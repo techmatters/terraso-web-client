@@ -7,20 +7,14 @@ import {
 } from 'react-router-dom'
 import { createTheme } from '@mui/material/styles'
 import { ThemeProvider } from '@mui/material'
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  Box,
-  IconButton
-} from '@mui/material'
-import MenuIcon from '@mui/icons-material/Menu'
+import { Box } from '@mui/material'
 
 
 import './index.css'
 import App from './App'
+import AppBar from './common/AppBar'
 import reportWebVitals from './reportWebVitals'
+import Dashboard from './dashboard/Dashboard'
 
 const theme = createTheme({
   palette: {
@@ -38,26 +32,11 @@ ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static">
-          <Toolbar>
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              News
-            </Typography>
-            <Button color="inherit">Login</Button>
-          </Toolbar>
-        </AppBar>
+        <AppBar />
         <BrowserRouter>
           <Routes>
             <Route path='/' element={<App />} />
+            <Route path='/dashboard' element={<Dashboard />} />
           </Routes>
         </BrowserRouter>
       </Box>

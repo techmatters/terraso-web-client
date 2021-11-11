@@ -11,9 +11,9 @@ function App() {
       <Button
         variant="contained"
         component={Link}
-        to="/invoices"
+        to="/dashboard"
       >
-        Invoices
+        Dashboard
       </Button>
     </div>
   )
