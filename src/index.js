@@ -8,13 +8,15 @@ import {
 import { createTheme } from '@mui/material/styles'
 import { ThemeProvider } from '@mui/material'
 import { Box } from '@mui/material'
+import { IntlProvider } from 'react-intl'
 
-
-import './index.css'
 import App from './App'
 import AppBar from './common/AppBar'
 import reportWebVitals from './reportWebVitals'
 import Dashboard from './dashboard/Dashboard'
+import * as localizationService from './localization/localizatinService'
+
+import './index.css'
 
 const theme = createTheme({
   palette: {
@@ -28,19 +30,23 @@ const theme = createTheme({
   },
 })
 
+var locale = navigator.language || navigator.userLanguage
+
 ReactDOM.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <Box sx={{ flexGrow: 1 }}>
-        <AppBar />
-        <BrowserRouter>
-          <Routes>
-            <Route path='/' element={<App />} />
-            <Route path='/dashboard' element={<Dashboard />} />
-          </Routes>
-        </BrowserRouter>
-      </Box>
-    </ThemeProvider>
+    <IntlProvider messages={localizationService.getLocaleValues(locale)} locale={locale}>
+      <ThemeProvider theme={theme}>
+        <Box sx={{ flexGrow: 1 }}>
+          <AppBar />
+          <BrowserRouter>
+            <Routes>
+              <Route path='/' element={<App />} />
+              <Route path='/dashboard' element={<Dashboard />} />
+            </Routes>
+          </BrowserRouter>
+        </Box>
+      </ThemeProvider>
+    </IntlProvider>
   </React.StrictMode>,
   document.getElementById('root')
 )

@@ -8,6 +8,7 @@ import {
   IconButton
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
+import { FormattedMessage } from 'react-intl'
 
 const AppBarComponent = props => (
   <AppBar position="static">
@@ -24,7 +25,9 @@ const AppBarComponent = props => (
       <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
         Terraso
       </Typography>
-      <Button color="inherit">Login</Button>
+      <Button color="inherit">
+        <FormattedMessage id="user.login"/>
+      </Button>
     </Toolbar>
   </AppBar>
 )
