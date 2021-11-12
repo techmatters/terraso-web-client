@@ -14,7 +14,7 @@ import App from './App'
 import AppBar from './common/AppBar'
 import reportWebVitals from './reportWebVitals'
 import Dashboard from './dashboard/Dashboard'
-import * as localizationService from './localization/localizatinService'
+import * as localizationService from './localization/localizationService'
 
 import './index.css'
 
