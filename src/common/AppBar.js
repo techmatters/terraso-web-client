@@ -9,6 +9,7 @@ import {
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import { FormattedMessage } from 'react-intl'
+import { Link } from 'react-router-dom'
 
 const AppBarComponent = props => (
   <AppBar position="static">
@@ -22,9 +23,16 @@ const AppBarComponent = props => (
       >
         <MenuIcon />
       </IconButton>
-      <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-        Terraso
-      </Typography>
+      <Button
+        color="inherit"
+        component={Link}
+        to="/"
+        sx={{ flexGrow: 1 }}
+      >
+        <Typography variant="h6">
+          <FormattedMessage id="terraso.title"/>
+        </Typography>
+      </Button>
       <Button color="inherit">
         <FormattedMessage id="user.login"/>
       </Button>

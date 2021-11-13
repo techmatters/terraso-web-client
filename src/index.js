@@ -37,8 +37,8 @@ ReactDOM.render(
     <IntlProvider messages={localizationService.getLocaleValues(locale)} locale={locale}>
       <ThemeProvider theme={theme}>
         <Box sx={{ flexGrow: 1 }}>
-          <AppBar />
           <BrowserRouter>
+            <AppBar />
             <Routes>
               <Route path='/' element={<App />} />
               <Route path='/dashboard' element={<Dashboard />} />
