@@ -9,20 +9,24 @@ import { createTheme } from '@mui/material/styles'
 import { ThemeProvider } from '@mui/material'
 import { Box } from '@mui/material'
 import { IntlProvider } from 'react-intl'
+import { Provider } from 'react-redux'
 
+import store from './store'
 import App from './App'
 import AppBar from './common/AppBar'
 import reportWebVitals from './reportWebVitals'
 import Dashboard from './dashboard/Dashboard'
 import * as localizationService from './localization/localizationService'
+import RequireAuth from './auth/RequireAuth'
 
 import './index.css'
 
+// Theme
 const theme = createTheme({
   palette: {
     type: 'light',
     primary: {
-      main: '#5e5547',
+      main: '#E5E5E5',
     },
     secondary: {
       main: '#f50057',
@@ -30,6 +34,7 @@ const theme = createTheme({
   },
 })
 
+// Localization
 var locale = navigator.language || navigator.userLanguage
 
 ReactDOM.render(
@@ -37,13 +42,19 @@ ReactDOM.render(
     <IntlProvider messages={localizationService.getLocaleValues(locale)} locale={locale}>
       <ThemeProvider theme={theme}>
         <Box sx={{ flexGrow: 1 }}>
-          <BrowserRouter>
-            <AppBar />
-            <Routes>
-              <Route path='/' element={<App />} />
-              <Route path='/dashboard' element={<Dashboard />} />
-            </Routes>
-          </BrowserRouter>
+          <Provider store={store}>
+            <BrowserRouter>
+              <AppBar />
+              <Routes>
+                <Route path='/' element={<App />} />
+                <Route path='/dashboard' element={
+                  <RequireAuth>
+                    <Dashboard />
+                  </RequireAuth>
+                } />
+              </Routes>
+            </BrowserRouter>
+          </Provider>
         </Box>
       </ThemeProvider>
     </IntlProvider>

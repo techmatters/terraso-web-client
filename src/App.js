@@ -8,7 +8,7 @@ import './App.css'
 
 function App() {
   return (
-    <div>
+    <div style={{padding: '20px'}}>
       <Button
         variant="contained"
         component={Link}
