@@ -2,6 +2,7 @@ import React from 'react'
 
 import { Button } from '@mui/material'
 import { Link } from 'react-router-dom'
+import { FormattedMessage } from 'react-intl'
 
 import './App.css'
 
@@ -11,9 +12,9 @@ function App() {
       <Button
         variant="contained"
         component={Link}
-        to="/invoices"
+        to="/dashboard"
       >
-        Invoices
+        <FormattedMessage id="dashboard.title" />
       </Button>
     </div>
   )
