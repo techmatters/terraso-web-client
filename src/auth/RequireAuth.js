@@ -7,7 +7,7 @@ const RequireAuth = ({ children }) => {
 
   return !!user
     ? children
-    : <Navigate to="/login" replace />;
+    : <Navigate to="/login" replace />
 }
 
 export default RequireAuth

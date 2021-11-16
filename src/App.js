@@ -4,7 +4,6 @@ import { Button } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { FormattedMessage } from 'react-intl'
 
-import './App.css'
 
 function App() {
   return (

@@ -5,60 +5,58 @@ import {
   Routes,
   Route
 } from 'react-router-dom'
-import { createTheme } from '@mui/material/styles'
 import { ThemeProvider } from '@mui/material'
 import { Box } from '@mui/material'
 import { IntlProvider } from 'react-intl'
 import { Provider } from 'react-redux'
 
 import store from './store'
+import theme from './theme'
 import App from './App'
 import AppBar from './common/AppBar'
 import reportWebVitals from './reportWebVitals'
-import Dashboard from './dashboard/Dashboard'
+import Dashboard from './dashboard/components/Dashboard'
 import * as localizationService from './localization/localizationService'
 import RequireAuth from './auth/RequireAuth'
 
 import './index.css'
 
-// Theme
-const theme = createTheme({
-  palette: {
-    type: 'light',
-    primary: {
-      main: '#E5E5E5',
-    },
-    secondary: {
-      main: '#f50057',
-    },
-  },
-})
-
 // Localization
 var locale = navigator.language || navigator.userLanguage
 
-ReactDOM.render(
+// Wrappers
+// Localization, Theme, Global State
+const AppWrappers = ({ children }) => (
   <React.StrictMode>
     <IntlProvider messages={localizationService.getLocaleValues(locale)} locale={locale}>
       <ThemeProvider theme={theme}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Provider store={store}>
-            <BrowserRouter>
-              <AppBar />
-              <Routes>
-                <Route path='/' element={<App />} />
-                <Route path='/dashboard' element={
-                  <RequireAuth>
-                    <Dashboard />
-                  </RequireAuth>
-                } />
-              </Routes>
-            </BrowserRouter>
-          </Provider>
-        </Box>
+        <Provider store={store}>
+          {children}
+        </Provider>
       </ThemeProvider>
     </IntlProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
+)
+
+ReactDOM.render(
+  <AppWrappers>
+    <Box sx={{ flexGrow: 1 }}>
+      <BrowserRouter>
+        <AppBar />
+        <Box
+          display="flex" 
+          width='auto'
+        >
+          <Box m="auto" sx={{ maxWidth: '1044px', paddingTop: theme.spacing(2) }}>
+            <Routes>
+              <Route path='/' element={<App />} />
+              <Route path='/dashboard' element={<RequireAuth children={<Dashboard />} />} />
+            </Routes>
+          </Box>
+        </Box>
+      </BrowserRouter>
+    </Box>
+  </AppWrappers>,
   document.getElementById('root')
 )
 

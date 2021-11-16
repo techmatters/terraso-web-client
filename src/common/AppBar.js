@@ -19,9 +19,10 @@ const AppBarComponent = props => {
   }
 
   return (
-    <AppBar position="static" elevation={0}>
+    <AppBar position="static" elevation={0} sx={{ bgcolor: 'grey.300', color: 'text.primary'}} >
       <Toolbar>
         <Button
+          sx={{ bgcolor: 'grey.400' }}
           color="inherit"
           component={Link}
           to="/"
