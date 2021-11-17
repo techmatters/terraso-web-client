@@ -16,13 +16,11 @@ const Dashboard = props => {
 
   const user = useSelector(state => state.user.user)
   const dashboard = useSelector(state => state.dashboard)
-  const { groups, landscapes, error, fetching, refresh } = dashboard
+  const { groups, landscapes, error, fetching } = dashboard
 
   useEffect(() => {
-    if (refresh) {
-      dispatch(fetchDashboardData())
-    }
-  }, [dispatch, refresh])
+    dispatch(fetchDashboardData())
+  }, [dispatch])
 
   if (fetching) {
     return (<Loader />)

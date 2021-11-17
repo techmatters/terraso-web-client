@@ -6,8 +6,7 @@ const initialState = {
   groups: [],
   landscapes: [],
   fetching: true,
-  error: null,
-  refresh: true
+  error: null
 } 
 
 export const dashboardSlice = createSlice({
