@@ -26,7 +26,7 @@
     "build": "react-scripts build",
     "build-serve": "serve -s build",
     "test": "react-scripts test",
-    "test-coverage": "react-scripts test --coverage --watchAll=false",
+    "test-coverage": "react-scripts test --coverage --changedSince=origin/main --watchAll=false",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -50,5 +50,15 @@
   "devDependencies": {
     "react-scripts": "^4.0.3",
     "serve": "^13.0.2"
+  },
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    }
   }
 }

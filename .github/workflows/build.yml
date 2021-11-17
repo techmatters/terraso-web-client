@@ -33,6 +33,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v2
@@ -43,7 +45,7 @@ jobs:
         run: npm install
 
       - name: Run test
-        run: npm run test
+        run: npm run test-coverage
 
   build:
     runs-on: ubuntu-latest
