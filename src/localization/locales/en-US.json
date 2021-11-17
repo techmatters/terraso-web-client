@@ -1,5 +1,23 @@
 {
-    "common": {
-        "terraso_projectName": "Terraso"
-    }
+  "common": {
+      "terraso_projectName": "Terraso"
+  },
+  "dashboard.title": "Dashboard",
+  "dashboard.page_title": "Your Stuff",
+  "dashboard.error": "Error loading data. Error: {error}",
+  "user.account_created_message": "Your Terraso account has been created successfully with the following information. You can edit them any time.",
+  "user.login": "Login",
+  "user.edit_profile_button": "Edit Profile Info",
+  "group.role.member": "Group Member",
+  "group.role.manager": "Group Manager",
+  "group.edit_profile_button": "Edit Group Profile",
+  "group.placeholder.title": "Join Groups",
+  "group.placeholder.content": "Terraso groups connect people with common interests and needs. Groups exist for people within and across landscapes.",
+  "group.placeholder.connect_button": "Join Groups",
+  "landscape.edit_profile_button": "Edit Landscape Profile",
+  "landscape.role.member": "Landscape Member",
+  "landscape.role.manager": "Landscape Manager",
+  "landscape.placeholder.title": "Landscape",
+  "landscape.placeholder.content": "Tell us which landscape  you are affiliated with. This will help you connect to others on Terraso and let you share information with other landscape members.",
+  "landscape.placeholder.connect_button": "Connect to Landscape"
 }

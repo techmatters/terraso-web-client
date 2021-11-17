@@ -1,7 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import {
-  Routes
+  Routes,
+  Route
 } from 'react-router-dom'
 import { Box } from '@mui/material'
 
@@ -9,9 +10,11 @@ import createStore from 'store'
 import theme from 'theme'
 import AppBar from 'common/components/AppBar'
 import reportWebVitals from 'monitoring/reportWebVitals'
+import RequireAuth from 'auth/RequireAuth'
+import Dashboard from 'user/dashboard/components/Dashboard'
 import AppWrappers from 'common/components/AppWrappers'
 
-import './index.css'
+import 'index.css'
 
 ReactDOM.render(
   <AppWrappers
@@ -26,6 +29,7 @@ ReactDOM.render(
       >
         <Box m="auto" sx={{ maxWidth: '1044px', paddingTop: theme.spacing(2) }}>
           <Routes>
+            <Route path='/dashboard' element={<RequireAuth children={<Dashboard />} />} />
           </Routes>
         </Box>
       </Box>
