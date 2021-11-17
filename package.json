@@ -46,7 +46,7 @@
     ]
   },
   "devDependencies": {
-    "react-scripts": "^3.4.4",
+    "react-scripts": "^4.0.3",
     "serve": "^13.0.2"
   }
 }

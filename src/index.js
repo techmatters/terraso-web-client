@@ -5,12 +5,9 @@ import {
   Routes,
   Route
 } from 'react-router-dom'
-import { ThemeProvider } from '@mui/material'
 import { Box } from '@mui/material'
-import { IntlProvider } from 'react-intl'
-import { Provider } from 'react-redux'
 
-import store from './store'
+import createStore from './store'
 import theme from './theme'
 import App from './App'
 import AppBar from './common/AppBar'
@@ -20,26 +17,21 @@ import * as localizationService from './localization/localizationService'
 import RequireAuth from './auth/RequireAuth'
 
 import './index.css'
+import AppWrappers from './common/AppWrappers'
 
 // Localization
 var locale = navigator.language || navigator.userLanguage
 
-// Wrappers
-// Localization, Theme, Global State
-const AppWrappers = ({ children }) => (
-  <React.StrictMode>
-    <IntlProvider messages={localizationService.getLocaleValues(locale)} locale={locale}>
-      <ThemeProvider theme={theme}>
-        <Provider store={store}>
-          {children}
-        </Provider>
-      </ThemeProvider>
-    </IntlProvider>
-  </React.StrictMode>
-)
 
 ReactDOM.render(
-  <AppWrappers>
+  <AppWrappers
+    localization={{
+      locale,
+      messages: localizationService.getLocaleValues(locale)
+    }}
+    store={createStore()}
+    theme={theme}
+  >
     <Box sx={{ flexGrow: 1 }}>
       <BrowserRouter>
         <AppBar />
