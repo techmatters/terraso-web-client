@@ -1,5 +1,3 @@
-import React from 'react'
-
 import * as localizationService from './localizationService'
 
 test('Localization Service: check if rendered', () => {
