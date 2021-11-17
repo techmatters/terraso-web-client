@@ -26,7 +26,7 @@
     "build": "react-scripts build",
     "build-serve": "serve -s build",
     "test": "react-scripts test",
-    "test-coverage": "react-scripts test --coverage --changedSince=main --watchAll=false",
+    "test-coverage": "react-scripts test --coverage --changedSince=origin/main --watchAll=false",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
