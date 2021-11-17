@@ -13,11 +13,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Main
-        uses: actions/checkout@v2
-        with:
-          ref: 'main'
-
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -36,6 +31,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Main
+        uses: actions/checkout@v2
+        with:
+          ref: 'main'
+
       - name: Checkout
         uses: actions/checkout@v2
 
