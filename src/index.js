@@ -6,18 +6,18 @@ import {
 } from 'react-router-dom'
 import { Box } from '@mui/material'
 
-import createStore from './store'
-import theme from './theme'
-import AppBar from './common/AppBar'
-import reportWebVitals from './reportWebVitals'
-import * as localizationService from './localization/localizationService'
+import createStore from 'store'
+import theme from 'theme'
+import AppBar from 'common/components/AppBar'
+import reportWebVitals from 'monitoring/reportWebVitals'
+import * as localizationService from 'localization/localizationService'
+import AppWrappers from 'common/components/AppWrappers'
 
 import './index.css'
-import AppWrappers from './common/AppWrappers'
+
 
 // Localization
 var locale = navigator.language || navigator.userLanguage
-
 
 ReactDOM.render(
   <AppWrappers
