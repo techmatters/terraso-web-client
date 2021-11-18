@@ -1,4 +1,5 @@
-import * as localizationService from './localizationService'
+import * as localizationService from 'localization/localizationService'
+
 
 test('Localization Service: check if rendered', () => {
   const values = localizationService.getLocaleValues('en-US')

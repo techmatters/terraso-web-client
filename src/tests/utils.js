@@ -1,10 +1,10 @@
 import React from 'react'
 import { render as rtlRender } from '@testing-library/react'
 
-import createStore from '../store'
-import theme from '../theme'
-import * as localizationService from '../localization/localizationService'
-import AppWrappers from '../common/AppWrappers'
+import createStore from 'store'
+import theme from 'theme'
+import * as localizationService from 'localization/localizationService'
+import AppWrappers from 'common/components/AppWrappers'
 
 const render = (component, intialState) => {
   const Wrapper = ({ children }) => (
