@@ -3,7 +3,7 @@ const { readFileSync } = require('fs')
 const { writeFile, readdir } = require('fs').promises
 const { i18nextToPo, gettextToI18next } = require('i18next-conv')
 
-
+// Script arguments
 const args = process.argv.slice(2)
 
 if (args.length === 0) {
@@ -13,11 +13,13 @@ if (args.length === 0) {
 
 const transformTo = args[0]
 
+// Util functions
 const save = target => result => writeFile(target, result)
 
 const filesInFolder = dirname => readdir(dirname)
     .then(filenames => filenames.map(filename => path.join(dirname, filename)))
 
+// Base transform function
 const transform = (process, from, i18Transform) => filesInFolder(path.join(__dirname, from))
   .then(files => {
     console.log(`${process} transform starting.`, 'Files:', files)
@@ -31,6 +33,7 @@ const transform = (process, from, i18Transform) => filesInFolder(path.join(__dir
   .then(locales => console.log(`Finished ${process} transform successfully.`, 'Locales:', locales))
   .catch(error => console.error(`Error transforming to ${process}`, error))
 
+// PO transform
 const toPoOptions = {
   project: 'Terraso'
 }
@@ -39,12 +42,14 @@ const toPo = () => transform('PO', '../../src/localization/locales/', (locale, f
       .then(save(`locales/po/${locale}.po`))
 )
 
+// JSON transform
 const toJsonOptions = {}
 const toJson = () => transform('JSON', '../../locales/po/', (locale, filePath) =>
     gettextToI18next(locale, readFileSync(filePath), toJsonOptions)
       .then(save(`src/localization/locales/${locale}.json`))
 )
 
+// Scripts entry
 if (transformTo === 'po') {
   toPo()
 }
