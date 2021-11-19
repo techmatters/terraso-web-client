@@ -31,7 +31,9 @@ const transform = (process, from, i18Transform) => filesInFolder(path.join(__dir
   .then(locales => console.log(`Finished ${process} transform successfully.`, 'Locales:', locales))
   .catch(error => console.error(`Error transforming to ${process}`, error))
 
-const toPoOptions = {}
+const toPoOptions = {
+  project: 'Terraso'
+}
 const toPo = () => transform('PO', '../../src/localization/locales/', (locale, filePath) =>
     i18nextToPo(locale, readFileSync(filePath), toPoOptions)
       .then(save(`locales/po/${locale}.po`))
