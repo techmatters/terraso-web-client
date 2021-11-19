@@ -1,3 +1,7 @@
 {
-  "terraso.title": "Terraso"
+    "common": {
+        "AppBar": {
+            "title": "Terraso"
+        }
+    }
 }

@@ -6,11 +6,12 @@ import {
   Button,
   Box
 } from '@mui/material'
-import { FormattedMessage } from 'react-intl'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 const AppBarComponent = props => {
+  const { t } = useTranslation()
   const user = useSelector(state => state.user.user)
 
   if (!user) {
@@ -27,7 +28,7 @@ const AppBarComponent = props => {
           to="/"
         >
           <Typography variant="h6">
-            <FormattedMessage id="terraso.title"/>
+            {t('common.AppBar.title')}
           </Typography>
         </Button>
         <Box sx={{ flexGrow: 1 }} />
