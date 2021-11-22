@@ -10,7 +10,6 @@ import { FormattedMessage } from 'react-intl'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
-
 const AppBarComponent = props => {
   const user = useSelector(state => state.user.user)
 
@@ -19,7 +18,7 @@ const AppBarComponent = props => {
   }
 
   return (
-    <AppBar position="static" elevation={0} sx={{ bgcolor: 'grey.300', color: 'text.primary'}} >
+    <AppBar position="static" elevation={0} sx={{ bgcolor: 'grey.300', color: 'text.primary' }} >
       <Toolbar>
         <Button
           sx={{ bgcolor: 'grey.400' }}

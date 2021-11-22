@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import {
   BrowserRouter,
-  Routes,
+  Routes
 } from 'react-router-dom'
 import { Box } from '@mui/material'
 
@@ -15,9 +15,8 @@ import AppWrappers from 'common/components/AppWrappers'
 
 import './index.css'
 
-
 // Localization
-var locale = navigator.language || navigator.userLanguage
+const locale = navigator.language || navigator.userLanguage
 
 ReactDOM.render(
   <AppWrappers
@@ -32,7 +31,7 @@ ReactDOM.render(
       <BrowserRouter>
         <AppBar />
         <Box
-          display="flex" 
+          display="flex"
           width='auto'
         >
           <Box m="auto" sx={{ maxWidth: '1044px', paddingTop: theme.spacing(2) }}>

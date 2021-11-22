@@ -11,7 +11,7 @@ export const getLocaleValues = userLocale => {
   }
   const fallbackLocale = _.chain(values)
     .toPairs()
-    .map(([ locale ]) => locale)
+    .map(([locale]) => locale)
     .find(locale => locale.startsWith(_.split(userLocale, '-', 1)))
     .value()
 
@@ -21,5 +21,5 @@ export const getLocaleValues = userLocale => {
     return _.get(values, 'en-US')
   }
   console.warn(`User locale (${userLocale}) not found, using fallback locale (${fallbackLocale})`)
-  return _.get(values, fallbackLocale) 
+  return _.get(values, fallbackLocale)
 }
