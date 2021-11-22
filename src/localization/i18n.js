@@ -10,7 +10,7 @@ const resources = {
 
 i18n
   .use(new LanguageDetector(null, {
-    order: ['querystring', 'cookie', 'localStorage', 'sessionStorage', 'navigator', 'htmlTag', 'path', 'subdomain'] 
+    order: ['querystring', 'cookie', 'localStorage', 'sessionStorage', 'navigator', 'htmlTag', 'path', 'subdomain']
   }))
   .use(initReactI18next)
   .init({
@@ -18,9 +18,9 @@ i18n
     interpolation: {
       escapeValue: false // react already safes from xss
     },
-    fallbackLng: { 
-        'default': ['en-US']
+    fallbackLng: {
+      default: ['en-US']
     }
   })
 
-  export default i18n
+export default i18n

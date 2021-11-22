@@ -21,7 +21,7 @@ ReactDOM.render(
     <Box sx={{ flexGrow: 1 }}>
       <AppBar />
       <Box
-        display="flex" 
+        display="flex"
         width='auto'
       >
         <Box m="auto" sx={{ maxWidth: '1044px', paddingTop: theme.spacing(2) }}>
