@@ -5,7 +5,6 @@ const _ = require('lodash')
 
 const { filesInFolder } = require('./utils')
 
-
 const SOURCE_LOCALE = 'en-US'
 
 const LOCALE_FILES_FOLDER = path.join(__dirname, '../../src/localization/locales/')
@@ -13,7 +12,7 @@ const LOCALE_FILES_FOLDER = path.join(__dirname, '../../src/localization/locales
 const getKeys = content => {
   const json = JSON.parse(content)
   const keys = Object.keys(flat(json))
-  return keys 
+  return keys
 }
 
 const checkMissingKeys = () => readFile(path.join(LOCALE_FILES_FOLDER, `${SOURCE_LOCALE}.json`))
@@ -27,7 +26,7 @@ const checkMissingKeys = () => readFile(path.join(LOCALE_FILES_FOLDER, `${SOURCE
       // Identify diff with source locale keys
       .then(localeKeys => _.difference(sourceKeys, localeKeys))
       .then(localeDiff => {
-        if(_.isEmpty(localeDiff)) {
+        if (_.isEmpty(localeDiff)) {
           return null
         }
         console.log(`Missing keys for ${path.parse(filePath).name}.`, 'Missing:', localeDiff)

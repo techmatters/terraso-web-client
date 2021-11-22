@@ -37,15 +37,15 @@ const toPoOptions = {
   project: 'Terraso'
 }
 const toPo = () => transform('PO', '../../src/localization/locales/', (locale, filePath) =>
-    i18nextToPo(locale, readFileSync(filePath), toPoOptions)
-      .then(save(`locales/po/${locale}.po`))
+  i18nextToPo(locale, readFileSync(filePath), toPoOptions)
+    .then(save(`locales/po/${locale}.po`))
 )
 
 // JSON transform
 const toJsonOptions = {}
 const toJson = () => transform('JSON', '../../locales/po/', (locale, filePath) =>
-    gettextToI18next(locale, readFileSync(filePath), toJsonOptions)
-      .then(save(`src/localization/locales/${locale}.json`))
+  gettextToI18next(locale, readFileSync(filePath), toJsonOptions)
+    .then(save(`src/localization/locales/${locale}.json`))
 )
 
 // Scripts entry
