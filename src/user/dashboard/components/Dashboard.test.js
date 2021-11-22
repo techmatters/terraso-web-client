@@ -87,7 +87,7 @@ test('Dashboard: Display groups', async () => {
   expect(screen.getByText(/Group 2/i)).toBeInTheDocument()
   expect(screen.getByText(/Group Manager/i)).toBeInTheDocument()
 })
-test('Dashboard: Display placeholders', async () => {
+test('Dashboard: Display defaults', async () => {
   fetchDashboardData.mockReturnValue(Promise.resolve({
     groups: [],
     landscapes: []

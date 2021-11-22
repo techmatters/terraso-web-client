@@ -21,13 +21,13 @@ const Actions = () => {
         component="div"
         sx={{ width: '100%', color: 'grey.700', borderColor: 'grey.700' }}
       >
-        {t('landscape.placeholder_connect_button')}
+        {t('landscape.default_connect_button')}
       </Button>
     </CardActions>
   )
 }
 
-const LandscapePlaceholderCard = () => {
+const LandscapeDefaultCard = () => {
   const { t } = useTranslation()
 
   return (
@@ -41,7 +41,7 @@ const LandscapePlaceholderCard = () => {
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography variant="h5" component="div">
-          {t('landscape.placeholder_title')}
+          {t('landscape.default_title')}
         </Typography>
         <Alert
           severity="info"
@@ -51,7 +51,7 @@ const LandscapePlaceholderCard = () => {
           }}
         >
           <Typography variant="body1" component="div">
-            {t('landscape.placeholder_content')}
+            {t('landscape.default_content')}
           </Typography>
         </Alert>
       </Box>
@@ -60,4 +60,4 @@ const LandscapePlaceholderCard = () => {
   )
 }
 
-export default LandscapePlaceholderCard
+export default LandscapeDefaultCard

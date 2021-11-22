@@ -14,9 +14,9 @@ import LoaderCard from 'common/components/LoaderCard'
 import { fetchDashboardData } from 'user/dashboard/dashboardSlice'
 import UserCard from 'user/components/UserCard'
 import LandscapeCard from 'landscape/LandscapeCard'
-import LandscapePlaceholderCard from 'landscape/LandscapePlaceholderCard'
+import LandscapeDefaultCard from 'landscape/LandscapeDefaultCard'
 import GroupCard from 'group/GroupCard'
-import GroupPlaceholderCard from 'group/GroupPlaceholderCard'
+import GroupDefaultCard from 'group/GroupDefaultCard'
 
 const Landscapes = ({ landscapes, fetching }) => {
   if (fetching) {
@@ -30,7 +30,7 @@ const Landscapes = ({ landscapes, fetching }) => {
   if (_.isEmpty(landscapes)) {
     return (
       <Grid item xs={12} md={6}>
-        <LandscapePlaceholderCard />
+        <LandscapeDefaultCard />
       </Grid>
     )
   }
@@ -54,7 +54,7 @@ const Groups = ({ groups, fetching }) => {
   if (_.isEmpty(groups)) {
     return (
       <Grid item xs={12} md={6}>
-        <GroupPlaceholderCard />
+        <GroupDefaultCard />
       </Grid>
     )
   }

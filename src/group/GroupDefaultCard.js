@@ -21,13 +21,13 @@ const Actions = () => {
         component="div"
         sx={{ width: '100%', color: 'grey.700', borderColor: 'grey.700' }}
       >
-        {t('group.placeholder_connect_button')}
+        {t('group.default_connect_button')}
       </Button>
     </CardActions>
   )
 }
 
-const GroupPlaceholderCard = () => {
+const GroupDefaultCard = () => {
   const { t } = useTranslation()
 
   return (
@@ -41,7 +41,7 @@ const GroupPlaceholderCard = () => {
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography variant="h5" component="div">
-          {t('group.placeholder_title')}
+          {t('group.default_title')}
         </Typography>
         <Alert
           severity="info"
@@ -51,7 +51,7 @@ const GroupPlaceholderCard = () => {
           }}
         >
           <Typography variant="body1" component="div">
-            {t('group.placeholder_content')}
+            {t('group.default_content')}
           </Typography>
         </Alert>
       </Box>
@@ -60,4 +60,4 @@ const GroupPlaceholderCard = () => {
   )
 }
 
-export default GroupPlaceholderCard
+export default GroupDefaultCard
