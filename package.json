@@ -12,10 +12,12 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "history": "^5.1.0",
+    "i18next": "^21.5.2",
+    "i18next-browser-languagedetector": "^6.1.2",
     "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-intl": "^5.21.1",
+    "react-i18next": "^11.14.2",
     "react-redux": "^7.2.6",
     "react-router-dom": "^6.0.1",
     "web-vitals": "^1.1.2"
@@ -27,6 +29,9 @@
     "build-serve": "serve -s build",
     "test": "react-scripts test",
     "test-coverage": "react-scripts test --coverage --changedSince=origin/main --watchAll=false",
+    "localization-to-po": "node scripts/localization/transform-to.js po",
+    "localization-to-json": "node scripts/localization/transform-to.js json",
+    "localization-check-missing": "node scripts/localization/missing-check.js",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -51,6 +56,8 @@
   },
   "devDependencies": {
     "eslint-config-standard": "^16.0.3",
+    "flat": "^5.0.2",
+    "i18next-conv": "^11.0.1",
     "react-scripts": "^4.0.3",
     "serve": "^13.0.2"
   },

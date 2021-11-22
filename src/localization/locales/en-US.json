@@ -1,3 +1,5 @@
 {
-  "terraso.title": "Terraso"
+    "common": {
+        "terraso_projectName": "Terraso"
+    }
 }

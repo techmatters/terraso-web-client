@@ -50,6 +50,18 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
+## Localization
+
+The localization is being hangled by the `react-i18next`. You can check the documentation here: [https://react.i18next.com/](https://react.i18next.com/)
+
+### Generate PO files
+
+Executing `npm run localization-to-po` will generate the PO files in `locales/po/` from the JSON files in `src/localization/locales/`
+
+### Generate JSON files
+
+Executing `npm run localization-to-json` will generate the JSON files in `src/localization/locales/` from the PO files in `locales/po/`
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
