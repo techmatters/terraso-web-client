@@ -28,7 +28,7 @@ const AppBarComponent = props => {
           to="/"
         >
           <Typography variant="h6">
-            {t('common.terraso')}
+            {t('common.terraso_projectName')}
           </Typography>
         </Button>
         <Box sx={{ flexGrow: 1 }} />
