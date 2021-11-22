@@ -5,7 +5,7 @@
         "page_title": "Your Stuff"
     },
     "user": {
-        "login": "Login",
+        "login": "Log in",
         "account_created_message": "Your Terraso account has been created successfully with the following information. You can edit them any time.",
         "edit_profile_button": "Edit Profile Info"
     },
@@ -19,7 +19,7 @@
     },
     "landscape": {
         "placeholder_title": "Landscape",
-        "placeholder_content": "Tell us which landscape  you are affiliated with. This will help you connect to others on Terraso and let you share information with other landscape members.",
+        "placeholder_content": "Tell us which landscape you are affiliated with. This will help you connect to others on Terraso and let you share information with other landscape members.",
         "edit_profile_button": "Edit Landscape Profile",
         "placeholder_connect_button": "Connect to Landscape",
         "role_member": "Landscape Member",
