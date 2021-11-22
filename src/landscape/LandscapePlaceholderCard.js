@@ -21,7 +21,7 @@ const Actions = () => {
         component="div"
         sx={{ width: '100%', color: 'grey.700', borderColor: 'grey.700' }}
       >
-        {t('landscape.placeholder.connect_button')}
+        {t('landscape.placeholder_connect_button')}
       </Button>
     </CardActions>
   )
@@ -41,7 +41,7 @@ const LandscapePlaceholderCard = () => {
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography variant="h5" component="div">
-          {t('landscape.placeholder.title')}
+          {t('landscape.placeholder_title')}
         </Typography>
         <Alert
           severity="info"
@@ -51,7 +51,7 @@ const LandscapePlaceholderCard = () => {
           }}
         >
           <Typography variant="body1" component="div">
-            {t('landscape.placeholder.content')}
+            {t('landscape.placeholder_content')}
           </Typography>
         </Alert>
       </Box>

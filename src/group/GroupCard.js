@@ -57,7 +57,7 @@ const GroupCard = ({ group }) => {
             {group.name}
           </Typography>
           <Typography variant="subtitle1" component="div">
-            {t(`group.role.${group.role}`)}
+            {t(`group.role_${group.role}`)}
           </Typography>
         </Box>
       </Box>

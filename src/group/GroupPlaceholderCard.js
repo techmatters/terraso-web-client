@@ -21,7 +21,7 @@ const Actions = () => {
         component="div"
         sx={{ width: '100%', color: 'grey.700', borderColor: 'grey.700' }}
       >
-        {t('group.placeholder.connect_button')}
+        {t('group.placeholder_connect_button')}
       </Button>
     </CardActions>
   )
@@ -41,7 +41,7 @@ const GroupPlaceholderCard = () => {
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography variant="h5" component="div">
-          {t('group.placeholder.title')}
+          {t('group.placeholder_title')}
         </Typography>
         <Alert
           severity="info"
@@ -51,7 +51,7 @@ const GroupPlaceholderCard = () => {
           }}
         >
           <Typography variant="body1" component="div">
-            {t('group.placeholder.content')}
+            {t('group.placeholder_content')}
           </Typography>
         </Alert>
       </Box>

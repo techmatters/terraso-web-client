@@ -10,7 +10,7 @@ import {
 } from '@mui/material'
 
 import theme from 'theme'
-import LoaderCard from 'common/LoaderCard'
+import LoaderCard from 'common/components/LoaderCard'
 import { fetchDashboardData } from 'user/dashboard/dashboardSlice'
 import UserCard from 'user/components/UserCard'
 import LandscapeCard from 'landscape/LandscapeCard'

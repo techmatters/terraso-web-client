@@ -57,7 +57,7 @@ const LandscapeCard = ({ landscape }) => {
             {landscape.name}
           </Typography>
           <Typography variant="subtitle1" component="div">
-            {t(`landscape.role.${landscape.role}`)}
+            {t(`landscape.role_${landscape.role}`)}
           </Typography>
         </Box>
       </Box>
