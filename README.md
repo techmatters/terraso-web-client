@@ -60,7 +60,7 @@ Executing `npm run localization-to-po` will generate the PO files in `locales/po
 
 ### Generate JSON files
 
-Executing `npm run localization-to-json` will generate the JSON files in `src/localization/locales/` from the JSON files in `locales/po/`
+Executing `npm run localization-to-json` will generate the JSON files in `src/localization/locales/` from the PO files in `locales/po/`
 
 ## Learn More
 
