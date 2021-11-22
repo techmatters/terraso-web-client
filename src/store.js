@@ -4,7 +4,7 @@ import userReducer from 'user/userSlice'
 
 const createStore = intialState => configureStore({
   reducer: {
-    user: userReducer,
+    user: userReducer
   },
   preloadedState: intialState
 })
