@@ -1,7 +1,9 @@
 const path = require('path')
 const { readFileSync } = require('fs')
-const { writeFile, readdir } = require('fs').promises
+const { writeFile } = require('fs').promises
 const { i18nextToPo, gettextToI18next } = require('i18next-conv')
+
+const { filesInFolder } = require('./utils')
 
 // Script arguments
 const args = process.argv.slice(2)
@@ -15,9 +17,6 @@ const transformTo = args[0]
 
 // Util functions
 const save = target => result => writeFile(target, result)
-
-const filesInFolder = dirname => readdir(dirname)
-    .then(filenames => filenames.map(filename => path.join(dirname, filename)))
 
 // Base transform function
 const transform = (process, from, i18Transform) => filesInFolder(path.join(__dirname, from))
