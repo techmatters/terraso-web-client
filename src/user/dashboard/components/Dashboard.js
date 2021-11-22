@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react'
 import _ from 'lodash'
-import { Typography } from '@mui/material'
-import { FormattedMessage } from 'react-intl'
+import { useTranslation } from 'react-i18next'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   Box,
   Grid,
   Alert,
+  Typography
 } from '@mui/material'
 
 import theme from 'theme'
@@ -17,7 +17,6 @@ import LandscapeCard from 'landscape/LandscapeCard'
 import LandscapePlaceholderCard from 'landscape/LandscapePlaceholderCard'
 import GroupCard from 'group/GroupCard'
 import GroupPlaceholderCard from 'group/GroupPlaceholderCard'
-
 
 const Landscapes = ({ landscapes, fetching }) => {
   if (fetching) {
@@ -33,7 +32,7 @@ const Landscapes = ({ landscapes, fetching }) => {
       <Grid item xs={12} md={6}>
         <LandscapePlaceholderCard />
       </Grid>
-    ) 
+    )
   }
 
   return landscapes.map(landscape => (
@@ -57,17 +56,18 @@ const Groups = ({ groups, fetching }) => {
       <Grid item xs={12} md={6}>
         <GroupPlaceholderCard />
       </Grid>
-    ) 
+    )
   }
 
   return groups.map(group => (
-      <Grid key={group.id} item xs={12} md={6}>
-        <GroupCard group={group} />
-      </Grid>
-    ))
+    <Grid key={group.id} item xs={12} md={6}>
+      <GroupCard group={group} />
+    </Grid>
+  ))
 }
 
 const Dashboard = props => {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
 
   const user = useSelector(state => state.user.user)
@@ -81,7 +81,7 @@ const Dashboard = props => {
   if (error) {
     return (
       <Alert severity="error">
-        <FormattedMessage id="dashboard.error" values={{ error }} /> 
+        {t('dashboard.error', { error })}
       </Alert>
     )
   }
@@ -89,7 +89,7 @@ const Dashboard = props => {
   return (
     <Box sx={{ padding: theme.spacing(2) }}>
       <Typography variant="h1" component="div" color='text.primary' gutterBottom>
-        <FormattedMessage id="dashboard.page_title" />
+        {t('dashboard.page_title')}
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>

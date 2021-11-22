@@ -6,10 +6,9 @@ import {
   Typography,
   Button
 } from '@mui/material'
-import { FormattedMessage } from 'react-intl'
+import { useTranslation } from 'react-i18next'
 
 import theme from 'theme'
-
 
 const Avatar = () => (
   <Box
@@ -24,41 +23,47 @@ const Avatar = () => (
 )
 
 const Actions = ({ group }) => {
+  const { t } = useTranslation()
+
   if (group.role !== 'manager') {
     return null
   }
 
   return (
     <CardActions sx={{ padding: 0 }}>
-        <Button variant="outlined" component="div" sx={{ width:'100%', color: 'grey.700', borderColor: 'grey.700' }} >
-          <FormattedMessage id="group.edit_profile_button" />
-        </Button>
-      </CardActions>
+      <Button variant="outlined" component="div" sx={{ width: '100%', color: 'grey.700', borderColor: 'grey.700' }} >
+        {t('group.edit_profile_button')}
+      </Button>
+    </CardActions>
   )
 }
 
-const GroupCard = ({ group }) => (
-  <Card
-    variant="outlined"
-    sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      padding: theme.spacing(2)
-    }}
-  >
-    <Box sx={{ display: 'flex', marginBottom: theme.spacing(2) }}>
-      <Avatar />
-      <Box sx={{ display: 'flex', flexDirection: 'column', marginLeft: theme.spacing(2) }}>
-        <Typography variant="h5" component="div">
-          {group.name}
-        </Typography>
-        <Typography variant="subtitle1" component="div">
-          <FormattedMessage id={`group.role.${group.role}`} />
-        </Typography>
+const GroupCard = ({ group }) => {
+  const { t } = useTranslation()
+
+  return (
+    <Card
+      variant="outlined"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        padding: theme.spacing(2)
+      }}
+    >
+      <Box sx={{ display: 'flex', marginBottom: theme.spacing(2) }}>
+        <Avatar />
+        <Box sx={{ display: 'flex', flexDirection: 'column', marginLeft: theme.spacing(2) }}>
+          <Typography variant="h5" component="div">
+            {group.name}
+          </Typography>
+          <Typography variant="subtitle1" component="div">
+            {t(`group.role.${group.role}`)}
+          </Typography>
+        </Box>
       </Box>
-    </Box>
-    <Actions group={group} />
-  </Card>
-)
+      <Actions group={group} />
+    </Card>
+  )
+}
 
 export default GroupCard

@@ -7,7 +7,7 @@ const initialState = {
   landscapes: [],
   fetching: true,
   error: null
-} 
+}
 
 export const dashboardSlice = createSlice({
   name: 'dashboard',
@@ -26,7 +26,7 @@ export const dashboardSlice = createSlice({
       groups: action.payload.groups,
       landscapes: action.payload.landscapes
     })
-  },
+  }
 })
 
 const {

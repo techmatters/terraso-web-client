@@ -4,7 +4,7 @@
   },
   "dashboard.title": "Dashboard",
   "dashboard.page_title": "Your Stuff",
-  "dashboard.error": "Error loading data. Error: {error}",
+  "dashboard.error": "Error loading data. Error: {{error}}",
   "user.account_created_message": "Your Terraso account has been created successfully with the following information. You can edit them any time.",
   "user.login": "Login",
   "user.edit_profile_button": "Edit Profile Info",

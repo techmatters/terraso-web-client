@@ -11,7 +11,7 @@ test('Dashboard: Display error', async () => {
   fetchDashboardData.mockReturnValue(Promise.reject(
     'Load error'
   ))
-  await act( async () => render(<Dashboard />))
+  await act(async () => render(<Dashboard />))
   expect(screen.getByText(/Error loading data. Error: Load error/i)).toBeInTheDocument()
 })
 test('Dashboard: Display loader', () => {
@@ -28,7 +28,7 @@ test('Dashboard: Display user', async () => {
     groups: [],
     landscapes: []
   }))
-  await act( async () => render(<Dashboard />, {
+  await act(async () => render(<Dashboard />, {
     user: {
       user: {
         first_name: 'First Name',
@@ -54,7 +54,7 @@ test('Dashboard: Display landscapes', async () => {
       role: 'manager'
     }]
   }))
-  await act( async () => render(<Dashboard />))
+  await act(async () => render(<Dashboard />))
   expect(screen.getByText(/Landscape 1/i)).toBeInTheDocument()
   expect(screen.getByText(/Landscape Member/i)).toBeInTheDocument()
   expect(screen.getByText(/Landscape 2/i)).toBeInTheDocument()
@@ -81,7 +81,7 @@ test('Dashboard: Display groups', async () => {
       role: 'manager'
     }]
   }))
-  await act( async () => render(<Dashboard />))
+  await act(async () => render(<Dashboard />))
   expect(screen.getByText(/Group 1/i)).toBeInTheDocument()
   expect(screen.getByText(/Group Member/i)).toBeInTheDocument()
   expect(screen.getByText(/Group 2/i)).toBeInTheDocument()
@@ -92,7 +92,7 @@ test('Dashboard: Display placeholders', async () => {
     groups: [],
     landscapes: []
   }))
-  await act( async () => render(<Dashboard />))
+  await act(async () => render(<Dashboard />))
   expect(screen.getByText(/Connect to Landscape/i)).toBeInTheDocument()
   expect(screen.getByText(/Terraso groups connect people/i)).toBeInTheDocument()
 })

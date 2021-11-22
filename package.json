@@ -40,7 +40,10 @@
       "react-app/jest",
       "eslint:recommended",
       "standard"
-    ]
+    ],
+    "rules": {
+      "prefer-promise-reject-errors": "off"
+    }
   },
   "browserslist": {
     "production": [

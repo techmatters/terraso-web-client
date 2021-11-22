@@ -6,12 +6,11 @@ import {
   Button,
   Link
 } from '@mui/material'
-import { FormattedMessage } from 'react-intl'
+import { useTranslation } from 'react-i18next'
 
 import theme from 'theme'
 
-const { palette } = theme 
-
+const { palette } = theme
 
 const Avatar = ({ user }) => (
   <Box
@@ -34,27 +33,31 @@ const Avatar = ({ user }) => (
   </Box>
 )
 
-const UserCard = ({ user }) => (
-  <Card variant="outlined" sx={{ display: 'flex' }}>
-    <Avatar user={user} />
-    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ flex: '1 0 auto', padding: theme.spacing(2) }}>
-        <Typography variant="h5" component="div">
-          {user.first_name} {user.last_name}
-        </Typography>
-        <Box sx={{ marginTop: theme.spacing(1) }}>
-          <Link href={`mailto:${user.email}`} underline="none">
-            {user.email}
-          </Link>
+const UserCard = ({ user }) => {
+  const { t } = useTranslation()
+
+  return (
+    <Card variant="outlined" sx={{ display: 'flex' }}>
+      <Avatar user={user} />
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ flex: '1 0 auto', padding: theme.spacing(2) }}>
+          <Typography variant="h5" component="div">
+            {user.first_name} {user.last_name}
+          </Typography>
+          <Box sx={{ marginTop: theme.spacing(1) }}>
+            <Link href={`mailto:${user.email}`} underline="none">
+              {user.email}
+            </Link>
+          </Box>
+        </Box>
+        <Box sx={{ padding: theme.spacing(2) }}>
+          <Button variant="outlined" sx={{ color: 'grey.700', borderColor: 'grey.700' }} >
+            {t('user.edit_profile_button')}
+          </Button>
         </Box>
       </Box>
-      <Box sx={{ padding: theme.spacing(2) }}>
-        <Button variant="outlined" sx={{ color: 'grey.700', borderColor: 'grey.700' }} >
-          <FormattedMessage id="user.edit_profile_button" />
-        </Button>
-      </Box>
-    </Box>
-  </Card>
-)
+    </Card>
+  )
+}
 
 export default UserCard

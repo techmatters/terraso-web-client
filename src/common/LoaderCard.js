@@ -7,7 +7,6 @@ import {
 
 import theme from 'theme'
 
-
 const LoaderCard = () => (
   <Card
     role="loader"
@@ -15,7 +14,7 @@ const LoaderCard = () => (
     sx={{
       display: 'flex',
       flexDirection: 'column',
-      padding: theme.spacing(2),
+      padding: theme.spacing(2)
     }}
   >
     <Box sx={{ display: 'flex', marginBottom: theme.spacing(2) }}>
