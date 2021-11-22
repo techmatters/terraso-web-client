@@ -1,4 +1,4 @@
-name: localization-missing-keys
+name: localization
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  lint:
+  missing-keys:
     runs-on: ubuntu-latest
 
     steps:
