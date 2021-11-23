@@ -1,7 +1,6 @@
 import React from 'react'
 import {
   Box,
-  Card,
   Typography,
   Button,
   Link
@@ -9,6 +8,7 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import theme from 'theme'
+import DashboardCard from 'dashboard/components/DashboardCard'
 
 const { palette } = theme
 
@@ -20,7 +20,7 @@ const Avatar = ({ user }) => (
       width: 80,
       height: 80,
       borderRadius: '50%',
-      margin: theme.spacing(2)
+      margin: theme.spacing(1)
     }}
   >
     <Typography
@@ -33,14 +33,14 @@ const Avatar = ({ user }) => (
   </Box>
 )
 
-const UserCard = ({ user }) => {
+const UserDashboardCard = ({ user }) => {
   const { t } = useTranslation()
 
   return (
-    <Card sx={{ display: 'flex' }}>
+    <DashboardCard>
       <Avatar user={user} />
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ flex: '1 0 auto', padding: theme.spacing(2) }}>
+        <Box sx={{ flex: '1 0 auto', padding: theme.spacing(1) }}>
           <Typography variant="h5">
             {user.first_name} {user.last_name}
           </Typography>
@@ -56,8 +56,8 @@ const UserCard = ({ user }) => {
           </Button>
         </Box>
       </Box>
-    </Card>
+    </DashboardCard>
   )
 }
 
-export default UserCard
+export default UserDashboardCard

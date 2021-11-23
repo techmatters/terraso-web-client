@@ -1,7 +1,6 @@
 import React from 'react'
 import {
   Box,
-  Card,
   CardActions,
   Typography,
   Button,
@@ -10,6 +9,7 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import theme from 'theme'
+import DashboardCard from 'dashboard/components/DashboardCard'
 
 const Actions = () => {
   const { t } = useTranslation()
@@ -20,26 +20,20 @@ const Actions = () => {
         variant="outlined"
         sx={{ width: '100%' }}
       >
-        {t('landscape.default_connect_button')}
+        {t('group.default_connect_button')}
       </Button>
     </CardActions>
   )
 }
 
-const LandscapeDefaultCard = () => {
+const GroupDefaultDashboardCard = () => {
   const { t } = useTranslation()
 
   return (
-    <Card
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        padding: theme.spacing(2)
-      }}
-    >
+    <DashboardCard sx={{ flexDirection: 'column' }}>
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography variant="h5">
-          {t('landscape.default_title')}
+          {t('group.default_title')}
         </Typography>
         <Alert
           severity="info"
@@ -49,13 +43,13 @@ const LandscapeDefaultCard = () => {
           }}
         >
           <Typography variant="body1">
-            {t('landscape.default_content')}
+            {t('group.default_content')}
           </Typography>
         </Alert>
       </Box>
       <Actions />
-    </Card>
+    </DashboardCard>
   )
 }
 
-export default LandscapeDefaultCard
+export default GroupDefaultDashboardCard

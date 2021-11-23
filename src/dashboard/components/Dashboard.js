@@ -12,11 +12,11 @@ import {
 import theme from 'theme'
 import LoaderCard from 'common/components/LoaderCard'
 import { fetchDashboardData } from 'dashboard/dashboardSlice'
-import UserCard from 'user/components/UserCard'
-import LandscapeCard from 'landscape/LandscapeCard'
-import LandscapeDefaultCard from 'landscape/LandscapeDefaultCard'
-import GroupCard from 'group/GroupCard'
-import GroupDefaultCard from 'group/GroupDefaultCard'
+import UserCard from 'user/components/UserDashboardCard'
+import LandscapeCard from 'landscape/LandscapeDashboardCard'
+import LandscapeDefaultCard from 'landscape/LandscapeDefaultDashboardCard'
+import GroupCard from 'group/GroupDashboardCard'
+import GroupDefaultCard from 'group/GroupDefaultDashboardCard'
 
 const Landscapes = ({ landscapes, fetching }) => {
   if (fetching) {

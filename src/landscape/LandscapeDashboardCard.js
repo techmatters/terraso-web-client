@@ -1,7 +1,6 @@
 import React from 'react'
 import {
   Box,
-  Card,
   CardActions,
   Typography,
   Button
@@ -9,6 +8,7 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import theme from 'theme'
+import DashboardCard from 'dashboard/components/DashboardCard'
 
 const Avatar = () => (
   <Box
@@ -38,17 +38,11 @@ const Actions = ({ landscape }) => {
   )
 }
 
-const LandscapeCard = ({ landscape }) => {
+const LandscapeDashboardCard = ({ landscape }) => {
   const { t } = useTranslation()
 
   return (
-    <Card
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        padding: theme.spacing(2)
-      }}
-    >
+    <DashboardCard sx={{ flexDirection: 'column' }}>
       <Box sx={{ display: 'flex', marginBottom: theme.spacing(2) }}>
         <Avatar />
         <Box sx={{ display: 'flex', flexDirection: 'column', marginLeft: theme.spacing(2) }}>
@@ -61,8 +55,8 @@ const LandscapeCard = ({ landscape }) => {
         </Box>
       </Box>
       <Actions landscape={landscape} />
-    </Card>
+    </DashboardCard>
   )
 }
 
-export default LandscapeCard
+export default LandscapeDashboardCard
