@@ -5,7 +5,7 @@ import { render, screen } from 'tests/utils'
 import Dashboard from 'dashboard/components/Dashboard'
 import { fetchDashboardData } from 'dashboard/dashboardService'
 
-jest.mock('user/dashboard/dashboardService')
+jest.mock('dashboard/dashboardService')
 
 test('Dashboard: Display error', async () => {
   fetchDashboardData.mockReturnValue(Promise.reject(
