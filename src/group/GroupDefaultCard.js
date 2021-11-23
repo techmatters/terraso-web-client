@@ -18,7 +18,6 @@ const Actions = () => {
     <CardActions sx={{ padding: 0 }}>
       <Button
         variant="outlined"
-        component="div"
         sx={{ width: '100%' }}
       >
         {t('group.default_connect_button')}

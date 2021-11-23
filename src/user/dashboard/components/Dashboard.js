@@ -88,7 +88,7 @@ const Dashboard = props => {
 
   return (
     <Box sx={{ padding: theme.spacing(2) }}>
-      <Typography variant="h1" component="div" color='text.primary' gutterBottom>
+      <Typography variant="h1" gutterBottom>
         {t('dashboard.page_title')}
       </Typography>
       <Grid container spacing={2}>

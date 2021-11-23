@@ -18,7 +18,6 @@ const Actions = () => {
     <CardActions sx={{ padding: 0 }}>
       <Button
         variant="outlined"
-        component="div"
         sx={{ width: '100%' }}
       >
         {t('landscape.default_connect_button')}
@@ -40,7 +39,7 @@ const LandscapeDefaultCard = () => {
       }}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <Typography variant="h5" component="div">
+        <Typography variant="h5">
           {t('landscape.default_title')}
         </Typography>
         <Alert
@@ -50,7 +49,7 @@ const LandscapeDefaultCard = () => {
             marginBottom: theme.spacing(1)
           }}
         >
-          <Typography variant="body1" component="div">
+          <Typography variant="body1">
             {t('landscape.default_content')}
           </Typography>
         </Alert>
