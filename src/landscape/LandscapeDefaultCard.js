@@ -19,7 +19,7 @@ const Actions = () => {
       <Button
         variant="outlined"
         component="div"
-        sx={{ width: '100%', color: 'grey.700', borderColor: 'grey.700' }}
+        sx={{ width: '100%' }}
       >
         {t('landscape.default_connect_button')}
       </Button>

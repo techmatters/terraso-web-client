@@ -19,7 +19,7 @@ const Actions = () => {
       <Button
         variant="outlined"
         component="div"
-        sx={{ width: '100%', color: 'grey.700', borderColor: 'grey.700' }}
+        sx={{ width: '100%' }}
       >
         {t('group.default_connect_button')}
       </Button>
@@ -40,7 +40,7 @@ const GroupDefaultCard = () => {
       }}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <Typography variant="h5" component="div">
+        <Typography variant="h5">
           {t('group.default_title')}
         </Typography>
         <Alert
@@ -50,7 +50,7 @@ const GroupDefaultCard = () => {
             marginBottom: theme.spacing(1)
           }}
         >
-          <Typography variant="body1" component="div">
+          <Typography variant="body1">
             {t('group.default_content')}
           </Typography>
         </Alert>

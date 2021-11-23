@@ -16,7 +16,7 @@ const Avatar = ({ user }) => (
   <Box
     component="span"
     sx={{
-      bgcolor: palette.grey[300],
+      bgcolor: palette.gray.mid,
       width: 80,
       height: 80,
       borderRadius: '50%',
@@ -25,7 +25,7 @@ const Avatar = ({ user }) => (
   >
     <Typography
       variant="h3"
-      color={palette.background.paper}
+      color={palette.white}
       sx={{ textAlign: 'center', marginTop: '10px' }}
     >
       {user.first_name.charAt(0)}
@@ -41,7 +41,7 @@ const UserCard = ({ user }) => {
       <Avatar user={user} />
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ flex: '1 0 auto', padding: theme.spacing(2) }}>
-          <Typography variant="h5" component="div">
+          <Typography variant="h5">
             {user.first_name} {user.last_name}
           </Typography>
           <Box sx={{ marginTop: theme.spacing(1) }}>
@@ -51,7 +51,7 @@ const UserCard = ({ user }) => {
           </Box>
         </Box>
         <Box sx={{ padding: theme.spacing(2) }}>
-          <Button variant="outlined" sx={{ color: 'grey.700', borderColor: 'grey.700' }} >
+          <Button variant="outlined" >
             {t('user.edit_profile_button')}
           </Button>
         </Box>

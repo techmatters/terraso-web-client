@@ -14,7 +14,7 @@ const Avatar = () => (
   <Box
     component="span"
     sx={{
-      bgcolor: 'grey.300',
+      bgcolor: theme.palette.gray.lite1,
       width: 80,
       height: 80
     }}
@@ -31,7 +31,7 @@ const Actions = ({ group }) => {
 
   return (
     <CardActions sx={{ padding: 0 }}>
-      <Button variant="outlined" component="div" sx={{ width: '100%', color: 'grey.700', borderColor: 'grey.700' }} >
+      <Button variant="outlined" sx={{ width: '100%' }} >
         {t('group.edit_profile_button')}
       </Button>
     </CardActions>
@@ -53,10 +53,10 @@ const GroupCard = ({ group }) => {
       <Box sx={{ display: 'flex', marginBottom: theme.spacing(2) }}>
         <Avatar />
         <Box sx={{ display: 'flex', flexDirection: 'column', marginLeft: theme.spacing(2) }}>
-          <Typography variant="h5" component="div">
+          <Typography variant="h5">
             {group.name}
           </Typography>
-          <Typography variant="subtitle1" component="div">
+          <Typography variant="subtitle1">
             {t(`group.role_${group.role}`)}
           </Typography>
         </Box>
