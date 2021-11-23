@@ -11,7 +11,7 @@ import {
 
 import theme from 'theme'
 import LoaderCard from 'common/components/LoaderCard'
-import { fetchDashboardData } from 'user/dashboard/dashboardSlice'
+import { fetchDashboardData } from 'dashboard/dashboardSlice'
 import UserCard from 'user/components/UserCard'
 import LandscapeCard from 'landscape/LandscapeCard'
 import LandscapeDefaultCard from 'landscape/LandscapeDefaultCard'

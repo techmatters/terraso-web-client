@@ -43,7 +43,6 @@ const GroupCard = ({ group }) => {
 
   return (
     <Card
-      variant="outlined"
       sx={{
         display: 'flex',
         flexDirection: 'column',

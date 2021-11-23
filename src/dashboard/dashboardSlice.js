@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-import * as dashboardService from 'user/dashboard/dashboardService'
+import * as dashboardService from 'dashboard/dashboardService'
 
 const initialState = {
   groups: [],

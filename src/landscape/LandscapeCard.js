@@ -43,7 +43,6 @@ const LandscapeCard = ({ landscape }) => {
 
   return (
     <Card
-      variant="outlined"
       sx={{
         display: 'flex',
         flexDirection: 'column',

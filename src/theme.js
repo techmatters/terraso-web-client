@@ -49,6 +49,11 @@ const components = {
         color: colorTheme.palette.black
       }
     }]
+  },
+  MuiCard: {
+    defaultProps: {
+      variant: 'outlined'
+    }
   }
 }
 

@@ -37,7 +37,7 @@ const UserCard = ({ user }) => {
   const { t } = useTranslation()
 
   return (
-    <Card variant="outlined" sx={{ display: 'flex' }}>
+    <Card sx={{ display: 'flex' }}>
       <Avatar user={user} />
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ flex: '1 0 auto', padding: theme.spacing(2) }}>

@@ -2,8 +2,8 @@ import React from 'react'
 import { act } from 'react-dom/test-utils'
 
 import { render, screen } from 'tests/utils'
-import Dashboard from 'user/dashboard/components/Dashboard'
-import { fetchDashboardData } from 'user/dashboard/dashboardService'
+import Dashboard from 'dashboard/components/Dashboard'
+import { fetchDashboardData } from 'dashboard/dashboardService'
 
 jest.mock('user/dashboard/dashboardService')
 

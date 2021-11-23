@@ -11,7 +11,7 @@ import theme from 'theme'
 import AppBar from 'common/components/AppBar'
 import reportWebVitals from 'monitoring/reportWebVitals'
 import RequireAuth from 'auth/RequireAuth'
-import Dashboard from 'user/dashboard/components/Dashboard'
+import Dashboard from 'dashboard/components/Dashboard'
 import AppWrappers from 'common/components/AppWrappers'
 
 import 'index.css'
