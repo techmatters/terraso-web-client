@@ -10,7 +10,6 @@ import theme from 'theme'
 const LoaderCard = () => (
   <Card
     role="loader"
-    variant="outlined"
     sx={{
       display: 'flex',
       flexDirection: 'column',
