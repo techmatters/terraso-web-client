@@ -1,4 +1,30 @@
 {
+    "dashboard": {
+        "title": "Dashboard",
+        "error": "Error loading data. Error: {{error}}",
+        "page_title": "Your Stuff"
+    },
+    "user": {
+        "login": "Log in",
+        "account_created_message": "Your Terraso account has been created successfully with the following information. You can edit them any time.",
+        "edit_profile_button": "Edit Profile Info"
+    },
+    "group": {
+        "role_member": "Group Member",
+        "role_manager": "Group Manager",
+        "default_title": "Join Groups",
+        "default_content": "Terraso groups connect people with common interests and needs. Groups exist for people within and across landscapes.",
+        "edit_profile_button": "Edit Group Profile",
+        "default_connect_button": "Join Groups"
+    },
+    "landscape": {
+        "default_title": "Landscape",
+        "default_content": "Tell us which landscape you are affiliated with. This will help you connect to others on Terraso and let you share information with other landscape members.",
+        "edit_profile_button": "Edit Landscape Profile",
+        "default_connect_button": "Connect to Landscape",
+        "role_member": "Landscape Member",
+        "role_manager": "Landscape Manager"
+    },
     "common": {
         "terraso_projectName": "Terraso"
     }

@@ -5,8 +5,84 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-11-22T17:41:42.653Z\n"
-"PO-Revision-Date: 2021-11-22T17:41:42.653Z\n"
+"POT-Creation-Date: 2021-11-22T21:42:07.190Z\n"
+"PO-Revision-Date: 2021-11-22T21:42:07.190Z\n"
+
+msgid "dashboard##title"
+msgstr "Dashboard"
+
+msgid "dashboard##error"
+msgstr "Error loading data. Error: {{error}}"
+
+msgid "user##login"
+msgstr "Log in"
+
+msgctxt "title"
+msgid "dashboard##page"
+msgstr "Your Stuff"
+
+msgctxt "title"
+msgid "group##placeholder"
+msgstr "Join Groups"
+
+msgctxt "title"
+msgid "landscape##placeholder"
+msgstr "Landscape"
+
+msgctxt "message"
+msgid "user##account_created"
+msgstr ""
+"Your Terraso account has been created successfully with the following "
+"information. You can edit them any time."
+
+msgctxt "button"
+msgid "user##edit_profile"
+msgstr "Edit Profile Info"
+
+msgctxt "button"
+msgid "group##edit_profile"
+msgstr "Edit Group Profile"
+
+msgctxt "button"
+msgid "group##placeholder_connect"
+msgstr "Join Groups"
+
+msgctxt "button"
+msgid "landscape##edit_profile"
+msgstr "Edit Landscape Profile"
+
+msgctxt "button"
+msgid "landscape##placeholder_connect"
+msgstr "Connect to Landscape"
+
+msgctxt "member"
+msgid "group##role"
+msgstr "Group Member"
+
+msgctxt "member"
+msgid "landscape##role"
+msgstr "Landscape Member"
+
+msgctxt "manager"
+msgid "group##role"
+msgstr "Group Manager"
+
+msgctxt "manager"
+msgid "landscape##role"
+msgstr "Landscape Manager"
+
+msgctxt "content"
+msgid "group##placeholder"
+msgstr ""
+"Terraso groups connect people with common interests and needs. Groups exist "
+"for people within and across landscapes."
+
+msgctxt "content"
+msgid "landscape##placeholder"
+msgstr ""
+"Tell us which landscape you are affiliated with. This will help you connect "
+"to others on Terraso and let you share information with other landscape "
+"members."
 
 msgctxt "projectName"
 msgid "common##terraso"
