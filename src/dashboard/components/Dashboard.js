@@ -15,8 +15,8 @@ import { fetchDashboardData } from 'dashboard/dashboardSlice'
 import UserCard from 'user/components/UserDashboardCard'
 import LandscapeCard from 'landscape/LandscapeDashboardCard'
 import LandscapeDefaultCard from 'landscape/LandscapeDefaultDashboardCard'
-import GroupCard from 'group/GroupDashboardCard'
-import GroupDefaultCard from 'group/GroupDefaultDashboardCard'
+import GroupCard from 'group/components/GroupDashboardCard'
+import GroupDefaultCard from 'group/components/GroupDefaultDashboardCard'
 
 const Landscapes = ({ landscapes, fetching }) => {
   if (fetching) {
