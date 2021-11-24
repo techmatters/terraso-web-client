@@ -40,6 +40,9 @@ const components = {
     }
   },
   MuiButton: {
+    defaultProps: {
+      disableElevation: true
+    },
     variants: [{
       props: {
         variant: 'outlined'

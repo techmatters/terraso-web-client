@@ -15,7 +15,19 @@
         "default_title": "Join Groups",
         "default_content": "Terraso groups connect people with common interests and needs. Groups exist for people within and across landscapes.",
         "edit_profile_button": "Edit Group Profile",
-        "default_connect_button": "Join Groups"
+        "default_connect_button": "Join Groups",
+        "form_edit_title": "Manage {{name}} Group Information",
+        "form_new_title": "New Group Information",
+        "form_name_label": "GROUP NAME (Required)",
+        "form_description_label": "GROUP DESCRIPTION (Required)",
+        "form_description_placeholder": "Enter  a short description about your group.  (600 characters maximum)",
+        "form_email_label": "GROUP CONTACT EMAIL ADDRESS",
+        "form_email_info": "This email address will be used by interested people to connect with you and your group.",
+        "form_email_placeholder": "e.g.info@mygroup.org",
+        "form_website_label": "GROUP WEBSITE",
+        "form_website_placeholder": "Enter the web address",
+        "form_save_button": "Submit Group Info",
+        "form_cancel_button": "Cancel"
     },
     "landscape": {
         "default_title": "Landscape",
