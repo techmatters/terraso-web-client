@@ -8,7 +8,7 @@ import {
 
 import theme from 'theme'
 
-const FormField = ({ id, label, error, info, inputProps = {} }) => (
+const FormField = ({ id, value, onChange, label, error, info, inputProps = {} }) => (
   <FormControlUnstyled style={{ marginBottom: theme.spacing(3) }}>
     <InputLabel error={!!error} shrink htmlFor={id}>
       {label}
@@ -19,6 +19,8 @@ const FormField = ({ id, label, error, info, inputProps = {} }) => (
       aria-describedby={`${id}-helper-text`}
       sx={{ width: '100%' }}
       {...inputProps}
+      value={value}
+      onChange={onChange}
     />
     {!error
       ? null

@@ -1,6 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-// import * as dashboardService from 'dashboard/dashboardService'
+import * as groupService from 'group/groupService'
 
 const initialState = {
   form: {
@@ -10,37 +10,53 @@ const initialState = {
   }
 }
 
-export const groupSlice = createSlice({
+export const fetchGroup = createAsyncThunk('group/fetchGroup', groupService.fetchGroup)
+export const saveGroup = createAsyncThunk('group/saveGroup', groupService.saveGroup)
+
+const groupSlice = createSlice({
   name: 'group',
   initialState,
-  reducers: {
-    getDashboardDataStart: () => initialState,
-    getDashboardDataError: (state, action) => ({
+  reducers: {},
+  extraReducers: {
+    [fetchGroup.pending]: state => ({
       ...state,
-      fetching: false,
-      error: action.payload
+      form: initialState.form
     }),
-    getDashboardDataSuccess: (state, action) => ({
+    [fetchGroup.fulfilled]: (state, action) => ({
       ...state,
-      fetching: false,
-      error: null,
-      groups: action.payload.groups,
-      landscapes: action.payload.landscapes
+      form: {
+        fetching: false,
+        error: null,
+        group: action.payload.group
+      }
+    }),
+    [fetchGroup.rejected]: (state, action) => ({
+      ...state,
+      form: {
+        fetching: false,
+        error: action.payload
+      }
+    }),
+    [saveGroup.pending]: state => ({
+      ...state,
+      form: initialState.form
+    }),
+    [saveGroup.fulfilled]: (state, action) => ({
+      ...state,
+      form: {
+        fetching: false,
+        error: null,
+        group: action.payload.group
+      }
+    }),
+    [saveGroup.rejected]: (state, action) => ({
+      ...state,
+      form: {
+        fetching: false,
+        error: action.payload
+      }
     })
   }
 })
 
-// const {
-//   getDashboardDataStart,
-//   getDashboardDataError,
-//   getDashboardDataSuccess
-// } = groupSlice.actions
-
 export default groupSlice.reducer
-
-// export const fetchDashboardData = () => dispatch => {
-//   dispatch(getDashboardDataStart())
-//   dashboardService.fetchDashboardData()
-//     .then(({ landscapes, groups }) => dispatch(getDashboardDataSuccess({ landscapes, groups })))
-//     .catch(error => dispatch(getDashboardDataError(error)))
-// }
