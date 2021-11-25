@@ -15,6 +15,7 @@ const FormField = ({ id, value, onChange, label, error, info, inputProps = {} })
     </InputLabel>
     <OutlinedInput
       id={id}
+      name={id}
       error={!!error}
       aria-describedby={`${id}-helper-text`}
       sx={{ width: '100%' }}
@@ -26,7 +27,7 @@ const FormField = ({ id, value, onChange, label, error, info, inputProps = {} })
       ? null
       : (<FormHelperText error id={`${id}-helper-text`}>{error}</FormHelperText>)
     }
-    {!error && !info
+    {error || !info
       ? null
       : (<FormHelperText id={`${id}-helper-text`}>{info}</FormHelperText>)
     }

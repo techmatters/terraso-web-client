@@ -25,9 +25,7 @@
         "form_email_info": "This email address will be used by interested people to connect with you and your group.",
         "form_email_placeholder": "e.g.info@mygroup.org",
         "form_website_label": "GROUP WEBSITE",
-        "form_website_placeholder": "Enter the web address",
-        "form_save_button": "Submit Group Info",
-        "form_cancel_button": "Cancel"
+        "form_website_placeholder": "Enter the web address"
     },
     "landscape": {
         "default_title": "Landscape",
@@ -38,6 +36,8 @@
         "role_manager": "Landscape Manager"
     },
     "common": {
-        "terraso_projectName": "Terraso"
+        "terraso_projectName": "Terraso",
+        "form_save_button": "Submit Group Info",
+        "form_cancel_button": "Cancel"
     }
 }

@@ -16,7 +16,16 @@ export const saveGroup = createAsyncThunk('group/saveGroup', groupService.saveGr
 const groupSlice = createSlice({
   name: 'group',
   initialState,
-  reducers: {},
+  reducers: {
+    setFormNewValues: state => ({
+      ...state,
+      form: {
+        ...state.form,
+        group: {},
+        fetching: false
+      }
+    })
+  },
   extraReducers: {
     [fetchGroup.pending]: state => ({
       ...state,
@@ -33,17 +42,22 @@ const groupSlice = createSlice({
     [fetchGroup.rejected]: (state, action) => ({
       ...state,
       form: {
+        ...state.form,
         fetching: false,
-        error: action.payload
+        error: action.error.message
       }
     }),
     [saveGroup.pending]: state => ({
       ...state,
-      form: initialState.form
+      form: {
+        ...state.form,
+        fetching: true
+      }
     }),
     [saveGroup.fulfilled]: (state, action) => ({
       ...state,
       form: {
+        ...state.form,
         fetching: false,
         error: null,
         group: action.payload.group
@@ -52,11 +66,16 @@ const groupSlice = createSlice({
     [saveGroup.rejected]: (state, action) => ({
       ...state,
       form: {
+        ...state.form,
         fetching: false,
-        error: action.payload
+        error: action.error.message
       }
     })
   }
 })
+
+export const {
+  setFormNewValues
+} = groupSlice.actions
 
 export default groupSlice.reducer
