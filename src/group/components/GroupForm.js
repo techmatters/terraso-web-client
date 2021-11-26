@@ -3,6 +3,7 @@ import _ from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
+import * as yup from 'yup'
 import {
   Box,
   Typography,
@@ -12,7 +13,14 @@ import {
 
 import theme from 'theme'
 import { fetchGroup, saveGroup, setFormNewValues } from 'group/groupSlice'
-import Form from 'common/components/Form'
+import Form from 'forms/components/Form'
+
+const validationSchema = yup.object({
+  name: yup.string().required(),
+  description: yup.string().required(),
+  email: yup.string().email(),
+  website: yup.string().urlCustom()
+}).required()
 
 const GroupForm = () => {
   const dispatch = useDispatch()
@@ -80,6 +88,7 @@ const GroupForm = () => {
         fields={fields}
         values={group}
         error={error}
+        validationSchema={validationSchema}
         onSave={onSave}
       />
     </Box>

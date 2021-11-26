@@ -89,6 +89,39 @@ test('GroupForm: Input change', async () => {
   fireEvent.change(inputs.website, { target: { value: 'www.other.org' } })
   expect(inputs.website).toHaveValue('www.other.org')
 })
+test('GroupForm: Input validation', async () => {
+  fetchGroup.mockReturnValue(Promise.resolve({
+    group: {
+      name: 'Group Name',
+      description: 'Group Description',
+      email: 'group@group.org',
+      website: 'www.group.org'
+    }
+  }))
+  const { inputs } = await setup()
+
+  expect(inputs.name).toHaveValue('Group Name')
+  fireEvent.change(inputs.name, { target: { value: '' } })
+  expect(inputs.name).toHaveValue('')
+
+  expect(inputs.description).toHaveValue('Group Description')
+  fireEvent.change(inputs.description, { target: { value: '' } })
+  expect(inputs.description).toHaveValue('')
+
+  expect(inputs.email).toHaveValue('group@group.org')
+  fireEvent.change(inputs.email, { target: { value: 'new.emailgrouporg' } })
+  expect(inputs.email).toHaveValue('new.emailgrouporg')
+
+  expect(inputs.website).toHaveValue('www.group.org')
+  fireEvent.change(inputs.website, { target: { value: 'wwwotherorg' } })
+  expect(inputs.website).toHaveValue('wwwotherorg')
+
+  await act(async () => fireEvent.click(screen.getByText(/Submit Group Info/i)))
+  expect(screen.getByText(/name is a required field/i)).toBeInTheDocument()
+  expect(screen.getByText(/description is a required field/i)).toBeInTheDocument()
+  expect(screen.getByText(/email must be a valid email/i)).toBeInTheDocument()
+  expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument()
+})
 test('GroupForm: Save form', async () => {
   fetchGroup.mockReturnValue(Promise.resolve({
     group: {

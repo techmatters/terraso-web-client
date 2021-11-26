@@ -39,5 +39,11 @@
         "terraso_projectName": "Terraso",
         "form_save_button": "Submit Group Info",
         "form_cancel_button": "Cancel"
+    },
+    "form": {
+        "validation_field_invalid": "{{path}} must be valid",
+        "validation_field_required": "{{path}} is a required field",
+        "validation_email_invalid": "{{path}} must be a valid email",
+        "validation_url_invalid": "{{path}} must be a valid URL"
     }
 }

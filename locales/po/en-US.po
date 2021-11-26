@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-11-22T21:42:07.190Z\n"
-"PO-Revision-Date: 2021-11-22T21:42:07.190Z\n"
+"POT-Creation-Date: 2021-11-26T20:35:38.260Z\n"
+"PO-Revision-Date: 2021-11-26T20:35:38.260Z\n"
 
 msgid "dashboard##title"
 msgstr "Dashboard"
@@ -22,11 +22,19 @@ msgid "dashboard##page"
 msgstr "Your Stuff"
 
 msgctxt "title"
-msgid "group##placeholder"
+msgid "group##default"
 msgstr "Join Groups"
 
 msgctxt "title"
-msgid "landscape##placeholder"
+msgid "group##form_edit"
+msgstr "Manage {{name}} Group Information"
+
+msgctxt "title"
+msgid "group##form_new"
+msgstr "New Group Information"
+
+msgctxt "title"
+msgid "landscape##default"
 msgstr "Landscape"
 
 msgctxt "message"
@@ -44,7 +52,7 @@ msgid "group##edit_profile"
 msgstr "Edit Group Profile"
 
 msgctxt "button"
-msgid "group##placeholder_connect"
+msgid "group##default_connect"
 msgstr "Join Groups"
 
 msgctxt "button"
@@ -52,8 +60,16 @@ msgid "landscape##edit_profile"
 msgstr "Edit Landscape Profile"
 
 msgctxt "button"
-msgid "landscape##placeholder_connect"
+msgid "landscape##default_connect"
 msgstr "Connect to Landscape"
+
+msgctxt "button"
+msgid "common##form_save"
+msgstr "Submit Group Info"
+
+msgctxt "button"
+msgid "common##form_cancel"
+msgstr "Cancel"
 
 msgctxt "member"
 msgid "group##role"
@@ -72,18 +88,68 @@ msgid "landscape##role"
 msgstr "Landscape Manager"
 
 msgctxt "content"
-msgid "group##placeholder"
+msgid "group##default"
 msgstr ""
 "Terraso groups connect people with common interests and needs. Groups exist "
 "for people within and across landscapes."
 
 msgctxt "content"
-msgid "landscape##placeholder"
+msgid "landscape##default"
 msgstr ""
 "Tell us which landscape you are affiliated with. This will help you connect "
 "to others on Terraso and let you share information with other landscape "
 "members."
 
+msgctxt "label"
+msgid "group##form_name"
+msgstr "GROUP NAME (Required)"
+
+msgctxt "label"
+msgid "group##form_description"
+msgstr "GROUP DESCRIPTION (Required)"
+
+msgctxt "label"
+msgid "group##form_email"
+msgstr "GROUP CONTACT EMAIL ADDRESS"
+
+msgctxt "label"
+msgid "group##form_website"
+msgstr "GROUP WEBSITE"
+
+msgctxt "placeholder"
+msgid "group##form_description"
+msgstr "Enter  a short description about your group.  (600 characters maximum)"
+
+msgctxt "placeholder"
+msgid "group##form_email"
+msgstr "e.g.info@mygroup.org"
+
+msgctxt "placeholder"
+msgid "group##form_website"
+msgstr "Enter the web address"
+
+msgctxt "info"
+msgid "group##form_email"
+msgstr ""
+"This email address will be used by interested people to connect with you "
+"and your group."
+
 msgctxt "projectName"
 msgid "common##terraso"
 msgstr "Terraso"
+
+msgctxt "invalid"
+msgid "form##validation_field"
+msgstr "{{path}} must be valid"
+
+msgctxt "invalid"
+msgid "form##validation_email"
+msgstr "{{path}} must be a valid email"
+
+msgctxt "invalid"
+msgid "form##validation_url"
+msgstr "{{path}} must be a valid URL"
+
+msgctxt "required"
+msgid "form##validation_field"
+msgstr "{{path}} is a required field"

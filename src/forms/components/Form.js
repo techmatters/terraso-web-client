@@ -1,45 +1,49 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import _ from 'lodash'
+import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import {
-  FormGroup,
   Alert,
   Button,
   Stack
 } from '@mui/material'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 import theme from 'theme'
-import FormField from 'common/components/FormField'
+import FormField from 'forms/components/FormField'
 
 const Form = props => {
   const { t } = useTranslation()
-  const { prefix, fields, values, error, onSave } = props
+  const { prefix, fields, values, error, validationSchema, onSave } = props
 
-  const [updatedValues, setUpdatedValues] = useState(null)
+  const getInitialEmptyValues = () => _.chain(fields)
+    .map(field => ([field.name, '']))
+    .fromPairs()
+    .value()
+
+  const { control, handleSubmit, reset } = useForm({
+    defaultValues: values || getInitialEmptyValues(),
+    resolver: yupResolver(validationSchema)
+  })
 
   useEffect(() => {
     if (values) {
-      setUpdatedValues(values)
+      reset(values)
     }
-  }, [values])
+  }, [values, reset])
 
-  const onFieldChange = (field, value) => {
-    setUpdatedValues({
-      ...updatedValues,
-      [field]: value
-    })
-  }
+  const onSubmit = data => onSave(data)
 
   return (
-    <FormGroup sx={{ width: '100%' }}>
+    <form onSubmit={handleSubmit(onSubmit)} sx={{ width: '100%' }} noValidate>
       {fields.map(field => (
         <FormField
+          control={control}
           key={field.name}
           id={`${prefix}-${field.name}`}
+          name={field.name}
           label={field.label}
           info={field.info}
-          value={_.get(updatedValues, field.name, '')}
-          onChange={event => onFieldChange(field.name, event.target.value)}
           inputProps={{
             type: field.type || 'text',
             placeholder: field.placeholder,
@@ -59,14 +63,14 @@ const Form = props => {
         sx={{ marginTop: theme.spacing(2) }}
       >
         <Button
+          type="submit"
           variant="contained"
-          onClick={() => onSave(updatedValues)}
         >
           {t('common.form_save_button')}
         </Button>
         <Button variant="text">{t('common.form_cancel_button')}</Button>
       </Stack>
-    </FormGroup>
+    </form>
 
   )
 }
