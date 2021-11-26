@@ -73,15 +73,14 @@ const GroupForm = () => {
 
   return (
     <Box sx={{ padding: theme.spacing(2) }}>
-      {!fetching
-        ? null
-        : (<Backdrop
-        sx={{ color: theme.palette.white, zIndex: theme => theme.zIndex.drawer + 1 }}
-        open={true}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>)
-      }
+      {!fetching ? null : (
+        <Backdrop
+          sx={{ color: theme.palette.white, zIndex: theme => theme.zIndex.drawer + 1 }}
+          open={true}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      )}
       <Typography variant="h1" sx={{ marginBottom: theme.spacing(5) }}>{title}</Typography>
       <Form
         prefix='group'
