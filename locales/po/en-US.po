@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-11-26T20:35:38.260Z\n"
-"PO-Revision-Date: 2021-11-26T20:35:38.260Z\n"
+"POT-Creation-Date: 2021-11-26T21:19:53.261Z\n"
+"PO-Revision-Date: 2021-11-26T21:19:53.261Z\n"
 
 msgid "dashboard##title"
 msgstr "Dashboard"
@@ -102,19 +102,23 @@ msgstr ""
 
 msgctxt "label"
 msgid "group##form_name"
-msgstr "GROUP NAME (Required)"
+msgstr "Group name"
 
 msgctxt "label"
 msgid "group##form_description"
-msgstr "GROUP DESCRIPTION (Required)"
+msgstr "Group description"
 
 msgctxt "label"
 msgid "group##form_email"
-msgstr "GROUP CONTACT EMAIL ADDRESS"
+msgstr "Group contact email address"
 
 msgctxt "label"
 msgid "group##form_website"
-msgstr "GROUP WEBSITE"
+msgstr "Group website"
+
+msgctxt "label"
+msgid "form##required"
+msgstr "Required"
 
 msgctxt "placeholder"
 msgid "group##form_description"
