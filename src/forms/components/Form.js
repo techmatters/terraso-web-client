@@ -26,6 +26,12 @@ const Form = props => {
     resolver: yupResolver(validationSchema)
   })
 
+  const requiredFields = _.chain(_.get(validationSchema, 'fields', {}))
+    .toPairs()
+    .filter(([name, field]) => _.get(field, 'exclusiveTests.required', false))
+    .map(([name, field]) => name)
+    .value()
+
   useEffect(() => {
     if (values) {
       reset(values)
@@ -39,6 +45,7 @@ const Form = props => {
       {fields.map(field => (
         <FormField
           control={control}
+          required={_.includes(requiredFields, field.name)}
           key={field.name}
           id={`${prefix}-${field.name}`}
           name={field.name}

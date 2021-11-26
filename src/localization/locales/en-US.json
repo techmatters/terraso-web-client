@@ -18,13 +18,13 @@
         "default_connect_button": "Join Groups",
         "form_edit_title": "Manage {{name}} Group Information",
         "form_new_title": "New Group Information",
-        "form_name_label": "GROUP NAME (Required)",
-        "form_description_label": "GROUP DESCRIPTION (Required)",
+        "form_name_label": "Group name",
+        "form_description_label": "Group description",
         "form_description_placeholder": "Enter  a short description about your group.  (600 characters maximum)",
-        "form_email_label": "GROUP CONTACT EMAIL ADDRESS",
+        "form_email_label": "Group contact email address",
         "form_email_info": "This email address will be used by interested people to connect with you and your group.",
         "form_email_placeholder": "e.g.info@mygroup.org",
-        "form_website_label": "GROUP WEBSITE",
+        "form_website_label": "Group website",
         "form_website_placeholder": "Enter the web address"
     },
     "landscape": {
@@ -41,6 +41,7 @@
         "form_cancel_button": "Cancel"
     },
     "form": {
+        "required_label": "Required",
         "validation_field_invalid": "{{path}} must be valid",
         "validation_field_required": "{{path}} is a required field",
         "validation_email_invalid": "{{path}} must be a valid email",

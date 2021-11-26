@@ -11,16 +11,16 @@ import {
 
 import theme from 'theme'
 
-const FormField = ({ control, id, name, label, info, inputProps }) => {
+const FormField = ({ control, required, id, name, label, info, inputProps }) => {
   const { t } = useTranslation()
   return (
     <Controller
       name={name}
       control={control}
-      render={({ field, fieldState }) => (
+      render={({ field, fieldState, formState }) => (
         <FormControlUnstyled style={{ marginBottom: theme.spacing(3) }}>
           <InputLabel error={!!fieldState.error} shrink htmlFor={id}>
-            {label}
+            {label.toUpperCase()} {!required ? null : `(${t('form.required_label')})` }
           </InputLabel>
           <OutlinedInput
             id={id}
