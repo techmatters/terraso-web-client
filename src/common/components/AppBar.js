@@ -13,8 +13,8 @@ import { useTranslation } from 'react-i18next'
 import LocalePicker from 'localization/components/LocalePicker'
 import theme from 'theme'
 
-import logo from 'assets/terraso-logo.svg'
-import logoSmall from 'assets/terraso-logo-small.svg'
+import logo from 'assets/logo.svg'
+import logoSquare from 'assets/logo-square.svg'
 
 const AppBarComponent = props => {
   const { t } = useTranslation()
@@ -33,7 +33,7 @@ const AppBarComponent = props => {
           component={Link}
           to="/"
         >
-          <img src={isSmall ? logoSmall : logo} height="35px" alt={t('common.terraso_projectName')} />
+          <img src={isSmall ? logoSquare : logo} height="35px" alt={t('common.terraso_projectName')} />
         </Button>
         <Box sx={{ flexGrow: 1 }} />
         <Button color="inherit" sx={{ fontWeight: 500 }}>

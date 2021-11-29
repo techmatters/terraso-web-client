@@ -23,10 +23,10 @@ test('AppBar: Display terraso title', async () => {
 test('AppBar: Logo display', async () => {
   useMediaQuery.mockReturnValue(false)
   await act(async () => render(<AppBar />))
-  expect(screen.getByRole('img', { name: 'Terraso' })).toHaveAttribute('src', 'terraso-logo.svg')
+  expect(screen.getByRole('img', { name: 'Terraso' })).toHaveAttribute('src', 'logo.svg')
 })
 test('AppBar: Logo display (small)', async () => {
   useMediaQuery.mockReturnValue(true)
   await act(async () => render(<AppBar />))
-  expect(screen.getByRole('img', { name: 'Terraso' })).toHaveAttribute('src', 'terraso-logo-small.svg')
+  expect(screen.getByRole('img', { name: 'Terraso' })).toHaveAttribute('src', 'logo-square.svg')
 })
