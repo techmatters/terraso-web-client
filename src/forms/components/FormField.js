@@ -17,7 +17,7 @@ const FormField = ({ control, required, id, name, label, info, inputProps }) => 
     <Controller
       name={name}
       control={control}
-      render={({ field, fieldState, formState }) => (
+      render={({ field, fieldState }) => (
         <FormControlUnstyled style={{ marginBottom: theme.spacing(3) }}>
           <InputLabel error={!!fieldState.error} shrink htmlFor={id}>
             {label.toUpperCase()} {!required ? null : `(${t('form.required_label')})` }
