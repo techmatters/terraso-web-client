@@ -13,9 +13,6 @@ import { LOCALES } from 'localization/i18n'
 import theme from 'theme'
 
 const SelectInput = styled(InputBase)(({ theme }) => ({
-  'label + &': {
-    marginTop: theme.spacing(3)
-  },
   '& .MuiInputBase-input': {
     backgroundColor: theme.palette.gray.lite1,
     borderRadius: 0,
