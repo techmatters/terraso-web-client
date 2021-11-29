@@ -38,11 +38,15 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
+    "plugins": [
+      "jsx-a11y"
+    ],
     "extends": [
       "react-app",
       "react-app/jest",
       "eslint:recommended",
-      "standard"
+      "standard",
+      "plugin:jsx-a11y/recommended"
     ],
     "rules": {
       "prefer-promise-reject-errors": "off",

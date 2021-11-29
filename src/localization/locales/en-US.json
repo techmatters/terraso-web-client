@@ -6,6 +6,7 @@
     },
     "user": {
         "login": "Log in",
+        "sign_out": "Sign Out",
         "account_created_message": "Your Terraso account has been created successfully with the following information. You can edit them any time.",
         "edit_profile_button": "Edit Profile Info"
     },
@@ -34,6 +35,12 @@
         "default_connect_button": "Connect to Landscape",
         "role_member": "Landscape Member",
         "role_manager": "Landscape Manager"
+    },
+    "localization": {
+        "locale_en-US": "English",
+        "locale_en-US_small": "EN",
+        "locale_es-ES": "Spanish",
+        "locale_es-ES_small": "ES"
     },
     "common": {
         "terraso_projectName": "Terraso",

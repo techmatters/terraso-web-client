@@ -34,7 +34,8 @@ const components = {
   MuiAppBar: {
     defaultProps: {
       sx: {
-        bgcolor: colorTheme.palette.gray.lite2
+        bgcolor: colorTheme.palette.gray.lite2,
+        color: 'gray.dark1'
       },
       elevation: 0
     }
@@ -67,6 +68,10 @@ const theme = createTheme(colorTheme, {
     },
     h5: {
       fontSize: '22px'
+    },
+    button: {
+      textTransform: 'none',
+      fontWeight: 0
     }
   },
   components
