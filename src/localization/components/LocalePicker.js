@@ -32,9 +32,6 @@ const LocalePicker = () => {
 
   const handleChange = event => {
     const locale = _.get(event, 'target.value')
-    if (!locale) {
-      return
-    }
     i18n.changeLanguage(locale)
   }
 
