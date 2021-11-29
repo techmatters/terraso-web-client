@@ -15,7 +15,17 @@
         "default_title": "Join Groups",
         "default_content": "Terraso groups connect people with common interests and needs. Groups exist for people within and across landscapes.",
         "edit_profile_button": "Edit Group Profile",
-        "default_connect_button": "Join Groups"
+        "default_connect_button": "Join Groups",
+        "form_edit_title": "Manage {{name}} Group Information",
+        "form_new_title": "New Group Information",
+        "form_name_label": "Group name",
+        "form_description_label": "Group description",
+        "form_description_placeholder": "Enter  a short description about your group.  (600 characters maximum)",
+        "form_email_label": "Group contact email address",
+        "form_email_info": "This email address will be used by interested people to connect with you and your group.",
+        "form_email_placeholder": "e.g.info@mygroup.org",
+        "form_website_label": "Group website",
+        "form_website_placeholder": "Enter the web address"
     },
     "landscape": {
         "default_title": "Landscape",
@@ -26,6 +36,15 @@
         "role_manager": "Landscape Manager"
     },
     "common": {
-        "terraso_projectName": "Terraso"
+        "terraso_projectName": "Terraso",
+        "form_save_button": "Submit Group Info",
+        "form_cancel_button": "Cancel"
+    },
+    "form": {
+        "required_label": "Required",
+        "validation_field_invalid": "{{path}} must be valid",
+        "validation_field_required": "{{path}} is a required field",
+        "validation_email_invalid": "{{path}} must be a valid email",
+        "validation_url_invalid": "{{path}} must be a valid URL"
     }
 }

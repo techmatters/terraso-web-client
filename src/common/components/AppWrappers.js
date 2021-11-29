@@ -6,6 +6,9 @@ import { BrowserRouter } from 'react-router-dom'
 // Localization
 import 'localization/i18n'
 
+// Form validations
+import 'forms/yup'
+
 // Wrappers
 // Router, Theme, Global State
 const AppWrappers = ({ children, localization, theme, store }) => (

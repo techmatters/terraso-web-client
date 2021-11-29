@@ -11,25 +11,21 @@ import theme from 'theme'
 import AppBar from 'common/components/AppBar'
 import reportWebVitals from 'monitoring/reportWebVitals'
 import RequireAuth from 'auth/RequireAuth'
-import Dashboard from 'dashboard/components/Dashboard'
 import AppWrappers from 'common/components/AppWrappers'
+import Dashboard from 'dashboard/components/Dashboard'
+import GroupForm from 'group/components/GroupForm'
 
 import 'index.css'
 
 ReactDOM.render(
-  <AppWrappers
-    store={createStore()}
-    theme={theme}
-  >
+  <AppWrappers store={createStore()} theme={theme}>
     <Box sx={{ flexGrow: 1 }}>
       <AppBar />
-      <Box
-        display="flex"
-        width='auto'
-      >
+      <Box display="flex" width='auto'>
         <Box m="auto" sx={{ maxWidth: '1044px', paddingTop: theme.spacing(2) }}>
           <Routes>
             <Route path='/dashboard' element={<RequireAuth children={<Dashboard />} />} />
+            <Route path='/group/:id' element={<RequireAuth children={<GroupForm />} />} />
           </Routes>
         </Box>
       </Box>
