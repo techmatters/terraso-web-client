@@ -6,7 +6,7 @@ import * as terrasoApi from 'terrasoBackend/api'
 const cleanGroup = group => _.omit(group, 'email')
 
 export const fetchGroup = id => terrasoApi
-  .request(`request group($id: ID!){
+  .request(`query group($id: ID!){
     group(id: $id) {
       id
       name
@@ -20,7 +20,7 @@ export const fetchGroup = id => terrasoApi
   )
 
 export const fetchGroups = () => terrasoApi
-  .request(`request {
+  .request(`query {
     groups {
       edges {
         node {
