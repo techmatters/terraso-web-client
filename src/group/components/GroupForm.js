@@ -68,6 +68,7 @@ const GroupForm = () => {
 
   useEffect(() => {
     if (group && group.id !== id) {
+      // Change URL if new group ID
       navigate(`/group/${group.id}`)
     }
   }, [id, group, navigate])

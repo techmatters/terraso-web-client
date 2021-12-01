@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-// TODO configuration backend
+// TODO Move this to the correct configuration file when the deployment process is defined
 const URL = 'http://localhost:8000/graphql/'
 
 const handleGraphQLError = response => response.json()
