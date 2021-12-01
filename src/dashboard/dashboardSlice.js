@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 import * as dashboardService from 'dashboard/dashboardService'
 
@@ -9,37 +9,27 @@ const initialState = {
   error: null
 }
 
+export const fetchDashboardData = createAsyncThunk('dashboard/fetchData', dashboardService.fetchDashboardData)
+
 export const dashboardSlice = createSlice({
   name: 'dashboard',
   initialState,
-  reducers: {
-    getDashboardDataStart: () => initialState,
-    getDashboardDataError: (state, action) => ({
-      ...state,
-      fetching: false,
-      error: action.payload
-    }),
-    getDashboardDataSuccess: (state, action) => ({
+  reducers: {},
+  extraReducers: {
+    [fetchDashboardData.pending]: () => initialState,
+    [fetchDashboardData.fulfilled]: (state, action) => ({
       ...state,
       fetching: false,
       error: null,
       groups: action.payload.groups,
       landscapes: action.payload.landscapes
+    }),
+    [fetchDashboardData.rejected]: (state, action) => ({
+      ...state,
+      fetching: false,
+      error: action.error.message
     })
   }
 })
 
-const {
-  getDashboardDataStart,
-  getDashboardDataError,
-  getDashboardDataSuccess
-} = dashboardSlice.actions
-
 export default dashboardSlice.reducer
-
-export const fetchDashboardData = () => dispatch => {
-  dispatch(getDashboardDataStart())
-  dashboardService.fetchDashboardData()
-    .then(({ landscapes, groups }) => dispatch(getDashboardDataSuccess({ landscapes, groups })))
-    .catch(error => dispatch(getDashboardDataError(error)))
-}

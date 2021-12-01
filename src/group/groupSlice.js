@@ -21,7 +21,7 @@ const groupSlice = createSlice({
       ...state,
       form: {
         ...state.form,
-        group: {},
+        group: null,
         fetching: false
       }
     })
@@ -36,7 +36,7 @@ const groupSlice = createSlice({
       form: {
         fetching: false,
         error: null,
-        group: action.payload.group
+        group: action.payload
       }
     }),
     [fetchGroup.rejected]: (state, action) => ({
@@ -60,7 +60,7 @@ const groupSlice = createSlice({
         ...state.form,
         fetching: false,
         error: null,
-        group: action.payload.group
+        group: action.payload
       }
     }),
     [saveGroup.rejected]: (state, action) => ({

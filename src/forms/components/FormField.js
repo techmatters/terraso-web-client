@@ -20,7 +20,7 @@ const FormField = ({ control, required, id, name, label, info, inputProps }) => 
       render={({ field, fieldState }) => (
         <FormControlUnstyled style={{ marginBottom: theme.spacing(3) }}>
           <InputLabel error={!!fieldState.error} shrink htmlFor={id}>
-            {label.toUpperCase()} {!required ? null : `(${t('form.required_label')})` }
+            {t(label).toUpperCase()} {!required ? null : `(${t('form.required_label')})` }
           </InputLabel>
           <OutlinedInput
             id={id}
@@ -31,7 +31,7 @@ const FormField = ({ control, required, id, name, label, info, inputProps }) => 
             {...field}
           />
           {!info ? null : (
-            <FormHelperText id={`${id}-helper-text`}>{info}</FormHelperText>
+            <FormHelperText id={`${id}-helper-text`}>{t(info)}</FormHelperText>
           )}
           {!fieldState.error ? null : (
             <FormHelperText error id={`${id}-helper-text`}>

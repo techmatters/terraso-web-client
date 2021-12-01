@@ -4,18 +4,26 @@ import { act } from 'react-dom/test-utils'
 import { render, screen } from 'tests/utils'
 import Dashboard from 'dashboard/components/Dashboard'
 import { fetchDashboardData } from 'dashboard/dashboardService'
+import * as terrasoApi from 'terrasoBackend/api'
 
-jest.mock('dashboard/dashboardService')
+jest.mock('terrasoBackend/api')
+
+jest.mock('dashboard/dashboardService', () => ({
+  ...jest.requireActual('dashboard/dashboardService'),
+  fetchDashboardData: jest.fn()
+}))
+
+beforeEach(() => {
+  fetchDashboardData.mockImplementation(jest.requireActual('dashboard/dashboardService').fetchDashboardData)
+})
 
 test('Dashboard: Display error', async () => {
-  fetchDashboardData.mockReturnValue(Promise.reject(
-    'Load error'
-  ))
+  terrasoApi.request.mockRejectedValueOnce('Load error')
   await act(async () => render(<Dashboard />))
-  expect(screen.getByText(/Error loading data. Error: Load error/i)).toBeInTheDocument()
+  expect(screen.getByText(/Error loading data. Load error/i)).toBeInTheDocument()
 })
 test('Dashboard: Display loader', () => {
-  fetchDashboardData.mockReturnValue(new Promise(() => {}))
+  terrasoApi.request.mockReturnValue(new Promise(() => {}))
   render(<Dashboard />)
   const loaders = screen.getAllByRole('loader', { name: '', hidden: true })
   expect(loaders.length).toBe(2)
@@ -24,9 +32,10 @@ test('Dashboard: Display loader', () => {
   )
 })
 test('Dashboard: Display user', async () => {
-  fetchDashboardData.mockReturnValue(Promise.resolve({
-    groups: [],
-    landscapes: []
+  terrasoApi.request.mockReturnValue(Promise.resolve({
+    groups: {
+      edges: []
+    }
   }))
   await act(async () => render(<Dashboard />, {
     user: {
@@ -61,25 +70,22 @@ test('Dashboard: Display landscapes', async () => {
   expect(screen.getByText(/Landscape Manager/i)).toBeInTheDocument()
 })
 test('Dashboard: Display groups', async () => {
-  fetchDashboardData.mockReturnValue(Promise.resolve({
-    groups: [{
-      id: 'id-1',
-      name: 'Group 1',
-      role: 'member'
-    }, {
-      id: 'id-2',
-      name: 'Group 2',
-      role: 'manager'
-    }],
-    landscapes: [{
-      id: 'id-1',
-      name: 'Landscape 1',
-      role: 'member'
-    }, {
-      id: 'id-2',
-      name: 'Landscape 2',
-      role: 'manager'
-    }]
+  terrasoApi.request.mockReturnValue(Promise.resolve({
+    groups: {
+      edges: [{
+        node: {
+          id: 'id-1',
+          name: 'Group 1',
+          role: 'member'
+        }
+      }, {
+        node: {
+          id: 'id-2',
+          name: 'Group 2',
+          role: 'manager'
+        }
+      }]
+    }
   }))
   await act(async () => render(<Dashboard />))
   expect(screen.getByText(/Group 1/i)).toBeInTheDocument()

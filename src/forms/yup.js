@@ -1,12 +1,14 @@
 import * as yup from 'yup'
 
-// Custom validations
-yup.addMethod(yup.string, 'urlCustom', () => yup.string()
-  .matches(
-    /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/,
-    params => ({ key: 'form.validation_url_invalid', params })
+const URL_REGEX = /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/
+
+yup.addMethod(yup.string, 'urlCustom', function () {
+  return this.test(
+    'urlCustom',
+    params => ({ key: 'form.validation_url_invalid', params }),
+    value => !value ? true : URL_REGEX.test(value)
   )
-)
+})
 
 // Localization codes form Yup schema validation
 // Check: https://github.com/jquense/yup#api to know the format to add more codes here

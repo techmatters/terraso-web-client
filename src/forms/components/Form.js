@@ -12,31 +12,47 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import theme from 'theme'
 import FormField from 'forms/components/FormField'
 
+const getInitialEmptyValues = fields => _.chain(fields)
+  .map(field => ([field.name, '']))
+  .fromPairs()
+  .value()
+
 const Form = props => {
   const { t } = useTranslation()
-  const { prefix, fields, values, error, validationSchema, onSave } = props
-
-  const getInitialEmptyValues = () => _.chain(fields)
-    .map(field => ([field.name, '']))
-    .fromPairs()
-    .value()
+  const {
+    prefix,
+    fields,
+    values,
+    error,
+    validationSchema,
+    saveLabel,
+    onSave,
+    cancelLabel,
+    onCancel
+  } = props
 
   const { control, handleSubmit, reset } = useForm({
-    defaultValues: values || getInitialEmptyValues(),
+    defaultValues: {
+      ...getInitialEmptyValues(fields),
+      ...values
+    },
     resolver: yupResolver(validationSchema)
   })
 
   const requiredFields = _.chain(_.get(validationSchema, 'fields', {}))
     .toPairs()
     .filter(([name, field]) => _.get(field, 'exclusiveTests.required', false))
-    .map(([name, field]) => name)
+    .map(([name]) => name)
     .value()
 
   useEffect(() => {
     if (values) {
-      reset(values)
+      reset({
+        ...getInitialEmptyValues(fields),
+        ...values
+      })
     }
-  }, [values, reset])
+  }, [values, fields, reset])
 
   const onSubmit = data => onSave(data)
 
@@ -53,7 +69,7 @@ const Form = props => {
           info={field.info}
           inputProps={{
             type: field.type || 'text',
-            placeholder: field.placeholder,
+            placeholder: t(field.placeholder),
             ..._.get(field, 'props.inputProps', {})
           }}
           {..._.get(field, 'props', {})}
@@ -61,7 +77,7 @@ const Form = props => {
       ))}
       {!error
         ? null
-        : (<Alert severity="error">{error}</Alert>)
+        : (<Alert severity="error">{t(error)}</Alert>)
       }
       <Stack
         spacing={2}
@@ -73,12 +89,18 @@ const Form = props => {
           type="submit"
           variant="contained"
         >
-          {t('common.form_save_button')}
+          {t(saveLabel)}
         </Button>
-        <Button variant="text">{t('common.form_cancel_button')}</Button>
+        {!onCancel ? null : (
+          <Button
+            variant="text"
+            onClick={() => onCancel()}
+          >
+            {t(cancelLabel)}
+          </Button>
+        )}
       </Stack>
     </form>
-
   )
 }
 

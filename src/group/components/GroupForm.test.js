@@ -4,9 +4,9 @@ import { useParams } from 'react-router-dom'
 
 import { render, screen, fireEvent } from 'tests/utils'
 import GroupForm from 'group/components/GroupForm'
-import { fetchGroup, saveGroup } from 'group/groupService'
+import * as terrasoApi from 'terrasoBackend/api'
 
-jest.mock('group/groupService')
+jest.mock('terrasoBackend/api')
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -33,20 +33,18 @@ beforeEach(() => {
 })
 
 test('GroupForm: Display error', async () => {
-  fetchGroup.mockReturnValue(Promise.reject(
-    'Load error'
-  ))
+  terrasoApi.request.mockReturnValue(Promise.reject('Load error'))
   await act(async () => render(<GroupForm />))
   expect(screen.getByText(/Load error/i)).toBeInTheDocument()
 })
 test('GroupForm: Display loader', () => {
-  fetchGroup.mockReturnValue(new Promise(() => {}))
+  terrasoApi.request.mockReturnValue(new Promise(() => {}))
   render(<GroupForm />)
   const loader = screen.getByRole('progressbar', { name: '', hidden: true })
   expect(loader).toBeInTheDocument()
 })
 test('GroupForm: Fill form', async () => {
-  fetchGroup.mockReturnValue(Promise.resolve({
+  terrasoApi.request.mockReturnValue(Promise.resolve({
     group: {
       name: 'Group Name',
       description: 'Group Description',
@@ -56,14 +54,14 @@ test('GroupForm: Fill form', async () => {
   }))
   const { inputs } = await setup()
 
-  expect(fetchGroup).toHaveBeenCalledTimes(1)
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1)
   expect(inputs.name).toHaveValue('Group Name')
   expect(inputs.description).toHaveValue('Group Description')
   expect(inputs.email).toHaveValue('group@group.org')
   expect(inputs.website).toHaveValue('www.group.org')
 })
 test('GroupForm: Input change', async () => {
-  fetchGroup.mockReturnValue(Promise.resolve({
+  terrasoApi.request.mockReturnValueOnce(Promise.resolve({
     group: {
       name: 'Group Name',
       description: 'Group Description',
@@ -90,7 +88,7 @@ test('GroupForm: Input change', async () => {
   expect(inputs.website).toHaveValue('www.other.org')
 })
 test('GroupForm: Input validation', async () => {
-  fetchGroup.mockReturnValue(Promise.resolve({
+  terrasoApi.request.mockReturnValue(Promise.resolve({
     group: {
       name: 'Group Name',
       description: 'Group Description',
@@ -123,15 +121,25 @@ test('GroupForm: Input validation', async () => {
   expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument()
 })
 test('GroupForm: Save form', async () => {
-  fetchGroup.mockReturnValue(Promise.resolve({
-    group: {
-      name: 'Group Name',
-      description: 'Group Description',
-      email: 'group@group.org',
-      website: 'www.group.org'
-    }
-  }))
-  saveGroup.mockReturnValue(Promise.resolve({}))
+  terrasoApi.request
+    .mockReturnValueOnce(Promise.resolve({
+      group: {
+        name: 'Group Name',
+        description: 'Group Description',
+        email: 'group@group.org',
+        website: 'www.group.org'
+      }
+    }))
+    .mockReturnValueOnce(Promise.resolve({
+      updateGroup: {
+        group: {
+          name: 'Group Name',
+          description: 'Group Description',
+          email: 'group@group.org',
+          website: 'www.group.org'
+        }
+      }
+    }))
 
   const { inputs } = await setup()
 
@@ -141,25 +149,27 @@ test('GroupForm: Save form', async () => {
   fireEvent.change(inputs.website, { target: { value: 'www.other.org' } })
 
   await act(async () => fireEvent.click(screen.getByText(/Submit Group Info/i)))
-  expect(saveGroup).toHaveBeenCalledTimes(1)
-  const call = saveGroup.mock.calls[0]
-  expect(call[0]).toStrictEqual({
-    description: 'New description',
-    email: 'new.email@group.org',
-    name: 'New name',
-    website: 'www.other.org'
+  expect(terrasoApi.request).toHaveBeenCalledTimes(2)
+  const saveCall = terrasoApi.request.mock.calls[1]
+  expect(saveCall[1]).toStrictEqual({
+    input: {
+      description: 'New description',
+      name: 'New name',
+      website: 'www.other.org'
+    }
   })
 })
 test('GroupForm: Save form error', async () => {
-  fetchGroup.mockReturnValue(Promise.resolve({
-    group: {
-      name: 'Group Name',
-      description: 'Group Description',
-      email: 'group@group.org',
-      website: 'www.group.org'
-    }
-  }))
-  saveGroup.mockRejectedValue('Save Error')
+  terrasoApi.request
+    .mockReturnValueOnce(Promise.resolve({
+      group: {
+        name: 'Group Name',
+        description: 'Group Description',
+        email: 'group@group.org',
+        website: 'www.group.org'
+      }
+    }))
+    .mockRejectedValueOnce('Save Error')
 
   const { inputs } = await setup()
 
@@ -178,13 +188,14 @@ test('GroupForm: Save form error', async () => {
   expect(inputs.description).toHaveValue('New description')
   expect(inputs.email).toHaveValue('new.email@group.org')
   expect(inputs.website).toHaveValue('www.other.org')
+
+  expect(terrasoApi.request).toHaveBeenCalledTimes(2)
 })
 test('GroupForm: Avoid fetch', async () => {
   useParams.mockReturnValue({ id: 'new' })
-  fetchGroup.mockReturnValue(Promise.resolve({}))
   const { inputs } = await setup()
 
-  expect(fetchGroup).toHaveBeenCalledTimes(0)
+  expect(terrasoApi.request).toHaveBeenCalledTimes(0)
 
   expect(inputs.name).toHaveValue('')
   expect(inputs.description).toHaveValue('')

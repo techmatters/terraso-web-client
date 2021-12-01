@@ -1,7 +1,7 @@
 {
     "dashboard": {
         "title": "Dashboard",
-        "error": "Error loading data. Error: {{error}}",
+        "error": "Error loading data. {{error}}",
         "page_title": "Your Stuff"
     },
     "user": {
@@ -26,7 +26,9 @@
         "form_email_info": "This email address will be used by interested people to connect with you and your group.",
         "form_email_placeholder": "e.g.info@mygroup.org",
         "form_website_label": "Group website",
-        "form_website_placeholder": "Enter the web address"
+        "form_website_placeholder": "Enter the web address",
+        "form_save_label": "Submit Group Info",
+        "not_found": "Group not found"
     },
     "landscape": {
         "default_title": "Landscape",
@@ -44,8 +46,7 @@
     },
     "common": {
         "terraso_projectName": "Terraso",
-        "form_save_button": "Submit Group Info",
-        "form_cancel_button": "Cancel"
+        "error_unexpected": "Unexpected error"
     },
     "form": {
         "required_label": "Required",
