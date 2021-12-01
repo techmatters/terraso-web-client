@@ -6,7 +6,8 @@ const initialState = {
   form: {
     group: null,
     fetching: true,
-    error: null
+    error: null,
+    message: null
   }
 }
 
@@ -35,7 +36,7 @@ const groupSlice = createSlice({
       ...state,
       form: {
         fetching: false,
-        error: null,
+        message: null,
         group: action.payload
       }
     }),
@@ -44,7 +45,10 @@ const groupSlice = createSlice({
       form: {
         ...state.form,
         fetching: false,
-        error: action.error.message
+        message: {
+          severity: 'error',
+          content: action.error.message
+        }
       }
     }),
     [saveGroup.pending]: state => ({
@@ -59,8 +63,11 @@ const groupSlice = createSlice({
       form: {
         ...state.form,
         fetching: false,
-        error: null,
-        group: action.payload
+        group: action.payload,
+        message: {
+          severity: 'success',
+          content: 'group.form_message_success'
+        }
       }
     }),
     [saveGroup.rejected]: (state, action) => ({
@@ -68,7 +75,10 @@ const groupSlice = createSlice({
       form: {
         ...state.form,
         fetching: false,
-        error: action.error.message
+        message: {
+          severity: 'error',
+          content: action.error.message
+        }
       }
     })
   }

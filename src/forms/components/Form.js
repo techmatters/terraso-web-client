@@ -3,7 +3,6 @@ import _ from 'lodash'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import {
-  Alert,
   Button,
   Stack
 } from '@mui/material'
@@ -23,7 +22,6 @@ const Form = props => {
     prefix,
     fields,
     values,
-    error,
     validationSchema,
     saveLabel,
     onSave,
@@ -75,10 +73,6 @@ const Form = props => {
           {..._.get(field, 'props', {})}
         />
       ))}
-      {!error
-        ? null
-        : (<Alert severity="error">{t(error)}</Alert>)
-      }
       <Stack
         spacing={2}
         direction="row"
@@ -91,10 +85,10 @@ const Form = props => {
         >
           {t(saveLabel)}
         </Button>
-        {!onCancel ? null : (
+        {onCancel && (
           <Button
             variant="text"
-            onClick={() => onCancel()}
+            onClick={onCancel}
           >
             {t(cancelLabel)}
           </Button>

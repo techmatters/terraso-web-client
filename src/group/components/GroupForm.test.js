@@ -33,7 +33,7 @@ beforeEach(() => {
 })
 
 test('GroupForm: Display error', async () => {
-  terrasoApi.request.mockReturnValue(Promise.reject('Load error'))
+  terrasoApi.request.mockRejectedValue('Load error')
   await act(async () => render(<GroupForm />))
   expect(screen.getByText(/Load error/i)).toBeInTheDocument()
 })

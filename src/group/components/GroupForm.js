@@ -3,6 +3,7 @@ import _ from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useSnackbar } from 'notistack'
 import * as yup from 'yup'
 import {
   Box,
@@ -15,14 +16,14 @@ import theme from 'theme'
 import { fetchGroup, saveGroup, setFormNewValues } from 'group/groupSlice'
 import Form from 'forms/components/Form'
 
-const validationSchema = yup.object({
+const VALIDATION_SCHEMA = yup.object({
   name: yup.string().required(),
   description: yup.string().required(),
   email: yup.string().email(),
   website: yup.string().urlCustom()
 }).required()
 
-const fields = [{
+const FIELDS = [{
   name: 'name',
   label: 'group.form_name_label'
 }, {
@@ -52,9 +53,10 @@ const GroupForm = () => {
   const dispatch = useDispatch()
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const { enqueueSnackbar } = useSnackbar()
 
   const { id } = useParams()
-  const { error, fetching, group } = useSelector(state => state.group.form)
+  const { fetching, group, message } = useSelector(state => state.group.form)
 
   const isNew = id === 'new'
 
@@ -73,6 +75,12 @@ const GroupForm = () => {
     }
   }, [id, group, navigate])
 
+  useEffect(() => {
+    if (message) {
+      enqueueSnackbar(message)
+    }
+  }, [message, enqueueSnackbar])
+
   const onSave = updatedGroup => dispatch(saveGroup(updatedGroup))
 
   const title = !isNew
@@ -81,7 +89,7 @@ const GroupForm = () => {
 
   return (
     <Box sx={{ padding: theme.spacing(2) }}>
-      {!fetching ? null : (
+      {fetching && (
         <Backdrop
           sx={{ color: theme.palette.white, zIndex: theme => theme.zIndex.drawer + 1 }}
           open={true}
@@ -92,10 +100,9 @@ const GroupForm = () => {
       <Typography variant="h1" sx={{ marginBottom: theme.spacing(5) }}>{title}</Typography>
       <Form
         prefix='group'
-        fields={fields}
+        fields={FIELDS}
         values={group}
-        error={error}
-        validationSchema={validationSchema}
+        validationSchema={VALIDATION_SCHEMA}
         onSave={onSave}
         saveLabel='group.form_save_label'
       />

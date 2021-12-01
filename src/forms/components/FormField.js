@@ -20,7 +20,7 @@ const FormField = ({ control, required, id, name, label, info, inputProps }) => 
       render={({ field, fieldState }) => (
         <FormControlUnstyled style={{ marginBottom: theme.spacing(3) }}>
           <InputLabel error={!!fieldState.error} shrink htmlFor={id}>
-            {t(label).toUpperCase()} {!required ? null : `(${t('form.required_label')})` }
+            {t(label).toUpperCase()} {required && `(${t('form.required_label')})` }
           </InputLabel>
           <OutlinedInput
             id={id}
@@ -30,10 +30,10 @@ const FormField = ({ control, required, id, name, label, info, inputProps }) => 
             {...inputProps}
             {...field}
           />
-          {!info ? null : (
+          {info && (
             <FormHelperText id={`${id}-helper-text`}>{t(info)}</FormHelperText>
           )}
-          {!fieldState.error ? null : (
+          {fieldState.error && (
             <FormHelperText error id={`${id}-helper-text`}>
               {t(
                 _.get(fieldState, 'error.message.key', 'form.validation_field_invalid'),

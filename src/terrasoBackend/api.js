@@ -1,9 +1,9 @@
 import _ from 'lodash'
 
 // TODO Move this to the correct configuration file when the deployment process is defined
-const URL = 'http://localhost:8000/graphql/'
+const TERRASO_API_URL = 'http://localhost:8000/graphql/'
 
-const handleGraphQLError = response => response.json()
+const handleGraphQLError = jsonResponse => jsonResponse
   .then(data => {
     const errors = _.get(data, 'errors')
     if (!_.has(data, 'errors')) {
@@ -17,7 +17,7 @@ const handleGraphQLError = response => response.json()
     return Promise.reject(message)
   })
 
-export const request = (query, variables) => fetch(URL, {
+export const request = (query, variables) => fetch(TERRASO_API_URL, {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -26,8 +26,9 @@ export const request = (query, variables) => fetch(URL, {
 })
   .then(response => response.ok
     ? response.json()
-    : handleGraphQLError(response)
+    : handleGraphQLError(response.json())
   )
-  .then(response => {
-    return response.data
-  })
+  .then(response => _.has(response, 'errors')
+    ? handleGraphQLError(Promise.resolve(response))
+    : response.data
+  )
