@@ -6,7 +6,6 @@ const initialState = {
   form: {
     group: null,
     fetching: true,
-    error: null,
     message: null
   }
 }
