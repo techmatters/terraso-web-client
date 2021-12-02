@@ -5,11 +5,11 @@ const TERRASO_API_URL = 'http://localhost:8000/graphql/'
 
 const handleGraphQLError = jsonResponse => jsonResponse
   .then(data => {
-    const errors = _.get(data, 'errors')
     if (!_.has(data, 'errors')) {
       return Promise.reject('common.error_unexpected')
     }
 
+    const errors = _.get(data, 'errors')
     const message = _.chain(errors)
       .map(error => error.message)
       .join('. ')
@@ -26,9 +26,9 @@ export const request = (query, variables) => fetch(TERRASO_API_URL, {
 })
   .then(response => response.ok
     ? response.json()
-    : handleGraphQLError(response.json())
+    : handleGraphQLError(response.json()) // Non 2xx errors
   )
   .then(response => _.has(response, 'errors')
-    ? handleGraphQLError(Promise.resolve(response))
+    ? handleGraphQLError(Promise.resolve(response)) // GraphQL errors inside a 2xx response
     : response.data
   )
