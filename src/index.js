@@ -14,6 +14,7 @@ import RequireAuth from 'auth/RequireAuth'
 import AppWrappers from 'common/components/AppWrappers'
 import Dashboard from 'dashboard/components/Dashboard'
 import GroupForm from 'group/components/GroupForm'
+import LandscapeForm from 'landscape/components/LandscapeForm'
 
 import 'index.css'
 
@@ -24,8 +25,9 @@ ReactDOM.render(
       <Box display="flex" width='auto'>
         <Box m="auto" sx={{ maxWidth: '1044px', paddingTop: theme.spacing(2) }}>
           <Routes>
-            <Route path='/dashboard' element={<RequireAuth children={<Dashboard />} />} />
+            <Route path='/' element={<RequireAuth children={<Dashboard />} />} />
             <Route path='/group/:id' element={<RequireAuth children={<GroupForm />} />} />
+            <Route path='/landscape/:id' element={<RequireAuth children={<LandscapeForm />} />} />
           </Routes>
         </Box>
       </Box>

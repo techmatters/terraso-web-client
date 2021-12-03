@@ -13,7 +13,7 @@ import {
 } from '@mui/material'
 
 import theme from 'theme'
-import { fetchGroup, saveGroup, setFormNewValues } from 'group/groupSlice'
+import { fetchLandscape, saveLandscape, setFormNewValues } from 'landscape/landscapeSlice'
 import Form from 'forms/components/Form'
 
 const VALIDATION_SCHEMA = yup.object({
@@ -27,11 +27,11 @@ const VALIDATION_SCHEMA = yup.object({
 
 const FIELDS = [{
   name: 'name',
-  label: 'group.form_name_label'
+  label: 'landscape.form_name_label'
 }, {
   name: 'description',
-  label: 'group.form_description_label',
-  placeholder: 'group.form_description_placeholder',
+  label: 'landscape.form_description_label',
+  placeholder: 'landscape.form_description_placeholder',
   props: {
     inputProps: {
       multiline: true,
@@ -40,25 +40,26 @@ const FIELDS = [{
   }
 }, {
   name: 'email',
-  label: 'group.form_email_label',
-  info: 'group.form_email_info',
-  placeholder: 'group.form_email_placeholder',
+  label: 'landscape.form_email_label',
+  info: 'landscape.form_email_info',
+  placeholder: 'landscape.form_email_placeholder',
   type: 'email'
 }, {
   name: 'website',
-  label: 'group.form_website_label',
-  placeholder: 'group.form_website_placeholder',
+  label: 'landscape.form_website_label',
+  info: 'landscape.form_website_info',
+  placeholder: 'landscape.form_website_placeholder',
   type: 'url'
 }]
 
-const GroupForm = () => {
+const LandscapeForm = () => {
   const dispatch = useDispatch()
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
 
   const { id } = useParams()
-  const { fetching, group, message } = useSelector(state => state.group.form)
+  const { fetching, landscape, message } = useSelector(state => state.landscape.form)
 
   const isNew = id === 'new'
 
@@ -67,15 +68,15 @@ const GroupForm = () => {
       dispatch(setFormNewValues())
       return
     }
-    dispatch(fetchGroup(id))
+    dispatch(fetchLandscape(id))
   }, [dispatch, id, isNew])
 
   useEffect(() => {
-    if (group && group.id !== id) {
-      // Change URL if new group ID
-      navigate(`/group/${group.id}`)
+    if (landscape && landscape.id !== id) {
+      // Change URL if new landscape ID
+      navigate(`/landscape/${landscape.id}`)
     }
-  }, [id, group, navigate])
+  }, [id, landscape, navigate])
 
   useEffect(() => {
     if (message) {
@@ -83,11 +84,11 @@ const GroupForm = () => {
     }
   }, [message, enqueueSnackbar])
 
-  const onSave = updatedGroup => dispatch(saveGroup(updatedGroup))
+  const onSave = updatedLandscape => dispatch(saveLandscape(updatedLandscape))
 
   const title = !isNew
-    ? t('group.form_edit_title', { name: _.get(group, 'name', '') })
-    : t('group.form_new_title')
+    ? t('landscape.form_edit_title', { name: _.get(landscape, 'name', '') })
+    : t('landscape.form_new_title')
 
   return (
     <Box sx={{ padding: theme.spacing(2) }}>
@@ -101,15 +102,15 @@ const GroupForm = () => {
       )}
       <Typography variant="h1" sx={{ marginBottom: theme.spacing(5) }}>{title}</Typography>
       <Form
-        prefix='group'
+        prefix='landscape'
         fields={FIELDS}
-        values={group}
+        values={landscape}
         validationSchema={VALIDATION_SCHEMA}
         onSave={onSave}
-        saveLabel='group.form_save_label'
+        saveLabel='landscape.form_save_label'
       />
     </Box>
   )
 }
 
-export default GroupForm
+export default LandscapeForm
