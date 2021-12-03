@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom'
 import { Box } from '@mui/material'
 
-import createStore from 'store'
+import createStore from 'state/store'
 import theme from 'theme'
 import AppBar from 'common/components/AppBar'
 import reportWebVitals from 'monitoring/reportWebVitals'

@@ -46,8 +46,7 @@
         "locale_es-ES_small": "ES"
     },
     "common": {
-        "terraso_projectName": "Terraso",
-        "error_unexpected": "Unexpected error"
+        "terraso_projectName": "Terraso"
     },
     "form": {
         "required_label": "Required",
@@ -55,5 +54,9 @@
         "validation_field_required": "{{path}} is a required field",
         "validation_email_invalid": "{{path}} must be a valid email",
         "validation_url_invalid": "{{path}} must be a valid URL"
+    },
+    "terraso_api": {
+        "error_unexpected": "Unexpected error",
+        "error_request_response": "Failed to connect with Terraso API"
     }
 }

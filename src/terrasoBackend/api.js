@@ -3,32 +3,39 @@ import _ from 'lodash'
 // TODO Move this to the correct configuration file when the deployment process is defined
 const TERRASO_API_URL = 'http://localhost:8000/graphql/'
 
-const handleGraphQLError = jsonResponse => jsonResponse
-  .then(data => {
-    if (!_.has(data, 'errors')) {
-      return Promise.reject('common.error_unexpected')
-    }
+const handleGraphQLError = data => {
+  const errors = _.get(data, 'errors')
+  const messages = errors.map(error => error.message)
+  return Promise.reject(messages)
+}
 
-    const errors = _.get(data, 'errors')
-    const message = _.chain(errors)
-      .map(error => error.message)
-      .join('. ')
-      .value()
-    return Promise.reject(message)
+export const request = async (query, variables) => {
+  const response = await fetch(TERRASO_API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ query, variables })
   })
+    .catch(error => {
+      console.error('Terraso API: Failed to execute request', error)
+      return Promise.reject(['terraso_api.error_request_response'])
+    })
 
-export const request = (query, variables) => fetch(TERRASO_API_URL, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ query, variables })
-})
-  .then(response => response.ok
-    ? response.json()
-    : handleGraphQLError(response.json()) // Non 2xx errors
-  )
-  .then(response => _.has(response, 'errors')
-    ? handleGraphQLError(Promise.resolve(response)) // GraphQL errors inside a 2xx response
-    : response.data
-  )
+  const jsonResponse = await response.json()
+    .catch(error => {
+      console.error('Terraso API: Failed to parse response', error)
+      return Promise.reject(['terraso_api.error_request_response'])
+    })
+
+  if (_.has(jsonResponse, 'errors')) {
+    await handleGraphQLError(jsonResponse)
+  }
+
+  if (!_.has(jsonResponse, 'data')) {
+    console.error('Terraso API: Unexpected error', 'received data:', jsonResponse)
+    await Promise.reject(['terraso_api.error_unexpected'])
+  }
+
+  return jsonResponse.data
+}

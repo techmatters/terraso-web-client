@@ -1,5 +1,6 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 
+import { createAsyncThunk } from 'state/utils'
 import * as dashboardService from 'dashboard/dashboardService'
 
 const initialState = {
@@ -27,7 +28,7 @@ export const dashboardSlice = createSlice({
     [fetchDashboardData.rejected]: (state, action) => ({
       ...state,
       fetching: false,
-      error: action.error.message
+      error: action.payload
     })
   }
 })

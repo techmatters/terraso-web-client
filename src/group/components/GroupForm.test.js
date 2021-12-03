@@ -33,7 +33,7 @@ beforeEach(() => {
 })
 
 test('GroupForm: Display error', async () => {
-  terrasoApi.request.mockRejectedValue('Load error')
+  terrasoApi.request.mockRejectedValue(['Load error'])
   await act(async () => render(<GroupForm />))
   expect(screen.getByText(/Load error/i)).toBeInTheDocument()
 })
@@ -122,24 +122,26 @@ test('GroupForm: Input validation', async () => {
 })
 test('GroupForm: Save form', async () => {
   terrasoApi.request
-    .mockReturnValueOnce(Promise.resolve({
+    .mockResolvedValueOnce({
       group: {
+        id: '1',
         name: 'Group Name',
         description: 'Group Description',
         email: 'group@group.org',
         website: 'www.group.org'
       }
-    }))
-    .mockReturnValueOnce(Promise.resolve({
+    })
+    .mockResolvedValueOnce({
       updateGroup: {
         group: {
+          id: '1',
           name: 'Group Name',
           description: 'Group Description',
           email: 'group@group.org',
           website: 'www.group.org'
         }
       }
-    }))
+    })
 
   const { inputs } = await setup()
 
@@ -153,6 +155,7 @@ test('GroupForm: Save form', async () => {
   const saveCall = terrasoApi.request.mock.calls[1]
   expect(saveCall[1]).toStrictEqual({
     input: {
+      id: '1',
       description: 'New description',
       name: 'New name',
       website: 'www.other.org'

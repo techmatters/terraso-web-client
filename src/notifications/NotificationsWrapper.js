@@ -1,4 +1,5 @@
 import React from 'react'
+import _ from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { SnackbarProvider } from 'notistack'
 import { Alert } from '@mui/material'
@@ -10,6 +11,12 @@ const NotificationsWrapper = props => {
   const { t } = useTranslation()
   const { children } = props
 
+  // To add more flexibility to messages and localization
+  // the content of a message can hold multiple sub messages
+  const getMessages = content => _.isArray(content)
+    ? content
+    : [content]
+
   return (
     <SnackbarProvider
       maxSnack={MAX_NOTIFICATIONS}
@@ -19,8 +26,11 @@ const NotificationsWrapper = props => {
         horizontal: 'center'
       }}
       content={(key, message) => (
-          <Alert severity={message.severity} sx={{ width: '100%' }}>
-          {t(message.content)}
+        <Alert severity={message.severity} sx={{ width: '100%' }}>
+          {getMessages(message.content)
+            .map(message => t(message))
+            .join('. ')
+          }
         </Alert>
       )}
     >

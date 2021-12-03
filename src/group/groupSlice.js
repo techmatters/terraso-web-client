@@ -1,5 +1,6 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 
+import { createAsyncThunk } from 'state/utils'
 import * as groupService from 'group/groupService'
 
 const initialState = {
@@ -46,7 +47,7 @@ const groupSlice = createSlice({
         fetching: false,
         message: {
           severity: 'error',
-          content: action.error.message
+          content: action.payload
         }
       }
     }),
@@ -76,7 +77,7 @@ const groupSlice = createSlice({
         fetching: false,
         message: {
           severity: 'error',
-          content: action.error.message
+          content: action.payload
         }
       }
     })
