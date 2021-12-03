@@ -2,6 +2,7 @@ import React from 'react'
 import { ThemeProvider } from '@mui/material'
 import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
+import NotificationsWrapper from 'notifications/NotificationsWrapper'
 
 // Localization
 import 'localization/i18n'
@@ -10,13 +11,15 @@ import 'localization/i18n'
 import 'forms/yup'
 
 // Wrappers
-// Router, Theme, Global State
-const AppWrappers = ({ children, localization, theme, store }) => (
+// Router, Theme, Global State, Notifications
+const AppWrappers = ({ children, theme, store }) => (
   <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <Provider store={store}>
-          {children}
+          <NotificationsWrapper>
+            {children}
+          </NotificationsWrapper>
         </Provider>
       </ThemeProvider>
     </BrowserRouter>

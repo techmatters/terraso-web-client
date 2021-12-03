@@ -81,7 +81,7 @@ const Dashboard = props => {
   if (error) {
     return (
       <Alert severity="error">
-        {t('dashboard.error', { error })}
+        {t('dashboard.error', { error: t(error) })}
       </Alert>
     )
   }

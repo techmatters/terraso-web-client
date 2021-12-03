@@ -1,7 +1,7 @@
 {
     "dashboard": {
         "title": "Dashboard",
-        "error": "Error loading data. Error: {{error}}",
+        "error": "Error loading data. {{error}}",
         "page_title": "Your Stuff"
     },
     "user": {
@@ -24,9 +24,12 @@
         "form_description_placeholder": "Enter  a short description about your group.  (600 characters maximum)",
         "form_email_label": "Group contact email address",
         "form_email_info": "This email address will be used by interested people to connect with you and your group.",
-        "form_email_placeholder": "e.g.info@mygroup.org",
+        "form_email_placeholder": "info@mygroup.org",
         "form_website_label": "Group website",
-        "form_website_placeholder": "Enter the web address"
+        "form_website_placeholder": "https://www.mygroup.org",
+        "form_save_label": "Submit Group Info",
+        "form_message_success": "Your Group has been saved.",
+        "not_found": "Group not found"
     },
     "landscape": {
         "default_title": "Landscape",
@@ -43,9 +46,7 @@
         "locale_es-ES_small": "ES"
     },
     "common": {
-        "terraso_projectName": "Terraso",
-        "form_save_button": "Submit Group Info",
-        "form_cancel_button": "Cancel"
+        "terraso_projectName": "Terraso"
     },
     "form": {
         "required_label": "Required",
@@ -53,5 +54,9 @@
         "validation_field_required": "{{path}} is a required field",
         "validation_email_invalid": "{{path}} must be a valid email",
         "validation_url_invalid": "{{path}} must be a valid URL"
+    },
+    "terraso_api": {
+        "error_unexpected": "Unexpected error",
+        "error_request_response": "Failed to connect with Terraso API"
     }
 }

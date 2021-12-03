@@ -1,12 +1,13 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 
+import { createAsyncThunk } from 'state/utils'
 import * as groupService from 'group/groupService'
 
 const initialState = {
   form: {
     group: null,
     fetching: true,
-    error: null
+    message: null
   }
 }
 
@@ -21,7 +22,7 @@ const groupSlice = createSlice({
       ...state,
       form: {
         ...state.form,
-        group: {},
+        group: null,
         fetching: false
       }
     })
@@ -35,8 +36,8 @@ const groupSlice = createSlice({
       ...state,
       form: {
         fetching: false,
-        error: null,
-        group: action.payload.group
+        message: null,
+        group: action.payload
       }
     }),
     [fetchGroup.rejected]: (state, action) => ({
@@ -44,7 +45,10 @@ const groupSlice = createSlice({
       form: {
         ...state.form,
         fetching: false,
-        error: action.error.message
+        message: {
+          severity: 'error',
+          content: action.payload
+        }
       }
     }),
     [saveGroup.pending]: state => ({
@@ -59,8 +63,11 @@ const groupSlice = createSlice({
       form: {
         ...state.form,
         fetching: false,
-        error: null,
-        group: action.payload.group
+        group: action.payload,
+        message: {
+          severity: 'success',
+          content: 'group.form_message_success'
+        }
       }
     }),
     [saveGroup.rejected]: (state, action) => ({
@@ -68,7 +75,10 @@ const groupSlice = createSlice({
       form: {
         ...state.form,
         fetching: false,
-        error: action.error.message
+        message: {
+          severity: 'error',
+          content: action.payload
+        }
       }
     })
   }

@@ -5,14 +5,14 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-11-29T18:36:34.040Z\n"
-"PO-Revision-Date: 2021-11-29T18:36:34.040Z\n"
+"POT-Creation-Date: 2021-12-03T01:12:54.292Z\n"
+"PO-Revision-Date: 2021-12-03T01:12:54.292Z\n"
 
 msgid "dashboard##title"
 msgstr "Dashboard"
 
 msgid "dashboard##error"
-msgstr "Error loading data. Error: {{error}}"
+msgstr "Error loading data. {{error}}"
 
 msgid "user##login"
 msgstr "Log in"
@@ -67,14 +67,6 @@ msgctxt "button"
 msgid "landscape##default_connect"
 msgstr "Connect to Landscape"
 
-msgctxt "button"
-msgid "common##form_save"
-msgstr "Submit Group Info"
-
-msgctxt "button"
-msgid "common##form_cancel"
-msgstr "Cancel"
-
 msgctxt "member"
 msgid "group##role"
 msgstr "Group Member"
@@ -121,6 +113,10 @@ msgid "group##form_website"
 msgstr "Group website"
 
 msgctxt "label"
+msgid "group##form_save"
+msgstr "Submit Group Info"
+
+msgctxt "label"
 msgid "form##required"
 msgstr "Required"
 
@@ -130,17 +126,25 @@ msgstr "Enter  a short description about your group.  (600 characters maximum)"
 
 msgctxt "placeholder"
 msgid "group##form_email"
-msgstr "e.g.info@mygroup.org"
+msgstr "info@mygroup.org"
 
 msgctxt "placeholder"
 msgid "group##form_website"
-msgstr "Enter the web address"
+msgstr "https://www.mygroup.org"
 
 msgctxt "info"
 msgid "group##form_email"
 msgstr ""
 "This email address will be used by interested people to connect with you "
 "and your group."
+
+msgctxt "success"
+msgid "group##form_message"
+msgstr "Your Group has been saved."
+
+msgctxt "found"
+msgid "group##not"
+msgstr "Group not found"
 
 msgctxt "en-US"
 msgid "localization##locale"
@@ -177,3 +181,11 @@ msgstr "{{path}} must be a valid URL"
 msgctxt "required"
 msgid "form##validation_field"
 msgstr "{{path}} is a required field"
+
+msgctxt "unexpected"
+msgid "terraso##error"
+msgstr "Unexpected error"
+
+msgctxt "response"
+msgid "terraso##error_request"
+msgstr "Failed to connect with Terraso API"
