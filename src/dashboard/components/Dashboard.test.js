@@ -18,8 +18,7 @@ beforeEach(() => {
 })
 
 test('Dashboard: Display error', async () => {
-  terrasoApi.request.mockRejectedValueOnce('Load error')
-  terrasoApi.request.mockRejectedValueOnce('Load error')
+  terrasoApi.request.mockRejectedValue('Load error')
   await act(async () => render(<Dashboard />))
   expect(screen.getByText(/Error loading data. Load error/i)).toBeInTheDocument()
 })
