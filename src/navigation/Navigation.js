@@ -2,7 +2,7 @@ import React from 'react'
 import _ from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Box, Tabs, Tab } from '@mui/material'
+import { Tab, Tabs } from '@mui/material'
 
 import theme from 'theme'
 
@@ -14,7 +14,6 @@ const PAGES = {
 
 const LinkTab = props => (
   <Tab
-    component="a"
     onClick={event => event.preventDefault()}
     sx={{
       '&.Mui-selected': {
@@ -40,29 +39,21 @@ const Navigation = () => {
   }
 
   return (
-    <Box sx={{
-      width: '100%'
-    }}>
-      <Tabs
-        value={value}
-        onChange={handleChange}
-        aria-label={t('navigation.nav_label')}
-        TabIndicatorProps={{ children: <span className="MuiTabs-indicatorSpan" /> }}
-        sx={{
-          '& .MuiTabs-indicator': {
-            display: 'flex'
-          },
-          '& .MuiTabs-indicatorSpan': {
-            width: '100%',
-            backgroundColor: 'black'
-          }
-        }}
-      >
-        {Object.keys(PAGES).map(path => (
-          <LinkTab key={path} label={t(PAGES[path]).toUpperCase()} path={path} />
-        ))}
-      </Tabs>
-    </Box>
+    <Tabs
+      component="nav"
+      value={value}
+      onChange={handleChange}
+      aria-label={t('navigation.nav_label')}
+      sx={{
+        '& .MuiTabs-indicator': {
+          backgroundColor: 'black'
+        }
+      }}
+    >
+      {Object.keys(PAGES).map(path => (
+        <LinkTab key={path} label={t(PAGES[path]).toUpperCase()} path={path} />
+      ))}
+    </Tabs>
   )
 }
 
