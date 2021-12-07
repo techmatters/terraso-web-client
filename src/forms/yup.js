@@ -10,6 +10,10 @@ yup.addMethod(yup.string, 'urlCustom', function () {
   )
 })
 
+yup.addMethod(yup.string, 'maxCustom', max => yup.string()
+  .max(max, params => ({ key: 'form.validation_field_max_length', params }))
+)
+
 // Localization codes form Yup schema validation
 // Check: https://github.com/jquense/yup#api to know the format to add more codes here
 yup.setLocale({

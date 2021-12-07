@@ -18,7 +18,7 @@ beforeEach(() => {
 })
 
 test('Dashboard: Display error', async () => {
-  terrasoApi.request.mockRejectedValueOnce('Load error')
+  terrasoApi.request.mockRejectedValue('Load error')
   await act(async () => render(<Dashboard />))
   expect(screen.getByText(/Error loading data. Load error/i)).toBeInTheDocument()
 })
@@ -32,8 +32,13 @@ test('Dashboard: Display loader', () => {
   )
 })
 test('Dashboard: Display user', async () => {
-  terrasoApi.request.mockReturnValue(Promise.resolve({
+  terrasoApi.request.mockReturnValueOnce(Promise.resolve({
     groups: {
+      edges: []
+    }
+  }))
+  terrasoApi.request.mockReturnValueOnce(Promise.resolve({
+    landscapes: {
       edges: []
     }
   }))
@@ -51,17 +56,25 @@ test('Dashboard: Display user', async () => {
   expect(screen.getByText(/email@email.com/i)).toBeInTheDocument()
 })
 test('Dashboard: Display landscapes', async () => {
-  fetchDashboardData.mockReturnValue(Promise.resolve({
-    groups: [],
-    landscapes: [{
-      id: 'id-1',
-      name: 'Landscape 1',
-      role: 'member'
-    }, {
-      id: 'id-2',
-      name: 'Landscape 2',
-      role: 'manager'
-    }]
+  terrasoApi.request.mockReturnValue(Promise.resolve({
+    groups: {
+      edges: []
+    },
+    landscapes: {
+      edges: [{
+        node: {
+          id: 'id-1',
+          name: 'Landscape 1',
+          role: 'member'
+        }
+      }, {
+        node: {
+          id: 'id-2',
+          name: 'Landscape 2',
+          role: 'manager'
+        }
+      }]
+    }
   }))
   await act(async () => render(<Dashboard />))
   expect(screen.getByText(/Landscape 1/i)).toBeInTheDocument()
@@ -71,6 +84,9 @@ test('Dashboard: Display landscapes', async () => {
 })
 test('Dashboard: Display groups', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
+    landscapes: {
+      edges: []
+    },
     groups: {
       edges: [{
         node: {

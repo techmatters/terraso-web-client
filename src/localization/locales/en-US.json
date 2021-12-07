@@ -21,7 +21,7 @@
         "form_new_title": "New Group Information",
         "form_name_label": "Group name",
         "form_description_label": "Group description",
-        "form_description_placeholder": "Enter  a short description about your group.  (600 characters maximum)",
+        "form_description_placeholder": "Enter a short description about your group.  (600 characters maximum)",
         "form_email_label": "Group contact email address",
         "form_email_info": "This email address will be used by interested people to connect with you and your group.",
         "form_email_placeholder": "info@mygroup.org",
@@ -37,7 +37,21 @@
         "edit_profile_button": "Edit Landscape Profile",
         "default_connect_button": "Connect to Landscape",
         "role_member": "Landscape Member",
-        "role_manager": "Landscape Manager"
+        "role_manager": "Landscape Manager",
+        "form_edit_title": "Manage {{name}} Landscape Information",
+        "form_new_title": "New Landscape Information",
+        "form_name_label": "Landscape name",
+        "form_description_label": "Landscape description",
+        "form_description_placeholder": "Enter a short description about your landscape  (600 characters maximum)",
+        "form_email_label": "Contact email address",
+        "form_email_info": "This email address will be used by interested people to connect with you and your landscape.",
+        "form_email_placeholder": "info@mygroup.org",
+        "form_website_label": "Landscape website",
+        "form_website_info": "This will be publicly displayed to all Terraso users.",
+        "form_website_placeholder": "www.mylandscape.org",
+        "form_save_label": "Submit Landscape Info",
+        "form_message_success": "Your Landscape has been saved.",
+        "not_found": "Landscape not found"
     },
     "localization": {
         "locale_en-US": "English",
@@ -53,7 +67,8 @@
         "validation_field_invalid": "{{path}} must be valid",
         "validation_field_required": "{{path}} is a required field",
         "validation_email_invalid": "{{path}} must be a valid email",
-        "validation_url_invalid": "{{path}} must be a valid URL"
+        "validation_url_invalid": "{{path}} must be a valid URL",
+        "validation_field_max_length": "{{path}} must be {{max}} characters maximum."
     },
     "terraso_api": {
         "error_unexpected": "Unexpected error",
