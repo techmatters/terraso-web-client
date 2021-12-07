@@ -17,11 +17,10 @@ const setup = async () => {
   await act(async () => render(<LandscapeForm />))
   const name = screen.getByRole('textbox', { name: 'LANDSCAPE NAME (Required)' })
   const description = screen.getByRole('textbox', { name: 'LANDSCAPE DESCRIPTION (Required)' })
-  const email = screen.getByRole('textbox', { name: 'CONTACT EMAIL ADDRESS' })
   const website = screen.getByRole('textbox', { name: 'LANDSCAPE WEBSITE' })
   return {
     inputs: {
-      name, description, email, website
+      name, description, website
     }
   }
 }
@@ -48,7 +47,6 @@ test('LandscapeForm: Fill form', async () => {
     landscape: {
       name: 'Landscape Name',
       description: 'Landscape Description',
-      email: 'landscape@landscape.org',
       website: 'www.landscape.org'
     }
   }))
@@ -57,7 +55,6 @@ test('LandscapeForm: Fill form', async () => {
   expect(terrasoApi.request).toHaveBeenCalledTimes(1)
   expect(inputs.name).toHaveValue('Landscape Name')
   expect(inputs.description).toHaveValue('Landscape Description')
-  expect(inputs.email).toHaveValue('landscape@landscape.org')
   expect(inputs.website).toHaveValue('www.landscape.org')
 })
 test('LandscapeForm: Input change', async () => {
@@ -65,7 +62,6 @@ test('LandscapeForm: Input change', async () => {
     landscape: {
       name: 'Landscape Name',
       description: 'Landscape Description',
-      email: 'landscape@landscape.org',
       website: 'www.landscape.org'
     }
   }))
@@ -79,10 +75,6 @@ test('LandscapeForm: Input change', async () => {
   fireEvent.change(inputs.description, { target: { value: 'New description' } })
   expect(inputs.description).toHaveValue('New description')
 
-  expect(inputs.email).toHaveValue('landscape@landscape.org')
-  fireEvent.change(inputs.email, { target: { value: 'new.email@landscape.org' } })
-  expect(inputs.email).toHaveValue('new.email@landscape.org')
-
   expect(inputs.website).toHaveValue('www.landscape.org')
   fireEvent.change(inputs.website, { target: { value: 'www.other.org' } })
   expect(inputs.website).toHaveValue('www.other.org')
@@ -92,7 +84,6 @@ test('LandscapeForm: Input validation', async () => {
     landscape: {
       name: 'Landscape Name',
       description: 'Landscape Description',
-      email: 'landscape@landscape.org',
       website: 'www.landscape.org'
     }
   }))
@@ -106,10 +97,6 @@ test('LandscapeForm: Input validation', async () => {
   fireEvent.change(inputs.description, { target: { value: '' } })
   expect(inputs.description).toHaveValue('')
 
-  expect(inputs.email).toHaveValue('landscape@landscape.org')
-  fireEvent.change(inputs.email, { target: { value: 'new.emaillandscapeorg' } })
-  expect(inputs.email).toHaveValue('new.emaillandscapeorg')
-
   expect(inputs.website).toHaveValue('www.landscape.org')
   fireEvent.change(inputs.website, { target: { value: 'wwwotherorg' } })
   expect(inputs.website).toHaveValue('wwwotherorg')
@@ -117,7 +104,6 @@ test('LandscapeForm: Input validation', async () => {
   await act(async () => fireEvent.click(screen.getByText(/Submit Landscape Info/i)))
   expect(screen.getByText(/name is a required field/i)).toBeInTheDocument()
   expect(screen.getByText(/description is a required field/i)).toBeInTheDocument()
-  expect(screen.getByText(/email must be a valid email/i)).toBeInTheDocument()
   expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument()
 })
 test('LandscapeForm: Save form', async () => {
@@ -127,7 +113,6 @@ test('LandscapeForm: Save form', async () => {
         id: '1',
         name: 'Landscape Name',
         description: 'Landscape Description',
-        email: 'landscape@landscape.org',
         website: 'www.landscape.org'
       }
     })
@@ -137,7 +122,6 @@ test('LandscapeForm: Save form', async () => {
           id: '1',
           name: 'Landscape Name',
           description: 'Landscape Description',
-          email: 'landscape@landscape.org',
           website: 'www.landscape.org'
         }
       }
@@ -147,7 +131,6 @@ test('LandscapeForm: Save form', async () => {
 
   fireEvent.change(inputs.name, { target: { value: 'New name' } })
   fireEvent.change(inputs.description, { target: { value: 'New description' } })
-  fireEvent.change(inputs.email, { target: { value: 'new.email@landscape.org' } })
   fireEvent.change(inputs.website, { target: { value: 'www.other.org' } })
 
   await act(async () => fireEvent.click(screen.getByText(/Submit Landscape Info/i)))
@@ -168,7 +151,6 @@ test('LandscapeForm: Save form error', async () => {
       landscape: {
         name: 'Landscape Name',
         description: 'Landscape Description',
-        email: 'landscape@landscape.org',
         website: 'www.landscape.org'
       }
     }))
@@ -178,7 +160,6 @@ test('LandscapeForm: Save form error', async () => {
 
   fireEvent.change(inputs.name, { target: { value: 'New name' } })
   fireEvent.change(inputs.description, { target: { value: 'New description' } })
-  fireEvent.change(inputs.email, { target: { value: 'new.email@landscape.org' } })
   fireEvent.change(inputs.website, { target: { value: 'www.other.org' } })
 
   await act(async () => fireEvent.click(screen.getByText(/Submit Landscape Info/i)))
@@ -189,7 +170,6 @@ test('LandscapeForm: Save form error', async () => {
   // Test update values still in the form
   expect(inputs.name).toHaveValue('New name')
   expect(inputs.description).toHaveValue('New description')
-  expect(inputs.email).toHaveValue('new.email@landscape.org')
   expect(inputs.website).toHaveValue('www.other.org')
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(2)
@@ -202,7 +182,6 @@ test('LandscapeForm: Avoid fetch', async () => {
 
   expect(inputs.name).toHaveValue('')
   expect(inputs.description).toHaveValue('')
-  expect(inputs.email).toHaveValue('')
   expect(inputs.website).toHaveValue('')
 
   expect(() => screen.getByRole('progressbar', { name: '', hidden: true }))
