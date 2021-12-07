@@ -21,7 +21,6 @@ const VALIDATION_SCHEMA = yup.object({
   description: yup.string()
     .maxCustom(600)
     .required(),
-  email: yup.string().email(),
   website: yup.string().urlCustom()
 }).required()
 
@@ -38,12 +37,6 @@ const FIELDS = [{
       rows: 4
     }
   }
-}, {
-  name: 'email',
-  label: 'landscape.form_email_label',
-  info: 'landscape.form_email_info',
-  placeholder: 'landscape.form_email_placeholder',
-  type: 'email'
 }, {
   name: 'website',
   label: 'landscape.form_website_label',

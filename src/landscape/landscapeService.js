@@ -1,9 +1,4 @@
-import _ from 'lodash'
-
 import * as terrasoApi from 'terrasoBackend/api'
-
-// Omitted email because it is not supported by the backend
-const cleanLandscape = landscape => _.omit(landscape, 'email')
 
 export const fetchLandscape = id => {
   const query = `query landscape($id: ID!){
@@ -53,7 +48,7 @@ const updateLandscape = landscape => {
     }
   }`
   return terrasoApi
-    .request(query, { input: cleanLandscape(landscape) })
+    .request(query, { input: landscape })
     .then(response => response.updateLandscape.landscape)
 }
 
@@ -69,7 +64,7 @@ const addLandscape = landscape => {
     }
   }`
   return terrasoApi
-    .request(query, { input: cleanLandscape(landscape) })
+    .request(query, { input: landscape })
     .then(response => response.addLandscape.landscape)
 }
 
