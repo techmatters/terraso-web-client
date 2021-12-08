@@ -22,9 +22,15 @@ const GroupMembershipCard = ({ ownerName, members, joinLabel }) => {
       />
       <CardContent>
         <Typography variant="body2" color="text.secondary">
-          {t('group.membership_card_description', { count: members.length, name: ownerName })}
+          {t(
+            'group.membership_card_description',
+            { count: members.length, name: ownerName }
+          )}
         </Typography>
-          <AvatarGroup max={5} sx={{ flexDirection: 'row', marginTop: theme.spacing(2) }}>
+          <AvatarGroup
+            max={5}
+            sx={{ flexDirection: 'row', marginTop: theme.spacing(2) }}
+          >
             {members.map((member, index) => {
               const name = `${member.firstName} ${member.lastName}`
               return (
