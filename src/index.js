@@ -1,35 +1,29 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {
-  Routes,
-  Route
-} from 'react-router-dom'
-import { Box } from '@mui/material'
+import { Box, Container } from '@mui/material'
 
 import createStore from 'state/store'
 import theme from 'theme'
 import AppBar from 'common/components/AppBar'
 import reportWebVitals from 'monitoring/reportWebVitals'
-import RequireAuth from 'auth/RequireAuth'
 import AppWrappers from 'common/components/AppWrappers'
-import Dashboard from 'dashboard/components/Dashboard'
-import GroupForm from 'group/components/GroupForm'
-import LandscapeForm from 'landscape/components/LandscapeForm'
+
+import Routes from 'navigation/Routes'
+import Navigation from 'navigation/Navigation'
 
 import 'index.css'
 
 ReactDOM.render(
   <AppWrappers store={createStore()} theme={theme}>
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1, bgcolor: 'gray.lite2' }}>
       <AppBar />
-      <Box display="flex" width='auto'>
-        <Box m="auto" sx={{ maxWidth: '1044px', paddingTop: theme.spacing(2) }}>
-          <Routes>
-            <Route path='/' element={<RequireAuth children={<Dashboard />} />} />
-            <Route path='/group/:id' element={<RequireAuth children={<GroupForm />} />} />
-            <Route path='/landscape/:id' element={<RequireAuth children={<LandscapeForm />} />} />
-          </Routes>
-        </Box>
+      <Container>
+        <Navigation />
+      </Container>
+      <Box sx={{ bgcolor: 'white' }}>
+        <Container>
+          <Routes />
+        </Container>
       </Box>
     </Box>
   </AppWrappers>,

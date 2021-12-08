@@ -73,5 +73,11 @@
     "terraso_api": {
         "error_unexpected": "Unexpected error",
         "error_request_response": "Failed to connect with Terraso API"
+    },
+    "navigation": {
+        "nav_label": "Navigation",
+        "home": "Home",
+        "landscapes": "Landscapes",
+        "groups": "Groups"
     }
 }
