@@ -16,7 +16,7 @@ import theme from 'theme'
 const GroupMembershipCard = ({ ownerName, members, joinLabel }) => {
   const { t } = useTranslation()
   return (
-    <Card sx={{ minWidth: '400px' }}>
+    <Card>
       <CardHeader
         title={t('group.membership_card_title')}
       />

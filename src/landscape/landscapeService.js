@@ -62,6 +62,16 @@ export const fetchLandscapeToView = id => {
       members: _.get(landscape, 'defaultGroup.edges[0].node.group.members.edges', [])
         .map(edge => edge.node)
     }))
+    .then(landscape =>
+      // TODO temporary getting position from openstreetmap API.
+      // This should change when we store landscape poligon.
+      fetch(`https://nominatim.openstreetmap.org/search.php?q=${landscape.location}&format=jsonv2`)
+        .then(response => response.json())
+        .then(json => ({
+          ...landscape,
+          position: _.get(json, '[0]')
+        }))
+    )
 }
 
 export const fetchLandscapes = () => {

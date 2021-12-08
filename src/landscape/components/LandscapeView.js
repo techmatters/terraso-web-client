@@ -13,6 +13,10 @@ import {
   Link,
   Stack
 } from '@mui/material'
+import {
+  MapContainer,
+  TileLayer
+} from 'react-leaflet'
 import SquareIcon from '@mui/icons-material/Square'
 
 import { fetchLandscapeView } from 'landscape/landscapeSlice'
@@ -20,7 +24,7 @@ import GroupMembershipCard from 'group/components/GroupMembershipCard'
 import theme from 'theme'
 
 const LandscapeCard = ({ landscape }) => (
-  <Card sx={{ minWidth: '400px' }}>
+  <Card>
     <CardHeader
       title={landscape.name}
     />
@@ -39,6 +43,30 @@ const LandscapeCard = ({ landscape }) => (
     </CardContent>
   </Card>
 )
+
+const LandscapeMap = ({ position }) => {
+  const bounds = position && [
+    [position.boundingbox[0], position.boundingbox[2]],
+    [position.boundingbox[1], position.boundingbox[3]]
+  ]
+  return (
+    <Box>
+      <MapContainer
+        bounds={bounds}
+        scrollWheelZoom={false}
+        style={{
+          width: '100%',
+          height: '400px'
+        }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+      </MapContainer>
+    </Box>
+  )
+}
 
 const LandscapeView = () => {
   const dispatch = useDispatch()
@@ -61,7 +89,10 @@ const LandscapeView = () => {
   }
 
   return (
-    <Box sx={{ width: '100%', padding: theme.spacing(4) }}>
+    <Box sx={{
+      paddingTop: theme.spacing(3),
+      paddingBottom: theme.spacing(2)
+    }}>
       <Typography variant="h1" >
         {landscape.name}
       </Typography>
@@ -77,7 +108,7 @@ const LandscapeView = () => {
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <LandscapeCard landscape={landscape} />
+          <LandscapeMap position={landscape.position} />
         </Grid>
         <Grid item xs={12} md={6}>
           <GroupMembershipCard
@@ -85,6 +116,9 @@ const LandscapeView = () => {
             members={landscape.members}
             joinLabel="landscape.view_join_label"
           />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <LandscapeCard landscape={landscape} />
         </Grid>
       </Grid>
     </Box>
