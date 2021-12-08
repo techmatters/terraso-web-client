@@ -2,7 +2,7 @@ import React from 'react'
 import { act } from 'react-dom/test-utils'
 import { useParams } from 'react-router-dom'
 
-import { render, screen, fireEvent } from 'tests/utils'
+import { render, screen } from 'tests/utils'
 import LandscapeView from 'landscape/components/LandscapeView'
 import * as terrasoApi from 'terrasoBackend/api'
 
@@ -13,11 +13,7 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn()
 }))
 
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    json: () => Promise.resolve({ rates: { CAD: 1.42 } }),
-  })
-)
+global.fetch = jest.fn()
 
 beforeEach(() => {
   useParams.mockReturnValue({
@@ -100,13 +96,13 @@ test('LandscapeView: Display data', async () => {
     }
   }))
   await act(async () => render(<LandscapeView />))
-  
+
   // Landscape info
   expect(screen.getByRole('heading', { name: 'Landscape Name' })).toBeInTheDocument()
   expect(screen.getByText(/Ecuador, Quito/i)).toBeInTheDocument()
   expect(screen.getByText(/Landscape Description/i)).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'www.landscape.org' })).toBeInTheDocument()
-  
+
   // Members
   expect(screen.getByText(/6 Landscape Name members have created accounts in Terraso./i)).toBeInTheDocument()
   expect(screen.getByText(/\+2/i)).toBeInTheDocument()
