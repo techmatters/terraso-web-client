@@ -187,3 +187,33 @@ test('LandscapeForm: Avoid fetch', async () => {
   expect(() => screen.getByRole('progressbar', { name: '', hidden: true }))
     .toThrow('Unable to find an element')
 })
+test('LandscapeForm: Save form (add)', async () => {
+  useParams.mockReturnValue({ id: 'new' })
+  terrasoApi.request
+    .mockResolvedValueOnce({
+      addLandscape: {
+        landscape: {
+          name: 'New name',
+          description: 'New description',
+          website: 'www.other.org'
+        }
+      }
+    })
+
+  const { inputs } = await setup()
+
+  fireEvent.change(inputs.name, { target: { value: 'New name' } })
+  fireEvent.change(inputs.description, { target: { value: 'New description' } })
+  fireEvent.change(inputs.website, { target: { value: 'www.other.org' } })
+
+  await act(async () => fireEvent.click(screen.getByText(/Submit Landscape Info/i)))
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1)
+  const saveCall = terrasoApi.request.mock.calls[0]
+  expect(saveCall[1]).toStrictEqual({
+    input: {
+      description: 'New description',
+      name: 'New name',
+      website: 'www.other.org'
+    }
+  })
+})

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
+import { useSnackbar } from 'notistack'
 import {
   Box,
   Typography,
@@ -70,12 +71,19 @@ const LandscapeMap = ({ position }) => {
 
 const LandscapeView = () => {
   const dispatch = useDispatch()
-  const { landscape, fetching } = useSelector(state => state.landscape.view)
+  const { landscape, fetching, message } = useSelector(state => state.landscape.view)
   const { id } = useParams()
+  const { enqueueSnackbar } = useSnackbar()
 
   useEffect(() => {
     dispatch(fetchLandscapeView(id))
   }, [dispatch, id])
+
+  useEffect(() => {
+    if (message) {
+      enqueueSnackbar(message)
+    }
+  }, [message, enqueueSnackbar])
 
   if (fetching) {
     return (
@@ -86,6 +94,10 @@ const LandscapeView = () => {
         <CircularProgress color="inherit" />
       </Backdrop>
     )
+  }
+
+  if (message && message.severity === 'error') {
+    return null
   }
 
   return (
