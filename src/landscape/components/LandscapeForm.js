@@ -52,7 +52,7 @@ const LandscapeForm = () => {
   const { enqueueSnackbar } = useSnackbar()
 
   const { id } = useParams()
-  const { fetching, landscape, message } = useSelector(state => state.landscape.form)
+  const { fetching, data: landscape, message } = useSelector(state => state.landscape.landscape)
 
   const isNew = id === 'new'
 
