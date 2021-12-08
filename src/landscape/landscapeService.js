@@ -1,6 +1,8 @@
+import _ from 'lodash'
+
 import * as terrasoApi from 'terrasoBackend/api'
 
-export const fetchLandscape = id => {
+export const fetchLandscapeToUpdate = id => {
   const query = `query landscape($id: ID!){
     landscape(id: $id) {
       id
@@ -15,6 +17,51 @@ export const fetchLandscape = id => {
       ? Promise.reject('landscape.not_found')
       : response.landscape
     )
+}
+
+export const fetchLandscapeToView = id => {
+  const query = `query landscape($id: ID!){
+    landscape(id: $id) {
+      id
+      slug
+      name
+      location
+      description
+      website
+      defaultGroup: associatedGroups(isDefaultLandscapeGroup: true) {
+        pageInfo {
+          startCursor
+          endCursor
+        }
+        edges {
+          node {
+            group {
+              slug
+              members {
+                edges {
+                  node {
+                    firstName
+                    lastName
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }`
+  return terrasoApi
+    .request(query, { id })
+    .then(response => !response.landscape
+      ? Promise.reject('landscape.not_found')
+      : response.landscape
+    )
+    .then(landscape => ({
+      ..._.omit(landscape, 'defaultGroup'),
+      members: _.get(landscape, 'defaultGroup.edges[0].node.group.members.edges', [])
+        .map(edge => edge.node)
+    }))
 }
 
 export const fetchLandscapes = () => {

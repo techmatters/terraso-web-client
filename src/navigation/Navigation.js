@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import _ from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -29,8 +29,15 @@ const Navigation = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
-  const initialValue = _.findIndex(Object.keys(PAGES), path => path === location.pathname)
-  const [value, setValue] = React.useState(initialValue)
+  const [value, setValue] = React.useState(false)
+
+  useEffect(() => {
+    const currentValue = _.findIndex(
+      Object.keys(PAGES),
+      path => path === location.pathname
+    )
+    setValue(currentValue > -1 ? currentValue : false)
+  }, [location])
 
   const handleChange = (event, newValue) => {
     const path = Object.keys(PAGES)[newValue]

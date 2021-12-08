@@ -4,14 +4,20 @@ import { createAsyncThunk } from 'state/utils'
 import * as landscapeService from 'landscape/landscapeService'
 
 const initialState = {
-  landscape: {
+  view: {
     fetching: true,
     message: null,
-    data: null
+    landscape: null
+  },
+  form: {
+    fetching: true,
+    message: null,
+    landscape: null
   }
 }
 
-export const fetchLandscape = createAsyncThunk('landscape/fetchLandscape', landscapeService.fetchLandscape)
+export const fetchLandscapeForm = createAsyncThunk('landscape/fetchLandscapeForm', landscapeService.fetchLandscapeToUpdate)
+export const fetchLandscapeView = createAsyncThunk('landscape/fetchLandscapeView', landscapeService.fetchLandscapeToView)
 export const saveLandscape = createAsyncThunk('landscape/saveLandscape', landscapeService.saveLandscape)
 
 const landscapeSlice = createSlice({
@@ -20,30 +26,53 @@ const landscapeSlice = createSlice({
   reducers: {
     setFormNewValues: state => ({
       ...state,
-      landscape: {
-        ...state.landscape,
-        data: null,
+      form: {
+        ...state.form,
+        landscape: null,
         fetching: false
       }
     })
   },
   extraReducers: {
-    [fetchLandscape.pending]: state => ({
+    [fetchLandscapeView.pending]: state => ({
       ...state,
-      landscape: initialState.landscape
+      view: initialState.view
     }),
-    [fetchLandscape.fulfilled]: (state, action) => ({
+    [fetchLandscapeView.fulfilled]: (state, action) => ({
       ...state,
-      landscape: {
+      view: {
         fetching: false,
         message: null,
-        data: action.payload
+        landscape: action.payload
       }
     }),
-    [fetchLandscape.rejected]: (state, action) => ({
+    [fetchLandscapeView.rejected]: (state, action) => ({
       ...state,
-      landscape: {
-        ...state.landscape,
+      view: {
+        ...state.view,
+        fetching: false,
+        message: {
+          severity: 'error',
+          content: action.payload
+        }
+      }
+    }),
+    [fetchLandscapeForm.pending]: state => ({
+      ...state,
+      form: initialState.form
+    }),
+    [fetchLandscapeForm.fulfilled]: (state, action) => ({
+      ...state,
+      form: {
+        fetching: false,
+        message: null,
+        landscape: action.payload
+      }
+    }),
+    [fetchLandscapeForm.rejected]: (state, action) => ({
+      ...state,
+      form: {
+        ...state.form,
         fetching: false,
         message: {
           severity: 'error',
@@ -53,17 +82,17 @@ const landscapeSlice = createSlice({
     }),
     [saveLandscape.pending]: state => ({
       ...state,
-      landscape: {
-        ...state.landscape,
+      form: {
+        ...state.form,
         fetching: true
       }
     }),
     [saveLandscape.fulfilled]: (state, action) => ({
       ...state,
-      landscape: {
-        ...state.landscape,
+      form: {
+        ...state.form,
         fetching: false,
-        data: action.payload,
+        landscape: action.payload,
         message: {
           severity: 'success',
           content: 'landscape.form_message_success'
@@ -72,8 +101,8 @@ const landscapeSlice = createSlice({
     }),
     [saveLandscape.rejected]: (state, action) => ({
       ...state,
-      landscape: {
-        ...state.landscape,
+      form: {
+        ...state.form,
         fetching: false,
         message: {
           severity: 'error',

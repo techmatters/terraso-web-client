@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import {
   Box,
   Typography,
@@ -12,10 +11,12 @@ import {
   CardHeader,
   CardContent,
   Link,
-  Button
+  Stack
 } from '@mui/material'
+import SquareIcon from '@mui/icons-material/Square'
 
-import { fetchLandscape } from 'landscape/landscapeSlice'
+import { fetchLandscapeView } from 'landscape/landscapeSlice'
+import GroupMembershipCard from 'group/components/GroupMembershipCard'
 import theme from 'theme'
 
 const LandscapeCard = ({ landscape }) => (
@@ -29,21 +30,23 @@ const LandscapeCard = ({ landscape }) => (
       </Typography>
     </CardContent>
     <CardContent>
-      <Link href={landscape.website} underline="none">
-        {landscape.website}
-      </Link>
+      <Stack direction="row" alignItems="center" spacing={1}>
+        <SquareIcon sx={{ color: 'gray.lite1' }} />
+        <Link href={landscape.website} underline="none">
+          {landscape.website}
+        </Link>
+      </Stack>
     </CardContent>
   </Card>
 )
 
 const LandscapeView = () => {
   const dispatch = useDispatch()
-  const { t } = useTranslation()
-  const { data: landscape, fetching } = useSelector(state => state.landscape.landscape)
+  const { landscape, fetching } = useSelector(state => state.landscape.view)
   const { id } = useParams()
 
   useEffect(() => {
-    dispatch(fetchLandscape(id))
+    dispatch(fetchLandscapeView(id))
   }, [dispatch, id])
 
   if (fetching) {
@@ -56,25 +59,32 @@ const LandscapeView = () => {
       </Backdrop>
     )
   }
+
   return (
-    <Box sx={{ width: '100%', padding: theme.spacing(2) }}>
-      <Box
+    <Box sx={{ width: '100%', padding: theme.spacing(4) }}>
+      <Typography variant="h1" >
+        {landscape.name}
+      </Typography>
+      <Typography
+        variant="caption"
+        display="block"
         sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginBottom: theme.spacing(3)
+          marginBottom: theme.spacing(3),
+          marginTop: theme.spacing(2)
         }}
       >
-        <Typography variant="h1">
-          {landscape.name}
-        </Typography>
-        <Button variant="contained">
-          {t('landscape.view_update_button')}
-        </Button>
-      </Box>
+        {landscape.location}
+      </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <LandscapeCard landscape={landscape} />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <GroupMembershipCard
+            ownerName={landscape.name}
+            members={landscape.members}
+            joinLabel="landscape.view_join_label"
+          />
         </Grid>
       </Grid>
     </Box>

@@ -13,7 +13,7 @@ import {
 } from '@mui/material'
 
 import theme from 'theme'
-import { fetchLandscape, saveLandscape, setFormNewValues } from 'landscape/landscapeSlice'
+import { fetchLandscapeForm, saveLandscape, setFormNewValues } from 'landscape/landscapeSlice'
 import Form from 'forms/components/Form'
 
 const VALIDATION_SCHEMA = yup.object({
@@ -52,7 +52,7 @@ const LandscapeForm = () => {
   const { enqueueSnackbar } = useSnackbar()
 
   const { id } = useParams()
-  const { fetching, data: landscape, message } = useSelector(state => state.landscape.landscape)
+  const { fetching, landscape, message } = useSelector(state => state.landscape.form)
 
   const isNew = id === 'new'
 
@@ -61,7 +61,7 @@ const LandscapeForm = () => {
       dispatch(setFormNewValues())
       return
     }
-    dispatch(fetchLandscape(id))
+    dispatch(fetchLandscapeForm(id))
   }, [dispatch, id, isNew])
 
   useEffect(() => {
