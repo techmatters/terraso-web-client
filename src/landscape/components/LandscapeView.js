@@ -112,14 +112,14 @@ const LandscapeView = () => {
           <LandscapeMap position={landscape.position} />
         </Grid>
         <Grid item xs={12} md={6}>
+          <LandscapeCard landscape={landscape} />
+        </Grid>
+        <Grid item xs={12} md={6}>
           <GroupMembershipCard
             ownerName={landscape.name}
             members={landscape.members}
             joinLabel="landscape.view_join_label"
           />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <LandscapeCard landscape={landscape} />
         </Grid>
       </Grid>
     </Box>
