@@ -76,3 +76,18 @@ const addGroup = group => {
 export const saveGroup = group => group.id
   ? updateGroup(group)
   : addGroup(group)
+
+export const joinGroup = ({ groupSlug, userEmail }) => {
+  const query = `mutation addMembership($input: MembershipAddMutationInput!){
+    addMembership(input: $input) {
+      membership {
+        id
+      }
+    }
+  }`
+  return terrasoApi
+    .request(query, {
+      input: { userEmail, groupSlug, userRole: 'member' }
+    })
+    .then(response => response.addGroup.group)
+}

@@ -13,7 +13,7 @@ import {
 
 import theme from 'theme'
 
-const GroupMembershipCard = ({ ownerName, members, joinLabel }) => {
+const GroupMembershipCard = ({ ownerName, members, joinLabel, onJoin }) => {
   const { t } = useTranslation()
   return (
     <Card>
@@ -43,6 +43,7 @@ const GroupMembershipCard = ({ ownerName, members, joinLabel }) => {
         <Button
           variant="outlined"
           sx={{ width: '100%' }}
+          onClick={onJoin}
         >
           {t(joinLabel)}
         </Button>

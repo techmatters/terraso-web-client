@@ -4,6 +4,7 @@ import { createAsyncThunk } from 'state/utils'
 import * as groupService from 'group/groupService'
 
 const initialState = {
+  join: [],
   form: {
     group: null,
     fetching: true,
@@ -13,6 +14,7 @@ const initialState = {
 
 export const fetchGroup = createAsyncThunk('group/fetchGroup', groupService.fetchGroup)
 export const saveGroup = createAsyncThunk('group/saveGroup', groupService.saveGroup)
+export const joinGroup = createAsyncThunk('group/joinGroup', groupService.joinGroup)
 
 const groupSlice = createSlice({
   name: 'group',
@@ -71,6 +73,29 @@ const groupSlice = createSlice({
       }
     }),
     [saveGroup.rejected]: (state, action) => ({
+      ...state,
+      form: {
+        ...state.form,
+        fetching: false,
+        message: {
+          severity: 'error',
+          content: action.payload
+        }
+      }
+    }),
+    [joinGroup.pending]: state => ({
+      ...state,
+      form: initialState.form
+    }),
+    [joinGroup.fulfilled]: (state, action) => ({
+      ...state,
+      form: {
+        fetching: false,
+        message: null,
+        group: action.payload
+      }
+    }),
+    [joinGroup.rejected]: (state, action) => ({
       ...state,
       form: {
         ...state.form,
