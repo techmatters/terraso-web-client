@@ -31,8 +31,8 @@
         "form_message_success": "Your Group has been saved.",
         "not_found": "Group not found",
         "membership_card_title": "Members",
-        "membership_card_description_plural": "{{count}} {{name}} members have created accounts in Terraso.",
-        "membership_card_description_singular": "{{count}} {{name}} member has created an account in Terraso"
+        "membership_card_description_other": "{{count}} {{name}} members have created accounts in Terraso.",
+        "membership_card_description_one": "{{count}} {{name}} member has created an account in Terraso"
     },
     "landscape": {
         "default_title": "Landscape",

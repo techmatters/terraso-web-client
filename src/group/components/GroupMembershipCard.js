@@ -15,9 +15,6 @@ import theme from 'theme'
 
 const GroupMembershipCard = ({ ownerName, members, joinLabel }) => {
   const { t } = useTranslation()
-  const descriptionKey = members.length === 1
-    ? 'group.membership_card_description_singular'
-    : 'group.membership_card_description_plural'
   return (
     <Card>
       <CardHeader
@@ -26,7 +23,7 @@ const GroupMembershipCard = ({ ownerName, members, joinLabel }) => {
       <CardContent>
         <Typography variant="body2" color="text.secondary">
           {t(
-            descriptionKey,
+            'group.membership_card_description',
             { count: members.length, name: ownerName }
           )}
         </Typography>
