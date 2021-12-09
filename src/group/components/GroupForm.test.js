@@ -148,7 +148,7 @@ test('GroupForm: Save form', async () => {
   fireEvent.change(inputs.name, { target: { value: 'New name' } })
   fireEvent.change(inputs.description, { target: { value: 'New description' } })
   fireEvent.change(inputs.email, { target: { value: 'new.email@group.org' } })
-  fireEvent.change(inputs.website, { target: { value: 'www.other.org' } })
+  fireEvent.change(inputs.website, { target: { value: 'https://www.other.org' } })
 
   await act(async () => fireEvent.click(screen.getByText(/Submit Group Info/i)))
   expect(terrasoApi.request).toHaveBeenCalledTimes(2)
@@ -158,7 +158,7 @@ test('GroupForm: Save form', async () => {
       id: '1',
       description: 'New description',
       name: 'New name',
-      website: 'www.other.org'
+      website: 'https://www.other.org'
     }
   })
 })
@@ -179,7 +179,7 @@ test('GroupForm: Save form error', async () => {
   fireEvent.change(inputs.name, { target: { value: 'New name' } })
   fireEvent.change(inputs.description, { target: { value: 'New description' } })
   fireEvent.change(inputs.email, { target: { value: 'new.email@group.org' } })
-  fireEvent.change(inputs.website, { target: { value: 'www.other.org' } })
+  fireEvent.change(inputs.website, { target: { value: 'http://www.other.org' } })
 
   await act(async () => fireEvent.click(screen.getByText(/Submit Group Info/i)))
 
@@ -190,7 +190,7 @@ test('GroupForm: Save form error', async () => {
   expect(inputs.name).toHaveValue('New name')
   expect(inputs.description).toHaveValue('New description')
   expect(inputs.email).toHaveValue('new.email@group.org')
-  expect(inputs.website).toHaveValue('www.other.org')
+  expect(inputs.website).toHaveValue('http://www.other.org')
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(2)
 })

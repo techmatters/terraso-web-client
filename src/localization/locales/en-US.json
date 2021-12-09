@@ -29,7 +29,10 @@
         "form_website_placeholder": "https://www.mygroup.org",
         "form_save_label": "Submit Group Info",
         "form_message_success": "Your Group has been saved.",
-        "not_found": "Group not found"
+        "not_found": "Group not found",
+        "membership_card_title": "Members",
+        "membership_card_description_other": "{{count}} {{name}} members have created accounts in Terraso.",
+        "membership_card_description_one": "{{count}} {{name}} member has created an account in Terraso"
     },
     "landscape": {
         "default_title": "Landscape",
@@ -48,10 +51,11 @@
         "form_email_placeholder": "info@mygroup.org",
         "form_website_label": "Landscape website",
         "form_website_info": "This will be publicly displayed to all Terraso users.",
-        "form_website_placeholder": "www.mylandscape.org",
+        "form_website_placeholder": "https://www.mylandscape.org",
         "form_save_label": "Submit Landscape Info",
         "form_message_success": "Your Landscape has been saved.",
-        "not_found": "Landscape not found"
+        "not_found": "Landscape not found",
+        "view_join_label": "Connect to Landscape"
     },
     "localization": {
         "locale_en-US": "English",
@@ -79,5 +83,8 @@
         "home": "Home",
         "landscapes": "Landscapes",
         "groups": "Groups"
+    },
+    "gis": {
+        "openstreetmap_api_error": "Failed to request data from nominatim.openstreetmap.org API"
     }
 }

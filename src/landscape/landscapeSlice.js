@@ -4,14 +4,20 @@ import { createAsyncThunk } from 'state/utils'
 import * as landscapeService from 'landscape/landscapeService'
 
 const initialState = {
-  form: {
-    landscape: null,
+  view: {
     fetching: true,
-    message: null
+    message: null,
+    landscape: null
+  },
+  form: {
+    fetching: true,
+    message: null,
+    landscape: null
   }
 }
 
-export const fetchLandscape = createAsyncThunk('landscape/fetchLandscape', landscapeService.fetchLandscape)
+export const fetchLandscapeForm = createAsyncThunk('landscape/fetchLandscapeForm', landscapeService.fetchLandscapeToUpdate)
+export const fetchLandscapeView = createAsyncThunk('landscape/fetchLandscapeView', landscapeService.fetchLandscapeToView)
 export const saveLandscape = createAsyncThunk('landscape/saveLandscape', landscapeService.saveLandscape)
 
 const landscapeSlice = createSlice({
@@ -28,11 +34,34 @@ const landscapeSlice = createSlice({
     })
   },
   extraReducers: {
-    [fetchLandscape.pending]: state => ({
+    [fetchLandscapeView.pending]: state => ({
+      ...state,
+      view: initialState.view
+    }),
+    [fetchLandscapeView.fulfilled]: (state, action) => ({
+      ...state,
+      view: {
+        fetching: false,
+        message: null,
+        landscape: action.payload
+      }
+    }),
+    [fetchLandscapeView.rejected]: (state, action) => ({
+      ...state,
+      view: {
+        ...state.view,
+        fetching: false,
+        message: {
+          severity: 'error',
+          content: action.payload
+        }
+      }
+    }),
+    [fetchLandscapeForm.pending]: state => ({
       ...state,
       form: initialState.form
     }),
-    [fetchLandscape.fulfilled]: (state, action) => ({
+    [fetchLandscapeForm.fulfilled]: (state, action) => ({
       ...state,
       form: {
         fetching: false,
@@ -40,7 +69,7 @@ const landscapeSlice = createSlice({
         landscape: action.payload
       }
     }),
-    [fetchLandscape.rejected]: (state, action) => ({
+    [fetchLandscapeForm.rejected]: (state, action) => ({
       ...state,
       form: {
         ...state.form,

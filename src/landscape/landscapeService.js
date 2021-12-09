@@ -1,19 +1,78 @@
-import * as terrasoApi from 'terrasoBackend/api'
+import _ from 'lodash'
 
-export const fetchLandscape = id => {
-  const query = `query landscape($id: ID!){
-    landscape(id: $id) {
-      id
-      name
-      description
-      website
+import * as terrasoApi from 'terrasoBackend/api'
+import * as gisService from 'gis/gisService'
+
+const LANDSCAPE_DEFAULT_FIELDS = `
+  id
+  slug
+  name
+  location
+  description
+  website
+`
+
+const cleanLandscape = landscape => _.omit(landscape, 'slug')
+
+export const fetchLandscapeToUpdate = slug => {
+  const query = `query landscapes($slug: String!){
+    landscapes(slug: $slug) {
+      edges {
+        node { ${LANDSCAPE_DEFAULT_FIELDS} }
+      }
     }
   }`
   return terrasoApi
-    .request(query, { id })
-    .then(response => !response.landscape
-      ? Promise.reject('landscape.not_found')
-      : response.landscape
+    .request(query, { slug })
+    .then(response => _.get(response, 'landscapes.edges[0].node'))
+    .then(landscape => landscape || Promise.reject('landscape.not_found'))
+}
+
+export const fetchLandscapeToView = slug => {
+  const query = `query landscapes($slug: String!){
+    landscapes(slug: $slug) {
+      edges {
+        node {
+          ${LANDSCAPE_DEFAULT_FIELDS}
+          defaultGroup: associatedGroups(isDefaultLandscapeGroup: true) {
+            edges {
+              node {
+                group {
+                  slug
+                  memberships {
+                    edges {
+                      node {
+                        user {
+                          firstName
+                          lastName
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }`
+  return terrasoApi
+    .request(query, { slug })
+    .then(response => _.get(response, 'landscapes.edges[0].node'))
+    .then(landscape => landscape || Promise.reject('landscape.not_found'))
+    .then(landscape => ({
+      ..._.omit(landscape, 'defaultGroup'),
+      members: _.get(landscape, 'defaultGroup.edges[0].node.group.memberships.edges', [])
+        .map(edge => _.get(edge, 'node.user'))
+    }))
+    // TODO temporarily getting position from openstreetmap API.
+    // This should change when we store landscape polygon.
+    .then(landscape => gisService.getPlaceInfoByName(landscape.location)
+      .then(placeInfo => ({
+        ...landscape,
+        position: placeInfo
+      }))
     )
 }
 
@@ -21,12 +80,7 @@ export const fetchLandscapes = () => {
   const query = `query {
     landscapes {
       edges {
-        node {
-          id
-          name
-          description
-          website
-        }
+        node { ${LANDSCAPE_DEFAULT_FIELDS} }
       }
     }
   }`
@@ -39,32 +93,22 @@ export const fetchLandscapes = () => {
 const updateLandscape = landscape => {
   const query = `mutation updateLandscape($input: LandscapeUpdateMutationInput!) {
     updateLandscape(input: $input) {
-      landscape {
-        id
-        name
-        description
-        website
-      }
+      landscape { ${LANDSCAPE_DEFAULT_FIELDS} }
     }
   }`
   return terrasoApi
-    .request(query, { input: landscape })
+    .request(query, { input: cleanLandscape(landscape) })
     .then(response => response.updateLandscape.landscape)
 }
 
 const addLandscape = landscape => {
   const query = `mutation addLandscape($input: LandscapeAddMutationInput!){
     addLandscape(input: $input) {
-      landscape {
-        id
-        name
-        description
-        website
-      }
+      landscape { ${LANDSCAPE_DEFAULT_FIELDS} }
     }
   }`
   return terrasoApi
-    .request(query, { input: landscape })
+    .request(query, { input: cleanLandscape(landscape) })
     .then(response => response.addLandscape.landscape)
 }
 

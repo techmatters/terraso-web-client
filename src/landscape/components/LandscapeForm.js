@@ -13,7 +13,7 @@ import {
 } from '@mui/material'
 
 import theme from 'theme'
-import { fetchLandscape, saveLandscape, setFormNewValues } from 'landscape/landscapeSlice'
+import { fetchLandscapeForm, saveLandscape, setFormNewValues } from 'landscape/landscapeSlice'
 import Form from 'forms/components/Form'
 
 const VALIDATION_SCHEMA = yup.object({
@@ -21,7 +21,7 @@ const VALIDATION_SCHEMA = yup.object({
   description: yup.string()
     .maxCustom(600)
     .required(),
-  website: yup.string().urlCustom()
+  website: yup.string().url()
 }).required()
 
 const FIELDS = [{
@@ -51,25 +51,25 @@ const LandscapeForm = () => {
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
 
-  const { id } = useParams()
+  const { slug } = useParams()
   const { fetching, landscape, message } = useSelector(state => state.landscape.form)
 
-  const isNew = id === 'new'
+  const isNew = !slug
 
   useEffect(() => {
     if (isNew) {
       dispatch(setFormNewValues())
       return
     }
-    dispatch(fetchLandscape(id))
-  }, [dispatch, id, isNew])
+    dispatch(fetchLandscapeForm(slug))
+  }, [dispatch, slug, isNew])
 
   useEffect(() => {
-    if (landscape && landscape.id !== id) {
+    if (landscape && landscape.slug !== slug) {
       // Change URL if new landscape ID
-      navigate(`/landscape/${landscape.id}`)
+      navigate(`/landscapes/${landscape.slug}/edit`)
     }
-  }, [id, landscape, navigate])
+  }, [slug, landscape, navigate])
 
   useEffect(() => {
     if (message) {

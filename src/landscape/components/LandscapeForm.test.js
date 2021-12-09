@@ -27,7 +27,7 @@ const setup = async () => {
 
 beforeEach(() => {
   useParams.mockReturnValue({
-    id: '1'
+    slug: 'slug-1'
   })
 })
 
@@ -44,10 +44,14 @@ test('LandscapeForm: Display loader', () => {
 })
 test('LandscapeForm: Fill form', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
-    landscape: {
-      name: 'Landscape Name',
-      description: 'Landscape Description',
-      website: 'www.landscape.org'
+    landscapes: {
+      edges: [{
+        node: {
+          name: 'Landscape Name',
+          description: 'Landscape Description',
+          website: 'www.landscape.org'
+        }
+      }]
     }
   }))
   const { inputs } = await setup()
@@ -59,10 +63,14 @@ test('LandscapeForm: Fill form', async () => {
 })
 test('LandscapeForm: Input change', async () => {
   terrasoApi.request.mockReturnValueOnce(Promise.resolve({
-    landscape: {
-      name: 'Landscape Name',
-      description: 'Landscape Description',
-      website: 'www.landscape.org'
+    landscapes: {
+      edges: [{
+        node: {
+          name: 'Landscape Name',
+          description: 'Landscape Description',
+          website: 'www.landscape.org'
+        }
+      }]
     }
   }))
   const { inputs } = await setup()
@@ -81,10 +89,14 @@ test('LandscapeForm: Input change', async () => {
 })
 test('LandscapeForm: Input validation', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
-    landscape: {
-      name: 'Landscape Name',
-      description: 'Landscape Description',
-      website: 'www.landscape.org'
+    landscapes: {
+      edges: [{
+        node: {
+          name: 'Landscape Name',
+          description: 'Landscape Description',
+          website: 'www.landscape.org'
+        }
+      }]
     }
   }))
   const { inputs } = await setup()
@@ -109,20 +121,28 @@ test('LandscapeForm: Input validation', async () => {
 test('LandscapeForm: Save form', async () => {
   terrasoApi.request
     .mockResolvedValueOnce({
-      landscape: {
-        id: '1',
-        name: 'Landscape Name',
-        description: 'Landscape Description',
-        website: 'www.landscape.org'
+      landscapes: {
+        edges: [{
+          node: {
+            id: '1',
+            name: 'Landscape Name',
+            description: 'Landscape Description',
+            website: 'www.landscape.org'
+          }
+        }]
       }
     })
     .mockResolvedValueOnce({
       updateLandscape: {
-        landscape: {
-          id: '1',
-          name: 'Landscape Name',
-          description: 'Landscape Description',
-          website: 'www.landscape.org'
+        landscapes: {
+          edges: [{
+            node: {
+              id: '1',
+              name: 'Landscape Name',
+              description: 'Landscape Description',
+              website: 'www.landscape.org'
+            }
+          }]
         }
       }
     })
@@ -131,7 +151,7 @@ test('LandscapeForm: Save form', async () => {
 
   fireEvent.change(inputs.name, { target: { value: 'New name' } })
   fireEvent.change(inputs.description, { target: { value: 'New description' } })
-  fireEvent.change(inputs.website, { target: { value: 'www.other.org' } })
+  fireEvent.change(inputs.website, { target: { value: 'https://www.other.org' } })
 
   await act(async () => fireEvent.click(screen.getByText(/Submit Landscape Info/i)))
   expect(terrasoApi.request).toHaveBeenCalledTimes(2)
@@ -141,17 +161,21 @@ test('LandscapeForm: Save form', async () => {
       id: '1',
       description: 'New description',
       name: 'New name',
-      website: 'www.other.org'
+      website: 'https://www.other.org'
     }
   })
 })
 test('LandscapeForm: Save form error', async () => {
   terrasoApi.request
     .mockReturnValueOnce(Promise.resolve({
-      landscape: {
-        name: 'Landscape Name',
-        description: 'Landscape Description',
-        website: 'www.landscape.org'
+      landscapes: {
+        edges: [{
+          node: {
+            name: 'Landscape Name',
+            description: 'Landscape Description',
+            website: 'www.landscape.org'
+          }
+        }]
       }
     }))
     .mockRejectedValueOnce('Save Error')
@@ -160,7 +184,7 @@ test('LandscapeForm: Save form error', async () => {
 
   fireEvent.change(inputs.name, { target: { value: 'New name' } })
   fireEvent.change(inputs.description, { target: { value: 'New description' } })
-  fireEvent.change(inputs.website, { target: { value: 'www.other.org' } })
+  fireEvent.change(inputs.website, { target: { value: 'https://www.other.org' } })
 
   await act(async () => fireEvent.click(screen.getByText(/Submit Landscape Info/i)))
 
@@ -170,12 +194,12 @@ test('LandscapeForm: Save form error', async () => {
   // Test update values still in the form
   expect(inputs.name).toHaveValue('New name')
   expect(inputs.description).toHaveValue('New description')
-  expect(inputs.website).toHaveValue('www.other.org')
+  expect(inputs.website).toHaveValue('https://www.other.org')
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(2)
 })
 test('LandscapeForm: Avoid fetch', async () => {
-  useParams.mockReturnValue({ id: 'new' })
+  useParams.mockReturnValue({ slug: null })
   const { inputs } = await setup()
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(0)
@@ -186,4 +210,34 @@ test('LandscapeForm: Avoid fetch', async () => {
 
   expect(() => screen.getByRole('progressbar', { name: '', hidden: true }))
     .toThrow('Unable to find an element')
+})
+test('LandscapeForm: Save form (add)', async () => {
+  useParams.mockReturnValue({ slug: null })
+  terrasoApi.request
+    .mockResolvedValueOnce({
+      addLandscape: {
+        landscape: {
+          name: 'New name',
+          description: 'New description',
+          website: 'http://www.other.org'
+        }
+      }
+    })
+
+  const { inputs } = await setup()
+
+  fireEvent.change(inputs.name, { target: { value: 'New name' } })
+  fireEvent.change(inputs.description, { target: { value: 'New description' } })
+  fireEvent.change(inputs.website, { target: { value: 'http://www.other.org' } })
+
+  await act(async () => fireEvent.click(screen.getByText(/Submit Landscape Info/i)))
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1)
+  const saveCall = terrasoApi.request.mock.calls[0]
+  expect(saveCall[1]).toStrictEqual({
+    input: {
+      description: 'New description',
+      name: 'New name',
+      website: 'http://www.other.org'
+    }
+  })
 })
