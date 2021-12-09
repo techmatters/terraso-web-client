@@ -14,7 +14,10 @@ const initialState = {
 
 export const fetchGroup = createAsyncThunk('group/fetchGroup', groupService.fetchGroup)
 export const saveGroup = createAsyncThunk('group/saveGroup', groupService.saveGroup)
-export const joinGroup = createAsyncThunk('group/joinGroup', groupService.joinGroup)
+export const joinGroup = createAsyncThunk('group/joinGroup', params =>
+  groupService.joinGroup(params)
+    .then(group => groupService.fetchGroup(group.id))
+)
 
 const groupSlice = createSlice({
   name: 'group',
