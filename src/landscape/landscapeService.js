@@ -3,43 +3,48 @@ import _ from 'lodash'
 import * as terrasoApi from 'terrasoBackend/api'
 import * as gisService from 'gis/gisService'
 
-export const fetchLandscapeToUpdate = id => {
-  const query = `query landscape($id: ID!){
-    landscape(id: $id) {
-      id
-      name
-      description
-      website
+export const fetchLandscapeToUpdate = slug => {
+  const query = `query landscapes($slug: String!){
+    landscapes(slug: $slug) {
+      edges {
+        node {
+          slug
+          name
+          description
+          website
+        }
+      }
     }
   }`
   return terrasoApi
-    .request(query, { id })
-    .then(response => !response.landscape
-      ? Promise.reject('landscape.not_found')
-      : response.landscape
-    )
+    .request(query, { slug })
+    .then(response => _.get(response, 'landscapes.edges[0].node'))
+    .then(landscape => landscape || Promise.reject('landscape.not_found'))
 }
 
-export const fetchLandscapeToView = id => {
-  const query = `query landscape($id: ID!){
-    landscape(id: $id) {
-      id
-      slug
-      name
-      location
-      description
-      website
-      defaultGroup: associatedGroups(isDefaultLandscapeGroup: true) {
-        edges {
-          node {
-            group {
-              slug
-              memberships {
-                edges {
-                  node {
-                    user {
-                      firstName
-                      lastName
+export const fetchLandscapeToView = slug => {
+  const query = `query landscapes($slug: String!){
+    landscapes(slug: $slug) {
+      edges {
+        node {
+          slug
+          name
+          location
+          description
+          website
+          defaultGroup: associatedGroups(isDefaultLandscapeGroup: true) {
+            edges {
+              node {
+                group {
+                  slug
+                  memberships {
+                    edges {
+                      node {
+                        user {
+                          firstName
+                          lastName
+                        }
+                      }
                     }
                   }
                 }
@@ -51,11 +56,9 @@ export const fetchLandscapeToView = id => {
     }
   }`
   return terrasoApi
-    .request(query, { id })
-    .then(response => response.landscape
-      ? response.landscape
-      : Promise.reject('landscape.not_found')
-    )
+    .request(query, { slug })
+    .then(response => _.get(response, 'landscapes.edges[0].node'))
+    .then(landscape => landscape || Promise.reject('landscape.not_found'))
     .then(landscape => ({
       ..._.omit(landscape, 'defaultGroup'),
       members: _.get(landscape, 'defaultGroup.edges[0].node.group.memberships.edges', [])
@@ -94,7 +97,7 @@ const updateLandscape = landscape => {
   const query = `mutation updateLandscape($input: LandscapeUpdateMutationInput!) {
     updateLandscape(input: $input) {
       landscape {
-        id
+        slug
         name
         description
         website
@@ -110,7 +113,7 @@ const addLandscape = landscape => {
   const query = `mutation addLandscape($input: LandscapeAddMutationInput!){
     addLandscape(input: $input) {
       landscape {
-        id
+        slug
         name
         description
         website

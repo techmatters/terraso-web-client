@@ -51,25 +51,25 @@ const LandscapeForm = () => {
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
 
-  const { id } = useParams()
+  const { slug } = useParams()
   const { fetching, landscape, message } = useSelector(state => state.landscape.form)
 
-  const isNew = !id
+  const isNew = !slug
 
   useEffect(() => {
     if (isNew) {
       dispatch(setFormNewValues())
       return
     }
-    dispatch(fetchLandscapeForm(id))
-  }, [dispatch, id, isNew])
+    dispatch(fetchLandscapeForm(slug))
+  }, [dispatch, slug, isNew])
 
   useEffect(() => {
-    if (landscape && landscape.id !== id) {
+    if (landscape && landscape.slug !== slug) {
       // Change URL if new landscape ID
-      navigate(`/landscapes/${landscape.id}/edit`)
+      navigate(`/landscapes/${landscape.slug}/edit`)
     }
-  }, [id, landscape, navigate])
+  }, [slug, landscape, navigate])
 
   useEffect(() => {
     if (message) {

@@ -59,12 +59,12 @@ const LandscapeMap = ({ position }) => {
 const LandscapeView = () => {
   const dispatch = useDispatch()
   const { landscape, fetching, message } = useSelector(state => state.landscape.view)
-  const { id } = useParams()
+  const { slug } = useParams()
   const { enqueueSnackbar } = useSnackbar()
 
   useEffect(() => {
-    dispatch(fetchLandscapeView(id))
-  }, [dispatch, id])
+    dispatch(fetchLandscapeView(slug))
+  }, [dispatch, slug])
 
   useEffect(() => {
     if (message) {
