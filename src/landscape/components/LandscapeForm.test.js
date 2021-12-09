@@ -27,7 +27,7 @@ const setup = async () => {
 
 beforeEach(() => {
   useParams.mockReturnValue({
-    id: '1'
+    slug: 'slug-1'
   })
 })
 
@@ -44,10 +44,14 @@ test('LandscapeForm: Display loader', () => {
 })
 test('LandscapeForm: Fill form', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
-    landscape: {
-      name: 'Landscape Name',
-      description: 'Landscape Description',
-      website: 'www.landscape.org'
+    landscapes: {
+      edges: [{
+        node: {
+          name: 'Landscape Name',
+          description: 'Landscape Description',
+          website: 'www.landscape.org'
+        }
+      }]
     }
   }))
   const { inputs } = await setup()
@@ -59,10 +63,14 @@ test('LandscapeForm: Fill form', async () => {
 })
 test('LandscapeForm: Input change', async () => {
   terrasoApi.request.mockReturnValueOnce(Promise.resolve({
-    landscape: {
-      name: 'Landscape Name',
-      description: 'Landscape Description',
-      website: 'www.landscape.org'
+    landscapes: {
+      edges: [{
+        node: {
+          name: 'Landscape Name',
+          description: 'Landscape Description',
+          website: 'www.landscape.org'
+        }
+      }]
     }
   }))
   const { inputs } = await setup()
@@ -81,10 +89,14 @@ test('LandscapeForm: Input change', async () => {
 })
 test('LandscapeForm: Input validation', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
-    landscape: {
-      name: 'Landscape Name',
-      description: 'Landscape Description',
-      website: 'www.landscape.org'
+    landscapes: {
+      edges: [{
+        node: {
+          name: 'Landscape Name',
+          description: 'Landscape Description',
+          website: 'www.landscape.org'
+        }
+      }]
     }
   }))
   const { inputs } = await setup()
@@ -109,20 +121,28 @@ test('LandscapeForm: Input validation', async () => {
 test('LandscapeForm: Save form', async () => {
   terrasoApi.request
     .mockResolvedValueOnce({
-      landscape: {
-        id: '1',
-        name: 'Landscape Name',
-        description: 'Landscape Description',
-        website: 'www.landscape.org'
+      landscapes: {
+        edges: [{
+          node: {
+            id: '1',
+            name: 'Landscape Name',
+            description: 'Landscape Description',
+            website: 'www.landscape.org'
+          }
+        }]
       }
     })
     .mockResolvedValueOnce({
       updateLandscape: {
-        landscape: {
-          id: '1',
-          name: 'Landscape Name',
-          description: 'Landscape Description',
-          website: 'www.landscape.org'
+        landscapes: {
+          edges: [{
+            node: {
+              id: '1',
+              name: 'Landscape Name',
+              description: 'Landscape Description',
+              website: 'www.landscape.org'
+            }
+          }]
         }
       }
     })
@@ -148,10 +168,14 @@ test('LandscapeForm: Save form', async () => {
 test('LandscapeForm: Save form error', async () => {
   terrasoApi.request
     .mockReturnValueOnce(Promise.resolve({
-      landscape: {
-        name: 'Landscape Name',
-        description: 'Landscape Description',
-        website: 'www.landscape.org'
+      landscapes: {
+        edges: [{
+          node: {
+            name: 'Landscape Name',
+            description: 'Landscape Description',
+            website: 'www.landscape.org'
+          }
+        }]
       }
     }))
     .mockRejectedValueOnce('Save Error')
@@ -175,7 +199,7 @@ test('LandscapeForm: Save form error', async () => {
   expect(terrasoApi.request).toHaveBeenCalledTimes(2)
 })
 test('LandscapeForm: Avoid fetch', async () => {
-  useParams.mockReturnValue({ id: 'new' })
+  useParams.mockReturnValue({ slug: null })
   const { inputs } = await setup()
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(0)
@@ -188,7 +212,7 @@ test('LandscapeForm: Avoid fetch', async () => {
     .toThrow('Unable to find an element')
 })
 test('LandscapeForm: Save form (add)', async () => {
-  useParams.mockReturnValue({ id: 'new' })
+  useParams.mockReturnValue({ slug: null })
   terrasoApi.request
     .mockResolvedValueOnce({
       addLandscape: {

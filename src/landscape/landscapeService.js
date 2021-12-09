@@ -8,6 +8,7 @@ export const fetchLandscapeToUpdate = slug => {
     landscapes(slug: $slug) {
       edges {
         node {
+          id
           slug
           name
           description

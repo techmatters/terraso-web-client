@@ -17,7 +17,7 @@ global.fetch = jest.fn()
 
 beforeEach(() => {
   useParams.mockReturnValue({
-    id: '1'
+    slug: 'slug-1'
   })
 })
 
@@ -47,64 +47,68 @@ test('LandscapeView: Display data', async () => {
     json: () => ([])
   }))
   terrasoApi.request.mockReturnValue(Promise.resolve({
-    landscape: {
-      name: 'Landscape Name',
-      description: 'Landscape Description',
-      website: 'www.landscape.org',
-      location: 'Ecuador, Quito',
-      defaultGroup: {
-        edges: [{
-          node: {
-            group: {
-              memberships: {
-                edges: [{
-                  node: {
-                    user: {
-                      firstName: 'Member name',
-                      lastName: 'Member Last Name'
-                    }
+    landscapes: {
+      edges: [{
+        node: {
+          name: 'Landscape Name',
+          description: 'Landscape Description',
+          website: 'www.landscape.org',
+          location: 'Ecuador, Quito',
+          defaultGroup: {
+            edges: [{
+              node: {
+                group: {
+                  memberships: {
+                    edges: [{
+                      node: {
+                        user: {
+                          firstName: 'Member name',
+                          lastName: 'Member Last Name'
+                        }
+                      }
+                    }, {
+                      node: {
+                        user: {
+                          firstName: 'Member name',
+                          lastName: 'Member Last Name'
+                        }
+                      }
+                    }, {
+                      node: {
+                        user: {
+                          firstName: 'Member name',
+                          lastName: 'Member Last Name'
+                        }
+                      }
+                    }, {
+                      node: {
+                        user: {
+                          firstName: 'Member name',
+                          lastName: 'Member Last Name'
+                        }
+                      }
+                    }, {
+                      node: {
+                        user: {
+                          firstName: 'Member name',
+                          lastName: 'Member Last Name'
+                        }
+                      }
+                    }, {
+                      node: {
+                        user: {
+                          firstName: 'Member name',
+                          lastName: 'Member Last Name'
+                        }
+                      }
+                    }]
                   }
-                }, {
-                  node: {
-                    user: {
-                      firstName: 'Member name',
-                      lastName: 'Member Last Name'
-                    }
-                  }
-                }, {
-                  node: {
-                    user: {
-                      firstName: 'Member name',
-                      lastName: 'Member Last Name'
-                    }
-                  }
-                }, {
-                  node: {
-                    user: {
-                      firstName: 'Member name',
-                      lastName: 'Member Last Name'
-                    }
-                  }
-                }, {
-                  node: {
-                    user: {
-                      firstName: 'Member name',
-                      lastName: 'Member Last Name'
-                    }
-                  }
-                }, {
-                  node: {
-                    user: {
-                      firstName: 'Member name',
-                      lastName: 'Member Last Name'
-                    }
-                  }
-                }]
+                }
               }
-            }
+            }]
           }
-        }]
-      }
+        }
+      }]
     }
   }))
   await act(async () => render(<LandscapeView />))
