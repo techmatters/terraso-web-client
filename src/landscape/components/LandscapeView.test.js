@@ -56,36 +56,48 @@ test('LandscapeView: Display data', async () => {
         edges: [{
           node: {
             group: {
-              members: {
+              memberships: {
                 edges: [{
                   node: {
-                    firstName: 'Member name',
-                    lastName: 'Member Last Name'
+                    user: {
+                      firstName: 'Member name',
+                      lastName: 'Member Last Name'
+                    }
                   }
                 }, {
                   node: {
-                    firstName: 'Member name',
-                    lastName: 'Member Last Name'
+                    user: {
+                      firstName: 'Member name',
+                      lastName: 'Member Last Name'
+                    }
                   }
                 }, {
                   node: {
-                    firstName: 'Member name',
-                    lastName: 'Member Last Name'
+                    user: {
+                      firstName: 'Member name',
+                      lastName: 'Member Last Name'
+                    }
                   }
                 }, {
                   node: {
-                    firstName: 'Member name',
-                    lastName: 'Member Last Name'
+                    user: {
+                      firstName: 'Member name',
+                      lastName: 'Member Last Name'
+                    }
                   }
                 }, {
                   node: {
-                    firstName: 'Member name',
-                    lastName: 'Member Last Name'
+                    user: {
+                      firstName: 'Member name',
+                      lastName: 'Member Last Name'
+                    }
                   }
                 }, {
                   node: {
-                    firstName: 'Member name',
-                    lastName: 'Member Last Name'
+                    user: {
+                      firstName: 'Member name',
+                      lastName: 'Member Last Name'
+                    }
                   }
                 }]
               }

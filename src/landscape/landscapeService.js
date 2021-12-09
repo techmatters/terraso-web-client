@@ -30,19 +30,17 @@ export const fetchLandscapeToView = id => {
       description
       website
       defaultGroup: associatedGroups(isDefaultLandscapeGroup: true) {
-        pageInfo {
-          startCursor
-          endCursor
-        }
         edges {
           node {
             group {
               slug
-              members {
+              memberships {
                 edges {
                   node {
-                    firstName
-                    lastName
+                    user {
+                      firstName
+                      lastName
+                    }
                   }
                 }
               }
@@ -54,14 +52,14 @@ export const fetchLandscapeToView = id => {
   }`
   return terrasoApi
     .request(query, { id })
-    .then(response => !response.landscape
-      ? Promise.reject('landscape.not_found')
-      : response.landscape
+    .then(response => response.landscape
+      ? response.landscape
+      : Promise.reject('landscape.not_found')
     )
     .then(landscape => ({
       ..._.omit(landscape, 'defaultGroup'),
-      members: _.get(landscape, 'defaultGroup.edges[0].node.group.members.edges', [])
-        .map(edge => edge.node)
+      members: _.get(landscape, 'defaultGroup.edges[0].node.group.memberships.edges', [])
+        .map(edge => _.get(edge, 'node.user'))
     }))
     // TODO temporarily getting position from openstreetmap API.
     // This should change when we store landscape polygon.

@@ -1,15 +1,5 @@
 import * as yup from 'yup'
 
-const URL_REGEX = /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/
-
-yup.addMethod(yup.string, 'urlCustom', function () {
-  return this.test(
-    'urlCustom',
-    params => ({ key: 'form.validation_url_invalid', params }),
-    value => !value ? true : URL_REGEX.test(value)
-  )
-})
-
 yup.addMethod(yup.string, 'maxCustom', max => yup.string()
   .max(max, params => ({ key: 'form.validation_field_max_length', params }))
 )
@@ -22,6 +12,7 @@ yup.setLocale({
     required: params => ({ key: 'form.validation_field_required', params })
   },
   string: {
-    email: params => ({ key: 'form.validation_email_invalid', params })
+    email: params => ({ key: 'form.validation_email_invalid', params }),
+    url: params => ({ key: 'form.validation_url_invalid', params })
   }
 })

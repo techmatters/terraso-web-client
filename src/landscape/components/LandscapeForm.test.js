@@ -131,7 +131,7 @@ test('LandscapeForm: Save form', async () => {
 
   fireEvent.change(inputs.name, { target: { value: 'New name' } })
   fireEvent.change(inputs.description, { target: { value: 'New description' } })
-  fireEvent.change(inputs.website, { target: { value: 'www.other.org' } })
+  fireEvent.change(inputs.website, { target: { value: 'https://www.other.org' } })
 
   await act(async () => fireEvent.click(screen.getByText(/Submit Landscape Info/i)))
   expect(terrasoApi.request).toHaveBeenCalledTimes(2)
@@ -141,7 +141,7 @@ test('LandscapeForm: Save form', async () => {
       id: '1',
       description: 'New description',
       name: 'New name',
-      website: 'www.other.org'
+      website: 'https://www.other.org'
     }
   })
 })
@@ -160,7 +160,7 @@ test('LandscapeForm: Save form error', async () => {
 
   fireEvent.change(inputs.name, { target: { value: 'New name' } })
   fireEvent.change(inputs.description, { target: { value: 'New description' } })
-  fireEvent.change(inputs.website, { target: { value: 'www.other.org' } })
+  fireEvent.change(inputs.website, { target: { value: 'https://www.other.org' } })
 
   await act(async () => fireEvent.click(screen.getByText(/Submit Landscape Info/i)))
 
@@ -170,7 +170,7 @@ test('LandscapeForm: Save form error', async () => {
   // Test update values still in the form
   expect(inputs.name).toHaveValue('New name')
   expect(inputs.description).toHaveValue('New description')
-  expect(inputs.website).toHaveValue('www.other.org')
+  expect(inputs.website).toHaveValue('https://www.other.org')
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(2)
 })
@@ -195,7 +195,7 @@ test('LandscapeForm: Save form (add)', async () => {
         landscape: {
           name: 'New name',
           description: 'New description',
-          website: 'www.other.org'
+          website: 'http://www.other.org'
         }
       }
     })
@@ -204,7 +204,7 @@ test('LandscapeForm: Save form (add)', async () => {
 
   fireEvent.change(inputs.name, { target: { value: 'New name' } })
   fireEvent.change(inputs.description, { target: { value: 'New description' } })
-  fireEvent.change(inputs.website, { target: { value: 'www.other.org' } })
+  fireEvent.change(inputs.website, { target: { value: 'http://www.other.org' } })
 
   await act(async () => fireEvent.click(screen.getByText(/Submit Landscape Info/i)))
   expect(terrasoApi.request).toHaveBeenCalledTimes(1)
@@ -213,7 +213,7 @@ test('LandscapeForm: Save form (add)', async () => {
     input: {
       description: 'New description',
       name: 'New name',
-      website: 'www.other.org'
+      website: 'http://www.other.org'
     }
   })
 })

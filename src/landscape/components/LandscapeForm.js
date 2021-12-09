@@ -21,7 +21,7 @@ const VALIDATION_SCHEMA = yup.object({
   description: yup.string()
     .maxCustom(600)
     .required(),
-  website: yup.string().urlCustom()
+  website: yup.string().url()
 }).required()
 
 const FIELDS = [{

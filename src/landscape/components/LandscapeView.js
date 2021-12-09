@@ -23,9 +23,7 @@ import Map from 'gis/components/Map'
 
 const LandscapeCard = ({ landscape }) => (
   <Card>
-    <CardHeader
-      title={landscape.name}
-    />
+    <CardHeader title={landscape.name}/>
     <CardContent>
       <Typography variant="body2" color="text.secondary">
         {landscape.description}
