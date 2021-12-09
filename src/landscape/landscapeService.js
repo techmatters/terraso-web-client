@@ -3,17 +3,22 @@ import _ from 'lodash'
 import * as terrasoApi from 'terrasoBackend/api'
 import * as gisService from 'gis/gisService'
 
+const LANDSCAPE_DEFAULT_FIELDS = `
+  id
+  slug
+  name
+  location
+  description
+  website
+`
+
+const cleanLandscape = landscape => _.omit(landscape, 'slug')
+
 export const fetchLandscapeToUpdate = slug => {
   const query = `query landscapes($slug: String!){
     landscapes(slug: $slug) {
       edges {
-        node {
-          id
-          slug
-          name
-          description
-          website
-        }
+        node { ${LANDSCAPE_DEFAULT_FIELDS} }
       }
     }
   }`
@@ -28,11 +33,7 @@ export const fetchLandscapeToView = slug => {
     landscapes(slug: $slug) {
       edges {
         node {
-          slug
-          name
-          location
-          description
-          website
+          ${LANDSCAPE_DEFAULT_FIELDS}
           defaultGroup: associatedGroups(isDefaultLandscapeGroup: true) {
             edges {
               node {
@@ -79,12 +80,7 @@ export const fetchLandscapes = () => {
   const query = `query {
     landscapes {
       edges {
-        node {
-          id
-          name
-          description
-          website
-        }
+        node { ${LANDSCAPE_DEFAULT_FIELDS} }
       }
     }
   }`
@@ -97,32 +93,22 @@ export const fetchLandscapes = () => {
 const updateLandscape = landscape => {
   const query = `mutation updateLandscape($input: LandscapeUpdateMutationInput!) {
     updateLandscape(input: $input) {
-      landscape {
-        slug
-        name
-        description
-        website
-      }
+      landscape { ${LANDSCAPE_DEFAULT_FIELDS} }
     }
   }`
   return terrasoApi
-    .request(query, { input: landscape })
+    .request(query, { input: cleanLandscape(landscape) })
     .then(response => response.updateLandscape.landscape)
 }
 
 const addLandscape = landscape => {
   const query = `mutation addLandscape($input: LandscapeAddMutationInput!){
     addLandscape(input: $input) {
-      landscape {
-        slug
-        name
-        description
-        website
-      }
+      landscape { ${LANDSCAPE_DEFAULT_FIELDS} }
     }
   }`
   return terrasoApi
-    .request(query, { input: landscape })
+    .request(query, { input: cleanLandscape(landscape) })
     .then(response => response.addLandscape.landscape)
 }
 
