@@ -54,7 +54,7 @@ const LandscapeForm = () => {
   const { id } = useParams()
   const { fetching, landscape, message } = useSelector(state => state.landscape.form)
 
-  const isNew = id === 'new'
+  const isNew = !id
 
   useEffect(() => {
     if (isNew) {
@@ -67,7 +67,7 @@ const LandscapeForm = () => {
   useEffect(() => {
     if (landscape && landscape.id !== id) {
       // Change URL if new landscape ID
-      navigate(`/landscape/${landscape.id}`)
+      navigate(`/landscapes/${landscape.id}/edit`)
     }
   }, [id, landscape, navigate])
 

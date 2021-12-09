@@ -14,8 +14,9 @@ const RoutesComponent = () => (
   <Routes>
     <Route path='/' element={<RequireAuth children={<Dashboard />} />} />
     <Route path='/group/:id' element={<RequireAuth children={<GroupForm />} />} />
-    <Route path='/landscapes/form/:id' element={<RequireAuth children={<LandscapeForm />} />} />
-    <Route path='/landscapes/view/:id' element={<RequireAuth children={<LandscapeView />} />} />
+    <Route path='/landscapes/new' element={<RequireAuth children={<LandscapeForm />} />} />
+    <Route path='/landscapes/:id/edit' element={<RequireAuth children={<LandscapeForm />} />} />
+    <Route path='/landscapes/:id' element={<RequireAuth children={<LandscapeView />} />} />
   </Routes>
 )
 
