@@ -1,6 +1,7 @@
 import _ from 'lodash'
 
 import * as terrasoApi from 'terrasoBackend/api'
+import * as gisService from 'gis/gisService'
 
 export const fetchLandscapeToUpdate = id => {
   const query = `query landscape($id: ID!){
@@ -62,15 +63,13 @@ export const fetchLandscapeToView = id => {
       members: _.get(landscape, 'defaultGroup.edges[0].node.group.members.edges', [])
         .map(edge => edge.node)
     }))
-    .then(landscape =>
-      // TODO temporarily getting position from openstreetmap API.
-      // This should change when we store landscape polygon.
-      fetch(`https://nominatim.openstreetmap.org/search.php?q=${landscape.location}&format=jsonv2`)
-        .then(response => response.json())
-        .then(json => ({
-          ...landscape,
-          position: _.get(json, '[0]')
-        }))
+    // TODO temporarily getting position from openstreetmap API.
+    // This should change when we store landscape polygon.
+    .then(landscape => gisService.getPlaceInfoByName(landscape.location)
+      .then(placeInfo => ({
+        ...landscape,
+        position: placeInfo
+      }))
     )
 }
 

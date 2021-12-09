@@ -14,15 +14,12 @@ import {
   Link,
   Stack
 } from '@mui/material'
-import {
-  MapContainer,
-  TileLayer
-} from 'react-leaflet'
 import SquareIcon from '@mui/icons-material/Square'
 
 import { fetchLandscapeView } from 'landscape/landscapeSlice'
 import GroupMembershipCard from 'group/components/GroupMembershipCard'
 import theme from 'theme'
+import Map from 'gis/components/Map'
 
 const LandscapeCard = ({ landscape }) => (
   <Card>
@@ -51,21 +48,13 @@ const LandscapeMap = ({ position }) => {
     [position.boundingbox[1], position.boundingbox[3]]
   ]
   return (
-    <Box>
-      <MapContainer
-        bounds={bounds}
-        scrollWheelZoom={false}
-        style={{
-          width: '100%',
-          height: '400px'
-        }}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-      </MapContainer>
-    </Box>
+    <Map
+      bounds={bounds}
+      style={{
+        width: '100%',
+        height: '400px'
+      }}
+    />
   )
 }
 
@@ -88,7 +77,7 @@ const LandscapeView = () => {
   if (fetching) {
     return (
       <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ color: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={true}
       >
         <CircularProgress color="inherit" />
