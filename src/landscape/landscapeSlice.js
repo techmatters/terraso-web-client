@@ -4,6 +4,11 @@ import { createAsyncThunk } from 'state/utils'
 import * as landscapeService from 'landscape/landscapeService'
 
 const initialState = {
+  list: {
+    fetching: true,
+    landscapes: [],
+    message: null
+  },
   view: {
     fetching: true,
     message: null,
@@ -16,6 +21,7 @@ const initialState = {
   }
 }
 
+export const fetchLandscapes = createAsyncThunk('landscape/fetchLandscapes', landscapeService.fetchLandscapes)
 export const fetchLandscapeForm = createAsyncThunk('landscape/fetchLandscapeForm', landscapeService.fetchLandscapeToUpdate)
 export const fetchLandscapeView = createAsyncThunk('landscape/fetchLandscapeView', landscapeService.fetchLandscapeToView)
 export const saveLandscape = createAsyncThunk('landscape/saveLandscape', landscapeService.saveLandscape)
@@ -34,6 +40,29 @@ const landscapeSlice = createSlice({
     })
   },
   extraReducers: {
+    [fetchLandscapes.pending]: state => ({
+      ...state,
+      list: initialState.list
+    }),
+    [fetchLandscapes.fulfilled]: (state, action) => ({
+      ...state,
+      list: {
+        fetching: false,
+        message: null,
+        landscapes: action.payload
+      }
+    }),
+    [fetchLandscapes.rejected]: (state, action) => ({
+      ...state,
+      list: {
+        ...state.list,
+        fetching: false,
+        message: {
+          severity: 'error',
+          content: action.payload
+        }
+      }
+    }),
     [fetchLandscapeView.pending]: state => ({
       ...state,
       view: initialState.view
