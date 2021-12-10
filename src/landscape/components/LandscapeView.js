@@ -87,10 +87,6 @@ const LandscapeView = () => {
     return null
   }
 
-  const onJoin = () => {
-
-  }
-
   return (
     <Box sx={{
       paddingTop: theme.spacing(3),
@@ -119,9 +115,8 @@ const LandscapeView = () => {
         <Grid item xs={12} md={6}>
           <GroupMembershipCard
             ownerName={landscape.name}
-            members={landscape.members}
+            groupSlug={landscape.group.slug}
             joinLabel="landscape.view_join_label"
-            onJoin={onJoin}
           />
         </Grid>
       </Grid>

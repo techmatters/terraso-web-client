@@ -47,6 +47,57 @@ test('LandscapeView: Display data', async () => {
     json: () => ([])
   }))
   terrasoApi.request.mockReturnValue(Promise.resolve({
+    groups: {
+      edges: [{
+        node: {
+          memberships: {
+            edges: [{
+              node: {
+                user: {
+                  firstName: 'Member name',
+                  lastName: 'Member Last Name'
+                }
+              }
+            }, {
+              node: {
+                user: {
+                  firstName: 'Member name',
+                  lastName: 'Member Last Name'
+                }
+              }
+            }, {
+              node: {
+                user: {
+                  firstName: 'Member name',
+                  lastName: 'Member Last Name'
+                }
+              }
+            }, {
+              node: {
+                user: {
+                  firstName: 'Member name',
+                  lastName: 'Member Last Name'
+                }
+              }
+            }, {
+              node: {
+                user: {
+                  firstName: 'Member name',
+                  lastName: 'Member Last Name'
+                }
+              }
+            }, {
+              node: {
+                user: {
+                  firstName: 'Member name',
+                  lastName: 'Member Last Name'
+                }
+              }
+            }]
+          }
+        }
+      }]
+    },
     landscapes: {
       edges: [{
         node: {
@@ -58,51 +109,7 @@ test('LandscapeView: Display data', async () => {
             edges: [{
               node: {
                 group: {
-                  memberships: {
-                    edges: [{
-                      node: {
-                        user: {
-                          firstName: 'Member name',
-                          lastName: 'Member Last Name'
-                        }
-                      }
-                    }, {
-                      node: {
-                        user: {
-                          firstName: 'Member name',
-                          lastName: 'Member Last Name'
-                        }
-                      }
-                    }, {
-                      node: {
-                        user: {
-                          firstName: 'Member name',
-                          lastName: 'Member Last Name'
-                        }
-                      }
-                    }, {
-                      node: {
-                        user: {
-                          firstName: 'Member name',
-                          lastName: 'Member Last Name'
-                        }
-                      }
-                    }, {
-                      node: {
-                        user: {
-                          firstName: 'Member name',
-                          lastName: 'Member Last Name'
-                        }
-                      }
-                    }, {
-                      node: {
-                        user: {
-                          firstName: 'Member name',
-                          lastName: 'Member Last Name'
-                        }
-                      }
-                    }]
-                  }
+                  slug: 'test-group-slug'  
                 }
               }
             }]

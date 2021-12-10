@@ -4,7 +4,7 @@ import { createAsyncThunk } from 'state/utils'
 import * as groupService from 'group/groupService'
 
 const initialState = {
-  join: [],
+  memberships: {},
   form: {
     group: null,
     fetching: true,
@@ -14,10 +14,8 @@ const initialState = {
 
 export const fetchGroup = createAsyncThunk('group/fetchGroup', groupService.fetchGroup)
 export const saveGroup = createAsyncThunk('group/saveGroup', groupService.saveGroup)
-export const joinGroup = createAsyncThunk('group/joinGroup', params =>
-  groupService.joinGroup(params)
-    .then(group => groupService.fetchGroup(group.id))
-)
+export const fetchGroupMembership = createAsyncThunk('group/fetchGroupMembership', groupService.fetchGroupMembership)
+export const joinGroup = createAsyncThunk('group/joinGroup', groupService.joinGroup)
 
 const groupSlice = createSlice({
   name: 'group',
@@ -86,26 +84,75 @@ const groupSlice = createSlice({
         }
       }
     }),
-    [joinGroup.pending]: state => ({
+    [fetchGroupMembership.pending]: (state, action) => ({
       ...state,
-      form: initialState.form
+      memberships: {
+        ...state.memberships,
+        [action.meta.arg]: {
+          fetching: true,
+          message: null,
+          group: action.payload
+        }
+      }
+    }),
+    [fetchGroupMembership.fulfilled]: (state, action) => ({
+      ...state,
+      memberships: {
+        ...state.memberships,
+        [action.meta.arg]: {
+          fetching: false,
+          group: action.payload
+        }
+      }
+    }),
+    [fetchGroupMembership.rejected]: (state, action) => ({
+      ...state,
+      memberships: {
+        ...state.memberships,
+        [action.meta.arg]: {
+          fetching: false,
+          group: null,
+          message: {
+            severity: 'error',
+            content: action.payload
+          }
+        }
+      }
+    }),
+    [joinGroup.pending]: (state, action) => ({
+      ...state,
+      memberships: {
+        ...state.memberships,
+        [action.meta.arg.groupSlug]: {
+          joining: true,
+          message: null
+        }
+      }
     }),
     [joinGroup.fulfilled]: (state, action) => ({
       ...state,
-      form: {
-        fetching: false,
-        message: null,
-        group: action.payload
+      memberships: {
+        ...state.memberships,
+        [action.meta.arg.groupSlug]: {
+          joining: false,
+          group: action.payload,
+          message: {
+            severity: 'success',
+            content: 'group.join_success'
+          }
+        }
       }
     }),
     [joinGroup.rejected]: (state, action) => ({
       ...state,
-      form: {
-        ...state.form,
-        fetching: false,
-        message: {
-          severity: 'error',
-          content: action.payload
+      memberships: {
+        ...state.memberships,
+        [action.meta.arg.groupSlug]: {
+          joining: false,
+          message: {
+            severity: 'error',
+            content: action.payload
+          }
         }
       }
     })

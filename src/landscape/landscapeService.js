@@ -28,6 +28,11 @@ export const fetchLandscapeToUpdate = slug => {
     .then(landscape => landscape || Promise.reject('landscape.not_found'))
 }
 
+const getDefaultGroup = landscape => {
+  const group = _.get(landscape, 'defaultGroup.edges[0].node.group')
+  return _.pick(group, ['id', 'slug'], {})
+}
+
 export const fetchLandscapeToView = slug => {
   const query = `query landscapes($slug: String!){
     landscapes(slug: $slug) {
@@ -38,17 +43,8 @@ export const fetchLandscapeToView = slug => {
             edges {
               node {
                 group {
+                  id
                   slug
-                  memberships {
-                    edges {
-                      node {
-                        user {
-                          firstName
-                          lastName
-                        }
-                      }
-                    }
-                  }
                 }
               }
             }
@@ -63,8 +59,7 @@ export const fetchLandscapeToView = slug => {
     .then(landscape => landscape || Promise.reject('landscape.not_found'))
     .then(landscape => ({
       ..._.omit(landscape, 'defaultGroup'),
-      members: _.get(landscape, 'defaultGroup.edges[0].node.group.memberships.edges', [])
-        .map(edge => _.get(edge, 'node.user'))
+      group: getDefaultGroup(landscape)
     }))
     // TODO temporarily getting position from openstreetmap API.
     // This should change when we store landscape polygon.
