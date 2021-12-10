@@ -18,7 +18,7 @@ const NotificationsWrapper = props => {
     : [content]
 
   return (
-    <SnackbarProvider
+    <SnackbarProvider preventDuplicate
       maxSnack={MAX_NOTIFICATIONS}
       autoHideDuration={AUTO_HIDE_DURATION}
       anchorOrigin={{

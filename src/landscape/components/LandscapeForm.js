@@ -43,6 +43,10 @@ const FIELDS = [{
   info: 'landscape.form_website_info',
   placeholder: 'landscape.form_website_placeholder',
   type: 'url'
+}, {
+  name: 'location',
+  label: 'landscape.form_location_label',
+  info: 'landscape.form_location_info'
 }]
 
 const LandscapeForm = () => {

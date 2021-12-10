@@ -99,7 +99,9 @@ const GroupMembershipCard = props => {
   const isMember = members.find(member => member.email === userEmail)
 
   useEffect(() => {
-    dispatch(fetchGroupMembership(groupSlug))
+    if (groupSlug) {
+      dispatch(fetchGroupMembership(groupSlug))
+    }
   }, [groupSlug, dispatch])
 
   useEffect(() => {
