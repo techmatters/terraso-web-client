@@ -25,10 +25,10 @@ const NotificationsWrapper = props => {
         vertical: 'top',
         horizontal: 'center'
       }}
-      content={(key, message) => (
-        <Alert severity={message.severity} sx={{ width: '100%' }}>
-          {getMessages(message.content)
-            .map(message => t(message))
+      content={(key, notification) => (
+        <Alert severity={notification.severity} sx={{ width: '100%' }}>
+          {getMessages(notification.content)
+            .map(message => t(message, notification.params))
             .join('. ')
           }
         </Alert>
