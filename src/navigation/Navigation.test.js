@@ -29,6 +29,15 @@ test('Navigation: Test initial', async () => {
   expect(screen.getByRole('tab', { name: 'LANDSCAPES' })).toHaveAttribute('aria-selected', 'true')
   expect(screen.getByRole('tab', { name: 'GROUPS' })).toHaveAttribute('aria-selected', 'false')
 })
+test('Navigation: Test select', async () => {
+  useLocation.mockReturnValue({
+    pathname: '/landscapes/landscape-slug'
+  })
+  await act(async () => render(<Navigation />))
+  expect(screen.getByRole('tab', { name: 'HOME' })).toHaveAttribute('aria-selected', 'false')
+  expect(screen.getByRole('tab', { name: 'LANDSCAPES' })).toHaveAttribute('aria-selected', 'true')
+  expect(screen.getByRole('tab', { name: 'GROUPS' })).toHaveAttribute('aria-selected', 'false')
+})
 test('Navigation: Test navigation', async () => {
   useLocation.mockReturnValue({
     pathname: '/'
