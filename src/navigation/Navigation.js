@@ -7,14 +7,26 @@ import { Tab, Tabs } from '@mui/material'
 import theme from 'theme'
 
 const PAGES = {
-  '/': 'navigation.home',
-  '/landscapes': 'navigation.landscapes',
-  '/groups': 'navigation.groups'
+  '/': {
+    label: 'navigation.home',
+    match: path => path === '/'
+  },
+  '/landscapes': {
+    label: 'navigation.landscapes',
+    match: path => path.startsWith('/landscapes')
+  },
+  '/groups': {
+    label: 'navigation.groups',
+    match: path => path.startsWith('/groups')
+  }
 }
 
 const LinkTab = props => (
   <Tab
-    onClick={event => event.preventDefault()}
+    onClick={event => {
+      props.onClick()
+      event.preventDefault()
+    }}
     sx={{
       '&.Mui-selected': {
         color: 'black',
@@ -33,23 +45,21 @@ const Navigation = () => {
 
   useEffect(() => {
     const currentValue = _.findIndex(
-      Object.keys(PAGES),
-      path => path === location.pathname
+      Object.values(PAGES),
+      path => path.match(location.pathname)
     )
     setValue(currentValue > -1 ? currentValue : false)
   }, [location])
 
-  const handleChange = (event, newValue) => {
-    const path = Object.keys(PAGES)[newValue]
+  const handleChange = (value, path) => {
     navigate(path)
-    setValue(newValue)
+    setValue(value)
   }
 
   return (
     <Tabs
       component="nav"
       value={value}
-      onChange={handleChange}
       aria-label={t('navigation.nav_label')}
       sx={{
         '& .MuiTabs-indicator': {
@@ -57,8 +67,12 @@ const Navigation = () => {
         }
       }}
     >
-      {Object.keys(PAGES).map(path => (
-        <LinkTab key={path} label={t(PAGES[path]).toUpperCase()} path={path} />
+      {Object.keys(PAGES).map((path, index) => (
+        <LinkTab
+          key={path}
+          label={t(PAGES[path].label).toUpperCase()}
+          onClick={() => handleChange(index, path)}
+        />
       ))}
     </Tabs>
   )
