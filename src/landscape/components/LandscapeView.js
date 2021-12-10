@@ -14,7 +14,7 @@ import {
   Link,
   Stack
 } from '@mui/material'
-import SquareIcon from '@mui/icons-material/Square'
+import PublicIcon from '@mui/icons-material/Public'
 
 import { fetchLandscapeView } from 'landscape/landscapeSlice'
 import GroupMembershipCard from 'group/components/GroupMembershipCard'
@@ -31,7 +31,7 @@ const LandscapeCard = ({ landscape }) => (
     </CardContent>
     <CardContent>
       <Stack direction="row" alignItems="center" spacing={1}>
-        <SquareIcon sx={{ color: 'gray.lite1' }} />
+        <PublicIcon sx={{ color: 'gray.lite1' }} />
         <Link href={landscape.website} underline="none">
           {landscape.website}
         </Link>
