@@ -33,7 +33,7 @@
         "membership_card_title": "Members",
         "membership_card_description_other": "{{count}} {{name}} members have created accounts in Terraso.",
         "membership_card_description_one": "{{count}} {{name}} member has created an account in Terraso.",
-        "join_success": "Joined successfully to group"
+        "join_success": "Joined successfully to {{name}}"
     },
     "landscape": {
         "default_title": "Landscape",

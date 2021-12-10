@@ -104,7 +104,12 @@ const GroupMembershipCard = props => {
 
   useEffect(() => {
     if (message) {
-      enqueueSnackbar(message)
+      enqueueSnackbar({
+        ...message,
+        params: {
+          name: ownerName
+        }
+      })
     }
   }, [message, enqueueSnackbar])
 
