@@ -111,7 +111,7 @@ const GroupMembershipCard = props => {
         }
       })
     }
-  }, [message, enqueueSnackbar])
+  }, [message, enqueueSnackbar, ownerName])
 
   const onJoin = () => {
     dispatch(joinGroup({
