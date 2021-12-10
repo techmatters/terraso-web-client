@@ -109,7 +109,7 @@ test('LandscapeView: Display data', async () => {
             edges: [{
               node: {
                 group: {
-                  slug: 'test-group-slug'  
+                  slug: 'test-group-slug'
                 }
               }
             }]
