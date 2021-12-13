@@ -46,58 +46,17 @@ test('LandscapeView: Display data', async () => {
   global.fetch.mockReturnValue(Promise.resolve({
     json: () => ([])
   }))
-  terrasoApi.request.mockReturnValue(Promise.resolve({
-    groups: {
-      edges: [{
-        node: {
-          memberships: {
-            edges: [{
-              node: {
-                user: {
-                  firstName: 'Member name',
-                  lastName: 'Member Last Name'
-                }
-              }
-            }, {
-              node: {
-                user: {
-                  firstName: 'Member name',
-                  lastName: 'Member Last Name'
-                }
-              }
-            }, {
-              node: {
-                user: {
-                  firstName: 'Member name',
-                  lastName: 'Member Last Name'
-                }
-              }
-            }, {
-              node: {
-                user: {
-                  firstName: 'Member name',
-                  lastName: 'Member Last Name'
-                }
-              }
-            }, {
-              node: {
-                user: {
-                  firstName: 'Member name',
-                  lastName: 'Member Last Name'
-                }
-              }
-            }, {
-              node: {
-                user: {
-                  firstName: 'Member name',
-                  lastName: 'Member Last Name'
-                }
-              }
-            }]
-          }
+  const memberships = {
+    edges: Array(6).fill(0).map(() => ({
+      node: {
+        user: {
+          firstName: 'Member name',
+          lastName: 'Member Last Name'
         }
-      }]
-    },
+      }
+    }))
+  }
+  terrasoApi.request.mockReturnValue(Promise.resolve({
     landscapes: {
       edges: [{
         node: {
@@ -109,7 +68,8 @@ test('LandscapeView: Display data', async () => {
             edges: [{
               node: {
                 group: {
-                  slug: 'test-group-slug'
+                  slug: 'test-group-slug',
+                  memberships
                 }
               }
             }]

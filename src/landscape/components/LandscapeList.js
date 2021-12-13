@@ -1,28 +1,41 @@
 import React, { useEffect } from 'react'
+import _ from 'lodash'
 import { useSelector, useDispatch } from 'react-redux'
 import { useSnackbar } from 'notistack'
 import { useTranslation } from 'react-i18next'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { Link as RouterLink } from 'react-router-dom'
 import {
   Box,
   Typography,
   Backdrop,
   CircularProgress,
-  Button,
-  Link
+  Link,
+  Stack,
+  Grid,
+  Card
 } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 
 import { fetchLandscapes } from 'landscape/landscapeSlice'
+import GroupMembershipButton from 'group/components/GroupMembershipButton'
+import GroupMembershipCount from 'group/components/GroupMembershipCount'
 import theme from 'theme'
 
 const PAGE_SIZE = 10
 
-const LandscapeList = () => {
-  const dispatch = useDispatch()
+const MembershipButton = ({ landscape }) => (
+  <GroupMembershipButton
+    groupSlug={_.get(landscape, 'defaultGroup.slug')}
+    joinLabel="landscape.list_join_button"
+    leaveLabel="landscape.list_leave_button"
+    ownerName={landscape.name}
+    sx={{ width: '100%' }}
+  />
+)
+
+const LandscapeTable = ({ landscapes }) => {
   const { t } = useTranslation()
-  const { landscapes, fetching, message } = useSelector(state => state.landscape.list)
-  const { enqueueSnackbar } = useSnackbar()
 
   const columns = [{
     field: 'name',
@@ -52,17 +65,99 @@ const LandscapeList = () => {
     field: 'members',
     headerName: t('landscape.list_column_members'),
     align: 'center',
-    valueGetter: () => 12
+    valueGetter: ({ row: landscape }) => _.get(landscape, 'defaultGroup.members.length', 0),
+    renderCell: ({ row: landscape }) => (
+      <GroupMembershipCount groupSlug={landscape.defaultGroup.slug} />
+    )
   }, {
     field: 'actions',
     headerName: t('landscape.list_column_actions'),
     sortable: false,
-    renderCell: () => (
-      <Button variant="outlined">
-        {t('landscape.list_join_button')}
-      </Button>
+    align: 'center',
+    renderCell: ({ row: landscape }) => (
+      <MembershipButton landscape={landscape} />
     )
   }]
+
+  return (
+    <DataGrid
+      rows={landscapes}
+      columns={columns}
+      pageSize={PAGE_SIZE}
+      rowsPerPageOptions={[PAGE_SIZE]}
+      autoHeight
+      disableVirtualization
+      sx={{
+        '& .MuiDataGrid-columnHeaders': {
+          backgroundColor: 'gray.lite2'
+        }
+      }}
+      localeText={{
+        noRowsLabel: t('landscape.list_empty'),
+        footerPaginationRowsPerPage: t('common.data_grid_pagination_of')
+      }}
+    />
+  )
+}
+
+const LandscapeCards = ({ landscapes }) => {
+  const { t } = useTranslation()
+
+  return (
+    <Stack spacing={2}>
+      {landscapes.map(landscape => (
+        <Card key={landscape.slug} sx={{ padding: theme.spacing(2) }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Typography variant="caption">
+                {t('landscape.list_column_name')}
+              </Typography>
+              <Typography variant="body1">
+                {landscape.name}
+              </Typography>
+            </Grid>
+            {landscape.location && (
+              <Grid item xs={12}>
+                <Typography variant="caption">
+                  {t('landscape.list_column_location')}
+                </Typography>
+                <Typography variant="body1">
+                  {landscape.location}
+                </Typography>
+              </Grid>
+            )}
+            {landscape.website && (
+              <Grid item xs={12}>
+                <Typography variant="caption">
+                  {t('landscape.list_column_contact')}
+                </Typography>
+                <Link component={Box} href={landscape.website} underline="none">
+                  {landscape.website}
+                </Link>
+              </Grid>
+            )}
+            <Grid item xs={6}>
+              <Typography variant="caption">
+                {t('landscape.list_column_members')}
+              </Typography>
+              <GroupMembershipCount groupSlug={landscape.defaultGroup.slug} />
+            </Grid>
+            <Grid item xs={6}>
+              <MembershipButton landscape={landscape} />
+            </Grid>
+          </Grid>
+        </Card>
+      ))}
+    </Stack>
+  )
+}
+
+const LandscapeList = () => {
+  const dispatch = useDispatch()
+  const { t } = useTranslation()
+  const { landscapes, fetching, message } = useSelector(state => state.landscape.list)
+  const { enqueueSnackbar } = useSnackbar()
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
 
   useEffect(() => {
     dispatch(fetchLandscapes())
@@ -107,17 +202,10 @@ const LandscapeList = () => {
       >
         {t('landscape.list_description')}
       </Typography>
-      <DataGrid
-        rows={landscapes}
-        columns={columns}
-        pageSize={PAGE_SIZE}
-        autoHeight
-        sx={{
-          '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: 'gray.lite2'
-          }
-        }}
-      />
+      {isSmall
+        ? <LandscapeCards landscapes={landscapes} />
+        : <LandscapeTable landscapes={landscapes} />
+      }
     </Box>
   )
 }

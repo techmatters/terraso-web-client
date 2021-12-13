@@ -28,6 +28,13 @@ const groupSlice = createSlice({
         group: null,
         fetching: false
       }
+    }),
+    setMemberships: (state, action) => ({
+      ...state,
+      memberships: {
+        ...state.memberships,
+        ...action.payload
+      }
     })
   },
   extraReducers: {
@@ -84,83 +91,46 @@ const groupSlice = createSlice({
         }
       }
     }),
-    [fetchGroupMembership.pending]: (state, action) => ({
-      ...state,
-      memberships: {
-        ...state.memberships,
-        [action.meta.arg]: {
-          fetching: true,
-          message: null,
-          group: action.payload
-        }
-      }
-    }),
-    [fetchGroupMembership.fulfilled]: (state, action) => ({
-      ...state,
-      memberships: {
-        ...state.memberships,
-        [action.meta.arg]: {
-          fetching: false,
-          group: action.payload
-        }
-      }
-    }),
-    [fetchGroupMembership.rejected]: (state, action) => ({
-      ...state,
-      memberships: {
-        ...state.memberships,
-        [action.meta.arg]: {
-          fetching: false,
-          group: null,
-          message: {
-            severity: 'error',
-            content: action.payload
+    [joinGroup.pending]: (state, action) =>
+      groupSlice.caseReducers.setMemberships(state, {
+        payload: {
+          [action.meta.arg.groupSlug]: {
+            joining: true,
+            message: null
           }
         }
-      }
-    }),
-    [joinGroup.pending]: (state, action) => ({
-      ...state,
-      memberships: {
-        ...state.memberships,
-        [action.meta.arg.groupSlug]: {
-          joining: true,
-          message: null
-        }
-      }
-    }),
-    [joinGroup.fulfilled]: (state, action) => ({
-      ...state,
-      memberships: {
-        ...state.memberships,
-        [action.meta.arg.groupSlug]: {
-          joining: false,
-          group: action.payload,
-          message: {
-            severity: 'success',
-            content: 'group.join_success'
+      }),
+    [joinGroup.fulfilled]: (state, action) =>
+      groupSlice.caseReducers.setMemberships(state, {
+        payload: {
+          [action.meta.arg.groupSlug]: {
+            joining: false,
+            group: action.payload,
+            message: {
+              severity: 'success',
+              content: 'group.join_success'
+            }
           }
         }
-      }
-    }),
-    [joinGroup.rejected]: (state, action) => ({
-      ...state,
-      memberships: {
-        ...state.memberships,
-        [action.meta.arg.groupSlug]: {
-          joining: false,
-          message: {
-            severity: 'error',
-            content: action.payload
+      }),
+    [joinGroup.rejected]: (state, action) =>
+      groupSlice.caseReducers.setMemberships(state, {
+        payload: {
+          [action.meta.arg.groupSlug]: {
+            joining: false,
+            message: {
+              severity: 'error',
+              content: action.payload
+            }
           }
         }
-      }
-    })
+      })
   }
 })
 
 export const {
-  setFormNewValues
+  setFormNewValues,
+  setMemberships
 } = groupSlice.actions
 
 export default groupSlice.reducer
