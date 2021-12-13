@@ -87,29 +87,6 @@ const landscapeSlice = createSlice({
     })
   },
   extraReducers: {
-    // [fetchLandscapeView.pending]: state => ({
-    //   ...state,
-    //   view: initialState.view
-    // }),
-    // [fetchLandscapeView.fulfilled]: (state, action) => ({
-    //   ...state,
-    //   view: {
-    //     fetching: false,
-    //     message: null,
-    //     landscape: action.payload
-    //   }
-    // }),
-    // [fetchLandscapeView.rejected]: (state, action) => ({
-    //   ...state,
-    //   view: {
-    //     ...state.view,
-    //     fetching: false,
-    //     message: {
-    //       severity: 'error',
-    //       content: action.payload
-    //     }
-    //   }
-    // }),
     [fetchLandscapeForm.pending]: state => ({
       ...state,
       form: initialState.form
