@@ -8,8 +8,9 @@ import {
 } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 
-import theme from 'theme'
 import DashboardCard from 'dashboard/components/DashboardCard'
+import { Link } from 'react-router-dom'
+import theme from 'theme'
 
 const Actions = () => {
   const { t } = useTranslation()
@@ -18,6 +19,8 @@ const Actions = () => {
     <CardActions sx={{ padding: 0 }}>
       <Button
         variant="outlined"
+        component={Link}
+        to="/landscapes"
         sx={{ width: '100%' }}
       >
         {t('landscape.default_connect_button')}
@@ -33,7 +36,7 @@ const LandscapeDefaultDashboardCard = () => {
     <DashboardCard sx={{ flexDirection: 'column' }}>
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography variant="h5">
-          {t('landscape.default_title')}
+          {t('landscape.dashboard_default_title')}
         </Typography>
         <Alert
           severity="info"

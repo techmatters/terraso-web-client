@@ -13,7 +13,9 @@
     "group": {
         "role_member": "Group Member",
         "role_manager": "Group Manager",
-        "default_title": "Join Groups",
+        "dashboard_title": "Groups",
+        "dashboard_default_title": "Join Groups",
+        "dashboard_connect_label": "Join another group",
         "default_content": "Terraso groups connect people with common interests and needs. Groups exist for people within and across landscapes.",
         "edit_profile_button": "Edit Group Profile",
         "default_connect_button": "Join Groups",
@@ -40,7 +42,9 @@
         "leave_success": "Left successfully from {{name}}"
     },
     "landscape": {
-        "default_title": "Landscape",
+        "dashboard_title": "Landscapes",
+        "dashboard_default_title": "Connect to Your Landscape",
+        "dashboard_connect_label": "Connect to another Landscape",
         "default_content": "Tell us which landscape you are affiliated with. This will help you connect to others on Terraso and let you share information with other landscape members.",
         "edit_profile_button": "Edit Landscape Profile",
         "default_connect_button": "Connect to Landscape",

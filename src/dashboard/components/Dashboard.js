@@ -12,61 +12,48 @@ import {
 import theme from 'theme'
 import LoaderCard from 'common/components/LoaderCard'
 import { fetchDashboardData } from 'dashboard/dashboardSlice'
-import UserCard from 'user/components/UserDashboardCard'
-import LandscapeCard from 'landscape/components/LandscapeDashboardCard'
+import LandscapesCard from 'landscape/components/LandscapesDashboardCard'
 import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultDashboardCard'
-import GroupCard from 'group/components/GroupDashboardCard'
+import GroupsCard from 'group/components/GroupsDashboardCard'
 import GroupDefaultCard from 'group/components/GroupDefaultDashboardCard'
 
 const Landscapes = ({ landscapes, fetching }) => {
   if (fetching) {
     return (
-      <Grid item xs={12} md={6}>
-        <LoaderCard />
-      </Grid>
+      <LoaderCard />
     )
   }
 
   if (_.isEmpty(landscapes)) {
     return (
-      <Grid item xs={12} md={6}>
-        <LandscapeDefaultCard />
-      </Grid>
+      <LandscapeDefaultCard />
     )
   }
 
-  return landscapes.map(landscape => (
-    <Grid key={landscape.id} item xs={12} md={6}>
-      <LandscapeCard landscape={landscape} />
-    </Grid>
-  ))
+  return (
+    <LandscapesCard landscapes={landscapes} />
+  )
 }
 
 const Groups = ({ groups, fetching }) => {
   if (fetching) {
     return (
-      <Grid item xs={12} md={6}>
-        <LoaderCard />
-      </Grid>
+      <LoaderCard />
     )
   }
 
   if (_.isEmpty(groups)) {
     return (
-      <Grid item xs={12} md={6}>
-        <GroupDefaultCard />
-      </Grid>
+      <GroupDefaultCard />
     )
   }
 
-  return groups.map(group => (
-    <Grid key={group.id} item xs={12} md={6}>
-      <GroupCard group={group} />
-    </Grid>
-  ))
+  return (
+    <GroupsCard groups={groups} />
+  )
 }
 
-const Dashboard = props => {
+const Dashboard = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
 
@@ -87,16 +74,27 @@ const Dashboard = props => {
   }
 
   return (
-    <Box sx={{ padding: theme.spacing(2) }}>
-      <Typography variant="h1" gutterBottom>
+    <Box
+      sx={{
+        paddingTop: theme.spacing(3),
+        paddingBottom: theme.spacing(2)
+      }}
+    >
+      <Typography variant="h1"
+        sx={{
+          marginBottom: theme.spacing(3),
+          marginTop: theme.spacing(2)
+        }}
+      >
         {t('dashboard.page_title', { name: user.firstName })}
       </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <UserCard user={user} />
+        <Grid item xs={6}>
+          <Landscapes landscapes={landscapes} fetching={fetching} />
         </Grid>
-        <Landscapes landscapes={landscapes} fetching={fetching} />
-        <Groups groups={groups} fetching={fetching} />
+        <Grid item xs={6}>
+          <Groups groups={groups} fetching={fetching} />
+        </Grid>
       </Grid>
     </Box>
   )
