@@ -12,7 +12,7 @@ const setup = async initialState => {
     ownerName="Owner Name"
     groupSlug="group-slug"
     joinLabel="Join Label"
-    leaveLabel='Leave Label'
+    leaveLabel="Leave Label"
   />, {
     user: {
       user: {

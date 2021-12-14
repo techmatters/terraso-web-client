@@ -35,7 +35,10 @@ const groupSlice = createSlice({
       memberships: {
         ...state.memberships,
         ..._.chain(action.payload)
+          // Object to pairs [[key, value], ...]
           .toPairs()
+          // Map each memberhip and just override the specified
+          // state fields and keep the current ones
           .map(([groupSlug, newMembershipState]) => ([
             groupSlug,
             {
@@ -43,6 +46,7 @@ const groupSlice = createSlice({
               ...newMembershipState
             }
           ]))
+          // Pairs to Object
           .fromPairs()
           .value()
       }
