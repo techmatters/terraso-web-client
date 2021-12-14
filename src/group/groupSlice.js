@@ -48,6 +48,26 @@ const groupSlice = createSlice({
           ]))
           // Pairs to Object
           .fromPairs()
+          //  Final output
+          //  {
+          //    'group-slug-1': {
+          //      fetching: false,
+          //      joining: false,
+          //      message: {
+          //        severity: 'error',
+          //        content: 'Saved'
+          //      },
+          //      group: {
+          //        slug: 'group-slug-1',
+          //        members: [{
+          //          email: 'email@email.com',
+          //          firsName: 'John',
+          //          lastName: 'Doe'
+          //        },...]
+          //      }
+          //    },
+          //    ...
+          //  }
           .value()
       }
     })
