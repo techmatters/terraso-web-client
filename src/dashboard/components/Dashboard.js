@@ -89,10 +89,10 @@ const Dashboard = () => {
         {t('dashboard.page_title', { name: user.firstName })}
       </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <Landscapes landscapes={landscapes} fetching={fetching} />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <Groups groups={groups} fetching={fetching} />
         </Grid>
       </Grid>
