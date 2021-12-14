@@ -2,7 +2,7 @@
     "dashboard": {
         "title": "Dashboard",
         "error": "Error loading data. {{error}}",
-        "page_title": "Your Stuff"
+        "page_title": "{{name}}’s Home in Terraso"
     },
     "user": {
         "login": "Log in",

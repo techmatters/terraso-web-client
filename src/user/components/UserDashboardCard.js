@@ -28,7 +28,7 @@ const Avatar = ({ user }) => (
       color={palette.white}
       sx={{ textAlign: 'center', marginTop: '10px' }}
     >
-      {user.first_name.charAt(0)}
+      {user.firstName.charAt(0)}
     </Typography>
   </Box>
 )
@@ -42,7 +42,7 @@ const UserDashboardCard = ({ user }) => {
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ flex: '1 0 auto', padding: theme.spacing(1) }}>
           <Typography variant="h5">
-            {user.first_name} {user.last_name}
+            {user.firstName} {user.lastName}
           </Typography>
           <Box sx={{ marginTop: theme.spacing(1) }}>
             <Link href={`mailto:${user.email}`} underline="none">

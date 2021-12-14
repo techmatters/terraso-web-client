@@ -37,7 +37,7 @@ const AppBarComponent = props => {
         </Button>
         <Box sx={{ flexGrow: 1 }} />
         <Button color="inherit" sx={{ fontWeight: 500 }}>
-          {user.first_name} {user.last_name}
+          {user.firstName} {user.lastName}
         </Button>
         |
         <Button color="inherit" sx={theme => ({ marginRight: theme.spacing(2) })}>

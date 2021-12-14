@@ -45,8 +45,8 @@ test('Dashboard: Display user', async () => {
   await act(async () => render(<Dashboard />, {
     user: {
       user: {
-        first_name: 'First Name',
-        last_name: 'Last Name',
+        firstName: 'First Name',
+        lastName: 'Last Name',
         email: 'email@email.com'
       }
     }
