@@ -33,7 +33,11 @@
         "membership_card_title": "Members",
         "membership_card_description_other": "{{count}} {{name}} members have created accounts in Terraso.",
         "membership_card_description_one": "{{count}} {{name}} member has created an account in Terraso.",
-        "join_success": "Joined successfully to {{name}}"
+        "membership_leave_confirm_title": "Leave {{name}}",
+        "membership_leave_confirm_message": "Are you sure you want to leave {{name}}?",
+        "membership_leave_confirm_button": "Leave {{name}}",
+        "join_success": "Joined successfully to {{name}}",
+        "leave_success": "Left successfully from {{name}}"
     },
     "landscape": {
         "default_title": "Landscape",
@@ -77,7 +81,8 @@
         "locale_es-ES_small": "ES"
     },
     "common": {
-        "terraso_projectName": "Terraso"
+        "terraso_projectName": "Terraso",
+        "dialog_cancel_label": "Cancel"
     },
     "form": {
         "required_label": "Required",

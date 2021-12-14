@@ -12,6 +12,7 @@ const setup = async initialState => {
     ownerName="Owner Name"
     groupSlug="group-slug"
     joinLabel="Join Label"
+    leaveLabel="Leave Label"
   />, {
     user: {
       user: {
@@ -74,6 +75,31 @@ test('GroupMembershipCard: Join error', async () => {
   await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Join Label' })))
   expect(screen.getByText(/Join error/i)).toBeInTheDocument()
 })
+test('GroupMembershipCard: Join (not found)', async () => {
+  terrasoApi.request.mockReturnValueOnce(Promise.resolve({
+    addMembership: {
+      membership: {
+        group: null
+      }
+    }
+  }))
+  await setup({
+    group: {
+      memberships: {
+        'group-slug': {
+          group: {
+            slug: 'group-slug'
+          }
+        }
+      }
+    }
+  })
+  expect(screen.getByText('0 Owner Name members have created accounts in Terraso.')).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Join Label' })).toBeInTheDocument()
+  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Join Label' })))
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1)
+  expect(screen.getByText('Group not found')).toBeInTheDocument()
+})
 test('GroupMembershipCard: Join', async () => {
   terrasoApi.request.mockReturnValueOnce(Promise.resolve({
     addMembership: {
@@ -113,4 +139,68 @@ test('GroupMembershipCard: Join', async () => {
   expect(screen.getByText('1 Owner Name member has created an account in Terraso.')).toBeInTheDocument()
   expect(() => screen.getByRole('progressbar')).toThrow()
   expect(() => screen.getByRole('button', { name: 'Join Label' })).toThrow()
+})
+test('GroupMembershipCard: Leave error', async () => {
+  terrasoApi.request.mockRejectedValueOnce('Leave error')
+  await setup({
+    group: {
+      memberships: {
+        'group-slug': {
+          group: {
+            slug: 'group-slug',
+            members: [{
+              membershipId: 'membership-id',
+              email: 'email@email.com'
+            }]
+          }
+        }
+      }
+    }
+  })
+  expect(screen.getByText('1 Owner Name member has created an account in Terraso.')).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'LEAVE LABEL' })).toBeInTheDocument()
+  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'LEAVE LABEL' })))
+  // Confirm dialog
+  expect(screen.getByRole('button', { name: 'Leave Owner Name' })).toBeInTheDocument()
+  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Leave Owner Name' })))
+
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1)
+  expect(screen.getByText(/Leave error/i)).toBeInTheDocument()
+})
+test('GroupMembershipCard: Leave', async () => {
+  terrasoApi.request.mockReturnValueOnce(Promise.resolve({
+    deleteMembership: {
+      membership: {
+        group: {
+          slug: 'group-slug'
+        }
+      }
+    }
+  }))
+  await setup({
+    group: {
+      memberships: {
+        'group-slug': {
+          group: {
+            slug: 'group-slug',
+            members: [{
+              membershipId: 'membership-id',
+              email: 'email@email.com'
+            }]
+          }
+        }
+      }
+    }
+  })
+  expect(screen.getByText('1 Owner Name member has created an account in Terraso.')).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'LEAVE LABEL' })).toBeInTheDocument()
+  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'LEAVE LABEL' })))
+  // Confirm dialog
+  expect(screen.getByRole('button', { name: 'Leave Owner Name' })).toBeInTheDocument()
+  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Leave Owner Name' })))
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1)
+
+  expect(screen.getByText('0 Owner Name members have created accounts in Terraso.')).toBeInTheDocument()
+  expect(() => screen.getByRole('progressbar')).toThrow()
+  expect(screen.getByRole('button', { name: 'Join Label' })).toBeInTheDocument()
 })

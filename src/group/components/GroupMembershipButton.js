@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import _ from 'lodash'
 import { useSelector, useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
@@ -8,7 +8,9 @@ import {
 } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 
-import { joinGroup } from 'group/groupSlice'
+import { joinGroup, leaveGroup } from 'group/groupSlice'
+import ConfirmationDialog from 'common/components/ConfirmationDialog'
+import { t } from 'i18next'
 
 const BaseButton = props => (
   <LoadingButton
@@ -41,6 +43,7 @@ const JoinButton = props => {
     <BaseButton
       variant="outlined"
       onClick={props.onJoin}
+      loading={props.loading}
     >
         {t(props.joinLabel)}
     </BaseButton>
@@ -53,6 +56,7 @@ const GroupMembershipButton = props => {
   const { joinLabel, leaveLabel, ownerName, groupSlug } = props
   const { email: userEmail } = useSelector(state => state.user.user)
   const { fetching, group, message, joining } = useSelector(state => _.get(state, `group.memberships.${groupSlug}`, {}))
+  const [openConfirmation, setOpenConfirmation] = useState(false)
 
   const loading = fetching || joining
 
@@ -61,7 +65,7 @@ const GroupMembershipButton = props => {
   const members = _.get(group, 'members', [])
 
   // TODO This should come from the backend when we have the authenticated user
-  const isMember = members.find(member => member.email === userEmail)
+  const userMembership = members.find(member => member.email === userEmail)
 
   useEffect(() => {
     if (message) {
@@ -71,22 +75,49 @@ const GroupMembershipButton = props => {
           name: ownerName
         }
       })
+      setOpenConfirmation(false)
     }
   }, [message, enqueueSnackbar, ownerName])
 
+  useEffect(() => {
+    setOpenConfirmation(false)
+  }, [userMembership])
+
   const onJoin = () => {
     dispatch(joinGroup({
-      groupSlug: group.slug,
+      groupSlug,
       userEmail
     }))
   }
+  const onLeaveConfirmation = () => {
+    setOpenConfirmation(true)
+  }
 
-  if (isMember) {
+  const onLeave = () => {
+    dispatch(leaveGroup({
+      groupSlug,
+      membershipId: userMembership.membershipId
+    }))
+  }
+
+  if (userMembership) {
     return (
-      <LeaveButton
-        leaveLabel={leaveLabel}
-        loading={loading}
-      />
+      <React.Fragment>
+        <ConfirmationDialog
+          open={openConfirmation}
+          title={t('group.membership_leave_confirm_title', { name: ownerName })}
+          message={t('group.membership_leave_confirm_message', { name: ownerName })}
+          confirmButtonLabel={t('group.membership_leave_confirm_button', { name: ownerName })}
+          onCancel={() => setOpenConfirmation(false)}
+          onConfirm={onLeave}
+          loading={loading}
+        />
+        <LeaveButton
+          leaveLabel={leaveLabel}
+          onLeave={onLeaveConfirmation}
+          loading={loading}
+        />
+      </React.Fragment>
     )
   }
   return (

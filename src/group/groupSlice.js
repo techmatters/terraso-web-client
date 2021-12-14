@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { createSlice } from '@reduxjs/toolkit'
 
 import { createAsyncThunk } from 'state/utils'
@@ -14,8 +15,8 @@ const initialState = {
 
 export const fetchGroup = createAsyncThunk('group/fetchGroup', groupService.fetchGroup)
 export const saveGroup = createAsyncThunk('group/saveGroup', groupService.saveGroup)
-export const fetchGroupMembership = createAsyncThunk('group/fetchGroupMembership', groupService.fetchGroupMembership)
 export const joinGroup = createAsyncThunk('group/joinGroup', groupService.joinGroup)
+export const leaveGroup = createAsyncThunk('group/leaveGroup', groupService.leaveGroup)
 
 const groupSlice = createSlice({
   name: 'group',
@@ -33,7 +34,37 @@ const groupSlice = createSlice({
       ...state,
       memberships: {
         ...state.memberships,
-        ...action.payload
+        ..._.chain(action.payload)
+          //  Final output
+          //  {
+          //    'group-slug-1': {
+          //      fetching: false,
+          //      joining: false,
+          //      message: {
+          //        severity: 'error',
+          //        content: 'Saved'
+          //      },
+          //      group: {
+          //        slug: 'group-slug-1',
+          //        members: [{
+          //          email: 'email@email.com',
+          //          firsName: 'John',
+          //          lastName: 'Doe'
+          //        },...]
+          //      }
+          //    },
+          //    ...
+          //  }
+          .toPairs()
+          .map(([groupSlug, newMembershipState]) => ([
+            groupSlug,
+            {
+              ..._.get(state, `memberships.${groupSlug}`, {}),
+              ...newMembershipState
+            }
+          ]))
+          .fromPairs()
+          .value()
       }
     })
   },
@@ -114,6 +145,40 @@ const groupSlice = createSlice({
         }
       }),
     [joinGroup.rejected]: (state, action) =>
+      groupSlice.caseReducers.setMemberships(state, {
+        payload: {
+          [action.meta.arg.groupSlug]: {
+            joining: false,
+            message: {
+              severity: 'error',
+              content: action.payload
+            }
+          }
+        }
+      }),
+    [leaveGroup.pending]: (state, action) =>
+      groupSlice.caseReducers.setMemberships(state, {
+        payload: {
+          [action.meta.arg.groupSlug]: {
+            joining: true,
+            message: null
+          }
+        }
+      }),
+    [leaveGroup.fulfilled]: (state, action) =>
+      groupSlice.caseReducers.setMemberships(state, {
+        payload: {
+          [action.payload.groupSlug]: {
+            joining: false,
+            group: null,
+            message: {
+              severity: 'success',
+              content: 'group.leave_success'
+            }
+          }
+        }
+      }),
+    [leaveGroup.rejected]: (state, action) =>
       groupSlice.caseReducers.setMemberships(state, {
         payload: {
           [action.meta.arg.groupSlug]: {
