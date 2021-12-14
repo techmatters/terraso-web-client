@@ -1,4 +1,5 @@
 import React from 'react'
+import _ from 'lodash'
 import {
   Box,
   Button,
@@ -27,7 +28,7 @@ const GroupItem = ({ group }) => {
         {group.name}
       </Link>
       <Typography variant="subtitle1" sx={{ marginTop: theme.spacing(3) }}>
-        {t(`group.role_${group.role || 'member'}`)}
+        {t(`group.role_${_.get(group, 'role', 'member')}`)}
       </Typography>
     </Box>
   )

@@ -1,4 +1,5 @@
 import React from 'react'
+import _ from 'lodash'
 import { Card } from '@mui/material'
 
 const DashboardCard = props => (
@@ -6,7 +7,7 @@ const DashboardCard = props => (
     {...props}
     sx={{
       display: 'flex',
-      ...(props.sx || {})
+      ..._.get(props, 'sx', {})
     }}
   >
     {props.children}

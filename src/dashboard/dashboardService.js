@@ -2,18 +2,22 @@ import _ from 'lodash'
 
 import * as terrasoApi from 'terrasoBackend/api'
 import { groupFields } from 'group/groupFragments'
+import { landscapeFields } from 'landscape/landscapeFragments'
 
 export const fetchDashboardData = email => {
   const query = `
     query dashboard($email: String!) {
-      userGroups: users(email: $email) {
+      landscapeGroups: groups(
+        members_Email: $email,
+        associatedLandscapes_IsDefaultLandscapeGroup: true
+      ) {
         edges {
           node {
-            memberships {
+            associatedLandscapes {
               edges {
                 node {
-                  group {
-                    ...groupFields
+                  landscape {
+                    ...landscapeFields
                   }
                 }
               }
@@ -21,15 +25,29 @@ export const fetchDashboardData = email => {
           }
         }
       }
+      groups: groups(
+        members_Email: $email,
+        associatedLandscapes_IsDefaultLandscapeGroup: false
+      ) {
+        edges {
+          node {
+            ...groupFields
+          }
+        }
+      }
     }
     ${groupFields}
+    ${landscapeFields}
   `
   return terrasoApi
     .request(query, { email })
     .then(response => ({
-      groups: _.get(response, 'userGroups.edges[0].node.memberships.edges', [])
-        .map(edge => _.get(edge, 'node.group'))
+      groups: _.get(response, 'groups.edges', [])
+        .map(groupEdge => _.get(groupEdge, 'node'))
         .filter(group => group),
-      landscapes: []
+      landscapes: _.get(response, 'landscapeGroups.edges', [])
+        .flatMap(groupEdge => _.get(groupEdge, 'node.associatedLandscapes.edges', []))
+        .map(landscapeEdge => _.get(landscapeEdge, 'node.landscape'))
+        .filter(landscape => landscape)
     }))
 }

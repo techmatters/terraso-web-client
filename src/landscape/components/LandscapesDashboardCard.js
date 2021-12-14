@@ -1,4 +1,5 @@
 import React from 'react'
+import _ from 'lodash'
 import {
   Avatar,
   Box,
@@ -36,7 +37,7 @@ const LandscapeItem = ({ landscape }) => {
           {landscape.name}
         </Link>
         <Typography variant="subtitle1" sx={{ marginTop: theme.spacing(3) }}>
-          {t(`landscape.role_${landscape.role || 'member'}`)}
+          {t(`landscape.role_${_.get(landscape, 'role', 'member')}`)}
         </Typography>
       </Box>
     </Box>
