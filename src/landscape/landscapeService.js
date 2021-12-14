@@ -3,6 +3,7 @@ import _ from 'lodash'
 import * as terrasoApi from 'terrasoBackend/api'
 import * as gisService from 'gis/gisService'
 import { defaultFields, defaultGroup } from 'landscape/landscapeFragments'
+import { extractMembers } from 'group/groupUtils'
 
 const cleanLandscape = landscape => _.omit(landscape, 'slug')
 
@@ -23,18 +24,11 @@ export const fetchLandscapeToUpdate = slug => {
     .then(landscape => landscape || Promise.reject('landscape.not_found'))
 }
 
-const getMembers = group => _.get(
-  group,
-  'memberships.edges',
-  []
-)
-  .map(edge => _.get(edge, 'node.user'))
-
 const getDefaultGroup = landscape => {
   const group = _.get(landscape, 'defaultGroup.edges[0].node.group')
   return {
     ..._.pick(group, ['id', 'slug'], {}),
-    members: getMembers(group)
+    members: extractMembers(group)
   }
 }
 
