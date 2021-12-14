@@ -8,9 +8,9 @@ import {
 } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 
-import theme from 'theme'
 import DashboardCard from 'dashboard/components/DashboardCard'
 import { Link } from 'react-router-dom'
+import theme from 'theme'
 
 const Actions = () => {
   const { t } = useTranslation()
@@ -33,7 +33,7 @@ const GroupDefaultDashboardCard = () => {
   const { t } = useTranslation()
 
   return (
-    <DashboardCard sx={{ flexDirection: 'column' }}>
+    <DashboardCard sx={{ flexDirection: 'column', padding: theme.spacing(2) }}>
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography variant="h5">
           {t('group.dashboard_default_title')}

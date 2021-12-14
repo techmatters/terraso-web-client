@@ -62,8 +62,8 @@ const Dashboard = () => {
   const { groups, landscapes, error, fetching } = dashboard
 
   useEffect(() => {
-    dispatch(fetchDashboardData())
-  }, [dispatch])
+    dispatch(fetchDashboardData(user.email))
+  }, [dispatch, user])
 
   if (error) {
     return (

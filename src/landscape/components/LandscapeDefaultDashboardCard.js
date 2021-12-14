@@ -33,7 +33,7 @@ const LandscapeDefaultDashboardCard = () => {
   const { t } = useTranslation()
 
   return (
-    <DashboardCard sx={{ flexDirection: 'column' }}>
+    <DashboardCard sx={{ flexDirection: 'column', padding: theme.spacing(2) }}>
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography variant="h5">
           {t('landscape.dashboard_default_title')}

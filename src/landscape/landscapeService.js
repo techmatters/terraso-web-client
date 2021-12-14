@@ -2,7 +2,7 @@ import _ from 'lodash'
 
 import * as terrasoApi from 'terrasoBackend/api'
 import * as gisService from 'gis/gisService'
-import { defaultFields, defaultGroup } from 'landscape/landscapeFragments'
+import { landscapeFields, defaultGroup } from 'landscape/landscapeFragments'
 import { extractMembers } from 'group/groupUtils'
 
 const cleanLandscape = landscape => _.omit(landscape, 'slug')
@@ -12,11 +12,11 @@ export const fetchLandscapeToUpdate = slug => {
     query landscapes($slug: String!){
       landscapes(slug: $slug) {
         edges {
-          node { ...defaultFields }
+          node { ...landscapeFields }
         }
       }
     }
-    ${defaultFields}
+    ${landscapeFields}
   `
   return terrasoApi
     .request(query, { slug })
@@ -38,13 +38,13 @@ export const fetchLandscapeToView = slug => {
       landscapes(slug: $slug) {
         edges {
           node {
-            ...defaultFields
+            ...landscapeFields
             ...defaultGroup
           }
         }
       }
     }
-    ${defaultFields}
+    ${landscapeFields}
     ${defaultGroup}
   `
   return terrasoApi
@@ -71,13 +71,13 @@ export const fetchLandscapes = () => {
       landscapes {
         edges {
           node {
-            ...defaultFields
+            ...landscapeFields
             ...defaultGroup
           }
         }
       }
     }
-    ${defaultFields}
+    ${landscapeFields}
     ${defaultGroup}
   `
   return terrasoApi
@@ -97,11 +97,11 @@ const updateLandscape = landscape => {
     mutation updateLandscape($input: LandscapeUpdateMutationInput!) {
       updateLandscape(input: $input) {
         landscape {
-          ...defaultFields
+          ...landscapeFields
         }
       }
     }
-    ${defaultFields}
+    ${landscapeFields}
   `
   return terrasoApi
     .request(query, { input: cleanLandscape(landscape) })
@@ -113,11 +113,11 @@ const addLandscape = landscape => {
     mutation addLandscape($input: LandscapeAddMutationInput!){
       addLandscape(input: $input) {
         landscape {
-          ...defaultFields
+          ...landscapeFields
         }
       }
     }
-    ${defaultFields}
+    ${landscapeFields}
   `
   return terrasoApi
     .request(query, { input: cleanLandscape(landscape) })

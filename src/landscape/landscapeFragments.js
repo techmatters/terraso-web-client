@@ -1,7 +1,7 @@
 import { groupMembers } from 'group/groupFragments'
 
-export const defaultFields = `
-  fragment defaultFields on LandscapeNode {
+export const landscapeFields = `
+  fragment landscapeFields on LandscapeNode {
     id
     slug
     name
