@@ -80,13 +80,11 @@ const GroupMembershipButton = props => {
       userEmail
     }))
   }
-  const onLeave = () => {}
 
   if (isMember) {
     return (
       <LeaveButton
         leaveLabel={leaveLabel}
-        onLeave={onLeave}
         loading={loading}
       />
     )

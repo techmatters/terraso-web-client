@@ -24,7 +24,6 @@ const initialState = {
 }
 
 export const fetchLandscapeForm = createAsyncThunk('landscape/fetchLandscapeForm', landscapeService.fetchLandscapeToUpdate)
-// export const fetchLandscapeView = createAsyncThunk('landscape/fetchLandscapeView', landscapeService.fetchLandscapeToView)
 export const saveLandscape = createAsyncThunk('landscape/saveLandscape', landscapeService.saveLandscape)
 
 const landscapeSlice = createSlice({
