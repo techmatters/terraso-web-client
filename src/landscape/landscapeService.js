@@ -2,64 +2,64 @@ import _ from 'lodash'
 
 import * as terrasoApi from 'terrasoBackend/api'
 import * as gisService from 'gis/gisService'
-
-const LANDSCAPE_DEFAULT_FIELDS = `
-  id
-  slug
-  name
-  location
-  description
-  website
-`
+import { defaultFields, defaultGroup } from 'landscape/landscapeFragments'
 
 const cleanLandscape = landscape => _.omit(landscape, 'slug')
 
 export const fetchLandscapeToUpdate = slug => {
-  const query = `query landscapes($slug: String!){
-    landscapes(slug: $slug) {
-      edges {
-        node { ${LANDSCAPE_DEFAULT_FIELDS} }
+  const query = `
+    query landscapes($slug: String!){
+      landscapes(slug: $slug) {
+        edges {
+          node { ...defaultFields }
+        }
       }
     }
-  }`
+    ${defaultFields}
+  `
   return terrasoApi
     .request(query, { slug })
     .then(response => _.get(response, 'landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('landscape.not_found'))
 }
 
+const getMembers = group => _.get(
+  group,
+  'memberships.edges',
+  []
+)
+  .map(edge => _.get(edge, 'node.user'))
+
 const getDefaultGroup = landscape => {
   const group = _.get(landscape, 'defaultGroup.edges[0].node.group')
-  return _.pick(group, ['id', 'slug'], {})
+  return {
+    ..._.pick(group, ['id', 'slug'], {}),
+    members: getMembers(group)
+  }
 }
 
 export const fetchLandscapeToView = slug => {
-  const query = `query landscapes($slug: String!){
-    landscapes(slug: $slug) {
-      edges {
-        node {
-          ${LANDSCAPE_DEFAULT_FIELDS}
-          defaultGroup: associatedGroups(isDefaultLandscapeGroup: true) {
-            edges {
-              node {
-                group {
-                  id
-                  slug
-                }
-              }
-            }
+  const query = `
+    query landscapes($slug: String!){
+      landscapes(slug: $slug) {
+        edges {
+          node {
+            ...defaultFields
+            ...defaultGroup
           }
         }
       }
     }
-  }`
+    ${defaultFields}
+    ${defaultGroup}
+  `
   return terrasoApi
     .request(query, { slug })
     .then(response => _.get(response, 'landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('landscape.not_found'))
     .then(landscape => ({
       ..._.omit(landscape, 'defaultGroup'),
-      group: getDefaultGroup(landscape)
+      defaultGroup: getDefaultGroup(landscape)
     }))
     // TODO temporarily getting position from openstreetmap API.
     // This should change when we store landscape polygon.
@@ -72,36 +72,59 @@ export const fetchLandscapeToView = slug => {
 }
 
 export const fetchLandscapes = () => {
-  const query = `query {
-    landscapes {
-      edges {
-        node { ${LANDSCAPE_DEFAULT_FIELDS} }
+  const query = `
+    query {
+      landscapes {
+        edges {
+          node {
+            ...defaultFields
+            ...defaultGroup
+          }
+        }
       }
     }
-  }`
+    ${defaultFields}
+    ${defaultGroup}
+  `
   return terrasoApi
     .request(query)
     .then(response => response.landscapes)
-    .then(landscapes => landscapes.edges.map(edge => edge.node))
+    .then(landscapes => landscapes.edges
+      .map(edge => edge.node)
+      .map(landscape => ({
+        ..._.omit(landscape, ['defaultGroup']),
+        defaultGroup: getDefaultGroup(landscape)
+      }))
+    )
 }
 
 const updateLandscape = landscape => {
-  const query = `mutation updateLandscape($input: LandscapeUpdateMutationInput!) {
-    updateLandscape(input: $input) {
-      landscape { ${LANDSCAPE_DEFAULT_FIELDS} }
+  const query = `
+    mutation updateLandscape($input: LandscapeUpdateMutationInput!) {
+      updateLandscape(input: $input) {
+        landscape {
+          ...defaultFields
+        }
+      }
     }
-  }`
+    ${defaultFields}
+  `
   return terrasoApi
     .request(query, { input: cleanLandscape(landscape) })
     .then(response => response.updateLandscape.landscape)
 }
 
 const addLandscape = landscape => {
-  const query = `mutation addLandscape($input: LandscapeAddMutationInput!){
-    addLandscape(input: $input) {
-      landscape { ${LANDSCAPE_DEFAULT_FIELDS} }
+  const query = `
+    mutation addLandscape($input: LandscapeAddMutationInput!){
+      addLandscape(input: $input) {
+        landscape {
+          ...defaultFields
+        }
+      }
     }
-  }`
+    ${defaultFields}
+  `
   return terrasoApi
     .request(query, { input: cleanLandscape(landscape) })
     .then(response => response.addLandscape.landscape)

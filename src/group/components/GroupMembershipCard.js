@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import _ from 'lodash'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
-import { useSnackbar } from 'notistack'
 import {
   Typography,
   Card,
@@ -14,35 +13,9 @@ import {
   CircularProgress,
   Box
 } from '@mui/material'
-import { LoadingButton } from '@mui/lab'
 
-import { fetchGroupMembership, joinGroup } from 'group/groupSlice'
 import theme from 'theme'
-
-const Actions = props => {
-  const { t } = useTranslation()
-  const { fetching, joining, onJoin, joinLabel, isMember } = props
-
-  if (isMember || fetching) {
-    return null
-  }
-
-  return (
-    <CardActions>
-      <LoadingButton
-        variant="outlined"
-        loading={joining}
-        loadingIndicator={(
-          <CircularProgress color="inherit" size={16} />
-        )}
-        onClick={onJoin}
-        sx={{ width: '100%' }}
-      >
-        {t(joinLabel)}
-      </LoadingButton>
-    </CardActions>
-  )
-}
+import GroupMembershipButton from './GroupMembershipButton'
 
 const Loader = () => (
   <CardContent>
@@ -85,40 +58,13 @@ const Content = props => {
 
 const GroupMembershipCard = props => {
   const { t } = useTranslation()
-  const dispatch = useDispatch()
-  const { enqueueSnackbar } = useSnackbar()
-  const { ownerName, groupSlug, joinLabel } = props
-  const { fetching, group, message, joining } = useSelector(state => _.get(state, `group.memberships.${groupSlug}`, {}))
-  const { email: userEmail } = useSelector(state => state.user.user)
+  const { ownerName, groupSlug, joinLabel, leaveLabel } = props
+  const { fetching, group } = useSelector(state => _.get(state, `group.memberships.${groupSlug}`, {}))
 
   // TODO This should just be 5 users and we should get the total count from
   // the backend when the support is added
   const members = _.get(group, 'members', [])
 
-  // TODO This should come from the backend when we have the authenticated user
-  const isMember = members.find(member => member.email === userEmail)
-
-  useEffect(() => {
-    dispatch(fetchGroupMembership(groupSlug))
-  }, [groupSlug, dispatch])
-
-  useEffect(() => {
-    if (message) {
-      enqueueSnackbar({
-        ...message,
-        params: {
-          name: ownerName
-        }
-      })
-    }
-  }, [message, enqueueSnackbar, ownerName])
-
-  const onJoin = () => {
-    dispatch(joinGroup({
-      groupSlug: group.slug,
-      userEmail
-    }))
-  }
   return (
     <Card>
       <CardHeader
@@ -129,13 +75,16 @@ const GroupMembershipCard = props => {
         ownerName={ownerName}
         members={members}
       />
-      <Actions
-        fetching={fetching}
-        isMember={isMember}
-        joining={joining}
-        joinLabel={joinLabel}
-        onJoin={onJoin}
-      />
+      { fetching ? null : (
+        <CardActions>
+          <GroupMembershipButton
+            ownerName={ownerName}
+            groupSlug={groupSlug}
+            joinLabel={joinLabel}
+            leaveLabel={leaveLabel}
+          />
+        </CardActions>
+      )}
     </Card>
   )
 }

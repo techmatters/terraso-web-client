@@ -115,8 +115,9 @@ const LandscapeView = () => {
         <Grid item xs={12} md={6}>
           <GroupMembershipCard
             ownerName={landscape.name}
-            groupSlug={landscape.group.slug}
+            groupSlug={landscape.defaultGroup.slug}
             joinLabel="landscape.view_join_label"
+            leaveLabel="landscape.view_leave_label"
           />
         </Grid>
       </Grid>

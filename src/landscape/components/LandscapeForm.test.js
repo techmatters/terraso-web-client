@@ -18,9 +18,10 @@ const setup = async () => {
   const name = screen.getByRole('textbox', { name: 'LANDSCAPE NAME (Required)' })
   const description = screen.getByRole('textbox', { name: 'LANDSCAPE DESCRIPTION (Required)' })
   const website = screen.getByRole('textbox', { name: 'LANDSCAPE WEBSITE' })
+  const location = screen.getByRole('textbox', { name: 'LANDSCAPE LOCATION' })
   return {
     inputs: {
-      name, description, website
+      name, description, website, location
     }
   }
 }
@@ -127,7 +128,8 @@ test('LandscapeForm: Save form', async () => {
             id: '1',
             name: 'Landscape Name',
             description: 'Landscape Description',
-            website: 'www.landscape.org'
+            website: 'www.landscape.org',
+            location: 'Location'
           }
         }]
       }
@@ -140,7 +142,8 @@ test('LandscapeForm: Save form', async () => {
               id: '1',
               name: 'Landscape Name',
               description: 'Landscape Description',
-              website: 'www.landscape.org'
+              website: 'www.landscape.org',
+              location: 'Location'
             }
           }]
         }
@@ -152,6 +155,7 @@ test('LandscapeForm: Save form', async () => {
   fireEvent.change(inputs.name, { target: { value: 'New name' } })
   fireEvent.change(inputs.description, { target: { value: 'New description' } })
   fireEvent.change(inputs.website, { target: { value: 'https://www.other.org' } })
+  fireEvent.change(inputs.location, { target: { value: 'New location' } })
 
   await act(async () => fireEvent.click(screen.getByText(/Submit Landscape Info/i)))
   expect(terrasoApi.request).toHaveBeenCalledTimes(2)
@@ -161,7 +165,8 @@ test('LandscapeForm: Save form', async () => {
       id: '1',
       description: 'New description',
       name: 'New name',
-      website: 'https://www.other.org'
+      website: 'https://www.other.org',
+      location: 'New location'
     }
   })
 })
@@ -173,7 +178,8 @@ test('LandscapeForm: Save form error', async () => {
           node: {
             name: 'Landscape Name',
             description: 'Landscape Description',
-            website: 'www.landscape.org'
+            website: 'www.landscape.org',
+            location: 'Location'
           }
         }]
       }
@@ -185,6 +191,7 @@ test('LandscapeForm: Save form error', async () => {
   fireEvent.change(inputs.name, { target: { value: 'New name' } })
   fireEvent.change(inputs.description, { target: { value: 'New description' } })
   fireEvent.change(inputs.website, { target: { value: 'https://www.other.org' } })
+  fireEvent.change(inputs.location, { target: { value: 'New location' } })
 
   await act(async () => fireEvent.click(screen.getByText(/Submit Landscape Info/i)))
 
@@ -195,6 +202,7 @@ test('LandscapeForm: Save form error', async () => {
   expect(inputs.name).toHaveValue('New name')
   expect(inputs.description).toHaveValue('New description')
   expect(inputs.website).toHaveValue('https://www.other.org')
+  expect(inputs.location).toHaveValue('New location')
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(2)
 })
@@ -219,7 +227,8 @@ test('LandscapeForm: Save form (add)', async () => {
         landscape: {
           name: 'New name',
           description: 'New description',
-          website: 'http://www.other.org'
+          website: 'http://www.other.org',
+          location: 'Location'
         }
       }
     })
@@ -229,6 +238,7 @@ test('LandscapeForm: Save form (add)', async () => {
   fireEvent.change(inputs.name, { target: { value: 'New name' } })
   fireEvent.change(inputs.description, { target: { value: 'New description' } })
   fireEvent.change(inputs.website, { target: { value: 'http://www.other.org' } })
+  fireEvent.change(inputs.location, { target: { value: 'New location' } })
 
   await act(async () => fireEvent.click(screen.getByText(/Submit Landscape Info/i)))
   expect(terrasoApi.request).toHaveBeenCalledTimes(1)
@@ -237,7 +247,8 @@ test('LandscapeForm: Save form (add)', async () => {
     input: {
       description: 'New description',
       name: 'New name',
-      website: 'http://www.other.org'
+      website: 'http://www.other.org',
+      location: 'New location'
     }
   })
 })

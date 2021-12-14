@@ -53,10 +53,22 @@
         "form_website_label": "Landscape website",
         "form_website_info": "This will be publicly displayed to all Terraso users.",
         "form_website_placeholder": "https://www.mylandscape.org",
+        "form_location_label": "Landscape location",
         "form_save_label": "Submit Landscape Info",
         "form_message_success": "Your Landscape has been saved.",
         "not_found": "Landscape not found",
-        "view_join_label": "Connect to Landscape"
+        "view_join_label": "Connect to Landscape",
+        "view_leave_label": "Leave Landscape",
+        "list_title": "Landscapes",
+        "list_description": "View the list of Landscapes in Terraso. Follow the landscape name link to learn more from their landscape profile.",
+        "list_join_button": "Connect",
+        "list_leave_button": "Member",
+        "list_column_name": "Landscape Name",
+        "list_column_location": "Location",
+        "list_column_contact": "Contact Info",
+        "list_column_members": "Members",
+        "list_column_actions": "Actions",
+        "list_empty": "No Landscapes"
     },
     "localization": {
         "locale_en-US": "English",
