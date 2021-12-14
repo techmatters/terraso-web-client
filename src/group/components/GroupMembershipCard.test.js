@@ -204,4 +204,3 @@ test('GroupMembershipCard: Leave', async () => {
   expect(() => screen.getByRole('progressbar')).toThrow()
   expect(screen.getByRole('button', { name: 'Join Label' })).toBeInTheDocument()
 })
-
