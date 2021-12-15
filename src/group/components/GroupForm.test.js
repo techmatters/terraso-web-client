@@ -28,7 +28,7 @@ const setup = async () => {
 
 beforeEach(() => {
   useParams.mockReturnValue({
-    id: '1'
+    slug: 'slug-1'
   })
 })
 
@@ -45,11 +45,15 @@ test('GroupForm: Display loader', () => {
 })
 test('GroupForm: Fill form', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
-    group: {
-      name: 'Group Name',
-      description: 'Group Description',
-      email: 'group@group.org',
-      website: 'www.group.org'
+    groups: {
+      edges: [{
+        node: {
+          name: 'Group Name',
+          description: 'Group Description',
+          email: 'group@group.org',
+          website: 'www.group.org'
+        }
+      }]
     }
   }))
   const { inputs } = await setup()
@@ -62,11 +66,15 @@ test('GroupForm: Fill form', async () => {
 })
 test('GroupForm: Input change', async () => {
   terrasoApi.request.mockReturnValueOnce(Promise.resolve({
-    group: {
-      name: 'Group Name',
-      description: 'Group Description',
-      email: 'group@group.org',
-      website: 'www.group.org'
+    groups: {
+      edges: [{
+        node: {
+          name: 'Group Name',
+          description: 'Group Description',
+          email: 'group@group.org',
+          website: 'www.group.org'
+        }
+      }]
     }
   }))
   const { inputs } = await setup()
@@ -89,11 +97,15 @@ test('GroupForm: Input change', async () => {
 })
 test('GroupForm: Input validation', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
-    group: {
-      name: 'Group Name',
-      description: 'Group Description',
-      email: 'group@group.org',
-      website: 'www.group.org'
+    groups: {
+      edges: [{
+        node: {
+          name: 'Group Name',
+          description: 'Group Description',
+          email: 'group@group.org',
+          website: 'www.group.org'
+        }
+      }]
     }
   }))
   const { inputs } = await setup()
@@ -123,12 +135,16 @@ test('GroupForm: Input validation', async () => {
 test('GroupForm: Save form', async () => {
   terrasoApi.request
     .mockResolvedValueOnce({
-      group: {
-        id: '1',
-        name: 'Group Name',
-        description: 'Group Description',
-        email: 'group@group.org',
-        website: 'www.group.org'
+      groups: {
+        edges: [{
+          node: {
+            id: '1',
+            name: 'Group Name',
+            description: 'Group Description',
+            email: 'group@group.org',
+            website: 'www.group.org'
+          }
+        }]
       }
     })
     .mockResolvedValueOnce({
@@ -158,18 +174,24 @@ test('GroupForm: Save form', async () => {
       id: '1',
       description: 'New description',
       name: 'New name',
-      website: 'https://www.other.org'
+      website: 'https://www.other.org',
+      email: 'new.email@group.org'
     }
   })
 })
 test('GroupForm: Save form error', async () => {
   terrasoApi.request
     .mockReturnValueOnce(Promise.resolve({
-      group: {
-        name: 'Group Name',
-        description: 'Group Description',
-        email: 'group@group.org',
-        website: 'www.group.org'
+      groups: {
+        edges: [{
+          node: {
+            slug: 'group-1',
+            name: 'Group Name',
+            description: 'Group Description',
+            email: 'group@group.org',
+            website: 'www.group.org'
+          }
+        }]
       }
     }))
     .mockRejectedValueOnce('Save Error')
@@ -182,6 +204,7 @@ test('GroupForm: Save form error', async () => {
   fireEvent.change(inputs.website, { target: { value: 'https://www.other.org' } })
 
   await act(async () => fireEvent.click(screen.getByText(/Submit Group Info/i)))
+  expect(terrasoApi.request).toHaveBeenCalledTimes(2)
 
   // Test error display
   expect(screen.getByText(/Save Error/i)).toBeInTheDocument()
@@ -216,7 +239,8 @@ test('GroupForm: Save form (add)', async () => {
         group: {
           name: 'New name',
           description: 'New description',
-          website: 'https://www.other.org'
+          website: 'https://www.other.org',
+          email: 'group@group.org'
         }
       }
     })
@@ -226,6 +250,7 @@ test('GroupForm: Save form (add)', async () => {
   fireEvent.change(inputs.name, { target: { value: 'New name' } })
   fireEvent.change(inputs.description, { target: { value: 'New description' } })
   fireEvent.change(inputs.website, { target: { value: 'https://www.other.org' } })
+  fireEvent.change(inputs.email, { target: { value: 'other@group.org' } })
 
   await act(async () => fireEvent.click(screen.getByText(/Submit Group Info/i)))
   expect(terrasoApi.request).toHaveBeenCalledTimes(1)
@@ -234,7 +259,8 @@ test('GroupForm: Save form (add)', async () => {
     input: {
       description: 'New description',
       name: 'New name',
-      website: 'https://www.other.org'
+      website: 'https://www.other.org',
+      email: 'other@group.org'
     }
   })
 })
