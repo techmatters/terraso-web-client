@@ -9,7 +9,7 @@ export const createAsyncThunk = (name, action, onSuccessMessage, customErrorMess
     try {
       const result = await action(input, thunkAPI)
       if (onSuccessMessage) {
-        dispatch(addMessage(onSuccessMessage(result)))
+        dispatch(addMessage(onSuccessMessage(result, input)))
       }
       return result
     } catch (error) {

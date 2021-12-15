@@ -72,7 +72,8 @@ const GroupMembershipButton = props => {
   const onJoin = () => {
     dispatch(joinGroup({
       groupSlug,
-      userEmail
+      userEmail,
+      ownerName
     }))
   }
   const onLeaveConfirmation = () => {
@@ -82,7 +83,8 @@ const GroupMembershipButton = props => {
   const onLeave = () => {
     dispatch(leaveGroup({
       groupSlug,
-      membershipId: userMembership.membershipId
+      membershipId: userMembership.membershipId,
+      ownerName
     }))
   }
 
