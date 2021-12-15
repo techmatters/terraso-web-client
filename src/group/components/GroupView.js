@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams, Link as RouterLink } from 'react-router-dom'
-import { useSnackbar } from 'notistack'
 import { useTranslation } from 'react-i18next'
 import {
   Box,
@@ -67,19 +66,12 @@ const GroupCard = ({ group }) => {
 const GroupView = () => {
   const dispatch = useDispatch()
   const { t } = useTranslation()
-  const { group, fetching, message } = useSelector(state => state.group.view)
+  const { group, fetching } = useSelector(state => state.group.view)
   const { slug } = useParams()
-  const { enqueueSnackbar } = useSnackbar()
 
   useEffect(() => {
     dispatch(fetchGroupView(slug))
   }, [dispatch, slug])
-
-  useEffect(() => {
-    if (message) {
-      enqueueSnackbar(message)
-    }
-  }, [message, enqueueSnackbar])
 
   if (fetching) {
     return (
@@ -92,7 +84,7 @@ const GroupView = () => {
     )
   }
 
-  if (message && message.severity === 'error') {
+  if (!group) {
     return null
   }
 

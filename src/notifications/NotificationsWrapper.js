@@ -1,31 +1,32 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, createRef } from 'react'
 import _ from 'lodash'
 import { useTranslation } from 'react-i18next'
-import { useSelector } from 'react-redux'
-import { SnackbarProvider, useSnackbar } from 'notistack'
+import { useSelector, useDispatch } from 'react-redux'
+import { SnackbarProvider } from 'notistack'
 import { Alert } from '@mui/material'
+
+import { removeMessage } from './notificationsSlice'
 
 const MAX_NOTIFICATIONS = 3
 const AUTO_HIDE_DURATION = 10000
 
-const NotificationsHandler = () => {
-  const messages = useSelector(state => state.notifications.messages)
-  const { enqueueSnackbar } = useSnackbar()
-
-  useEffect(() => {
-    Object.values(messages).forEach(message => {
-      enqueueSnackbar(message)
-    })
-  }, [messages, enqueueSnackbar])
-
-  return (
-    <React.Fragment></React.Fragment>
-  )
-}
-
 const NotificationsWrapper = props => {
   const { t } = useTranslation()
   const { children } = props
+  const notistackRef = createRef()
+  const dispatch = useDispatch()
+  const messages = useSelector(state => state.notifications.messages)
+
+  useEffect(() => {
+    const shownMessage = Object.keys(messages)
+      .map(messageKey => {
+        notistackRef.current.enqueueSnackbar(messages[messageKey])
+        return messageKey
+      })
+    shownMessage.forEach(key => {
+      dispatch(removeMessage(key))
+    })
+  }, [messages, notistackRef, dispatch])
 
   // To add more flexibility to messages and localization
   // the content of a message can hold multiple sub messages
@@ -33,8 +34,13 @@ const NotificationsWrapper = props => {
     ? content
     : [content]
 
+  const onClose = key => {
+    notistackRef.current.closeSnackbar(key)
+  }
+
   return (
     <SnackbarProvider preventDuplicate
+      ref={notistackRef}
       maxSnack={MAX_NOTIFICATIONS}
       autoHideDuration={AUTO_HIDE_DURATION}
       anchorOrigin={{
@@ -42,7 +48,7 @@ const NotificationsWrapper = props => {
         horizontal: 'center'
       }}
       content={(key, notification) => (
-        <Alert severity={notification.severity} sx={{ width: '100%' }}>
+        <Alert onClose={() => onClose(key)} severity={notification.severity} sx={{ width: '100%' }}>
           {getMessages(notification.content)
             .map(message => t(message, notification.params))
             .join('. ')
@@ -50,7 +56,6 @@ const NotificationsWrapper = props => {
         </Alert>
       )}
     >
-      <NotificationsHandler />
       {children}
     </SnackbarProvider>
   )

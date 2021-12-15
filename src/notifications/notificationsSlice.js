@@ -1,4 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
+import _ from 'lodash'
+import { v4 as uuidv4 } from 'uuid'
 
 const initialState = {
   messages: {}
@@ -12,15 +14,20 @@ const notificationsSlice = createSlice({
       ...state,
       messages: {
         ...state.messages,
-        [action.payload.key]: action.payload.message
+        [uuidv4()]: action.payload
       }
+    }),
+    removeMessage: (state, action) => ({
+      ...state,
+      messages: _.omit(state.messages, action.payload)
     })
   },
   extraReducers: {}
 })
 
 export const {
-  addMessage
+  addMessage,
+  removeMessage
 } = notificationsSlice.actions
 
 export default notificationsSlice.reducer

@@ -4,9 +4,10 @@ import { addMessage } from 'notifications/notificationsSlice'
 // Handle custom error message to allow multiple sub messages
 export const createAsyncThunk = (name, action, onSuccessMessage, onErrorMessage) => createAsyncThunkBase(
   name,
-  async (input, { rejectWithValue, dispatch }) => {
+  async (input, thunkAPI) => {
+    const { rejectWithValue, dispatch } = thunkAPI
     try {
-      const result = await action(input)
+      const result = await action(input, thunkAPI)
       if (onSuccessMessage) {
         dispatch(addMessage(onSuccessMessage(result)))
       }
