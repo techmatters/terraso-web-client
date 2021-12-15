@@ -10,7 +10,7 @@ test('GroupService: Fetch group', async () => {
         node: {
           name: 'Group Name',
           description: 'Group Description',
-          website: 'www.group.org'
+          website: 'https://www.group.org'
         }
       }]
     }
@@ -19,7 +19,7 @@ test('GroupService: Fetch group', async () => {
   expect(group).toStrictEqual({
     name: 'Group Name',
     description: 'Group Description',
-    website: 'www.group.org'
+    website: 'https://www.group.org'
   })
 })
 test('GroupService: Fetch group not found', async () => {

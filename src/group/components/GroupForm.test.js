@@ -51,7 +51,7 @@ test('GroupForm: Fill form', async () => {
           name: 'Group Name',
           description: 'Group Description',
           email: 'group@group.org',
-          website: 'www.group.org'
+          website: 'https://www.group.org'
         }
       }]
     }
@@ -62,7 +62,7 @@ test('GroupForm: Fill form', async () => {
   expect(inputs.name).toHaveValue('Group Name')
   expect(inputs.description).toHaveValue('Group Description')
   expect(inputs.email).toHaveValue('group@group.org')
-  expect(inputs.website).toHaveValue('www.group.org')
+  expect(inputs.website).toHaveValue('https://www.group.org')
 })
 test('GroupForm: Input change', async () => {
   terrasoApi.request.mockReturnValueOnce(Promise.resolve({
@@ -72,7 +72,7 @@ test('GroupForm: Input change', async () => {
           name: 'Group Name',
           description: 'Group Description',
           email: 'group@group.org',
-          website: 'www.group.org'
+          website: 'https://www.group.org'
         }
       }]
     }
@@ -91,9 +91,9 @@ test('GroupForm: Input change', async () => {
   fireEvent.change(inputs.email, { target: { value: 'new.email@group.org' } })
   expect(inputs.email).toHaveValue('new.email@group.org')
 
-  expect(inputs.website).toHaveValue('www.group.org')
-  fireEvent.change(inputs.website, { target: { value: 'www.other.org' } })
-  expect(inputs.website).toHaveValue('www.other.org')
+  expect(inputs.website).toHaveValue('https://www.group.org')
+  fireEvent.change(inputs.website, { target: { value: 'https://www.other.org' } })
+  expect(inputs.website).toHaveValue('https://www.other.org')
 })
 test('GroupForm: Input validation', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
@@ -103,7 +103,7 @@ test('GroupForm: Input validation', async () => {
           name: 'Group Name',
           description: 'Group Description',
           email: 'group@group.org',
-          website: 'www.group.org'
+          website: 'https://www.group.org'
         }
       }]
     }
@@ -122,7 +122,7 @@ test('GroupForm: Input validation', async () => {
   fireEvent.change(inputs.email, { target: { value: 'new.emailgrouporg' } })
   expect(inputs.email).toHaveValue('new.emailgrouporg')
 
-  expect(inputs.website).toHaveValue('www.group.org')
+  expect(inputs.website).toHaveValue('https://www.group.org')
   fireEvent.change(inputs.website, { target: { value: 'wwwotherorg' } })
   expect(inputs.website).toHaveValue('wwwotherorg')
 
@@ -142,7 +142,7 @@ test('GroupForm: Save form', async () => {
             name: 'Group Name',
             description: 'Group Description',
             email: 'group@group.org',
-            website: 'www.group.org'
+            website: 'https://www.group.org'
           }
         }]
       }
@@ -154,7 +154,7 @@ test('GroupForm: Save form', async () => {
           name: 'Group Name',
           description: 'Group Description',
           email: 'group@group.org',
-          website: 'www.group.org'
+          website: 'https://www.group.org'
         }
       }
     })
@@ -189,7 +189,7 @@ test('GroupForm: Save form error', async () => {
             name: 'Group Name',
             description: 'Group Description',
             email: 'group@group.org',
-            website: 'www.group.org'
+            website: 'https://www.group.org'
           }
         }]
       }
