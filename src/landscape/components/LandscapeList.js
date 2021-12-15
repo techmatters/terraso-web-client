@@ -11,9 +11,10 @@ import {
   Backdrop,
   CircularProgress,
   Link,
-  Stack,
   Grid,
-  Card
+  Card,
+  List,
+  ListItem
 } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 
@@ -104,51 +105,53 @@ const LandscapeCards = ({ landscapes }) => {
   const { t } = useTranslation()
 
   return (
-    <Stack spacing={2}>
+    <List>
       {landscapes.map(landscape => (
-        <Card key={landscape.slug} sx={{ padding: theme.spacing(2) }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Typography variant="caption">
-                {t('landscape.list_column_name')}
-              </Typography>
-              <Typography variant="body1">
-                {landscape.name}
-              </Typography>
-            </Grid>
-            {landscape.location && (
+        <ListItem key={landscape.slug} sx={{ padding: 0, marginBottom: theme.spacing(2) }}>
+          <Card sx={{ padding: theme.spacing(2), width: '100%' }}>
+            <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Typography variant="caption">
-                  {t('landscape.list_column_location')}
+                  {t('landscape.list_column_name')}
                 </Typography>
                 <Typography variant="body1">
-                  {landscape.location}
+                  {landscape.name}
                 </Typography>
               </Grid>
-            )}
-            {landscape.website && (
-              <Grid item xs={12}>
+              {landscape.location && (
+                <Grid item xs={12}>
+                  <Typography variant="caption">
+                    {t('landscape.list_column_location')}
+                  </Typography>
+                  <Typography variant="body1">
+                    {landscape.location}
+                  </Typography>
+                </Grid>
+              )}
+              {landscape.website && (
+                <Grid item xs={12}>
+                  <Typography variant="caption">
+                    {t('landscape.list_column_contact')}
+                  </Typography>
+                  <Link component={Box} href={landscape.website} underline="none">
+                    {landscape.website}
+                  </Link>
+                </Grid>
+              )}
+              <Grid item xs={6}>
                 <Typography variant="caption">
-                  {t('landscape.list_column_contact')}
+                  {t('landscape.list_column_members')}
                 </Typography>
-                <Link component={Box} href={landscape.website} underline="none">
-                  {landscape.website}
-                </Link>
+                <GroupMembershipCount groupSlug={landscape.defaultGroup.slug} />
               </Grid>
-            )}
-            <Grid item xs={6}>
-              <Typography variant="caption">
-                {t('landscape.list_column_members')}
-              </Typography>
-              <GroupMembershipCount groupSlug={landscape.defaultGroup.slug} />
+              <Grid item xs={6}>
+                <MembershipButton landscape={landscape} />
+              </Grid>
             </Grid>
-            <Grid item xs={6}>
-              <MembershipButton landscape={landscape} />
-            </Grid>
-          </Grid>
-        </Card>
+          </Card>
+        </ListItem>
       ))}
-    </Stack>
+    </List>
   )
 }
 

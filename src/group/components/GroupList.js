@@ -11,10 +11,11 @@ import {
   Backdrop,
   CircularProgress,
   Link,
-  Stack,
   Grid,
   Card,
-  Button
+  Button,
+  List,
+  ListItem
 } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 
@@ -110,51 +111,53 @@ const GroupCards = ({ groups }) => {
   const { t } = useTranslation()
 
   return (
-    <Stack spacing={2}>
+    <List>
       {groups.map(group => (
-        <Card key={group.slug} sx={{ padding: theme.spacing(2) }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Typography variant="caption">
-                {t('group.list_column_name')}
-              </Typography>
-              <Typography variant="body1">
-                {group.name}
-              </Typography>
-            </Grid>
-            {group.email && (
+        <ListItem key={group.slug} sx={{ padding: 0, marginBottom: theme.spacing(2) }}>
+          <Card sx={{ width: '100%', padding: theme.spacing(2) }}>
+            <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Typography variant="caption">
-                  {t('group.list_column_contact')}
+                  {t('group.list_column_name')}
                 </Typography>
-                <Link component={Box} href={`mailto:${group.website}`} underline="none">
-                  {group.email}
-                </Link>
+                <Typography variant="body1">
+                  {group.name}
+                </Typography>
               </Grid>
-            )}
-            {group.website && (
-              <Grid item xs={12}>
+              {group.email && (
+                <Grid item xs={12}>
+                  <Typography variant="caption">
+                    {t('group.list_column_contact')}
+                  </Typography>
+                  <Link component={Box} href={`mailto:${group.website}`} underline="none">
+                    {group.email}
+                  </Link>
+                </Grid>
+              )}
+              {group.website && (
+                <Grid item xs={12}>
+                  <Typography variant="caption">
+                    {t('group.list_column_website')}
+                  </Typography>
+                  <Link component={Box} href={group.website} underline="none">
+                    {group.website}
+                  </Link>
+                </Grid>
+              )}
+              <Grid item xs={6}>
                 <Typography variant="caption">
-                  {t('group.list_column_website')}
+                  {t('group.list_column_members')}
                 </Typography>
-                <Link component={Box} href={group.website} underline="none">
-                  {group.website}
-                </Link>
+                <GroupMembershipCount groupSlug={group.slug} />
               </Grid>
-            )}
-            <Grid item xs={6}>
-              <Typography variant="caption">
-                {t('group.list_column_members')}
-              </Typography>
-              <GroupMembershipCount groupSlug={group.slug} />
+              <Grid item xs={6}>
+                <MembershipButton group={group} />
+              </Grid>
             </Grid>
-            <Grid item xs={6}>
-              <MembershipButton group={group} />
-            </Grid>
-          </Grid>
-        </Card>
+          </Card>
+        </ListItem>
       ))}
-    </Stack>
+    </List>
   )
 }
 
@@ -164,8 +167,6 @@ const GroupList = () => {
   const { groups, fetching, message } = useSelector(state => state.group.list)
   const { enqueueSnackbar } = useSnackbar()
   const isSmall = useMediaQuery(theme.breakpoints.down('md'))
-
-  console.log({ groups })
 
   useEffect(() => {
     dispatch(fetchGroups())
