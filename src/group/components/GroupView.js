@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useParams, Link as RouterLink } from 'react-router-dom'
 import { useSnackbar } from 'notistack'
+import { useTranslation } from 'react-i18next'
 import {
   Box,
   Typography,
@@ -12,51 +13,56 @@ import {
   CardHeader,
   CardContent,
   Link,
-  Stack
+  Stack,
+  Button
 } from '@mui/material'
 import PublicIcon from '@mui/icons-material/Public'
+import EmailIcon from '@mui/icons-material/Email'
 
 import { fetchGroupView } from 'group/groupSlice'
 import GroupMembershipCard from 'group/components/GroupMembershipCard'
 import theme from 'theme'
 
-const GroupCard = ({ group }) => (
-  <Card>
-    <CardHeader title={group.name}/>
-    <CardContent>
-      <Typography variant="body2" color="text.secondary">
-        {group.description}
-      </Typography>
-    </CardContent>
-    <CardContent>
-      <Stack direction="row" alignItems="center" spacing={1}>
-        <PublicIcon sx={{ color: 'gray.lite1' }} />
-        <Link href={group.website} underline="none">
-          {group.website}
-        </Link>
-      </Stack>
-    </CardContent>
-  </Card>
-)
-
-const GroupMap = ({ position }) => {
-  const bounds = position && [
-    [position.boundingbox[0], position.boundingbox[2]],
-    [position.boundingbox[1], position.boundingbox[3]]
-  ]
+const GroupCard = ({ group }) => {
+  const { t } = useTranslation()
   return (
-    <Map
-      bounds={bounds}
-      style={{
-        width: '100%',
-        height: '400px'
-      }}
-    />
+    <Card>
+      <CardHeader title={t('group.view_card_title', { name: group.name })} />
+      <CardContent>
+        <Typography variant="body2" color="text.secondary">
+          {group.description}
+        </Typography>
+      </CardContent>
+      <CardContent>
+        <Stack
+          direction="row"
+          alignItems="center"
+          spacing={1}
+          sx={{ marginBottom: theme.spacing(2) }}
+        >
+          <EmailIcon sx={{ color: 'gray.lite1' }} />
+          <Link href={`mailto:${group.email}`} underline="none">
+            {group.email}
+          </Link>
+        </Stack>
+        <Stack
+          direction="row"
+          alignItems="center"
+          spacing={1}
+        >
+          <PublicIcon sx={{ color: 'gray.lite1' }} />
+          <Link href={group.website} underline="none">
+            {group.website}
+          </Link>
+        </Stack>
+      </CardContent>
+    </Card>
   )
 }
 
 const GroupView = () => {
   const dispatch = useDispatch()
+  const { t } = useTranslation()
   const { group, fetching, message } = useSelector(state => state.group.view)
   const { slug } = useParams()
   const { enqueueSnackbar } = useSnackbar()
@@ -91,30 +97,32 @@ const GroupView = () => {
       paddingTop: theme.spacing(3),
       paddingBottom: theme.spacing(2)
     }}>
-      <Typography variant="h1" >
-        {group.name}
-      </Typography>
-      <Typography
-        variant="caption"
-        display="block"
+      <Stack
+        direction="row"
+        justifyContent="space-between"
         sx={{
-          marginBottom: theme.spacing(3),
-          marginTop: theme.spacing(2)
+          marginBottom: theme.spacing(3)
         }}
       >
-        {group.location}
-      </Typography>
+        <Typography variant="h1">
+          {group.name}
+        </Typography>
+        <Button
+          variant="contained"
+          component={RouterLink}
+          to={`/groups/${group.slug}/edit`}
+        >
+          {t('group.view_update_button')}
+        </Button>
+      </Stack>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <GroupMap position={group.position} />
-        </Grid>
         <Grid item xs={12} md={6}>
           <GroupCard group={group} />
         </Grid>
         <Grid item xs={12} md={6}>
           <GroupMembershipCard
             ownerName={group.name}
-            groupSlug={group.defaultGroup.slug}
+            groupSlug={group.slug}
             joinLabel="group.view_join_label"
             leaveLabel="group.view_leave_label"
           />

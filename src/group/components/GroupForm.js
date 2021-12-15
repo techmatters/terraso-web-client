@@ -13,7 +13,7 @@ import {
 } from '@mui/material'
 
 import theme from 'theme'
-import { fetchGroup, saveGroup, setFormNewValues } from 'group/groupSlice'
+import { fetchGroupForm, saveGroup, setFormNewValues } from 'group/groupSlice'
 import Form from 'forms/components/Form'
 
 const VALIDATION_SCHEMA = yup.object({
@@ -58,7 +58,7 @@ const GroupForm = () => {
   const { enqueueSnackbar } = useSnackbar()
 
   const { slug } = useParams()
-  const { fetching, group, message } = useSelector(state => state.group.form)
+  const { fetching, group, message, success } = useSelector(state => state.group.form)
 
   const isNew = !slug
 
@@ -67,15 +67,14 @@ const GroupForm = () => {
       dispatch(setFormNewValues())
       return
     }
-    dispatch(fetchGroup(slug))
+    dispatch(fetchGroupForm(slug))
   }, [dispatch, slug, isNew])
 
   useEffect(() => {
-    if (group && group.slug !== slug) {
-      // Change URL if new group slug
-      navigate(`/group/${group.slug}`)
+    if (success) {
+      navigate(`/groups/${group.slug}`)
     }
-  }, [slug, group, navigate])
+  }, [success, group, navigate])
 
   useEffect(() => {
     if (message) {

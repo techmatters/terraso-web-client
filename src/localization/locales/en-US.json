@@ -39,7 +39,11 @@
         "membership_leave_confirm_message": "Are you sure you want to leave {{name}}?",
         "membership_leave_confirm_button": "Leave {{name}}",
         "join_success": "Joined successfully to {{name}}",
-        "leave_success": "Left successfully from {{name}}"
+        "leave_success": "Left successfully from {{name}}",
+        "view_card_title": "About {{name}}",
+        "view_update_button": "Update Group info",
+        "view_join_label": "Join Group",
+        "view_leave_label": "Leave Group"
     },
     "landscape": {
         "dashboard_title": "Landscapes",

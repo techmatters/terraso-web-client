@@ -1,9 +1,9 @@
-import _ from 'lodash'
 import { createSlice } from '@reduxjs/toolkit'
 
 import { createAsyncThunk } from 'state/utils'
 import * as landscapeService from 'landscape/landscapeService'
 import { setMemberships } from 'group/groupSlice'
+import * as groupUtils from 'group/groupUtils'
 
 const initialState = {
   list: {
@@ -154,12 +154,12 @@ export const {
 
 export default landscapeSlice.reducer
 
-const getMemberships = landscapes => _.chain(landscapes)
-  .map(landscape => landscape.defaultGroup)
-  .filter(group => group.slug)
-  .map(group => ([group.slug, { group, fetching: false }]))
-  .fromPairs()
-  .value()
+const getMemberships = landscapes => {
+  const groups = landscapes
+    .map(landscape => landscape.defaultGroup)
+    .filter(group => group.slug)
+  return groupUtils.getMemberships(groups)
+}
 
 export const fetchLandscapes = () => dispatch => {
   dispatch(fetchLandscapesPending())
