@@ -34,27 +34,31 @@ const GroupCard = ({ group }) => {
         </Typography>
       </CardContent>
       <CardContent>
-        <Stack
-          direction="row"
-          alignItems="center"
-          spacing={1}
-          sx={{ marginBottom: theme.spacing(2) }}
-        >
-          <EmailIcon sx={{ color: 'gray.lite1' }} />
-          <Link href={`mailto:${group.email}`} underline="none">
-            {group.email}
-          </Link>
-        </Stack>
-        <Stack
-          direction="row"
-          alignItems="center"
-          spacing={1}
-        >
-          <PublicIcon sx={{ color: 'gray.lite1' }} />
-          <Link href={group.website} underline="none">
-            {group.website}
-          </Link>
-        </Stack>
+        {group.email && (
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={1}
+            sx={{ marginBottom: theme.spacing(2) }}
+          >
+            <EmailIcon sx={{ color: 'gray.lite1' }} />
+            <Link href={`mailto:${group.email}`} underline="none">
+              {group.email}
+            </Link>
+          </Stack>
+        )}
+        {group.website && (
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={1}
+          >
+            <PublicIcon sx={{ color: 'gray.lite1' }} />
+            <Link href={group.website} underline="none">
+              {group.website}
+            </Link>
+          </Stack>
+        )}
       </CardContent>
     </Card>
   )

@@ -13,7 +13,7 @@ import {
 } from '@mui/material'
 
 import theme from 'theme'
-import { fetchGroupForm, saveGroup, setFormNewValues } from 'group/groupSlice'
+import { fetchGroupForm, saveGroup, setFormNewValues, resetFormSuccess } from 'group/groupSlice'
 import Form from 'forms/components/Form'
 
 const VALIDATION_SCHEMA = yup.object({
@@ -74,7 +74,10 @@ const GroupForm = () => {
     if (success) {
       navigate(`/groups/${group.slug}`)
     }
-  }, [success, group, navigate])
+    return () => {
+      dispatch(resetFormSuccess())
+    }
+  }, [success, group, navigate, dispatch])
 
   useEffect(() => {
     if (message) {

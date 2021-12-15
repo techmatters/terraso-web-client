@@ -74,6 +74,13 @@ const groupSlice = createSlice({
           .fromPairs()
           .value()
       }
+    }),
+    resetFormSuccess: state => ({
+      ...state,
+      form: {
+        ...state.form,
+        success: false
+      }
     })
   },
   extraReducers: {
@@ -229,7 +236,8 @@ const groupSlice = createSlice({
 
 export const {
   setFormNewValues,
-  setMemberships
+  setMemberships,
+  resetFormSuccess
 } = groupSlice.actions
 
 export default groupSlice.reducer
