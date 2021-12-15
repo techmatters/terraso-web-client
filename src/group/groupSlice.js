@@ -28,8 +28,30 @@ const initialState = {
 export const fetchGroupForm = createAsyncThunk('group/fetchGroupForm', groupService.fetchGroupToUpdate)
 export const fetchGroupView = createAsyncThunk('group/fetchGroupView', groupService.fetchGroupToView)
 export const fetchGroups = createAsyncThunk('group/fetchGroups', groupService.fetchGroups)
-export const saveGroup = createAsyncThunk('group/saveGroup', groupService.saveGroup)
-export const joinGroup = createAsyncThunk('group/joinGroup', groupService.joinGroup)
+export const saveGroup = createAsyncThunk(
+  'group/saveGroup',
+  groupService.saveGroup,
+  () => ({
+    key: 'save-group',
+    message: { severity: 'success', content: 'group.form_message_success' }
+  }),
+  error => ({
+    key: 'save-group',
+    message: { severity: 'error', content: error }
+  })
+)
+export const joinGroup = createAsyncThunk(
+  'group/joinGroup',
+  groupService.joinGroup,
+  () => ({
+    key: 'join-group',
+    message: { severity: 'success', content: 'group.join_success' }
+  }),
+  error => ({
+    key: 'join-group',
+    message: { severity: 'error', content: error }
+  })
+)
 export const leaveGroup = createAsyncThunk('group/leaveGroup', groupService.leaveGroup)
 
 const groupSlice = createSlice({
@@ -177,29 +199,20 @@ const groupSlice = createSlice({
         fetching: false,
         success: true,
         group: action.payload,
-        message: {
-          severity: 'success',
-          content: 'group.form_message_success'
-        }
       }
     }),
     [saveGroup.rejected]: (state, action) => ({
       ...state,
       form: {
         ...state.form,
-        fetching: false,
-        message: {
-          severity: 'error',
-          content: action.payload
-        }
+        fetching: false
       }
     }),
     [joinGroup.pending]: (state, action) =>
       groupSlice.caseReducers.setMemberships(state, {
         payload: {
           [action.meta.arg.groupSlug]: {
-            joining: true,
-            message: null
+            joining: true
           }
         }
       }),
@@ -208,11 +221,7 @@ const groupSlice = createSlice({
         payload: {
           [action.meta.arg.groupSlug]: {
             joining: false,
-            group: action.payload,
-            message: {
-              severity: 'success',
-              content: 'group.join_success'
-            }
+            group: action.payload
           }
         }
       }),
@@ -220,11 +229,7 @@ const groupSlice = createSlice({
       groupSlice.caseReducers.setMemberships(state, {
         payload: {
           [action.meta.arg.groupSlug]: {
-            joining: false,
-            message: {
-              severity: 'error',
-              content: action.payload
-            }
+            joining: false
           }
         }
       }),

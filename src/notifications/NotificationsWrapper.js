@@ -1,11 +1,27 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import _ from 'lodash'
 import { useTranslation } from 'react-i18next'
-import { SnackbarProvider } from 'notistack'
+import { useSelector } from 'react-redux'
+import { SnackbarProvider, useSnackbar } from 'notistack'
 import { Alert } from '@mui/material'
 
 const MAX_NOTIFICATIONS = 3
 const AUTO_HIDE_DURATION = 10000
+
+const NotificationsHandler = () => {
+  const messages = useSelector(state => state.notifications.messages)
+  const { enqueueSnackbar } = useSnackbar()
+
+  useEffect(() => {
+    Object.values(messages).forEach(message => {
+      enqueueSnackbar(message)
+    })
+  }, [messages, enqueueSnackbar])
+
+  return (
+    <React.Fragment></React.Fragment>
+  )
+}
 
 const NotificationsWrapper = props => {
   const { t } = useTranslation()
@@ -34,6 +50,7 @@ const NotificationsWrapper = props => {
         </Alert>
       )}
     >
+      <NotificationsHandler />
       {children}
     </SnackbarProvider>
   )
