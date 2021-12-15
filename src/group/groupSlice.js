@@ -25,43 +25,23 @@ const initialState = {
   }
 }
 
-const onFetchError = error => ({ severity: 'error', content: error })
-
-export const fetchGroupForm = createAsyncThunk(
-  'group/fetchGroupForm',
-  groupService.fetchGroupToUpdate,
-  null,
-  onFetchError
-)
-export const fetchGroupView = createAsyncThunk(
-  'group/fetchGroupView',
-  groupService.fetchGroupToView,
-  null,
-  onFetchError
-)
-export const fetchGroups = createAsyncThunk(
-  'group/fetchGroups',
-  groupService.fetchGroups,
-  null,
-  onFetchError
-)
+export const fetchGroupForm = createAsyncThunk('group/fetchGroupForm', groupService.fetchGroupToUpdate)
+export const fetchGroupView = createAsyncThunk('group/fetchGroupView', groupService.fetchGroupToView)
+export const fetchGroups = createAsyncThunk('group/fetchGroups', groupService.fetchGroups)
 export const saveGroup = createAsyncThunk(
   'group/saveGroup',
   groupService.saveGroup,
-  () => ({ severity: 'success', content: 'group.form_message_success' }),
-  error => ({ severity: 'error', content: error })
+  () => ({ severity: 'success', content: 'group.form_message_success' })
 )
 export const joinGroup = createAsyncThunk(
   'group/joinGroup',
   groupService.joinGroup,
-  () => ({ severity: 'success', content: 'group.join_success' }),
-  error => ({ severity: 'error', content: error })
+  () => ({ severity: 'success', content: 'group.join_success' })
 )
 export const leaveGroup = createAsyncThunk(
   'group/leaveGroup',
   groupService.leaveGroup,
-  () => ({ severity: 'success', content: 'group.leave_success' }),
-  error => ({ severity: 'error', content: error })
+  () => ({ severity: 'success', content: 'group.leave_success' })
 )
 
 const groupSlice = createSlice({

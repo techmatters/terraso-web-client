@@ -29,9 +29,7 @@ export const fetchLandscapes = createAsyncThunk(
     const landscapes = await landscapeService.fetchLandscapes(params)
     dispatch(setMemberships(getMemberships(landscapes)))
     return landscapes
-  },
-  null,
-  error => ({ severity: 'error', content: error })
+  }
 )
 export const fetchLandscapeView = createAsyncThunk(
   'landscape/fetchLandscapeView',
@@ -39,21 +37,13 @@ export const fetchLandscapeView = createAsyncThunk(
     const landscape = await landscapeService.fetchLandscapeToView(params)
     dispatch(setMemberships(getMemberships([landscape])))
     return landscape
-  },
-  null,
-  error => ({ severity: 'error', content: error })
+  }
 )
-export const fetchLandscapeForm = createAsyncThunk(
-  'landscape/fetchLandscapeForm',
-  landscapeService.fetchLandscapeToUpdate,
-  null,
-  error => ({ severity: 'error', content: error })
-)
+export const fetchLandscapeForm = createAsyncThunk('landscape/fetchLandscapeForm', landscapeService.fetchLandscapeToUpdate)
 export const saveLandscape = createAsyncThunk(
   'landscape/saveLandscape',
   landscapeService.saveLandscape,
-  () => ({ severity: 'success', content: 'landscape.form_message_success' }),
-  error => ({ severity: 'error', content: error })
+  () => ({ severity: 'success', content: 'landscape.form_message_success' })
 )
 
 const landscapeSlice = createSlice({

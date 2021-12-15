@@ -2,7 +2,7 @@ import { createAsyncThunk as createAsyncThunkBase } from '@reduxjs/toolkit'
 import { addMessage } from 'notifications/notificationsSlice'
 
 // Handle custom error message to allow multiple sub messages
-export const createAsyncThunk = (name, action, onSuccessMessage, onErrorMessage) => createAsyncThunkBase(
+export const createAsyncThunk = (name, action, onSuccessMessage, customErrorMessage) => createAsyncThunkBase(
   name,
   async (input, thunkAPI) => {
     const { rejectWithValue, dispatch } = thunkAPI
@@ -13,9 +13,10 @@ export const createAsyncThunk = (name, action, onSuccessMessage, onErrorMessage)
       }
       return result
     } catch (error) {
-      if (onErrorMessage) {
-        dispatch(addMessage(onErrorMessage(error)))
-      }
+      const message = customErrorMessage
+        ? customErrorMessage(error)
+        : { severity: 'error', content: error }
+      dispatch(addMessage(message))
       return rejectWithValue(error)
     }
   }
