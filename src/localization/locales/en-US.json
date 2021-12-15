@@ -43,7 +43,19 @@
         "view_card_title": "About {{name}}",
         "view_update_button": "Update Group info",
         "view_join_label": "Join Group",
-        "view_leave_label": "Leave Group"
+        "view_leave_label": "Leave Group",
+        "list_title": "Groups",
+        "list_description": "View the list of groups in Terraso. Follow the group name link to learn more from the group profile. You can also create a group and invete others to join.",
+        "list_join_button": "Connect",
+        "list_leave_button": "Member",
+        "list_column_name": "Group Name",
+        "list_column_website": "Web Address",
+        "list_column_contact": "Contact Info",
+        "list_column_members": "Members",
+        "list_column_actions": "Actions",
+        "list_empty": "No Groups",
+        "list_new_description": "Can’t find the organizations or groups you are affiliated with? Create your group in Terraso, so you and your group members can connect in Terraso. The group creator will be the group manager who can add the group information.",
+        "list_new_button": "Create Group"
     },
     "landscape": {
         "dashboard_title": "Landscapes",

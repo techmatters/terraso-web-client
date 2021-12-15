@@ -4,6 +4,7 @@ export const groupFields = `
     slug
     name
     description
+    email
     website
     email
   }

@@ -13,76 +13,82 @@ import {
   Link,
   Grid,
   Card,
+  Button,
   List,
   ListItem
 } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 
-import { fetchLandscapes } from 'landscape/landscapeSlice'
+import { fetchGroups } from 'group/groupSlice'
 import GroupMembershipButton from 'group/components/GroupMembershipButton'
 import GroupMembershipCount from 'group/components/GroupMembershipCount'
 import theme from 'theme'
 
 const PAGE_SIZE = 10
 
-const MembershipButton = ({ landscape }) => (
+const MembershipButton = ({ group }) => (
   <GroupMembershipButton
-    groupSlug={_.get(landscape, 'defaultGroup.slug')}
-    joinLabel="landscape.list_join_button"
-    leaveLabel="landscape.list_leave_button"
-    ownerName={landscape.name}
+    groupSlug={group.slug}
+    joinLabel="group.list_join_button"
+    leaveLabel="group.list_leave_button"
+    ownerName={group.name}
     sx={{ width: '100%' }}
   />
 )
 
-const LandscapeTable = ({ landscapes }) => {
+const GroupTable = ({ groups }) => {
   const { t } = useTranslation()
 
   const columns = [{
     field: 'name',
-    headerName: t('landscape.list_column_name'),
+    headerName: t('group.list_column_name'),
     flex: 1.5,
     minWidth: 200,
-    renderCell: ({ row: landscape }) =>
-      <Link component={RouterLink} to={`/landscapes/${landscape.slug}`}>
-        {landscape.name}
+    renderCell: ({ row: group }) =>
+      <Link component={RouterLink} to={`/groups/${group.slug}`}>
+        {group.name}
       </Link>
   }, {
-    field: 'location',
-    headerName: t('landscape.list_column_location'),
-    flex: 1.5,
-    minWidth: 200
-  }, {
-    field: 'website',
-    headerName: t('landscape.list_column_contact'),
+    field: 'email',
+    headerName: t('group.list_column_contact'),
     sortable: false,
     flex: 1.5,
     minWidth: 200,
-    renderCell: ({ row: landscape }) =>
-      <Link href={landscape.website} underline="none">
-        {landscape.website}
+    renderCell: ({ row: group }) =>
+      <Link href={`mailto:${group.email}`} underline="none">
+        {group.email}
+      </Link>
+  }, {
+    field: 'website',
+    headerName: t('group.list_column_website'),
+    sortable: false,
+    flex: 1.5,
+    minWidth: 200,
+    renderCell: ({ row: group }) =>
+      <Link href={group.website} underline="none">
+        {group.website}
       </Link>
   }, {
     field: 'members',
-    headerName: t('landscape.list_column_members'),
+    headerName: t('group.list_column_members'),
     align: 'center',
-    valueGetter: ({ row: landscape }) => _.get(landscape, 'defaultGroup.members.length', 0),
-    renderCell: ({ row: landscape }) => (
-      <GroupMembershipCount groupSlug={landscape.defaultGroup.slug} />
+    valueGetter: ({ row: group }) => _.get(group, 'members.length', 0),
+    renderCell: ({ row: group }) => (
+      <GroupMembershipCount groupSlug={group.slug} />
     )
   }, {
     field: 'actions',
-    headerName: t('landscape.list_column_actions'),
+    headerName: t('group.list_column_actions'),
     sortable: false,
     align: 'center',
-    renderCell: ({ row: landscape }) => (
-      <MembershipButton landscape={landscape} />
+    renderCell: ({ row: group }) => (
+      <MembershipButton group={group} />
     )
   }]
 
   return (
     <DataGrid
-      rows={landscapes}
+      rows={groups}
       columns={columns}
       pageSize={PAGE_SIZE}
       rowsPerPageOptions={[PAGE_SIZE]}
@@ -94,58 +100,58 @@ const LandscapeTable = ({ landscapes }) => {
         }
       }}
       localeText={{
-        noRowsLabel: t('landscape.list_empty'),
+        noRowsLabel: t('group.list_empty'),
         footerPaginationRowsPerPage: t('common.data_grid_pagination_of')
       }}
     />
   )
 }
 
-const LandscapeCards = ({ landscapes }) => {
+const GroupCards = ({ groups }) => {
   const { t } = useTranslation()
 
   return (
     <List>
-      {landscapes.map(landscape => (
-        <ListItem key={landscape.slug} sx={{ padding: 0, marginBottom: theme.spacing(2) }}>
-          <Card sx={{ padding: theme.spacing(2), width: '100%' }}>
+      {groups.map(group => (
+        <ListItem key={group.slug} sx={{ padding: 0, marginBottom: theme.spacing(2) }}>
+          <Card sx={{ width: '100%', padding: theme.spacing(2) }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Typography variant="caption">
-                  {t('landscape.list_column_name')}
+                  {t('group.list_column_name')}
                 </Typography>
                 <Typography variant="body1">
-                  {landscape.name}
+                  {group.name}
                 </Typography>
               </Grid>
-              {landscape.location && (
+              {group.email && (
                 <Grid item xs={12}>
                   <Typography variant="caption">
-                    {t('landscape.list_column_location')}
+                    {t('group.list_column_contact')}
                   </Typography>
-                  <Typography variant="body1">
-                    {landscape.location}
-                  </Typography>
+                  <Link component={Box} href={`mailto:${group.website}`} underline="none">
+                    {group.email}
+                  </Link>
                 </Grid>
               )}
-              {landscape.website && (
+              {group.website && (
                 <Grid item xs={12}>
                   <Typography variant="caption">
-                    {t('landscape.list_column_contact')}
+                    {t('group.list_column_website')}
                   </Typography>
-                  <Link component={Box} href={landscape.website} underline="none">
-                    {landscape.website}
+                  <Link component={Box} href={group.website} underline="none">
+                    {group.website}
                   </Link>
                 </Grid>
               )}
               <Grid item xs={6}>
                 <Typography variant="caption">
-                  {t('landscape.list_column_members')}
+                  {t('group.list_column_members')}
                 </Typography>
-                <GroupMembershipCount groupSlug={landscape.defaultGroup.slug} />
+                <GroupMembershipCount groupSlug={group.slug} />
               </Grid>
               <Grid item xs={6}>
-                <MembershipButton landscape={landscape} />
+                <MembershipButton group={group} />
               </Grid>
             </Grid>
           </Card>
@@ -155,15 +161,15 @@ const LandscapeCards = ({ landscapes }) => {
   )
 }
 
-const LandscapeList = () => {
+const GroupList = () => {
   const dispatch = useDispatch()
   const { t } = useTranslation()
-  const { landscapes, fetching, message } = useSelector(state => state.landscape.list)
+  const { groups, fetching, message } = useSelector(state => state.group.list)
   const { enqueueSnackbar } = useSnackbar()
   const isSmall = useMediaQuery(theme.breakpoints.down('md'))
 
   useEffect(() => {
-    dispatch(fetchLandscapes())
+    dispatch(fetchGroups())
   }, [dispatch])
 
   useEffect(() => {
@@ -193,7 +199,7 @@ const LandscapeList = () => {
       paddingBottom: theme.spacing(2)
     }}>
       <Typography variant="h1" >
-        {t('landscape.list_title')}
+        {t('group.list_title')}
       </Typography>
       <Typography
         variant="body2"
@@ -203,14 +209,31 @@ const LandscapeList = () => {
           marginTop: theme.spacing(2)
         }}
       >
-        {t('landscape.list_description')}
+        {t('group.list_description')}
       </Typography>
       {isSmall
-        ? <LandscapeCards landscapes={landscapes} />
-        : <LandscapeTable landscapes={landscapes} />
+        ? <GroupCards groups={groups} />
+        : <GroupTable groups={groups} />
       }
+      <Typography
+        variant="body2"
+        display="block"
+        sx={{
+          marginTop: theme.spacing(2),
+          marginBottom: theme.spacing(2)
+        }}
+      >
+        {t('group.list_new_description')}
+      </Typography>
+      <Button
+        variant="contained"
+        component={RouterLink}
+        to="/groups/new"
+      >
+        {t('group.list_new_button')}
+      </Button>
     </Box>
   )
 }
 
-export default LandscapeList
+export default GroupList

@@ -56,16 +56,25 @@ export const fetchGroups = () => {
     query {
       groups {
         edges {
-          node { ...groupFields }
+          node {
+            ...groupFields
+            ...groupMembers
+          }
         }
       }
     }
     ${groupFields}
+    ${groupMembers}
   `
   return terrasoApi
     .request(query)
     .then(response => response.groups)
-    .then(groups => groups.edges.map(edge => edge.node))
+    .then(groups => groups.edges
+      .map(edge => ({
+        ..._.omit(edge.node, 'memberships'),
+        members: extractMembers(edge.node)
+      }))
+    )
 }
 
 const updateGroup = group => {
