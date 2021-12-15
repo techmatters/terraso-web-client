@@ -5,26 +5,30 @@ jest.mock('terrasoBackend/api')
 
 test('GroupService: Fetch group', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
-    group: {
-      name: 'Group Name',
-      description: 'Group Description',
-      website: 'www.group.org'
+    groups: {
+      edges: [{
+        node: {
+          name: 'Group Name',
+          description: 'Group Description',
+          website: 'https://www.group.org'
+        }
+      }]
     }
   }))
-  const group = await groupService.fetchGroup()
+  const group = await groupService.fetchGroupToUpdate()
   expect(group).toStrictEqual({
     name: 'Group Name',
     description: 'Group Description',
-    website: 'www.group.org'
+    website: 'https://www.group.org'
   })
 })
 test('GroupService: Fetch group not found', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
     group: null
   }))
-  await expect(groupService.fetchGroup()).rejects.toEqual('group.not_found')
+  await expect(groupService.fetchGroupToUpdate()).rejects.toEqual('group.not_found')
 })
 test('GroupService: Fetch group backend error', async () => {
   terrasoApi.request.mockReturnValue(Promise.reject('Test error'))
-  await expect(groupService.fetchGroup()).rejects.toEqual('Test error')
+  await expect(groupService.fetchGroupToUpdate()).rejects.toEqual('Test error')
 })

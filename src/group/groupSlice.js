@@ -3,17 +3,25 @@ import { createSlice } from '@reduxjs/toolkit'
 
 import { createAsyncThunk } from 'state/utils'
 import * as groupService from 'group/groupService'
+import * as groupUtils from 'group/groupUtils'
 
 const initialState = {
   memberships: {},
-  form: {
+  view: {
     group: null,
     fetching: true,
     message: null
+  },
+  form: {
+    group: null,
+    fetching: true,
+    message: null,
+    success: false
   }
 }
 
-export const fetchGroup = createAsyncThunk('group/fetchGroup', groupService.fetchGroup)
+export const fetchGroupForm = createAsyncThunk('group/fetchGroupForm', groupService.fetchGroupToUpdate)
+export const fetchGroupView = createAsyncThunk('group/fetchGroupView', groupService.fetchGroupToView)
 export const saveGroup = createAsyncThunk('group/saveGroup', groupService.saveGroup)
 export const joinGroup = createAsyncThunk('group/joinGroup', groupService.joinGroup)
 export const leaveGroup = createAsyncThunk('group/leaveGroup', groupService.leaveGroup)
@@ -66,14 +74,46 @@ const groupSlice = createSlice({
           .fromPairs()
           .value()
       }
+    }),
+    resetFormSuccess: state => ({
+      ...state,
+      form: {
+        ...state.form,
+        success: false
+      }
     })
   },
   extraReducers: {
-    [fetchGroup.pending]: state => ({
+    [fetchGroupView.pending]: state => ({
+      ...state,
+      view: initialState.view
+    }),
+    [fetchGroupView.fulfilled]: (state, action) => ({
+      ...groupSlice.caseReducers.setMemberships(state, {
+        payload: groupUtils.getMemberships([action.payload])
+      }),
+      view: {
+        fetching: false,
+        message: null,
+        group: action.payload
+      }
+    }),
+    [fetchGroupView.rejected]: (state, action) => ({
+      ...state,
+      view: {
+        ...state.form,
+        fetching: false,
+        message: {
+          severity: 'error',
+          content: action.payload
+        }
+      }
+    }),
+    [fetchGroupForm.pending]: state => ({
       ...state,
       form: initialState.form
     }),
-    [fetchGroup.fulfilled]: (state, action) => ({
+    [fetchGroupForm.fulfilled]: (state, action) => ({
       ...state,
       form: {
         fetching: false,
@@ -81,7 +121,7 @@ const groupSlice = createSlice({
         group: action.payload
       }
     }),
-    [fetchGroup.rejected]: (state, action) => ({
+    [fetchGroupForm.rejected]: (state, action) => ({
       ...state,
       form: {
         ...state.form,
@@ -104,6 +144,7 @@ const groupSlice = createSlice({
       form: {
         ...state.form,
         fetching: false,
+        success: true,
         group: action.payload,
         message: {
           severity: 'success',
@@ -195,7 +236,8 @@ const groupSlice = createSlice({
 
 export const {
   setFormNewValues,
-  setMemberships
+  setMemberships,
+  resetFormSuccess
 } = groupSlice.actions
 
 export default groupSlice.reducer

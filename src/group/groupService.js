@@ -5,23 +5,50 @@ import { groupFields, groupMembers } from 'group/groupFragments'
 import { extractMembers } from './groupUtils'
 
 // Omitted email because it is not supported by the backend
-const cleanGroup = group => _.omit(group, 'email')
+const cleanGroup = group => _.omit(group, 'slug')
 
-export const fetchGroup = id => {
+export const fetchGroupToUpdate = slug => {
   const query = `
-    query group($id: ID!){
-      group(id: $id) {
-        ...groupFields
+    query group($slug: String!){
+      groups(slug: $slug) {
+        edges {
+          node {
+            ...groupFields
+          }
+        }
       }
     }
     ${groupFields}
   `
   return terrasoApi
-    .request(query, { id })
-    .then(response => !response.group
-      ? Promise.reject('group.not_found')
-      : response.group
-    )
+    .request(query, { slug })
+    .then(response => _.get(response, 'groups.edges[0].node'))
+    .then(group => group || Promise.reject('group.not_found'))
+}
+
+export const fetchGroupToView = slug => {
+  const query = `
+    query group($slug: String!){
+      groups(slug: $slug) {
+        edges {
+          node {
+            ...groupFields
+            ...groupMembers
+          }
+        }
+      }
+    }
+    ${groupFields}
+    ${groupMembers}
+  `
+  return terrasoApi
+    .request(query, { slug })
+    .then(response => _.get(response, 'groups.edges[0].node'))
+    .then(group => group || Promise.reject('group.not_found'))
+    .then(group => ({
+      ...group,
+      members: extractMembers(group)
+    }))
 }
 
 export const fetchGroups = () => {

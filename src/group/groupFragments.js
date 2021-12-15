@@ -5,6 +5,7 @@ export const groupFields = `
     name
     description
     website
+    email
   }
 `
 
