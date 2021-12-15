@@ -4,7 +4,8 @@ import {
   CardActions,
   Typography,
   Button,
-  Alert
+  Alert,
+  Divider
 } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 
@@ -16,14 +17,13 @@ const Actions = () => {
   const { t } = useTranslation()
 
   return (
-    <CardActions sx={{ padding: 0 }}>
+    <CardActions>
       <Button
-        variant="outlined"
         component={Link}
         to="/landscapes"
         sx={{ width: '100%' }}
       >
-        {t('landscape.default_connect_button')}
+        {t('landscape.default_connect_button').toUpperCase()}
       </Button>
     </CardActions>
   )
@@ -33,8 +33,8 @@ const LandscapeDefaultDashboardCard = () => {
   const { t } = useTranslation()
 
   return (
-    <DashboardCard sx={{ flexDirection: 'column', padding: theme.spacing(2) }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+    <DashboardCard sx={{ flexDirection: 'column' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', padding: theme.spacing(2) }}>
         <Typography variant="h5">
           {t('landscape.dashboard_default_title')}
         </Typography>
@@ -50,6 +50,7 @@ const LandscapeDefaultDashboardCard = () => {
           </Typography>
         </Alert>
       </Box>
+      <Divider />
       <Actions />
     </DashboardCard>
   )
