@@ -6,6 +6,7 @@ import {
 
 import RequireAuth from 'auth/RequireAuth'
 import Dashboard from 'dashboard/components/Dashboard'
+import GroupList from 'group/components/GroupList'
 import GroupForm from 'group/components/GroupForm'
 import GroupView from 'group/components/GroupView'
 import LandscapeList from 'landscape/components/LandscapeList'
@@ -15,6 +16,7 @@ import LandscapeView from 'landscape/components/LandscapeView'
 const RoutesComponent = () => (
   <Routes>
     <Route path='/' element={<RequireAuth children={<Dashboard />} />} />
+    <Route path='/groups' element={<RequireAuth children={<GroupList />} />} />
     <Route path='/groups/new' element={<RequireAuth children={<GroupForm />} />} />
     <Route path='/groups/:slug/edit' element={<RequireAuth children={<GroupForm />} />} />
     <Route path='/groups/:slug' element={<RequireAuth children={<GroupView />} />} />

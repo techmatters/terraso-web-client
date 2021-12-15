@@ -7,6 +7,11 @@ import * as groupUtils from 'group/groupUtils'
 
 const initialState = {
   memberships: {},
+  list: {
+    fetching: true,
+    groups: [],
+    message: null
+  },
   view: {
     group: null,
     fetching: true,
@@ -22,6 +27,7 @@ const initialState = {
 
 export const fetchGroupForm = createAsyncThunk('group/fetchGroupForm', groupService.fetchGroupToUpdate)
 export const fetchGroupView = createAsyncThunk('group/fetchGroupView', groupService.fetchGroupToView)
+export const fetchGroups = createAsyncThunk('group/fetchGroups', groupService.fetchGroups)
 export const saveGroup = createAsyncThunk('group/saveGroup', groupService.saveGroup)
 export const joinGroup = createAsyncThunk('group/joinGroup', groupService.joinGroup)
 export const leaveGroup = createAsyncThunk('group/leaveGroup', groupService.leaveGroup)
@@ -107,6 +113,31 @@ const groupSlice = createSlice({
           severity: 'error',
           content: action.payload
         }
+      }
+    }),
+    [fetchGroups.pending]: state => ({
+      ...state,
+      list: initialState.list
+    }),
+    [fetchGroups.rejected]: (state, action) => ({
+      ...state,
+      list: {
+        ...state.list,
+        fetching: false,
+        message: {
+          severity: 'error',
+          content: action.payload
+        }
+      }
+    }),
+    [fetchGroups.fulfilled]: (state, action) => ({
+      ...groupSlice.caseReducers.setMemberships(state, {
+        payload: groupUtils.getMemberships(action.payload)
+      }),
+      list: {
+        fetching: false,
+        message: null,
+        groups: action.payload
       }
     }),
     [fetchGroupForm.pending]: state => ({
