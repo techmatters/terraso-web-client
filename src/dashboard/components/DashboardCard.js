@@ -1,15 +1,13 @@
 import React from 'react'
+import _ from 'lodash'
 import { Card } from '@mui/material'
-
-import theme from 'theme'
 
 const DashboardCard = props => (
   <Card
     {...props}
     sx={{
       display: 'flex',
-      padding: theme.spacing(2),
-      ...(props.sx || {})
+      ..._.get(props, 'sx', {})
     }}
   >
     {props.children}

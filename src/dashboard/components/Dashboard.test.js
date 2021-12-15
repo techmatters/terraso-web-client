@@ -31,47 +31,35 @@ test('Dashboard: Display loader', () => {
     expect(role).toBeInTheDocument()
   )
 })
-test('Dashboard: Display user', async () => {
-  terrasoApi.request.mockReturnValueOnce(Promise.resolve({
-    groups: {
-      edges: []
-    }
-  }))
-  terrasoApi.request.mockReturnValueOnce(Promise.resolve({
-    landscapes: {
-      edges: []
-    }
-  }))
-  await act(async () => render(<Dashboard />, {
-    user: {
-      user: {
-        first_name: 'First Name',
-        last_name: 'Last Name',
-        email: 'email@email.com'
-      }
-    }
-  }))
-  expect(screen.getByText(/First Name/i)).toBeInTheDocument()
-  expect(screen.getByText(/Last Name/i)).toBeInTheDocument()
-  expect(screen.getByText(/email@email.com/i)).toBeInTheDocument()
-})
 test('Dashboard: Display landscapes', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
     groups: {
       edges: []
     },
-    landscapes: {
+    landscapeGroups: {
       edges: [{
         node: {
-          id: 'id-1',
-          name: 'Landscape 1',
-          role: 'member'
-        }
-      }, {
-        node: {
-          id: 'id-2',
-          name: 'Landscape 2',
-          role: 'manager'
+          associatedLandscapes: {
+            edges: [{
+              node: {
+                landscape: {
+                  id: 'id-1',
+                  slug: 'id-1',
+                  name: 'Landscape 1',
+                  role: 'member'
+                }
+              }
+            }, {
+              node: {
+                landscape: {
+                  id: 'id-2',
+                  slug: 'id-2',
+                  name: 'Landscape 2',
+                  role: 'manager'
+                }
+              }
+            }]
+          }
         }
       }]
     }
@@ -84,19 +72,18 @@ test('Dashboard: Display landscapes', async () => {
 })
 test('Dashboard: Display groups', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
-    landscapes: {
-      edges: []
-    },
     groups: {
       edges: [{
         node: {
           id: 'id-1',
+          slug: 'id-1',
           name: 'Group 1',
           role: 'member'
         }
       }, {
         node: {
           id: 'id-2',
+          slug: 'id-2',
           name: 'Group 2',
           role: 'manager'
         }

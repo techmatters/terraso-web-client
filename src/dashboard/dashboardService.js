@@ -1,10 +1,53 @@
-import * as groupService from 'group/groupService'
-import * as landscapeService from 'landscape/landscapeService'
+import _ from 'lodash'
 
-export const fetchDashboardData = () => Promise.resolve()
-  .then(() => ([
-    groupService.fetchGroups(),
-    landscapeService.fetchLandscapes()
-  ]))
-  .then(promises => Promise.all(promises))
-  .then(([groups, landscapes]) => ({ landscapes, groups }))
+import * as terrasoApi from 'terrasoBackend/api'
+import { groupFields } from 'group/groupFragments'
+import { landscapeFields } from 'landscape/landscapeFragments'
+
+export const fetchDashboardData = email => {
+  const query = `
+    query dashboard($email: String!) {
+      landscapeGroups: groups(
+        members_Email: $email,
+        associatedLandscapes_IsDefaultLandscapeGroup: true
+      ) {
+        edges {
+          node {
+            associatedLandscapes {
+              edges {
+                node {
+                  landscape {
+                    ...landscapeFields
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      groups: groups(
+        members_Email: $email,
+        associatedLandscapes_IsDefaultLandscapeGroup: false
+      ) {
+        edges {
+          node {
+            ...groupFields
+          }
+        }
+      }
+    }
+    ${groupFields}
+    ${landscapeFields}
+  `
+  return terrasoApi
+    .request(query, { email })
+    .then(response => ({
+      groups: _.get(response, 'groups.edges', [])
+        .map(groupEdge => _.get(groupEdge, 'node'))
+        .filter(group => group),
+      landscapes: _.get(response, 'landscapeGroups.edges', [])
+        .flatMap(groupEdge => _.get(groupEdge, 'node.associatedLandscapes.edges', []))
+        .map(landscapeEdge => _.get(landscapeEdge, 'node.landscape'))
+        .filter(landscape => landscape)
+    }))
+}
