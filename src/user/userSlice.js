@@ -8,8 +8,7 @@ export const userSlice = createSlice({
       lastName: 'Buitron',
       email: 'email@email.org'
     },
-    fetching: false,
-    error: null
+    fetching: false
   },
   reducers: {}
 });

@@ -1,9 +1,9 @@
-import _ from 'lodash';
-import { createSlice } from '@reduxjs/toolkit';
+import _ from 'lodash'
+import { createSlice } from '@reduxjs/toolkit'
 
-import { createAsyncThunk } from 'state/utils';
-import * as groupService from 'group/groupService';
-import * as groupUtils from 'group/groupUtils';
+import { createAsyncThunk } from 'state/utils'
+import * as groupService from 'group/groupService'
+import * as groupUtils from 'group/groupUtils'
 
 const initialState = {
   memberships: {},
@@ -23,14 +23,34 @@ const initialState = {
     message: null,
     success: false
   }
-};
+}
 
-export const fetchGroupForm = createAsyncThunk('group/fetchGroupForm', groupService.fetchGroupToUpdate);
-export const fetchGroupView = createAsyncThunk('group/fetchGroupView', groupService.fetchGroupToView);
-export const fetchGroups = createAsyncThunk('group/fetchGroups', groupService.fetchGroups);
-export const saveGroup = createAsyncThunk('group/saveGroup', groupService.saveGroup);
-export const joinGroup = createAsyncThunk('group/joinGroup', groupService.joinGroup);
-export const leaveGroup = createAsyncThunk('group/leaveGroup', groupService.leaveGroup);
+export const fetchGroupForm = createAsyncThunk('group/fetchGroupForm', groupService.fetchGroupToUpdate)
+export const fetchGroupView = createAsyncThunk('group/fetchGroupView', groupService.fetchGroupToView)
+export const fetchGroups = createAsyncThunk('group/fetchGroups', groupService.fetchGroups)
+export const saveGroup = createAsyncThunk(
+  'group/saveGroup',
+  groupService.saveGroup,
+  () => ({ severity: 'success', content: 'group.form_message_success' })
+)
+export const joinGroup = createAsyncThunk(
+  'group/joinGroup',
+  groupService.joinGroup,
+  (group, { ownerName }) => ({
+    severity: 'success',
+    content: 'group.join_success',
+    params: { name: ownerName }
+  })
+)
+export const leaveGroup = createAsyncThunk(
+  'group/leaveGroup',
+  groupService.leaveGroup,
+  (group, { ownerName }) => ({
+    severity: 'success',
+    content: 'group.leave_success',
+    params: { name: ownerName }
+  })
+)
 
 const groupSlice = createSlice({
   name: 'group',
@@ -176,30 +196,21 @@ const groupSlice = createSlice({
         ...state.form,
         fetching: false,
         success: true,
-        group: action.payload,
-        message: {
-          severity: 'success',
-          content: 'group.form_message_success'
-        }
+        group: action.payload
       }
     }),
     [saveGroup.rejected]: (state, action) => ({
       ...state,
       form: {
         ...state.form,
-        fetching: false,
-        message: {
-          severity: 'error',
-          content: action.payload
-        }
+        fetching: false
       }
     }),
     [joinGroup.pending]: (state, action) =>
       groupSlice.caseReducers.setMemberships(state, {
         payload: {
           [action.meta.arg.groupSlug]: {
-            joining: true,
-            message: null
+            joining: true
           }
         }
       }),
@@ -208,11 +219,7 @@ const groupSlice = createSlice({
         payload: {
           [action.meta.arg.groupSlug]: {
             joining: false,
-            group: action.payload,
-            message: {
-              severity: 'success',
-              content: 'group.join_success'
-            }
+            group: action.payload
           }
         }
       }),
@@ -220,11 +227,7 @@ const groupSlice = createSlice({
       groupSlice.caseReducers.setMemberships(state, {
         payload: {
           [action.meta.arg.groupSlug]: {
-            joining: false,
-            message: {
-              severity: 'error',
-              content: action.payload
-            }
+            joining: false
           }
         }
       }),
@@ -242,11 +245,7 @@ const groupSlice = createSlice({
         payload: {
           [action.payload.groupSlug]: {
             joining: false,
-            group: null,
-            message: {
-              severity: 'success',
-              content: 'group.leave_success'
-            }
+            group: null
           }
         }
       }),
@@ -254,21 +253,17 @@ const groupSlice = createSlice({
       groupSlice.caseReducers.setMemberships(state, {
         payload: {
           [action.meta.arg.groupSlug]: {
-            joining: false,
-            message: {
-              severity: 'error',
-              content: action.payload
-            }
+            joining: false
           }
         }
       })
   }
-});
+})
 
 export const {
   setFormNewValues,
   setMemberships,
   resetFormSuccess
-} = groupSlice.actions;
+} = groupSlice.actions
 
-export default groupSlice.reducer;
+export default groupSlice.reducer
