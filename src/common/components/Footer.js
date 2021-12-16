@@ -25,7 +25,7 @@ const Footer = () => {
       <Stack direction={isSmall ? 'column' : 'row'} justifyContent="space-between" spacing={2} sx={{ color: theme.palette.white, background: theme.palette.secondary.main }}>
         <ul style={{ listStyle: 'none' }}>
           {
-            footerLinks.map(link => <li style={{ display: isSmall ? 'block' : 'inline', padding: '0 5px' }}><Link sx={{ color: theme.palette.white }} href="{link.url}">{link.text}</Link></li>)
+            footerLinks.map((link, index) => <li key={index} style={{ display: isSmall ? 'block' : 'inline', padding: '0 5px' }}><Link sx={{ color: theme.palette.white }} href="{link.url}">{link.text}</Link></li>)
           }
         </ul>
 
