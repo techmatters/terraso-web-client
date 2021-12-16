@@ -3,7 +3,6 @@ import _ from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useSnackbar } from 'notistack'
 import * as yup from 'yup'
 import {
   Box,
@@ -53,10 +52,9 @@ const LandscapeForm = () => {
   const dispatch = useDispatch()
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { enqueueSnackbar } = useSnackbar()
 
   const { slug } = useParams()
-  const { fetching, landscape, message } = useSelector(state => state.landscape.form)
+  const { fetching, landscape } = useSelector(state => state.landscape.form)
 
   const isNew = !slug
 
@@ -68,18 +66,17 @@ const LandscapeForm = () => {
     dispatch(fetchLandscapeForm(slug))
   }, [dispatch, slug, isNew])
 
+  useEffect(() => () => {
+    // Clean values when component closes
+    dispatch(setFormNewValues())
+  }, [dispatch, slug, isNew])
+
   useEffect(() => {
     if (landscape && landscape.slug !== slug) {
       // Change URL if new landscape ID
       navigate(`/landscapes/${landscape.slug}/edit`)
     }
   }, [slug, landscape, navigate])
-
-  useEffect(() => {
-    if (message) {
-      enqueueSnackbar(message)
-    }
-  }, [message, enqueueSnackbar])
 
   const onSave = updatedLandscape => dispatch(saveLandscape(updatedLandscape))
 
