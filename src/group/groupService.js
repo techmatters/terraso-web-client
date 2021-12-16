@@ -75,6 +75,7 @@ export const fetchGroups = () => {
         members: extractMembers(edge.node)
       }))
     )
+    .then(groups => _.orderBy(groups, [group => group.name.toLowerCase()]))
 }
 
 const updateGroup = group => {
