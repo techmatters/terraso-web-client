@@ -6,16 +6,18 @@ import {
   Box,
   Grid,
   Alert,
-  Typography
+  Typography,
+  Stack
 } from '@mui/material'
 
-import theme from 'theme'
 import LoaderCard from 'common/components/LoaderCard'
 import { fetchDashboardData } from 'dashboard/dashboardSlice'
 import LandscapesCard from 'landscape/components/LandscapesDashboardCard'
 import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultDashboardCard'
 import GroupsCard from 'group/components/GroupsDashboardCard'
 import GroupDefaultCard from 'group/components/GroupDefaultDashboardCard'
+import ToolDashboardCard from 'tool/components/ToolDasboardCard'
+import theme from 'theme'
 
 const Landscapes = ({ landscapes, fetching }) => {
   if (fetching) {
@@ -90,7 +92,10 @@ const Dashboard = () => {
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <Landscapes landscapes={landscapes} fetching={fetching} />
+          <Stack spacing={1}>
+            <Landscapes landscapes={landscapes} fetching={fetching} />
+            <ToolDashboardCard />
+          </Stack>
         </Grid>
         <Grid item xs={12} md={6}>
           <Groups groups={groups} fetching={fetching} />

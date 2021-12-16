@@ -102,7 +102,12 @@
       "list_title": "Tools",
       "list_description": "Helpful tools in Terraso",
       "is_for": "This tool is for",
-      "requirements": "System requirements"
+      "requirements": "System requirements",
+      "dashboard_card_title": "Access Data Collection Tool in Terraso",
+      "dashboard_card_description": "Take advantage of integrated tools in Terraso. KoBoToolbox is a free open-source data collection tool.",
+      "dashboard_card_img_alt": "KoBoToolbox image",
+      "dashboard_card_kobo_title": "KoBoToolbox",
+      "dashboard_card_kobo_link": "Learn more about KoBoToolbox features"
     },
     "localization": {
         "locale_en-US": "English",
