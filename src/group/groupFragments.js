@@ -8,7 +8,7 @@ export const groupFields = `
     website
     email
   }
-`
+`;
 
 export const groupMembers = `
   fragment groupMembers on GroupNode {
@@ -25,4 +25,4 @@ export const groupMembers = `
       }
     }
   }
-`
+`;

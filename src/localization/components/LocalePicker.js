@@ -1,16 +1,16 @@
-import React from 'react'
-import _ from 'lodash'
-import { useTranslation } from 'react-i18next'
-import { styled } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
+import React from 'react';
+import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
+import { styled } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import {
   Select,
   MenuItem,
   InputBase
-} from '@mui/material'
+} from '@mui/material';
 
-import { LOCALES } from 'localization/i18n'
-import theme from 'theme'
+import { LOCALES } from 'localization/i18n';
+import theme from 'theme';
 
 const SelectInput = styled(InputBase)(({ theme }) => ({
   '& .MuiInputBase-input': {
@@ -23,21 +23,21 @@ const SelectInput = styled(InputBase)(({ theme }) => ({
   '& .MuiInputBase-input:focus': {
     borderRadius: 0
   }
-}))
+}));
 
 const LocalePicker = () => {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useTranslation();
 
-  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleChange = event => {
-    const locale = _.get(event, 'target.value')
-    i18n.changeLanguage(locale)
-  }
+    const locale = _.get(event, 'target.value');
+    i18n.changeLanguage(locale);
+  };
 
   const getLocaleLabel = locale => isSmall
     ? `localization.locale_${locale}_small`
-    : `localization.locale_${locale}`
+    : `localization.locale_${locale}`;
 
   return (
     <Select
@@ -52,7 +52,7 @@ const LocalePicker = () => {
         </MenuItem>
       ))}
     </Select>
-  )
-}
+  );
+};
 
-export default LocalePicker
+export default LocalePicker;

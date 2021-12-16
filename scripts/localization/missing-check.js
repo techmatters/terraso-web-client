@@ -1,19 +1,19 @@
-const { readFile } = require('fs').promises
-const path = require('path')
-const flat = require('flat')
-const _ = require('lodash')
+const { readFile } = require('fs').promises;
+const path = require('path');
+const flat = require('flat');
+const _ = require('lodash');
 
-const { filesInFolder } = require('./utils')
+const { filesInFolder } = require('./utils');
 
-const SOURCE_LOCALE = 'en-US'
+const SOURCE_LOCALE = 'en-US';
 
-const LOCALE_FILES_FOLDER = path.join(__dirname, '../../src/localization/locales/')
+const LOCALE_FILES_FOLDER = path.join(__dirname, '../../src/localization/locales/');
 
 const getKeys = content => {
-  const json = JSON.parse(content)
-  const keys = Object.keys(flat(json))
-  return keys
-}
+  const json = JSON.parse(content);
+  const keys = Object.keys(flat(json));
+  return keys;
+};
 
 const checkMissingKeys = () => readFile(path.join(LOCALE_FILES_FOLDER, `${SOURCE_LOCALE}.json`))
   // Get source locale keys
@@ -27,10 +27,10 @@ const checkMissingKeys = () => readFile(path.join(LOCALE_FILES_FOLDER, `${SOURCE
       .then(localeKeys => _.difference(sourceKeys, localeKeys))
       .then(localeDiff => {
         if (_.isEmpty(localeDiff)) {
-          return null
+          return null;
         }
-        console.log(`Missing keys for ${path.parse(filePath).name}.`, 'Missing:', localeDiff)
-        return localeDiff
+        console.log(`Missing keys for ${path.parse(filePath).name}.`, 'Missing:', localeDiff);
+        return localeDiff;
       })
     ))
   )
@@ -39,10 +39,10 @@ const checkMissingKeys = () => readFile(path.join(LOCALE_FILES_FOLDER, `${SOURCE
   .then(results => {
     // Exit with error if missing keys identified
     if (_.isEmpty(results)) {
-      process.exit(0)
+      process.exit(0);
     } else {
-      process.exit(1)
+      process.exit(1);
     }
-  })
+  });
 
-checkMissingKeys()
+checkMissingKeys();

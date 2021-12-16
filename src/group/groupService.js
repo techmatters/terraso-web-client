@@ -1,11 +1,11 @@
-import _ from 'lodash'
+import _ from 'lodash';
 
-import * as terrasoApi from 'terrasoBackend/api'
-import { groupFields, groupMembers } from 'group/groupFragments'
-import { extractMembers } from './groupUtils'
+import * as terrasoApi from 'terrasoBackend/api';
+import { groupFields, groupMembers } from 'group/groupFragments';
+import { extractMembers } from './groupUtils';
 
 // Omitted email because it is not supported by the backend
-const cleanGroup = group => _.omit(group, 'slug')
+const cleanGroup = group => _.omit(group, 'slug');
 
 export const fetchGroupToUpdate = slug => {
   const query = `
@@ -19,12 +19,12 @@ export const fetchGroupToUpdate = slug => {
       }
     }
     ${groupFields}
-  `
+  `;
   return terrasoApi
     .request(query, { slug })
     .then(response => _.get(response, 'groups.edges[0].node'))
-    .then(group => group || Promise.reject('group.not_found'))
-}
+    .then(group => group || Promise.reject('group.not_found'));
+};
 
 export const fetchGroupToView = slug => {
   const query = `
@@ -40,7 +40,7 @@ export const fetchGroupToView = slug => {
     }
     ${groupFields}
     ${groupMembers}
-  `
+  `;
   return terrasoApi
     .request(query, { slug })
     .then(response => _.get(response, 'groups.edges[0].node'))
@@ -48,8 +48,8 @@ export const fetchGroupToView = slug => {
     .then(group => ({
       ...group,
       members: extractMembers(group)
-    }))
-}
+    }));
+};
 
 export const fetchGroups = () => {
   const query = `
@@ -65,7 +65,7 @@ export const fetchGroups = () => {
     }
     ${groupFields}
     ${groupMembers}
-  `
+  `;
   return terrasoApi
     .request(query)
     .then(response => response.groups)
@@ -74,8 +74,8 @@ export const fetchGroups = () => {
         ..._.omit(edge.node, 'memberships'),
         members: extractMembers(edge.node)
       }))
-    )
-}
+    );
+};
 
 const updateGroup = group => {
   const query = `
@@ -85,11 +85,11 @@ const updateGroup = group => {
       }
     }
     ${groupFields}
-  `
+  `;
   return terrasoApi
     .request(query, { input: cleanGroup(group) })
-    .then(response => response.updateGroup.group)
-}
+    .then(response => response.updateGroup.group);
+};
 
 const addGroup = group => {
   const query = `
@@ -99,15 +99,15 @@ const addGroup = group => {
       }
     }
     ${groupFields}
-  `
+  `;
   return terrasoApi
     .request(query, { input: cleanGroup(group) })
-    .then(response => response.addGroup.group)
-}
+    .then(response => response.addGroup.group);
+};
 
 export const saveGroup = group => group.id
   ? updateGroup(group)
-  : addGroup(group)
+  : addGroup(group);
 
 export const joinGroup = ({ groupSlug, userEmail }) => {
   const query = `
@@ -123,7 +123,7 @@ export const joinGroup = ({ groupSlug, userEmail }) => {
     }
     ${groupFields}
     ${groupMembers}
-  `
+  `;
   return terrasoApi
     .request(query, {
       input: { userEmail, groupSlug, userRole: 'member' }
@@ -134,8 +134,8 @@ export const joinGroup = ({ groupSlug, userEmail }) => {
     .then(group => ({
       ..._.omit(group, 'memberships'),
       members: extractMembers(group)
-    }))
-}
+    }));
+};
 
 export const leaveGroup = ({ groupSlug, membershipId }) => {
   const query = `
@@ -151,10 +151,10 @@ export const leaveGroup = ({ groupSlug, membershipId }) => {
     }
     ${groupFields}
     ${groupMembers}
-  `
+  `;
   return terrasoApi
     .request(query, { input: { id: membershipId } })
     .then()
     .then(response => _.get(response, 'deleteMembership.membership.group'))
-    .then(() => ({ groupSlug }))
-}
+    .then(() => ({ groupSlug }));
+};

@@ -1,9 +1,9 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit';
 
-import userReducer from 'user/userSlice'
-import userDashboardReducer from 'dashboard/dashboardSlice'
-import groupReducer from 'group/groupSlice'
-import landscapeReducer from 'landscape/landscapeSlice'
+import userReducer from 'user/userSlice';
+import userDashboardReducer from 'dashboard/dashboardSlice';
+import groupReducer from 'group/groupSlice';
+import landscapeReducer from 'landscape/landscapeSlice';
 
 const createStore = intialState => configureStore({
   reducer: {
@@ -13,6 +13,6 @@ const createStore = intialState => configureStore({
     landscape: landscapeReducer
   },
   preloadedState: intialState
-})
+});
 
-export default createStore
+export default createStore;

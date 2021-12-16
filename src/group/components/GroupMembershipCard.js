@@ -1,7 +1,7 @@
-import React from 'react'
-import _ from 'lodash'
-import { useSelector } from 'react-redux'
-import { useTranslation } from 'react-i18next'
+import React from 'react';
+import _ from 'lodash';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import {
   Typography,
   Card,
@@ -12,10 +12,10 @@ import {
   AvatarGroup,
   CircularProgress,
   Box
-} from '@mui/material'
+} from '@mui/material';
 
-import theme from 'theme'
-import GroupMembershipButton from './GroupMembershipButton'
+import theme from 'theme';
+import GroupMembershipButton from './GroupMembershipButton';
 
 const Loader = () => (
   <CardContent>
@@ -23,14 +23,14 @@ const Loader = () => (
       <CircularProgress />
     </Box>
   </CardContent>
-)
+);
 
 const Content = props => {
-  const { t } = useTranslation()
-  const { ownerName, members, fetching } = props
+  const { t } = useTranslation();
+  const { ownerName, members, fetching } = props;
 
   if (fetching) {
-    return (<Loader />)
+    return (<Loader />);
   }
 
   return (
@@ -46,24 +46,24 @@ const Content = props => {
         sx={{ flexDirection: 'row', marginTop: theme.spacing(2) }}
       >
         {members.map((member, index) => {
-          const name = `${member.firstName} ${member.lastName}`
+          const name = `${member.firstName} ${member.lastName}`;
           return (
             <Avatar key={index} alt={name} src="no-image.jpg" />
-          )
+          );
         })}
       </AvatarGroup>
     </CardContent>
-  )
-}
+  );
+};
 
 const GroupMembershipCard = props => {
-  const { t } = useTranslation()
-  const { ownerName, groupSlug, joinLabel, leaveLabel } = props
-  const { fetching, group } = useSelector(state => _.get(state, `group.memberships.${groupSlug}`, {}))
+  const { t } = useTranslation();
+  const { ownerName, groupSlug, joinLabel, leaveLabel } = props;
+  const { fetching, group } = useSelector(state => _.get(state, `group.memberships.${groupSlug}`, {}));
 
   // TODO This should just be 5 users and we should get the total count from
   // the backend when the support is added
-  const members = _.get(group, 'members', [])
+  const members = _.get(group, 'members', []);
 
   return (
     <Card>
@@ -86,7 +86,7 @@ const GroupMembershipCard = props => {
         </CardActions>
       )}
     </Card>
-  )
-}
+  );
+};
 
-export default GroupMembershipCard
+export default GroupMembershipCard;

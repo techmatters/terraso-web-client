@@ -1,9 +1,9 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
 
-import { createAsyncThunk } from 'state/utils'
-import * as landscapeService from 'landscape/landscapeService'
-import { setMemberships } from 'group/groupSlice'
-import * as groupUtils from 'group/groupUtils'
+import { createAsyncThunk } from 'state/utils';
+import * as landscapeService from 'landscape/landscapeService';
+import { setMemberships } from 'group/groupSlice';
+import * as groupUtils from 'group/groupUtils';
 
 const initialState = {
   list: {
@@ -21,10 +21,10 @@ const initialState = {
     message: null,
     landscape: null
   }
-}
+};
 
-export const fetchLandscapeForm = createAsyncThunk('landscape/fetchLandscapeForm', landscapeService.fetchLandscapeToUpdate)
-export const saveLandscape = createAsyncThunk('landscape/saveLandscape', landscapeService.saveLandscape)
+export const fetchLandscapeForm = createAsyncThunk('landscape/fetchLandscapeForm', landscapeService.fetchLandscapeToUpdate);
+export const saveLandscape = createAsyncThunk('landscape/saveLandscape', landscapeService.saveLandscape);
 
 const landscapeSlice = createSlice({
   name: 'landscape',
@@ -140,7 +140,7 @@ const landscapeSlice = createSlice({
       }
     })
   }
-})
+});
 
 export const {
   setFormNewValues,
@@ -150,37 +150,37 @@ export const {
   fetchLandscapeViewPending,
   fetchLandscapeViewRejected,
   fetchLandscapeViewFulfilled
-} = landscapeSlice.actions
+} = landscapeSlice.actions;
 
-export default landscapeSlice.reducer
+export default landscapeSlice.reducer;
 
 const getMemberships = landscapes => {
   const groups = landscapes
     .map(landscape => landscape.defaultGroup)
-    .filter(group => group.slug)
-  return groupUtils.getMemberships(groups)
-}
+    .filter(group => group.slug);
+  return groupUtils.getMemberships(groups);
+};
 
 export const fetchLandscapes = () => dispatch => {
-  dispatch(fetchLandscapesPending())
+  dispatch(fetchLandscapesPending());
   landscapeService.fetchLandscapes()
     .then(landscapes => {
-      dispatch(fetchLandscapesFulfilled(landscapes))
-      dispatch(setMemberships(getMemberships(landscapes)))
+      dispatch(fetchLandscapesFulfilled(landscapes));
+      dispatch(setMemberships(getMemberships(landscapes)));
     })
     .catch(error => {
-      dispatch(fetchLandscapesRejected(error))
-    })
-}
+      dispatch(fetchLandscapesRejected(error));
+    });
+};
 
 export const fetchLandscapeView = slug => dispatch => {
-  dispatch(fetchLandscapeViewPending())
+  dispatch(fetchLandscapeViewPending());
   landscapeService.fetchLandscapeToView(slug)
     .then(landscape => {
-      dispatch(fetchLandscapeViewFulfilled(landscape))
-      dispatch(setMemberships(getMemberships([landscape])))
+      dispatch(fetchLandscapeViewFulfilled(landscape));
+      dispatch(setMemberships(getMemberships([landscape])));
     })
     .catch(error => {
-      dispatch(fetchLandscapeViewRejected(error))
-    })
-}
+      dispatch(fetchLandscapeViewRejected(error));
+    });
+};

@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react'
-import _ from 'lodash'
-import { useSelector, useDispatch } from 'react-redux'
-import { useTranslation } from 'react-i18next'
-import { useSnackbar } from 'notistack'
+import React, { useEffect, useState } from 'react';
+import _ from 'lodash';
+import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import { useSnackbar } from 'notistack';
 import {
   CircularProgress
-} from '@mui/material'
-import { LoadingButton } from '@mui/lab'
+} from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 
-import { joinGroup, leaveGroup } from 'group/groupSlice'
-import ConfirmationDialog from 'common/components/ConfirmationDialog'
-import { t } from 'i18next'
+import { joinGroup, leaveGroup } from 'group/groupSlice';
+import ConfirmationDialog from 'common/components/ConfirmationDialog';
+import { t } from 'i18next';
 
 const BaseButton = props => (
   <LoadingButton
@@ -23,10 +23,10 @@ const BaseButton = props => (
   >
       {props.children}
   </LoadingButton>
-)
+);
 
 const LeaveButton = props => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <BaseButton
       onClick={props.onLeave}
@@ -34,11 +34,11 @@ const LeaveButton = props => {
     >
       {t(props.leaveLabel).toUpperCase()}
     </BaseButton>
-  )
-}
+  );
+};
 
 const JoinButton = props => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <BaseButton
       variant="outlined"
@@ -47,25 +47,25 @@ const JoinButton = props => {
     >
         {t(props.joinLabel)}
     </BaseButton>
-  )
-}
+  );
+};
 
 const GroupMembershipButton = props => {
-  const dispatch = useDispatch()
-  const { enqueueSnackbar } = useSnackbar()
-  const { joinLabel, leaveLabel, ownerName, groupSlug } = props
-  const { email: userEmail } = useSelector(state => state.user.user)
-  const { fetching, group, message, joining } = useSelector(state => _.get(state, `group.memberships.${groupSlug}`, {}))
-  const [openConfirmation, setOpenConfirmation] = useState(false)
+  const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
+  const { joinLabel, leaveLabel, ownerName, groupSlug } = props;
+  const { email: userEmail } = useSelector(state => state.user.user);
+  const { fetching, group, message, joining } = useSelector(state => _.get(state, `group.memberships.${groupSlug}`, {}));
+  const [openConfirmation, setOpenConfirmation] = useState(false);
 
-  const loading = fetching || joining
+  const loading = fetching || joining;
 
   // TODO This should just be 5 users and we should get the total count from
   // the backend when the support is added
-  const members = _.get(group, 'members', [])
+  const members = _.get(group, 'members', []);
 
   // TODO This should come from the backend when we have the authenticated user
-  const userMembership = members.find(member => member.email === userEmail)
+  const userMembership = members.find(member => member.email === userEmail);
 
   useEffect(() => {
     if (message) {
@@ -74,31 +74,31 @@ const GroupMembershipButton = props => {
         params: {
           name: ownerName
         }
-      })
-      setOpenConfirmation(false)
+      });
+      setOpenConfirmation(false);
     }
-  }, [message, enqueueSnackbar, ownerName])
+  }, [message, enqueueSnackbar, ownerName]);
 
   useEffect(() => {
-    setOpenConfirmation(false)
-  }, [userMembership])
+    setOpenConfirmation(false);
+  }, [userMembership]);
 
   const onJoin = () => {
     dispatch(joinGroup({
       groupSlug,
       userEmail
-    }))
-  }
+    }));
+  };
   const onLeaveConfirmation = () => {
-    setOpenConfirmation(true)
-  }
+    setOpenConfirmation(true);
+  };
 
   const onLeave = () => {
     dispatch(leaveGroup({
       groupSlug,
       membershipId: userMembership.membershipId
-    }))
-  }
+    }));
+  };
 
   if (userMembership) {
     return (
@@ -118,7 +118,7 @@ const GroupMembershipButton = props => {
           loading={loading}
         />
       </React.Fragment>
-    )
+    );
   }
   return (
     <JoinButton
@@ -126,7 +126,7 @@ const GroupMembershipButton = props => {
       onJoin={onJoin}
       loading={loading}
     />
-  )
-}
+  );
+};
 
-export default GroupMembershipButton
+export default GroupMembershipButton;

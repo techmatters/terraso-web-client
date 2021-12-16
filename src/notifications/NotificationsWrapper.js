@@ -1,21 +1,21 @@
-import React from 'react'
-import _ from 'lodash'
-import { useTranslation } from 'react-i18next'
-import { SnackbarProvider } from 'notistack'
-import { Alert } from '@mui/material'
+import React from 'react';
+import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
+import { SnackbarProvider } from 'notistack';
+import { Alert } from '@mui/material';
 
-const MAX_NOTIFICATIONS = 3
-const AUTO_HIDE_DURATION = 10000
+const MAX_NOTIFICATIONS = 3;
+const AUTO_HIDE_DURATION = 10000;
 
 const NotificationsWrapper = props => {
-  const { t } = useTranslation()
-  const { children } = props
+  const { t } = useTranslation();
+  const { children } = props;
 
   // To add more flexibility to messages and localization
   // the content of a message can hold multiple sub messages
   const getMessages = content => _.isArray(content)
     ? content
-    : [content]
+    : [content];
 
   return (
     <SnackbarProvider preventDuplicate
@@ -36,7 +36,7 @@ const NotificationsWrapper = props => {
     >
       {children}
     </SnackbarProvider>
-  )
-}
+  );
+};
 
-export default NotificationsWrapper
+export default NotificationsWrapper;

@@ -1,8 +1,8 @@
-import React from 'react'
+import React from 'react';
 import {
   MapContainer,
   TileLayer
-} from 'react-leaflet'
+} from 'react-leaflet';
 
 const Map = props => {
   return (
@@ -16,7 +16,7 @@ const Map = props => {
       />
       {props.children}
     </MapContainer>
-  )
-}
+  );
+};
 
-export default Map
+export default Map;

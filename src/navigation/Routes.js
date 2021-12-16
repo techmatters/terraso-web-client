@@ -1,17 +1,17 @@
-import React from 'react'
+import React from 'react';
 import {
   Routes,
   Route
-} from 'react-router-dom'
+} from 'react-router-dom';
 
-import RequireAuth from 'auth/RequireAuth'
-import Dashboard from 'dashboard/components/Dashboard'
-import GroupList from 'group/components/GroupList'
-import GroupForm from 'group/components/GroupForm'
-import GroupView from 'group/components/GroupView'
-import LandscapeList from 'landscape/components/LandscapeList'
-import LandscapeForm from 'landscape/components/LandscapeForm'
-import LandscapeView from 'landscape/components/LandscapeView'
+import RequireAuth from 'auth/RequireAuth';
+import Dashboard from 'dashboard/components/Dashboard';
+import GroupList from 'group/components/GroupList';
+import GroupForm from 'group/components/GroupForm';
+import GroupView from 'group/components/GroupView';
+import LandscapeList from 'landscape/components/LandscapeList';
+import LandscapeForm from 'landscape/components/LandscapeForm';
+import LandscapeView from 'landscape/components/LandscapeView';
 
 const RoutesComponent = () => (
   <Routes>
@@ -25,6 +25,6 @@ const RoutesComponent = () => (
     <Route path='/landscapes/:slug/edit' element={<RequireAuth children={<LandscapeForm />} />} />
     <Route path='/landscapes/:slug' element={<RequireAuth children={<LandscapeView />} />} />
   </Routes>
-)
+);
 
-export default RoutesComponent
+export default RoutesComponent;

@@ -1,8 +1,8 @@
-import _ from 'lodash'
+import _ from 'lodash';
 
-import * as terrasoApi from 'terrasoBackend/api'
-import { groupFields } from 'group/groupFragments'
-import { landscapeFields } from 'landscape/landscapeFragments'
+import * as terrasoApi from 'terrasoBackend/api';
+import { groupFields } from 'group/groupFragments';
+import { landscapeFields } from 'landscape/landscapeFragments';
 
 export const fetchDashboardData = email => {
   const query = `
@@ -38,7 +38,7 @@ export const fetchDashboardData = email => {
     }
     ${groupFields}
     ${landscapeFields}
-  `
+  `;
   return terrasoApi
     .request(query, { email })
     .then(response => ({
@@ -49,5 +49,5 @@ export const fetchDashboardData = email => {
         .flatMap(groupEdge => _.get(groupEdge, 'node.associatedLandscapes.edges', []))
         .map(landscapeEdge => _.get(landscapeEdge, 'node.landscape'))
         .filter(landscape => landscape)
-    }))
-}
+    }));
+};
