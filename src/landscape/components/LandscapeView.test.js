@@ -87,7 +87,7 @@ test('LandscapeView: Display data', async () => {
   expect(screen.getByRole('link', { name: 'www.landscape.org' })).toBeInTheDocument()
 
   // Members
-  expect(screen.getByText(/6 Landscape Name members have created accounts in Terraso./i)).toBeInTheDocument()
+  expect(screen.getByText(/6 Terraso members have affiliated themselves with Landscape Name./i)).toBeInTheDocument()
   expect(screen.getByText(/\+2/i)).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Connect to Landscape' })).toBeInTheDocument()
 

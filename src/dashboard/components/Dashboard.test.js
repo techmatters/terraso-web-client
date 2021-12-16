@@ -66,9 +66,9 @@ test('Dashboard: Display landscapes', async () => {
   }))
   await act(async () => render(<Dashboard />))
   expect(screen.getByText(/Landscape 1/i)).toBeInTheDocument()
-  expect(screen.getByText(/Landscape Member/i)).toBeInTheDocument()
+  expect(screen.getByText(/Member/i)).toBeInTheDocument()
   expect(screen.getByText(/Landscape 2/i)).toBeInTheDocument()
-  expect(screen.getByText(/Landscape Manager/i)).toBeInTheDocument()
+  expect(screen.getByText(/Manager/i)).toBeInTheDocument()
 })
 test('Dashboard: Display groups', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
@@ -91,10 +91,10 @@ test('Dashboard: Display groups', async () => {
     }
   }))
   await act(async () => render(<Dashboard />))
-  expect(screen.getByText(/Group 1/i)).toBeInTheDocument()
-  expect(screen.getByText(/Group Member/i)).toBeInTheDocument()
-  expect(screen.getByText(/Group 2/i)).toBeInTheDocument()
-  expect(screen.getByText(/Group Manager/i)).toBeInTheDocument()
+  expect(screen.getByText('Group 1')).toBeInTheDocument()
+  expect(screen.getByText('Member')).toBeInTheDocument()
+  expect(screen.getByText('Group 2')).toBeInTheDocument()
+  expect(screen.getByText('Manager')).toBeInTheDocument()
 })
 test('Dashboard: Display defaults', async () => {
   fetchDashboardData.mockReturnValue(Promise.resolve({

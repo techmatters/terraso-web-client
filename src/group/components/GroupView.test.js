@@ -78,7 +78,7 @@ test('GroupView: Display data', async () => {
   expect(screen.getByRole('link', { name: 'www.group.org' })).toBeInTheDocument()
 
   // Members
-  expect(screen.getByText(/6 Group Name members have created accounts in Terraso./i)).toBeInTheDocument()
+  expect(screen.getByText(/6 Terraso members have affiliated themselves with Group Name./i)).toBeInTheDocument()
   expect(screen.getByText(/\+2/i)).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Join Group' })).toBeInTheDocument()
 })

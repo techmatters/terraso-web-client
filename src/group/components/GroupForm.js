@@ -98,7 +98,17 @@ const GroupForm = () => {
           <CircularProgress color="inherit" />
         </Backdrop>
       )}
-      <Typography variant="h1" sx={{ marginBottom: theme.spacing(5) }}>{title}</Typography>
+      <Typography variant="h1" sx={{ marginBottom: theme.spacing(2) }}>{title}</Typography>
+      <Typography
+        variant="body2"
+        display="block"
+        sx={{
+          marginBottom: theme.spacing(3),
+          marginTop: theme.spacing(2)
+        }}
+      >
+        {t('group.form_new_description')}
+      </Typography>
       <Form
         prefix='group'
         fields={FIELDS}

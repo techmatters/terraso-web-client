@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   Box,
   Typography,
@@ -20,24 +21,27 @@ import GroupMembershipCard from 'group/components/GroupMembershipCard'
 import theme from 'theme'
 import Map from 'gis/components/Map'
 
-const LandscapeCard = ({ landscape }) => (
-  <Card>
-    <CardHeader title={landscape.name}/>
-    <CardContent>
-      <Typography variant="body2" color="text.secondary">
-        {landscape.description}
-      </Typography>
-    </CardContent>
-    <CardContent>
-      <Stack direction="row" alignItems="center" spacing={1}>
-        <PublicIcon sx={{ color: 'gray.lite1' }} />
-        <Link href={landscape.website} underline="none">
-          {landscape.website}
-        </Link>
-      </Stack>
-    </CardContent>
-  </Card>
-)
+const LandscapeCard = ({ landscape }) => {
+  const { t } = useTranslation()
+  return (
+    <Card>
+      <CardHeader title={t('landscape.view_card_title', { name: landscape.name })} />
+      <CardContent>
+        <Typography variant="body2" color="text.secondary">
+          {landscape.description}
+        </Typography>
+      </CardContent>
+      <CardContent>
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <PublicIcon sx={{ color: 'gray.lite1' }} />
+          <Link href={landscape.website} underline="none">
+            {landscape.website}
+          </Link>
+        </Stack>
+      </CardContent>
+    </Card>
+  )
+}
 
 const LandscapeMap = ({ position }) => {
   const bounds = position && [
