@@ -206,5 +206,5 @@ test('GroupList: Display list (small screen)', async () => {
   expect(within(rows[1]).getByText('email@email.com')).toBeInTheDocument()
   expect(within(rows[1]).getByText('23')).toBeInTheDocument()
   expect(within(rows[1]).getByText('Connect')).toBeInTheDocument()
-  expect(within(rows[3]).getByText('MEMBER')).toBeInTheDocument()
+  expect(within(rows[8]).getByText('MEMBER')).toBeInTheDocument()
 })
