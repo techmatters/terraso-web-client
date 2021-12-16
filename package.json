@@ -32,7 +32,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "lint": "eslint ./ --ext .js --max-warnings 0 --ignore-pattern node_modules/ --ignore-pattern build/",
+    "lint": "eslint ./ --fix --ext .js --max-warnings 0 --ignore-pattern node_modules/ --ignore-pattern build/",
     "build": "react-scripts build",
     "build-serve": "serve -s build",
     "test": "react-scripts test",
@@ -54,6 +54,7 @@
       "plugin:jsx-a11y/recommended"
     ],
     "rules": {
+      "react/jsx-indent": [2, 2, {"checkAttributes": true, "indentLogicalExpressions": true}],
       "prefer-promise-reject-errors": "off",
       "multiline-ternary": "off"
     }

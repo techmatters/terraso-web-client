@@ -18,6 +18,10 @@ const PAGES = {
   '/groups': {
     label: 'navigation.groups',
     match: path => path.startsWith('/groups')
+  },
+  '/tools': {
+    label: 'navigation.tools',
+    match: path => path.startsWith('/tools')
   }
 }
 
