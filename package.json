@@ -49,7 +49,7 @@
       "react-app",
       "react-app/jest",
       "eslint:recommended",
-      "standard",
+      "semistandard",
       "plugin:jsx-a11y/recommended"
     ],
     "rules": {
@@ -63,7 +63,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "eslint-config-standard": "^16.0.3",
+    "eslint-config-semistandard": "^16.0.0",
     "flat": "^5.0.2",
     "i18next-conv": "^11.0.1",
     "react-scripts": "^4.0.3",
