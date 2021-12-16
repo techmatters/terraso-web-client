@@ -244,6 +244,18 @@ test('GroupForm: Save form (add)', async () => {
         }
       }
     })
+    .mockReturnValueOnce(Promise.resolve({
+      addMembership: {
+        membership: {
+          group: {
+            name: 'New name',
+            description: 'New description',
+            website: 'https://www.other.org',
+            email: 'group@group.org'
+          }
+        }
+      }
+    }))
 
   const { inputs } = await setup()
 
@@ -253,7 +265,7 @@ test('GroupForm: Save form (add)', async () => {
   fireEvent.change(inputs.email, { target: { value: 'other@group.org' } })
 
   await act(async () => fireEvent.click(screen.getByText(/Submit Group Info/i)))
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1)
+  expect(terrasoApi.request).toHaveBeenCalledTimes(2)
   const saveCall = terrasoApi.request.mock.calls[0]
   expect(saveCall[1]).toStrictEqual({
     input: {

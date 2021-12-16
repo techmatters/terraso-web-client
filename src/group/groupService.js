@@ -92,7 +92,7 @@ const updateGroup = group => {
     .then(response => response.updateGroup.group)
 }
 
-const addGroup = group => {
+const addGroup = ({ group, user }) => {
   const query = `
     mutation addGroup($input: GroupAddMutationInput!){
       addGroup(input: $input) {
@@ -101,16 +101,23 @@ const addGroup = group => {
     }
     ${groupFields}
   `
+
   return terrasoApi
     .request(query, { input: cleanGroup(group) })
     .then(response => response.addGroup.group)
+    // TODO Workaround to set group manager
+    .then(group => joinGroup({
+      groupSlug: group.slug,
+      userEmail: user.email,
+      userRole: 'manager'
+    }))
 }
 
-export const saveGroup = group => group.id
+export const saveGroup = ({ group, user }) => group.id
   ? updateGroup(group)
-  : addGroup(group)
+  : addGroup({ group, user })
 
-export const joinGroup = ({ groupSlug, userEmail }) => {
+export const joinGroup = ({ groupSlug, userEmail, userRole = 'member' }) => {
   const query = `
     mutation addMembership($input: MembershipAddMutationInput!){
       addMembership(input: $input) {
@@ -127,7 +134,7 @@ export const joinGroup = ({ groupSlug, userEmail }) => {
   `
   return terrasoApi
     .request(query, {
-      input: { userEmail, groupSlug, userRole: 'member' }
+      input: { userEmail, groupSlug, userRole }
     })
     .then()
     .then(response => _.get(response, 'addMembership.membership.group'))
