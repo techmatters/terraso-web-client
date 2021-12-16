@@ -56,7 +56,7 @@ test('GroupMembershipCard: Display description', async () => {
       }
     }
   })
-  expect(screen.getByText('8 Owner Name members have created accounts in Terraso.')).toBeInTheDocument()
+  expect(screen.getByText('8 Terraso members have affiliated themselves with Owner Name.')).toBeInTheDocument()
 })
 test('GroupMembershipCard: Join error', async () => {
   terrasoApi.request.mockRejectedValueOnce('Join error')
@@ -94,7 +94,7 @@ test('GroupMembershipCard: Join (not found)', async () => {
       }
     }
   })
-  expect(screen.getByText('0 Owner Name members have created accounts in Terraso.')).toBeInTheDocument()
+  expect(screen.getByText('0 Terraso members have affiliated themselves with Owner Name.')).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Join Label' })).toBeInTheDocument()
   await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Join Label' })))
   expect(terrasoApi.request).toHaveBeenCalledTimes(1)
@@ -132,11 +132,11 @@ test('GroupMembershipCard: Join', async () => {
       }
     }
   })
-  expect(screen.getByText('0 Owner Name members have created accounts in Terraso.')).toBeInTheDocument()
+  expect(screen.getByText('0 Terraso members have affiliated themselves with Owner Name.')).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Join Label' })).toBeInTheDocument()
   await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Join Label' })))
   expect(terrasoApi.request).toHaveBeenCalledTimes(1)
-  expect(screen.getByText('1 Owner Name member has created an account in Terraso.')).toBeInTheDocument()
+  expect(screen.getByText('1 Terraso member has affiliated with Owner Name.')).toBeInTheDocument()
   expect(() => screen.getByRole('progressbar')).toThrow()
   expect(() => screen.getByRole('button', { name: 'Join Label' })).toThrow()
 })
@@ -157,12 +157,12 @@ test('GroupMembershipCard: Leave error', async () => {
       }
     }
   })
-  expect(screen.getByText('1 Owner Name member has created an account in Terraso.')).toBeInTheDocument()
+  expect(screen.getByText('1 Terraso member has affiliated with Owner Name.')).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'LEAVE LABEL' })).toBeInTheDocument()
   await act(async () => fireEvent.click(screen.getByRole('button', { name: 'LEAVE LABEL' })))
   // Confirm dialog
-  expect(screen.getByRole('button', { name: 'Leave Owner Name' })).toBeInTheDocument()
-  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Leave Owner Name' })))
+  expect(screen.getByRole('button', { name: 'Yes, leave Owner Name' })).toBeInTheDocument()
+  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Yes, leave Owner Name' })))
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(1)
   expect(screen.getByText(/Leave error/i)).toBeInTheDocument()
@@ -192,15 +192,15 @@ test('GroupMembershipCard: Leave', async () => {
       }
     }
   })
-  expect(screen.getByText('1 Owner Name member has created an account in Terraso.')).toBeInTheDocument()
+  expect(screen.getByText('1 Terraso member has affiliated with Owner Name.')).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'LEAVE LABEL' })).toBeInTheDocument()
   await act(async () => fireEvent.click(screen.getByRole('button', { name: 'LEAVE LABEL' })))
   // Confirm dialog
-  expect(screen.getByRole('button', { name: 'Leave Owner Name' })).toBeInTheDocument()
-  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Leave Owner Name' })))
+  expect(screen.getByRole('button', { name: 'Yes, leave Owner Name' })).toBeInTheDocument()
+  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Yes, leave Owner Name' })))
   expect(terrasoApi.request).toHaveBeenCalledTimes(1)
 
-  expect(screen.getByText('0 Owner Name members have created accounts in Terraso.')).toBeInTheDocument()
+  expect(screen.getByText('0 Terraso members have affiliated themselves with Owner Name.')).toBeInTheDocument()
   expect(() => screen.getByRole('progressbar')).toThrow()
   expect(screen.getByRole('button', { name: 'Join Label' })).toBeInTheDocument()
 })
