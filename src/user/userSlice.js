@@ -6,7 +6,7 @@ export const userSlice = createSlice({
     user: {
       firstName: 'John',
       lastName: 'Doe',
-      email: 'user01@gmail.com '
+      email: 'user01@gmail.com'
     },
     fetching: false
   },
