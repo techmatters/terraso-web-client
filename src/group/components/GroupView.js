@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { useParams, Link as RouterLink } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams, Link as RouterLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Typography,
@@ -14,16 +14,16 @@ import {
   Link,
   Stack,
   Button
-} from '@mui/material'
-import PublicIcon from '@mui/icons-material/Public'
-import EmailIcon from '@mui/icons-material/Email'
+} from '@mui/material';
+import PublicIcon from '@mui/icons-material/Public';
+import EmailIcon from '@mui/icons-material/Email';
 
-import { fetchGroupView } from 'group/groupSlice'
-import GroupMembershipCard from 'group/components/GroupMembershipCard'
-import theme from 'theme'
+import { fetchGroupView } from 'group/groupSlice';
+import GroupMembershipCard from 'group/components/GroupMembershipCard';
+import theme from 'theme';
 
 const GroupCard = ({ group }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <Card>
       <CardHeader title={t('group.view_card_title', { name: group.name })} />
@@ -60,18 +60,18 @@ const GroupCard = ({ group }) => {
         )}
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 const GroupView = () => {
-  const dispatch = useDispatch()
-  const { t } = useTranslation()
-  const { group, fetching } = useSelector(state => state.group.view)
-  const { slug } = useParams()
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
+  const { group, fetching } = useSelector(state => state.group.view);
+  const { slug } = useParams();
 
   useEffect(() => {
-    dispatch(fetchGroupView(slug))
-  }, [dispatch, slug])
+    dispatch(fetchGroupView(slug));
+  }, [dispatch, slug]);
 
   if (fetching) {
     return (
@@ -81,11 +81,11 @@ const GroupView = () => {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-    )
+    );
   }
 
   if (!group) {
-    return null
+    return null;
   }
 
   return (
@@ -125,7 +125,7 @@ const GroupView = () => {
         </Grid>
       </Grid>
     </Box>
-  )
-}
+  );
+};
 
-export default GroupView
+export default GroupView;

@@ -1,10 +1,10 @@
-import { createSlice } from '@reduxjs/toolkit'
-import _ from 'lodash'
-import { v4 as uuidv4 } from 'uuid'
+import { createSlice } from '@reduxjs/toolkit';
+import _ from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 
 const initialState = {
   messages: {}
-}
+};
 
 const notificationsSlice = createSlice({
   name: 'notifications',
@@ -23,11 +23,11 @@ const notificationsSlice = createSlice({
     })
   },
   extraReducers: {}
-})
+});
 
 export const {
   addMessage,
   removeMessage
-} = notificationsSlice.actions
+} = notificationsSlice.actions;
 
-export default notificationsSlice.reducer
+export default notificationsSlice.reducer;
