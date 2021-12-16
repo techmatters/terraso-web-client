@@ -82,6 +82,14 @@
         "list_column_actions": "Actions",
         "list_empty": "No Landscapes"
     },
+    "tool": {
+      "faq_title": "Tools FAQ",
+      "go_to": "Go to {{tool}}",
+      "list_title": "Tools",
+      "list_description": "Helpful tools in Terraso",
+      "is_for": "This tool is for",
+      "requirements": "System requirements"
+    },
     "localization": {
         "locale_en-US": "English",
         "locale_en-US_small": "EN",
@@ -108,7 +116,8 @@
         "nav_label": "Navigation",
         "home": "Home",
         "landscapes": "Landscapes",
-        "groups": "Groups"
+        "groups": "Groups",
+        "tools": "Tools"
     },
     "gis": {
         "openstreetmap_api_error": "Failed to request data from nominatim.openstreetmap.org API"
