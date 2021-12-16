@@ -10,6 +10,7 @@ import AppWrappers from 'common/components/AppWrappers'
 
 import Routes from 'navigation/Routes'
 import Navigation from 'navigation/Navigation'
+import Footer from 'common/components/Footer'
 
 import 'index.css'
 
@@ -25,6 +26,7 @@ ReactDOM.render(
           <Routes />
         </Container>
       </Box>
+      <Footer />
     </Box>
   </AppWrappers>,
   document.getElementById('root')
