@@ -54,7 +54,7 @@ export const fetchGroupToView = slug => {
 export const fetchGroups = () => {
   const query = `
     query {
-      groups {
+      groups(associatedLandscapes_Isnull:true) {
         edges {
           node {
             ...groupFields
