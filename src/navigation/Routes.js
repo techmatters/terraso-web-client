@@ -11,6 +11,7 @@ import GroupView from 'group/components/GroupView'
 import LandscapeList from 'landscape/components/LandscapeList'
 import LandscapeForm from 'landscape/components/LandscapeForm'
 import LandscapeView from 'landscape/components/LandscapeView'
+import ToolsList from 'tool/components/ToolList'
 
 const RoutesComponent = () => (
   <Routes>
@@ -22,6 +23,7 @@ const RoutesComponent = () => (
     <Route path='/landscapes/new' element={<RequireAuth children={<LandscapeForm />} />} />
     <Route path='/landscapes/:slug/edit' element={<RequireAuth children={<LandscapeForm />} />} />
     <Route path='/landscapes/:slug' element={<RequireAuth children={<LandscapeView />} />} />
+    <Route path='/tools' element={<RequireAuth children={<ToolsList />} />} />
   </Routes>
 )
 
