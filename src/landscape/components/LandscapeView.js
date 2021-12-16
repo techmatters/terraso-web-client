@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { useParams } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Typography,
@@ -13,16 +13,16 @@ import {
   CardContent,
   Link,
   Stack
-} from '@mui/material'
-import PublicIcon from '@mui/icons-material/Public'
+} from '@mui/material';
+import PublicIcon from '@mui/icons-material/Public';
 
-import { fetchLandscapeView } from 'landscape/landscapeSlice'
-import GroupMembershipCard from 'group/components/GroupMembershipCard'
-import theme from 'theme'
-import Map from 'gis/components/Map'
+import { fetchLandscapeView } from 'landscape/landscapeSlice';
+import GroupMembershipCard from 'group/components/GroupMembershipCard';
+import theme from 'theme';
+import Map from 'gis/components/Map';
 
 const LandscapeCard = ({ landscape }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <Card>
       <CardHeader title={t('landscape.view_card_title', { name: landscape.name })} />
@@ -40,14 +40,14 @@ const LandscapeCard = ({ landscape }) => {
         </Stack>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 const LandscapeMap = ({ position }) => {
   const bounds = position && [
     [position.boundingbox[0], position.boundingbox[2]],
     [position.boundingbox[1], position.boundingbox[3]]
-  ]
+  ];
   return (
     <Map
       bounds={bounds}
@@ -56,17 +56,17 @@ const LandscapeMap = ({ position }) => {
         height: '400px'
       }}
     />
-  )
-}
+  );
+};
 
 const LandscapeView = () => {
-  const dispatch = useDispatch()
-  const { landscape, fetching } = useSelector(state => state.landscape.view)
-  const { slug } = useParams()
+  const dispatch = useDispatch();
+  const { landscape, fetching } = useSelector(state => state.landscape.view);
+  const { slug } = useParams();
 
   useEffect(() => {
-    dispatch(fetchLandscapeView(slug))
-  }, [dispatch, slug])
+    dispatch(fetchLandscapeView(slug));
+  }, [dispatch, slug]);
 
   if (fetching) {
     return (
@@ -76,11 +76,11 @@ const LandscapeView = () => {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-    )
+    );
   }
 
   if (!landscape) {
-    return null
+    return null;
   }
 
   return (
@@ -118,7 +118,7 @@ const LandscapeView = () => {
         </Grid>
       </Grid>
     </Box>
-  )
-}
+  );
+};
 
-export default LandscapeView
+export default LandscapeView;

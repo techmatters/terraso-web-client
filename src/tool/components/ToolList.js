@@ -1,19 +1,19 @@
-import React from 'react'
-import { useTranslation } from 'react-i18next'
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
   Box,
   Typography
-} from '@mui/material'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-import theme from 'theme'
-import Tool from 'tool/components/Tool'
+import theme from 'theme';
+import Tool from 'tool/components/Tool';
 
 const ToolList = ({ tools }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const toolsData = [
     {
@@ -33,7 +33,7 @@ const ToolList = ({ tools }) => {
         'Modern web browser (Chrome, Edge, Firefox, Safari)'
       ]
     }
-  ]
+  ];
 
   return (
     <React.Fragment>
@@ -100,7 +100,7 @@ const ToolList = ({ tools }) => {
 
       </Box>
     </React.Fragment>
-  )
-}
+  );
+};
 
-export default ToolList
+export default ToolList;
