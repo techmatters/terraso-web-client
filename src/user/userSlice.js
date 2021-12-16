@@ -4,9 +4,9 @@ export const userSlice = createSlice({
   name: 'user',
   initialState: {
     user: {
-      firstName: 'Jose',
-      lastName: 'Buitron',
-      email: 'email@email.org'
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'user01@gmail.com '
     },
     fetching: false
   },
