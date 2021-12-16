@@ -72,7 +72,7 @@ test('Dashboard: Display landscapes', async () => {
 })
 test('Dashboard: Display groups', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
-    groups: {
+    userIndependentGroups: {
       edges: [{
         node: {
           id: 'id-1',
@@ -80,7 +80,10 @@ test('Dashboard: Display groups', async () => {
           name: 'Group 1',
           role: 'member'
         }
-      }, {
+      }]
+    },
+    userLandscapeGroups: {
+      edges: [{
         node: {
           id: 'id-2',
           slug: 'id-2',

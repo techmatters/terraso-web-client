@@ -54,7 +54,19 @@ export const fetchGroupToView = slug => {
 export const fetchGroups = () => {
   const query = `
     query {
-      groups(associatedLandscapes_Isnull:true) {
+      independentGroups: groups(
+        associatedLandscapes_Isnull: true
+      ) {
+        edges {
+          node {
+            ...groupFields
+            ...groupMembers
+          }
+        }
+      }
+      landscapeGroups: groups(
+        associatedLandscapes_IsDefaultLandscapeGroup: false
+      ) {
         edges {
           node {
             ...groupFields
@@ -68,8 +80,11 @@ export const fetchGroups = () => {
   `
   return terrasoApi
     .request(query)
-    .then(response => response.groups)
-    .then(groups => groups.edges
+    .then(response => [
+      ..._.get(response, 'independentGroups.edges', []),
+      ..._.get(response, 'landscapeGroups.edges', [])
+    ])
+    .then(groups => groups
       .map(edge => ({
         ..._.omit(edge.node, 'memberships'),
         members: extractMembers(edge.node)
