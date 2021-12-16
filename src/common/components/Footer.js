@@ -21,7 +21,7 @@ const Footer = () => {
   ]
 
   return (
-    <footer>
+    <footer style={{ position: 'fixed', bottom: 0, width: '100%' }}>
       <Stack direction={isSmall ? 'column' : 'row'} justifyContent="space-between" spacing={2} sx={{ color: theme.palette.white, background: theme.palette.secondary.main }}>
         <ul style={{ listStyle: 'none' }}>
           {
