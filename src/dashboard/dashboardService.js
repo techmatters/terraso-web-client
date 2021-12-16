@@ -27,7 +27,7 @@ export const fetchDashboardData = email => {
       }
       groups: groups(
         members_Email: $email,
-        associatedLandscapes_IsDefaultLandscapeGroup: false
+        associatedLandscapes_Isnull:true
       ) {
         edges {
           node {
