@@ -1,23 +1,23 @@
-import React, { useEffect } from 'react';
-import _ from 'lodash';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect } from 'react'
+import _ from 'lodash'
+import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import {
   Button,
   Stack
-} from '@mui/material';
-import { yupResolver } from '@hookform/resolvers/yup';
+} from '@mui/material'
+import { yupResolver } from '@hookform/resolvers/yup'
 
-import theme from 'theme';
-import FormField from 'forms/components/FormField';
+import theme from 'theme'
+import FormField from 'forms/components/FormField'
 
 const getInitialEmptyValues = fields => _.chain(fields)
   .map(field => ([field.name, '']))
   .fromPairs()
-  .value();
+  .value()
 
 const Form = props => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   const {
     prefix,
     fields,
@@ -27,7 +27,7 @@ const Form = props => {
     onSave,
     cancelLabel,
     onCancel
-  } = props;
+  } = props
 
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -35,24 +35,24 @@ const Form = props => {
       ...values
     },
     resolver: yupResolver(validationSchema)
-  });
+  })
 
   const requiredFields = _.chain(_.get(validationSchema, 'fields', {}))
     .toPairs()
     .filter(([name, field]) => _.get(field, 'exclusiveTests.required', false))
     .map(([name]) => name)
-    .value();
+    .value()
 
   useEffect(() => {
     if (values) {
       reset({
         ...getInitialEmptyValues(fields),
         ...values
-      });
+      })
     }
-  }, [values, fields, reset]);
+  }, [values, fields, reset])
 
-  const onSubmit = data => onSave(data);
+  const onSubmit = data => onSave(data)
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} sx={{ width: '100%' }} noValidate>
@@ -95,7 +95,7 @@ const Form = props => {
         )}
       </Stack>
     </form>
-  );
-};
+  )
+}
 
-export default Form;
+export default Form

@@ -1,16 +1,16 @@
-import React from 'react';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import React from 'react'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   Link,
   Stack
-} from '@mui/material';
+} from '@mui/material'
 
-import theme from 'theme';
+import theme from 'theme'
 
-const year = new Date().getFullYear();
+const year = new Date().getFullYear()
 
 const Footer = () => {
-  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
 
   const footerLinks = [
     { url: '#', text: 'Terraso Help' },
@@ -18,7 +18,7 @@ const Footer = () => {
     { url: '#', text: 'Terms of Use' },
     { url: 'https://techmatters.org/privacy-policy/', text: 'Privacy Policy' },
     { url: '#', text: 'Data Policy' }
-  ];
+  ]
 
   return (
     <footer>
@@ -34,7 +34,7 @@ const Footer = () => {
         </ul>
       </Stack>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer

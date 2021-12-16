@@ -1,28 +1,28 @@
-import React from 'react';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import React from 'react'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   AppBar,
   Toolbar,
   Button,
   Box
-} from '@mui/material';
-import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
+} from '@mui/material'
+import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
-import LocalePicker from 'localization/components/LocalePicker';
-import theme from 'theme';
+import LocalePicker from 'localization/components/LocalePicker'
+import theme from 'theme'
 
-import logo from 'assets/logo.svg';
-import logoSquare from 'assets/logo-square.svg';
+import logo from 'assets/logo.svg'
+import logoSquare from 'assets/logo-square.svg'
 
 const AppBarComponent = props => {
-  const { t } = useTranslation();
-  const user = useSelector(state => state.user.user);
-  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+  const { t } = useTranslation()
+  const user = useSelector(state => state.user.user)
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
 
   if (!user) {
-    return null;
+    return null
   }
 
   return (
@@ -46,7 +46,7 @@ const AppBarComponent = props => {
         <LocalePicker />
       </Toolbar>
     </AppBar>
-  );
-};
+  )
+}
 
-export default AppBarComponent;
+export default AppBarComponent

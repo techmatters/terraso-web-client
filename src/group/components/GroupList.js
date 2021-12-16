@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
-import _ from 'lodash';
-import { useSelector, useDispatch } from 'react-redux';
-import { useTranslation } from 'react-i18next';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useEffect } from 'react'
+import _ from 'lodash'
+import { useSelector, useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { Link as RouterLink } from 'react-router-dom'
 import {
   Box,
   Typography,
@@ -15,15 +15,15 @@ import {
   Button,
   List,
   ListItem
-} from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+} from '@mui/material'
+import { DataGrid } from '@mui/x-data-grid'
 
-import { fetchGroups } from 'group/groupSlice';
-import GroupMembershipButton from 'group/components/GroupMembershipButton';
-import GroupMembershipCount from 'group/components/GroupMembershipCount';
-import theme from 'theme';
+import { fetchGroups } from 'group/groupSlice'
+import GroupMembershipButton from 'group/components/GroupMembershipButton'
+import GroupMembershipCount from 'group/components/GroupMembershipCount'
+import theme from 'theme'
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 10
 
 const MembershipButton = ({ group }) => (
   <GroupMembershipButton
@@ -33,10 +33,10 @@ const MembershipButton = ({ group }) => (
     ownerName={group.name}
     sx={{ width: '100%' }}
   />
-);
+)
 
 const GroupTable = ({ groups }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   const columns = [{
     field: 'name',
@@ -83,7 +83,7 @@ const GroupTable = ({ groups }) => {
     renderCell: ({ row: group }) => (
       <MembershipButton group={group} />
     )
-  }];
+  }]
 
   return (
     <DataGrid
@@ -103,11 +103,11 @@ const GroupTable = ({ groups }) => {
         footerPaginationRowsPerPage: t('common.data_grid_pagination_of')
       }}
     />
-  );
-};
+  )
+}
 
 const GroupCards = ({ groups }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   return (
     <List>
@@ -157,18 +157,18 @@ const GroupCards = ({ groups }) => {
         </ListItem>
       ))}
     </List>
-  );
-};
+  )
+}
 
 const GroupList = () => {
-  const dispatch = useDispatch();
-  const { t } = useTranslation();
-  const { groups, fetching, message } = useSelector(state => state.group.list);
-  const isSmall = useMediaQuery(theme.breakpoints.down('md'));
+  const dispatch = useDispatch()
+  const { t } = useTranslation()
+  const { groups, fetching, message } = useSelector(state => state.group.list)
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
 
   useEffect(() => {
-    dispatch(fetchGroups());
-  }, [dispatch]);
+    dispatch(fetchGroups())
+  }, [dispatch])
 
   if (fetching) {
     return (
@@ -178,11 +178,11 @@ const GroupList = () => {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-    );
+    )
   }
 
   if (message && message.severity === 'error') {
-    return null;
+    return null
   }
 
   return (
@@ -225,7 +225,7 @@ const GroupList = () => {
         {t('group.list_new_button')}
       </Button>
     </Box>
-  );
-};
+  )
+}
 
-export default GroupList;
+export default GroupList

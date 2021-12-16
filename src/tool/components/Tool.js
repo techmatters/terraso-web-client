@@ -1,15 +1,15 @@
-import React from 'react';
+import React from 'react'
 import {
   Card,
   Link,
   Stack,
   Typography
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import theme from 'theme';
+} from '@mui/material'
+import { useTranslation } from 'react-i18next'
+import theme from 'theme'
 
 const Tool = ({ tool }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   return (
     <React.Fragment>
@@ -61,7 +61,7 @@ const Tool = ({ tool }) => {
       </Card>
 
     </React.Fragment>
-  );
-};
+  )
+}
 
-export default Tool;
+export default Tool

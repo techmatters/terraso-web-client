@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
-import _ from 'lodash';
-import { useSelector, useDispatch } from 'react-redux';
-import { useTranslation } from 'react-i18next';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useEffect } from 'react'
+import _ from 'lodash'
+import { useSelector, useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { Link as RouterLink } from 'react-router-dom'
 import {
   Box,
   Typography,
@@ -14,15 +14,15 @@ import {
   Card,
   List,
   ListItem
-} from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+} from '@mui/material'
+import { DataGrid } from '@mui/x-data-grid'
 
-import { fetchLandscapes } from 'landscape/landscapeSlice';
-import GroupMembershipButton from 'group/components/GroupMembershipButton';
-import GroupMembershipCount from 'group/components/GroupMembershipCount';
-import theme from 'theme';
+import { fetchLandscapes } from 'landscape/landscapeSlice'
+import GroupMembershipButton from 'group/components/GroupMembershipButton'
+import GroupMembershipCount from 'group/components/GroupMembershipCount'
+import theme from 'theme'
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 10
 
 const MembershipButton = ({ landscape }) => (
   <GroupMembershipButton
@@ -32,10 +32,10 @@ const MembershipButton = ({ landscape }) => (
     ownerName={landscape.name}
     sx={{ width: '100%' }}
   />
-);
+)
 
 const LandscapeTable = ({ landscapes }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   const columns = [{
     field: 'name',
@@ -77,7 +77,7 @@ const LandscapeTable = ({ landscapes }) => {
     renderCell: ({ row: landscape }) => (
       <MembershipButton landscape={landscape} />
     )
-  }];
+  }]
 
   return (
     <DataGrid
@@ -97,11 +97,11 @@ const LandscapeTable = ({ landscapes }) => {
         footerPaginationRowsPerPage: t('common.data_grid_pagination_of')
       }}
     />
-  );
-};
+  )
+}
 
 const LandscapeCards = ({ landscapes }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   return (
     <List>
@@ -151,18 +151,18 @@ const LandscapeCards = ({ landscapes }) => {
         </ListItem>
       ))}
     </List>
-  );
-};
+  )
+}
 
 const LandscapeList = () => {
-  const dispatch = useDispatch();
-  const { t } = useTranslation();
-  const { landscapes, fetching } = useSelector(state => state.landscape.list);
-  const isSmall = useMediaQuery(theme.breakpoints.down('md'));
+  const dispatch = useDispatch()
+  const { t } = useTranslation()
+  const { landscapes, fetching } = useSelector(state => state.landscape.list)
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
 
   useEffect(() => {
-    dispatch(fetchLandscapes());
-  }, [dispatch]);
+    dispatch(fetchLandscapes())
+  }, [dispatch])
 
   if (fetching) {
     return (
@@ -172,11 +172,11 @@ const LandscapeList = () => {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-    );
+    )
   }
 
   if (!landscapes) {
-    return null;
+    return null
   }
 
   return (
@@ -202,7 +202,7 @@ const LandscapeList = () => {
         : <LandscapeTable landscapes={landscapes} />
       }
     </Box>
-  );
-};
+  )
+}
 
-export default LandscapeList;
+export default LandscapeList

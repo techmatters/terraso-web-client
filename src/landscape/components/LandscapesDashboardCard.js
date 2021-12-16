@@ -1,5 +1,5 @@
-import React from 'react';
-import _ from 'lodash';
+import React from 'react'
+import _ from 'lodash'
 import {
   Avatar,
   Box,
@@ -10,19 +10,19 @@ import {
   List,
   ListItem,
   Typography
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
+} from '@mui/material'
+import { useTranslation } from 'react-i18next'
+import { Link as RouterLink } from 'react-router-dom'
 
-import DashboardCard from 'dashboard/components/DashboardCard';
-import theme from 'theme';
+import DashboardCard from 'dashboard/components/DashboardCard'
+import theme from 'theme'
 
 const getAcronym = name => name
   .match(/\b(\w)/g)
-  .join('');
+  .join('')
 
 const LandscapeItem = ({ landscape }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   return (
     <Box sx={{ display: 'flex', padding: theme.spacing(1) }}>
       <Avatar sx={{ width: 80, height: 80 }} variant="square">
@@ -41,11 +41,11 @@ const LandscapeItem = ({ landscape }) => {
         </Typography>
       </Box>
     </Box>
-  );
-};
+  )
+}
 
 const LandscapesDashboardCard = ({ landscapes }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   return (
     <DashboardCard sx={{ flexDirection: 'column' }}>
       <Typography variant="h5" sx={{ padding: theme.spacing(2) }}>
@@ -77,7 +77,7 @@ const LandscapesDashboardCard = ({ landscapes }) => {
         </Button>
       </CardActions>
     </DashboardCard>
-  );
-};
+  )
+}
 
-export default LandscapesDashboardCard;
+export default LandscapesDashboardCard

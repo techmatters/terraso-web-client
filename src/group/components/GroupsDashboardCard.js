@@ -1,5 +1,5 @@
-import React from 'react';
-import _ from 'lodash';
+import React from 'react'
+import _ from 'lodash'
 import {
   Box,
   Button,
@@ -9,15 +9,15 @@ import {
   List,
   ListItem,
   Typography
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
+} from '@mui/material'
+import { useTranslation } from 'react-i18next'
+import { Link as RouterLink } from 'react-router-dom'
 
-import DashboardCard from 'dashboard/components/DashboardCard';
-import theme from 'theme';
+import DashboardCard from 'dashboard/components/DashboardCard'
+import theme from 'theme'
 
 const GroupItem = ({ group }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', padding: theme.spacing(1) }}>
       <Link
@@ -31,11 +31,11 @@ const GroupItem = ({ group }) => {
         {t(`group.role_${_.get(group, 'role', 'member')}`)}
       </Typography>
     </Box>
-  );
-};
+  )
+}
 
 const GroupsDashboardCard = ({ groups }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   return (
     <DashboardCard sx={{ flexDirection: 'column' }}>
       <Typography variant="h5" sx={{ padding: theme.spacing(2) }}>
@@ -67,7 +67,7 @@ const GroupsDashboardCard = ({ groups }) => {
         </Button>
       </CardActions>
     </DashboardCard>
-  );
-};
+  )
+}
 
-export default GroupsDashboardCard;
+export default GroupsDashboardCard

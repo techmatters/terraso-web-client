@@ -1,6 +1,6 @@
-import _ from 'lodash';
+import _ from 'lodash'
 
-const generateUrl = name => `https://nominatim.openstreetmap.org/search.php?q=${name}&format=jsonv2`;
+const generateUrl = name => `https://nominatim.openstreetmap.org/search.php?q=${name}&format=jsonv2`
 
 export const getPlaceInfoByName = name => fetch(generateUrl(name))
   .then(response => response.json())
@@ -10,6 +10,6 @@ export const getPlaceInfoByName = name => fetch(generateUrl(name))
       'Failed to request data from nominatim.openstreetmap.org API',
       'Name:', name,
       'Error:', error
-    );
-    return Promise.reject('gis.openstreetmap_api_error');
-  });
+    )
+    return Promise.reject('gis.openstreetmap_api_error')
+  })

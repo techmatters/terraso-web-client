@@ -1,6 +1,6 @@
-import React from 'react';
-import _ from 'lodash';
-import { Card } from '@mui/material';
+import React from 'react'
+import _ from 'lodash'
+import { Card } from '@mui/material'
 
 const DashboardCard = props => (
   <Card
@@ -12,6 +12,6 @@ const DashboardCard = props => (
   >
     {props.children}
   </Card>
-);
+)
 
-export default DashboardCard;
+export default DashboardCard

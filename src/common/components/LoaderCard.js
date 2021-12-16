@@ -1,11 +1,11 @@
-import React from 'react';
+import React from 'react'
 import {
   Box,
   Skeleton,
   Card
-} from '@mui/material';
+} from '@mui/material'
 
-import theme from 'theme';
+import theme from 'theme'
 
 const LoaderCard = () => (
   <Card
@@ -29,6 +29,6 @@ const LoaderCard = () => (
     </Box>
     <Skeleton sx={{ height: 40 }} animation="wave" variant="rectangular" />
   </Card>
-);
+)
 
-export default LoaderCard;
+export default LoaderCard

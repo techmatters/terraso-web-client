@@ -1,9 +1,9 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit'
 
-import { createAsyncThunk } from 'state/utils';
-import * as landscapeService from 'landscape/landscapeService';
-import { setMemberships } from 'group/groupSlice';
-import * as groupUtils from 'group/groupUtils';
+import { createAsyncThunk } from 'state/utils'
+import * as landscapeService from 'landscape/landscapeService'
+import { setMemberships } from 'group/groupSlice'
+import * as groupUtils from 'group/groupUtils'
 
 const initialState = {
   list: {
@@ -21,30 +21,30 @@ const initialState = {
     message: null,
     landscape: null
   }
-};
+}
 
 export const fetchLandscapes = createAsyncThunk(
   'landscape/fetchLandscapes',
   async (params, { dispatch }) => {
-    const landscapes = await landscapeService.fetchLandscapes(params);
-    dispatch(setMemberships(getMemberships(landscapes)));
-    return landscapes;
+    const landscapes = await landscapeService.fetchLandscapes(params)
+    dispatch(setMemberships(getMemberships(landscapes)))
+    return landscapes
   }
-);
+)
 export const fetchLandscapeView = createAsyncThunk(
   'landscape/fetchLandscapeView',
   async (params, { dispatch }) => {
-    const landscape = await landscapeService.fetchLandscapeToView(params);
-    dispatch(setMemberships(getMemberships([landscape])));
-    return landscape;
+    const landscape = await landscapeService.fetchLandscapeToView(params)
+    dispatch(setMemberships(getMemberships([landscape])))
+    return landscape
   }
-);
-export const fetchLandscapeForm = createAsyncThunk('landscape/fetchLandscapeForm', landscapeService.fetchLandscapeToUpdate);
+)
+export const fetchLandscapeForm = createAsyncThunk('landscape/fetchLandscapeForm', landscapeService.fetchLandscapeToUpdate)
 export const saveLandscape = createAsyncThunk(
   'landscape/saveLandscape',
   landscapeService.saveLandscape,
   () => ({ severity: 'success', content: 'landscape.form_message_success' })
-);
+)
 
 const landscapeSlice = createSlice({
   name: 'landscape',
@@ -148,7 +148,7 @@ const landscapeSlice = createSlice({
       }
     })
   }
-});
+})
 
 export const {
   setFormNewValues,
@@ -158,13 +158,13 @@ export const {
   fetchLandscapeViewPending,
   fetchLandscapeViewRejected,
   fetchLandscapeViewFulfilled
-} = landscapeSlice.actions;
+} = landscapeSlice.actions
 
-export default landscapeSlice.reducer;
+export default landscapeSlice.reducer
 
 const getMemberships = landscapes => {
   const groups = landscapes
     .map(landscape => landscape.defaultGroup)
-    .filter(group => group.slug);
-  return groupUtils.getMemberships(groups);
-};
+    .filter(group => group.slug)
+  return groupUtils.getMemberships(groups)
+}

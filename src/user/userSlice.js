@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit'
 
 export const userSlice = createSlice({
   name: 'user',
@@ -11,6 +11,6 @@ export const userSlice = createSlice({
     fetching: false
   },
   reducers: {}
-});
+})
 
-export default userSlice.reducer;
+export default userSlice.reducer

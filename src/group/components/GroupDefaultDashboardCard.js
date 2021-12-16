@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
   Box,
   CardActions,
@@ -6,15 +6,15 @@ import {
   Button,
   Alert,
   Divider
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
+} from '@mui/material'
+import { useTranslation } from 'react-i18next'
 
-import DashboardCard from 'dashboard/components/DashboardCard';
-import { Link } from 'react-router-dom';
-import theme from 'theme';
+import DashboardCard from 'dashboard/components/DashboardCard'
+import { Link } from 'react-router-dom'
+import theme from 'theme'
 
 const Actions = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   return (
     <CardActions>
@@ -26,11 +26,11 @@ const Actions = () => {
         {t('group.default_connect_button').toUpperCase()}
       </Button>
     </CardActions>
-  );
-};
+  )
+}
 
 const GroupDefaultDashboardCard = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   return (
     <DashboardCard sx={{ flexDirection: 'column' }}>
@@ -53,7 +53,7 @@ const GroupDefaultDashboardCard = () => {
       <Divider />
       <Actions />
     </DashboardCard>
-  );
-};
+  )
+}
 
-export default GroupDefaultDashboardCard;
+export default GroupDefaultDashboardCard

@@ -1,6 +1,6 @@
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
+import i18n from 'i18next'
+import { initReactI18next } from 'react-i18next'
+import LanguageDetector from 'i18next-browser-languagedetector'
 
 export const LOCALES = {
   'en-US': {
@@ -9,7 +9,7 @@ export const LOCALES = {
   'es-ES': {
     translation: require('./locales/es-ES.json')
   }
-};
+}
 
 i18n
   .use(new LanguageDetector(null, {
@@ -24,6 +24,6 @@ i18n
     fallbackLng: {
       default: ['en-US']
     }
-  });
+  })
 
-export default i18n;
+export default i18n

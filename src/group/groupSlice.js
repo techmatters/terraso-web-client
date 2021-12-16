@@ -1,9 +1,9 @@
-import _ from 'lodash';
-import { createSlice } from '@reduxjs/toolkit';
+import _ from 'lodash'
+import { createSlice } from '@reduxjs/toolkit'
 
-import { createAsyncThunk } from 'state/utils';
-import * as groupService from 'group/groupService';
-import * as groupUtils from 'group/groupUtils';
+import { createAsyncThunk } from 'state/utils'
+import * as groupService from 'group/groupService'
+import * as groupUtils from 'group/groupUtils'
 
 const initialState = {
   memberships: {},
@@ -23,16 +23,16 @@ const initialState = {
     message: null,
     success: false
   }
-};
+}
 
-export const fetchGroupForm = createAsyncThunk('group/fetchGroupForm', groupService.fetchGroupToUpdate);
-export const fetchGroupView = createAsyncThunk('group/fetchGroupView', groupService.fetchGroupToView);
-export const fetchGroups = createAsyncThunk('group/fetchGroups', groupService.fetchGroups);
+export const fetchGroupForm = createAsyncThunk('group/fetchGroupForm', groupService.fetchGroupToUpdate)
+export const fetchGroupView = createAsyncThunk('group/fetchGroupView', groupService.fetchGroupToView)
+export const fetchGroups = createAsyncThunk('group/fetchGroups', groupService.fetchGroups)
 export const saveGroup = createAsyncThunk(
   'group/saveGroup',
   groupService.saveGroup,
   () => ({ severity: 'success', content: 'group.form_message_success' })
-);
+)
 export const joinGroup = createAsyncThunk(
   'group/joinGroup',
   groupService.joinGroup,
@@ -41,7 +41,7 @@ export const joinGroup = createAsyncThunk(
     content: 'group.join_success',
     params: { name: ownerName }
   })
-);
+)
 export const leaveGroup = createAsyncThunk(
   'group/leaveGroup',
   groupService.leaveGroup,
@@ -50,7 +50,7 @@ export const leaveGroup = createAsyncThunk(
     content: 'group.leave_success',
     params: { name: ownerName }
   })
-);
+)
 
 const groupSlice = createSlice({
   name: 'group',
@@ -258,12 +258,12 @@ const groupSlice = createSlice({
         }
       })
   }
-});
+})
 
 export const {
   setFormNewValues,
   setMemberships,
   resetFormSuccess
-} = groupSlice.actions;
+} = groupSlice.actions
 
-export default groupSlice.reducer;
+export default groupSlice.reducer

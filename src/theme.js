@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles'
 
 const colorTheme = createTheme({
   palette: {
@@ -28,7 +28,7 @@ const colorTheme = createTheme({
     },
     black: '#000000'
   }
-});
+})
 
 const components = {
   MuiAppBar: {
@@ -59,7 +59,7 @@ const components = {
       variant: 'outlined'
     }
   }
-};
+}
 
 const theme = createTheme(colorTheme, {
   typography: {
@@ -79,6 +79,6 @@ const theme = createTheme(colorTheme, {
     }
   },
   components
-});
+})
 
-export default theme;
+export default theme
