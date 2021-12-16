@@ -66,6 +66,10 @@ const theme = createTheme(colorTheme, {
     h1: {
       fontSize: '30px'
     },
+    h2: {
+      fontSize: '26px',
+      fontWeight: 600
+    },
     h5: {
       fontSize: '22px'
     },
