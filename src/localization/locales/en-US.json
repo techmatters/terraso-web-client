@@ -18,7 +18,7 @@
         "dashboard_connect_label": "Join another group",
         "default_content": "Terraso groups connect people with common interests and needs. Explore the groups and join your organizations. Groups exist for people within and across landscapes.",
         "edit_profile_button": "Edit Group Profile",
-        "default_connect_button": "Join Group",
+        "default_connect_button": "Connect",
         "form_edit_title": "Manage {{name}} Group Information",
         "form_new_title": "Create New Group",
         "form_new_description": "You are creating a new group as group manger to connect people with common interests and needs. Groups exist for people within and across landscapes. You can update the group information and manage member list any time.",
