@@ -21,7 +21,7 @@ const BaseButton = props => (
     sx={{ width: '100%' }}
     {...props}
   >
-      {props.children}
+    {props.children}
   </LoadingButton>
 )
 
@@ -45,7 +45,7 @@ const JoinButton = props => {
       onClick={props.onJoin}
       loading={props.loading}
     >
-        {t(props.joinLabel)}
+      {t(props.joinLabel)}
     </BaseButton>
   )
 }
