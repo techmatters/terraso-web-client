@@ -15,14 +15,12 @@ import {
   List,
   ListItem
 } from '@mui/material'
-import { DataGrid } from '@mui/x-data-grid'
 
 import { fetchLandscapes } from 'landscape/landscapeSlice'
 import GroupMembershipButton from 'group/components/GroupMembershipButton'
 import GroupMembershipCount from 'group/components/GroupMembershipCount'
+import Table from 'common/components/Table'
 import theme from 'theme'
-
-const PAGE_SIZE = 10
 
 const MembershipButton = ({ landscape }) => (
   <GroupMembershipButton
@@ -80,18 +78,13 @@ const LandscapeTable = ({ landscapes }) => {
   }]
 
   return (
-    <DataGrid
+    <Table
       rows={landscapes}
       columns={columns}
-      pageSize={PAGE_SIZE}
-      rowsPerPageOptions={[PAGE_SIZE]}
-      autoHeight
-      disableVirtualization
-      sx={{
-        '& .MuiDataGrid-columnHeaders': {
-          backgroundColor: 'gray.lite2'
-        }
-      }}
+      initialSort={[{
+        field: 'name',
+        sort: 'asc'
+      }]}
       localeText={{
         noRowsLabel: t('landscape.list_empty'),
         footerPaginationRowsPerPage: t('common.data_grid_pagination_of')

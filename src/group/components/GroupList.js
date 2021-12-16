@@ -16,14 +16,12 @@ import {
   List,
   ListItem
 } from '@mui/material'
-import { DataGrid } from '@mui/x-data-grid'
 
 import { fetchGroups } from 'group/groupSlice'
 import GroupMembershipButton from 'group/components/GroupMembershipButton'
 import GroupMembershipCount from 'group/components/GroupMembershipCount'
+import Table from 'common/components/Table'
 import theme from 'theme'
-
-const PAGE_SIZE = 10
 
 const MembershipButton = ({ group }) => (
   <GroupMembershipButton
@@ -86,18 +84,13 @@ const GroupTable = ({ groups }) => {
   }]
 
   return (
-    <DataGrid
+    <Table
       rows={groups}
       columns={columns}
-      pageSize={PAGE_SIZE}
-      rowsPerPageOptions={[PAGE_SIZE]}
-      autoHeight
-      disableVirtualization
-      sx={{
-        '& .MuiDataGrid-columnHeaders': {
-          backgroundColor: 'gray.lite2'
-        }
-      }}
+      initialSort={[{
+        field: 'name',
+        sort: 'asc'
+      }]}
       localeText={{
         noRowsLabel: t('group.list_empty'),
         footerPaginationRowsPerPage: t('common.data_grid_pagination_of')
