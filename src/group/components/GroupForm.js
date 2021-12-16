@@ -3,7 +3,6 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useSnackbar } from 'notistack';
 import * as yup from 'yup';
 import {
   Box,
@@ -55,10 +54,9 @@ const GroupForm = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
 
   const { slug } = useParams();
-  const { fetching, group, message, success } = useSelector(state => state.group.form);
+  const { fetching, group, success } = useSelector(state => state.group.form);
 
   const isNew = !slug;
 
@@ -70,6 +68,11 @@ const GroupForm = () => {
     dispatch(fetchGroupForm(slug));
   }, [dispatch, slug, isNew]);
 
+  useEffect(() => () => {
+    // Clean values when component closes
+    dispatch(setFormNewValues());
+  }, [dispatch, slug, isNew]);
+
   useEffect(() => {
     if (success) {
       navigate(`/groups/${group.slug}`);
@@ -78,12 +81,6 @@ const GroupForm = () => {
       dispatch(resetFormSuccess());
     };
   }, [success, group, navigate, dispatch]);
-
-  useEffect(() => {
-    if (message) {
-      enqueueSnackbar(message);
-    }
-  }, [message, enqueueSnackbar]);
 
   const onSave = updatedGroup => dispatch(saveGroup(updatedGroup));
 

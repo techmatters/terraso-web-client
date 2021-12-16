@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
 import {
   CircularProgress
 } from '@mui/material';
@@ -52,10 +51,9 @@ const JoinButton = props => {
 
 const GroupMembershipButton = props => {
   const dispatch = useDispatch();
-  const { enqueueSnackbar } = useSnackbar();
   const { joinLabel, leaveLabel, ownerName, groupSlug } = props;
   const { email: userEmail } = useSelector(state => state.user.user);
-  const { fetching, group, message, joining } = useSelector(state => _.get(state, `group.memberships.${groupSlug}`, {}));
+  const { fetching, group, joining } = useSelector(state => _.get(state, `group.memberships.${groupSlug}`, {}));
   const [openConfirmation, setOpenConfirmation] = useState(false);
 
   const loading = fetching || joining;
@@ -68,25 +66,14 @@ const GroupMembershipButton = props => {
   const userMembership = members.find(member => member.email === userEmail);
 
   useEffect(() => {
-    if (message) {
-      enqueueSnackbar({
-        ...message,
-        params: {
-          name: ownerName
-        }
-      });
-      setOpenConfirmation(false);
-    }
-  }, [message, enqueueSnackbar, ownerName]);
-
-  useEffect(() => {
     setOpenConfirmation(false);
   }, [userMembership]);
 
   const onJoin = () => {
     dispatch(joinGroup({
       groupSlug,
-      userEmail
+      userEmail,
+      ownerName
     }));
   };
   const onLeaveConfirmation = () => {
@@ -96,7 +83,8 @@ const GroupMembershipButton = props => {
   const onLeave = () => {
     dispatch(leaveGroup({
       groupSlug,
-      membershipId: userMembership.membershipId
+      membershipId: userMembership.membershipId,
+      ownerName
     }));
   };
 

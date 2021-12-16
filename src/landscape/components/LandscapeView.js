@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useSnackbar } from 'notistack';
 import {
   Box,
   Typography,
@@ -58,19 +57,12 @@ const LandscapeMap = ({ position }) => {
 
 const LandscapeView = () => {
   const dispatch = useDispatch();
-  const { landscape, fetching, message } = useSelector(state => state.landscape.view);
+  const { landscape, fetching } = useSelector(state => state.landscape.view);
   const { slug } = useParams();
-  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     dispatch(fetchLandscapeView(slug));
   }, [dispatch, slug]);
-
-  useEffect(() => {
-    if (message) {
-      enqueueSnackbar(message);
-    }
-  }, [message, enqueueSnackbar]);
 
   if (fetching) {
     return (
@@ -83,7 +75,7 @@ const LandscapeView = () => {
     );
   }
 
-  if (message && message.severity === 'error') {
+  if (!landscape) {
     return null;
   }
 

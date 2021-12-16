@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Link as RouterLink } from 'react-router-dom';
@@ -158,19 +157,12 @@ const LandscapeCards = ({ landscapes }) => {
 const LandscapeList = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { landscapes, fetching, message } = useSelector(state => state.landscape.list);
-  const { enqueueSnackbar } = useSnackbar();
+  const { landscapes, fetching } = useSelector(state => state.landscape.list);
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
     dispatch(fetchLandscapes());
   }, [dispatch]);
-
-  useEffect(() => {
-    if (message) {
-      enqueueSnackbar(message);
-    }
-  }, [message, enqueueSnackbar]);
 
   if (fetching) {
     return (
@@ -183,7 +175,7 @@ const LandscapeList = () => {
     );
   }
 
-  if (message && message.severity === 'error') {
+  if (!landscapes) {
     return null;
   }
 

@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Link as RouterLink } from 'react-router-dom';
@@ -165,18 +164,11 @@ const GroupList = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { groups, fetching, message } = useSelector(state => state.group.list);
-  const { enqueueSnackbar } = useSnackbar();
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
     dispatch(fetchGroups());
   }, [dispatch]);
-
-  useEffect(() => {
-    if (message) {
-      enqueueSnackbar(message);
-    }
-  }, [message, enqueueSnackbar]);
 
   if (fetching) {
     return (
