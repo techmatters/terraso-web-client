@@ -53,6 +53,7 @@
       "plugin:jsx-a11y/recommended"
     ],
     "rules": {
+      "react/jsx-indent": [2, 2, {"checkAttributes": true, "indentLogicalExpressions": true}],
       "prefer-promise-reject-errors": "off",
       "multiline-ternary": "off"
     }
