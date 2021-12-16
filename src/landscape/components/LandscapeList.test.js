@@ -96,7 +96,7 @@ test('LandscapeList: Display list', async () => {
   expect(within(rows[2]).getByRole('cell', { name: 'Connect' })).toHaveAttribute('data-field', 'actions')
   expect(within(rows[9]).getByRole('cell', { name: 'MEMBER' })).toHaveAttribute('data-field', 'actions')
 })
-test('LandscapeList: Display list', async () => {
+test('LandscapeList: List sort', async () => {
   const isMember = {
     3: true
   }
