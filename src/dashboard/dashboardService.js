@@ -25,9 +25,19 @@ export const fetchDashboardData = email => {
           }
         }
       }
-      groups: groups(
+      userIndependentGroups: groups(
         members_Email: $email,
-        associatedLandscapes_Isnull:true
+        associatedLandscapes_Isnull: true
+      ) {
+        edges {
+          node {
+            ...groupFields
+          }
+        }
+      }
+      userLandscapeGroups: groups(
+        members_Email: $email,
+        associatedLandscapes_IsDefaultLandscapeGroup: false
       ) {
         edges {
           node {
@@ -42,7 +52,10 @@ export const fetchDashboardData = email => {
   return terrasoApi
     .request(query, { email })
     .then(response => ({
-      groups: _.get(response, 'groups.edges', [])
+      groups: [
+        ..._.get(response, 'userIndependentGroups.edges', []),
+        ..._.get(response, 'userLandscapeGroups.edges', [])
+      ]
         .map(groupEdge => _.get(groupEdge, 'node'))
         .filter(group => group),
       landscapes: _.get(response, 'landscapeGroups.edges', [])

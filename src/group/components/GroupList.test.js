@@ -66,7 +66,7 @@ test('GroupList: Display list', async () => {
   }))
 
   terrasoApi.request.mockReturnValue(Promise.resolve({
-    groups: {
+    landscapeGroups: {
       edges: groups
     }
   }))
@@ -125,7 +125,7 @@ test('GroupList: List sort', async () => {
   }))
 
   terrasoApi.request.mockReturnValue(Promise.resolve({
-    groups: {
+    landscapeGroups: {
       edges: groups
     }
   }))
@@ -184,7 +184,7 @@ test('GroupList: Display list (small screen)', async () => {
   }))
 
   terrasoApi.request.mockReturnValue(Promise.resolve({
-    groups: {
+    independentGroups: {
       edges: groups
     }
   }))
