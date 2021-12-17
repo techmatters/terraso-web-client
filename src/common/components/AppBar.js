@@ -36,7 +36,7 @@ const AppBarComponent = props => {
           <img src={isSmall ? logoSquare : logo} height="35px" alt={t('common.terraso_projectName')} />
         </Button>
         <Box sx={{ flexGrow: 1 }} />
-        <Button color="inherit" sx={{ fontWeight: 500 }}>
+        <Button component={Link} to="/account/profile" color="inherit" sx={{ fontWeight: 500 }}>
           {user.firstName} {user.lastName}
         </Button>
         |
