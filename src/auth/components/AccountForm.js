@@ -1,14 +1,15 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
+import { Link as RouterLink } from 'react-router-dom'
 import {
   Button,
   Stack,
   Typography
 } from '@mui/material'
-import { useTranslation } from 'react-i18next'
-import { Link as RouterLink } from 'react-router-dom'
-import logo from 'assets/logo.svg'
 import AppleIcon from '@mui/icons-material/Apple'
 import GoogleIcon from '@mui/icons-material/Google'
+
+import logo from 'assets/logo.svg'
 
 const AccountForm = ({ tool }) => {
   const { t } = useTranslation()
