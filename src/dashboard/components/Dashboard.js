@@ -62,9 +62,7 @@ const Dashboard = () => {
 
   const user = useSelector(state => state.user.user)
   const dashboard = useSelector(state => state.userDashboard)
-  const { landscapesDiscovery, error, fetching } = dashboard
-  const landscapes = []
-  const groups = []
+  const { groups, landscapes, landscapesDiscovery, error, fetching } = dashboard
 
   useEffect(() => {
     dispatch(fetchDashboardData(user.email))

@@ -70,6 +70,31 @@ test('Dashboard: Display landscapes', async () => {
   expect(screen.getByText(/Landscape 2/i)).toBeInTheDocument()
   expect(screen.getByText(/Manager/i)).toBeInTheDocument()
 })
+test('Dashboard: Display landscapes discovery', async () => {
+  terrasoApi.request.mockReturnValue(Promise.resolve({
+    landscapesDiscovery: {
+      edges: [{
+        node: {
+          id: 'id-1',
+          slug: 'id-1',
+          name: 'Landscape 1',
+          role: 'member'
+        }
+      }, {
+        node: {
+          id: 'id-2',
+          slug: 'id-2',
+          name: 'Landscape Discovery 2',
+          role: 'manager'
+        }
+      }]
+    }
+  }))
+  await act(async () => render(<Dashboard />))
+  expect(screen.getByText(/Discover Landscapes in Terraso/i)).toBeInTheDocument()
+  expect(screen.getByText(/Terraso has 2 landscape partners./i)).toBeInTheDocument()
+  expect(screen.getByText(/Landscape Discovery 2/i)).toBeInTheDocument()
+})
 test('Dashboard: Display groups', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
     userIndependentGroups: {
