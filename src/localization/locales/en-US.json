@@ -114,6 +114,12 @@
         "terraso_projectName": "Terraso",
         "dialog_cancel_label": "Cancel"
     },
+    "account": {
+      "welcome_to": "Welcome to",
+      "apple_login": "Continue with Apple",
+      "google_login": "Continue with Google",
+      "disclaimer": "If you don’t already have a Terraso account, you agree signing in will create one in accordance with our <a href='#'>Terms of Service</a>."
+    },
     "form": {
         "required_label": "Required",
         "validation_field_invalid": "{{path}} must be valid",
