@@ -26,7 +26,7 @@ test('Dashboard: Display loader', () => {
   terrasoApi.request.mockReturnValue(new Promise(() => {}))
   render(<Dashboard />)
   const loaders = screen.getAllByRole('loader', { name: '', hidden: true })
-  expect(loaders.length).toBe(2)
+  expect(loaders.length).toBe(3)
   loaders.forEach(role =>
     expect(role).toBeInTheDocument()
   )
@@ -70,6 +70,31 @@ test('Dashboard: Display landscapes', async () => {
   expect(screen.getByText(/Landscape 2/i)).toBeInTheDocument()
   expect(screen.getByText(/Manager/i)).toBeInTheDocument()
 })
+test('Dashboard: Display landscapes discovery', async () => {
+  terrasoApi.request.mockReturnValue(Promise.resolve({
+    landscapesDiscovery: {
+      edges: [{
+        node: {
+          id: 'id-1',
+          slug: 'id-1',
+          name: 'Landscape 1',
+          role: 'member'
+        }
+      }, {
+        node: {
+          id: 'id-2',
+          slug: 'id-2',
+          name: 'Landscape Discovery 2',
+          role: 'manager'
+        }
+      }]
+    }
+  }))
+  await act(async () => render(<Dashboard />))
+  expect(screen.getByText(/Discover Landscapes in Terraso/i)).toBeInTheDocument()
+  expect(screen.getByText(/Terraso has 2 landscape partners./i)).toBeInTheDocument()
+  expect(screen.getByText(/Landscape Discovery 2/i)).toBeInTheDocument()
+})
 test('Dashboard: Display groups', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
     userIndependentGroups: {
@@ -102,9 +127,10 @@ test('Dashboard: Display groups', async () => {
 test('Dashboard: Display defaults', async () => {
   fetchDashboardData.mockReturnValue(Promise.resolve({
     groups: [],
-    landscapes: []
+    landscapes: [],
+    landscapesDiscovery: []
   }))
   await act(async () => render(<Dashboard />))
-  expect(screen.getByText(/Connect to Landscape/i)).toBeInTheDocument()
+  expect(screen.getByText(/EXPLORE AND CONNECT TO LANDSCAPE/i)).toBeInTheDocument()
   expect(screen.getByText(/Terraso groups connect people/i)).toBeInTheDocument()
 })

@@ -25,6 +25,13 @@ export const fetchDashboardData = email => {
           }
         }
       }
+      landscapesDiscovery: landscapes {
+        edges {
+          node {
+            ...landscapeFields
+          }
+        }
+      }
       userIndependentGroups: groups(
         members_Email: $email,
         associatedLandscapes_Isnull: true
@@ -61,6 +68,8 @@ export const fetchDashboardData = email => {
       landscapes: _.get(response, 'landscapeGroups.edges', [])
         .flatMap(groupEdge => _.get(groupEdge, 'node.associatedLandscapes.edges', []))
         .map(landscapeEdge => _.get(landscapeEdge, 'node.landscape'))
-        .filter(landscape => landscape)
+        .filter(landscape => landscape),
+      landscapesDiscovery: _.get(response, 'landscapesDiscovery.edges', [])
+        .map(edge => edge.node)
     }))
 }

@@ -94,7 +94,9 @@
         "list_column_contact": "Contact Info",
         "list_column_members": "Members",
         "list_column_actions": "Actions",
-        "list_empty": "No Landscapes"
+        "list_empty": "No Landscapes",
+        "dashboard_discovery_title": "Discover Landscapes in Terraso",
+        "dashboard_discovery_description": "Terraso has {{count}} landscape partners."
     },
     "tool": {
       "faq_title": "Tools FAQ",

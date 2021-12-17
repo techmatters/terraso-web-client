@@ -23,7 +23,8 @@ export const dashboardSlice = createSlice({
       fetching: false,
       error: null,
       groups: action.payload.groups,
-      landscapes: action.payload.landscapes
+      landscapes: action.payload.landscapes,
+      landscapesDiscovery: action.payload.landscapesDiscovery
     }),
     [fetchDashboardData.rejected]: (state, action) => ({
       ...state,
