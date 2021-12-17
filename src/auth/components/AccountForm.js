@@ -15,7 +15,12 @@ const AccountForm = ({ tool }) => {
   const { t } = useTranslation()
 
   return (
-    <Stack direction="column" alignItems="center" justifyContent="center" style={{ height: '80vh' }}>
+    <Stack
+      direction="column"
+      alignItems="center"
+      justifyContent="center"
+      style={{ height: '80vh' }}
+    >
       <Stack sx={{ maxWidth: 'sm' }} alignItems="center">
         <Typography variant="h1" >
           {t('account.welcome_to')}
