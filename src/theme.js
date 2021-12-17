@@ -58,6 +58,14 @@ const components = {
     defaultProps: {
       variant: 'outlined'
     }
+  },
+  MuiInputLabel: {
+    defaultProps: {
+      shrink: true,
+      sx: {
+        textTransform: 'uppercase'
+      }
+    }
   }
 }
 
