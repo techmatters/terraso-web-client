@@ -125,7 +125,7 @@ test('GroupList: List sort', async () => {
   }))
 
   terrasoApi.request.mockReturnValue(Promise.resolve({
-    groups: {
+    landscapeGroups: {
       edges: groups
     }
   }))
