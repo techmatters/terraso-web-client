@@ -57,6 +57,7 @@ const GroupForm = () => {
 
   const { slug } = useParams()
   const { fetching, group, success } = useSelector(state => state.group.form)
+  const user = useSelector(state => state.user.user)
 
   const isNew = !slug
 
@@ -82,7 +83,10 @@ const GroupForm = () => {
     }
   }, [success, group, navigate, dispatch])
 
-  const onSave = updatedGroup => dispatch(saveGroup(updatedGroup))
+  const onSave = group => dispatch(saveGroup({
+    group,
+    user
+  }))
 
   const title = !isNew
     ? t('group.form_edit_title', { name: _.get(group, 'name', '') })
