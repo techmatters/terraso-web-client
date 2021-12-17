@@ -1,17 +1,18 @@
 import React from 'react'
 import * as yup from 'yup'
+import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   Avatar,
   InputLabel,
   Stack,
   Typography
 } from '@mui/material'
-import theme from 'theme'
-import Form from 'forms/components/Form'
+
 import { setUser } from 'user/userSlice'
-import { useSelector, useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+import Form from 'forms/components/Form'
+import theme from 'theme'
 
 const VALIDATION_SCHEMA = yup.object({
   fullname: yup.string().required()
