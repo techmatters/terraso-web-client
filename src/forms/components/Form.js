@@ -26,7 +26,8 @@ const Form = props => {
     saveLabel,
     onSave,
     cancelLabel,
-    onCancel
+    onCancel,
+    children
   } = props
 
   const { control, handleSubmit, reset } = useForm({
@@ -73,6 +74,7 @@ const Form = props => {
           {..._.get(field, 'props', {})}
         />
       ))}
+      {children}
       <Stack
         spacing={2}
         direction="row"

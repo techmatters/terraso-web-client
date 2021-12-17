@@ -11,7 +11,7 @@ import {
 
 import theme from 'theme'
 
-const FormField = ({ control, required, id, name, label, info, inputProps }) => {
+const FormField = ({ control, required, disabled, id, name, label, info, inputProps }) => {
   const { t } = useTranslation()
   return (
     <Controller
@@ -19,11 +19,12 @@ const FormField = ({ control, required, id, name, label, info, inputProps }) => 
       control={control}
       render={({ field, fieldState }) => (
         <FormControlUnstyled style={{ marginBottom: theme.spacing(3) }}>
-          <InputLabel error={!!fieldState.error} shrink htmlFor={id}>
-            {t(label).toUpperCase()} {required && `(${t('form.required_label')})` }
+          <InputLabel disabled={disabled} error={!!fieldState.error} htmlFor={id}>
+            {t(label)} {required && `(${t('form.required_label')})` }
           </InputLabel>
           <OutlinedInput
             id={id}
+            disabled={disabled}
             error={!!fieldState.error}
             aria-describedby={`${id}-helper-text`}
             sx={{ width: '100%' }}

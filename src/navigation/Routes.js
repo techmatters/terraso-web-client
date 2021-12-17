@@ -13,6 +13,8 @@ import LandscapeList from 'landscape/components/LandscapeList'
 import LandscapeForm from 'landscape/components/LandscapeForm'
 import LandscapeView from 'landscape/components/LandscapeView'
 import ToolsList from 'tool/components/ToolList'
+import AccountForm from 'auth/components/AccountForm'
+import AccountProfile from 'auth/components/AccountProfile'
 
 const RoutesComponent = () => (
   <Routes>
@@ -26,6 +28,8 @@ const RoutesComponent = () => (
     <Route path='/landscapes/:slug/edit' element={<RequireAuth children={<LandscapeForm />} />} />
     <Route path='/landscapes/:slug' element={<RequireAuth children={<LandscapeView />} />} />
     <Route path='/tools' element={<RequireAuth children={<ToolsList />} />} />
+    <Route path='/account' element={<AccountForm />} />
+    <Route path='/account/profile' element={<AccountProfile />} />
   </Routes>
 )
 
