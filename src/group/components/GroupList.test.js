@@ -184,7 +184,7 @@ test('GroupList: Display list (small screen)', async () => {
   }))
 
   terrasoApi.request.mockReturnValue(Promise.resolve({
-    landscapeGroups: {
+    independentGroups: {
       edges: groups
     }
   }))
