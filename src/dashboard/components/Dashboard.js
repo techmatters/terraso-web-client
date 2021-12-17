@@ -17,6 +17,7 @@ import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultDashboard
 import GroupsCard from 'group/components/GroupsDashboardCard'
 import GroupDefaultCard from 'group/components/GroupDefaultDashboardCard'
 import ToolDashboardCard from 'tool/components/ToolDasboardCard'
+import LandscapesDashboardDiscoveryCard from 'landscape/components/LandscapesDashboardDiscoveryCard'
 import theme from 'theme'
 
 const Landscapes = ({ landscapes, fetching }) => {
@@ -61,7 +62,9 @@ const Dashboard = () => {
 
   const user = useSelector(state => state.user.user)
   const dashboard = useSelector(state => state.userDashboard)
-  const { groups, landscapes, error, fetching } = dashboard
+  const { landscapesDiscovery, error, fetching } = dashboard
+  const landscapes = []
+  const groups = []
 
   useEffect(() => {
     dispatch(fetchDashboardData(user.email))
@@ -98,7 +101,13 @@ const Dashboard = () => {
           </Stack>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Groups groups={groups} fetching={fetching} />
+          <Stack spacing={1}>
+            <Groups groups={groups} fetching={fetching} />
+            <LandscapesDashboardDiscoveryCard
+              fetching={fetching}
+              landscapes={landscapesDiscovery}
+            />
+          </Stack>
         </Grid>
       </Grid>
     </Box>

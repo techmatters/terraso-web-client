@@ -26,7 +26,7 @@ test('Dashboard: Display loader', () => {
   terrasoApi.request.mockReturnValue(new Promise(() => {}))
   render(<Dashboard />)
   const loaders = screen.getAllByRole('loader', { name: '', hidden: true })
-  expect(loaders.length).toBe(2)
+  expect(loaders.length).toBe(3)
   loaders.forEach(role =>
     expect(role).toBeInTheDocument()
   )
@@ -102,9 +102,10 @@ test('Dashboard: Display groups', async () => {
 test('Dashboard: Display defaults', async () => {
   fetchDashboardData.mockReturnValue(Promise.resolve({
     groups: [],
-    landscapes: []
+    landscapes: [],
+    landscapesDiscovery: []
   }))
   await act(async () => render(<Dashboard />))
-  expect(screen.getByText(/Connect to Landscape/i)).toBeInTheDocument()
+  expect(screen.getByText(/EXPLORE AND CONNECT TO LANDSCAPE/i)).toBeInTheDocument()
   expect(screen.getByText(/Terraso groups connect people/i)).toBeInTheDocument()
 })
