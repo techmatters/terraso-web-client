@@ -4,11 +4,12 @@ import {
   Link,
   Divider,
   Typography,
-  Container,
   Grid
 } from '@mui/material'
 
 import theme from 'theme'
+
+const { spacing, palette } = theme
 
 const year = new Date().getFullYear()
 
@@ -29,7 +30,7 @@ const FooterLink = ({ index, link }) => {
         xs={12} sm="auto"
         sx={{
           paddingBottom: {
-            xs: theme.spacing(1),
+            xs: spacing(1),
             sm: 0
           }
         }}
@@ -38,7 +39,7 @@ const FooterLink = ({ index, link }) => {
           variant="body2"
           underline="none"
           href={link.url}
-          sx={{ color: theme.palette.white }}
+          sx={{ color: palette.white }}
         >
           {t(link.text)}
         </Link>
@@ -49,8 +50,8 @@ const FooterLink = ({ index, link }) => {
           orientation="vertical"
           sx={{
             bgcolor: 'white',
-            marginLeft: theme.spacing(2),
-            marginRight: theme.spacing(2)
+            marginLeft: spacing(2),
+            marginRight: spacing(2)
           }}
         />
       )}
@@ -60,52 +61,52 @@ const FooterLink = ({ index, link }) => {
 
 const Footer = () => {
   return (
-    <footer style={{
-      position: 'fixed',
-      bottom: 0,
-      width: '100%',
-      background: theme.palette.secondary.main
-    }}>
-      <Grid container
-        component={Container}
-        justifyContent="space-between"
-        sx={{
-          color: theme.palette.white,
-          padding: theme.spacing(2)
-        }}
-      >
-        <Grid item xs={12} md={8}>
-          <Grid container
-            component="ul"
-            spacing={0}
-            sx= {{
-              listStyle: 'none',
-              padding: 0,
-              margin: 0
-            }}
-            justifyContent="flex-start"
-            alignItems="center"
-          >
-            {footerLinks.map((link, index) => (
-              <FooterLink key={index} index={index} link={link} />
-            ))}
-          </Grid>
-        </Grid>
-        <Grid item xs={12} md="auto"
-          component={Typography}
-          variant="body2"
-          sx={{
-            textAlign: 'right',
-            paddingTop: {
-              xs: theme.spacing(1),
-              md: 0
-            }
+    <Grid container
+      component="footer"
+      justifyContent="space-between"
+      sx={{
+        position: 'fixed',
+        bottom: 0,
+        width: '100%',
+        background: palette.secondary.main,
+        color: palette.white,
+        padding: {
+          xs: spacing(2),
+          md: `${spacing(2)} ${spacing(10)} ${spacing(2)} ${spacing(10)}`
+        }
+      }}
+    >
+      <Grid item xs={12} md={8}>
+        <Grid container
+          component="ul"
+          spacing={0}
+          sx= {{
+            listStyle: 'none',
+            padding: 0,
+            margin: 0
           }}
+          justifyContent="flex-start"
+          alignItems="center"
         >
-          © {year} Tech Matters
+          {footerLinks.map((link, index) => (
+            <FooterLink key={index} index={index} link={link} />
+          ))}
         </Grid>
       </Grid>
-    </footer>
+      <Grid item xs={12} md="auto"
+        component={Typography}
+        variant="body2"
+        sx={{
+          textAlign: 'right',
+          paddingTop: {
+            xs: spacing(1),
+            md: 0
+          }
+        }}
+      >
+        © {year} Tech Matters
+      </Grid>
+    </Grid>
   )
 }
 
