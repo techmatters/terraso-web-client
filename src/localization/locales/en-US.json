@@ -105,6 +105,8 @@
       "list_description": "Helpful tools in Terraso",
       "is_for": "This tool is for",
       "requirements": "System requirements",
+      "actions_bookmark": "Bookmark",
+      "actions_recommend": "Recommend this to my team",
       "dashboard_card_title": "Access Data Collection Tool in Terraso",
       "dashboard_card_description": "Take advantage of integrated tools in Terraso. KoBoToolbox is a free open-source data collection tool.",
       "dashboard_card_img_alt": "KoBoToolbox image",
