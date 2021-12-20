@@ -27,14 +27,6 @@ const LandscapesDashboardDiscoveryCard = props => {
       <Typography variant="h5">
         {t('landscape.dashboard_discovery_title')}
       </Typography>
-      <Typography
-        variant="body1"
-        sx={{
-          marginTop: theme.spacing(2)
-        }}
-      >
-        {t('landscape.dashboard_discovery_description', { count: landscapes.length })}
-      </Typography>
       <List>
         {landscapes.slice(0, 5).map(landscape => (
           <ListItem

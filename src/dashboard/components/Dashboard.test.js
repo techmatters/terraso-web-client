@@ -92,7 +92,6 @@ test('Dashboard: Display landscapes discovery', async () => {
   }))
   await act(async () => render(<Dashboard />))
   expect(screen.getByText(/Discover Landscapes in Terraso/i)).toBeInTheDocument()
-  expect(screen.getByText(/Terraso has 2 landscape partners./i)).toBeInTheDocument()
   expect(screen.getByText(/Landscape Discovery 2/i)).toBeInTheDocument()
 })
 test('Dashboard: Display groups', async () => {
