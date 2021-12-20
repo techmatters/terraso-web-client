@@ -1,4 +1,5 @@
 import React from 'react'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   Button,
   Card,
@@ -12,6 +13,7 @@ import theme from 'theme'
 
 const Tool = ({ tool }) => {
   const { t } = useTranslation()
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
 
   return (
     <React.Fragment>
@@ -19,7 +21,7 @@ const Tool = ({ tool }) => {
         <Typography variant="h1" >
           {tool.title}
         </Typography>
-        <Stack direction="row" spacing={2}
+        <Stack direction={isSmall ? 'column' : 'row'} spacing={2}
           sx= {{
             marginTop: theme.spacing(3),
             marginBottom: theme.spacing(4)
@@ -33,7 +35,7 @@ const Tool = ({ tool }) => {
           </Button>
         </Stack>
         <Stack direction="row" justifyContent="space-between" spacing={2}>
-
+          
           <section>
             <Typography variant="h2" >
               {t('tool.is_for')}
