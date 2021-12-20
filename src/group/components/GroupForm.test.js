@@ -15,10 +15,10 @@ jest.mock('react-router-dom', () => ({
 
 const setup = async () => {
   await act(async () => render(<GroupForm />))
-  const name = screen.getByRole('textbox', { name: 'GROUP NAME (Required)' })
-  const description = screen.getByRole('textbox', { name: 'GROUP DESCRIPTION (Required)' })
-  const email = screen.getByRole('textbox', { name: 'GROUP CONTACT EMAIL ADDRESS' })
-  const website = screen.getByRole('textbox', { name: 'GROUP WEBSITE' })
+  const name = screen.getByRole('textbox', { name: 'Group name (Required)' })
+  const description = screen.getByRole('textbox', { name: 'Group description (Required)' })
+  const email = screen.getByRole('textbox', { name: 'Email address' })
+  const website = screen.getByRole('textbox', { name: 'Website' })
   return {
     inputs: {
       name, description, email, website
@@ -48,8 +48,8 @@ test('GroupForm: Fill form', async () => {
     groups: {
       edges: [{
         node: {
-          name: 'Group Name',
-          description: 'Group Description',
+          name: 'Group name',
+          description: 'Group description',
           email: 'group@group.org',
           website: 'https://www.group.org'
         }
@@ -59,8 +59,8 @@ test('GroupForm: Fill form', async () => {
   const { inputs } = await setup()
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(1)
-  expect(inputs.name).toHaveValue('Group Name')
-  expect(inputs.description).toHaveValue('Group Description')
+  expect(inputs.name).toHaveValue('Group name')
+  expect(inputs.description).toHaveValue('Group description')
   expect(inputs.email).toHaveValue('group@group.org')
   expect(inputs.website).toHaveValue('https://www.group.org')
 })
@@ -69,8 +69,8 @@ test('GroupForm: Input change', async () => {
     groups: {
       edges: [{
         node: {
-          name: 'Group Name',
-          description: 'Group Description',
+          name: 'Group name',
+          description: 'Group description',
           email: 'group@group.org',
           website: 'https://www.group.org'
         }
@@ -79,11 +79,11 @@ test('GroupForm: Input change', async () => {
   }))
   const { inputs } = await setup()
 
-  expect(inputs.name).toHaveValue('Group Name')
+  expect(inputs.name).toHaveValue('Group name')
   fireEvent.change(inputs.name, { target: { value: 'New name' } })
   expect(inputs.name).toHaveValue('New name')
 
-  expect(inputs.description).toHaveValue('Group Description')
+  expect(inputs.description).toHaveValue('Group description')
   fireEvent.change(inputs.description, { target: { value: 'New description' } })
   expect(inputs.description).toHaveValue('New description')
 
@@ -100,8 +100,8 @@ test('GroupForm: Input validation', async () => {
     groups: {
       edges: [{
         node: {
-          name: 'Group Name',
-          description: 'Group Description',
+          name: 'Group name',
+          description: 'Group description',
           email: 'group@group.org',
           website: 'https://www.group.org'
         }
@@ -110,11 +110,11 @@ test('GroupForm: Input validation', async () => {
   }))
   const { inputs } = await setup()
 
-  expect(inputs.name).toHaveValue('Group Name')
+  expect(inputs.name).toHaveValue('Group name')
   fireEvent.change(inputs.name, { target: { value: '' } })
   expect(inputs.name).toHaveValue('')
 
-  expect(inputs.description).toHaveValue('Group Description')
+  expect(inputs.description).toHaveValue('Group description')
   fireEvent.change(inputs.description, { target: { value: '' } })
   expect(inputs.description).toHaveValue('')
 
@@ -139,8 +139,8 @@ test('GroupForm: Save form', async () => {
         edges: [{
           node: {
             id: '1',
-            name: 'Group Name',
-            description: 'Group Description',
+            name: 'Group name',
+            description: 'Group description',
             email: 'group@group.org',
             website: 'https://www.group.org'
           }
@@ -151,8 +151,8 @@ test('GroupForm: Save form', async () => {
       updateGroup: {
         group: {
           id: '1',
-          name: 'Group Name',
-          description: 'Group Description',
+          name: 'Group name',
+          description: 'Group description',
           email: 'group@group.org',
           website: 'https://www.group.org'
         }
@@ -186,8 +186,8 @@ test('GroupForm: Save form error', async () => {
         edges: [{
           node: {
             slug: 'group-1',
-            name: 'Group Name',
-            description: 'Group Description',
+            name: 'Group name',
+            description: 'Group description',
             email: 'group@group.org',
             website: 'https://www.group.org'
           }
