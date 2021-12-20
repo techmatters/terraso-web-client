@@ -59,6 +59,21 @@ const FooterLink = ({ index, link }) => {
   )
 }
 
+const LinksContainer = props => (
+  <Grid container
+    component="ul"
+    spacing={0}
+    sx= {{
+      listStyle: 'none',
+      padding: 0,
+      margin: 0
+    }}
+    justifyContent="flex-start"
+    alignItems="center"
+    {...props}
+  />
+)
+
 const Footer = () => {
   return (
     <Grid container
@@ -76,22 +91,12 @@ const Footer = () => {
         }
       }}
     >
-      <Grid item xs={12} md={8}>
-        <Grid container
-          component="ul"
-          spacing={0}
-          sx= {{
-            listStyle: 'none',
-            padding: 0,
-            margin: 0
-          }}
-          justifyContent="flex-start"
-          alignItems="center"
-        >
-          {footerLinks.map((link, index) => (
-            <FooterLink key={index} index={index} link={link} />
-          ))}
-        </Grid>
+      <Grid item xs={12} md={8}
+        component={LinksContainer}
+      >
+        {footerLinks.map((link, index) => (
+          <FooterLink key={index} index={index} link={link} />
+        ))}
       </Grid>
       <Grid item xs={12} md="auto"
         component={Typography}
