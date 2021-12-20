@@ -16,7 +16,7 @@ const footerLinks = [
   { url: '#', text: 'footer.help' },
   { url: 'https://terraso.org/contact-us/', text: 'footer.contact' },
   { url: '#', text: 'footer.terms' },
-  { url: 'https://techmatters.org/privacy-policy/', text: 'footer.privacy_policy' },
+  { url: 'https://techmatters.org/privacy-policy/', text: 'footer.privacy' },
   { url: '#', text: 'footer.data' }
 ]
 
@@ -66,50 +66,46 @@ const Footer = () => {
       width: '100%',
       background: theme.palette.secondary.main
     }}>
-      <Container sx={{
-        '& .MuiGrid-container': {
-          padding: 0,
-          paddingTop: theme.spacing(1),
-          paddingBottom: theme.spacing(1)
-        }
-      }}>
-        <Grid container
-          justifyContent="space-between"
-          sx={{
-            color: theme.palette.white,
-            padding: theme.spacing(2)
-          }}
-        >
-          <Grid item xs={12} md={8}>
-            <Grid container
-              component="ul"
-              spacing={0}
-              sx= {{
-                listStyle: 'none',
-                padding: 0,
-                margin: 0
-              }}
-              justifyContent="flex-start"
-              alignItems="center"
-            >
-              {footerLinks.map((link, index) => (
-                <FooterLink key={index} index={index} link={link} />
-              ))}
-            </Grid>
-          </Grid>
-          <Grid item xs={12} md="auto">
-            <Typography
-              variant="body2"
-              sx={{
-                textAlign: 'right',
-                marginTop: theme.spacing(1)
-              }}
-            >
-              © {year} Tech Matters
-            </Typography>
+      <Grid container
+        component={Container}
+        justifyContent="space-between"
+        sx={{
+          color: theme.palette.white,
+          padding: theme.spacing(2)
+        }}
+      >
+        <Grid item xs={12} md={8}>
+          <Grid container
+            component="ul"
+            spacing={0}
+            sx= {{
+              listStyle: 'none',
+              padding: 0,
+              margin: 0
+            }}
+            justifyContent="flex-start"
+            alignItems="center"
+          >
+            {footerLinks.map((link, index) => (
+              <FooterLink key={index} index={index} link={link} />
+            ))}
           </Grid>
         </Grid>
-      </Container>
+        <Grid item xs={12} md="auto">
+          <Typography
+            variant="body2"
+            sx={{
+              textAlign: 'right',
+              marginTop: {
+                xs: theme.spacing(1),
+                sm: 0
+              }
+            }}
+          >
+            © {year} Tech Matters
+          </Typography>
+        </Grid>
+      </Grid>
     </footer>
   )
 }
