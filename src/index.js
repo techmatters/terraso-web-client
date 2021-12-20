@@ -21,7 +21,7 @@ ReactDOM.render(
       <Container>
         <Navigation />
       </Container>
-      <Box sx={{ bgcolor: 'white', marginBottom: { xs: '25vh', sm: '10vh' } }}>
+      <Box sx={{ bgcolor: 'white', marginBottom: { xs: '29vh', sm: '15vh', md: '10vh' } }}>
         <Container>
           <Routes />
         </Container>

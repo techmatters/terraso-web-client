@@ -1,5 +1,4 @@
 import React from 'react'
-// import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   Link,
   Divider,
@@ -64,7 +63,13 @@ const Footer = () => {
       width: '100%',
       background: theme.palette.secondary.main
     }}>
-      <Container>
+      <Container sx={{
+        '& .MuiGrid-container': {
+          padding: 0,
+          paddingTop: theme.spacing(1),
+          paddingBottom: theme.spacing(1)
+        }
+      }}>
         <Grid container
           justifyContent="space-between"
           sx={{
@@ -89,19 +94,12 @@ const Footer = () => {
               ))}
             </Grid>
           </Grid>
-          <Grid item
-            xs={12}
-            sm="auto"
-          >
+          <Grid item xs={12} md="auto">
             <Typography
               variant="body2"
               sx={{
-                display: 'flex',
-                alignItems: 'center',
-                marginTop: {
-                  xs: theme.spacing(4),
-                  md: 0
-                }
+                textAlign: 'right',
+                marginTop: theme.spacing(1)
               }}
             >
               © {year} Tech Matters
