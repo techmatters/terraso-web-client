@@ -1,8 +1,8 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   Link,
-  Divider,
   Typography,
   Grid
 } from '@mui/material'
@@ -23,6 +23,14 @@ const footerLinks = [
 
 const FooterLink = ({ index, link }) => {
   const { t } = useTranslation()
+  const isBig = useMediaQuery(theme.breakpoints.up('sm'))
+  const showBorder = isBig && index < footerLinks.length - 1
+
+  const borderStyle = {
+    borderRight: `1px solid ${palette.white}`,
+    paddingRight: spacing(2),
+    marginRight: spacing(2)
+  }
 
   return (
     <React.Fragment>
@@ -39,22 +47,14 @@ const FooterLink = ({ index, link }) => {
           variant="body2"
           underline="none"
           href={link.url}
-          sx={{ color: palette.white }}
+          sx={{
+            color: palette.white,
+            ...(showBorder ? borderStyle : {})
+          }}
         >
           {t(link.text)}
         </Link>
       </Grid>
-      {index < footerLinks.length - 1 && (
-        <Divider
-          flexItem
-          orientation="vertical"
-          sx={{
-            bgcolor: 'white',
-            marginLeft: spacing(2),
-            marginRight: spacing(2)
-          }}
-        />
-      )}
     </React.Fragment>
   )
 }
