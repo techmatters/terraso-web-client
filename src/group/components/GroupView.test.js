@@ -60,8 +60,8 @@ test('GroupView: Display data', async () => {
     groups: {
       edges: [{
         node: {
-          name: 'Group Name',
-          description: 'Group Description',
+          name: 'Group name',
+          description: 'Group description',
           website: 'www.group.org',
           email: 'email@email.com',
           memberships
@@ -72,13 +72,13 @@ test('GroupView: Display data', async () => {
   await act(async () => render(<GroupView />))
 
   // Group info
-  expect(screen.getByRole('heading', { name: 'Group Name' })).toBeInTheDocument()
-  expect(screen.getByText(/Group Description/i)).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Group name' })).toBeInTheDocument()
+  expect(screen.getByText(/Group description/i)).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'email@email.com' })).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'www.group.org' })).toBeInTheDocument()
 
   // Members
-  expect(screen.getByText(/6 Terraso members have affiliated themselves with Group Name./i)).toBeInTheDocument()
+  expect(screen.getByText(/6 Terraso members have affiliated themselves with Group name./i)).toBeInTheDocument()
   expect(screen.getByText(/\+2/i)).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Join Group' })).toBeInTheDocument()
 })

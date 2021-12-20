@@ -15,10 +15,10 @@ jest.mock('react-router-dom', () => ({
 
 const setup = async () => {
   await act(async () => render(<LandscapeForm />))
-  const name = screen.getByRole('textbox', { name: 'LANDSCAPE NAME (Required)' })
-  const description = screen.getByRole('textbox', { name: 'LANDSCAPE DESCRIPTION (Required)' })
-  const website = screen.getByRole('textbox', { name: 'LANDSCAPE WEBSITE' })
-  const location = screen.getByRole('textbox', { name: 'LANDSCAPE LOCATION' })
+  const name = screen.getByRole('textbox', { name: 'Landscape name (Required)' })
+  const description = screen.getByRole('textbox', { name: 'Landscape description (Required)' })
+  const website = screen.getByRole('textbox', { name: 'Landscape website' })
+  const location = screen.getByRole('textbox', { name: 'Landscape location' })
   return {
     inputs: {
       name, description, website, location

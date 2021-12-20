@@ -8,8 +8,8 @@ test('GroupService: Fetch group', async () => {
     groups: {
       edges: [{
         node: {
-          name: 'Group Name',
-          description: 'Group Description',
+          name: 'Group name',
+          description: 'Group description',
           website: 'https://www.group.org'
         }
       }]
@@ -17,8 +17,8 @@ test('GroupService: Fetch group', async () => {
   }))
   const group = await groupService.fetchGroupToUpdate()
   expect(group).toStrictEqual({
-    name: 'Group Name',
-    description: 'Group Description',
+    name: 'Group name',
+    description: 'Group description',
     website: 'https://www.group.org'
   })
 })

@@ -57,8 +57,8 @@ test('GroupList: Display list', async () => {
     node: {
       slug: `group-${groupIndex}`,
       id: `group-${groupIndex}`,
-      name: `Group Name ${groupIndex}`,
-      description: 'Group Description',
+      name: `Group name ${groupIndex}`,
+      description: 'Group description',
       website: 'https://www.group.org',
       email: 'email@email.com',
       memberships: generateMemberhips(groupIndex, membersCounts[groupIndex])
@@ -82,7 +82,7 @@ test('GroupList: Display list', async () => {
   expect(screen.getByRole('heading', { name: 'Groups' })).toBeInTheDocument()
   const rows = screen.getAllByRole('row')
   expect(rows.length).toBe(11) // 10 displayed + header
-  expect(within(rows[2]).getByRole('cell', { name: 'Group Name 1' })).toHaveAttribute('data-field', 'name')
+  expect(within(rows[2]).getByRole('cell', { name: 'Group name 1' })).toHaveAttribute('data-field', 'name')
   expect(within(rows[2]).getByRole('cell', { name: 'https://www.group.org' })).toHaveAttribute('data-field', 'website')
   expect(within(rows[2]).getByRole('cell', { name: 'email@email.com' })).toHaveAttribute('data-field', 'email')
   expect(within(rows[2]).getByRole('cell', { name: '23' })).toHaveAttribute('data-field', 'members')
@@ -116,8 +116,8 @@ test('GroupList: List sort', async () => {
     node: {
       slug: `group-${groupIndex}`,
       id: `group-${groupIndex}`,
-      name: `Group Name ${groupIndex}`,
-      description: 'Group Description',
+      name: `Group name ${groupIndex}`,
+      description: 'Group description',
       website: 'https://www.group.org',
       email: 'email@email.com',
       memberships: generateMemberhips(groupIndex, membersCounts[groupIndex])
@@ -143,9 +143,9 @@ test('GroupList: List sort', async () => {
   expect(rows.length).toBe(11) // 10 displayed + header
 
   // Sorting
-  expect(within(rows[1]).getByRole('cell', { name: 'Group Name 0' })).toHaveAttribute('data-field', 'name')
-  await act(async () => fireEvent.click(within(rows[0]).getByRole('columnheader', { name: 'Group Name' })))
-  expect(within(rows[1]).getByRole('cell', { name: 'Group Name 9' })).toHaveAttribute('data-field', 'name')
+  expect(within(rows[1]).getByRole('cell', { name: 'Group name 0' })).toHaveAttribute('data-field', 'name')
+  await act(async () => fireEvent.click(within(rows[0]).getByRole('columnheader', { name: 'Group name' })))
+  expect(within(rows[1]).getByRole('cell', { name: 'Group name 9' })).toHaveAttribute('data-field', 'name')
 })
 test('GroupList: Display list (small screen)', async () => {
   useMediaQuery.mockReturnValue(true)
@@ -175,8 +175,8 @@ test('GroupList: Display list (small screen)', async () => {
     node: {
       slug: `group-${groupIndex}`,
       id: `group-${groupIndex}`,
-      name: `Group Name ${groupIndex}`,
-      description: 'Group Description',
+      name: `Group name ${groupIndex}`,
+      description: 'Group description',
       website: 'https://www.group.org',
       email: 'email@email.com',
       memberships: generateMemberhips(groupIndex, membersCounts[groupIndex])
@@ -201,7 +201,7 @@ test('GroupList: Display list (small screen)', async () => {
 
   const rows = screen.getAllByRole('listitem')
   expect(rows.length).toBe(15)
-  expect(within(rows[1]).getByText('Group Name 1')).toBeInTheDocument()
+  expect(within(rows[1]).getByText('Group name 1')).toBeInTheDocument()
   expect(within(rows[1]).getByText('https://www.group.org')).toBeInTheDocument()
   expect(within(rows[1]).getByText('email@email.com')).toBeInTheDocument()
   expect(within(rows[1]).getByText('23')).toBeInTheDocument()
