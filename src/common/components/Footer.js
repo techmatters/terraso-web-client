@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Link,
   Divider,
@@ -12,14 +13,16 @@ import theme from 'theme'
 const year = new Date().getFullYear()
 
 const footerLinks = [
-  { url: '#', text: 'Terraso Help' },
-  { url: 'https://terraso.org/contact-us/', text: 'Contact' },
-  { url: '#', text: 'Terms of Use' },
-  { url: 'https://techmatters.org/privacy-policy/', text: 'Privacy Policy' },
-  { url: '#', text: 'Data Policy' }
+  { url: '#', text: 'footer.help' },
+  { url: 'https://terraso.org/contact-us/', text: 'footer.contact' },
+  { url: '#', text: 'footer.terms' },
+  { url: 'https://techmatters.org/privacy-policy/', text: 'footer.privacy_policy' },
+  { url: '#', text: 'footer.data' }
 ]
 
 const FooterLink = ({ index, link }) => {
+  const { t } = useTranslation()
+
   return (
     <React.Fragment>
       <Grid item component="li"
@@ -37,7 +40,7 @@ const FooterLink = ({ index, link }) => {
           href={link.url}
           sx={{ color: theme.palette.white }}
         >
-          {link.text}
+          {t(link.text)}
         </Link>
       </Grid>
       {index < footerLinks.length - 1 && (
