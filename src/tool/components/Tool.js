@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+  Button,
   Card,
   Link,
   Stack,
@@ -17,7 +18,19 @@ const Tool = ({ tool }) => {
         <Typography variant="h1" >
           {tool.title}
         </Typography>
-
+        <Stack direction="row" spacing={2}
+          sx= {{
+            marginTop: theme.spacing(3),
+            marginBottom: theme.spacing(4)
+          }}
+        >
+          <Button variant="contained">
+            {t('tool.actions_bookmark')}
+          </Button>
+          <Button variant="outlined">
+            {t('tool.actions_recommend')}
+          </Button>
+        </Stack>
         <Stack direction="row" justifyContent="space-between" spacing={2}>
 
           <section>
