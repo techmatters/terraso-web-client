@@ -6,6 +6,7 @@ import {
   Stack,
   Typography
 } from '@mui/material'
+import LaunchIcon from '@mui/icons-material/Launch'
 import { useTranslation } from 'react-i18next'
 import theme from 'theme'
 
@@ -67,6 +68,7 @@ const Tool = ({ tool }) => {
             <p>
               <Link href={tool.url}>
                 {t('tool.go_to', { tool: tool.title })}
+                <LaunchIcon sx={{ paddingLeft: '5px', height: '1.2rem', width: '1.2rem', verticalAlign: 'bottom' }} />
               </Link>
             </p>
           </section>
