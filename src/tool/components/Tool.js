@@ -35,7 +35,7 @@ const Tool = ({ tool }) => {
           </Button>
         </Stack>
         <Stack direction="row" justifyContent="space-between" spacing={2}>
-          
+
           <section>
             <Typography variant="h2" >
               {t('tool.is_for')}
