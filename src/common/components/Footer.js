@@ -91,19 +91,18 @@ const Footer = () => {
             ))}
           </Grid>
         </Grid>
-        <Grid item xs={12} md="auto">
-          <Typography
-            variant="body2"
-            sx={{
-              textAlign: 'right',
-              marginTop: {
-                xs: theme.spacing(1),
-                sm: 0
-              }
-            }}
-          >
-            © {year} Tech Matters
-          </Typography>
+        <Grid item xs={12} md="auto"
+          component={Typography}
+          variant="body2"
+          sx={{
+            textAlign: 'right',
+            paddingTop: {
+              xs: theme.spacing(1),
+              md: 0
+            }
+          }}
+        >
+          © {year} Tech Matters
         </Grid>
       </Grid>
     </footer>
