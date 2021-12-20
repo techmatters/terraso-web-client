@@ -143,6 +143,13 @@
         "validation_url_invalid": "{{path}} must be a valid URL",
         "validation_field_max_length": "{{path}} must be {{max}} characters maximum."
     },
+    "footer": {
+      "help": "Terraso Help",
+      "contact": "Contact",
+      "terms": "Terms of Use",
+      "privacy": "Privacy Policy",
+      "data": "Data Policy"
+    },
     "terraso_api": {
         "error_unexpected": "Unexpected error",
         "error_request_response": "Failed to connect with Terraso API"

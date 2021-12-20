@@ -1,39 +1,117 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   Link,
-  Stack
+  Typography,
+  Grid
 } from '@mui/material'
 
 import theme from 'theme'
 
+const { spacing, palette } = theme
+
 const year = new Date().getFullYear()
 
-const Footer = () => {
-  const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
+const footerLinks = [
+  { url: '#', text: 'footer.help' },
+  { url: 'https://terraso.org/contact-us/', text: 'footer.contact' },
+  { url: '#', text: 'footer.terms' },
+  { url: 'https://techmatters.org/privacy-policy/', text: 'footer.privacy' },
+  { url: '#', text: 'footer.data' }
+]
 
-  const footerLinks = [
-    { url: '#', text: 'Terraso Help' },
-    { url: 'https://terraso.org/contact-us/', text: 'Contact' },
-    { url: '#', text: 'Terms of Use' },
-    { url: 'https://techmatters.org/privacy-policy/', text: 'Privacy Policy' },
-    { url: '#', text: 'Data Policy' }
-  ]
+const FooterLink = ({ index, link }) => {
+  const { t } = useTranslation()
+  const isBig = useMediaQuery(theme.breakpoints.up('sm'))
+  const showBorder = isBig && index < footerLinks.length - 1
+
+  const borderStyle = {
+    borderRight: `1px solid ${palette.white}`,
+    paddingRight: spacing(2),
+    marginRight: spacing(2)
+  }
 
   return (
-    <footer style={{ position: 'fixed', bottom: 0, width: '100%' }}>
-      <Stack direction={isSmall ? 'column' : 'row'} justifyContent="space-between" spacing={2} sx={{ color: theme.palette.white, background: theme.palette.secondary.main }}>
-        <ul style={{ listStyle: 'none' }}>
-          {
-            footerLinks.map((link, index) => <li key={index} style={{ display: isSmall ? 'block' : 'inline', padding: '0 5px' }}><Link sx={{ color: theme.palette.white }} href="{link.url}">{link.text}</Link></li>)
+    <React.Fragment>
+      <Grid item component="li"
+        xs={12} sm="auto"
+        sx={{
+          paddingBottom: {
+            xs: spacing(1),
+            sm: 0
           }
-        </ul>
+        }}
+      >
+        <Link
+          variant="body2"
+          underline="none"
+          href={link.url}
+          sx={{
+            color: palette.white,
+            ...(showBorder ? borderStyle : {})
+          }}
+        >
+          {t(link.text)}
+        </Link>
+      </Grid>
+    </React.Fragment>
+  )
+}
 
-        <ul style={{ listStyle: 'none', display: 'flex', alignItems: 'center', paddingRight: '40px' }}>
-          <li>© {year} Tech Matters</li>
-        </ul>
-      </Stack>
-    </footer>
+const LinksContainer = props => (
+  <Grid container
+    component="ul"
+    spacing={0}
+    sx= {{
+      listStyle: 'none',
+      padding: 0,
+      margin: 0
+    }}
+    justifyContent="flex-start"
+    alignItems="center"
+    {...props}
+  />
+)
+
+const Footer = () => {
+  return (
+    <Grid container
+      component="footer"
+      justifyContent="space-between"
+      sx={{
+        position: 'fixed',
+        bottom: 0,
+        width: '100%',
+        background: palette.secondary.main,
+        color: palette.white,
+        padding: {
+          xs: spacing(2),
+          md: `${spacing(2)} ${spacing(10)} ${spacing(2)} ${spacing(10)}`
+        }
+      }}
+    >
+      <Grid item xs={12} md={8}
+        component={LinksContainer}
+      >
+        {footerLinks.map((link, index) => (
+          <FooterLink key={index} index={index} link={link} />
+        ))}
+      </Grid>
+      <Grid item xs={12} md="auto"
+        component={Typography}
+        variant="body2"
+        sx={{
+          textAlign: 'right',
+          paddingTop: {
+            xs: spacing(1),
+            md: 0
+          }
+        }}
+      >
+        © {year} Tech Matters
+      </Grid>
+    </Grid>
   )
 }
 
