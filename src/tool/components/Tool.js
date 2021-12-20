@@ -1,11 +1,13 @@
 import React from 'react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import {
+  Button,
   Card,
   Link,
   Stack,
   Typography
 } from '@mui/material'
+import LaunchIcon from '@mui/icons-material/Launch'
 import { useTranslation } from 'react-i18next'
 import theme from 'theme'
 
@@ -19,9 +21,21 @@ const Tool = ({ tool }) => {
         <Typography variant="h1" >
           {tool.title}
         </Typography>
-
-        <Stack direction={isSmall ? 'column' : 'row'} justifyContent="space-between" spacing={2}>
-
+        <Stack direction={isSmall ? 'column' : 'row'} spacing={2}
+          sx= {{
+            marginTop: theme.spacing(3),
+            marginBottom: theme.spacing(4)
+          }}
+        >
+          <Button variant="contained">
+            {t('tool.actions_bookmark')}
+          </Button>
+          <Button variant="outlined">
+            {t('tool.actions_recommend')}
+          </Button>
+        </Stack>
+        <Stack direction="row" justifyContent="space-between" spacing={2}>
+          
           <section>
             <Typography variant="h2" >
               {t('tool.is_for')}
@@ -56,6 +70,7 @@ const Tool = ({ tool }) => {
             <p>
               <Link href={tool.url}>
                 {t('tool.go_to', { tool: tool.title })}
+                <LaunchIcon sx={{ paddingLeft: '5px', height: '1.2rem', width: '1.2rem', verticalAlign: 'bottom' }} />
               </Link>
             </p>
           </section>
