@@ -91,7 +91,7 @@
         "list_leave_button": "Member",
         "list_column_name": "Landscape Name",
         "list_column_location": "Location",
-        "list_column_contact": "Contact Info",
+        "list_column_website": "Website",
         "list_column_members": "Members",
         "list_column_actions": "Actions",
         "list_empty": "No Landscapes",

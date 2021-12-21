@@ -8,8 +8,7 @@ import * as groupUtils from 'group/groupUtils'
 const initialState = {
   list: {
     fetching: true,
-    landscapes: [],
-    message: null
+    landscapes: []
   },
   view: {
     fetching: true,
@@ -67,19 +66,14 @@ const landscapeSlice = createSlice({
     [fetchLandscapes.rejected]: (state, action) => ({
       ...state,
       list: {
-        ...state.list,
         fetching: false,
-        message: {
-          severity: 'error',
-          content: action.payload
-        }
+        landscapes: []
       }
     }),
     [fetchLandscapes.fulfilled]: (state, action) => ({
       ...state,
       list: {
         fetching: false,
-        message: null,
         landscapes: action.payload
       }
     }),
