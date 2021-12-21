@@ -51,7 +51,7 @@ const LandscapeTable = ({ landscapes }) => {
     minWidth: 200
   }, {
     field: 'website',
-    headerName: t('landscape.list_column_contact'),
+    headerName: t('landscape.list_column_website'),
     sortable: false,
     flex: 1.5,
     minWidth: 200,
@@ -128,7 +128,7 @@ const LandscapeCards = ({ landscapes }) => {
               {landscape.website && (
                 <Grid item xs={12}>
                   <Typography variant="caption">
-                    {t('landscape.list_column_contact')}
+                    {t('landscape.list_column_website')}
                   </Typography>
                   <Link component={Box} href={landscape.website} underline="none">
                     {landscape.website}
@@ -171,10 +171,6 @@ const LandscapeList = () => {
         <CircularProgress color="inherit" />
       </Backdrop>
     )
-  }
-
-  if (!landscapes) {
-    return null
   }
 
   return (
