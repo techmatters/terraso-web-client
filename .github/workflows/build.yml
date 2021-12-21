@@ -20,6 +20,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm install
@@ -27,7 +28,26 @@ jobs:
       - name: Run lint checks
         run: npm run lint
 
-  test:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run test
+        run: npm run test
+  
+  tests-coverage:
     runs-on: ubuntu-latest
 
     steps:
@@ -40,6 +60,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm install
@@ -58,6 +79,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm install
