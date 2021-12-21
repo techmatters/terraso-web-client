@@ -112,9 +112,14 @@ const GroupCards = ({ groups }) => {
                 <Typography variant="caption">
                   {t('group.list_column_name')}
                 </Typography>
-                <Typography variant="body1">
+                <Link
+                  variant="body1"
+                  display="block"
+                  component={RouterLink}
+                  to={`/groups/${group.slug}`}
+                >
                   {group.name}
-                </Typography>
+                </Link>
               </Grid>
               {group.email && (
                 <Grid item xs={12}>

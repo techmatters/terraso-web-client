@@ -106,9 +106,14 @@ const LandscapeCards = ({ landscapes }) => {
                 <Typography variant="caption">
                   {t('landscape.list_column_name')}
                 </Typography>
-                <Typography variant="body1">
+                <Link
+                  variant="body1"
+                  display="block"
+                  component={RouterLink}
+                  to={`/landscapes/${landscape.slug}`}
+                >
                   {landscape.name}
-                </Typography>
+                </Link>
               </Grid>
               {landscape.location && (
                 <Grid item xs={12}>
