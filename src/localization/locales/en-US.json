@@ -46,7 +46,7 @@
         "view_join_label": "Join Group",
         "view_leave_label": "Leave Group",
         "list_title": "Groups",
-        "list_description": "View the list of groups in Terraso. Follow the group name link to learn more from the group profile. You can also create a group and invite others to join.",
+        "list_description": "Groups are gatherings of people in Terraso. A group can be a formal Landscape Partnership, an organization, or an informal group of people. Join groups to connect with members in your community or create a group and invite others to join.",
         "list_join_button": "Join",
         "list_leave_button": "Member",
         "list_column_name": "Group name",
