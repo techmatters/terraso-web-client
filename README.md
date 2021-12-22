@@ -11,7 +11,10 @@ To define environment variables we are using: https://create-react-app.dev/docs/
 
 **REACT_APP_TERRASO_API_URL**: Terraso API host URL
 
-### Set variable: `export REACT_APP_TERRASO_API_URL=http://localhost:8000/graphql/`
+### Run command with custom variable value:
+
+Start: `REACT_APP_TERRASO_API_URL=https://terraso.com/graphql npm start`
+Build: `REACT_APP_TERRASO_API_URL=https://terraso.com/graphql npm run build`
 
 ## Available Scripts
 
