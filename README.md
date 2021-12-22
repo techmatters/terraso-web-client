@@ -50,6 +50,18 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
+## Environment
+
+To define environment variables we are using: https://create-react-app.dev/docs/adding-custom-environment-variables/. The available variables are:
+
+**REACT_APP_TERRASO_API_URL**: Terraso API host URL
+
+### Run command with custom variable value:
+
+Start: `REACT_APP_TERRASO_API_URL=https://terraso.com/graphql npm start`
+
+Build: `REACT_APP_TERRASO_API_URL=https://terraso.com/graphql npm run build`
+
 ## Localization
 
 The localization is being hangled by the `react-i18next`. You can check the documentation here: [https://react.i18next.com/](https://react.i18next.com/)

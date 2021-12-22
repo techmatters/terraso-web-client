@@ -1,7 +1,6 @@
 import _ from 'lodash'
 
-// TODO Move this to the correct configuration file when the deployment process is defined
-const TERRASO_API_URL = 'http://localhost:8000/graphql/'
+import { TERRASO_API_URL } from 'config'
 
 const handleGraphQLError = data => {
   const errors = _.get(data, 'errors')
