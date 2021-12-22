@@ -5,6 +5,14 @@
 - Node: Version 16.13.0
 - Npm: Version 8.1.0
 
+## Environment
+
+To define environment variables we are using: https://create-react-app.dev/docs/adding-custom-environment-variables/. The available variables are:
+
+**REACT_APP_TERRASO_API_URL**: Terraso API host URL
+
+### Set variable: `export REACT_APP_TERRASO_API_URL=http://localhost:8000/graphql/`
+
 ## Available Scripts
 
 In the project directory, you can run:
