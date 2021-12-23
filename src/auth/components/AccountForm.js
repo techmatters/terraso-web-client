@@ -28,13 +28,11 @@ const AccountForm = ({ tool }) => {
         <img src={logo} height="35px" alt={t('common.terraso_projectName')} />
 
         <Stack spacing={3} sx={{ margin: '3em 0 8em' }}>
-          <Button variant="outlined" component={RouterLink} to="/account/profile">
-            <GoogleIcon sx={{ paddingRight: '10px' }} />
+          <Button startIcon={<GoogleIcon sx={{ paddingRight: '5px' }} />} variant="outlined" component={RouterLink} to="/account/profile">
             {t('account.google_login')}
           </Button>
 
-          <Button variant="outlined" component={RouterLink} to="/account/profile">
-            <AppleIcon sx={{ paddingRight: '10px' }} />
+          <Button startIcon={<AppleIcon sx={{ paddingRight: '5px' }} />} variant="outlined" component={RouterLink} to="/account/profile">
             {t('account.apple_login')}
           </Button>
         </Stack>
