@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import Cookies from 'js-cookie'
 import { Backdrop, CircularProgress } from '@mui/material'
 
 import { fetchUser } from 'account/accountSlice'
@@ -10,7 +9,6 @@ const RequireAuth = ({ children }) => {
   const dispatch = useDispatch()
   const { data: user, fetching } = useSelector(state => state.account.currentUser)
   const hasToken = useSelector(state => state.account.hasToken)
-  const token = Cookies.get('token')
 
   useEffect(() => {
     if (hasToken && !user) {
@@ -29,7 +27,7 @@ const RequireAuth = ({ children }) => {
     )
   }
 
-  return user && token
+  return user && hasToken
     ? children
     : <Navigate to="/account" replace />
 }
