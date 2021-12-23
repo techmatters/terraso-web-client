@@ -1,5 +1,6 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSelector, useDispatch } from 'react-redux'
 import { Link as RouterLink } from 'react-router-dom'
 import {
   Button,
@@ -9,10 +10,28 @@ import {
 import AppleIcon from '@mui/icons-material/Apple'
 import GoogleIcon from '@mui/icons-material/Google'
 
+import { fetchAuthURLs } from 'account/accountSlice'
 import logo from 'assets/logo.svg'
 
-const AccountForm = ({ tool }) => {
+const AccountForm = () => {
+  const dispatch = useDispatch()
   const { t } = useTranslation()
+  const { fetching, urls } = useSelector(state => state.account.login)
+  
+  useEffect(() => {
+    dispatch(fetchAuthURLs())
+  }, [dispatch])
+
+  if (fetching) {
+    return (
+      <Backdrop
+        sx={{ color: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={true}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    )
+  }
 
   return (
     <Stack

@@ -2,11 +2,16 @@ import Cookies from 'js-cookie'
 import { createSlice } from '@reduxjs/toolkit'
 
 import { createAsyncThunk } from 'state/utils'
+import * as accountService from 'account/accountService'
 
 const initialState = {
   currentUser: {
     fetching: true,
     data: null
+  },
+  login: {
+    urls: null,
+    fetching: true
   },
   hasToken: !!Cookies.get('token')
 }
@@ -19,6 +24,7 @@ export const fetchUser = createAsyncThunk('account/fetchUser', () =>
     email: 'user01@gmail.com'
   }))
 )
+export const fetchAuthURLs = createAsyncThunk('account/fetchUser', accountService.getAuthURLs)
 
 export const userSlice = createSlice({
   name: 'user',
@@ -50,6 +56,24 @@ export const userSlice = createSlice({
       currentUser: {
         fetching: false,
         data: null
+      }
+    }),
+    [fetchAuthURLs.pending]: state => ({
+      ...state,
+      login: initialState.login
+    }),
+    [fetchAuthURLs.fulfilled]: (state, action) => ({
+      ...state,
+      login: {
+        fetching: false,
+        urls: action.payload
+      }
+    }),
+    [fetchAuthURLs.rejected]: state => ({
+      ...state,
+      login: {
+        fetching: false,
+        urls: null
       }
     })
   }
