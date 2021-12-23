@@ -1,4 +1,7 @@
-# Terraso Web App
+# Terraso Web Client
+
+Terraso web client is a React applications that powers the frontend of the Terraso platform.
+
 
 ## Requirements
 
