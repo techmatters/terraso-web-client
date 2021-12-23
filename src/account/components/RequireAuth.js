@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { Backdrop, CircularProgress } from '@mui/material'
 
 import { fetchUser } from 'account/accountSlice'
+import PageLoader from 'common/components/PageLoader'
 
 const RequireAuth = ({ children }) => {
   const dispatch = useDispatch()
@@ -18,12 +18,7 @@ const RequireAuth = ({ children }) => {
 
   if (hasToken && fetching) {
     return (
-      <Backdrop
-        sx={{ color: 'white', zIndex: theme => theme.zIndex.drawer + 1 }}
-        open={true}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <PageLoader />
     )
   }
 

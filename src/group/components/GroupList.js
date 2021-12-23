@@ -7,8 +7,6 @@ import { Link as RouterLink } from 'react-router-dom'
 import {
   Box,
   Typography,
-  Backdrop,
-  CircularProgress,
   Link,
   Grid,
   Card,
@@ -21,6 +19,7 @@ import { fetchGroups } from 'group/groupSlice'
 import GroupMembershipButton from 'group/components/GroupMembershipButton'
 import GroupMembershipCount from 'group/components/GroupMembershipCount'
 import Table from 'common/components/Table'
+import PageLoader from 'common/components/PageLoader'
 import theme from 'theme'
 
 const MembershipButton = ({ group }) => (
@@ -170,12 +169,7 @@ const GroupList = () => {
 
   if (fetching) {
     return (
-      <Backdrop
-        sx={{ color: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={true}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <PageLoader />
     )
   }
 

@@ -1,7 +1,7 @@
-import Cookies from 'js-cookie'
 import { createSlice } from '@reduxjs/toolkit'
 
 import { createAsyncThunk } from 'state/utils'
+import { getToken } from 'account/auth'
 import * as accountService from 'account/accountService'
 
 const initialState = {
@@ -10,21 +10,15 @@ const initialState = {
     data: null
   },
   login: {
-    urls: null,
+    urls: {},
     fetching: true
   },
-  hasToken: !!Cookies.get('token')
+  hasToken: !!getToken()
 }
 
 // TODO hook with proper backend query
-export const fetchUser = createAsyncThunk('account/fetchUser', () =>
-  (new Promise((resolve) => setTimeout(() => { resolve() }, 500))).then(() => ({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'user01@gmail.com'
-  }))
-)
-export const fetchAuthURLs = createAsyncThunk('account/fetchUser', accountService.getAuthURLs)
+export const fetchUser = createAsyncThunk('account/fetchUser', accountService.fetchUser)
+export const fetchAuthURLs = createAsyncThunk('account/fetchAuthURLs', accountService.getAuthURLs)
 
 export const userSlice = createSlice({
   name: 'user',
@@ -48,7 +42,11 @@ export const userSlice = createSlice({
       ...state,
       currentUser: {
         fetching: false,
-        data: action.payload
+        data: {
+          email: action.payload.user.email,
+          firstName: action.payload.user.first_name,
+          lastName: action.payload.user.last_name
+        }
       }
     }),
     [fetchUser.rejected]: state => ({
@@ -73,7 +71,7 @@ export const userSlice = createSlice({
       ...state,
       login: {
         fetching: false,
-        urls: null
+        urls: {}
       }
     })
   }

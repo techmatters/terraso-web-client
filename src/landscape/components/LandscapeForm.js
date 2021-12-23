@@ -6,14 +6,13 @@ import { useParams, useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
 import {
   Box,
-  Typography,
-  Backdrop,
-  CircularProgress
+  Typography
 } from '@mui/material'
 
 import theme from 'theme'
 import { fetchLandscapeForm, saveLandscape, setFormNewValues } from 'landscape/landscapeSlice'
 import Form from 'forms/components/Form'
+import PageLoader from 'common/components/PageLoader'
 
 const VALIDATION_SCHEMA = yup.object({
   name: yup.string().required(),
@@ -87,12 +86,7 @@ const LandscapeForm = () => {
   return (
     <Box sx={{ padding: theme.spacing(2) }}>
       {fetching && (
-        <Backdrop
-          sx={{ color: theme.palette.white, zIndex: theme => theme.zIndex.drawer + 1 }}
-          open={true}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
+        <PageLoader />
       )}
       <Typography variant="h1" sx={{ marginBottom: theme.spacing(5) }}>{title}</Typography>
       <Form

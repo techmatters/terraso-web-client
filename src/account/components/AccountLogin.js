@@ -1,7 +1,6 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector, useDispatch } from 'react-redux'
-import { Link as RouterLink } from 'react-router-dom'
 import {
   Button,
   Stack,
@@ -11,25 +10,21 @@ import AppleIcon from '@mui/icons-material/Apple'
 import GoogleIcon from '@mui/icons-material/Google'
 
 import { fetchAuthURLs } from 'account/accountSlice'
+import PageLoader from 'common/components/PageLoader'
 import logo from 'assets/logo.svg'
 
 const AccountForm = () => {
   const dispatch = useDispatch()
   const { t } = useTranslation()
   const { fetching, urls } = useSelector(state => state.account.login)
-  
+
   useEffect(() => {
     dispatch(fetchAuthURLs())
   }, [dispatch])
 
   if (fetching) {
     return (
-      <Backdrop
-        sx={{ color: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={true}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <PageLoader />
     )
   }
 
@@ -47,13 +42,23 @@ const AccountForm = () => {
         <img src={logo} height="35px" alt={t('common.terraso_projectName')} />
 
         <Stack spacing={3} sx={{ margin: '3em 0 8em' }}>
-          <Button startIcon={<GoogleIcon sx={{ paddingRight: '5px' }} />} variant="outlined" component={RouterLink} to="/account/profile">
-            {t('account.google_login')}
-          </Button>
+          {urls.google && (
+            <Button variant="outlined"
+              startIcon={<GoogleIcon sx={{ paddingRight: '5px' }} />}
+              href={urls.google}
+            >
+              {t('account.google_login')}
+            </Button>
+          )}
 
-          <Button startIcon={<AppleIcon sx={{ paddingRight: '5px' }} />} variant="outlined" component={RouterLink} to="/account/profile">
-            {t('account.apple_login')}
-          </Button>
+          {urls.apple && (
+            <Button variant="outlined"
+              startIcon={<AppleIcon sx={{ paddingRight: '5px' }} />}
+              href={urls.apple}
+            >
+              {t('account.apple_login')}
+            </Button>
+          )}
         </Stack>
 
         <p dangerouslySetInnerHTML={ { __html: t('account.disclaimer') } } />

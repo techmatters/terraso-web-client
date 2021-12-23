@@ -9,7 +9,7 @@ import LandscapeList from 'landscape/components/LandscapeList'
 import LandscapeForm from 'landscape/components/LandscapeForm'
 import LandscapeView from 'landscape/components/LandscapeView'
 import ToolsList from 'tool/components/ToolList'
-import AccountForm from 'account/components/AccountForm'
+import AccountLogin from 'account/components/AccountLogin'
 import AccountProfile from 'account/components/AccountProfile'
 import RequireAuth from 'account/components/RequireAuth'
 
@@ -28,7 +28,7 @@ const paths = [
   path('/landscapes/:slug/edit', LandscapeForm),
   path('/landscapes/:slug', LandscapeView),
   path('/tools', ToolsList),
-  path('/account', AccountForm, false),
+  path('/account', AccountLogin, false),
   path('/account/profile', AccountProfile)
 ]
 

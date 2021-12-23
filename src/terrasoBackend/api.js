@@ -1,6 +1,6 @@
 import _ from 'lodash'
-import Cookies from 'js-cookie'
 
+import { getToken } from 'account/auth'
 import { TERRASO_API_URL } from 'config'
 
 const handleGraphQLError = data => {
@@ -10,14 +10,17 @@ const handleGraphQLError = data => {
 }
 
 export const request = async (query, variables) => {
-  const response = await fetch(TERRASO_API_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${Cookies.get('token')}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ query, variables })
-  })
+  const response = await fetch(
+    new URL('/graphql/', TERRASO_API_URL).href,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ query, variables })
+    }
+  )
     .catch(error => {
       console.error('Terraso API: Failed to execute request', error)
       return Promise.reject(['terraso_api.error_request_response'])

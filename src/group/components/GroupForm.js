@@ -6,14 +6,13 @@ import { useParams, useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
 import {
   Box,
-  Typography,
-  Backdrop,
-  CircularProgress
+  Typography
 } from '@mui/material'
 
 import theme from 'theme'
 import { fetchGroupForm, saveGroup, setFormNewValues, resetFormSuccess } from 'group/groupSlice'
 import Form from 'forms/components/Form'
+import PageLoader from 'common/components/PageLoader'
 
 const VALIDATION_SCHEMA = yup.object({
   name: yup.string().required(),
@@ -57,7 +56,7 @@ const GroupForm = () => {
 
   const { slug } = useParams()
   const { fetching, group, success } = useSelector(state => state.group.form)
-  const user = useSelector(state => state.user.user)
+  const { data: user } = useSelector(state => state.account.currentUser)
 
   const isNew = !slug
 
@@ -95,12 +94,7 @@ const GroupForm = () => {
   return (
     <Box sx={{ padding: theme.spacing(2) }}>
       {fetching && (
-        <Backdrop
-          sx={{ color: theme.palette.white, zIndex: theme => theme.zIndex.drawer + 1 }}
-          open={true}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
+        <PageLoader />
       )}
       <Typography variant="h1" sx={{ marginBottom: theme.spacing(2) }}>{title}</Typography>
       <Typography

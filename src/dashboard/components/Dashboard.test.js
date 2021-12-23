@@ -13,18 +13,33 @@ jest.mock('dashboard/dashboardService', () => ({
   fetchDashboardData: jest.fn()
 }))
 
+const setup = async () => {
+  await act(async () => render(<Dashboard />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          firstName: 'First',
+          lastName: 'Last'
+        }
+      }
+    }
+  }))
+}
+
 beforeEach(() => {
   fetchDashboardData.mockImplementation(jest.requireActual('dashboard/dashboardService').fetchDashboardData)
 })
 
 test('Dashboard: Display error', async () => {
   terrasoApi.request.mockRejectedValue('Load error')
-  await act(async () => render(<Dashboard />))
+  await setup()
   expect(screen.getByText(/Error loading data. Load error/i)).toBeInTheDocument()
 })
-test('Dashboard: Display loader', () => {
+test('Dashboard: Display loader', async () => {
   terrasoApi.request.mockReturnValue(new Promise(() => {}))
-  render(<Dashboard />)
+  await setup()
   const loaders = screen.getAllByRole('loader', { name: '', hidden: true })
   expect(loaders.length).toBe(3)
   loaders.forEach(role =>
@@ -64,7 +79,7 @@ test('Dashboard: Display landscapes', async () => {
       }]
     }
   }))
-  await act(async () => render(<Dashboard />))
+  await setup()
   expect(screen.getByText(/Landscape 1/i)).toBeInTheDocument()
   expect(screen.getByText(/Member/i)).toBeInTheDocument()
   expect(screen.getByText(/Landscape 2/i)).toBeInTheDocument()
@@ -90,7 +105,7 @@ test('Dashboard: Display landscapes discovery', async () => {
       }]
     }
   }))
-  await act(async () => render(<Dashboard />))
+  await setup()
   expect(screen.getByText(/Discover Landscapes in Terraso/i)).toBeInTheDocument()
   expect(screen.getByText(/Landscape Discovery 2/i)).toBeInTheDocument()
 })
@@ -117,7 +132,7 @@ test('Dashboard: Display groups', async () => {
       }]
     }
   }))
-  await act(async () => render(<Dashboard />))
+  await setup()
   expect(screen.getByText('Group 1')).toBeInTheDocument()
   expect(screen.getByText('Member')).toBeInTheDocument()
   expect(screen.getByText('Group 2')).toBeInTheDocument()
@@ -129,7 +144,7 @@ test('Dashboard: Display defaults', async () => {
     landscapes: [],
     landscapesDiscovery: []
   }))
-  await act(async () => render(<Dashboard />))
+  await setup()
   expect(screen.getByText(/EXPLORE AND CONNECT TO LANDSCAPE/i)).toBeInTheDocument()
   expect(screen.getByText(/Terraso groups connect people/i)).toBeInTheDocument()
 })

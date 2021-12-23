@@ -14,7 +14,17 @@ jest.mock('react-router-dom', () => ({
 }))
 
 const setup = async () => {
-  await act(async () => render(<GroupForm />))
+  await act(async () => render(<GroupForm />, {
+    account: {
+      currentUser: {
+        data: {
+          email: 'email@email.com',
+          firstName: 'First',
+          lastName: 'Last'
+        }
+      }
+    }
+  }))
   const name = screen.getByRole('textbox', { name: 'Group name (Required)' })
   const description = screen.getByRole('textbox', { name: 'Group description (Required)' })
   const email = screen.getByRole('textbox', { name: 'Email address' })
@@ -232,7 +242,7 @@ test('GroupForm: Avoid fetch', async () => {
     .toThrow('Unable to find an element')
 })
 test('GroupForm: Save form (add)', async () => {
-  useParams.mockReturnValue({ id: 'new' })
+  useParams.mockReturnValue({})
   terrasoApi.request
     .mockResolvedValueOnce({
       addGroup: {
