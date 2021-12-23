@@ -28,9 +28,7 @@ const AppBarComponent = () => {
     return null
   }
 
-  const onSignOut = () => {
-    dispatch(setHasToken(false))
-  }
+  const onSignOut = () => dispatch(setHasToken(false))
 
   return (
     <AppBar position="static" >

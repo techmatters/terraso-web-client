@@ -11,6 +11,7 @@ import GoogleIcon from '@mui/icons-material/Google'
 
 import { fetchAuthURLs } from 'account/accountSlice'
 import PageLoader from 'common/components/PageLoader'
+
 import logo from 'assets/logo.svg'
 
 const AccountForm = () => {
@@ -23,9 +24,7 @@ const AccountForm = () => {
   }, [dispatch])
 
   if (fetching) {
-    return (
-      <PageLoader />
-    )
+    return (<PageLoader />)
   }
 
   return (

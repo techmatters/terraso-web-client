@@ -17,9 +17,7 @@ const RequireAuth = ({ children }) => {
   }, [hasToken, user, dispatch])
 
   if (hasToken && fetching) {
-    return (
-      <PageLoader />
-    )
+    return (<PageLoader />)
   }
 
   return user && hasToken

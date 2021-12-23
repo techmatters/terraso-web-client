@@ -16,7 +16,6 @@ const initialState = {
   hasToken: !!getToken()
 }
 
-// TODO hook with proper backend query
 export const fetchUser = createAsyncThunk('account/fetchUser', accountService.fetchUser)
 export const fetchAuthURLs = createAsyncThunk('account/fetchAuthURLs', accountService.getAuthURLs)
 
