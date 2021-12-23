@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 
-const COOKIES_DOMAIN = '.terraso.org'
+import { COOKIES_DOMAIN } from 'config'
 
 export const getToken = () => Cookies.get('atoken')
 
