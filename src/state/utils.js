@@ -3,6 +3,7 @@ import { createAsyncThunk as createAsyncThunkBase } from '@reduxjs/toolkit'
 import { removeToken } from 'account/auth'
 import { addMessage } from 'notifications/notificationsSlice'
 import { setHasToken } from 'account/accountSlice'
+import { UNAUTHENTICATED } from 'account/authConstants'
 
 export const createAsyncThunk = (name, action, onSuccessMessage, customErrorMessage) => createAsyncThunkBase(
   name,
@@ -16,7 +17,7 @@ export const createAsyncThunk = (name, action, onSuccessMessage, customErrorMess
       return result
     } catch (error) {
       // Handle auth error
-      if (error === 'UNAUTHENTICATED') {
+      if (error === UNAUTHENTICATED) {
         dispatch(addMessage({ severity: 'error', content: 'account.unauthenticated_message' }))
         removeToken()
         dispatch(setHasToken(false))

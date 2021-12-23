@@ -1,7 +1,6 @@
-import _ from 'lodash'
-
 import { getToken } from 'account/auth'
 import { TERRASO_API_URL } from 'config'
+import { UNAUTHENTICATED } from 'account/authConstants'
 
 const getURL = provider => fetch(
   new URL(`/auth/${provider}/authorize`, TERRASO_API_URL).href,
@@ -26,8 +25,8 @@ export const fetchUser = () => fetch(
   }
 )
   .then(response => {
-    if (_.includes([401, 403], response.status)) {
-      return Promise.reject('UNAUTHENTICATED')
+    if (response.status === 401) {
+      return Promise.reject(UNAUTHENTICATED)
     }
     return response
   })

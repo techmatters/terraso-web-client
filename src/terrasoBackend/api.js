@@ -2,6 +2,7 @@ import _ from 'lodash'
 
 import { getToken } from 'account/auth'
 import { TERRASO_API_URL } from 'config'
+import { UNAUTHENTICATED } from 'account/authConstants'
 
 const handleGraphQLError = data => {
   const errors = _.get(data, 'errors')
@@ -27,7 +28,7 @@ export const request = async (query, variables) => {
     })
 
   if (response.status === 401) {
-    await Promise.reject('UNAUTHENTICATED')
+    await Promise.reject(UNAUTHENTICATED)
   }
 
   const jsonResponse = await response.json()
