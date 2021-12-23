@@ -1,6 +1,6 @@
-import Cookies from 'js-cookie'
 import { createAsyncThunk as createAsyncThunkBase } from '@reduxjs/toolkit'
 
+import { removeToken } from 'account/auth'
 import { addMessage } from 'notifications/notificationsSlice'
 import { setHasToken } from 'account/accountSlice'
 
@@ -18,7 +18,7 @@ export const createAsyncThunk = (name, action, onSuccessMessage, customErrorMess
       // Handle auth error
       if (error === 'UNAUTHENTICATED') {
         dispatch(addMessage({ severity: 'error', content: 'account.unauthenticated_message' }))
-        Cookies.remove('token')
+        removeToken()
         dispatch(setHasToken(false))
         return rejectWithValue(error)
       }

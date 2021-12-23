@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next'
 
 import LocalePicker from 'localization/components/LocalePicker'
 import { setHasToken } from 'account/accountSlice'
+import { removeToken } from 'account/auth'
 import theme from 'theme'
 
 import logo from 'assets/logo.svg'
@@ -28,7 +29,10 @@ const AppBarComponent = () => {
     return null
   }
 
-  const onSignOut = () => dispatch(setHasToken(false))
+  const onSignOut = () => {
+    removeToken()
+    dispatch(setHasToken(false))
+  }
 
   return (
     <AppBar position="static" >
