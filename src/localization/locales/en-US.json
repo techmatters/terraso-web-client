@@ -132,7 +132,8 @@
       "apple_login": "Continue with Apple",
       "google_login": "Continue with Google",
       "disclaimer": "If you don’t already have a Terraso account, you agree signing in will create one in accordance with our <a href='#'>Terms of Service</a>.",
-      "name_and_profile": "Here’s the name and profile photo we received from your Google account. if you’d like to use a different name or an photo for Terraso, you can change them."
+      "name_and_profile": "Here’s the name and profile photo we received from your Google account. if you’d like to use a different name or an photo for Terraso, you can change them.",
+      "unauthenticated_message": "Not authenticated"
     },
     "form": {
         "required_label": "Required",

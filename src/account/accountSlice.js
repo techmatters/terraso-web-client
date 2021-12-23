@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie'
 import { createSlice } from '@reduxjs/toolkit'
 
 import { createAsyncThunk } from 'state/utils'
@@ -6,7 +7,8 @@ const initialState = {
   currentUser: {
     fetching: true,
     data: null
-  }
+  },
+  hasToken: !!Cookies.get('token')
 }
 
 // TODO hook with proper backend query
@@ -25,6 +27,10 @@ export const userSlice = createSlice({
     setUser: (state, action) => ({
       ...state,
       user: action.payload
+    }),
+    setHasToken: (state, action) => ({
+      ...state,
+      hasToken: action.payload
     })
   },
   extraReducers: {
@@ -50,7 +56,8 @@ export const userSlice = createSlice({
 })
 
 export const {
-  setUser
+  setUser,
+  setHasToken
 } = userSlice.actions
 
 export default userSlice.reducer

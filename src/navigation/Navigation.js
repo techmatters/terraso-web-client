@@ -46,6 +46,7 @@ const Navigation = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { data: user } = useSelector(state => state.account.currentUser)
+  const hasToken = useSelector(state => state.account.hasToken)
   const location = useLocation()
   const [value, setValue] = React.useState(false)
 
@@ -57,7 +58,7 @@ const Navigation = () => {
     setValue(currentValue > -1 ? currentValue : false)
   }, [location])
 
-  if (!user) {
+  if (!hasToken || !user) {
     return null
   }
 

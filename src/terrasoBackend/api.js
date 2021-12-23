@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import Cookies from 'js-cookie'
 
 import { TERRASO_API_URL } from 'config'
 
@@ -12,6 +13,7 @@ export const request = async (query, variables) => {
   const response = await fetch(TERRASO_API_URL, {
     method: 'POST',
     headers: {
+      Authorization: `Bearer ${Cookies.get('token')}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({ query, variables })
@@ -20,6 +22,10 @@ export const request = async (query, variables) => {
       console.error('Terraso API: Failed to execute request', error)
       return Promise.reject(['terraso_api.error_request_response'])
     })
+
+  if (response.status === 401) {
+    await Promise.reject('UNAUTHENTICATED')
+  }
 
   const jsonResponse = await response.json()
     .catch(error => {

@@ -9,15 +9,16 @@ import { fetchUser } from 'account/accountSlice'
 const RequireAuth = ({ children }) => {
   const dispatch = useDispatch()
   const { data: user, fetching } = useSelector(state => state.account.currentUser)
+  const hasToken = useSelector(state => state.account.hasToken)
   const token = Cookies.get('token')
 
   useEffect(() => {
-    if (token && !user) {
+    if (hasToken && !user) {
       dispatch(fetchUser())
     }
-  }, [token, user, dispatch])
+  }, [hasToken, user, dispatch])
 
-  if (token && fetching) {
+  if (hasToken && fetching) {
     return (
       <Backdrop
         sx={{ color: 'white', zIndex: theme => theme.zIndex.drawer + 1 }}
