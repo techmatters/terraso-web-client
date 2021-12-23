@@ -1,7 +1,7 @@
 import _ from 'lodash'
 
 import { getToken } from 'account/auth'
-import { TERRASO_API_URL } from 'config'
+import { TERRASO_API_URL, GRAPH_QL_ENDPOINT } from 'config'
 import { UNAUTHENTICATED } from 'account/authConstants'
 
 const handleGraphQLError = data => {
@@ -12,7 +12,7 @@ const handleGraphQLError = data => {
 
 export const request = async (query, variables) => {
   const response = await fetch(
-    new URL('/graphql/', TERRASO_API_URL).href,
+    new URL(GRAPH_QL_ENDPOINT, TERRASO_API_URL).href,
     {
       method: 'POST',
       headers: {
