@@ -16,9 +16,9 @@ import theme from 'theme'
 import logo from 'assets/logo.svg'
 import logoSquare from 'assets/logo-square.svg'
 
-const AppBarComponent = props => {
+const AppBarComponent = () => {
   const { t } = useTranslation()
-  const user = useSelector(state => state.user.user)
+  const { data: user } = useSelector(state => state.account.currentUser)
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
 
   if (!user) {

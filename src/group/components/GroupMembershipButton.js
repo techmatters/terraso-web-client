@@ -52,7 +52,7 @@ const JoinButton = props => {
 const GroupMembershipButton = props => {
   const dispatch = useDispatch()
   const { joinLabel, leaveLabel, ownerName, groupSlug } = props
-  const { email: userEmail } = useSelector(state => state.user.user)
+  const { data: { email: userEmail } } = useSelector(state => state.account.currentUser)
   const { fetching, group, joining } = useSelector(state => _.get(state, `group.memberships.${groupSlug}`, {}))
   const [openConfirmation, setOpenConfirmation] = useState(false)
 

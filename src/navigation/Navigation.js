@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import _ from 'lodash'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Tab, Tabs } from '@mui/material'
 
@@ -44,6 +45,7 @@ const LinkTab = props => (
 const Navigation = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const { data: user } = useSelector(state => state.account.currentUser)
   const location = useLocation()
   const [value, setValue] = React.useState(false)
 
@@ -54,6 +56,10 @@ const Navigation = () => {
     )
     setValue(currentValue > -1 ? currentValue : false)
   }, [location])
+
+  if (!user) {
+    return null
+  }
 
   const handleChange = (value, path) => {
     navigate(path)

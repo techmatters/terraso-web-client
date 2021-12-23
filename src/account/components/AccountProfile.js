@@ -10,7 +10,7 @@ import {
   Typography
 } from '@mui/material'
 
-import { setUser } from 'user/userSlice'
+import { setUser } from 'account/accountSlice'
 import Form from 'forms/components/Form'
 import theme from 'theme'
 
@@ -32,7 +32,7 @@ const AccountProfile = ({ tool }) => {
   const dispatch = useDispatch()
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const user = useSelector(state => state.user.user)
+  const { data: user } = useSelector(state => state.account.currentUser)
 
   const onSave = updatedProfile => {
     const [firstName, lastName] = updatedProfile.fullname.split(' ', 2)
