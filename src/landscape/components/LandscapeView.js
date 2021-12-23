@@ -6,8 +6,6 @@ import {
   Box,
   Typography,
   Grid,
-  Backdrop,
-  CircularProgress,
   Card,
   CardHeader,
   CardContent,
@@ -18,8 +16,9 @@ import PublicIcon from '@mui/icons-material/Public'
 
 import { fetchLandscapeView } from 'landscape/landscapeSlice'
 import GroupMembershipCard from 'group/components/GroupMembershipCard'
-import theme from 'theme'
+import PageLoader from 'common/components/PageLoader'
 import Map from 'gis/components/Map'
+import theme from 'theme'
 
 const LandscapeCard = ({ landscape }) => {
   const { t } = useTranslation()
@@ -70,12 +69,7 @@ const LandscapeView = () => {
 
   if (fetching) {
     return (
-      <Backdrop
-        sx={{ color: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={true}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <PageLoader />
     )
   }
 

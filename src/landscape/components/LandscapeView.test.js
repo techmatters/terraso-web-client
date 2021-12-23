@@ -15,6 +15,22 @@ jest.mock('react-router-dom', () => ({
 
 global.fetch = jest.fn()
 
+const setup = async () => {
+  await act(async () => render(<LandscapeView />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          email: 'email@email.com',
+          firstName: 'First',
+          lastName: 'Last'
+        }
+      }
+    }
+  }))
+}
+
 beforeEach(() => {
   useParams.mockReturnValue({
     slug: 'slug-1'
@@ -78,7 +94,7 @@ test('LandscapeView: Display data', async () => {
       }]
     }
   }))
-  await act(async () => render(<LandscapeView />))
+  await setup()
 
   // Landscape info
   expect(screen.getByRole('heading', { name: 'Landscape Name' })).toBeInTheDocument()

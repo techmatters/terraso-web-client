@@ -15,6 +15,22 @@ jest.mock('react-router-dom', () => ({
 
 global.fetch = jest.fn()
 
+const setup = async () => {
+  await act(async () => render(<GroupView />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          email: 'email@email.com',
+          firstName: 'First',
+          lastName: 'Last'
+        }
+      }
+    }
+  }))
+}
+
 beforeEach(() => {
   useParams.mockReturnValue({
     slug: 'slug-1'
@@ -69,7 +85,7 @@ test('GroupView: Display data', async () => {
       }]
     }
   }))
-  await act(async () => render(<GroupView />))
+  await setup()
 
   // Group info
   expect(screen.getByRole('heading', { name: 'Group name' })).toBeInTheDocument()

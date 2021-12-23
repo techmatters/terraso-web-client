@@ -7,22 +7,31 @@ import {
   Box
 } from '@mui/material'
 import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 
 import LocalePicker from 'localization/components/LocalePicker'
+import { setHasToken } from 'account/accountSlice'
+import { removeToken } from 'account/auth'
 import theme from 'theme'
 
 import logo from 'assets/logo.svg'
 import logoSquare from 'assets/logo-square.svg'
 
-const AppBarComponent = props => {
+const AppBarComponent = () => {
+  const dispatch = useDispatch()
   const { t } = useTranslation()
-  const user = useSelector(state => state.user.user)
+  const { data: user } = useSelector(state => state.account.currentUser)
+  const hasToken = useSelector(state => state.account.hasToken)
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
 
-  if (!user) {
+  if (!hasToken || !user) {
     return null
+  }
+
+  const onSignOut = () => {
+    removeToken()
+    dispatch(setHasToken(false))
   }
 
   return (
@@ -40,7 +49,9 @@ const AppBarComponent = props => {
           {user.firstName} {user.lastName}
         </Button>
         |
-        <Button color="inherit" sx={theme => ({ marginRight: theme.spacing(2) })}>
+        <Button color="inherit" sx={theme => ({ marginRight: theme.spacing(2) })}
+          onClick={onSignOut}
+        >
           {t('user.sign_out')}
         </Button>
         <LocalePicker />

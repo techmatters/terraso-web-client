@@ -60,7 +60,7 @@ const Dashboard = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
 
-  const user = useSelector(state => state.user.user)
+  const { data: user } = useSelector(state => state.account.currentUser)
   const dashboard = useSelector(state => state.userDashboard)
   const { groups, landscapes, landscapesDiscovery, error, fetching } = dashboard
 

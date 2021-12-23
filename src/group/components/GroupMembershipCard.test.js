@@ -14,9 +14,15 @@ const setup = async initialState => {
     joinLabel="Join Label"
     leaveLabel="Leave Label"
   />, {
-    user: {
-      user: {
-        email: 'email@email.com'
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          email: 'email@email.com',
+          firstName: 'First',
+          lastName: 'Last'
+        }
       }
     },
     ...initialState

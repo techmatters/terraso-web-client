@@ -6,8 +6,6 @@ import {
   Box,
   Typography,
   Grid,
-  Backdrop,
-  CircularProgress,
   Card,
   CardHeader,
   CardContent,
@@ -20,6 +18,7 @@ import EmailIcon from '@mui/icons-material/Email'
 
 import { fetchGroupView } from 'group/groupSlice'
 import GroupMembershipCard from 'group/components/GroupMembershipCard'
+import PageLoader from 'common/components/PageLoader'
 import theme from 'theme'
 
 const GroupCard = ({ group }) => {
@@ -75,12 +74,7 @@ const GroupView = () => {
 
   if (fetching) {
     return (
-      <Backdrop
-        sx={{ color: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={true}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <PageLoader />
     )
   }
 

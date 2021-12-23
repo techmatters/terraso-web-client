@@ -80,9 +80,13 @@ test('LandscapeList: Display list', async () => {
     }
   }))
   await act(async () => render(<LandscapeList />, {
-    user: {
-      user: {
-        email: 'email@email.com'
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          email: 'email@email.com'
+        }
       }
     }
   }))
@@ -146,9 +150,13 @@ test('LandscapeList: List sort', async () => {
     }
   }))
   await act(async () => render(<LandscapeList />, {
-    user: {
-      user: {
-        email: 'email@email.com'
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          email: 'email@email.com'
+        }
       }
     }
   }))
@@ -214,9 +222,13 @@ test('LandscapeList: Display list (small screen)', async () => {
     }
   }))
   await act(async () => render(<LandscapeList />, {
-    user: {
-      user: {
-        email: 'email@email.com'
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          email: 'email@email.com'
+        }
       }
     }
   }))

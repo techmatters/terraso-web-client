@@ -2,6 +2,7 @@ import React from 'react'
 import { ThemeProvider } from '@mui/material'
 import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
+
 import NotificationsWrapper from 'notifications/NotificationsWrapper'
 
 // Localization

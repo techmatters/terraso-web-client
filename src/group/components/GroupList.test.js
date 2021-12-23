@@ -71,9 +71,13 @@ test('GroupList: Display list', async () => {
     }
   }))
   await act(async () => render(<GroupList />, {
-    user: {
-      user: {
-        email: 'email@email.com'
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          email: 'email@email.com'
+        }
       }
     }
   }))
@@ -130,9 +134,13 @@ test('GroupList: List sort', async () => {
     }
   }))
   await act(async () => render(<GroupList />, {
-    user: {
-      user: {
-        email: 'email@email.com'
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          email: 'email@email.com'
+        }
       }
     }
   }))
@@ -189,9 +197,13 @@ test('GroupList: Display list (small screen)', async () => {
     }
   }))
   await act(async () => render(<GroupList />, {
-    user: {
-      user: {
-        email: 'email@email.com'
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          email: 'email@email.com'
+        }
       }
     }
   }))
