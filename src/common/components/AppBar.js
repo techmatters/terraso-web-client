@@ -11,8 +11,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 
 import LocalePicker from 'localization/components/LocalePicker'
-import { setHasToken } from 'account/accountSlice'
-import { removeToken } from 'account/auth'
+import { signOut } from 'account/accountSlice'
 import theme from 'theme'
 
 import logo from 'assets/logo.svg'
@@ -30,8 +29,7 @@ const AppBarComponent = () => {
   }
 
   const onSignOut = () => {
-    removeToken()
-    dispatch(setHasToken(false))
+    dispatch(signOut())
   }
 
   return (

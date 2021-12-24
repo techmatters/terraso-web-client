@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 import { createAsyncThunk } from 'state/utils'
-import { getToken } from 'account/auth'
+import { getToken, removeToken } from 'account/auth'
 import * as accountService from 'account/accountService'
 
 const initialState = {
@@ -82,3 +82,8 @@ export const {
 } = userSlice.actions
 
 export default userSlice.reducer
+
+export const signOut = () => dispatch => {
+  removeToken()
+  dispatch(setHasToken(false))
+}
