@@ -1,11 +1,12 @@
 import React from 'react'
+import _ from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { Link as RouterLink } from 'react-router-dom'
 import { Link, List, ListItem, Typography } from '@mui/material'
 
 import DashboardCard from 'dashboard/components/DashboardCard'
-import theme from 'theme'
 import LoaderCard from 'common/components/LoaderCard'
+import theme from 'theme'
 
 const LandscapesDashboardDiscoveryCard = props => {
   const { t } = useTranslation()
@@ -15,6 +16,10 @@ const LandscapesDashboardDiscoveryCard = props => {
     return (
       <LoaderCard />
     )
+  }
+
+  if (_.isEmpty(landscapes)) {
+    return null
   }
 
   return (
