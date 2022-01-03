@@ -109,7 +109,7 @@ test('Dashboard: Display landscapes discovery', async () => {
   expect(screen.queryByText(/Discover Landscapes in Terraso/i)).toBeInTheDocument()
   expect(screen.queryByText(/Landscape Discovery 2/i)).toBeInTheDocument()
 })
-test('Dashboard: Display landscapes empty', async () => {
+test('Dashboard: Display landscapes discovery empty', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
     landscapesDiscovery: {
       edges: []
