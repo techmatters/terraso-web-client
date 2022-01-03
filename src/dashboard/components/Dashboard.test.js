@@ -106,8 +106,17 @@ test('Dashboard: Display landscapes discovery', async () => {
     }
   }))
   await setup()
-  expect(screen.getByText(/Discover Landscapes in Terraso/i)).toBeInTheDocument()
-  expect(screen.getByText(/Landscape Discovery 2/i)).toBeInTheDocument()
+  expect(screen.queryByText(/Discover Landscapes in Terraso/i)).toBeInTheDocument()
+  expect(screen.queryByText(/Landscape Discovery 2/i)).toBeInTheDocument()
+})
+test('Dashboard: Display landscapes discovery empty', async () => {
+  terrasoApi.request.mockReturnValue(Promise.resolve({
+    landscapesDiscovery: {
+      edges: []
+    }
+  }))
+  await setup()
+  expect(screen.queryByText(/Discover Landscapes in Terraso/i)).not.toBeInTheDocument()
 })
 test('Dashboard: Display groups', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
