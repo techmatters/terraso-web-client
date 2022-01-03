@@ -78,12 +78,13 @@ const Form = props => {
       <Stack
         spacing={2}
         direction="row"
-        justifyContent='flex-end'
+        justifyContent="flex-start"
         sx={{ marginTop: theme.spacing(2) }}
       >
         <Button
           type="submit"
           variant="contained"
+          sx={{ paddingLeft: theme.spacing(5), paddingRight: theme.spacing(5) }}
         >
           {t(saveLabel)}
         </Button>

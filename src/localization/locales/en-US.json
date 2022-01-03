@@ -31,6 +31,7 @@
         "form_website_label": "Website",
         "form_website_placeholder": "https://www.mygroup.org",
         "form_save_label": "Submit Group Info",
+        "form_cancel_label": "Cancel",
         "form_message_success": "Your Group has been saved.",
         "not_found": "Group not found",
         "membership_card_title": "Members",
