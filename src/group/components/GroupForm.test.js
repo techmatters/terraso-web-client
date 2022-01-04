@@ -1,6 +1,6 @@
 import React from 'react'
 import { act } from 'react-dom/test-utils'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 
 import { render, screen, fireEvent } from 'tests/utils'
 import GroupForm from 'group/components/GroupForm'
@@ -10,7 +10,8 @@ jest.mock('terrasoBackend/api')
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useParams: jest.fn()
+  useParams: jest.fn(),
+  useNavigate: jest.fn()
 }))
 
 const setup = async () => {
@@ -40,6 +41,7 @@ beforeEach(() => {
   useParams.mockReturnValue({
     slug: 'slug-1'
   })
+  useNavigate.mockReturnValue(() => {})
 })
 
 test('GroupForm: Display error', async () => {
@@ -73,6 +75,34 @@ test('GroupForm: Fill form', async () => {
   expect(inputs.description).toHaveValue('Group description')
   expect(inputs.email).toHaveValue('group@group.org')
   expect(inputs.website).toHaveValue('https://www.group.org')
+})
+test('GroupForm: Show cancel', async () => {
+  const navigate = jest.fn()
+  useNavigate.mockReturnValue(navigate)
+  terrasoApi.request.mockReturnValue(Promise.resolve({
+    groups: {
+      edges: [{
+        node: {
+          name: 'Group name',
+          description: 'Group description',
+          email: 'group@group.org',
+          website: 'https://www.group.org'
+        }
+      }]
+    }
+  }))
+  const { inputs } = await setup()
+
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1)
+  expect(inputs.name).toHaveValue('Group name')
+  expect(inputs.description).toHaveValue('Group description')
+  expect(inputs.email).toHaveValue('group@group.org')
+  expect(inputs.website).toHaveValue('https://www.group.org')
+
+  const cancelButton = screen.getByRole('button', { name: 'Cancel' })
+  expect(cancelButton).toBeInTheDocument()
+  await act(async () => fireEvent.click(cancelButton))
+  expect(navigate.mock.calls[0]).toEqual([-1])
 })
 test('GroupForm: Input change', async () => {
   terrasoApi.request.mockReturnValueOnce(Promise.resolve({

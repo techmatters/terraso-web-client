@@ -87,6 +87,10 @@ const GroupForm = () => {
     user
   }))
 
+  const onCancel = () => {
+    navigate(-1)
+  }
+
   const title = !isNew
     ? t('group.form_edit_title', { name: _.get(group, 'name', '') })
     : t('group.form_new_title')
@@ -114,6 +118,8 @@ const GroupForm = () => {
         validationSchema={VALIDATION_SCHEMA}
         onSave={onSave}
         saveLabel='group.form_save_label'
+        onCancel={onCancel}
+        cancelLabel='group.form_cancel_label'
       />
     </Box>
   )
