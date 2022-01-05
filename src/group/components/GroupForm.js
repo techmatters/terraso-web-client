@@ -14,13 +14,21 @@ import { fetchGroupForm, saveGroup, setFormNewValues, resetFormSuccess } from 'g
 import Form from 'forms/components/Form'
 import PageLoader from 'common/components/PageLoader'
 
+const transformURL = (url) => {
+  if (url === '' || url.startsWith('http:') || url.startsWith('https:')) {
+    return url
+  }
+
+  return `https://${url}`
+}
+
 const VALIDATION_SCHEMA = yup.object({
   name: yup.string().required(),
   description: yup.string()
     .maxCustom(600)
     .required(),
   email: yup.string().email(),
-  website: yup.string().url()
+  website: yup.string().ensure().transform(transformURL).url()
 }).required()
 
 const FIELDS = [{

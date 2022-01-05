@@ -172,6 +172,43 @@ test('GroupForm: Input validation', async () => {
   expect(screen.getByText(/email must be a valid email/i)).toBeInTheDocument()
   expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument()
 })
+
+test('GroupForm: website accepts address without protocol', async () => {
+  terrasoApi.request
+    .mockResolvedValueOnce({
+      groups: {
+        edges: [{
+          node: {
+            id: '1',
+            name: 'Group name',
+            description: 'Group description',
+            email: 'group@group.org',
+            website: 'https://www.group.org'
+          }
+        }]
+      }
+    })
+    .mockResolvedValueOnce({
+      updateGroup: {
+        group: {
+          id: '1',
+          name: 'Group name',
+          description: 'Group description',
+          email: 'group@group.org',
+          website: 'https://www.group.org'
+        }
+      }
+    })
+  const { inputs } = await setup()
+
+  fireEvent.change(inputs.website, { target: { value: 'example.org' } })
+
+  await act(async () => fireEvent.click(screen.getByText(/Submit Group Info/i)))
+  const saveCall = terrasoApi.request.mock.calls[1]
+
+  expect(saveCall[1].input.website).toEqual('https://example.org')
+})
+
 test('GroupForm: Save form', async () => {
   terrasoApi.request
     .mockResolvedValueOnce({
