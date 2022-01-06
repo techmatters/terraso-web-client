@@ -80,6 +80,10 @@
     "serve": "^13.0.2"
   },
   "jest": {
+    "collectCoverageFrom" : [
+      "src/**/*.js",
+      "!src/terrasoBackend/*.js"
+    ],
     "coverageThreshold": {
       "global": {
         "branches": 80,
