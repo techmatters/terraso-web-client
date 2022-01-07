@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
 
-const PAGE_SIZE = 10
+const PAGE_SIZE = 15
 
 const Table = props => {
   const [sortModel, setSortModel] = useState(props.initialSort)

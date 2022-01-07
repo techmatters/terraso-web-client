@@ -94,7 +94,7 @@ test('LandscapeList: Display list', async () => {
   // Landscape info
   expect(screen.getByRole('heading', { name: 'Landscapes' })).toBeInTheDocument()
   const rows = screen.getAllByRole('row')
-  expect(rows.length).toBe(11) // 10 displayed + header
+  expect(rows.length).toBe(16) // 15 displayed + header
   expect(within(rows[2]).getByRole('cell', { name: 'Landscape Name 1' })).toHaveAttribute('data-field', 'name')
   expect(within(rows[2]).getByRole('cell', { name: '23' })).toHaveAttribute('data-field', 'members')
   expect(within(rows[2]).getByRole('cell', { name: 'Connect' })).toHaveAttribute('data-field', 'actions')
@@ -164,7 +164,7 @@ test('LandscapeList: List sort', async () => {
   // Landscape info
   expect(screen.getByRole('heading', { name: 'Landscapes' })).toBeInTheDocument()
   const rows = screen.getAllByRole('row')
-  expect(rows.length).toBe(11) // 10 displayed + header
+  expect(rows.length).toBe(16) // 15 displayed + header
 
   // Sorting
   expect(within(rows[1]).getByRole('cell', { name: 'Landscape Name 0' })).toHaveAttribute('data-field', 'name')

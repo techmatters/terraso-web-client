@@ -85,7 +85,7 @@ test('GroupList: Display list', async () => {
   // Group info
   expect(screen.getByRole('heading', { name: 'Groups' })).toBeInTheDocument()
   const rows = screen.getAllByRole('row')
-  expect(rows.length).toBe(11) // 10 displayed + header
+  expect(rows.length).toBe(16) // 15 displayed + header
   expect(within(rows[2]).getByRole('cell', { name: 'Group name 1' })).toHaveAttribute('data-field', 'name')
   expect(within(rows[2]).getByRole('cell', { name: 'https://www.group.org' })).toHaveAttribute('data-field', 'website')
   expect(within(rows[2]).getByRole('cell', { name: 'email@email.com' })).toHaveAttribute('data-field', 'email')
@@ -148,7 +148,7 @@ test('GroupList: List sort', async () => {
   // Group info
   expect(screen.getByRole('heading', { name: 'Groups' })).toBeInTheDocument()
   const rows = screen.getAllByRole('row')
-  expect(rows.length).toBe(11) // 10 displayed + header
+  expect(rows.length).toBe(16) // 11 displayed + header
 
   // Sorting
   expect(within(rows[1]).getByRole('cell', { name: 'Group name 0' })).toHaveAttribute('data-field', 'name')
