@@ -1,13 +1,9 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Box,
   Typography
 } from '@mui/material'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 import theme from 'theme'
 import Tool from 'tool/components/Tool'
@@ -17,7 +13,7 @@ const ToolList = ({ tools }) => {
 
   const toolsData = [
     {
-      title: 'KoBo toolbox',
+      title: 'KoBoToolbox',
       url: 'https://www.kobotoolbox.org/',
       img: {
         height: 222,
@@ -57,47 +53,6 @@ const ToolList = ({ tools }) => {
         {toolsData.map(tool => (
           <Tool key="{tool}" tool={tool} />
         ))}
-      </Box>
-
-      <Box sx={{
-        paddingTop: theme.spacing(3),
-        paddingBottom: theme.spacing(2)
-      }}>
-        <Typography variant="h1" >
-          {t('tool.faq_title')}
-        </Typography>
-
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
-            <Typography>What does adding the tool to the landscape’s toolset mean?</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-              malesuada lacus ex, sit amet blandit leo lobortis eget.
-            </Typography>
-          </AccordionDetails>
-        </Accordion>
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel2a-content"
-            id="panel2a-header"
-          >
-            <Typography>Who can add the tool to the Landscape or the group?</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-              malesuada lacus ex, sit amet blandit leo lobortis eget.
-            </Typography>
-          </AccordionDetails>
-        </Accordion>
-
       </Box>
     </React.Fragment>
   )
