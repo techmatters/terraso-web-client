@@ -1,6 +1,6 @@
 {
-    "dashboard": {
-        "title": "Dashboard",
+    "home": {
+        "title": "Home",
         "error": "Error loading data. {{error}}",
         "page_title": "{{name}}’s Home in Terraso"
     },
@@ -13,9 +13,9 @@
     "group": {
         "role_member": "Member",
         "role_manager": "Manager",
-        "dashboard_title": "Groups",
-        "dashboard_default_title": "Group",
-        "dashboard_connect_label": "Join another group",
+        "home_title": "Groups",
+        "home_default_title": "Group",
+        "home_connect_label": "Join another group",
         "default_content": "Terraso groups connect people with common interests and needs. Explore the groups and join your organizations. Groups exist for people within and across landscapes.",
         "edit_profile_button": "Edit Group Profile",
         "default_connect_button": "Connect",
@@ -60,9 +60,9 @@
         "list_new_button": "Create Group"
     },
     "landscape": {
-        "dashboard_title": "Landscapes",
-        "dashboard_default_title": "Landscape",
-        "dashboard_connect_label": "Connect to another Landscape",
+        "home_title": "Landscapes",
+        "home_default_title": "Landscape",
+        "home_connect_label": "Connect to another Landscape",
         "default_content": "Explore the landscapes in Terraso and become a member of your landscape. This will help you connect with others on Terraso and lets you share information with other landscape members.",
         "edit_profile_button": "Edit Landscape Profile",
         "default_connect_button": "Explore and Connect to Landscape",
@@ -96,7 +96,7 @@
         "list_column_members": "Members",
         "list_column_actions": "Actions",
         "list_empty": "No Landscapes",
-        "dashboard_discovery_title": "Discover Landscapes in Terraso"
+        "home_discovery_title": "Discover Landscapes in Terraso"
     },
     "tool": {
       "faq_title": "Tools FAQ",
@@ -107,11 +107,11 @@
       "requirements": "System requirements",
       "actions_bookmark": "Bookmark",
       "actions_recommend": "Recommend this to my team",
-      "dashboard_card_title": "Access Data Collection Tool in Terraso",
-      "dashboard_card_description": "Take advantage of integrated tools in Terraso. KoBoToolbox is a free open-source data collection tool.",
-      "dashboard_card_img_alt": "KoBoToolbox image",
-      "dashboard_card_kobo_title": "KoBoToolbox",
-      "dashboard_card_kobo_link": "Learn more about KoBoToolbox features"
+      "home_card_title": "Access Data Collection Tool in Terraso",
+      "home_card_description": "Take advantage of integrated tools in Terraso. KoBoToolbox is a free open-source data collection tool.",
+      "home_card_img_alt": "KoBoToolbox image",
+      "home_card_kobo_title": "KoBoToolbox",
+      "home_card_kobo_link": "Learn more about KoBoToolbox features"
     },
     "localization": {
         "locale_en-US": "English",

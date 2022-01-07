@@ -2,7 +2,7 @@ import React from 'react'
 import _ from 'lodash'
 import { Card } from '@mui/material'
 
-const DashboardCard = props => (
+const HomeCard = props => (
   <Card
     {...props}
     sx={{
@@ -14,4 +14,4 @@ const DashboardCard = props => (
   </Card>
 )
 
-export default DashboardCard
+export default HomeCard

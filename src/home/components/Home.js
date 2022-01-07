@@ -11,13 +11,13 @@ import {
 } from '@mui/material'
 
 import LoaderCard from 'common/components/LoaderCard'
-import { fetchDashboardData } from 'dashboard/dashboardSlice'
-import LandscapesCard from 'landscape/components/LandscapesDashboardCard'
-import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultDashboardCard'
-import GroupsCard from 'group/components/GroupsDashboardCard'
-import GroupDefaultCard from 'group/components/GroupDefaultDashboardCard'
-import ToolDashboardCard from 'tool/components/ToolDasboardCard'
-import LandscapesDashboardDiscoveryCard from 'landscape/components/LandscapesDashboardDiscoveryCard'
+import { fetchHomeData } from 'home/homeSlice'
+import LandscapesCard from 'landscape/components/LandscapesHomeCard'
+import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultHomeCard'
+import GroupsCard from 'group/components/GroupsHomeCard'
+import GroupDefaultCard from 'group/components/GroupDefaultHomeCard'
+import ToolHomeCard from 'tool/components/ToolHomeCard'
+import LandscapesHomeDiscoveryCard from 'landscape/components/LandscapesHomeDiscoveryCard'
 import theme from 'theme'
 
 const Landscapes = ({ landscapes, fetching }) => {
@@ -56,22 +56,22 @@ const Groups = ({ groups, fetching }) => {
   )
 }
 
-const Dashboard = () => {
+const Home = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
 
   const { data: user } = useSelector(state => state.account.currentUser)
-  const dashboard = useSelector(state => state.userDashboard)
-  const { groups, landscapes, landscapesDiscovery, error, fetching } = dashboard
+  const home = useSelector(state => state.userHome)
+  const { groups, landscapes, landscapesDiscovery, error, fetching } = home
 
   useEffect(() => {
-    dispatch(fetchDashboardData(user.email))
+    dispatch(fetchHomeData(user.email))
   }, [dispatch, user])
 
   if (error) {
     return (
       <Alert severity="error">
-        {t('dashboard.error', { error: t(error) })}
+        {t('home.error', { error: t(error) })}
       </Alert>
     )
   }
@@ -89,19 +89,19 @@ const Dashboard = () => {
           marginTop: theme.spacing(2)
         }}
       >
-        {t('dashboard.page_title', { name: user.firstName })}
+        {t('home.page_title', { name: user.firstName })}
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <Stack spacing={1}>
             <Landscapes landscapes={landscapes} fetching={fetching} />
-            <ToolDashboardCard />
+            <ToolHomeCard />
           </Stack>
         </Grid>
         <Grid item xs={12} md={6}>
           <Stack spacing={1}>
             <Groups groups={groups} fetching={fetching} />
-            <LandscapesDashboardDiscoveryCard
+            <LandscapesHomeDiscoveryCard
               fetching={fetching}
               landscapes={landscapesDiscovery}
             />
@@ -112,4 +112,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+export default Home

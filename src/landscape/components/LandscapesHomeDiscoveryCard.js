@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next'
 import { Link as RouterLink } from 'react-router-dom'
 import { Link, List, ListItem, Typography } from '@mui/material'
 
-import DashboardCard from 'dashboard/components/DashboardCard'
+import HomeCard from 'home/components/HomeCard'
 import LoaderCard from 'common/components/LoaderCard'
 import theme from 'theme'
 
-const LandscapesDashboardDiscoveryCard = props => {
+const LandscapesHomeDiscoveryCard = props => {
   const { t } = useTranslation()
   const { landscapes, fetching } = props
 
@@ -23,14 +23,14 @@ const LandscapesDashboardDiscoveryCard = props => {
   }
 
   return (
-    <DashboardCard
+    <HomeCard
       sx={{
         flexDirection: 'column',
         padding: theme.spacing(2)
       }}
     >
       <Typography variant="h5">
-        {t('landscape.dashboard_discovery_title')}
+        {t('landscape.home_discovery_title')}
       </Typography>
       <List>
         {landscapes.slice(0, 5).map(landscape => (
@@ -48,8 +48,8 @@ const LandscapesDashboardDiscoveryCard = props => {
           </ListItem>
         ))}
       </List>
-    </DashboardCard>
+    </HomeCard>
   )
 }
 
-export default LandscapesDashboardDiscoveryCard
+export default LandscapesHomeDiscoveryCard

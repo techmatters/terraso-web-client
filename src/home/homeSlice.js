@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 import { createAsyncThunk } from 'state/utils'
-import * as dashboardService from 'dashboard/dashboardService'
+import * as homeService from 'home/homeService'
 
 const initialState = {
   groups: [],
@@ -10,15 +10,15 @@ const initialState = {
   error: null
 }
 
-export const fetchDashboardData = createAsyncThunk('dashboard/fetchData', dashboardService.fetchDashboardData)
+export const fetchHomeData = createAsyncThunk('home/fetchData', homeService.fetchHomeData)
 
-export const dashboardSlice = createSlice({
-  name: 'dashboard',
+export const homeSlice = createSlice({
+  name: 'home',
   initialState,
   reducers: {},
   extraReducers: {
-    [fetchDashboardData.pending]: () => initialState,
-    [fetchDashboardData.fulfilled]: (state, action) => ({
+    [fetchHomeData.pending]: () => initialState,
+    [fetchHomeData.fulfilled]: (state, action) => ({
       ...state,
       fetching: false,
       error: null,
@@ -26,7 +26,7 @@ export const dashboardSlice = createSlice({
       landscapes: action.payload.landscapes,
       landscapesDiscovery: action.payload.landscapesDiscovery
     }),
-    [fetchDashboardData.rejected]: (state, action) => ({
+    [fetchHomeData.rejected]: (state, action) => ({
       ...state,
       fetching: false,
       error: action.payload
@@ -34,4 +34,4 @@ export const dashboardSlice = createSlice({
   }
 })
 
-export default dashboardSlice.reducer
+export default homeSlice.reducer

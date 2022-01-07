@@ -13,7 +13,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { Link as RouterLink } from 'react-router-dom'
 
-import DashboardCard from 'dashboard/components/DashboardCard'
+import HomeCard from 'home/components/HomeCard'
 import theme from 'theme'
 
 const GroupItem = ({ group }) => {
@@ -34,12 +34,12 @@ const GroupItem = ({ group }) => {
   )
 }
 
-const GroupsDashboardCard = ({ groups }) => {
+const GroupsHomeCard = ({ groups }) => {
   const { t } = useTranslation()
   return (
-    <DashboardCard sx={{ flexDirection: 'column' }}>
+    <HomeCard sx={{ flexDirection: 'column' }}>
       <Typography variant="h5" sx={{ padding: theme.spacing(2) }}>
-        {t('group.dashboard_title')}
+        {t('group.home_title')}
       </Typography>
       <List>
         {groups
@@ -63,11 +63,11 @@ const GroupsDashboardCard = ({ groups }) => {
           to="/groups"
           sx={{ width: '100%' }}
         >
-          {t('group.dashboard_connect_label').toUpperCase()}
+          {t('group.home_connect_label').toUpperCase()}
         </Button>
       </CardActions>
-    </DashboardCard>
+    </HomeCard>
   )
 }
 
-export default GroupsDashboardCard
+export default GroupsHomeCard

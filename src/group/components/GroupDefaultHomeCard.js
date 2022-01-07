@@ -9,7 +9,7 @@ import {
 } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 
-import DashboardCard from 'dashboard/components/DashboardCard'
+import HomeCard from 'home/components/HomeCard'
 import { Link } from 'react-router-dom'
 import theme from 'theme'
 
@@ -20,23 +20,23 @@ const Actions = () => {
     <CardActions>
       <Button
         component={Link}
-        to="/landscapes"
+        to="/groups"
         sx={{ width: '100%' }}
       >
-        {t('landscape.default_connect_button').toUpperCase()}
+        {t('group.default_connect_button').toUpperCase()}
       </Button>
     </CardActions>
   )
 }
 
-const LandscapeDefaultDashboardCard = () => {
+const GroupDefaultHomeCard = () => {
   const { t } = useTranslation()
 
   return (
-    <DashboardCard sx={{ flexDirection: 'column' }}>
+    <HomeCard sx={{ flexDirection: 'column' }}>
       <Box sx={{ display: 'flex', flexDirection: 'column', padding: theme.spacing(2) }}>
         <Typography variant="h5">
-          {t('landscape.dashboard_default_title')}
+          {t('group.home_default_title')}
         </Typography>
         <Alert
           severity="info"
@@ -46,14 +46,14 @@ const LandscapeDefaultDashboardCard = () => {
           }}
         >
           <Typography variant="body1">
-            {t('landscape.default_content')}
+            {t('group.default_content')}
           </Typography>
         </Alert>
       </Box>
       <Divider />
       <Actions />
-    </DashboardCard>
+    </HomeCard>
   )
 }
 
-export default LandscapeDefaultDashboardCard
+export default GroupDefaultHomeCard

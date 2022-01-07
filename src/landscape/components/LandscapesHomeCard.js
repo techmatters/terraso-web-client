@@ -14,7 +14,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { Link as RouterLink } from 'react-router-dom'
 
-import DashboardCard from 'dashboard/components/DashboardCard'
+import HomeCard from 'home/components/HomeCard'
 import theme from 'theme'
 
 const getAcronym = name => name
@@ -44,12 +44,12 @@ const LandscapeItem = ({ landscape }) => {
   )
 }
 
-const LandscapesDashboardCard = ({ landscapes }) => {
+const LandscapesHomeCard = ({ landscapes }) => {
   const { t } = useTranslation()
   return (
-    <DashboardCard sx={{ flexDirection: 'column' }}>
+    <HomeCard sx={{ flexDirection: 'column' }}>
       <Typography variant="h5" sx={{ padding: theme.spacing(2) }}>
-        {t('landscape.dashboard_title')}
+        {t('landscape.home_title')}
       </Typography>
       <List>
         {landscapes
@@ -73,11 +73,11 @@ const LandscapesDashboardCard = ({ landscapes }) => {
           to="/landscapes"
           sx={{ width: '100%' }}
         >
-          {t('landscape.dashboard_connect_label').toUpperCase()}
+          {t('landscape.home_connect_label').toUpperCase()}
         </Button>
       </CardActions>
-    </DashboardCard>
+    </HomeCard>
   )
 }
 
-export default LandscapesDashboardCard
+export default LandscapesHomeCard

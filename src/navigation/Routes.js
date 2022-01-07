@@ -1,7 +1,7 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 
-import Dashboard from 'dashboard/components/Dashboard'
+import Home from 'home/components/Home'
 import GroupList from 'group/components/GroupList'
 import GroupForm from 'group/components/GroupForm'
 import GroupView from 'group/components/GroupView'
@@ -18,7 +18,7 @@ const path = (path, Component, auth = true) => ({
 })
 
 const paths = [
-  path('/', Dashboard),
+  path('/', Home),
   path('/groups', GroupList),
   path('/groups/new', GroupForm),
   path('/groups/:slug/edit', GroupForm),

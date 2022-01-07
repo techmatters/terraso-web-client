@@ -3,20 +3,20 @@ import { useTranslation } from 'react-i18next'
 import { Link as RouterLink } from 'react-router-dom'
 import { Link, Stack, Typography } from '@mui/material'
 
-import DashboardCard from 'dashboard/components/DashboardCard'
+import HomeCard from 'home/components/HomeCard'
 import theme from 'theme'
 
-const ToolDashboardCard = () => {
+const ToolHomeCard = () => {
   const { t } = useTranslation()
   return (
-    <DashboardCard
+    <HomeCard
       sx={{
         flexDirection: 'column',
         padding: theme.spacing(2)
       }}
     >
       <Typography variant="h5">
-        {t('tool.dashboard_card_title')}
+        {t('tool.home_card_title')}
       </Typography>
       <Typography
         variant="body1"
@@ -25,28 +25,28 @@ const ToolDashboardCard = () => {
           marginBottom: theme.spacing(2)
         }}
       >
-        {t('tool.dashboard_card_description')}
+        {t('tool.home_card_description')}
       </Typography>
       <Stack direction="row" spacing={3}>
         <img
           src="/tools/kobo-small.png"
-          alt={t('tool.dashboard_card_img_alt')}
+          alt={t('tool.home_card_img_alt')}
           height={64}
         />
         <Stack spacing={1}>
           <Typography>
-            {t('tool.dashboard_card_kobo_title')}
+            {t('tool.home_card_kobo_title')}
           </Typography>
           <Link
             component={RouterLink}
             to="/tools"
           >
-            {t('tool.dashboard_card_kobo_link')}
+            {t('tool.home_card_kobo_link')}
           </Link>
         </Stack>
       </Stack>
-    </DashboardCard>
+    </HomeCard>
   )
 }
 
-export default ToolDashboardCard
+export default ToolHomeCard
