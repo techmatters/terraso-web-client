@@ -8,9 +8,11 @@ import {
 import LaunchIcon from '@mui/icons-material/Launch'
 import { useTranslation } from 'react-i18next'
 import theme from 'theme'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 const Tool = ({ tool }) => {
   const { t } = useTranslation()
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
 
   return (
     <React.Fragment>
@@ -18,7 +20,7 @@ const Tool = ({ tool }) => {
         <Typography variant="h1" >
           {tool.title}
         </Typography>
-        <Stack direction="row" justifyContent="space-between" spacing={2}>
+        <Stack direction={isSmall ? 'column' : 'row'} justifyContent="space-between" spacing={2}>
 
           <section>
             <Typography variant="h2" >
