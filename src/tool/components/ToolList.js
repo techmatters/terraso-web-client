@@ -13,7 +13,7 @@ const ToolList = ({ tools }) => {
 
   const toolsData = [
     {
-      title: 'KoBo toolbox',
+      title: 'KoBoToolbox',
       url: 'https://www.kobotoolbox.org/',
       img: {
         height: 222,
