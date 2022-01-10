@@ -2,19 +2,19 @@ import React from 'react'
 import { act } from 'react-dom/test-utils'
 
 import { render, screen } from 'tests/utils'
-import Dashboard from 'dashboard/components/Dashboard'
-import { fetchDashboardData } from 'dashboard/dashboardService'
+import Home from 'home/components/Home'
+import { fetchHomeData } from 'home/homeService'
 import * as terrasoApi from 'terrasoBackend/api'
 
 jest.mock('terrasoBackend/api')
 
-jest.mock('dashboard/dashboardService', () => ({
-  ...jest.requireActual('dashboard/dashboardService'),
-  fetchDashboardData: jest.fn()
+jest.mock('home/homeService', () => ({
+  ...jest.requireActual('home/homeService'),
+  fetchHomeData: jest.fn()
 }))
 
 const setup = async () => {
-  await act(async () => render(<Dashboard />, {
+  await act(async () => render(<Home />, {
     account: {
       hasToken: true,
       currentUser: {
@@ -29,15 +29,15 @@ const setup = async () => {
 }
 
 beforeEach(() => {
-  fetchDashboardData.mockImplementation(jest.requireActual('dashboard/dashboardService').fetchDashboardData)
+  fetchHomeData.mockImplementation(jest.requireActual('home/homeService').fetchHomeData)
 })
 
-test('Dashboard: Display error', async () => {
+test('Home: Display error', async () => {
   terrasoApi.request.mockRejectedValue('Load error')
   await setup()
   expect(screen.getByText(/Error loading data. Load error/i)).toBeInTheDocument()
 })
-test('Dashboard: Display loader', async () => {
+test('Home: Display loader', async () => {
   terrasoApi.request.mockReturnValue(new Promise(() => {}))
   await setup()
   const loaders = screen.getAllByRole('loader', { name: '', hidden: true })
@@ -46,7 +46,7 @@ test('Dashboard: Display loader', async () => {
     expect(role).toBeInTheDocument()
   )
 })
-test('Dashboard: Display landscapes', async () => {
+test('Home: Display landscapes', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
     groups: {
       edges: []
@@ -85,7 +85,7 @@ test('Dashboard: Display landscapes', async () => {
   expect(screen.getByText(/Landscape 2/i)).toBeInTheDocument()
   expect(screen.getByText(/Manager/i)).toBeInTheDocument()
 })
-test('Dashboard: Display landscapes discovery', async () => {
+test('Home: Display landscapes discovery', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
     landscapesDiscovery: {
       edges: [{
@@ -109,7 +109,7 @@ test('Dashboard: Display landscapes discovery', async () => {
   expect(screen.queryByText(/Discover Landscapes in Terraso/i)).toBeInTheDocument()
   expect(screen.queryByText(/Landscape Discovery 2/i)).toBeInTheDocument()
 })
-test('Dashboard: Display landscapes discovery empty', async () => {
+test('Home: Display landscapes discovery empty', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
     landscapesDiscovery: {
       edges: []
@@ -118,7 +118,7 @@ test('Dashboard: Display landscapes discovery empty', async () => {
   await setup()
   expect(screen.queryByText(/Discover Landscapes in Terraso/i)).not.toBeInTheDocument()
 })
-test('Dashboard: Display groups', async () => {
+test('Home: Display groups', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
     userIndependentGroups: {
       edges: [{
@@ -147,8 +147,8 @@ test('Dashboard: Display groups', async () => {
   expect(screen.getByText('Group 2')).toBeInTheDocument()
   expect(screen.getByText('Manager')).toBeInTheDocument()
 })
-test('Dashboard: Display defaults', async () => {
-  fetchDashboardData.mockReturnValue(Promise.resolve({
+test('Home: Display defaults', async () => {
+  fetchHomeData.mockReturnValue(Promise.resolve({
     groups: [],
     landscapes: [],
     landscapesDiscovery: []

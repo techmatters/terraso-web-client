@@ -4,9 +4,9 @@ import * as terrasoApi from 'terrasoBackend/api'
 import { groupFields } from 'group/groupFragments'
 import { landscapeFields } from 'landscape/landscapeFragments'
 
-export const fetchDashboardData = email => {
+export const fetchHomeData = email => {
   const query = `
-    query dashboard($email: String!) {
+    query home($email: String!) {
       landscapeGroups: groups(
         members_Email: $email,
         associatedLandscapes_IsDefaultLandscapeGroup: true

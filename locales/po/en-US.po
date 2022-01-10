@@ -8,17 +8,17 @@ msgstr ""
 "POT-Creation-Date: 2021-12-03T01:12:54.292Z\n"
 "PO-Revision-Date: 2021-12-03T01:12:54.292Z\n"
 
-msgid "dashboard##title"
-msgstr "Dashboard"
+msgid "home##title"
+msgstr "Home"
 
-msgid "dashboard##error"
+msgid "home##error"
 msgstr "Error loading data. {{error}}"
 
 msgid "user##login"
 msgstr "Log in"
 
 msgctxt "title"
-msgid "dashboard##page"
+msgid "home##page"
 msgstr "Your Stuff"
 
 msgctxt "title"
