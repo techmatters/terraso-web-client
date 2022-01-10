@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import _ from 'lodash'
 import { DataGrid } from '@mui/x-data-grid'
-import { useSearchParams } from 'react-router-dom'
 
 const PAGE_SIZE = 15
 const DIRECTION = {
@@ -14,14 +13,9 @@ const DIRECTION_REVERSE = {
 }
 
 const Table = props => {
-  const [searchParams, setSearchParams] = useSearchParams()
   const [sortModel, setSortModel] = useState()
   const [page, setPage] = useState()
-
-  const setUrlParam = (field, value) => setSearchParams({
-    ...Object.fromEntries(searchParams.entries()),
-    [field]: value
-  })
+  const { searchParams, onSearchParamsChange } = props
 
   const parseSortQuery = value =>
     _.chain(value)
@@ -33,27 +27,33 @@ const Table = props => {
       .value()
 
   useEffect(() => {
-    const sortQuery = searchParams.get('sort')
-    setSortModel(sortQuery
-      ? parseSortQuery(sortQuery)
+    const sort = searchParams.sort
+    setSortModel(sort
+      ? parseSortQuery(sort)
       : props.initialSort
     )
   }, [props.initialSort, searchParams])
 
   useEffect(() => {
-    const pageValue = searchParams.get('page')
+    const pageValue = searchParams.page
     setPage(parseInt(pageValue) || 0)
   }, [searchParams])
 
   const onPageChange = page => {
-    setUrlParam('page', page)
+    onSearchParamsChange({
+      ...searchParams,
+      page
+    })
   }
 
   const onSortModelChange = model => {
-    const sortValue = model
+    const sort = model
       .map(column => `${DIRECTION[column.sort]}${column.field}`)
       .join(',')
-    setUrlParam('sort', sortValue)
+    onSearchParamsChange({
+      ...searchParams,
+      sort
+    })
   }
 
   return (

@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { useSelector, useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink, useSearchParams } from 'react-router-dom'
 import {
   Box,
   Typography,
@@ -34,6 +34,7 @@ const MembershipButton = ({ group }) => (
 
 const GroupTable = ({ groups }) => {
   const { t } = useTranslation()
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const columns = [{
     field: 'name',
@@ -90,6 +91,8 @@ const GroupTable = ({ groups }) => {
         field: 'name',
         sort: 'asc'
       }]}
+      searchParams={Object.fromEntries(searchParams.entries())}
+      onSearchParamsChange={setSearchParams}
       localeText={{
         noRowsLabel: t('group.list_empty'),
         footerPaginationRowsPerPage: t('common.data_grid_pagination_of')
