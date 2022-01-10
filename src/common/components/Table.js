@@ -17,14 +17,13 @@ const Table = props => {
   const [page, setPage] = useState()
   const { searchParams, onSearchParamsChange } = props
 
-  const parseSortQuery = value =>
-    _.chain(value)
-      .split(',')
-      .map(column => ({
-        field: column.substring(1),
-        sort: DIRECTION_REVERSE[column.substring(0, 1)]
-      }))
-      .value()
+  const parseSortQuery = value => _.chain(value)
+    .split(',')
+    .map(column => ({
+      field: column.substring(1),
+      sort: DIRECTION_REVERSE[column.substring(0, 1)]
+    }))
+    .value()
 
   useEffect(() => {
     const sort = searchParams.sort
