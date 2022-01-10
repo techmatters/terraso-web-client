@@ -3,11 +3,11 @@ import _ from 'lodash'
 import { DataGrid } from '@mui/x-data-grid'
 
 const PAGE_SIZE = 15
-const DIRECTION = {
+const DIRECTION_BY_WORD = {
   desc: '-',
   asc: '+'
 }
-const DIRECTION_REVERSE = {
+const DIRECTION_BY_SYMBOL = {
   '-': 'desc',
   '+': 'asc'
 }
@@ -21,7 +21,7 @@ const Table = props => {
     .split(',')
     .map(column => ({
       field: column.substring(1),
-      sort: DIRECTION_REVERSE[column.substring(0, 1)]
+      sort: DIRECTION_BY_SYMBOL[column.substring(0, 1)]
     }))
     .value()
 
@@ -47,7 +47,7 @@ const Table = props => {
 
   const onSortModelChange = model => {
     const sort = model
-      .map(column => `${DIRECTION[column.sort]}${column.field}`)
+      .map(column => `${DIRECTION_BY_WORD[column.sort]}${column.field}`)
       .join(',')
     onSearchParamsChange({
       ...searchParams,
