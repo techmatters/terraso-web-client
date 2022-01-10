@@ -1,6 +1,7 @@
 import React from 'react'
 import { act } from 'react-dom/test-utils'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { useSearchParams } from 'react-router-dom'
 
 import { render, screen, within, fireEvent } from 'tests/utils'
 import GroupList from 'group/components/GroupList'
@@ -9,6 +10,18 @@ import * as terrasoApi from 'terrasoBackend/api'
 jest.mock('terrasoBackend/api')
 
 jest.mock('@mui/material/useMediaQuery')
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useSearchParams: jest.fn()
+}))
+
+beforeEach(() => {
+  useSearchParams.mockReturnValue([
+    new URLSearchParams(),
+    () => {}
+  ])
+})
 
 test('GroupList: Display error', async () => {
   terrasoApi.request.mockRejectedValue('Load error')
@@ -219,4 +232,67 @@ test('GroupList: Display list (small screen)', async () => {
   expect(within(rows[1]).getByText('23')).toBeInTheDocument()
   expect(within(rows[1]).getByText('Join')).toBeInTheDocument()
   expect(within(rows[8]).getByText('MEMBER')).toBeInTheDocument()
+})
+test('GroupList: URL params', async () => {
+  const entriesSpy = jest.spyOn(URLSearchParams.prototype, "entries")
+  entriesSpy.mockReturnValue(
+    new Map([['page', '1']])
+  )
+
+  const setParamsMock = jest.fn()
+  useSearchParams.mockReturnValue([
+    new URLSearchParams(),
+    setParamsMock
+  ])
+
+  const groups = Array(21).fill(0).map((i, groupIndex) => ({
+    node: {
+      slug: `group-${groupIndex}`,
+      id: `group-${groupIndex}`,
+      name: `Group name ${groupIndex}`,
+      description: 'Group description',
+      website: 'https://www.group.org',
+      email: 'email@email.com',
+      memberships: { edges: [] }
+    }
+  }))
+
+  terrasoApi.request.mockReturnValue(Promise.resolve({
+    landscapeGroups: {
+      edges: groups
+    }
+  }))
+  await act(async () => render(<GroupList />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          email: 'email@email.com'
+        }
+      }
+    }
+  }))
+  expect(entriesSpy).toHaveBeenCalledTimes(2)
+
+  // Group info
+  expect(screen.getByRole('heading', { name: 'Groups' })).toBeInTheDocument()
+  const rows = screen.getAllByRole('row')
+  expect(rows.length).toBe(7) // Second page + header
+
+  // Sorting
+  await act(async () => fireEvent.click(within(rows[0]).getByRole('columnheader', { name: 'Group name' })))
+  expect(setParamsMock).toHaveBeenCalledTimes(1)
+  const setCallSort = setParamsMock.mock.calls[0]
+  expect(setCallSort[0]).toStrictEqual({
+    page: '1',
+    sort: '-name'
+  })
+
+  // Page
+  await act(async () => fireEvent.click(screen.getByLabelText('Go to previous page')))
+  const setCallPage = setParamsMock.mock.calls[1]
+  expect(setCallPage[0]).toStrictEqual({
+    page: 0
+  })
 })
