@@ -17,7 +17,6 @@ import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultHomeCard'
 import GroupsCard from 'group/components/GroupsHomeCard'
 import GroupDefaultCard from 'group/components/GroupDefaultHomeCard'
 import ToolHomeCard from 'tool/components/ToolHomeCard'
-import LandscapesHomeDiscoveryCard from 'landscape/components/LandscapesHomeDiscoveryCard'
 import theme from 'theme'
 
 const Landscapes = ({ landscapes, fetching }) => {
@@ -62,7 +61,7 @@ const Home = () => {
 
   const { data: user } = useSelector(state => state.account.currentUser)
   const home = useSelector(state => state.userHome)
-  const { groups, landscapes, landscapesDiscovery, error, fetching } = home
+  const { groups, landscapes, error, fetching } = home
 
   useEffect(() => {
     dispatch(fetchHomeData(user.email))
@@ -101,10 +100,6 @@ const Home = () => {
         <Grid item xs={12} md={6}>
           <Stack spacing={1}>
             <Groups groups={groups} fetching={fetching} />
-            <LandscapesHomeDiscoveryCard
-              fetching={fetching}
-              landscapes={landscapesDiscovery}
-            />
           </Stack>
         </Grid>
       </Grid>
