@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
-  Avatar,
   InputLabel,
   Stack,
   Typography
@@ -13,6 +12,7 @@ import {
 import { setUser } from 'account/accountSlice'
 import Form from 'forms/components/Form'
 import theme from 'theme'
+import AccountAvatar from './AccountAvatar'
 
 const VALIDATION_SCHEMA = yup.object({
   fullname: yup.string().required()
@@ -61,10 +61,7 @@ const AccountProfile = ({ tool }) => {
         <InputLabel>
           {t('account.profile_picture')}
         </InputLabel>
-        <Avatar sx={{ width: 80, height: 80, fontSize: '3em' }}>
-          {user.firstName.substr(0, 1).toUpperCase()}
-        </Avatar>
-
+        <AccountAvatar sx={{ width: 80, height: 80, fontSize: '3em' }} user={user} />
       </Form>
     </Stack>
   )

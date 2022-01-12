@@ -16,6 +16,8 @@ jest.mock('react-router-dom', () => ({
   )
 }))
 
+global.fetch = jest.fn()
+
 test('Auth: test redirect', async () => {
   useParams.mockReturnValue({
     slug: 'slug-1'
@@ -38,4 +40,27 @@ test('Auth: test redirect', async () => {
     }
   ))
   expect(screen.getByText('To: /account')).toBeInTheDocument()
+})
+test('Auth: test fetch user', async () => {
+  global.fetch.mockReturnValue(Promise.resolve({
+    json: () => ({
+      user: {
+        first_name: 'First',
+        last_name: 'Last'
+      }
+    })
+  }))
+  await act(async () => render(
+    <RequireAuth><div /></RequireAuth>,
+    {
+      account: {
+        hasToken: true,
+        currentUser: {
+          fetching: true,
+          data: null
+        }
+      }
+    }
+  ))
+  expect(global.fetch).toHaveBeenCalledTimes(1)
 })

@@ -16,6 +16,7 @@ import theme from 'theme'
 
 import logo from 'assets/logo.svg'
 import logoSquare from 'assets/logo-square.svg'
+import AccountAvatar from 'account/components/AccountAvatar'
 
 const AppBarComponent = () => {
   const dispatch = useDispatch()
@@ -43,7 +44,13 @@ const AppBarComponent = () => {
           <img src={isSmall ? logoSquare : logo} height="35px" alt={t('common.terraso_projectName')} />
         </Button>
         <Box sx={{ flexGrow: 1 }} />
-        <Button component={Link} to="/account/profile" color="inherit" sx={{ fontWeight: 500 }}>
+        <Button
+          component={Link}
+          to="/account/profile"
+          color="inherit"
+          startIcon={<AccountAvatar user={user} sx={{ width: 24, height: 24 }} />}
+          sx={{ fontWeight: 500 }}
+        >
           {user.firstName} {user.lastName}
         </Button>
         |

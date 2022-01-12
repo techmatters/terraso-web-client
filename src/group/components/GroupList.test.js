@@ -234,7 +234,7 @@ test('GroupList: Display list (small screen)', async () => {
   expect(within(rows[8]).getByText('MEMBER')).toBeInTheDocument()
 })
 test('GroupList: URL params', async () => {
-  const entriesSpy = jest.spyOn(URLSearchParams.prototype, "entries")
+  const entriesSpy = jest.spyOn(URLSearchParams.prototype, 'entries')
   entriesSpy.mockReturnValue(
     new Map([['page', '1']])
   )

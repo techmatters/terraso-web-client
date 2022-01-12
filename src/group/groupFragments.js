@@ -20,6 +20,7 @@ export const groupMembers = `
             email
             firstName
             lastName
+            profileImage
           }
         }
       }

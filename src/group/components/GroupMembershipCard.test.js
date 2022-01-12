@@ -156,7 +156,9 @@ test('GroupMembershipCard: Leave error', async () => {
             slug: 'group-slug',
             members: [{
               membershipId: 'membership-id',
-              email: 'email@email.com'
+              email: 'email@email.com',
+              firstName: 'First',
+              lastName: 'Last'
             }]
           }
         }
@@ -191,7 +193,9 @@ test('GroupMembershipCard: Leave', async () => {
             slug: 'group-slug',
             members: [{
               membershipId: 'membership-id',
-              email: 'email@email.com'
+              email: 'email@email.com',
+              firstName: 'First',
+              lastName: 'Last'
             }]
           }
         }

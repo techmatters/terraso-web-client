@@ -44,7 +44,8 @@ export const userSlice = createSlice({
         data: {
           email: action.payload.user.email,
           firstName: action.payload.user.first_name,
-          lastName: action.payload.user.last_name
+          lastName: action.payload.user.last_name,
+          profileImage: action.payload.user.profile_image
         }
       }
     }),
