@@ -36,6 +36,9 @@ const LinkTab = props => (
       '&.Mui-selected': {
         color: 'black',
         fontWeight: theme.typography.fontWeightMedium
+      },
+      '&:hover': {
+        background: theme.palette.gray.mid
       }
     }}
     {...props}
