@@ -95,7 +95,7 @@ const Footer = () => {
         component={LinksContainer}
       >
         {footerLinks.map((link, index) => (
-          <FooterLink key={index} index={index} link={link} />
+          link.url !== '#' && <FooterLink key={index} index={index} link={link} />
         ))}
       </Grid>
       <Grid item xs={12} md="auto"
