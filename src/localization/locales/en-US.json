@@ -95,8 +95,7 @@
         "list_column_website": "Website",
         "list_column_members": "Members",
         "list_column_actions": "Actions",
-        "list_empty": "No Landscapes",
-        "home_discovery_title": "Discover Landscapes in Terraso"
+        "list_empty": "No Landscapes"
     },
     "tool": {
       "faq_title": "Tools FAQ",

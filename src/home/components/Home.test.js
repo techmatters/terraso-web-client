@@ -41,7 +41,7 @@ test('Home: Display loader', async () => {
   terrasoApi.request.mockReturnValue(new Promise(() => {}))
   await setup()
   const loaders = screen.getAllByRole('loader', { name: '', hidden: true })
-  expect(loaders.length).toBe(3)
+  expect(loaders.length).toBe(2)
   loaders.forEach(role =>
     expect(role).toBeInTheDocument()
   )
@@ -84,39 +84,6 @@ test('Home: Display landscapes', async () => {
   expect(screen.getByText(/Member/i)).toBeInTheDocument()
   expect(screen.getByText(/Landscape 2/i)).toBeInTheDocument()
   expect(screen.getByText(/Manager/i)).toBeInTheDocument()
-})
-test('Home: Display landscapes discovery', async () => {
-  terrasoApi.request.mockReturnValue(Promise.resolve({
-    landscapesDiscovery: {
-      edges: [{
-        node: {
-          id: 'id-1',
-          slug: 'id-1',
-          name: 'Landscape 1',
-          role: 'member'
-        }
-      }, {
-        node: {
-          id: 'id-2',
-          slug: 'id-2',
-          name: 'Landscape Discovery 2',
-          role: 'manager'
-        }
-      }]
-    }
-  }))
-  await setup()
-  expect(screen.queryByText(/Discover Landscapes in Terraso/i)).toBeInTheDocument()
-  expect(screen.queryByText(/Landscape Discovery 2/i)).toBeInTheDocument()
-})
-test('Home: Display landscapes discovery empty', async () => {
-  terrasoApi.request.mockReturnValue(Promise.resolve({
-    landscapesDiscovery: {
-      edges: []
-    }
-  }))
-  await setup()
-  expect(screen.queryByText(/Discover Landscapes in Terraso/i)).not.toBeInTheDocument()
 })
 test('Home: Display groups', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
