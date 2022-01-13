@@ -8,14 +8,14 @@ import {
   CardHeader,
   CardContent,
   CardActions,
-  Avatar,
   AvatarGroup,
   CircularProgress,
   Box
 } from '@mui/material'
 
-import theme from 'theme'
 import GroupMembershipButton from './GroupMembershipButton'
+import AccountAvatar from 'account/components/AccountAvatar'
+import theme from 'theme'
 
 const Loader = () => (
   <CardContent>
@@ -46,9 +46,8 @@ const Content = props => {
         sx={{ flexDirection: 'row', marginTop: theme.spacing(2) }}
       >
         {members.map((member, index) => {
-          const name = `${member.firstName} ${member.lastName}`
           return (
-            <Avatar key={index} alt={name} src="no-image.jpg" />
+            <AccountAvatar key={index} user={member}/>
           )
         })}
       </AvatarGroup>
