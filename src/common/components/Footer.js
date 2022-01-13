@@ -24,7 +24,7 @@ const footerLinks = [
 const FooterLink = ({ index, link }) => {
   const { t } = useTranslation()
   const isBig = useMediaQuery(theme.breakpoints.up('sm'))
-  const showBorder = isBig && index < footerLinks.length - 1
+  const showBorder = isBig && index < footerLinks.length - 2
 
   const borderStyle = {
     borderRight: `1px solid ${palette.white}`,
