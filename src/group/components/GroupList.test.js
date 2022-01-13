@@ -165,7 +165,7 @@ test('GroupList: List sort', async () => {
 
   // Sorting
   expect(within(rows[1]).getByRole('cell', { name: 'Group name 0' })).toHaveAttribute('data-field', 'name')
-  await act(async () => fireEvent.click(within(rows[0]).getByRole('columnheader', { name: 'Group name' })))
+  await act(async () => fireEvent.click(within(rows[0]).getByRole('columnheader', { name: 'Group' })))
   expect(within(rows[1]).getByRole('cell', { name: 'Group name 9' })).toHaveAttribute('data-field', 'name')
 })
 test('GroupList: Display list (small screen)', async () => {
@@ -281,7 +281,7 @@ test('GroupList: URL params', async () => {
   expect(rows.length).toBe(7) // Second page + header
 
   // Sorting
-  await act(async () => fireEvent.click(within(rows[0]).getByRole('columnheader', { name: 'Group name' })))
+  await act(async () => fireEvent.click(within(rows[0]).getByRole('columnheader', { name: 'Group' })))
   expect(setParamsMock).toHaveBeenCalledTimes(1)
   const setCallSort = setParamsMock.mock.calls[0]
   expect(setCallSort[0]).toStrictEqual({
