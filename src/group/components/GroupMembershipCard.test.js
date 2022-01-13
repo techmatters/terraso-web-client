@@ -157,8 +157,8 @@ test('GroupMembershipCard: Leave error', async () => {
             members: [{
               membershipId: 'membership-id',
               email: 'email@email.com',
-              firstName: 'First',
-              lastName: 'Last'
+              firstName: 'John',
+              lastName: 'Doe'
             }]
           }
         }
@@ -194,8 +194,8 @@ test('GroupMembershipCard: Leave', async () => {
             members: [{
               membershipId: 'membership-id',
               email: 'email@email.com',
-              firstName: 'First',
-              lastName: 'Last'
+              firstName: 'John',
+              lastName: 'Doe'
             }]
           }
         }

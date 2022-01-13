@@ -32,8 +32,8 @@ test('Auth: test redirect', async () => {
           fetching: false,
           data: {
             email: 'email@email.com',
-            firstName: 'First',
-            lastName: 'Last'
+            firstName: 'John',
+            lastName: 'Doe'
           }
         }
       }
@@ -45,8 +45,8 @@ test('Auth: test fetch user', async () => {
   global.fetch.mockReturnValue(Promise.resolve({
     json: () => ({
       user: {
-        first_name: 'First',
-        last_name: 'Last'
+        first_name: 'John',
+        last_name: 'Doe'
       }
     })
   }))
