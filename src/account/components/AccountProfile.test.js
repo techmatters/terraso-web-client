@@ -13,14 +13,14 @@ test('AccountProfile: Display Avatar', async () => {
       currentUser: {
         fetching: false,
         data: {
-          firstName: 'Jhon',
+          firstName: 'John',
           lastName: 'Doe',
           profileImage: 'test.com'
         }
       }
     }
   }))
-  expect(screen.getByRole('img', { name: 'Jhon Doe' })).toBeInTheDocument()
+  expect(screen.getByRole('img', { name: 'John Doe' })).toBeInTheDocument()
 })
 test('AccountProfile: Display Avatar with missing image', async () => {
   await act(async () => render(<AccountProfile />, {
@@ -29,13 +29,13 @@ test('AccountProfile: Display Avatar with missing image', async () => {
       currentUser: {
         fetching: false,
         data: {
-          firstName: 'Jhon',
+          firstName: 'John',
           lastName: 'Doe',
           profileImage: ''
         }
       }
     }
   }))
-  expect(screen.queryByRole('img', { name: 'Jhon Doe' })).not.toBeInTheDocument()
-  expect(screen.getByLabelText('Jhon Doe')).toBeInTheDocument()
+  expect(screen.queryByRole('img', { name: 'John Doe' })).not.toBeInTheDocument()
+  expect(screen.getByLabelText('John Doe')).toBeInTheDocument()
 })
