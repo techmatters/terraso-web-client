@@ -25,7 +25,7 @@ const FIELDS = [{
 {
   name: 'email',
   label: 'account.form_email_label',
-  props: { disabled: true }
+  props: { guideText: true }
 }]
 
 const AccountProfile = ({ tool }) => {
