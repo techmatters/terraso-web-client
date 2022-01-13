@@ -11,7 +11,7 @@ import {
 
 import theme from 'theme'
 
-const FormField = ({ control, required, disabled, id, name, label, info, inputProps }) => {
+const FormField = ({ control, required, disabled, id, name, label, info, inputProps, guideText }) => {
   const { t } = useTranslation()
   return (
     <Controller
@@ -22,7 +22,7 @@ const FormField = ({ control, required, disabled, id, name, label, info, inputPr
           <InputLabel disabled={disabled} error={!!fieldState.error} htmlFor={id}>
             {t(label)} {required && `(${t('form.required_label')})` }
           </InputLabel>
-          <OutlinedInput
+          {guideText ? field.value : <OutlinedInput
             id={id}
             disabled={disabled}
             error={!!fieldState.error}
@@ -31,6 +31,7 @@ const FormField = ({ control, required, disabled, id, name, label, info, inputPr
             {...inputProps}
             {...field}
           />
+          }
           {info && (
             <FormHelperText id={`${id}-helper-text`}>{t(info)}</FormHelperText>
           )}
