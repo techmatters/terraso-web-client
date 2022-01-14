@@ -26,7 +26,6 @@
         "form_description_label": "Group description",
         "form_description_placeholder": "Enter a short description about your group. (600 characters maximum)",
         "form_email_label": "Email address",
-        "form_email_info": "This email address will be used by interested people to connect with you and your group.",
         "form_email_placeholder": "info@mygroup.org",
         "form_website_label": "Website",
         "form_website_placeholder": "https://www.mygroup.org",
