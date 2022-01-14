@@ -25,6 +25,7 @@ import theme from 'theme'
 const MembershipButton = ({ group }) => (
   <GroupMembershipButton
     groupSlug={group.slug}
+    confirmButtonLabel="group.membership_leave_confirm_button"
     messageTitle="group.membership_leave_confirm_title"
     messageText="group.membership_leave_confirm_message"
     joinLabel="group.list_join_button"
