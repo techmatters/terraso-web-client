@@ -17,6 +17,14 @@ const initialState = {
 }
 
 export const fetchUser = createAsyncThunk('account/fetchUser', accountService.fetchUser)
+export const saveUser = createAsyncThunk(
+  'account/saveUser',
+  accountService.saveUser,
+  () => ({
+    severity: 'success',
+    content: 'account.save_success'
+  })
+)
 export const fetchAuthURLs = createAsyncThunk('account/fetchAuthURLs', accountService.getAuthURLs)
 
 export const userSlice = createSlice({
@@ -33,6 +41,27 @@ export const userSlice = createSlice({
     })
   },
   extraReducers: {
+    [saveUser.pending]: state => ({
+      ...state,
+      currentUser: {
+        ...state.currentUser,
+        fetching: true
+      }
+    }),
+    [saveUser.fulfilled]: (state, action) => ({
+      ...state,
+      currentUser: {
+        fetching: false,
+        data: action.payload
+      }
+    }),
+    [saveUser.rejected]: state => ({
+      ...state,
+      currentUser: {
+        ...state.currentUser,
+        fetching: false
+      }
+    }),
     [fetchUser.pending]: state => ({
       ...state,
       currentUser: initialState.currentUser
@@ -41,12 +70,7 @@ export const userSlice = createSlice({
       ...state,
       currentUser: {
         fetching: false,
-        data: {
-          email: action.payload.user.email,
-          firstName: action.payload.user.first_name,
-          lastName: action.payload.user.last_name,
-          profileImage: action.payload.user.profile_image
-        }
+        data: action.payload
       }
     }),
     [fetchUser.rejected]: state => ({
