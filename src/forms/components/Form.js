@@ -78,16 +78,9 @@ const Form = props => {
       <Stack
         spacing={2}
         direction="row"
-        justifyContent="flex-start"
+        justifyContent="space-between"
         sx={{ marginTop: theme.spacing(2) }}
       >
-        <Button
-          type="submit"
-          variant="contained"
-          sx={{ paddingLeft: theme.spacing(5), paddingRight: theme.spacing(5) }}
-        >
-          {t(saveLabel)}
-        </Button>
         {onCancel && (
           <Button
             variant="text"
@@ -96,6 +89,13 @@ const Form = props => {
             {t(cancelLabel)}
           </Button>
         )}
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{ paddingLeft: theme.spacing(5), paddingRight: theme.spacing(5) }}
+        >
+          {t(saveLabel)}
+        </Button>
       </Stack>
     </form>
   )
