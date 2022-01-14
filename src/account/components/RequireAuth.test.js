@@ -1,12 +1,16 @@
 import React from 'react'
+import _ from 'lodash'
 import { useParams } from 'react-router-dom'
 
 import { render, screen, act } from 'tests/utils'
 import GroupView from 'group/components/GroupView'
 import * as terrasoApi from 'terrasoBackend/api'
 import RequireAuth from 'account/components/RequireAuth'
+import { getUserEmail } from 'account/auth'
 
 jest.mock('terrasoBackend/api')
+
+jest.mock('account/auth')
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -15,8 +19,6 @@ jest.mock('react-router-dom', () => ({
     <div>To: {props.to}</div>
   )
 }))
-
-global.fetch = jest.fn()
 
 test('Auth: test redirect', async () => {
   useParams.mockReturnValue({
@@ -42,14 +44,11 @@ test('Auth: test redirect', async () => {
   expect(screen.getByText('To: /account')).toBeInTheDocument()
 })
 test('Auth: test fetch user', async () => {
-  global.fetch.mockReturnValue(Promise.resolve({
-    json: () => ({
-      user: {
-        first_name: 'John',
-        last_name: 'Doe'
-      }
-    })
-  }))
+  getUserEmail.mockReturnValue(Promise.resolve('test@email.com'))
+  terrasoApi.request.mockReturnValue(Promise.resolve(_.set({}, 'users.edges[0].node', {
+    firstName: 'John',
+    lastName: 'Doe'
+  })))
   await act(async () => render(
     <RequireAuth><div /></RequireAuth>,
     {
@@ -62,5 +61,5 @@ test('Auth: test fetch user', async () => {
       }
     }
   ))
-  expect(global.fetch).toHaveBeenCalledTimes(1)
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1)
 })

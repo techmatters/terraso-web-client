@@ -61,9 +61,15 @@ const components = {
   },
   MuiInputLabel: {
     defaultProps: {
-      shrink: true,
+      shrink: true
+    }
+  },
+  MuiOutlinedInput: {
+    defaultProps: {
       sx: {
-        textTransform: 'uppercase'
+        '& .Mui-disabled': {
+          bgcolor: colorTheme.palette.gray.lite1
+        }
       }
     }
   }
