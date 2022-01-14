@@ -131,6 +131,7 @@
       "form_email_label": "Email address",
       "form_save_label": "Confirm",
       "save_success": "Your profile has been saved.",
+      "not_found": "Account not found",
       "profile_picture": "Profile Picture",
       "apple_login": "Continue with Apple",
       "google_login": "Continue with Google",
