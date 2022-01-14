@@ -26,7 +26,8 @@ const FIELDS = [{
   info: 'account.form_first_name_info',
   props: {
     gridItemProps: {
-      xs: 6
+      xs: 12,
+      sm: 6
     }
   }
 }, {
@@ -34,7 +35,8 @@ const FIELDS = [{
   label: 'account.form_last_name_label',
   props: {
     gridItemProps: {
-      xs: 6
+      xs: 12,
+      sm: 6
     }
   }
 }, {
