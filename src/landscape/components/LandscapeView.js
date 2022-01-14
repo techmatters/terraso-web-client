@@ -108,6 +108,7 @@ const LandscapeView = () => {
             groupSlug={landscape.defaultGroup.slug}
             joinLabel="landscape.view_join_label"
             leaveLabel="landscape.view_leave_label"
+            messageLabel="landscape.membership_leave_confirm_message"
           />
         </Grid>
       </Grid>

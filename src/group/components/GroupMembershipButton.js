@@ -51,7 +51,7 @@ const JoinButton = props => {
 
 const GroupMembershipButton = props => {
   const dispatch = useDispatch()
-  const { joinLabel, leaveLabel, ownerName, groupSlug } = props
+  const { joinLabel, leaveLabel, messageLabel, ownerName, groupSlug } = props
   const { data: { email: userEmail } } = useSelector(state => state.account.currentUser)
   const { fetching, group, joining } = useSelector(state => _.get(state, `group.memberships.${groupSlug}`, {}))
   const [openConfirmation, setOpenConfirmation] = useState(false)
@@ -94,8 +94,8 @@ const GroupMembershipButton = props => {
         <ConfirmationDialog
           open={openConfirmation}
           title={t('group.membership_leave_confirm_title', { name: ownerName })}
-          message={t('group.membership_leave_confirm_message', { name: ownerName })}
-          confirmButtonLabel={t('group.membership_leave_confirm_button', { name: ownerName })}
+          message={t(messageLabel, { name: ownerName })}
+          confirmButtonLabel={t('group.membership_leave_confirm_button')}
           onCancel={() => setOpenConfirmation(false)}
           onConfirm={onLeave}
           loading={loading}

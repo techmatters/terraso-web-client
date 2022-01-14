@@ -24,6 +24,7 @@ import theme from 'theme'
 const MembershipButton = ({ landscape }) => (
   <GroupMembershipButton
     groupSlug={_.get(landscape, 'defaultGroup.slug')}
+    messageLabel="landscape.membership_leave_confirm_message"
     joinLabel="landscape.list_join_button"
     leaveLabel="landscape.list_leave_button"
     ownerName={landscape.name}

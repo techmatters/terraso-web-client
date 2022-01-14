@@ -83,6 +83,7 @@
         "form_save_label": "Submit Landscape Info",
         "form_message_success": "Your Landscape has been saved.",
         "not_found": "Landscape not found",
+        "membership_leave_confirm_message": "Are you sure you want to leave the landscape “{{name}}”?",
         "view_card_title": "About {{name}}",
         "view_join_label": "Connect to Landscape",
         "view_leave_label": "Leave Landscape",
