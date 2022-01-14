@@ -112,6 +112,25 @@
       "home_card_kobo_title": "KoBoToolbox",
       "home_card_kobo_link": "Learn more about KoBoToolbox features"
     },
+    "tools": {
+      "kobo": {
+        "title": "KoBoToolbox",
+        "url": "https://www.kobotoolbox.org/",
+        "img": {
+          "height": "222",
+          "width": "377",
+          "src": "kobo.png"
+        },
+        "description": [
+          "Design and build forms quickly",
+          "Collect data offline and online'",
+          "Analyze and manage data"
+        ],
+        "requirements": [
+          "Modern web browser (Chrome, Edge, Firefox, Safari)"
+        ]
+      }
+    },
     "localization": {
         "locale_en-US": "English",
         "locale_en-US_small": "EN",
