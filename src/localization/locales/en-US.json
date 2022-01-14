@@ -54,7 +54,6 @@
         "list_column_website": "Website",
         "list_column_contact": "Email",
         "list_column_members": "Members",
-        "list_column_actions": "Actions",
         "list_empty": "No Groups",
         "list_new_description": "Can’t find the organizations or groups you are affiliated with? Create your group in Terraso, so you and your group members can connect in Terraso. The group creator will be the group manager who can add the group information.",
         "list_new_button": "Create Group"
@@ -93,7 +92,6 @@
         "list_column_location": "Location",
         "list_column_website": "Website",
         "list_column_members": "Members",
-        "list_column_actions": "Actions",
         "list_empty": "No Landscapes"
     },
     "tool": {

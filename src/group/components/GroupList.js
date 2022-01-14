@@ -75,7 +75,7 @@ const GroupTable = ({ groups }) => {
     )
   }, {
     field: 'actions',
-    headerName: t('group.list_column_actions'),
+    headerName: false,
     sortable: false,
     align: 'center',
     renderCell: ({ row: group }) => (

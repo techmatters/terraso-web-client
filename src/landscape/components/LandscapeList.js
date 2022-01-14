@@ -69,7 +69,7 @@ const LandscapeTable = ({ landscapes }) => {
     )
   }, {
     field: 'actions',
-    headerName: t('landscape.list_column_actions'),
+    headerName: false,
     sortable: false,
     align: 'center',
     renderCell: ({ row: landscape }) => (
