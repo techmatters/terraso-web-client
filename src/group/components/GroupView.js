@@ -116,6 +116,7 @@ const GroupView = () => {
             joinLabel="group.view_join_label"
             leaveLabel="group.view_leave_label"
             messageText="group.membership_leave_confirm_message"
+            messageTitle="group.membership_leave_confirm_title"
           />
         </Grid>
       </Grid>

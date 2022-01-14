@@ -109,6 +109,7 @@ const LandscapeView = () => {
             joinLabel="landscape.view_join_label"
             leaveLabel="landscape.view_leave_label"
             messageText="landscape.membership_leave_confirm_message"
+            messageTitle="landscape.membership_leave_confirm_title"
           />
         </Grid>
       </Grid>

@@ -25,6 +25,7 @@ const MembershipButton = ({ landscape }) => (
   <GroupMembershipButton
     groupSlug={_.get(landscape, 'defaultGroup.slug')}
     messageText="landscape.membership_leave_confirm_message"
+    messageTitle="landscape.membership_leave_confirm_title"
     joinLabel="landscape.list_join_button"
     leaveLabel="landscape.list_leave_button"
     ownerName={landscape.name}
