@@ -186,7 +186,6 @@ const LandscapeList = () => {
           marginTop: theme.spacing(2)
         }}
       >
-        {t('landscape.list_description')}
       </Typography>
       {isSmall
         ? <LandscapeCards landscapes={landscapes} />
