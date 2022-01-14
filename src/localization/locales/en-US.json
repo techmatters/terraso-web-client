@@ -104,6 +104,7 @@
       "list_description": "Helpful tools in Terraso",
       "is_for": "This tool is for",
       "requirements": "System requirements",
+      "avilability": "Availability",
       "actions_bookmark": "Bookmark",
       "actions_recommend": "Recommend this to my team",
       "home_card_title": "Access Data Collection Tool in Terraso",
@@ -128,7 +129,8 @@
         ],
         "requirements": [
           "Modern web browser (Chrome, Edge, Firefox, Safari)"
-        ]
+        ],
+        "availability": "KoBoToolbox will be integrated into Terraso in 2022. Use Kobo independently for now."
       }
     },
     "localization": {

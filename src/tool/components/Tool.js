@@ -48,6 +48,11 @@ const Tool = ({ tool }) => {
                 ))
               }
             </ul>
+
+            <Typography variant="h2" >
+              {t('tool.avilability')}
+            </Typography>
+            <p>{t(`tools.${tool}.availability`)}</p>
           </section>
 
           <section>
