@@ -9,6 +9,7 @@ jest.mock('terrasoBackend/api')
 
 const setup = async initialState => {
   await act(async () => render(<GroupMembershipCard
+    confirmButtonLabel="Leave Group"
     ownerName="Owner Name"
     groupSlug="group-slug"
     joinLabel="Join Label"
@@ -169,8 +170,8 @@ test('GroupMembershipCard: Leave error', async () => {
   expect(screen.getByRole('button', { name: 'LEAVE LABEL' })).toBeInTheDocument()
   await act(async () => fireEvent.click(screen.getByRole('button', { name: 'LEAVE LABEL' })))
   // Confirm dialog
-  expect(screen.getByRole('button', { name: 'Yes, leave Owner Name' })).toBeInTheDocument()
-  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Yes, leave Owner Name' })))
+  expect(screen.getByRole('button', { name: 'Leave Group' })).toBeInTheDocument()
+  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Leave Group' })))
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(1)
   expect(screen.getByText(/Leave error/i)).toBeInTheDocument()
@@ -206,8 +207,8 @@ test('GroupMembershipCard: Leave', async () => {
   expect(screen.getByRole('button', { name: 'LEAVE LABEL' })).toBeInTheDocument()
   await act(async () => fireEvent.click(screen.getByRole('button', { name: 'LEAVE LABEL' })))
   // Confirm dialog
-  expect(screen.getByRole('button', { name: 'Yes, leave Owner Name' })).toBeInTheDocument()
-  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Yes, leave Owner Name' })))
+  expect(screen.getByRole('button', { name: 'Leave Group' })).toBeInTheDocument()
+  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Leave Group' })))
   expect(terrasoApi.request).toHaveBeenCalledTimes(1)
 
   expect(screen.getByText('0 Terraso members have affiliated themselves with Owner Name.')).toBeInTheDocument()
