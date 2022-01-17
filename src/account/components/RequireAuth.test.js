@@ -10,7 +10,11 @@ import { getUserEmail } from 'account/auth'
 
 jest.mock('terrasoBackend/api')
 
-jest.mock('account/auth')
+
+jest.mock('account/auth', () => ({
+  ...jest.requireActual('account/auth'),
+  getUserEmail: jest.fn()
+}))
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -28,7 +32,7 @@ test('Auth: test redirect', async () => {
   useParams.mockReturnValue({
     slug: 'slug-1'
   })
-  terrasoApi.request.mockRejectedValue('UNAUTHENTICATED')
+  terrasoApi.request.mockRejectedValueOnce('UNAUTHENTICATED')
   global.fetch.mockResolvedValueOnce({
     status: 401
   })
@@ -48,6 +52,8 @@ test('Auth: test redirect', async () => {
       }
     }
   ))
+  expect(global.fetch).toHaveBeenCalledTimes(1)
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1)
   expect(screen.getByText('To: /account')).toBeInTheDocument()
 })
 test('Auth: test refresh tokens', async () => {
