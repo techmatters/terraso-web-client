@@ -10,7 +10,6 @@ import { getUserEmail } from 'account/auth'
 
 jest.mock('terrasoBackend/api')
 
-
 jest.mock('account/auth', () => ({
   ...jest.requireActual('account/auth'),
   getUserEmail: jest.fn()
