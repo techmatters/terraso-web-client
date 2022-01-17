@@ -64,10 +64,18 @@ const Table = props => {
       }}
       autoHeight
       disableVirtualization
+      disableColumnSelector
+      hideFooterSelectedRowCount
       onPageChange={onPageChange}
       sx={{
         '& .MuiDataGrid-columnHeaders': {
           backgroundColor: 'gray.lite2'
+        },
+        '&.MuiDataGrid-root .MuiDataGrid-cell:focus': {
+          outline: 'none'
+        },
+        '&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus': {
+          outline: 'none'
         }
       }}
       {...props}
