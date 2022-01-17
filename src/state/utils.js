@@ -7,7 +7,6 @@ import { UNAUTHENTICATED } from 'account/authConstants'
 
 const executeAuthRequest = (dispatch, action) => action().catch(async error => {
   if (error !== UNAUTHENTICATED) {
-    // If not auth error return request error
     await Promise.reject(error)
   }
   try {
