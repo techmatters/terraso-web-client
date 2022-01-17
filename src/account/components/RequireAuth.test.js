@@ -25,6 +25,9 @@ test('Auth: test redirect', async () => {
     slug: 'slug-1'
   })
   terrasoApi.request.mockRejectedValue('UNAUTHENTICATED')
+  global.fetch.mockReturnValue(Promise.resolve({
+    status: 401
+  }))
   await act(async () => render(
     <RequireAuth><GroupView /></RequireAuth>,
     {
@@ -42,6 +45,38 @@ test('Auth: test redirect', async () => {
     }
   ))
   expect(screen.getByText('To: /account')).toBeInTheDocument()
+})
+test('Auth: test refresh tokens', async () => {
+  useParams.mockReturnValue({
+    slug: 'slug-1'
+  })
+  terrasoApi.request
+    .mockRejectedValueOnce('UNAUTHENTICATED')
+    .mockResolvedValueOnce({})
+  global.fetch.mockReturnValue(Promise.resolve({
+    status: 200,
+    json: () => ({
+      atoken: 'auth-token',
+      rtoken: 'refresh-token'
+    })
+  }))
+  await act(async () => render(
+    <RequireAuth><GroupView /></RequireAuth>,
+    {
+      account: {
+        hasToken: true,
+        currentUser: {
+          fetching: false,
+          data: {
+            email: 'email@email.com',
+            firstName: 'John',
+            lastName: 'Doe'
+          }
+        }
+      }
+    }
+  ))
+  expect(screen.getByText('Group not found')).toBeInTheDocument()
 })
 test('Auth: test fetch user', async () => {
   getUserEmail.mockReturnValue(Promise.resolve('test@email.com'))
