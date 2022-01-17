@@ -57,7 +57,7 @@ const Content = props => {
 
 const GroupMembershipCard = props => {
   const { t } = useTranslation()
-  const { ownerName, groupSlug, joinLabel, leaveLabel, messageText, messageTitle, confirmButtonLabel } = props
+  const { ownerName, groupSlug, joinLabel, leaveLabel, confirmMessageText, confirmMessageTitle, confirmButtonLabel } = props
   const { fetching, group } = useSelector(state => _.get(state, `group.memberships.${groupSlug}`, {}))
 
   // TODO This should just be 5 users and we should get the total count from
@@ -81,8 +81,8 @@ const GroupMembershipCard = props => {
             groupSlug={groupSlug}
             joinLabel={joinLabel}
             leaveLabel={leaveLabel}
-            messageText={messageText}
-            messageTitle={messageTitle}
+            confirmMessageText={confirmMessageText}
+            confirmMessageTitle={confirmMessageTitle}
             confirmButtonLabel={confirmButtonLabel}
           />
         </CardActions>
