@@ -25,9 +25,9 @@ test('Auth: test redirect', async () => {
     slug: 'slug-1'
   })
   terrasoApi.request.mockRejectedValue('UNAUTHENTICATED')
-  global.fetch.mockReturnValue(Promise.resolve({
+  global.fetch.mockResolvedValueOnce({
     status: 401
-  }))
+  })
   await act(async () => render(
     <RequireAuth><GroupView /></RequireAuth>,
     {
@@ -53,13 +53,13 @@ test('Auth: test refresh tokens', async () => {
   terrasoApi.request
     .mockRejectedValueOnce('UNAUTHENTICATED')
     .mockResolvedValueOnce({})
-  global.fetch.mockReturnValue(Promise.resolve({
+  global.fetch.mockResolvedValueOnce({
     status: 200,
     json: () => ({
       atoken: 'auth-token',
       rtoken: 'refresh-token'
     })
-  }))
+  })
   await act(async () => render(
     <RequireAuth><GroupView /></RequireAuth>,
     {
