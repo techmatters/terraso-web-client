@@ -20,6 +20,10 @@ jest.mock('react-router-dom', () => ({
   )
 }))
 
+beforeEach(() => {
+  global.fetch = jest.fn()
+})
+
 test('Auth: test redirect', async () => {
   useParams.mockReturnValue({
     slug: 'slug-1'
