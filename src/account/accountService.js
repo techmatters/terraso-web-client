@@ -1,6 +1,9 @@
-import { getToken } from 'account/auth'
+import _ from 'lodash'
+
+import { getUserEmail } from 'account/auth'
+import { userFields } from 'account/accountFragments'
+import * as terrasoApi from 'terrasoBackend/api'
 import { TERRASO_API_URL } from 'config'
-import { UNAUTHENTICATED } from 'account/authConstants'
 
 const getURL = provider => fetch(
   new URL(`/auth/${provider}/authorize`, TERRASO_API_URL).href,
@@ -15,19 +18,35 @@ export const getAuthURLs = () => Promise.all([
 ])
   .then(([google, apple]) => ({ google, apple }))
 
-export const fetchUser = () => fetch(
-  new URL('/auth/user', TERRASO_API_URL).href,
-  {
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-      'Content-Type': 'application/json'
+export const fetchUser = () => {
+  const query = `
+    query user($email: String!){
+      users(email: $email) {
+        edges {
+          node {
+            ...userFields
+          }
+        }
+      }
     }
-  }
-)
-  .then(response => {
-    if (response.status === 401) {
-      return Promise.reject(UNAUTHENTICATED)
+    ${userFields}
+  `
+  return terrasoApi
+    .request(query, { email: getUserEmail() })
+    .then(response => _.get(response, 'users.edges[0].node'))
+    .then(user => user || Promise.reject('account.not_found'))
+}
+
+export const saveUser = user => {
+  const query = `
+    mutation updateUser($input: UserUpdateMutationInput!) {
+      updateUser(input: $input) {
+        user { ...userFields }
+      }
     }
-    return response
-  })
-  .then(response => response.json())
+    ${userFields}
+  `
+  return terrasoApi
+    .request(query, { input: _.omit(user, ['profileImage', 'email']) })
+    .then(response => response.updateUser.user)
+}
