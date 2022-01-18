@@ -14,11 +14,13 @@ const Tool = ({ tool }) => {
   const { t } = useTranslation()
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
 
+  const toolTitle = t(`tools.${tool}.title`)
+
   return (
     <React.Fragment>
       <Card sx={{ padding: theme.spacing(2) }}>
         <Typography variant="h1" >
-          {tool.title}
+          {toolTitle}
         </Typography>
         <Stack direction={isSmall ? 'column' : 'row'} justifyContent="space-between" spacing={2}>
 
@@ -29,7 +31,7 @@ const Tool = ({ tool }) => {
 
             <ul>
               {
-                tool.description.map((description, index) => (
+                t(`tools.${tool}.description`, { returnObjects: true }).map((description, index) => (
                   <li key={index}>{description}</li>
                 ))
               }
@@ -41,21 +43,26 @@ const Tool = ({ tool }) => {
 
             <ul>
               {
-                tool.requirements.map((req, index) => (
+                t(`tools.${tool}.requirements`, { returnObjects: true }).map((req, index) => (
                   <li key={index}>{req}</li>
                 ))
               }
             </ul>
+
+            <Typography variant="h2" >
+              {t('tool.avilability')}
+            </Typography>
+            <p>{t(`tools.${tool}.availability`)}</p>
           </section>
 
           <section>
-            <Link href={tool.url}>
-              <img alt={tool.title} height={tool.img.height} width={tool.img.src} src={tool.img.src} />
+            <Link href={t(`tools.${tool}.url`)}>
+              <img alt={toolTitle} height={t(`tools.${tool}.img.height`)} width={t(`tools.${tool}.img.width`)} src={t(`tools.${tool}.img.src`)} />
             </Link>
 
             <p>
-              <Link href={tool.url}>
-                {t('tool.go_to', { tool: tool.title })}
+              <Link href={t(`tools.${tool}.url`)}>
+                {t('tool.go_to', { tool: toolTitle }) }
                 <LaunchIcon sx={{ paddingLeft: '5px', height: '1.2rem', width: '1.2rem', verticalAlign: 'bottom' }} />
               </Link>
             </p>

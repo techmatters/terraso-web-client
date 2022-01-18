@@ -107,6 +107,7 @@
       "list_description": "Helpful tools in Terraso",
       "is_for": "This tool is for",
       "requirements": "System requirements",
+      "avilability": "Availability",
       "actions_bookmark": "Bookmark",
       "actions_recommend": "Recommend this to my team",
       "home_card_title": "Access Data Collection Tool in Terraso",
@@ -114,6 +115,26 @@
       "home_card_img_alt": "KoBoToolbox image",
       "home_card_kobo_title": "KoBoToolbox",
       "home_card_kobo_link": "Learn more about KoBoToolbox features"
+    },
+    "tools": {
+      "kobo": {
+        "title": "KoBoToolbox",
+        "url": "https://www.kobotoolbox.org/",
+        "img": {
+          "height": "222",
+          "width": "377",
+          "src": "kobo.png"
+        },
+        "description": [
+          "Design and build forms quickly",
+          "Collect data offline and online'",
+          "Analyze and manage data"
+        ],
+        "requirements": [
+          "Modern web browser (Chrome, Edge, Firefox, Safari)"
+        ],
+        "availability": "KoBoToolbox will be integrated into Terraso in 2022. Use Kobo independently for now."
+      }
     },
     "localization": {
         "locale_en-US": "English",

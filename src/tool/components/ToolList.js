@@ -11,25 +11,7 @@ import Tool from 'tool/components/Tool'
 const ToolList = ({ tools }) => {
   const { t } = useTranslation()
 
-  const toolsData = [
-    {
-      title: 'KoBoToolbox',
-      url: 'https://www.kobotoolbox.org/',
-      img: {
-        height: 222,
-        width: 377,
-        src: 'kobo.png'
-      },
-      description: [
-        'Design and build forms quickly',
-        'Collect data offline and online',
-        'Analyze and manage data'
-      ],
-      requirements: [
-        'Modern web browser (Chrome, Edge, Firefox, Safari)'
-      ]
-    }
-  ]
+  const toolList = ['kobo']
 
   return (
     <React.Fragment>
@@ -50,8 +32,8 @@ const ToolList = ({ tools }) => {
         >
           {t('tool.list_description')}
         </Typography>
-        {toolsData.map(tool => (
-          <Tool key="{tool}" tool={tool} />
+        {toolList.map((tool, index) => (
+          <Tool key={index} tool={tool} />
         ))}
       </Box>
     </React.Fragment>
