@@ -34,7 +34,7 @@ const ConfirmationDialog = props => {
         </DialogContentText>
       </DialogContent>
       <DialogActions sx={{
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         padding: '20px'
       }}>
         <Button onClick={onCancel}>
