@@ -83,16 +83,9 @@ const Form = props => {
       <Grid item container xs={12}
         spacing={2}
         direction="row"
-        justifyContent="flex-start"
+        justifyContent="space-between"
         sx={{ marginTop: theme.spacing(2) }}
       >
-        <Button
-          type="submit"
-          variant="contained"
-          sx={{ paddingLeft: theme.spacing(5), paddingRight: theme.spacing(5) }}
-        >
-          {t(saveLabel)}
-        </Button>
         {onCancel && (
           <Button
             variant="text"
@@ -101,6 +94,13 @@ const Form = props => {
             {t(cancelLabel)}
           </Button>
         )}
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{ paddingLeft: theme.spacing(5), paddingRight: theme.spacing(5) }}
+        >
+          {t(saveLabel)}
+        </Button>
       </Grid>
     </Grid>
   )

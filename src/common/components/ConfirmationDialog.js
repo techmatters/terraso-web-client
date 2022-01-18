@@ -33,7 +33,14 @@ const ConfirmationDialog = props => {
           {message}
         </DialogContentText>
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{
+        justifyContent: 'flex-end',
+        padding: '20px'
+      }}>
+        <Button onClick={onCancel}>
+          {t('common.dialog_cancel_label')}
+        </Button>
+
         <LoadingButton
           variant="contained"
           onClick={onConfirm}
@@ -41,9 +48,6 @@ const ConfirmationDialog = props => {
         >
           {confirmButtonLabel}
         </LoadingButton>
-        <Button onClick={onCancel}>
-          {t('common.dialog_cancel_label')}
-        </Button>
       </DialogActions>
     </Dialog>
   )
