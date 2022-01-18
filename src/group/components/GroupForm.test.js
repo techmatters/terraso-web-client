@@ -26,8 +26,8 @@ const setup = async () => {
       }
     }
   }))
-  const name = screen.getByRole('textbox', { name: 'Group name (Required)' })
-  const description = screen.getByRole('textbox', { name: 'Group description (Required)' })
+  const name = screen.getByRole('textbox', { name: 'Name (Required)' })
+  const description = screen.getByRole('textbox', { name: 'Description (Required)' })
   const email = screen.getByRole('textbox', { name: 'Email address' })
   const website = screen.getByRole('textbox', { name: 'Website' })
   return {
@@ -166,7 +166,7 @@ test('GroupForm: Input validation', async () => {
   fireEvent.change(inputs.website, { target: { value: 'wwwotherorg' } })
   expect(inputs.website).toHaveValue('wwwotherorg')
 
-  await act(async () => fireEvent.click(screen.getByText(/Submit Group Info/i)))
+  await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)))
   expect(screen.getByText(/name is a required field/i)).toBeInTheDocument()
   expect(screen.getByText(/description is a required field/i)).toBeInTheDocument()
   expect(screen.getByText(/email must be a valid email/i)).toBeInTheDocument()
@@ -203,7 +203,7 @@ test('GroupForm: website accepts address without protocol', async () => {
 
   fireEvent.change(inputs.website, { target: { value: 'example.org' } })
 
-  await act(async () => fireEvent.click(screen.getByText(/Submit Group Info/i)))
+  await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)))
   const saveCall = terrasoApi.request.mock.calls[1]
 
   expect(saveCall[1].input.website).toEqual('https://example.org')
@@ -243,7 +243,7 @@ test('GroupForm: Save form', async () => {
   fireEvent.change(inputs.email, { target: { value: 'new.email@group.org' } })
   fireEvent.change(inputs.website, { target: { value: 'https://www.other.org' } })
 
-  await act(async () => fireEvent.click(screen.getByText(/Submit Group Info/i)))
+  await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)))
   expect(terrasoApi.request).toHaveBeenCalledTimes(2)
   const saveCall = terrasoApi.request.mock.calls[1]
   expect(saveCall[1]).toStrictEqual({
@@ -280,7 +280,7 @@ test('GroupForm: Save form error', async () => {
   fireEvent.change(inputs.email, { target: { value: 'new.email@group.org' } })
   fireEvent.change(inputs.website, { target: { value: 'https://www.other.org' } })
 
-  await act(async () => fireEvent.click(screen.getByText(/Submit Group Info/i)))
+  await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)))
   expect(terrasoApi.request).toHaveBeenCalledTimes(2)
 
   // Test error display
@@ -341,7 +341,7 @@ test('GroupForm: Save form (add)', async () => {
   fireEvent.change(inputs.website, { target: { value: 'https://www.other.org' } })
   fireEvent.change(inputs.email, { target: { value: 'other@group.org' } })
 
-  await act(async () => fireEvent.click(screen.getByText(/Submit Group Info/i)))
+  await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)))
   expect(terrasoApi.request).toHaveBeenCalledTimes(2)
   const saveCall = terrasoApi.request.mock.calls[0]
   expect(saveCall[1]).toStrictEqual({
