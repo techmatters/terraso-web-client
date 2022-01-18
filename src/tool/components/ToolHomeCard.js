@@ -25,24 +25,18 @@ const ToolHomeCard = () => {
           marginBottom: theme.spacing(2)
         }}
       >
-        {t('tool.home_card_description')}
       </Typography>
       <Stack direction="row" spacing={3}>
-        <img
-          src="/tools/kobo-small.png"
-          alt={t('tool.home_card_img_alt')}
-          height={64}
-        />
+        <Link component={RouterLink} to="/tools">
+          <img src="/tools/kobo-small.png" alt={t('tool.home_card_img_alt')} height={64} />
+        </Link>
         <Stack spacing={1}>
-          <Typography>
-            {t('tool.home_card_kobo_title')}
-          </Typography>
-          <Link
-            component={RouterLink}
-            to="/tools"
-          >
-            {t('tool.home_card_kobo_link')}
+          <Link component={RouterLink} to="/tools">
+            <Typography>
+              {t('tool.home_card_kobo_title')}
+            </Typography>
           </Link>
+          {t('tool.home_card_description')}
         </Stack>
       </Stack>
     </HomeCard>
