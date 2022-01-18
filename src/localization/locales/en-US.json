@@ -105,8 +105,7 @@
       "home_card_title": "Data Collection",
       "home_card_description": "KoBoToolbox is a free open source data collection tool.",
       "home_card_img_alt": "KoBoToolbox image",
-      "home_card_kobo_title": "KoBoToolbox",
-      "home_card_kobo_link": "Learn more about KoBoToolbox features"
+      "home_card_kobo_title": "KoBoToolbox"
     },
     "localization": {
         "locale_en-US": "English",
