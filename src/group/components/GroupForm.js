@@ -47,7 +47,6 @@ const FIELDS = [{
 }, {
   name: 'email',
   label: 'group.form_email_label',
-  info: 'group.form_email_info',
   placeholder: 'group.form_email_placeholder',
   type: 'email'
 }, {

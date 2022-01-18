@@ -72,7 +72,7 @@ const LandscapeTable = ({ landscapes }) => {
     )
   }, {
     field: 'actions',
-    headerName: t('landscape.list_column_actions'),
+    headerName: false,
     sortable: false,
     align: 'center',
     renderCell: ({ row: landscape }) => (
@@ -189,7 +189,6 @@ const LandscapeList = () => {
           marginTop: theme.spacing(2)
         }}
       >
-        {t('landscape.list_description')}
       </Typography>
       {isSmall
         ? <LandscapeCards landscapes={landscapes} />

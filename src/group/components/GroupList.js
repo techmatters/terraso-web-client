@@ -78,7 +78,7 @@ const GroupTable = ({ groups }) => {
     )
   }, {
     field: 'actions',
-    headerName: t('group.list_column_actions'),
+    headerName: false,
     sortable: false,
     align: 'center',
     renderCell: ({ row: group }) => (
@@ -206,15 +206,16 @@ const GroupList = () => {
         : <GroupTable groups={groups} />
       }
       <Typography
-        variant="body2"
-        display="block"
+        variant="h2"
         sx={{
-          marginTop: theme.spacing(2),
-          marginBottom: theme.spacing(2)
+          marginTop: theme.spacing(4)
         }}
       >
-        {t('group.list_new_description')}
+        {t('group.create')}
       </Typography>
+
+      <p>{t('group.list_new_description')}</p>
+
       <Button
         variant="contained"
         component={RouterLink}

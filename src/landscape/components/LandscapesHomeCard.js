@@ -24,7 +24,7 @@ const getAcronym = name => name
 const LandscapeItem = ({ landscape }) => {
   const { t } = useTranslation()
   return (
-    <Box sx={{ display: 'flex', padding: theme.spacing(1) }}>
+    <List sx={{ display: 'flex', padding: theme.spacing(1) }}>
       <Avatar sx={{ width: 80, height: 80 }} variant="square">
         {getAcronym(landscape.name).toUpperCase()}
       </Avatar>
@@ -36,11 +36,9 @@ const LandscapeItem = ({ landscape }) => {
         >
           {landscape.name}
         </Link>
-        <Typography variant="subtitle1" sx={{ marginTop: theme.spacing(3) }}>
-          {t(`landscape.role_${_.get(landscape, 'role', 'member')}`)}
-        </Typography>
+        {t(`landscape.role_${_.get(landscape, 'role', 'member')}`)}
       </Box>
-    </Box>
+    </List>
   )
 }
 

@@ -30,7 +30,6 @@ const ToolList = ({ tools }) => {
             marginTop: theme.spacing(2)
           }}
         >
-          {t('tool.list_description')}
         </Typography>
         {toolList.map((tool, index) => (
           <Tool key={index} tool={tool} />

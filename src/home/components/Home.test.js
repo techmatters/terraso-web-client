@@ -110,9 +110,9 @@ test('Home: Display groups', async () => {
   }))
   await setup()
   expect(screen.getByText('Group 1')).toBeInTheDocument()
-  expect(screen.getByText('Member')).toBeInTheDocument()
+  expect(screen.getByText('(Member)')).toBeInTheDocument()
   expect(screen.getByText('Group 2')).toBeInTheDocument()
-  expect(screen.getByText('Manager')).toBeInTheDocument()
+  expect(screen.getByText('(Manager)')).toBeInTheDocument()
 })
 test('Home: Display defaults', async () => {
   fetchHomeData.mockReturnValue(Promise.resolve({
@@ -121,6 +121,6 @@ test('Home: Display defaults', async () => {
     landscapesDiscovery: []
   }))
   await setup()
-  expect(screen.getByText(/EXPLORE AND CONNECT TO LANDSCAPE/i)).toBeInTheDocument()
-  expect(screen.getByText(/Terraso groups connect people/i)).toBeInTheDocument()
+  expect(screen.getByText(/EXPLORE LANDSCAPES/i)).toBeInTheDocument()
+  expect(screen.getByText(/Groups connect people/i)).toBeInTheDocument()
 })
