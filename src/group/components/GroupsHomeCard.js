@@ -1,7 +1,6 @@
 import React from 'react'
 import _ from 'lodash'
 import {
-  Box,
   Button,
   CardActions,
   Divider,
@@ -19,7 +18,7 @@ import theme from 'theme'
 const GroupItem = ({ group }) => {
   const { t } = useTranslation()
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', padding: theme.spacing(1) }}>
+    <List>
       <Link
         component={RouterLink}
         underline="none"
@@ -27,10 +26,8 @@ const GroupItem = ({ group }) => {
       >
         {group.name}
       </Link>
-      <Typography variant="subtitle1" sx={{ marginTop: theme.spacing(3) }}>
-        {t(`group.role_${_.get(group, 'role', 'member')}`)}
-      </Typography>
-    </Box>
+      &nbsp;({t(`group.role_${_.get(group, 'role', 'member')}`)})
+    </List>
   )
 }
 
