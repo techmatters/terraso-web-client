@@ -13,6 +13,9 @@ const setup = async initialState => {
     groupSlug="group-slug"
     joinLabel="Join Label"
     leaveLabel="Leave Label"
+    confirmMessageText="Confirm Message Text"
+    confirmMessageTitle="Confirm Message Title"
+    confirmButtonLabel="Confirm Button Label"
   />, {
     account: {
       hasToken: true,
@@ -169,8 +172,10 @@ test('GroupMembershipCard: Leave error', async () => {
   expect(screen.getByRole('button', { name: 'LEAVE LABEL' })).toBeInTheDocument()
   await act(async () => fireEvent.click(screen.getByRole('button', { name: 'LEAVE LABEL' })))
   // Confirm dialog
-  expect(screen.getByRole('button', { name: 'Yes, leave Owner Name' })).toBeInTheDocument()
-  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Yes, leave Owner Name' })))
+  expect(screen.getByText('Confirm Message Title')).toBeInTheDocument()
+  expect(screen.getByText('Confirm Message Text')).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Confirm Button Label' })).toBeInTheDocument()
+  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Confirm Button Label' })))
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(1)
   expect(screen.getByText(/Leave error/i)).toBeInTheDocument()
@@ -206,8 +211,8 @@ test('GroupMembershipCard: Leave', async () => {
   expect(screen.getByRole('button', { name: 'LEAVE LABEL' })).toBeInTheDocument()
   await act(async () => fireEvent.click(screen.getByRole('button', { name: 'LEAVE LABEL' })))
   // Confirm dialog
-  expect(screen.getByRole('button', { name: 'Yes, leave Owner Name' })).toBeInTheDocument()
-  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Yes, leave Owner Name' })))
+  expect(screen.getByRole('button', { name: 'Confirm Button Label' })).toBeInTheDocument()
+  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Confirm Button Label' })))
   expect(terrasoApi.request).toHaveBeenCalledTimes(1)
 
   expect(screen.getByText('0 Terraso members have affiliated themselves with Owner Name.')).toBeInTheDocument()
