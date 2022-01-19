@@ -14,12 +14,12 @@ import { PermissionsProvider } from 'permissions'
 
 // Wrappers
 // Router, Theme, Global State, Notifications
-const AppWrappers = ({ children, theme, store }) => (
+const AppWrappers = ({ children, theme, store, permissionsRules }) => (
   <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <Provider store={store}>
-          <PermissionsProvider>
+          <PermissionsProvider rules={permissionsRules}>
             <NotificationsWrapper>
               {children}
             </NotificationsWrapper>

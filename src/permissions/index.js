@@ -2,15 +2,13 @@ import React, { useState, useContext, useEffect, useRef } from 'react'
 import _ from 'lodash'
 import { useSelector } from 'react-redux'
 
-import rules from 'permissions/rules'
-
 const defaultBehaviour = {
   isAllowedTo: () => Promise.resolve(false)
 }
 
 export const PermissionsContext = React.createContext(defaultBehaviour)
 
-export const PermissionsProvider = ({ children }) => {
+export const PermissionsProvider = ({ rules, children }) => {
   const isAllowedTo = (permission, user, resource) => {
     const ruleResolver = _.get(rules, permission, defaultBehaviour.isAllowedTo)
     return ruleResolver({ user, resource })

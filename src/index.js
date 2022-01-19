@@ -2,12 +2,12 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Box, Container } from '@mui/material'
 
+import reportWebVitals from 'monitoring/reportWebVitals'
 import createStore from 'state/store'
+import rules from 'permissions/rules'
 import theme from 'theme'
 import AppBar from 'common/components/AppBar'
-import reportWebVitals from 'monitoring/reportWebVitals'
 import AppWrappers from 'common/components/AppWrappers'
-
 import Routes from 'navigation/Routes'
 import Navigation from 'navigation/Navigation'
 import Footer from 'common/components/Footer'
@@ -15,7 +15,7 @@ import Footer from 'common/components/Footer'
 import 'index.css'
 
 ReactDOM.render(
-  <AppWrappers store={createStore()} theme={theme}>
+  <AppWrappers store={createStore()} theme={theme} permissionsRules={rules}>
     <Box sx={{ flexGrow: 1, bgcolor: 'gray.lite2' }}>
       <AppBar />
       <Container>
