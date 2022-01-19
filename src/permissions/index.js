@@ -15,7 +15,9 @@ export const PermissionsProvider = ({ rules, children }) => {
   }
 
   return (
-    <PermissionsContext.Provider value={{ isAllowedTo }}>{children}</PermissionsContext.Provider>
+    <PermissionsContext.Provider value={{ isAllowedTo }}>
+      {children}
+    </PermissionsContext.Provider>
   )
 }
 

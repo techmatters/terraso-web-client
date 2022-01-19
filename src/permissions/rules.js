@@ -1,7 +1,8 @@
 import _ from 'lodash'
 
 const isAllowedToChangeGroup = ({ resource: group }) => {
-  return Promise.resolve(_.get(group, 'accountMembership.userRole') === 'MANAGER')
+  const isManager = _.get(group, 'accountMembership.userRole') === 'MANAGER'
+  return Promise.resolve(isManager)
 }
 
 const rules = {
