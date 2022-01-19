@@ -24,7 +24,7 @@ const initialState = {
 
 export const fetchLandscapes = createAsyncThunk(
   'landscape/fetchLandscapes',
-  async (params, { dispatch }) => {
+  async (params, currentUser, { dispatch }) => {
     const landscapes = await landscapeService.fetchLandscapes(params)
     dispatch(setMemberships(getMemberships(landscapes)))
     return landscapes
@@ -32,7 +32,7 @@ export const fetchLandscapes = createAsyncThunk(
 )
 export const fetchLandscapeView = createAsyncThunk(
   'landscape/fetchLandscapeView',
-  async (params, { dispatch }) => {
+  async (params, currentUser, { dispatch }) => {
     const landscape = await landscapeService.fetchLandscapeToView(params)
     dispatch(setMemberships(getMemberships([landscape])))
     return landscape

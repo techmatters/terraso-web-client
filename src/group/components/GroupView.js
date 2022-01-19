@@ -19,6 +19,7 @@ import EmailIcon from '@mui/icons-material/Email'
 import { fetchGroupView } from 'group/groupSlice'
 import GroupMembershipCard from 'group/components/GroupMembershipCard'
 import PageLoader from 'common/components/PageLoader'
+import Restricted from 'permissions/components/Restricted'
 import theme from 'theme'
 
 const GroupCard = ({ group }) => {
@@ -97,13 +98,15 @@ const GroupView = () => {
         <Typography variant="h1">
           {group.name}
         </Typography>
-        <Button
-          variant="contained"
-          component={RouterLink}
-          to={`/groups/${group.slug}/edit`}
-        >
-          {t('group.view_update_button')}
-        </Button>
+        <Restricted permission="group.change" resource={group}>
+          <Button
+            variant="contained"
+            component={RouterLink}
+            to={`/groups/${group.slug}/edit`}
+          >
+            {t('group.view_update_button')}
+          </Button>
+        </Restricted>
       </Stack>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>

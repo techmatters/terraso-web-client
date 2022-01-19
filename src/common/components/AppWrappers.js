@@ -10,6 +10,7 @@ import 'localization/i18n'
 
 // Form validations
 import 'forms/yup'
+import { PermissionsProvider } from 'permissions'
 
 // Wrappers
 // Router, Theme, Global State, Notifications
@@ -18,9 +19,11 @@ const AppWrappers = ({ children, theme, store }) => (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <Provider store={store}>
-          <NotificationsWrapper>
-            {children}
-          </NotificationsWrapper>
+          <PermissionsProvider>
+            <NotificationsWrapper>
+              {children}
+            </NotificationsWrapper>
+          </PermissionsProvider>
         </Provider>
       </ThemeProvider>
     </BrowserRouter>

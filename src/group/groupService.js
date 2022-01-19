@@ -1,8 +1,8 @@
 import _ from 'lodash'
 
 import * as terrasoApi from 'terrasoBackend/api'
-import { groupFields, groupMembers } from 'group/groupFragments'
-import { extractMembers } from './groupUtils'
+import { accountMembership, groupFields, groupMembers } from 'group/groupFragments'
+import { extractAccountMembership, extractMembers } from './groupUtils'
 
 // Omitted email because it is not supported by the backend
 const cleanGroup = group => _.omit(group, 'slug')
@@ -26,28 +26,31 @@ export const fetchGroupToUpdate = slug => {
     .then(group => group || Promise.reject('group.not_found'))
 }
 
-export const fetchGroupToView = slug => {
+export const fetchGroupToView = (slug, currentUser) => {
   const query = `
-    query group($slug: String!){
+    query group($slug: String!, $accountEmail: String!){
       groups(slug: $slug) {
         edges {
           node {
             ...groupFields
             ...groupMembers
+            ...accountMembership
           }
         }
       }
     }
     ${groupFields}
     ${groupMembers}
+    ${accountMembership}
   `
   return terrasoApi
-    .request(query, { slug })
+    .request(query, { slug, accountEmail: currentUser.email })
     .then(response => _.get(response, 'groups.edges[0].node'))
     .then(group => group || Promise.reject('group.not_found'))
     .then(group => ({
       ...group,
-      members: extractMembers(group)
+      members: extractMembers(group),
+      accountMembership: extractAccountMembership(group)
     }))
 }
 
