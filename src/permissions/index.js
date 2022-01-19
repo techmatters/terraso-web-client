@@ -31,7 +31,7 @@ export const usePermission = (permission, resource) => {
 
   useEffect(() => {
     isMounted.current = true
-    isAllowedTo(permission, user, resource).then((allowed) => {
+    isAllowedTo(permission, user, resource).then(allowed => {
       if (isMounted.current) {
         setLoading(false)
         setAllowed(allowed)

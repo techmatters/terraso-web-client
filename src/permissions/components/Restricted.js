@@ -1,7 +1,7 @@
 import React from 'react'
+import { CircularProgress } from '@mui/material'
 
 import { usePermission } from 'permissions'
-import { CircularProgress } from '@mui/material'
 
 const Restricted = props => {
   const {
