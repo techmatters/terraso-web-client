@@ -166,7 +166,8 @@ test('GroupList: List sort', async () => {
   // Sorting
   expect(within(rows[1]).getByRole('cell', { name: 'Group name 0' })).toHaveAttribute('data-field', 'name')
   await act(async () => fireEvent.click(within(rows[0]).getByRole('columnheader', { name: 'Group' })))
-  expect(within(rows[1]).getByRole('cell', { name: 'Group name 9' })).toHaveAttribute('data-field', 'name')
+  const sortedRows = screen.getAllByRole('row')
+  expect(within(sortedRows[1]).getByRole('cell', { name: 'Group name 9' })).toHaveAttribute('data-field', 'name')
 })
 test('GroupList: Display list (small screen)', async () => {
   useMediaQuery.mockReturnValue(true)
