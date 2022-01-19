@@ -4,7 +4,13 @@ import { usePermission } from 'permissions'
 import { CircularProgress } from '@mui/material'
 
 const Restricted = props => {
-  const { permission, resource, FallbackComponent, LoadingComponent, children } = props
+  const {
+    permission,
+    resource,
+    FallbackComponent,
+    LoadingComponent,
+    children
+  } = props
   const [loading, allowed] = usePermission(permission, resource)
 
   if (loading) {
