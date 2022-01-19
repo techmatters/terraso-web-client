@@ -13,7 +13,7 @@ import 'localization/i18n'
 import 'forms/yup'
 
 // Wrappers
-// Router, Theme, Global State, Notifications
+// Router, Theme, Global State, Permissions, Notifications
 const AppWrappers = ({ children, theme, store, permissionsRules }) => (
   <React.StrictMode>
     <BrowserRouter>
