@@ -169,7 +169,8 @@ test('LandscapeList: List sort', async () => {
   // Sorting
   expect(within(rows[1]).getByRole('cell', { name: 'Landscape Name 0' })).toHaveAttribute('data-field', 'name')
   await act(async () => fireEvent.click(within(rows[0]).getByRole('columnheader', { name: 'Landscape' })))
-  expect(within(rows[1]).getByRole('cell', { name: 'Landscape Name 9' })).toHaveAttribute('data-field', 'name')
+  const sortedRows = screen.getAllByRole('row')
+  expect(within(sortedRows[1]).getByRole('cell', { name: 'Landscape Name 9' })).toHaveAttribute('data-field', 'name')
 })
 test('LandscapeList: Display list (small screen)', async () => {
   useMediaQuery.mockReturnValue(true)
