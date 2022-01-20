@@ -3,13 +3,15 @@ import { render as rtlRender } from '@testing-library/react'
 
 import createStore from 'state/store'
 import theme from 'theme'
+import rules from 'permissions/rules'
 import AppWrappers from 'common/components/AppWrappers'
 
-const render = (component, intialState) => {
+const render = (component, intialState, permissionsRules) => {
   const Wrapper = ({ children }) => (
     <AppWrappers
       store={createStore(intialState)}
       theme={theme}
+      permissionsRules={permissionsRules || rules}
     >
       {children}
     </AppWrappers>

@@ -39,12 +39,12 @@ beforeEach(() => {
 
 test('GroupView: Display error', async () => {
   terrasoApi.request.mockRejectedValue(['Load error'])
-  await act(async () => render(<GroupView />))
+  await setup()
   expect(screen.getByText(/Load error/i)).toBeInTheDocument()
 })
-test('GroupForm: Display loader', () => {
+test('GroupForm: Display loader', async () => {
   terrasoApi.request.mockReturnValue(new Promise(() => {}))
-  render(<GroupView />)
+  await setup()
   const loader = screen.getByRole('progressbar', { name: '', hidden: true })
   expect(loader).toBeInTheDocument()
 })
@@ -55,7 +55,7 @@ test('GroupView: Not found', async () => {
   terrasoApi.request.mockReturnValue(Promise.resolve({
     group: null
   }))
-  await act(async () => render(<GroupView />))
+  await setup()
   expect(screen.getByText(/Group not found/i)).toBeInTheDocument()
 })
 test('GroupView: Display data', async () => {
