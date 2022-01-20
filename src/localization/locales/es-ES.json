@@ -151,7 +151,7 @@
         "validation_field_max_length": "{{path}} debe tener {{max}} caracteres como máximo."
     },
     "localization": {
-        "locale_en-US": "Inglés",
+        "locale_en-US": "English",
         "locale_en-US_small": "EN",
         "locale_es-ES_small": "ES",
         "locale_es-ES": "Español"
