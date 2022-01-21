@@ -1,7 +1,7 @@
-import React from 'react'
-import { CircularProgress } from '@mui/material'
+import React from 'react';
+import { CircularProgress } from '@mui/material';
 
-import { usePermission } from 'permissions'
+import { usePermission } from 'permissions';
 
 const Restricted = props => {
   const {
@@ -9,23 +9,23 @@ const Restricted = props => {
     resource,
     FallbackComponent,
     LoadingComponent,
-    children
-  } = props
-  const [loading, allowed] = usePermission(permission, resource)
+    children,
+  } = props;
+  const [loading, allowed] = usePermission(permission, resource);
 
   if (loading) {
-    return LoadingComponent ? <LoadingComponent /> : <CircularProgress />
+    return LoadingComponent ? <LoadingComponent /> : <CircularProgress />;
   }
 
   if (allowed) {
-    return <>{children}</>
+    return <>{children}</>;
   }
 
   if (!FallbackComponent) {
-    return null
+    return null;
   }
 
-  return <FallbackComponent />
-}
+  return <FallbackComponent />;
+};
 
-export default Restricted
+export default Restricted;

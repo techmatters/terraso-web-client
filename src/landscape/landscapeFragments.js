@@ -1,4 +1,4 @@
-import { groupMembers } from 'group/groupFragments'
+import { groupMembers } from 'group/groupFragments';
 
 export const landscapeFields = `
   fragment landscapeFields on LandscapeNode {
@@ -9,7 +9,7 @@ export const landscapeFields = `
     description
     website
   }
-`
+`;
 
 export const defaultGroup = `
   fragment defaultGroup on LandscapeNode {
@@ -26,4 +26,4 @@ export const defaultGroup = `
     }
   }
   ${groupMembers}
-`
+`;

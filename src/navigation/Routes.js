@@ -1,21 +1,23 @@
-import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 
-import Home from 'home/components/Home'
-import GroupList from 'group/components/GroupList'
-import GroupForm from 'group/components/GroupForm'
-import GroupView from 'group/components/GroupView'
-import LandscapeList from 'landscape/components/LandscapeList'
-import LandscapeForm from 'landscape/components/LandscapeForm'
-import LandscapeView from 'landscape/components/LandscapeView'
-import ToolsList from 'tool/components/ToolList'
-import AccountLogin from 'account/components/AccountLogin'
-import AccountProfile from 'account/components/AccountProfile'
-import RequireAuth from 'account/components/RequireAuth'
+import Home from 'home/components/Home';
+import GroupList from 'group/components/GroupList';
+import GroupForm from 'group/components/GroupForm';
+import GroupView from 'group/components/GroupView';
+import LandscapeList from 'landscape/components/LandscapeList';
+import LandscapeForm from 'landscape/components/LandscapeForm';
+import LandscapeView from 'landscape/components/LandscapeView';
+import ToolsList from 'tool/components/ToolList';
+import AccountLogin from 'account/components/AccountLogin';
+import AccountProfile from 'account/components/AccountProfile';
+import RequireAuth from 'account/components/RequireAuth';
 
 const path = (path, Component, auth = true) => ({
-  path, Component, auth
-})
+  path,
+  Component,
+  auth,
+});
 
 const paths = [
   path('/', Home),
@@ -29,8 +31,8 @@ const paths = [
   path('/landscapes/:slug', LandscapeView),
   path('/tools', ToolsList),
   path('/account', AccountLogin, false),
-  path('/account/profile', AccountProfile)
-]
+  path('/account/profile', AccountProfile),
+];
 
 const RoutesComponent = () => (
   <Routes>
@@ -38,13 +40,12 @@ const RoutesComponent = () => (
       <Route
         key={path}
         path={path}
-        element={ auth
-          ? <RequireAuth children={<Component />} />
-          : <Component />
+        element={
+          auth ? <RequireAuth children={<Component />} /> : <Component />
         }
       />
     ))}
   </Routes>
-)
+);
 
-export default RoutesComponent
+export default RoutesComponent;

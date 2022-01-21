@@ -1,7 +1,7 @@
-import React from 'react'
-import _ from 'lodash'
-import { useSelector } from 'react-redux'
-import { useTranslation } from 'react-i18next'
+import React from 'react';
+import _ from 'lodash';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import {
   Typography,
   Card,
@@ -10,12 +10,12 @@ import {
   CardActions,
   AvatarGroup,
   CircularProgress,
-  Box
-} from '@mui/material'
+  Box,
+} from '@mui/material';
 
-import GroupMembershipButton from './GroupMembershipButton'
-import AccountAvatar from 'account/components/AccountAvatar'
-import theme from 'theme'
+import GroupMembershipButton from './GroupMembershipButton';
+import AccountAvatar from 'account/components/AccountAvatar';
+import theme from 'theme';
 
 const Loader = () => (
   <CardContent>
@@ -23,58 +23,60 @@ const Loader = () => (
       <CircularProgress />
     </Box>
   </CardContent>
-)
+);
 
 const Content = props => {
-  const { t } = useTranslation()
-  const { ownerName, members, fetching } = props
+  const { t } = useTranslation();
+  const { ownerName, members, fetching } = props;
 
   if (fetching) {
-    return (<Loader />)
+    return <Loader />;
   }
 
   return (
     <CardContent>
       <Typography variant="body2" color="text.secondary">
-        {t(
-          'group.membership_card_description',
-          { count: members.length, name: ownerName }
-        )}
+        {t('group.membership_card_description', {
+          count: members.length,
+          name: ownerName,
+        })}
       </Typography>
       <AvatarGroup
         max={5}
         sx={{ flexDirection: 'row', marginTop: theme.spacing(2) }}
       >
         {members.map((member, index) => {
-          return (
-            <AccountAvatar key={index} user={member}/>
-          )
+          return <AccountAvatar key={index} user={member} />;
         })}
       </AvatarGroup>
     </CardContent>
-  )
-}
+  );
+};
 
 const GroupMembershipCard = props => {
-  const { t } = useTranslation()
-  const { ownerName, groupSlug, joinLabel, leaveLabel, confirmMessageText, confirmMessageTitle, confirmButtonLabel } = props
-  const { fetching, group } = useSelector(state => _.get(state, `group.memberships.${groupSlug}`, {}))
+  const { t } = useTranslation();
+  const {
+    ownerName,
+    groupSlug,
+    joinLabel,
+    leaveLabel,
+    confirmMessageText,
+    confirmMessageTitle,
+    confirmButtonLabel,
+  } = props;
+  const { fetching, group } = useSelector(state =>
+    _.get(state, `group.memberships.${groupSlug}`, {})
+  );
 
   // TODO This should just be 5 users and we should get the total count from
   // the backend when the support is added
-  const members = _.get(group, 'members', [])
+  const members = _.get(group, 'members', []);
 
   return (
     <Card>
-      <CardHeader
-        title={t('group.membership_card_title')}
-      />
-      <Content
-        fetching={fetching}
-        ownerName={ownerName}
-        members={members}
-      />
-      { fetching ? null : (
+      <CardHeader title={t('group.membership_card_title')} />
+      <Content fetching={fetching} ownerName={ownerName} members={members} />
+      {fetching ? null : (
         <CardActions>
           <GroupMembershipButton
             ownerName={ownerName}
@@ -88,7 +90,7 @@ const GroupMembershipCard = props => {
         </CardActions>
       )}
     </Card>
-  )
-}
+  );
+};
 
-export default GroupMembershipCard
+export default GroupMembershipCard;
