@@ -19,8 +19,8 @@ test('LocalePicker: Change locale', async () => {
   expect(screen.queryByText('ENGLISH')).toBeInTheDocument()
   await act(async () => fireEvent.mouseDown(screen.getByRole('button', { name: /ENGLISH/i })))
   const listbox = within(screen.getByRole('listbox'))
-  await act(async () => fireEvent.click(listbox.getByRole('option', { name: /SPANISH/i })))
-  expect(screen.getByRole('button', { name: /SPANISH/i })).toBeInTheDocument()
+  await act(async () => fireEvent.click(listbox.getByRole('option', { name: /ESPAÑOL/i })))
+  expect(screen.getByRole('button', { name: /ESPAÑOL/i })).toBeInTheDocument()
 })
 test('LocalePicker: Change locale (small screen)', async () => {
   useMediaQuery.mockReturnValue(true)
