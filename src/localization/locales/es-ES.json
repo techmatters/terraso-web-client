@@ -71,6 +71,21 @@
         "actions_recommend": "Recomendar esto a mi equipo",
         "home_card_img_alt": "Imagen de KoBoToolbox"
     },
+    "tools": {
+      "kobo": {
+        "title": "KoBoToolbox",
+        "url": "https://www.kobotoolbox.org/",
+        "img": {
+          "height": "222",
+          "width": "377",
+          "src": "kobo.png"
+        },
+        "description": [
+        ],
+        "requirements": [
+        ]
+      }
+    },
     "account": {
         "welcome": "Bienvenidos",
         "disclaimer": "Si aún no tiene una cuenta de Terraso, al iniciar sesión se creará una de acuerdo con nuestros <a href='#'>Términos de servicio</a>.",
