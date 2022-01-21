@@ -20,8 +20,6 @@ const render = (component, intialState, permissionsRules) => {
 };
 
 // re-export everything
-/* eslint-disable import/export */
-// re-export everything
 export * from '@testing-library/react';
 // override render method
 export { render };
