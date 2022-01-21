@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-01-20T18:52:13.123Z\n"
-"PO-Revision-Date: 2022-01-20T18:52:13.123Z\n"
+"POT-Creation-Date: 2022-01-21T17:24:15.787Z\n"
+"PO-Revision-Date: 2022-01-21T17:24:15.787Z\n"
 
 msgid "home##title"
 msgstr "Inicio"
@@ -22,6 +22,27 @@ msgstr "Crear un grupo"
 
 msgid "tool##requirements"
 msgstr "Requisitos del sistema"
+
+msgid "tools##kobo##title"
+msgstr "KoBoToolbox"
+
+msgid "tools##kobo##url"
+msgstr "https://www.kobotoolbox.org/"
+
+msgid "tools##kobo##img##height"
+msgstr "222"
+
+msgid "tools##kobo##img##width"
+msgstr "377"
+
+msgid "tools##kobo##img##src"
+msgstr "kobo.png"
+
+msgid "tools##kobo##description"
+msgstr ""
+
+msgid "tools##kobo##requirements"
+msgstr ""
 
 msgid "account##welcome"
 msgstr "Bienvenidos"
@@ -543,7 +564,7 @@ msgstr "{{path}} debe tener {{max}} caracteres como máximo."
 
 msgctxt "en-US"
 msgid "localization##locale"
-msgstr "Inglés"
+msgstr "English"
 
 msgctxt "small"
 msgid "localization##locale_en-US"
