@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-01-21T17:24:15.787Z\n"
-"PO-Revision-Date: 2022-01-21T17:24:15.787Z\n"
+"POT-Creation-Date: 2022-01-21T22:13:35.241Z\n"
+"PO-Revision-Date: 2022-01-21T22:13:35.241Z\n"
 
 msgid "home##title"
 msgstr "Inicio"
@@ -19,6 +19,9 @@ msgstr "Iniciar sesión"
 
 msgid "group##create"
 msgstr "Crear un grupo"
+
+msgid "tool##avilability"
+msgstr "Disponibilidad"
 
 msgid "tool##requirements"
 msgstr "Requisitos del sistema"
@@ -40,9 +43,17 @@ msgstr "kobo.png"
 
 msgid "tools##kobo##description"
 msgstr ""
+"Diseñe y cree formularios rápidamente\n"
+"Recopilar datos fuera de línea y en línea'\n"
+"Analizar y gestionar datos"
 
 msgid "tools##kobo##requirements"
+msgstr "Navegador web moderno (Chrome, Edge, Firefox, Safari)"
+
+msgid "tools##kobo##availability"
 msgstr ""
+"KoboToolbox se integrará en Terraso en 2022. Usa Kobo de forma "
+"independiente por ahora."
 
 msgid "account##welcome"
 msgstr "Bienvenidos"
@@ -105,7 +116,7 @@ msgstr "Miembros"
 
 msgctxt "title"
 msgid "group##membership_leave_confirm"
-msgstr "Abandonar {{name}}"
+msgstr "Dejar “{{name}}”"
 
 msgctxt "title"
 msgid "group##view_card"
@@ -155,6 +166,10 @@ msgctxt "title"
 msgid "landscape##list"
 msgstr "Paisajes"
 
+msgctxt "title"
+msgid "landscape##membership_leave_confirm"
+msgstr "Dejar “{{name}}”"
+
 msgctxt "out"
 msgid "user##sign"
 msgstr "Cerrar sesión"
@@ -167,13 +182,15 @@ msgstr ""
 
 msgctxt "message"
 msgid "group##membership_leave_confirm"
-msgstr ""
-"¿Está seguro de que desea abandonar {{name}}? La actualización de estado "
-"puede tomar unos minutos."
+msgstr "¿Está seguro de que desea abandonar el group “{{name}}”?"
 
 msgctxt "message"
 msgid "account##unauthenticated"
 msgstr "Su sesión de Terraso ha caducado. Vuelva a iniciar sesión."
+
+msgctxt "message"
+msgid "landscape##membership_leave_confirm"
+msgstr "¿Está seguro de que desea abandonar el paisaje “{{name}}”?"
 
 msgctxt "button"
 msgid "user##edit_profile"
@@ -189,7 +206,7 @@ msgstr "Explorar grupos"
 
 msgctxt "button"
 msgid "group##membership_leave_confirm"
-msgstr "Sí, abandonar {{name}}"
+msgstr "Dejar group"
 
 msgctxt "button"
 msgid "group##view_update"
@@ -222,6 +239,10 @@ msgstr "Conectar"
 msgctxt "button"
 msgid "landscape##list_leave"
 msgstr "Miembro"
+
+msgctxt "button"
+msgid "landscape##membership_leave_confirm"
+msgstr "Dejar el paisaje"
 
 msgctxt "member"
 msgid "group##role"
@@ -273,7 +294,7 @@ msgstr "Unirse al grupo"
 
 msgctxt "label"
 msgid "group##view_leave"
-msgstr "Abandonar grupo"
+msgstr "Dejar grupo"
 
 msgctxt "label"
 msgid "account##form_first_name"
