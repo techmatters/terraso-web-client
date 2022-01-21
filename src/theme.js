@@ -1,20 +1,20 @@
-import { createTheme } from '@mui/material/styles'
+import { createTheme } from '@mui/material/styles';
 
 const colorTheme = createTheme({
   palette: {
     tonalOffset: 0.2,
     primary: {
-      main: '#307F9C'
+      main: '#307F9C',
     },
     secondary: {
-      main: '#5E5547'
+      main: '#5E5547',
     },
     link: '#307F9C',
     success: {
-      main: '#b0d098'
+      main: '#b0d098',
     },
     info: {
-      main: '#76a7ec'
+      main: '#76a7ec',
     },
     cardBorder: '#DADADA',
     white: '#FFFFFF',
@@ -24,77 +24,79 @@ const colorTheme = createTheme({
       mid: '#C4C4C4',
       mid2: '#AAAAAA',
       dark1: '#666666',
-      dark2: '#333333'
+      dark2: '#333333',
     },
-    black: '#000000'
-  }
-})
+    black: '#000000',
+  },
+});
 
 const components = {
   MuiAppBar: {
     defaultProps: {
       sx: {
         bgcolor: colorTheme.palette.gray.lite2,
-        color: 'gray.dark1'
+        color: 'gray.dark1',
       },
-      elevation: 0
-    }
+      elevation: 0,
+    },
   },
   MuiButton: {
     defaultProps: {
-      disableElevation: true
+      disableElevation: true,
     },
-    variants: [{
-      props: {
-        variant: 'outlined'
+    variants: [
+      {
+        props: {
+          variant: 'outlined',
+        },
+        style: {
+          borderColor: colorTheme.palette.black,
+          color: colorTheme.palette.black,
+        },
       },
-      style: {
-        borderColor: colorTheme.palette.black,
-        color: colorTheme.palette.black
-      }
-    }]
+    ],
   },
   MuiCard: {
     defaultProps: {
-      variant: 'outlined'
-    }
+      variant: 'outlined',
+    },
   },
   MuiInputLabel: {
     defaultProps: {
-      shrink: true
-    }
+      shrink: true,
+    },
   },
   MuiOutlinedInput: {
     defaultProps: {
       sx: {
         '& .Mui-disabled': {
-          bgcolor: colorTheme.palette.gray.lite1
-        }
-      }
-    }
-  }
-}
+          bgcolor: colorTheme.palette.gray.lite1,
+        },
+      },
+    },
+  },
+};
 
 const theme = createTheme(colorTheme, {
   typography: {
     h1: {
-      fontSize: '30px'
+      fontSize: '30px',
     },
     h2: {
       fontSize: '1rem',
       fontWeight: 400,
       textTransform: 'uppercase',
-      paddingTop: '1rem'
+      paddingTop: '1rem',
     },
     h5: {
-      fontSize: '22px'
+      fontSize: '22px',
     },
     button: {
       textTransform: 'none',
-      fontWeight: 0
-    }
+      fontWeight: 0,
+    },
   },
-  components
-})
+  components,
+});
 
-export default theme
+export default theme;

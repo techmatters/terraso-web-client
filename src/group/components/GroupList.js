@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react'
-import _ from 'lodash'
-import { useSelector, useDispatch } from 'react-redux'
-import { useTranslation } from 'react-i18next'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { Link as RouterLink, useSearchParams } from 'react-router-dom'
+import React, { useEffect } from 'react';
+import _ from 'lodash';
+import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -12,15 +12,15 @@ import {
   Card,
   Button,
   List,
-  ListItem
-} from '@mui/material'
+  ListItem,
+} from '@mui/material';
 
-import { fetchGroups } from 'group/groupSlice'
-import GroupMembershipButton from 'group/components/GroupMembershipButton'
-import GroupMembershipCount from 'group/components/GroupMembershipCount'
-import Table from 'common/components/Table'
-import PageLoader from 'common/components/PageLoader'
-import theme from 'theme'
+import { fetchGroups } from 'group/groupSlice';
+import GroupMembershipButton from 'group/components/GroupMembershipButton';
+import GroupMembershipCount from 'group/components/GroupMembershipCount';
+import Table from 'common/components/Table';
+import PageLoader from 'common/components/PageLoader';
+import theme from 'theme';
 
 const MembershipButton = ({ group }) => (
   <GroupMembershipButton
@@ -33,84 +33,96 @@ const MembershipButton = ({ group }) => (
     ownerName={group.name}
     sx={{ width: '100%' }}
   />
-)
+);
 
 const GroupTable = ({ groups }) => {
-  const { t } = useTranslation()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const columns = [{
-    field: 'name',
-    headerName: t('group.list_column_name'),
-    flex: 1.5,
-    minWidth: 200,
-    renderCell: ({ row: group }) =>
-      <Link component={RouterLink} to={`/groups/${group.slug}`}>
-        {group.name}
-      </Link>
-  }, {
-    field: 'email',
-    headerName: t('group.list_column_contact'),
-    sortable: false,
-    flex: 1.5,
-    minWidth: 200,
-    renderCell: ({ row: group }) =>
-      <Link href={`mailto:${group.email}`} underline="none">
-        {group.email}
-      </Link>
-  }, {
-    field: 'website',
-    headerName: t('group.list_column_website'),
-    sortable: false,
-    flex: 1.5,
-    minWidth: 200,
-    renderCell: ({ row: group }) =>
-      <Link href={group.website} underline="none">
-        {group.website}
-      </Link>
-  }, {
-    field: 'members',
-    headerName: t('group.list_column_members'),
-    align: 'center',
-    valueGetter: ({ row: group }) => _.get(group, 'members.length', 0),
-    renderCell: ({ row: group }) => (
-      <GroupMembershipCount groupSlug={group.slug} />
-    )
-  }, {
-    field: 'actions',
-    headerName: false,
-    sortable: false,
-    align: 'center',
-    renderCell: ({ row: group }) => (
-      <MembershipButton group={group} />
-    )
-  }]
+  const columns = [
+    {
+      field: 'name',
+      headerName: t('group.list_column_name'),
+      flex: 1.5,
+      minWidth: 200,
+      renderCell: ({ row: group }) => (
+        <Link component={RouterLink} to={`/groups/${group.slug}`}>
+          {group.name}
+        </Link>
+      ),
+    },
+    {
+      field: 'email',
+      headerName: t('group.list_column_contact'),
+      sortable: false,
+      flex: 1.5,
+      minWidth: 200,
+      renderCell: ({ row: group }) => (
+        <Link href={`mailto:${group.email}`} underline="none">
+          {group.email}
+        </Link>
+      ),
+    },
+    {
+      field: 'website',
+      headerName: t('group.list_column_website'),
+      sortable: false,
+      flex: 1.5,
+      minWidth: 200,
+      renderCell: ({ row: group }) => (
+        <Link href={group.website} underline="none">
+          {group.website}
+        </Link>
+      ),
+    },
+    {
+      field: 'members',
+      headerName: t('group.list_column_members'),
+      align: 'center',
+      valueGetter: ({ row: group }) => _.get(group, 'members.length', 0),
+      renderCell: ({ row: group }) => (
+        <GroupMembershipCount groupSlug={group.slug} />
+      ),
+    },
+    {
+      field: 'actions',
+      headerName: false,
+      sortable: false,
+      align: 'center',
+      renderCell: ({ row: group }) => <MembershipButton group={group} />,
+    },
+  ];
 
   return (
     <Table
       rows={groups}
       columns={columns}
-      initialSort={[{
-        field: 'name',
-        sort: 'asc'
-      }]}
+      initialSort={[
+        {
+          field: 'name',
+          sort: 'asc',
+        },
+      ]}
       searchParams={Object.fromEntries(searchParams.entries())}
       onSearchParamsChange={setSearchParams}
       localeText={{
         noRowsLabel: t('group.list_empty'),
-        footerPaginationRowsPerPage: t('common.data_grid_pagination_of')
+        footerPaginationRowsPerPage: t('common.data_grid_pagination_of'),
       }}
     />
-  )
-}
+  );
+};
 
 const GroupCards = ({ groups }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <List>
       {groups.map(group => (
-        <ListItem key={group.slug} sx={{ padding: 0, marginBottom: theme.spacing(2) }}>
+        <ListItem
+          key={group.slug}
+          sx={{ padding: 0, marginBottom: theme.spacing(2) }}
+        >
           <Card sx={{ width: '100%', padding: theme.spacing(2) }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -131,7 +143,11 @@ const GroupCards = ({ groups }) => {
                   <Typography variant="caption">
                     {t('group.list_column_contact')}
                   </Typography>
-                  <Link component={Box} href={`mailto:${group.website}`} underline="none">
+                  <Link
+                    component={Box}
+                    href={`mailto:${group.website}`}
+                    underline="none"
+                  >
                     {group.email}
                   </Link>
                 </Grid>
@@ -160,55 +176,54 @@ const GroupCards = ({ groups }) => {
         </ListItem>
       ))}
     </List>
-  )
-}
+  );
+};
 
 const GroupList = () => {
-  const dispatch = useDispatch()
-  const { t } = useTranslation()
-  const { groups, fetching, message } = useSelector(state => state.group.list)
-  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
+  const { groups, fetching, message } = useSelector(state => state.group.list);
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
-    dispatch(fetchGroups())
-  }, [dispatch])
+    dispatch(fetchGroups());
+  }, [dispatch]);
 
   if (fetching) {
-    return (
-      <PageLoader />
-    )
+    return <PageLoader />;
   }
 
   if (message && message.severity === 'error') {
-    return null
+    return null;
   }
 
   return (
-    <Box sx={{
-      paddingTop: theme.spacing(3),
-      paddingBottom: theme.spacing(2)
-    }}>
-      <Typography variant="h1" >
-        {t('group.list_title')}
-      </Typography>
+    <Box
+      sx={{
+        paddingTop: theme.spacing(3),
+        paddingBottom: theme.spacing(2),
+      }}
+    >
+      <Typography variant="h1">{t('group.list_title')}</Typography>
       <Typography
         variant="body2"
         display="block"
         sx={{
           marginBottom: theme.spacing(3),
-          marginTop: theme.spacing(2)
+          marginTop: theme.spacing(2),
         }}
       >
         {t('group.list_description')}
       </Typography>
-      {isSmall
-        ? <GroupCards groups={groups} />
-        : <GroupTable groups={groups} />
-      }
+      {isSmall ? (
+        <GroupCards groups={groups} />
+      ) : (
+        <GroupTable groups={groups} />
+      )}
       <Typography
         variant="h2"
         sx={{
-          marginTop: theme.spacing(4)
+          marginTop: theme.spacing(4),
         }}
       >
         {t('group.create')}
@@ -216,15 +231,11 @@ const GroupList = () => {
 
       <p>{t('group.list_new_description')}</p>
 
-      <Button
-        variant="contained"
-        component={RouterLink}
-        to="/groups/new"
-      >
+      <Button variant="contained" component={RouterLink} to="/groups/new">
         {t('group.list_new_button')}
       </Button>
     </Box>
-  )
-}
+  );
+};
 
-export default GroupList
+export default GroupList;

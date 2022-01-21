@@ -1,23 +1,21 @@
-import React, { useEffect } from 'react'
-import _ from 'lodash'
-import { useForm } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
-import {
-  Button,
-  Grid
-} from '@mui/material'
-import { yupResolver } from '@hookform/resolvers/yup'
+import React, { useEffect } from 'react';
+import _ from 'lodash';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { Button, Grid } from '@mui/material';
+import { yupResolver } from '@hookform/resolvers/yup';
 
-import FormField from 'forms/components/FormField'
-import theme from 'theme'
+import FormField from 'forms/components/FormField';
+import theme from 'theme';
 
-const getInitialEmptyValues = fields => _.chain(fields)
-  .map(field => ([field.name, '']))
-  .fromPairs()
-  .value()
+const getInitialEmptyValues = fields =>
+  _.chain(fields)
+    .map(field => [field.name, ''])
+    .fromPairs()
+    .value();
 
 const Form = props => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const {
     prefix,
     fields,
@@ -27,42 +25,50 @@ const Form = props => {
     onSave,
     cancelLabel,
     onCancel,
-    children
-  } = props
+    children,
+  } = props;
 
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
       ...getInitialEmptyValues(fields),
-      ...values
+      ...values,
     },
-    resolver: yupResolver(validationSchema)
-  })
+    resolver: yupResolver(validationSchema),
+  });
 
   const requiredFields = _.chain(_.get(validationSchema, 'fields', {}))
     .toPairs()
     .filter(([name, field]) => _.get(field, 'exclusiveTests.required', false))
     .map(([name]) => name)
-    .value()
+    .value();
 
   useEffect(() => {
     if (values) {
       reset({
         ...getInitialEmptyValues(fields),
-        ...values
-      })
+        ...values,
+      });
     }
-  }, [values, fields, reset])
+  }, [values, fields, reset]);
 
-  const onSubmit = data => onSave(data)
+  const onSubmit = data => onSave(data);
 
   return (
-    <Grid component="form" noValidate
-      container spacing={2}
+    <Grid
+      component="form"
+      noValidate
+      container
+      spacing={2}
       onSubmit={handleSubmit(onSubmit)}
       sx={{ width: '100%' }}
     >
       {fields.map(field => (
-        <Grid key={field.name} item xs={12} {..._.get(field, 'props.gridItemProps')}>
+        <Grid
+          key={field.name}
+          item
+          xs={12}
+          {..._.get(field, 'props.gridItemProps')}
+        >
           <FormField
             control={control}
             required={_.includes(requiredFields, field.name)}
@@ -73,24 +79,24 @@ const Form = props => {
             inputProps={{
               type: field.type || 'text',
               placeholder: t(field.placeholder),
-              ..._.get(field, 'props.inputProps', {})
+              ..._.get(field, 'props.inputProps', {}),
             }}
             {..._.get(field, 'props', {})}
           />
         </Grid>
       ))}
       {children}
-      <Grid item container xs={12}
+      <Grid
+        item
+        container
+        xs={12}
         spacing={2}
         direction="row"
         justifyContent="space-between"
         sx={{ marginTop: theme.spacing(2) }}
       >
         {onCancel && (
-          <Button
-            variant="text"
-            onClick={onCancel}
-          >
+          <Button variant="text" onClick={onCancel}>
             {t(cancelLabel)}
           </Button>
         )}
@@ -103,7 +109,7 @@ const Form = props => {
         </Button>
       </Grid>
     </Grid>
-  )
-}
+  );
+};
 
-export default Form
+export default Form;

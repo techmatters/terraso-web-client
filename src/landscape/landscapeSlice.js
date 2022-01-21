@@ -1,49 +1,52 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
 
-import { createAsyncThunk } from 'state/utils'
-import * as landscapeService from 'landscape/landscapeService'
-import { setMemberships } from 'group/groupSlice'
-import * as groupUtils from 'group/groupUtils'
+import { createAsyncThunk } from 'state/utils';
+import * as landscapeService from 'landscape/landscapeService';
+import { setMemberships } from 'group/groupSlice';
+import * as groupUtils from 'group/groupUtils';
 
 const initialState = {
   list: {
     fetching: true,
-    landscapes: []
+    landscapes: [],
   },
   view: {
     fetching: true,
     message: null,
-    landscape: null
+    landscape: null,
   },
   form: {
     fetching: true,
     message: null,
-    landscape: null
-  }
-}
+    landscape: null,
+  },
+};
 
 export const fetchLandscapes = createAsyncThunk(
   'landscape/fetchLandscapes',
   async (params, currentUser, { dispatch }) => {
-    const landscapes = await landscapeService.fetchLandscapes(params)
-    dispatch(setMemberships(getMemberships(landscapes)))
-    return landscapes
+    const landscapes = await landscapeService.fetchLandscapes(params);
+    dispatch(setMemberships(getMemberships(landscapes)));
+    return landscapes;
   }
-)
+);
 export const fetchLandscapeView = createAsyncThunk(
   'landscape/fetchLandscapeView',
   async (params, currentUser, { dispatch }) => {
-    const landscape = await landscapeService.fetchLandscapeToView(params)
-    dispatch(setMemberships(getMemberships([landscape])))
-    return landscape
+    const landscape = await landscapeService.fetchLandscapeToView(params);
+    dispatch(setMemberships(getMemberships([landscape])));
+    return landscape;
   }
-)
-export const fetchLandscapeForm = createAsyncThunk('landscape/fetchLandscapeForm', landscapeService.fetchLandscapeToUpdate)
+);
+export const fetchLandscapeForm = createAsyncThunk(
+  'landscape/fetchLandscapeForm',
+  landscapeService.fetchLandscapeToUpdate
+);
 export const saveLandscape = createAsyncThunk(
   'landscape/saveLandscape',
   landscapeService.saveLandscape,
   () => ({ severity: 'success', content: 'landscape.form_message_success' })
-)
+);
 
 const landscapeSlice = createSlice({
   name: 'landscape',
@@ -54,32 +57,32 @@ const landscapeSlice = createSlice({
       form: {
         ...state.form,
         landscape: null,
-        fetching: false
-      }
-    })
+        fetching: false,
+      },
+    }),
   },
   extraReducers: {
     [fetchLandscapes.pending]: state => ({
       ...state,
-      list: initialState.list
+      list: initialState.list,
     }),
     [fetchLandscapes.rejected]: (state, action) => ({
       ...state,
       list: {
         fetching: false,
-        landscapes: []
-      }
+        landscapes: [],
+      },
     }),
     [fetchLandscapes.fulfilled]: (state, action) => ({
       ...state,
       list: {
         fetching: false,
-        landscapes: action.payload
-      }
+        landscapes: action.payload,
+      },
     }),
     [fetchLandscapeView.pending]: state => ({
       ...state,
-      view: initialState.view
+      view: initialState.view,
     }),
     [fetchLandscapeView.rejected]: (state, action) => ({
       ...state,
@@ -88,61 +91,61 @@ const landscapeSlice = createSlice({
         fetching: false,
         message: {
           severity: 'error',
-          content: action.payload
-        }
-      }
+          content: action.payload,
+        },
+      },
     }),
     [fetchLandscapeView.fulfilled]: (state, action) => ({
       ...state,
       view: {
         fetching: false,
         message: null,
-        landscape: action.payload
-      }
+        landscape: action.payload,
+      },
     }),
     [fetchLandscapeForm.pending]: state => ({
       ...state,
-      form: initialState.form
+      form: initialState.form,
     }),
     [fetchLandscapeForm.fulfilled]: (state, action) => ({
       ...state,
       form: {
         fetching: false,
         message: null,
-        landscape: action.payload
-      }
+        landscape: action.payload,
+      },
     }),
     [fetchLandscapeForm.rejected]: (state, action) => ({
       ...state,
       form: {
         ...state.form,
-        fetching: false
-      }
+        fetching: false,
+      },
     }),
     [saveLandscape.pending]: state => ({
       ...state,
       form: {
         ...state.form,
-        fetching: true
-      }
+        fetching: true,
+      },
     }),
     [saveLandscape.fulfilled]: (state, action) => ({
       ...state,
       form: {
         ...state.form,
         fetching: false,
-        landscape: action.payload
-      }
+        landscape: action.payload,
+      },
     }),
     [saveLandscape.rejected]: (state, action) => ({
       ...state,
       form: {
         ...state.form,
-        fetching: false
-      }
-    })
-  }
-})
+        fetching: false,
+      },
+    }),
+  },
+});
 
 export const {
   setFormNewValues,
@@ -151,14 +154,14 @@ export const {
   fetchLandscapesFulfilled,
   fetchLandscapeViewPending,
   fetchLandscapeViewRejected,
-  fetchLandscapeViewFulfilled
-} = landscapeSlice.actions
+  fetchLandscapeViewFulfilled,
+} = landscapeSlice.actions;
 
-export default landscapeSlice.reducer
+export default landscapeSlice.reducer;
 
 const getMemberships = landscapes => {
   const groups = landscapes
     .map(landscape => landscape.defaultGroup)
-    .filter(group => group.slug)
-  return groupUtils.getMemberships(groups)
-}
+    .filter(group => group.slug);
+  return groupUtils.getMemberships(groups);
+};

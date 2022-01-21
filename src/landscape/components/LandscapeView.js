@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { useParams } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Typography,
@@ -10,21 +10,23 @@ import {
   CardHeader,
   CardContent,
   Link,
-  Stack
-} from '@mui/material'
-import PublicIcon from '@mui/icons-material/Public'
+  Stack,
+} from '@mui/material';
+import PublicIcon from '@mui/icons-material/Public';
 
-import { fetchLandscapeView } from 'landscape/landscapeSlice'
-import GroupMembershipCard from 'group/components/GroupMembershipCard'
-import PageLoader from 'common/components/PageLoader'
-import Map from 'gis/components/Map'
-import theme from 'theme'
+import { fetchLandscapeView } from 'landscape/landscapeSlice';
+import GroupMembershipCard from 'group/components/GroupMembershipCard';
+import PageLoader from 'common/components/PageLoader';
+import Map from 'gis/components/Map';
+import theme from 'theme';
 
 const LandscapeCard = ({ landscape }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <Card>
-      <CardHeader title={t('landscape.view_card_title', { name: landscape.name })} />
+      <CardHeader
+        title={t('landscape.view_card_title', { name: landscape.name })}
+      />
       <CardContent>
         <Typography variant="body2" color="text.secondary">
           {landscape.description}
@@ -39,58 +41,56 @@ const LandscapeCard = ({ landscape }) => {
         </Stack>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 const LandscapeMap = ({ position }) => {
   const bounds = position && [
     [position.boundingbox[0], position.boundingbox[2]],
-    [position.boundingbox[1], position.boundingbox[3]]
-  ]
+    [position.boundingbox[1], position.boundingbox[3]],
+  ];
   return (
     <Map
       bounds={bounds}
       style={{
         width: '100%',
-        height: '400px'
+        height: '400px',
       }}
     />
-  )
-}
+  );
+};
 
 const LandscapeView = () => {
-  const dispatch = useDispatch()
-  const { landscape, fetching } = useSelector(state => state.landscape.view)
-  const { slug } = useParams()
+  const dispatch = useDispatch();
+  const { landscape, fetching } = useSelector(state => state.landscape.view);
+  const { slug } = useParams();
 
   useEffect(() => {
-    dispatch(fetchLandscapeView(slug))
-  }, [dispatch, slug])
+    dispatch(fetchLandscapeView(slug));
+  }, [dispatch, slug]);
 
   if (fetching) {
-    return (
-      <PageLoader />
-    )
+    return <PageLoader />;
   }
 
   if (!landscape) {
-    return null
+    return null;
   }
 
   return (
-    <Box sx={{
-      paddingTop: theme.spacing(3),
-      paddingBottom: theme.spacing(2)
-    }}>
-      <Typography variant="h1" >
-        {landscape.name}
-      </Typography>
+    <Box
+      sx={{
+        paddingTop: theme.spacing(3),
+        paddingBottom: theme.spacing(2),
+      }}
+    >
+      <Typography variant="h1">{landscape.name}</Typography>
       <Typography
         variant="caption"
         display="block"
         sx={{
           marginBottom: theme.spacing(3),
-          marginTop: theme.spacing(2)
+          marginTop: theme.spacing(2),
         }}
       >
         {landscape.location}
@@ -115,7 +115,7 @@ const LandscapeView = () => {
         </Grid>
       </Grid>
     </Box>
-  )
-}
+  );
+};
 
-export default LandscapeView
+export default LandscapeView;
