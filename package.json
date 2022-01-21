@@ -44,39 +44,18 @@
     "localization-check-missing": "node scripts/localization/missing-check.js",
     "eject": "react-scripts eject"
   },
-  "eslintConfig": {
-    "plugins": [
-      "jsx-a11y"
-    ],
-    "extends": [
-      "react-app",
-      "react-app/jest",
-      "eslint:recommended",
-      "standard",
-      "plugin:jsx-a11y/recommended"
-    ],
-    "rules": {
-      "react/jsx-indent": [
-        2,
-        2,
-        {
-          "checkAttributes": true,
-          "indentLogicalExpressions": true
-        }
-      ],
-      "prefer-promise-reject-errors": "off",
-      "multiline-ternary": "off"
-    }
-  },
   "browserslist": [
     ">0.2%",
     "not dead",
     "not op_mini all"
   ],
   "devDependencies": {
-    "eslint-config-standard": "^16.0.3",
+    "@babel/eslint-parser": "^7.16.5",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "flat": "^5.0.2",
     "i18next-conv": "^11.0.1",
+    "prettier": "^2.5.1",
     "react-scripts": "^4.0.3",
     "serve": "^13.0.2"
   },

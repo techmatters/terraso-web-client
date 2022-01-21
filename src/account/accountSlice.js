@@ -1,31 +1,37 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
 
-import { createAsyncThunk } from 'state/utils'
-import { getToken, removeToken } from 'account/auth'
-import * as accountService from 'account/accountService'
+import { createAsyncThunk } from 'state/utils';
+import { getToken, removeToken } from 'account/auth';
+import * as accountService from 'account/accountService';
 
 const initialState = {
   currentUser: {
     fetching: true,
-    data: null
+    data: null,
   },
   login: {
     urls: {},
-    fetching: true
+    fetching: true,
   },
-  hasToken: !!getToken()
-}
+  hasToken: !!getToken(),
+};
 
-export const fetchUser = createAsyncThunk('account/fetchUser', accountService.fetchUser)
+export const fetchUser = createAsyncThunk(
+  'account/fetchUser',
+  accountService.fetchUser
+);
 export const saveUser = createAsyncThunk(
   'account/saveUser',
   accountService.saveUser,
   () => ({
     severity: 'success',
-    content: 'account.save_success'
+    content: 'account.save_success',
   })
-)
-export const fetchAuthURLs = createAsyncThunk('account/fetchAuthURLs', accountService.getAuthURLs)
+);
+export const fetchAuthURLs = createAsyncThunk(
+  'account/fetchAuthURLs',
+  accountService.getAuthURLs
+);
 
 export const userSlice = createSlice({
   name: 'user',
@@ -33,82 +39,79 @@ export const userSlice = createSlice({
   reducers: {
     setUser: (state, action) => ({
       ...state,
-      user: action.payload
+      user: action.payload,
     }),
     setHasToken: (state, action) => ({
       ...state,
-      hasToken: action.payload
-    })
+      hasToken: action.payload,
+    }),
   },
   extraReducers: {
     [saveUser.pending]: state => ({
       ...state,
       currentUser: {
         ...state.currentUser,
-        fetching: true
-      }
+        fetching: true,
+      },
     }),
     [saveUser.fulfilled]: (state, action) => ({
       ...state,
       currentUser: {
         fetching: false,
-        data: action.payload
-      }
+        data: action.payload,
+      },
     }),
     [saveUser.rejected]: state => ({
       ...state,
       currentUser: {
         ...state.currentUser,
-        fetching: false
-      }
+        fetching: false,
+      },
     }),
     [fetchUser.pending]: state => ({
       ...state,
-      currentUser: initialState.currentUser
+      currentUser: initialState.currentUser,
     }),
     [fetchUser.fulfilled]: (state, action) => ({
       ...state,
       currentUser: {
         fetching: false,
-        data: action.payload
-      }
+        data: action.payload,
+      },
     }),
     [fetchUser.rejected]: state => ({
       ...state,
       currentUser: {
         fetching: false,
-        data: null
-      }
+        data: null,
+      },
     }),
     [fetchAuthURLs.pending]: state => ({
       ...state,
-      login: initialState.login
+      login: initialState.login,
     }),
     [fetchAuthURLs.fulfilled]: (state, action) => ({
       ...state,
       login: {
         fetching: false,
-        urls: action.payload
-      }
+        urls: action.payload,
+      },
     }),
     [fetchAuthURLs.rejected]: state => ({
       ...state,
       login: {
         fetching: false,
-        urls: {}
-      }
-    })
-  }
-})
+        urls: {},
+      },
+    }),
+  },
+});
 
-export const {
-  setUser,
-  setHasToken
-} = userSlice.actions
+export const { setUser, setHasToken } = userSlice.actions;
 
-export default userSlice.reducer
+export default userSlice.reducer;
 
 export const signOut = () => dispatch => {
-  removeToken()
-  dispatch(setHasToken(false))
-}
+  removeToken();
+  dispatch(setHasToken(false));
+};

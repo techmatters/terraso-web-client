@@ -1,18 +1,18 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { Box, Container } from '@mui/material'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Box, Container } from '@mui/material';
 
-import reportWebVitals from 'monitoring/reportWebVitals'
-import createStore from 'state/store'
-import rules from 'permissions/rules'
-import theme from 'theme'
-import AppBar from 'common/components/AppBar'
-import AppWrappers from 'common/components/AppWrappers'
-import Routes from 'navigation/Routes'
-import Navigation from 'navigation/Navigation'
-import Footer from 'common/components/Footer'
+import reportWebVitals from 'monitoring/reportWebVitals';
+import createStore from 'state/store';
+import rules from 'permissions/rules';
+import theme from 'theme';
+import AppBar from 'common/components/AppBar';
+import AppWrappers from 'common/components/AppWrappers';
+import Routes from 'navigation/Routes';
+import Navigation from 'navigation/Navigation';
+import Footer from 'common/components/Footer';
 
-import 'index.css'
+import 'index.css';
 
 ReactDOM.render(
   <AppWrappers store={createStore()} theme={theme} permissionsRules={rules}>
@@ -21,7 +21,12 @@ ReactDOM.render(
       <Container>
         <Navigation />
       </Container>
-      <Box sx={{ bgcolor: 'white', marginBottom: { xs: '29vh', sm: '15vh', md: '10vh' } }}>
+      <Box
+        sx={{
+          bgcolor: 'white',
+          marginBottom: { xs: '29vh', sm: '15vh', md: '10vh' },
+        }}
+      >
         <Container>
           <Routes />
         </Container>
@@ -30,9 +35,9 @@ ReactDOM.render(
     </Box>
   </AppWrappers>,
   document.getElementById('root')
-)
+);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals()
+reportWebVitals();

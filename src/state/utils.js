@@ -1,49 +1,53 @@
-import _ from 'lodash'
-import { createAsyncThunk as createAsyncThunkBase } from '@reduxjs/toolkit'
+import _ from 'lodash';
+import { createAsyncThunk as createAsyncThunkBase } from '@reduxjs/toolkit';
 
-import { addMessage } from 'notifications/notificationsSlice'
-import { signOut } from 'account/accountSlice'
-import { refreshToken } from 'account/auth'
-import { UNAUTHENTICATED } from 'account/authConstants'
+import { addMessage } from 'notifications/notificationsSlice';
+import { signOut } from 'account/accountSlice';
+import { refreshToken } from 'account/auth';
+import { UNAUTHENTICATED } from 'account/authConstants';
 
-const executeAuthRequest = (dispatch, action) => action().catch(async error => {
-  if (error !== UNAUTHENTICATED) {
-    await Promise.reject(error)
-  }
-  try {
-    await refreshToken()
-  } catch {
-    // Failed token renew
-    dispatch(signOut())
-    await Promise.reject('account.unauthenticated_message')
-  }
-  // Retry request after tokens renewed
-  return await action()
-})
+const executeAuthRequest = (dispatch, action) =>
+  action().catch(async error => {
+    if (error !== UNAUTHENTICATED) {
+      await Promise.reject(error);
+    }
+    try {
+      await refreshToken();
+    } catch {
+      // Failed token renew
+      dispatch(signOut());
+      await Promise.reject('account.unauthenticated_message');
+    }
+    // Retry request after tokens renewed
+    return await action();
+  });
 
-export const createAsyncThunk = (name, action, onSuccessMessage, customErrorMessage) => createAsyncThunkBase(
+export const createAsyncThunk = (
   name,
-  async (input, thunkAPI) => {
-    const { rejectWithValue, dispatch } = thunkAPI
+  action,
+  onSuccessMessage,
+  customErrorMessage
+) =>
+  createAsyncThunkBase(name, async (input, thunkAPI) => {
+    const { rejectWithValue, dispatch } = thunkAPI;
 
     const executeAction = async () => {
-      const state = thunkAPI.getState()
-      const currentUser = _.get(state, 'account.currentUser.data')
-      const result = await action(input, currentUser, thunkAPI)
+      const state = thunkAPI.getState();
+      const currentUser = _.get(state, 'account.currentUser.data');
+      const result = await action(input, currentUser, thunkAPI);
       if (onSuccessMessage) {
-        dispatch(addMessage(onSuccessMessage(result, input)))
+        dispatch(addMessage(onSuccessMessage(result, input)));
       }
-      return result
-    }
+      return result;
+    };
 
     try {
-      return await executeAuthRequest(dispatch, executeAction)
+      return await executeAuthRequest(dispatch, executeAction);
     } catch (error) {
       const message = customErrorMessage
         ? customErrorMessage(error)
-        : { severity: 'error', content: error }
-      dispatch(addMessage(message))
-      return rejectWithValue(error)
+        : { severity: 'error', content: error };
+      dispatch(addMessage(message));
+      return rejectWithValue(error);
     }
-  }
-)
+  });

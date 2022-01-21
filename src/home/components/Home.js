@@ -1,91 +1,72 @@
-import React, { useEffect } from 'react'
-import _ from 'lodash'
-import { useTranslation } from 'react-i18next'
-import { useSelector, useDispatch } from 'react-redux'
-import {
-  Box,
-  Grid,
-  Alert,
-  Typography,
-  Stack
-} from '@mui/material'
+import React, { useEffect } from 'react';
+import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
+import { useSelector, useDispatch } from 'react-redux';
+import { Box, Grid, Alert, Typography, Stack } from '@mui/material';
 
-import LoaderCard from 'common/components/LoaderCard'
-import { fetchHomeData } from 'home/homeSlice'
-import LandscapesCard from 'landscape/components/LandscapesHomeCard'
-import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultHomeCard'
-import GroupsCard from 'group/components/GroupsHomeCard'
-import GroupDefaultCard from 'group/components/GroupDefaultHomeCard'
-import ToolHomeCard from 'tool/components/ToolHomeCard'
-import theme from 'theme'
+import LoaderCard from 'common/components/LoaderCard';
+import { fetchHomeData } from 'home/homeSlice';
+import LandscapesCard from 'landscape/components/LandscapesHomeCard';
+import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultHomeCard';
+import GroupsCard from 'group/components/GroupsHomeCard';
+import GroupDefaultCard from 'group/components/GroupDefaultHomeCard';
+import ToolHomeCard from 'tool/components/ToolHomeCard';
+import theme from 'theme';
 
 const Landscapes = ({ landscapes, fetching }) => {
   if (fetching) {
-    return (
-      <LoaderCard />
-    )
+    return <LoaderCard />;
   }
 
   if (_.isEmpty(landscapes)) {
-    return (
-      <LandscapeDefaultCard />
-    )
+    return <LandscapeDefaultCard />;
   }
 
-  return (
-    <LandscapesCard landscapes={landscapes} />
-  )
-}
+  return <LandscapesCard landscapes={landscapes} />;
+};
 
 const Groups = ({ groups, fetching }) => {
   if (fetching) {
-    return (
-      <LoaderCard />
-    )
+    return <LoaderCard />;
   }
 
   if (_.isEmpty(groups)) {
-    return (
-      <GroupDefaultCard />
-    )
+    return <GroupDefaultCard />;
   }
 
-  return (
-    <GroupsCard groups={groups} />
-  )
-}
+  return <GroupsCard groups={groups} />;
+};
 
 const Home = () => {
-  const { t } = useTranslation()
-  const dispatch = useDispatch()
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
 
-  const { data: user } = useSelector(state => state.account.currentUser)
-  const home = useSelector(state => state.userHome)
-  const { groups, landscapes, error, fetching } = home
+  const { data: user } = useSelector(state => state.account.currentUser);
+  const home = useSelector(state => state.userHome);
+  const { groups, landscapes, error, fetching } = home;
 
   useEffect(() => {
-    dispatch(fetchHomeData(user.email))
-  }, [dispatch, user])
+    dispatch(fetchHomeData(user.email));
+  }, [dispatch, user]);
 
   if (error) {
     return (
-      <Alert severity="error">
-        {t('home.error', { error: t(error) })}
-      </Alert>
-    )
+      <Alert severity="error">{t('home.error', { error: t(error) })}</Alert>
+    );
   }
 
   return (
     <Box
       sx={{
         paddingTop: theme.spacing(3),
-        paddingBottom: theme.spacing(2)
+        paddingBottom: theme.spacing(2),
       }}
     >
-      <Typography variant="h1"
+      <Typography
+        variant="h1"
         sx={{
           marginBottom: theme.spacing(3),
-          marginTop: theme.spacing(2)
+          marginTop: theme.spacing(2),
         }}
       >
         {t('home.page_title', { name: user.firstName })}
@@ -104,7 +85,7 @@ const Home = () => {
         </Grid>
       </Grid>
     </Box>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

@@ -1,16 +1,19 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
 
-import { createAsyncThunk } from 'state/utils'
-import * as homeService from 'home/homeService'
+import { createAsyncThunk } from 'state/utils';
+import * as homeService from 'home/homeService';
 
 const initialState = {
   groups: [],
   landscapes: [],
   fetching: true,
-  error: null
-}
+  error: null,
+};
 
-export const fetchHomeData = createAsyncThunk('home/fetchData', homeService.fetchHomeData)
+export const fetchHomeData = createAsyncThunk(
+  'home/fetchData',
+  homeService.fetchHomeData
+);
 
 export const homeSlice = createSlice({
   name: 'home',
@@ -24,14 +27,14 @@ export const homeSlice = createSlice({
       error: null,
       groups: action.payload.groups,
       landscapes: action.payload.landscapes,
-      landscapesDiscovery: action.payload.landscapesDiscovery
+      landscapesDiscovery: action.payload.landscapesDiscovery,
     }),
     [fetchHomeData.rejected]: (state, action) => ({
       ...state,
       fetching: false,
-      error: action.payload
-    })
-  }
-})
+      error: action.payload,
+    }),
+  },
+});
 
-export default homeSlice.reducer
+export default homeSlice.reducer;

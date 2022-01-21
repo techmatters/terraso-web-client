@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { useParams, Link as RouterLink } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams, Link as RouterLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Typography,
@@ -11,19 +11,19 @@ import {
   CardContent,
   Link,
   Stack,
-  Button
-} from '@mui/material'
-import PublicIcon from '@mui/icons-material/Public'
-import EmailIcon from '@mui/icons-material/Email'
+  Button,
+} from '@mui/material';
+import PublicIcon from '@mui/icons-material/Public';
+import EmailIcon from '@mui/icons-material/Email';
 
-import { fetchGroupView } from 'group/groupSlice'
-import GroupMembershipCard from 'group/components/GroupMembershipCard'
-import PageLoader from 'common/components/PageLoader'
-import Restricted from 'permissions/components/Restricted'
-import theme from 'theme'
+import { fetchGroupView } from 'group/groupSlice';
+import GroupMembershipCard from 'group/components/GroupMembershipCard';
+import PageLoader from 'common/components/PageLoader';
+import Restricted from 'permissions/components/Restricted';
+import theme from 'theme';
 
 const GroupCard = ({ group }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <Card>
       <CardHeader title={t('group.view_card_title', { name: group.name })} />
@@ -47,11 +47,7 @@ const GroupCard = ({ group }) => {
           </Stack>
         )}
         {group.website && (
-          <Stack
-            direction="row"
-            alignItems="center"
-            spacing={1}
-          >
+          <Stack direction="row" alignItems="center" spacing={1}>
             <PublicIcon sx={{ color: 'gray.lite1' }} />
             <Link href={group.website} underline="none">
               {group.website}
@@ -60,44 +56,42 @@ const GroupCard = ({ group }) => {
         )}
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 const GroupView = () => {
-  const dispatch = useDispatch()
-  const { t } = useTranslation()
-  const { group, fetching } = useSelector(state => state.group.view)
-  const { slug } = useParams()
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
+  const { group, fetching } = useSelector(state => state.group.view);
+  const { slug } = useParams();
 
   useEffect(() => {
-    dispatch(fetchGroupView(slug))
-  }, [dispatch, slug])
+    dispatch(fetchGroupView(slug));
+  }, [dispatch, slug]);
 
   if (fetching) {
-    return (
-      <PageLoader />
-    )
+    return <PageLoader />;
   }
 
   if (!group) {
-    return null
+    return null;
   }
 
   return (
-    <Box sx={{
-      paddingTop: theme.spacing(3),
-      paddingBottom: theme.spacing(2)
-    }}>
+    <Box
+      sx={{
+        paddingTop: theme.spacing(3),
+        paddingBottom: theme.spacing(2),
+      }}
+    >
       <Stack
         direction="row"
         justifyContent="space-between"
         sx={{
-          marginBottom: theme.spacing(3)
+          marginBottom: theme.spacing(3),
         }}
       >
-        <Typography variant="h1">
-          {group.name}
-        </Typography>
+        <Typography variant="h1">{group.name}</Typography>
         <Restricted permission="group.change" resource={group}>
           <Button
             variant="contained"
@@ -125,7 +119,7 @@ const GroupView = () => {
         </Grid>
       </Grid>
     </Box>
-  )
-}
+  );
+};
 
-export default GroupView
+export default GroupView;
