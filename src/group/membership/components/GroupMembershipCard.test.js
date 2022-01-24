@@ -2,23 +2,31 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 
 import { render, screen, fireEvent } from 'tests/utils';
-import GroupMembershipCard from 'group/components/GroupMembershipCard';
 import * as terrasoApi from 'terrasoBackend/api';
+import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
+import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
+import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
+import { GroupContextProvider } from 'group/groupContext';
 
 jest.mock('terrasoBackend/api');
 
 const setup = async initialState => {
   await act(async () =>
     render(
-      <GroupMembershipCard
-        ownerName="Owner Name"
+      <GroupContextProvider
+        owner={{
+          name: 'Owner Name',
+        }}
         groupSlug="group-slug"
-        joinLabel="Join Label"
-        leaveLabel="Leave Label"
-        confirmMessageText="Confirm Message Text"
-        confirmMessageTitle="Confirm Message Title"
-        confirmButtonLabel="Confirm Button Label"
-      />,
+        MemberJoinButton={props => (
+          <GroupMemberJoin label="Join Label" {...props} />
+        )}
+        MemberLeaveButton={props => (
+          <GroupMemberLeave label="Leave Label" {...props} />
+        )}
+      >
+        <GroupMembershipCard />
+      </GroupContextProvider>,
       {
         account: {
           hasToken: true,
@@ -217,21 +225,21 @@ test('GroupMembershipCard: Leave error', async () => {
     screen.getByText('1 Terraso member has affiliated with Owner Name.')
   ).toBeInTheDocument();
   expect(
-    screen.getByRole('button', { name: 'LEAVE LABEL' })
+    screen.getByRole('button', { name: 'Leave Label' })
   ).toBeInTheDocument();
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'LEAVE LABEL' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Leave Label' }))
   );
   // Confirm dialog
-  expect(screen.getByText('Confirm Message Title')).toBeInTheDocument();
-  expect(screen.getByText('Confirm Message Text')).toBeInTheDocument();
+  expect(screen.getByText('Leave “Owner Name”')).toBeInTheDocument();
   expect(
-    screen.getByRole('button', { name: 'Confirm Button Label' })
+    screen.getByText('Are you sure you want to leave the group “Owner Name”?')
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Leave Group' })
   ).toBeInTheDocument();
   await act(async () =>
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Confirm Button Label' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Leave Group' }))
   );
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
@@ -272,19 +280,17 @@ test('GroupMembershipCard: Leave', async () => {
     screen.getByText('1 Terraso member has affiliated with Owner Name.')
   ).toBeInTheDocument();
   expect(
-    screen.getByRole('button', { name: 'LEAVE LABEL' })
+    screen.getByRole('button', { name: 'Leave Label' })
   ).toBeInTheDocument();
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'LEAVE LABEL' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Leave Label' }))
   );
   // Confirm dialog
   expect(
-    screen.getByRole('button', { name: 'Confirm Button Label' })
+    screen.getByRole('button', { name: 'Leave Group' })
   ).toBeInTheDocument();
   await act(async () =>
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Confirm Button Label' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Leave Group' }))
   );
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
 

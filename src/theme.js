@@ -75,6 +75,11 @@ const components = {
       },
     },
   },
+  MuiLink: {
+    defaultProps: {
+      underline: 'none',
+    },
+  },
 };
 
 const theme = createTheme(colorTheme, {

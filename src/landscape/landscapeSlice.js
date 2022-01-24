@@ -1,3 +1,4 @@
+import _ from 'lodash/fp';
 import { createSlice } from '@reduxjs/toolkit';
 
 import { createAsyncThunk } from 'state/utils';
@@ -20,6 +21,10 @@ const initialState = {
     message: null,
     landscape: null,
   },
+  membersLandscape: {
+    data: null,
+    fetching: true,
+  },
 };
 
 export const fetchLandscapes = createAsyncThunk(
@@ -41,6 +46,10 @@ export const fetchLandscapeView = createAsyncThunk(
 export const fetchLandscapeForm = createAsyncThunk(
   'landscape/fetchLandscapeForm',
   landscapeService.fetchLandscapeToUpdate
+);
+export const fetchLandscapeForMembers = createAsyncThunk(
+  'group/fetchLandscapeForMembers',
+  landscapeService.fetchLandscapeForMembers
 );
 export const saveLandscape = createAsyncThunk(
   'landscape/saveLandscape',
@@ -122,6 +131,19 @@ const landscapeSlice = createSlice({
         fetching: false,
       },
     }),
+    [fetchLandscapeForMembers.pending]: state =>
+      _.set('membersLandscape', initialState.membersLandscape, state),
+    [fetchLandscapeForMembers.fulfilled]: (state, action) =>
+      _.set(
+        'membersLandscape',
+        {
+          fetching: false,
+          data: action.payload,
+        },
+        state
+      ),
+    [fetchLandscapeForMembers.rejected]: state =>
+      _.set('membersLandscape', initialState.membersLandscape, state),
     [saveLandscape.pending]: state => ({
       ...state,
       form: {

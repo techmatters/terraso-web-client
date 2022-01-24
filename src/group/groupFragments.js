@@ -16,7 +16,9 @@ export const groupMembers = `
       edges {
         node {
           id
+          userRole
           user {
+            id
             email
             firstName
             lastName

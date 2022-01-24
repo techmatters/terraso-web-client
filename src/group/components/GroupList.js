@@ -16,23 +16,41 @@ import {
 } from '@mui/material';
 
 import { fetchGroups } from 'group/groupSlice';
-import GroupMembershipButton from 'group/components/GroupMembershipButton';
-import GroupMembershipCount from 'group/components/GroupMembershipCount';
+import { withProps } from 'react-hoc';
+import GroupMembershipButton from 'group/membership/components/GroupMembershipButton';
+import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
 import Table from 'common/components/Table';
 import PageLoader from 'common/components/PageLoader';
+import { GroupContextProvider } from 'group/groupContext';
+import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
+import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import theme from 'theme';
 
+const MemberLeaveButton = withProps(GroupMemberLeave, {
+  label: 'group.list_leave_button',
+  buttonProps: {
+    variant: 'contained',
+    sx: {
+      bgcolor: 'gray.lite1',
+      color: 'black',
+      textTransform: 'uppercase',
+    },
+  },
+});
+
+const MemberJoinButton = withProps(GroupMemberJoin, {
+  label: 'group.list_join_button',
+});
+
 const MembershipButton = ({ group }) => (
-  <GroupMembershipButton
+  <GroupContextProvider
+    owner={group}
     groupSlug={group.slug}
-    confirmButtonLabel="group.membership_leave_confirm_button"
-    confirmMessageTitle="group.membership_leave_confirm_title"
-    confirmMessageText="group.membership_leave_confirm_message"
-    joinLabel="group.list_join_button"
-    leaveLabel="group.list_leave_button"
-    ownerName={group.name}
-    sx={{ width: '100%' }}
-  />
+    MemberJoinButton={MemberJoinButton}
+    MemberLeaveButton={MemberLeaveButton}
+  >
+    <GroupMembershipButton sx={{ width: '100%' }} />
+  </GroupContextProvider>
 );
 
 const GroupTable = ({ groups }) => {
@@ -86,10 +104,11 @@ const GroupTable = ({ groups }) => {
     },
     {
       field: 'actions',
+      type: 'actions',
       headerName: false,
       sortable: false,
       align: 'center',
-      renderCell: ({ row: group }) => <MembershipButton group={group} />,
+      getActions: ({ row: group }) => [<MembershipButton group={group} />],
     },
   ];
 
