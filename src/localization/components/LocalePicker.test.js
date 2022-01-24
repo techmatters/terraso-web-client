@@ -22,9 +22,9 @@ test('LocalePicker: Change locale', async () => {
   );
   const listbox = within(screen.getByRole('listbox'));
   await act(async () =>
-    fireEvent.click(listbox.getByRole('option', { name: /SPANISH/i }))
+    fireEvent.click(listbox.getByRole('option', { name: /ESPAÑOL/i }))
   );
-  expect(screen.getByRole('button', { name: /SPANISH/i })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /ESPAÑOL/i })).toBeInTheDocument();
 });
 test('LocalePicker: Change locale (small screen)', async () => {
   useMediaQuery.mockReturnValue(true);

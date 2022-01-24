@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-01-18T16:33:50.843Z\n"
-"PO-Revision-Date: 2022-01-18T16:33:50.843Z\n"
+"POT-Creation-Date: 2022-01-21T22:13:35.239Z\n"
+"PO-Revision-Date: 2022-01-21T22:13:35.239Z\n"
 
 msgid "home##title"
 msgstr "Home"
@@ -22,6 +22,38 @@ msgstr "Create a Group"
 
 msgid "tool##requirements"
 msgstr "System requirements"
+
+msgid "tool##avilability"
+msgstr "Availability"
+
+msgid "tools##kobo##title"
+msgstr "KoBoToolbox"
+
+msgid "tools##kobo##url"
+msgstr "https://www.kobotoolbox.org/"
+
+msgid "tools##kobo##img##height"
+msgstr "222"
+
+msgid "tools##kobo##img##width"
+msgstr "377"
+
+msgid "tools##kobo##img##src"
+msgstr "kobo.png"
+
+msgid "tools##kobo##description"
+msgstr ""
+"Design and build forms quickly\n"
+"Collect data offline and online'\n"
+"Analyze and manage data"
+
+msgid "tools##kobo##requirements"
+msgstr "Modern web browser (Chrome, Edge, Firefox, Safari)"
+
+msgid "tools##kobo##availability"
+msgstr ""
+"KoBoToolbox will be integrated into Terraso in 2022. Use Kobo independently "
+"for now."
 
 msgid "account##welcome"
 msgstr "Welcome"
@@ -84,7 +116,7 @@ msgstr "Members"
 
 msgctxt "title"
 msgid "group##membership_leave_confirm"
-msgstr "Leave {{name}}"
+msgstr "Leave “{{name}}”"
 
 msgctxt "title"
 msgid "group##view_card"
@@ -109,6 +141,10 @@ msgstr "Manage “{{name}}” Landscape Information"
 msgctxt "title"
 msgid "landscape##form_new"
 msgstr "New Landscape Information"
+
+msgctxt "title"
+msgid "landscape##membership_leave_confirm"
+msgstr "Leave “{{name}}”"
 
 msgctxt "title"
 msgid "landscape##view_card"
@@ -146,9 +182,11 @@ msgstr ""
 
 msgctxt "message"
 msgid "group##membership_leave_confirm"
-msgstr ""
-"Are you sure you want to leave {{name}}? The status update may take a few "
-"minutes."
+msgstr "Are you sure you want to leave the group “{{name}}”?"
+
+msgctxt "message"
+msgid "landscape##membership_leave_confirm"
+msgstr "Are you sure you want to leave the landscape “{{name}}”?"
 
 msgctxt "message"
 msgid "account##unauthenticated"
@@ -168,7 +206,7 @@ msgstr "Explore Groups"
 
 msgctxt "button"
 msgid "group##membership_leave_confirm"
-msgstr "Yes, leave {{name}}"
+msgstr "Leave Group"
 
 msgctxt "button"
 msgid "group##view_update"
@@ -193,6 +231,10 @@ msgstr "Edit Landscape Profile"
 msgctxt "button"
 msgid "landscape##default_connect"
 msgstr "Explore Landscapes"
+
+msgctxt "button"
+msgid "landscape##membership_leave_confirm"
+msgstr "Leave Landscape"
 
 msgctxt "button"
 msgid "landscape##list_join"
@@ -508,7 +550,7 @@ msgstr "ES"
 
 msgctxt "es-ES"
 msgid "localization##locale"
-msgstr "Spanish"
+msgstr "Español"
 
 msgctxt "projectName"
 msgid "common##terraso"
