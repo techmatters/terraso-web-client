@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash/fp';
 
 import * as terrasoApi from 'terrasoBackend/api';
 import { groupFields } from 'group/groupFragments';
@@ -58,18 +58,16 @@ export const fetchHomeData = email => {
   `;
   return terrasoApi.request(query, { email }).then(response => ({
     groups: [
-      ..._.get(response, 'userIndependentGroups.edges', []),
-      ..._.get(response, 'userLandscapeGroups.edges', []),
+      ..._.getOr([], 'userIndependentGroups.edges', response),
+      ..._.getOr([], 'userLandscapeGroups.edges', response),
     ]
-      .map(groupEdge => _.get(groupEdge, 'node'))
+      .map(_.get('node'))
       .filter(group => group),
-    landscapes: _.get(response, 'landscapeGroups.edges', [])
-      .flatMap(groupEdge =>
-        _.get(groupEdge, 'node.associatedLandscapes.edges', [])
-      )
-      .map(landscapeEdge => _.get(landscapeEdge, 'node.landscape'))
+    landscapes: _.getOr([], 'landscapeGroups.edges', response)
+      .flatMap(_.getOr([], 'node.associatedLandscapes.edges'))
+      .map(_.get('node.landscape'))
       .filter(landscape => landscape),
-    landscapesDiscovery: _.get(response, 'landscapesDiscovery.edges', []).map(
+    landscapesDiscovery: _.getOr([], 'landscapesDiscovery.edges', response).map(
       edge => edge.node
     ),
   }));

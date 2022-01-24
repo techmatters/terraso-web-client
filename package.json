@@ -52,6 +52,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.5",
     "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-lodash-fp": "^2.2.0-a1",
     "eslint-plugin-prettier": "^4.0.0",
     "flat": "^5.0.2",
     "i18next-conv": "^11.0.1",

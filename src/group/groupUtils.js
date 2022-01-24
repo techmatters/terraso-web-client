@@ -1,16 +1,16 @@
-import _ from 'lodash';
+import _ from 'lodash/fp';
 
 export const extractMembers = group =>
-  _.get(group, 'memberships.edges', []).map(edge => ({
-    membershipId: _.get(edge, 'node.id'),
-    ..._.get(edge, 'node.user'),
+  _.getOr([], 'memberships.edges', group).map(edge => ({
+    membershipId: _.get('node.id', edge),
+    ..._.get('node.user', edge),
   }));
 
 export const extractAccountMembership = group =>
-  _.get(group, 'accountMembership.edges[0].node');
+  _.get('accountMembership.edges[0].node', group);
 
 export const getMemberships = groups =>
-  _.chain(groups)
-    .map(group => [group.slug, { group, fetching: false }])
-    .fromPairs()
-    .value();
+  _.flow(
+    _.map(group => [group.slug, { group, fetching: false }]),
+    _.fromPairs
+  )(groups);

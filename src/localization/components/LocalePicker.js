@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -27,7 +27,7 @@ const LocalePicker = () => {
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleChange = event => {
-    const locale = _.get(event, 'target.value');
+    const locale = _.get('target.value', event);
     i18n.changeLanguage(locale);
   };
 

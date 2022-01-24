@@ -1,11 +1,11 @@
-import _ from 'lodash';
+import _ from 'lodash/fp';
 
 import * as terrasoApi from 'terrasoBackend/api';
 import * as gisService from 'gis/gisService';
 import { landscapeFields, defaultGroup } from 'landscape/landscapeFragments';
 import { extractMembers } from 'group/groupUtils';
 
-const cleanLandscape = landscape => _.omit(landscape, 'slug');
+const cleanLandscape = landscape => _.omit('slug', landscape);
 
 export const fetchLandscapeToUpdate = slug => {
   const query = `
@@ -20,14 +20,14 @@ export const fetchLandscapeToUpdate = slug => {
   `;
   return terrasoApi
     .request(query, { slug })
-    .then(response => _.get(response, 'landscapes.edges[0].node'))
+    .then(_.get('landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('landscape.not_found'));
 };
 
 const getDefaultGroup = landscape => {
-  const group = _.get(landscape, 'defaultGroup.edges[0].node.group');
+  const group = _.get('defaultGroup.edges[0].node.group', landscape);
   return {
-    ..._.pick(group, ['id', 'slug'], {}),
+    ..._.pick(['id', 'slug'], group),
     members: extractMembers(group),
   };
 };
@@ -50,10 +50,10 @@ export const fetchLandscapeToView = slug => {
   return (
     terrasoApi
       .request(query, { slug })
-      .then(response => _.get(response, 'landscapes.edges[0].node'))
+      .then(_.get('landscapes.edges[0].node'))
       .then(landscape => landscape || Promise.reject('landscape.not_found'))
       .then(landscape => ({
-        ..._.omit(landscape, 'defaultGroup'),
+        ..._.omit('defaultGroup', landscape),
         defaultGroup: getDefaultGroup(landscape),
       }))
       // TODO temporarily getting position from openstreetmap API.
@@ -89,12 +89,12 @@ export const fetchLandscapes = () => {
       landscapes.edges
         .map(edge => edge.node)
         .map(landscape => ({
-          ..._.omit(landscape, ['defaultGroup']),
+          ..._.omit(['defaultGroup'], landscape),
           defaultGroup: getDefaultGroup(landscape),
         }))
     )
     .then(landscapes =>
-      _.orderBy(landscapes, [landscape => landscape.name.toLowerCase()])
+      _.orderBy(landscapes, null, [landscape => landscape.name.toLowerCase()])
     );
 };
 

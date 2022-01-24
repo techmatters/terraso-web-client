@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { DataGrid } from '@mui/x-data-grid';
 
 const PAGE_SIZE = 15;
@@ -15,13 +15,13 @@ const Table = props => {
   const { searchParams, onSearchParamsChange } = props;
 
   const parseSortQuery = value =>
-    _.chain(value)
-      .split(',')
-      .map(column => ({
+    _.flow(
+      _.split(','),
+      _.map(column => ({
         field: column.substring(1),
         sort: SORT_DIRECTION_BY_SYMBOL[column.substring(0, 1)],
       }))
-      .value();
+    )(value);
 
   useEffect(() => {
     const sort = searchParams.sort;

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -54,8 +54,9 @@ const Navigation = () => {
   const [value, setValue] = React.useState(false);
 
   useEffect(() => {
-    const currentValue = _.findIndex(Object.values(PAGES), path =>
-      path.match(location.pathname)
+    const currentValue = _.findIndex(
+      path => path.match(location.pathname),
+      Object.values(PAGES)
     );
     setValue(currentValue > -1 ? currentValue : false);
   }, [location]);

@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { v4 as uuidv4 } from 'uuid';
 
 const initialState = {
@@ -19,7 +19,7 @@ const notificationsSlice = createSlice({
     }),
     removeMessage: (state, action) => ({
       ...state,
-      messages: _.omit(state.messages, action.payload),
+      messages: _.omit(action.payload, state.messages),
     }),
   },
   extraReducers: {},

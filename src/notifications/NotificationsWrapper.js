@@ -1,5 +1,5 @@
 import React, { useEffect, createRef } from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { SnackbarProvider } from 'notistack';

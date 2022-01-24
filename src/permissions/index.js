@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
 
 const defaultBehaviour = {
@@ -10,7 +10,11 @@ export const PermissionsContext = React.createContext(defaultBehaviour);
 
 export const PermissionsProvider = ({ rules, children }) => {
   const isAllowedTo = (permission, user, resource) => {
-    const ruleResolver = _.get(rules, permission, defaultBehaviour.isAllowedTo);
+    const ruleResolver = _.getOr(
+      defaultBehaviour.isAllowedTo,
+      permission,
+      rules
+    );
     return ruleResolver({ user, resource });
   };
 
