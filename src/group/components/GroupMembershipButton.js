@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { CircularProgress } from '@mui/material';
@@ -59,8 +59,8 @@ const GroupMembershipButton = props => {
   const {
     data: { email: userEmail },
   } = useSelector(state => state.account.currentUser);
-  const { fetching, group, joining } = useSelector(state =>
-    _.get(state, `group.memberships.${groupSlug}`, {})
+  const { fetching, group, joining } = useSelector(
+    _.getOr({}, `group.memberships.${groupSlug}`)
   );
   const [openConfirmation, setOpenConfirmation] = useState(false);
 
@@ -68,7 +68,7 @@ const GroupMembershipButton = props => {
 
   // TODO This should just be 5 users and we should get the total count from
   // the backend when the support is added
-  const members = _.get(group, 'members', []);
+  const members = _.getOr([], 'members', group);
 
   // TODO This should come from the backend when we have the authenticated user
   const userMembership = members.find(member => member.email === userEmail);

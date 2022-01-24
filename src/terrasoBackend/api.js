@@ -1,11 +1,11 @@
-import _ from 'lodash';
+import _ from 'lodash/fp';
 
 import { getToken } from 'account/auth';
 import { TERRASO_API_URL, GRAPH_QL_ENDPOINT } from 'config';
 import { UNAUTHENTICATED } from 'account/authConstants';
 
 const handleGraphQLError = data => {
-  const errors = _.get(data, 'errors');
+  const errors = _.get('errors', data);
   const messages = errors.map(error => error.message);
   return Promise.reject(messages);
 };
@@ -35,11 +35,11 @@ export const request = async (query, variables) => {
     return Promise.reject(['terraso_api.error_request_response']);
   });
 
-  if (_.has(jsonResponse, 'errors')) {
+  if (_.has('errors', jsonResponse)) {
     await handleGraphQLError(jsonResponse);
   }
 
-  if (!_.has(jsonResponse, 'data')) {
+  if (!_.has('data', jsonResponse)) {
     console.error(
       'Terraso API: Unexpected error',
       'received data:',

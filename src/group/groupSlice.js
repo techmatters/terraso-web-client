@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { createSlice } from '@reduxjs/toolkit';
 
 import { createAsyncThunk } from 'state/utils';
@@ -77,7 +77,7 @@ const groupSlice = createSlice({
       ...state,
       memberships: {
         ...state.memberships,
-        ..._.chain(action.payload)
+        ..._.flow(
           //  Final output
           //  {
           //    'group-slug-1': {
@@ -98,16 +98,16 @@ const groupSlice = createSlice({
           //    },
           //    ...
           //  }
-          .toPairs()
-          .map(([groupSlug, newMembershipState]) => [
+          _.toPairs,
+          _.map(([groupSlug, newMembershipState]) => [
             groupSlug,
             {
-              ..._.get(state, `memberships.${groupSlug}`, {}),
+              ..._.getOr({}, `memberships.${groupSlug}`, state),
               ...newMembershipState,
             },
-          ])
-          .fromPairs()
-          .value(),
+          ]),
+          _.fromPairs
+        )(action.payload),
       },
     }),
     resetFormSuccess: state => ({

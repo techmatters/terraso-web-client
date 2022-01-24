@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Controller } from 'react-hook-form';
 import {
@@ -57,9 +57,13 @@ const FormField = ({
               error={!!fieldState.error}
               aria-describedby={`${id}-helper-text`}
               sx={theme =>
-                _.mergeWith(theme.components.MuiOutlinedInput.defaultProps.sx, {
-                  width: '100%',
-                })
+                _.mergeWith(
+                  null,
+                  {
+                    width: '100%',
+                  },
+                  theme.components.MuiOutlinedInput.defaultProps.sx
+                )
               }
               {...inputProps}
               {...field}
@@ -71,12 +75,12 @@ const FormField = ({
           {fieldState.error && (
             <FormHelperText error id={`${id}-helper-text`}>
               {t(
-                _.get(
-                  fieldState,
+                _.getOr(
+                  'form.validation_field_invalid',
                   'error.message.key',
-                  'form.validation_field_invalid'
+                  fieldState
                 ),
-                _.get(fieldState, 'error.message.params', {})
+                _.getOr({}, 'error.message.params', fieldState)
               )}
             </FormHelperText>
           )}

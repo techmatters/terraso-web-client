@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -79,7 +79,7 @@ const GroupTable = ({ groups }) => {
       field: 'members',
       headerName: t('group.list_column_members'),
       align: 'center',
-      valueGetter: ({ row: group }) => _.get(group, 'members.length', 0),
+      valueGetter: ({ row: group }) => _.getOr(0, 'members.length', group),
       renderCell: ({ row: group }) => (
         <GroupMembershipCount groupSlug={group.slug} />
       ),

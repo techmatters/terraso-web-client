@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -112,7 +112,7 @@ const GroupForm = () => {
   };
 
   const title = !isNew
-    ? t('group.form_edit_title', { name: _.get(group, 'name', '') })
+    ? t('group.form_edit_title', { name: _.getOr('', 'name', group) })
     : t('group.form_new_title');
 
   return (

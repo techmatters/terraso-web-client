@@ -1,7 +1,7 @@
-import _ from 'lodash';
+import _ from 'lodash/fp';
 
 const isAllowedToChangeGroup = ({ resource: group }) => {
-  const isManager = _.get(group, 'accountMembership.userRole') === 'MANAGER';
+  const isManager = _.get('accountMembership.userRole', group) === 'MANAGER';
   return Promise.resolve(isManager);
 };
 

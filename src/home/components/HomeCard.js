@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { Card } from '@mui/material';
 
 const HomeCard = props => (
@@ -7,7 +7,7 @@ const HomeCard = props => (
     {...props}
     sx={{
       display: 'flex',
-      ..._.get(props, 'sx', {}),
+      ..._.getOr({}, 'sx', props),
     }}
   >
     {props.children}

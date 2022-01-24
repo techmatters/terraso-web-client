@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { createAsyncThunk as createAsyncThunkBase } from '@reduxjs/toolkit';
 
 import { addMessage } from 'notifications/notificationsSlice';
@@ -33,7 +33,7 @@ export const createAsyncThunk = (
 
     const executeAction = async () => {
       const state = thunkAPI.getState();
-      const currentUser = _.get(state, 'account.currentUser.data');
+      const currentUser = _.get('account.currentUser.data', state);
       const result = await action(input, currentUser, thunkAPI);
       if (onSuccessMessage) {
         dispatch(addMessage(onSuccessMessage(result, input)));

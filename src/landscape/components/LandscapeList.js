@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -23,7 +23,7 @@ import theme from 'theme';
 
 const MembershipButton = ({ landscape }) => (
   <GroupMembershipButton
-    groupSlug={_.get(landscape, 'defaultGroup.slug')}
+    groupSlug={_.get('defaultGroup.slug', landscape)}
     confirmMessageText="landscape.membership_leave_confirm_message"
     confirmMessageTitle="landscape.membership_leave_confirm_title"
     confirmButtonLabel="landscape.membership_leave_confirm_button"
@@ -73,7 +73,7 @@ const LandscapeTable = ({ landscapes }) => {
       headerName: t('landscape.list_column_members'),
       align: 'center',
       valueGetter: ({ row: landscape }) =>
-        _.get(landscape, 'defaultGroup.members.length', 0),
+        _.getOr(0, 'defaultGroup.members.length', landscape),
       renderCell: ({ row: landscape }) => (
         <GroupMembershipCount groupSlug={landscape.defaultGroup.slug} />
       ),

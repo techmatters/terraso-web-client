@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import {
@@ -64,13 +64,13 @@ const GroupMembershipCard = props => {
     confirmMessageTitle,
     confirmButtonLabel,
   } = props;
-  const { fetching, group } = useSelector(state =>
-    _.get(state, `group.memberships.${groupSlug}`, {})
+  const { fetching, group } = useSelector(
+    _.getOr({}, `group.memberships.${groupSlug}`)
   );
 
   // TODO This should just be 5 users and we should get the total count from
   // the backend when the support is added
-  const members = _.get(group, 'members', []);
+  const members = _.getOr([], 'members', group);
 
   return (
     <Card>

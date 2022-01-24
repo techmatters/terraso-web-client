@@ -7,8 +7,14 @@
       "modules": true
     }
   },
-  "plugins": ["prettier"],
-  "extends": ["prettier"],
+  "plugins": [
+    "prettier",
+    "lodash-fp"
+  ],
+  "extends": [
+    "prettier",
+    "plugin:lodash-fp/recommended"
+  ],
   "rules": {
     "prettier/prettier": "error"
   }

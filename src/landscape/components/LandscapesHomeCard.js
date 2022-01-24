@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import {
   Avatar,
   Box,
@@ -40,7 +40,7 @@ const LandscapeItem = ({ landscape }) => {
         >
           {landscape.name}
         </Link>
-        {t(`landscape.role_${_.get(landscape, 'role', 'member')}`)}
+        {t(`landscape.role_${_.getOr('member', 'role', landscape)}`)}
       </Box>
     </List>
   );
