@@ -1,7 +1,7 @@
 const { readFile } = require('fs').promises;
 const path = require('path');
 const flat = require('flat');
-const _ = require('lodash');
+const _ = require('lodash/fp');
 
 const { filesInFolder } = require('./utils');
 
@@ -30,7 +30,7 @@ const checkMissingKeys = () =>
             // Process each Locale
             .then(localeContent => getKeys(localeContent))
             // Identify diff with source locale keys
-            .then(localeKeys => _.difference(sourceKeys, localeKeys))
+            .then(_.difference(sourceKeys))
             .then(localeDiff => {
               if (_.isEmpty(localeDiff)) {
                 return null;

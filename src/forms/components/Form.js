@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, Grid } from '@mui/material';
@@ -8,11 +8,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import FormField from 'forms/components/FormField';
 import theme from 'theme';
 
-const getInitialEmptyValues = fields =>
-  _.chain(fields)
-    .map(field => [field.name, ''])
-    .fromPairs()
-    .value();
+const getInitialEmptyValues = _.flow(
+  _.map(field => [field.name, '']),
+  _.fromPairs
+);
 
 const Form = props => {
   const { t } = useTranslation();
@@ -36,11 +35,13 @@ const Form = props => {
     resolver: yupResolver(validationSchema),
   });
 
-  const requiredFields = _.chain(_.get(validationSchema, 'fields', {}))
-    .toPairs()
-    .filter(([name, field]) => _.get(field, 'exclusiveTests.required', false))
-    .map(([name]) => name)
-    .value();
+  const requiredFields = _.flow(
+    _.toPairs,
+    _.filter(([name, field]) =>
+      _.getOr(false, 'exclusiveTests.required', field)
+    ),
+    _.map(([name]) => name)
+  )(_.getOr({}, 'fields', validationSchema));
 
   useEffect(() => {
     if (values) {
@@ -67,11 +68,11 @@ const Form = props => {
           key={field.name}
           item
           xs={12}
-          {..._.get(field, 'props.gridItemProps')}
+          {..._.get('props.gridItemProps', field)}
         >
           <FormField
             control={control}
-            required={_.includes(requiredFields, field.name)}
+            required={_.includes(field.name, requiredFields)}
             id={`${prefix}-${field.name}`}
             name={field.name}
             label={field.label}
@@ -79,9 +80,9 @@ const Form = props => {
             inputProps={{
               type: field.type || 'text',
               placeholder: t(field.placeholder),
-              ..._.get(field, 'props.inputProps', {}),
+              ..._.getOr({}, 'props.inputProps', field),
             }}
-            {..._.get(field, 'props', {})}
+            {..._.getOr({}, 'props', field)}
           />
         </Grid>
       ))}

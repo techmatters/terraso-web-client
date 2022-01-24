@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash/fp';
 
 import { getUserEmail } from 'account/auth';
 import { userFields } from 'account/accountFragments';
@@ -33,7 +33,7 @@ export const fetchUser = () => {
   `;
   return terrasoApi
     .request(query, { email: getUserEmail() })
-    .then(response => _.get(response, 'users.edges[0].node'))
+    .then(_.get('users.edges[0].node'))
     .then(user => user || Promise.reject('account.not_found'));
 };
 
@@ -47,6 +47,6 @@ export const saveUser = user => {
     ${userFields}
   `;
   return terrasoApi
-    .request(query, { input: _.omit(user, ['profileImage', 'email']) })
+    .request(query, { input: _.omit(['profileImage', 'email'], user) })
     .then(response => response.updateUser.user);
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 
 import { render, screen, fireEvent } from 'tests/utils';
@@ -63,13 +63,17 @@ test('AccountProfile: Display Avatar with missing image', async () => {
 });
 test('AccountProfile: Save', async () => {
   terrasoApi.request.mockResolvedValue(
-    _.set({}, 'updateUser.user', {
-      id: '1',
-      firstName: 'Pablo',
-      lastName: 'Perez',
-      email: 'group@group.org',
-      profileImage: 'https://www.group.org/image.jpg',
-    })
+    _.set(
+      'updateUser.user',
+      {
+        id: '1',
+        firstName: 'Pablo',
+        lastName: 'Perez',
+        email: 'group@group.org',
+        profileImage: 'https://www.group.org/image.jpg',
+      },
+      {}
+    )
   );
 
   const { inputs } = await setup({

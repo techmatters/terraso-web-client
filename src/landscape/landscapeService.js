@@ -93,9 +93,7 @@ export const fetchLandscapes = () => {
           defaultGroup: getDefaultGroup(landscape),
         }))
     )
-    .then(landscapes =>
-      _.orderBy(landscapes, null, [landscape => landscape.name.toLowerCase()])
-    );
+    .then(_.orderBy([landscape => landscape.name.toLowerCase()], null));
 };
 
 const updateLandscape = landscape => {

@@ -1,13 +1,11 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
 import { Typography } from '@mui/material';
 
 const GroupMembershipCount = ({ groupSlug }) => {
-  const { group } = useSelector(state =>
-    _.get(state, `group.memberships.${groupSlug}`, {})
-  );
-  const members = _.get(group, 'members', []);
+  const { group } = useSelector(_.getOr({}, `group.memberships.${groupSlug}`));
+  const members = _.getOr([], 'members', group);
   return <Typography variant="body1">{members.length}</Typography>;
 };
 

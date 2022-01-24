@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { Avatar } from '@mui/material';
 
 const AccountAvatar = props => {
@@ -10,7 +10,7 @@ const AccountAvatar = props => {
       aria-label={name}
       alt={name}
       src={user.profileImage}
-      {..._.omit(props, 'user')}
+      {..._.omit('user', props)}
     >
       {user.firstName.substr(0, 1).toUpperCase()}
     </Avatar>

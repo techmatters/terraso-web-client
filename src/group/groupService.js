@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash/fp';
 
 import * as terrasoApi from 'terrasoBackend/api';
 import {
@@ -9,7 +9,7 @@ import {
 import { extractAccountMembership, extractMembers } from './groupUtils';
 
 // Omitted email because it is not supported by the backend
-const cleanGroup = group => _.omit(group, 'slug');
+const cleanGroup = group => _.omit('slug', group);
 
 export const fetchGroupToUpdate = slug => {
   const query = `
@@ -26,7 +26,7 @@ export const fetchGroupToUpdate = slug => {
   `;
   return terrasoApi
     .request(query, { slug })
-    .then(response => _.get(response, 'groups.edges[0].node'))
+    .then(_.get('groups.edges[0].node'))
     .then(group => group || Promise.reject('group.not_found'));
 };
 
@@ -49,7 +49,7 @@ export const fetchGroupToView = (slug, currentUser) => {
   `;
   return terrasoApi
     .request(query, { slug, accountEmail: currentUser.email })
-    .then(response => _.get(response, 'groups.edges[0].node'))
+    .then(_.get('groups.edges[0].node'))
     .then(group => group || Promise.reject('group.not_found'))
     .then(group => ({
       ...group,
@@ -88,16 +88,16 @@ export const fetchGroups = () => {
   return terrasoApi
     .request(query)
     .then(response => [
-      ..._.get(response, 'independentGroups.edges', []),
-      ..._.get(response, 'landscapeGroups.edges', []),
+      ..._.getOr([], 'independentGroups.edges', response),
+      ..._.getOr([], 'landscapeGroups.edges', response),
     ])
     .then(groups =>
       groups.map(edge => ({
-        ..._.omit(edge.node, 'memberships'),
+        ..._.omit('memberships', edge.node),
         members: extractMembers(edge.node),
       }))
     )
-    .then(groups => _.orderBy(groups, [group => group.name.toLowerCase()]));
+    .then(_.orderBy([group => group.name.toLowerCase()], null));
 };
 
 const updateGroup = group => {
@@ -162,10 +162,10 @@ export const joinGroup = ({ groupSlug, userEmail, userRole = 'member' }) => {
       input: { userEmail, groupSlug, userRole },
     })
     .then()
-    .then(response => _.get(response, 'addMembership.membership.group'))
+    .then(_.get('addMembership.membership.group'))
     .then(group => group || Promise.reject('group.not_found'))
     .then(group => ({
-      ..._.omit(group, 'memberships'),
+      ..._.omit('memberships', group),
       members: extractMembers(group),
     }));
 };
@@ -188,6 +188,6 @@ export const leaveGroup = ({ groupSlug, membershipId }) => {
   return terrasoApi
     .request(query, { input: { id: membershipId } })
     .then()
-    .then(response => _.get(response, 'deleteMembership.membership.group'))
+    .then(_.get('deleteMembership.membership.group'))
     .then(() => ({ groupSlug }));
 };

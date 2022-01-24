@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import { useParams } from 'react-router-dom';
 
 import { render, screen, act } from 'tests/utils';
@@ -97,10 +97,14 @@ test('Auth: test fetch user', async () => {
   getUserEmail.mockReturnValue(Promise.resolve('test@email.com'));
   terrasoApi.request.mockReturnValue(
     Promise.resolve(
-      _.set({}, 'users.edges[0].node', {
-        firstName: 'John',
-        lastName: 'Doe',
-      })
+      _.set(
+        'users.edges[0].node',
+        {
+          firstName: 'John',
+          lastName: 'Doe',
+        },
+        {}
+      )
     )
   );
   await act(async () =>

@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import _ from 'lodash/fp';
 import {
   Button,
   CardActions,
@@ -26,7 +26,7 @@ const GroupItem = ({ group }) => {
       >
         {group.name}
       </Link>
-      &nbsp;({t(`group.role_${_.get(group, 'role', 'member')}`)})
+      &nbsp;({t(`group.role_${_.getOr('member', 'role', group)}`)})
     </List>
   );
 };
