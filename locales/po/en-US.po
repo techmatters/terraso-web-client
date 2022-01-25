@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-01-21T22:13:35.239Z\n"
-"PO-Revision-Date: 2022-01-21T22:13:35.239Z\n"
+"POT-Creation-Date: 2022-01-25T16:09:35.443Z\n"
+"PO-Revision-Date: 2022-01-25T16:09:35.443Z\n"
 
 msgid "home##title"
 msgstr "Home"
@@ -127,6 +127,14 @@ msgid "group##list"
 msgstr "Groups"
 
 msgctxt "title"
+msgid "group##members_list"
+msgstr "{{name}} Members"
+
+msgctxt "title"
+msgid "group##members_remove_confirmation"
+msgstr "Remove Member"
+
+msgctxt "title"
 msgid "landscape##home"
 msgstr "Landscapes"
 
@@ -153,6 +161,10 @@ msgstr "About {{name}}"
 msgctxt "title"
 msgid "landscape##list"
 msgstr "Landscapes"
+
+msgctxt "title"
+msgid "landscape##members_remove_confirmation"
+msgstr "Remove Member"
 
 msgctxt "title"
 msgid "tool##faq"
@@ -185,8 +197,16 @@ msgid "group##membership_leave_confirm"
 msgstr "Are you sure you want to leave the group “{{name}}”?"
 
 msgctxt "message"
+msgid "group##members_remove_confirmation"
+msgstr "You are about to remove “{{userName}}” from the “{{name}}” group."
+
+msgctxt "message"
 msgid "landscape##membership_leave_confirm"
 msgstr "Are you sure you want to leave the landscape “{{name}}”?"
+
+msgctxt "message"
+msgid "landscape##members_remove_confirmation"
+msgstr "You are about to remove “{{userName}}” from the “{{name}}” landscape."
 
 msgctxt "message"
 msgid "account##unauthenticated"
@@ -225,6 +245,10 @@ msgid "group##list_new"
 msgstr "Create Group"
 
 msgctxt "button"
+msgid "group##members_remove_confirmation"
+msgstr "Remove Member"
+
+msgctxt "button"
 msgid "landscape##edit_profile"
 msgstr "Edit Landscape Profile"
 
@@ -244,21 +268,73 @@ msgctxt "button"
 msgid "landscape##list_leave"
 msgstr "Member"
 
+msgctxt "button"
+msgid "landscape##members_remove_confirmation"
+msgstr "Remove Member"
+
+msgctxt "name"
+msgid "user##full"
+msgstr "{{user.firstName}} {{user.lastName}}"
+
+msgctxt "name"
+msgid "group##list_column"
+msgstr "Group"
+
+msgctxt "name"
+msgid "group##members_list_column"
+msgstr "Name"
+
+msgctxt "name"
+msgid "landscape##list_column"
+msgstr "Landscape"
+
 msgctxt "member"
 msgid "group##role"
 msgstr "Member"
 
 msgctxt "member"
+msgid "group##members_title"
+msgstr "{{name}} Members"
+
+msgctxt "member"
+msgid "group##members_description"
+msgstr ""
+
+msgctxt "member"
 msgid "landscape##role"
 msgstr "Member"
+
+msgctxt "member"
+msgid "landscape##members_title"
+msgstr "{{name}} Members"
+
+msgctxt "member"
+msgid "landscape##members_description"
+msgstr ""
 
 msgctxt "manager"
 msgid "group##role"
 msgstr "Manager"
 
 msgctxt "manager"
+msgid "group##members_title"
+msgstr "Manage Members"
+
+msgctxt "manager"
+msgid "group##members_description"
+msgstr "Add or remove members in the “{{name}}” group."
+
+msgctxt "manager"
 msgid "landscape##role"
 msgstr "Manager"
+
+msgctxt "manager"
+msgid "landscape##members_title"
+msgstr "Manage Members"
+
+msgctxt "manager"
+msgid "landscape##members_description"
+msgstr "Add or remove members in the “{{name}}” landscape."
 
 msgctxt "label"
 msgid "group##home_connect"
@@ -458,13 +534,9 @@ msgctxt "one"
 msgid "group##membership_card_description"
 msgstr "{{count}} Terraso member has affiliated with {{name}}."
 
-msgctxt "name"
-msgid "group##list_column"
-msgstr "Group"
-
-msgctxt "name"
-msgid "landscape##list_column"
-msgstr "Landscape"
+msgctxt "all"
+msgid "group##membership_view"
+msgstr "View all members"
 
 msgctxt "website"
 msgid "group##list_column"
@@ -491,8 +563,32 @@ msgid "group##list"
 msgstr "No Groups"
 
 msgctxt "empty"
+msgid "group##members_list"
+msgstr "No members"
+
+msgctxt "empty"
 msgid "landscape##list"
 msgstr "No Landscapes"
+
+msgctxt "leave"
+msgid "group##members_list"
+msgstr "Leave"
+
+msgctxt "leave"
+msgid "landscape##members_list"
+msgstr "Leave"
+
+msgctxt "remove"
+msgid "group##members_list"
+msgstr "Remove"
+
+msgctxt "remove"
+msgid "landscape##members_list"
+msgstr "Remove"
+
+msgctxt "role"
+msgid "group##members_list_column"
+msgstr "Role"
 
 msgctxt "info"
 msgid "landscape##form_email"
