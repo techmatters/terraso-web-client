@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useParams, Link as RouterLink } from 'react-router-dom';
+import { useParams, Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Box,
@@ -17,10 +17,25 @@ import PublicIcon from '@mui/icons-material/Public';
 import EmailIcon from '@mui/icons-material/Email';
 
 import { fetchGroupView } from 'group/groupSlice';
-import GroupMembershipCard from 'group/components/GroupMembershipCard';
+import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
 import PageLoader from 'common/components/PageLoader';
 import Restricted from 'permissions/components/Restricted';
+import { GroupContextProvider } from 'group/groupContext';
+import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
+import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import theme from 'theme';
+import { withProps } from 'react-hoc';
+
+const MemberLeaveButton = withProps(GroupMemberLeave, {
+  label: 'group.view_leave_label',
+  buttonProps: {
+    sx: { flexGrow: 1 },
+  },
+});
+
+const MemberJoinButton = withProps(GroupMemberJoin, {
+  label: 'group.view_join_label',
+});
 
 const GroupCard = ({ group }) => {
   const { t } = useTranslation();
@@ -62,6 +77,7 @@ const GroupCard = ({ group }) => {
 const GroupView = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { group, fetching } = useSelector(state => state.group.view);
   const { slug } = useParams();
 
@@ -107,15 +123,16 @@ const GroupView = () => {
           <GroupCard group={group} />
         </Grid>
         <Grid item xs={12} md={6}>
-          <GroupMembershipCard
-            ownerName={group.name}
+          <GroupContextProvider
+            owner={group}
             groupSlug={group.slug}
-            joinLabel="group.view_join_label"
-            leaveLabel="group.view_leave_label"
-            messageText="group.membership_leave_confirm_message"
-            messageTitle="group.membership_leave_confirm_title"
-            confirmButtonLabel="group.membership_leave_confirm_button"
-          />
+            MemberJoinButton={MemberJoinButton}
+            MemberLeaveButton={MemberLeaveButton}
+          >
+            <GroupMembershipCard
+              onViewMembers={() => navigate(`/groups/${group.slug}/members`)}
+            />
+          </GroupContextProvider>
         </Grid>
       </Grid>
     </Box>

@@ -119,7 +119,7 @@ test('GroupList: Display list', async () => {
     'data-field',
     'actions'
   );
-  expect(within(rows[9]).getByRole('cell', { name: 'MEMBER' })).toHaveAttribute(
+  expect(within(rows[9]).getByRole('cell', { name: 'Member' })).toHaveAttribute(
     'data-field',
     'actions'
   );
@@ -268,7 +268,7 @@ test('GroupList: Display list (small screen)', async () => {
   expect(within(rows[1]).getByText('email@email.com')).toBeInTheDocument();
   expect(within(rows[1]).getByText('23')).toBeInTheDocument();
   expect(within(rows[1]).getByText('Join')).toBeInTheDocument();
-  expect(within(rows[8]).getByText('MEMBER')).toBeInTheDocument();
+  expect(within(rows[8]).getByText('Member')).toBeInTheDocument();
 });
 test('GroupList: URL params', async () => {
   const entriesSpy = jest.spyOn(URLSearchParams.prototype, 'entries');

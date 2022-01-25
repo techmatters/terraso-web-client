@@ -1,0 +1,28 @@
+import React from 'react';
+import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
+
+import ConfirmButton from 'common/components/ConfirmButton';
+
+const LandscapeMemberLeave = props => {
+  const { t } = useTranslation();
+  const { label, owner, onConfirm, buttonProps, loading } = props;
+
+  return (
+    <ConfirmButton
+      onConfirm={onConfirm}
+      confirmTitle={t('landscape.membership_leave_confirm_title', {
+        name: _.get('name', owner),
+      })}
+      confirmMessage={t('landscape.membership_leave_confirm_message', {
+        name: _.get('name', owner),
+      })}
+      confirmButton={t('landscape.membership_leave_confirm_button')}
+      buttonLabel={t(label)}
+      buttonProps={buttonProps}
+      loading={loading}
+    />
+  );
+};
+
+export default LandscapeMemberLeave;

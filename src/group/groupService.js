@@ -100,6 +100,101 @@ export const fetchGroups = () => {
     .then(_.orderBy([group => group.name.toLowerCase()], null));
 };
 
+export const fetchGroupForMembers = (slug, currentUser) => {
+  const query = `
+    query group($slug: String!, $accountEmail: String!){
+      groups(slug: $slug) {
+        edges {
+          node {
+            ...groupFields
+            ...accountMembership
+          }
+        }
+      }
+    }
+    ${groupFields}
+    ${accountMembership}
+  `;
+  return terrasoApi
+    .request(query, { slug, accountEmail: currentUser.email })
+    .then(_.get('groups.edges[0].node'))
+    .then(group => group || Promise.reject('group.not_found'))
+    .then(group => ({
+      ...group,
+      accountMembership: extractAccountMembership(group),
+    }));
+};
+
+export const fetchMembers = (slug, currentUser) => {
+  const query = `
+    query group($slug: String!){
+      groups(slug: $slug) {
+        edges {
+          node {
+            ...groupMembers
+          }
+        }
+      }
+    }
+    ${groupMembers}
+  `;
+  return terrasoApi
+    .request(query, { slug, accountEmail: currentUser.email })
+    .then(_.get('groups.edges[0].node'))
+    .then(group => group || Promise.reject('group.not_found'))
+    .then(group => ({
+      members: extractMembers(group),
+    }));
+};
+
+export const removeMember = (member, currentUser) => {
+  const query = `
+    mutation deleteMembership($input: MembershipDeleteMutationInput!) {
+      deleteMembership(input: $input) {
+        membership {
+          group {
+            ...groupMembers
+          }
+        }
+      }
+    }
+    ${groupMembers}
+  `;
+  return terrasoApi
+    .request(query, {
+      input: { id: member.membershipId },
+      accountEmail: currentUser.email,
+    })
+    .then(_.get('deleteMembership.membership.group'))
+    .then(group => ({
+      members: extractMembers(group),
+    }));
+};
+
+export const updateMemberRole = ({ member, newRole }, currentUser) => {
+  const query = `
+    mutation updateMembership($input: MembershipUpdateMutationInput!) {
+      updateMembership(input: $input) {
+        membership {
+          group {
+            ...groupMembers
+          }
+        }
+      }
+    }
+    ${groupMembers}
+  `;
+  return terrasoApi
+    .request(query, {
+      input: { id: member.membershipId, userRole: newRole },
+      accountEmail: currentUser.email,
+    })
+    .then(_.get('updateMembership.membership.group'))
+    .then(group => ({
+      members: extractMembers(group),
+    }));
+};
+
 const updateGroup = group => {
   const query = `
     mutation updateGroup($input: GroupUpdateMutationInput!) {
@@ -189,5 +284,8 @@ export const leaveGroup = ({ groupSlug, membershipId }) => {
     .request(query, { input: { id: membershipId } })
     .then()
     .then(_.get('deleteMembership.membership.group'))
-    .then(() => ({ groupSlug }));
+    .then(group => ({
+      ..._.omit('memberships', group),
+      members: extractMembers(group),
+    }));
 };

@@ -11,8 +11,10 @@ import {
   AvatarGroup,
   CircularProgress,
   Box,
+  Link,
 } from '@mui/material';
 
+import { useGroupContext } from 'group/groupContext';
 import GroupMembershipButton from './GroupMembershipButton';
 import AccountAvatar from 'account/components/AccountAvatar';
 import theme from 'theme';
@@ -27,7 +29,8 @@ const Loader = () => (
 
 const Content = props => {
   const { t } = useTranslation();
-  const { ownerName, members, fetching } = props;
+  const { owner } = useGroupContext();
+  const { members, fetching, onViewMembers } = props;
 
   if (fetching) {
     return <Loader />;
@@ -38,32 +41,32 @@ const Content = props => {
       <Typography variant="body2" color="text.secondary">
         {t('group.membership_card_description', {
           count: members.length,
-          name: ownerName,
+          name: owner.name,
         })}
       </Typography>
       <AvatarGroup
         max={5}
-        sx={{ flexDirection: 'row', marginTop: theme.spacing(2) }}
+        sx={{
+          flexDirection: 'row',
+          marginTop: theme.spacing(2),
+          marginBottom: theme.spacing(2),
+        }}
       >
         {members.map((member, index) => {
           return <AccountAvatar key={index} user={member} />;
         })}
       </AvatarGroup>
+      <Link component="button" onClick={onViewMembers}>
+        {t('group.membership_view_all')}
+      </Link>
     </CardContent>
   );
 };
 
 const GroupMembershipCard = props => {
   const { t } = useTranslation();
-  const {
-    ownerName,
-    groupSlug,
-    joinLabel,
-    leaveLabel,
-    confirmMessageText,
-    confirmMessageTitle,
-    confirmButtonLabel,
-  } = props;
+  const { groupSlug } = useGroupContext();
+  const { onViewMembers } = props;
   const { fetching, group } = useSelector(
     _.getOr({}, `group.memberships.${groupSlug}`)
   );
@@ -75,18 +78,14 @@ const GroupMembershipCard = props => {
   return (
     <Card>
       <CardHeader title={t('group.membership_card_title')} />
-      <Content fetching={fetching} ownerName={ownerName} members={members} />
+      <Content
+        fetching={fetching}
+        members={members}
+        onViewMembers={onViewMembers}
+      />
       {fetching ? null : (
-        <CardActions>
-          <GroupMembershipButton
-            ownerName={ownerName}
-            groupSlug={groupSlug}
-            joinLabel={joinLabel}
-            leaveLabel={leaveLabel}
-            confirmMessageText={confirmMessageText}
-            confirmMessageTitle={confirmMessageTitle}
-            confirmButtonLabel={confirmButtonLabel}
-          />
+        <CardActions sx={{ flexDirection: 'row' }}>
+          <GroupMembershipButton />
         </CardActions>
       )}
     </Card>

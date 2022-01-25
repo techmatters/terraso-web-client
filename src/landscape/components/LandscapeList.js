@@ -15,23 +15,41 @@ import {
 } from '@mui/material';
 
 import { fetchLandscapes } from 'landscape/landscapeSlice';
-import GroupMembershipButton from 'group/components/GroupMembershipButton';
-import GroupMembershipCount from 'group/components/GroupMembershipCount';
+import { withProps } from 'react-hoc';
+import GroupMembershipButton from 'group/membership/components/GroupMembershipButton';
+import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
 import Table from 'common/components/Table';
 import PageLoader from 'common/components/PageLoader';
+import { GroupContextProvider } from 'group/groupContext';
+import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
+import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import theme from 'theme';
 
+const MemberLeaveButton = withProps(LandscapeMemberLeave, {
+  label: 'landscape.list_leave_button',
+  buttonProps: {
+    variant: 'contained',
+    sx: {
+      bgcolor: 'gray.lite1',
+      color: 'black',
+      textTransform: 'uppercase',
+    },
+  },
+});
+
+const MemberJoinButton = withProps(GroupMemberJoin, {
+  label: 'landscape.list_join_button',
+});
+
 const MembershipButton = ({ landscape }) => (
-  <GroupMembershipButton
+  <GroupContextProvider
+    owner={landscape}
     groupSlug={_.get('defaultGroup.slug', landscape)}
-    confirmMessageText="landscape.membership_leave_confirm_message"
-    confirmMessageTitle="landscape.membership_leave_confirm_title"
-    confirmButtonLabel="landscape.membership_leave_confirm_button"
-    joinLabel="landscape.list_join_button"
-    leaveLabel="landscape.list_leave_button"
-    ownerName={landscape.name}
-    sx={{ width: '100%' }}
-  />
+    MemberJoinButton={MemberJoinButton}
+    MemberLeaveButton={MemberLeaveButton}
+  >
+    <GroupMembershipButton sx={{ width: '100%' }} />
+  </GroupContextProvider>
 );
 
 const LandscapeTable = ({ landscapes }) => {
@@ -80,12 +98,13 @@ const LandscapeTable = ({ landscapes }) => {
     },
     {
       field: 'actions',
+      type: 'actions',
       headerName: false,
       sortable: false,
       align: 'center',
-      renderCell: ({ row: landscape }) => (
-        <MembershipButton landscape={landscape} />
-      ),
+      getActions: ({ row: landscape }) => [
+        <MembershipButton landscape={landscape} />,
+      ],
     },
   ];
 

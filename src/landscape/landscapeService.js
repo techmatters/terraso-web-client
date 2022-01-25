@@ -3,7 +3,8 @@ import _ from 'lodash/fp';
 import * as terrasoApi from 'terrasoBackend/api';
 import * as gisService from 'gis/gisService';
 import { landscapeFields, defaultGroup } from 'landscape/landscapeFragments';
-import { extractMembers } from 'group/groupUtils';
+import { extractAccountMembership, extractMembers } from 'group/groupUtils';
+import { accountMembership } from 'group/groupFragments';
 
 const cleanLandscape = landscape => _.omit('slug', landscape);
 
@@ -94,6 +95,44 @@ export const fetchLandscapes = () => {
         }))
     )
     .then(_.orderBy([landscape => landscape.name.toLowerCase()], null));
+};
+
+export const fetchLandscapeForMembers = (slug, currentUser) => {
+  const query = `
+    query landscapes($slug: String!, $accountEmail: String!){
+      landscapes(slug: $slug) {
+        edges {
+          node {
+            ...landscapeFields
+            associatedGroups(isDefaultLandscapeGroup: true) {
+              edges {
+                node {
+                  group {
+                    slug
+                    ...accountMembership
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    ${landscapeFields}
+    ${accountMembership}
+  `;
+  return terrasoApi
+    .request(query, { slug, accountEmail: currentUser.email })
+    .then(_.get('landscapes.edges[0].node'))
+    .then(landscape => landscape || Promise.reject('landscape.not_found'))
+    .then(landscape => {
+      const group = _.get('associatedGroups.edges[0].node.group', landscape);
+      return {
+        ...landscape,
+        accountMembership: extractAccountMembership(group),
+        groupSlug: _.get('slug', group),
+      };
+    });
 };
 
 const updateLandscape = landscape => {

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Box,
@@ -15,10 +15,25 @@ import {
 import PublicIcon from '@mui/icons-material/Public';
 
 import { fetchLandscapeView } from 'landscape/landscapeSlice';
-import GroupMembershipCard from 'group/components/GroupMembershipCard';
+import { withProps } from 'react-hoc';
+import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
 import PageLoader from 'common/components/PageLoader';
 import Map from 'gis/components/Map';
+import { GroupContextProvider } from 'group/groupContext';
+import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
+import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import theme from 'theme';
+
+const MemberLeaveButton = withProps(LandscapeMemberLeave, {
+  label: 'landscape.view_leave_label',
+  buttonProps: {
+    sx: { flexGrow: 1 },
+  },
+});
+
+const MemberJoinButton = withProps(GroupMemberJoin, {
+  label: 'landscape.view_join_label',
+});
 
 const LandscapeCard = ({ landscape }) => {
   const { t } = useTranslation();
@@ -62,6 +77,7 @@ const LandscapeMap = ({ position }) => {
 
 const LandscapeView = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { landscape, fetching } = useSelector(state => state.landscape.view);
   const { slug } = useParams();
 
@@ -103,15 +119,18 @@ const LandscapeView = () => {
           <LandscapeCard landscape={landscape} />
         </Grid>
         <Grid item xs={12} md={6}>
-          <GroupMembershipCard
-            ownerName={landscape.name}
+          <GroupContextProvider
+            owner={landscape}
             groupSlug={landscape.defaultGroup.slug}
-            joinLabel="landscape.view_join_label"
-            leaveLabel="landscape.view_leave_label"
-            messageText="landscape.membership_leave_confirm_message"
-            messageTitle="landscape.membership_leave_confirm_title"
-            confirmButtonLabel="landscape.membership_leave_confirm_button"
-          />
+            MemberJoinButton={MemberJoinButton}
+            MemberLeaveButton={MemberLeaveButton}
+          >
+            <GroupMembershipCard
+              onViewMembers={() =>
+                navigate(`/landscapes/${landscape.slug}/members`)
+              }
+            />
+          </GroupContextProvider>
         </Grid>
       </Grid>
     </Box>

@@ -23,6 +23,14 @@ const initialState = {
     message: null,
     success: false,
   },
+  membersGroup: {
+    data: null,
+    fetching: true,
+  },
+  members: {
+    list: null,
+    fetching: true,
+  },
 };
 
 export const fetchGroupForm = createAsyncThunk(
@@ -36,6 +44,22 @@ export const fetchGroupView = createAsyncThunk(
 export const fetchGroups = createAsyncThunk(
   'group/fetchGroups',
   groupService.fetchGroups
+);
+export const fetchGroupForMembers = createAsyncThunk(
+  'group/fetchGroupForMembers',
+  groupService.fetchGroupForMembers
+);
+export const fetchMembers = createAsyncThunk(
+  'group/fetchMembers',
+  groupService.fetchMembers
+);
+export const removeMember = createAsyncThunk(
+  'group/removeMember',
+  groupService.removeMember
+);
+export const updateMemberRole = createAsyncThunk(
+  'group/updateMemberRole',
+  groupService.updateMemberRole
 );
 export const saveGroup = createAsyncThunk(
   'group/saveGroup',
@@ -192,6 +216,57 @@ const groupSlice = createSlice({
         },
       },
     }),
+    [fetchGroupForMembers.pending]: state =>
+      _.set('membersGroup', initialState.membersGroup, state),
+    [fetchGroupForMembers.fulfilled]: (state, action) =>
+      _.set(
+        'membersGroup',
+        {
+          fetching: false,
+          data: action.payload,
+        },
+        state
+      ),
+    [fetchGroupForMembers.rejected]: state =>
+      _.set('membersGroup', initialState.membersGroup, state),
+    [fetchMembers.pending]: state =>
+      _.set('members', initialState.members, state),
+    [fetchMembers.fulfilled]: (state, action) =>
+      _.set(
+        'members',
+        {
+          fetching: false,
+          list: groupUtils.generateIndexedMembers(action.payload.members),
+        },
+        state
+      ),
+    [fetchMembers.rejected]: state => _.set('members.fetching', false, state),
+    [removeMember.pending]: (state, action) =>
+      _.set(`members.list.${action.meta.arg.id}.fetching`, true, state),
+    [removeMember.fulfilled]: (state, action) =>
+      _.set(
+        'members',
+        {
+          fetching: false,
+          list: groupUtils.generateIndexedMembers(action.payload.members),
+        },
+        state
+      ),
+    [removeMember.rejected]: (state, action) =>
+      _.set(`members.list.${action.meta.arg.id}.fetching`, false, state),
+    [updateMemberRole.pending]: (state, action) =>
+      _.set(`members.list.${action.meta.arg.member.id}.fetching`, true, state),
+    [updateMemberRole.fulfilled]: (state, action) =>
+      _.set(
+        'members',
+        {
+          fetching: false,
+          list: groupUtils.generateIndexedMembers(action.payload.members),
+        },
+        state
+      ),
+    [updateMemberRole.rejected]: (state, action) =>
+      _.set(`members.list.${action.meta.arg.member.id}.fetching`, false, state),
     [saveGroup.pending]: state => ({
       ...state,
       form: {
@@ -252,9 +327,9 @@ const groupSlice = createSlice({
     [leaveGroup.fulfilled]: (state, action) =>
       groupSlice.caseReducers.setMemberships(state, {
         payload: {
-          [action.payload.groupSlug]: {
+          [action.payload.slug]: {
             joining: false,
-            group: null,
+            group: action.payload,
           },
         },
       }),
