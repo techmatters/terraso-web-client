@@ -6,9 +6,9 @@ const LOG_LEVELS = ['log', 'info', 'warn', 'error'];
 
 const ORDER = _.flow(
   _.entries,
-  _.map(([index, severity]) => ([severity, index])),
+  _.map(([index, severity]) => [severity, index]),
   _.fromPairs
-)(LOG_LEVELS)
+)(LOG_LEVELS);
 
 const handleLog =
   severity =>

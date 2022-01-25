@@ -1,6 +1,6 @@
 import React from 'react';
 import Rollbar from 'rollbar';
-import { Provider, ErrorBoundary, LEVEL_WARN } from '@rollbar/react';
+import { Provider, ErrorBoundary } from '@rollbar/react';
 
 import { TERRASO_ENV, ROLLBAR_TOKEN } from 'config';
 
@@ -16,7 +16,7 @@ export const rollbar = new Rollbar(rollbarConfig);
 export const RollbarProvider = props => {
   return (
     <Provider config={rollbarConfig}>
-      <ErrorBoundary level={LEVEL_WARN}>{props.children}</ErrorBoundary>
+      <ErrorBoundary>{props.children}</ErrorBoundary>
     </Provider>
   );
 };

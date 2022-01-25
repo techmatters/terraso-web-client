@@ -1,4 +1,4 @@
-export const TERRASO_ENV = process.env.REACT_APP_ENV || 'local';
+export const TERRASO_ENV = process.env.REACT_APP_TERRASO_ENV || 'local';
 
 export const TERRASO_API_URL =
   process.env.REACT_APP_TERRASO_API_URL || 'http://127.0.0.1:8000';
