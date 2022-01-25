@@ -36,6 +36,11 @@ const LocalePicker = () => {
       ? `localization.locale_${locale}_small`
       : `localization.locale_${locale}`;
 
+  // Only show language picker if at least two languages are available.
+  if (Object.keys(LOCALES).length <= 1) {
+    return null;
+  }
+
   return (
     <Select
       size="small"
