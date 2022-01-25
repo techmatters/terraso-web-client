@@ -57,7 +57,9 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 
 To define environment variables we are using: https://create-react-app.dev/docs/adding-custom-environment-variables/. The available variables are:
 
+**REACT_APP_ENV**: Terraso Environment
 **REACT_APP_TERRASO_API_URL**: Terraso API host URL
+**REACT_APP_ROLLBAR_TOKEN**: Rollbar token
 
 ### Run command with custom variable value:
 
