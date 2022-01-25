@@ -4,11 +4,17 @@ import { rollbar, logLevel } from 'monitoring/rollbar';
 
 const LOG_LEVELS = ['log', 'info', 'warn', 'error'];
 
+const ORDER = _.flow(
+  _.entries,
+  _.map(([index, severity]) => ([severity, index])),
+  _.fromPairs
+)(LOG_LEVELS)
+
 const handleLog =
   severity =>
   (...args) => {
     console[severity](...args);
-    if (LOG_LEVELS.indexOf(severity) >= LOG_LEVELS.indexOf(logLevel)) {
+    if (ORDER[severity] >= ORDER[logLevel]) {
       rollbar[severity](...args);
       return;
     }
