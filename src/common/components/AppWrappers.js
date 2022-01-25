@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import NotificationsWrapper from 'notifications/NotificationsWrapper';
 import { PermissionsProvider } from 'permissions';
-import RollbarProvider from 'monitoring/rollbar';
+import { RollbarProvider } from 'monitoring/rollbar';
 
 // Localization
 import 'localization/i18n';

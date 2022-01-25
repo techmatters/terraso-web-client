@@ -1,4 +1,7 @@
 import * as terrasoApi from 'terrasoBackend/api';
+import { rollbar } from 'monitoring/rollbar';
+
+jest.mock('monitoring/rollbar');
 
 global.fetch = jest.fn();
 global.console.error = jest.fn();
@@ -9,6 +12,7 @@ test('Terraso API: request error', async () => {
     'terraso_api.error_request_response',
   ]);
   expect(console.error).toHaveBeenCalledTimes(1);
+  expect(rollbar.error).toHaveBeenCalledTimes(1);
 });
 test('Terraso API: request format error', async () => {
   global.fetch.mockResolvedValue({
@@ -18,6 +22,7 @@ test('Terraso API: request format error', async () => {
     'terraso_api.error_request_response',
   ]);
   expect(console.error).toHaveBeenCalledTimes(1);
+  expect(rollbar.error).toHaveBeenCalledTimes(1);
 });
 test('Terraso API: request GraphQL errors', async () => {
   global.fetch.mockResolvedValue({
@@ -32,6 +37,7 @@ test('Terraso API: request GraphQL errors', async () => {
   });
   await expect(terrasoApi.request()).rejects.toEqual(['Test error']);
   expect(console.error).toHaveBeenCalledTimes(0);
+  expect(rollbar.error).toHaveBeenCalledTimes(0);
 });
 test('Terraso API: no data error', async () => {
   global.fetch.mockResolvedValue({
@@ -54,4 +60,5 @@ test('Terraso API: success', async () => {
   const result = await terrasoApi.request();
   expect(result).toEqual({ test: 'value' });
   expect(console.error).toHaveBeenCalledTimes(0);
+  expect(rollbar.error).toHaveBeenCalledTimes(0);
 });

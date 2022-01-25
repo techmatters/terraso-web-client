@@ -1,6 +1,7 @@
 import _ from 'lodash/fp';
 
 import { getToken } from 'account/auth';
+import logger from 'monitoring/logger';
 import { TERRASO_API_URL, GRAPH_QL_ENDPOINT } from 'config';
 import { UNAUTHENTICATED } from 'account/authConstants';
 
@@ -22,7 +23,7 @@ export const request = async (query, variables) => {
       body: JSON.stringify({ query, variables }),
     }
   ).catch(error => {
-    console.error('Terraso API: Failed to execute request', error);
+    logger.error('Terraso API: Failed to execute request', error);
     return Promise.reject(['terraso_api.error_request_response']);
   });
 
@@ -31,7 +32,7 @@ export const request = async (query, variables) => {
   }
 
   const jsonResponse = await response.json().catch(error => {
-    console.error('Terraso API: Failed to parse response', error);
+    logger.error('Terraso API: Failed to parse response', error);
     return Promise.reject(['terraso_api.error_request_response']);
   });
 
@@ -40,7 +41,7 @@ export const request = async (query, variables) => {
   }
 
   if (!_.has('data', jsonResponse)) {
-    console.error(
+    logger.error(
       'Terraso API: Unexpected error',
       'received data:',
       jsonResponse
