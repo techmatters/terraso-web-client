@@ -8,7 +8,8 @@
         "login": "Iniciar sesión",
         "sign_out": "Cerrar sesión",
         "account_created_message": "Su cuenta de Terraso se creó con éxito con la siguiente información. Puede editarla en cualquier momento.",
-        "edit_profile_button": "Editar información de perfil"
+        "edit_profile_button": "Editar información de perfil",
+        "full_name": "{{user.firstName}} {{user.lastName}}"
     },
     "group": {
         "create": "Crear un grupo",
@@ -17,10 +18,13 @@
         "form_edit_title": "Administrar la información del grupo “{{name}}”",
         "form_new_title": "Crear nuevo grupo",
         "membership_card_title": "Miembros",
-        "membership_leave_confirm_title": "Abandonar {{name}}",
+        "membership_leave_confirm_title": "Dejar “{{name}}”",
         "view_card_title": "Acerca de {{name}}",
         "list_title": "Grupos",
+        "members_list_title": "{{name}} Miembros",
+        "members_remove_confirmation_title": "Quitar miembro",
         "membership_leave_confirm_message": "¿Está seguro de que desea abandonar el group “{{name}}”?",
+        "members_remove_confirmation_message": "Estás a punto de eliminar a “{{userName}}” del grupo “{{name}}”.",
         "edit_profile_button": "Editar perfil de grupo",
         "default_connect_button": "Explorar grupos",
         "membership_leave_confirm_button": "Dejar group",
@@ -28,8 +32,13 @@
         "list_join_button": "Unirse",
         "list_leave_button": "Miembro",
         "list_new_button": "Crear un grupo",
+        "members_remove_confirmation_button": "Quitar miembro",
         "role_member": "Miembro",
+        "members_title_member": "Miembros de {{name}}",
+        "members_description_member": "",
         "role_manager": "Administrador",
+        "members_title_manager": "Administrar miembros",
+        "members_description_manager": "Agrega o elimina miembros del grupo “{{name}}”.",
         "home_connect_label": "Unirse a otro grupo",
         "form_name_label": "Nombre",
         "form_description_label": "Descripción",
@@ -52,12 +61,17 @@
         "not_found": "Grupo no encontrado",
         "membership_card_description_other": "{{count}} Los miembros de Terraso se han afiliado a {{name}}.",
         "membership_card_description_one": "{{count}} El miembro de Terraso se ha afiliado a {{name}}.",
-        "membership_leave_confirm_title": "Dejar “{{name}}”",
         "list_column_name": "Grupo",
+        "members_list_column_name": "Nombre",
         "list_column_website": "Sitio web",
         "list_column_contact": "Correo electrónico",
         "list_column_members": "Miembros",
-        "list_empty": "No hay grupos"
+        "list_empty": "No hay grupos",
+        "members_list_empty": "No existen miembros",
+        "membership_view_all": "Ver toda(o)s los miembros",
+        "members_list_leave": "Abandonar",
+        "members_list_remove": "Eliminar",
+        "members_list_column_role": "Rol"
     },
     "tool": {
         "avilability": "Disponibilidad",
@@ -74,24 +88,18 @@
         "home_card_img_alt": "Imagen de KoBoToolbox"
     },
     "tools": {
-      "kobo": {
-        "title": "KoBoToolbox",
-        "url": "https://www.kobotoolbox.org/",
-        "img": {
-          "height": "222",
-          "width": "377",
-          "src": "kobo.png"
-        },
-        "description": [
-          "Diseñe y cree formularios rápidamente",
-          "Recopilar datos fuera de línea y en línea'",
-          "Analizar y gestionar datos"
-        ],
-        "requirements": [
-          "Navegador web moderno (Chrome, Edge, Firefox, Safari)"
-        ],
-        "availability": "KoboToolbox se integrará en Terraso en 2022. Usa Kobo de forma independiente por ahora."
-      }
+        "kobo": {
+            "title": "KoBoToolbox",
+            "url": "https://www.kobotoolbox.org/",
+            "img": {
+                "height": "222",
+                "width": "377",
+                "src": "kobo.png"
+            },
+            "description": "Diseñe y cree formularios rápidamente\nRecopilar datos fuera de línea y en línea'\nAnalizar y gestionar datos",
+            "requirements": "Navegador web moderno (Chrome, Edge, Firefox, Safari)",
+            "availability": "KoboToolbox se integrará en Terraso en 2022. Usa Kobo de forma independiente por ahora."
+        }
     },
     "account": {
         "welcome": "Bienvenidos",
@@ -103,8 +111,8 @@
         "form_save_label": "Confirmar",
         "save_success": "Su perfil se ha guardado.",
         "not_found": "Cuenta no encontrada",
-        "form_first_name_info": "Este nombre se utilizará para saludarlo en Terraso.",
         "welcome_to": "Bienvenido a",
+        "form_first_name_info": "Este nombre se utilizará para saludarlo en Terraso.",
         "profile_picture": "Fotografía de perfil",
         "apple_login": "Continuar con Apple",
         "google_login": "Continuar con Google",
@@ -131,12 +139,22 @@
         "form_new_title": "Información del nuevo paisaje",
         "view_card_title": "Acerca de {{name}}",
         "list_title": "Paisajes",
+        "membership_leave_confirm_title": "Dejar “{{name}}”",
+        "members_remove_confirmation_title": "Quitar miembro",
+        "membership_leave_confirm_message": "¿Está seguro de que desea abandonar el paisaje “{{name}}”?",
+        "members_remove_confirmation_message": "Estás a punto de eliminar a “{{userName}}” del paisaje “{{name}}”.",
         "edit_profile_button": "Editar perfil de paisaje",
         "default_connect_button": "Explora paisajes",
         "list_join_button": "Conectar",
         "list_leave_button": "Miembro",
+        "membership_leave_confirm_button": "Dejar el paisaje",
+        "members_remove_confirmation_button": "Quitar miembro",
         "role_member": "Miembro",
+        "members_title_member": "Miembros de {{name}}",
+        "members_description_member": "",
         "role_manager": "Administrador",
+        "members_title_manager": "Administrar miembros",
+        "members_description_manager": "Agrega o elimina miembros del paisaje “{{name}}”.",
         "home_connect_label": "Conectar con otro paisaje",
         "form_name_label": "Nombre del paisaje",
         "form_description_label": "Descripción del paisaje",
@@ -159,9 +177,8 @@
         "form_email_info": "Esta dirección de correo electrónico será utilizada por personas interesadas en conectarse con usted y su paisaje.",
         "form_website_info": "Se mostrará públicamente a todos los usuarios de Terraso.",
         "list_column_location": "Ubicación",
-        "membership_leave_confirm_message": "¿Está seguro de que desea abandonar el paisaje “{{name}}”?",
-        "membership_leave_confirm_button": "Dejar el paisaje",
-        "membership_leave_confirm_title": "Dejar “{{name}}”"
+        "members_list_leave": "Abandonar",
+        "members_list_remove": "Eliminar"
     },
     "common": {
         "dialog_cancel_label": "Cancelar",
