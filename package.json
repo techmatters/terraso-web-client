@@ -11,6 +11,7 @@
     "@mui/material": "^5.1.0",
     "@mui/x-data-grid": "^5.2.0",
     "@reduxjs/toolkit": "^1.6.2",
+    "@rollbar/react": "^0.8.0",
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
