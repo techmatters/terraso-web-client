@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-01-21T22:13:35.241Z\n"
-"PO-Revision-Date: 2022-01-21T22:13:35.241Z\n"
+"POT-Creation-Date: 2022-01-25T21:47:37.193Z\n"
+"PO-Revision-Date: 2022-01-25T21:47:37.193Z\n"
 
 msgid "home##title"
 msgstr "Inicio"
@@ -127,6 +127,14 @@ msgid "group##list"
 msgstr "Grupos"
 
 msgctxt "title"
+msgid "group##members_list"
+msgstr "{{name}} Miembros"
+
+msgctxt "title"
+msgid "group##members_remove_confirmation"
+msgstr "Quitar miembro"
+
+msgctxt "title"
 msgid "tool##faq"
 msgstr "Preguntas frecuentes sobre herramientas"
 
@@ -170,6 +178,10 @@ msgctxt "title"
 msgid "landscape##membership_leave_confirm"
 msgstr "Dejar “{{name}}”"
 
+msgctxt "title"
+msgid "landscape##members_remove_confirmation"
+msgstr "Quitar miembro"
+
 msgctxt "out"
 msgid "user##sign"
 msgstr "Cerrar sesión"
@@ -185,12 +197,20 @@ msgid "group##membership_leave_confirm"
 msgstr "¿Está seguro de que desea abandonar el group “{{name}}”?"
 
 msgctxt "message"
+msgid "group##members_remove_confirmation"
+msgstr "Estás a punto de eliminar a “{{userName}}” del grupo “{{name}}”."
+
+msgctxt "message"
 msgid "account##unauthenticated"
 msgstr "Su sesión de Terraso ha caducado. Vuelva a iniciar sesión."
 
 msgctxt "message"
 msgid "landscape##membership_leave_confirm"
 msgstr "¿Está seguro de que desea abandonar el paisaje “{{name}}”?"
+
+msgctxt "message"
+msgid "landscape##members_remove_confirmation"
+msgstr "Estás a punto de eliminar a “{{userName}}” del paisaje “{{name}}”."
 
 msgctxt "button"
 msgid "user##edit_profile"
@@ -225,6 +245,10 @@ msgid "group##list_new"
 msgstr "Crear un grupo"
 
 msgctxt "button"
+msgid "group##members_remove_confirmation"
+msgstr "Quitar miembro"
+
+msgctxt "button"
 msgid "landscape##edit_profile"
 msgstr "Editar perfil de paisaje"
 
@@ -244,21 +268,73 @@ msgctxt "button"
 msgid "landscape##membership_leave_confirm"
 msgstr "Dejar el paisaje"
 
+msgctxt "button"
+msgid "landscape##members_remove_confirmation"
+msgstr "Quitar miembro"
+
+msgctxt "name"
+msgid "user##full"
+msgstr "{{user.firstName}} {{user.lastName}}"
+
+msgctxt "name"
+msgid "group##list_column"
+msgstr "Grupo"
+
+msgctxt "name"
+msgid "group##members_list_column"
+msgstr "Nombre"
+
+msgctxt "name"
+msgid "landscape##list_column"
+msgstr "Paisaje"
+
 msgctxt "member"
 msgid "group##role"
 msgstr "Miembro"
 
 msgctxt "member"
+msgid "group##members_title"
+msgstr "Miembros de {{name}}"
+
+msgctxt "member"
+msgid "group##members_description"
+msgstr ""
+
+msgctxt "member"
 msgid "landscape##role"
 msgstr "Miembro"
+
+msgctxt "member"
+msgid "landscape##members_title"
+msgstr "Miembros de {{name}}"
+
+msgctxt "member"
+msgid "landscape##members_description"
+msgstr ""
 
 msgctxt "manager"
 msgid "group##role"
 msgstr "Administrador"
 
 msgctxt "manager"
+msgid "group##members_title"
+msgstr "Administrar miembros"
+
+msgctxt "manager"
+msgid "group##members_description"
+msgstr "Agrega o elimina miembros del grupo “{{name}}”."
+
+msgctxt "manager"
 msgid "landscape##role"
 msgstr "Administrador"
+
+msgctxt "manager"
+msgid "landscape##members_title"
+msgstr "Administrar miembros"
+
+msgctxt "manager"
+msgid "landscape##members_description"
+msgstr "Agrega o elimina miembros del paisaje “{{name}}”."
 
 msgctxt "label"
 msgid "group##home_connect"
@@ -462,14 +538,6 @@ msgctxt "one"
 msgid "group##membership_card_description"
 msgstr "{{count}} El miembro de Terraso se ha afiliado a {{name}}."
 
-msgctxt "name"
-msgid "group##list_column"
-msgstr "Grupo"
-
-msgctxt "name"
-msgid "landscape##list_column"
-msgstr "Paisaje"
-
 msgctxt "website"
 msgid "group##list_column"
 msgstr "Sitio web"
@@ -495,8 +563,36 @@ msgid "group##list"
 msgstr "No hay grupos"
 
 msgctxt "empty"
+msgid "group##members_list"
+msgstr "No existen miembros"
+
+msgctxt "empty"
 msgid "landscape##list"
 msgstr "No hay paisajes"
+
+msgctxt "all"
+msgid "group##membership_view"
+msgstr "Ver toda(o)s los miembros"
+
+msgctxt "leave"
+msgid "group##members_list"
+msgstr "Abandonar"
+
+msgctxt "leave"
+msgid "landscape##members_list"
+msgstr "Abandonar"
+
+msgctxt "remove"
+msgid "group##members_list"
+msgstr "Eliminar"
+
+msgctxt "remove"
+msgid "landscape##members_list"
+msgstr "Eliminar"
+
+msgctxt "role"
+msgid "group##members_list_column"
+msgstr "Rol"
 
 msgctxt "to"
 msgid "tool##go"

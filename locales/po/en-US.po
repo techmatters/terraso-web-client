@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-01-25T16:09:35.443Z\n"
-"PO-Revision-Date: 2022-01-25T16:09:35.443Z\n"
+"POT-Creation-Date: 2022-01-25T21:47:37.190Z\n"
+"PO-Revision-Date: 2022-01-25T21:47:37.190Z\n"
 
 msgid "home##title"
 msgstr "Home"
@@ -135,6 +135,22 @@ msgid "group##members_remove_confirmation"
 msgstr "Remove Member"
 
 msgctxt "title"
+msgid "tool##faq"
+msgstr "Tools FAQ"
+
+msgctxt "title"
+msgid "tool##list"
+msgstr "Tools"
+
+msgctxt "title"
+msgid "tool##home_card"
+msgstr "Data Collection"
+
+msgctxt "title"
+msgid "tool##home_card_kobo"
+msgstr "KoBoToolbox"
+
+msgctxt "title"
 msgid "landscape##home"
 msgstr "Landscapes"
 
@@ -166,22 +182,6 @@ msgctxt "title"
 msgid "landscape##members_remove_confirmation"
 msgstr "Remove Member"
 
-msgctxt "title"
-msgid "tool##faq"
-msgstr "Tools FAQ"
-
-msgctxt "title"
-msgid "tool##list"
-msgstr "Tools"
-
-msgctxt "title"
-msgid "tool##home_card"
-msgstr "Data Collection"
-
-msgctxt "title"
-msgid "tool##home_card_kobo"
-msgstr "KoBoToolbox"
-
 msgctxt "out"
 msgid "user##sign"
 msgstr "Sign Out"
@@ -201,16 +201,16 @@ msgid "group##members_remove_confirmation"
 msgstr "You are about to remove “{{userName}}” from the “{{name}}” group."
 
 msgctxt "message"
+msgid "account##unauthenticated"
+msgstr "Your Terraso session has expired. Please log in again."
+
+msgctxt "message"
 msgid "landscape##membership_leave_confirm"
 msgstr "Are you sure you want to leave the landscape “{{name}}”?"
 
 msgctxt "message"
 msgid "landscape##members_remove_confirmation"
 msgstr "You are about to remove “{{userName}}” from the “{{name}}” landscape."
-
-msgctxt "message"
-msgid "account##unauthenticated"
-msgstr "Your Terraso session has expired. Please log in again."
 
 msgctxt "button"
 msgid "user##edit_profile"
@@ -373,6 +373,26 @@ msgid "group##view_leave"
 msgstr "Leave Group"
 
 msgctxt "label"
+msgid "account##form_first_name"
+msgstr "Given names"
+
+msgctxt "label"
+msgid "account##form_last_name"
+msgstr "Family names"
+
+msgctxt "label"
+msgid "account##form_email"
+msgstr "Email address"
+
+msgctxt "label"
+msgid "account##form_save"
+msgstr "Confirm"
+
+msgctxt "label"
+msgid "navigation##nav"
+msgstr "Navigation"
+
+msgctxt "label"
 msgid "landscape##home_connect"
 msgstr "Connect to another Landscape"
 
@@ -413,28 +433,8 @@ msgid "common##dialog_cancel"
 msgstr "Cancel"
 
 msgctxt "label"
-msgid "account##form_first_name"
-msgstr "Given names"
-
-msgctxt "label"
-msgid "account##form_last_name"
-msgstr "Family names"
-
-msgctxt "label"
-msgid "account##form_email"
-msgstr "Email address"
-
-msgctxt "label"
-msgid "account##form_save"
-msgstr "Confirm"
-
-msgctxt "label"
 msgid "form##required"
 msgstr "Required"
-
-msgctxt "label"
-msgid "navigation##nav"
-msgstr "Navigation"
 
 msgctxt "content"
 msgid "group##default"
@@ -507,24 +507,24 @@ msgid "group##leave"
 msgstr "Left successfully from {{name}}"
 
 msgctxt "success"
-msgid "landscape##form_message"
-msgstr "Your Landscape has been saved."
-
-msgctxt "success"
 msgid "account##save"
 msgstr "Your profile has been saved."
+
+msgctxt "success"
+msgid "landscape##form_message"
+msgstr "Your Landscape has been saved."
 
 msgctxt "found"
 msgid "group##not"
 msgstr "Group not found"
 
 msgctxt "found"
-msgid "landscape##not"
-msgstr "Landscape not found"
-
-msgctxt "found"
 msgid "account##not"
 msgstr "Account not found"
+
+msgctxt "found"
+msgid "landscape##not"
+msgstr "Landscape not found"
 
 msgctxt "other"
 msgid "group##membership_card_description"
@@ -590,24 +590,6 @@ msgctxt "role"
 msgid "group##members_list_column"
 msgstr "Role"
 
-msgctxt "info"
-msgid "landscape##form_email"
-msgstr ""
-"This email address will be used by interested people to connect with you "
-"and your landscape."
-
-msgctxt "info"
-msgid "landscape##form_website"
-msgstr "This will be publicly displayed to all Terraso users."
-
-msgctxt "info"
-msgid "account##form_first_name"
-msgstr "This name will be used to greet you in Terraso."
-
-msgctxt "location"
-msgid "landscape##list_column"
-msgstr "Location"
-
 msgctxt "to"
 msgid "tool##go"
 msgstr "Go to {{tool}}"
@@ -632,25 +614,19 @@ msgctxt "alt"
 msgid "tool##home_card_img"
 msgstr "KoBoToolbox image"
 
-msgctxt "en-US"
-msgid "localization##locale"
-msgstr "English"
+msgctxt "info"
+msgid "account##form_first_name"
+msgstr "This name will be used to greet you in Terraso."
 
-msgctxt "small"
-msgid "localization##locale_en-US"
-msgstr "EN"
+msgctxt "info"
+msgid "landscape##form_email"
+msgstr ""
+"This email address will be used by interested people to connect with you "
+"and your landscape."
 
-msgctxt "small"
-msgid "localization##locale_es-ES"
-msgstr "ES"
-
-msgctxt "es-ES"
-msgid "localization##locale"
-msgstr "Español"
-
-msgctxt "projectName"
-msgid "common##terraso"
-msgstr "Terraso"
+msgctxt "info"
+msgid "landscape##form_website"
+msgstr "This will be publicly displayed to all Terraso users."
 
 msgctxt "picture"
 msgid "account##profile"
@@ -669,6 +645,14 @@ msgid "account##name_and"
 msgstr ""
 "Here’s the name and profile photo from your Google account. if you’d like "
 "to use a different name or an photo for Terraso, you can change them."
+
+msgctxt "location"
+msgid "landscape##list_column"
+msgstr "Location"
+
+msgctxt "projectName"
+msgid "common##terraso"
+msgstr "Terraso"
 
 msgctxt "invalid"
 msgid "form##validation_field"
@@ -689,6 +673,22 @@ msgstr "{{path}} is a required field"
 msgctxt "length"
 msgid "form##validation_field_max"
 msgstr "{{path}} must be {{max}} characters maximum."
+
+msgctxt "en-US"
+msgid "localization##locale"
+msgstr "English"
+
+msgctxt "small"
+msgid "localization##locale_en-US"
+msgstr "EN"
+
+msgctxt "small"
+msgid "localization##locale_es-ES"
+msgstr "ES"
+
+msgctxt "es-ES"
+msgid "localization##locale"
+msgstr "Español"
 
 msgctxt "unexpected"
 msgid "terraso##error"
