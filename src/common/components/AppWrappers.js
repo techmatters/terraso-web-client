@@ -16,19 +16,19 @@ import 'forms/yup';
 // Wrappers
 // Router, Theme, Global State, Permissions, Notifications
 const AppWrappers = ({ children, theme, store, permissionsRules }) => (
-  <ErrorMonitoringProvider>
-    <React.StrictMode>
-      <BrowserRouter>
-        <ThemeProvider theme={theme}>
+  <React.StrictMode>
+    <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <ErrorMonitoringProvider>
           <Provider store={store}>
             <PermissionsProvider rules={permissionsRules}>
               <NotificationsWrapper>{children}</NotificationsWrapper>
             </PermissionsProvider>
           </Provider>
-        </ThemeProvider>
-      </BrowserRouter>
-    </React.StrictMode>
-  </ErrorMonitoringProvider>
+        </ErrorMonitoringProvider>
+      </ThemeProvider>
+    </BrowserRouter>
+  </React.StrictMode>
 );
 
 export default AppWrappers;

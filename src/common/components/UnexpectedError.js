@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Stack } from '@mui/material';
+import { Alert, Paper, Stack } from '@mui/material';
 
 import logo from 'assets/logo.svg';
 
@@ -12,9 +12,14 @@ const UnexpectedError = () => {
       direction="column"
       alignItems="center"
       justifyContent="center"
-      style={{ height: '80vh' }}
+      sx={{ height: '80vh' }}
     >
-      <Stack sx={{ maxWidth: 'sm' }} alignItems="center">
+      <Stack
+        component={Paper}
+        elevation={0}
+        sx={theme => ({ maxWidth: 'md', padding: theme.spacing(3) })}
+        alignItems="center"
+      >
         <img src={logo} height="35px" alt={t('common.terraso_projectName')} />
 
         <Alert severity="error" sx={{ margin: '3em 0 8em' }}>

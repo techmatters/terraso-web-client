@@ -39,5 +39,9 @@ test('ErrorMonitoringProvider: component error', async () => {
   expect(rollbarCall[1].startsWith('Error: 💥 CABOOM 💥')).toBe(true);
 
   // Show error page
-  expect(screen.getByText('Oops, something went wrong. Please try it again in a few minutes.')).toBeInTheDocument();
+  expect(
+    screen.getByText(
+      'Oops, something went wrong. Please try it again in a few minutes.'
+    )
+  ).toBeInTheDocument();
 });
