@@ -1,10 +1,10 @@
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { rollbar } from 'monitoring/rollbar';
+import logger from 'monitoring/logger';
 
 const errorHandler = error => {
-  rollbar.error(error.message, error.stack);
+  logger.error(error.message, error.stack);
 };
 
 const ErrorMonitoringProvider = props => {
