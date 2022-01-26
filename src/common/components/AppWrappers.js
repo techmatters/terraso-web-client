@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import NotificationsWrapper from 'notifications/NotificationsWrapper';
 import { PermissionsProvider } from 'permissions';
-import { RollbarProvider } from 'monitoring/rollbar';
+import ErrorMonitoringProvider from 'monitoring/error';
 
 // Localization
 import 'localization/i18n';
@@ -16,7 +16,7 @@ import 'forms/yup';
 // Wrappers
 // Router, Theme, Global State, Permissions, Notifications
 const AppWrappers = ({ children, theme, store, permissionsRules }) => (
-  <RollbarProvider>
+  <ErrorMonitoringProvider>
     <React.StrictMode>
       <BrowserRouter>
         <ThemeProvider theme={theme}>
@@ -28,7 +28,7 @@ const AppWrappers = ({ children, theme, store, permissionsRules }) => (
         </ThemeProvider>
       </BrowserRouter>
     </React.StrictMode>
-  </RollbarProvider>
+  </ErrorMonitoringProvider>
 );
 
 export default AppWrappers;

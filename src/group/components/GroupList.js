@@ -25,7 +25,6 @@ import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import theme from 'theme';
-import logger from 'monitoring/logger';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
   label: 'group.list_leave_button',
@@ -199,9 +198,6 @@ const GroupCards = ({ groups }) => {
   );
 };
 
-const Bomb = () => {
-  throw new Error('CABOOM');
-};
 const GroupList = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -220,8 +216,6 @@ const GroupList = () => {
     return null;
   }
 
-  logger.error('jose');
-
   return (
     <Box
       sx={{
@@ -229,7 +223,6 @@ const GroupList = () => {
         paddingBottom: theme.spacing(2),
       }}
     >
-      <Bomb />
       <Typography variant="h1">{t('group.list_title')}</Typography>
       <Typography
         variant="body2"
