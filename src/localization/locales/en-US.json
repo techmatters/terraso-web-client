@@ -182,7 +182,8 @@
     },
     "common": {
         "dialog_cancel_label": "Cancel",
-        "terraso_projectName": "Terraso"
+        "terraso_projectName": "Terraso",
+        "unexpected_error": "Oops, something went wrong. Please try it again in a few minutes."
     },
     "form": {
         "required_label": "Required",

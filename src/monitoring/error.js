@@ -2,6 +2,7 @@ import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import logger from 'monitoring/logger';
+import UnexpectedError from 'common/components/UnexpectedError';
 
 const errorHandler = error => {
   logger.error(error.message, error.stack);
@@ -9,10 +10,7 @@ const errorHandler = error => {
 
 const ErrorMonitoringProvider = props => {
   return (
-    <ErrorBoundary
-      FallbackComponent={() => <div>Unexpected error</div>}
-      onError={errorHandler}
-    >
+    <ErrorBoundary FallbackComponent={UnexpectedError} onError={errorHandler}>
       {props.children}
     </ErrorBoundary>
   );

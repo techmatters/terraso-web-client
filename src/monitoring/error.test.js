@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { render } from 'tests/utils';
+import { render, screen } from 'tests/utils';
 import { rollbar } from 'monitoring/rollbar';
 
 jest.mock('monitoring/rollbar');
@@ -37,4 +37,7 @@ test('ErrorMonitoringProvider: component error', async () => {
   const rollbarCall = rollbar.error.mock.calls[0];
   expect(rollbarCall[0]).toStrictEqual('💥 CABOOM 💥');
   expect(rollbarCall[1].startsWith('Error: 💥 CABOOM 💥')).toBe(true);
+
+  // Show error page
+  expect(screen.getByText('Unexpected Error')).toBeInTheDocument();
 });
