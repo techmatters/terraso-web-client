@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import NotificationsWrapper from 'notifications/NotificationsWrapper';
 import { PermissionsProvider } from 'permissions';
+import ErrorMonitoringProvider from 'monitoring/error';
 
 // Localization
 import 'localization/i18n';
@@ -18,11 +19,13 @@ const AppWrappers = ({ children, theme, store, permissionsRules }) => (
   <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider theme={theme}>
-        <Provider store={store}>
-          <PermissionsProvider rules={permissionsRules}>
-            <NotificationsWrapper>{children}</NotificationsWrapper>
-          </PermissionsProvider>
-        </Provider>
+        <ErrorMonitoringProvider>
+          <Provider store={store}>
+            <PermissionsProvider rules={permissionsRules}>
+              <NotificationsWrapper>{children}</NotificationsWrapper>
+            </PermissionsProvider>
+          </Provider>
+        </ErrorMonitoringProvider>
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>
