@@ -1,3 +1,7 @@
+import { userFields } from 'user/userFragments';
+
+const MEMBERS_INFO_SAMPLE_SIZE = 5;
+
 export const groupFields = `
   fragment groupFields on GroupNode {
     id
@@ -10,24 +14,38 @@ export const groupFields = `
   }
 `;
 
-export const groupMembers = `
-  fragment groupMembers on GroupNode {
-    memberships {
+export const groupMembersInfo = `
+  fragment groupMembersInfo on GroupNode {
+    memberships(first: ${MEMBERS_INFO_SAMPLE_SIZE}) {
+      totalCount
       edges {
         node {
-          id
-          userRole
           user {
-            id
-            email
-            firstName
-            lastName
-            profileImage
+            ...userFields
           }
         }
       }
     }
   }
+  ${userFields}
+`;
+
+export const groupMembers = `
+  fragment groupMembers on GroupNode {
+    memberships {
+      totalCount
+      edges {
+        node {
+          id
+          userRole
+          user {
+            ...userFields
+          }
+        }
+      }
+    }
+  }
+  ${userFields}
 `;
 
 export const accountMembership = `
@@ -35,6 +53,7 @@ export const accountMembership = `
     accountMembership: memberships(user_Email_In: [$accountEmail]) {
       edges {
         node {
+          id
           userRole
         }
       }

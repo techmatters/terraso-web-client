@@ -41,12 +41,12 @@ beforeEach(() => {
 
 test('LandscapeView: Display error', async () => {
   terrasoApi.request.mockRejectedValue(['Load error']);
-  await act(async () => render(<LandscapeView />));
+  await setup();
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
-test('LandscapeForm: Display loader', () => {
+test('LandscapeForm: Display loader', async () => {
   terrasoApi.request.mockReturnValue(new Promise(() => {}));
-  render(<LandscapeView />);
+  await setup();
   const loader = screen.getByRole('progressbar', { name: '', hidden: true });
   expect(loader).toBeInTheDocument();
 });
@@ -61,7 +61,7 @@ test('LandscapeView: Not found', async () => {
       landscape: null,
     })
   );
-  await act(async () => render(<LandscapeView />));
+  await setup();
   expect(screen.getByText(/Landscape not found/i)).toBeInTheDocument();
 });
 test('LandscapeView: Display data', async () => {
@@ -71,7 +71,8 @@ test('LandscapeView: Display data', async () => {
     })
   );
   const memberships = {
-    edges: Array(6)
+    totalCount: 6,
+    edges: Array(5)
       .fill(0)
       .map(() => ({
         node: {

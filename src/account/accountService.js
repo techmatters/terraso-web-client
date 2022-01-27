@@ -1,7 +1,7 @@
 import _ from 'lodash/fp';
 
 import { getUserEmail } from 'account/auth';
-import { userFields } from 'account/accountFragments';
+import { userFields } from 'user/userFragments';
 import * as terrasoApi from 'terrasoBackend/api';
 import { TERRASO_API_URL } from 'config';
 

@@ -1,5 +1,11 @@
 import _ from 'lodash/fp';
 
+export const extractMembersInfo = group => ({
+  totalCount: _.get('memberships.totalCount', group),
+  accountMembership: extractAccountMembership(group),
+  membersSample: extractMembers(group),
+});
+
 export const extractMembers = group =>
   _.getOr([], 'memberships.edges', group).map(edge => ({
     membershipId: _.get('node.id', edge),

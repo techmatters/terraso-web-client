@@ -3,7 +3,7 @@ import _ from 'lodash/fp';
 import * as terrasoApi from 'terrasoBackend/api';
 import * as gisService from 'gis/gisService';
 import { landscapeFields, defaultGroup } from 'landscape/landscapeFragments';
-import { extractAccountMembership, extractMembers } from 'group/groupUtils';
+import { extractAccountMembership, extractMembersInfo } from 'group/groupUtils';
 import { accountMembership } from 'group/groupFragments';
 
 const cleanLandscape = landscape => _.omit('slug', landscape);
@@ -29,13 +29,13 @@ const getDefaultGroup = landscape => {
   const group = _.get('defaultGroup.edges[0].node.group', landscape);
   return {
     ..._.pick(['id', 'slug'], group),
-    members: extractMembers(group),
+    membersInfo: extractMembersInfo(group),
   };
 };
 
-export const fetchLandscapeToView = slug => {
+export const fetchLandscapeToView = (slug, currentUser) => {
   const query = `
-    query landscapes($slug: String!){
+    query landscapes($slug: String!, $accountEmail: String!){
       landscapes(slug: $slug) {
         edges {
           node {
@@ -50,7 +50,7 @@ export const fetchLandscapeToView = slug => {
   `;
   return (
     terrasoApi
-      .request(query, { slug })
+      .request(query, { slug, accountEmail: currentUser.email })
       .then(_.get('landscapes.edges[0].node'))
       .then(landscape => landscape || Promise.reject('landscape.not_found'))
       .then(landscape => ({
@@ -68,9 +68,9 @@ export const fetchLandscapeToView = slug => {
   );
 };
 
-export const fetchLandscapes = () => {
+export const fetchLandscapes = (params, currentUser) => {
   const query = `
-    query {
+    query landscapes($accountEmail: String!){
       landscapes {
         edges {
           node {
@@ -84,7 +84,7 @@ export const fetchLandscapes = () => {
     ${defaultGroup}
   `;
   return terrasoApi
-    .request(query)
+    .request(query, { accountEmail: currentUser.email })
     .then(response => response.landscapes)
     .then(landscapes =>
       landscapes.edges
