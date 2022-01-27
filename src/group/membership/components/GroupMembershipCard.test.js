@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 
 import { render, screen, fireEvent } from 'tests/utils';
@@ -73,12 +74,16 @@ test('GroupMembershipCard: Display description', async () => {
         'group-slug': {
           group: {
             slug: 'group-slug',
-            members: Array(8)
-              .fill(0)
-              .map(() => ({
-                firstName: 'First',
-                lastName: 'Last',
-              })),
+            membersInfo: {
+              totalCount: 8,
+              membersSample: Array(5)
+                .fill(0)
+                .map(() => ({
+                  firstName: 'First',
+                  lastName: 'Last',
+                })),
+            },
+            
           },
         },
       },
@@ -153,7 +158,9 @@ test('GroupMembershipCard: Join', async () => {
         membership: {
           group: {
             slug: 'group-slug',
+            accountMembership: _.set('edges[0].node.userRole', 'MEMBER', {}),
             memberships: {
+              totalCount: 1,
               edges: [
                 {
                   node: {
@@ -208,14 +215,18 @@ test('GroupMembershipCard: Leave error', async () => {
         'group-slug': {
           group: {
             slug: 'group-slug',
-            members: [
-              {
-                membershipId: 'membership-id',
-                email: 'email@email.com',
-                firstName: 'John',
-                lastName: 'Doe',
-              },
-            ],
+            membersInfo: {
+              totalCount: 1,
+              membersSample: [
+                {
+                  membershipId: 'membership-id',
+                  email: 'email@email.com',
+                  firstName: 'John',
+                  lastName: 'Doe',
+                },
+              ],
+              accountMembership: { userRole: 'MEMBER' },
+            },
           },
         },
       },
@@ -263,14 +274,18 @@ test('GroupMembershipCard: Leave', async () => {
         'group-slug': {
           group: {
             slug: 'group-slug',
-            members: [
-              {
-                membershipId: 'membership-id',
-                email: 'email@email.com',
-                firstName: 'John',
-                lastName: 'Doe',
-              },
-            ],
+            membersInfo: {
+              totalCount: 1,
+              membersSample: [
+                {
+                  membershipId: 'membership-id',
+                  email: 'email@email.com',
+                  firstName: 'John',
+                  lastName: 'Doe',
+                },
+              ],
+              accountMembership: { userRole: 'MEMBER' },
+            },
           },
         },
       },

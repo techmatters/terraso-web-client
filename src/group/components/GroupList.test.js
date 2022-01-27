@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useSearchParams } from 'react-router-dom';
@@ -20,14 +21,31 @@ beforeEach(() => {
   useSearchParams.mockReturnValue([new URLSearchParams(), () => {}]);
 });
 
+const setup = async initialState => {
+  await act(async () =>
+    render(<GroupList />, {
+      account: {
+        hasToken: true,
+        currentUser: {
+          fetching: false,
+          data: {
+            email: 'email@email.com',
+          },
+        },
+      },
+      ...initialState,
+    })
+  );
+};
+
 test('GroupList: Display error', async () => {
   terrasoApi.request.mockRejectedValue('Load error');
-  await act(async () => render(<GroupList />));
+  await setup();
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
-test('GroupList: Display loader', () => {
+test('GroupList: Display loader', async () => {
   terrasoApi.request.mockReturnValue(new Promise(() => {}));
-  render(<GroupList />);
+  await setup();
   const loader = screen.getByRole('progressbar', { name: '', hidden: true });
   expect(loader).toBeInTheDocument();
 });
@@ -39,7 +57,7 @@ test('GroupList: Empty', async () => {
       },
     })
   );
-  await act(async () => render(<GroupList />));
+  await setup();
   expect(screen.getByText(/No Groups/i)).toBeInTheDocument();
 });
 test('GroupList: Display list', async () => {
@@ -48,14 +66,15 @@ test('GroupList: Display list', async () => {
   };
 
   const generateMemberhips = (index, count) => ({
-    edges: Array(count)
+    totalCount: count,
+    edges: Array(5)
       .fill(0)
       .map(() => ({
         node: {
           user: {
             firstName: 'Member name',
             lastName: 'Member Last Name',
-            email: isMember[index] ? 'email@email.com' : 'other@email.com',
+            email: 'other@email.com',
           },
         },
       })),
@@ -74,6 +93,9 @@ test('GroupList: Display list', async () => {
         website: 'https://www.group.org',
         email: 'email@email.com',
         memberships: generateMemberhips(groupIndex, membersCounts[groupIndex]),
+        accountMembership: isMember[groupIndex]
+          ? _.set('edges[0].node.userRole', 'MEMBER', {})
+          : null,
       },
     }));
 
@@ -84,19 +106,7 @@ test('GroupList: Display list', async () => {
       },
     })
   );
-  await act(async () =>
-    render(<GroupList />, {
-      account: {
-        hasToken: true,
-        currentUser: {
-          fetching: false,
-          data: {
-            email: 'email@email.com',
-          },
-        },
-      },
-    })
-  );
+  await setup();
 
   // Group info
   expect(screen.getByRole('heading', { name: 'Groups' })).toBeInTheDocument();
@@ -166,19 +176,7 @@ test('GroupList: List sort', async () => {
       },
     })
   );
-  await act(async () =>
-    render(<GroupList />, {
-      account: {
-        hasToken: true,
-        currentUser: {
-          fetching: false,
-          data: {
-            email: 'email@email.com',
-          },
-        },
-      },
-    })
-  );
+  await setup();
 
   // Group info
   expect(screen.getByRole('heading', { name: 'Groups' })).toBeInTheDocument();
@@ -206,14 +204,15 @@ test('GroupList: Display list (small screen)', async () => {
   };
 
   const generateMemberhips = (index, count) => ({
-    edges: Array(count)
+    totalCount: count,
+    edges: Array(5)
       .fill(0)
       .map(() => ({
         node: {
           user: {
             firstName: 'Member name',
             lastName: 'Member Last Name',
-            email: isMember[index] ? 'email@email.com' : 'other@email.com',
+            email: 'other@email.com',
           },
         },
       })),
@@ -232,6 +231,9 @@ test('GroupList: Display list (small screen)', async () => {
         website: 'https://www.group.org',
         email: 'email@email.com',
         memberships: generateMemberhips(groupIndex, membersCounts[groupIndex]),
+        accountMembership: isMember[groupIndex]
+          ? _.set('edges[0].node.userRole', 'MEMBER', {})
+          : null,
       },
     }));
 
@@ -242,19 +244,7 @@ test('GroupList: Display list (small screen)', async () => {
       },
     })
   );
-  await act(async () =>
-    render(<GroupList />, {
-      account: {
-        hasToken: true,
-        currentUser: {
-          fetching: false,
-          data: {
-            email: 'email@email.com',
-          },
-        },
-      },
-    })
-  );
+  await setup();
 
   // Group info
   expect(screen.getByRole('heading', { name: 'Groups' })).toBeInTheDocument();
@@ -298,19 +288,7 @@ test('GroupList: URL params', async () => {
       },
     })
   );
-  await act(async () =>
-    render(<GroupList />, {
-      account: {
-        hasToken: true,
-        currentUser: {
-          fetching: false,
-          data: {
-            email: 'email@email.com',
-          },
-        },
-      },
-    })
-  );
+  await setup();
   expect(entriesSpy).toHaveBeenCalledTimes(2);
 
   // Group info

@@ -4,9 +4,14 @@ import * as terrasoApi from 'terrasoBackend/api';
 import {
   accountMembership,
   groupFields,
+  groupMembersInfo,
   groupMembers,
 } from 'group/groupFragments';
-import { extractAccountMembership, extractMembers } from './groupUtils';
+import {
+  extractAccountMembership,
+  extractMembers,
+  extractMembersInfo,
+} from './groupUtils';
 
 // Omitted email because it is not supported by the backend
 const cleanGroup = group => _.omit('slug', group);
@@ -37,14 +42,14 @@ export const fetchGroupToView = (slug, currentUser) => {
         edges {
           node {
             ...groupFields
-            ...groupMembers
+            ...groupMembersInfo
             ...accountMembership
           }
         }
       }
     }
     ${groupFields}
-    ${groupMembers}
+    ${groupMembersInfo}
     ${accountMembership}
   `;
   return terrasoApi
@@ -52,22 +57,23 @@ export const fetchGroupToView = (slug, currentUser) => {
     .then(_.get('groups.edges[0].node'))
     .then(group => group || Promise.reject('group.not_found'))
     .then(group => ({
-      ...group,
-      members: extractMembers(group),
+      ..._.omit(['memberships', 'accountMembership'], group),
+      membersInfo: extractMembersInfo(group),
       accountMembership: extractAccountMembership(group),
     }));
 };
 
-export const fetchGroups = () => {
+export const fetchGroups = (params, currentUser) => {
   const query = `
-    query {
+    query groups($accountEmail: String!){
       independentGroups: groups(
         associatedLandscapes_Isnull: true
       ) {
         edges {
           node {
             ...groupFields
-            ...groupMembers
+            ...groupMembersInfo
+            ...accountMembership
           }
         }
       }
@@ -77,24 +83,26 @@ export const fetchGroups = () => {
         edges {
           node {
             ...groupFields
-            ...groupMembers
+            ...groupMembersInfo
+            ...accountMembership
           }
         }
       }
     }
     ${groupFields}
-    ${groupMembers}
+    ${groupMembersInfo}
+    ${accountMembership}
   `;
   return terrasoApi
-    .request(query)
+    .request(query, { accountEmail: currentUser.email })
     .then(response => [
       ..._.getOr([], 'independentGroups.edges', response),
       ..._.getOr([], 'landscapeGroups.edges', response),
     ])
     .then(groups =>
       groups.map(edge => ({
-        ..._.omit('memberships', edge.node),
-        members: extractMembers(edge.node),
+        ..._.omit(['memberships', 'accountMembership'], edge.node),
+        membersInfo: extractMembersInfo(edge.node),
       }))
     )
     .then(_.orderBy([group => group.name.toLowerCase()], null));
@@ -219,73 +227,78 @@ const addGroup = ({ group, user }) => {
     ${groupFields}
   `;
 
-  return (
-    terrasoApi
-      .request(query, { input: cleanGroup(group) })
-      .then(response => response.addGroup.group)
-      // TODO Workaround to set group manager
-      .then(group =>
-        joinGroup({
-          groupSlug: group.slug,
-          userEmail: user.email,
-          userRole: 'manager',
-        })
-      )
-  );
+  return terrasoApi
+    .request(query, { input: cleanGroup(group) })
+    .then(response => response.addGroup.group);
 };
 
 export const saveGroup = ({ group, user }) =>
   group.id ? updateGroup(group) : addGroup({ group, user });
 
-export const joinGroup = ({ groupSlug, userEmail, userRole = 'member' }) => {
+export const joinGroup = (
+  { groupSlug, userEmail, userRole = 'member' },
+  currentUser
+) => {
   const query = `
-    mutation addMembership($input: MembershipAddMutationInput!){
+    mutation addMembership($input: MembershipAddMutationInput!, $accountEmail: String!){
       addMembership(input: $input) {
         membership {
           group { 
             ...groupFields
-            ...groupMembers
+            ...groupMembersInfo
+            ...accountMembership
           }
         }
       }
     }
     ${groupFields}
-    ${groupMembers}
+    ${groupMembersInfo}
+    ${accountMembership}
   `;
   return terrasoApi
     .request(query, {
-      input: { userEmail, groupSlug, userRole },
+      input: {
+        userEmail,
+        groupSlug,
+        userRole,
+      },
+      accountEmail: currentUser.email,
     })
     .then()
     .then(_.get('addMembership.membership.group'))
     .then(group => group || Promise.reject('group.not_found'))
     .then(group => ({
-      ..._.omit('memberships', group),
-      members: extractMembers(group),
+      ..._.omit(['memberships', 'accountMembership'], group),
+      membersInfo: extractMembersInfo(group),
     }));
 };
 
-export const leaveGroup = ({ groupSlug, membershipId }) => {
+export const leaveGroup = ({ groupSlug, membershipId }, currentUser) => {
   const query = `
-    mutation deleteMembership($input: MembershipDeleteMutationInput!){
+    mutation deleteMembership($input: MembershipDeleteMutationInput!, $accountEmail: String!){
       deleteMembership(input: $input) {
         membership {
           group { 
             ...groupFields
-            ...groupMembers
+            ...groupMembersInfo
+            ...accountMembership
           }
         }
       }
     }
     ${groupFields}
-    ${groupMembers}
+    ${groupMembersInfo}
+    ${accountMembership}
   `;
   return terrasoApi
-    .request(query, { input: { id: membershipId } })
+    .request(query, {
+      input: { id: membershipId },
+      accountEmail: currentUser.email,
+    })
     .then()
     .then(_.get('deleteMembership.membership.group'))
     .then(group => ({
-      ..._.omit('memberships', group),
-      members: extractMembers(group),
+      ..._.omit(['memberships', 'accountMembership'], group),
+      membersInfo: extractMembersInfo(group),
     }));
 };

@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
@@ -10,14 +11,31 @@ jest.mock('terrasoBackend/api');
 
 jest.mock('@mui/material/useMediaQuery');
 
+const setup = async initialState => {
+  await act(async () =>
+    render(<LandscapeList />, {
+      account: {
+        hasToken: true,
+        currentUser: {
+          fetching: false,
+          data: {
+            email: 'email@email.com',
+          },
+        },
+      },
+      ...initialState,
+    })
+  );
+};
+
 test('LandscapeList: Display error', async () => {
   terrasoApi.request.mockRejectedValue('Load error');
-  await act(async () => render(<LandscapeList />));
+  await setup();
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
-test('LandscapeList: Display loader', () => {
+test('LandscapeList: Display loader', async () => {
   terrasoApi.request.mockReturnValue(new Promise(() => {}));
-  render(<LandscapeList />);
+  await setup();
   const loader = screen.getByRole('progressbar', { name: '', hidden: true });
   expect(loader).toBeInTheDocument();
 });
@@ -29,7 +47,7 @@ test('LandscapeList: Empty', async () => {
       },
     })
   );
-  await act(async () => render(<LandscapeList />));
+  await setup();
   expect(screen.getByText(/No Landscapes/i)).toBeInTheDocument();
 });
 test('LandscapeList: Display list', async () => {
@@ -38,14 +56,15 @@ test('LandscapeList: Display list', async () => {
   };
 
   const generateMemberhips = (index, count) => ({
-    edges: Array(count)
+    totalCount: count,
+    edges: Array(5)
       .fill(0)
       .map(() => ({
         node: {
           user: {
             firstName: 'Member name',
             lastName: 'Member Last Name',
-            email: isMember[index] ? 'email@email.com' : 'other@email.com',
+            email: 'other@email.com',
           },
         },
       })),
@@ -73,6 +92,9 @@ test('LandscapeList: Display list', async () => {
                     landscapeIndex,
                     membersCounts[landscapeIndex]
                   ),
+                  accountMembership: isMember[landscapeIndex]
+                    ? _.set('edges[0].node.userRole', 'MEMBER', {})
+                    : null,
                 },
               },
             },
@@ -88,19 +110,7 @@ test('LandscapeList: Display list', async () => {
       },
     })
   );
-  await act(async () =>
-    render(<LandscapeList />, {
-      account: {
-        hasToken: true,
-        currentUser: {
-          fetching: false,
-          data: {
-            email: 'email@email.com',
-          },
-        },
-      },
-    })
-  );
+  await setup();
 
   // Landscape info
   expect(
@@ -179,19 +189,7 @@ test('LandscapeList: List sort', async () => {
       },
     })
   );
-  await act(async () =>
-    render(<LandscapeList />, {
-      account: {
-        hasToken: true,
-        currentUser: {
-          fetching: false,
-          data: {
-            email: 'email@email.com',
-          },
-        },
-      },
-    })
-  );
+  await setup();
 
   // Landscape info
   expect(
@@ -221,14 +219,15 @@ test('LandscapeList: Display list (small screen)', async () => {
   };
 
   const generateMemberhips = (index, count) => ({
-    edges: Array(count)
+    totalCount: count,
+    edges: Array(5)
       .fill(0)
       .map(() => ({
         node: {
           user: {
             firstName: 'Member name',
             lastName: 'Member Last Name',
-            email: isMember[index] ? 'email@email.com' : 'other@email.com',
+            email: 'other@email.com',
           },
         },
       })),
@@ -256,6 +255,9 @@ test('LandscapeList: Display list (small screen)', async () => {
                     landscapeIndex,
                     membersCounts[landscapeIndex]
                   ),
+                  accountMembership: isMember[landscapeIndex]
+                    ? _.set('edges[0].node.userRole', 'MEMBER', {})
+                    : null,
                 },
               },
             },
@@ -271,19 +273,7 @@ test('LandscapeList: Display list (small screen)', async () => {
       },
     })
   );
-  await act(async () =>
-    render(<LandscapeList />, {
-      account: {
-        hasToken: true,
-        currentUser: {
-          fetching: false,
-          data: {
-            email: 'email@email.com',
-          },
-        },
-      },
-    })
-  );
+  await setup();
 
   // Landscape info
   expect(

@@ -30,7 +30,10 @@ const Loader = () => (
 const Content = props => {
   const { t } = useTranslation();
   const { owner } = useGroupContext();
-  const { members, fetching, onViewMembers } = props;
+  const { membersInfo, fetching, onViewMembers } = props;
+
+  const membersSample = _.getOr([], 'membersSample', membersInfo);
+  const totalCount = _.getOr(0, 'totalCount', membersInfo);
 
   if (fetching) {
     return <Loader />;
@@ -40,21 +43,21 @@ const Content = props => {
     <CardContent>
       <Typography variant="body2" color="text.secondary">
         {t('group.membership_card_description', {
-          count: members.length,
+          count: totalCount,
           name: owner.name,
         })}
       </Typography>
       <AvatarGroup
-        max={5}
+        total={totalCount}
         sx={{
           flexDirection: 'row',
           marginTop: theme.spacing(2),
           marginBottom: theme.spacing(2),
         }}
       >
-        {members.map((member, index) => {
-          return <AccountAvatar key={index} user={member} />;
-        })}
+        {membersSample.map((member, index) => (
+          <AccountAvatar key={index} user={member} />
+        ))}
       </AvatarGroup>
       <Link component="button" onClick={onViewMembers}>
         {t('group.membership_view_all')}
@@ -71,16 +74,14 @@ const GroupMembershipCard = props => {
     _.getOr({}, `group.memberships.${groupSlug}`)
   );
 
-  // TODO This should just be 5 users and we should get the total count from
-  // the backend when the support is added
-  const members = _.getOr([], 'members', group);
+  const membersInfo = _.getOr([], 'membersInfo', group);
 
   return (
     <Card>
       <CardHeader title={t('group.membership_card_title')} />
       <Content
         fetching={fetching}
-        members={members}
+        membersInfo={membersInfo}
         onViewMembers={onViewMembers}
       />
       {fetching ? null : (

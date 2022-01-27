@@ -1,4 +1,4 @@
-import { groupMembers } from 'group/groupFragments';
+import { accountMembership, groupMembersInfo } from 'group/groupFragments';
 
 export const landscapeFields = `
   fragment landscapeFields on LandscapeNode {
@@ -19,11 +19,13 @@ export const defaultGroup = `
           group {
             id
             slug
-            ...groupMembers
+            ...groupMembersInfo
+            ...accountMembership
           }
         }
       }
     }
   }
-  ${groupMembers}
+  ${groupMembersInfo}
+  ${accountMembership}
 `;

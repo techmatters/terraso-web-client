@@ -71,7 +71,8 @@ test('GroupView: Display data', async () => {
     })
   );
   const memberships = {
-    edges: Array(6)
+    totalCount: 6,
+    edges: Array(5)
       .fill(0)
       .map(() => ({
         node: {

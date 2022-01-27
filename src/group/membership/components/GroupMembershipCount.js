@@ -5,8 +5,8 @@ import { Typography } from '@mui/material';
 
 const GroupMembershipCount = ({ groupSlug }) => {
   const { group } = useSelector(_.getOr({}, `group.memberships.${groupSlug}`));
-  const members = _.getOr([], 'members', group);
-  return <Typography variant="body1">{members.length}</Typography>;
+  const count = _.getOr([], 'membersInfo.totalCount', group);
+  return <Typography variant="body1">{count}</Typography>;
 };
 
 export default GroupMembershipCount;
