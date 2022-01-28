@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash/fp';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 import { render, screen, act } from 'tests/utils';
 import GroupView from 'group/components/GroupView';
@@ -18,6 +18,7 @@ jest.mock('account/auth', () => ({
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(),
+  useLocation: jest.fn(),
   Navigate: props => <div>To: {props.to}</div>,
 }));
 
@@ -56,6 +57,26 @@ test('Auth: test redirect', async () => {
   expect(global.fetch).toHaveBeenCalledTimes(1);
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
   expect(screen.getByText('To: /account')).toBeInTheDocument();
+});
+test('Auth: test redirect referrer', async () => {
+  useLocation.mockReturnValue({
+    pathname: '/groups',
+    search: '?sort=-name',
+  });
+  terrasoApi.request.mockRejectedValueOnce('UNAUTHENTICATED');
+  global.fetch.mockResolvedValueOnce({
+    status: 401,
+  });
+  await act(async () =>
+    render(
+      <RequireAuth>
+        <div />
+      </RequireAuth>
+    )
+  );
+  expect(
+    screen.getByText('To: /account?referrer=groups?sort=-name')
+  ).toBeInTheDocument();
 });
 test('Auth: test refresh tokens', async () => {
   useParams.mockReturnValue({
