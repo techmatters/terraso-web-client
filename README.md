@@ -5,6 +5,7 @@ Terraso web client is a React application that powers the frontend of the Terras
 
 ## Requirements
 
+- Docker: Version 20.10.10
 - Node: Version 16.13.0
 - Npm: Version 8.1.0
 
@@ -12,7 +13,11 @@ Terraso web client is a React application that powers the frontend of the Terras
 
 In the project directory, you can run:
 
-### `npm start`
+### `make build-docker`
+
+Builds docker image for local environment
+
+### `make run`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
@@ -20,16 +25,16 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `npm test`
+### `make test`
 
 Launches the test runner in the interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run test-coverage`
+### `make test-coverage`
 
 Lunches the test runner with coverage
 
-### `npm run build`
+### `make build`
 
 Builds the app for production to the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
@@ -39,19 +44,9 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run build-serve`
+### `make run-build`
 
-Runs the app that was build using `npm run build`
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Builds and runs the app
 
 ## Environment
 
@@ -60,8 +55,11 @@ To define environment variables we are using: https://create-react-app.dev/docs/
 **REACT_APP_TERRASO_ENV**: Terraso Environment
 **REACT_APP_TERRASO_API_URL**: Terraso API host URL
 **REACT_APP_ROLLBAR_TOKEN**: Rollbar token
+**REACT_APP_COOKIES_DOMAIN**: Cookies domain
 
-### Run command with custom variable value:
+To modify the this variables with the docker environment change the `local.env` file
+
+### Run command with custom variable value directly with npm:
 
 Start: `REACT_APP_TERRASO_API_URL=https://terraso.com/graphql npm start`
 
@@ -73,17 +71,28 @@ The localization is being hangled by the `react-i18next`. You can check the docu
 
 ### Generate PO files
 
-Executing `npm run localization-to-po` will generate the PO files in `locales/po/` from the JSON files in `src/localization/locales/`
+Executing `make localization-to-po` will generate the PO files in `locales/po/` from the JSON files in `src/localization/locales/`
 
 ### Generate JSON files
 
-Executing `npm run localization-to-json` will generate the JSON files in `src/localization/locales/` from the PO files in `locales/po/`
+Executing `make localization-to-json` will generate the JSON files in `src/localization/locales/` from the PO files in `locales/po/`
 
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Remove create-react-app wrapper `npm run eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+
 
 ### Code Splitting
 
