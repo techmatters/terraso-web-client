@@ -83,7 +83,6 @@ test('GroupMembershipCard: Display description', async () => {
                   lastName: 'Last',
                 })),
             },
-            
           },
         },
       },

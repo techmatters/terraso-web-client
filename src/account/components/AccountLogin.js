@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Stack, Typography } from '@mui/material';
+import { useSearchParams } from 'react-router-dom';
 import AppleIcon from '@mui/icons-material/Apple';
 import GoogleIcon from '@mui/icons-material/Google';
 
@@ -10,10 +11,15 @@ import PageLoader from 'common/components/PageLoader';
 
 import logo from 'assets/logo.svg';
 
+const appendReferrer = (url, referrer) =>
+  referrer ? `${url}&state=${referrer}` : url;
+
 const AccountForm = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const { fetching, urls } = useSelector(state => state.account.login);
+  const referrer = searchParams.get('referrer');
 
   useEffect(() => {
     dispatch(fetchAuthURLs());
@@ -39,7 +45,7 @@ const AccountForm = () => {
             <Button
               variant="outlined"
               startIcon={<GoogleIcon sx={{ paddingRight: '5px' }} />}
-              href={urls.google}
+              href={appendReferrer(urls.google, referrer)}
             >
               {t('account.google_login')}
             </Button>
@@ -49,7 +55,7 @@ const AccountForm = () => {
             <Button
               variant="outlined"
               startIcon={<AppleIcon sx={{ paddingRight: '5px' }} />}
-              href={urls.apple}
+              href={appendReferrer(urls.apple, referrer)}
             >
               {t('account.apple_login')}
             </Button>
