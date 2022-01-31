@@ -22,24 +22,10 @@ const Tool = ({ tool }) => {
         >
           <section>
             <Typography variant="h2">{t('tool.is_for')}</Typography>
-
-            <ul>
-              {t(`tools.${tool}.description`, { returnObjects: true }).map(
-                (description, index) => (
-                  <li key={index}>{description}</li>
-                )
-              )}
-            </ul>
+            <Typography>{t(`tools.${tool}.description`)}</Typography>
 
             <Typography variant="h2">{t('tool.requirements')}</Typography>
-
-            <ul>
-              {t(`tools.${tool}.requirements`, { returnObjects: true }).map(
-                (req, index) => (
-                  <li key={index}>{req}</li>
-                )
-              )}
-            </ul>
+            <Typography>{t(`tools.${tool}.requirements`)}</Typography>
 
             <Typography variant="h2">{t('tool.avilability')}</Typography>
             <p>{t(`tools.${tool}.availability`)}</p>
