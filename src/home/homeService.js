@@ -8,7 +8,7 @@ export const fetchHomeData = email => {
   const query = `
     query home($email: String!) {
       landscapeGroups: groups(
-        members_Email: $email,
+        memberships_Email: $email,
         associatedLandscapes_IsDefaultLandscapeGroup: true
       ) {
         edges {
@@ -33,7 +33,7 @@ export const fetchHomeData = email => {
         }
       }
       userIndependentGroups: groups(
-        members_Email: $email,
+        memberships_Email: $email,
         associatedLandscapes_Isnull: true
       ) {
         edges {
@@ -43,7 +43,7 @@ export const fetchHomeData = email => {
         }
       }
       userLandscapeGroups: groups(
-        members_Email: $email,
+        memberships_Email: $email,
         associatedLandscapes_IsDefaultLandscapeGroup: false
       ) {
         edges {
