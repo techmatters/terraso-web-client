@@ -57,7 +57,7 @@ To define environment variables we are using: https://create-react-app.dev/docs/
 **REACT_APP_ROLLBAR_TOKEN**: Rollbar token
 **REACT_APP_COOKIES_DOMAIN**: Cookies domain
 
-To modify the this variables with the docker environment change the `local.env` file
+To modify these variables inside the docker environment change the `local.env` file
 
 ### Run command with custom variable value directly with npm:
 
