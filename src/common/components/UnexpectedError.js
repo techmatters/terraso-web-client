@@ -20,7 +20,12 @@ const UnexpectedError = () => {
         sx={theme => ({ maxWidth: 'md', padding: theme.spacing(3) })}
         alignItems="center"
       >
-        <img src={logo} width="125" height="35" alt={t('common.terraso_projectName')} />
+        <img
+          src={logo}
+          width="125"
+          height="35"
+          alt={t('common.terraso_projectName')}
+        />
 
         <Alert severity="error" sx={{ margin: '3em 0 8em' }}>
           {t('common.unexpected_error')}

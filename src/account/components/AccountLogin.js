@@ -38,7 +38,12 @@ const AccountForm = () => {
     >
       <Stack sx={{ maxWidth: 'sm' }} alignItems="center">
         <Typography variant="h1">{t('account.welcome_to')}</Typography>
-        <img src={logo} width="125" height="35" alt={t('common.terraso_projectName')} />
+        <img
+          src={logo}
+          width="125"
+          height="35"
+          alt={t('common.terraso_projectName')}
+        />
 
         <Stack spacing={3} sx={{ margin: '3em 0 8em' }}>
           {urls.google && (
