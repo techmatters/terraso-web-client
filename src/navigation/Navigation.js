@@ -79,6 +79,10 @@ const Navigation = () => {
         '& .MuiTabs-indicator': {
           backgroundColor: 'black',
         },
+        maxWidth: 'lg',
+        margin: '0 auto',
+        padding: '0 24px',
+        boxSizing: 'border-box',
       }}
     >
       {Object.keys(PAGES).map((path, index) => (

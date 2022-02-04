@@ -18,9 +18,7 @@ ReactDOM.render(
   <AppWrappers store={createStore()} theme={theme} permissionsRules={rules}>
     <Box sx={{ flexGrow: 1, bgcolor: 'gray.lite2' }}>
       <AppBar />
-      <Container>
-        <Navigation />
-      </Container>
+      <Navigation />
       <Box
         component="main"
         sx={{
