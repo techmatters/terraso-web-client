@@ -34,7 +34,8 @@ const AppBarComponent = () => {
         <Button color="inherit" component={Link} to="/">
           <img
             src={isSmall ? logoSquare : logo}
-            height="35px"
+            width={isSmall ? 35 : 125}
+            height="35"
             alt={t('common.terraso_projectName')}
           />
         </Button>
