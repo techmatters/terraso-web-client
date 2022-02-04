@@ -22,6 +22,7 @@ ReactDOM.render(
         <Navigation />
       </Container>
       <Box
+        component="main"
         sx={{
           bgcolor: 'white',
           marginBottom: { xs: '29vh', sm: '15vh', md: '10vh' },
