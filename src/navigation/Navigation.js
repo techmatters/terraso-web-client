@@ -3,9 +3,8 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Tab, Tabs } from '@mui/material';
-
-import theme from 'theme';
+import { styled } from '@mui/material/styles';
+import { ToggleButton, Box, List, ListItem } from '@mui/material';
 
 const PAGES = {
   '/': {
@@ -26,24 +25,19 @@ const PAGES = {
   },
 };
 
-const LinkTab = props => (
-  <Tab
-    onClick={event => {
-      props.onClick();
-      event.preventDefault();
-    }}
-    sx={{
-      '&.Mui-selected': {
-        color: 'black',
-        fontWeight: theme.typography.fontWeightMedium,
-      },
-      '&:hover': {
-        background: theme.palette.gray.mid,
-      },
-    }}
-    {...props}
-  />
-);
+const NavButton = styled(ToggleButton)(({ theme }) => ({
+  border: 0,
+  borderRadius: 0,
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(2),
+  textTransform: 'uppercase',
+  '&.Mui-selected': {
+    color: 'black',
+    fontWeight: theme.typography.fontWeightMedium,
+    backgroundColor: 'inherit',
+    borderBottom: '2px solid',
+  },
+}));
 
 const Navigation = () => {
   const { t } = useTranslation();
@@ -71,7 +65,7 @@ const Navigation = () => {
   };
 
   return (
-    <Tabs
+    <Box
       component="nav"
       value={value}
       aria-label={t('navigation.nav_label')}
@@ -85,14 +79,22 @@ const Navigation = () => {
         boxSizing: 'border-box',
       }}
     >
-      {Object.keys(PAGES).map((path, index) => (
-        <LinkTab
-          key={path}
-          label={t(PAGES[path].label).toUpperCase()}
-          onClick={() => handleChange(index, path)}
-        />
-      ))}
-    </Tabs>
+      <List sx={{ display: 'flex', flexDirection: 'row', padding: 0 }}>
+        {Object.keys(PAGES).map((path, index) => (
+          <ListItem key={path} disablePadding dense sx={{ width: 'auto' }}>
+            <NavButton
+              component="a"
+              value={path}
+              selected={value === index}
+              aria-selected={value === index}
+              onClick={() => handleChange(index, path)}
+            >
+              {t(PAGES[path].label)}
+            </NavButton>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
   );
 };
 
