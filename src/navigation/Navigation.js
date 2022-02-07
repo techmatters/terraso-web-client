@@ -28,8 +28,8 @@ const PAGES = {
 const NavButton = styled(ToggleButton)(({ theme }) => ({
   border: 0,
   borderRadius: 0,
-  paddingLeft: theme.spacing(3),
-  paddingRight: theme.spacing(3),
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(2),
   textTransform: 'uppercase',
   '&.Mui-selected': {
     color: 'black',
