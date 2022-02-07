@@ -11,16 +11,19 @@ import AppWrappers from 'common/components/AppWrappers';
 import Routes from 'navigation/Routes';
 import Navigation from 'navigation/Navigation';
 import Footer from 'common/components/Footer';
+import SkipLink from 'navigation/SkipLink';
 
 import 'index.css';
 
 ReactDOM.render(
   <AppWrappers store={createStore()} theme={theme} permissionsRules={rules}>
+    <SkipLink />
     <Box sx={{ flexGrow: 1, bgcolor: 'gray.lite2' }}>
       <AppBar />
       <Navigation />
       <Box
         component="main"
+        id="content"
         sx={{
           bgcolor: 'white',
           marginBottom: { xs: '29vh', sm: '15vh', md: '10vh' },
