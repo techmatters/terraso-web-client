@@ -33,7 +33,9 @@ test('Navigation: Show tabs', async () => {
   });
   await setup();
   expect(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Landscapes' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Landscapes' })
+  ).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Groups' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
     'aria-selected',

@@ -3,7 +3,7 @@ import _ from 'lodash/fp';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import { usePermission } from 'permissions';
 import { fetchGroupForMembers } from 'group/groupSlice';
@@ -12,6 +12,8 @@ import { GroupContextProvider } from 'group/groupContext';
 import GroupMembersList from 'group/membership/components/GroupMembersList';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberRemove from 'group/membership/components/GroupMemberRemove';
+import PageTitle from 'common/components/PageTitle';
+import PageContainer from 'common/components/PageContainer';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
@@ -41,14 +43,14 @@ const Header = () => {
 
   return (
     <>
-      <Typography variant="h1">
-        {t(
+      <PageTitle
+        title={t(
           allowed
             ? 'group.members_title_manager'
             : 'group.members_title_member',
           { name: _.get('name', group) }
         )}
-      </Typography>
+      />
       <Typography
         variant="body2"
         display="block"
@@ -73,12 +75,7 @@ const GroupMembers = () => {
   const { data: group } = useSelector(state => state.group.membersGroup);
 
   return (
-    <Box
-      sx={{
-        paddingTop: theme.spacing(3),
-        paddingBottom: theme.spacing(2),
-      }}
-    >
+    <PageContainer>
       <Header />
       <GroupContextProvider
         owner={group}
@@ -88,7 +85,7 @@ const GroupMembers = () => {
       >
         <GroupMembersList />
       </GroupContextProvider>
-    </Box>
+    </PageContainer>
   );
 };
 

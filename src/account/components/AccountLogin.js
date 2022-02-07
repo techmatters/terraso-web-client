@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, Stack, Typography } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
 import AppleIcon from '@mui/icons-material/Apple';
 import GoogleIcon from '@mui/icons-material/Google';
 
 import { fetchAuthURLs } from 'account/accountSlice';
 import PageLoader from 'common/components/PageLoader';
+import PageTitle from 'common/components/PageTitle';
 
 import logo from 'assets/logo.svg';
 
@@ -37,7 +38,7 @@ const AccountForm = () => {
       style={{ height: '80vh' }}
     >
       <Stack sx={{ maxWidth: 'sm' }} alignItems="center">
-        <Typography variant="h1">{t('account.welcome_to')}</Typography>
+        <PageTitle title={t('account.welcome_to')} />
         <img
           src={logo}
           width="125"

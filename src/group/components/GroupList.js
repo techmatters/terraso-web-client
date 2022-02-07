@@ -24,6 +24,8 @@ import PageLoader from 'common/components/PageLoader';
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
+import PageTitle from 'common/components/PageTitle';
+import PageContainer from 'common/components/PageContainer';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
@@ -217,13 +219,8 @@ const GroupList = () => {
   }
 
   return (
-    <Box
-      sx={{
-        paddingTop: theme.spacing(3),
-        paddingBottom: theme.spacing(2),
-      }}
-    >
-      <Typography variant="h1">{t('group.list_title')}</Typography>
+    <PageContainer>
+      <PageTitle title={t('group.list_title')} />
       <Typography
         variant="body2"
         display="block"
@@ -253,7 +250,7 @@ const GroupList = () => {
       <Button variant="contained" component={RouterLink} to="/groups/new">
         {t('group.list_new_button')}
       </Button>
-    </Box>
+    </PageContainer>
   );
 };
 

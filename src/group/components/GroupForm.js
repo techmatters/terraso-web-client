@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import theme from 'theme';
 import {
@@ -15,6 +15,8 @@ import {
 } from 'group/groupSlice';
 import Form from 'forms/components/Form';
 import PageLoader from 'common/components/PageLoader';
+import PageTitle from 'common/components/PageTitle';
+import PageContainer from 'common/components/PageContainer';
 
 const transformURL = url => {
   if (url === '' || url.startsWith('http:') || url.startsWith('https:')) {
@@ -116,11 +118,9 @@ const GroupForm = () => {
     : t('group.form_new_title');
 
   return (
-    <Box sx={{ padding: theme.spacing(2) }}>
+    <PageContainer>
       {fetching && <PageLoader />}
-      <Typography variant="h1" sx={{ marginBottom: theme.spacing(2) }}>
-        {title}
-      </Typography>
+      <PageTitle title={title} />
       <Typography
         variant="body2"
         display="block"
@@ -141,7 +141,7 @@ const GroupForm = () => {
         onCancel={onCancel}
         cancelLabel="group.form_cancel_label"
       />
-    </Box>
+    </PageContainer>
   );
 };
 

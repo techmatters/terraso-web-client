@@ -4,9 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
-import { Box, Typography } from '@mui/material';
 
-import theme from 'theme';
 import {
   fetchLandscapeForm,
   saveLandscape,
@@ -14,6 +12,8 @@ import {
 } from 'landscape/landscapeSlice';
 import Form from 'forms/components/Form';
 import PageLoader from 'common/components/PageLoader';
+import PageTitle from 'common/components/PageTitle';
+import PageContainer from 'common/components/PageContainer';
 
 const VALIDATION_SCHEMA = yup
   .object({
@@ -93,11 +93,9 @@ const LandscapeForm = () => {
     : t('landscape.form_new_title');
 
   return (
-    <Box sx={{ padding: theme.spacing(2) }}>
+    <PageContainer>
       {fetching && <PageLoader />}
-      <Typography variant="h1" sx={{ marginBottom: theme.spacing(5) }}>
-        {title}
-      </Typography>
+      <PageTitle title={title} />
       <Form
         prefix="landscape"
         fields={FIELDS}
@@ -106,7 +104,7 @@ const LandscapeForm = () => {
         onSave={onSave}
         saveLabel="landscape.form_save_label"
       />
-    </Box>
+    </PageContainer>
   );
 };
 

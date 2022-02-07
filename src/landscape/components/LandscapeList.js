@@ -20,9 +20,12 @@ import GroupMembershipButton from 'group/membership/components/GroupMembershipBu
 import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
 import Table from 'common/components/Table';
 import PageLoader from 'common/components/PageLoader';
+import PageTitle from 'common/components/PageTitle';
+import PageContainer from 'common/components/PageContainer';
 import { GroupContextProvider } from 'group/groupContext';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
+
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
@@ -207,13 +210,8 @@ const LandscapeList = () => {
   }
 
   return (
-    <Box
-      sx={{
-        paddingTop: theme.spacing(3),
-        paddingBottom: theme.spacing(2),
-      }}
-    >
-      <Typography variant="h1">{t('landscape.list_title')}</Typography>
+    <PageContainer>
+      <PageTitle title={t('landscape.list_title')} />
       <Typography
         variant="body2"
         display="block"
@@ -227,7 +225,7 @@ const LandscapeList = () => {
       ) : (
         <LandscapeTable landscapes={landscapes} />
       )}
-    </Box>
+    </PageContainer>
   );
 };
 

@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  Box,
   Typography,
   Grid,
   Card,
@@ -22,6 +21,8 @@ import Map from 'gis/components/Map';
 import { GroupContextProvider } from 'group/groupContext';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
+import PageTitle from 'common/components/PageTitle';
+import PageContainer from 'common/components/PageContainer';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
@@ -94,13 +95,8 @@ const LandscapeView = () => {
   }
 
   return (
-    <Box
-      sx={{
-        paddingTop: theme.spacing(3),
-        paddingBottom: theme.spacing(2),
-      }}
-    >
-      <Typography variant="h1">{landscape.name}</Typography>
+    <PageContainer>
+      <PageTitle title={landscape.name} />
       <Typography
         variant="caption"
         display="block"
@@ -133,7 +129,7 @@ const LandscapeView = () => {
           </GroupContextProvider>
         </Grid>
       </Grid>
-    </Box>
+    </PageContainer>
   );
 };
 

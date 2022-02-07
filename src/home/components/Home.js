@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
-import { Box, Grid, Alert, Typography, Stack } from '@mui/material';
+import { Grid, Alert, Stack } from '@mui/material';
 
 import LoaderCard from 'common/components/LoaderCard';
 import { fetchHomeData } from 'home/homeSlice';
@@ -11,7 +11,8 @@ import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultHomeCard'
 import GroupsCard from 'group/components/GroupsHomeCard';
 import GroupDefaultCard from 'group/components/GroupDefaultHomeCard';
 import ToolHomeCard from 'tool/components/ToolHomeCard';
-import theme from 'theme';
+import PageTitle from 'common/components/PageTitle';
+import PageContainer from 'common/components/PageContainer';
 
 const Landscapes = ({ landscapes, fetching }) => {
   if (fetching) {
@@ -56,21 +57,8 @@ const Home = () => {
   }
 
   return (
-    <Box
-      sx={{
-        paddingTop: theme.spacing(3),
-        paddingBottom: theme.spacing(2),
-      }}
-    >
-      <Typography
-        variant="h1"
-        sx={{
-          marginBottom: theme.spacing(3),
-          marginTop: theme.spacing(2),
-        }}
-      >
-        {t('home.page_title', { name: user.firstName })}
-      </Typography>
+    <PageContainer>
+      <PageTitle title={t('home.page_title', { name: user.firstName })} />
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <Stack spacing={1}>
@@ -84,7 +72,7 @@ const Home = () => {
           </Stack>
         </Grid>
       </Grid>
-    </Box>
+    </PageContainer>
   );
 };
 

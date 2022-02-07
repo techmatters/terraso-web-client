@@ -3,7 +3,7 @@ import _ from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import { fetchLandscapeForMembers } from 'landscape/landscapeSlice';
 import { usePermission } from 'permissions';
@@ -13,6 +13,8 @@ import { GroupContextProvider } from 'group/groupContext';
 import PageLoader from 'common/components/PageLoader';
 import LandscapeMemberLeave from './LandscapeMemberLeave';
 import LandscapeMemberRemove from './LandscapeMemberRemove';
+import PageTitle from 'common/components/PageTitle';
+import PageContainer from 'common/components/PageContainer';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
@@ -32,14 +34,14 @@ const Header = ({ landscape }) => {
 
   return (
     <>
-      <Typography variant="h1">
-        {t(
+      <PageTitle
+        title={t(
           allowed
             ? 'landscape.members_title_manager'
             : 'landscape.members_title_member',
           { name: _.get('name', landscape) }
         )}
-      </Typography>
+      />
       <Typography
         variant="body2"
         display="block"
@@ -75,12 +77,7 @@ const LandscapeMembers = () => {
   }
 
   return (
-    <Box
-      sx={{
-        paddingTop: theme.spacing(3),
-        paddingBottom: theme.spacing(2),
-      }}
-    >
+    <PageContainer>
       <Header landscape={landscape} />
       <GroupContextProvider
         owner={landscape}
@@ -90,7 +87,7 @@ const LandscapeMembers = () => {
       >
         <GroupMembersList />
       </GroupContextProvider>
-    </Box>
+    </PageContainer>
   );
 };
 
