@@ -32,10 +32,10 @@ test('Navigation: Show tabs', async () => {
     pathname: '/',
   });
   await setup();
-  expect(screen.getByRole('tab', { name: 'HOME' })).toBeInTheDocument();
-  expect(screen.getByRole('tab', { name: 'LANDSCAPES' })).toBeInTheDocument();
-  expect(screen.getByRole('tab', { name: 'GROUPS' })).toBeInTheDocument();
-  expect(screen.getByRole('tab', { name: 'HOME' })).toHaveAttribute(
+  expect(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Landscapes' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Groups' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
     'aria-selected',
     'true'
   );
@@ -45,15 +45,15 @@ test('Navigation: Test initial', async () => {
     pathname: '/landscapes',
   });
   await setup();
-  expect(screen.getByRole('tab', { name: 'HOME' })).toHaveAttribute(
+  expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
     'aria-selected',
     'false'
   );
-  expect(screen.getByRole('tab', { name: 'LANDSCAPES' })).toHaveAttribute(
+  expect(screen.getByRole('button', { name: 'Landscapes' })).toHaveAttribute(
     'aria-selected',
     'true'
   );
-  expect(screen.getByRole('tab', { name: 'GROUPS' })).toHaveAttribute(
+  expect(screen.getByRole('button', { name: 'Groups' })).toHaveAttribute(
     'aria-selected',
     'false'
   );
@@ -63,15 +63,15 @@ test('Navigation: Test select', async () => {
     pathname: '/landscapes/landscape-slug',
   });
   await setup();
-  expect(screen.getByRole('tab', { name: 'HOME' })).toHaveAttribute(
+  expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
     'aria-selected',
     'false'
   );
-  expect(screen.getByRole('tab', { name: 'LANDSCAPES' })).toHaveAttribute(
+  expect(screen.getByRole('button', { name: 'Landscapes' })).toHaveAttribute(
     'aria-selected',
     'true'
   );
-  expect(screen.getByRole('tab', { name: 'GROUPS' })).toHaveAttribute(
+  expect(screen.getByRole('button', { name: 'Groups' })).toHaveAttribute(
     'aria-selected',
     'false'
   );
@@ -82,13 +82,13 @@ test('Navigation: Test navigation', async () => {
   });
   await setup();
   await act(async () =>
-    fireEvent.click(screen.getByRole('tab', { name: 'LANDSCAPES' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Landscapes' }))
   );
-  expect(screen.getByRole('tab', { name: 'HOME' })).toHaveAttribute(
+  expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
     'aria-selected',
     'false'
   );
-  expect(screen.getByRole('tab', { name: 'LANDSCAPES' })).toHaveAttribute(
+  expect(screen.getByRole('button', { name: 'Landscapes' })).toHaveAttribute(
     'aria-selected',
     'true'
   );
@@ -98,15 +98,15 @@ test('Navigation: none selected', async () => {
     pathname: '/other',
   });
   await setup();
-  expect(screen.getByRole('tab', { name: 'HOME' })).toHaveAttribute(
+  expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
     'aria-selected',
     'false'
   );
-  expect(screen.getByRole('tab', { name: 'LANDSCAPES' })).toHaveAttribute(
+  expect(screen.getByRole('button', { name: 'Landscapes' })).toHaveAttribute(
     'aria-selected',
     'false'
   );
-  expect(screen.getByRole('tab', { name: 'GROUPS' })).toHaveAttribute(
+  expect(screen.getByRole('button', { name: 'Groups' })).toHaveAttribute(
     'aria-selected',
     'false'
   );

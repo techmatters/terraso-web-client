@@ -81,11 +81,12 @@ const Navigation = () => {
     >
       <List sx={{ display: 'flex', flexDirection: 'row', padding: 0 }}>
         {Object.keys(PAGES).map((path, index) => (
-          <ListItem disablePadding dense sx={{ width: 'auto' }}>
+          <ListItem key={path} disablePadding dense sx={{ width: 'auto' }}>
             <NavButton
               component="a"
-              key={path}
+              value={path}
               selected={value === index}
+              aria-selected={value === index}
               onClick={() => handleChange(index, path)}
             >
               {t(PAGES[path].label)}
