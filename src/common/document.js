@@ -10,10 +10,7 @@ export const useDocumentTitle = (title, fetching, omitSuffix = false) => {
     omitSuffix ? null : t('common.terraso_projectName'),
   ];
 
-  const fullTitle = _.flow(
-    _.filter(part => !_.isEmpty(part)),
-    _.join(' | ')
-  )(titleParts);
+  const fullTitle = _.compact(titleParts).join(' | ');
 
   useEffect(() => {
     if (fullTitle) {
