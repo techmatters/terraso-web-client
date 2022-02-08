@@ -17,6 +17,7 @@ import {
 
 import { fetchGroups } from 'group/groupSlice';
 import { withProps } from 'react-hoc';
+import { useDocumentTitle } from 'common/document';
 import GroupMembershipButton from 'group/membership/components/GroupMembershipButton';
 import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
 import Table from 'common/components/Table';
@@ -24,7 +25,7 @@ import PageLoader from 'common/components/PageLoader';
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
-import PageTitle from 'common/components/PageTitle';
+import PageHeader from 'common/components/PageHeader';
 import PageContainer from 'common/components/PageContainer';
 import theme from 'theme';
 
@@ -206,6 +207,8 @@ const GroupList = () => {
   const { groups, fetching, message } = useSelector(state => state.group.list);
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
 
+  useDocumentTitle(t('group.list_document_title'), fetching);
+
   useEffect(() => {
     dispatch(fetchGroups());
   }, [dispatch]);
@@ -220,7 +223,7 @@ const GroupList = () => {
 
   return (
     <PageContainer>
-      <PageTitle title={t('group.list_title')} />
+      <PageHeader header={t('group.list_title')} />
       <Typography
         variant="body2"
         display="block"

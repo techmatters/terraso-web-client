@@ -16,11 +16,12 @@ import {
 
 import { fetchLandscapes } from 'landscape/landscapeSlice';
 import { withProps } from 'react-hoc';
+import { useDocumentTitle } from 'common/document';
 import GroupMembershipButton from 'group/membership/components/GroupMembershipButton';
 import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
 import Table from 'common/components/Table';
 import PageLoader from 'common/components/PageLoader';
-import PageTitle from 'common/components/PageTitle';
+import PageHeader from 'common/components/PageHeader';
 import PageContainer from 'common/components/PageContainer';
 import { GroupContextProvider } from 'group/groupContext';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
@@ -201,6 +202,8 @@ const LandscapeList = () => {
   const { landscapes, fetching } = useSelector(state => state.landscape.list);
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
 
+  useDocumentTitle(t('landscape.list_document_title'), fetching);
+
   useEffect(() => {
     dispatch(fetchLandscapes());
   }, [dispatch]);
@@ -211,7 +214,7 @@ const LandscapeList = () => {
 
   return (
     <PageContainer>
-      <PageTitle title={t('landscape.list_title')} />
+      <PageHeader header={t('landscape.list_title')} />
       <Typography
         variant="body2"
         display="block"

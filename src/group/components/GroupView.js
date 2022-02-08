@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import _ from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -17,13 +18,14 @@ import EmailIcon from '@mui/icons-material/Email';
 
 import { withProps } from 'react-hoc';
 import { fetchGroupView } from 'group/groupSlice';
+import { useDocumentTitle } from 'common/document';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
 import PageLoader from 'common/components/PageLoader';
 import Restricted from 'permissions/components/Restricted';
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
-import PageTitle from 'common/components/PageTitle';
+import PageHeader from 'common/components/PageHeader';
 import PageContainer from 'common/components/PageContainer';
 import theme from 'theme';
 
@@ -82,6 +84,11 @@ const GroupView = () => {
   const { group, fetching } = useSelector(state => state.group.view);
   const { slug } = useParams();
 
+  useDocumentTitle(
+    t('group.view_document_title', { name: _.get('name', group) }),
+    fetching
+  );
+
   useEffect(() => {
     dispatch(fetchGroupView(slug));
   }, [dispatch, slug]);
@@ -104,7 +111,7 @@ const GroupView = () => {
           marginBottom: theme.spacing(3),
         }}
       >
-        <PageTitle title={group.name} />
+        <PageHeader header={group.name} />
         <Restricted permission="group.change" resource={group}>
           <Button
             variant="contained"

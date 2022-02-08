@@ -2,8 +2,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
+import { useDocumentTitle } from 'common/document';
 import Tool from 'tool/components/Tool';
-import PageTitle from 'common/components/PageTitle';
+import PageHeader from 'common/components/PageHeader';
 import PageContainer from 'common/components/PageContainer';
 import theme from 'theme';
 
@@ -12,9 +13,14 @@ const ToolList = ({ tools }) => {
 
   const toolList = ['kobo'];
 
+  useDocumentTitle(t('tool.list_document_title'));
+
   return (
     <PageContainer>
-      <PageTitle title={t('tool.list_title')} />
+      <PageHeader
+        header={t('tool.list_title')}
+        documentTitle={t('tool.list_document_title')}
+      />
       <Typography
         variant="body2"
         display="block"

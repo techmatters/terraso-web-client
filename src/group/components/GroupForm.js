@@ -6,17 +6,18 @@ import { useParams, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { Typography } from '@mui/material';
 
-import theme from 'theme';
 import {
   fetchGroupForm,
   saveGroup,
   setFormNewValues,
   resetFormSuccess,
 } from 'group/groupSlice';
+import { useDocumentTitle } from 'common/document';
 import Form from 'forms/components/Form';
 import PageLoader from 'common/components/PageLoader';
-import PageTitle from 'common/components/PageTitle';
+import PageHeader from 'common/components/PageHeader';
 import PageContainer from 'common/components/PageContainer';
+import theme from 'theme';
 
 const transformURL = url => {
   if (url === '' || url.startsWith('http:') || url.startsWith('https:')) {
@@ -76,6 +77,15 @@ const GroupForm = () => {
 
   const isNew = !slug;
 
+  useDocumentTitle(
+    !isNew
+      ? t('group.form_edit_document_title', {
+          name: _.getOr('', 'name', group),
+        })
+      : t('group.form_new_document_title'),
+    fetching
+  );
+
   useEffect(() => {
     if (isNew) {
       dispatch(setFormNewValues());
@@ -120,7 +130,7 @@ const GroupForm = () => {
   return (
     <PageContainer>
       {fetching && <PageLoader />}
-      <PageTitle title={title} />
+      <PageHeader header={title} />
       <Typography
         variant="body2"
         display="block"

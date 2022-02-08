@@ -10,9 +10,10 @@ import {
   saveLandscape,
   setFormNewValues,
 } from 'landscape/landscapeSlice';
+import { useDocumentTitle } from 'common/document';
 import Form from 'forms/components/Form';
 import PageLoader from 'common/components/PageLoader';
-import PageTitle from 'common/components/PageTitle';
+import PageHeader from 'common/components/PageHeader';
 import PageContainer from 'common/components/PageContainer';
 
 const VALIDATION_SCHEMA = yup
@@ -63,6 +64,15 @@ const LandscapeForm = () => {
 
   const isNew = !slug;
 
+  useDocumentTitle(
+    !isNew
+      ? t('landscape.form_edit_document_title', {
+          name: _.getOr('', 'name', landscape),
+        })
+      : t('landscape.form_new_document_title'),
+    fetching
+  );
+
   useEffect(() => {
     if (isNew) {
       dispatch(setFormNewValues());
@@ -95,7 +105,7 @@ const LandscapeForm = () => {
   return (
     <PageContainer>
       {fetching && <PageLoader />}
-      <PageTitle title={title} />
+      <PageHeader header={title} />
       <Form
         prefix="landscape"
         fields={FIELDS}

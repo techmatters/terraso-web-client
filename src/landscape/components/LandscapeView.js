@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import _ from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -21,9 +22,10 @@ import Map from 'gis/components/Map';
 import { GroupContextProvider } from 'group/groupContext';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
-import PageTitle from 'common/components/PageTitle';
+import PageHeader from 'common/components/PageHeader';
 import PageContainer from 'common/components/PageContainer';
 import theme from 'theme';
+import { useDocumentTitle } from 'common/document';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.view_leave_label',
@@ -77,10 +79,18 @@ const LandscapeMap = ({ position }) => {
 };
 
 const LandscapeView = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { landscape, fetching } = useSelector(state => state.landscape.view);
   const { slug } = useParams();
+
+  useDocumentTitle(
+    t('landscape.view_document_title', {
+      name: _.get('name', landscape),
+    }),
+    fetching
+  );
 
   useEffect(() => {
     dispatch(fetchLandscapeView(slug));
@@ -96,7 +106,7 @@ const LandscapeView = () => {
 
   return (
     <PageContainer>
-      <PageTitle title={landscape.name} />
+      <PageHeader header={landscape.name} />
       <Typography
         variant="caption"
         display="block"

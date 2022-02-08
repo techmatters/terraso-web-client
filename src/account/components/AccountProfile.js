@@ -6,10 +6,11 @@ import { useTranslation } from 'react-i18next';
 import { Grid, InputLabel } from '@mui/material';
 
 import { saveUser } from 'account/accountSlice';
+import { useDocumentTitle } from 'common/document';
 import Form from 'forms/components/Form';
 import AccountAvatar from './AccountAvatar';
 import PageLoader from 'common/components/PageLoader';
-import PageTitle from 'common/components/PageTitle';
+import PageHeader from 'common/components/PageHeader';
 import PageContainer from 'common/components/PageContainer';
 
 const VALIDATION_SCHEMA = yup
@@ -55,6 +56,8 @@ const AccountProfile = () => {
     state => state.account.currentUser
   );
 
+  useDocumentTitle(t('account.profile_document_title'), fetching);
+
   const onSave = updatedProfile => {
     dispatch(saveUser(updatedProfile));
     navigate('/');
@@ -66,8 +69,8 @@ const AccountProfile = () => {
 
   return (
     <PageContainer>
-      <PageTitle
-        title={`${t('account.welcome')}, ${user.firstName} ${user.lastName}`}
+      <PageHeader
+        header={`${t('account.welcome')}, ${user.firstName} ${user.lastName}`}
       />
 
       <p>{t('account.name_and_profile')}</p>

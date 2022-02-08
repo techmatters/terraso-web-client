@@ -8,12 +8,13 @@ import { Typography } from '@mui/material';
 import { fetchLandscapeForMembers } from 'landscape/landscapeSlice';
 import { usePermission } from 'permissions';
 import { withProps } from 'react-hoc';
+import { useDocumentTitle } from 'common/document';
 import GroupMembersList from 'group/membership/components/GroupMembersList';
 import { GroupContextProvider } from 'group/groupContext';
 import PageLoader from 'common/components/PageLoader';
 import LandscapeMemberLeave from './LandscapeMemberLeave';
 import LandscapeMemberRemove from './LandscapeMemberRemove';
-import PageTitle from 'common/components/PageTitle';
+import PageHeader from 'common/components/PageHeader';
 import PageContainer from 'common/components/PageContainer';
 import theme from 'theme';
 
@@ -21,11 +22,18 @@ const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.members_list_leave',
 });
 
-const Header = ({ landscape }) => {
+const Header = ({ landscape, fetching }) => {
   const { t } = useTranslation();
   const [loadingPermissions, allowed] = usePermission(
     'group.manageMembers',
     landscape
+  );
+
+  useDocumentTitle(
+    t('landscape.members_document_title', {
+      name: _.get('name', landscape),
+    }),
+    fetching
   );
 
   if (loadingPermissions) {
@@ -34,8 +42,8 @@ const Header = ({ landscape }) => {
 
   return (
     <>
-      <PageTitle
-        title={t(
+      <PageHeader
+        header={t(
           allowed
             ? 'landscape.members_title_manager'
             : 'landscape.members_title_member',
@@ -78,7 +86,7 @@ const LandscapeMembers = () => {
 
   return (
     <PageContainer>
-      <Header landscape={landscape} />
+      <Header landscape={landscape} fetching={fetching} />
       <GroupContextProvider
         owner={landscape}
         groupSlug={landscape.groupSlug}

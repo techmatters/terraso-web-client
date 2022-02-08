@@ -6,13 +6,14 @@ import { useParams } from 'react-router-dom';
 import { Typography } from '@mui/material';
 
 import { usePermission } from 'permissions';
+import { useDocumentTitle } from 'common/document';
 import { fetchGroupForMembers } from 'group/groupSlice';
 import { withProps } from 'react-hoc';
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMembersList from 'group/membership/components/GroupMembersList';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberRemove from 'group/membership/components/GroupMemberRemove';
-import PageTitle from 'common/components/PageTitle';
+import PageHeader from 'common/components/PageHeader';
 import PageContainer from 'common/components/PageContainer';
 import theme from 'theme';
 
@@ -26,6 +27,13 @@ const Header = () => {
   const { slug } = useParams();
   const { data: group, fetching } = useSelector(
     state => state.group.membersGroup
+  );
+
+  useDocumentTitle(
+    t('group.members_document_title', {
+      name: _.get('name', group),
+    }),
+    fetching
   );
 
   useEffect(() => {
@@ -43,8 +51,8 @@ const Header = () => {
 
   return (
     <>
-      <PageTitle
-        title={t(
+      <PageHeader
+        header={t(
           allowed
             ? 'group.members_title_manager'
             : 'group.members_title_member',
