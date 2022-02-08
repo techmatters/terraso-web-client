@@ -207,7 +207,7 @@ const GroupList = () => {
   const { groups, fetching, message } = useSelector(state => state.group.list);
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
 
-  useDocumentTitle(t('group.list_document_title'), fetching);
+  useDocumentTitle(t('group.list_document_title'));
 
   useEffect(() => {
     dispatch(fetchGroups());

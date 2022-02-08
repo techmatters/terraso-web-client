@@ -202,7 +202,7 @@ const LandscapeList = () => {
   const { landscapes, fetching } = useSelector(state => state.landscape.list);
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
 
-  useDocumentTitle(t('landscape.list_document_title'), fetching);
+  useDocumentTitle(t('landscape.list_document_title'));
 
   useEffect(() => {
     dispatch(fetchLandscapes());

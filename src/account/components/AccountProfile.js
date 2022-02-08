@@ -56,7 +56,7 @@ const AccountProfile = () => {
     state => state.account.currentUser
   );
 
-  useDocumentTitle(t('account.profile_document_title'), fetching);
+  useDocumentTitle(t('account.profile_document_title'));
 
   const onSave = updatedProfile => {
     dispatch(saveUser(updatedProfile));

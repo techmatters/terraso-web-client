@@ -23,7 +23,7 @@ const AccountForm = () => {
   const { fetching, urls } = useSelector(state => state.account.login);
   const referrer = searchParams.get('referrer');
 
-  useDocumentTitle(t('account.login_document_title'), fetching);
+  useDocumentTitle(t('account.login_document_title'));
 
   useEffect(() => {
     dispatch(fetchAuthURLs());
