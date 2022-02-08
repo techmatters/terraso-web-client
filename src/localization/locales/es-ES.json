@@ -2,7 +2,8 @@
     "home": {
         "title": "Inicio",
         "error": "Error al cargar datos. {{error}}",
-        "page_title": "Terraso de {{name}}"
+        "page_title": "Terraso de {{name}}",
+        "document_title": "Inicio"
     },
     "user": {
         "login": "Iniciar sesión",
@@ -71,7 +72,12 @@
         "membership_view_all": "Ver toda(o)s los miembros",
         "members_list_leave": "Abandonar",
         "members_list_remove": "Eliminar",
-        "members_list_column_role": "Rol"
+        "members_list_column_role": "Rol",
+        "form_edit_document_title": "Editar: {{name}}",
+        "form_new_document_title": "Crear Grupo",
+        "list_document_title": "Grupos",
+        "view_document_title": "{{name}}",
+        "members_document_title": "Miembros: {{name}}"
     },
     "tool": {
         "avilability": "Disponibilidad",
@@ -85,7 +91,8 @@
         "is_for": "Esta herramienta es para",
         "actions_bookmark": "Marcar como favorito",
         "actions_recommend": "Recomendar esto a mi equipo",
-        "home_card_img_alt": "Imagen de KoBoToolbox"
+        "home_card_img_alt": "Imagen de KoBoToolbox",
+        "list_document_title": "Herramientas"
     },
     "tools": {
         "kobo": {
@@ -116,7 +123,9 @@
         "profile_picture": "Fotografía de perfil",
         "apple_login": "Continuar con Apple",
         "google_login": "Continuar con Google",
-        "name_and_profile": "Aquí está el nombre y la fotografía de perfil de su cuenta de Google. Si desea usar un nombre o una fotografía diferente para Terraso, puede cambiarlos."
+        "name_and_profile": "Aquí está el nombre y la fotografía de perfil de su cuenta de Google. Si desea usar un nombre o una fotografía diferente para Terraso, puede cambiarlos.",
+        "login_document_title": "Iniciar sesión",
+        "profile_document_title": "Cuenta"
     },
     "footer": {
         "help": "Ayuda de Terraso",
@@ -178,7 +187,12 @@
         "form_website_info": "Se mostrará públicamente a todos los usuarios de Terraso.",
         "list_column_location": "Ubicación",
         "members_list_leave": "Abandonar",
-        "members_list_remove": "Eliminar"
+        "members_list_remove": "Eliminar",
+        "form_edit_document_title": "Editar: {{name}}",
+        "form_new_document_title": "Crear Paisaje",
+        "list_document_title": "Paisajes",
+        "view_document_title": "{{name}}",
+        "members_document_title": "Miembros: {{name}}"
     },
     "common": {
         "dialog_cancel_label": "Cancelar",
