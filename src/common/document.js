@@ -9,7 +9,6 @@ export const useDocumentTitle = (title, fetching) => {
     : `${title} | ${t('common.terraso_projectName')}`;
 
   useEffect(() => {
-    console.log({ fullTitle });
     if (fullTitle) {
       document.title = fullTitle;
     }
