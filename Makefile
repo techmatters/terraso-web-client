@@ -15,7 +15,7 @@ run-build:
 		"--name terraso_web_client_build -p 3000:3000" \
 		"npm run build && npm run build-serve"
 
-build:
+create-build:
 	./scripts/docker/run.sh \
 		"--name terraso_web_client_build -p 3000:3000" \
 		"npm run build"
@@ -45,3 +45,8 @@ localization-to-json:
 	./scripts/docker/run.sh \
 		"--name terraso_web_client_localization" \
 		"npm run localization-to-json"
+
+npm:
+	./scripts/docker/run.sh \
+		"--name terraso_web_client_npm" \
+		"npm $(command)"
