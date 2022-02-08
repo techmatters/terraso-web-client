@@ -1,6 +1,9 @@
 import React, { useRef, useEffect } from 'react';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
+
+const HIDE_FOR_PATHS = ['/account'];
 
 const SkipLinks = props => {
   const { contentRef, navigationRef } = props;
@@ -10,8 +13,14 @@ const SkipLinks = props => {
 
   useEffect(() => {
     // Jump to initial ref after location change
-    initialRef.current.focus();
-  }, [initialRef, location]);
+    if (initialRef.current) {
+      initialRef.current.focus();
+    }
+  }, [initialRef, location.pathname]);
+
+  if (_.includes(location.pathname, HIDE_FOR_PATHS)) {
+    return null;
+  }
 
   const toContent = event => {
     contentRef.current.focus();
