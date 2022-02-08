@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { Box, Container } from '@mui/material';
 
@@ -11,30 +11,43 @@ import AppWrappers from 'common/components/AppWrappers';
 import Routes from 'navigation/Routes';
 import Navigation from 'navigation/Navigation';
 import Footer from 'common/components/Footer';
-import SkipLink from 'navigation/SkipLink';
+import SkipLinks from 'navigation/SkipLinks';
 
 import 'index.css';
 
+const App = () => {
+  const contentRef = useRef();
+  const navigationRef = useRef();
+
+  return (
+    <>
+      <SkipLinks contentRef={contentRef} navigationRef={navigationRef} />
+      <Box sx={{ flexGrow: 1, bgcolor: 'gray.lite2' }}>
+        <AppBar />
+        <Navigation ref={navigationRef} />
+        <Box
+          component="main"
+          id="content"
+          tabIndex="-1"
+          ref={contentRef}
+          sx={{
+            bgcolor: 'white',
+            marginBottom: { xs: '29vh', sm: '15vh', md: '10vh' },
+          }}
+        >
+          <Container>
+            <Routes />
+          </Container>
+        </Box>
+        <Footer />
+      </Box>
+    </>
+  );
+};
+
 ReactDOM.render(
   <AppWrappers store={createStore()} theme={theme} permissionsRules={rules}>
-    <SkipLink />
-    <Box sx={{ flexGrow: 1, bgcolor: 'gray.lite2' }}>
-      <AppBar />
-      <Navigation />
-      <Box
-        component="main"
-        id="content"
-        sx={{
-          bgcolor: 'white',
-          marginBottom: { xs: '29vh', sm: '15vh', md: '10vh' },
-        }}
-      >
-        <Container>
-          <Routes />
-        </Container>
-      </Box>
-      <Footer />
-    </Box>
+    <App />
   </AppWrappers>,
   document.getElementById('root')
 );

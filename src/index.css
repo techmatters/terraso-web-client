@@ -13,8 +13,14 @@ code {
     monospace;
 }
 
-.sr-only-focusable:active,.sr-only-focusable:focus
-{
+.skip-link:focus,.skip-link:active {
+	display: block;
+	padding: 1.5rem;
+	text-align: center;
+	font-weight: bold;
+}
+
+.sr-only-focusable:active,.sr-only-focusable:focus {
 	position: static;
 	width: auto;
 	height: auto;
