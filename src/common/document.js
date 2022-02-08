@@ -6,15 +6,15 @@ export const useDocumentTitle = (title, fetching, omitSuffix = false) => {
   const { t } = useTranslation();
 
   const titleParts = [
-    fetching ? null : title,
+    title,
     omitSuffix ? null : t('common.terraso_projectName'),
   ];
 
   const fullTitle = _.compact(titleParts).join(' | ');
 
   useEffect(() => {
-    if (fullTitle) {
+    if (!fetching && fullTitle) {
       document.title = fullTitle;
     }
-  }, [fullTitle]);
+  }, [fetching, fullTitle]);
 };
