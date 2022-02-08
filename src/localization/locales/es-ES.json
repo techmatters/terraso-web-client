@@ -3,7 +3,7 @@
         "title": "Inicio",
         "error": "Error al cargar datos. {{error}}",
         "page_title": "Terraso de {{name}}",
-        "document_title": "Inicio"
+        "document_title": "Terraso Inicio"
     },
     "user": {
         "login": "Iniciar sesión",

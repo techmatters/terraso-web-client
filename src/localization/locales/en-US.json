@@ -3,7 +3,7 @@
         "title": "Home",
         "error": "Error loading data. {{error}}",
         "page_title": "{{name}}’s Terraso",
-        "document_title": "Home"
+        "document_title": "Terraso Home"
     },
     "user": {
         "login": "Log in",

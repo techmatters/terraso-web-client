@@ -47,7 +47,7 @@ const Home = () => {
   const home = useSelector(state => state.userHome);
   const { groups, landscapes, error, fetching } = home;
 
-  useDocumentTitle(t('home.document_title'), fetching);
+  useDocumentTitle(t('home.document_title'), fetching, true);
 
   useEffect(() => {
     dispatch(fetchHomeData(user.email));
