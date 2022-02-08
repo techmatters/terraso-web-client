@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, Stack, Typography } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
 import AppleIcon from '@mui/icons-material/Apple';
 import GoogleIcon from '@mui/icons-material/Google';
 
 import { fetchAuthURLs } from 'account/accountSlice';
+import { useDocumentTitle } from 'common/document';
 import PageLoader from 'common/components/PageLoader';
+import PageHeader from 'common/components/PageHeader';
 
 import logo from 'assets/logo.svg';
 
@@ -20,6 +22,8 @@ const AccountForm = () => {
   const [searchParams] = useSearchParams();
   const { fetching, urls } = useSelector(state => state.account.login);
   const referrer = searchParams.get('referrer');
+
+  useDocumentTitle(t('account.login_document_title'));
 
   useEffect(() => {
     dispatch(fetchAuthURLs());
@@ -37,7 +41,7 @@ const AccountForm = () => {
       style={{ height: '80vh' }}
     >
       <Stack sx={{ maxWidth: 'sm' }} alignItems="center">
-        <Typography variant="h1">{t('account.welcome_to')}</Typography>
+        <PageHeader header={t('account.welcome_to')} />
         <img
           src={logo}
           width="125"

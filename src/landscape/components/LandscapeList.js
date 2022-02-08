@@ -16,13 +16,17 @@ import {
 
 import { fetchLandscapes } from 'landscape/landscapeSlice';
 import { withProps } from 'react-hoc';
+import { useDocumentTitle } from 'common/document';
 import GroupMembershipButton from 'group/membership/components/GroupMembershipButton';
 import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
 import Table from 'common/components/Table';
 import PageLoader from 'common/components/PageLoader';
+import PageHeader from 'common/components/PageHeader';
+import PageContainer from 'common/components/PageContainer';
 import { GroupContextProvider } from 'group/groupContext';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
+
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
@@ -198,6 +202,8 @@ const LandscapeList = () => {
   const { landscapes, fetching } = useSelector(state => state.landscape.list);
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
 
+  useDocumentTitle(t('landscape.list_document_title'));
+
   useEffect(() => {
     dispatch(fetchLandscapes());
   }, [dispatch]);
@@ -207,13 +213,8 @@ const LandscapeList = () => {
   }
 
   return (
-    <Box
-      sx={{
-        paddingTop: theme.spacing(3),
-        paddingBottom: theme.spacing(2),
-      }}
-    >
-      <Typography variant="h1">{t('landscape.list_title')}</Typography>
+    <PageContainer>
+      <PageHeader header={t('landscape.list_title')} />
       <Typography
         variant="body2"
         display="block"
@@ -227,7 +228,7 @@ const LandscapeList = () => {
       ) : (
         <LandscapeTable landscapes={landscapes} />
       )}
-    </Box>
+    </PageContainer>
   );
 };
 

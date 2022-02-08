@@ -3,13 +3,15 @@ import * as yup from 'yup';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Grid, InputLabel, Stack, Typography } from '@mui/material';
+import { Grid, InputLabel } from '@mui/material';
 
 import { saveUser } from 'account/accountSlice';
+import { useDocumentTitle } from 'common/document';
 import Form from 'forms/components/Form';
 import AccountAvatar from './AccountAvatar';
 import PageLoader from 'common/components/PageLoader';
-import theme from 'theme';
+import PageHeader from 'common/components/PageHeader';
+import PageContainer from 'common/components/PageContainer';
 
 const VALIDATION_SCHEMA = yup
   .object({
@@ -54,6 +56,8 @@ const AccountProfile = () => {
     state => state.account.currentUser
   );
 
+  useDocumentTitle(t('account.profile_document_title'));
+
   const onSave = updatedProfile => {
     dispatch(saveUser(updatedProfile));
     navigate('/');
@@ -64,10 +68,10 @@ const AccountProfile = () => {
   }
 
   return (
-    <Stack sx={{ maxWidth: 'sm', paddingTop: theme.spacing(3) }}>
-      <Typography variant="h1">
-        {t('account.welcome')}, {user.firstName} {user.lastName}
-      </Typography>
+    <PageContainer>
+      <PageHeader
+        header={`${t('account.welcome')}, ${user.firstName} ${user.lastName}`}
+      />
 
       <p>{t('account.name_and_profile')}</p>
 
@@ -87,7 +91,7 @@ const AccountProfile = () => {
           />
         </Grid>
       </Form>
-    </Stack>
+    </PageContainer>
   );
 };
 

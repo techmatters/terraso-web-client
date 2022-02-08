@@ -17,6 +17,7 @@ import {
 
 import { fetchGroups } from 'group/groupSlice';
 import { withProps } from 'react-hoc';
+import { useDocumentTitle } from 'common/document';
 import GroupMembershipButton from 'group/membership/components/GroupMembershipButton';
 import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
 import Table from 'common/components/Table';
@@ -24,6 +25,8 @@ import PageLoader from 'common/components/PageLoader';
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
+import PageHeader from 'common/components/PageHeader';
+import PageContainer from 'common/components/PageContainer';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
@@ -204,6 +207,8 @@ const GroupList = () => {
   const { groups, fetching, message } = useSelector(state => state.group.list);
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
 
+  useDocumentTitle(t('group.list_document_title'));
+
   useEffect(() => {
     dispatch(fetchGroups());
   }, [dispatch]);
@@ -217,13 +222,8 @@ const GroupList = () => {
   }
 
   return (
-    <Box
-      sx={{
-        paddingTop: theme.spacing(3),
-        paddingBottom: theme.spacing(2),
-      }}
-    >
-      <Typography variant="h1">{t('group.list_title')}</Typography>
+    <PageContainer>
+      <PageHeader header={t('group.list_title')} />
       <Typography
         variant="body2"
         display="block"
@@ -253,7 +253,7 @@ const GroupList = () => {
       <Button variant="contained" component={RouterLink} to="/groups/new">
         {t('group.list_new_button')}
       </Button>
-    </Box>
+    </PageContainer>
   );
 };
 

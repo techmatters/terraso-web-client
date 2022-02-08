@@ -3,27 +3,37 @@ import _ from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import { fetchLandscapeForMembers } from 'landscape/landscapeSlice';
 import { usePermission } from 'permissions';
 import { withProps } from 'react-hoc';
+import { useDocumentTitle } from 'common/document';
 import GroupMembersList from 'group/membership/components/GroupMembersList';
 import { GroupContextProvider } from 'group/groupContext';
 import PageLoader from 'common/components/PageLoader';
 import LandscapeMemberLeave from './LandscapeMemberLeave';
 import LandscapeMemberRemove from './LandscapeMemberRemove';
+import PageHeader from 'common/components/PageHeader';
+import PageContainer from 'common/components/PageContainer';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.members_list_leave',
 });
 
-const Header = ({ landscape }) => {
+const Header = ({ landscape, fetching }) => {
   const { t } = useTranslation();
   const [loadingPermissions, allowed] = usePermission(
     'group.manageMembers',
     landscape
+  );
+
+  useDocumentTitle(
+    t('landscape.members_document_title', {
+      name: _.get('name', landscape),
+    }),
+    fetching
   );
 
   if (loadingPermissions) {
@@ -32,14 +42,14 @@ const Header = ({ landscape }) => {
 
   return (
     <>
-      <Typography variant="h1">
-        {t(
+      <PageHeader
+        header={t(
           allowed
             ? 'landscape.members_title_manager'
             : 'landscape.members_title_member',
           { name: _.get('name', landscape) }
         )}
-      </Typography>
+      />
       <Typography
         variant="body2"
         display="block"
@@ -75,13 +85,8 @@ const LandscapeMembers = () => {
   }
 
   return (
-    <Box
-      sx={{
-        paddingTop: theme.spacing(3),
-        paddingBottom: theme.spacing(2),
-      }}
-    >
-      <Header landscape={landscape} />
+    <PageContainer>
+      <Header landscape={landscape} fetching={fetching} />
       <GroupContextProvider
         owner={landscape}
         groupSlug={landscape.groupSlug}
@@ -90,7 +95,7 @@ const LandscapeMembers = () => {
       >
         <GroupMembersList />
       </GroupContextProvider>
-    </Box>
+    </PageContainer>
   );
 };
 

@@ -4,17 +4,20 @@ import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
-import theme from 'theme';
 import {
   fetchGroupForm,
   saveGroup,
   setFormNewValues,
   resetFormSuccess,
 } from 'group/groupSlice';
+import { useDocumentTitle } from 'common/document';
 import Form from 'forms/components/Form';
 import PageLoader from 'common/components/PageLoader';
+import PageHeader from 'common/components/PageHeader';
+import PageContainer from 'common/components/PageContainer';
+import theme from 'theme';
 
 const transformURL = url => {
   if (url === '' || url.startsWith('http:') || url.startsWith('https:')) {
@@ -74,6 +77,15 @@ const GroupForm = () => {
 
   const isNew = !slug;
 
+  useDocumentTitle(
+    !isNew
+      ? t('group.form_edit_document_title', {
+          name: _.getOr('', 'name', group),
+        })
+      : t('group.form_new_document_title'),
+    fetching
+  );
+
   useEffect(() => {
     if (isNew) {
       dispatch(setFormNewValues());
@@ -116,11 +128,9 @@ const GroupForm = () => {
     : t('group.form_new_title');
 
   return (
-    <Box sx={{ padding: theme.spacing(2) }}>
+    <PageContainer>
       {fetching && <PageLoader />}
-      <Typography variant="h1" sx={{ marginBottom: theme.spacing(2) }}>
-        {title}
-      </Typography>
+      <PageHeader header={title} />
       <Typography
         variant="body2"
         display="block"
@@ -141,7 +151,7 @@ const GroupForm = () => {
         onCancel={onCancel}
         cancelLabel="group.form_cancel_label"
       />
-    </Box>
+    </PageContainer>
   );
 };
 

@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
+import _ from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  Box,
   Typography,
   Grid,
   Card,
@@ -16,15 +16,18 @@ import {
 import PublicIcon from '@mui/icons-material/Public';
 import EmailIcon from '@mui/icons-material/Email';
 
+import { withProps } from 'react-hoc';
 import { fetchGroupView } from 'group/groupSlice';
+import { useDocumentTitle } from 'common/document';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
 import PageLoader from 'common/components/PageLoader';
 import Restricted from 'permissions/components/Restricted';
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
+import PageHeader from 'common/components/PageHeader';
+import PageContainer from 'common/components/PageContainer';
 import theme from 'theme';
-import { withProps } from 'react-hoc';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
   label: 'group.view_leave_label',
@@ -81,6 +84,11 @@ const GroupView = () => {
   const { group, fetching } = useSelector(state => state.group.view);
   const { slug } = useParams();
 
+  useDocumentTitle(
+    t('group.view_document_title', { name: _.get('name', group) }),
+    fetching
+  );
+
   useEffect(() => {
     dispatch(fetchGroupView(slug));
   }, [dispatch, slug]);
@@ -94,20 +102,16 @@ const GroupView = () => {
   }
 
   return (
-    <Box
-      sx={{
-        paddingTop: theme.spacing(3),
-        paddingBottom: theme.spacing(2),
-      }}
-    >
+    <PageContainer>
       <Stack
         direction="row"
         justifyContent="space-between"
+        alignItems="flex-start"
         sx={{
           marginBottom: theme.spacing(3),
         }}
       >
-        <Typography variant="h1">{group.name}</Typography>
+        <PageHeader header={group.name} />
         <Restricted permission="group.change" resource={group}>
           <Button
             variant="contained"
@@ -135,7 +139,7 @@ const GroupView = () => {
           </GroupContextProvider>
         </Grid>
       </Grid>
-    </Box>
+    </PageContainer>
   );
 };
 
