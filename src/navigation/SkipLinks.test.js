@@ -42,24 +42,36 @@ test('Navigation: Show links', async () => {
     pathname: '/',
   });
   await setup();
-  expect(screen.getByRole('link', { name: 'Skip to main content' })).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Skip to main navigation' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'Skip to main content' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'Skip to main navigation' })
+  ).toBeInTheDocument();
 });
 test('Navigation: Hide links for login page', async () => {
   useLocation.mockReturnValue({
     pathname: '/account',
   });
   await setup();
-  expect(screen.queryByRole('link', { name: 'Skip to main content' })).not.toBeInTheDocument();
-  expect(screen.queryByRole('link', { name: 'Skip to main navigation' })).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('link', { name: 'Skip to main content' })
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('link', { name: 'Skip to main navigation' })
+  ).not.toBeInTheDocument();
 });
 test('Navigation: To content', async () => {
   useLocation.mockReturnValue({
     pathname: '/',
   });
   await setup();
-  expect(screen.getByRole('link', { name: 'Skip to main content' })).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Skip to main navigation' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'Skip to main content' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'Skip to main navigation' })
+  ).toBeInTheDocument();
 
   expect(screen.getByRole('main')).not.toHaveFocus();
   await act(async () =>
@@ -72,12 +84,18 @@ test('Navigation: To navigation', async () => {
     pathname: '/',
   });
   await setup();
-  expect(screen.getByRole('link', { name: 'Skip to main content' })).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Skip to main navigation' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'Skip to main content' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'Skip to main navigation' })
+  ).toBeInTheDocument();
 
   expect(screen.getByRole('navigation')).not.toHaveFocus();
   await act(async () =>
-    fireEvent.click(screen.getByRole('link', { name: 'Skip to main navigation' }))
+    fireEvent.click(
+      screen.getByRole('link', { name: 'Skip to main navigation' })
+    )
   );
   expect(screen.getByRole('navigation')).toHaveFocus();
 });
