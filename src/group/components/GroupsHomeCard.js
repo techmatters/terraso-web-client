@@ -50,7 +50,9 @@ const GroupsHomeCard = ({ groups }) => {
           <React.Fragment key={group.slug}>
             <GroupItem group={group} />
             {index !== groups.length - 1 ? (
-              <Divider sx={{ margin: theme.spacing(2) }} />
+              <ListItem>
+                <Divider sx={{ margin: theme.spacing(2) }} />
+              </ListItem>
             ) : null}
           </React.Fragment>
         ))}
