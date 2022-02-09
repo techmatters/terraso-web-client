@@ -1,17 +1,19 @@
-.skip-link:focus,.skip-link:active {
-	display: block;
-	padding: 1.5rem;
-	text-align: center;
-	font-weight: bold;
+.skip-link:focus,
+.skip-link:active {
+  display: block;
+  padding: 1.5rem;
+  text-align: center;
+  font-weight: bold;
 }
 
-.sr-only-focusable:active,.sr-only-focusable:focus {
-	position: static;
-	width: auto;
-	height: auto;
-	margin: 0;
-	overflow: visible;
-	clip: auto;
+.sr-only-focusable:active,
+.sr-only-focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
 }
 
 .sr-only {
@@ -21,6 +23,6 @@
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0,0,0,0);
+  clip: rect(0, 0, 0, 0);
   border: 0;
 }
