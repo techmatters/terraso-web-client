@@ -64,9 +64,12 @@ const LandscapesHomeCard = ({ landscapes }) => {
           <React.Fragment key={landscape.slug}>
             <LandscapeItem landscape={landscape} />
             {index !== landscapes.length - 1 ? (
-              <ListItem>
-                <Divider sx={{ margin: theme.spacing(2) }} />
-              </ListItem>
+              <Divider
+                component="li"
+                sx={{
+                  margin: theme.spacing(2),
+                }}
+              />
             ) : null}
           </React.Fragment>
         ))}
