@@ -18,7 +18,7 @@ import theme from 'theme';
 const GroupItem = ({ group }) => {
   const { t } = useTranslation();
   return (
-    <List>
+    <ListItem>
       <Link
         component={RouterLink}
         underline="none"
@@ -26,8 +26,11 @@ const GroupItem = ({ group }) => {
       >
         {group.name}
       </Link>
-      &nbsp;({t(`group.role_${_.getOr('member', 'role', group)}`)})
-    </List>
+      &nbsp;
+      <Typography>
+        ({t(`group.role_${_.getOr('member', 'role', group)}`)})
+      </Typography>
+    </ListItem>
   );
 };
 
@@ -35,15 +38,17 @@ const GroupsHomeCard = ({ groups }) => {
   const { t } = useTranslation();
   return (
     <HomeCard sx={{ flexDirection: 'column' }}>
-      <Typography variant="h5" sx={{ padding: theme.spacing(2) }}>
+      <Typography
+        variant="h2"
+        id="groups-list-title"
+        sx={{ padding: theme.spacing(2) }}
+      >
         {t('group.home_title')}
       </Typography>
-      <List>
+      <List aria-describedby="groups-list-title">
         {groups.map((group, index) => (
           <React.Fragment key={group.slug}>
-            <ListItem>
-              <GroupItem group={group} />
-            </ListItem>
+            <GroupItem group={group} />
             {index !== groups.length - 1 ? (
               <Divider sx={{ margin: theme.spacing(2) }} />
             ) : null}

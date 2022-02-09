@@ -22,7 +22,7 @@ const getAcronym = name => name.match(/\b(\w)/g).join('');
 const LandscapeItem = ({ landscape }) => {
   const { t } = useTranslation();
   return (
-    <List sx={{ display: 'flex', padding: theme.spacing(1) }}>
+    <ListItem sx={{ display: 'flex', padding: theme.spacing(1) }}>
       <Avatar sx={{ width: 80, height: 80 }} variant="square">
         {getAcronym(landscape.name).toUpperCase()}
       </Avatar>
@@ -40,9 +40,11 @@ const LandscapeItem = ({ landscape }) => {
         >
           {landscape.name}
         </Link>
-        {t(`landscape.role_${_.getOr('member', 'role', landscape)}`)}
+        <Typography>
+          {t(`landscape.role_${_.getOr('member', 'role', landscape)}`)}
+        </Typography>
       </Box>
-    </List>
+    </ListItem>
   );
 };
 
@@ -50,15 +52,17 @@ const LandscapesHomeCard = ({ landscapes }) => {
   const { t } = useTranslation();
   return (
     <HomeCard sx={{ flexDirection: 'column' }}>
-      <Typography variant="h5" sx={{ padding: theme.spacing(2) }}>
+      <Typography
+        variant="h2"
+        id="landscapes-list-title"
+        sx={{ padding: theme.spacing(2) }}
+      >
         {t('landscape.home_title')}
       </Typography>
-      <List>
+      <List aria-describedby="landscapes-list-title">
         {landscapes.map((landscape, index) => (
           <React.Fragment key={landscape.slug}>
-            <ListItem>
-              <LandscapeItem landscape={landscape} />
-            </ListItem>
+            <LandscapeItem landscape={landscape} />
             {index !== landscapes.length - 1 ? (
               <Divider sx={{ margin: theme.spacing(2) }} />
             ) : null}
