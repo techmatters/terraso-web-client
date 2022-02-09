@@ -3,6 +3,8 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 
+import 'navigation/SkipLinks.css';
+
 const HIDE_FOR_PATHS = ['/account'];
 
 const SkipLinks = props => {
