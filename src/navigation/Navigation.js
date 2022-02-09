@@ -39,7 +39,7 @@ const NavButton = styled(ToggleButton)(({ theme }) => ({
   },
 }));
 
-const Navigation = () => {
+const Navigation = React.forwardRef((props, ref) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: user } = useSelector(state => state.account.currentUser);
@@ -67,6 +67,9 @@ const Navigation = () => {
   return (
     <Box
       component="nav"
+      id="main-navigation"
+      tabIndex="-1"
+      ref={ref}
       value={value}
       aria-label={t('navigation.nav_label')}
       sx={{
@@ -96,6 +99,6 @@ const Navigation = () => {
       </List>
     </Box>
   );
-};
+});
 
 export default Navigation;

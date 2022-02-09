@@ -36,7 +36,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "lint": "eslint ./ --fix --ext .js --max-warnings 0 --ignore-pattern node_modules/ --ignore-pattern build/",
+    "lint-js": "eslint ./ --fix --ext .js --max-warnings 0 --ignore-pattern node_modules/ --ignore-pattern build/",
+    "lint-css": "stylelint --fix --config=.stylelintrc '**/*.css'",
     "build": "react-scripts build",
     "build-serve": "serve -s build",
     "test": "react-scripts test",
@@ -60,7 +61,9 @@
     "i18next-conv": "^11.0.1",
     "prettier": "^2.5.1",
     "react-scripts": "^4.0.3",
-    "serve": "^13.0.2"
+    "serve": "^13.0.2",
+    "stylelint": "^14.4.0",
+    "stylelint-prettier": "^2.0.0"
   },
   "jest": {
     "collectCoverageFrom": [
