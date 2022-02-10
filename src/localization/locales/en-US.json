@@ -213,6 +213,7 @@
         "validation_field_max_length": "{{path}} must be {{max}} characters maximum."
     },
     "localization": {
+        "locale_select_label": "Selected language: {{name}}",
         "locale_en-US": "English",
         "locale_en-US_small": "EN",
         "locale_es-ES_small": "ES",

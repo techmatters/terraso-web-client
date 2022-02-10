@@ -40,8 +40,19 @@ const LocalePicker = () => {
     return null;
   }
 
+  const currentLocale = i18n.resolvedLanguage;
+
   return (
-    <Select size="small" value={i18n.resolvedLanguage} onChange={handleChange}>
+    <Select
+      size="small"
+      value={currentLocale}
+      onChange={handleChange}
+      inputProps={{
+        'aria-label': t('localization.locale_select_label', {
+          name: t(getLocaleLabel(currentLocale)),
+        }),
+      }}
+    >
       {Object.keys(LOCALES).map(locale => (
         <MenuItem key={locale} value={locale}>
           {t(getLocaleLabel(locale)).toUpperCase()}
