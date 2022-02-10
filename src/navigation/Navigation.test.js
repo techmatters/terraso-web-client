@@ -38,7 +38,7 @@ test('Navigation: Show tabs', async () => {
   ).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Groups' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
-    'aria-selected',
+    'aria-pressed',
     'true'
   );
 });
@@ -48,15 +48,15 @@ test('Navigation: Test initial', async () => {
   });
   await setup();
   expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
-    'aria-selected',
+    'aria-pressed',
     'false'
   );
   expect(screen.getByRole('button', { name: 'Landscapes' })).toHaveAttribute(
-    'aria-selected',
+    'aria-pressed',
     'true'
   );
   expect(screen.getByRole('button', { name: 'Groups' })).toHaveAttribute(
-    'aria-selected',
+    'aria-pressed',
     'false'
   );
 });
@@ -66,15 +66,15 @@ test('Navigation: Test select', async () => {
   });
   await setup();
   expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
-    'aria-selected',
+    'aria-pressed',
     'false'
   );
   expect(screen.getByRole('button', { name: 'Landscapes' })).toHaveAttribute(
-    'aria-selected',
+    'aria-pressed',
     'true'
   );
   expect(screen.getByRole('button', { name: 'Groups' })).toHaveAttribute(
-    'aria-selected',
+    'aria-pressed',
     'false'
   );
 });
@@ -87,11 +87,11 @@ test('Navigation: Test navigation', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Landscapes' }))
   );
   expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
-    'aria-selected',
+    'aria-pressed',
     'false'
   );
   expect(screen.getByRole('button', { name: 'Landscapes' })).toHaveAttribute(
-    'aria-selected',
+    'aria-pressed',
     'true'
   );
 });
@@ -101,15 +101,15 @@ test('Navigation: none selected', async () => {
   });
   await setup();
   expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
-    'aria-selected',
+    'aria-pressed',
     'false'
   );
   expect(screen.getByRole('button', { name: 'Landscapes' })).toHaveAttribute(
-    'aria-selected',
+    'aria-pressed',
     'false'
   );
   expect(screen.getByRole('button', { name: 'Groups' })).toHaveAttribute(
-    'aria-selected',
+    'aria-pressed',
     'false'
   );
 });

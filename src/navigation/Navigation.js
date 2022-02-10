@@ -89,7 +89,6 @@ const Navigation = React.forwardRef((props, ref) => {
               component="a"
               value={path}
               selected={value === index}
-              aria-selected={value === index}
               onClick={() => handleChange(index, path)}
             >
               {t(PAGES[path].label)}
