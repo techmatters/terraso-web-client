@@ -78,11 +78,12 @@ const GroupTable = ({ groups }) => {
       sortable: false,
       flex: 1.5,
       minWidth: 200,
-      renderCell: ({ row: group }) => (
-        <Link href={`mailto:${group.email}`} underline="none">
-          {group.email}
-        </Link>
-      ),
+      renderCell: ({ row: group }) =>
+        group.email && (
+          <Link href={`mailto:${group.email}`} underline="none">
+            {group.email}
+          </Link>
+        ),
     },
     {
       field: 'website',
@@ -90,11 +91,12 @@ const GroupTable = ({ groups }) => {
       sortable: false,
       flex: 1.5,
       minWidth: 200,
-      renderCell: ({ row: group }) => (
-        <Link href={group.website} underline="none">
-          {group.website}
-        </Link>
-      ),
+      renderCell: ({ row: group }) =>
+        group.website && (
+          <Link href={group.website} underline="none">
+            {group.website}
+          </Link>
+        ),
     },
     {
       field: 'members',
@@ -108,6 +110,7 @@ const GroupTable = ({ groups }) => {
     {
       field: 'actions',
       type: 'actions',
+      description: t('group.list_column_actions_description'),
       headerName: false,
       sortable: false,
       align: 'center',

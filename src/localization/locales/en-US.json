@@ -77,7 +77,9 @@
         "form_new_document_title": "Create Group",
         "list_document_title": "Groups",
         "view_document_title": "{{name}}",
-        "members_document_title": "Members: {{name}}"
+        "members_document_title": "Members: {{name}}",
+        "list_column_actions_description": "Actions",
+        "members_list_column_actions_description": "Actions"
     },
     "tool": {
         "requirements": "System requirements",
@@ -194,7 +196,8 @@
         "form_new_document_title": "Create Landscape",
         "list_document_title": "Landscapes",
         "view_document_title": "{{name}}",
-        "members_document_title": "Members: {{name}}"
+        "members_document_title": "Members: {{name}}",
+        "list_column_actions_description": "Actions"
     },
     "common": {
         "dialog_cancel_label": "Cancel",
@@ -210,6 +213,7 @@
         "validation_field_max_length": "{{path}} must be {{max}} characters maximum."
     },
     "localization": {
+        "locale_select_label": "Selected language: {{name}}",
         "locale_en-US": "English",
         "locale_en-US_small": "EN",
         "locale_es-ES_small": "ES",

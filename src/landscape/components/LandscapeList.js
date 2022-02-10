@@ -84,11 +84,12 @@ const LandscapeTable = ({ landscapes }) => {
       sortable: false,
       flex: 1.5,
       minWidth: 200,
-      renderCell: ({ row: landscape }) => (
-        <Link href={landscape.website} underline="none">
-          {landscape.website}
-        </Link>
-      ),
+      renderCell: ({ row: landscape }) =>
+        landscape.website && (
+          <Link href={landscape.website} underline="none">
+            {landscape.website}
+          </Link>
+        ),
     },
     {
       field: 'members',
@@ -103,6 +104,7 @@ const LandscapeTable = ({ landscapes }) => {
     {
       field: 'actions',
       type: 'actions',
+      description: t('landscape.list_column_actions_description'),
       headerName: false,
       sortable: false,
       align: 'center',
