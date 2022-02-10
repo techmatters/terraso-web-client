@@ -76,6 +76,7 @@ const AccountProfile = () => {
       <p>{t('account.name_and_profile')}</p>
 
       <Form
+        aria-label={t('account.profile_form_label')}
         prefix="profile"
         fields={FIELDS}
         values={user}
