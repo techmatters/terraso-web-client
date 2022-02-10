@@ -3,13 +3,13 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Controller } from 'react-hook-form';
 import {
-  FormControlUnstyled,
   OutlinedInput,
   InputLabel,
   FormHelperText,
   Typography,
   Stack,
 } from '@mui/material';
+import { FormControlUnstyled } from '@mui/base';
 
 import theme from 'theme';
 

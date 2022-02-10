@@ -119,16 +119,18 @@ const MembersTable = () => {
     },
     {
       field: 'role',
+      type: 'actions',
       headerName: t('group.members_list_column_role'),
       flex: 1.5,
       minWidth: 200,
       valueGetter: ({ row: member }) =>
         t(`group.role_${member.role.toLowerCase()}`),
-      renderCell: ({ row: member }) => <RoleSelect member={member} />,
+      getActions: ({ row: member }) => [<RoleSelect member={member} />],
     },
     {
       field: 'actions',
       headerName: '',
+      description: t('group.members_list_column_actions_description'),
       type: 'actions',
       sortable: false,
       flex: 1.5,

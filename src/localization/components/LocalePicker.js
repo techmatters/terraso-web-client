@@ -3,21 +3,20 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { Select, MenuItem, InputBase } from '@mui/material';
+import { Select as SelectBase, MenuItem } from '@mui/material';
 
 import { LOCALES } from 'localization/i18n';
 import theme from 'theme';
 
-const SelectInput = styled(InputBase)(({ theme }) => ({
+const Select = styled(SelectBase)(({ theme }) => ({
+  '& .MuiOutlinedInput-notchedOutline': {
+    borderColor: theme.palette.gray.lite1,
+    borderRadius: 0,
+  },
   '& .MuiInputBase-input': {
     backgroundColor: theme.palette.gray.lite1,
-    borderRadius: 0,
-    border: 'none',
     fontSize: 12,
     padding: theme.spacing(1),
-  },
-  '& .MuiInputBase-input:focus': {
-    borderRadius: 0,
   },
 }));
 
@@ -42,12 +41,7 @@ const LocalePicker = () => {
   }
 
   return (
-    <Select
-      size="small"
-      value={i18n.resolvedLanguage}
-      onChange={handleChange}
-      input={<SelectInput />}
-    >
+    <Select size="small" value={i18n.resolvedLanguage} onChange={handleChange}>
       {Object.keys(LOCALES).map(locale => (
         <MenuItem key={locale} value={locale}>
           {t(getLocaleLabel(locale)).toUpperCase()}

@@ -7,6 +7,9 @@ import { render, screen, within, fireEvent } from 'tests/utils';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
 import * as terrasoApi from 'terrasoBackend/api';
 
+// Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850
+global.console.error = jest.fn();
+
 jest.mock('terrasoBackend/api');
 
 jest.mock('@mui/material/useMediaQuery');
