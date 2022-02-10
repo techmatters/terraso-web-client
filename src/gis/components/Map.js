@@ -1,6 +1,8 @@
 import React from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 
+import 'gis/components/Map.css';
+
 const Map = props => {
   return (
     <MapContainer scrollWheelZoom={false} {...props}>
