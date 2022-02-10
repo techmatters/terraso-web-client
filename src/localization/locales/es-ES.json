@@ -77,7 +77,9 @@
         "form_new_document_title": "Crear Grupo",
         "list_document_title": "Grupos",
         "view_document_title": "{{name}}",
-        "members_document_title": "Miembros: {{name}}"
+        "members_document_title": "Miembros: {{name}}",
+        "list_column_actions_description": "Acciones",
+        "members_list_column_actions_description": "Acciones"
     },
     "tool": {
         "avilability": "Disponibilidad",
@@ -194,7 +196,8 @@
         "form_new_document_title": "Crear Paisaje",
         "list_document_title": "Paisajes",
         "view_document_title": "{{name}}",
-        "members_document_title": "Miembros: {{name}}"
+        "members_document_title": "Miembros: {{name}}",
+        "list_column_actions_description": "Acciones"
     },
     "common": {
         "dialog_cancel_label": "Cancelar",
@@ -210,6 +213,7 @@
         "validation_field_max_length": "{{path}} debe tener {{max}} caracteres como máximo."
     },
     "localization": {
+        "locale_select_label": "Idioma seleccionado: {{name}}",
         "locale_en-US": "English",
         "locale_en-US_small": "EN",
         "locale_es-ES_small": "ES",
