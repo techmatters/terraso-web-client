@@ -15,7 +15,7 @@ const ToolHomeCard = () => {
         padding: theme.spacing(2),
       }}
     >
-      <Typography variant="h5">{t('tool.home_card_title')}</Typography>
+      <Typography variant="h2">{t('tool.home_card_title')}</Typography>
       <Typography
         variant="body1"
         sx={{

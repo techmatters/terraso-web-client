@@ -4,6 +4,7 @@ import { Card } from '@mui/material';
 
 const HomeCard = props => (
   <Card
+    component="section"
     {...props}
     sx={{
       display: 'flex',
