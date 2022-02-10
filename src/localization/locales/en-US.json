@@ -197,7 +197,8 @@
         "list_document_title": "Landscapes",
         "view_document_title": "{{name}}",
         "members_document_title": "Members: {{name}}",
-        "list_column_actions_description": "Actions"
+        "list_column_actions_description": "Actions",
+        "view_map_title": "Landscape map"
     },
     "common": {
         "dialog_cancel_label": "Cancel",

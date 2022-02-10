@@ -14,21 +14,21 @@ const Tool = ({ tool }) => {
   return (
     <React.Fragment>
       <Card sx={{ padding: theme.spacing(2) }}>
-        <Typography variant="h1">{toolTitle}</Typography>
+        <Typography variant="h2">{toolTitle}</Typography>
         <Stack
           direction={isSmall ? 'column' : 'row'}
           justifyContent="space-between"
           spacing={2}
         >
           <section>
-            <Typography variant="h2">{t('tool.is_for')}</Typography>
+            <Typography variant="h3">{t('tool.is_for')}</Typography>
             <Typography>{t(`tools.${tool}.description`)}</Typography>
 
-            <Typography variant="h2">{t('tool.requirements')}</Typography>
+            <Typography variant="h3">{t('tool.requirements')}</Typography>
             <Typography>{t(`tools.${tool}.requirements`)}</Typography>
 
-            <Typography variant="h2">{t('tool.avilability')}</Typography>
-            <p>{t(`tools.${tool}.availability`)}</p>
+            <Typography variant="h3">{t('tool.avilability')}</Typography>
+            <Typography>{t(`tools.${tool}.availability`)}</Typography>
           </section>
 
           <section>

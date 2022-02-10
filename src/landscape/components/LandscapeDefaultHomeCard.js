@@ -29,7 +29,10 @@ const LandscapeDefaultHomeCard = () => {
   const { t } = useTranslation();
 
   return (
-    <HomeCard sx={{ flexDirection: 'column' }}>
+    <HomeCard
+      aria-labelledby="landscapes-default-title"
+      sx={{ flexDirection: 'column' }}
+    >
       <Box
         sx={{
           display: 'flex',
@@ -37,7 +40,7 @@ const LandscapeDefaultHomeCard = () => {
           padding: theme.spacing(2),
         }}
       >
-        <Typography variant="h5">
+        <Typography id="landscapes-default-title" variant="h2">
           {t('landscape.home_default_title')}
         </Typography>
         <Alert
