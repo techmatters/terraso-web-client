@@ -12,7 +12,8 @@ const executeAxe = process.env['TEST_A11Y'] === 'true';
 
 if (executeAxe) {
   expect.extend(toHaveNoViolations);
-  jest.setTimeout(50000);
+  // Added longer timeout to work with the axe expensive tests
+  jest.setTimeout(20000);
 }
 
 afterEach(cleanup);
