@@ -54,9 +54,15 @@ const Form = props => {
 
   const onSubmit = data => onSave(data);
 
+  const ariaProps = _.pickBy(
+    (value, propName) => propName.startsWith('aria-'),
+    props
+  );
+
   return (
     <Grid
       component="form"
+      {...ariaProps}
       noValidate
       container
       spacing={2}

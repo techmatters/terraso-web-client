@@ -105,8 +105,12 @@ const LandscapeForm = () => {
   return (
     <PageContainer>
       {fetching && <PageLoader />}
-      <PageHeader header={title} />
+      <PageHeader
+        typographyProps={{ id: 'landscape-form-page-title' }}
+        header={title}
+      />
       <Form
+        aria-labelledby="landscape-form-page-title"
         prefix="landscape"
         fields={FIELDS}
         values={landscape}

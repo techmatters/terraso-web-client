@@ -10,12 +10,15 @@ const ToolHomeCard = () => {
   const { t } = useTranslation();
   return (
     <HomeCard
+      aria-labelledby="tools-title"
       sx={{
         flexDirection: 'column',
         padding: theme.spacing(2),
       }}
     >
-      <Typography variant="h2">{t('tool.home_card_title')}</Typography>
+      <Typography id="tools-title" variant="h2">
+        {t('tool.home_card_title')}
+      </Typography>
       <Typography
         variant="body1"
         sx={{

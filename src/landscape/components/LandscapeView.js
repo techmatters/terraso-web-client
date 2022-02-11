@@ -11,6 +11,7 @@ import {
   CardContent,
   Link,
   Stack,
+  Box,
 } from '@mui/material';
 import PublicIcon from '@mui/icons-material/Public';
 
@@ -41,9 +42,14 @@ const MemberJoinButton = withProps(GroupMemberJoin, {
 const LandscapeCard = ({ landscape }) => {
   const { t } = useTranslation();
   return (
-    <Card>
+    <Card component="section" aria-labelledby="landscape-view-card-title">
       <CardHeader
-        title={t('landscape.view_card_title', { name: landscape.name })}
+        disableTypography
+        title={
+          <Typography variant="h2" id="landscape-view-card-title">
+            {t('landscape.view_card_title', { name: landscape.name })}
+          </Typography>
+        }
       />
       <CardContent>
         <Typography variant="body2" color="text.secondary">
@@ -63,18 +69,21 @@ const LandscapeCard = ({ landscape }) => {
 };
 
 const LandscapeMap = ({ position }) => {
+  const { t } = useTranslation();
   const bounds = position && [
     [position.boundingbox[0], position.boundingbox[2]],
     [position.boundingbox[1], position.boundingbox[3]],
   ];
   return (
-    <Map
-      bounds={bounds}
-      style={{
-        width: '100%',
-        height: '400px',
-      }}
-    />
+    <Box component="section" aria-label={t('landscape.view_map_title')}>
+      <Map
+        bounds={bounds}
+        style={{
+          width: '100%',
+          height: '400px',
+        }}
+      />
+    </Box>
   );
 };
 

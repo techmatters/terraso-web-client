@@ -130,7 +130,10 @@ const GroupForm = () => {
   return (
     <PageContainer>
       {fetching && <PageLoader />}
-      <PageHeader header={title} />
+      <PageHeader
+        header={title}
+        typographyProps={{ id: 'group-form-page-title' }}
+      />
       <Typography
         variant="body2"
         display="block"
@@ -142,6 +145,7 @@ const GroupForm = () => {
         {t('group.form_new_description')}
       </Typography>
       <Form
+        aria-labelledby="group-form-page-title"
         prefix="group"
         fields={FIELDS}
         values={group}

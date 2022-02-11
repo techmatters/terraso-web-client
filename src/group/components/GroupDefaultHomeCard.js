@@ -29,7 +29,10 @@ const GroupDefaultHomeCard = () => {
   const { t } = useTranslation();
 
   return (
-    <HomeCard sx={{ flexDirection: 'column' }}>
+    <HomeCard
+      aria-labelledby="groups-default-title"
+      sx={{ flexDirection: 'column' }}
+    >
       <Box
         sx={{
           display: 'flex',
@@ -37,7 +40,9 @@ const GroupDefaultHomeCard = () => {
           padding: theme.spacing(2),
         }}
       >
-        <Typography variant="h5">{t('group.home_default_title')}</Typography>
+        <Typography id="groups-default-title" variant="h2">
+          {t('group.home_default_title')}
+        </Typography>
         <Alert
           severity="info"
           sx={{

@@ -43,8 +43,15 @@ const MemberJoinButton = withProps(GroupMemberJoin, {
 const GroupCard = ({ group }) => {
   const { t } = useTranslation();
   return (
-    <Card>
-      <CardHeader title={t('group.view_card_title', { name: group.name })} />
+    <Card component="section" aria-labelledby="group-view-card-title">
+      <CardHeader
+        disableTypography
+        title={
+          <Typography variant="h2" id="group-view-card-title">
+            {t('group.view_card_title', { name: group.name })}
+          </Typography>
+        }
+      />
       <CardContent>
         <Typography variant="body2" color="text.secondary">
           {group.description}

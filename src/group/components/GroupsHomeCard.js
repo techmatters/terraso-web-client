@@ -36,7 +36,10 @@ const GroupItem = ({ group }) => {
 const GroupsHomeCard = ({ groups }) => {
   const { t } = useTranslation();
   return (
-    <HomeCard sx={{ flexDirection: 'column' }}>
+    <HomeCard
+      aria-labelledby="groups-list-title"
+      sx={{ flexDirection: 'column' }}
+    >
       <Typography
         variant="h2"
         id="groups-list-title"

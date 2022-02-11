@@ -51,7 +51,10 @@ const LandscapeItem = ({ landscape }) => {
 const LandscapesHomeCard = ({ landscapes }) => {
   const { t } = useTranslation();
   return (
-    <HomeCard sx={{ flexDirection: 'column' }}>
+    <HomeCard
+      aria-labelledby="landscapes-list-title"
+      sx={{ flexDirection: 'column' }}
+    >
       <Typography
         variant="h2"
         id="landscapes-list-title"

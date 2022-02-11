@@ -85,12 +85,17 @@ const components = {
 const theme = createTheme(colorTheme, {
   typography: {
     h1: {
-      fontSize: '30px',
+      fontSize: '2rem',
     },
     h2: {
-      fontSize: '1rem',
+      fontSize: '1.2rem',
       fontWeight: 400,
       textTransform: 'uppercase',
+      paddingTop: '1rem',
+    },
+    h3: {
+      fontSize: '1rem',
+      fontWeight: 300,
       paddingTop: '1rem',
     },
     h5: {

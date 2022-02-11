@@ -77,8 +77,15 @@ const GroupMembershipCard = props => {
   const membersInfo = _.getOr([], 'membersInfo', group);
 
   return (
-    <Card>
-      <CardHeader title={t('group.membership_card_title')} />
+    <Card component="section" aria-labelledby="membership-card-title">
+      <CardHeader
+        disableTypography
+        title={
+          <Typography variant="h2" id="membership-card-title">
+            {t('group.membership_card_title')}
+          </Typography>
+        }
+      />
       <Content
         fetching={fetching}
         membersInfo={membersInfo}
