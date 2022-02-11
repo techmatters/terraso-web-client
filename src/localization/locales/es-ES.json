@@ -204,7 +204,8 @@
     "common": {
         "dialog_cancel_label": "Cancelar",
         "terraso_projectName": "Terraso",
-        "unexpected_error": "Ups! Algo salió mal. Vuelve a intentarlo en unos minutos."
+        "unexpected_error": "Ups! Algo salió mal. Vuelve a intentarlo en unos minutos.",
+        "loader_label": "Cargando"
     },
     "form": {
         "required_label": "Obligatorio",
