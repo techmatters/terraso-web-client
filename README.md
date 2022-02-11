@@ -30,6 +30,10 @@ You will also see any lint errors in the console.
 Launches the test runner in the interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
+### `make test-a11y`
+
+Launches the test runner in the interactive watch mode also running the [jest-axe](https://www.npmjs.com/package/jest-axe) validation over the rendered components.
+
 ### `make test-coverage`
 
 Lunches the test runner with coverage

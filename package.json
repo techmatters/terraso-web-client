@@ -60,6 +60,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "flat": "^5.0.2",
     "i18next-conv": "^11.0.1",
+    "jest-axe": "^5.0.1",
     "prettier": "^2.5.1",
     "react-scripts": "^4.0.3",
     "serve": "^13.0.2",

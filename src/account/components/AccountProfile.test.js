@@ -9,7 +9,7 @@ import * as terrasoApi from 'terrasoBackend/api';
 jest.mock('terrasoBackend/api');
 
 const setup = async initialState => {
-  await act(async () => render(<AccountProfile />, initialState));
+  await render(<AccountProfile />, initialState);
   const firstName = screen.getByRole('textbox', {
     name: 'Given names (Required)',
   });
@@ -23,39 +23,36 @@ const setup = async initialState => {
 };
 
 test('AccountProfile: Display Avatar', async () => {
-  await act(async () =>
-    render(<AccountProfile />, {
-      account: {
-        hasToken: true,
-        currentUser: {
-          fetching: false,
-          data: {
-            firstName: 'John',
-            lastName: 'Doe',
-            profileImage: 'test.com',
-          },
+  await render(<AccountProfile />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          firstName: 'John',
+          lastName: 'Doe',
+          profileImage: 'test.com',
         },
       },
-    })
-  );
+    },
+  });
   expect(screen.getByRole('img', { name: 'John Doe' })).toBeInTheDocument();
 });
 test('AccountProfile: Display Avatar with missing image', async () => {
-  await act(async () =>
-    render(<AccountProfile />, {
-      account: {
-        hasToken: true,
-        currentUser: {
-          fetching: false,
-          data: {
-            firstName: 'John',
-            lastName: 'Doe',
-            profileImage: '',
-          },
+  await render(<AccountProfile />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          firstName: 'John',
+          lastName: 'Doe',
+          profileImage: '',
         },
       },
-    })
-  );
+    },
+  });
+
   expect(
     screen.queryByRole('img', { name: 'John Doe' })
   ).not.toBeInTheDocument();

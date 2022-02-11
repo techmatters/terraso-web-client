@@ -15,19 +15,18 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const setup = async () => {
-  await act(async () =>
-    render(<GroupForm />, {
-      account: {
-        currentUser: {
-          data: {
-            email: 'email@email.com',
-            firstName: 'First',
-            lastName: 'Last',
-          },
+  await render(<GroupForm />, {
+    account: {
+      currentUser: {
+        data: {
+          email: 'email@email.com',
+          firstName: 'First',
+          lastName: 'Last',
         },
       },
-    })
-  );
+    },
+  });
+
   const name = screen.getByRole('textbox', { name: 'Name (Required)' });
   const description = screen.getByRole('textbox', {
     name: 'Description (Required)',
@@ -53,13 +52,16 @@ beforeEach(() => {
 
 test('GroupForm: Display error', async () => {
   terrasoApi.request.mockRejectedValue(['Load error']);
-  await act(async () => render(<GroupForm />));
+  await render(<GroupForm />);
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
-test('GroupForm: Display loader', () => {
+test('GroupForm: Display loader', async () => {
   terrasoApi.request.mockReturnValue(new Promise(() => {}));
-  render(<GroupForm />);
-  const loader = screen.getByRole('progressbar', { name: '', hidden: true });
+  await render(<GroupForm />);
+  const loader = screen.getByRole('progressbar', {
+    name: 'Loading',
+    hidden: true,
+  });
   expect(loader).toBeInTheDocument();
 });
 test('GroupForm: Fill form', async () => {
@@ -351,7 +353,7 @@ test('GroupForm: Avoid fetch', async () => {
   expect(inputs.website).toHaveValue('');
 
   expect(() =>
-    screen.getByRole('progressbar', { name: '', hidden: true })
+    screen.getByRole('progressbar', { name: 'Loading', hidden: true })
   ).toThrow('Unable to find an element');
 });
 test('GroupForm: Save form (add)', async () => {

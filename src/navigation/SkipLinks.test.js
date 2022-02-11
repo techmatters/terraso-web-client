@@ -34,7 +34,7 @@ const App = () => {
 };
 
 const setup = async () => {
-  await act(async () => render(<App />));
+  await render(<App />);
 };
 
 test('Navigation: Show links', async () => {

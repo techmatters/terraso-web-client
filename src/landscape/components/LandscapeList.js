@@ -104,8 +104,7 @@ const LandscapeTable = ({ landscapes }) => {
     {
       field: 'actions',
       type: 'actions',
-      description: t('landscape.list_column_actions_description'),
-      headerName: false,
+      headerName: t('landscape.list_column_actions_description'),
       sortable: false,
       align: 'center',
       getActions: ({ row: landscape }) => [

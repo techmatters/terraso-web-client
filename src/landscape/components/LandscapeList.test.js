@@ -15,20 +15,18 @@ jest.mock('terrasoBackend/api');
 jest.mock('@mui/material/useMediaQuery');
 
 const setup = async initialState => {
-  await act(async () =>
-    render(<LandscapeList />, {
-      account: {
-        hasToken: true,
-        currentUser: {
-          fetching: false,
-          data: {
-            email: 'email@email.com',
-          },
+  await render(<LandscapeList />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          email: 'email@email.com',
         },
       },
-      ...initialState,
-    })
-  );
+    },
+    ...initialState,
+  });
 };
 
 test('LandscapeList: Display error', async () => {
@@ -39,7 +37,10 @@ test('LandscapeList: Display error', async () => {
 test('LandscapeList: Display loader', async () => {
   terrasoApi.request.mockReturnValue(new Promise(() => {}));
   await setup();
-  const loader = screen.getByRole('progressbar', { name: '', hidden: true });
+  const loader = screen.getByRole('progressbar', {
+    name: 'Loading',
+    hidden: true,
+  });
   expect(loader).toBeInTheDocument();
 });
 test('LandscapeList: Empty', async () => {

@@ -110,8 +110,7 @@ const GroupTable = ({ groups }) => {
     {
       field: 'actions',
       type: 'actions',
-      description: t('group.list_column_actions_description'),
-      headerName: false,
+      headerName: t('group.list_column_actions_description'),
       sortable: false,
       align: 'center',
       getActions: ({ row: group }) => [<MembershipButton group={group} />],

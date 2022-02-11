@@ -129,8 +129,7 @@ const MembersTable = () => {
     },
     {
       field: 'actions',
-      headerName: '',
-      description: t('group.members_list_column_actions_description'),
+      headerName: t('group.members_list_column_actions_description'),
       type: 'actions',
       sortable: false,
       flex: 1.5,

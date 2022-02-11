@@ -10,34 +10,31 @@ jest.mock('@mui/material/useMediaQuery');
 jest.mock('js-cookie');
 
 const setup = async () => {
-  await act(async () =>
-    render(<AppBar />, {
-      account: {
-        hasToken: true,
-        currentUser: {
-          fetching: false,
-          data: {
-            firstName: 'First',
-            lastName: 'Last',
-          },
+  await render(<AppBar />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          firstName: 'First',
+          lastName: 'Last',
         },
       },
-    })
-  );
+    },
+  });
 };
 
 test('AppBar: Dont display if no user', async () => {
-  await act(async () =>
-    render(<AppBar />, {
-      account: {
-        hasToken: true,
-        currentUser: {
-          fetching: false,
-          data: null,
-        },
+  await render(<AppBar />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: null,
       },
-    })
-  );
+    },
+  });
+
   expect(() => screen.getByAltText(/Terraso/i)).toThrow(
     'Unable to find an element'
   );

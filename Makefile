@@ -40,6 +40,11 @@ test:
 		"--name terraso_web_client_test" \
 		"npm run test"
 
+test-a11y:
+	./scripts/docker/run.sh \
+		"--name terraso_web_client_test" \
+		"TEST_A11Y=true npm run test"
+
 test-coverage:
 	./scripts/docker/run.sh \
 		"--name terraso_web_client_test_coverage" \

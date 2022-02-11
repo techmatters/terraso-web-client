@@ -25,20 +25,18 @@ beforeEach(() => {
 });
 
 const setup = async initialState => {
-  await act(async () =>
-    render(<GroupList />, {
-      account: {
-        hasToken: true,
-        currentUser: {
-          fetching: false,
-          data: {
-            email: 'email@email.com',
-          },
+  await render(<GroupList />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          email: 'email@email.com',
         },
       },
-      ...initialState,
-    })
-  );
+    },
+    ...initialState,
+  });
 };
 
 test('GroupList: Display error', async () => {
@@ -49,7 +47,10 @@ test('GroupList: Display error', async () => {
 test('GroupList: Display loader', async () => {
   terrasoApi.request.mockReturnValue(new Promise(() => {}));
   await setup();
-  const loader = screen.getByRole('progressbar', { name: '', hidden: true });
+  const loader = screen.getByRole('progressbar', {
+    name: 'Loading',
+    hidden: true,
+  });
   expect(loader).toBeInTheDocument();
 });
 test('GroupList: Empty', async () => {

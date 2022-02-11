@@ -12,37 +12,35 @@ import { GroupContextProvider } from 'group/groupContext';
 jest.mock('terrasoBackend/api');
 
 const setup = async initialState => {
-  await act(async () =>
-    render(
-      <GroupContextProvider
-        owner={{
-          name: 'Owner Name',
-        }}
-        groupSlug="group-slug"
-        MemberJoinButton={props => (
-          <GroupMemberJoin label="Join Label" {...props} />
-        )}
-        MemberLeaveButton={props => (
-          <GroupMemberLeave label="Leave Label" {...props} />
-        )}
-      >
-        <GroupMembershipCard />
-      </GroupContextProvider>,
-      {
-        account: {
-          hasToken: true,
-          currentUser: {
-            fetching: false,
-            data: {
-              email: 'email@email.com',
-              firstName: 'First',
-              lastName: 'Last',
-            },
+  await render(
+    <GroupContextProvider
+      owner={{
+        name: 'Owner Name',
+      }}
+      groupSlug="group-slug"
+      MemberJoinButton={props => (
+        <GroupMemberJoin label="Join Label" {...props} />
+      )}
+      MemberLeaveButton={props => (
+        <GroupMemberLeave label="Leave Label" {...props} />
+      )}
+    >
+      <GroupMembershipCard />
+    </GroupContextProvider>,
+    {
+      account: {
+        hasToken: true,
+        currentUser: {
+          fetching: false,
+          data: {
+            email: 'email@email.com',
+            firstName: 'First',
+            lastName: 'Last',
           },
         },
-        ...initialState,
-      }
-    )
+      },
+      ...initialState,
+    }
   );
 };
 
@@ -58,7 +56,7 @@ test('GroupMembershipCard: Display loader', async () => {
     },
   });
   expect(
-    screen.getByRole('progressbar', { name: '', hidden: true })
+    screen.getByRole('progressbar', { name: 'Loading', hidden: true })
   ).toBeInTheDocument();
 });
 test('GroupMembershipCard: Display join button', async () => {
