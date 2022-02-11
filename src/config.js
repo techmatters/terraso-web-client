@@ -9,3 +9,5 @@ export const COOKIES_DOMAIN =
   process.env.REACT_APP_COOKIES_DOMAIN || '127.0.0.1';
 
 export const ROLLBAR_TOKEN = process.env.REACT_APP_ROLLBAR_TOKEN;
+
+export const AXE_TEST_TIMEOUT = process.env.REACT_AXE_TEST_TIMEOUT || 20000;

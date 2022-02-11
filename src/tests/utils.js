@@ -3,6 +3,7 @@ import { act } from 'react-dom/test-utils';
 import { render as rtlRender, cleanup } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 
+import { AXE_TEST_TIMEOUT } from 'config';
 import createStore from 'state/store';
 import theme from 'theme';
 import rules from 'permissions/rules';
@@ -13,7 +14,7 @@ const executeAxe = process.env['TEST_A11Y'] === 'true';
 if (executeAxe) {
   expect.extend(toHaveNoViolations);
   // Added longer timeout to work with the axe expensive tests
-  jest.setTimeout(20000);
+  jest.setTimeout(AXE_TEST_TIMEOUT);
 }
 
 afterEach(cleanup);
