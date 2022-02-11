@@ -15,22 +15,20 @@ jest.mock('terrasoBackend/api');
 jest.mock('@mui/material/useMediaQuery');
 
 const setup = async initialState => {
-  await act(async () =>
-    render(<LandscapeMembers />, {
-      account: {
-        hasToken: true,
-        currentUser: {
-          fetching: false,
-          data: {
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john.doe@email.com',
-          },
+  await render(<LandscapeMembers />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'john.doe@email.com',
         },
       },
-      ...initialState,
-    })
-  );
+    },
+    ...initialState,
+  });
 };
 
 test('LandscapeMembers: Display error', async () => {
@@ -42,7 +40,10 @@ test('LandscapeMembers: Display error', async () => {
 test('LandscapeMembers: Display loader', async () => {
   terrasoApi.request.mockReturnValue(new Promise(() => {}));
   await setup();
-  const loader = screen.getByRole('progressbar', { name: '', hidden: true });
+  const loader = screen.getByRole('progressbar', {
+    name: 'Loading',
+    hidden: true,
+  });
   expect(loader).toBeInTheDocument();
 });
 test('LandscapeMembers: Empty', async () => {

@@ -1,5 +1,4 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 import { useSearchParams } from 'react-router-dom';
 
 import { render, screen } from 'tests/utils';
@@ -19,13 +18,16 @@ beforeEach(() => {
 
 test('AccountLogin: Display error', async () => {
   accountService.getAuthURLs.mockRejectedValue('Load error');
-  await act(async () => render(<AccountLogin />));
+  await render(<AccountLogin />);
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
 test('AccountLogin: Display loader', async () => {
   accountService.getAuthURLs.mockReturnValue(new Promise(() => {}));
-  await act(async () => render(<AccountLogin />));
-  const loader = screen.getByRole('progressbar', { name: '', hidden: true });
+  await render(<AccountLogin />);
+  const loader = screen.getByRole('progressbar', {
+    name: 'Loading',
+    hidden: true,
+  });
   expect(loader).toBeInTheDocument();
 });
 test('AccountLogin: Display buttons', async () => {
@@ -35,7 +37,7 @@ test('AccountLogin: Display buttons', async () => {
       apple: 'apple.url',
     })
   );
-  await act(async () => render(<AccountLogin />));
+  await render(<AccountLogin />);
   expect(screen.getByText('Continue with Google')).toBeInTheDocument();
   expect(screen.getByText('Continue with Apple')).toBeInTheDocument();
 });
@@ -49,7 +51,7 @@ test('AccountLogin: Add referrer', async () => {
       apple: 'apple.url',
     })
   );
-  await act(async () => render(<AccountLogin />));
+  await render(<AccountLogin />);
   expect(screen.getByText('Continue with Google')).toBeInTheDocument();
   expect(screen.getByText('Continue with Google')).toHaveAttribute(
     'href',

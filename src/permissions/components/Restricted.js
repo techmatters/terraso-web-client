@@ -1,9 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { CircularProgress } from '@mui/material';
 
 import { usePermission } from 'permissions';
 
 const Restricted = props => {
+  const { t } = useTranslation();
   const {
     permission,
     resource,
@@ -14,7 +16,11 @@ const Restricted = props => {
   const [loading, allowed] = usePermission(permission, resource);
 
   if (loading) {
-    return LoadingComponent ? <LoadingComponent /> : <CircularProgress />;
+    return LoadingComponent ? (
+      <LoadingComponent />
+    ) : (
+      <CircularProgress aria-label={t('common.loader_label')} />
+    );
   }
 
   if (allowed) {

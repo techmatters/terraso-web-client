@@ -14,7 +14,7 @@ beforeEach(() => {
 
 test('LocalePicker: Change locale', async () => {
   useMediaQuery.mockReturnValue(false);
-  render(<LocalePicker />);
+  await render(<LocalePicker />);
 
   expect(screen.queryByText('ENGLISH')).toBeInTheDocument();
   await act(async () =>
@@ -28,7 +28,7 @@ test('LocalePicker: Change locale', async () => {
 });
 test('LocalePicker: Change locale (small screen)', async () => {
   useMediaQuery.mockReturnValue(true);
-  render(<LocalePicker />);
+  await render(<LocalePicker />);
 
   expect(screen.queryByText('EN')).toBeInTheDocument();
   await act(async () =>

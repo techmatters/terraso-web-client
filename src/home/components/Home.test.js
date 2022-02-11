@@ -1,5 +1,4 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 
 import { render, screen } from 'tests/utils';
 import Home from 'home/components/Home';
@@ -14,20 +13,18 @@ jest.mock('home/homeService', () => ({
 }));
 
 const setup = async () => {
-  await act(async () =>
-    render(<Home />, {
-      account: {
-        hasToken: true,
-        currentUser: {
-          fetching: false,
-          data: {
-            firstName: 'First',
-            lastName: 'Last',
-          },
+  await render(<Home />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          firstName: 'First',
+          lastName: 'Last',
         },
       },
-    })
-  );
+    },
+  });
 };
 
 beforeEach(() => {
@@ -46,7 +43,10 @@ test('Home: Display error', async () => {
 test('Home: Display loader', async () => {
   terrasoApi.request.mockReturnValue(new Promise(() => {}));
   await setup();
-  const loaders = screen.getAllByRole('loader', { name: '', hidden: true });
+  const loaders = screen.getAllByRole('progressbar', {
+    name: 'Loading',
+    hidden: true,
+  });
   expect(loaders.length).toBe(2);
   loaders.forEach(role => expect(role).toBeInTheDocument());
 });

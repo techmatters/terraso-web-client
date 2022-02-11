@@ -1,28 +1,25 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 
 import { render, screen } from 'tests/utils';
 import Restricted from 'permissions/components/Restricted';
 
 const setup = async (props, rules) => {
-  await act(async () =>
-    render(
-      <Restricted {...props} />,
-      {
-        account: {
-          hasToken: true,
-          currentUser: {
-            fetching: false,
-            data: {
-              email: 'john.doe@email.com',
-              firstName: 'John',
-              lastName: 'Doe',
-            },
+  await render(
+    <Restricted {...props} />,
+    {
+      account: {
+        hasToken: true,
+        currentUser: {
+          fetching: false,
+          data: {
+            email: 'john.doe@email.com',
+            firstName: 'John',
+            lastName: 'Doe',
           },
         },
       },
-      rules
-    )
+    },
+    rules
   );
 };
 

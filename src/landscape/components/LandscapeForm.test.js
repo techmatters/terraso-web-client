@@ -14,7 +14,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const setup = async () => {
-  await act(async () => render(<LandscapeForm />));
+  await render(<LandscapeForm />);
   const name = screen.getByRole('textbox', {
     name: 'Landscape name (Required)',
   });
@@ -41,13 +41,16 @@ beforeEach(() => {
 
 test('LandscapeForm: Display error', async () => {
   terrasoApi.request.mockRejectedValue(['Load error']);
-  await act(async () => render(<LandscapeForm />));
+  await render(<LandscapeForm />);
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
-test('LandscapeForm: Display loader', () => {
+test('LandscapeForm: Display loader', async () => {
   terrasoApi.request.mockReturnValue(new Promise(() => {}));
-  render(<LandscapeForm />);
-  const loader = screen.getByRole('progressbar', { name: '', hidden: true });
+  await render(<LandscapeForm />);
+  const loader = screen.getByRole('progressbar', {
+    name: 'Loading',
+    hidden: true,
+  });
   expect(loader).toBeInTheDocument();
 });
 test('LandscapeForm: Fill form', async () => {
@@ -262,7 +265,7 @@ test('LandscapeForm: Avoid fetch', async () => {
   expect(inputs.website).toHaveValue('');
 
   expect(() =>
-    screen.getByRole('progressbar', { name: '', hidden: true })
+    screen.getByRole('progressbar', { name: 'Loading', hidden: true })
   ).toThrow('Unable to find an element');
 });
 test('LandscapeForm: Save form (add)', async () => {

@@ -52,6 +52,9 @@ const Table = props => {
 
   return (
     <DataGrid
+      components={{
+        Panel: () => <div></div>,
+      }}
       pageSize={PAGE_SIZE}
       page={page}
       rowsPerPageOptions={[PAGE_SIZE]}
@@ -69,6 +72,10 @@ const Table = props => {
         '& .MuiDataGrid-columnHeaders': {
           backgroundColor: 'gray.lite2',
         },
+        '& .MuiDataGrid-columnHeader[data-field=actions] .MuiDataGrid-columnHeaderTitle':
+          {
+            display: 'none',
+          },
       }}
       {...props}
     />

@@ -1,5 +1,4 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
 
 import { render, screen } from 'tests/utils';
@@ -16,21 +15,19 @@ jest.mock('react-router-dom', () => ({
 global.fetch = jest.fn();
 
 const setup = async () => {
-  await act(async () =>
-    render(<GroupView />, {
-      account: {
-        hasToken: true,
-        currentUser: {
-          fetching: false,
-          data: {
-            email: 'email@email.com',
-            firstName: 'First',
-            lastName: 'Last',
-          },
+  await render(<GroupView />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          email: 'email@email.com',
+          firstName: 'First',
+          lastName: 'Last',
         },
       },
-    })
-  );
+    },
+  });
 };
 
 beforeEach(() => {
@@ -47,7 +44,10 @@ test('GroupView: Display error', async () => {
 test('GroupForm: Display loader', async () => {
   terrasoApi.request.mockReturnValue(new Promise(() => {}));
   await setup();
-  const loader = screen.getByRole('progressbar', { name: '', hidden: true });
+  const loader = screen.getByRole('progressbar', {
+    name: 'Loading',
+    hidden: true,
+  });
   expect(loader).toBeInTheDocument();
 });
 test('GroupView: Not found', async () => {

@@ -13,7 +13,7 @@ const Bomb = () => {
 
 test('ErrorMonitoringProvider: component error', async () => {
   try {
-    render(<Bomb />);
+    await render(<Bomb />);
   } catch {
     // Nothing
   }

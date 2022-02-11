@@ -11,20 +11,18 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const setup = async () => {
-  await act(async () =>
-    render(<Navigation />, {
-      account: {
-        hasToken: true,
-        currentUser: {
-          fetching: false,
-          data: {
-            firstName: 'First',
-            lastName: 'Last',
-          },
+  await render(<Navigation />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          firstName: 'First',
+          lastName: 'Last',
         },
       },
-    })
-  );
+    },
+  });
 };
 
 test('Navigation: Show tabs', async () => {

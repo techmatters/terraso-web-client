@@ -19,13 +19,16 @@ import GroupMembershipButton from './GroupMembershipButton';
 import AccountAvatar from 'account/components/AccountAvatar';
 import theme from 'theme';
 
-const Loader = () => (
-  <CardContent>
-    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-      <CircularProgress />
-    </Box>
-  </CardContent>
-);
+const Loader = () => {
+  const { t } = useTranslation();
+  return (
+    <CardContent>
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <CircularProgress aria-label={t('common.loader_label')} />
+      </Box>
+    </CardContent>
+  );
+};
 
 const Content = props => {
   const { t } = useTranslation();

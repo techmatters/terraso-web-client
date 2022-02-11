@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash/fp';
 import { useLocation, useParams } from 'react-router-dom';
 
-import { render, screen, act } from 'tests/utils';
+import { render, screen } from 'tests/utils';
 import GroupView from 'group/components/GroupView';
 import * as terrasoApi from 'terrasoBackend/api';
 import RequireAuth from 'account/components/RequireAuth';
@@ -34,26 +34,25 @@ test('Auth: test redirect', async () => {
   global.fetch.mockResolvedValueOnce({
     status: 401,
   });
-  await act(async () =>
-    render(
-      <RequireAuth>
-        <GroupView />
-      </RequireAuth>,
-      {
-        account: {
-          hasToken: true,
-          currentUser: {
-            fetching: false,
-            data: {
-              email: 'email@email.com',
-              firstName: 'John',
-              lastName: 'Doe',
-            },
+  await render(
+    <RequireAuth>
+      <GroupView />
+    </RequireAuth>,
+    {
+      account: {
+        hasToken: true,
+        currentUser: {
+          fetching: false,
+          data: {
+            email: 'email@email.com',
+            firstName: 'John',
+            lastName: 'Doe',
           },
         },
-      }
-    )
+      },
+    }
   );
+
   expect(global.fetch).toHaveBeenCalledTimes(1);
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
   expect(screen.getByText('To: /account')).toBeInTheDocument();
@@ -67,13 +66,12 @@ test('Auth: test redirect referrer', async () => {
   global.fetch.mockResolvedValueOnce({
     status: 401,
   });
-  await act(async () =>
-    render(
-      <RequireAuth>
-        <div />
-      </RequireAuth>
-    )
+  await render(
+    <RequireAuth>
+      <div />
+    </RequireAuth>
   );
+
   expect(
     screen.getByText('To: /account?referrer=groups?sort=-name')
   ).toBeInTheDocument();
@@ -92,26 +90,25 @@ test('Auth: test refresh tokens', async () => {
       rtoken: 'refresh-token',
     }),
   });
-  await act(async () =>
-    render(
-      <RequireAuth>
-        <GroupView />
-      </RequireAuth>,
-      {
-        account: {
-          hasToken: true,
-          currentUser: {
-            fetching: false,
-            data: {
-              email: 'email@email.com',
-              firstName: 'John',
-              lastName: 'Doe',
-            },
+  await render(
+    <RequireAuth>
+      <GroupView />
+    </RequireAuth>,
+    {
+      account: {
+        hasToken: true,
+        currentUser: {
+          fetching: false,
+          data: {
+            email: 'email@email.com',
+            firstName: 'John',
+            lastName: 'Doe',
           },
         },
-      }
-    )
+      },
+    }
   );
+
   expect(screen.getByText('Group not found')).toBeInTheDocument();
 });
 test('Auth: test fetch user', async () => {
@@ -128,21 +125,20 @@ test('Auth: test fetch user', async () => {
       )
     )
   );
-  await act(async () =>
-    render(
-      <RequireAuth>
-        <div />
-      </RequireAuth>,
-      {
-        account: {
-          hasToken: true,
-          currentUser: {
-            fetching: true,
-            data: null,
-          },
+  await render(
+    <RequireAuth>
+      <div />
+    </RequireAuth>,
+    {
+      account: {
+        hasToken: true,
+        currentUser: {
+          fetching: true,
+          data: null,
         },
-      }
-    )
+      },
+    }
   );
+
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
 });
