@@ -53,8 +53,9 @@ const SkipLinks = props => {
   return (
     <>
       <span tabIndex="-1" ref={initialRef} />
-      {links.map(link => (
+      {links.map((link, index) => (
         <Link
+          key={index}
           component="a"
           underline="always"
           className="skip-link sr-only sr-only-focusable"
