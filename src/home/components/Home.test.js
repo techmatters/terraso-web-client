@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash/fp';
 
 import { render, screen } from 'tests/utils';
 import Home from 'home/components/Home';
@@ -68,7 +69,11 @@ test('Home: Display landscapes', async () => {
                         id: 'id-1',
                         slug: 'id-1',
                         name: 'Landscape 1',
-                        role: 'member',
+                        defaultGroup: _.set(
+                          'edges[0].node.group.accountMembership.edges[0].node.userRole',
+                          'MEMBER',
+                          {}
+                        ),
                       },
                     },
                   },
@@ -78,7 +83,11 @@ test('Home: Display landscapes', async () => {
                         id: 'id-2',
                         slug: 'id-2',
                         name: 'Landscape 2',
-                        role: 'manager',
+                        defaultGroup: _.set(
+                          'edges[0].node.group.accountMembership.edges[0].node.userRole',
+                          'MANAGER',
+                          {}
+                        ),
                       },
                     },
                   },
@@ -106,7 +115,7 @@ test('Home: Display groups', async () => {
               id: 'id-1',
               slug: 'id-1',
               name: 'Group 1',
-              role: 'member',
+              accountMembership: _.set('edges[0].node.userRole', 'MEMBER', {}),
             },
           },
         ],
@@ -118,7 +127,7 @@ test('Home: Display groups', async () => {
               id: 'id-2',
               slug: 'id-2',
               name: 'Group 2',
-              role: 'manager',
+              accountMembership: _.set('edges[0].node.userRole', 'MANAGER', {}),
             },
           },
         ],

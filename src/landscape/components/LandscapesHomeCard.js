@@ -41,7 +41,13 @@ const LandscapeItem = ({ landscape }) => {
           {landscape.name}
         </Link>
         <Typography>
-          {t(`landscape.role_${_.getOr('member', 'role', landscape)}`)}
+          {t(
+            `landscape.role_${_.getOr(
+              'member',
+              'accountMembership.userRole',
+              landscape
+            ).toLowerCase()}`
+          )}
         </Typography>
       </Box>
     </ListItem>
