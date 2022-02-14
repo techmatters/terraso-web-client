@@ -27,7 +27,15 @@ const GroupItem = ({ group }) => {
         {group.name}
       </Link>
       <Typography sx={theme => ({ marginLeft: theme.spacing(1) })}>
-        ({t(`group.role_${_.getOr('member', 'role', group)}`)})
+        (
+        {t(
+          `group.role_${_.getOr(
+            'member',
+            'accountMembership.userRole',
+            group
+          ).toLowerCase()}`
+        )}
+        )
       </Typography>
     </ListItem>
   );
