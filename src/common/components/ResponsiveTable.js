@@ -64,7 +64,7 @@ const CardValue = props => {
 };
 
 const Cards = props => {
-  const { columns, rows, cardsProps } = props;
+  const { columns, rows, cardsProps = {} } = props;
 
   return (
     <List>
