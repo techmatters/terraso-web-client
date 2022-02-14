@@ -14,6 +14,7 @@ import {
   Box,
 } from '@mui/material';
 import PublicIcon from '@mui/icons-material/Public';
+import bbox from '@turf/bbox';
 
 import { fetchLandscapeView } from 'landscape/landscapeSlice';
 import { withProps } from 'react-hoc';
@@ -68,16 +69,24 @@ const LandscapeCard = ({ landscape }) => {
   );
 };
 
-const LandscapeMap = ({ position }) => {
+const LandscapeMap = ({ landscape }) => {
   const { t } = useTranslation();
-  const bounds = position && [
-    [position.boundingbox[0], position.boundingbox[2]],
-    [position.boundingbox[1], position.boundingbox[3]],
+  const { areaPolygon, position } = landscape;
+
+  const areaBoundingBox = areaPolygon && bbox(areaPolygon);
+  const positionBoundingBox = position && position.boundingbox;
+
+  const boundingBox = areaBoundingBox || positionBoundingBox;
+  const bounds = boundingBox && [
+    [boundingBox[1], boundingBox[0]],
+    [boundingBox[3], boundingBox[2]],
   ];
+
   return (
     <Box component="section" aria-label={t('landscape.view_map_title')}>
       <Map
         bounds={bounds}
+        geojson={areaPolygon}
         style={{
           width: '100%',
           height: '400px',
@@ -128,7 +137,7 @@ const LandscapeView = () => {
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <LandscapeMap position={landscape.position} />
+          <LandscapeMap landscape={landscape} />
         </Grid>
         <Grid item xs={12} md={6}>
           <LandscapeCard landscape={landscape} />

@@ -65,6 +65,12 @@ export const fetchLandscapeToView = (slug, currentUser) => {
           position: placeInfo,
         }))
       )
+      .then(landscape => ({
+        ...landscape,
+        areaPolygon: landscape.areaPolygon
+          ? JSON.parse(landscape.areaPolygon)
+          : null,
+      }))
   );
 };
 

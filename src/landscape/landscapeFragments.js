@@ -8,6 +8,7 @@ export const landscapeFields = `
     location
     description
     website
+    areaPolygon
   }
 `;
 
