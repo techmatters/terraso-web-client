@@ -12,8 +12,8 @@ import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultHomeCard'
 import GroupsCard from 'group/components/GroupsHomeCard';
 import GroupDefaultCard from 'group/components/GroupDefaultHomeCard';
 import ToolHomeCard from 'tool/components/ToolHomeCard';
-import PageHeader from 'common/components/PageHeader';
-import PageContainer from 'common/components/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import PageContainer from 'layout/PageContainer';
 
 const Landscapes = ({ landscapes, fetching }) => {
   if (fetching) {

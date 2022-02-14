@@ -12,9 +12,9 @@ import {
 } from 'landscape/landscapeSlice';
 import { useDocumentTitle } from 'common/document';
 import Form from 'forms/components/Form';
-import PageLoader from 'common/components/PageLoader';
-import PageHeader from 'common/components/PageHeader';
-import PageContainer from 'common/components/PageContainer';
+import PageLoader from 'layout/PageLoader';
+import PageHeader from 'layout/PageHeader';
+import PageContainer from 'layout/PageContainer';
 
 const VALIDATION_SCHEMA = yup
   .object({

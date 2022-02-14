@@ -20,7 +20,7 @@ import { useGroupContext } from 'group/groupContext';
 import Table from 'common/components/Table';
 import AccountAvatar from 'account/components/AccountAvatar';
 import Restricted from 'permissions/components/Restricted';
-import PageLoader from 'common/components/PageLoader';
+import PageLoader from 'layout/PageLoader';
 import theme from 'theme';
 
 const ROLES = ['MEMBER', 'MANAGER'];

@@ -4,7 +4,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { fetchUser } from 'account/accountSlice';
-import PageLoader from 'common/components/PageLoader';
+import PageLoader from 'layout/PageLoader';
 
 const RequireAuth = ({ children }) => {
   const dispatch = useDispatch();

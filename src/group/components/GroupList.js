@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import _ from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import {
   Box,
@@ -21,12 +20,13 @@ import { useDocumentTitle } from 'common/document';
 import GroupMembershipButton from 'group/membership/components/GroupMembershipButton';
 import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
 import Table from 'common/components/Table';
-import PageLoader from 'common/components/PageLoader';
+import PageLoader from 'layout/PageLoader';
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
-import PageHeader from 'common/components/PageHeader';
-import PageContainer from 'common/components/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import PageContainer from 'layout/PageContainer';
+import MobileDesktopSwitch from 'layout/MobileDesktopSwitch';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
@@ -207,7 +207,6 @@ const GroupList = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { groups, fetching, message } = useSelector(state => state.group.list);
-  const isSmall = useMediaQuery(theme.breakpoints.down('md'));
 
   useDocumentTitle(t('group.list_document_title'));
 
@@ -236,11 +235,10 @@ const GroupList = () => {
       >
         {t('group.list_description')}
       </Typography>
-      {isSmall ? (
-        <GroupCards groups={groups} />
-      ) : (
-        <GroupTable groups={groups} />
-      )}
+      <MobileDesktopSwitch
+        mobile={<GroupCards groups={groups} />}
+        desktop={<GroupTable groups={groups} />}
+      />
       <Typography
         variant="h2"
         sx={{

@@ -11,11 +11,11 @@ import { withProps } from 'react-hoc';
 import { useDocumentTitle } from 'common/document';
 import GroupMembersList from 'group/membership/components/GroupMembersList';
 import { GroupContextProvider } from 'group/groupContext';
-import PageLoader from 'common/components/PageLoader';
+import PageLoader from 'layout/PageLoader';
 import LandscapeMemberLeave from './LandscapeMemberLeave';
 import LandscapeMemberRemove from './LandscapeMemberRemove';
-import PageHeader from 'common/components/PageHeader';
-import PageContainer from 'common/components/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import PageContainer from 'layout/PageContainer';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {

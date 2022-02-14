@@ -8,8 +8,8 @@ import GoogleIcon from '@mui/icons-material/Google';
 
 import { fetchAuthURLs } from 'account/accountSlice';
 import { useDocumentTitle } from 'common/document';
-import PageLoader from 'common/components/PageLoader';
-import PageHeader from 'common/components/PageHeader';
+import PageLoader from 'layout/PageLoader';
+import PageHeader from 'layout/PageHeader';
 
 import logo from 'assets/logo.svg';
 
