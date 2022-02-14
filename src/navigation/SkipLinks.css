@@ -9,9 +9,9 @@
 .sr-only-focusable:active,
 .sr-only-focusable:focus {
   position: static;
-  width: auto;
+  width: fit-content;
   height: auto;
-  margin: 0;
+  margin: 5px;
   overflow: visible;
   clip: auto;
 }
