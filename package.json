@@ -15,6 +15,7 @@
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
+    "@turf/bbox": "^6.5.0",
     "history": "^5.1.0",
     "i18next": "^21.5.2",
     "i18next-browser-languagedetector": "^6.1.2",

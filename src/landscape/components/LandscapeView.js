@@ -28,6 +28,8 @@ import PageContainer from 'common/components/PageContainer';
 import theme from 'theme';
 import { useDocumentTitle } from 'common/document';
 
+import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';
+
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.view_leave_label',
   buttonProps: {
@@ -68,16 +70,14 @@ const LandscapeCard = ({ landscape }) => {
   );
 };
 
-const LandscapeMap = ({ position }) => {
+const LandscapeMap = ({ landscape }) => {
   const { t } = useTranslation();
-  const bounds = position && [
-    [position.boundingbox[0], position.boundingbox[2]],
-    [position.boundingbox[1], position.boundingbox[3]],
-  ];
+
   return (
     <Box component="section" aria-label={t('landscape.view_map_title')}>
       <Map
-        bounds={bounds}
+        bounds={getLandscapeBoundingBox(landscape)}
+        geojson={landscape.areaPolygon}
         style={{
           width: '100%',
           height: '400px',
@@ -128,7 +128,7 @@ const LandscapeView = () => {
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <LandscapeMap position={landscape.position} />
+          <LandscapeMap landscape={landscape} />
         </Grid>
         <Grid item xs={12} md={6}>
           <LandscapeCard landscape={landscape} />
