@@ -14,7 +14,6 @@ import {
   Box,
 } from '@mui/material';
 import PublicIcon from '@mui/icons-material/Public';
-import bbox from '@turf/bbox';
 
 import { fetchLandscapeView } from 'landscape/landscapeSlice';
 import { withProps } from 'react-hoc';
@@ -28,6 +27,8 @@ import PageHeader from 'common/components/PageHeader';
 import PageContainer from 'common/components/PageContainer';
 import theme from 'theme';
 import { useDocumentTitle } from 'common/document';
+
+import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.view_leave_label',
@@ -71,22 +72,12 @@ const LandscapeCard = ({ landscape }) => {
 
 const LandscapeMap = ({ landscape }) => {
   const { t } = useTranslation();
-  const { areaPolygon, position } = landscape;
-
-  const areaBoundingBox = areaPolygon && bbox(areaPolygon);
-  const positionBoundingBox = position && position.boundingbox;
-
-  const boundingBox = areaBoundingBox || positionBoundingBox;
-  const bounds = boundingBox && [
-    [boundingBox[1], boundingBox[0]],
-    [boundingBox[3], boundingBox[2]],
-  ];
 
   return (
     <Box component="section" aria-label={t('landscape.view_map_title')}>
       <Map
-        bounds={bounds}
-        geojson={areaPolygon}
+        bounds={getLandscapeBoundingBox(landscape)}
+        geojson={landscape.areaPolygon}
         style={{
           width: '100%',
           height: '400px',
