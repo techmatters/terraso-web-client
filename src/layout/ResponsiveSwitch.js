@@ -2,7 +2,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import theme from 'theme';
 
-const MobileDesktopSwitch = props => {
+const ResponsiveSwitch = props => {
   const { desktop, mobile } = props;
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -12,4 +12,4 @@ const MobileDesktopSwitch = props => {
   return desktop;
 };
 
-export default MobileDesktopSwitch;
+export default ResponsiveSwitch;

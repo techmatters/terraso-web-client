@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash/fp';
 import { Card, Grid, List, ListItem, Stack, Typography } from '@mui/material';
 
-import MobileDesktopSwitch from 'layout/MobileDesktopSwitch';
+import ResponsiveSwitch from 'layout/ResponsiveSwitch';
 import BaseTable from 'common/components/Table';
 
 const Table = props => {
@@ -93,13 +93,13 @@ const Cards = props => {
   );
 };
 
-const ResponsiveTable = props => {
+const TableResponsive = props => {
   return (
-    <MobileDesktopSwitch
+    <ResponsiveSwitch
       desktop={<Table {...props} />}
       mobile={<Cards {...props} />}
     />
   );
 };
 
-export default ResponsiveTable;
+export default TableResponsive;

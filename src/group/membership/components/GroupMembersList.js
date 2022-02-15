@@ -10,7 +10,7 @@ import { useGroupContext } from 'group/groupContext';
 import AccountAvatar from 'account/components/AccountAvatar';
 import Restricted from 'permissions/components/Restricted';
 import PageLoader from 'layout/PageLoader';
-import ResponsiveTable from 'common/components/ResponsiveTable';
+import TableResponsive from 'common/components/TableResponsive';
 import theme from 'theme';
 
 const ROLES = ['MEMBER', 'MANAGER'];
@@ -176,7 +176,7 @@ const GroupMembersList = () => {
           </Typography>
         </Restricted>
       </Stack>
-      <ResponsiveTable
+      <TableResponsive
         columns={columns}
         rows={_.values(members)}
         cardsProps={{

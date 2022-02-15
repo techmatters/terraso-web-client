@@ -16,7 +16,7 @@ import PageContainer from 'layout/PageContainer';
 import { GroupContextProvider } from 'group/groupContext';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
-import ResponsiveTable from 'common/components/ResponsiveTable';
+import TableResponsive from 'common/components/TableResponsive';
 
 import theme from 'theme';
 
@@ -129,7 +129,7 @@ const LandscapeList = () => {
           marginTop: theme.spacing(2),
         }}
       ></Typography>
-      <ResponsiveTable
+      <TableResponsive
         columns={columns}
         rows={landscapes}
         tableProps={{

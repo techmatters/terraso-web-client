@@ -16,7 +16,7 @@ import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import PageHeader from 'layout/PageHeader';
 import PageContainer from 'layout/PageContainer';
-import ResponsiveTable from 'common/components/ResponsiveTable';
+import TableResponsive from 'common/components/TableResponsive';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
@@ -139,7 +139,7 @@ const GroupList = () => {
       >
         {t('group.list_description')}
       </Typography>
-      <ResponsiveTable
+      <TableResponsive
         columns={columns}
         rows={groups}
         tableProps={{
