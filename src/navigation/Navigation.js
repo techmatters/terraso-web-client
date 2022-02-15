@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { ToggleButton, Box, List, ListItem } from '@mui/material';
+import { Button, Box, List, ListItem } from '@mui/material';
 
 const PAGES = {
   '/': {
@@ -25,12 +25,15 @@ const PAGES = {
   },
 };
 
-const NavButton = styled(ToggleButton)(({ theme }) => ({
+const NavButton = styled(Button)(({ theme }) => ({
   border: 0,
   borderRadius: 0,
-  paddingLeft: theme.spacing(2),
-  paddingRight: theme.spacing(2),
+  padding: theme.spacing(2),
   textTransform: 'uppercase',
+  color: theme.palette.gray.dark1,
+  '&.MuiButton-root:hover': {
+    backgroundColor: theme.palette.gray.lite1,
+  },
   '&.Mui-selected': {
     color: 'black',
     fontWeight: theme.typography.fontWeightMedium,
@@ -39,30 +42,37 @@ const NavButton = styled(ToggleButton)(({ theme }) => ({
   },
 }));
 
+const NavigationLink = ({ path, selected }) => {
+  const { t } = useTranslation();
+  return (
+    <ListItem disablePadding dense sx={{ width: 'auto' }}>
+      <NavButton
+        className={selected && 'Mui-selected'}
+        component={RouterLink}
+        to={path}
+        value={path}
+        {...(selected ? { 'aria-current': 'page' } : {})}
+      >
+        {t(PAGES[path].label)}
+      </NavButton>
+    </ListItem>
+  );
+};
+
 const Navigation = React.forwardRef((props, ref) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { data: user } = useSelector(state => state.account.currentUser);
   const hasToken = useSelector(state => state.account.hasToken);
   const location = useLocation();
-  const [value, setValue] = React.useState(false);
 
-  useEffect(() => {
-    const currentValue = _.findIndex(
-      path => path.match(location.pathname),
-      Object.values(PAGES)
-    );
-    setValue(currentValue > -1 ? currentValue : false);
-  }, [location]);
+  const value = _.findIndex(
+    path => path.match(location.pathname),
+    Object.values(PAGES)
+  );
 
   if (!hasToken || !user) {
     return null;
   }
-
-  const handleChange = (value, path) => {
-    navigate(path);
-    setValue(value);
-  };
 
   return (
     <Box
@@ -84,16 +94,7 @@ const Navigation = React.forwardRef((props, ref) => {
     >
       <List sx={{ display: 'flex', flexDirection: 'row', padding: 0 }}>
         {Object.keys(PAGES).map((path, index) => (
-          <ListItem key={path} disablePadding dense sx={{ width: 'auto' }}>
-            <NavButton
-              component="a"
-              value={path}
-              selected={value === index}
-              onClick={() => handleChange(index, path)}
-            >
-              {t(PAGES[path].label)}
-            </NavButton>
-          </ListItem>
+          <NavigationLink key={path} path={path} selected={index === value} />
         ))}
       </List>
     </Box>

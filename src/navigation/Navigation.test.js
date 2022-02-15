@@ -30,14 +30,12 @@ test('Navigation: Show tabs', async () => {
     pathname: '/',
   });
   await setup();
-  expect(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument();
-  expect(
-    screen.getByRole('button', { name: 'Landscapes' })
-  ).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Groups' })).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
-    'aria-pressed',
-    'true'
+  expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Landscapes' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Groups' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
+    'aria-current',
+    'page'
   );
 });
 test('Navigation: Test initial', async () => {
@@ -45,17 +43,17 @@ test('Navigation: Test initial', async () => {
     pathname: '/landscapes',
   });
   await setup();
-  expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
-    'aria-pressed',
-    'false'
+  expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute(
+    'aria-current',
+    'page'
   );
-  expect(screen.getByRole('button', { name: 'Landscapes' })).toHaveAttribute(
-    'aria-pressed',
-    'true'
+  expect(screen.getByRole('link', { name: 'Landscapes' })).toHaveAttribute(
+    'aria-current',
+    'page'
   );
-  expect(screen.getByRole('button', { name: 'Groups' })).toHaveAttribute(
-    'aria-pressed',
-    'false'
+  expect(screen.getByRole('link', { name: 'Groups' })).not.toHaveAttribute(
+    'aria-current',
+    'page'
   );
 });
 test('Navigation: Test select', async () => {
@@ -63,34 +61,38 @@ test('Navigation: Test select', async () => {
     pathname: '/landscapes/landscape-slug',
   });
   await setup();
-  expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
-    'aria-pressed',
-    'false'
+  expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute(
+    'aria-current',
+    'page'
   );
-  expect(screen.getByRole('button', { name: 'Landscapes' })).toHaveAttribute(
-    'aria-pressed',
-    'true'
+  expect(screen.getByRole('link', { name: 'Landscapes' })).toHaveAttribute(
+    'aria-current',
+    'page'
   );
-  expect(screen.getByRole('button', { name: 'Groups' })).toHaveAttribute(
-    'aria-pressed',
-    'false'
+  expect(screen.getByRole('link', { name: 'Groups' })).not.toHaveAttribute(
+    'aria-current',
+    'page'
   );
 });
 test('Navigation: Test navigation', async () => {
-  useLocation.mockReturnValue({
-    pathname: '/',
-  });
+  useLocation
+    .mockReturnValueOnce({
+      pathname: '/',
+    })
+    .mockReturnValueOnce({
+      pathname: '/landscapes',
+    });
   await setup();
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Landscapes' }))
+    fireEvent.click(screen.getByRole('link', { name: 'Landscapes' }))
   );
-  expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
-    'aria-pressed',
-    'false'
+  expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute(
+    'aria-current',
+    'page'
   );
-  expect(screen.getByRole('button', { name: 'Landscapes' })).toHaveAttribute(
-    'aria-pressed',
-    'true'
+  expect(screen.getByRole('link', { name: 'Landscapes' })).toHaveAttribute(
+    'aria-current',
+    'page'
   );
 });
 test('Navigation: none selected', async () => {
@@ -98,16 +100,16 @@ test('Navigation: none selected', async () => {
     pathname: '/other',
   });
   await setup();
-  expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute(
-    'aria-pressed',
-    'false'
+  expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute(
+    'aria-current',
+    'page'
   );
-  expect(screen.getByRole('button', { name: 'Landscapes' })).toHaveAttribute(
-    'aria-pressed',
-    'false'
+  expect(screen.getByRole('link', { name: 'Landscapes' })).not.toHaveAttribute(
+    'aria-current',
+    'page'
   );
-  expect(screen.getByRole('button', { name: 'Groups' })).toHaveAttribute(
-    'aria-pressed',
-    'false'
+  expect(screen.getByRole('link', { name: 'Groups' })).not.toHaveAttribute(
+    'aria-current',
+    'page'
   );
 });
