@@ -13,8 +13,8 @@ import { GroupContextProvider } from 'group/groupContext';
 import GroupMembersList from 'group/membership/components/GroupMembersList';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberRemove from 'group/membership/components/GroupMemberRemove';
-import PageHeader from 'common/components/PageHeader';
-import PageContainer from 'common/components/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import PageContainer from 'layout/PageContainer';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {

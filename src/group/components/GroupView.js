@@ -20,13 +20,13 @@ import { withProps } from 'react-hoc';
 import { fetchGroupView } from 'group/groupSlice';
 import { useDocumentTitle } from 'common/document';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
-import PageLoader from 'common/components/PageLoader';
+import PageLoader from 'layout/PageLoader';
 import Restricted from 'permissions/components/Restricted';
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
-import PageHeader from 'common/components/PageHeader';
-import PageContainer from 'common/components/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import PageContainer from 'layout/PageContainer';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {

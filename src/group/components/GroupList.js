@@ -2,31 +2,21 @@ import React, { useEffect } from 'react';
 import _ from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
-import {
-  Box,
-  Typography,
-  Link,
-  Grid,
-  Card,
-  Button,
-  List,
-  ListItem,
-} from '@mui/material';
+import { Typography, Link, Button } from '@mui/material';
 
 import { fetchGroups } from 'group/groupSlice';
 import { withProps } from 'react-hoc';
 import { useDocumentTitle } from 'common/document';
 import GroupMembershipButton from 'group/membership/components/GroupMembershipButton';
 import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
-import Table from 'common/components/Table';
-import PageLoader from 'common/components/PageLoader';
+import PageLoader from 'layout/PageLoader';
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
-import PageHeader from 'common/components/PageHeader';
-import PageContainer from 'common/components/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import PageContainer from 'layout/PageContainer';
+import TableResponsive from 'common/components/TableResponsive';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
@@ -56,9 +46,25 @@ const MembershipButton = ({ group }) => (
   </GroupContextProvider>
 );
 
-const GroupTable = ({ groups }) => {
+const GroupList = () => {
+  const dispatch = useDispatch();
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { groups, fetching, message } = useSelector(state => state.group.list);
+
+  useDocumentTitle(t('group.list_document_title'));
+
+  useEffect(() => {
+    dispatch(fetchGroups());
+  }, [dispatch]);
+
+  if (fetching) {
+    return <PageLoader />;
+  }
+
+  if (message && message.severity === 'error') {
+    return null;
+  }
 
   const columns = [
     {
@@ -102,7 +108,9 @@ const GroupTable = ({ groups }) => {
       field: 'members',
       headerName: t('group.list_column_members'),
       align: 'center',
-      valueGetter: ({ row: group }) => _.getOr(0, 'members.length', group),
+      cardSize: 6,
+      valueGetter: ({ row: group }) =>
+        _.getOr(0, 'membersInfo.totalCount', group),
       renderCell: ({ row: group }) => (
         <GroupMembershipCount groupSlug={group.slug} />
       ),
@@ -113,115 +121,10 @@ const GroupTable = ({ groups }) => {
       headerName: t('group.list_column_actions_description'),
       sortable: false,
       align: 'center',
+      cardSize: 6,
       getActions: ({ row: group }) => [<MembershipButton group={group} />],
     },
   ];
-
-  return (
-    <Table
-      rows={groups}
-      columns={columns}
-      initialSort={[
-        {
-          field: 'name',
-          sort: 'asc',
-        },
-      ]}
-      searchParams={Object.fromEntries(searchParams.entries())}
-      onSearchParamsChange={setSearchParams}
-      localeText={{
-        noRowsLabel: t('group.list_empty'),
-        footerPaginationRowsPerPage: t('common.data_grid_pagination_of'),
-      }}
-    />
-  );
-};
-
-const GroupCards = ({ groups }) => {
-  const { t } = useTranslation();
-
-  return (
-    <List>
-      {groups.map(group => (
-        <ListItem
-          key={group.slug}
-          sx={{ padding: 0, marginBottom: theme.spacing(2) }}
-        >
-          <Card sx={{ width: '100%', padding: theme.spacing(2) }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Typography variant="caption">
-                  {t('group.list_column_name')}
-                </Typography>
-                <Link
-                  variant="body1"
-                  display="block"
-                  component={RouterLink}
-                  to={`/groups/${group.slug}`}
-                >
-                  {group.name}
-                </Link>
-              </Grid>
-              {group.email && (
-                <Grid item xs={12}>
-                  <Typography variant="caption">
-                    {t('group.list_column_contact')}
-                  </Typography>
-                  <Link
-                    component={Box}
-                    href={`mailto:${group.website}`}
-                    underline="none"
-                  >
-                    {group.email}
-                  </Link>
-                </Grid>
-              )}
-              {group.website && (
-                <Grid item xs={12}>
-                  <Typography variant="caption">
-                    {t('group.list_column_website')}
-                  </Typography>
-                  <Link component={Box} href={group.website} underline="none">
-                    {group.website}
-                  </Link>
-                </Grid>
-              )}
-              <Grid item xs={6}>
-                <Typography variant="caption">
-                  {t('group.list_column_members')}
-                </Typography>
-                <GroupMembershipCount groupSlug={group.slug} />
-              </Grid>
-              <Grid item xs={6}>
-                <MembershipButton group={group} />
-              </Grid>
-            </Grid>
-          </Card>
-        </ListItem>
-      ))}
-    </List>
-  );
-};
-
-const GroupList = () => {
-  const dispatch = useDispatch();
-  const { t } = useTranslation();
-  const { groups, fetching, message } = useSelector(state => state.group.list);
-  const isSmall = useMediaQuery(theme.breakpoints.down('md'));
-
-  useDocumentTitle(t('group.list_document_title'));
-
-  useEffect(() => {
-    dispatch(fetchGroups());
-  }, [dispatch]);
-
-  if (fetching) {
-    return <PageLoader />;
-  }
-
-  if (message && message.severity === 'error') {
-    return null;
-  }
 
   return (
     <PageContainer>
@@ -236,11 +139,24 @@ const GroupList = () => {
       >
         {t('group.list_description')}
       </Typography>
-      {isSmall ? (
-        <GroupCards groups={groups} />
-      ) : (
-        <GroupTable groups={groups} />
-      )}
+      <TableResponsive
+        columns={columns}
+        rows={groups}
+        tableProps={{
+          initialSort: [
+            {
+              field: 'name',
+              sort: 'asc',
+            },
+          ],
+          searchParams: Object.fromEntries(searchParams.entries()),
+          onSearchParamsChange: setSearchParams,
+          localeText: {
+            noRowsLabel: t('group.list_empty'),
+            footerPaginationRowsPerPage: t('common.data_grid_pagination_of'),
+          },
+        }}
+      />
       <Typography
         variant="h2"
         sx={{

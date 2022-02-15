@@ -18,13 +18,13 @@ import PublicIcon from '@mui/icons-material/Public';
 import { fetchLandscapeView } from 'landscape/landscapeSlice';
 import { withProps } from 'react-hoc';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
-import PageLoader from 'common/components/PageLoader';
+import PageLoader from 'layout/PageLoader';
 import Map from 'gis/components/Map';
 import { GroupContextProvider } from 'group/groupContext';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
-import PageHeader from 'common/components/PageHeader';
-import PageContainer from 'common/components/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import PageContainer from 'layout/PageContainer';
 import theme from 'theme';
 import { useDocumentTitle } from 'common/document';
 
