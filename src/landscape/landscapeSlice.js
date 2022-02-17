@@ -60,7 +60,11 @@ export const fetchLandscapeForMembers = createAsyncThunk(
 export const saveLandscape = createAsyncThunk(
   'landscape/saveLandscape',
   landscapeService.saveLandscape,
-  () => ({ severity: 'success', content: 'landscape.form_message_success' })
+  landscape => ({
+    severity: 'success',
+    content: 'landscape.form_message_success',
+    params: { name: landscape.name },
+  })
 );
 
 const landscapeSlice = createSlice({
