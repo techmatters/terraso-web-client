@@ -1,20 +1,48 @@
 import React from 'react';
+import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import i18n from 'localization/i18n';
 import { render, screen, fireEvent, within } from 'tests/utils';
+import * as terrasoApi from 'terrasoBackend/api';
 import LocalePicker from 'localization/components/LocalePicker';
 
 jest.mock('@mui/material/useMediaQuery');
+jest.mock('terrasoBackend/api');
 
+const setup = async () => {
+  await render(
+    <LocalePicker />,
+    _.set('account.currentUser.data.email', 'test@email.org', {})
+  );
+};
 beforeEach(() => {
   i18n.changeLanguage('en-US');
 });
 
-test('LocalePicker: Change locale', async () => {
+test('LocalePicker: Use saved preference', async () => {
   useMediaQuery.mockReturnValue(false);
-  await render(<LocalePicker />);
+  await render(
+    <LocalePicker />,
+    _.flow(
+      _.set('account.currentUser.data.preferences.language', 'es-ES'),
+      _.set('account.currentUser.data.email', 'test@email.org')
+    )({})
+  );
+
+  expect(screen.queryByText('Español')).toBeInTheDocument();
+});
+test('LocalePicker: Change locale', async () => {
+  terrasoApi.request.mockResolvedValue(
+    _.set(
+      'updateUserPreference.preference',
+      { key: 'language', value: 'es-ES' },
+      {}
+    )
+  );
+  useMediaQuery.mockReturnValue(false);
+  await setup();
 
   expect(screen.queryByText('English')).toBeInTheDocument();
   await act(async () =>
@@ -25,10 +53,26 @@ test('LocalePicker: Change locale', async () => {
     fireEvent.click(listbox.getByRole('option', { name: /Español/i }))
   );
   expect(screen.getByRole('button', { name: /Español/i })).toBeInTheDocument();
-});
+
+  const savePreferenceCall = terrasoApi.request.mock.calls[0];
+  expect(savePreferenceCall[1]).toStrictEqual({
+    input: {
+      key: 'language',
+      userEmail: 'test@email.org',
+      value: 'es-ES',
+    },
+  });
+  });
 test('LocalePicker: Change locale (small screen)', async () => {
+  terrasoApi.request.mockResolvedValue(
+    _.set(
+      'updateUserPreference.preference',
+      { key: 'language', value: 'es-ES' },
+      {}
+    )
+  );
   useMediaQuery.mockReturnValue(true);
-  await render(<LocalePicker />);
+  await setup();
 
   expect(screen.queryByText('EN')).toBeInTheDocument();
   await act(async () =>

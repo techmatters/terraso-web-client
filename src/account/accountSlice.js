@@ -1,3 +1,4 @@
+import _ from 'lodash/fp';
 import { createSlice } from '@reduxjs/toolkit';
 
 import { createAsyncThunk } from 'state/utils';
@@ -31,6 +32,10 @@ export const saveUser = createAsyncThunk(
 export const fetchAuthURLs = createAsyncThunk(
   'account/fetchAuthURLs',
   accountService.getAuthURLs
+);
+export const savePreference = createAsyncThunk(
+  'account/savePreference',
+  accountService.savePreference
 );
 
 export const userSlice = createSlice({
@@ -66,6 +71,17 @@ export const userSlice = createSlice({
       currentUser: {
         ...state.currentUser,
         fetching: false,
+      },
+    }),
+    [savePreference.fulfilled]: (state, action) => ({
+      ...state,
+      currentUser: {
+        fetching: false,
+        data: _.set(
+          `preferences.${action.payload.key}`,
+          action.payload.value,
+          state.currentUser.data
+        ),
       },
     }),
     [fetchUser.pending]: state => ({

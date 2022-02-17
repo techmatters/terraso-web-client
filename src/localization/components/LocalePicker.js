@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
+import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Select as SelectBase, MenuItem } from '@mui/material';
 
 import { LOCALES } from 'localization/i18n';
+import { savePreference } from 'account/accountSlice';
 import theme from 'theme';
 
 const Select = styled(SelectBase)(({ theme }) => ({
@@ -22,12 +24,24 @@ const Select = styled(SelectBase)(({ theme }) => ({
 
 const LocalePicker = () => {
   const { t, i18n } = useTranslation();
+  const dispatch = useDispatch();
+  const language = useSelector(
+    _.get('account.currentUser.data.preferences.language')
+  );
 
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
+
+  useEffect(() => {
+    // Set user preferred language
+    if (language) {
+      i18n.changeLanguage(language);
+    }
+  }, [i18n, language]);
 
   const handleChange = event => {
     const locale = _.get('target.value', event);
     i18n.changeLanguage(locale);
+    dispatch(savePreference({ key: 'language', value: locale }));
   };
 
   const getLocaleLabel = locale =>

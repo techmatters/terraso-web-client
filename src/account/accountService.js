@@ -1,9 +1,20 @@
 import _ from 'lodash/fp';
 
 import { getUserEmail } from 'account/auth';
-import { userFields } from 'user/userFragments';
+import {
+  userFields,
+  userPreferences,
+  userPreferencesFields,
+} from 'user/userFragments';
 import * as terrasoApi from 'terrasoBackend/api';
 import { TERRASO_API_URL } from 'config';
+
+const parsePreferences = user =>
+  _.flow(
+    _.getOr([], 'preferences.edges'),
+    _.map(({ node }) => [node.key, node.value]),
+    _.fromPairs
+  )(user);
 
 const getURL = provider =>
   fetch(new URL(`/auth/${provider}/authorize`, TERRASO_API_URL).href, {
@@ -25,16 +36,22 @@ export const fetchUser = () => {
         edges {
           node {
             ...userFields
+            ...userPreferences
           }
         }
       }
     }
     ${userFields}
+    ${userPreferences}
   `;
   return terrasoApi
     .request(query, { email: getUserEmail() })
     .then(_.get('users.edges[0].node'))
-    .then(user => user || Promise.reject('account.not_found'));
+    .then(user => user || Promise.reject('account.not_found'))
+    .then(user => ({
+      ..._.omit('preferences', user),
+      preferences: parsePreferences(user),
+    }));
 };
 
 export const saveUser = user => {
@@ -48,5 +65,28 @@ export const saveUser = user => {
   `;
   return terrasoApi
     .request(query, { input: _.omit(['profileImage', 'email'], user) })
-    .then(response => response.updateUser.user);
+    .then(response => ({
+      ..._.omit('preferences', response.updateUser.user),
+      preferences: parsePreferences(response.updateUser.user),
+    }));
+};
+
+export const savePreference = ({ key, value }, currentUser) => {
+  const query = `
+    mutation updateUserPreference($input: UserPreferenceUpdateInput!) {
+      updateUserPreference(input: $input) {
+        preference { ...userPreferencesFields }
+      }
+    }
+    ${userPreferencesFields}
+  `;
+  return terrasoApi
+    .request(query, {
+      input: {
+        userEmail: currentUser.email,
+        key,
+        value,
+      },
+    })
+    .then(response => response.updateUserPreference.preference);
 };
