@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-01-26T17:33:21.154Z\n"
-"PO-Revision-Date: 2022-01-26T17:33:21.154Z\n"
+"POT-Creation-Date: 2022-02-17T22:24:18.465Z\n"
+"PO-Revision-Date: 2022-02-17T22:24:18.465Z\n"
 
 msgid "home##title"
 msgstr "Inicio"
@@ -95,6 +95,10 @@ msgid "home##page"
 msgstr "Terraso de {{name}}"
 
 msgctxt "title"
+msgid "home##document"
+msgstr "Terraso Inicio"
+
+msgctxt "title"
 msgid "group##home"
 msgstr "Grupos"
 
@@ -135,6 +139,26 @@ msgid "group##members_remove_confirmation"
 msgstr "Quitar miembro"
 
 msgctxt "title"
+msgid "group##form_edit_document"
+msgstr "Editar: {{name}}"
+
+msgctxt "title"
+msgid "group##form_new_document"
+msgstr "Crear Grupo"
+
+msgctxt "title"
+msgid "group##list_document"
+msgstr "Grupos"
+
+msgctxt "title"
+msgid "group##view_document"
+msgstr "{{name}}"
+
+msgctxt "title"
+msgid "group##members_document"
+msgstr "Miembros: {{name}}"
+
+msgctxt "title"
 msgid "tool##faq"
 msgstr "Preguntas frecuentes sobre herramientas"
 
@@ -149,6 +173,18 @@ msgstr "Recopilación de datos"
 msgctxt "title"
 msgid "tool##home_card_kobo"
 msgstr "KoBoToolbox"
+
+msgctxt "title"
+msgid "tool##list_document"
+msgstr "Herramientas"
+
+msgctxt "title"
+msgid "account##login_document"
+msgstr "Iniciar sesión"
+
+msgctxt "title"
+msgid "account##profile_document"
+msgstr "Cuenta"
 
 msgctxt "title"
 msgid "landscape##home"
@@ -181,6 +217,30 @@ msgstr "Dejar “{{name}}”"
 msgctxt "title"
 msgid "landscape##members_remove_confirmation"
 msgstr "Quitar miembro"
+
+msgctxt "title"
+msgid "landscape##form_edit_document"
+msgstr "Editar: {{name}}"
+
+msgctxt "title"
+msgid "landscape##form_new_document"
+msgstr "Crear Paisaje"
+
+msgctxt "title"
+msgid "landscape##list_document"
+msgstr "Paisajes"
+
+msgctxt "title"
+msgid "landscape##view_document"
+msgstr "{{name}}"
+
+msgctxt "title"
+msgid "landscape##members_document"
+msgstr "Miembros: {{name}}"
+
+msgctxt "title"
+msgid "landscape##view_map"
+msgstr "Mapa del paisaje"
 
 msgctxt "out"
 msgid "user##sign"
@@ -389,8 +449,12 @@ msgid "account##form_save"
 msgstr "Confirmar"
 
 msgctxt "label"
+msgid "account##profile_form"
+msgstr "Administrar perfil"
+
+msgctxt "label"
 msgid "navigation##nav"
-msgstr "Navegación"
+msgstr "Navegación principal"
 
 msgctxt "label"
 msgid "landscape##home_connect"
@@ -433,14 +497,26 @@ msgid "common##dialog_cancel"
 msgstr "Cancelar"
 
 msgctxt "label"
+msgid "common##loader"
+msgstr "Cargando"
+
+msgctxt "label"
 msgid "form##required"
 msgstr "Obligatorio"
+
+msgctxt "label"
+msgid "localization##locale_select"
+msgstr "Idioma seleccionado: {{name}}"
 
 msgctxt "content"
 msgid "group##default"
 msgstr ""
 "Los grupos conectan a las personas con intereses y necesidades comunes "
 "dentro y fuera de los paisajes."
+
+msgctxt "content"
+msgid "navigation##skip_to_main"
+msgstr "Saltar al contenido principal"
 
 msgctxt "content"
 msgid "landscape##default"
@@ -467,10 +543,22 @@ msgstr ""
 "afiliado? Cree un grupo para ellos."
 
 msgctxt "description"
+msgid "group##list_column_actions"
+msgstr "Acciones"
+
+msgctxt "description"
+msgid "group##members_list_column_actions"
+msgstr "Acciones"
+
+msgctxt "description"
 msgid "tool##home_card"
 msgstr ""
 "KoBoToolbox es una herramienta gratuita de recopilación de datos de código "
 "abierto."
+
+msgctxt "description"
+msgid "landscape##list_column_actions"
+msgstr "Acciones"
 
 msgctxt "placeholder"
 msgid "group##form_description"
@@ -500,15 +588,15 @@ msgstr "https://www.mylandscape.org"
 
 msgctxt "success"
 msgid "group##form_message"
-msgstr "Su grupo se ha guardado."
+msgstr "Cambios a “{{name}}” han sido salvado."
 
 msgctxt "success"
 msgid "group##join"
-msgstr "Se unió con éxito a {{name}}"
+msgstr "Se unió {{name}}"
 
 msgctxt "success"
 msgid "group##leave"
-msgstr "Abandonó con éxito {{name}}"
+msgstr "Se abandonó {{name}}"
 
 msgctxt "success"
 msgid "account##save"
@@ -516,7 +604,7 @@ msgstr "Su perfil se ha guardado."
 
 msgctxt "success"
 msgid "landscape##form_message"
-msgstr "Su paisaje se ha guardado."
+msgstr "Cambios a “{{name}}” han sido salvado."
 
 msgctxt "found"
 msgid "group##not"
@@ -651,6 +739,10 @@ msgstr ""
 "desea usar un nombre o una fotografía diferente para Terraso, puede "
 "cambiarlos."
 
+msgctxt "navigation"
+msgid "navigation##skip_to_main"
+msgstr "Saltar a la navegación principal"
+
 msgctxt "location"
 msgid "landscape##list_column"
 msgstr "Ubicación"
@@ -662,6 +754,10 @@ msgstr "Terraso"
 msgctxt "error"
 msgid "common##unexpected"
 msgstr "Ups! Algo salió mal. Vuelve a intentarlo en unos minutos."
+
+msgctxt "error"
+msgid "gis##openstreetmap_api"
+msgstr "Error al solicitar datos de la API nominatim.openstreetmap.org"
 
 msgctxt "invalid"
 msgid "form##validation_field"
@@ -706,7 +802,3 @@ msgstr "Error inesperado"
 msgctxt "response"
 msgid "terraso##error_request"
 msgstr "No se pudo conectar con la API de Terraso"
-
-msgctxt "error"
-msgid "gis##openstreetmap_api"
-msgstr "Error al solicitar datos de la API nominatim.openstreetmap.org"
