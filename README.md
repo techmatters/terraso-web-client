@@ -65,9 +65,9 @@ To modify these variables inside the docker environment change the `local.env` f
 
 ### Run command with custom variable value directly with npm:
 
-Start: `REACT_APP_TERRASO_API_URL=https://terraso.com/graphql npm start`
+Start: `REACT_APP_TERRASO_API_URL=https://api.terraso.org/graphql npm start`
 
-Build: `REACT_APP_TERRASO_API_URL=https://terraso.com/graphql npm run build`
+Build: `REACT_APP_TERRASO_API_URL=https://api.terraso.org/graphql npm run build`
 
 ## Localization
 
