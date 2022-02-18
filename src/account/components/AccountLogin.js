@@ -10,6 +10,7 @@ import { fetchAuthURLs } from 'account/accountSlice';
 import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
 import PageHeader from 'layout/PageHeader';
+import LocalePicker from 'localization/components/LocalePicker';
 
 import logo from 'assets/logo.svg';
 
@@ -72,6 +73,8 @@ const AccountForm = () => {
         </Stack>
 
         <p dangerouslySetInnerHTML={{ __html: t('account.disclaimer') }} />
+
+        <LocalePicker />
       </Stack>
     </Stack>
   );

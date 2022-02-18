@@ -21,6 +21,7 @@ test('AccountLogin: Display error', async () => {
   await render(<AccountLogin />);
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
+
 test('AccountLogin: Display loader', async () => {
   accountService.getAuthURLs.mockReturnValue(new Promise(() => {}));
   await render(<AccountLogin />);
@@ -30,6 +31,7 @@ test('AccountLogin: Display loader', async () => {
   });
   expect(loader).toBeInTheDocument();
 });
+
 test('AccountLogin: Display buttons', async () => {
   accountService.getAuthURLs.mockReturnValue(
     Promise.resolve({
@@ -41,6 +43,7 @@ test('AccountLogin: Display buttons', async () => {
   expect(screen.getByText('Continue with Google')).toBeInTheDocument();
   expect(screen.getByText('Continue with Apple')).toBeInTheDocument();
 });
+
 test('AccountLogin: Add referrer', async () => {
   const searchParams = new URLSearchParams();
   searchParams.set('referrer', 'groups?sort=-name');
@@ -62,4 +65,15 @@ test('AccountLogin: Add referrer', async () => {
     'href',
     'apple.url&state=groups?sort=-name'
   );
+});
+
+test('AccountLogin: Display locale picker', async () => {
+  accountService.getAuthURLs.mockReturnValue(
+    Promise.resolve({
+      google: 'google.url',
+      apple: 'apple.url',
+    })
+  );
+  await render(<AccountLogin />);
+  expect(screen.getByRole('button', { name: /English/i })).toBeInTheDocument();
 });
