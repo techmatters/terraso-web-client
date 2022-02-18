@@ -16,15 +16,15 @@ test('LocalePicker: Change locale', async () => {
   useMediaQuery.mockReturnValue(false);
   await render(<LocalePicker />);
 
-  expect(screen.queryByText('ENGLISH')).toBeInTheDocument();
+  expect(screen.queryByText('English')).toBeInTheDocument();
   await act(async () =>
-    fireEvent.mouseDown(screen.getByRole('button', { name: /ENGLISH/i }))
+    fireEvent.mouseDown(screen.getByRole('button', { name: /English/i }))
   );
   const listbox = within(screen.getByRole('listbox'));
   await act(async () =>
-    fireEvent.click(listbox.getByRole('option', { name: /ESPAÑOL/i }))
+    fireEvent.click(listbox.getByRole('option', { name: /Español/i }))
   );
-  expect(screen.getByRole('button', { name: /ESPAÑOL/i })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /Español/i })).toBeInTheDocument();
 });
 test('LocalePicker: Change locale (small screen)', async () => {
   useMediaQuery.mockReturnValue(true);
