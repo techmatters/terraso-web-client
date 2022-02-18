@@ -166,18 +166,12 @@ test('LandscapeForm: Save form', async () => {
     })
     .mockResolvedValueOnce({
       updateLandscape: {
-        landscapes: {
-          edges: [
-            {
-              node: {
-                id: '1',
-                name: 'Landscape Name',
-                description: 'Landscape Description',
-                website: 'www.landscape.org',
-                location: 'Location',
-              },
-            },
-          ],
+        landscape: {
+          id: '1',
+          name: 'Landscape Name',
+          description: 'Landscape Description',
+          website: 'www.landscape.org',
+          location: 'Location',
         },
       },
     });
