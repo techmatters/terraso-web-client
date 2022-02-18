@@ -14,8 +14,8 @@ const Select = styled(SelectBase)(({ theme }) => ({
     borderRadius: 0,
   },
   '& .MuiInputBase-input': {
-    backgroundColor: theme.palette.gray.lite1,
-    fontSize: 12,
+    backgroundColor: theme.palette.white,
+    fontSize: theme.typography.body2.fontSize,
     padding: theme.spacing(1),
   },
 }));
@@ -55,7 +55,7 @@ const LocalePicker = () => {
     >
       {Object.keys(LOCALES).map(locale => (
         <MenuItem key={locale} value={locale}>
-          {t(getLocaleLabel(locale)).toUpperCase()}
+          {t(getLocaleLabel(locale))}
         </MenuItem>
       ))}
     </Select>
