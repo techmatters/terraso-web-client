@@ -64,7 +64,11 @@ export const updateMemberRole = createAsyncThunk(
 export const saveGroup = createAsyncThunk(
   'group/saveGroup',
   groupService.saveGroup,
-  () => ({ severity: 'success', content: 'group.form_message_success' })
+  group => ({
+    severity: 'success',
+    content: 'group.form_message_success',
+    params: { name: group.name },
+  })
 );
 export const joinGroup = createAsyncThunk(
   'group/joinGroup',
