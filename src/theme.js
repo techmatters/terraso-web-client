@@ -80,6 +80,13 @@ const components = {
       underline: 'none',
     },
   },
+  MuiAvatar: {
+    styleOverrides: {
+      root: {
+        color: colorTheme.palette.gray.dark2,
+      },
+    },
+  },
 };
 
 const theme = createTheme(colorTheme, {
