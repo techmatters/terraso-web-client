@@ -62,7 +62,24 @@ test('LocalePicker: Change locale', async () => {
       value: 'es-ES',
     },
   });
-  });
+});
+test('LocalePicker: Dont save if no user', async () => {
+  useMediaQuery.mockReturnValue(false);
+  await render(
+    <LocalePicker />
+  );
+
+  expect(screen.queryByText('English')).toBeInTheDocument();
+  await act(async () =>
+    fireEvent.mouseDown(screen.getByRole('button', { name: /English/i }))
+  );
+  const listbox = within(screen.getByRole('listbox'));
+  await act(async () =>
+    fireEvent.click(listbox.getByRole('option', { name: /Español/i }))
+  );
+  expect(screen.getByRole('button', { name: /Español/i })).toBeInTheDocument();
+  expect(terrasoApi.request).toHaveBeenCalledTimes(0);
+});
 test('LocalePicker: Change locale (small screen)', async () => {
   terrasoApi.request.mockResolvedValue(
     _.set(
