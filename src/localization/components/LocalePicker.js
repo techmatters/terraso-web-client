@@ -28,6 +28,7 @@ const LocalePicker = () => {
   const language = useSelector(
     _.get('account.currentUser.data.preferences.language')
   );
+  const userEmail = useSelector(_.get('account.currentUser.data.email'));
 
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -41,7 +42,9 @@ const LocalePicker = () => {
   const handleChange = event => {
     const locale = _.get('target.value', event);
     i18n.changeLanguage(locale);
-    dispatch(savePreference({ key: 'language', value: locale }));
+    if (userEmail) {
+      dispatch(savePreference({ key: 'language', value: locale }));
+    }
   };
 
   const getLocaleLabel = locale =>
