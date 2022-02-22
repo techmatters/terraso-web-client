@@ -83,6 +83,7 @@ const components = {
   MuiAvatar: {
     styleOverrides: {
       root: {
+        backgroundColor: colorTheme.palette.gray.lite1,
         color: colorTheme.palette.gray.dark2,
       },
     },
