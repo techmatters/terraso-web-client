@@ -5,9 +5,26 @@ import logger from 'monitoring/logger';
 import { TERRASO_API_URL, GRAPH_QL_ENDPOINT } from 'config';
 import { UNAUTHENTICATED } from 'account/authConstants';
 
+const parseMessage = message => {
+  try {
+    // If JSON return parsed
+    const jsonMessages = JSON.parse(message);
+    return jsonMessages.map(message => ({
+      content: message.code,
+      params: {
+        ..._.omit('extra', message.context),
+        context: _.get('context.extra', message),
+      },
+    }));
+  } catch (error) {
+    logger.warn('Failed to parse Terraso API error. Message: ', message, error);
+    return null;
+  }
+};
+
 const handleGraphQLError = data => {
   const errors = _.get('errors', data);
-  const messages = errors.map(error => error.message);
+  const messages = _.flatMap(error => parseMessage(error.message), errors);
   return Promise.reject(messages);
 };
 

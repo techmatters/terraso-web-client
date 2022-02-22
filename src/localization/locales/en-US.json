@@ -227,8 +227,14 @@
         "locale_es-ES": "Español"
     },
     "terraso_api": {
+        "models": {
+            "Membership": "Membership"
+        },
         "error_unexpected": "Unexpected error",
-        "error_request_response": "Failed to connect with Terraso API"
+        "error_request_response": "Failed to connect with Terraso API",
+        "deleteNotAllowed_base": "Not allowed to delete $t(terraso_api.models.{{model}})",
+        "deleteNotAllowed": "$t(terraso_api.deleteNotAllowed_base)",
+        "deleteNotAllowed_manager_count": "$t(terraso_api.deleteNotAllowed_base). There should at least be one manager."
     },
     "gis": {
         "openstreetmap_api_error": "Failed to request data from nominatim.openstreetmap.org API"
