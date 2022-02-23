@@ -68,6 +68,9 @@ test('AccountProfile: Save', async () => {
         lastName: 'Perez',
         email: 'group@group.org',
         profileImage: 'https://www.group.org/image.jpg',
+        preferences: {
+          language: 'es-ES',
+        },
       },
       {}
     )

@@ -64,7 +64,9 @@ export const saveUser = user => {
     ${userFields}
   `;
   return terrasoApi
-    .request(query, { input: _.omit(['profileImage', 'email'], user) })
+    .request(query, {
+      input: _.omit(['profileImage', 'email', 'preferences'], user),
+    })
     .then(response => ({
       ..._.omit('preferences', response.updateUser.user),
       preferences: parsePreferences(response.updateUser.user),
