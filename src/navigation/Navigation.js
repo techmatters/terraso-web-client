@@ -30,12 +30,12 @@ const NavButton = styled(Button)(({ theme }) => ({
   borderRadius: 0,
   padding: theme.spacing(2),
   textTransform: 'uppercase',
-  color: theme.palette.gray.dark1,
+  color: theme.palette.gray.dark2,
   '&.MuiButton-root:hover': {
     backgroundColor: theme.palette.gray.lite1,
   },
   '&.Mui-selected': {
-    color: 'black',
+    color: theme.palette.black,
     fontWeight: theme.typography.fontWeightMedium,
     backgroundColor: 'inherit',
     borderBottom: '2px solid',
