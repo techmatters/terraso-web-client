@@ -7,6 +7,7 @@ const AccountAvatar = props => {
   const name = `${user.firstName} ${user.lastName}`;
   return (
     <Avatar
+      role="img"
       aria-label={name}
       alt={name}
       src={user.profileImage}
