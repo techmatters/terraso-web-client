@@ -17,7 +17,7 @@ const AccountAvatar = props => {
       }}
       {..._.omit('user', props)}
     >
-      <Typography aria-hidden="true">
+      <Typography aria-hidden="true" {..._.pick('sx.fontSize', props)}>
         {user.firstName.substr(0, 1).toUpperCase()}
       </Typography>
     </Avatar>
