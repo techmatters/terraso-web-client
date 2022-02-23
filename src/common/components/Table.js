@@ -72,10 +72,6 @@ const Table = props => {
         '& .MuiDataGrid-columnHeaders': {
           backgroundColor: 'gray.lite2',
         },
-        '& .MuiDataGrid-columnHeader[data-field=actions] .MuiDataGrid-columnHeaderTitle':
-          {
-            display: 'none',
-          },
       }}
       {...props}
     />
