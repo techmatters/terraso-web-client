@@ -65,9 +65,7 @@ test('LocalePicker: Change locale', async () => {
 });
 test('LocalePicker: Dont save if no user', async () => {
   useMediaQuery.mockReturnValue(false);
-  await render(
-    <LocalePicker />
-  );
+  await render(<LocalePicker />);
 
   expect(screen.queryByText('English')).toBeInTheDocument();
   await act(async () =>
