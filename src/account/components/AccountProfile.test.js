@@ -53,10 +53,7 @@ test('AccountProfile: Display Avatar with missing image', async () => {
     },
   });
 
-  expect(
-    screen.queryByRole('img', { name: 'John Doe' })
-  ).not.toBeInTheDocument();
-  expect(screen.getByLabelText('John Doe')).toBeInTheDocument();
+  expect(screen.queryByRole('img', { name: 'John Doe' })).toBeInTheDocument();
 });
 test('AccountProfile: Save', async () => {
   terrasoApi.request.mockResolvedValue(

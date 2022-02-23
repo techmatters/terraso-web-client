@@ -87,7 +87,7 @@ const AccountProfile = () => {
         <Grid item xs={12}>
           <InputLabel>{t('account.profile_picture')}</InputLabel>
           <AccountAvatar
-            sx={{ width: 80, height: 80, fontSize: '3em' }}
+            sx={{ width: 80, height: 80, fontSize: '1.5em' }}
             user={user}
           />
         </Grid>
