@@ -205,7 +205,12 @@
         "dialog_cancel_label": "Cancelar",
         "terraso_projectName": "Terraso",
         "unexpected_error": "Ups! Algo salió mal. Vuelve a intentarlo en unos minutos.",
-        "loader_label": "Cargando"
+        "loader_label": "Cargando",
+        "not_found_title": "Página no encontrada",
+        "not_found_message": "No pudimos encontrar la página que estabas buscando.",
+        "not_found_error_code": "Código de error: 404",
+        "not_found_help_message": "Puedes <1>contarnos qué salió mal</1>.",
+        "not_found_sorry_message": "ups, perdón por el error."
     },
     "form": {
         "required_label": "Obligatorio",
