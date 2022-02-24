@@ -54,9 +54,6 @@ const NotFound = () => {
             alt=""
             sx={{ maxWidth: 313, maxHeight: 313 }}
           />
-          <Typography sx={{ marginTop: 2, fontSize: '16px' }}>
-            {t('common.not_found_sorry_message')}
-          </Typography>
         </Box>
       </Stack>
     </PageContainer>
