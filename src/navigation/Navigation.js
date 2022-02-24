@@ -13,15 +13,15 @@ const PAGES = {
   },
   '/landscapes': {
     label: 'navigation.landscapes',
-    match: path => path.startsWith('/landscapes'),
+    match: path => path === '/landscapes' || path.startsWith('/landscapes/'),
   },
   '/groups': {
     label: 'navigation.groups',
-    match: path => path.startsWith('/groups'),
+    match: path => path === '/groups' || path.startsWith('/groups/'),
   },
   '/tools': {
     label: 'navigation.tools',
-    match: path => path.startsWith('/tools'),
+    match: path => path === '/tools' || path.startsWith('/tools/'),
   },
 };
 
