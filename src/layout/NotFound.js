@@ -12,7 +12,7 @@ const HELP_URL = 'https://terraso.org/contact-us/';
 const NotFound = () => {
   const { t } = useTranslation();
   return (
-    <PageContainer maxWidth="md">
+    <PageContainer>
       <PageHeader header={t('common.not_found_title')} />
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
