@@ -17,7 +17,7 @@ beforeEach(() => {
 });
 
 test('AccountLogin: Display error', async () => {
-  accountService.getAuthURLs.mockRejectedValue('Load error');
+  accountService.getAuthURLs.mockRejectedValue(['Load error']);
   await render(<AccountLogin />);
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });

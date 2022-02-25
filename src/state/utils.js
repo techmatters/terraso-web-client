@@ -24,16 +24,17 @@ const executeAuthRequest = (dispatch, action) =>
 
 const generateErrorFallbacksPartial = name => {
   const [slice, action] = _.split('/', name);
-  return errorCode => {
-    return [
-      `${slice}.${action}.${errorCode}`,
-      `${slice}.${errorCode}`,
-      `${slice}.${action}_unexpected_error`,
-      `${slice}.${errorCode}`,
-      `common.${errorCode}`,
-      'common.unexpected_error',
-    ].filter(fallback => fallback);
-  };
+  const baseCodes = [
+    code => [slice, action, code],
+    code => [slice, code],
+    code => [code],
+    () => [slice, `${action}_unexpected_error`],
+    () => ['common', 'unexpected_error'],
+  ];
+  return codes =>
+    _.flatMap(baseCode => codes.map(code => baseCode(code).join('.')))(
+      baseCodes
+    );
 };
 
 export const createAsyncThunk = (name, action, onSuccessMessage) => {
@@ -58,12 +59,15 @@ export const createAsyncThunk = (name, action, onSuccessMessage) => {
       errors.forEach(error => {
         const baseMessage = _.has('content', error)
           ? { severity: 'error', ...error }
-          : { severity: 'error', content: error };
+          : { severity: 'error', content: error, params: { error } };
         const message = {
           ..._.omit('content', baseMessage),
-          content: generateErrorFallbacks(baseMessage.content),
+          content: generateErrorFallbacks(
+            _.isArray(baseMessage.content)
+              ? baseMessage.content
+              : [baseMessage.content]
+          ),
         };
-        console.log({ message });
         dispatch(addMessage(message));
       });
 

@@ -32,7 +32,7 @@ export const fetchGroupToUpdate = slug => {
   return terrasoApi
     .request(query, { slug })
     .then(_.get('groups.edges[0].node'))
-    .then(group => group || Promise.reject('group.not_found'));
+    .then(group => group || Promise.reject('not_found'));
 };
 
 export const fetchGroupToView = (slug, currentUser) => {
@@ -55,7 +55,7 @@ export const fetchGroupToView = (slug, currentUser) => {
   return terrasoApi
     .request(query, { slug, accountEmail: currentUser.email })
     .then(_.get('groups.edges[0].node'))
-    .then(group => group || Promise.reject('group.not_found'))
+    .then(group => group || Promise.reject('not_found'))
     .then(group => ({
       ..._.omit(['memberships', 'accountMembership'], group),
       membersInfo: extractMembersInfo(group),
@@ -126,7 +126,7 @@ export const fetchGroupForMembers = (slug, currentUser) => {
   return terrasoApi
     .request(query, { slug, accountEmail: currentUser.email })
     .then(_.get('groups.edges[0].node'))
-    .then(group => group || Promise.reject('group.not_found'))
+    .then(group => group || Promise.reject('not_found'))
     .then(group => ({
       ...group,
       accountMembership: extractAccountMembership(group),
@@ -149,7 +149,7 @@ export const fetchMembers = (slug, currentUser) => {
   return terrasoApi
     .request(query, { slug, accountEmail: currentUser.email })
     .then(_.get('groups.edges[0].node'))
-    .then(group => group || Promise.reject('group.not_found'))
+    .then(group => group || Promise.reject('not_found'))
     .then(group => ({
       members: extractMembers(group),
     }));
@@ -266,7 +266,7 @@ export const joinGroup = (
     })
     .then()
     .then(_.get('addMembership.membership.group'))
-    .then(group => group || Promise.reject('group.not_found'))
+    .then(group => group || Promise.reject('not_found'))
     .then(group => ({
       ..._.omit(['memberships', 'accountMembership'], group),
       membersInfo: extractMembersInfo(group),

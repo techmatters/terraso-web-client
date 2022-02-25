@@ -22,7 +22,7 @@ export const fetchLandscapeToUpdate = slug => {
   return terrasoApi
     .request(query, { slug })
     .then(_.get('landscapes.edges[0].node'))
-    .then(landscape => landscape || Promise.reject('landscape.not_found'));
+    .then(landscape => landscape || Promise.reject('not_found'));
 };
 
 const getDefaultGroup = landscape => {
@@ -52,7 +52,7 @@ export const fetchLandscapeToView = (slug, currentUser) => {
     terrasoApi
       .request(query, { slug, accountEmail: currentUser.email })
       .then(_.get('landscapes.edges[0].node'))
-      .then(landscape => landscape || Promise.reject('landscape.not_found'))
+      .then(landscape => landscape || Promise.reject('not_found'))
       .then(landscape => ({
         ..._.omit('defaultGroup', landscape),
         defaultGroup: getDefaultGroup(landscape),
@@ -130,7 +130,7 @@ export const fetchLandscapeForMembers = (slug, currentUser) => {
   return terrasoApi
     .request(query, { slug, accountEmail: currentUser.email })
     .then(_.get('landscapes.edges[0].node'))
-    .then(landscape => landscape || Promise.reject('landscape.not_found'))
+    .then(landscape => landscape || Promise.reject('not_found'))
     .then(landscape => {
       const group = _.get('associatedGroups.edges[0].node.group', landscape);
       return {

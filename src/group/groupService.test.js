@@ -33,7 +33,7 @@ test('GroupService: Fetch group not found', async () => {
     })
   );
   await expect(groupService.fetchGroupToUpdate()).rejects.toEqual(
-    'group.not_found'
+    'not_found'
   );
 });
 test('GroupService: Fetch group backend error', async () => {
