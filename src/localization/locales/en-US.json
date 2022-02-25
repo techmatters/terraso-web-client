@@ -205,7 +205,11 @@
         "dialog_cancel_label": "Cancel",
         "terraso_projectName": "Terraso",
         "unexpected_error": "Oops, something went wrong. Please try it again in a few minutes.",
-        "loader_label": "Loading"
+        "loader_label": "Loading",
+        "not_found_title": "Page not found",
+        "not_found_message": "We couldn’t find the page you were looking for.",
+        "not_found_error_code": "Error code: 404",
+        "not_found_help_message": "You can <1>let us know what went wrong</1>."
     },
     "form": {
         "required_label": "Required",

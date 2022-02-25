@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import ReactDOM from 'react-dom';
-import { Box, Container } from '@mui/material';
+import { Box } from '@mui/material';
 
 import reportWebVitals from 'monitoring/reportWebVitals';
 import createStore from 'state/store';
@@ -35,9 +35,7 @@ const App = () => {
             marginBottom: { xs: '29vh', sm: '15vh', md: '10vh' },
           }}
         >
-          <Container>
-            <Routes />
-          </Container>
+          <Routes />
         </Box>
         <Footer />
       </Box>

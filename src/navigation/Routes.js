@@ -14,6 +14,7 @@ import ToolsList from 'tool/components/ToolList';
 import AccountLogin from 'account/components/AccountLogin';
 import AccountProfile from 'account/components/AccountProfile';
 import RequireAuth from 'account/components/RequireAuth';
+import NotFound from 'layout/NotFound';
 
 const path = (path, Component, auth = true) => ({
   path,
@@ -36,6 +37,7 @@ const paths = [
   path('/tools', ToolsList),
   path('/account', AccountLogin, false),
   path('/account/profile', AccountProfile),
+  path('*', NotFound),
 ];
 
 const RoutesComponent = () => (

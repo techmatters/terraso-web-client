@@ -13,15 +13,15 @@ const PAGES = {
   },
   '/landscapes': {
     label: 'navigation.landscapes',
-    match: path => path.startsWith('/landscapes'),
+    match: path => /^\/landscapes(\/.*)?$/.test(path),
   },
   '/groups': {
     label: 'navigation.groups',
-    match: path => path.startsWith('/groups'),
+    match: path => /^\/groups(\/.*)?$/.test(path),
   },
   '/tools': {
     label: 'navigation.tools',
-    match: path => path.startsWith('/tools'),
+    match: path => /^\/tools(\/.*)?$/.test(path),
   },
 };
 

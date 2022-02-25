@@ -1,17 +1,18 @@
 import React from 'react';
-import { Box } from '@mui/material';
+import _ from 'lodash/fp';
+import { Container } from '@mui/material';
 
-const PageContainer = ({ children }) => {
+const PageContainer = props => {
   return (
-    <Box
+    <Container
       aria-live="polite"
       sx={theme => ({
         paddingTop: theme.spacing(3),
         paddingBottom: theme.spacing(2),
+        ...props.sx,
       })}
-    >
-      {children}
-    </Box>
+      {..._.omit('sx', props)}
+    />
   );
 };
 

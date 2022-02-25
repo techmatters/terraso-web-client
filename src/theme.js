@@ -94,6 +94,7 @@ const theme = createTheme(colorTheme, {
   typography: {
     h1: {
       fontSize: '2rem',
+      fontWeight: 400,
     },
     h2: {
       fontSize: '1.2rem',
