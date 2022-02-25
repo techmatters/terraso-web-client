@@ -79,7 +79,9 @@
         "view_document_title": "{{name}}",
         "members_document_title": "Members: {{name}}",
         "list_column_actions_description": "Actions",
-        "members_list_column_actions_description": "Actions"
+        "members_list_column_actions_description": "Actions",
+        "deleteNotAllowed": "$t(terraso_api.deleteNotAllowed_base)",
+        "deleteNotAllowed_manager_count": "$t(terraso_api.deleteNotAllowed_base). There should at least be one manager."
     },
     "tool": {
         "requirements": "System requirements",

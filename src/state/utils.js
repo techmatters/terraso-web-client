@@ -23,13 +23,14 @@ const executeAuthRequest = (dispatch, action) =>
   });
 
 const generateErrorFallbacksPartial = name => {
-  const [sliceName, action] = _.split('/', name);
+  const [slice, action] = _.split('/', name);
   return errorCode => {
     return [
-      `${sliceName}.${action}.${errorCode}`,
-      errorCode,
-      `${sliceName}.${action}.unexpected`,
-      `${sliceName}.unexpected`,
+      `${slice}.${action}.${errorCode}`,
+      `${slice}.${errorCode}`,
+      `${slice}.${action}_unexpected_error`,
+      `${slice}.${errorCode}`,
+      `common.${errorCode}`,
       'common.unexpected_error',
     ].filter(fallback => fallback);
   };
