@@ -32,9 +32,7 @@ test('GroupService: Fetch group not found', async () => {
       group: null,
     })
   );
-  await expect(groupService.fetchGroupToUpdate()).rejects.toEqual(
-    'not_found'
-  );
+  await expect(groupService.fetchGroupToUpdate()).rejects.toEqual('not_found');
 });
 test('GroupService: Fetch group backend error', async () => {
   terrasoApi.request.mockReturnValue(Promise.reject('Test error'));

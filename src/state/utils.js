@@ -28,13 +28,16 @@ const generateErrorFallbacksPartial = name => {
     code => [slice, action, code],
     code => [slice, code],
     code => [code],
-    () => [slice, `${action}_unexpected_error`],
-    () => ['common', 'unexpected_error'],
   ];
-  return codes =>
-    _.flatMap(baseCode => codes.map(code => baseCode(code).join('.')))(
+  return codes => [
+    ..._.flatMap(baseCode => codes.map(code => baseCode(code).join('.')))(
       baseCodes
-    );
+    ),
+    ...[
+      [slice, action, 'unexpected_error'].join('.'),
+      'common.unexpected_error',
+    ],
+  ];
 };
 
 export const createAsyncThunk = (name, action, onSuccessMessage) => {
@@ -59,14 +62,10 @@ export const createAsyncThunk = (name, action, onSuccessMessage) => {
       errors.forEach(error => {
         const baseMessage = _.has('content', error)
           ? { severity: 'error', ...error }
-          : { severity: 'error', content: error, params: { error } };
+          : { severity: 'error', content: [error], params: { error } };
         const message = {
           ..._.omit('content', baseMessage),
-          content: generateErrorFallbacks(
-            _.isArray(baseMessage.content)
-              ? baseMessage.content
-              : [baseMessage.content]
-          ),
+          content: generateErrorFallbacks(baseMessage.content),
         };
         dispatch(addMessage(message));
       });
