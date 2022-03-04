@@ -85,7 +85,9 @@ const LandscapeBoundaries = () => {
     <PageContainer>
       <PageHeader header={t('landscape.boudaries_title')} />
       <Typography variant="h2">{t('landscape.boudaries_subtitle')}</Typography>
-      <Typography sx={{ marginTop: 2 }}>{t('landscape.boudaries_description')}</Typography>
+      <Typography sx={{ marginTop: 2 }}>
+        {t('landscape.boudaries_description')}
+      </Typography>
       <Link component={Box} sx={{ marginTop: 1 }} href="">
         {t('landscape.boundaries_help_geojson')}
       </Link>
