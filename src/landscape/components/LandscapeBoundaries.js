@@ -67,8 +67,12 @@ const DropZone = props => {
           <Button variant="outlined" onClick={open}>
             {t('landscape.boudaries_select_file')}
           </Button>
-          <Typography>{t('landscape.boudaries_format')}</Typography>
-          <Typography>{t('landscape.boudaries_size')}</Typography>
+          <Typography variant="caption">
+            {t('landscape.boudaries_format')}
+          </Typography>
+          <Typography variant="caption">
+            {t('landscape.boudaries_size')}
+          </Typography>
         </>
       )}
     </Stack>
