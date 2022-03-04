@@ -11,24 +11,21 @@ import {
   CardContent,
   Link,
   Stack,
-  Box,
 } from '@mui/material';
 import PublicIcon from '@mui/icons-material/Public';
 
 import { fetchLandscapeView } from 'landscape/landscapeSlice';
 import { withProps } from 'react-hoc';
+import { useDocumentTitle } from 'common/document';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
 import PageLoader from 'layout/PageLoader';
-import Map from 'gis/components/Map';
 import { GroupContextProvider } from 'group/groupContext';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import PageHeader from 'layout/PageHeader';
 import PageContainer from 'layout/PageContainer';
+import LandscapeMap from 'landscape/components/LandscapeMap';
 import theme from 'theme';
-import { useDocumentTitle } from 'common/document';
-
-import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.view_leave_label',
@@ -70,22 +67,22 @@ const LandscapeCard = ({ landscape }) => {
   );
 };
 
-const LandscapeMap = ({ landscape }) => {
-  const { t } = useTranslation();
+// const LandscapeMap = ({ landscape }) => {
+//   const { t } = useTranslation();
 
-  return (
-    <Box component="section" aria-label={t('landscape.view_map_title')}>
-      <Map
-        bounds={getLandscapeBoundingBox(landscape)}
-        geojson={landscape.areaPolygon}
-        style={{
-          width: '100%',
-          height: '400px',
-        }}
-      />
-    </Box>
-  );
-};
+//   return (
+//     <Box component="section" aria-label={t('landscape.view_map_title')}>
+//       <Map
+//         bounds={getLandscapeBoundingBox(landscape)}
+//         geojson={landscape.areaPolygon}
+//         style={{
+//           width: '100%',
+//           height: '400px',
+//         }}
+//       />
+//     </Box>
+//   );
+// };
 
 const LandscapeView = () => {
   const { t } = useTranslation();
@@ -128,7 +125,10 @@ const LandscapeView = () => {
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <LandscapeMap landscape={landscape} />
+          <LandscapeMap
+            landscape={landscape}
+            label={t('landscape.view_map_title')}
+          />
         </Grid>
         <Grid item xs={12} md={6}>
           <LandscapeCard landscape={landscape} />

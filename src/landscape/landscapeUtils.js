@@ -1,12 +1,14 @@
 import bbox from '@turf/bbox';
 
-export const getLandscapeBoundingBox = landscape => {
+export const getLandscapeBoundingBox = (landscape = {}) => {
   const { areaPolygon, position } = landscape;
 
   const areaBoundingBox = areaPolygon && bbox(areaPolygon);
   const positionBoundingBox = position && position.boundingbox;
 
   const boundingBox = areaBoundingBox || positionBoundingBox;
+
+  console.log({ boundingBox });
 
   return (
     boundingBox && [
