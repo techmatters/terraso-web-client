@@ -36,7 +36,9 @@ export const fetchLandscapeToUpdate = slug => {
     .then(landscape => landscape || Promise.reject('not_found'))
     .then(landscape => ({
       ...landscape,
-      areaPolygon: !landscape.areaPolygon || JSON.parse(landscape.areaPolygon),
+      areaPolygon: landscape.areaPolygon
+        ? JSON.parse(landscape.areaPolygon)
+        : null,
     }));
 };
 
@@ -82,8 +84,9 @@ export const fetchLandscapeToView = (slug, currentUser) => {
       )
       .then(landscape => ({
         ...landscape,
-        areaPolygon:
-          !landscape.areaPolygon || JSON.parse(landscape.areaPolygon),
+        areaPolygon: landscape.areaPolygon
+          ? JSON.parse(landscape.areaPolygon)
+          : null,
       }))
   );
 };
