@@ -10,9 +10,17 @@ const isAllowedToManagerGroupMembers = ({ resource: group }) => {
   return Promise.resolve(isManager);
 };
 
+const isAllowedToChangeLandscape = ({ resource: landscape }) => {
+  const isManager =
+    _.get('defaultGroup.membersInfo.accountMembership.userRole', landscape) ===
+    'MANAGER';
+  return Promise.resolve(isManager);
+};
+
 const rules = {
   'group.change': isAllowedToChangeGroup,
   'group.manageMembers': isAllowedToManagerGroupMembers,
+  'landscape.change': isAllowedToChangeLandscape,
 };
 
 export default rules;

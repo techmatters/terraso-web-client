@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import _ from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Typography,
@@ -11,6 +11,9 @@ import {
   CardContent,
   Link,
   Stack,
+  Paper,
+  Button,
+  Box,
 } from '@mui/material';
 import PublicIcon from '@mui/icons-material/Public';
 
@@ -25,6 +28,7 @@ import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import PageHeader from 'layout/PageHeader';
 import PageContainer from 'layout/PageContainer';
 import LandscapeMap from 'landscape/components/LandscapeMap';
+import Restricted from 'permissions/components/Restricted';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
@@ -67,23 +71,6 @@ const LandscapeCard = ({ landscape }) => {
   );
 };
 
-// const LandscapeMap = ({ landscape }) => {
-//   const { t } = useTranslation();
-
-//   return (
-//     <Box component="section" aria-label={t('landscape.view_map_title')}>
-//       <Map
-//         bounds={getLandscapeBoundingBox(landscape)}
-//         geojson={landscape.areaPolygon}
-//         style={{
-//           width: '100%',
-//           height: '400px',
-//         }}
-//       />
-//     </Box>
-//   );
-// };
-
 const LandscapeView = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -113,22 +100,41 @@ const LandscapeView = () => {
   return (
     <PageContainer>
       <PageHeader header={landscape.name} />
-      <Typography
-        variant="caption"
-        display="block"
-        sx={{
-          marginBottom: theme.spacing(3),
-          marginTop: theme.spacing(2),
-        }}
-      >
-        {landscape.location}
-      </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          component={Paper}
+          variant="outlined"
+          sx={{ padding: 2, marginTop: 2 }}
+        >
+          <Typography
+            variant="caption"
+            display="block"
+            sx={{
+              marginBottom: theme.spacing(2),
+            }}
+          >
+            {landscape.location}
+          </Typography>
           <LandscapeMap
             landscape={landscape}
             label={t('landscape.view_map_title')}
           />
+          <Restricted permission="landscape.change" resource={landscape}>
+            <Link component={Box} sx={{ marginTop: 2 }} href="">
+              {t('landscape.view_map_boundaries_help')}
+            </Link>
+            <Button
+              variant="outlined"
+              component={RouterLink}
+              to={`/landscapes/${landscape.slug}/boundaries`}
+              sx={{ marginTop: 2 }}
+            >
+              {t('landscape.view_map_boundaries_update')}
+            </Button>
+          </Restricted>
         </Grid>
         <Grid item xs={12} md={6}>
           <LandscapeCard landscape={landscape} />

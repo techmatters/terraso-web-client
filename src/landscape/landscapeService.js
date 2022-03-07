@@ -6,7 +6,18 @@ import { landscapeFields, defaultGroup } from 'landscape/landscapeFragments';
 import { extractAccountMembership, extractMembersInfo } from 'group/groupUtils';
 import { accountMembership } from 'group/groupFragments';
 
-const cleanLandscape = landscape => _.omit('slug', landscape);
+const cleanLandscape = landscape =>
+  _.flow(
+    _.omit('slug'),
+    _.toPairs,
+    _.map(([key, value]) => {
+      if (key === 'areaPolygon') {
+        return [key, JSON.stringify(value)];
+      }
+      return [key, value];
+    }),
+    _.fromPairs
+  )(landscape);
 
 export const fetchLandscapeToUpdate = slug => {
   const query = `
@@ -22,7 +33,11 @@ export const fetchLandscapeToUpdate = slug => {
   return terrasoApi
     .request(query, { slug })
     .then(_.get('landscapes.edges[0].node'))
-    .then(landscape => landscape || Promise.reject('not_found'));
+    .then(landscape => landscape || Promise.reject('not_found'))
+    .then(landscape => ({
+      ...landscape,
+      areaPolygon: !landscape.areaPolygon || JSON.parse(landscape.areaPolygon),
+    }));
 };
 
 const getDefaultGroup = landscape => {
@@ -67,9 +82,8 @@ export const fetchLandscapeToView = (slug, currentUser) => {
       )
       .then(landscape => ({
         ...landscape,
-        areaPolygon: landscape.areaPolygon
-          ? JSON.parse(landscape.areaPolygon)
-          : null,
+        areaPolygon:
+          !landscape.areaPolygon || JSON.parse(landscape.areaPolygon),
       }))
   );
 };

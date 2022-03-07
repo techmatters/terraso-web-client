@@ -3,14 +3,20 @@ import _ from 'lodash/fp';
 import { Box } from '@mui/material';
 
 import Map from 'gis/components/Map';
-import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';
+import {
+  getLandscapeBoundingBox,
+  isValidGeoJson,
+} from 'landscape/landscapeUtils';
 
 const LandscapeMap = ({ landscape, label }) => {
+  const bounds = getLandscapeBoundingBox(landscape);
+  const areaPolygon = _.get('areaPolygon', landscape);
+  const geojson = isValidGeoJson(areaPolygon) && areaPolygon;
   return (
     <Box component="section" aria-label={label}>
       <Map
-        bounds={getLandscapeBoundingBox(landscape)}
-        geojson={_.get('areaPolygon', landscape)}
+        bounds={bounds}
+        geojson={geojson}
         style={{
           width: '100%',
           height: '400px',

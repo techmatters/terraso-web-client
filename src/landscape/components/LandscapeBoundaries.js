@@ -1,4 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import {
   Box,
@@ -11,9 +13,14 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
+import { fetchLandscapeForm, saveLandscape } from 'landscape/landscapeSlice';
+import { isValidGeoJson } from 'landscape/landscapeUtils';
+import { addMessage } from 'notifications/notificationsSlice';
 import PageContainer from 'layout/PageContainer';
 import LandscapeMap from './LandscapeMap';
 import PageHeader from 'layout/PageHeader';
+import PageLoader from 'layout/PageLoader';
+import logger from 'monitoring/logger';
 
 const openFile = file =>
   new Promise((resolve, reject) => {
@@ -26,16 +33,46 @@ const openFile = file =>
     reader.readAsText(file);
   });
 
+const CurrentFile = ({ file }) => {
+  const size = (file.size / 1000).toLocaleString(undefined, {
+    maximumFractionDigits: 2,
+  });
+  return (
+    <Typography sx={{ fontWeight: 'bold' }}>
+      {file.name} {size}KB
+    </Typography>
+  );
+};
+
 const DropZone = props => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const { onFileSelected } = props;
+  const [currentFile, setCurrentFile] = useState();
   const onDrop = useCallback(
     acceptedFiles => {
-      openFile(acceptedFiles[0]).then(contents => {
-        onFileSelected(contents);
+      const selectedFile = acceptedFiles[0];
+      openFile(selectedFile).then(contents => {
+        try {
+          const json = JSON.parse(contents);
+          if (isValidGeoJson(json)) {
+            setCurrentFile(selectedFile);
+            onFileSelected(json);
+          } else {
+            throw new Error('Invalid GEO Json format');
+          }
+        } catch (error) {
+          logger.error('Failed to parse file. Error:', error);
+          dispatch(
+            addMessage({
+              severity: 'error',
+              content: 'landscape.boundaries_format_error',
+            })
+          );
+        }
       });
     },
-    [onFileSelected]
+    [onFileSelected, dispatch]
   );
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
@@ -48,6 +85,7 @@ const DropZone = props => {
       component={Paper}
       direction="column"
       alignItems="center"
+      justifyContent="center"
       spacing={2}
       variant="outlined"
       sx={{
@@ -56,23 +94,30 @@ const DropZone = props => {
         paddingTop: 2,
         paddingBottom: 3,
         marginBottom: 2,
+        minHeight: '125px',
       }}
       {...getRootProps()}
     >
       <input {...getInputProps()} />
       {isDragActive ? (
-        <p>Drop the files here ...</p>
+        <Typography>{t('landscape.boundaries_drop_message')}</Typography>
       ) : (
         <>
           <Button variant="outlined" onClick={open}>
-            {t('landscape.boudaries_select_file')}
+            {t('landscape.boundaries_select_file')}
           </Button>
-          <Typography variant="caption">
-            {t('landscape.boudaries_format')}
-          </Typography>
-          <Typography variant="caption">
-            {t('landscape.boudaries_size')}
-          </Typography>
+          {currentFile ? (
+            <CurrentFile file={currentFile} />
+          ) : (
+            <>
+              <Typography variant="caption">
+                {t('landscape.boundaries_format')}
+              </Typography>
+              <Typography variant="caption">
+                {t('landscape.boundaries_size')}
+              </Typography>
+            </>
+          )}
         </>
       )}
     </Stack>
@@ -80,27 +125,59 @@ const DropZone = props => {
 };
 
 const LandscapeBoundaries = () => {
+  const dispatch = useDispatch();
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { slug } = useParams();
+  const { fetching, landscape, success } = useSelector(
+    state => state.landscape.form
+  );
   const [areaPolygon, setAreaPolygon] = useState();
-  const onFileSelected = fileContent => {
-    setAreaPolygon(JSON.parse(fileContent));
+  const onFileSelected = areaPolygon => {
+    setAreaPolygon(areaPolygon);
   };
+
+  useEffect(() => {
+    dispatch(fetchLandscapeForm(slug));
+  }, [dispatch, slug]);
+
+  useEffect(() => {
+    if (success) {
+      navigate(`/landscapes/${slug}`);
+    }
+  }, [success, slug, navigate, dispatch]);
+
+  if (fetching) {
+    return <PageLoader />;
+  }
+
+  const onSave = () => {
+    dispatch(
+      saveLandscape({
+        ...landscape,
+        areaPolygon,
+      })
+    );
+  };
+
   return (
     <PageContainer>
-      <PageHeader header={t('landscape.boudaries_title')} />
-      <Typography variant="h2">{t('landscape.boudaries_subtitle')}</Typography>
+      <PageHeader header={t('landscape.boundaries_title')} />
+      <Typography variant="h2">{t('landscape.boundaries_subtitle')}</Typography>
       <Typography sx={{ marginTop: 2 }}>
-        {t('landscape.boudaries_description')}
+        {t('landscape.boundaries_description')}
       </Typography>
       <Link component={Box} sx={{ marginTop: 1 }} href="">
         {t('landscape.boundaries_help_geojson')}
       </Link>
       <Paper variant="outlined" sx={{ padding: 2, marginTop: 2 }}>
         <Typography sx={{ marginBottom: 2 }}>
-          {t('landscape.boudaries_select_title')}
+          {t('landscape.boundaries_select_title')}
         </Typography>
         <DropZone onFileSelected={onFileSelected} />
-        <LandscapeMap landscape={{ areaPolygon }} />
+        <LandscapeMap
+          landscape={{ areaPolygon: areaPolygon || landscape.areaPolygon }}
+        />
         <Link component={Box} sx={{ marginTop: 2 }} href="">
           {t('landscape.boundaries_help_map')}
         </Link>
@@ -111,9 +188,16 @@ const LandscapeBoundaries = () => {
         justifyContent="space-between"
         sx={{ marginTop: 2 }}
       >
-        <Button variant="text">{t('landscape.boundaries_help_cancel')}</Button>
-        <Button variant="contained" sx={{ paddingLeft: 5, paddingRight: 5 }}>
-          {t('landscape.boundaries_help_save')}
+        <Button variant="text" onClick={() => navigate(-1)}>
+          {t('landscape.boundaries_cancel')}
+        </Button>
+        <Button
+          variant="contained"
+          disabled={!areaPolygon}
+          sx={{ paddingLeft: 5, paddingRight: 5 }}
+          onClick={onSave}
+        >
+          {t('landscape.boundaries_save')}
         </Button>
       </Grid>
     </PageContainer>
