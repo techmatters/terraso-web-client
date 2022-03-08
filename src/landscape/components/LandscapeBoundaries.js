@@ -96,17 +96,22 @@ const DropZone = props => {
         paddingBottom: 3,
         marginBottom: 2,
         minHeight: '125px',
+        cursor: 'pointer',
       }}
       {...getRootProps()}
     >
-      <input name="drop-input" {...getInputProps()} />
+      <input {...getInputProps()} />
       {isDragActive ? (
         <Typography>{t('landscape.boundaries_drop_message')}</Typography>
       ) : (
         <>
-          <Button variant="outlined" onClick={open}>
+          <Paper
+            variant="outlined"
+            onClick={open}
+            sx={({ spacing }) => ({ padding: `${spacing(1)} ${spacing(3)}` })}
+          >
             {t('landscape.boundaries_select_file')}
-          </Button>
+          </Paper>
           {currentFile ? (
             <CurrentFile file={currentFile} />
           ) : (
