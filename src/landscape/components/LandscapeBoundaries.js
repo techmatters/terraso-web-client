@@ -108,7 +108,10 @@ const DropZone = props => {
           <Paper
             variant="outlined"
             onClick={open}
-            sx={({ spacing }) => ({ padding: `${spacing(1)} ${spacing(3)}` })}
+            sx={({ spacing, palette }) => ({
+              padding: `${spacing(1)} ${spacing(3)}`,
+              borderColor: palette.black,
+            })}
           >
             {t('landscape.boundaries_select_file')}
           </Paper>
