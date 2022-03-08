@@ -77,7 +77,7 @@ const DropZone = props => {
   );
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
-    accept: '.json',
+    accept: '.json,.geojson',
     maxFiles: 1,
     maxSize: 1000000,
   });

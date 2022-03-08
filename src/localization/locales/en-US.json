@@ -208,7 +208,7 @@
         "boundaries_select_title": "Select a file and preview",
         "boundaries_select_file": "Select File",
         "boundaries_size": "File size limit: 1MB",
-        "boundaries_format": "Acceptable file format: *.json",
+        "boundaries_format": "Acceptable file formats: *.json, *geojson",
         "boundaries_help_map": "Get help with uploading a file",
         "boundaries_save": "Update Geographic Info",
         "boundaries_cancel": "Cancel",
