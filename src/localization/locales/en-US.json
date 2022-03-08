@@ -215,7 +215,8 @@
         "boundaries_drop_message": "Drop your file here",
         "boundaries_format_error": "Invalid GeoJSON format",
         "view_map_boundaries_help": "How to improve the geographic info",
-        "view_map_boundaries_update": "Update Geographic Info"
+        "view_map_boundaries_update": "Update Geographic Info",
+        "view_manager_help": "{{name}}, you can update the landscape profile and also manage members as a Landscape manager for {{landscape}}. <1>Read more about Landscape manager</1>."
     },
     "common": {
         "dialog_cancel_label": "Cancel",
