@@ -11,7 +11,7 @@ import {
 const LandscapeMap = ({ landscape, label }) => {
   const bounds = getLandscapeBoundingBox(landscape);
   const areaPolygon = _.get('areaPolygon', landscape);
-  const geojson = isValidGeoJson(areaPolygon) && areaPolygon;
+  const geojson = isValidGeoJson(areaPolygon) ? areaPolygon : null;
   return (
     <Box component="section" aria-label={label}>
       <Map

@@ -1,4 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
+import _ from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
@@ -98,7 +99,7 @@ const DropZone = props => {
       }}
       {...getRootProps()}
     >
-      <input {...getInputProps()} />
+      <input name="drop-input" {...getInputProps()} />
       {isDragActive ? (
         <Typography>{t('landscape.boundaries_drop_message')}</Typography>
       ) : (
@@ -176,7 +177,9 @@ const LandscapeBoundaries = () => {
         </Typography>
         <DropZone onFileSelected={onFileSelected} />
         <LandscapeMap
-          landscape={{ areaPolygon: areaPolygon || landscape.areaPolygon }}
+          landscape={{
+            areaPolygon: areaPolygon || _.get('areaPolygon', landscape),
+          }}
         />
         <Link component={Box} sx={{ marginTop: 2 }} href="">
           {t('landscape.boundaries_help_map')}

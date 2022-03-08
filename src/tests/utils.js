@@ -11,6 +11,20 @@ import AppWrappers from 'common/components/AppWrappers';
 
 const executeAxe = process.env['TEST_A11Y'] === 'true';
 
+// Work around to avoid tests trying to render SVGs
+const createElementNSOrig = global.document.createElementNS;
+global.document.createElementNS = function (namespaceURI, qualifiedName) {
+  if (
+    namespaceURI === 'http://www.w3.org/2000/svg' &&
+    qualifiedName === 'svg'
+  ) {
+    const element = createElementNSOrig.apply(this, arguments);
+    element.createSVGRect = function () {};
+    return element;
+  }
+  return createElementNSOrig.apply(this, arguments);
+};
+
 if (executeAxe) {
   expect.extend(toHaveNoViolations);
   // Added longer timeout to work with the axe expensive tests
