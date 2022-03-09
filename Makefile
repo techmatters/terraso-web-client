@@ -17,7 +17,7 @@ run-build:
 
 create-build:
 	./scripts/docker/run.sh \
-		"--name terraso_web_client_build -p 3000:3000" \
+		"--name terraso_web_client_build" \
 		"npm run build"
 
 lint:

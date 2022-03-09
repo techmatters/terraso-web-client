@@ -50,7 +50,7 @@ const openGeoJsonFile = file =>
   });
 
 const getFormatedSize = bytes => {
-  const size = (bytes).toLocaleString(undefined, {
+  const size = bytes.toLocaleString(undefined, {
     maximumFractionDigits: 2,
   });
   return `${size}`;
