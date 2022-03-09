@@ -17,11 +17,11 @@ import { useTranslation } from 'react-i18next';
 import { fetchLandscapeForm, saveLandscape } from 'landscape/landscapeSlice';
 import { isValidGeoJson } from 'landscape/landscapeUtils';
 import { addMessage } from 'notifications/notificationsSlice';
+import logger from 'monitoring/logger';
 import PageContainer from 'layout/PageContainer';
 import LandscapeMap from './LandscapeMap';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
-import logger from 'monitoring/logger';
 
 const openFile = file =>
   new Promise((resolve, reject) => {
@@ -32,6 +32,20 @@ const openFile = file =>
     };
     reader.onerror = () => reject(reader.error);
     reader.readAsText(file);
+  });
+
+const openGeoJsonFile = file =>
+  openFile(file).then(contents => {
+    try {
+      const json = JSON.parse(contents);
+      if (isValidGeoJson(json)) {
+        return Promise.resolve(json);
+      } else {
+        throw new Error('Invalid GEO Json format');
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
   });
 
 const CurrentFile = ({ file }) => {
@@ -53,16 +67,12 @@ const DropZone = props => {
   const onDrop = useCallback(
     acceptedFiles => {
       const selectedFile = acceptedFiles[0];
-      openFile(selectedFile).then(contents => {
-        try {
-          const json = JSON.parse(contents);
-          if (isValidGeoJson(json)) {
-            setCurrentFile(selectedFile);
-            onFileSelected(json);
-          } else {
-            throw new Error('Invalid GEO Json format');
-          }
-        } catch (error) {
+      openGeoJsonFile(selectedFile)
+        .then(json => {
+          setCurrentFile(selectedFile);
+          onFileSelected(json);
+        })
+        .catch(error => {
           logger.error('Failed to parse file. Error:', error);
           dispatch(
             addMessage({
@@ -70,8 +80,7 @@ const DropZone = props => {
               content: 'landscape.boundaries_format_error',
             })
           );
-        }
-      });
+        });
     },
     [onFileSelected, dispatch]
   );
