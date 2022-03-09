@@ -22,7 +22,7 @@ const setup = async () => {
     account: {
       currentUser: {
         data: {
-          email: 'email@email.com',
+          email: 'email@example.com',
           firstName: 'First',
           lastName: 'Last',
         },
