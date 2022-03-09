@@ -14,7 +14,7 @@ const MapPolygon = props => {
     }
   }, [map, bounds]);
 
-  // Added unique key on every rerender to force geo json update
+  // Added unique key on every rerender to force GeoJSON update
   return <GeoJSON key={uuidv4()} data={geojson} />;
 };
 
