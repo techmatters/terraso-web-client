@@ -203,7 +203,7 @@
         "view_map_title": "Mapa del paisaje",
         "boundaries_title": "Actualiza la información geográfica del paisaje",
         "boundaries_subtitle": "Sube un nuevo archivo",
-        "boundaries_description": "Muestra el límite del paisaje en un mapa cargando un archivo geojson. Puedes obtener una vista previa antes de reemplazar el mapa actual.",
+        "boundaries_description": "Muestra el límite del paisaje en un mapa cargando un archivo GeoJSON. Puedes obtener una vista previa antes de reemplazar el mapa actual.",
         "boundaries_help_geojson": "¿No tienes un archivo geojson? Siga estas instrucciones de 3 pasos para crear uno.",
         "boundaries_select_title": "Selecciona un archivo y obten una vista previa",
         "boundaries_select_file": "Selecciona Archivo",
