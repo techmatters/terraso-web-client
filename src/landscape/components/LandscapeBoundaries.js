@@ -90,7 +90,7 @@ const DropZone = props => {
     },
     [onFileSelected, dispatch]
   );
-  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: '.json,.geojson',
     maxFiles: 1,
@@ -122,7 +122,6 @@ const DropZone = props => {
         <>
           <Paper
             variant="outlined"
-            onClick={open}
             sx={({ spacing, palette }) => ({
               padding: `${spacing(1)} ${spacing(3)}`,
               borderColor: palette.black,
