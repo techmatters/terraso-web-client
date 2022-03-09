@@ -166,7 +166,7 @@ test('LandscapeBoundaries: Show cancel', async () => {
   const cancelButton = screen.getByRole('button', { name: 'Cancel' });
   expect(cancelButton).toBeInTheDocument();
   await act(async () => fireEvent.click(cancelButton));
-  expect(navigate.mock.calls[0]).toEqual([-1]);
+  expect(navigate.mock.calls[0]).toEqual(['/landscapes/slug-1']);
 });
 test('LandscapeBoundaries: Save', async () => {
   terrasoApi.request

@@ -90,7 +90,7 @@ const DropZone = props => {
       spacing={2}
       variant="outlined"
       sx={{
-        backgroundColor: '#F3FAFD',
+        backgroundColor: isDragActive ? '#D2EDF7' : '#F3FAFD',
         border: '2px dashed #307F9C',
         paddingTop: 2,
         paddingBottom: 3,
@@ -199,7 +199,7 @@ const LandscapeBoundaries = () => {
         justifyContent="space-between"
         sx={{ marginTop: 2 }}
       >
-        <Button variant="text" onClick={() => navigate(-1)}>
+        <Button variant="text" onClick={() => navigate(`/landscapes/${slug}`)}>
           {t('landscape.boundaries_cancel')}
         </Button>
         <Button
