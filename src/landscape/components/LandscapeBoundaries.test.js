@@ -107,7 +107,7 @@ test('LandscapeBoundaries: Select file', async () => {
             node: {
               name: 'Landscape Name',
               description: 'Landscape Description',
-              website: 'www.landscape.org',
+              website: 'https://www.landscape.org/',
             },
           },
         ],
