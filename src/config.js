@@ -11,3 +11,5 @@ export const COOKIES_DOMAIN =
 export const ROLLBAR_TOKEN = process.env.REACT_APP_ROLLBAR_TOKEN;
 
 export const AXE_TEST_TIMEOUT = process.env.REACT_AXE_TEST_TIMEOUT || 20000;
+
+export const GEOJSON_MAX_SIZE = process.env.REACT_GEOJSON_MAX_SIZE || 1000000;

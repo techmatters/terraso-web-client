@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
+import { GEOJSON_MAX_SIZE } from 'config';
 import { fetchLandscapeForm, saveLandscape } from 'landscape/landscapeSlice';
 import { isValidGeoJson } from 'landscape/landscapeUtils';
 import { addMessage } from 'notifications/notificationsSlice';
@@ -48,10 +49,15 @@ const openGeoJsonFile = file =>
     }
   });
 
-const CurrentFile = ({ file }) => {
-  const size = (file.size / 1000).toLocaleString(undefined, {
+const getFormatedSize = bytes => {
+  const size = (bytes).toLocaleString(undefined, {
     maximumFractionDigits: 2,
   });
+  return `${size}`;
+};
+
+const CurrentFile = ({ file }) => {
+  const size = getFormatedSize(file.size / 1000.0);
   return (
     <Typography sx={{ fontWeight: 'bold' }}>
       {file.name} {size}KB
@@ -88,7 +94,7 @@ const DropZone = props => {
     onDrop,
     accept: '.json,.geojson',
     maxFiles: 1,
-    maxSize: 1000000,
+    maxSize: GEOJSON_MAX_SIZE,
   });
   return (
     <Stack
@@ -98,15 +104,15 @@ const DropZone = props => {
       justifyContent="center"
       spacing={2}
       variant="outlined"
-      sx={{
-        backgroundColor: isDragActive ? '#D2EDF7' : '#F3FAFD',
-        border: '2px dashed #307F9C',
+      sx={({ palette }) => ({
+        backgroundColor: isDragActive ? palette.blue.mid : palette.blue.lite,
+        border: `2px dashed ${palette.blue.dark}`,
         paddingTop: 2,
         paddingBottom: 3,
         marginBottom: 2,
         minHeight: '125px',
         cursor: 'pointer',
-      }}
+      })}
       {...getRootProps()}
     >
       <input {...getInputProps()} />
@@ -132,7 +138,9 @@ const DropZone = props => {
                 {t('landscape.boundaries_format')}
               </Typography>
               <Typography variant="caption">
-                {t('landscape.boundaries_size')}
+                {t('landscape.boundaries_size', {
+                  size: getFormatedSize(GEOJSON_MAX_SIZE / 1000000.0),
+                })}
               </Typography>
             </>
           )}
