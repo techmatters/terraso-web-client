@@ -204,7 +204,7 @@
         "boundaries_title": "Update Landscape’s Geographic Info",
         "boundaries_subtitle": "Upload a new file",
         "boundaries_description": "Show the landscape’s boundary on a map by uploading a geojson file. You can preview it before replacing the current map.",
-        "boundaries_help_geojson": "Don’t have a geojson file? Follow this 3-step instruction to create one.",
+        "boundaries_help_geojson": "Don’t have a GeoJSON file? Follow these three steps to create one.",
         "boundaries_select_title": "Select a file and preview",
         "boundaries_select_file": "Select File",
         "boundaries_size": "File size limit: 1MB",
