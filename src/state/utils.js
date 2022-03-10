@@ -30,9 +30,9 @@ const generateErrorFallbacksPartial = name => {
     code => [code],
   ];
   return codes => [
-    ..._.flatMap(baseCode => codes.map(code => baseCode(code).join('.')))(
-      baseCodes
-    ),
+    ..._.flatMap(baseCode =>
+      _.flatten([codes]).map(code => baseCode(code).join('.'))
+    )(baseCodes),
     ...[
       [slice, action, 'unexpected_error'].join('.'),
       'common.unexpected_error',
@@ -58,8 +58,7 @@ export const createAsyncThunk = (name, action, onSuccessMessage) => {
     try {
       return await executeAuthRequest(dispatch, executeAction);
     } catch (error) {
-      const errors = _.isArray(error) ? error : [error];
-      errors.forEach(error => {
+      _.flatten([error]).forEach(error => {
         const baseMessage = _.has('content', error)
           ? { severity: 'error', ...error }
           : { severity: 'error', content: [error], params: { error } };

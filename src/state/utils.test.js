@@ -28,3 +28,15 @@ test('AsyncThunk: Handle multiple errors', async () => {
   expect(screen.getByText(/Test error 1/i)).toBeInTheDocument();
   expect(screen.getByText(/Test error 2/i)).toBeInTheDocument();
 });
+test('AsyncThunk: Complex error message', async () => {
+  global.fetch.mockRejectedValue({
+    content: ['common.unexpected_error'],
+    params: { error: 'Unexpected' },
+  });
+  await render(<TestComponent />);
+  expect(
+    screen.getByText(
+      /Oops, something went wrong. Please try it again in a few minutes. \(Error: Unexpected\)/i
+    )
+  ).toBeInTheDocument();
+});
