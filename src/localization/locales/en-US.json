@@ -205,7 +205,7 @@
     "common": {
         "dialog_cancel_label": "Cancel",
         "terraso_projectName": "Terraso",
-        "unexpected_error": "Oops, something went wrong. Please try it again in a few minutes. {{error}}",
+        "unexpected_error": "Oops, something went wrong. Please try it again in a few minutes. {{error, errorParam(label: Error)}}",
         "loader_label": "Loading",
         "not_found_title": "Page not found",
         "not_found_message": "We couldn’t find the page you were looking for.",

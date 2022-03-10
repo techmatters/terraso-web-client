@@ -1,14 +1,8 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { render, screen } from 'tests/utils';
 import { fetchAuthURLs } from 'account/accountSlice';
-// import { addMessage } from 'notifications/notificationsSlice';
-
-// jest.mock('notifications/notificationsSlice', () => ({
-//   ...jest.requireActual('notifications/notificationsSlice'),
-//   addMessage: jest.fn(addMessage),
-// }));
 
 const TestComponent = () => {
   const dispatch = useDispatch();
@@ -17,26 +11,16 @@ const TestComponent = () => {
   }, [dispatch]);
 
   return <div></div>;
-}
+};
 
 beforeEach(() => {
   global.fetch = jest.fn();
 });
 
 test('AsyncThunk: Handle error', async () => {
-  // global.fetch.mockResolvedValue({
-  //   status: 200,
-  //   json: () => ({
-  //     atoken: 'auth-token',
-  //     rtoken: 'refresh-token',
-  //   }),
-  // });
   global.fetch.mockRejectedValue('Test error');
   await render(<TestComponent />);
   expect(screen.getByText(/Test error/i)).toBeInTheDocument();
-  // const action = jest.fn();
-  // action.mockRejectedValue('error');
-  // createAsyncThunk('name', action);
 });
 test('AsyncThunk: Handle multiple errors', async () => {
   global.fetch.mockRejectedValue(['Test error 1', 'Test error 2']);
