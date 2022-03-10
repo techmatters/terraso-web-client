@@ -37,4 +37,11 @@ i18n
     },
   });
 
+i18n.services.formatter.add('errorParam', (value, lng, options) => {
+  if (!value) {
+    return null;
+  }
+  return `(${options.label}: ${value})`;
+});
+
 export default i18n;

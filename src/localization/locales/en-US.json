@@ -233,11 +233,15 @@
             "Group": "Group",
             "Landscape": "Landscape"
         },
-        "error": "Failed to perform request. Code: {{code}}",
+        "error": "Failed to execute request. {{code, errorParam(label: Code)}} {{field, errorParam(label: Field)}} {{model, errorParam(label: Model)}} {{context, errorParam(label: Context)}}",
         "error_unexpected": "Unexpected error",
         "error_request_response": "Failed to connect with Terraso API",
         "deleteNotAllowed_base": "Not allowed to delete $t(terraso_api.models.{{model}})",
         "deleteNotAllowed": "$t(terraso_api.deleteNotAllowed_base)",
+        "createNotAllowed_base": "Not allowed to create $t(terraso_api.models.{{model}})",
+        "createNotAllowed": "$t(terraso_api.createNotAllowed_base)",
+        "updateNotAllowed_base": "Not allowed to update $t(terraso_api.models.{{model}})",
+        "updateNotAllowed": "$t(terraso_api.updateNotAllowed_base)",
         "unique": "$t(terraso_api.models.{{model}}) {{field}} must be unique."
     },
     "gis": {
