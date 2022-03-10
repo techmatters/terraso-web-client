@@ -233,9 +233,6 @@ test('LandscapeBoundaries: Save', async () => {
   expect(saveCall[1]).toStrictEqual({
     input: {
       id: '1',
-      description: 'Landscape Description',
-      name: 'Landscape Name',
-      website: 'www.landscape.org',
       areaPolygon: JSON.stringify(JSON.parse(GEOJSON)),
     },
   });
