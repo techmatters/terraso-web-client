@@ -16,6 +16,7 @@ import {
   Alert,
 } from '@mui/material';
 import PublicIcon from '@mui/icons-material/Public';
+import LaunchIcon from '@mui/icons-material/Launch';
 
 import { fetchLandscapeView } from 'landscape/landscapeSlice';
 import { withProps } from 'react-hoc';
@@ -106,7 +107,7 @@ const LandscapeView = () => {
         <Alert severity="info" sx={{ marginBottom: 2 }}>
           <Trans i18nKey="landscape.view_manager_help">
             {{ name: t('user.full_name', { user }), landscape: landscape.name }}
-            <Link href="TODO">link</Link>.
+            <Link href={t('landscape.view_manager_help_url')}>link</Link>.
           </Trans>
         </Alert>
       </Restricted>
@@ -133,8 +134,15 @@ const LandscapeView = () => {
                   details: (
                     <Trans i18nKey="landscape.view_map_boundaries_help_details">
                       Prefix
-                      <Link href="https://terraso.org/contact-us/?noredirect=en-US">
+                      <Link
+                        href={t('landscape.view_map_boundaries_help_url')}
+                        target="_blank"
+                      >
                         link
+                        <LaunchIcon
+                          fontSize="small"
+                          sx={{ verticalAlign: 'bottom' }}
+                        />
                       </Link>
                       .
                     </Trans>

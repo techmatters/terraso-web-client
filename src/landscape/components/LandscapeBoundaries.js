@@ -192,7 +192,11 @@ const LandscapeBoundaries = () => {
       <Typography sx={{ marginTop: 2 }}>
         {t('landscape.boundaries_description')}
       </Typography>
-      <Link component={Box} sx={{ marginTop: 1 }} href="">
+      <Link
+        component={Box}
+        sx={{ marginTop: 1 }}
+        href={t('landscape.boundaries_help_geojson_url')}
+      >
         {t('landscape.boundaries_help_geojson')}
       </Link>
       <Paper variant="outlined" sx={{ padding: 2, marginTop: 2 }}>
@@ -205,7 +209,11 @@ const LandscapeBoundaries = () => {
             areaPolygon: areaPolygon || _.get('areaPolygon', landscape),
           }}
         />
-        <Link component={Box} sx={{ marginTop: 2 }} href="">
+        <Link
+          component={Box}
+          sx={{ margintop: 2 }}
+          href={t('landscape.boundaries_help_map_url')}
+        >
           {t('landscape.boundaries_help_map')}
         </Link>
       </Paper>
