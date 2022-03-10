@@ -208,7 +208,7 @@
         "boundaries_select_title": "Selecciona un archivo y obten una vista previa",
         "boundaries_select_file": "Selecciona Archivo",
         "boundaries_size": "Límite de tamaño de archivo: {{size}}MB",
-        "boundaries_format": "Formatos de archivo aceptables: *.json, *geojson",
+        "boundaries_format": "Formatos de archivo aceptables: *.json, *.geojson",
         "boundaries_help_map": "Obten ayuda para cargar un archivo",
         "boundaries_save": "Actualizar información geográfica",
         "boundaries_cancel": "Cancelar",
