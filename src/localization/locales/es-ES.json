@@ -204,7 +204,7 @@
         "boundaries_title": "Actualiza la información geográfica del paisaje",
         "boundaries_subtitle": "Sube un nuevo archivo",
         "boundaries_description": "Muestra el límite del paisaje en un mapa cargando un archivo GeoJSON. Puedes obtener una vista previa antes de reemplazar el mapa actual.",
-        "boundaries_help_geojson": "¿No tienes un archivo GeoJSON? Siga estas instrucciones de tres pasos para crear uno.",
+        "boundaries_help_geojson": "¿No tienes un archivo GeoJSON? Siga estas sencillas instrucciones para crear uno.",
         "boundaries_select_title": "Selecciona un archivo y obten una vista previa",
         "boundaries_select_file": "Selecciona Archivo",
         "boundaries_size": "Límite de tamaño de archivo: {{size}}MB",
@@ -215,6 +215,7 @@
         "boundaries_drop_message": "Suelta tu archivo aquí",
         "boundaries_format_error": "Formato GeoJSON no válido",
         "view_map_boundaries_help": "Cómo mejorar la información geográfica",
+        "view_map_boundaries_help_details": "Si crees que el paisaje se puede mejorar, comuníquese con el administrador de su paisaje o <1>envíanos un mensaje</1>.",
         "view_map_boundaries_update": "Actualizar información geográfica",
         "view_manager_help": "{{name}}, puedes actualizar el perfil del paisaje y también administrar miembros como administrador del paisaje para {{landscape}}. <1>Lee más sobre administracion de paisajes</1>."
     },

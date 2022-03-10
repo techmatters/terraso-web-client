@@ -13,7 +13,6 @@ import {
   Stack,
   Paper,
   Button,
-  Box,
   Alert,
 } from '@mui/material';
 import PublicIcon from '@mui/icons-material/Public';
@@ -30,6 +29,7 @@ import PageHeader from 'layout/PageHeader';
 import PageContainer from 'layout/PageContainer';
 import LandscapeMap from 'landscape/components/LandscapeMap';
 import Restricted from 'permissions/components/Restricted';
+import InlineHelp from 'common/components/InlineHelp';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
@@ -126,10 +126,23 @@ const LandscapeView = () => {
               landscape={landscape}
               label={t('landscape.view_map_title')}
             />
+            <InlineHelp
+              items={[
+                {
+                  title: t('landscape.view_map_boundaries_help'),
+                  details: (
+                    <Trans i18nKey="landscape.view_map_boundaries_help_details">
+                      Prefix
+                      <Link href="https://terraso.org/contact-us/?noredirect=en-US">
+                        link
+                      </Link>
+                      .
+                    </Trans>
+                  ),
+                },
+              ]}
+            />
             <Restricted permission="landscape.change" resource={landscape}>
-              <Link component={Box} sx={{ marginTop: 2 }} href="">
-                {t('landscape.view_map_boundaries_help')}
-              </Link>
               <Button
                 variant="outlined"
                 component={RouterLink}

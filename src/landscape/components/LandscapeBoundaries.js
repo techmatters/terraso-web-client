@@ -179,7 +179,7 @@ const LandscapeBoundaries = () => {
   const onSave = () => {
     dispatch(
       saveLandscape({
-        ...landscape,
+        id: landscape.id,
         areaPolygon,
       })
     );
