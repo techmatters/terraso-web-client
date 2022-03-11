@@ -22,6 +22,7 @@ const parseMessage = message => {
       },
     }));
   } catch (error) {
+    logger.warn('Failed to parse Terraso API error response', message, error);
     return message;
   }
 };

@@ -29,15 +29,14 @@ const generateErrorFallbacksPartial = name => {
     code => [slice, code],
     code => [code],
   ];
-  return codes => [
-    ..._.flatMap(baseCode =>
-      _.flatten([codes]).map(code => baseCode(code).join('.'))
-    )(baseCodes),
-    ...[
-      [slice, action, 'unexpected_error'].join('.'),
-      'common.unexpected_error',
-    ],
-  ];
+  return codes =>
+    [
+      ..._.flatMap(baseCode => _.flatten([codes]).map(baseCode))(baseCodes),
+      ...[
+        [slice, action, 'unexpected_error'],
+        ['common', 'unexpected_error'],
+      ],
+    ].map(parts => parts.join('.'));
 };
 
 export const createAsyncThunk = (name, action, onSuccessMessage) => {

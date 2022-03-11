@@ -28,7 +28,7 @@ const UnexpectedError = () => {
         />
 
         <Alert severity="error" sx={{ margin: '3em 0 8em' }}>
-          {t('common.unexpected_error', { error: '' })}
+          {t('common.unexpected_error')}
         </Alert>
       </Stack>
     </Stack>
