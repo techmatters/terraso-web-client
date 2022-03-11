@@ -3,15 +3,7 @@ import _ from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
-import {
-  Box,
-  Button,
-  Grid,
-  Link,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Button, Grid, Link, Paper, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { GEOJSON_MAX_SIZE } from 'config';
@@ -193,8 +185,7 @@ const LandscapeBoundaries = () => {
         {t('landscape.boundaries_description')}
       </Typography>
       <Link
-        component={Box}
-        sx={{ marginTop: 1 }}
+        sx={{ marginTop: 1, display: 'block' }}
         href={t('landscape.boundaries_help_geojson_url')}
       >
         {t('landscape.boundaries_help_geojson')}
@@ -210,8 +201,7 @@ const LandscapeBoundaries = () => {
           }}
         />
         <Link
-          component={Box}
-          sx={{ margintop: 2 }}
+          sx={{ marginTop: 2, display: 'block' }}
           href={t('landscape.boundaries_help_map_url')}
         >
           {t('landscape.boundaries_help_map')}

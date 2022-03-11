@@ -205,13 +205,13 @@
         "boundaries_subtitle": "Upload a new file",
         "boundaries_description": "Show the landscape’s boundary on a map by uploading a GeoJSON file. You can preview it before replacing the current map.",
         "boundaries_help_geojson": "Don’t have a GeoJSON file? Follow this simple instruction to create one.",
-        "boundaries_help_geojson_url": "TODO",
+        "boundaries_help_geojson_url": "https://terraso.org/help/draw-landscape-boundary",
         "boundaries_select_title": "Select a file and preview",
         "boundaries_select_file": "Select File",
         "boundaries_size": "File size limit: {{size}}MB",
         "boundaries_format": "Acceptable file formats: *.json, *.geojson",
         "boundaries_help_map": "Get help with uploading a file",
-        "boundaries_help_map_url": "TODO",
+        "boundaries_help_map_url": "https://terraso.org/contact-us/?noredirect=en-US",
         "boundaries_save": "Update Geographic Info",
         "boundaries_cancel": "Cancel",
         "boundaries_drop_message": "Drop your file here",
@@ -221,7 +221,7 @@
         "view_map_boundaries_help_url": "https://terraso.org/contact-us/?noredirect=en-US",
         "view_map_boundaries_update": "Update Geographic Info",
         "view_manager_help": "{{name}}, you can update the landscape profile and also manage members as a Landscape manager for {{landscape}}. <1>Read more about Landscape manager</1>.",
-        "view_manager_help_url": "TODO"
+        "view_manager_help_url": "https://terraso.org/help/#landscape-manager-priviileges"
     },
     "common": {
         "dialog_cancel_label": "Cancel",
