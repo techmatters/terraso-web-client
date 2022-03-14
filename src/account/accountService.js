@@ -47,7 +47,7 @@ export const fetchUser = () => {
   return terrasoApi
     .request(query, { email: getUserEmail() })
     .then(_.get('users.edges[0].node'))
-    .then(user => user || Promise.reject('account.not_found'))
+    .then(user => user || Promise.reject('not_found'))
     .then(user => ({
       ..._.omit('preferences', user),
       preferences: parsePreferences(user),

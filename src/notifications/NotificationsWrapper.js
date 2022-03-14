@@ -1,5 +1,4 @@
 import React, { useEffect, createRef } from 'react';
-import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { SnackbarProvider } from 'notistack';
@@ -29,8 +28,6 @@ const NotificationsWrapper = props => {
 
   // To add more flexibility to messages and localization
   // the content of a message can hold multiple sub messages
-  const getMessages = content => (_.isArray(content) ? content : [content]);
-
   const onClose = key => {
     notistackRef.current.closeSnackbar(key);
   };
@@ -51,9 +48,7 @@ const NotificationsWrapper = props => {
           severity={notification.severity}
           sx={{ width: '100%' }}
         >
-          {getMessages(notification.content)
-            .map(message => t(message, notification.params))
-            .join('. ')}
+          {t(notification.content, notification.params)}
         </Alert>
       )}
     >

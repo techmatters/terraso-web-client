@@ -79,7 +79,8 @@
         "view_document_title": "{{name}}",
         "members_document_title": "Miembros: {{name}}",
         "list_column_actions_description": "Acciones",
-        "members_list_column_actions_description": "Acciones"
+        "members_list_column_actions_description": "Acciones",
+        "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). Debe existir al menos un administrador."
     },
     "tool": {
         "avilability": "Disponibilidad",
@@ -204,7 +205,7 @@
     "common": {
         "dialog_cancel_label": "Cancelar",
         "terraso_projectName": "Terraso",
-        "unexpected_error": "Ups! Algo salió mal. Vuelve a intentarlo en unos minutos.",
+        "unexpected_error": "Ups! Algo salió mal. Vuelve a intentarlo en unos minutos. {{error, errorParam(label: Error)}}",
         "loader_label": "Cargando",
         "not_found_title": "Página no encontrada",
         "not_found_message": "No pudimos encontrar la página que estabas buscando.",
@@ -227,8 +228,21 @@
         "locale_es-ES": "Español"
     },
     "terraso_api": {
+        "models": {
+            "Membership": "Afiliación",
+            "Group": "Groupo",
+            "Landscape": "Paisaje"
+        },
+        "error": "No se pudo ejecutar la solicitud. {{code, errorParam(label: Codigo)}} {{field, errorParam(label: Campo)}} {{model, errorParam(label: Modelo)}} {{context, errorParam(label: Contexto)}}",
         "error_unexpected": "Error inesperado",
-        "error_request_response": "No se pudo conectar con la API de Terraso"
+        "error_request_response": "No se pudo conectar con la API de Terraso",
+        "delete_not_allowed_base": "No puedes eliminar $t(terraso_api.models.{{model}})",
+        "delete_not_allowed": "$t(terraso_api.delete_not_allowed_base)",
+        "create_not_allowed_base": "No puedes crear $t(terraso_api.models.{{model}})",
+        "create_not_allowed": "$t(terraso_api.create_not_allowed_base)",
+        "update_not_allowed_base": "No puedes actualizar $t(terraso_api.models.{{model}})",
+        "update_not_allowed": "$t(terraso_api.update_not_allowed_base)",
+        "unique": "$t(terraso_api.models.{{model}}) {{field}} Debe ser único."
     },
     "gis": {
         "openstreetmap_api_error": "Error al solicitar datos de la API nominatim.openstreetmap.org"
