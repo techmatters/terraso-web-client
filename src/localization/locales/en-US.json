@@ -209,7 +209,7 @@
         "boundaries_select_title": "Select a file and preview",
         "boundaries_select_file": "Select File",
         "boundaries_size": "File size limit: {{size}}MB",
-        "boundaries_format": "Acceptable file formats: *.json, *.geojson",
+        "boundaries_format": "Accepted file formats: *.json, *.geojson",
         "boundaries_help_map": "Get help with uploading a file",
         "boundaries_help_map_url": "https://terraso.org/contact-us/?noredirect=en-US",
         "boundaries_save": "Update Geographic Info",
