@@ -74,7 +74,7 @@ test('LandscapeBoundaries: Select file (Invalid)', async () => {
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Acceptable file formats: *.json, *.geojson File size limit: 1MB',
+    name: 'Select File Accepted file formats: *.json, *.geojson File size limit: 1MB',
   });
 
   const file = new File(['{"key": "value"}'], 'test.json', {
@@ -121,7 +121,7 @@ test('LandscapeBoundaries: Select file', async () => {
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Acceptable file formats: *.json, *.geojson File size limit: 1MB',
+    name: 'Select File Accepted file formats: *.json, *.geojson File size limit: 1MB',
   });
 
   const file = new File([GEOJSON], 'test.json', { type: 'application/json' });
@@ -142,7 +142,7 @@ test('LandscapeBoundaries: Select file', async () => {
   await waitFor(() =>
     expect(
       screen.getByRole('button', {
-        name: 'Select File Acceptable file formats: *.json, *.geojson File size limit: 1MB test.json 0.8KB',
+        name: 'Select File Accepted file formats: *.json, *.geojson File size limit: 1MB test.json 0.8KB',
       })
     ).toBeInTheDocument()
   );
@@ -206,7 +206,7 @@ test('LandscapeBoundaries: Save', async () => {
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Acceptable file formats: *.json, *.geojson File size limit: 1MB',
+    name: 'Select File Accepted file formats: *.json, *.geojson File size limit: 1MB',
   });
 
   const file = new File([GEOJSON], 'test.json', { type: 'application/json' });
