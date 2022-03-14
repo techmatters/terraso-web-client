@@ -3,7 +3,15 @@ import _ from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
-import { Button, Grid, Link, Paper, Stack, Typography } from '@mui/material';
+import {
+  Alert,
+  Button,
+  Grid,
+  Link,
+  Paper,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { GEOJSON_MAX_SIZE } from 'config';
@@ -62,15 +70,18 @@ const DropZone = props => {
   const dispatch = useDispatch();
   const { onFileSelected } = props;
   const [currentFile, setCurrentFile] = useState();
+  const [error, setError] = useState();
   const onDrop = useCallback(
     acceptedFiles => {
+      setError(null);
       const selectedFile = acceptedFiles[0];
+      setCurrentFile(selectedFile);
       openGeoJsonFile(selectedFile)
         .then(json => {
-          setCurrentFile(selectedFile);
           onFileSelected(json);
         })
         .catch(error => {
+          setError(error);
           logger.error('Failed to parse file. Error:', error);
           dispatch(
             addMessage({
@@ -94,7 +105,7 @@ const DropZone = props => {
       direction="column"
       alignItems="center"
       justifyContent="center"
-      spacing={2}
+      spacing={1}
       variant="outlined"
       sx={({ palette }) => ({
         backgroundColor: isDragActive ? palette.blue.mid : palette.blue.lite,
@@ -121,18 +132,22 @@ const DropZone = props => {
           >
             {t('landscape.boundaries_select_file')}
           </Paper>
-          {currentFile ? (
-            <CurrentFile file={currentFile} />
-          ) : (
+          <Typography variant="caption" sx={{ paddingTop: 1 }}>
+            {t('landscape.boundaries_format')}
+          </Typography>
+          <Typography variant="caption">
+            {t('landscape.boundaries_size', {
+              size: getFormatedSize(GEOJSON_MAX_SIZE / 1000000.0),
+            })}
+          </Typography>
+          {currentFile && (
             <>
-              <Typography variant="caption">
-                {t('landscape.boundaries_format')}
-              </Typography>
-              <Typography variant="caption">
-                {t('landscape.boundaries_size', {
-                  size: getFormatedSize(GEOJSON_MAX_SIZE / 1000000.0),
-                })}
-              </Typography>
+              {error && (
+                <Alert severity="error">
+                  {t('landscape.boundaries_format_error')}
+                </Alert>
+              )}
+              <CurrentFile file={currentFile} />
             </>
           )}
         </>
@@ -201,6 +216,7 @@ const LandscapeBoundaries = () => {
           }}
         />
         <Link
+          variant="body2"
           sx={{ marginTop: 2, display: 'block' }}
           href={t('landscape.boundaries_help_map_url')}
         >

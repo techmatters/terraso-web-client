@@ -215,7 +215,7 @@
         "boundaries_save": "Update Geographic Info",
         "boundaries_cancel": "Cancel",
         "boundaries_drop_message": "Drop your file here",
-        "boundaries_format_error": "Invalid GeoJSON format",
+        "boundaries_format_error": "Incorrect file format. Please upload a GeoJSON file.",
         "view_map_boundaries_help": "How to improve the geographic info",
         "view_map_boundaries_help_details": "If you believe the landscape can be improved, please contact your landscape’s manager or <1>send us a message <1 /></1>.",
         "view_map_boundaries_help_url": "https://terraso.org/contact-us/?noredirect=en-US",

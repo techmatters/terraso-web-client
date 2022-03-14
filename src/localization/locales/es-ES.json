@@ -215,7 +215,7 @@
         "boundaries_save": "Actualizar información geográfica",
         "boundaries_cancel": "Cancelar",
         "boundaries_drop_message": "Suelta tu archivo aquí",
-        "boundaries_format_error": "Formato GeoJSON no válido",
+        "boundaries_format_error": "Formato de archivo incorrecto. Cargue un archivo GeoJSON.",
         "view_map_boundaries_help": "Cómo mejorar la información geográfica",
         "view_map_boundaries_help_details": "Si crees que el paisaje se puede mejorar, comuníquese con el administrador de su paisaje o <1>envíanos un mensaje <1 /></1>.",
         "view_map_boundaries_help_url": "https://terraso.org/es/contactanos/?noredirect=es-ES",
