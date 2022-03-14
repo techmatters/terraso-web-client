@@ -229,9 +229,6 @@ const LandscapeBoundaries = () => {
         justifyContent="space-between"
         sx={{ marginTop: 2 }}
       >
-        <Button variant="text" onClick={() => navigate(`/landscapes/${slug}`)}>
-          {t('landscape.boundaries_cancel')}
-        </Button>
         <Button
           variant="contained"
           disabled={!areaPolygon}
@@ -239,6 +236,9 @@ const LandscapeBoundaries = () => {
           onClick={onSave}
         >
           {t('landscape.boundaries_save')}
+        </Button>
+        <Button variant="text" onClick={() => navigate(`/landscapes/${slug}`)}>
+          {t('landscape.boundaries_cancel')}
         </Button>
       </Grid>
     </PageContainer>
