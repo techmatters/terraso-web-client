@@ -17,10 +17,8 @@ const Item = props => {
         aria-controls={`${id}-details`}
         id={`${id}-title`}
         sx={{ padding: 0 }}
-        component={Typography}
-        variant="body2"
       >
-        {item.title}
+        <Typography variant="body2">{item.title}</Typography>
       </AccordionSummary>
       <Typography
         variant="body2"

@@ -95,7 +95,9 @@ test('LandscapeBoundaries: Select file (Invalid)', async () => {
   };
   fireEvent.drop(dropzone, data);
   await waitFor(() =>
-    expect(screen.getByText('Invalid GeoJSON format')).toBeInTheDocument()
+    expect(
+      screen.getByText('Incorrect file format. Please upload a GeoJSON file.')
+    ).toBeInTheDocument()
   );
 });
 test('LandscapeBoundaries: Select file', async () => {
@@ -139,7 +141,9 @@ test('LandscapeBoundaries: Select file', async () => {
   fireEvent.drop(dropzone, data);
   await waitFor(() =>
     expect(
-      screen.getByRole('button', { name: 'Select File test.json 0.8KB' })
+      screen.getByRole('button', {
+        name: 'Select File Acceptable file formats: *.json, *.geojson File size limit: 1MB test.json 0.8KB',
+      })
     ).toBeInTheDocument()
   );
 });
@@ -221,13 +225,12 @@ test('LandscapeBoundaries: Save', async () => {
   };
   fireEvent.drop(dropzone, data);
   await waitFor(() =>
-    expect(
-      screen.getByRole('button', { name: 'Select File test.json 0.8KB' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Update Geographic Info' })).not.toHaveAttribute('disabled')
   );
-  await act(async () =>
-    fireEvent.click(screen.getByText(/Update Geographic Info/i))
-  );
+  const saveButton = screen.getByRole('button', { name: 'Update Geographic Info' });
+  expect(saveButton).toBeInTheDocument();
+  expect(saveButton).not.toHaveAttribute('disabled');
+  await act(async () => fireEvent.click(saveButton));
   expect(terrasoApi.request).toHaveBeenCalledTimes(2);
   const saveCall = terrasoApi.request.mock.calls[1];
   expect(saveCall[1]).toStrictEqual({
