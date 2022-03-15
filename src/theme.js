@@ -26,6 +26,11 @@ const colorTheme = createTheme({
       dark1: '#666666',
       dark2: '#333333',
     },
+    blue: {
+      lite: '#F3FAFD',
+      mid: '#D2EDF7',
+      dark: '#307F9C',
+    },
     black: '#000000',
   },
 });

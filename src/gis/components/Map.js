@@ -1,7 +1,22 @@
-import React from 'react';
-import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
+import React, { useEffect } from 'react';
+import { GeoJSON, MapContainer, TileLayer, useMap } from 'react-leaflet';
+import { v4 as uuidv4 } from 'uuid';
 
 import 'gis/components/Map.css';
+
+const MapPolygon = props => {
+  const { bounds, geojson } = props;
+  const map = useMap();
+
+  useEffect(() => {
+    if (bounds) {
+      map.fitBounds(bounds);
+    }
+  }, [map, bounds]);
+
+  // Added unique key on every rerender to force GeoJSON update
+  return <GeoJSON key={uuidv4()} data={geojson} />;
+};
 
 const Map = props => {
   return (
@@ -15,7 +30,7 @@ const Map = props => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <GeoJSON data={props.geojson} />
+      <MapPolygon {...props} />
       {props.children}
     </MapContainer>
   );
