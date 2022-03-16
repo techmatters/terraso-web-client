@@ -10,7 +10,7 @@ import AppBar from 'common/components/AppBar';
 import AppWrappers from 'common/components/AppWrappers';
 import Routes from 'navigation/Routes';
 import Navigation from 'navigation/Navigation';
-import Footer from 'common/components/Footer';
+import Footer from 'layout/Footer';
 import SkipLinks from 'navigation/SkipLinks';
 
 import 'index.css';
