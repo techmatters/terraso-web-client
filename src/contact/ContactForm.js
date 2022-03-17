@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { addMessage } from 'notifications/notificationsSlice';
+import { useScript } from 'react-hooks';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 import { HUBSPOT_FORMS } from 'config';
@@ -13,29 +14,12 @@ const ContactForm = () => {
   const dispatch = useDispatch();
   const { i18n } = useTranslation();
   const { data: user } = useSelector(state => state.account.currentUser);
-  const [loadingDependencies, setLoadingDependencies] = useState(true);
   const [loadingForm, setLoadingForm] = useState(true);
 
+  const loadingDependencies = useScript('//js.hsforms.net/forms/shell.js');
   const loading = loadingDependencies || loadingForm;
 
   useEffect(() => {
-    // Hubsopt dependencies
-    const dependenciesScript = document.createElement('script');
-    dependenciesScript.src = '//js.hsforms.net/forms/shell.js';
-    dependenciesScript.async = true;
-    document.body.appendChild(dependenciesScript);
-
-    dependenciesScript.addEventListener('load', () => {
-      setLoadingDependencies(false);
-    });
-
-    return () => {
-      document.body.removeChild(dependenciesScript);
-    };
-  });
-
-  useEffect(() => {
-    // Form
     if (loadingDependencies) {
       return;
     }
