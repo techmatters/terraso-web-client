@@ -79,7 +79,8 @@
         "view_document_title": "{{name}}",
         "members_document_title": "Members: {{name}}",
         "list_column_actions_description": "Actions",
-        "members_list_column_actions_description": "Actions"
+        "members_list_column_actions_description": "Actions",
+        "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). There should at least be one manager."
     },
     "tool": {
         "requirements": "System requirements",
@@ -179,7 +180,7 @@
         "form_save_label": "Submit Landscape Info",
         "view_join_label": "Connect to Landscape",
         "view_leave_label": "Leave Landscape",
-        "default_content": "Explore the landscapes in Terraso. Vecome a member of your landscape to connect with others on Terraso and lets you share information.",
+        "default_content": "Explore the landscapes in Terraso. Become a member of your landscape to connect with others on Terraso and lets you share information.",
         "form_description_placeholder": "Enter a short description about your landscape  (600 characters maximum)",
         "form_email_placeholder": "info@mygroup.org",
         "form_website_placeholder": "https://www.mylandscape.org",
@@ -199,12 +200,33 @@
         "view_document_title": "{{name}}",
         "members_document_title": "Members: {{name}}",
         "list_column_actions_description": "Actions",
-        "view_map_title": "Landscape map"
+        "view_map_title": "Landscape map",
+        "boundaries_title": "Update Landscape’s Geographic Info",
+        "boundaries_subtitle": "Upload a new file",
+        "boundaries_description": "Show the landscape’s boundary on a map by uploading a GeoJSON file. You can preview it before replacing the current map.",
+        "boundaries_help_geojson": "Don’t have a GeoJSON file? Follow this simple instruction to create one.",
+        "boundaries_help_geojson_url": "https://terraso.org/help/draw-landscape-boundary",
+        "boundaries_select_title": "Select a file and preview",
+        "boundaries_select_file": "Select File",
+        "boundaries_size": "File size limit: {{size}}MB",
+        "boundaries_format": "Accepted file formats: *.json, *.geojson",
+        "boundaries_help_map": "Get help with uploading a file",
+        "boundaries_help_map_url": "https://terraso.org/contact-us/",
+        "boundaries_save": "Update Geographic Info",
+        "boundaries_cancel": "Cancel",
+        "boundaries_drop_message": "Drop your file here",
+        "boundaries_format_error": "Incorrect file format. Please upload a GeoJSON file.",
+        "view_map_boundaries_help": "How to improve the geographic info",
+        "view_map_boundaries_help_details": "If you believe the landscape can be improved, please contact your landscape’s manager or <1>send us a message <1 /></1>.",
+        "view_map_boundaries_help_url": "https://terraso.org/contact-us/",
+        "view_map_boundaries_update": "Update Geographic Info",
+        "view_manager_help": "{{name}}, you can update the landscape profile and also manage members as a Landscape manager for {{landscape}}. <1>Read more about Landscape manager</1>.",
+        "view_manager_help_url": "https://terraso.org/help/#landscape-manager-priviileges"
     },
     "common": {
         "dialog_cancel_label": "Cancel",
         "terraso_projectName": "Terraso",
-        "unexpected_error": "Oops, something went wrong. Please try it again in a few minutes.",
+        "unexpected_error": "Oops, something went wrong. Please try it again in a few minutes. {{error, errorParam(label: Error)}}",
         "loader_label": "Loading",
         "not_found_title": "Page not found",
         "not_found_message": "We couldn’t find the page you were looking for.",
@@ -227,8 +249,21 @@
         "locale_es-ES": "Español"
     },
     "terraso_api": {
+        "models": {
+            "Membership": "Membership",
+            "Group": "Group",
+            "Landscape": "Landscape"
+        },
+        "error": "Failed to execute request. {{code, errorParam(label: Code)}} {{field, errorParam(label: Field)}} {{model, errorParam(label: Model)}} {{context, errorParam(label: Context)}}",
         "error_unexpected": "Unexpected error",
-        "error_request_response": "Failed to connect with Terraso API"
+        "error_request_response": "Failed to connect with Terraso API",
+        "delete_not_allowed_base": "Not allowed to delete $t(terraso_api.models.{{model}})",
+        "delete_not_allowed": "$t(terraso_api.delete_not_allowed_base)",
+        "create_not_allowed_base": "Not allowed to create $t(terraso_api.models.{{model}})",
+        "create_not_allowed": "$t(terraso_api.create_not_allowed_base)",
+        "update_not_allowed_base": "Not allowed to update $t(terraso_api.models.{{model}})",
+        "update_not_allowed": "$t(terraso_api.update_not_allowed_base)",
+        "unique": "$t(terraso_api.models.{{model}}) {{field}} must be unique."
     },
     "gis": {
         "openstreetmap_api_error": "Failed to request data from nominatim.openstreetmap.org API"

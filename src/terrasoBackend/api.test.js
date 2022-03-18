@@ -7,6 +7,7 @@ global.fetch = jest.fn();
 global.console.error = jest.fn();
 
 test('Terraso API: request error', async () => {
+  global.console.warn = jest.fn();
   global.fetch.mockRejectedValue('Test Error');
   await expect(terrasoApi.request()).rejects.toEqual([
     'terraso_api.error_request_response',

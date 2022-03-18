@@ -159,6 +159,7 @@ test('LandscapeForm: Save form', async () => {
               description: 'Landscape Description',
               website: 'www.landscape.org',
               location: 'Location',
+              areaPolygon: '{ "key": "value" }',
             },
           },
         ],
@@ -199,6 +200,7 @@ test('LandscapeForm: Save form', async () => {
       name: 'New name',
       website: 'https://www.other.org',
       location: 'New location',
+      areaPolygon: '{"key":"value"}',
     },
   });
 });

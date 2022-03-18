@@ -20,6 +20,7 @@ const initialState = {
     fetching: true,
     message: null,
     landscape: null,
+    success: false,
   },
   membersLandscape: {
     data: null,
@@ -132,6 +133,7 @@ const landscapeSlice = createSlice({
         fetching: false,
         message: null,
         landscape: action.payload,
+        success: false,
       },
     }),
     [fetchLandscapeForm.rejected]: (state, action) => ({
@@ -167,6 +169,7 @@ const landscapeSlice = createSlice({
         ...state.form,
         fetching: false,
         landscape: action.payload,
+        success: true,
       },
     }),
     [saveLandscape.rejected]: (state, action) => ({

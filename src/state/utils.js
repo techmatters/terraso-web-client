@@ -22,13 +22,26 @@ const executeAuthRequest = (dispatch, action) =>
     return await action();
   });
 
-export const createAsyncThunk = (
-  name,
-  action,
-  onSuccessMessage,
-  customErrorMessage
-) =>
-  createAsyncThunkBase(name, async (input, thunkAPI) => {
+const generateErrorFallbacksPartial = name => {
+  const [slice, action] = _.split('/', name);
+  const baseCodes = [
+    code => [slice, action, code],
+    code => [slice, code],
+    code => [code],
+  ];
+  return codes =>
+    [
+      ..._.flatMap(baseCode => _.flatten([codes]).map(baseCode))(baseCodes),
+      ...[
+        [slice, action, 'unexpected_error'],
+        ['common', 'unexpected_error'],
+      ],
+    ].map(parts => parts.join('.'));
+};
+
+export const createAsyncThunk = (name, action, onSuccessMessage) => {
+  const generateErrorFallbacks = generateErrorFallbacksPartial(name);
+  return createAsyncThunkBase(name, async (input, thunkAPI) => {
     const { rejectWithValue, dispatch } = thunkAPI;
 
     const executeAction = async () => {
@@ -44,10 +57,18 @@ export const createAsyncThunk = (
     try {
       return await executeAuthRequest(dispatch, executeAction);
     } catch (error) {
-      const message = customErrorMessage
-        ? customErrorMessage(error)
-        : { severity: 'error', content: error };
-      dispatch(addMessage(message));
+      _.flatten([error]).forEach(error => {
+        const baseMessage = _.has('content', error)
+          ? { severity: 'error', ...error }
+          : { severity: 'error', content: [error], params: { error } };
+        const message = {
+          ..._.omit('content', baseMessage),
+          content: generateErrorFallbacks(baseMessage.content),
+        };
+        dispatch(addMessage(message));
+      });
+
       return rejectWithValue(error);
     }
   });
+};

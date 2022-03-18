@@ -79,7 +79,8 @@
         "view_document_title": "{{name}}",
         "members_document_title": "Miembros: {{name}}",
         "list_column_actions_description": "Acciones",
-        "members_list_column_actions_description": "Acciones"
+        "members_list_column_actions_description": "Acciones",
+        "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). Debe existir al menos un administrador."
     },
     "tool": {
         "avilability": "Disponibilidad",
@@ -199,12 +200,33 @@
         "view_document_title": "{{name}}",
         "members_document_title": "Miembros: {{name}}",
         "list_column_actions_description": "Acciones",
-        "view_map_title": "Mapa del paisaje"
+        "view_map_title": "Mapa del paisaje",
+        "boundaries_title": "Actualiza la información geográfica del paisaje",
+        "boundaries_subtitle": "Sube un nuevo archivo",
+        "boundaries_description": "Muestra el límite del paisaje en un mapa cargando un archivo GeoJSON. Puedes obtener una vista previa antes de reemplazar el mapa actual.",
+        "boundaries_help_geojson": "¿No tienes un archivo GeoJSON? Siga estas sencillas instrucciones para crear uno.",
+        "boundaries_help_geojson_url": "https://terraso.org/help/draw-landscape-boundary",
+        "boundaries_select_title": "Selecciona un archivo y obten una vista previa",
+        "boundaries_select_file": "Selecciona Archivo",
+        "boundaries_size": "Límite de tamaño de archivo: {{size}}MB",
+        "boundaries_format": "Formatos de archivo aceptados: *.json, *.geojson",
+        "boundaries_help_map": "Obten ayuda para cargar un archivo",
+        "boundaries_help_map_url": "https://terraso.org/es/contactanos/",
+        "boundaries_save": "Actualizar información geográfica",
+        "boundaries_cancel": "Cancelar",
+        "boundaries_drop_message": "Suelta tu archivo aquí",
+        "boundaries_format_error": "Formato de archivo incorrecto. Cargue un archivo GeoJSON.",
+        "view_map_boundaries_help": "Cómo mejorar la información geográfica",
+        "view_map_boundaries_help_details": "Si crees que el paisaje se puede mejorar, comuníquese con el administrador de su paisaje o <1>envíanos un mensaje <1 /></1>.",
+        "view_map_boundaries_help_url": "https://terraso.org/es/contactanos/",
+        "view_map_boundaries_update": "Actualizar información geográfica",
+        "view_manager_help": "{{name}}, puedes actualizar el perfil del paisaje y también administrar miembros como administrador del paisaje para {{landscape}}. <1>Lee más sobre administracion de paisajes</1>.",
+        "view_manager_help_url": "https://terraso.org/help/#landscape-manager-priviileges"
     },
     "common": {
         "dialog_cancel_label": "Cancelar",
         "terraso_projectName": "Terraso",
-        "unexpected_error": "Ups! Algo salió mal. Vuelve a intentarlo en unos minutos.",
+        "unexpected_error": "Ups! Algo salió mal. Vuelve a intentarlo en unos minutos. {{error, errorParam(label: Error)}}",
         "loader_label": "Cargando",
         "not_found_title": "Página no encontrada",
         "not_found_message": "No pudimos encontrar la página que estabas buscando.",
@@ -227,8 +249,21 @@
         "locale_es-ES": "Español"
     },
     "terraso_api": {
+        "models": {
+            "Membership": "Afiliación",
+            "Group": "Groupo",
+            "Landscape": "Paisaje"
+        },
+        "error": "No se pudo ejecutar la solicitud. {{code, errorParam(label: Codigo)}} {{field, errorParam(label: Campo)}} {{model, errorParam(label: Modelo)}} {{context, errorParam(label: Contexto)}}",
         "error_unexpected": "Error inesperado",
-        "error_request_response": "No se pudo conectar con la API de Terraso"
+        "error_request_response": "No se pudo conectar con la API de Terraso",
+        "delete_not_allowed_base": "No puedes eliminar $t(terraso_api.models.{{model}})",
+        "delete_not_allowed": "$t(terraso_api.delete_not_allowed_base)",
+        "create_not_allowed_base": "No puedes crear $t(terraso_api.models.{{model}})",
+        "create_not_allowed": "$t(terraso_api.create_not_allowed_base)",
+        "update_not_allowed_base": "No puedes actualizar $t(terraso_api.models.{{model}})",
+        "update_not_allowed": "$t(terraso_api.update_not_allowed_base)",
+        "unique": "$t(terraso_api.models.{{model}}) {{field}} Debe ser único."
     },
     "gis": {
         "openstreetmap_api_error": "Error al solicitar datos de la API nominatim.openstreetmap.org"

@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import _ from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
+import { Trans, useTranslation } from 'react-i18next';
 import {
   Typography,
   Grid,
@@ -11,24 +11,27 @@ import {
   CardContent,
   Link,
   Stack,
-  Box,
+  Paper,
+  Button,
+  Alert,
 } from '@mui/material';
 import PublicIcon from '@mui/icons-material/Public';
+import LaunchIcon from '@mui/icons-material/Launch';
 
 import { fetchLandscapeView } from 'landscape/landscapeSlice';
 import { withProps } from 'react-hoc';
+import { useDocumentTitle } from 'common/document';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
 import PageLoader from 'layout/PageLoader';
-import Map from 'gis/components/Map';
 import { GroupContextProvider } from 'group/groupContext';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import PageHeader from 'layout/PageHeader';
 import PageContainer from 'layout/PageContainer';
+import LandscapeMap from 'landscape/components/LandscapeMap';
+import Restricted from 'permissions/components/Restricted';
+import InlineHelp from 'common/components/InlineHelp';
 import theme from 'theme';
-import { useDocumentTitle } from 'common/document';
-
-import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.view_leave_label',
@@ -70,28 +73,12 @@ const LandscapeCard = ({ landscape }) => {
   );
 };
 
-const LandscapeMap = ({ landscape }) => {
-  const { t } = useTranslation();
-
-  return (
-    <Box component="section" aria-label={t('landscape.view_map_title')}>
-      <Map
-        bounds={getLandscapeBoundingBox(landscape)}
-        geojson={landscape.areaPolygon}
-        style={{
-          width: '100%',
-          height: '400px',
-        }}
-      />
-    </Box>
-  );
-};
-
 const LandscapeView = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { landscape, fetching } = useSelector(state => state.landscape.view);
+  const { data: user } = useSelector(state => state.account.currentUser);
   const { slug } = useParams();
 
   useDocumentTitle(
@@ -116,19 +103,64 @@ const LandscapeView = () => {
   return (
     <PageContainer>
       <PageHeader header={landscape.name} />
-      <Typography
-        variant="caption"
-        display="block"
-        sx={{
-          marginBottom: theme.spacing(3),
-          marginTop: theme.spacing(2),
-        }}
-      >
-        {landscape.location}
-      </Typography>
+      <Restricted permission="landscape.change" resource={landscape}>
+        <Alert severity="info" sx={{ marginBottom: 2 }}>
+          <Trans i18nKey="landscape.view_manager_help">
+            {{ name: t('user.full_name', { user }), landscape: landscape.name }}
+            <Link href={t('landscape.view_manager_help_url')}>link</Link>.
+          </Trans>
+        </Alert>
+      </Restricted>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <LandscapeMap landscape={landscape} />
+          <Paper variant="outlined" sx={{ padding: 2 }}>
+            <Typography
+              variant="caption"
+              display="block"
+              sx={{
+                marginBottom: theme.spacing(2),
+              }}
+            >
+              {landscape.location}
+            </Typography>
+            <LandscapeMap
+              landscape={landscape}
+              label={t('landscape.view_map_title')}
+            />
+            <InlineHelp
+              items={[
+                {
+                  title: t('landscape.view_map_boundaries_help'),
+                  details: (
+                    <Trans i18nKey="landscape.view_map_boundaries_help_details">
+                      Prefix
+                      <Link
+                        href={t('landscape.view_map_boundaries_help_url')}
+                        target="_blank"
+                      >
+                        link
+                        <LaunchIcon
+                          fontSize="small"
+                          sx={{ verticalAlign: 'bottom' }}
+                        />
+                      </Link>
+                      .
+                    </Trans>
+                  ),
+                },
+              ]}
+            />
+            <Restricted permission="landscape.change" resource={landscape}>
+              <Button
+                variant="outlined"
+                component={RouterLink}
+                to={`/landscapes/${landscape.slug}/boundaries`}
+                sx={{ marginTop: 2 }}
+              >
+                {t('landscape.view_map_boundaries_update')}
+              </Button>
+            </Restricted>
+          </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
           <LandscapeCard landscape={landscape} />
