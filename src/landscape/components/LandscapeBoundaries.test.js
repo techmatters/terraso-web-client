@@ -94,10 +94,8 @@ test('LandscapeBoundaries: Select file (Invalid)', async () => {
     },
   };
   fireEvent.drop(dropzone, data);
-  await waitFor(() =>
-    expect(
-      screen.getByText('Incorrect file format. Please upload a GeoJSON file.')
-    ).toBeInTheDocument()
+  await screen.findByText(
+    'Incorrect file format. Please upload a GeoJSON file.'
   );
 });
 test('LandscapeBoundaries: Select file', async () => {
@@ -139,13 +137,9 @@ test('LandscapeBoundaries: Select file', async () => {
     },
   };
   fireEvent.drop(dropzone, data);
-  await waitFor(() =>
-    expect(
-      screen.getByRole('button', {
-        name: 'Select File Accepted file formats: *.json, *.geojson File size limit: 1MB test.json 0.8KB',
-      })
-    ).toBeInTheDocument()
-  );
+  await screen.findByRole('button', {
+    name: 'Select File Accepted file formats: *.json, *.geojson File size limit: 1MB test.json 0.8KB',
+  });
 });
 test('LandscapeBoundaries: Show cancel', async () => {
   const navigate = jest.fn();
