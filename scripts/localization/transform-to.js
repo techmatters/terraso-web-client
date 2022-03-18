@@ -10,7 +10,7 @@ const args = process.argv.slice(2);
 
 if (args.length === 0) {
   console.log('Parameters [po|json]');
-  return;
+  process.exit(1);
 }
 
 const transformTo = args[0];
