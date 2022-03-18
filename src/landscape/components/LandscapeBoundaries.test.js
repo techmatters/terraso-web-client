@@ -225,9 +225,13 @@ test('LandscapeBoundaries: Save', async () => {
   };
   fireEvent.drop(dropzone, data);
   await waitFor(() =>
-    expect(screen.getByRole('button', { name: 'Update Geographic Info' })).not.toHaveAttribute('disabled')
+    expect(
+      screen.getByRole('button', { name: 'Update Geographic Info' })
+    ).not.toHaveAttribute('disabled')
   );
-  const saveButton = screen.getByRole('button', { name: 'Update Geographic Info' });
+  const saveButton = screen.getByRole('button', {
+    name: 'Update Geographic Info',
+  });
   expect(saveButton).toBeInTheDocument();
   expect(saveButton).not.toHaveAttribute('disabled');
   await act(async () => fireEvent.click(saveButton));
