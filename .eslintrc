@@ -20,6 +20,7 @@
     "plugin:lodash-fp/recommended"
   ],
   "rules": {
-    "prettier/prettier": "error"
+    "prettier/prettier": "error",
+    "testing-library/no-unnecessary-act": "off"
   }
 }
