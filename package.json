@@ -57,9 +57,9 @@
   ],
   "devDependencies": {
     "@babel/eslint-parser": "^7.17.0",
-    "eslint-config-prettier": "^8.5.0",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.4",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-lodash-fp": "^2.2.0-a1",
     "eslint-plugin-prettier": "^4.0.0",
     "flat": "^5.0.2",
