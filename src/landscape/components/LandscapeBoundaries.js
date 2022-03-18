@@ -17,7 +17,6 @@ import { useTranslation } from 'react-i18next';
 import { GEOJSON_MAX_SIZE } from 'config';
 import { fetchLandscapeForm, saveLandscape } from 'landscape/landscapeSlice';
 import { isValidGeoJson } from 'landscape/landscapeUtils';
-import { addMessage } from 'notifications/notificationsSlice';
 import logger from 'monitoring/logger';
 import PageContainer from 'layout/PageContainer';
 import LandscapeMap from './LandscapeMap';
@@ -67,7 +66,6 @@ const CurrentFile = ({ file }) => {
 
 const DropZone = props => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
   const { onFileSelected } = props;
   const [currentFile, setCurrentFile] = useState();
   const [error, setError] = useState();
@@ -83,15 +81,9 @@ const DropZone = props => {
         .catch(error => {
           setError(error);
           logger.error('Failed to parse file. Error:', error);
-          dispatch(
-            addMessage({
-              severity: 'error',
-              content: 'landscape.boundaries_format_error',
-            })
-          );
         });
     },
-    [onFileSelected, dispatch]
+    [onFileSelected]
   );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
