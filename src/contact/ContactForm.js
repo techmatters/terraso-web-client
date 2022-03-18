@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { addMessage } from 'notifications/notificationsSlice';
-import { useScript } from 'react-hooks';
+import { useScript } from 'custom-hooks';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 import { HUBSPOT_FORMS } from 'config';

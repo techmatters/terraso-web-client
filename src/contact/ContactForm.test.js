@@ -3,12 +3,12 @@ import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 
 import { render, screen } from 'tests/utils';
-import { useScript } from 'react-hooks';
+import { useScript } from 'custom-hooks';
 import ContactForm from 'contact/ContactForm';
 
 jest.mock('@mui/material/useMediaQuery');
 jest.mock('js-cookie');
-jest.mock('react-hooks');
+jest.mock('custom-hooks');
 
 const setup = async () => {
   await render(<ContactForm />, {
