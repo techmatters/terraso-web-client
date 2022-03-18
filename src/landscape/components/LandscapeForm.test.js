@@ -1,5 +1,4 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
 
 import { render, screen, fireEvent } from 'tests/utils';
@@ -138,9 +137,7 @@ test('LandscapeForm: Input validation', async () => {
   fireEvent.change(inputs.website, { target: { value: 'wwwotherorg' } });
   expect(inputs.website).toHaveValue('wwwotherorg');
 
-  await act(async () =>
-    fireEvent.click(screen.getByText(/Submit Landscape Info/i))
-  );
+  await fireEvent.click(screen.getByText(/Submit Landscape Info/i));
   expect(screen.getByText(/name is a required field/i)).toBeInTheDocument();
   expect(
     screen.getByText(/description is a required field/i)
@@ -188,9 +185,7 @@ test('LandscapeForm: Save form', async () => {
   });
   fireEvent.change(inputs.location, { target: { value: 'New location' } });
 
-  await act(async () =>
-    fireEvent.click(screen.getByText(/Submit Landscape Info/i))
-  );
+  await fireEvent.click(screen.getByText(/Submit Landscape Info/i));
   expect(terrasoApi.request).toHaveBeenCalledTimes(2);
   const saveCall = terrasoApi.request.mock.calls[1];
   expect(saveCall[1]).toStrictEqual({
@@ -235,9 +230,7 @@ test('LandscapeForm: Save form error', async () => {
   });
   fireEvent.change(inputs.location, { target: { value: 'New location' } });
 
-  await act(async () =>
-    fireEvent.click(screen.getByText(/Submit Landscape Info/i))
-  );
+  await fireEvent.click(screen.getByText(/Submit Landscape Info/i));
 
   // Test error display
   expect(screen.getByText(/Save Error/i)).toBeInTheDocument();
@@ -288,9 +281,8 @@ test('LandscapeForm: Save form (add)', async () => {
   });
   fireEvent.change(inputs.location, { target: { value: 'New location' } });
 
-  await act(async () =>
-    fireEvent.click(screen.getByText(/Submit Landscape Info/i))
-  );
+  await fireEvent.click(screen.getByText(/Submit Landscape Info/i));
+
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
   const saveCall = terrasoApi.request.mock.calls[0];
   expect(saveCall[1]).toStrictEqual({

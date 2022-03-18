@@ -1,6 +1,5 @@
 import React from 'react';
 import _ from 'lodash/fp';
-import { act } from 'react-dom/test-utils';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { render, screen, within, fireEvent } from 'tests/utils';
@@ -206,10 +205,8 @@ test('LandscapeList: List sort', async () => {
   expect(
     within(rows[1]).getByRole('cell', { name: 'Landscape Name 0' })
   ).toHaveAttribute('data-field', 'name');
-  await act(async () =>
-    fireEvent.click(
-      within(rows[0]).getByRole('columnheader', { name: 'Landscape' })
-    )
+  await fireEvent.click(
+    within(rows[0]).getByRole('columnheader', { name: 'Landscape' })
   );
   const sortedRows = screen.getAllByRole('row');
   expect(

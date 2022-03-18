@@ -1,6 +1,5 @@
 import React from 'react';
 import _ from 'lodash/fp';
-import { act } from 'react-dom/test-utils';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useSearchParams } from 'react-router-dom';
 
@@ -191,10 +190,8 @@ test('GroupList: List sort', async () => {
   expect(
     within(rows[1]).getByRole('cell', { name: 'Group name 0' })
   ).toHaveAttribute('data-field', 'name');
-  await act(async () =>
-    fireEvent.click(
-      within(rows[0]).getByRole('columnheader', { name: 'Group' })
-    )
+  await fireEvent.click(
+    within(rows[0]).getByRole('columnheader', { name: 'Group' })
   );
   const sortedRows = screen.getAllByRole('row');
   expect(
@@ -301,10 +298,8 @@ test('GroupList: URL params', async () => {
   expect(rows.length).toBe(7); // Second page + header
 
   // Sorting
-  await act(async () =>
-    fireEvent.click(
-      within(rows[0]).getByRole('columnheader', { name: 'Group' })
-    )
+  await fireEvent.click(
+    within(rows[0]).getByRole('columnheader', { name: 'Group' })
   );
   expect(setParamsMock).toHaveBeenCalledTimes(1);
   const setCallSort = setParamsMock.mock.calls[0];
@@ -314,9 +309,7 @@ test('GroupList: URL params', async () => {
   });
 
   // Page
-  await act(async () =>
-    fireEvent.click(screen.getByLabelText('Go to previous page'))
-  );
+  await fireEvent.click(screen.getByLabelText('Go to previous page'));
   const setCallPage = setParamsMock.mock.calls[1];
   expect(setCallPage[0]).toStrictEqual({
     page: 0,

@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import { act } from 'react-dom/test-utils';
 import { useLocation } from 'react-router-dom';
 import { Box } from '@mui/material';
 
@@ -74,8 +73,8 @@ test('Navigation: To content', async () => {
   ).toBeInTheDocument();
 
   expect(screen.getByRole('main')).not.toHaveFocus();
-  await act(async () =>
-    fireEvent.click(screen.getByRole('link', { name: 'Skip to main content' }))
+  await fireEvent.click(
+    screen.getByRole('link', { name: 'Skip to main content' })
   );
   expect(screen.getByRole('main')).toHaveFocus();
 });
@@ -92,10 +91,8 @@ test('Navigation: To navigation', async () => {
   ).toBeInTheDocument();
 
   expect(screen.getByRole('navigation')).not.toHaveFocus();
-  await act(async () =>
-    fireEvent.click(
-      screen.getByRole('link', { name: 'Skip to main navigation' })
-    )
+  await fireEvent.click(
+    screen.getByRole('link', { name: 'Skip to main navigation' })
   );
   expect(screen.getByRole('navigation')).toHaveFocus();
 });

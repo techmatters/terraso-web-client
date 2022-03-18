@@ -1,6 +1,5 @@
 import React from 'react';
 import _ from 'lodash/fp';
-import { act } from 'react-dom/test-utils';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import i18n from 'localization/i18n';
@@ -45,13 +44,9 @@ test('LocalePicker: Change locale', async () => {
   await setup();
 
   expect(screen.queryByText('English')).toBeInTheDocument();
-  await act(async () =>
-    fireEvent.mouseDown(screen.getByRole('button', { name: /English/i }))
-  );
+  await fireEvent.mouseDown(screen.getByRole('button', { name: /English/i }));
   const listbox = within(screen.getByRole('listbox'));
-  await act(async () =>
-    fireEvent.click(listbox.getByRole('option', { name: /Español/i }))
-  );
+  await fireEvent.click(listbox.getByRole('option', { name: /Español/i }));
   expect(screen.getByRole('button', { name: /Español/i })).toBeInTheDocument();
 
   const savePreferenceCall = terrasoApi.request.mock.calls[0];
@@ -68,13 +63,9 @@ test('LocalePicker: Dont save if no user', async () => {
   await render(<LocalePicker />);
 
   expect(screen.queryByText('English')).toBeInTheDocument();
-  await act(async () =>
-    fireEvent.mouseDown(screen.getByRole('button', { name: /English/i }))
-  );
+  await fireEvent.mouseDown(screen.getByRole('button', { name: /English/i }));
   const listbox = within(screen.getByRole('listbox'));
-  await act(async () =>
-    fireEvent.click(listbox.getByRole('option', { name: /Español/i }))
-  );
+  await fireEvent.click(listbox.getByRole('option', { name: /Español/i }));
   expect(screen.getByRole('button', { name: /Español/i })).toBeInTheDocument();
   expect(terrasoApi.request).toHaveBeenCalledTimes(0);
 });
@@ -90,12 +81,8 @@ test('LocalePicker: Change locale (small screen)', async () => {
   await setup();
 
   expect(screen.queryByText('EN')).toBeInTheDocument();
-  await act(async () =>
-    fireEvent.mouseDown(screen.getByRole('button', { name: /EN/i }))
-  );
+  await fireEvent.mouseDown(screen.getByRole('button', { name: /EN/i }));
   const listbox = within(screen.getByRole('listbox'));
-  await act(async () =>
-    fireEvent.click(listbox.getByRole('option', { name: /ES/i }))
-  );
+  await fireEvent.click(listbox.getByRole('option', { name: /ES/i }));
   expect(screen.getByRole('button', { name: /ES/i })).toBeInTheDocument();
 });

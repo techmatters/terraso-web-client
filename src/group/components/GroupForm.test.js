@@ -1,5 +1,4 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { render, screen, fireEvent } from 'tests/utils';
@@ -118,7 +117,7 @@ test('GroupForm: Show cancel', async () => {
 
   const cancelButton = screen.getByRole('button', { name: 'Cancel' });
   expect(cancelButton).toBeInTheDocument();
-  await act(async () => fireEvent.click(cancelButton));
+  await fireEvent.click(cancelButton);
   expect(navigate.mock.calls[0]).toEqual([-1]);
 });
 test('GroupForm: Input change', async () => {
@@ -195,7 +194,7 @@ test('GroupForm: Input validation', async () => {
   fireEvent.change(inputs.website, { target: { value: 'wwwotherorg' } });
   expect(inputs.website).toHaveValue('wwwotherorg');
 
-  await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
+  await fireEvent.click(screen.getByText(/Save Changes/i));
   expect(screen.getByText(/name is a required field/i)).toBeInTheDocument();
   expect(
     screen.getByText(/description is a required field/i)
@@ -236,7 +235,7 @@ test('GroupForm: website accepts address without protocol', async () => {
 
   fireEvent.change(inputs.website, { target: { value: 'example.org' } });
 
-  await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
+  await fireEvent.click(screen.getByText(/Save Changes/i));
   const saveCall = terrasoApi.request.mock.calls[1];
 
   expect(saveCall[1].input.website).toEqual('https://example.org');
@@ -282,7 +281,7 @@ test('GroupForm: Save form', async () => {
     target: { value: 'https://www.other.org' },
   });
 
-  await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
+  await fireEvent.click(screen.getByText(/Save Changes/i));
   expect(terrasoApi.request).toHaveBeenCalledTimes(2);
   const saveCall = terrasoApi.request.mock.calls[1];
   expect(saveCall[1]).toStrictEqual({
@@ -327,7 +326,7 @@ test('GroupForm: Save form error', async () => {
     target: { value: 'https://www.other.org' },
   });
 
-  await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
+  await fireEvent.click(screen.getByText(/Save Changes/i));
   expect(terrasoApi.request).toHaveBeenCalledTimes(2);
 
   // Test error display
@@ -380,7 +379,7 @@ test('GroupForm: Save form (add)', async () => {
   });
   fireEvent.change(inputs.email, { target: { value: 'other@group.org' } });
 
-  await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
+  await fireEvent.click(screen.getByText(/Save Changes/i));
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
   const saveCall = terrasoApi.request.mock.calls[0];
   expect(saveCall[1]).toStrictEqual({
