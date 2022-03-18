@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash/fp';
+import { act } from 'react-dom/test-utils';
 
 import { render, screen, fireEvent } from 'tests/utils';
 import AccountProfile from 'account/components/AccountProfile';
@@ -92,7 +93,9 @@ test('AccountProfile: Save', async () => {
   fireEvent.change(inputs.firstName, { target: { value: 'Pablo' } });
   fireEvent.change(inputs.lastName, { target: { value: 'Perez' } });
 
-  await fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
+  );
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
   const saveCall = terrasoApi.request.mock.calls[0];
   expect(saveCall[1]).toStrictEqual({
@@ -125,7 +128,9 @@ test('AccountProfile: Save error', async () => {
   fireEvent.change(inputs.firstName, { target: { value: 'Pablo' } });
   fireEvent.change(inputs.lastName, { target: { value: 'Perez' } });
 
-  await fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
+  );
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
 
   // Test error display

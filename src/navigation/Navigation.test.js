@@ -1,4 +1,5 @@
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { useLocation } from 'react-router-dom';
 
 import { render, screen, fireEvent } from 'tests/utils';
@@ -82,7 +83,9 @@ test('Navigation: Test navigation', async () => {
       pathname: '/landscapes',
     });
   await setup();
-  await fireEvent.click(screen.getByRole('link', { name: 'Landscapes' }));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('link', { name: 'Landscapes' }))
+  );
   expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute(
     'aria-current',
     'page'

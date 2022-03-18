@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash/fp';
+import { act } from 'react-dom/test-utils';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { render, screen, within, fireEvent } from 'tests/utils';
@@ -357,8 +358,10 @@ test('LandscapeMembers: Manager actions', async () => {
   );
   const roleButton = within(rows[3]).getByRole('button', { name: 'Member' });
   expect(roleButton).toBeInTheDocument();
-  await fireEvent.mouseDown(roleButton);
-  await fireEvent.click(screen.getByRole('option', { name: 'Manager' }));
+  await act(async () => fireEvent.mouseDown(roleButton));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('option', { name: 'Manager' }))
+  );
   expect(
     within(rows[3]).getByRole('cell', { name: 'Manager' })
   ).toHaveAttribute('data-field', 'role');
@@ -366,8 +369,10 @@ test('LandscapeMembers: Manager actions', async () => {
   // Remove member
   expect(rows.length).toBe(4);
   const removeButton = within(rows[3]).getByRole('button', { name: 'Remove' });
-  await fireEvent.click(removeButton);
-  await fireEvent.click(screen.getByRole('button', { name: 'Remove Member' }));
+  await act(async () => fireEvent.click(removeButton));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Remove Member' }))
+  );
   const removedRows = screen.getAllByRole('row');
   expect(removedRows.length).toBe(3);
 });

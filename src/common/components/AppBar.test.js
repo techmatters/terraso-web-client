@@ -1,4 +1,5 @@
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Cookies from 'js-cookie';
 
@@ -65,7 +66,9 @@ test('AppBar: Sign out', async () => {
     'src',
     'logo.svg'
   );
-  await fireEvent.click(screen.getByRole('button', { name: 'Sign Out' }));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Sign Out' }))
+  );
   expect(Cookies.remove).toHaveBeenCalledTimes(2);
   const saveCall = Cookies.remove.mock.calls[1];
   expect(saveCall[1]).toStrictEqual({

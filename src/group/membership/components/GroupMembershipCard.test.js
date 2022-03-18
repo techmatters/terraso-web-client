@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash/fp';
+import { act } from 'react-dom/test-utils';
 
 import { render, screen, fireEvent } from 'tests/utils';
 import * as terrasoApi from 'terrasoBackend/api';
@@ -107,7 +108,9 @@ test('GroupMembershipCard: Join error', async () => {
   expect(
     screen.getByRole('button', { name: 'Join Label' })
   ).toBeInTheDocument();
-  await fireEvent.click(screen.getByRole('button', { name: 'Join Label' }));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Join Label' }))
+  );
   expect(screen.getByText(/Join error/i)).toBeInTheDocument();
 });
 test('GroupMembershipCard: Join (not found)', async () => {
@@ -139,7 +142,9 @@ test('GroupMembershipCard: Join (not found)', async () => {
   expect(
     screen.getByRole('button', { name: 'Join Label' })
   ).toBeInTheDocument();
-  await fireEvent.click(screen.getByRole('button', { name: 'Join Label' }));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Join Label' }))
+  );
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
   expect(screen.getByText('Group not found')).toBeInTheDocument();
 });
@@ -189,7 +194,9 @@ test('GroupMembershipCard: Join', async () => {
   expect(
     screen.getByRole('button', { name: 'Join Label' })
   ).toBeInTheDocument();
-  await fireEvent.click(screen.getByRole('button', { name: 'Join Label' }));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Join Label' }))
+  );
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
   expect(
     screen.getByText('1 Terraso member has affiliated with Owner Name.')
@@ -228,7 +235,9 @@ test('GroupMembershipCard: Leave error', async () => {
   expect(
     screen.getByRole('button', { name: 'Leave Label' })
   ).toBeInTheDocument();
-  await fireEvent.click(screen.getByRole('button', { name: 'Leave Label' }));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Leave Label' }))
+  );
   // Confirm dialog
   expect(screen.getByText('Leave “Owner Name”')).toBeInTheDocument();
   expect(
@@ -237,7 +246,9 @@ test('GroupMembershipCard: Leave error', async () => {
   expect(
     screen.getByRole('button', { name: 'Leave Group' })
   ).toBeInTheDocument();
-  await fireEvent.click(screen.getByRole('button', { name: 'Leave Group' }));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Leave Group' }))
+  );
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
   expect(screen.getByText(/Leave error/i)).toBeInTheDocument();
@@ -283,12 +294,16 @@ test('GroupMembershipCard: Leave', async () => {
   expect(
     screen.getByRole('button', { name: 'Leave Label' })
   ).toBeInTheDocument();
-  await fireEvent.click(screen.getByRole('button', { name: 'Leave Label' }));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Leave Label' }))
+  );
   // Confirm dialog
   expect(
     screen.getByRole('button', { name: 'Leave Group' })
   ).toBeInTheDocument();
-  await fireEvent.click(screen.getByRole('button', { name: 'Leave Group' }));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Leave Group' }))
+  );
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
 
   expect(

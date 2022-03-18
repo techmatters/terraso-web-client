@@ -1,4 +1,5 @@
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { render, screen, fireEvent, waitFor } from 'tests/utils';
@@ -93,8 +94,10 @@ test('LandscapeBoundaries: Select file (Invalid)', async () => {
     },
   };
   fireEvent.drop(dropzone, data);
-  await screen.findByText(
-    'Incorrect file format. Please upload a GeoJSON file.'
+  await waitFor(() =>
+    expect(
+      screen.getByText('Incorrect file format. Please upload a GeoJSON file.')
+    ).toBeInTheDocument()
   );
 });
 test('LandscapeBoundaries: Select file', async () => {
@@ -136,9 +139,13 @@ test('LandscapeBoundaries: Select file', async () => {
     },
   };
   fireEvent.drop(dropzone, data);
-  await screen.findByRole('button', {
-    name: 'Select File Accepted file formats: *.json, *.geojson File size limit: 1MB test.json 0.8KB',
-  });
+  await waitFor(() =>
+    expect(
+      screen.getByRole('button', {
+        name: 'Select File Accepted file formats: *.json, *.geojson File size limit: 1MB test.json 0.8KB',
+      })
+    ).toBeInTheDocument()
+  );
 });
 test('LandscapeBoundaries: Show cancel', async () => {
   const navigate = jest.fn();
@@ -162,7 +169,7 @@ test('LandscapeBoundaries: Show cancel', async () => {
 
   const cancelButton = screen.getByRole('button', { name: 'Cancel' });
   expect(cancelButton).toBeInTheDocument();
-  await fireEvent.click(cancelButton);
+  await act(async () => fireEvent.click(cancelButton));
   expect(navigate.mock.calls[0]).toEqual(['/landscapes/slug-1']);
 });
 test('LandscapeBoundaries: Save', async () => {
@@ -227,7 +234,7 @@ test('LandscapeBoundaries: Save', async () => {
   });
   expect(saveButton).toBeInTheDocument();
   expect(saveButton).not.toHaveAttribute('disabled');
-  await fireEvent.click(saveButton);
+  await act(async () => fireEvent.click(saveButton));
   expect(terrasoApi.request).toHaveBeenCalledTimes(2);
   const saveCall = terrasoApi.request.mock.calls[1];
   expect(saveCall[1]).toStrictEqual({
