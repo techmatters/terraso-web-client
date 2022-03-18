@@ -97,16 +97,10 @@ const Form = props => {
         item
         container
         xs={12}
-        spacing={2}
         direction="row"
         justifyContent="space-between"
         sx={{ marginTop: theme.spacing(2) }}
       >
-        {onCancel && (
-          <Button variant="text" onClick={onCancel}>
-            {t(cancelLabel)}
-          </Button>
-        )}
         <Button
           type="submit"
           variant="contained"
@@ -114,6 +108,11 @@ const Form = props => {
         >
           {t(saveLabel)}
         </Button>
+        {onCancel && (
+          <Button variant="text" onClick={onCancel}>
+            {t(cancelLabel)}
+          </Button>
+        )}
       </Grid>
     </Grid>
   );
