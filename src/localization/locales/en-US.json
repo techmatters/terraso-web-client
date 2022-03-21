@@ -133,7 +133,7 @@
     },
     "footer": {
         "help": { "text": "Terraso Help", "url": "https://terraso.org/help/" },
-        "contact": { "text": "Contact", "url": "/contact" },
+        "contact": { "text": "Contact", "to": "/contact" },
         "terms": { "text": "Terms of Use", "url": "#" },
         "privacy": { "text": "Privacy Policy", "url": "https://techmatters.org/privacy-policy/" },
         "data": { "text": "Data Policy", "url": "#"}
@@ -267,5 +267,9 @@
     },
     "gis": {
         "openstreetmap_api_error": "Failed to request data from nominatim.openstreetmap.org API"
+    },
+    "contact": {
+        "success": "Your message has been sent. Terraso will follow up within two business days.",
+        "iframe_title": "Contact Terraso"
     }
 }

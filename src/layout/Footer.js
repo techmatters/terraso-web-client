@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Link, Typography, Grid } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 
 import theme from 'theme';
 
@@ -35,7 +36,9 @@ const FooterLink = ({ link, showBorder }) => {
         <Link
           variant="body2"
           underline="none"
-          href={t(link.url)}
+          {...(link.to
+            ? { component: RouterLink, to: t(link.to) }
+            : { href: t(link.url) })}
           sx={{
             color: palette.white,
             ...(showBorder ? borderStyle : {}),

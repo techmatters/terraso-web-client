@@ -133,7 +133,7 @@
     },
     "footer": {
         "help": { "text": "Ayuda de Terraso", "url": "https://terraso.org/es/ayuda/" },
-        "contact": { "text": "Contacto", "url": "/contact" },
+        "contact": { "text": "Contacto", "to": "/contact" },
         "terms": { "text": "Términos de uso", "url": "#" },
         "privacy": { "text": "Política de privacidad", "url": "https://techmatters.org/privacy-policy/" },
         "data": { "text": "Política de datos", "url": "#"}
@@ -267,5 +267,9 @@
     },
     "gis": {
         "openstreetmap_api_error": "Error al solicitar datos de la API nominatim.openstreetmap.org"
+    },
+    "contact": {
+        "success": "Tu mensaje ha sido enviado. Terraso hará un seguimiento dentro de dos días hábiles.",
+        "iframe_title": "Contacto Terraso"
     }
 }
