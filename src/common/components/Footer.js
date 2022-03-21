@@ -81,8 +81,6 @@ const Footer = () => {
       component="footer"
       justifyContent="space-between"
       sx={{
-        position: 'fixed',
-        bottom: 0,
         width: '100%',
         background: palette.secondary.main,
         color: palette.white,

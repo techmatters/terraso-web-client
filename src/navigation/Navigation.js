@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useLocation, Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { Button, Box, List, ListItem } from '@mui/material';
+import { Button, List, ListItem, Container } from '@mui/material';
 
 const PAGES = {
   '/': {
@@ -75,7 +75,7 @@ const Navigation = React.forwardRef((props, ref) => {
   }
 
   return (
-    <Box
+    <Container
       component="nav"
       id="main-navigation"
       tabIndex="-1"
@@ -97,7 +97,7 @@ const Navigation = React.forwardRef((props, ref) => {
           <NavigationLink key={path} path={path} selected={index === value} />
         ))}
       </List>
-    </Box>
+    </Container>
   );
 });
 
