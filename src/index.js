@@ -22,7 +22,14 @@ const App = () => {
   return (
     <>
       <SkipLinks contentRef={contentRef} navigationRef={navigationRef} />
-      <Box sx={{ flexGrow: 1, bgcolor: 'gray.lite2' }}>
+      <Box
+        sx={{
+          bgcolor: 'gray.lite2',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100vh',
+        }}
+      >
         <AppBar />
         <Navigation ref={navigationRef} />
         <Box
@@ -33,6 +40,7 @@ const App = () => {
           sx={{
             bgcolor: 'white',
             marginBottom: { xs: '29vh', sm: '15vh', md: '10vh' },
+            flex: 1,
           }}
         >
           <Routes />
