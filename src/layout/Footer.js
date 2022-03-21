@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Link, Typography, Grid } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 
 import theme from 'theme';
 
@@ -11,7 +12,7 @@ const year = new Date().getFullYear();
 
 const footerLinks = [
   { url: '#', text: 'footer.help' },
-  { url: 'https://terraso.org/contact-us/', text: 'footer.contact' },
+  { to: '/contact', text: 'footer.contact' },
   { url: '#', text: 'footer.terms' },
   { url: 'https://techmatters.org/privacy-policy/', text: 'footer.privacy' },
   { url: '#', text: 'footer.data' },
@@ -45,7 +46,9 @@ const FooterLink = ({ index, link }) => {
         <Link
           variant="body2"
           underline="none"
-          href={link.url}
+          {...(link.to
+            ? { component: RouterLink, to: link.to }
+            : { href: link.url })}
           sx={{
             color: palette.white,
             ...(showBorder ? borderStyle : {}),

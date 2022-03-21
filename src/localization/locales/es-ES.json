@@ -267,5 +267,9 @@
     },
     "gis": {
         "openstreetmap_api_error": "Error al solicitar datos de la API nominatim.openstreetmap.org"
+    },
+    "contact": {
+        "success": "Tu mensaje ha sido enviado. Terraso hará un seguimiento dentro de dos días hábiles.",
+        "iframe_title": "Contacto Terraso"
     }
 }
