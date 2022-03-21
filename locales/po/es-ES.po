@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-02-17T22:24:18.465Z\n"
-"PO-Revision-Date: 2022-02-17T22:24:18.465Z\n"
+"POT-Creation-Date: 2022-03-21T20:27:51.377Z\n"
+"PO-Revision-Date: 2022-03-21T20:27:51.377Z\n"
 
 msgid "home##title"
 msgstr "Inicio"
@@ -63,20 +63,35 @@ msgstr ""
 "Si aún no tiene una cuenta de Terraso, al iniciar sesión se creará una de "
 "acuerdo con nuestros <a href='#'>Términos de servicio</a>."
 
-msgid "footer##help"
+msgid "footer##help##text"
 msgstr "Ayuda de Terraso"
 
-msgid "footer##contact"
+msgid "footer##help##url"
+msgstr "https://terraso.org/es/ayuda/"
+
+msgid "footer##contact##text"
 msgstr "Contacto"
 
-msgid "footer##terms"
+msgid "footer##contact##url"
+msgstr "/contact"
+
+msgid "footer##terms##text"
 msgstr "Términos de uso"
 
-msgid "footer##privacy"
+msgid "footer##terms##url"
+msgstr "#"
+
+msgid "footer##privacy##text"
 msgstr "Política de privacidad"
 
-msgid "footer##data"
+msgid "footer##privacy##url"
+msgstr "https://techmatters.org/privacy-policy/"
+
+msgid "footer##data##text"
 msgstr "Política de datos"
+
+msgid "footer##data##url"
+msgstr "#"
 
 msgid "navigation##home"
 msgstr "Inicio"
@@ -89,6 +104,24 @@ msgstr "Grupos"
 
 msgid "navigation##tools"
 msgstr "Herramientas"
+
+msgid "terraso##models##Membership"
+msgstr "Afiliación"
+
+msgid "terraso##models##Group"
+msgstr "Groupo"
+
+msgid "terraso##models##Landscape"
+msgstr "Paisaje"
+
+msgid "terraso##error"
+msgstr ""
+"No se pudo ejecutar la solicitud. {{code, errorParam(label: Codigo)}} "
+"{{field, errorParam(label: Campo)}} {{model, errorParam(label: Modelo)}} "
+"{{context, errorParam(label: Contexto)}}"
+
+msgid "terraso##unique"
+msgstr "$t(terraso_api.models.{{model}}) {{field}} Debe ser único."
 
 msgctxt "title"
 msgid "home##page"
@@ -242,6 +275,18 @@ msgctxt "title"
 msgid "landscape##view_map"
 msgstr "Mapa del paisaje"
 
+msgctxt "title"
+msgid "landscape##boundaries"
+msgstr "Actualiza la información geográfica del paisaje"
+
+msgctxt "title"
+msgid "landscape##boundaries_select"
+msgstr "Selecciona un archivo y obten una vista previa"
+
+msgctxt "title"
+msgid "common##not_found"
+msgstr "Página no encontrada"
+
 msgctxt "out"
 msgid "user##sign"
 msgstr "Cerrar sesión"
@@ -271,6 +316,18 @@ msgstr "¿Está seguro de que desea abandonar el paisaje “{{name}}”?"
 msgctxt "message"
 msgid "landscape##members_remove_confirmation"
 msgstr "Estás a punto de eliminar a “{{userName}}” del paisaje “{{name}}”."
+
+msgctxt "message"
+msgid "landscape##boundaries_drop"
+msgstr "Suelta tu archivo aquí"
+
+msgctxt "message"
+msgid "common##not_found"
+msgstr "No pudimos encontrar la página que estabas buscando."
+
+msgctxt "message"
+msgid "common##not_found_help"
+msgstr "Puedes <1>contarnos qué salió mal</1>."
 
 msgctxt "button"
 msgid "user##edit_profile"
@@ -560,6 +617,12 @@ msgctxt "description"
 msgid "landscape##list_column_actions"
 msgstr "Acciones"
 
+msgctxt "description"
+msgid "landscape##boundaries"
+msgstr ""
+"Muestra el límite del paisaje en un mapa cargando un archivo GeoJSON. "
+"Puedes obtener una vista previa antes de reemplazar el mapa actual."
+
 msgctxt "placeholder"
 msgid "group##form_description"
 msgstr ""
@@ -682,6 +745,12 @@ msgctxt "role"
 msgid "group##members_list_column"
 msgstr "Rol"
 
+msgctxt "count"
+msgid "group##delete_not_allowed_manager"
+msgstr ""
+"$t(terraso_api.delete_not_allowed_base). Debe existir al menos un "
+"administrador."
+
 msgctxt "to"
 msgid "tool##go"
 msgstr "Ir a {{tool}}"
@@ -747,17 +816,98 @@ msgctxt "location"
 msgid "landscape##list_column"
 msgstr "Ubicación"
 
-msgctxt "projectName"
-msgid "common##terraso"
-msgstr "Terraso"
+msgctxt "subtitle"
+msgid "landscape##boundaries"
+msgstr "Sube un nuevo archivo"
+
+msgctxt "geojson"
+msgid "landscape##boundaries_help"
+msgstr ""
+"¿No tienes un archivo GeoJSON? Siga estas sencillas instrucciones para "
+"crear uno."
+
+msgctxt "url"
+msgid "landscape##boundaries_help_geojson"
+msgstr "https://terraso.org/help/draw-landscape-boundary"
+
+msgctxt "url"
+msgid "landscape##boundaries_help_map"
+msgstr "https://terraso.org/es/contactanos/"
+
+msgctxt "url"
+msgid "landscape##view_map_boundaries_help"
+msgstr "https://terraso.org/es/contactanos/"
+
+msgctxt "url"
+msgid "landscape##view_manager_help"
+msgstr "https://terraso.org/help/#landscape-manager-priviileges"
+
+msgctxt "file"
+msgid "landscape##boundaries_select"
+msgstr "Selecciona Archivo"
+
+msgctxt "size"
+msgid "landscape##boundaries"
+msgstr "Límite de tamaño de archivo: {{size}}MB"
+
+msgctxt "format"
+msgid "landscape##boundaries"
+msgstr "Formatos de archivo aceptados: *.json, *.geojson"
+
+msgctxt "map"
+msgid "landscape##boundaries_help"
+msgstr "Obten ayuda para cargar un archivo"
+
+msgctxt "save"
+msgid "landscape##boundaries"
+msgstr "Actualizar información geográfica"
+
+msgctxt "cancel"
+msgid "landscape##boundaries"
+msgstr "Cancelar"
+
+msgctxt "error"
+msgid "landscape##boundaries_format"
+msgstr "Formato de archivo incorrecto. Cargue un archivo GeoJSON."
 
 msgctxt "error"
 msgid "common##unexpected"
-msgstr "Ups! Algo salió mal. Vuelve a intentarlo en unos minutos."
+msgstr ""
+"Ups! Algo salió mal. Vuelve a intentarlo en unos minutos. {{error, "
+"errorParam(label: Error)}}"
 
 msgctxt "error"
 msgid "gis##openstreetmap_api"
 msgstr "Error al solicitar datos de la API nominatim.openstreetmap.org"
+
+msgctxt "help"
+msgid "landscape##view_map_boundaries"
+msgstr "Cómo mejorar la información geográfica"
+
+msgctxt "help"
+msgid "landscape##view_manager"
+msgstr ""
+"{{name}}, puedes actualizar el perfil del paisaje y también administrar "
+"miembros como administrador del paisaje para {{landscape}}. <1>Lee más "
+"sobre administracion de paisajes</1>."
+
+msgctxt "details"
+msgid "landscape##view_map_boundaries_help"
+msgstr ""
+"Si crees que el paisaje se puede mejorar, comuníquese con el administrador "
+"de su paisaje o <1>envíanos un mensaje <1 /></1>."
+
+msgctxt "update"
+msgid "landscape##view_map_boundaries"
+msgstr "Actualizar información geográfica"
+
+msgctxt "projectName"
+msgid "common##terraso"
+msgstr "Terraso"
+
+msgctxt "code"
+msgid "common##not_found_error"
+msgstr "Código de error: 404"
 
 msgctxt "invalid"
 msgid "form##validation_field"
@@ -802,3 +952,27 @@ msgstr "Error inesperado"
 msgctxt "response"
 msgid "terraso##error_request"
 msgstr "No se pudo conectar con la API de Terraso"
+
+msgctxt "base"
+msgid "terraso##delete_not_allowed"
+msgstr "No puedes eliminar $t(terraso_api.models.{{model}})"
+
+msgctxt "base"
+msgid "terraso##create_not_allowed"
+msgstr "No puedes crear $t(terraso_api.models.{{model}})"
+
+msgctxt "base"
+msgid "terraso##update_not_allowed"
+msgstr "No puedes actualizar $t(terraso_api.models.{{model}})"
+
+msgctxt "allowed"
+msgid "terraso##delete_not"
+msgstr "$t(terraso_api.delete_not_allowed_base)"
+
+msgctxt "allowed"
+msgid "terraso##create_not"
+msgstr "$t(terraso_api.create_not_allowed_base)"
+
+msgctxt "allowed"
+msgid "terraso##update_not"
+msgstr "$t(terraso_api.update_not_allowed_base)"
