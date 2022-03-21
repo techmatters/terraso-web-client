@@ -31,7 +31,7 @@ test('LocalePicker: Use saved preference', async () => {
     )({})
   );
 
-  expect(screen.queryByText('Español')).toBeInTheDocument();
+  expect(screen.getByText('Español')).toBeInTheDocument();
 });
 test('LocalePicker: Change locale', async () => {
   terrasoApi.request.mockResolvedValue(
@@ -43,8 +43,7 @@ test('LocalePicker: Change locale', async () => {
   );
   useMediaQuery.mockReturnValue(false);
   await setup();
-
-  expect(screen.queryByText('English')).toBeInTheDocument();
+  expect(screen.getByText('English')).toBeInTheDocument();
   await act(async () =>
     fireEvent.mouseDown(screen.getByRole('button', { name: /English/i }))
   );
@@ -67,7 +66,7 @@ test('LocalePicker: Dont save if no user', async () => {
   useMediaQuery.mockReturnValue(false);
   await render(<LocalePicker />);
 
-  expect(screen.queryByText('English')).toBeInTheDocument();
+  expect(screen.getByText('English')).toBeInTheDocument();
   await act(async () =>
     fireEvent.mouseDown(screen.getByRole('button', { name: /English/i }))
   );
@@ -89,7 +88,7 @@ test('LocalePicker: Change locale (small screen)', async () => {
   useMediaQuery.mockReturnValue(true);
   await setup();
 
-  expect(screen.queryByText('EN')).toBeInTheDocument();
+  expect(screen.getByText('EN')).toBeInTheDocument();
   await act(async () =>
     fireEvent.mouseDown(screen.getByRole('button', { name: /EN/i }))
   );

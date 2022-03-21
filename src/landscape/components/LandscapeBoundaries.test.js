@@ -94,11 +94,11 @@ test('LandscapeBoundaries: Select file (Invalid)', async () => {
     },
   };
   fireEvent.drop(dropzone, data);
-  await waitFor(() =>
-    expect(
-      screen.getByText('Incorrect file format. Please upload a GeoJSON file.')
-    ).toBeInTheDocument()
-  );
+  expect(
+    await screen.findByText(
+      'Incorrect file format. Please upload a GeoJSON file.'
+    )
+  ).toBeInTheDocument();
 });
 test('LandscapeBoundaries: Select file', async () => {
   terrasoApi.request.mockReturnValue(
@@ -139,13 +139,11 @@ test('LandscapeBoundaries: Select file', async () => {
     },
   };
   fireEvent.drop(dropzone, data);
-  await waitFor(() =>
-    expect(
-      screen.getByRole('button', {
-        name: 'Select File Accepted file formats: *.json, *.geojson File size limit: 1MB test.json 0.8KB',
-      })
-    ).toBeInTheDocument()
-  );
+  expect(
+    await screen.findByRole('button', {
+      name: 'Select File Accepted file formats: *.json, *.geojson File size limit: 1MB test.json 0.8KB',
+    })
+  ).toBeInTheDocument();
 });
 test('LandscapeBoundaries: Show cancel', async () => {
   const navigate = jest.fn();

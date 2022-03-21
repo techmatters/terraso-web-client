@@ -27,7 +27,7 @@ const LocalizedComponent = () => {
 
 test('i18n: Test locale change', async () => {
   await render(<LocalizedComponent />);
-  expect(screen.queryByText('English content')).toBeInTheDocument();
+  expect(screen.getByText('English content')).toBeInTheDocument();
   await act(async () => i18n.changeLanguage('es-EC'));
-  expect(screen.queryByText('Contenido en Español')).toBeInTheDocument();
+  expect(screen.getByText('Contenido en Español')).toBeInTheDocument();
 });
