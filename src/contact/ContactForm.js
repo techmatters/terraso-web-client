@@ -1,4 +1,3 @@
-/* global hbspt */
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash/fp';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,7 +15,9 @@ const ContactForm = () => {
   const { data: user } = useSelector(state => state.account.currentUser);
   const [loadingForm, setLoadingForm] = useState(true);
 
-  const loadingDependencies = useScript('//js.hsforms.net/forms/shell.js');
+  const loadingDependencies = useScript(
+    'https://js.hsforms.net/forms/shell.js'
+  );
   const loading = loadingDependencies || loadingForm;
 
   const iframeTitle = t('contact.iframe_title');
@@ -29,7 +30,7 @@ const ContactForm = () => {
     setLoadingForm(true);
     const container = document.getElementById('contact-container');
     container.innerHTML = '';
-    const form = hbspt.forms.create({
+    const form = window.hbspt.forms.create({
       region: HUBSPOT_FORMS.region,
       portalId: HUBSPOT_FORMS.portalId,
       formId: HUBSPOT_FORMS.contactForm[i18n.language],
