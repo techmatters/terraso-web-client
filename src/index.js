@@ -39,7 +39,6 @@ const App = () => {
           ref={contentRef}
           sx={{
             bgcolor: 'white',
-            marginBottom: { xs: '29vh', sm: '15vh', md: '10vh' },
             flex: 1,
           }}
         >
