@@ -9,18 +9,8 @@ const { spacing, palette } = theme;
 
 const year = new Date().getFullYear();
 
-const footerLinks = [
-  { url: '#', text: 'footer.help' },
-  { url: 'https://terraso.org/contact-us/', text: 'footer.contact' },
-  { url: '#', text: 'footer.terms' },
-  { url: 'https://techmatters.org/privacy-policy/', text: 'footer.privacy' },
-  { url: '#', text: 'footer.data' },
-];
-
-const FooterLink = ({ index, link }) => {
+const FooterLink = ({ link, showBorder }) => {
   const { t } = useTranslation();
-  const isBig = useMediaQuery(theme.breakpoints.up('sm'));
-  const showBorder = isBig && index < footerLinks.length - 2;
 
   const borderStyle = {
     borderRight: `1px solid ${palette.white}`,
@@ -45,7 +35,7 @@ const FooterLink = ({ index, link }) => {
         <Link
           variant="body2"
           underline="none"
-          href={link.url}
+          href={t(link.url)}
           sx={{
             color: palette.white,
             ...(showBorder ? borderStyle : {}),
@@ -75,6 +65,16 @@ const LinksContainer = props => (
 );
 
 const Footer = () => {
+  const { t } = useTranslation();
+  const isBig = useMediaQuery(theme.breakpoints.up('sm'));
+
+  // Convert to Array. Remove items where URL is #. Return values from new array.
+  // IN: {"help":{"text":"Terraso Help","url":"https://terraso.org/help/"}, "terms":{"text":"Terms of Use","url":"#"}}
+  // OUT: [{"text":"Terraso Help", "url":"https://terraso.org/help/"}]
+  const footerLinks = Object.entries(t('footer', { returnObjects: true }))
+    .filter(item => item[1].url !== '#')
+    .map(item => item[1]);
+
   return (
     <Grid
       container
@@ -91,12 +91,13 @@ const Footer = () => {
       }}
     >
       <Grid item xs={12} md={8} component={LinksContainer}>
-        {footerLinks.map(
-          (link, index) =>
-            link.url !== '#' && (
-              <FooterLink key={index} index={index} link={link} />
-            )
-        )}
+        {footerLinks.map((link, index) => (
+          <FooterLink
+            key={index}
+            link={link}
+            showBorder={isBig && index < footerLinks.length - 1}
+          />
+        ))}
       </Grid>
       <Grid
         item
