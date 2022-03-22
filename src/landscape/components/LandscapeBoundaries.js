@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { GEOJSON_MAX_SIZE } from 'config';
 import { fetchLandscapeForm, saveLandscape } from 'landscape/landscapeSlice';
 import { isValidGeoJson } from 'landscape/landscapeUtils';
+import { useDocumentTitle } from 'common/document';
 import logger from 'monitoring/logger';
 import PageContainer from 'layout/PageContainer';
 import LandscapeMap from './LandscapeMap';
@@ -160,6 +161,13 @@ const LandscapeBoundaries = () => {
   const onFileSelected = areaPolygon => {
     setAreaPolygon(areaPolygon);
   };
+
+  useDocumentTitle(
+    t('landscape.boundaries_document_title', {
+      name: _.get('name', landscape),
+    }),
+    fetching
+  );
 
   useEffect(() => {
     dispatch(fetchLandscapeForm(slug));
