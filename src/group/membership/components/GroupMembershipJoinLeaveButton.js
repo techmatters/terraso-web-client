@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { joinGroup, leaveGroup } from 'group/groupSlice';
 import { useGroupContext } from 'group/groupContext';
 
-const GroupMembershipButton = () => {
+const GroupMembershipJoinLeaveButton = () => {
   const dispatch = useDispatch();
   const { owner, groupSlug, MemberLeaveButton, MemberJoinButton } =
     useGroupContext();
@@ -46,4 +46,4 @@ const GroupMembershipButton = () => {
   return <MemberJoinButton onJoin={onJoin} loading={loading} />;
 };
 
-export default GroupMembershipButton;
+export default GroupMembershipJoinLeaveButton;
