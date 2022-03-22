@@ -126,7 +126,7 @@ test('LandscapeView: Display data', async () => {
   // Members
   expect(
     screen.getByText(
-      /6 Terraso members have affiliated themselves with Landscape Name./i
+      /6 Terraso members joined Landscape Name./i
     )
   ).toBeInTheDocument();
   expect(screen.getByText(/\+2/i)).toBeInTheDocument();

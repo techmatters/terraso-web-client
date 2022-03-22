@@ -117,7 +117,7 @@ test('GroupView: Display data', async () => {
   // Members
   expect(
     screen.getByText(
-      /6 Terraso members have affiliated themselves with Group name./i
+      /6 Terraso members joined Group name./i
     )
   ).toBeInTheDocument();
   expect(screen.getByText(/\+2/i)).toBeInTheDocument();
