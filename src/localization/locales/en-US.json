@@ -220,8 +220,6 @@
         "view_map_boundaries_help_details": "If you believe the landscape can be improved, please contact your landscape’s manager or <1>send us a message <1 /></1>.",
         "view_map_boundaries_help_url": "https://terraso.org/contact-us/",
         "view_map_boundaries_update": "Update Geographic Info",
-        "view_manager_help": "{{name}}, you can update the landscape profile and also manage members as a Landscape manager for {{landscape}}. <1>Read more about Landscape manager</1>.",
-        "view_manager_help_url": "https://terraso.org/help/#landscape-manager-priviileges"
     },
     "common": {
         "dialog_cancel_label": "Cancel",

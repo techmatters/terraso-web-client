@@ -13,7 +13,6 @@ import {
   Stack,
   Paper,
   Button,
-  Alert,
 } from '@mui/material';
 import PublicIcon from '@mui/icons-material/Public';
 import LaunchIcon from '@mui/icons-material/Launch';
@@ -103,14 +102,6 @@ const LandscapeView = () => {
   return (
     <PageContainer>
       <PageHeader header={landscape.name} />
-      <Restricted permission="landscape.change" resource={landscape}>
-        <Alert severity="info" sx={{ marginBottom: 2 }}>
-          <Trans i18nKey="landscape.view_manager_help">
-            {{ name: t('user.full_name', { user }), landscape: landscape.name }}
-            <Link href={t('landscape.view_manager_help_url')}>link</Link>.
-          </Trans>
-        </Alert>
-      </Restricted>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <Paper variant="outlined" sx={{ padding: 2 }}>
