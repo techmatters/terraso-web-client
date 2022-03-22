@@ -12,7 +12,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { GEOJSON_MAX_SIZE } from 'config';
 import { fetchLandscapeForm, saveLandscape } from 'landscape/landscapeSlice';
@@ -23,6 +23,7 @@ import PageContainer from 'layout/PageContainer';
 import LandscapeMap from './LandscapeMap';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
+import InlineHelp from 'common/components/InlineHelp';
 
 const openFile = file =>
   new Promise((resolve, reject) => {
@@ -105,7 +106,7 @@ const DropZone = props => {
         border: `2px dashed ${palette.blue.dark}`,
         paddingTop: 2,
         paddingBottom: 3,
-        marginBottom: 2,
+        marginTop: 2,
         minHeight: '125px',
         cursor: 'pointer',
       })}
@@ -125,10 +126,17 @@ const DropZone = props => {
           >
             {t('landscape.boundaries_select_file')}
           </Paper>
-          <Typography variant="caption" sx={{ paddingTop: 1 }}>
+          <Typography
+            variant="caption"
+            sx={{ fontWeight: 'bold', paddingTop: 1 }}
+          >
             {t('landscape.boundaries_format')}
           </Typography>
-          <Typography variant="caption">
+          <Typography
+            variant="caption"
+            sx={{ fontWeight: 'bold' }}
+            style={{ margin: 0 }}
+          >
             {t('landscape.boundaries_size', {
               size: getFormatedSize(GEOJSON_MAX_SIZE / 1000000.0),
             })}
@@ -194,35 +202,36 @@ const LandscapeBoundaries = () => {
 
   return (
     <PageContainer>
-      <PageHeader header={t('landscape.boundaries_title')} />
-      <Typography variant="h2">{t('landscape.boundaries_subtitle')}</Typography>
-      <Typography sx={{ marginTop: 2 }}>
-        {t('landscape.boundaries_description')}
-      </Typography>
-      <Link
-        sx={{ marginTop: 1, display: 'block' }}
-        href={t('landscape.boundaries_help_geojson_url')}
-      >
-        {t('landscape.boundaries_help_geojson')}
-      </Link>
-      <Paper variant="outlined" sx={{ padding: 2, marginTop: 2 }}>
-        <Typography sx={{ marginBottom: 2 }}>
-          {t('landscape.boundaries_select_title')}
-        </Typography>
-        <DropZone onFileSelected={onFileSelected} />
+      <PageHeader
+        header={t('landscape.boundaries_title', { name: landscape.name })}
+      />
+      <Paper variant="outlined" sx={{ padding: 2 }}>
         <LandscapeMap
           landscape={{
             areaPolygon: areaPolygon || _.get('areaPolygon', landscape),
           }}
         />
-        <Link
-          variant="body2"
-          sx={{ marginTop: 2, display: 'block' }}
-          href={t('landscape.boundaries_help_map_url')}
-        >
-          {t('landscape.boundaries_help_map')}
-        </Link>
+        <DropZone onFileSelected={onFileSelected} />
       </Paper>
+      <InlineHelp
+        items={[
+          {
+            title: t('landscape.boundaries_help_geojson'),
+            details: (
+              <Trans i18nKey="landscape.boundaries_help_geojson_detail">
+                Prefix
+                <Link
+                  href={t('landscape.boundaries_help_geojson_url')}
+                  target="_blank"
+                >
+                  link
+                </Link>
+                .
+              </Trans>
+            ),
+          },
+        ]}
+      />
       <Grid
         container
         direction="row"
