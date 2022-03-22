@@ -203,7 +203,7 @@ const LandscapeBoundaries = () => {
   return (
     <PageContainer>
       <PageHeader
-        header={t('landscape.boundaries_title', { name: landscape.name })}
+        header={t('landscape.boundaries_title', { name: _.get('name', landscape) })}
       />
       <Paper variant="outlined" sx={{ padding: 2 }}>
         <LandscapeMap
