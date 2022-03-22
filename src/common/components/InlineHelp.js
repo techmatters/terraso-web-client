@@ -23,7 +23,7 @@ const Item = props => {
       <Typography
         variant="body2"
         component={AccordionDetails}
-        sx={{ padding: 0 }}
+        sx={{ padding: 0, paddingBottom: 2 }}
       >
         {item.details}
       </Typography>
