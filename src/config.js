@@ -15,10 +15,10 @@ export const AXE_TEST_TIMEOUT = process.env.REACT_AXE_TEST_TIMEOUT || 20000;
 export const GEOJSON_MAX_SIZE = process.env.REACT_GEOJSON_MAX_SIZE || 1000000;
 
 export const HUBSPOT_FORMS = {
-  region: process.env.REACT_HUBSPOT_FORMS_REGION || 'na1',
-  portalId: process.env.REACT_HUBSPOT_FORMS_PORTAL_ID,
+  region: process.env.REACT_APP_HUBSPOT_FORMS_REGION || 'na1',
+  portalId: process.env.REACT_APP_HUBSPOT_FORMS_PORTAL_ID,
   contactForm: {
-    'en-US': process.env.REACT_HUBSPOT_FORMS_CONTACT_FORM_EN,
-    'es-ES': process.env.REACT_HUBSPOT_FORMS_CONTACT_FORM_ES,
+    'en-US': process.env.REACT_APP_HUBSPOT_FORMS_CONTACT_FORM_EN,
+    'es-ES': process.env.REACT_APP_HUBSPOT_FORMS_CONTACT_FORM_ES,
   },
 };
