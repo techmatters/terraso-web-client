@@ -7,11 +7,11 @@ import {
   Typography,
   Grid,
   Card,
+  CardActions,
   CardHeader,
   CardContent,
   Link,
   Stack,
-  Paper,
   Button,
 } from '@mui/material';
 import PublicIcon from '@mui/icons-material/Public';
@@ -30,13 +30,9 @@ import PageContainer from 'layout/PageContainer';
 import LandscapeMap from 'landscape/components/LandscapeMap';
 import Restricted from 'permissions/components/Restricted';
 import InlineHelp from 'common/components/InlineHelp';
-import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.view_leave_label',
-  buttonProps: {
-    sx: { flexGrow: 1 },
-  },
 });
 
 const MemberJoinButton = withProps(GroupMemberJoin, {
@@ -77,7 +73,6 @@ const LandscapeView = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { landscape, fetching } = useSelector(state => state.landscape.view);
-  const { data: user } = useSelector(state => state.account.currentUser);
   const { slug } = useParams();
 
   useDocumentTitle(
@@ -104,54 +99,54 @@ const LandscapeView = () => {
       <PageHeader header={landscape.name} />
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <Paper variant="outlined" sx={{ padding: 2 }}>
-            <Typography
-              variant="caption"
-              display="block"
-              sx={{
-                marginBottom: theme.spacing(2),
-              }}
-            >
-              {landscape.location}
-            </Typography>
-            <LandscapeMap
-              landscape={landscape}
-              label={t('landscape.view_map_title')}
+          <Card variant="outlined">
+            <CardHeader
+              variant="h2"
+              title={landscape.location}
+              titleTypographyProps={{ variant: 'h2' }}
             />
-            <InlineHelp
-              items={[
-                {
-                  title: t('landscape.view_map_boundaries_help'),
-                  details: (
-                    <Trans i18nKey="landscape.view_map_boundaries_help_details">
-                      Prefix
-                      <Link
-                        href={t('landscape.view_map_boundaries_help_url')}
-                        target="_blank"
-                      >
-                        link
-                        <LaunchIcon
-                          fontSize="small"
-                          sx={{ verticalAlign: 'bottom' }}
-                        />
-                      </Link>
-                      .
-                    </Trans>
-                  ),
-                },
-              ]}
-            />
+            <CardContent>
+              <LandscapeMap
+                landscape={landscape}
+                label={t('landscape.view_map_title')}
+              />
+              <InlineHelp
+                items={[
+                  {
+                    title: t('landscape.view_map_boundaries_help'),
+                    details: (
+                      <Trans i18nKey="landscape.view_map_boundaries_help_details">
+                        Prefix
+                        <Link
+                          href={t('landscape.view_map_boundaries_help_url')}
+                          target="_blank"
+                        >
+                          link
+                          <LaunchIcon
+                            fontSize="small"
+                            sx={{ verticalAlign: 'bottom' }}
+                          />
+                        </Link>
+                        .
+                      </Trans>
+                    ),
+                  },
+                ]}
+              />
+            </CardContent>
             <Restricted permission="landscape.change" resource={landscape}>
-              <Button
-                variant="outlined"
-                component={RouterLink}
-                to={`/landscapes/${landscape.slug}/boundaries`}
-                sx={{ marginTop: 2 }}
-              >
-                {t('landscape.view_map_boundaries_update')}
-              </Button>
+              <CardActions>
+                <Button
+                  variant="outlined"
+                  component={RouterLink}
+                  to={`/landscapes/${landscape.slug}/boundaries`}
+                  sx={{ marginTop: 2 }}
+                >
+                  {t('landscape.view_map_boundaries_update')}
+                </Button>
+              </CardActions>
             </Restricted>
-          </Paper>
+          </Card>
         </Grid>
         <Grid item xs={12} md={6}>
           <LandscapeCard landscape={landscape} />
