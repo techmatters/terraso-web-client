@@ -44,6 +44,7 @@
     "build": "react-scripts build",
     "build-serve": "serve -s build",
     "test": "react-scripts test",
+    "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
     "test-coverage": "react-scripts test --coverage --changedSince=origin/main --watchAll=false",
     "localization-to-po": "node scripts/localization/transform-to.js po",
     "localization-to-json": "node scripts/localization/transform-to.js json",
