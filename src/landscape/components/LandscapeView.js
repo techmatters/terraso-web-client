@@ -46,7 +46,11 @@ const LandscapeCard = ({ landscape }) => {
       <CardHeader
         disableTypography
         title={
-          <Typography variant="h2" id="landscape-view-card-title">
+          <Typography
+            variant="h2"
+            id="landscape-view-card-title"
+            sx={{ paddingTop: 0 }}
+          >
             {t('landscape.view_card_title', { name: landscape.name })}
           </Typography>
         }
@@ -96,15 +100,16 @@ const LandscapeView = () => {
 
   return (
     <PageContainer>
-      <PageHeader header={landscape.name} />
+      <PageHeader
+        header={landscape.name}
+        typographyProps={{ sx: { marginBottom: 0 } }}
+      />
+      <Typography variant="body2" sx={{ marginBottom: 2 }}>
+        {landscape.location}
+      </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <Card variant="outlined">
-            <CardHeader
-              variant="h2"
-              title={landscape.location}
-              titleTypographyProps={{ variant: 'h2' }}
-            />
             <CardContent>
               <LandscapeMap
                 landscape={landscape}
@@ -135,12 +140,11 @@ const LandscapeView = () => {
               />
             </CardContent>
             <Restricted permission="landscape.change" resource={landscape}>
-              <CardActions>
+              <CardActions sx={{ paddingTop: 0 }}>
                 <Button
                   variant="outlined"
                   component={RouterLink}
                   to={`/landscapes/${landscape.slug}/boundaries`}
-                  sx={{ marginTop: 2 }}
                 >
                   {t('landscape.view_map_boundaries_update')}
                 </Button>
