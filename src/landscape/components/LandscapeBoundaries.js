@@ -71,11 +71,11 @@ const DropZone = props => {
   const [error, setError] = useState();
   const onDrop = useCallback(
     acceptedFiles => {
-      setError(null);
       if (_.isEmpty(acceptedFiles)) {
         setError('No accepted files');
         return;
       }
+      setError(null);
       const selectedFile = acceptedFiles[0];
       setCurrentFile(selectedFile);
       openGeoJsonFile(selectedFile)
