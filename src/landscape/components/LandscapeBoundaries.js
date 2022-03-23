@@ -72,6 +72,10 @@ const DropZone = props => {
   const onDrop = useCallback(
     acceptedFiles => {
       setError(null);
+      if (_.isEmpty(acceptedFiles)) {
+        setError('No accepted files');
+        return;
+      }
       const selectedFile = acceptedFiles[0];
       setCurrentFile(selectedFile);
       openGeoJsonFile(selectedFile)
@@ -85,10 +89,10 @@ const DropZone = props => {
     },
     [onFileSelected]
   );
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     accept: '.json,.geojson',
-    maxFiles: 1,
+    multiple: false,
     maxSize: GEOJSON_MAX_SIZE,
   });
   return (
@@ -121,6 +125,7 @@ const DropZone = props => {
               padding: `${spacing(1)} ${spacing(3)}`,
               borderColor: palette.black,
             })}
+            onClick={open}
           >
             {t('landscape.boundaries_select_file')}
           </Paper>
@@ -132,16 +137,12 @@ const DropZone = props => {
               size: getFormatedSize(GEOJSON_MAX_SIZE / 1000000.0),
             })}
           </Typography>
-          {currentFile && (
-            <>
-              {error && (
-                <Alert severity="error">
-                  {t('landscape.boundaries_format_error')}
-                </Alert>
-              )}
-              <CurrentFile file={currentFile} />
-            </>
+          {error && (
+            <Alert severity="error">
+              {t('landscape.boundaries_format_error')}
+            </Alert>
           )}
+          {currentFile && <CurrentFile file={currentFile} />}
         </>
       )}
     </Stack>
