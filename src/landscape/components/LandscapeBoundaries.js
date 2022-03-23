@@ -89,7 +89,7 @@ const DropZone = props => {
     },
     [onFileSelected]
   );
-  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: '.json,.geojson',
     multiple: false,
@@ -125,7 +125,6 @@ const DropZone = props => {
               padding: `${spacing(1)} ${spacing(3)}`,
               borderColor: palette.black,
             })}
-            onClick={open}
           >
             {t('landscape.boundaries_select_file')}
           </Paper>
