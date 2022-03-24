@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-02-17T22:24:18.463Z\n"
-"PO-Revision-Date: 2022-02-17T22:24:18.463Z\n"
+"POT-Creation-Date: 2022-03-24T18:10:56.850Z\n"
+"PO-Revision-Date: 2022-03-24T18:10:56.850Z\n"
 
 msgid "home##title"
 msgstr "Home"
@@ -89,6 +89,27 @@ msgstr "Groups"
 
 msgid "navigation##tools"
 msgstr "Tools"
+
+msgid "terraso##models##Membership"
+msgstr "Membership"
+
+msgid "terraso##models##Group"
+msgstr "Group"
+
+msgid "terraso##models##Landscape"
+msgstr "Landscape"
+
+msgid "terraso##error"
+msgstr ""
+"Failed to execute request. {{code, errorParam(label: Code)}} {{field, "
+"errorParam(label: Field)}} {{model, errorParam(label: Model)}} {{context, "
+"errorParam(label: Context)}}"
+
+msgid "terraso##unique"
+msgstr "$t(terraso_api.models.{{model}}) {{field}} must be unique."
+
+msgid "contact##success"
+msgstr "Your message has been sent. Terraso will follow up within two business days."
 
 msgctxt "title"
 msgid "home##page"
@@ -239,8 +260,24 @@ msgid "landscape##members_document"
 msgstr "Members: {{name}}"
 
 msgctxt "title"
+msgid "landscape##boundaries_document"
+msgstr "Edit boundary: {{name}}"
+
+msgctxt "title"
 msgid "landscape##view_map"
 msgstr "Landscape map"
+
+msgctxt "title"
+msgid "landscape##boundaries"
+msgstr "Update {{name}}’s boundaries"
+
+msgctxt "title"
+msgid "common##not_found"
+msgstr "Page not found"
+
+msgctxt "title"
+msgid "contact##iframe"
+msgstr "Contact Terraso"
 
 msgctxt "out"
 msgid "user##sign"
@@ -271,6 +308,18 @@ msgstr "Are you sure you want to leave the landscape “{{name}}”?"
 msgctxt "message"
 msgid "landscape##members_remove_confirmation"
 msgstr "You are about to remove “{{userName}}” from the “{{name}}” landscape."
+
+msgctxt "message"
+msgid "landscape##boundaries_drop"
+msgstr "Drop file to upload"
+
+msgctxt "message"
+msgid "common##not_found"
+msgstr "We couldn’t find the page you were looking for."
+
+msgctxt "message"
+msgid "common##not_found_help"
+msgstr "You can <1>let us know what went wrong</1>."
 
 msgctxt "button"
 msgid "user##edit_profile"
@@ -521,7 +570,7 @@ msgstr "Skip to main content"
 msgctxt "content"
 msgid "landscape##default"
 msgstr ""
-"Explore the landscapes in Terraso. Vecome a member of your landscape to "
+"Explore the landscapes in Terraso. Become a member of your landscape to "
 "connect with others on Terraso and lets you share information."
 
 msgctxt "description"
@@ -616,11 +665,11 @@ msgstr "Landscape not found"
 
 msgctxt "other"
 msgid "group##membership_card_description"
-msgstr "{{count}} Terraso members have affiliated themselves with {{name}}."
+msgstr "{{count}} Terraso members joined {{name}}."
 
 msgctxt "one"
 msgid "group##membership_card_description"
-msgstr "{{count}} Terraso member has affiliated with {{name}}."
+msgstr "{{count}} Terraso member joined {{name}}."
 
 msgctxt "all"
 msgid "group##membership_view"
@@ -677,6 +726,12 @@ msgstr "Remove"
 msgctxt "role"
 msgid "group##members_list_column"
 msgstr "Role"
+
+msgctxt "count"
+msgid "group##delete_not_allowed_manager"
+msgstr ""
+"$t(terraso_api.delete_not_allowed_base). There should at least be one "
+"manager."
 
 msgctxt "to"
 msgid "tool##go"
@@ -742,17 +797,71 @@ msgctxt "location"
 msgid "landscape##list_column"
 msgstr "Location"
 
-msgctxt "projectName"
-msgid "common##terraso"
-msgstr "Terraso"
+msgctxt "geojson"
+msgid "landscape##boundaries_help"
+msgstr "Don’t have a GeoJSON file?"
+
+msgctxt "detail"
+msgid "landscape##boundaries_help_geojson"
+msgstr "<1>Learn how to create one</1>."
+
+msgctxt "url"
+msgid "landscape##boundaries_help_geojson"
+msgstr "https://terraso.org/help/draw-landscape-boundary"
+
+msgctxt "file"
+msgid "landscape##boundaries_select"
+msgstr "Select File"
+
+msgctxt "size"
+msgid "landscape##boundaries"
+msgstr "Maximum file size: {{size}}MB"
+
+msgctxt "format"
+msgid "landscape##boundaries"
+msgstr "Accepted file formats: *.json, *.geojson"
+
+msgctxt "save"
+msgid "landscape##boundaries"
+msgstr "Update Geographic Info"
+
+msgctxt "cancel"
+msgid "landscape##boundaries"
+msgstr "Cancel"
+
+msgctxt "error"
+msgid "landscape##boundaries_format"
+msgstr "Incorrect file format. Please upload a GeoJSON file."
 
 msgctxt "error"
 msgid "common##unexpected"
-msgstr "Oops, something went wrong. Please try it again in a few minutes."
+msgstr ""
+"Oops, something went wrong. Please try it again in a few minutes. {{error, "
+"errorParam(label: Error)}}"
 
 msgctxt "error"
 msgid "gis##openstreetmap_api"
 msgstr "Failed to request data from nominatim.openstreetmap.org API"
+
+msgctxt "help"
+msgid "landscape##view_map_boundaries"
+msgstr "Something wrong with the map?"
+
+msgctxt "details"
+msgid "landscape##view_map_boundaries_help"
+msgstr "Contact your landscape’s manager or <1>send us a message <1 /></1>."
+
+msgctxt "update"
+msgid "landscape##view_map_boundaries"
+msgstr "Update Map"
+
+msgctxt "projectName"
+msgid "common##terraso"
+msgstr "Terraso"
+
+msgctxt "code"
+msgid "common##not_found_error"
+msgstr "Error code: 404"
 
 msgctxt "invalid"
 msgid "form##validation_field"
@@ -797,3 +906,27 @@ msgstr "Unexpected error"
 msgctxt "response"
 msgid "terraso##error_request"
 msgstr "Failed to connect with Terraso API"
+
+msgctxt "base"
+msgid "terraso##delete_not_allowed"
+msgstr "Not allowed to delete $t(terraso_api.models.{{model}})"
+
+msgctxt "base"
+msgid "terraso##create_not_allowed"
+msgstr "Not allowed to create $t(terraso_api.models.{{model}})"
+
+msgctxt "base"
+msgid "terraso##update_not_allowed"
+msgstr "Not allowed to update $t(terraso_api.models.{{model}})"
+
+msgctxt "allowed"
+msgid "terraso##delete_not"
+msgstr "$t(terraso_api.delete_not_allowed_base)"
+
+msgctxt "allowed"
+msgid "terraso##create_not"
+msgstr "$t(terraso_api.create_not_allowed_base)"
+
+msgctxt "allowed"
+msgid "terraso##update_not"
+msgstr "$t(terraso_api.update_not_allowed_base)"
