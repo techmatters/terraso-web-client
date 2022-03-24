@@ -205,7 +205,7 @@
         "boundaries_title": "Actualiza la información geográfica del {{name}}",
         "boundaries_help_geojson": "¿No tienes un archivo GeoJSON?",
         "boundaries_help_geojson_detail": "<1>Aprende a crear uno</1>.",
-        "boundaries_help_geojson_url": "https://terraso.org/es/ayuda/dibujar-el-limite-del-paisaje/",
+        "boundaries_help_geojson_url": "https://terraso.org/es/ayuda/dibujar-limites-del-paisaje/",
         "boundaries_select_file": "Selecciona Archivo",
         "boundaries_size": "Tamaño máximo de archivo: {{size}}MB",
         "boundaries_format": "Formatos de archivo aceptados: *.json, *.geojson",
