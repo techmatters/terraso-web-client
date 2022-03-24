@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-03-24T18:10:56.852Z\n"
-"PO-Revision-Date: 2022-03-24T18:10:56.852Z\n"
+"POT-Creation-Date: 2022-03-24T18:15:45.661Z\n"
+"PO-Revision-Date: 2022-03-24T18:15:45.661Z\n"
 
 msgid "home##title"
 msgstr "Inicio"
@@ -619,11 +619,11 @@ msgstr ""
 
 msgctxt "placeholder"
 msgid "group##form_email"
-msgstr "info@mygroup.org"
+msgstr "info@migroupo.org"
 
 msgctxt "placeholder"
 msgid "group##form_website"
-msgstr "https://www.mygroup.org"
+msgstr "https://www.migroupo.org"
 
 msgctxt "placeholder"
 msgid "landscape##form_description"
@@ -631,11 +631,11 @@ msgstr "Ingrese una breve descripción sobre su paisaje (600 caracteres como m�
 
 msgctxt "placeholder"
 msgid "landscape##form_email"
-msgstr "info@mygroup.org"
+msgstr "info@mipaisaje.org"
 
 msgctxt "placeholder"
 msgid "landscape##form_website"
-msgstr "https://www.mylandscape.org"
+msgstr "https://www.mipaisaje.org"
 
 msgctxt "success"
 msgid "group##form_message"
@@ -814,7 +814,7 @@ msgstr "<1>Aprende a crear uno</1>."
 
 msgctxt "url"
 msgid "landscape##boundaries_help_geojson"
-msgstr "https://terraso.org/es/ayuda/dibujar-el-limite-del-paisaje/"
+msgstr "https://terraso.org/es/ayuda/dibujar-limites-del-paisaje/"
 
 msgctxt "file"
 msgid "landscape##boundaries_select"
