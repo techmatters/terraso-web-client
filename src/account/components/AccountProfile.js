@@ -1,17 +1,19 @@
 import React from 'react';
+import _ from 'lodash/fp';
 import * as yup from 'yup';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Grid, InputLabel } from '@mui/material';
 
 import { saveUser } from 'account/accountSlice';
+import { savePreference } from 'account/accountSlice';
 import { useDocumentTitle } from 'common/document';
 import Form from 'forms/components/Form';
 import AccountAvatar from './AccountAvatar';
 import PageLoader from 'layout/PageLoader';
 import PageHeader from 'layout/PageHeader';
 import PageContainer from 'layout/PageContainer';
+import LocalePickerSelect from 'localization/components/LocalePickerSelect';
 
 const VALIDATION_SCHEMA = yup
   .object({
@@ -42,11 +44,42 @@ const FIELDS = [
     },
   },
   {
+    name: 'preferences.language',
+    label: 'account.form_language_label',
+    props: {
+      renderInput: ({ field }) => (
+        <LocalePickerSelect
+          locale={field.value}
+          onLocaleChange={field.onChange}
+        />
+      ),
+    },
+  },
+  {
     name: 'email',
     label: 'account.form_email_label',
-    props: { guideText: true },
+    props: {
+      renderInput: ({ field }) => field.value,
+    },
+  },
+  {
+    name: 'profilePicture',
+    label: 'account.profile_picture',
+    props: {
+      renderInput: () => <ProfilePicture />,
+    },
   },
 ];
+
+const ProfilePicture = () => {
+  const { data: user } = useSelector(state => state.account.currentUser);
+  return (
+    <AccountAvatar
+      sx={{ width: 80, height: 80, fontSize: '1.5em' }}
+      user={user}
+    />
+  );
+};
 
 const AccountProfile = () => {
   const dispatch = useDispatch();
@@ -59,7 +92,23 @@ const AccountProfile = () => {
   useDocumentTitle(t('account.profile_document_title'));
 
   const onSave = updatedProfile => {
-    dispatch(saveUser(updatedProfile));
+    // Save user data
+    dispatch(
+      saveUser(
+        _.omit(
+          ['profilePicture', 'preferences.language', 'email'],
+          updatedProfile
+        )
+      )
+    );
+
+    // Save language preference
+    const currentLanguage = _.get(['preferences', 'language'], user);
+    const newLanguage = _.get(['preferences', 'language'], updatedProfile);
+    if (newLanguage && newLanguage !== currentLanguage) {
+      dispatch(savePreference({ key: 'language', value: newLanguage }));
+    }
+
     navigate('/');
   };
 
@@ -83,15 +132,7 @@ const AccountProfile = () => {
         validationSchema={VALIDATION_SCHEMA}
         onSave={onSave}
         saveLabel="account.form_save_label"
-      >
-        <Grid item xs={12}>
-          <InputLabel>{t('account.profile_picture')}</InputLabel>
-          <AccountAvatar
-            sx={{ width: 80, height: 80, fontSize: '1.5em' }}
-            user={user}
-          />
-        </Grid>
-      </Form>
+      />
     </PageContainer>
   );
 };

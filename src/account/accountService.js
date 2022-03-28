@@ -90,5 +90,5 @@ export const savePreference = ({ key, value }, currentUser) => {
         value,
       },
     })
-    .then(response => response.updateUserPreference.preference);
+    .then(_.get('updateUserPreference.preference'));
 };

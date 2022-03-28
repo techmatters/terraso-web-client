@@ -96,7 +96,8 @@ const LandscapeForm = () => {
     }
   }, [slug, landscape, navigate]);
 
-  const onSave = updatedLandscape => dispatch(saveLandscape(updatedLandscape));
+  const onSave = updatedLandscape =>
+    dispatch(saveLandscape(_.omit('areaPolygon', updatedLandscape)));
 
   const title = !isNew
     ? t('landscape.form_edit_title', { name: _.getOr('', 'name', landscape) })
