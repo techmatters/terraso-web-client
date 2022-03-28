@@ -130,7 +130,7 @@
         "login_document_title": "Iniciar sesión",
         "profile_document_title": "Cuenta",
         "profile_form_label": "Administrar perfil",
-        "form_language_label": "Idioma preferido"
+        "form_language_label": "Idioma"
     },
     "footer": {
         "help": "Ayuda de Terraso",
