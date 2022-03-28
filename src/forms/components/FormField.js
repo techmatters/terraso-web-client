@@ -14,7 +14,8 @@ import { FormControlUnstyled } from '@mui/base';
 import theme from 'theme';
 
 const FormFieldInput = props => {
-  const { disabled, id, inputProps, field, fieldState, renderInput } = props;
+  const { disabled, id, inputProps, field, fieldState, renderInput, info } =
+    props;
 
   if (renderInput) {
     return renderInput(props);
@@ -25,7 +26,7 @@ const FormFieldInput = props => {
       id={id}
       disabled={disabled}
       error={!!fieldState.error}
-      aria-describedby={`${id}-helper-text`}
+      {...(info ? { 'aria-describedby': `${id}-helper-text` } : {})}
       sx={theme =>
         _.mergeWith(
           null,
