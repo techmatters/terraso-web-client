@@ -13,17 +13,36 @@ import { FormControlUnstyled } from '@mui/base';
 
 import theme from 'theme';
 
-const FormField = ({
-  control,
-  required,
-  disabled,
-  id,
-  name,
-  label,
-  info,
-  inputProps,
-  guideText,
-}) => {
+const FormFieldInput = props => {
+  const { disabled, id, inputProps, field, fieldState, renderInput } = props;
+
+  if (renderInput) {
+    return renderInput(props);
+  }
+
+  return (
+    <OutlinedInput
+      id={id}
+      disabled={disabled}
+      error={!!fieldState.error}
+      aria-describedby={`${id}-helper-text`}
+      sx={theme =>
+        _.mergeWith(
+          null,
+          {
+            width: '100%',
+          },
+          theme.components.MuiOutlinedInput.defaultProps.sx
+        )
+      }
+      {...inputProps}
+      {...field}
+    />
+  );
+};
+
+const FormField = props => {
+  const { control, required, disabled, id, name, label, info } = props;
   const { t } = useTranslation();
   return (
     <Controller
@@ -48,27 +67,7 @@ const FormField = ({
             </Typography>
             {required && <Typography>({t('form.required_label')})</Typography>}
           </Stack>
-          {guideText ? (
-            field.value
-          ) : (
-            <OutlinedInput
-              id={id}
-              disabled={disabled}
-              error={!!fieldState.error}
-              aria-describedby={`${id}-helper-text`}
-              sx={theme =>
-                _.mergeWith(
-                  null,
-                  {
-                    width: '100%',
-                  },
-                  theme.components.MuiOutlinedInput.defaultProps.sx
-                )
-              }
-              {...inputProps}
-              {...field}
-            />
-          )}
+          <FormFieldInput field={field} fieldState={fieldState} {...props} />
           {info && (
             <FormHelperText id={`${id}-helper-text`}>{t(info)}</FormHelperText>
           )}
