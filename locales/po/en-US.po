@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-03-21T20:27:51.374Z\n"
-"PO-Revision-Date: 2022-03-21T20:27:51.374Z\n"
+"POT-Creation-Date: 2022-03-29T13:46:05.781Z\n"
+"PO-Revision-Date: 2022-03-29T13:46:05.781Z\n"
 
 msgid "home##title"
 msgstr "Home"
@@ -72,7 +72,7 @@ msgstr "https://terraso.org/help/"
 msgid "footer##contact##text"
 msgstr "Contact"
 
-msgid "footer##contact##url"
+msgid "footer##contact##to"
 msgstr "/contact"
 
 msgid "footer##terms##text"
@@ -122,6 +122,9 @@ msgstr ""
 
 msgid "terraso##unique"
 msgstr "$t(terraso_api.models.{{model}}) {{field}} must be unique."
+
+msgid "contact##success"
+msgstr "Your message has been sent. Terraso will follow up within two business days."
 
 msgctxt "title"
 msgid "home##page"
@@ -272,20 +275,24 @@ msgid "landscape##members_document"
 msgstr "Members: {{name}}"
 
 msgctxt "title"
+msgid "landscape##boundaries_document"
+msgstr "Edit boundary: {{name}}"
+
+msgctxt "title"
 msgid "landscape##view_map"
 msgstr "Landscape map"
 
 msgctxt "title"
 msgid "landscape##boundaries"
-msgstr "Update Landscape’s Geographic Info"
-
-msgctxt "title"
-msgid "landscape##boundaries_select"
-msgstr "Select a file and preview"
+msgstr "Update {{name}}’s boundaries"
 
 msgctxt "title"
 msgid "common##not_found"
 msgstr "Page not found"
+
+msgctxt "title"
+msgid "contact##iframe"
+msgstr "Contact Terraso"
 
 msgctxt "out"
 msgid "user##sign"
@@ -319,7 +326,7 @@ msgstr "You are about to remove “{{userName}}” from the “{{name}}” lands
 
 msgctxt "message"
 msgid "landscape##boundaries_drop"
-msgstr "Drop your file here"
+msgstr "Drop file to upload"
 
 msgctxt "message"
 msgid "common##not_found"
@@ -510,6 +517,10 @@ msgid "account##profile_form"
 msgstr "Manage profile"
 
 msgctxt "label"
+msgid "account##form_language"
+msgstr "Language"
+
+msgctxt "label"
 msgid "navigation##nav"
 msgstr "Main navigation"
 
@@ -615,12 +626,6 @@ msgctxt "description"
 msgid "landscape##list_column_actions"
 msgstr "Actions"
 
-msgctxt "description"
-msgid "landscape##boundaries"
-msgstr ""
-"Show the landscape’s boundary on a map by uploading a GeoJSON file. You can "
-"preview it before replacing the current map."
-
 msgctxt "placeholder"
 msgid "group##form_description"
 msgstr "Enter a short description about your group. (600 characters maximum)"
@@ -679,11 +684,11 @@ msgstr "Landscape not found"
 
 msgctxt "other"
 msgid "group##membership_card_description"
-msgstr "{{count}} Terraso members have affiliated themselves with {{name}}."
+msgstr "{{count}} Terraso members joined {{name}}."
 
 msgctxt "one"
 msgid "group##membership_card_description"
-msgstr "{{count}} Terraso member has affiliated with {{name}}."
+msgstr "{{count}} Terraso member joined {{name}}."
 
 msgctxt "all"
 msgid "group##membership_view"
@@ -811,29 +816,17 @@ msgctxt "location"
 msgid "landscape##list_column"
 msgstr "Location"
 
-msgctxt "subtitle"
-msgid "landscape##boundaries"
-msgstr "Upload a new file"
-
 msgctxt "geojson"
 msgid "landscape##boundaries_help"
-msgstr "Don’t have a GeoJSON file? Follow this simple instruction to create one."
+msgstr "Don’t have a GeoJSON file?"
+
+msgctxt "detail"
+msgid "landscape##boundaries_help_geojson"
+msgstr "<1>Learn how to create one</1>."
 
 msgctxt "url"
 msgid "landscape##boundaries_help_geojson"
 msgstr "https://terraso.org/help/draw-landscape-boundary"
-
-msgctxt "url"
-msgid "landscape##boundaries_help_map"
-msgstr "https://terraso.org/contact-us/"
-
-msgctxt "url"
-msgid "landscape##view_map_boundaries_help"
-msgstr "https://terraso.org/contact-us/"
-
-msgctxt "url"
-msgid "landscape##view_manager_help"
-msgstr "https://terraso.org/help/#landscape-manager-priviileges"
 
 msgctxt "file"
 msgid "landscape##boundaries_select"
@@ -841,15 +834,11 @@ msgstr "Select File"
 
 msgctxt "size"
 msgid "landscape##boundaries"
-msgstr "File size limit: {{size}}MB"
+msgstr "Maximum file size: {{size}}MB"
 
 msgctxt "format"
 msgid "landscape##boundaries"
 msgstr "Accepted file formats: *.json, *.geojson"
-
-msgctxt "map"
-msgid "landscape##boundaries_help"
-msgstr "Get help with uploading a file"
 
 msgctxt "save"
 msgid "landscape##boundaries"
@@ -875,24 +864,15 @@ msgstr "Failed to request data from nominatim.openstreetmap.org API"
 
 msgctxt "help"
 msgid "landscape##view_map_boundaries"
-msgstr "How to improve the geographic info"
-
-msgctxt "help"
-msgid "landscape##view_manager"
-msgstr ""
-"{{name}}, you can update the landscape profile and also manage members as a "
-"Landscape manager for {{landscape}}. <1>Read more about Landscape "
-"manager</1>."
+msgstr "Something wrong with the map?"
 
 msgctxt "details"
 msgid "landscape##view_map_boundaries_help"
-msgstr ""
-"If you believe the landscape can be improved, please contact your "
-"landscape’s manager or <1>send us a message <1 /></1>."
+msgstr "Contact your landscape’s manager or <1>send us a message <1 /></1>."
 
 msgctxt "update"
 msgid "landscape##view_map_boundaries"
-msgstr "Update Geographic Info"
+msgstr "Update Map"
 
 msgctxt "projectName"
 msgid "common##terraso"

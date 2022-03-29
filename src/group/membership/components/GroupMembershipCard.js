@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 
 import { useGroupContext } from 'group/groupContext';
-import GroupMembershipButton from './GroupMembershipButton';
+import GroupMembershipJoinLeaveButton from './GroupMembershipJoinLeaveButton';
 import AccountAvatar from 'account/components/AccountAvatar';
 import theme from 'theme';
 
@@ -95,8 +95,8 @@ const GroupMembershipCard = props => {
         onViewMembers={onViewMembers}
       />
       {fetching ? null : (
-        <CardActions sx={{ flexDirection: 'row' }}>
-          <GroupMembershipButton />
+        <CardActions>
+          <GroupMembershipJoinLeaveButton />
         </CardActions>
       )}
     </Card>

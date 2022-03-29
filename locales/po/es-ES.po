@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-03-21T20:27:51.377Z\n"
-"PO-Revision-Date: 2022-03-21T20:27:51.377Z\n"
+"POT-Creation-Date: 2022-03-29T13:46:05.794Z\n"
+"PO-Revision-Date: 2022-03-29T13:46:05.794Z\n"
 
 msgid "home##title"
 msgstr "Inicio"
@@ -72,7 +72,7 @@ msgstr "https://terraso.org/es/ayuda/"
 msgid "footer##contact##text"
 msgstr "Contacto"
 
-msgid "footer##contact##url"
+msgid "footer##contact##to"
 msgstr "/contact"
 
 msgid "footer##terms##text"
@@ -122,6 +122,11 @@ msgstr ""
 
 msgid "terraso##unique"
 msgstr "$t(terraso_api.models.{{model}}) {{field}} Debe ser único."
+
+msgid "contact##success"
+msgstr ""
+"Tu mensaje ha sido enviado. Terraso hará un seguimiento dentro de dos días "
+"hábiles."
 
 msgctxt "title"
 msgid "home##page"
@@ -272,20 +277,24 @@ msgid "landscape##members_document"
 msgstr "Miembros: {{name}}"
 
 msgctxt "title"
+msgid "landscape##boundaries_document"
+msgstr "Editar información geográfica: {{name}}"
+
+msgctxt "title"
 msgid "landscape##view_map"
 msgstr "Mapa del paisaje"
 
 msgctxt "title"
 msgid "landscape##boundaries"
-msgstr "Actualiza la información geográfica del paisaje"
-
-msgctxt "title"
-msgid "landscape##boundaries_select"
-msgstr "Selecciona un archivo y obten una vista previa"
+msgstr "Actualiza la información geográfica del {{name}}"
 
 msgctxt "title"
 msgid "common##not_found"
 msgstr "Página no encontrada"
+
+msgctxt "title"
+msgid "contact##iframe"
+msgstr "Contacto Terraso"
 
 msgctxt "out"
 msgid "user##sign"
@@ -319,7 +328,7 @@ msgstr "Estás a punto de eliminar a “{{userName}}” del paisaje “{{name}}�
 
 msgctxt "message"
 msgid "landscape##boundaries_drop"
-msgstr "Suelta tu archivo aquí"
+msgstr "Soltar el archivo para subirlo"
 
 msgctxt "message"
 msgid "common##not_found"
@@ -510,6 +519,10 @@ msgid "account##profile_form"
 msgstr "Administrar perfil"
 
 msgctxt "label"
+msgid "account##form_language"
+msgstr "Idioma"
+
+msgctxt "label"
 msgid "navigation##nav"
 msgstr "Navegación principal"
 
@@ -617,12 +630,6 @@ msgctxt "description"
 msgid "landscape##list_column_actions"
 msgstr "Acciones"
 
-msgctxt "description"
-msgid "landscape##boundaries"
-msgstr ""
-"Muestra el límite del paisaje en un mapa cargando un archivo GeoJSON. "
-"Puedes obtener una vista previa antes de reemplazar el mapa actual."
-
 msgctxt "placeholder"
 msgid "group##form_description"
 msgstr ""
@@ -631,11 +638,11 @@ msgstr ""
 
 msgctxt "placeholder"
 msgid "group##form_email"
-msgstr "info@mygroup.org"
+msgstr "info@migroupo.org"
 
 msgctxt "placeholder"
 msgid "group##form_website"
-msgstr "https://www.mygroup.org"
+msgstr "https://www.migroupo.org"
 
 msgctxt "placeholder"
 msgid "landscape##form_description"
@@ -643,11 +650,11 @@ msgstr "Ingrese una breve descripción sobre su paisaje (600 caracteres como m�
 
 msgctxt "placeholder"
 msgid "landscape##form_email"
-msgstr "info@mygroup.org"
+msgstr "info@mipaisaje.org"
 
 msgctxt "placeholder"
 msgid "landscape##form_website"
-msgstr "https://www.mylandscape.org"
+msgstr "https://www.mipaisaje.org"
 
 msgctxt "success"
 msgid "group##form_message"
@@ -683,11 +690,11 @@ msgstr "Paisaje no encontrado"
 
 msgctxt "other"
 msgid "group##membership_card_description"
-msgstr "{{count}} Los miembros de Terraso se han afiliado a {{name}}."
+msgstr "{{count}} miembros de Terraso se unieron a {{name}}."
 
 msgctxt "one"
 msgid "group##membership_card_description"
-msgstr "{{count}} El miembro de Terraso se ha afiliado a {{name}}."
+msgstr "{{count}} miembro de Terraso se unió a {{name}}."
 
 msgctxt "website"
 msgid "group##list_column"
@@ -816,31 +823,17 @@ msgctxt "location"
 msgid "landscape##list_column"
 msgstr "Ubicación"
 
-msgctxt "subtitle"
-msgid "landscape##boundaries"
-msgstr "Sube un nuevo archivo"
-
 msgctxt "geojson"
 msgid "landscape##boundaries_help"
-msgstr ""
-"¿No tienes un archivo GeoJSON? Siga estas sencillas instrucciones para "
-"crear uno."
+msgstr "¿No tienes un archivo GeoJSON?"
+
+msgctxt "detail"
+msgid "landscape##boundaries_help_geojson"
+msgstr "<1>Aprende a crear uno</1>."
 
 msgctxt "url"
 msgid "landscape##boundaries_help_geojson"
-msgstr "https://terraso.org/help/draw-landscape-boundary"
-
-msgctxt "url"
-msgid "landscape##boundaries_help_map"
-msgstr "https://terraso.org/es/contactanos/"
-
-msgctxt "url"
-msgid "landscape##view_map_boundaries_help"
-msgstr "https://terraso.org/es/contactanos/"
-
-msgctxt "url"
-msgid "landscape##view_manager_help"
-msgstr "https://terraso.org/help/#landscape-manager-priviileges"
+msgstr "https://terraso.org/es/ayuda/dibujar-limites-del-paisaje/"
 
 msgctxt "file"
 msgid "landscape##boundaries_select"
@@ -848,15 +841,11 @@ msgstr "Selecciona Archivo"
 
 msgctxt "size"
 msgid "landscape##boundaries"
-msgstr "Límite de tamaño de archivo: {{size}}MB"
+msgstr "Tamaño máximo de archivo: {{size}}MB"
 
 msgctxt "format"
 msgid "landscape##boundaries"
 msgstr "Formatos de archivo aceptados: *.json, *.geojson"
-
-msgctxt "map"
-msgid "landscape##boundaries_help"
-msgstr "Obten ayuda para cargar un archivo"
 
 msgctxt "save"
 msgid "landscape##boundaries"
@@ -882,20 +871,13 @@ msgstr "Error al solicitar datos de la API nominatim.openstreetmap.org"
 
 msgctxt "help"
 msgid "landscape##view_map_boundaries"
-msgstr "Cómo mejorar la información geográfica"
-
-msgctxt "help"
-msgid "landscape##view_manager"
-msgstr ""
-"{{name}}, puedes actualizar el perfil del paisaje y también administrar "
-"miembros como administrador del paisaje para {{landscape}}. <1>Lee más "
-"sobre administracion de paisajes</1>."
+msgstr "¿Algo mal con el mapa?"
 
 msgctxt "details"
 msgid "landscape##view_map_boundaries_help"
 msgstr ""
-"Si crees que el paisaje se puede mejorar, comuníquese con el administrador "
-"de su paisaje o <1>envíanos un mensaje <1 /></1>."
+"Comunícate con el administrador de su paisaje o <1>envíanos un mensaje <1 "
+"/></1>."
 
 msgctxt "update"
 msgid "landscape##view_map_boundaries"

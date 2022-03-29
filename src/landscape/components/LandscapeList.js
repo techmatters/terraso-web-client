@@ -8,7 +8,7 @@ import { Typography, Link } from '@mui/material';
 import { fetchLandscapes } from 'landscape/landscapeSlice';
 import { withProps } from 'react-hoc';
 import { useDocumentTitle } from 'common/document';
-import GroupMembershipButton from 'group/membership/components/GroupMembershipButton';
+import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton';
 import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
 import PageLoader from 'layout/PageLoader';
 import PageHeader from 'layout/PageHeader';
@@ -43,7 +43,7 @@ const MembershipButton = ({ landscape }) => (
     MemberJoinButton={MemberJoinButton}
     MemberLeaveButton={MemberLeaveButton}
   >
-    <GroupMembershipButton sx={{ width: '100%' }} />
+    <GroupMembershipJoinLeaveButton sx={{ width: '100%' }} />
   </GroupContextProvider>
 );
 

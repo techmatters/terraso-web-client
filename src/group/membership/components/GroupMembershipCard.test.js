@@ -87,9 +87,7 @@ test('GroupMembershipCard: Display description', async () => {
     },
   });
   expect(
-    screen.getByText(
-      '8 Terraso members have affiliated themselves with Owner Name.'
-    )
+    screen.getByText('8 Terraso members joined Owner Name.')
   ).toBeInTheDocument();
 });
 test('GroupMembershipCard: Join error', async () => {
@@ -135,9 +133,7 @@ test('GroupMembershipCard: Join (not found)', async () => {
     },
   });
   expect(
-    screen.getByText(
-      '0 Terraso members have affiliated themselves with Owner Name.'
-    )
+    screen.getByText('0 Terraso members joined Owner Name.')
   ).toBeInTheDocument();
   expect(
     screen.getByRole('button', { name: 'Join Label' })
@@ -187,9 +183,7 @@ test('GroupMembershipCard: Join', async () => {
     },
   });
   expect(
-    screen.getByText(
-      '0 Terraso members have affiliated themselves with Owner Name.'
-    )
+    screen.getByText('0 Terraso members joined Owner Name.')
   ).toBeInTheDocument();
   expect(
     screen.getByRole('button', { name: 'Join Label' })
@@ -199,7 +193,7 @@ test('GroupMembershipCard: Join', async () => {
   );
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
   expect(
-    screen.getByText('1 Terraso member has affiliated with Owner Name.')
+    screen.getByText('1 Terraso member joined Owner Name.')
   ).toBeInTheDocument();
   expect(() => screen.getByRole('progressbar')).toThrow();
   expect(() => screen.getByRole('button', { name: 'Join Label' })).toThrow();
@@ -230,7 +224,7 @@ test('GroupMembershipCard: Leave error', async () => {
     },
   });
   expect(
-    screen.getByText('1 Terraso member has affiliated with Owner Name.')
+    screen.getByText('1 Terraso member joined Owner Name.')
   ).toBeInTheDocument();
   expect(
     screen.getByRole('button', { name: 'Leave Label' })
@@ -289,7 +283,7 @@ test('GroupMembershipCard: Leave', async () => {
     },
   });
   expect(
-    screen.getByText('1 Terraso member has affiliated with Owner Name.')
+    screen.getByText('1 Terraso member joined Owner Name.')
   ).toBeInTheDocument();
   expect(
     screen.getByRole('button', { name: 'Leave Label' })
@@ -307,9 +301,7 @@ test('GroupMembershipCard: Leave', async () => {
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
 
   expect(
-    screen.getByText(
-      '0 Terraso members have affiliated themselves with Owner Name.'
-    )
+    screen.getByText('0 Terraso members joined Owner Name.')
   ).toBeInTheDocument();
   expect(() => screen.getByRole('progressbar')).toThrow();
   expect(

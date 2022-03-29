@@ -8,7 +8,7 @@ import { Typography, Link, Button } from '@mui/material';
 import { fetchGroups } from 'group/groupSlice';
 import { withProps } from 'react-hoc';
 import { useDocumentTitle } from 'common/document';
-import GroupMembershipButton from 'group/membership/components/GroupMembershipButton';
+import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton';
 import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
 import PageLoader from 'layout/PageLoader';
 import { GroupContextProvider } from 'group/groupContext';
@@ -42,7 +42,7 @@ const MembershipButton = ({ group }) => (
     MemberJoinButton={MemberJoinButton}
     MemberLeaveButton={MemberLeaveButton}
   >
-    <GroupMembershipButton sx={{ width: '100%' }} />
+    <GroupMembershipJoinLeaveButton sx={{ width: '100%' }} />
   </GroupContextProvider>
 );
 
