@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-03-24T18:15:45.661Z\n"
-"PO-Revision-Date: 2022-03-24T18:15:45.661Z\n"
+"POT-Creation-Date: 2022-03-29T13:46:05.794Z\n"
+"PO-Revision-Date: 2022-03-29T13:46:05.794Z\n"
 
 msgid "home##title"
 msgstr "Inicio"
@@ -63,20 +63,35 @@ msgstr ""
 "Si aún no tiene una cuenta de Terraso, al iniciar sesión se creará una de "
 "acuerdo con nuestros <a href='#'>Términos de servicio</a>."
 
-msgid "footer##help"
+msgid "footer##help##text"
 msgstr "Ayuda de Terraso"
 
-msgid "footer##contact"
+msgid "footer##help##url"
+msgstr "https://terraso.org/es/ayuda/"
+
+msgid "footer##contact##text"
 msgstr "Contacto"
 
-msgid "footer##terms"
+msgid "footer##contact##to"
+msgstr "/contact"
+
+msgid "footer##terms##text"
 msgstr "Términos de uso"
 
-msgid "footer##privacy"
+msgid "footer##terms##url"
+msgstr "#"
+
+msgid "footer##privacy##text"
 msgstr "Política de privacidad"
 
-msgid "footer##data"
+msgid "footer##privacy##url"
+msgstr "https://techmatters.org/privacy-policy/"
+
+msgid "footer##data##text"
 msgstr "Política de datos"
+
+msgid "footer##data##url"
+msgstr "#"
 
 msgid "navigation##home"
 msgstr "Inicio"
@@ -502,6 +517,10 @@ msgstr "Confirmar"
 msgctxt "label"
 msgid "account##profile_form"
 msgstr "Administrar perfil"
+
+msgctxt "label"
+msgid "account##form_language"
+msgstr "Idioma"
 
 msgctxt "label"
 msgid "navigation##nav"

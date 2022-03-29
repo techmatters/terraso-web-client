@@ -133,11 +133,11 @@
         "form_language_label": "Language"
     },
     "footer": {
-        "help": "Terraso Help",
-        "contact": "Contact",
-        "terms": "Terms of Use",
-        "privacy": "Privacy Policy",
-        "data": "Data Policy"
+        "help": { "text": "Terraso Help", "url": "https://terraso.org/help/" },
+        "contact": { "text": "Contact", "to": "/contact" },
+        "terms": { "text": "Terms of Use", "url": "#" },
+        "privacy": { "text": "Privacy Policy", "url": "https://techmatters.org/privacy-policy/" },
+        "data": { "text": "Data Policy", "url": "#"}
     },
     "navigation": {
         "home": "Home",
