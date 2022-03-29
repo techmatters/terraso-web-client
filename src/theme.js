@@ -85,6 +85,14 @@ const components = {
       underline: 'none',
     },
   },
+  MuiCardActions: {
+    styleOverrides: {
+      root: {
+        padding: 16,
+        display: 'inherit',
+      },
+    },
+  },
   MuiAvatar: {
     styleOverrides: {
       root: {
@@ -103,7 +111,7 @@ const theme = createTheme(colorTheme, {
     },
     h2: {
       fontSize: '1.2rem',
-      fontWeight: 400,
+      fontWeight: 500,
       textTransform: 'uppercase',
       paddingTop: '1rem',
     },
@@ -118,6 +126,9 @@ const theme = createTheme(colorTheme, {
     button: {
       textTransform: 'none',
       fontWeight: 0,
+    },
+    caption: {
+      fontSize: '1rem',
     },
   },
   components,
