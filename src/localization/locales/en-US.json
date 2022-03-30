@@ -213,7 +213,9 @@
         "boundaries_save": "Update Geographic Info",
         "boundaries_cancel": "Cancel",
         "boundaries_drop_message": "Drop file to upload",
-        "boundaries_format_error": "Incorrect file format. Please upload a GeoJSON file.",
+        "boundaries_file_empty": "The file was empty.",
+        "boundaries_file_invalid_json": "The file was not a valid JSON file.",
+        "boundaries_file_invalid_geojson": "The file was JSON, but not a valid GeoJSON file.",
         "view_map_boundaries_help": "Something wrong with the map?",
         "view_map_boundaries_help_details": "Contact your landscape’s manager or <1>send us a message <1 /></1>.",
         "view_map_boundaries_update": "Update Map"
