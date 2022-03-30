@@ -18,7 +18,7 @@ import { GEOJSON_MAX_SIZE } from 'config';
 import { fetchLandscapeForm, saveLandscape } from 'landscape/landscapeSlice';
 import { isValidGeoJson } from 'landscape/landscapeUtils';
 import { useDocumentTitle } from 'common/document';
-import logger from 'monitoring/logger';
+import { sendToRollbar } from 'monitoring/logger';
 import PageContainer from 'layout/PageContainer';
 import LandscapeMap from './LandscapeMap';
 import PageHeader from 'layout/PageHeader';
@@ -38,15 +38,21 @@ const openFile = file =>
 
 const openGeoJsonFile = file =>
   openFile(file).then(contents => {
+    if (!contents.length) {
+      throw new Error('boundaries_file_empty');
+    }
+    let json;
+
     try {
-      const json = JSON.parse(contents);
-      if (isValidGeoJson(json)) {
-        return Promise.resolve(json);
-      } else {
-        throw new Error('Invalid GeoJSON format');
-      }
+      json = JSON.parse(contents);
     } catch (error) {
-      return Promise.reject(error);
+      throw new Error('boundaries_file_invalid_json');
+    }
+
+    if (isValidGeoJson(json)) {
+      return json;
+    } else {
+      throw new Error('boundaries_file_invalid_geojson');
     }
   });
 
@@ -86,7 +92,7 @@ const DropZone = props => {
         })
         .catch(error => {
           setError(error);
-          logger.error('Failed to parse file. Error:', error);
+          sendToRollbar('error', error);
         });
     },
     [onFileSelected]
@@ -122,6 +128,7 @@ const DropZone = props => {
         <Typography>{t('landscape.boundaries_drop_message')}</Typography>
       ) : (
         <>
+            <Alert severity="error">{t(`landscape.${error.message}`)}</Alert>
           <Paper
             variant="outlined"
             sx={({ spacing, palette }) => ({
@@ -147,9 +154,6 @@ const DropZone = props => {
             })}
           </Typography>
           {error && (
-            <Alert severity="error">
-              {t('landscape.boundaries_format_error')}
-            </Alert>
           )}
           {currentFile && <CurrentFile file={currentFile} />}
         </>
