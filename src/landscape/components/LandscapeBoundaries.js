@@ -43,9 +43,10 @@ const openGeoJsonFile = file =>
       if (isValidGeoJson(json)) {
         return Promise.resolve(json);
       } else {
-        throw new Error('Invalid GEO Json format');
+        throw new Error('Invalid GeoJSON format');
       }
     } catch (error) {
+      console.error('error', error);
       return Promise.reject(error);
     }
   });
