@@ -46,7 +46,6 @@ const openGeoJsonFile = file =>
         throw new Error('Invalid GeoJSON format');
       }
     } catch (error) {
-      console.error('error', error);
       return Promise.reject(error);
     }
   });
