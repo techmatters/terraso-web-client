@@ -94,6 +94,7 @@ const DropZone = props => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: '.json,.geojson',
+    useFsAccessApi: false,
     multiple: false,
     maxSize: GEOJSON_MAX_SIZE,
   });
