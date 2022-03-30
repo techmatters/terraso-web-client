@@ -114,7 +114,7 @@ const DropZone = props => {
       variant="outlined"
       sx={({ palette }) => ({
         backgroundColor: isDragActive ? palette.blue.mid : palette.blue.lite,
-        border: `2px dashed ${palette.blue.dark}`,
+        border: `3px dashed ${palette.blue.dark}`,
         paddingTop: 2,
         paddingBottom: 3,
         marginTop: 2,
@@ -128,7 +128,9 @@ const DropZone = props => {
         <Typography>{t('landscape.boundaries_drop_message')}</Typography>
       ) : (
         <>
+          {error && (
             <Alert severity="error">{t(`landscape.${error.message}`)}</Alert>
+          )}
           <Paper
             variant="outlined"
             sx={({ spacing, palette }) => ({
@@ -153,9 +155,7 @@ const DropZone = props => {
               size: getFormatedSize(GEOJSON_MAX_SIZE / 1000000.0),
             })}
           </Typography>
-          {error && (
-          )}
-          {currentFile && <CurrentFile file={currentFile} />}
+          {!error && currentFile && <CurrentFile file={currentFile} />}
         </>
       )}
     </Stack>
