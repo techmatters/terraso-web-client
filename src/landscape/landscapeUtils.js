@@ -1,5 +1,4 @@
 import bbox from '@turf/bbox';
-import logger from 'monitoring/logger';
 
 const parseGeoJson = areaPolygon => {
   if (!areaPolygon) {
@@ -8,7 +7,6 @@ const parseGeoJson = areaPolygon => {
   try {
     return bbox(areaPolygon);
   } catch (error) {
-    logger.error('Failed to parse polygon', error);
     return null;
   }
 };
