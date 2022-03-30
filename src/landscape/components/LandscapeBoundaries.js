@@ -43,7 +43,7 @@ const openGeoJsonFile = file =>
       if (isValidGeoJson(json)) {
         return Promise.resolve(json);
       } else {
-        throw new Error('Invalid GEO Json format');
+        throw new Error('Invalid GeoJSON format');
       }
     } catch (error) {
       return Promise.reject(error);
@@ -94,6 +94,7 @@ const DropZone = props => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: '.json,.geojson',
+    useFsAccessApi: false,
     multiple: false,
     maxSize: GEOJSON_MAX_SIZE,
   });
