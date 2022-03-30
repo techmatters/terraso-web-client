@@ -31,28 +31,7 @@ const setup = async () => {
   });
 };
 
-beforeEach(() => {
-  useParams.mockReturnValue({
-    slug: 'slug-1',
-  });
-  useNavigate.mockReturnValue(() => {});
-});
-
-test('LandscapeBoundaries: Display error', async () => {
-  terrasoApi.request.mockRejectedValue(['Load error']);
-  await setup();
-  expect(screen.getByText(/Load error/i)).toBeInTheDocument();
-});
-test('LandscapeBoundaries: Display loader', async () => {
-  terrasoApi.request.mockReturnValue(new Promise(() => {}));
-  await setup();
-  const loader = screen.getByRole('progressbar', {
-    name: 'Loading',
-    hidden: true,
-  });
-  expect(loader).toBeInTheDocument();
-});
-test('LandscapeBoundaries: Select file (Invalid)', async () => {
+const testGeoJsonParsing = (file, errorMessage) => async () => {
   global.console.error = jest.fn();
   terrasoApi.request.mockReturnValue(
     Promise.resolve({
@@ -77,9 +56,6 @@ test('LandscapeBoundaries: Select file (Invalid)', async () => {
     name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1MB',
   });
 
-  const file = new File(['{"key": "value"}'], 'test.json', {
-    type: 'application/json',
-  });
   const data = {
     dataTransfer: {
       files: [file],
@@ -95,11 +71,88 @@ test('LandscapeBoundaries: Select file (Invalid)', async () => {
   };
   fireEvent.drop(dropzone, data);
   expect(
-    await screen.findByText(
-      'Incorrect file format. Please upload a GeoJSON file.'
-    )
+    await screen.findByText(errorMessage)
   ).toBeInTheDocument();
+};
+
+beforeEach(() => {
+  useParams.mockReturnValue({
+    slug: 'slug-1',
+  });
+  useNavigate.mockReturnValue(() => {});
 });
+
+test('LandscapeBoundaries: Display error', async () => {
+  terrasoApi.request.mockRejectedValue(['Load error']);
+  await setup();
+  expect(screen.getByText(/Load error/i)).toBeInTheDocument();
+});
+test('LandscapeBoundaries: Display loader', async () => {
+  terrasoApi.request.mockReturnValue(new Promise(() => {}));
+  await setup();
+  const loader = screen.getByRole('progressbar', {
+    name: 'Loading',
+    hidden: true,
+  });
+  expect(loader).toBeInTheDocument();
+});
+
+const plainTextFile = new File(['hello'], 'test.json', {
+  type: 'application/json',
+});
+test(
+  'LandscapeBoundaries: Select file (empty)',
+  testGeoJsonParsing(
+    plainTextFile,
+    'The file was not a valid JSON file.'
+  )
+);
+
+const invalidJsonFile = new File(['{"type":"FeatureCollection","features":.61687046392973],[-96.064453125,42.74701217318067]]]}}]}'], 'test.json', {
+  type: 'application/json',
+});
+test(
+  'LandscapeBoundaries: Select file (empty)',
+  testGeoJsonParsing(
+    invalidJsonFile,
+    'The file was not a valid JSON file.'
+  )
+);
+
+const invalidGeoJsonFile = new File(['{"key": "value"}'], 'test.json', {
+  type: 'application/json',
+});
+test(
+  'LandscapeBoundaries: Select file (Invalid GeoJSON)',
+  testGeoJsonParsing(
+    invalidGeoJsonFile,
+    'The file was JSON, but not a valid GeoJSON file.'
+  )
+);
+
+const invalidGeomtryinGeoJsonFile = new File(['{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygoff","coordinates":[[[-96.064453125,42.74701217318067],[-104.150390625,38.06539235133249],[-93.515625,35.10193405724606],[-85.95703125,38.61687046392973],[-96.064453125,42.74701217318067]]]}}]}'], 'test.json', {
+  type: 'application/json',
+});
+test(
+  'LandscapeBoundaries: Select file (Invalid GeoJSON)',
+  testGeoJsonParsing(
+    invalidGeomtryinGeoJsonFile,
+    'The file was JSON, but not a valid GeoJSON file.'
+  )
+);
+
+
+const emptyGeoJsonFile = new File([''], 'test.json', {
+  type: 'application/json',
+});
+test(
+  'LandscapeBoundaries: Select file (empty)',
+  testGeoJsonParsing(
+    emptyGeoJsonFile,
+    'The file was empty.'
+  )
+);
+
 test('LandscapeBoundaries: Select file', async () => {
   terrasoApi.request.mockReturnValue(
     Promise.resolve({
