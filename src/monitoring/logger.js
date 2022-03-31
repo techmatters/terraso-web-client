@@ -10,6 +10,8 @@ const ORDER = _.flow(
   _.fromPairs
 )(LOG_LEVELS);
 
+export const sendToRollbar = (severity, ...args) => rollbar[severity](...args);
+
 const handleLog =
   severity =>
   (...args) => {

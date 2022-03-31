@@ -213,7 +213,9 @@
         "boundaries_save": "Actualizar información geográfica",
         "boundaries_cancel": "Cancelar",
         "boundaries_drop_message": "Soltar el archivo para subirlo",
-        "boundaries_format_error": "Formato de archivo incorrecto. Cargue un archivo GeoJSON.",
+        "boundaries_file_empty": "El archivo está vacío.",
+        "boundaries_file_invalid_json": "El archivo no es un archivo JSON válido.",
+        "boundaries_file_invalid_geojson": "El archivo es JSON, pero no es un archivo GeoJSON válido.",
         "view_map_boundaries_help": "¿Algo mal con el mapa?",
         "view_map_boundaries_help_details": "Comunícate con el administrador de su paisaje o <1>envíanos un mensaje <1 /></1>.",
         "view_map_boundaries_update": "Actualizar información geográfica"
