@@ -70,9 +70,7 @@ const testGeoJsonParsing = (file, errorMessage) => async () => {
     },
   };
   fireEvent.drop(dropzone, data);
-  expect(
-    await screen.findByText(errorMessage)
-  ).toBeInTheDocument();
+  expect(await screen.findByText(errorMessage)).toBeInTheDocument();
 };
 
 beforeEach(() => {
@@ -101,22 +99,22 @@ const plainTextFile = new File(['hello'], 'test.json', {
   type: 'application/json',
 });
 test(
-  'LandscapeBoundaries: Select file (empty)',
-  testGeoJsonParsing(
-    plainTextFile,
-    'The file was not a valid JSON file.'
-  )
+  'LandscapeBoundaries: Select file (plain text, not JSON)',
+  testGeoJsonParsing(plainTextFile, 'The file was not a valid JSON file.')
 );
 
-const invalidJsonFile = new File(['{"type":"FeatureCollection","features":.61687046392973],[-96.064453125,42.74701217318067]]]}}]}'], 'test.json', {
-  type: 'application/json',
-});
+const invalidJsonFile = new File(
+  [
+    '{"type":"FeatureCollection","features":.61687046392973],[-96.064453125,42.74701217318067]]]}}]}',
+  ],
+  'test.json',
+  {
+    type: 'application/json',
+  }
+);
 test(
-  'LandscapeBoundaries: Select file (empty)',
-  testGeoJsonParsing(
-    invalidJsonFile,
-    'The file was not a valid JSON file.'
-  )
+  'LandscapeBoundaries: Select file (invalid JSON)',
+  testGeoJsonParsing(invalidJsonFile, 'The file was not a valid JSON file.')
 );
 
 const invalidGeoJsonFile = new File(['{"key": "value"}'], 'test.json', {
@@ -130,27 +128,29 @@ test(
   )
 );
 
-const invalidGeomtryinGeoJsonFile = new File(['{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygoff","coordinates":[[[-96.064453125,42.74701217318067],[-104.150390625,38.06539235133249],[-93.515625,35.10193405724606],[-85.95703125,38.61687046392973],[-96.064453125,42.74701217318067]]]}}]}'], 'test.json', {
-  type: 'application/json',
-});
+const invalidGeomtryinGeoJsonFile = new File(
+  [
+    '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygoff","coordinates":[[[-96.064453125,42.74701217318067],[-104.150390625,38.06539235133249],[-93.515625,35.10193405724606],[-85.95703125,38.61687046392973],[-96.064453125,42.74701217318067]]]}}]}',
+  ],
+  'test.json',
+  {
+    type: 'application/json',
+  }
+);
 test(
-  'LandscapeBoundaries: Select file (Invalid GeoJSON)',
+  'LandscapeBoundaries: Select file (Invalid GeoJSON Boundary)',
   testGeoJsonParsing(
     invalidGeomtryinGeoJsonFile,
     'The file was JSON, but not a valid GeoJSON file.'
   )
 );
 
-
 const emptyGeoJsonFile = new File([''], 'test.json', {
   type: 'application/json',
 });
 test(
   'LandscapeBoundaries: Select file (empty)',
-  testGeoJsonParsing(
-    emptyGeoJsonFile,
-    'The file was empty.'
-  )
+  testGeoJsonParsing(emptyGeoJsonFile, 'The file was empty.')
 );
 
 test('LandscapeBoundaries: Select file', async () => {
