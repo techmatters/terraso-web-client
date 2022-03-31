@@ -115,7 +115,7 @@ const DropZone = props => {
       sx={({ palette }) => ({
         backgroundColor: isDragActive ? palette.blue.mid : palette.blue.lite,
         border: `3px dashed ${palette.blue.dark}`,
-        paddingTop: 2,
+        paddingTop: error ? 0 : 2,
         paddingBottom: 3,
         marginTop: 2,
         minHeight: '125px',
@@ -129,7 +129,16 @@ const DropZone = props => {
       ) : (
         <>
           {error && (
-            <Alert severity="error">{t(`landscape.${error.message}`)}</Alert>
+            <Alert
+              style={{
+                width: '100%',
+                boxSizing: 'border-box',
+                margin: '0 0 1rem',
+              }}
+              severity="error"
+            >
+              {t(`landscape.${error.message}`)}
+            </Alert>
           )}
           <Paper
             variant="outlined"
