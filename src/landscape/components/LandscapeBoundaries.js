@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 
+import theme from 'theme';
 import { GEOJSON_MAX_SIZE } from 'config';
 import { fetchLandscapeForm, saveLandscape } from 'landscape/landscapeSlice';
 import { isValidGeoJson } from 'landscape/landscapeUtils';
@@ -133,7 +134,7 @@ const DropZone = props => {
               style={{
                 width: '100%',
                 boxSizing: 'border-box',
-                margin: '0 0 1rem',
+                margin: `0 0 ${theme.spacing(1)}`,
               }}
               severity="error"
             >
