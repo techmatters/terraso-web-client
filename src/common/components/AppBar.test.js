@@ -24,6 +24,10 @@ const setup = async () => {
   });
 };
 
+beforeEach(() => {
+  global.fetch = jest.fn();
+});
+
 test('AppBar: Dont display if no user', async () => {
   await render(<AppBar />, {
     account: {
@@ -60,6 +64,9 @@ test('AppBar: Logo display (small)', async () => {
   );
 });
 test('AppBar: Sign out', async () => {
+  global.fetch.mockResolvedValueOnce({
+    status: 200,
+  });
   useMediaQuery.mockReturnValue(false);
   await setup();
   expect(screen.getByRole('img', { name: 'Terraso' })).toHaveAttribute(

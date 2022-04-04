@@ -34,6 +34,9 @@ test('Auth: test redirect', async () => {
   global.fetch.mockResolvedValueOnce({
     status: 401,
   });
+  global.fetch.mockResolvedValueOnce({
+    status: 200,
+  });
   await render(
     <RequireAuth>
       <GroupView />
@@ -53,7 +56,7 @@ test('Auth: test redirect', async () => {
     }
   );
 
-  expect(global.fetch).toHaveBeenCalledTimes(1);
+  expect(global.fetch).toHaveBeenCalledTimes(2);
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
   expect(screen.getByText('To: /account')).toBeInTheDocument();
 });
@@ -61,10 +64,6 @@ test('Auth: test redirect referrer', async () => {
   useLocation.mockReturnValue({
     pathname: '/groups',
     search: '?sort=-name',
-  });
-  terrasoApi.request.mockRejectedValueOnce('UNAUTHENTICATED');
-  global.fetch.mockResolvedValueOnce({
-    status: 401,
   });
   await render(
     <RequireAuth>
