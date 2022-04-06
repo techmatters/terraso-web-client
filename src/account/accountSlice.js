@@ -4,6 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { createAsyncThunk } from 'state/utils';
 import { getToken, removeToken } from 'account/auth';
 import * as accountService from 'account/accountService';
+import logger from 'monitoring/logger';
 
 const initialState = {
   currentUser: {
@@ -128,6 +129,9 @@ export const { setUser, setHasToken } = userSlice.actions;
 export default userSlice.reducer;
 
 export const signOut = () => dispatch => {
+  accountService.signOut().catch(error => {
+    logger.error('Failed to execute API signout request', error);
+  });
   removeToken();
   dispatch(setHasToken(false));
 };
