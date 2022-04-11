@@ -5,7 +5,6 @@ import { PLAUSIBLE_DOMAIN } from 'config';
 
 const plausible = Plausible({
   domain: PLAUSIBLE_DOMAIN,
-  trackLocalhost: true,
 });
 
 plausible.enableAutoPageviews();
