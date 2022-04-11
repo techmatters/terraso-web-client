@@ -66,8 +66,9 @@
     "flat": "^5.0.2",
     "i18next-conv": "^12.1.0",
     "jest-axe": "^6.0.0",
-    "react-scripts": "^5.0.0",
+    "plausible-tracker": "^0.3.5",
     "prettier": "^2.6.1",
+    "react-scripts": "^5.0.0",
     "serve": "^13.0.2",
     "stylelint": "^14.6.1",
     "stylelint-prettier": "^2.0.0"

@@ -22,3 +22,5 @@ export const HUBSPOT_FORMS = {
     'es-ES': process.env.REACT_APP_HUBSPOT_FORMS_CONTACT_FORM_ES,
   },
 };
+
+export const PLAUSIBLE_DOMAIN = process.env.REACT_APP_PLAUSIBLE_DOMAIN;

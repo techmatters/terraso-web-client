@@ -4,9 +4,11 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { joinGroup, leaveGroup } from 'group/groupSlice';
 import { useGroupContext } from 'group/groupContext';
+import { useAnalytics } from 'monitoring/anaylitics';
 
 const GroupMembershipJoinLeaveButton = () => {
   const dispatch = useDispatch();
+  const { trackEvent } = useAnalytics();
   const { owner, groupSlug, MemberLeaveButton, MemberJoinButton } =
     useGroupContext();
   const {
@@ -21,6 +23,7 @@ const GroupMembershipJoinLeaveButton = () => {
   const userMembership = _.get('membersInfo.accountMembership', group);
 
   const onJoin = () => {
+    trackEvent('joinGroup');
     dispatch(
       joinGroup({
         groupSlug,
@@ -31,6 +34,7 @@ const GroupMembershipJoinLeaveButton = () => {
   };
 
   const onLeave = () => {
+    trackEvent('leaveGroup');
     dispatch(
       leaveGroup({
         groupSlug,

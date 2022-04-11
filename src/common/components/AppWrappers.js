@@ -13,6 +13,9 @@ import 'localization/i18n';
 // Form validations
 import 'forms/yup';
 
+// Analytics
+import 'monitoring/anaylitics';
+
 // Wrappers
 // Router, Theme, Global State, Permissions, Notifications
 const AppWrappers = ({ children, theme, store, permissionsRules }) => (
