@@ -151,7 +151,7 @@ const GroupForm = () => {
         values={group}
         validationSchema={VALIDATION_SCHEMA}
         onSave={onSave}
-        saveLabel="group.form_save_label"
+        saveLabel={isNew ? 'group.form_create_label' : 'group.form_save_label'}
         onCancel={onCancel}
         cancelLabel="group.form_cancel_label"
       />

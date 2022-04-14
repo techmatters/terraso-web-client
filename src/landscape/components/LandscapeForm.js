@@ -117,7 +117,9 @@ const LandscapeForm = () => {
         values={landscape}
         validationSchema={VALIDATION_SCHEMA}
         onSave={onSave}
-        saveLabel="landscape.form_save_label"
+        saveLabel={
+          isNew ? 'landscape.form_create_label' : 'landscape.form_save_label'
+        }
       />
     </PageContainer>
   );
