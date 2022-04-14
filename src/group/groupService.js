@@ -214,7 +214,7 @@ const updateGroup = group => {
   `;
   return terrasoApi
     .request(query, { input: cleanGroup(group) })
-    .then(response => response.updateGroup.group);
+    .then(response => ({ new: false, ...response.updateGroup.group }));
 };
 
 const addGroup = ({ group, user }) => {
@@ -229,7 +229,7 @@ const addGroup = ({ group, user }) => {
 
   return terrasoApi
     .request(query, { input: cleanGroup(group) })
-    .then(response => response.addGroup.group);
+    .then(response => ({ new: true, ...response.addGroup.group }));
 };
 
 export const saveGroup = ({ group, user }) =>
