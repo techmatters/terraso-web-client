@@ -63,7 +63,7 @@ export const saveLandscape = createAsyncThunk(
   landscapeService.saveLandscape,
   landscape => ({
     severity: 'success',
-    content: 'landscape.form_message_success',
+    content: landscape.new ? 'landscape.added' : 'landscape.updated',
     params: { name: landscape.name },
   })
 );

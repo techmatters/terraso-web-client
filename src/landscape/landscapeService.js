@@ -171,7 +171,7 @@ const updateLandscape = landscape => {
   `;
   return terrasoApi
     .request(query, { input: cleanLandscape(landscape) })
-    .then(response => response.updateLandscape.landscape);
+    .then(response => ({ new: false, ...response.updateLandscape.landscape }));
 };
 
 const addLandscape = landscape => {
@@ -187,7 +187,7 @@ const addLandscape = landscape => {
   `;
   return terrasoApi
     .request(query, { input: cleanLandscape(landscape) })
-    .then(response => response.addLandscape.landscape);
+    .then(response => ({ new: true, ...response.addLandscape.landscape }));
 };
 
 export const saveLandscape = landscape =>

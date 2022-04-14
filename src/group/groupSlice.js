@@ -66,7 +66,7 @@ export const saveGroup = createAsyncThunk(
   groupService.saveGroup,
   group => ({
     severity: 'success',
-    content: 'group.form_message_success',
+    content: group.new ? 'group.added' : 'group.updated',
     params: { name: group.name },
   })
 );
