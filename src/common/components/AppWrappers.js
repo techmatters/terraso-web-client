@@ -14,7 +14,7 @@ import 'localization/i18n';
 import 'forms/yup';
 
 // Analytics
-import 'monitoring/anaylitics';
+import 'monitoring/analytics';
 
 // Wrappers
 // Router, Theme, Global State, Permissions, Notifications

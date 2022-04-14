@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { PLAUSIBLE_DOMAIN } from 'config';
 
-const plausible = Plausible({
+export const plausible = Plausible({
   domain: PLAUSIBLE_DOMAIN,
 });
 

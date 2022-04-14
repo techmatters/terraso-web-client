@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { joinGroup, leaveGroup } from 'group/groupSlice';
 import { useGroupContext } from 'group/groupContext';
-import { useAnalytics } from 'monitoring/anaylitics';
+import { useAnalytics } from 'monitoring/analytics';
 
 const GroupMembershipJoinLeaveButton = () => {
   const dispatch = useDispatch();
