@@ -1,10 +1,11 @@
 import Plausible from 'plausible-tracker';
 import { useTranslation } from 'react-i18next';
 
-import { PLAUSIBLE_DOMAIN } from 'config';
+import { PLAUSIBLE_DOMAIN, TERRASO_ENV } from 'config';
 
 export const plausible = Plausible({
   domain: PLAUSIBLE_DOMAIN,
+  trackLocalhost: TERRASO_ENV === 'local',
 });
 
 plausible.enableAutoPageviews();
