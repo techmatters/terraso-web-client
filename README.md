@@ -63,6 +63,7 @@ To define environment variables we are using: https://create-react-app.dev/docs/
 **REACT_APP_HUBSPOT_FORMS_PORTAL_ID**: HubSpot portal ID
 **REACT_APP_HUBSPOT_FORMS_CONTACT_FORM_EN**: HubSpot English form ID
 **REACT_APP_HUBSPOT_FORMS_CONTACT_FORM_ES**: HubSpot Epanish form ID
+**REACT_APP_PLAUSIBLE_DOMAIN**: Plausible domain configuration
 
 To modify these variables inside the docker environment change the `local.env` file
 
@@ -89,6 +90,10 @@ Executing `make localization-to-json` will generate the JSON files in `src/local
 The contact section integrates with HubSpot to display it in the application. To gather the configuration needed for the Hubsport environment variables (`REACT_APP_HUBSPOT_FORMS_REGION`, `REACT_APP_HUBSPOT_FORMS_PORTAL_ID`, `REACT_APP_HUBSPOT_FORMS_CONTACT_FORM_EN`, `REACT_APP_HUBSPOT_FORMS_CONTACT_FORM_ES`) get it for you form URL that should have this strcuture:
 
 `https://app.hubspot.com/forms/{portal ID}/editor/{form ID}/edit/form`
+
+## Analytics
+
+The application is built to work with Plausible, to configure the domain Plausible will use you have to set the `REACT_APP_PLAUSIBLE_DOMAIN` environment variable.
 
 ## Learn More
 
