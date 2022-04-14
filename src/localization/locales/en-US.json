@@ -218,6 +218,7 @@
         "boundaries_file_invalid_geojson": "The file was JSON, but not a valid GeoJSON file.",
         "view_map_boundaries_help": "Something wrong with the map?",
         "view_map_boundaries_help_details": "Contact your landscape’s manager or <1>send us a message <1 /></1>.",
+        "view_map_boundaries_help_url": "/contact",
         "view_map_boundaries_update": "Update Map"
     },
     "common": {
