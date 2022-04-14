@@ -93,7 +93,7 @@ The contact section integrates with HubSpot to display it in the application. To
 
 ## Analytics
 
-The application is built to work with Plausible, to configure the domain plausibel will use you have to set the `REACT_APP_PLAUSIBLE_DOMAIN` environment variable.
+The application is built to work with Plausible, to configure the domain Plausible will use you have to set the `REACT_APP_PLAUSIBLE_DOMAIN` environment variable.
 
 ## Learn More
 
