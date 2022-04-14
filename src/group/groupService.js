@@ -243,7 +243,7 @@ export const joinGroup = (
     mutation addMembership($input: MembershipAddMutationInput!, $accountEmail: String!){
       addMembership(input: $input) {
         membership {
-          group { 
+          group {
             ...groupFields
             ...groupMembersInfo
             ...accountMembership
@@ -278,7 +278,7 @@ export const leaveGroup = ({ groupSlug, membershipId }, currentUser) => {
     mutation deleteMembership($input: MembershipDeleteMutationInput!, $accountEmail: String!){
       deleteMembership(input: $input) {
         membership {
-          group { 
+          group {
             ...groupFields
             ...groupMembersInfo
             ...accountMembership
