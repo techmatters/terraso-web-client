@@ -50,7 +50,6 @@ const FIELDS = [
   {
     name: 'location',
     label: 'landscape.form_location_label',
-    info: 'landscape.form_location_info',
   },
 ];
 
