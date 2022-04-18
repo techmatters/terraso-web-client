@@ -13,8 +13,8 @@ const Component = () => {
   const { trackEvent } = useAnalytics();
 
   trackEvent('eventTest', { props: { customProp: 'testProp' } });
-  return (<div></div>);
-}
+  return <div></div>;
+};
 
 test('Analytics: add language to custom events', async () => {
   await render(<Component />);
