@@ -3,7 +3,7 @@ import _ from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
-import { Typography, Link } from '@mui/material';
+import { Typography, Link, Button } from '@mui/material';
 
 import { fetchLandscapes } from 'landscape/landscapeSlice';
 import { withProps } from 'react-hoc';
@@ -147,6 +147,20 @@ const LandscapeList = () => {
           },
         }}
       />
+      <Typography
+        variant="h2"
+        sx={{
+          marginTop: theme.spacing(4),
+        }}
+      >
+        {t('landscape.create')}
+      </Typography>
+
+      <p>{t('landscape.list_new_description')}</p>
+
+      <Button variant="contained" component={RouterLink} to="/landscapes/new">
+        {t('landscape.list_new_button')}
+      </Button>
     </PageContainer>
   );
 };
