@@ -380,7 +380,7 @@ test('GroupForm: Save form (add)', async () => {
   });
   fireEvent.change(inputs.email, { target: { value: 'other@group.org' } });
 
-  await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
+  await act(async () => fireEvent.click(screen.getByText(/Create Group/i)));
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
   const saveCall = terrasoApi.request.mock.calls[0];
   expect(saveCall[1]).toStrictEqual({
