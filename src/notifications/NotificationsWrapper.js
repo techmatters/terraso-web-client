@@ -46,7 +46,7 @@ const NotificationsWrapper = props => {
         <Alert
           onClose={() => onClose(key)}
           severity={notification.severity}
-          sx={{ width: '100%' }}
+          sx={{ width: '90%' }}
         >
           {t(notification.content, notification.params)}
         </Alert>
