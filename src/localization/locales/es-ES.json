@@ -16,7 +16,7 @@
         "create": "Crear un grupo",
         "home_title": "Grupos",
         "home_default_title": "Grupo",
-        "form_edit_title": "[TODO]Administrar la información del grupo “{{name}}”",
+        "form_edit_title": "Actualizar el grupo “{{name}}”",
         "form_new_title": "Crear nuevo grupo",
         "membership_card_title": "Miembros",
         "membership_leave_confirm_title": "Dejar “{{name}}”",
