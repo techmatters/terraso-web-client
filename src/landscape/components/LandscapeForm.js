@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
@@ -121,8 +121,17 @@ const CountrySelector = props => {
   );
 };
 
+const BoundaryStep = props => {
+  const [option, setOption] = useState(-1);
+
+  if (option === -1) {
+    return <BoundaryOptions setOption={setOption} />;
+  }
+};
+
 const BoundaryOptions = props => {
   const { t } = useTranslation();
+  const { setOption } = props;
 
   const options = [
     {
@@ -155,6 +164,7 @@ const BoundaryOptions = props => {
             key={index}
             fullWidth
             variant="outlined"
+            onClick={() => setOption(index)}
             sx={{
               justifyContent: 'start',
               padding: 4,
@@ -215,20 +225,25 @@ const LandscapeForm = () => {
     }
   }, [slug, landscape, navigate]);
 
-  const steps = [
-    {
-      label: 'landscape.form_step_info_label',
-      render: ({ setActiveStepIndex }) => (
-        <InfoStep
+  const renderStep =
+    Component =>
+    ({ setActiveStepIndex }) =>
+      (
+        <Component
           landscape={updatedLandscape}
           setActiveStepIndex={setActiveStepIndex}
           setUpdatedLandscape={setUpdatedLandscape}
         />
-      ),
+      );
+
+  const steps = [
+    {
+      label: 'landscape.form_step_info_label',
+      render: renderStep(InfoStep),
     },
     {
       label: 'landscape.form_step_boundaries_options_label',
-      render: () => <BoundaryOptions />,
+      render: renderStep(BoundaryStep),
     },
   ];
 
