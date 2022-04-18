@@ -4,6 +4,7 @@ import { AppBar, Toolbar, Button, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 
 import LocalePicker from 'localization/components/LocalePicker';
 import { signOut } from 'account/accountSlice';
@@ -12,6 +13,7 @@ import theme from 'theme';
 import logo from 'assets/logo.svg';
 import logoSquare from 'assets/logo-square.svg';
 import AccountAvatar from 'account/components/AccountAvatar';
+import ConditionalLink from 'common/components/ConditionalLink';
 
 const AppBarComponent = () => {
   const dispatch = useDispatch();
@@ -19,6 +21,8 @@ const AppBarComponent = () => {
   const { data: user } = useSelector(state => state.account.currentUser);
   const hasToken = useSelector(state => state.account.hasToken);
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
   if (!hasToken || !user) {
     return null;
@@ -31,14 +35,14 @@ const AppBarComponent = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        <Button color="inherit" component={Link} to="/">
+        <ConditionalLink to="/" condition={!isHomePage}>
           <img
             src={isSmall ? logoSquare : logo}
             width={isSmall ? 35 : 125}
             height="35"
             alt={t('common.terraso_projectName')}
           />
-        </Button>
+        </ConditionalLink>
         <Box sx={{ flexGrow: 1 }} />
         <Button
           component={Link}
