@@ -4,20 +4,17 @@ import { v4 as uuidv4 } from 'uuid';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import L from 'leaflet';
 
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-geosearch/dist/geosearch.css';
 
 import 'gis/components/Map.css';
 
-const mapMarkerIcon = L.icon({
-  iconSize: [25, 41],
-  iconAnchor: [10, 41],
-  popupAnchor: [2, -40],
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
 const LeafletSearch = ({ onPinLocationChange }) => {
@@ -41,7 +38,7 @@ const LeafletSearch = ({ onPinLocationChange }) => {
       provider,
       marker: {
         draggable: true,
-        mapMarkerIcon,
+        mapMarkerIcon: L.Icon.Default,
       },
     });
 
