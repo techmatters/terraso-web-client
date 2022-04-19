@@ -4,7 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 
-import { fetchLandscapeForm, setFormNewValues } from 'landscape/landscapeSlice';
+import {
+  fetchLandscapeForm,
+  saveLandscape,
+  setFormNewValues,
+} from 'landscape/landscapeSlice';
 import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
 import PageContainer from 'layout/PageContainer';
@@ -52,9 +56,14 @@ const LandscapeForm = () => {
   useEffect(() => {
     if (landscape && landscape.slug !== slug) {
       // Change URL if new landscape ID
-      navigate(`/landscapes/${landscape.slug}/edit`);
+      navigate(`/landscapes/${landscape.slug}`);
     }
   }, [slug, landscape, navigate]);
+
+  const onSave = updatedLandscape => {
+    setUpdatedLandscape(updatedLandscape);
+    dispatch(saveLandscape(_.omit('areaPolygon', updatedLandscape)));
+  };
 
   const renderStep =
     Component =>
@@ -64,6 +73,7 @@ const LandscapeForm = () => {
           landscape={updatedLandscape}
           setActiveStepIndex={setActiveStepIndex}
           setUpdatedLandscape={setUpdatedLandscape}
+          onSave={onSave}
         />
       );
 

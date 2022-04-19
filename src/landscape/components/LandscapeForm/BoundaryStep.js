@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Link, Stack, Typography } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
@@ -8,10 +8,20 @@ import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import PageHeader from 'layout/PageHeader';
 
 const BoundaryStep = props => {
+  const { landscape, onSave } = props;
   const [option, setOption] = useState(-1);
 
-  if (option === -1) {
-    return <BoundaryOptions setOption={setOption} {...props} />;
+  useEffect(() => {
+    switch (option) {
+      case 2:
+        onSave(landscape);
+        return null;
+    }
+  }, [option]);
+
+  switch (option) {
+    default:
+      return <BoundaryOptions setOption={setOption} {...props} />;
   }
 };
 

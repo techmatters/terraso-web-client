@@ -3,7 +3,7 @@ import { act } from 'react-dom/test-utils';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { render, screen, fireEvent, waitFor } from 'tests/utils';
-import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
+import LandscapeBoundaries from 'landscape/components/LandscapeBoundariesUpdate';
 import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('terrasoBackend/api');

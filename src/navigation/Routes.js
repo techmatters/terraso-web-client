@@ -10,7 +10,7 @@ import LandscapeList from 'landscape/components/LandscapeList';
 import LandscapeForm from 'landscape/components/LandscapeForm';
 import LandscapeView from 'landscape/components/LandscapeView';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
-import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
+import LandscapeBoundariesUpdate from 'landscape/components/LandscapeBoundariesUpdate';
 import ToolsList from 'tool/components/ToolList';
 import AccountLogin from 'account/components/AccountLogin';
 import AccountProfile from 'account/components/AccountProfile';
@@ -34,7 +34,7 @@ const paths = [
   path('/landscapes', LandscapeList),
   path('/landscapes/new', LandscapeForm),
   path('/landscapes/:slug/edit', LandscapeForm),
-  path('/landscapes/:slug/boundaries', LandscapeBoundaries),
+  path('/landscapes/:slug/boundaries', LandscapeBoundariesUpdate),
   path('/landscapes/:slug/members', LandscapeMembers),
   path('/landscapes/:slug', LandscapeView),
   path('/tools', ToolsList),
