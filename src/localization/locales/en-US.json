@@ -224,7 +224,19 @@
         "view_map_boundaries_help": "Something wrong with the map?",
         "view_map_boundaries_help_details": "Contact your landscape’s manager or <1>send us a message <1 /></1>.",
         "view_map_boundaries_help_url": "/contact",
-        "view_map_boundaries_update": "Update Map"
+        "view_map_boundaries_update": "Update Map",
+        "form_step_info_label": "Add Info",
+        "form_step_boundaries_options_label": "Add Landscape Boundary",
+        "form_boundary_options_title": "Add Your Landscape Boundary (Optional)",
+        "form_boundary_options_description": "Select how you’d like to proceed to display the landscape bounary.",
+        "form_boundary_options_suggestion": "We highly recommend uploading a map file to display the accurate boundary of your landscape.",
+        "form_boundary_options_link": "Don’t have a GeoJSON file? Create one by following a simple instruction.",
+        "form_boundary_options_geo_json": "Upload the landscape’s boundary GeoJSON file  (RECOMMENDED)",
+        "form_boundary_options_pin": "Drop a pin on a map",
+        "form_boundary_options_skip": "Not now. Just add my Landscape",
+        "form_boundary_options_back": "Back",
+        "form_info_next": "Next",
+        "form_info_cancel": "Cancel"
     },
     "common": {
         "dialog_cancel_label": "Cancel",

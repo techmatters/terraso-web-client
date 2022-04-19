@@ -25,6 +25,7 @@ const Form = props => {
     cancelLabel,
     onCancel,
     children,
+    reverseActionsOrder,
   } = props;
 
   const { control, handleSubmit, reset } = useForm({
@@ -58,6 +59,25 @@ const Form = props => {
     (value, propName) => propName.startsWith('aria-'),
     props
   );
+
+  const actions = [
+    <Button
+      key="submit"
+      type="submit"
+      variant="contained"
+      sx={{
+        paddingLeft: theme.spacing(5),
+        paddingRight: theme.spacing(5),
+      }}
+    >
+      {t(saveLabel)}
+    </Button>,
+    onCancel && (
+      <Button key="cancel" variant="text" onClick={onCancel}>
+        {t(cancelLabel)}
+      </Button>
+    ),
+  ];
 
   return (
     <Grid
@@ -101,18 +121,7 @@ const Form = props => {
         justifyContent="space-between"
         sx={{ marginTop: theme.spacing(2) }}
       >
-        <Button
-          type="submit"
-          variant="contained"
-          sx={{ paddingLeft: theme.spacing(5), paddingRight: theme.spacing(5) }}
-        >
-          {t(saveLabel)}
-        </Button>
-        {onCancel && (
-          <Button variant="text" onClick={onCancel}>
-            {t(cancelLabel)}
-          </Button>
-        )}
+        {reverseActionsOrder ? actions.reverse() : actions}
       </Grid>
     </Grid>
   );

@@ -67,6 +67,7 @@ const FORM_FIELDS = [
 
 const InfoStep = props => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { slug } = useParams();
   const isNew = !slug;
   const { setActiveStepIndex, setUpdatedLandscape, landscape } = props;
@@ -90,7 +91,10 @@ const InfoStep = props => {
           setUpdatedLandscape(updatedLandscape);
           setActiveStepIndex(current => current + 1);
         }}
-        saveLabel="landscape.form_save_label"
+        saveLabel="landscape.form_info_next"
+        cancelLabel="landscape.form_info_cancel"
+        onCancel={() => navigate(-1)}
+        reverseActionsOrder
       />
     </>
   );
@@ -125,13 +129,13 @@ const BoundaryStep = props => {
   const [option, setOption] = useState(-1);
 
   if (option === -1) {
-    return <BoundaryOptions setOption={setOption} />;
+    return <BoundaryOptions setOption={setOption} {...props} />;
   }
 };
 
 const BoundaryOptions = props => {
   const { t } = useTranslation();
-  const { setOption } = props;
+  const { setOption, setActiveStepIndex } = props;
 
   const options = [
     {
@@ -156,9 +160,11 @@ const BoundaryOptions = props => {
       <Typography>
         {t('landscape.form_boundary_options_description')}
       </Typography>
-      <Typography>{t('landscape.form_boundary_options_suggestion')}</Typography>
-      <Link>{t('landscape.form_boundary_options_link')}</Link>
-      <Stack spacing={3}>
+      <Typography variant="body2" sx={{ marginTop: 2, marginBottom: 4 }}>
+        {t('landscape.form_boundary_options_suggestion')}
+      </Typography>
+      <Link variant="body2">{t('landscape.form_boundary_options_link')}</Link>
+      <Stack sx={{ marginTop: 2 }} spacing={3}>
         {options.map((option, index) => (
           <Button
             key={index}
@@ -178,6 +184,12 @@ const BoundaryOptions = props => {
           </Button>
         ))}
       </Stack>
+      <Button
+        sx={{ marginTop: 2 }}
+        onClick={() => setActiveStepIndex(current => current - 1)}
+      >
+        {t('landscape.form_boundary_options_back')}
+      </Button>
     </>
   );
 };
@@ -238,11 +250,11 @@ const LandscapeForm = () => {
 
   const steps = [
     {
-      label: 'landscape.form_step_info_label',
+      label: t('landscape.form_step_info_label'),
       render: renderStep(InfoStep),
     },
     {
-      label: 'landscape.form_step_boundaries_options_label',
+      label: t('landscape.form_step_boundaries_options_label'),
       render: renderStep(BoundaryStep),
     },
   ];
