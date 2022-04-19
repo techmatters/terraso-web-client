@@ -6,6 +6,7 @@ import PinDropIcon from '@mui/icons-material/PinDrop';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 
 import PageHeader from 'layout/PageHeader';
+import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
 
 const BoundaryStep = props => {
   const { landscape, onSave } = props;
@@ -16,13 +17,21 @@ const BoundaryStep = props => {
       case 2:
         onSave(landscape);
         return null;
+      default:
+        return null;
     }
-  }, [option]);
+  }, [option, landscape, onSave]);
 
   switch (option) {
+    case 0:
+      return <GeoJson />;
     default:
       return <BoundaryOptions setOption={setOption} {...props} />;
   }
+};
+
+const GeoJson = props => {
+  return <LandscapeBoundaries />;
 };
 
 const BoundaryOptions = props => {
