@@ -8,7 +8,12 @@ import {
   isValidGeoJson,
 } from 'landscape/landscapeUtils';
 
-const LandscapeMap = ({ landscape, label }) => {
+const LandscapeMap = ({
+  landscape,
+  label,
+  onPinLocationChange,
+  enableSearch,
+}) => {
   const bounds = getLandscapeBoundingBox(landscape);
   const areaPolygon = _.get('areaPolygon', landscape);
   const geojson = isValidGeoJson(areaPolygon) ? areaPolygon : null;
@@ -17,6 +22,8 @@ const LandscapeMap = ({ landscape, label }) => {
       <Map
         bounds={bounds}
         geojson={geojson}
+        onPinLocationChange={onPinLocationChange}
+        enableSearch={enableSearch}
         style={{
           width: '100%',
           height: '400px',
