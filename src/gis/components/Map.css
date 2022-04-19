@@ -1,1 +1,16 @@
 @import '~leaflet/dist/leaflet.css';
+
+.leaflet-control-container .leaflet-control-geosearch form input {
+  font-size: 15px;
+  height: 30px;
+  min-width: 300px;
+}
+
+.leaflet-control-geosearch {
+  position: absolute;
+  left: 60px;
+}
+
+.leaflet-control-geosearch .results > * {
+  font-size: 15px;
+}
