@@ -49,6 +49,31 @@ const FORM_FIELDS = [
   },
 ];
 
+const CountrySelector = props => {
+  const { i18n } = useTranslation();
+  const { field } = props;
+
+  const countriesLang = i18n.resolvedLanguage.startsWith('es')
+    ? 'translations.spa.common'
+    : 'name.common';
+
+  const countriesList = countries.map(_.get(countriesLang)).sort();
+
+  return (
+    <Select
+      value={field.value}
+      onChange={field.onChange}
+      sx={{ width: '100%' }}
+    >
+      {countriesList.map((country, index) => (
+        <MenuItem key={index} value={country}>
+          {country}
+        </MenuItem>
+      ))}
+    </Select>
+  );
+};
+
 const InfoStep = props => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -81,31 +106,6 @@ const InfoStep = props => {
         reverseActionsOrder
       />
     </>
-  );
-};
-
-const CountrySelector = props => {
-  const { i18n } = useTranslation();
-  const { field } = props;
-
-  const countriesLang = i18n.resolvedLanguage.startsWith('es')
-    ? 'translations.spa.common'
-    : 'name.common';
-
-  const countriesList = countries.map(_.get(countriesLang)).sort();
-
-  return (
-    <Select
-      value={field.value}
-      onChange={field.onChange}
-      sx={{ width: '100%' }}
-    >
-      {countriesList.map((country, index) => (
-        <MenuItem key={index} value={country}>
-          {country}
-        </MenuItem>
-      ))}
-    </Select>
   );
 };
 
