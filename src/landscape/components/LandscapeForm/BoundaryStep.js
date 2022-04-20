@@ -9,29 +9,54 @@ import PageHeader from 'layout/PageHeader';
 import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
 
 const BoundaryStep = props => {
-  const { landscape, onSave } = props;
+  const { landscape, save } = props;
   const [option, setOption] = useState(-1);
 
   useEffect(() => {
-    switch (option) {
-      case 2:
-        onSave(landscape);
-        return null;
-      default:
-        return null;
+    if (option === 2) {
+      save(landscape);
     }
-  }, [option, landscape, onSave]);
+  }, [option, landscape, save]);
 
   switch (option) {
     case 0:
-      return <GeoJson />;
+      return <GeoJson setOption={setOption} {...props} />;
     default:
       return <BoundaryOptions setOption={setOption} {...props} />;
   }
 };
 
 const GeoJson = props => {
-  return <LandscapeBoundaries />;
+  const { t } = useTranslation();
+  const { landscape, setOption, save } = props;
+  const [areaPolygon, setAreaPolygon] = useState();
+  const onFileSelected = areaPolygon => {
+    setAreaPolygon(areaPolygon);
+  };
+
+  const onSave = () => {
+    save({
+      ...landscape,
+      areaPolygon,
+    });
+  };
+
+  return (
+    <>
+      <LandscapeBoundaries
+        areaPolygon={areaPolygon || landscape?.areaPolygon}
+        onFileSelected={onFileSelected}
+      />
+      <Stack direction="row" justifyContent="space-between">
+        <Button sx={{ marginTop: 2 }} onClick={() => setOption(-1)}>
+          {t('landscape.form_boundary_options_back')}
+        </Button>
+        <Button variant="contained" sx={{ marginTop: 2 }} onClick={onSave}>
+          {t('landscape.form_save_label')}
+        </Button>
+      </Stack>
+    </>
+  );
 };
 
 const BoundaryOptions = props => {

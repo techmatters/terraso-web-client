@@ -62,7 +62,7 @@ const LandscapeForm = () => {
 
   const onSave = updatedLandscape => {
     setUpdatedLandscape(updatedLandscape);
-    dispatch(saveLandscape(_.omit('areaPolygon', updatedLandscape)));
+    dispatch(saveLandscape(updatedLandscape));
   };
 
   const renderStep =
@@ -73,7 +73,7 @@ const LandscapeForm = () => {
           landscape={updatedLandscape}
           setActiveStepIndex={setActiveStepIndex}
           setUpdatedLandscape={setUpdatedLandscape}
-          onSave={onSave}
+          save={onSave}
         />
       );
 
