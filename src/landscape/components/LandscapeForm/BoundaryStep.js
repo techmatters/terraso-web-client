@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Link, Stack, Typography } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
@@ -7,24 +7,6 @@ import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 
 import PageHeader from 'layout/PageHeader';
 import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
-
-const BoundaryStep = props => {
-  const { landscape, save } = props;
-  const [option, setOption] = useState(-1);
-
-  useEffect(() => {
-    if (option === 2) {
-      save(landscape);
-    }
-  }, [option, landscape, save]);
-
-  switch (option) {
-    case 0:
-      return <GeoJson setOption={setOption} {...props} />;
-    default:
-      return <BoundaryOptions setOption={setOption} {...props} />;
-  }
-};
 
 const GeoJson = props => {
   const { t } = useTranslation();
@@ -51,7 +33,12 @@ const GeoJson = props => {
         <Button sx={{ marginTop: 2 }} onClick={() => setOption(-1)}>
           {t('landscape.form_boundary_options_back')}
         </Button>
-        <Button variant="contained" sx={{ marginTop: 2 }} onClick={onSave}>
+        <Button
+          disabled={!areaPolygon}
+          variant="contained"
+          sx={{ marginTop: 2 }}
+          onClick={onSave}
+        >
           {t('landscape.form_save_label')}
         </Button>
       </Stack>
@@ -61,20 +48,23 @@ const GeoJson = props => {
 
 const BoundaryOptions = props => {
   const { t } = useTranslation();
-  const { setOption, setActiveStepIndex } = props;
+  const { landscape, setOption, setActiveStepIndex, save } = props;
 
   const options = [
     {
       Icon: UploadFileIcon,
       label: 'landscape.form_boundary_options_geo_json',
+      onClick: () => setOption(0),
     },
     {
       Icon: PinDropIcon,
       label: 'landscape.form_boundary_options_pin',
+      onClick: () => setOption(0),
     },
     {
       Icon: ArrowRightAltIcon,
       label: 'landscape.form_boundary_options_skip',
+      onClick: () => save(landscape),
     },
   ];
   return (
@@ -96,7 +86,7 @@ const BoundaryOptions = props => {
             key={index}
             fullWidth
             variant="outlined"
-            onClick={() => setOption(index)}
+            onClick={option.onClick}
             sx={{
               justifyContent: 'start',
               padding: 4,
@@ -118,6 +108,17 @@ const BoundaryOptions = props => {
       </Button>
     </>
   );
+};
+
+const BoundaryStep = props => {
+  const [option, setOption] = useState(-1);
+
+  switch (option) {
+    case 0:
+      return <GeoJson setOption={setOption} {...props} />;
+    default:
+      return <BoundaryOptions setOption={setOption} {...props} />;
+  }
 };
 
 export default BoundaryStep;

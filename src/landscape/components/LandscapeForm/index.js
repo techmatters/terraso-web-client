@@ -24,7 +24,7 @@ const LandscapeForm = () => {
 
   const { slug } = useParams();
   const { fetching, landscape } = useSelector(state => state.landscape.form);
-  const [updatedLandscape, setUpdatedLandscape] = React.useState(landscape);
+  const [updatedLandscape, setUpdatedLandscape] = React.useState();
 
   const isNew = !slug;
 
@@ -36,6 +36,10 @@ const LandscapeForm = () => {
       : t('landscape.form_new_document_title'),
     fetching
   );
+
+  useEffect(() => {
+    setUpdatedLandscape(landscape);
+  }, [landscape]);
 
   useEffect(() => {
     if (isNew) {

@@ -64,6 +64,7 @@ const CountrySelector = props => {
       value={field.value}
       onChange={field.onChange}
       sx={{ width: '100%' }}
+      labelId="landscape-location-label"
     >
       {countriesList.map((country, index) => (
         <MenuItem key={index} value={country}>
