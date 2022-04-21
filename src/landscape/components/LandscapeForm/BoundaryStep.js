@@ -4,9 +4,11 @@ import { Button, Link, Stack, Typography } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import PinDropIcon from '@mui/icons-material/PinDrop';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
+import * as turf from '@turf/helpers';
 
 import PageHeader from 'layout/PageHeader';
 import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
+import LandscapeMap from 'landscape/components/LandscapeMap';
 
 const GeoJson = props => {
   const { t } = useTranslation();
@@ -46,6 +48,48 @@ const GeoJson = props => {
   );
 };
 
+const MapPin = props => {
+  const { t } = useTranslation();
+  const { landscape, setOption, save } = props;
+  const [areaPolygon, setAreaPolygon] = useState();
+  const onPinLocationChange = ({ pinLocation: { lat, lng }, boundingBox }) => {
+    if (!lat || !lng || !boundingBox) {
+      return;
+    }
+    setAreaPolygon({
+      type: 'FeatureCollection',
+      bbox: boundingBox,
+      features: [turf.point([lng, lat])],
+    });
+  };
+
+  const onSave = () => {
+    save({
+      ...landscape,
+      areaPolygon,
+    });
+  };
+
+  return (
+    <>
+      <LandscapeMap enableSearch onPinLocationChange={onPinLocationChange} />
+      <Stack direction="row" justifyContent="space-between">
+        <Button sx={{ marginTop: 2 }} onClick={() => setOption(-1)}>
+          {t('landscape.form_boundary_options_back')}
+        </Button>
+        <Button
+          disabled={!areaPolygon}
+          variant="contained"
+          sx={{ marginTop: 2 }}
+          onClick={onSave}
+        >
+          {t('landscape.form_save_label')}
+        </Button>
+      </Stack>
+    </>
+  );
+};
+
 const BoundaryOptions = props => {
   const { t } = useTranslation();
   const { landscape, setOption, setActiveStepIndex, save } = props;
@@ -59,7 +103,7 @@ const BoundaryOptions = props => {
     {
       Icon: PinDropIcon,
       label: 'landscape.form_boundary_options_pin',
-      onClick: () => setOption(0),
+      onClick: () => setOption(1),
     },
     {
       Icon: ArrowRightAltIcon,
@@ -116,6 +160,8 @@ const BoundaryStep = props => {
   switch (option) {
     case 0:
       return <GeoJson setOption={setOption} {...props} />;
+    case 1:
+      return <MapPin setOption={setOption} {...props} />;
     default:
       return <BoundaryOptions setOption={setOption} {...props} />;
   }

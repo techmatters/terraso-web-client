@@ -5,7 +5,7 @@ const parseGeoJson = areaPolygon => {
     return null;
   }
   try {
-    return bbox(areaPolygon);
+    return areaPolygon.bbox || bbox(areaPolygon);
   } catch (error) {
     return null;
   }

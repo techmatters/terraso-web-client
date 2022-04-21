@@ -20,16 +20,16 @@ L.Icon.Default.mergeOptions({
 const LeafletSearch = ({ onPinLocationChange }) => {
   const map = useMap();
   const [pinLocation, setPinLocation] = useState();
-  const [zoomLevel, setZoomLevel] = useState();
+  const [boundingBox, setBoundingBox] = useState();
 
   useEffect(() => {
-    if (pinLocation && zoomLevel) {
+    if (pinLocation && boundingBox) {
       onPinLocationChange({
         pinLocation,
-        zoomLevel,
+        boundingBox,
       });
     }
-  }, [zoomLevel, pinLocation, onPinLocationChange]);
+  }, [boundingBox, pinLocation, onPinLocationChange]);
 
   useEffect(() => {
     const provider = new OpenStreetMapProvider();
@@ -45,9 +45,11 @@ const LeafletSearch = ({ onPinLocationChange }) => {
     map.addControl(searchControl);
 
     const getPinData = event => {
-      const zoom = event?.sourceTarget?.getZoom();
-      if (zoom) {
-        setZoomLevel(zoom);
+      const soutWest = map.getBounds().getSouthWest();
+      const northEast = map.getBounds().getNorthEast();
+      const bbox = [soutWest.lng, soutWest.lat, northEast.lng, northEast.lat];
+      if (bbox) {
+        setBoundingBox(bbox);
       }
 
       if (event?.location?.lat) {
