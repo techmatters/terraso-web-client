@@ -20,7 +20,10 @@ import TableResponsive from 'common/components/TableResponsive';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
-  label: 'group.list_leave_button',
+  renderLabel: role =>
+    role === 'MANAGER'
+      ? 'group.list_manager_button'
+      : 'group.list_member_button',
   buttonProps: {
     variant: 'contained',
     sx: {
