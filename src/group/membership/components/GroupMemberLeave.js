@@ -6,7 +6,9 @@ import ConfirmButton from 'common/components/ConfirmButton';
 
 const GroupMemberLeave = props => {
   const { t } = useTranslation();
-  const { label, owner, onConfirm, buttonProps, loading } = props;
+  const { renderLabel, owner, onConfirm, buttonProps, loading } = props;
+
+  const role = owner?.membersInfo?.accountMembership?.userRole;
 
   return (
     <ConfirmButton
@@ -18,7 +20,7 @@ const GroupMemberLeave = props => {
         name: _.get('name', owner),
       })}
       confirmButton={t('group.membership_leave_confirm_button')}
-      buttonLabel={t(label)}
+      buttonLabel={t(renderLabel(role))}
       buttonProps={buttonProps}
       loading={loading}
     />
