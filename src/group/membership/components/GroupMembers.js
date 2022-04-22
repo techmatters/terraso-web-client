@@ -18,7 +18,7 @@ import PageContainer from 'layout/PageContainer';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
-  label: 'group.members_list_leave',
+  renderLabel: () => 'group.members_list_leave',
 });
 
 const Header = () => {

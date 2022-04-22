@@ -19,7 +19,7 @@ import PageContainer from 'layout/PageContainer';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
-  label: 'landscape.members_list_leave',
+  renderLabel: () => 'landscape.members_list_leave',
 });
 
 const Header = ({ landscape, fetching }) => {
