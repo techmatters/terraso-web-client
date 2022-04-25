@@ -10,6 +10,10 @@ import PageHeader from 'layout/PageHeader';
 import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
 import LandscapeMap from 'landscape/components/LandscapeMap';
 
+const OPTION_GEO_JSON = 'geo-json';
+const OPTION_MAP_PIN = 'map-pin';
+const OPTION_SELECT_OPTIONS = 'options';
+
 const GeoJson = props => {
   const { t } = useTranslation();
   const { landscape, setOption, save } = props;
@@ -41,7 +45,10 @@ const GeoJson = props => {
         />
       </Paper>
       <Stack direction="row" justifyContent="space-between">
-        <Button sx={{ marginTop: 2 }} onClick={() => setOption(-1)}>
+        <Button
+          sx={{ marginTop: 2 }}
+          onClick={() => setOption(OPTION_SELECT_OPTIONS)}
+        >
           {t('landscape.form_boundary_options_back')}
         </Button>
         <Button
@@ -96,7 +103,10 @@ const MapPin = props => {
         </Link>
       </Paper>
       <Stack direction="row" justifyContent="space-between">
-        <Button sx={{ marginTop: 2 }} onClick={() => setOption(-1)}>
+        <Button
+          sx={{ marginTop: 2 }}
+          onClick={() => setOption(OPTION_SELECT_OPTIONS)}
+        >
           {t('landscape.form_boundary_options_back')}
         </Button>
         <Button
@@ -120,12 +130,12 @@ const BoundaryOptions = props => {
     {
       Icon: UploadFileIcon,
       label: 'landscape.form_boundary_options_geo_json',
-      onClick: () => setOption(0),
+      onClick: () => setOption(OPTION_GEO_JSON),
     },
     {
       Icon: PinDropIcon,
       label: 'landscape.form_boundary_options_pin',
-      onClick: () => setOption(1),
+      onClick: () => setOption(OPTION_MAP_PIN),
     },
     {
       Icon: ArrowRightAltIcon,
@@ -176,17 +186,23 @@ const BoundaryOptions = props => {
   );
 };
 
-const BoundaryStep = props => {
-  const [option, setOption] = useState(-1);
-
+const getOptionComponent = option => {
   switch (option) {
-    case 0:
-      return <GeoJson setOption={setOption} {...props} />;
-    case 1:
-      return <MapPin setOption={setOption} {...props} />;
+    case OPTION_GEO_JSON:
+      return GeoJson;
+    case OPTION_MAP_PIN:
+      return MapPin;
     default:
-      return <BoundaryOptions setOption={setOption} {...props} />;
+      return BoundaryOptions;
   }
+};
+
+const BoundaryStep = props => {
+  const [option, setOption] = useState(OPTION_SELECT_OPTIONS);
+
+  const OptionComponent = getOptionComponent(option);
+
+  return <OptionComponent setOption={setOption} {...props} />;
 };
 
 export default BoundaryStep;

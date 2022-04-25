@@ -6,7 +6,6 @@ import { Button, Grid } from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import FormField from 'forms/components/FormField';
-import theme from 'theme';
 
 const getInitialEmptyValues = _.flow(
   _.map(field => [field.name, '']),
