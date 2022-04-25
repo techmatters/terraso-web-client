@@ -22,7 +22,7 @@ const setup = async initialState => {
         <GroupMemberJoin label="Join Label" {...props} />
       )}
       MemberLeaveButton={props => (
-        <GroupMemberLeave label="Leave Label" {...props} />
+        <GroupMemberLeave renderLabel={() => 'Leave Label'} {...props} />
       )}
     >
       <GroupMembershipCard />

@@ -30,7 +30,7 @@ import PageContainer from 'layout/PageContainer';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
-  label: 'group.view_leave_label',
+  renderLabel: () => 'group.view_leave_label',
   buttonProps: {
     sx: { flexGrow: 1 },
   },

@@ -6,7 +6,9 @@ import ConfirmButton from 'common/components/ConfirmButton';
 
 const LandscapeMemberLeave = props => {
   const { t } = useTranslation();
-  const { label, owner, onConfirm, buttonProps, loading } = props;
+  const { renderLabel, owner, onConfirm, buttonProps, loading } = props;
+
+  const role = owner?.defaultGroup?.membersInfo?.accountMembership?.userRole;
 
   return (
     <ConfirmButton
@@ -18,7 +20,7 @@ const LandscapeMemberLeave = props => {
         name: _.get('name', owner),
       })}
       confirmButton={t('landscape.membership_leave_confirm_button')}
-      buttonLabel={t(label)}
+      buttonLabel={t(renderLabel(role))}
       buttonProps={buttonProps}
       loading={loading}
     />

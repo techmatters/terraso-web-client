@@ -21,7 +21,10 @@ import TableResponsive from 'common/components/TableResponsive';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
-  label: 'landscape.list_leave_button',
+  renderLabel: role =>
+    role === 'MANAGER'
+      ? 'landscape.list_manager_button'
+      : 'landscape.list_member_button',
   buttonProps: {
     variant: 'contained',
     sx: {

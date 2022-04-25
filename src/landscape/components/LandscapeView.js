@@ -32,7 +32,7 @@ import Restricted from 'permissions/components/Restricted';
 import InlineHelp from 'common/components/InlineHelp';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
-  label: 'landscape.view_leave_label',
+  renderLabel: () => 'landscape.view_leave_label',
 });
 
 const MemberJoinButton = withProps(GroupMemberJoin, {
