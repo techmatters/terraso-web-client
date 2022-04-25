@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash/fp';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Grid } from '@mui/material';
+import { Button, Grid, Paper } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { fetchLandscapeForm, saveLandscape } from 'landscape/landscapeSlice';
@@ -62,10 +62,12 @@ const LandscapeBoundariesUpdate = () => {
           name: _.get('name', landscape),
         })}
       />
-      <LandscapeBoundaries
-        areaPolygon={areaPolygon || _.get('areaPolygon', landscape)}
-        onFileSelected={onFileSelected}
-      />
+      <Paper variant="outlined" sx={{ padding: 2 }}>
+        <LandscapeBoundaries
+          areaPolygon={areaPolygon || _.get('areaPolygon', landscape)}
+          onFileSelected={onFileSelected}
+        />
+      </Paper>
       <Grid
         container
         direction="row"

@@ -119,7 +119,7 @@ const Form = props => {
         xs={12}
         direction="row"
         justifyContent="space-between"
-        sx={{ marginTop: theme.spacing(2) }}
+        sx={{ marginTop: 2 }}
       >
         {reverseActionsOrder ? actions.reverse() : actions}
       </Grid>

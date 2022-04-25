@@ -163,10 +163,8 @@ const LandscapeBoundaries = props => {
 
   return (
     <>
-      <Paper variant="outlined" sx={{ padding: 2 }}>
-        <LandscapeMap landscape={{ areaPolygon }} />
-        <DropZone onFileSelected={onFileSelected} />
-      </Paper>
+      <LandscapeMap landscape={{ areaPolygon }} />
+      <DropZone onFileSelected={onFileSelected} />
       <InlineHelp
         items={[
           {

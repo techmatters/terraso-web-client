@@ -236,7 +236,12 @@
         "form_boundary_options_skip": "Not now. Just add my Landscape",
         "form_boundary_options_back": "Back",
         "form_info_next": "Next",
-        "form_info_cancel": "Cancel"
+        "form_info_cancel": "Cancel",
+        "form_boundary_pin_title": "Add Your Landscape Boundary (Optional)",
+        "form_boundary_pin_description": "[TODO] Drop a pin at the center of the landscape. You can update the landsscape boundary with Geojson file to display the boundary later.",
+        "form_boundary_pin_help_link": "[TODO] Need help?",
+        "form_boundary_geojson_title": "Add Your Landscape Boundary (Optional)",
+        "form_boundary_geojson_description": "Upload a geojson file to show the accurate boundary of your landscape. The map below will be added to your landscape."
     },
     "common": {
         "dialog_cancel_label": "Cancel",

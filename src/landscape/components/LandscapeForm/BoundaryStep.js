@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Link, Stack, Typography } from '@mui/material';
+import { Button, Link, Paper, Stack, Typography } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import PinDropIcon from '@mui/icons-material/PinDrop';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
@@ -27,10 +27,19 @@ const GeoJson = props => {
 
   return (
     <>
-      <LandscapeBoundaries
-        areaPolygon={areaPolygon || landscape?.areaPolygon}
-        onFileSelected={onFileSelected}
+      <PageHeader
+        typographyProps={{ id: 'landscape-form-page-title' }}
+        header={t('landscape.form_boundary_geojson_title')}
       />
+      <Paper variant="outlined" sx={{ padding: 2, marginTop: 2 }}>
+        <Typography sx={{ marginBottom: 2 }}>
+          {t('landscape.form_boundary_geojson_description')}
+        </Typography>
+        <LandscapeBoundaries
+          areaPolygon={areaPolygon || landscape?.areaPolygon}
+          onFileSelected={onFileSelected}
+        />
+      </Paper>
       <Stack direction="row" justifyContent="space-between">
         <Button sx={{ marginTop: 2 }} onClick={() => setOption(-1)}>
           {t('landscape.form_boundary_options_back')}
@@ -52,16 +61,19 @@ const MapPin = props => {
   const { t } = useTranslation();
   const { landscape, setOption, save } = props;
   const [areaPolygon, setAreaPolygon] = useState();
-  const onPinLocationChange = ({ pinLocation: { lat, lng }, boundingBox }) => {
-    if (!lat || !lng || !boundingBox) {
-      return;
-    }
-    setAreaPolygon({
-      type: 'FeatureCollection',
-      bbox: boundingBox,
-      features: [turf.point([lng, lat])],
-    });
-  };
+  const onPinLocationChange = useCallback(
+    ({ pinLocation: { lat, lng }, boundingBox }) => {
+      if (!lat || !lng || !boundingBox) {
+        return;
+      }
+      setAreaPolygon({
+        type: 'FeatureCollection',
+        bbox: boundingBox,
+        features: [turf.point([lng, lat])],
+      });
+    },
+    [setAreaPolygon]
+  );
 
   const onSave = () => {
     save({
@@ -72,7 +84,17 @@ const MapPin = props => {
 
   return (
     <>
-      <LandscapeMap enableSearch onPinLocationChange={onPinLocationChange} />
+      <PageHeader
+        typographyProps={{ id: 'landscape-form-page-title' }}
+        header={t('landscape.form_boundary_pin_title')}
+      />
+      <Typography>{t('landscape.form_boundary_pin_description')}</Typography>
+      <Paper variant="outlined" sx={{ padding: 2, marginTop: 2 }}>
+        <LandscapeMap enableSearch onPinLocationChange={onPinLocationChange} />
+        <Link variant="body2">
+          {t('landscape.form_boundary_pin_help_link')}
+        </Link>
+      </Paper>
       <Stack direction="row" justifyContent="space-between">
         <Button sx={{ marginTop: 2 }} onClick={() => setOption(-1)}>
           {t('landscape.form_boundary_options_back')}
