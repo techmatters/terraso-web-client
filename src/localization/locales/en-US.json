@@ -214,7 +214,7 @@
         "boundaries_select_file": "Select File",
         "boundaries_size": "Maximum file size: {{size}}MB",
         "boundaries_format": "Accepted file formats: *.json, *.geojson",
-        "boundaries_save": "Update Geographic Info",
+        "boundaries_save": "Save Changes",
         "boundaries_cancel": "Cancel",
         "boundaries_drop_message": "Drop file to upload",
         "boundaries_file_empty": "The file was empty.",
