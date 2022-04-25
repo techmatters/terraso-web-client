@@ -3,13 +3,15 @@ import { act } from 'react-dom/test-utils';
 import { render as rtlRender, cleanup } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 
-import { AXE_TEST_TIMEOUT } from 'config';
+import { AXE_TEST_TIMEOUT, JEST_TEST_TIMEOUT } from 'config';
 import createStore from 'state/store';
 import theme from 'theme';
 import rules from 'permissions/rules';
 import AppWrappers from 'common/components/AppWrappers';
 
 const executeAxe = process.env['TEST_A11Y'] === 'true';
+
+jest.setTimeout(JEST_TEST_TIMEOUT);
 
 // Work around to avoid tests trying to render SVGs
 const createElementNSOrig = global.document.createElementNS;
