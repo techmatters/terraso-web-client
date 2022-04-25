@@ -66,8 +66,8 @@ const Form = props => {
       type="submit"
       variant="contained"
       sx={{
-        paddingLeft: theme.spacing(5),
-        paddingRight: theme.spacing(5),
+        paddingLeft: 5,
+        paddingRight: 5,
       }}
     >
       {t(saveLabel)}
