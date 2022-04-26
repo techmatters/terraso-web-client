@@ -159,9 +159,7 @@ test('LandscapeForm: Input validation', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Next' }))
   );
   expect(screen.getByText(/name is required/i)).toBeInTheDocument();
-  expect(
-    screen.getByText(/description is required/i)
-  ).toBeInTheDocument();
+  expect(screen.getByText(/description is required/i)).toBeInTheDocument();
   expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument();
 });
 test('LandscapeForm: Save form', async () => {

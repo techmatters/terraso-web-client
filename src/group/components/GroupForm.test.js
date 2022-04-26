@@ -197,9 +197,7 @@ test('GroupForm: Input validation', async () => {
 
   await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
   expect(screen.getByText(/name is required/i)).toBeInTheDocument();
-  expect(
-    screen.getByText(/description is required/i)
-  ).toBeInTheDocument();
+  expect(screen.getByText(/description is required/i)).toBeInTheDocument();
   expect(screen.getByText(/email must be a valid email/i)).toBeInTheDocument();
   expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument();
 });
