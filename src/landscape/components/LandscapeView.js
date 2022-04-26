@@ -60,14 +60,16 @@ const LandscapeCard = ({ landscape }) => {
           {landscape.description}
         </Typography>
       </CardContent>
-      <CardContent>
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <PublicIcon sx={{ color: 'gray.lite1' }} />
-          <Link href={landscape.website} underline="none">
-            {landscape.website}
-          </Link>
-        </Stack>
-      </CardContent>
+      {landscape.website && (
+        <CardContent>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <PublicIcon sx={{ color: 'gray.lite1' }} />
+            <Link href={landscape.website} underline="none">
+              {landscape.website}
+            </Link>
+          </Stack>
+        </CardContent>
+      )}
     </Card>
   );
 };
