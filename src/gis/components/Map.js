@@ -45,9 +45,9 @@ const LeafletSearch = ({ onPinLocationChange }) => {
     map.addControl(searchControl);
 
     const getPinData = event => {
-      const soutWest = map.getBounds().getSouthWest();
+      const southWest = map.getBounds().getSouthWest();
       const northEast = map.getBounds().getNorthEast();
-      const bbox = [soutWest.lng, soutWest.lat, northEast.lng, northEast.lat];
+      const bbox = [southWest.lng, southWest.lat, northEast.lng, northEast.lat];
       if (bbox) {
         setBoundingBox(bbox);
       }
