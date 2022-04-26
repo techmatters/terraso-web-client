@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Button, Link, Paper, Stack, Typography } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import PinDropIcon from '@mui/icons-material/PinDrop';
@@ -36,9 +36,6 @@ const GeoJson = props => {
         header={t('landscape.form_boundary_geojson_title')}
       />
       <Paper variant="outlined" sx={{ padding: 2, marginTop: 2 }}>
-        <Typography sx={{ marginBottom: 2 }}>
-          {t('landscape.form_boundary_geojson_description')}
-        </Typography>
         <LandscapeBoundaries
           areaPolygon={areaPolygon || landscape?.areaPolygon}
           onFileSelected={onFileSelected}
@@ -98,9 +95,6 @@ const MapPin = props => {
       <Typography>{t('landscape.form_boundary_pin_description')}</Typography>
       <Paper variant="outlined" sx={{ padding: 2, marginTop: 2 }}>
         <LandscapeMap enableSearch onPinLocationChange={onPinLocationChange} />
-        <Link variant="body2">
-          {t('landscape.form_boundary_pin_help_link')}
-        </Link>
       </Paper>
       <Stack direction="row" justifyContent="space-between">
         <Button
@@ -149,13 +143,13 @@ const BoundaryOptions = props => {
         typographyProps={{ id: 'landscape-form-page-title' }}
         header={t('landscape.form_boundary_options_title')}
       />
-      <Typography>
-        {t('landscape.form_boundary_options_description')}
-      </Typography>
-      <Typography variant="body2" sx={{ marginTop: 2, marginBottom: 4 }}>
-        {t('landscape.form_boundary_options_suggestion')}
-      </Typography>
-      <Link variant="body2">{t('landscape.form_boundary_options_link')}</Link>
+      <Trans i18nKey="landscape.form_boundary_options_description">
+        Prefix
+        <Link href={t('landscape.boundaries_help_geojson_url')} target="_blank">
+          link
+        </Link>
+        .
+      </Trans>
       <Stack sx={{ marginTop: 2 }} spacing={3}>
         {options.map((option, index) => (
           <Button
