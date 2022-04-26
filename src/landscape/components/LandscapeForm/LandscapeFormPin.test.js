@@ -22,13 +22,13 @@ jest.mock('react-leaflet', () => ({
 const setup = async () => {
   await render(<LandscapeForm />);
   const name = screen.getByRole('textbox', {
-    name: 'Name (Required)',
+    name: 'Name (required)',
   });
   const description = screen.getByRole('textbox', {
-    name: 'Description (Required)',
+    name: 'Description (required)',
   });
   const website = screen.getByRole('textbox', { name: 'Website' });
-  const location = screen.getByRole('button', { name: 'Location' });
+  const location = screen.getByRole('button', { name: 'Country or region' });
 
   const changeLocation = async newLocation => {
     await act(async () => fireEvent.mouseDown(location));
@@ -114,7 +114,7 @@ test('LandscapeForm: Save form Pin boundary', async () => {
   );
   await waitFor(() => {
     expect(
-      screen.getByRole('button', { name: 'Not now. Just add my Landscape' })
+      screen.getByRole('button', { name: 'Skip this step for now' })
     ).toBeInTheDocument();
   });
   await act(async () =>
@@ -129,12 +129,12 @@ test('LandscapeForm: Save form Pin boundary', async () => {
 
   await waitFor(() =>
     expect(
-      screen.getByRole('button', { name: 'Add Your Landscape' })
+      screen.getByRole('button', { name: 'Create Landscape' })
     ).not.toHaveAttribute('disabled')
   );
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Add Your Landscape' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Create Landscape' }))
   );
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(2);

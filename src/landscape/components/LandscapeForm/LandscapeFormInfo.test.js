@@ -16,13 +16,13 @@ jest.mock('react-router-dom', () => ({
 const setup = async () => {
   await render(<LandscapeForm />);
   const name = screen.getByRole('textbox', {
-    name: 'Name (Required)',
+    name: 'Name (required)',
   });
   const description = screen.getByRole('textbox', {
-    name: 'Description (Required)',
+    name: 'Description (required)',
   });
   const website = screen.getByRole('textbox', { name: 'Website' });
-  const location = screen.getByRole('button', { name: 'Location' });
+  const location = screen.getByRole('button', { name: 'Country or region' });
 
   const changeLocation = async newLocation => {
     await act(async () => fireEvent.mouseDown(location));
@@ -158,9 +158,9 @@ test('LandscapeForm: Input validation', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Next' }))
   );
-  expect(screen.getByText(/name is a required field/i)).toBeInTheDocument();
+  expect(screen.getByText(/name is required/i)).toBeInTheDocument();
   expect(
-    screen.getByText(/description is a required field/i)
+    screen.getByText(/description is required/i)
   ).toBeInTheDocument();
   expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument();
 });
@@ -209,12 +209,12 @@ test('LandscapeForm: Save form', async () => {
   );
   await waitFor(() => {
     expect(
-      screen.getByRole('button', { name: 'Not now. Just add my Landscape' })
+      screen.getByRole('button', { name: 'Skip this step for now' })
     ).toBeInTheDocument();
   });
   await act(async () =>
     fireEvent.click(
-      screen.getByRole('button', { name: 'Not now. Just add my Landscape' })
+      screen.getByRole('button', { name: 'Skip this step for now' })
     )
   );
   expect(terrasoApi.request).toHaveBeenCalledTimes(2);
@@ -266,12 +266,12 @@ test('LandscapeForm: Save form error', async () => {
   );
   await waitFor(() => {
     expect(
-      screen.getByRole('button', { name: 'Not now. Just add my Landscape' })
+      screen.getByRole('button', { name: 'Skip this step for now' })
     ).toBeInTheDocument();
   });
   await act(async () =>
     fireEvent.click(
-      screen.getByRole('button', { name: 'Not now. Just add my Landscape' })
+      screen.getByRole('button', { name: 'Skip this step for now' })
     )
   );
 
@@ -329,12 +329,12 @@ test('LandscapeForm: Save form (add)', async () => {
   );
   await waitFor(() => {
     expect(
-      screen.getByRole('button', { name: 'Not now. Just add my Landscape' })
+      screen.getByRole('button', { name: 'Skip this step for now' })
     ).toBeInTheDocument();
   });
   await act(async () =>
     fireEvent.click(
-      screen.getByRole('button', { name: 'Not now. Just add my Landscape' })
+      screen.getByRole('button', { name: 'Skip this step for now' })
     )
   );
 

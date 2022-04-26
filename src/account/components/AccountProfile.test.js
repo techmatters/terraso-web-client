@@ -11,7 +11,7 @@ jest.mock('terrasoBackend/api');
 const setup = async initialState => {
   await render(<AccountProfile />, initialState);
   const firstName = screen.getByRole('textbox', {
-    name: 'Given names (Required)',
+    name: 'Given names (required)',
   });
   const lastName = screen.getByRole('textbox', { name: 'Family names' });
   return {
