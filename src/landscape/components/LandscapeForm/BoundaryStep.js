@@ -10,7 +10,7 @@ import PageHeader from 'layout/PageHeader';
 import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
 import LandscapeMap from 'landscape/components/LandscapeMap';
 
-const OPTION_GEO_JSON = 'geo-json';
+const OPTION_GEOJSON = 'geo-json';
 const OPTION_MAP_PIN = 'map-pin';
 const OPTION_SELECT_OPTIONS = 'options';
 
@@ -123,8 +123,8 @@ const BoundaryOptions = props => {
   const options = [
     {
       Icon: UploadFileIcon,
-      label: 'landscape.form_boundary_options_geo_json',
-      onClick: () => setOption(OPTION_GEO_JSON),
+      label: 'landscape.form_boundary_options_geojson',
+      onClick: () => setOption(OPTION_GEOJSON),
     },
     {
       Icon: PinDropIcon,
@@ -182,7 +182,7 @@ const BoundaryOptions = props => {
 
 const getOptionComponent = option => {
   switch (option) {
-    case OPTION_GEO_JSON:
+    case OPTION_GEOJSON:
       return GeoJson;
     case OPTION_MAP_PIN:
       return MapPin;
