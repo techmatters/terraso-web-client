@@ -236,7 +236,9 @@
         "form_info_cancel": "Cancel",
         "form_boundary_pin_title": "Place your landscape on a map",
         "form_boundary_pin_description": "Search for the city or region your landscape is in. Then, move the pin to the center of the landscape.",
-        "form_boundary_geojson_title": "Upload your landscape’s boundary"
+        "form_boundary_geojson_title": "Upload your landscape’s boundary",
+        "form_name_placeholder": "Enter your Landscape’s official name",
+        "form_location_placeholder": "Select country"
     },
     "common": {
         "dialog_cancel_label": "Cancel",

@@ -102,12 +102,12 @@ const Form = props => {
             name={field.name}
             label={field.label}
             info={field.info}
+            {..._.getOr({}, 'props', field)}
             inputProps={{
               type: field.type || 'text',
               placeholder: t(field.placeholder),
               ..._.getOr({}, 'props.inputProps', field),
             }}
-            {..._.getOr({}, 'props', field)}
           />
         </Grid>
       ))}

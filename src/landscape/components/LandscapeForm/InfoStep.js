@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash/fp';
 import * as yup from 'yup';
 import countries from 'world-countries';
-import { MenuItem, Select } from '@mui/material';
+import { MenuItem, Select, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -21,6 +21,7 @@ const FORM_FIELDS = [
   {
     name: 'name',
     label: 'landscape.form_name_label',
+    placeholder: 'landscape.form_name_placeholder',
   },
   {
     name: 'description',
@@ -49,7 +50,7 @@ const FORM_FIELDS = [
 ];
 
 const CountrySelector = props => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { field } = props;
 
   const countriesLang = i18n.resolvedLanguage.startsWith('es')
@@ -60,10 +61,18 @@ const CountrySelector = props => {
 
   return (
     <Select
+      displayEmpty
       value={field.value}
       onChange={field.onChange}
       sx={{ width: '100%' }}
       labelId="landscape-location-label"
+      renderValue={selected =>
+        selected || (
+          <Typography sx={{ color: 'gray.mid2' }}>
+            {t('landscape.form_location_placeholder')}
+          </Typography>
+        )
+      }
     >
       {countriesList.map((country, index) => (
         <MenuItem key={index} value={country}>

@@ -36,8 +36,8 @@ const FormFieldInput = props => {
           theme.components.MuiOutlinedInput.defaultProps.sx
         )
       }
-      {...inputProps}
       {...field}
+      {...inputProps}
     />
   );
 };
