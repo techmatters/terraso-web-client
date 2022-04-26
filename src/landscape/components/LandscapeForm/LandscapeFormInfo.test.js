@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from 'tests/utils';
+import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
 
 import React from 'react';
 
@@ -18,19 +18,29 @@ jest.mock('react-router-dom', () => ({
 const setup = async () => {
   await render(<LandscapeForm />);
   const name = screen.getByRole('textbox', {
-    name: 'Name (Required)',
+    name: 'Name (required)',
   });
   const description = screen.getByRole('textbox', {
-    name: 'Description (Required)',
+    name: 'Description (required)',
   });
   const website = screen.getByRole('textbox', { name: 'Website' });
-  const location = screen.getByRole('textbox', { name: 'Location' });
+  const location = screen.getByRole('button', { name: 'Country or region' });
+
+  const changeLocation = async newLocation => {
+    await act(async () => fireEvent.mouseDown(location));
+    const listbox = within(screen.getByRole('listbox'));
+    await act(async () =>
+      fireEvent.click(listbox.getByRole('option', { name: newLocation }))
+    );
+  };
+
   return {
     inputs: {
       name,
       description,
       website,
       location,
+      changeLocation,
     },
   };
 };
@@ -65,6 +75,7 @@ test('LandscapeForm: Fill form', async () => {
               name: 'Landscape Name',
               description: 'Landscape Description',
               website: 'www.landscape.org',
+              location: 'Ecuador',
             },
           },
         ],
@@ -77,6 +88,7 @@ test('LandscapeForm: Fill form', async () => {
   expect(inputs.name).toHaveValue('Landscape Name');
   expect(inputs.description).toHaveValue('Landscape Description');
   expect(inputs.website).toHaveValue('www.landscape.org');
+  expect(inputs.location).toHaveTextContent('Ecuador');
 });
 test('LandscapeForm: Input change', async () => {
   terrasoApi.request.mockReturnValueOnce(
@@ -88,6 +100,7 @@ test('LandscapeForm: Input change', async () => {
               name: 'Landscape Name',
               description: 'Landscape Description',
               website: 'www.landscape.org',
+              location: 'Argentina',
             },
           },
         ],
@@ -109,6 +122,10 @@ test('LandscapeForm: Input change', async () => {
   expect(inputs.website).toHaveValue('www.landscape.org');
   fireEvent.change(inputs.website, { target: { value: 'www.other.org' } });
   expect(inputs.website).toHaveValue('www.other.org');
+
+  expect(inputs.location).toHaveTextContent('Argentina');
+  await inputs.changeLocation('Ecuador');
+  expect(inputs.location).toHaveTextContent('Ecuador');
 });
 test('LandscapeForm: Input validation', async () => {
   terrasoApi.request.mockReturnValue(
@@ -140,11 +157,11 @@ test('LandscapeForm: Input validation', async () => {
   fireEvent.change(inputs.website, { target: { value: 'wwwotherorg' } });
   expect(inputs.website).toHaveValue('wwwotherorg');
 
-  await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
-  expect(screen.getByText(/name is a required field/i)).toBeInTheDocument();
-  expect(
-    screen.getByText(/description is a required field/i)
-  ).toBeInTheDocument();
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+  );
+  expect(screen.getByText(/name is required/i)).toBeInTheDocument();
+  expect(screen.getByText(/description is required/i)).toBeInTheDocument();
   expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument();
 });
 test('LandscapeForm: Save form', async () => {
@@ -158,8 +175,7 @@ test('LandscapeForm: Save form', async () => {
               name: 'Landscape Name',
               description: 'Landscape Description',
               website: 'www.landscape.org',
-              location: 'Location',
-              areaPolygon: '{ "key": "value" }',
+              location: 'Ecuador',
             },
           },
         ],
@@ -172,7 +188,7 @@ test('LandscapeForm: Save form', async () => {
           name: 'Landscape Name',
           description: 'Landscape Description',
           website: 'www.landscape.org',
-          location: 'Location',
+          location: 'Ecuador',
         },
       },
     });
@@ -186,9 +202,21 @@ test('LandscapeForm: Save form', async () => {
   fireEvent.change(inputs.website, {
     target: { value: 'https://www.other.org' },
   });
-  fireEvent.change(inputs.location, { target: { value: 'New location' } });
+  await inputs.changeLocation('Argentina');
 
-  await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+  );
+  await waitFor(() => {
+    expect(
+      screen.getByRole('button', { name: 'Skip this step for now' })
+    ).toBeInTheDocument();
+  });
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Skip this step for now' })
+    )
+  );
   expect(terrasoApi.request).toHaveBeenCalledTimes(2);
   const saveCall = terrasoApi.request.mock.calls[1];
   expect(saveCall[1]).toStrictEqual({
@@ -197,7 +225,8 @@ test('LandscapeForm: Save form', async () => {
       description: 'New description',
       name: 'New name',
       website: 'https://www.other.org',
-      location: 'New location',
+      location: 'Argentina',
+      areaPolygon: null,
     },
   });
 });
@@ -212,7 +241,7 @@ test('LandscapeForm: Save form error', async () => {
                 name: 'Landscape Name',
                 description: 'Landscape Description',
                 website: 'www.landscape.org',
-                location: 'Location',
+                location: 'Ecuador',
               },
             },
           ],
@@ -230,9 +259,21 @@ test('LandscapeForm: Save form error', async () => {
   fireEvent.change(inputs.website, {
     target: { value: 'https://www.other.org' },
   });
-  fireEvent.change(inputs.location, { target: { value: 'New location' } });
+  await inputs.changeLocation('Argentina');
 
-  await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+  );
+  await waitFor(() => {
+    expect(
+      screen.getByRole('button', { name: 'Skip this step for now' })
+    ).toBeInTheDocument();
+  });
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Skip this step for now' })
+    )
+  );
 
   // Test error display
   expect(screen.getByText(/Save Error/i)).toBeInTheDocument();
@@ -241,7 +282,7 @@ test('LandscapeForm: Save form error', async () => {
   expect(inputs.name).toHaveValue('New name');
   expect(inputs.description).toHaveValue('New description');
   expect(inputs.website).toHaveValue('https://www.other.org');
-  expect(inputs.location).toHaveValue('New location');
+  expect(inputs.location).toHaveTextContent('Argentina');
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(2);
 });
@@ -267,7 +308,7 @@ test('LandscapeForm: Save form (add)', async () => {
         name: 'New name',
         description: 'New description',
         website: 'http://www.other.org',
-        location: 'Location',
+        location: 'Argentina',
       },
     },
   });
@@ -281,9 +322,22 @@ test('LandscapeForm: Save form (add)', async () => {
   fireEvent.change(inputs.website, {
     target: { value: 'http://www.other.org' },
   });
-  fireEvent.change(inputs.location, { target: { value: 'New location' } });
+  await inputs.changeLocation('Ecuador');
 
-  await act(async () => fireEvent.click(screen.getByText(/Create Landscape/i)));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+  );
+  await waitFor(() => {
+    expect(
+      screen.getByRole('button', { name: 'Skip this step for now' })
+    ).toBeInTheDocument();
+  });
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Skip this step for now' })
+    )
+  );
+
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
   const saveCall = terrasoApi.request.mock.calls[0];
   expect(saveCall[1]).toStrictEqual({
@@ -291,7 +345,7 @@ test('LandscapeForm: Save form (add)', async () => {
       description: 'New description',
       name: 'New name',
       website: 'http://www.other.org',
-      location: 'New location',
+      location: 'Ecuador',
     },
   });
 });

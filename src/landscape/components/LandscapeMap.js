@@ -19,9 +19,11 @@ const LandscapeMap = ({
   const bounds = getLandscapeBoundingBox(landscape);
   const areaPolygon = _.get('areaPolygon', landscape);
   const geojson = isValidGeoJson(areaPolygon) ? areaPolygon : null;
+  const defaultProps = areaPolygon ? {} : { zoom: 1, center: [0, 0] };
   return (
     <Box component="section" aria-label={label}>
       <Map
+        {...defaultProps}
         bounds={bounds}
         geojson={geojson}
         onPinLocationChange={onPinLocationChange}

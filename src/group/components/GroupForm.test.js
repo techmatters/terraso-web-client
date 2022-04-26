@@ -29,9 +29,9 @@ const setup = async () => {
     },
   });
 
-  const name = screen.getByRole('textbox', { name: 'Name (Required)' });
+  const name = screen.getByRole('textbox', { name: 'Name (required)' });
   const description = screen.getByRole('textbox', {
-    name: 'Description (Required)',
+    name: 'Description (required)',
   });
   const email = screen.getByRole('textbox', { name: 'Email address' });
   const website = screen.getByRole('textbox', { name: 'Website' });
@@ -198,10 +198,8 @@ test('GroupForm: Input validation', async () => {
   expect(inputs.website).toHaveValue('wwwotherorg');
 
   await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
-  expect(screen.getByText(/name is a required field/i)).toBeInTheDocument();
-  expect(
-    screen.getByText(/description is a required field/i)
-  ).toBeInTheDocument();
+  expect(screen.getByText(/name is required/i)).toBeInTheDocument();
+  expect(screen.getByText(/description is required/i)).toBeInTheDocument();
   expect(screen.getByText(/email must be a valid email/i)).toBeInTheDocument();
   expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument();
 });

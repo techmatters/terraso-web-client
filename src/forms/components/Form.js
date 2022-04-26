@@ -9,8 +9,6 @@ import { Button, Grid } from '@mui/material';
 
 import FormField from 'forms/components/FormField';
 
-import theme from 'theme';
-
 const getInitialEmptyValues = _.flow(
   _.map(field => [field.name, '']),
   _.fromPairs
@@ -28,6 +26,7 @@ const Form = props => {
     cancelLabel,
     onCancel,
     children,
+    reverseActionsOrder,
   } = props;
 
   const { control, handleSubmit, reset } = useForm({
@@ -62,6 +61,25 @@ const Form = props => {
     props
   );
 
+  const actions = [
+    <Button
+      key="submit"
+      type="submit"
+      variant="contained"
+      sx={{
+        paddingLeft: 5,
+        paddingRight: 5,
+      }}
+    >
+      {t(saveLabel)}
+    </Button>,
+    onCancel && (
+      <Button key="cancel" variant="text" onClick={onCancel}>
+        {t(cancelLabel)}
+      </Button>
+    ),
+  ];
+
   return (
     <Grid
       component="form"
@@ -86,12 +104,12 @@ const Form = props => {
             name={field.name}
             label={field.label}
             info={field.info}
+            {..._.getOr({}, 'props', field)}
             inputProps={{
               type: field.type || 'text',
               placeholder: t(field.placeholder),
               ..._.getOr({}, 'props.inputProps', field),
             }}
-            {..._.getOr({}, 'props', field)}
           />
         </Grid>
       ))}
@@ -102,20 +120,9 @@ const Form = props => {
         xs={12}
         direction="row"
         justifyContent="space-between"
-        sx={{ marginTop: theme.spacing(2) }}
+        sx={{ marginTop: 2 }}
       >
-        <Button
-          type="submit"
-          variant="contained"
-          sx={{ paddingLeft: theme.spacing(5), paddingRight: theme.spacing(5) }}
-        >
-          {t(saveLabel)}
-        </Button>
-        {onCancel && (
-          <Button variant="text" onClick={onCancel}>
-            {t(cancelLabel)}
-          </Button>
-        )}
+        {reverseActionsOrder ? actions.reverse() : actions}
       </Grid>
     </Grid>
   );

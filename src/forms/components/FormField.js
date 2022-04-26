@@ -38,8 +38,8 @@ const FormFieldInput = props => {
           theme.components.MuiOutlinedInput.defaultProps.sx
         )
       }
-      {...inputProps}
       {...field}
+      {...inputProps}
     />
   );
 };
@@ -55,6 +55,7 @@ const FormField = props => {
         <FormControlUnstyled style={{ marginBottom: theme.spacing(3) }}>
           <Stack
             component={InputLabel}
+            id={`${id}-label`}
             direction="row"
             spacing={1}
             disabled={disabled}
