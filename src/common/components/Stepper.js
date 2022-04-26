@@ -21,7 +21,8 @@ const Stepper = props => {
             key={index}
             sx={{
               borderBottom: '8px solid',
-              borderColor: index <= activeStepIndex ? 'gray.mid' : 'gray.lite1',
+              borderColor:
+                index <= activeStepIndex ? 'primary.main' : 'gray.lite1',
               fontWeight: index <= activeStepIndex ? '500' : '300',
               marginRight: '2px',
               flexGrow: 1,
