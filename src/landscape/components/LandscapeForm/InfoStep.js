@@ -43,7 +43,6 @@ const FORM_FIELDS = [
   {
     name: 'website',
     label: 'landscape.form_website_label',
-    info: 'landscape.form_website_info',
     placeholder: 'landscape.form_website_placeholder',
     type: 'url',
   },
