@@ -83,7 +83,8 @@
         "members_document_title": "Members: {{name}}",
         "list_column_actions_description": "Actions",
         "members_list_column_actions_description": "Actions",
-        "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). There should at least be one manager."
+        "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). There should at least be one manager.",
+        "unique": "The group “{{inputData.input.name}}” already exists."
     },
     "tool": {
         "requirements": "System requirements",
