@@ -4,6 +4,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
+import SharedFilesCard from 'shared-files/SharedFilesCard';
 
 import EmailIcon from '@mui/icons-material/Email';
 import PublicIcon from '@mui/icons-material/Public';
@@ -149,6 +150,9 @@ const GroupView = () => {
               onViewMembers={() => navigate(`/groups/${group.slug}/members`)}
             />
           </GroupContextProvider>
+        </Grid>
+        <Grid item xs={12} md={12}>
+          <SharedFilesCard group={group} />
         </Grid>
       </Grid>
     </PageContainer>
