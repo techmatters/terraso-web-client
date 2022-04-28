@@ -50,10 +50,10 @@ const FileCard = ({ file }) => {
               onConfirm={onConfirm}
               variant="text"
               confirmTitle={t('shared_files.delete_confirm_title', {
-                name: 'bob',
+                name: file.name,
               })}
               confirmMessage={t('shared_files.delete_confirm_message', {
-                name: 'bob',
+                name: file.name,
               })}
               confirmButton={t('shared_files.delete_confirm_button')}
             >
