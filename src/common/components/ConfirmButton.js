@@ -13,6 +13,7 @@ const ConfirmButton = props => {
     loading,
     buttonProps,
     onConfirm,
+    variant,
   } = props;
 
   useEffect(() => {
@@ -38,10 +39,10 @@ const ConfirmButton = props => {
       <LoadingButton
         onClick={onClick}
         loading={loading}
-        variant="outlined"
+        variant={variant || 'outlined'}
         {...(buttonProps || {})}
       >
-        {buttonLabel}
+        {buttonLabel || props.children}
       </LoadingButton>
     </>
   );
