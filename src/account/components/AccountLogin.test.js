@@ -1,9 +1,10 @@
-import React from 'react';
-import { useSearchParams } from 'react-router-dom';
-
+// prettier-ignore
 import { render, screen } from 'tests/utils';
+
 import * as accountService from 'account/accountService';
 import AccountLogin from 'account/components/AccountLogin';
+import React from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 jest.mock('account/accountService');
 

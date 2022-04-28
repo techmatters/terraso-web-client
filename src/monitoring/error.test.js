@@ -1,7 +1,8 @@
-import React from 'react';
-
+// prettier-ignore
 import { render, screen } from 'tests/utils';
+
 import { rollbar } from 'monitoring/rollbar';
+import React from 'react';
 
 jest.mock('monitoring/rollbar');
 

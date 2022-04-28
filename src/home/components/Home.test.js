@@ -1,9 +1,10 @@
-import React from 'react';
-import _ from 'lodash/fp';
-
+// prettier-ignore
 import { render, screen } from 'tests/utils';
+
 import Home from 'home/components/Home';
 import { fetchHomeData } from 'home/homeService';
+import _ from 'lodash/fp';
+import React from 'react';
 import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('terrasoBackend/api');

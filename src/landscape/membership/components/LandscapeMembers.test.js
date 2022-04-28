@@ -1,10 +1,11 @@
-import React from 'react';
-import _ from 'lodash/fp';
-import { act } from 'react-dom/test-utils';
-import useMediaQuery from '@mui/material/useMediaQuery';
+// prettier-ignore
+import { fireEvent, render, screen, within } from 'tests/utils';
 
-import { render, screen, within, fireEvent } from 'tests/utils';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
+import _ from 'lodash/fp';
+import React from 'react';
+import { act } from 'react-dom/test-utils';
 import * as terrasoApi from 'terrasoBackend/api';
 
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850

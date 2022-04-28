@@ -1,10 +1,10 @@
-import React from 'react';
-import _ from 'lodash/fp';
-import { act } from 'react-dom/test-utils';
-
-import { render, screen, fireEvent, within } from 'tests/utils';
 import AccountProfile from 'account/components/AccountProfile';
+import _ from 'lodash/fp';
+import React from 'react';
+import { act } from 'react-dom/test-utils';
 import * as terrasoApi from 'terrasoBackend/api';
+
+import { fireEvent, render, screen, within } from 'tests/utils';
 
 jest.mock('terrasoBackend/api');
 

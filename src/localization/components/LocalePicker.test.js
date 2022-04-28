@@ -1,12 +1,13 @@
-import React from 'react';
-import _ from 'lodash/fp';
-import { act } from 'react-dom/test-utils';
-import useMediaQuery from '@mui/material/useMediaQuery';
+// prettier-ignore
+import { fireEvent, render, screen, within } from 'tests/utils';
 
-import i18n from 'localization/i18n';
-import { render, screen, fireEvent, within } from 'tests/utils';
-import * as terrasoApi from 'terrasoBackend/api';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import LocalePicker from 'localization/components/LocalePicker';
+import i18n from 'localization/i18n';
+import _ from 'lodash/fp';
+import React from 'react';
+import { act } from 'react-dom/test-utils';
+import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('@mui/material/useMediaQuery');
 jest.mock('terrasoBackend/api');

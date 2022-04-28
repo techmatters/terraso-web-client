@@ -1,7 +1,8 @@
-import React from 'react';
-
+// prettier-ignore
 import { render, screen } from 'tests/utils';
+
 import Restricted from 'permissions/components/Restricted';
+import React from 'react';
 
 const setup = async (props, rules) => {
   await render(

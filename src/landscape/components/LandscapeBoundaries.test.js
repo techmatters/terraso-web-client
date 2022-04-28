@@ -1,9 +1,10 @@
+// prettier-ignore
+import { fireEvent, render, screen, waitFor } from 'tests/utils';
+
+import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { useParams, useNavigate } from 'react-router-dom';
-
-import { render, screen, fireEvent, waitFor } from 'tests/utils';
-import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
+import { useNavigate, useParams } from 'react-router-dom';
 import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('terrasoBackend/api');

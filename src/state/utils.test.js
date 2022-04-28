@@ -1,8 +1,9 @@
+// prettier-ignore
+import { render, screen } from 'tests/utils';
+
+import { fetchAuthURLs } from 'account/accountSlice';
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-
-import { render, screen } from 'tests/utils';
-import { fetchAuthURLs } from 'account/accountSlice';
 
 const TestComponent = () => {
   const dispatch = useDispatch();

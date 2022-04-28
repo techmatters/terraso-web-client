@@ -1,5 +1,5 @@
-import * as terrasoApi from 'terrasoBackend/api';
 import { rollbar } from 'monitoring/rollbar';
+import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('monitoring/rollbar');
 

@@ -1,10 +1,11 @@
-import React from 'react';
-import _ from 'lodash/fp';
-import { act } from 'react-dom/test-utils';
-
+// prettier-ignore
 import { render, screen } from 'tests/utils';
-import { useScript } from 'custom-hooks';
+
 import ContactForm from 'contact/ContactForm';
+import { useScript } from 'custom-hooks';
+import _ from 'lodash/fp';
+import React from 'react';
+import { act } from 'react-dom/test-utils';
 
 jest.mock('@mui/material/useMediaQuery');
 jest.mock('js-cookie');

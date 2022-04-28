@@ -1,13 +1,14 @@
-import React from 'react';
-import _ from 'lodash/fp';
-import { act } from 'react-dom/test-utils';
+// prettier-ignore
+import { fireEvent, render, screen } from 'tests/utils';
 
-import { render, screen, fireEvent } from 'tests/utils';
-import * as terrasoApi from 'terrasoBackend/api';
-import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
-import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
-import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import { GroupContextProvider } from 'group/groupContext';
+import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
+import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
+import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
+import _ from 'lodash/fp';
+import React from 'react';
+import { act } from 'react-dom/test-utils';
+import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('terrasoBackend/api');
 
