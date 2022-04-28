@@ -27,6 +27,7 @@ import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import PageHeader from 'layout/PageHeader';
 import PageContainer from 'layout/PageContainer';
+import SharedFilesCard from 'shared-files/SharedFilesCard';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
@@ -144,6 +145,9 @@ const GroupView = () => {
               onViewMembers={() => navigate(`/groups/${group.slug}/members`)}
             />
           </GroupContextProvider>
+        </Grid>
+        <Grid item xs={12} md={12}>
+          <SharedFilesCard group={group} />
         </Grid>
       </Grid>
     </PageContainer>
