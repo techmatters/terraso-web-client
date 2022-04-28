@@ -25,27 +25,28 @@ const FileCard = ({ file }) => {
     <Card variant="outlined">
       <CardContent>
         <Grid container spacing={2}>
-          <Grid item xs={1}>
+          <Grid item xs={1} md={1} order={{ xs: 1, md: 1 }}>
             <Button
               startIcon={<InsertDriveFileOutlinedIcon />}
               sx={{ marginTop: '-5px' }}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={9} md={4} order={{ xs: 2, md: 2 }}>
             <Link href={`/files/${file.id}/download`}>{file.name}</Link>
           </Grid>
-          <Grid item xs={1}>
+          <Grid item xs={2} md={1} order={{ xs: 6, md: 3 }}>
             {file.size}MB
           </Grid>
-          <Grid item xs={4}>
-            {file.date}
+          <Grid item xs={9} md={4} order={{ xs: 7, md: 4 }}>
+            {file.date}, by {file.owner}
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={1} md={1} order={{ xs: 3, md: 5 }}>
             <Button
               to={`/files/${file.id}/download`}
               startIcon={<FileDownloadIcon />}
-              sx={{ marginTop: '-5px' }}
             />
+          </Grid>
+          <Grid item xs={1} md={1} order={{ xs: 4, md: 6 }}>
             <ConfirmButton
               onConfirm={onConfirm}
               variant="text"
@@ -57,12 +58,14 @@ const FileCard = ({ file }) => {
               })}
               confirmButton={t('shared_files.delete_confirm_button')}
             >
-              <DeleteIcon sx={{ marginTop: '-5px' }} />
+              <DeleteIcon sx={{ marginTop: '-5px', marginLeft: '-35px' }} />
             </ConfirmButton>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={11} md={12} order={{ xs: 9, md: 7 }}>
             <Typography variant="body1">{file.description}</Typography>
           </Grid>
+          <Grid item xs={1} order={{ xs: 5 }} display={{ md: 'none' }} />
+          <Grid item xs={1} order={{ xs: 8 }} display={{ md: 'none' }} />
         </Grid>
       </CardContent>
     </Card>
