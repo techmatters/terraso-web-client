@@ -19,7 +19,8 @@ const SharedFilesCard = ({ group }) => {
       description: 'sample file',
       type: 'xls',
       size: 32,
-      date: '2022-04-08',
+      date: 'March 16, 2022',
+      owner: 'Peppermint Patty',
       id: 23456,
     },
     {
@@ -27,7 +28,8 @@ const SharedFilesCard = ({ group }) => {
       description: 'recipe',
       type: 'json',
       size: 77,
-      date: '2022-04-01',
+      date: 'March 18, 2022',
+      owner: 'Charlie Brown',
       id: 67890,
     },
   ];
