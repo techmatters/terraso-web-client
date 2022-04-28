@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - feature/shared-files
   pull_request:
     branches:
       - main
+      - feature/shared-files
 
 jobs:
   lint:
@@ -49,7 +51,7 @@ jobs:
 
       - name: Run test
         run: npm run test
-  
+
   tests-coverage:
     runs-on: ubuntu-latest
 
