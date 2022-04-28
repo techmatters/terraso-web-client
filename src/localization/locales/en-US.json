@@ -228,6 +228,14 @@
         "view_map_boundaries_help_url": "/contact",
         "view_map_boundaries_update": "Update Map"
     },
+    "shared_files": {
+        "title": "Shared files",
+        "description": "Only the members of your group can download the files. Read more about sharing files.",
+        "upload_button": "Upload Files",
+        "delete_confirm_title": "Delete “{{name}}”?",
+        "delete_confirm_message": "Are you sure you wish to delete the file “{{name}}”?",
+        "delete_confirm_button": "Delete File"
+    },
     "common": {
         "dialog_cancel_label": "Cancel",
         "terraso_projectName": "Terraso",
