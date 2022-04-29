@@ -2,6 +2,7 @@
   "arrowParens": "avoid",
   "singleQuote": true,
   "semi": true,
+  "importOrder": ["^tests/utils$", "^react.*$", "^@mui/(.*)$", "^lodash/(.*)$", "<THIRD_PARTY_MODULES>", "^[./]"],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true
 }
