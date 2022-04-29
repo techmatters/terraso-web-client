@@ -1,7 +1,9 @@
 import React from 'react';
-import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
+
 import { Typography } from '@mui/material';
+
+import _ from 'lodash/fp';
 
 const GroupMembershipCount = ({ groupSlug }) => {
   const { group } = useSelector(_.getOr({}, `group.memberships.${groupSlug}`));

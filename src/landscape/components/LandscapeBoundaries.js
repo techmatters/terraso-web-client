@@ -1,8 +1,9 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import _ from 'lodash/fp';
-import { useSelector, useDispatch } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { Trans, useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
+
 import {
   Alert,
   Button,
@@ -12,19 +13,21 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { Trans, useTranslation } from 'react-i18next';
 
-import theme from 'theme';
+import _ from 'lodash/fp';
+
+import InlineHelp from 'common/components/InlineHelp';
+import { useDocumentTitle } from 'common/document';
 import { GEOJSON_MAX_SIZE } from 'config';
 import { fetchLandscapeForm, saveLandscape } from 'landscape/landscapeSlice';
 import { isValidGeoJson } from 'landscape/landscapeUtils';
-import { useDocumentTitle } from 'common/document';
-import { sendToRollbar } from 'monitoring/logger';
 import PageContainer from 'layout/PageContainer';
-import LandscapeMap from './LandscapeMap';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
-import InlineHelp from 'common/components/InlineHelp';
+import { sendToRollbar } from 'monitoring/logger';
+import theme from 'theme';
+
+import LandscapeMap from './LandscapeMap';
 
 const openFile = file =>
   new Promise((resolve, reject) => {

@@ -1,9 +1,10 @@
 import { fireEvent, render, screen } from 'tests/utils';
 
-import Navigation from 'navigation/Navigation';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useLocation } from 'react-router-dom';
+
+import Navigation from 'navigation/Navigation';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

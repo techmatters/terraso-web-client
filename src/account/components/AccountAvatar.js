@@ -1,6 +1,8 @@
 import React from 'react';
-import _ from 'lodash/fp';
+
 import { Avatar, Typography } from '@mui/material';
+
+import _ from 'lodash/fp';
 
 const AccountAvatar = props => {
   const { user } = props;

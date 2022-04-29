@@ -1,19 +1,21 @@
 import React, { useEffect } from 'react';
-import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { useSelector, useDispatch } from 'react-redux';
-import { Grid, Alert, Stack } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchHomeData } from 'home/homeSlice';
-import { useDocumentTitle } from 'common/document';
+import { Alert, Grid, Stack } from '@mui/material';
+
+import _ from 'lodash/fp';
+
 import LoaderCard from 'common/components/LoaderCard';
-import LandscapesCard from 'landscape/components/LandscapesHomeCard';
-import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultHomeCard';
-import GroupsCard from 'group/components/GroupsHomeCard';
+import { useDocumentTitle } from 'common/document';
 import GroupDefaultCard from 'group/components/GroupDefaultHomeCard';
-import ToolHomeCard from 'tool/components/ToolHomeCard';
-import PageHeader from 'layout/PageHeader';
+import GroupsCard from 'group/components/GroupsHomeCard';
+import { fetchHomeData } from 'home/homeSlice';
+import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultHomeCard';
+import LandscapesCard from 'landscape/components/LandscapesHomeCard';
 import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import ToolHomeCard from 'tool/components/ToolHomeCard';
 
 const Landscapes = ({ landscapes, fetching }) => {
   if (fetching) {

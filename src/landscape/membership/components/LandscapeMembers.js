@@ -1,22 +1,25 @@
 import React, { useEffect } from 'react';
-import _ from 'lodash/fp';
-import { useSelector, useDispatch } from 'react-redux';
+import { withProps } from 'react-hoc';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+
 import { Typography } from '@mui/material';
 
-import { fetchLandscapeForMembers } from 'landscape/landscapeSlice';
-import { usePermission } from 'permissions';
-import { withProps } from 'react-hoc';
+import _ from 'lodash/fp';
+
 import { useDocumentTitle } from 'common/document';
-import GroupMembersList from 'group/membership/components/GroupMembersList';
 import { GroupContextProvider } from 'group/groupContext';
+import GroupMembersList from 'group/membership/components/GroupMembersList';
+import { fetchLandscapeForMembers } from 'landscape/landscapeSlice';
+import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
+import { usePermission } from 'permissions';
+import theme from 'theme';
+
 import LandscapeMemberLeave from './LandscapeMemberLeave';
 import LandscapeMemberRemove from './LandscapeMemberRemove';
-import PageHeader from 'layout/PageHeader';
-import PageContainer from 'layout/PageContainer';
-import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   renderLabel: () => 'landscape.members_list_leave',

@@ -1,8 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
-
 import accountReducer from 'account/accountSlice';
-import userHomeReducer from 'home/homeSlice';
 import groupReducer from 'group/groupSlice';
+import userHomeReducer from 'home/homeSlice';
 import landscapeReducer from 'landscape/landscapeSlice';
 import notificationsReducer from 'notifications/notificationsSlice';
 

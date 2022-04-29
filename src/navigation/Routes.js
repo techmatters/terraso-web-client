@@ -1,22 +1,22 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
-import Home from 'home/components/Home';
-import GroupList from 'group/components/GroupList';
-import GroupForm from 'group/components/GroupForm';
-import GroupView from 'group/components/GroupView';
-import GroupMembers from 'group/membership/components/GroupMembers';
-import LandscapeList from 'landscape/components/LandscapeList';
-import LandscapeForm from 'landscape/components/LandscapeForm';
-import LandscapeView from 'landscape/components/LandscapeView';
-import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
-import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
-import ToolsList from 'tool/components/ToolList';
 import AccountLogin from 'account/components/AccountLogin';
 import AccountProfile from 'account/components/AccountProfile';
 import RequireAuth from 'account/components/RequireAuth';
-import NotFound from 'layout/NotFound';
 import ContactForm from 'contact/ContactForm';
+import GroupForm from 'group/components/GroupForm';
+import GroupList from 'group/components/GroupList';
+import GroupView from 'group/components/GroupView';
+import GroupMembers from 'group/membership/components/GroupMembers';
+import Home from 'home/components/Home';
+import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
+import LandscapeForm from 'landscape/components/LandscapeForm';
+import LandscapeList from 'landscape/components/LandscapeList';
+import LandscapeView from 'landscape/components/LandscapeView';
+import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
+import NotFound from 'layout/NotFound';
+import ToolsList from 'tool/components/ToolList';
 
 const path = (path, Component, auth = true) => ({
   path,

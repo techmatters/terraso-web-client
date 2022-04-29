@@ -1,9 +1,11 @@
 import React from 'react';
-import _ from 'lodash/fp';
+
 import { Card, Grid, List, ListItem, Stack, Typography } from '@mui/material';
 
-import ResponsiveSwitch from 'layout/ResponsiveSwitch';
+import _ from 'lodash/fp';
+
 import BaseTable from 'common/components/Table';
+import ResponsiveSwitch from 'layout/ResponsiveSwitch';
 
 const Table = props => {
   const { columns, rows, tableProps } = props;

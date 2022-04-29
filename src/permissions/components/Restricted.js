@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { CircularProgress } from '@mui/material';
 
 import { usePermission } from 'permissions';

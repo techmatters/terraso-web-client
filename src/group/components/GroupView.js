@@ -1,32 +1,34 @@
 import React, { useEffect } from 'react';
-import _ from 'lodash/fp';
-import { useSelector, useDispatch } from 'react-redux';
-import { useParams, Link as RouterLink, useNavigate } from 'react-router-dom';
+import { withProps } from 'react-hoc';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
+
+import EmailIcon from '@mui/icons-material/Email';
+import PublicIcon from '@mui/icons-material/Public';
 import {
-  Typography,
-  Grid,
+  Button,
   Card,
-  CardHeader,
   CardContent,
+  CardHeader,
+  Grid,
   Link,
   Stack,
-  Button,
+  Typography,
 } from '@mui/material';
-import PublicIcon from '@mui/icons-material/Public';
-import EmailIcon from '@mui/icons-material/Email';
 
-import { withProps } from 'react-hoc';
-import { fetchGroupView } from 'group/groupSlice';
+import _ from 'lodash/fp';
+
 import { useDocumentTitle } from 'common/document';
+import { GroupContextProvider } from 'group/groupContext';
+import { fetchGroupView } from 'group/groupSlice';
+import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
+import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
+import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import Restricted from 'permissions/components/Restricted';
-import { GroupContextProvider } from 'group/groupContext';
-import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
-import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
-import PageHeader from 'layout/PageHeader';
-import PageContainer from 'layout/PageContainer';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {

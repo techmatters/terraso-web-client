@@ -1,9 +1,9 @@
 import _ from 'lodash/fp';
-import { createSlice } from '@reduxjs/toolkit';
 
-import { createAsyncThunk } from 'state/utils';
+import { createSlice } from '@reduxjs/toolkit';
 import * as groupService from 'group/groupService';
 import * as groupUtils from 'group/groupUtils';
+import { createAsyncThunk } from 'state/utils';
 
 const initialState = {
   memberships: {},

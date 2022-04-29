@@ -1,6 +1,7 @@
-import React, { useState, useContext, useEffect, useRef } from 'react';
-import _ from 'lodash/fp';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+
+import _ from 'lodash/fp';
 
 const defaultBehaviour = {
   isAllowedTo: () => Promise.resolve(false),

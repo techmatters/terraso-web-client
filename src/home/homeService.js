@@ -1,9 +1,9 @@
 import _ from 'lodash/fp';
 
-import * as terrasoApi from 'terrasoBackend/api';
 import { groupFields } from 'group/groupFragments';
-import { landscapeFields, defaultGroup } from 'landscape/landscapeFragments';
 import { extractAccountMembership } from 'group/groupUtils';
+import { defaultGroup, landscapeFields } from 'landscape/landscapeFragments';
+import * as terrasoApi from 'terrasoBackend/api';
 
 export const fetchHomeData = email => {
   const query = `

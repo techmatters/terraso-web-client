@@ -1,23 +1,26 @@
 import React from 'react';
-import _ from 'lodash/fp';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+
 import {
-  Typography,
-  Card,
-  CardHeader,
-  CardContent,
-  CardActions,
   AvatarGroup,
-  CircularProgress,
   Box,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  CircularProgress,
   Link,
+  Typography,
 } from '@mui/material';
 
-import { useGroupContext } from 'group/groupContext';
-import GroupMembershipJoinLeaveButton from './GroupMembershipJoinLeaveButton';
+import _ from 'lodash/fp';
+
 import AccountAvatar from 'account/components/AccountAvatar';
+import { useGroupContext } from 'group/groupContext';
 import theme from 'theme';
+
+import GroupMembershipJoinLeaveButton from './GroupMembershipJoinLeaveButton';
 
 const Loader = () => {
   const { t } = useTranslation();

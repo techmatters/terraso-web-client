@@ -1,7 +1,8 @@
-import { plausible, useAnalytics } from 'monitoring/analytics';
+import { render } from 'tests/utils';
+
 import React from 'react';
 
-import { render } from 'tests/utils';
+import { plausible, useAnalytics } from 'monitoring/analytics';
 
 jest.mock('plausible-tracker', () => () => ({
   trackEvent: jest.fn(),

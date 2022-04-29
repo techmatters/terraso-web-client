@@ -1,10 +1,10 @@
 import _ from 'lodash/fp';
-import { createSlice } from '@reduxjs/toolkit';
 
-import { createAsyncThunk } from 'state/utils';
-import { getToken, removeToken } from 'account/auth';
+import { createSlice } from '@reduxjs/toolkit';
 import * as accountService from 'account/accountService';
+import { getToken, removeToken } from 'account/auth';
 import logger from 'monitoring/logger';
+import { createAsyncThunk } from 'state/utils';
 
 const initialState = {
   currentUser: {

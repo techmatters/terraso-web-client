@@ -1,8 +1,9 @@
 import { render, screen } from 'tests/utils';
 
-import GroupView from 'group/components/GroupView';
 import React from 'react';
 import { useParams } from 'react-router-dom';
+
+import GroupView from 'group/components/GroupView';
 import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('terrasoBackend/api');

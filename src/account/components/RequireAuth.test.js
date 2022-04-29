@@ -1,11 +1,13 @@
 import { render, screen } from 'tests/utils';
 
+import React from 'react';
+import { useLocation, useParams } from 'react-router-dom';
+
+import _ from 'lodash/fp';
+
 import { getUserEmail } from 'account/auth';
 import RequireAuth from 'account/components/RequireAuth';
 import GroupView from 'group/components/GroupView';
-import _ from 'lodash/fp';
-import React from 'react';
-import { useLocation, useParams } from 'react-router-dom';
 import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('terrasoBackend/api');

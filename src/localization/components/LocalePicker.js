@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
-import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { LOCALES } from 'localization/i18n';
+import _ from 'lodash/fp';
+
 import { savePreference } from 'account/accountSlice';
 import LocalePickerSelect from 'localization/components/LocalePickerSelect';
+import { LOCALES } from 'localization/i18n';
 
 const LocalePicker = () => {
   const { i18n } = useTranslation();

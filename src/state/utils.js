@@ -1,10 +1,10 @@
 import _ from 'lodash/fp';
-import { createAsyncThunk as createAsyncThunkBase } from '@reduxjs/toolkit';
 
-import { addMessage } from 'notifications/notificationsSlice';
+import { createAsyncThunk as createAsyncThunkBase } from '@reduxjs/toolkit';
 import { signOut } from 'account/accountSlice';
 import { refreshToken } from 'account/auth';
 import { UNAUTHENTICATED } from 'account/authConstants';
+import { addMessage } from 'notifications/notificationsSlice';
 
 const executeAuthRequest = (dispatch, action) =>
   action().catch(async error => {

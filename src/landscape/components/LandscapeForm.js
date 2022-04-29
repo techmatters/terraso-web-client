@@ -1,20 +1,21 @@
 import React, { useEffect } from 'react';
-import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { useSelector, useDispatch } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom';
-import * as yup from 'yup';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
 
+import _ from 'lodash/fp';
+
+import { useDocumentTitle } from 'common/document';
+import Form from 'forms/components/Form';
 import {
   fetchLandscapeForm,
   saveLandscape,
   setFormNewValues,
 } from 'landscape/landscapeSlice';
-import { useDocumentTitle } from 'common/document';
-import Form from 'forms/components/Form';
-import PageLoader from 'layout/PageLoader';
-import PageHeader from 'layout/PageHeader';
 import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import PageLoader from 'layout/PageLoader';
+import * as yup from 'yup';
 
 const VALIDATION_SCHEMA = yup
   .object({

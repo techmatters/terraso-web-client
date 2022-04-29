@@ -1,7 +1,8 @@
 import { render, screen } from 'tests/utils';
 
-import { rollbar } from 'monitoring/rollbar';
 import React from 'react';
+
+import { rollbar } from 'monitoring/rollbar';
 
 jest.mock('monitoring/rollbar');
 

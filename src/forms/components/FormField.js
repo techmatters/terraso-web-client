@@ -1,15 +1,17 @@
 import React from 'react';
-import _ from 'lodash/fp';
-import { useTranslation } from 'react-i18next';
 import { Controller } from 'react-hook-form';
-import {
-  OutlinedInput,
-  InputLabel,
-  FormHelperText,
-  Typography,
-  Stack,
-} from '@mui/material';
+import { useTranslation } from 'react-i18next';
+
 import { FormControlUnstyled } from '@mui/base';
+import {
+  FormHelperText,
+  InputLabel,
+  OutlinedInput,
+  Stack,
+  Typography,
+} from '@mui/material';
+
+import _ from 'lodash/fp';
 
 import theme from 'theme';
 

@@ -1,7 +1,8 @@
 import { render, screen } from 'tests/utils';
 
-import Restricted from 'permissions/components/Restricted';
 import React from 'react';
+
+import Restricted from 'permissions/components/Restricted';
 
 const setup = async (props, rules) => {
   await render(

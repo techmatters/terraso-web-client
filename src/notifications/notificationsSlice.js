@@ -1,5 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
+
+import { createSlice } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
 const initialState = {

@@ -1,8 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { Link, Typography, Grid } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
+
+import { Grid, Link, Typography } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import theme from 'theme';
 

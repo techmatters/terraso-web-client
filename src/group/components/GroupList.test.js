@@ -1,11 +1,14 @@
 import { fireEvent, render, screen, within } from 'tests/utils';
 
-import useMediaQuery from '@mui/material/useMediaQuery';
-import GroupList from 'group/components/GroupList';
-import _ from 'lodash/fp';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useSearchParams } from 'react-router-dom';
+
+import useMediaQuery from '@mui/material/useMediaQuery';
+
+import _ from 'lodash/fp';
+
+import GroupList from 'group/components/GroupList';
 import * as terrasoApi from 'terrasoBackend/api';
 
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850

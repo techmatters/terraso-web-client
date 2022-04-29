@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import _ from 'lodash/fp';
-import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { addMessage } from 'notifications/notificationsSlice';
+import _ from 'lodash/fp';
+
+import { HUBSPOT_FORMS } from 'config';
 import { useScript } from 'custom-hooks';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
-import { HUBSPOT_FORMS } from 'config';
+import { addMessage } from 'notifications/notificationsSlice';
 
 const ContactForm = () => {
   const dispatch = useDispatch();
