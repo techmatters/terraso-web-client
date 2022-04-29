@@ -4,6 +4,8 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import _ from 'lodash/fp';
+
 import {
   Alert,
   Button,
@@ -14,20 +16,21 @@ import {
   Typography,
 } from '@mui/material';
 
-import _ from 'lodash/fp';
-
 import InlineHelp from 'common/components/InlineHelp';
 import { useDocumentTitle } from 'common/document';
-import { GEOJSON_MAX_SIZE } from 'config';
-import { fetchLandscapeForm, saveLandscape } from 'landscape/landscapeSlice';
-import { isValidGeoJson } from 'landscape/landscapeUtils';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { sendToRollbar } from 'monitoring/logger';
-import theme from 'theme';
+
+import { fetchLandscapeForm, saveLandscape } from 'landscape/landscapeSlice';
+import { isValidGeoJson } from 'landscape/landscapeUtils';
+
+import { GEOJSON_MAX_SIZE } from 'config';
 
 import LandscapeMap from './LandscapeMap';
+
+import theme from 'theme';
 
 const openFile = file =>
   new Promise((resolve, reject) => {

@@ -4,11 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import _ from 'lodash/fp';
 
-import { HUBSPOT_FORMS } from 'config';
-import { useScript } from 'custom-hooks';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 import { addMessage } from 'notifications/notificationsSlice';
+
+import { HUBSPOT_FORMS } from 'config';
+import { useScript } from 'custom-hooks';
 
 const ContactForm = () => {
   const dispatch = useDispatch();

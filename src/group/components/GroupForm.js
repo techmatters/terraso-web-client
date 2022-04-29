@@ -3,23 +3,25 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { Typography } from '@mui/material';
-
 import _ from 'lodash/fp';
+import * as yup from 'yup';
+
+import { Typography } from '@mui/material';
 
 import { useDocumentTitle } from 'common/document';
 import Form from 'forms/components/Form';
+import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import PageLoader from 'layout/PageLoader';
+
 import {
   fetchGroupForm,
   resetFormSuccess,
   saveGroup,
   setFormNewValues,
 } from 'group/groupSlice';
-import PageContainer from 'layout/PageContainer';
-import PageHeader from 'layout/PageHeader';
-import PageLoader from 'layout/PageLoader';
+
 import theme from 'theme';
-import * as yup from 'yup';
 
 const transformURL = url => {
   if (url === '' || url.startsWith('http:') || url.startsWith('https:')) {

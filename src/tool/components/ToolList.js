@@ -6,8 +6,10 @@ import { Typography } from '@mui/material';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
-import theme from 'theme';
+
 import Tool from 'tool/components/Tool';
+
+import theme from 'theme';
 
 const ToolList = ({ tools }) => {
   const { t } = useTranslation();

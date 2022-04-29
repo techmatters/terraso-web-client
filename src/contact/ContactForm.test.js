@@ -6,6 +6,7 @@ import { act } from 'react-dom/test-utils';
 import _ from 'lodash/fp';
 
 import ContactForm from 'contact/ContactForm';
+
 import { useScript } from 'custom-hooks';
 
 jest.mock('@mui/material/useMediaQuery');

@@ -1,9 +1,11 @@
 import _ from 'lodash/fp';
 
+import logger from 'monitoring/logger';
+
 import { getToken } from 'account/auth';
 import { UNAUTHENTICATED } from 'account/authConstants';
+
 import { GRAPH_QL_ENDPOINT, TERRASO_API_URL } from 'config';
-import logger from 'monitoring/logger';
 
 const parseMessage = message => {
   try {

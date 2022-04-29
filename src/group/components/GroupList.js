@@ -4,21 +4,23 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 
-import { Button, Link, Typography } from '@mui/material';
-
 import _ from 'lodash/fp';
+
+import { Button, Link, Typography } from '@mui/material';
 
 import TableResponsive from 'common/components/TableResponsive';
 import { useDocumentTitle } from 'common/document';
+import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import PageLoader from 'layout/PageLoader';
+
 import { GroupContextProvider } from 'group/groupContext';
 import { fetchGroups } from 'group/groupSlice';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
 import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton';
-import PageContainer from 'layout/PageContainer';
-import PageHeader from 'layout/PageHeader';
-import PageLoader from 'layout/PageLoader';
+
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {

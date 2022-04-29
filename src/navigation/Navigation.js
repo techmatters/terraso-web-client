@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 
+import _ from 'lodash/fp';
+
 import { Button, Container, List, ListItem } from '@mui/material';
 import { styled } from '@mui/material/styles';
-
-import _ from 'lodash/fp';
 
 const PAGES = {
   '/': {

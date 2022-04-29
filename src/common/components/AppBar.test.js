@@ -3,10 +3,11 @@ import { fireEvent, render, screen } from 'tests/utils';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 
+import Cookies from 'js-cookie';
+
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import AppBar from 'common/components/AppBar';
-import Cookies from 'js-cookie';
 
 jest.mock('@mui/material/useMediaQuery');
 jest.mock('js-cookie');

@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next';
 
-import { PLAUSIBLE_DOMAIN, TERRASO_ENV } from 'config';
 import Plausible from 'plausible-tracker';
+
+import { PLAUSIBLE_DOMAIN, TERRASO_ENV } from 'config';
 
 export const plausible = Plausible({
   domain: PLAUSIBLE_DOMAIN,

@@ -4,6 +4,8 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 
+import _ from 'lodash/fp';
+
 import LaunchIcon from '@mui/icons-material/Launch';
 import PublicIcon from '@mui/icons-material/Public';
 import {
@@ -18,20 +20,19 @@ import {
   Typography,
 } from '@mui/material';
 
-import _ from 'lodash/fp';
-
 import InlineHelp from 'common/components/InlineHelp';
 import { useDocumentTitle } from 'common/document';
+import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import PageLoader from 'layout/PageLoader';
+import Restricted from 'permissions/components/Restricted';
+
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
 import LandscapeMap from 'landscape/components/LandscapeMap';
 import { fetchLandscapeView } from 'landscape/landscapeSlice';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
-import PageContainer from 'layout/PageContainer';
-import PageHeader from 'layout/PageHeader';
-import PageLoader from 'layout/PageLoader';
-import Restricted from 'permissions/components/Restricted';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   renderLabel: () => 'landscape.view_leave_label',

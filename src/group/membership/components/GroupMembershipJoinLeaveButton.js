@@ -3,9 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import _ from 'lodash/fp';
 
+import { useAnalytics } from 'monitoring/analytics';
+
 import { useGroupContext } from 'group/groupContext';
 import { joinGroup, leaveGroup } from 'group/groupSlice';
-import { useAnalytics } from 'monitoring/analytics';
 
 const GroupMembershipJoinLeaveButton = () => {
   const dispatch = useDispatch();

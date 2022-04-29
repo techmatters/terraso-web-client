@@ -4,8 +4,9 @@ import { Navigate, useLocation } from 'react-router-dom';
 
 import _ from 'lodash/fp';
 
-import { fetchUser } from 'account/accountSlice';
 import PageLoader from 'layout/PageLoader';
+
+import { fetchUser } from 'account/accountSlice';
 
 const RequireAuth = ({ children }) => {
   const dispatch = useDispatch();

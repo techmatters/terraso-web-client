@@ -4,22 +4,24 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
+import _ from 'lodash/fp';
+import { usePermission } from 'permissions';
+
 import { Typography } from '@mui/material';
 
-import _ from 'lodash/fp';
-
 import { useDocumentTitle } from 'common/document';
-import { GroupContextProvider } from 'group/groupContext';
-import GroupMembersList from 'group/membership/components/GroupMembersList';
-import { fetchLandscapeForMembers } from 'landscape/landscapeSlice';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
-import { usePermission } from 'permissions';
-import theme from 'theme';
+
+import { GroupContextProvider } from 'group/groupContext';
+import GroupMembersList from 'group/membership/components/GroupMembersList';
+import { fetchLandscapeForMembers } from 'landscape/landscapeSlice';
 
 import LandscapeMemberLeave from './LandscapeMemberLeave';
 import LandscapeMemberRemove from './LandscapeMemberRemove';
+
+import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   renderLabel: () => 'landscape.members_list_leave',

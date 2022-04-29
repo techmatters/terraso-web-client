@@ -4,16 +4,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import _ from 'lodash/fp';
+import * as yup from 'yup';
 
-import { saveUser } from 'account/accountSlice';
-import { savePreference } from 'account/accountSlice';
 import { useDocumentTitle } from 'common/document';
 import Form from 'forms/components/Form';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePickerSelect from 'localization/components/LocalePickerSelect';
-import * as yup from 'yup';
+
+import { saveUser } from 'account/accountSlice';
+import { savePreference } from 'account/accountSlice';
 
 import AccountAvatar from './AccountAvatar';
 

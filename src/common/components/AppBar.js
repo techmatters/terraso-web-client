@@ -7,12 +7,15 @@ import { useLocation } from 'react-router-dom';
 import { AppBar, Box, Button, Toolbar } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import { signOut } from 'account/accountSlice';
-import AccountAvatar from 'account/components/AccountAvatar';
 import logoSquare from 'assets/logo-square.svg';
 import logo from 'assets/logo.svg';
+
 import ConditionalLink from 'common/components/ConditionalLink';
 import LocalePicker from 'localization/components/LocalePicker';
+
+import { signOut } from 'account/accountSlice';
+import AccountAvatar from 'account/components/AccountAvatar';
+
 import theme from 'theme';
 
 const AppBarComponent = () => {

@@ -3,9 +3,9 @@ import { fireEvent, render, screen, within } from 'tests/utils';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 
-import useMediaQuery from '@mui/material/useMediaQuery';
-
 import _ from 'lodash/fp';
+
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import LandscapeList from 'landscape/components/LandscapeList';
 import * as terrasoApi from 'terrasoBackend/api';

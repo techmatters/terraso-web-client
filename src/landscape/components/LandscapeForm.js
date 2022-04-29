@@ -4,18 +4,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import _ from 'lodash/fp';
+import * as yup from 'yup';
 
 import { useDocumentTitle } from 'common/document';
 import Form from 'forms/components/Form';
+import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import PageLoader from 'layout/PageLoader';
+
 import {
   fetchLandscapeForm,
   saveLandscape,
   setFormNewValues,
 } from 'landscape/landscapeSlice';
-import PageContainer from 'layout/PageContainer';
-import PageHeader from 'layout/PageHeader';
-import PageLoader from 'layout/PageLoader';
-import * as yup from 'yup';
 
 const VALIDATION_SCHEMA = yup
   .object({

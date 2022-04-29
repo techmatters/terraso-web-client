@@ -4,19 +4,21 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
+import _ from 'lodash/fp';
+import { usePermission } from 'permissions';
+
 import { Typography } from '@mui/material';
 
-import _ from 'lodash/fp';
-
 import { useDocumentTitle } from 'common/document';
+import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
+
 import { GroupContextProvider } from 'group/groupContext';
 import { fetchGroupForMembers } from 'group/groupSlice';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberRemove from 'group/membership/components/GroupMemberRemove';
 import GroupMembersList from 'group/membership/components/GroupMembersList';
-import PageContainer from 'layout/PageContainer';
-import PageHeader from 'layout/PageHeader';
-import { usePermission } from 'permissions';
+
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {

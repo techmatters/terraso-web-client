@@ -2,6 +2,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
+import _ from 'lodash/fp';
+
 import {
   AvatarGroup,
   Box,
@@ -14,13 +16,12 @@ import {
   Typography,
 } from '@mui/material';
 
-import _ from 'lodash/fp';
-
 import AccountAvatar from 'account/components/AccountAvatar';
 import { useGroupContext } from 'group/groupContext';
-import theme from 'theme';
 
 import GroupMembershipJoinLeaveButton from './GroupMembershipJoinLeaveButton';
+
+import theme from 'theme';
 
 const Loader = () => {
   const { t } = useTranslation();

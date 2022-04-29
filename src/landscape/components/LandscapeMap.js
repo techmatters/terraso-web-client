@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { Box } from '@mui/material';
-
 import _ from 'lodash/fp';
+
+import { Box } from '@mui/material';
 
 import Map from 'gis/components/Map';
 import {

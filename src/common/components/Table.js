@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
-import { DataGrid } from '@mui/x-data-grid';
-
 import _ from 'lodash/fp';
+
+import { DataGrid } from '@mui/x-data-grid';
 
 const PAGE_SIZE = 15;
 const SORT_DIRECTION_BY_WORD = {

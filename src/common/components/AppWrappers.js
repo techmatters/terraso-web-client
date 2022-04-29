@@ -2,11 +2,12 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 
+import { PermissionsProvider } from 'permissions';
+
 import { ThemeProvider } from '@mui/material';
 
 import ErrorMonitoringProvider from 'monitoring/error';
 import NotificationsWrapper from 'notifications/NotificationsWrapper';
-import { PermissionsProvider } from 'permissions';
 
 // Localization
 import 'localization/i18n';

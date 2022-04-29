@@ -2,6 +2,8 @@ import React from 'react';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import _ from 'lodash/fp';
+
 import { FormControlUnstyled } from '@mui/base';
 import {
   FormHelperText,
@@ -10,8 +12,6 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-
-import _ from 'lodash/fp';
 
 import theme from 'theme';
 

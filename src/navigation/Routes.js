@@ -1,6 +1,8 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
+import NotFound from 'layout/NotFound';
+
 import AccountLogin from 'account/components/AccountLogin';
 import AccountProfile from 'account/components/AccountProfile';
 import RequireAuth from 'account/components/RequireAuth';
@@ -15,7 +17,6 @@ import LandscapeForm from 'landscape/components/LandscapeForm';
 import LandscapeList from 'landscape/components/LandscapeList';
 import LandscapeView from 'landscape/components/LandscapeView';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
-import NotFound from 'layout/NotFound';
 import ToolsList from 'tool/components/ToolList';
 
 const path = (path, Component, auth = true) => ({

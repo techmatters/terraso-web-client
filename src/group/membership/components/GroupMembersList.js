@@ -3,16 +3,18 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 
-import { MenuItem, Select, Stack, Typography } from '@mui/material';
-
 import _ from 'lodash/fp';
 
-import AccountAvatar from 'account/components/AccountAvatar';
+import { MenuItem, Select, Stack, Typography } from '@mui/material';
+
 import TableResponsive from 'common/components/TableResponsive';
-import { useGroupContext } from 'group/groupContext';
-import { fetchMembers, removeMember, updateMemberRole } from 'group/groupSlice';
 import PageLoader from 'layout/PageLoader';
 import Restricted from 'permissions/components/Restricted';
+
+import AccountAvatar from 'account/components/AccountAvatar';
+import { useGroupContext } from 'group/groupContext';
+import { fetchMembers, removeMember, updateMemberRole } from 'group/groupSlice';
+
 import theme from 'theme';
 
 const ROLES = ['MEMBER', 'MANAGER'];

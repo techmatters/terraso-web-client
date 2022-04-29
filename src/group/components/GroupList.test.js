@@ -4,9 +4,9 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useSearchParams } from 'react-router-dom';
 
-import useMediaQuery from '@mui/material/useMediaQuery';
-
 import _ from 'lodash/fp';
+
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import GroupList from 'group/components/GroupList';
 import * as terrasoApi from 'terrasoBackend/api';

@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { Container } from '@mui/material';
-
 import _ from 'lodash/fp';
+
+import { Container } from '@mui/material';
 
 const PageContainer = props => {
   return (

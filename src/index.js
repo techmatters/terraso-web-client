@@ -12,6 +12,7 @@ import Routes from 'navigation/Routes';
 import SkipLinks from 'navigation/SkipLinks';
 import rules from 'permissions/rules';
 import createStore from 'state/store';
+
 import theme from 'theme';
 
 import 'index.css';

@@ -1,6 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import * as homeService from 'home/homeService';
+
 import { createAsyncThunk } from 'state/utils';
+
+import * as homeService from 'home/homeService';
 
 const initialState = {
   groups: [],

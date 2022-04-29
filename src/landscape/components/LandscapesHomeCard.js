@@ -2,6 +2,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
+import _ from 'lodash/fp';
+
 import {
   Avatar,
   Box,
@@ -14,9 +16,8 @@ import {
   Typography,
 } from '@mui/material';
 
-import _ from 'lodash/fp';
-
 import HomeCard from 'home/components/HomeCard';
+
 import theme from 'theme';
 
 const getAcronym = name => name.match(/\b(\w)/g).join('');
