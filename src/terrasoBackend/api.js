@@ -7,7 +7,7 @@ import { UNAUTHENTICATED } from 'account/authConstants';
 
 import { GRAPH_QL_ENDPOINT, TERRASO_API_URL } from 'config';
 
-const parseMessage = message => {
+const parseMessage = (message, inputData) => {
   try {
     // If JSON return parsed
     const jsonMessages = JSON.parse(message);
@@ -21,6 +21,7 @@ const parseMessage = message => {
         code: message.code,
         ..._.omit('extra', message.context),
         context: _.get('context.extra', message),
+        inputData,
       },
     }));
   } catch (error) {
@@ -29,9 +30,12 @@ const parseMessage = message => {
   }
 };
 
-const handleGraphQLError = data => {
+const handleGraphQLError = (data, inputData) => {
   const errors = _.get('errors', data);
-  const messages = _.flatMap(error => parseMessage(error.message), errors);
+  const messages = _.flatMap(
+    error => parseMessage(error.message, inputData),
+    errors
+  );
   return Promise.reject(messages);
 };
 
@@ -61,7 +65,7 @@ export const request = async (query, variables) => {
   });
 
   if (_.has('errors', jsonResponse)) {
-    await handleGraphQLError(jsonResponse);
+    await handleGraphQLError(jsonResponse, variables);
   }
 
   if (!_.has('data', jsonResponse)) {

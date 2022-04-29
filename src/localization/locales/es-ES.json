@@ -83,7 +83,8 @@
         "members_document_title": "Miembros: {{name}}",
         "list_column_actions_description": "Acciones",
         "members_list_column_actions_description": "Acciones",
-        "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). Debe existir al menos un administrador."
+        "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). Debe existir al menos un administrador.",
+        "unique": "El grupo “{{inputData.input.name}}” ya existe."
     },
     "tool": {
         "avilability": "Disponibilidad",
