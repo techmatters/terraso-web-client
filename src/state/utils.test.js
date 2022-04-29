@@ -1,4 +1,3 @@
-// prettier-ignore
 import { render, screen } from 'tests/utils';
 
 import { fetchAuthURLs } from 'account/accountSlice';

@@ -1,4 +1,3 @@
-// prettier-ignore
 import { fireEvent, render, screen } from 'tests/utils';
 
 import { GroupContextProvider } from 'group/groupContext';

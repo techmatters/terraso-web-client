@@ -1,4 +1,3 @@
-// prettier-ignore
 import { render, screen } from 'tests/utils';
 
 import ContactForm from 'contact/ContactForm';

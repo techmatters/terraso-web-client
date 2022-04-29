@@ -1,4 +1,3 @@
-// prettier-ignore
 import { fireEvent, render, screen, within } from 'tests/utils';
 
 import useMediaQuery from '@mui/material/useMediaQuery';

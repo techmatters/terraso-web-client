@@ -1,4 +1,3 @@
-// prettier-ignore
 import { fireEvent, render, screen, waitFor } from 'tests/utils';
 
 import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
