@@ -1,8 +1,10 @@
+import { fireEvent, render, screen } from 'tests/utils';
+
 import React from 'react';
+
 import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
 
-import { render, screen, fireEvent } from 'tests/utils';
 import LandscapeForm from 'landscape/components/LandscapeForm';
 import * as terrasoApi from 'terrasoBackend/api';
 

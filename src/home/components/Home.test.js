@@ -1,7 +1,9 @@
+import { render, screen } from 'tests/utils';
+
 import React from 'react';
+
 import _ from 'lodash/fp';
 
-import { render, screen } from 'tests/utils';
 import Home from 'home/components/Home';
 import { fetchHomeData } from 'home/homeService';
 import * as terrasoApi from 'terrasoBackend/api';

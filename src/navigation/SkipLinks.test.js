@@ -1,9 +1,12 @@
+import { fireEvent, render, screen } from 'tests/utils';
+
 import React, { useRef } from 'react';
+
 import { act } from 'react-dom/test-utils';
 import { useLocation } from 'react-router-dom';
+
 import { Box } from '@mui/material';
 
-import { render, screen, fireEvent } from 'tests/utils';
 import SkipLinks from 'navigation/SkipLinks';
 
 jest.mock('react-router-dom', () => ({

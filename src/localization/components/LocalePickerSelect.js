@@ -1,11 +1,14 @@
 import React from 'react';
+
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import useMediaQuery from '@mui/material/useMediaQuery';
+
+import { MenuItem, Select as SelectBase } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Select as SelectBase, MenuItem } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { LOCALES } from 'localization/i18n';
+
 import theme from 'theme';
 
 const Select = styled(SelectBase)(({ theme }) => ({

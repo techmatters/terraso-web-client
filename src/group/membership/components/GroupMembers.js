@@ -1,20 +1,25 @@
 import React, { useEffect } from 'react';
+
 import _ from 'lodash/fp';
-import { useDispatch, useSelector } from 'react-redux';
+import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+
 import { Typography } from '@mui/material';
 
-import { usePermission } from 'permissions';
 import { useDocumentTitle } from 'common/document';
-import { fetchGroupForMembers } from 'group/groupSlice';
-import { withProps } from 'react-hoc';
+import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
+
 import { GroupContextProvider } from 'group/groupContext';
-import GroupMembersList from 'group/membership/components/GroupMembersList';
+import { fetchGroupForMembers } from 'group/groupSlice';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberRemove from 'group/membership/components/GroupMemberRemove';
-import PageHeader from 'layout/PageHeader';
-import PageContainer from 'layout/PageContainer';
+import GroupMembersList from 'group/membership/components/GroupMembersList';
+
+import { withProps } from 'react-hoc';
+
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {

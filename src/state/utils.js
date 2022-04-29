@@ -1,7 +1,8 @@
-import _ from 'lodash/fp';
 import { createAsyncThunk as createAsyncThunkBase } from '@reduxjs/toolkit';
+import _ from 'lodash/fp';
 
 import { addMessage } from 'notifications/notificationsSlice';
+
 import { signOut } from 'account/accountSlice';
 import { refreshToken } from 'account/auth';
 import { UNAUTHENTICATED } from 'account/authConstants';

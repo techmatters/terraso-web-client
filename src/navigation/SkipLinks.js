@@ -1,7 +1,9 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
+
 import { Link } from '@mui/material';
 
 import 'navigation/SkipLinks.css';

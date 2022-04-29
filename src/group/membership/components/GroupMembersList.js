@@ -1,16 +1,20 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
+
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
+
 import { MenuItem, Select, Stack, Typography } from '@mui/material';
 
-import { fetchMembers, removeMember, updateMemberRole } from 'group/groupSlice';
-import { useGroupContext } from 'group/groupContext';
-import AccountAvatar from 'account/components/AccountAvatar';
-import Restricted from 'permissions/components/Restricted';
-import PageLoader from 'layout/PageLoader';
 import TableResponsive from 'common/components/TableResponsive';
+import PageLoader from 'layout/PageLoader';
+import Restricted from 'permissions/components/Restricted';
+
+import AccountAvatar from 'account/components/AccountAvatar';
+import { useGroupContext } from 'group/groupContext';
+import { fetchMembers, removeMember, updateMemberRole } from 'group/groupSlice';
+
 import theme from 'theme';
 
 const ROLES = ['MEMBER', 'MANAGER'];

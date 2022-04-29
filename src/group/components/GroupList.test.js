@@ -1,10 +1,13 @@
+import { fireEvent, render, screen, within } from 'tests/utils';
+
 import React from 'react';
+
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { useSearchParams } from 'react-router-dom';
 
-import { render, screen, within, fireEvent } from 'tests/utils';
+import useMediaQuery from '@mui/material/useMediaQuery';
+
 import GroupList from 'group/components/GroupList';
 import * as terrasoApi from 'terrasoBackend/api';
 

@@ -1,10 +1,11 @@
-import _ from 'lodash/fp';
 import { createSlice } from '@reduxjs/toolkit';
+import _ from 'lodash/fp';
 
 import { createAsyncThunk } from 'state/utils';
-import * as landscapeService from 'landscape/landscapeService';
+
 import { setMemberships } from 'group/groupSlice';
 import * as groupUtils from 'group/groupUtils';
+import * as landscapeService from 'landscape/landscapeService';
 
 const initialState = {
   list: {

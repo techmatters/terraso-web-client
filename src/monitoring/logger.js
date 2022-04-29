@@ -1,6 +1,6 @@
 import _ from 'lodash/fp';
 
-import { rollbar, logLevel } from 'monitoring/rollbar';
+import { logLevel, rollbar } from 'monitoring/rollbar';
 
 const LOG_LEVELS = ['log', 'info', 'warn', 'error'];
 

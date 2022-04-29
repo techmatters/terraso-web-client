@@ -1,12 +1,16 @@
+import { fireEvent, render, screen, within } from 'tests/utils';
+
 import React from 'react';
+
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
+
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import i18n from 'localization/i18n';
-import { render, screen, fireEvent, within } from 'tests/utils';
-import * as terrasoApi from 'terrasoBackend/api';
 import LocalePicker from 'localization/components/LocalePicker';
+import i18n from 'localization/i18n';
+
+import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('@mui/material/useMediaQuery');
 jest.mock('terrasoBackend/api');

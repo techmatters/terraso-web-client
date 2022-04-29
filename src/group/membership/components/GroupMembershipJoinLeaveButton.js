@@ -1,10 +1,12 @@
 import React from 'react';
-import _ from 'lodash/fp';
-import { useSelector, useDispatch } from 'react-redux';
 
-import { joinGroup, leaveGroup } from 'group/groupSlice';
-import { useGroupContext } from 'group/groupContext';
+import _ from 'lodash/fp';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { useAnalytics } from 'monitoring/analytics';
+
+import { useGroupContext } from 'group/groupContext';
+import { joinGroup, leaveGroup } from 'group/groupSlice';
 
 const GroupMembershipJoinLeaveButton = () => {
   const dispatch = useDispatch();

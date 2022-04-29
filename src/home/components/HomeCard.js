@@ -1,5 +1,7 @@
 import React from 'react';
+
 import _ from 'lodash/fp';
+
 import { Card } from '@mui/material';
 
 const HomeCard = props => (

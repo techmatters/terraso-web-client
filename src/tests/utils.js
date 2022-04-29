@@ -1,13 +1,16 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
-import { render as rtlRender, cleanup } from '@testing-library/react';
+
+import { cleanup, render as rtlRender } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
+import { act } from 'react-dom/test-utils';
+
+import AppWrappers from 'common/components/AppWrappers';
+import rules from 'permissions/rules';
+import createStore from 'state/store';
 
 import { AXE_TEST_TIMEOUT } from 'config';
-import createStore from 'state/store';
+
 import theme from 'theme';
-import rules from 'permissions/rules';
-import AppWrappers from 'common/components/AppWrappers';
 
 const executeAxe = process.env['TEST_A11Y'] === 'true';
 

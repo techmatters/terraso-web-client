@@ -1,7 +1,9 @@
+import { render, screen } from 'tests/utils';
+
 import React from 'react';
+
 import { useParams } from 'react-router-dom';
 
-import { render, screen } from 'tests/utils';
 import LandscapeView from 'landscape/components/LandscapeView';
 import * as terrasoApi from 'terrasoBackend/api';
 

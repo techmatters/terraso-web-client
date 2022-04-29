@@ -1,5 +1,19 @@
 {
-  "arrowParens": "avoid",
-  "singleQuote": true,
-  "semi": true
+	"arrowParens": "avoid",
+	"singleQuote": true,
+	"semi": true,
+	"importOrder": [
+		"^tests/utils$",
+		"^react$",
+		"<THIRD_PARTY_MODULES>",
+		"^@mui/(.*)$",
+		"^(common|forms|layout|localization|monitoring|navigation|notifications|permissions|state)/(.*)$",
+		"^(account|contact|gis|group|home|landscape|terrasoBackend|tool|user)/(.*)$",
+		"^(config|custom-hooks|react-hoc)$",
+		"^[./]",
+		"^assets/(.*)$",
+		"^theme$"
+	],
+	"importOrderSeparation": true,
+	"importOrderSortSpecifiers": true
 }

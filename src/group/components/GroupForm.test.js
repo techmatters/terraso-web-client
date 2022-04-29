@@ -1,8 +1,10 @@
-import React from 'react';
-import { act } from 'react-dom/test-utils';
-import { useParams, useNavigate } from 'react-router-dom';
+import { fireEvent, render, screen } from 'tests/utils';
 
-import { render, screen, fireEvent } from 'tests/utils';
+import React from 'react';
+
+import { act } from 'react-dom/test-utils';
+import { useNavigate, useParams } from 'react-router-dom';
+
 import GroupForm from 'group/components/GroupForm';
 import * as terrasoApi from 'terrasoBackend/api';
 

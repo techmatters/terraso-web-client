@@ -1,6 +1,6 @@
 import Rollbar from 'rollbar';
 
-import { TERRASO_ENV, ROLLBAR_TOKEN } from 'config';
+import { ROLLBAR_TOKEN, TERRASO_ENV } from 'config';
 
 const rollbarConfig = {
   accessToken: ROLLBAR_TOKEN,

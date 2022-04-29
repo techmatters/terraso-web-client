@@ -1,16 +1,19 @@
 import React from 'react';
-import {
-  Box,
-  CardActions,
-  Typography,
-  Button,
-  Alert,
-  Divider,
-} from '@mui/material';
+
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+
+import {
+  Alert,
+  Box,
+  Button,
+  CardActions,
+  Divider,
+  Typography,
+} from '@mui/material';
 
 import HomeCard from 'home/components/HomeCard';
-import { Link } from 'react-router-dom';
+
 import theme from 'theme';
 
 const Actions = () => {

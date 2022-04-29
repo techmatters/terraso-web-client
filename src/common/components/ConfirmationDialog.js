@@ -1,6 +1,8 @@
 import React from 'react';
-import useMediaQuery from '@mui/material/useMediaQuery';
+
 import { useTranslation } from 'react-i18next';
+
+import { LoadingButton } from '@mui/lab';
 import {
   Button,
   Dialog,
@@ -9,9 +11,9 @@ import {
   DialogContentText,
   DialogTitle,
 } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import theme from 'theme';
-import { LoadingButton } from '@mui/lab';
 
 const ConfirmationDialog = props => {
   const { t } = useTranslation();

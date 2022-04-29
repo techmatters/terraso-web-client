@@ -1,7 +1,9 @@
+import { render, screen } from 'tests/utils';
+
 import React from 'react';
+
 import { useSearchParams } from 'react-router-dom';
 
-import { render, screen } from 'tests/utils';
 import * as accountService from 'account/accountService';
 import AccountLogin from 'account/components/AccountLogin';
 

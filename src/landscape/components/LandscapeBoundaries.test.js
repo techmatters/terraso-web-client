@@ -1,8 +1,10 @@
-import React from 'react';
-import { act } from 'react-dom/test-utils';
-import { useParams, useNavigate } from 'react-router-dom';
+import { fireEvent, render, screen, waitFor } from 'tests/utils';
 
-import { render, screen, fireEvent, waitFor } from 'tests/utils';
+import React from 'react';
+
+import { act } from 'react-dom/test-utils';
+import { useNavigate, useParams } from 'react-router-dom';
+
 import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
 import * as terrasoApi from 'terrasoBackend/api';
 

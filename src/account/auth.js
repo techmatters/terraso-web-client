@@ -1,8 +1,9 @@
 import Cookies from 'js-cookie';
 import jwt from 'jwt-decode';
 
-import { COOKIES_DOMAIN, TERRASO_API_URL } from 'config';
 import { UNAUTHENTICATED } from 'account/authConstants';
+
+import { COOKIES_DOMAIN, TERRASO_API_URL } from 'config';
 
 const COOKIES_PARAMS = { path: '/', domain: COOKIES_DOMAIN };
 

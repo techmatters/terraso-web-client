@@ -1,12 +1,13 @@
 import _ from 'lodash/fp';
 
 import { getUserEmail } from 'account/auth';
+import * as terrasoApi from 'terrasoBackend/api';
 import {
   userFields,
   userPreferences,
   userPreferencesFields,
 } from 'user/userFragments';
-import * as terrasoApi from 'terrasoBackend/api';
+
 import { TERRASO_API_URL } from 'config';
 
 const parsePreferences = user =>

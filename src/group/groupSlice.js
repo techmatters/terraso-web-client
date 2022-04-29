@@ -1,7 +1,8 @@
-import _ from 'lodash/fp';
 import { createSlice } from '@reduxjs/toolkit';
+import _ from 'lodash/fp';
 
 import { createAsyncThunk } from 'state/utils';
+
 import * as groupService from 'group/groupService';
 import * as groupUtils from 'group/groupUtils';
 

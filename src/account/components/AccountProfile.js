@@ -1,19 +1,22 @@
 import React from 'react';
+
 import _ from 'lodash/fp';
-import * as yup from 'yup';
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import * as yup from 'yup';
+
+import { useDocumentTitle } from 'common/document';
+import Form from 'forms/components/Form';
+import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import PageLoader from 'layout/PageLoader';
+import LocalePickerSelect from 'localization/components/LocalePickerSelect';
 
 import { saveUser } from 'account/accountSlice';
 import { savePreference } from 'account/accountSlice';
-import { useDocumentTitle } from 'common/document';
-import Form from 'forms/components/Form';
+
 import AccountAvatar from './AccountAvatar';
-import PageLoader from 'layout/PageLoader';
-import PageHeader from 'layout/PageHeader';
-import PageContainer from 'layout/PageContainer';
-import LocalePickerSelect from 'localization/components/LocalePickerSelect';
 
 const VALIDATION_SCHEMA = yup
   .object({

@@ -1,5 +1,9 @@
 import React from 'react';
+
 import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
+import { Link as RouterLink } from 'react-router-dom';
+
 import {
   Avatar,
   Box,
@@ -11,10 +15,9 @@ import {
   ListItem,
   Typography,
 } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
 
 import HomeCard from 'home/components/HomeCard';
+
 import theme from 'theme';
 
 const getAcronym = name => name.match(/\b(\w)/g).join('');

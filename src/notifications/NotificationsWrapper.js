@@ -1,7 +1,9 @@
-import React, { useEffect, createRef } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { createRef, useEffect } from 'react';
+
 import { SnackbarProvider } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { Alert } from '@mui/material';
 
 import { removeMessage } from './notificationsSlice';

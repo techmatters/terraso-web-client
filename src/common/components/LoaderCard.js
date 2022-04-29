@@ -1,6 +1,8 @@
 import React from 'react';
+
 import { useTranslation } from 'react-i18next';
-import { Box, Skeleton, Card } from '@mui/material';
+
+import { Box, Card, Skeleton } from '@mui/material';
 
 import theme from 'theme';
 

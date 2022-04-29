@@ -1,9 +1,11 @@
 import React from 'react';
+
 import { Trans, useTranslation } from 'react-i18next';
+
+import { Box, Link, Stack, Typography } from '@mui/material';
 
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
-import { Box, Link, Stack, Typography } from '@mui/material';
 
 import notFoundImage from 'assets/not-found.png';
 

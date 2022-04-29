@@ -1,10 +1,13 @@
+import { render, screen } from 'tests/utils';
+
 import React from 'react';
+
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 
-import { render, screen } from 'tests/utils';
-import { useScript } from 'custom-hooks';
 import ContactForm from 'contact/ContactForm';
+
+import { useScript } from 'custom-hooks';
 
 jest.mock('@mui/material/useMediaQuery');
 jest.mock('js-cookie');

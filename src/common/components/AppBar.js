@@ -1,19 +1,23 @@
 import React from 'react';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { AppBar, Toolbar, Button, Box } from '@mui/material';
-import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 
-import LocalePicker from 'localization/components/LocalePicker';
-import { signOut } from 'account/accountSlice';
-import theme from 'theme';
+import { AppBar, Box, Button, Toolbar } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-import logo from 'assets/logo.svg';
-import logoSquare from 'assets/logo-square.svg';
-import AccountAvatar from 'account/components/AccountAvatar';
 import ConditionalLink from 'common/components/ConditionalLink';
+import LocalePicker from 'localization/components/LocalePicker';
+
+import { signOut } from 'account/accountSlice';
+import AccountAvatar from 'account/components/AccountAvatar';
+
+import logoSquare from 'assets/logo-square.svg';
+import logo from 'assets/logo.svg';
+
+import theme from 'theme';
 
 const AppBarComponent = () => {
   const dispatch = useDispatch();

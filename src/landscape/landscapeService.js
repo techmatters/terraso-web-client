@@ -1,10 +1,10 @@
 import _ from 'lodash/fp';
 
-import * as terrasoApi from 'terrasoBackend/api';
 import * as gisService from 'gis/gisService';
-import { landscapeFields, defaultGroup } from 'landscape/landscapeFragments';
-import { extractAccountMembership, extractMembersInfo } from 'group/groupUtils';
 import { accountMembership } from 'group/groupFragments';
+import { extractAccountMembership, extractMembersInfo } from 'group/groupUtils';
+import { defaultGroup, landscapeFields } from 'landscape/landscapeFragments';
+import * as terrasoApi from 'terrasoBackend/api';
 
 const cleanLandscape = landscape =>
   _.flow(

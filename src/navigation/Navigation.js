@@ -1,10 +1,12 @@
 import React from 'react';
+
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useLocation, Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
+
+import { Button, Container, List, ListItem } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Button, List, ListItem, Container } from '@mui/material';
 
 const PAGES = {
   '/': {

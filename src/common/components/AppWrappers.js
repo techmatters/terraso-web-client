@@ -1,18 +1,18 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material';
+
+import { PermissionsProvider } from 'permissions';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 
-import NotificationsWrapper from 'notifications/NotificationsWrapper';
-import { PermissionsProvider } from 'permissions';
+import { ThemeProvider } from '@mui/material';
+
 import ErrorMonitoringProvider from 'monitoring/error';
+import NotificationsWrapper from 'notifications/NotificationsWrapper';
 
 // Localization
 import 'localization/i18n';
-
 // Form validations
 import 'forms/yup';
-
 // Analytics
 import 'monitoring/analytics';
 
