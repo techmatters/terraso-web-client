@@ -1,6 +1,5 @@
-import { useTranslation } from 'react-i18next';
-
 import Plausible from 'plausible-tracker';
+import { useTranslation } from 'react-i18next';
 
 import { PLAUSIBLE_DOMAIN, TERRASO_ENV } from 'config';
 

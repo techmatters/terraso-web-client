@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from 'tests/utils';
 
 import React from 'react';
+
 import { act } from 'react-dom/test-utils';
 import { useNavigate, useParams } from 'react-router-dom';
 

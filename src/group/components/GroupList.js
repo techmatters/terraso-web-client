@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
-import { withProps } from 'react-hoc';
+
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
-
-import _ from 'lodash/fp';
 
 import { Button, Link, Typography } from '@mui/material';
 
@@ -20,6 +19,8 @@ import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
 import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton';
+
+import { withProps } from 'react-hoc';
 
 import theme from 'theme';
 

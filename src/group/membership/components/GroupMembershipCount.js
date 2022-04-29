@@ -1,7 +1,7 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 
 import _ from 'lodash/fp';
+import { useSelector } from 'react-redux';
 
 import { Typography } from '@mui/material';
 

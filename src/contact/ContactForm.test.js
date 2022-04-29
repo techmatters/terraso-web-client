@@ -1,9 +1,9 @@
 import { render, screen } from 'tests/utils';
 
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 
 import _ from 'lodash/fp';
+import { act } from 'react-dom/test-utils';
 
 import ContactForm from 'contact/ContactForm';
 

@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
+
+import _ from 'lodash/fp';
 import { useDropzone } from 'react-dropzone';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-
-import _ from 'lodash/fp';
 
 import {
   Alert,

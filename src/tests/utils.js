@@ -1,8 +1,8 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 
 import { cleanup, render as rtlRender } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
+import { act } from 'react-dom/test-utils';
 
 import AppWrappers from 'common/components/AppWrappers';
 import rules from 'permissions/rules';

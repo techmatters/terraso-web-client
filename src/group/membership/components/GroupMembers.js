@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
-import { withProps } from 'react-hoc';
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
 
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 import { Typography } from '@mui/material';
 
@@ -18,6 +17,8 @@ import { fetchGroupForMembers } from 'group/groupSlice';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberRemove from 'group/membership/components/GroupMemberRemove';
 import GroupMembersList from 'group/membership/components/GroupMembersList';
+
+import { withProps } from 'react-hoc';
 
 import theme from 'theme';
 

@@ -1,9 +1,9 @@
 import { fireEvent, render, screen, within } from 'tests/utils';
 
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 
 import _ from 'lodash/fp';
+import { act } from 'react-dom/test-utils';
 
 import AccountProfile from 'account/components/AccountProfile';
 import * as terrasoApi from 'terrasoBackend/api';

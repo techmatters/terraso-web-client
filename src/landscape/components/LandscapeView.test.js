@@ -1,6 +1,7 @@
 import { render, screen } from 'tests/utils';
 
 import React from 'react';
+
 import { useParams } from 'react-router-dom';
 
 import LandscapeView from 'landscape/components/LandscapeView';

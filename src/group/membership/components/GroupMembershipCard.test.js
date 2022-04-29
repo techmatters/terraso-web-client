@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from 'tests/utils';
 
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 
 import _ from 'lodash/fp';
+import { act } from 'react-dom/test-utils';
 
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';

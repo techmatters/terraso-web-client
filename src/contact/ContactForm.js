@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
 
 import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';

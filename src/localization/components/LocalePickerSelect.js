@@ -1,7 +1,7 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
 
 import { MenuItem, Select as SelectBase } from '@mui/material';
 import { styled } from '@mui/material/styles';

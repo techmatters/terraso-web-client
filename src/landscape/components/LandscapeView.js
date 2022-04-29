@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
-import { withProps } from 'react-hoc';
+
+import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
-
-import _ from 'lodash/fp';
 
 import LaunchIcon from '@mui/icons-material/Launch';
 import PublicIcon from '@mui/icons-material/Public';
@@ -33,6 +32,8 @@ import GroupMembershipCard from 'group/membership/components/GroupMembershipCard
 import LandscapeMap from 'landscape/components/LandscapeMap';
 import { fetchLandscapeView } from 'landscape/landscapeSlice';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
+
+import { withProps } from 'react-hoc';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   renderLabel: () => 'landscape.view_leave_label',

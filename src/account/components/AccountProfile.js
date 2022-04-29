@@ -1,9 +1,9 @@
 import React from 'react';
+
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-
-import _ from 'lodash/fp';
 import * as yup from 'yup';
 
 import { useDocumentTitle } from 'common/document';

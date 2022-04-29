@@ -1,9 +1,9 @@
 import { render, screen } from 'tests/utils';
 
 import React from 'react';
-import { useLocation, useParams } from 'react-router-dom';
 
 import _ from 'lodash/fp';
+import { useLocation, useParams } from 'react-router-dom';
 
 import { getUserEmail } from 'account/auth';
 import RequireAuth from 'account/components/RequireAuth';

@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
-import { withProps } from 'react-hoc';
+
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
-
-import _ from 'lodash/fp';
 
 import EmailIcon from '@mui/icons-material/Email';
 import PublicIcon from '@mui/icons-material/Public';
@@ -30,6 +29,8 @@ import { fetchGroupView } from 'group/groupSlice';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
+
+import { withProps } from 'react-hoc';
 
 import theme from 'theme';
 

@@ -1,8 +1,8 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 
 import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 import {
   AvatarGroup,

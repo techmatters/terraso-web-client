@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { ErrorBoundary } from 'react-error-boundary';
 
 import UnexpectedError from 'common/components/UnexpectedError';

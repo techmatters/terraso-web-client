@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
-import { withProps } from 'react-hoc';
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
 
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 import { Typography } from '@mui/material';
 
@@ -17,6 +16,8 @@ import PageLoader from 'layout/PageLoader';
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMembersList from 'group/membership/components/GroupMembersList';
 import { fetchLandscapeForMembers } from 'landscape/landscapeSlice';
+
+import { withProps } from 'react-hoc';
 
 import LandscapeMemberLeave from './LandscapeMemberLeave';
 import LandscapeMemberRemove from './LandscapeMemberRemove';

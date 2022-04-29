@@ -1,7 +1,7 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
 import _ from 'lodash/fp';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { useAnalytics } from 'monitoring/analytics';
 

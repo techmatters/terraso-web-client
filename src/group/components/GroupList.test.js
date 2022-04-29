@@ -1,10 +1,10 @@
 import { fireEvent, render, screen, within } from 'tests/utils';
 
 import React from 'react';
-import { act } from 'react-dom/test-utils';
-import { useSearchParams } from 'react-router-dom';
 
 import _ from 'lodash/fp';
+import { act } from 'react-dom/test-utils';
+import { useSearchParams } from 'react-router-dom';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 

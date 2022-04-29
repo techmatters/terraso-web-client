@@ -1,7 +1,7 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
 
 import ConfirmButton from 'common/components/ConfirmButton';
 

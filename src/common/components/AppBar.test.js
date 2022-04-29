@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from 'tests/utils';
 
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 
 import Cookies from 'js-cookie';
+import { act } from 'react-dom/test-utils';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 
