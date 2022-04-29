@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 
-import { Link, Typography } from '@mui/material';
+import { Button, Link, Typography } from '@mui/material';
 
 import TableResponsive from 'common/components/TableResponsive';
 import { useDocumentTitle } from 'common/document';
@@ -154,6 +154,20 @@ const LandscapeList = () => {
           },
         }}
       />
+      <Typography
+        variant="h2"
+        sx={{
+          marginTop: theme.spacing(4),
+        }}
+      >
+        {t('landscape.create')}
+      </Typography>
+
+      <p>{t('landscape.list_new_description')}</p>
+
+      <Button variant="contained" component={RouterLink} to="/landscapes/new">
+        {t('landscape.list_new_button')}
+      </Button>
     </PageContainer>
   );
 };
