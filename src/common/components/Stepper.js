@@ -1,5 +1,6 @@
 import React from 'react';
-import { Step, Stepper as BaseStepper, Typography } from '@mui/material';
+
+import { Stepper as BaseStepper, Step, Typography } from '@mui/material';
 
 const Stepper = props => {
   const { steps } = props;

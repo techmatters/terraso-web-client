@@ -1,12 +1,15 @@
-import React, { useState, useCallback } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-import { Button, Link, Paper, Stack, Typography } from '@mui/material';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
-import PinDropIcon from '@mui/icons-material/PinDrop';
-import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
+import React, { useCallback, useState } from 'react';
+
 import * as turf from '@turf/helpers';
+import { Trans, useTranslation } from 'react-i18next';
+
+import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
+import PinDropIcon from '@mui/icons-material/PinDrop';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import { Button, Link, Paper, Stack, Typography } from '@mui/material';
 
 import PageHeader from 'layout/PageHeader';
+
 import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
 import LandscapeMap from 'landscape/components/LandscapeMap';
 

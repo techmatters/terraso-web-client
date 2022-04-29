@@ -1,21 +1,23 @@
 import React, { useEffect } from 'react';
+
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { useSelector, useDispatch } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
+
+import Stepper from 'common/components/Stepper';
+import { useDocumentTitle } from 'common/document';
+import PageContainer from 'layout/PageContainer';
+import PageLoader from 'layout/PageLoader';
 
 import {
   fetchLandscapeForm,
   saveLandscape,
   setFormNewValues,
 } from 'landscape/landscapeSlice';
-import { useDocumentTitle } from 'common/document';
-import PageLoader from 'layout/PageLoader';
-import PageContainer from 'layout/PageContainer';
-import Stepper from 'common/components/Stepper';
 
-import InfoStep from './InfoStep';
 import BoundaryStep from './BoundaryStep';
+import InfoStep from './InfoStep';
 
 const LandscapeForm = () => {
   const dispatch = useDispatch();
