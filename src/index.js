@@ -1,6 +1,8 @@
 import React, { useRef } from 'react';
 
 import ReactDOM from 'react-dom';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 
 import { Box } from '@mui/material';
 
@@ -14,41 +16,57 @@ import SkipLinks from 'navigation/SkipLinks';
 import rules from 'permissions/rules';
 import createStore from 'state/store';
 
+import { REACT_APP_BASE_URL } from 'config';
+
 import theme from 'theme';
 
 import 'index.css';
 
+const helmetContext = {};
+
 const App = () => {
   const contentRef = useRef();
   const navigationRef = useRef();
+  const { t } = useTranslation();
 
   return (
     <>
-      <SkipLinks contentRef={contentRef} navigationRef={navigationRef} />
-      <Box
-        sx={{
-          bgcolor: 'gray.lite2',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '100vh',
-        }}
-      >
-        <AppBar />
-        <Navigation ref={navigationRef} />
+      <HelmetProvider context={helmetContext}>
+        <Helmet>
+          <meta name="description" content={t('site.description')} />
+          <meta property="og:title" content={document.title} />
+          <meta property="og:description" content={t('site.description')} />
+          <meta
+            property="og:image"
+            content={`${REACT_APP_BASE_URL}/favicon.png`}
+          />
+        </Helmet>
+        <SkipLinks contentRef={contentRef} navigationRef={navigationRef} />
         <Box
-          component="main"
-          id="content"
-          tabIndex="-1"
-          ref={contentRef}
           sx={{
-            bgcolor: 'white',
-            flex: 1,
+            bgcolor: 'gray.lite2',
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '100vh',
           }}
         >
-          <Routes />
+          <AppBar />
+          <Navigation ref={navigationRef} />
+          <Box
+            component="main"
+            id="content"
+            tabIndex="-1"
+            ref={contentRef}
+            sx={{
+              bgcolor: 'white',
+              flex: 1,
+            }}
+          >
+            <Routes />
+          </Box>
+          <Footer />
         </Box>
-        <Footer />
-      </Box>
+      </HelmetProvider>
     </>
   );
 };
