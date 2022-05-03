@@ -84,11 +84,27 @@ const LeafletSearch = ({ onPinLocationChange }) => {
   return null;
 };
 
+const getGeoJson = e => {
+  let coordinates = [];
+  const latlngs = e.layer.getLatLngs()[0];
+  for (let i = 0; i < latlngs.length; i++) {
+    coordinates.push([latlngs[i].lng, latlngs[i].lat]);
+  }
+
+  const geojson = {
+    type: 'Feature',
+    geometry: { type: 'Polygon', coordinates: coordinates },
+  };
+
+  return JSON.stringify(geojson);
+};
+
 const LeafletDraw = () => {
   return (
     <FeatureGroup>
       <EditControl
         position="topright"
+        onCreated={getGeoJson}
         draw={{
           rectangle: false,
           circle: false,
