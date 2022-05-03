@@ -84,6 +84,27 @@ const LeafletSearch = ({ onPinLocationChange }) => {
   return null;
 };
 
+const LeafletDraw = () => {
+  return (
+    <FeatureGroup>
+      <EditControl
+        position="topright"
+        draw={{
+          rectangle: false,
+          circle: false,
+          circlemarker: false,
+          polyline: false,
+          marker: false,
+        }}
+        edit={{
+          edit: false,
+          remove: false,
+        }}
+      />
+    </FeatureGroup>
+  );
+};
+
 const MapPolygon = props => {
   const { bounds, geojson } = props;
   const map = useMap();
@@ -115,22 +136,8 @@ const Map = props => {
       {props.enableSearch && (
         <LeafletSearch onPinLocationChange={props.onPinLocationChange} />
       )}
-      <FeatureGroup>
-        <EditControl
-          position="topright"
-          draw={{
-            rectangle: false,
-            circle: false,
-            circlemarker: false,
-            polyline: false,
-            marker: false,
-          }}
-          edit={{
-            edit: false,
-            remove: false,
-          }}
-        />
-      </FeatureGroup>
+
+      {props.enableDraw && <LeafletDraw />}
 
       {props.children}
     </MapContainer>
