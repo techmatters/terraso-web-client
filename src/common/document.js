@@ -45,10 +45,10 @@ export const useDocumentDescription = (description, fetching) => {
     if (!fetching && fullDescription) {
       document
         .querySelector('meta[name="description"]')
-        .setAttribute('content', fullDescription);
+        ?.setAttribute('content', fullDescription);
       document
         .querySelector('meta[property="og:description"]')
-        .setAttribute('content', fullDescription);
+        ?.setAttribute('content', fullDescription);
     }
   }, [fetching, fullDescription]);
 };
