@@ -2,12 +2,20 @@ import React, { useEffect, useState } from 'react';
 
 import L from 'leaflet';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
-import { GeoJSON, MapContainer, TileLayer, useMap } from 'react-leaflet';
+import {
+  FeatureGroup,
+  GeoJSON,
+  MapContainer,
+  TileLayer,
+  useMap,
+} from 'react-leaflet';
+import { EditControl } from 'react-leaflet-draw';
 import { v4 as uuidv4 } from 'uuid';
 
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-geosearch/dist/geosearch.css';
 import 'gis/components/Map.css';
+import 'leaflet-draw/dist/leaflet.draw.css';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -107,6 +115,22 @@ const Map = props => {
       {props.enableSearch && (
         <LeafletSearch onPinLocationChange={props.onPinLocationChange} />
       )}
+      <FeatureGroup>
+        <EditControl
+          position="topright"
+          draw={{
+            rectangle: false,
+            circle: false,
+            circlemarker: false,
+            polyline: false,
+            marker: false,
+          }}
+          edit={{
+            edit: false,
+            remove: false,
+          }}
+        />
+      </FeatureGroup>
 
       {props.children}
     </MapContainer>
