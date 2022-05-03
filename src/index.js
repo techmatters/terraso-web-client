@@ -22,8 +22,6 @@ import theme from 'theme';
 
 import 'index.css';
 
-const helmetContext = {};
-
 const App = () => {
   const contentRef = useRef();
   const navigationRef = useRef();
@@ -31,7 +29,7 @@ const App = () => {
 
   return (
     <>
-      <HelmetProvider context={helmetContext}>
+      <HelmetProvider>
         <Helmet>
           <meta name="description" content={t('site.description')} />
           <meta property="og:title" content={document.title} />
