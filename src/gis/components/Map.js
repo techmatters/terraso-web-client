@@ -80,31 +80,51 @@ const LeafletSearch = ({ onPinLocationChange }) => {
 
     return () => map.removeControl(searchControl);
   }, [map]);
-
-  return null;
 };
 
-const getGeoJson = e => {
-  let coordinates = [];
-  const latlngs = e.layer.getLatLngs()[0];
-  for (let i = 0; i < latlngs.length; i++) {
-    coordinates.push([latlngs[i].lng, latlngs[i].lat]);
-  }
+const LeafletDraw = ({ onPolygonChange }) => {
+  const map = useMap();
+  const [polygon, setPolygon] = useState();
+  const [boundingBox, setBoundingBox] = useState();
 
-  const geojson = {
-    type: 'Feature',
-    geometry: { type: 'Polygon', coordinates: coordinates },
+  const onPolygonCreated = e => {
+    let coordinates = [];
+    const latlngs = e.layer.getLatLngs()[0];
+    for (let i = 0; i < latlngs.length; i++) {
+      coordinates.push([latlngs[i].lng, latlngs[i].lat]);
+    }
+
+    if (coordinates) {
+      const geojson = {
+        type: 'Feature',
+        geometry: { type: 'Polygon', coordinates: coordinates },
+      };
+
+      setPolygon(geojson);
+
+      const southWest = map.getBounds().getSouthWest();
+      const northEast = map.getBounds().getNorthEast();
+      const bbox = [southWest.lng, southWest.lat, northEast.lng, northEast.lat];
+      if (bbox) {
+        setBoundingBox(bbox);
+      }
+    }
   };
 
-  return JSON.stringify(geojson);
-};
+  useEffect(() => {
+    if (polygon && boundingBox) {
+      onPolygonChange({
+        polygon,
+        boundingBox,
+      });
+    }
+  }, [boundingBox, polygon]);
 
-const LeafletDraw = () => {
   return (
     <FeatureGroup>
       <EditControl
         position="topright"
-        onCreated={getGeoJson}
+        onCreated={onPolygonCreated}
         draw={{
           rectangle: false,
           circle: false,
@@ -153,7 +173,9 @@ const Map = props => {
         <LeafletSearch onPinLocationChange={props.onPinLocationChange} />
       )}
 
-      {props.enableDraw && <LeafletDraw />}
+      {props.enableDraw && (
+        <LeafletDraw onPolygonChange={props.onPolygonChange} />
+      )}
 
       {props.children}
     </MapContainer>
