@@ -14,7 +14,9 @@ const LandscapeMap = ({
   landscape,
   label,
   onPinLocationChange,
+  onPolygonChange,
   enableSearch,
+  enableDraw,
 }) => {
   const bounds = getLandscapeBoundingBox(landscape);
   const areaPolygon = _.get('areaPolygon', landscape);
@@ -27,7 +29,9 @@ const LandscapeMap = ({
         bounds={bounds}
         geojson={geojson}
         onPinLocationChange={onPinLocationChange}
+        onPolygonChange={onPolygonChange}
         enableSearch={enableSearch}
+        enableDraw={enableDraw}
         style={{
           width: '100%',
           height: '400px',
