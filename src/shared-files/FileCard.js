@@ -1,5 +1,10 @@
 import React from 'react';
+
 import { useTranslation } from 'react-i18next';
+
+import DeleteIcon from '@mui/icons-material/Delete';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
 import {
   Button,
   Card,
@@ -8,9 +13,6 @@ import {
   Link,
   Typography,
 } from '@mui/material';
-import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import DeleteIcon from '@mui/icons-material/Delete';
 
 import ConfirmButton from 'common/components/ConfirmButton';
 

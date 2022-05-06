@@ -1,13 +1,17 @@
 import React from 'react';
+
+import { useTranslation } from 'react-i18next';
+
 import {
-  Typography,
   Button,
   Card,
-  CardHeader,
   CardContent,
+  CardHeader,
+  Typography,
 } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+
 import FileCard from './FileCard';
+
 import theme from 'theme';
 
 const SharedFilesCard = ({ group }) => {
