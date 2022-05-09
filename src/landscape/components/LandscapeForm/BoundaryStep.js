@@ -51,12 +51,7 @@ const GeoJson = props => {
         >
           {t('landscape.form_boundary_options_back')}
         </Button>
-        <Button
-          disabled={!areaPolygon}
-          variant="contained"
-          sx={{ marginTop: 2 }}
-          onClick={onSave}
-        >
+        <Button variant="contained" sx={{ marginTop: 2 }} onClick={onSave}>
           {t('landscape.form_save_label')}
         </Button>
       </Stack>
@@ -106,12 +101,7 @@ const MapPin = props => {
         >
           {t('landscape.form_boundary_options_back')}
         </Button>
-        <Button
-          disabled={!areaPolygon}
-          variant="contained"
-          sx={{ marginTop: 2 }}
-          onClick={onSave}
-        >
+        <Button variant="contained" sx={{ marginTop: 2 }} onClick={onSave}>
           {t('landscape.form_save_label')}
         </Button>
       </Stack>
