@@ -36,6 +36,7 @@ const LeafletSearch = ({ onPinLocationChange }) => {
 
     const searchControl = new GeoSearchControl({
       provider,
+      style: 'bar',
       marker: {
         draggable: true,
         mapMarkerIcon: L.Icon.Default,
