@@ -77,10 +77,10 @@ const DropZone = props => {
       }
       setError(null);
       const selectedFile = acceptedFiles[0];
-      setCurrentFile(selectedFile);
       openGeoJsonFile(selectedFile)
         .then(json => {
           onFileSelected(json);
+          setCurrentFile(selectedFile);
         })
         .catch(error => {
           setError(error);
