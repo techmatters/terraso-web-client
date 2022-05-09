@@ -8,6 +8,7 @@ import * as yup from 'yup';
 
 import { MenuItem, Select, Typography } from '@mui/material';
 
+import { transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
 import PageHeader from 'layout/PageHeader';
 
@@ -15,7 +16,7 @@ const FORM_VALIDATION_SCHEMA = yup
   .object({
     name: yup.string().required(),
     description: yup.string().maxCustom(600).required(),
-    website: yup.string().url(),
+    website: yup.string().ensure().transform(transformURL).url(),
   })
   .required();
 
