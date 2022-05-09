@@ -114,7 +114,7 @@ const LandscapeView = () => {
         {landscape.location}
       </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={12}>
           <Card variant="outlined">
             <CardContent>
               <LandscapeMap
