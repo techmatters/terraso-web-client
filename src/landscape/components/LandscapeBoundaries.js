@@ -165,11 +165,11 @@ const DropZone = props => {
 
 const LandscapeBoundaries = props => {
   const { t } = useTranslation();
-  const { areaPolygon, onFileSelected } = props;
+  const { areaPolygon, mapCenter, onFileSelected } = props;
 
   return (
     <>
-      <LandscapeMap landscape={{ areaPolygon }} />
+      <LandscapeMap mapCenter={mapCenter} landscape={{ areaPolygon }} />
       <DropZone onFileSelected={onFileSelected} />
       <InlineHelp
         items={[

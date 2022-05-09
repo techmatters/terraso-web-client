@@ -92,11 +92,20 @@ const MapPolygon = props => {
 };
 
 const Map = props => {
+  const [map, setMap] = useState();
+
+  useEffect(() => {
+    if (map?.target && props.center) {
+      map.target.flyTo(props.center, 3);
+    }
+  }, [props.center, map]);
+
   return (
     <MapContainer
       zoomDelta={0.5}
       zoomSnap={0.5}
       wheelPxPerZoomLevel={200}
+      whenReady={setMap}
       {...props}
     >
       <TileLayer

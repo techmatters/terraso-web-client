@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import * as turf from '@turf/helpers';
 import { Trans, useTranslation } from 'react-i18next';
@@ -10,6 +10,7 @@ import { Button, Link, Paper, Stack, Typography } from '@mui/material';
 
 import PageHeader from 'layout/PageHeader';
 
+import { getPlaceInfoByName } from 'gis/gisService';
 import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
 import LandscapeMap from 'landscape/components/LandscapeMap';
 
@@ -19,7 +20,7 @@ const OPTION_SELECT_OPTIONS = 'options';
 
 const GeoJson = props => {
   const { t } = useTranslation();
-  const { landscape, setOption, save } = props;
+  const { mapCenter, landscape, setOption, save } = props;
   const [areaPolygon, setAreaPolygon] = useState();
   const onFileSelected = areaPolygon => {
     setAreaPolygon(areaPolygon);
@@ -40,6 +41,7 @@ const GeoJson = props => {
       />
       <Paper variant="outlined" sx={{ padding: 2, marginTop: 2 }}>
         <LandscapeBoundaries
+          mapCenter={mapCenter}
           areaPolygon={areaPolygon || landscape?.areaPolygon}
           onFileSelected={onFileSelected}
         />
@@ -61,8 +63,9 @@ const GeoJson = props => {
 
 const MapPin = props => {
   const { t } = useTranslation();
-  const { landscape, setOption, save } = props;
+  const { landscape, mapCenter, setOption, save } = props;
   const [areaPolygon, setAreaPolygon] = useState();
+
   const onPinLocationChange = useCallback(
     ({ pinLocation: { lat, lng }, boundingBox }) => {
       if (!lat || !lng || !boundingBox) {
@@ -92,7 +95,11 @@ const MapPin = props => {
       />
       <Typography>{t('landscape.form_boundary_pin_description')}</Typography>
       <Paper variant="outlined" sx={{ padding: 2, marginTop: 2 }}>
-        <LandscapeMap enableSearch onPinLocationChange={onPinLocationChange} />
+        <LandscapeMap
+          enableSearch
+          mapCenter={mapCenter}
+          onPinLocationChange={onPinLocationChange}
+        />
       </Paper>
       <Stack direction="row" justifyContent="space-between">
         <Button
@@ -186,10 +193,22 @@ const getOptionComponent = option => {
 
 const BoundaryStep = props => {
   const [option, setOption] = useState(OPTION_SELECT_OPTIONS);
-
+  const [mapCenter, setMapCenter] = useState();
   const OptionComponent = getOptionComponent(option);
+  const { landscape } = props;
 
-  return <OptionComponent setOption={setOption} {...props} />;
+  // Whenever the location (country) changes, fetch the lat/lng for the
+  // country and center the map on that country.
+  useEffect(() => {
+    if (landscape.location) {
+      getPlaceInfoByName(landscape.location).then(data =>
+        setMapCenter([parseFloat(data.lat), parseFloat(data.lon)])
+      );
+    }
+  }, [landscape.location]);
+
+  return (
+    <OptionComponent mapCenter={mapCenter} setOption={setOption} {...props} />
+  );
 };
-
 export default BoundaryStep;
