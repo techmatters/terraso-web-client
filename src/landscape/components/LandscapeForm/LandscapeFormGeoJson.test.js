@@ -54,7 +54,7 @@ beforeEach(() => {
   });
 });
 
-test('LandscapeForm: Save form Geo Json', async () => {
+test('LandscapeForm: Save from GeoJSON', async () => {
   terrasoApi.request
     .mockResolvedValueOnce({
       landscapes: {
