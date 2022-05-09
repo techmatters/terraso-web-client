@@ -67,7 +67,6 @@ const CountrySelector = props => {
       displayEmpty
       value={field.value}
       onChange={field.onChange}
-      sx={{ width: '100%' }}
       labelId="landscape-location-label"
       renderValue={selected =>
         selected || (
