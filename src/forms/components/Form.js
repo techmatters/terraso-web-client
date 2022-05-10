@@ -26,7 +26,7 @@ const Form = props => {
     cancelLabel,
     onCancel,
     children,
-    reverseActionsOrder,
+    isMultiStep,
   } = props;
 
   const { control, handleSubmit, reset } = useForm({
@@ -61,7 +61,7 @@ const Form = props => {
     props
   );
 
-  const buttonPadding = reverseActionsOrder ? 0 : 5;
+  const buttonPadding = isMultiStep ? 0 : 5;
 
   const actions = [
     <Button
@@ -126,10 +126,10 @@ const Form = props => {
         container
         xs={12}
         direction="row"
-        justifyContent={reverseActionsOrder ? 'space-between' : 'start'}
+        justifyContent={isMultiStep ? 'space-between' : 'start'}
         sx={{ marginTop: 2 }}
       >
-        {reverseActionsOrder ? actions.reverse() : actions}
+        {isMultiStep ? actions.reverse() : actions}
       </Grid>
     </Grid>
   );

@@ -114,7 +114,7 @@ const InfoStep = props => {
         saveLabel="landscape.form_info_next"
         cancelLabel="landscape.form_info_cancel"
         onCancel={() => navigate(-1)}
-        reverseActionsOrder
+        isMultiStep
       />
     </>
   );
