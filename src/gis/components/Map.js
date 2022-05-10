@@ -1,13 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import L from 'leaflet';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
-import { GeoJSON, MapContainer, TileLayer, useMap } from 'react-leaflet';
+import {
+  GeoJSON,
+  MapContainer,
+  Marker,
+  TileLayer,
+  useMap,
+} from 'react-leaflet';
 import { v4 as uuidv4 } from 'uuid';
 
+import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-geosearch/dist/geosearch.css';
 import 'gis/components/Map.css';
+import 'leaflet-draw/dist/leaflet.draw.css';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -17,19 +25,41 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
-const LeafletSearch = ({ onPinLocationChange }) => {
+const LeafletDraw = props => {
   const map = useMap();
-  const [pinLocation, setPinLocation] = useState();
-  const [boundingBox, setBoundingBox] = useState();
+  const { setPinLocation } = props;
 
   useEffect(() => {
-    if (pinLocation && boundingBox) {
-      onPinLocationChange({
-        pinLocation,
-        boundingBox,
-      });
-    }
-  }, [boundingBox, pinLocation, onPinLocationChange]);
+    const options = {
+      position: 'topleft',
+      draw: {
+        polyline: false,
+        polygon: false,
+        circle: false,
+        rectangle: false,
+        circlemarker: false,
+      },
+    };
+    const drawControl = new L.Control.Draw(options);
+    map.addControl(drawControl);
+
+    map.on(L.Draw.Event.CREATED, event => {
+      const { layerType } = event;
+      if (layerType === 'marker') {
+        const location = event.layer.getLatLng();
+
+        setPinLocation({ lat: location.lat, lng: location.lng });
+      }
+    });
+
+    return () => map.removeControl(drawControl);
+  }, [map, setPinLocation]);
+  return null;
+};
+
+const LeafletSearch = props => {
+  const map = useMap();
+  const { setBoundingBox, setPinLocation } = props;
 
   useEffect(() => {
     const provider = new OpenStreetMapProvider();
@@ -37,22 +67,12 @@ const LeafletSearch = ({ onPinLocationChange }) => {
     const searchControl = new GeoSearchControl({
       provider,
       style: 'bar',
-      marker: {
-        draggable: true,
-        mapMarkerIcon: L.Icon.Default,
-      },
+      showMarker: false,
     });
 
     map.addControl(searchControl);
 
     const getPinData = event => {
-      const southWest = map.getBounds().getSouthWest();
-      const northEast = map.getBounds().getNorthEast();
-      const bbox = [southWest.lng, southWest.lat, northEast.lng, northEast.lat];
-      if (bbox) {
-        setBoundingBox(bbox);
-      }
-
       if (event?.location?.lat) {
         setPinLocation({
           lat: event.location.lat,
@@ -68,11 +88,8 @@ const LeafletSearch = ({ onPinLocationChange }) => {
     };
 
     map.on('geosearch/showlocation', getPinData);
-    map.on('geosearch/marker/dragend', getPinData);
-    map.on('zoomend', getPinData);
-
     return () => map.removeControl(searchControl);
-  }, [map]);
+  }, [map, setBoundingBox, setPinLocation]);
 
   return null;
 };
@@ -89,6 +106,74 @@ const MapPolygon = props => {
 
   // Added unique key on every rerender to force GeoJSON update
   return <GeoJSON key={uuidv4()} data={geojson} />;
+};
+
+const Location = props => {
+  const map = useMap();
+  const markerRef = useRef(null);
+  const [pinLocation, setPinLocation] = useState();
+  const [boundingBox, setBoundingBox] = useState();
+  const { onPinLocationChange, enableSearch, enableDraw } = props;
+
+  const markerEventHandlers = useMemo(
+    () => ({
+      dragend: () => {
+        const marker = markerRef.current;
+        if (marker != null) {
+          setPinLocation(marker.getLatLng());
+        }
+      },
+    }),
+    []
+  );
+
+  useEffect(() => {
+    if (pinLocation && boundingBox) {
+      onPinLocationChange({
+        pinLocation,
+        boundingBox,
+      });
+    }
+  }, [boundingBox, pinLocation, onPinLocationChange]);
+
+  useEffect(() => {
+    const getZoomData = () => {
+      const southWest = map.getBounds().getSouthWest();
+      const northEast = map.getBounds().getNorthEast();
+      const bbox = [southWest.lng, southWest.lat, northEast.lng, northEast.lat];
+      if (bbox) {
+        setBoundingBox(bbox);
+      }
+    };
+    getZoomData();
+    map.on('zoomend', getZoomData);
+  }, [map]);
+  return (
+    <>
+      {enableSearch && (
+        <LeafletSearch
+          setPinLocation={setPinLocation}
+          setBoundingBox={setBoundingBox}
+        />
+      )}
+
+      {enableDraw && (
+        <LeafletDraw
+          setPinLocation={setPinLocation}
+          setBoundingBox={setBoundingBox}
+        />
+      )}
+
+      {pinLocation && (
+        <Marker
+          draggable
+          ref={markerRef}
+          position={pinLocation}
+          eventHandlers={markerEventHandlers}
+        />
+      )}
+    </>
+  );
 };
 
 const Map = props => {
@@ -113,10 +198,11 @@ const Map = props => {
         url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
       />
       <MapPolygon {...props} />
-
-      {props.enableSearch && (
-        <LeafletSearch onPinLocationChange={props.onPinLocationChange} />
-      )}
+      <Location
+        onPinLocationChange={props.onPinLocationChange}
+        enableSearch={props.enableSearch}
+        enableDraw={props.enableDraw}
+      />
 
       {props.children}
     </MapContainer>

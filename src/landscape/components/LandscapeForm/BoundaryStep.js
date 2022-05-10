@@ -97,6 +97,7 @@ const MapPin = props => {
       <Paper variant="outlined" sx={{ padding: 2, marginTop: 2 }}>
         <LandscapeMap
           enableSearch
+          enableDraw
           mapCenter={mapCenter}
           onPinLocationChange={onPinLocationChange}
         />

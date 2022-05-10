@@ -15,6 +15,7 @@ const LandscapeMap = ({
   label,
   onPinLocationChange,
   enableSearch,
+  enableDraw,
   mapCenter,
 }) => {
   const bounds = getLandscapeBoundingBox(landscape);
@@ -31,6 +32,7 @@ const LandscapeMap = ({
         geojson={geojson}
         onPinLocationChange={onPinLocationChange}
         enableSearch={enableSearch}
+        enableDraw={enableDraw}
         style={{
           width: '100%',
           height: '400px',
