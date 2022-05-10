@@ -61,6 +61,8 @@ const Form = props => {
     props
   );
 
+  const buttonPadding = reverseActionsOrder ? 0 : 5;
+
   const actions = [
     <Button
       key="submit"
@@ -74,7 +76,12 @@ const Form = props => {
       {t(saveLabel)}
     </Button>,
     onCancel && (
-      <Button key="cancel" variant="text" onClick={onCancel}>
+      <Button
+        key="cancel"
+        variant="text"
+        onClick={onCancel}
+        sx={{ paddingLeft: buttonPadding, paddingRight: buttonPadding }}
+      >
         {t(cancelLabel)}
       </Button>
     ),
@@ -119,7 +126,7 @@ const Form = props => {
         container
         xs={12}
         direction="row"
-        justifyContent="space-between"
+        justifyContent={reverseActionsOrder ? 'space-between' : 'start'}
         sx={{ marginTop: 2 }}
       >
         {reverseActionsOrder ? actions.reverse() : actions}
