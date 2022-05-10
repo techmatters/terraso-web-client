@@ -86,7 +86,7 @@ test('LandscapeForm: Save form Pin boundary', async () => {
       },
     });
 
-  let eventCallback;
+  const eventCallback = {};
   useMap.mockReturnValue({
     getBounds: () => ({
       getSouthWest: () => ({ lat: 0, lng: 10 }),
@@ -96,7 +96,7 @@ test('LandscapeForm: Save form Pin boundary', async () => {
     addControl: () => {},
     removeControl: () => {},
     on: (event, callback) => {
-      eventCallback = callback;
+      eventCallback[event] = callback;
     },
   });
 
@@ -127,12 +127,11 @@ test('LandscapeForm: Save form Pin boundary', async () => {
     )
   );
 
-  await act(async () => eventCallback({ location: { lat: 10, lng: 10 } }));
-
-  await waitFor(() =>
-    expect(
-      screen.getByRole('button', { name: 'Create Landscape' })
-    ).not.toHaveAttribute('disabled')
+  await act(async () =>
+    eventCallback['draw:created']({
+      layerType: 'marker',
+      layer: { getLatLng: () => ({ lat: 10, lng: 10 }) },
+    })
   );
 
   await act(async () =>
