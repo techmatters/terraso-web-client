@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import L from 'leaflet';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
+import _ from 'lodash/fp';
 import {
   GeoJSON,
   MapContainer,
@@ -12,10 +13,10 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 
 import 'leaflet-draw';
+import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-geosearch/dist/geosearch.css';
 import 'gis/components/Map.css';
-import 'leaflet-draw/dist/leaflet.draw.css';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -190,7 +191,9 @@ const Map = props => {
       zoomSnap={0.5}
       wheelPxPerZoomLevel={200}
       whenReady={setMap}
-      {...props}
+      zoom={3}
+      center={[0, 0]}
+      {..._.omit(['center', 'zoom'], props)}
     >
       <TileLayer
         attribution='Data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors Tiles &copy; HOT'
