@@ -265,7 +265,6 @@ export const joinGroup = (
       },
       accountEmail: currentUser.email,
     })
-    .then()
     .then(_.get('addMembership.membership.group'))
     .then(group => group || Promise.reject('not_found'))
     .then(group => ({
@@ -296,7 +295,6 @@ export const leaveGroup = ({ groupSlug, membershipId }, currentUser) => {
       input: { id: membershipId },
       accountEmail: currentUser.email,
     })
-    .then()
     .then(_.get('deleteMembership.membership.group'))
     .then(group => ({
       ..._.omit(['memberships', 'accountMembership'], group),
