@@ -47,7 +47,6 @@ const LeafletDraw = props => {
       const { layerType } = event;
       if (layerType === 'marker') {
         const location = event.layer.getLatLng();
-
         setPinLocation({ lat: location.lat, lng: location.lng });
       }
     });

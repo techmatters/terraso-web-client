@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export const useScript = url => {
   const [loading, setLoading] = useState(true);
@@ -17,4 +17,15 @@ export const useScript = url => {
     };
   }, [url]);
   return loading;
+};
+
+export const useIsMounted = () => {
+  const isMounted = useRef(false);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => (isMounted.current = false);
+  }, []);
+
+  return isMounted;
 };

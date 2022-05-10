@@ -14,6 +14,8 @@ import { getPlaceInfoByName } from 'gis/gisService';
 import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
 import LandscapeMap from 'landscape/components/LandscapeMap';
 
+import { useIsMounted } from 'custom-hooks';
+
 const OPTION_GEOJSON = 'geo-json';
 const OPTION_MAP_PIN = 'map-pin';
 const OPTION_SELECT_OPTIONS = 'options';
@@ -195,6 +197,7 @@ const getOptionComponent = option => {
 const BoundaryStep = props => {
   const [option, setOption] = useState(OPTION_SELECT_OPTIONS);
   const [mapCenter, setMapCenter] = useState();
+  const isMounted = useIsMounted();
   const OptionComponent = getOptionComponent(option);
   const { landscape } = props;
 
@@ -202,11 +205,13 @@ const BoundaryStep = props => {
   // country and center the map on that country.
   useEffect(() => {
     if (landscape.location) {
-      getPlaceInfoByName(landscape.location).then(data =>
-        setMapCenter([parseFloat(data.lat), parseFloat(data.lon)])
-      );
+      getPlaceInfoByName(landscape.location).then(data => {
+        if (isMounted.current) {
+          setMapCenter([parseFloat(data.lat), parseFloat(data.lon)]);
+        }
+      });
     }
-  }, [landscape.location]);
+  }, [landscape.location, isMounted]);
 
   return (
     <OptionComponent mapCenter={mapCenter} setOption={setOption} {...props} />
