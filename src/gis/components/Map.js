@@ -32,7 +32,7 @@ const LeafletDraw = props => {
 
   useEffect(() => {
     const options = {
-      position: 'topleft',
+      position: 'topright',
       draw: {
         polyline: false,
         polygon: false,
@@ -68,6 +68,7 @@ const LeafletSearch = props => {
       provider,
       style: 'bar',
       showMarker: false,
+      autoClose: true,
     });
 
     map.addControl(searchControl);
