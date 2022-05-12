@@ -49,7 +49,7 @@ export const groupMembers = `
 `;
 
 export const accountMembership = `
-  fragment accountMembership on GroupNode { 
+  fragment accountMembership on GroupNode {
     accountMembership: memberships(user_Email_In: [$accountEmail]) {
       edges {
         node {

@@ -94,7 +94,7 @@ test('LandscapeView: Display data', async () => {
               name: 'Landscape Name',
               description: 'Landscape Description',
               website: 'www.landscape.org',
-              location: 'Ecuador, Quito',
+              location: 'EC',
               defaultGroup: {
                 edges: [
                   {
@@ -119,7 +119,7 @@ test('LandscapeView: Display data', async () => {
   expect(
     screen.getByRole('heading', { name: 'Landscape Name' })
   ).toBeInTheDocument();
-  expect(screen.getByText(/Ecuador, Quito/i)).toBeInTheDocument();
+  expect(screen.getByText(/Ecuador/i)).toBeInTheDocument();
   expect(screen.getByText(/Landscape Description/i)).toBeInTheDocument();
   expect(
     screen.getByRole('link', { name: 'www.landscape.org' })

@@ -11,7 +11,7 @@ const cleanLandscape = landscape =>
     _.omit('slug'),
     _.toPairs,
     _.map(([key, value]) => {
-      if (key === 'areaPolygon') {
+      if (key === 'areaPolygon' && value) {
         return [key, JSON.stringify(value)];
       }
       return [key, value];
