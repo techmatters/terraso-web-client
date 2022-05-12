@@ -3,12 +3,11 @@ import React from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import countries from 'world-countries';
 import * as yup from 'yup';
 
-import { MenuItem, Select, Typography } from '@mui/material';
+import { MenuItem, Select } from '@mui/material';
 
-import { transformURL } from 'common/utils';
+import { countriesList, transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
 import PageHeader from 'layout/PageHeader';
 
@@ -53,14 +52,11 @@ const FORM_FIELDS = [
 ];
 
 const CountrySelector = props => {
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   const { field } = props;
 
-  const countriesLang = i18n.resolvedLanguage.startsWith('es')
-    ? 'translations.spa.common'
-    : 'name.common';
-
-  const countriesList = countries.map(_.get(countriesLang)).sort();
+  // country list for menu contents (must be sorted)
+  const countriesArray = countriesList();
 
   return (
     <Select
@@ -68,17 +64,14 @@ const CountrySelector = props => {
       value={field.value}
       onChange={field.onChange}
       labelId="landscape-location-label"
-      renderValue={selected =>
-        selected || (
-          <Typography sx={{ color: 'gray.mid2' }}>
-            {t('landscape.form_location_placeholder')}
-          </Typography>
-        )
-      }
+      sx={{
+        width: '25%',
+      }}
     >
-      {countriesList.map((country, index) => (
-        <MenuItem key={index} value={country}>
-          {country}
+      <MenuItem value={''}>{t('landscape.form_location_select')}</MenuItem>
+      {countriesArray.map((country, index) => (
+        <MenuItem key={index} value={country.code}>
+          {country.name}
         </MenuItem>
       ))}
     </Select>
