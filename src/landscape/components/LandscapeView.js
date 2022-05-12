@@ -21,7 +21,6 @@ import {
 
 import InlineHelp from 'common/components/InlineHelp';
 import { useDocumentTitle } from 'common/document';
-import { countriesList } from 'common/utils';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
@@ -86,8 +85,6 @@ const LandscapeView = () => {
   const { landscape, fetching } = useSelector(state => state.landscape.view);
   const { slug } = useParams();
 
-  const countriesMap = Object.fromEntries(countriesList());
-
   useDocumentTitle(
     t('landscape.view_document_title', {
       name: _.get('name', landscape),
@@ -114,7 +111,7 @@ const LandscapeView = () => {
         typographyProps={{ sx: { marginBottom: 0 } }}
       />
       <Typography variant="body2" sx={{ marginBottom: 2 }}>
-        {countriesMap[landscape.location]}
+        {landscape.location}
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={12}>
