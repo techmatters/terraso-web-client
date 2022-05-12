@@ -86,8 +86,6 @@ const LandscapeView = () => {
   const { landscape, fetching } = useSelector(state => state.landscape.view);
   const { slug } = useParams();
 
-  const countriesMap = Object.fromEntries(countriesList());
-
   useDocumentTitle(
     t('landscape.view_document_title', {
       name: _.get('name', landscape),
@@ -107,6 +105,10 @@ const LandscapeView = () => {
     return null;
   }
 
+  const currentCountry = countriesList().find(
+    country => country.code === landscape.location
+  );
+
   return (
     <PageContainer>
       <PageHeader
@@ -114,7 +116,7 @@ const LandscapeView = () => {
         typographyProps={{ sx: { marginBottom: 0 } }}
       />
       <Typography variant="body2" sx={{ marginBottom: 2 }}>
-        {countriesMap[landscape.location]}
+        {currentCountry?.name}
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={12}>
