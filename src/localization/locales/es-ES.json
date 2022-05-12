@@ -243,6 +243,7 @@
         "form_boundary_pin_description": "Busca la ciudad o región en la que se encuentra tu paisaje. Luego, mueva el marcador al centro del paisaje.",
         "form_boundary_geojson_title": "Carga el límite de su paisaje",
         "form_location_placeholder": "Ubicación del paisaje",
+        "form_location_select": "Selecciona una ubicación",
         "form_name_placeholder": "El nombre oficial de tu paisaje"
     },
     "common": {

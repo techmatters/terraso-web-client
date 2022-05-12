@@ -243,6 +243,7 @@
         "form_boundary_pin_description": "Search for the city or region your landscape is in. Then, move the pin to the center of the landscape.",
         "form_boundary_geojson_title": "Upload your landscape’s boundary",
         "form_location_placeholder": "Landscape location",
+        "form_location_select": "Select location",
         "form_name_placeholder": "Your landscape’s official name"
     },
     "common": {
