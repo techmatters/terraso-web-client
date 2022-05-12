@@ -65,7 +65,7 @@ test('LandscapeForm: Save from GeoJSON', async () => {
               name: 'Landscape Name',
               description: 'Landscape Description',
               website: 'www.landscape.org',
-              location: 'Ecuador',
+              location: 'EC',
             },
           },
         ],
@@ -78,7 +78,7 @@ test('LandscapeForm: Save from GeoJSON', async () => {
           name: 'Landscape Name',
           description: 'Landscape Description',
           website: 'www.landscape.org',
-          location: 'Ecuador',
+          location: 'EC',
         },
       },
     });
@@ -148,7 +148,7 @@ test('LandscapeForm: Save from GeoJSON', async () => {
       description: 'New description',
       name: 'New name',
       website: 'https://www.other.org',
-      location: 'Argentina',
+      location: 'AR',
       areaPolygon: JSON.stringify(JSON.parse(GEOJSON)),
     },
   });
