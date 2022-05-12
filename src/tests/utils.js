@@ -8,11 +8,13 @@ import AppWrappers from 'common/components/AppWrappers';
 import rules from 'permissions/rules';
 import createStore from 'state/store';
 
-import { AXE_TEST_TIMEOUT } from 'config';
+import { AXE_TEST_TIMEOUT, JEST_TEST_TIMEOUT } from 'config';
 
 import theme from 'theme';
 
 const executeAxe = process.env['TEST_A11Y'] === 'true';
+
+jest.setTimeout(JEST_TEST_TIMEOUT);
 
 // Work around to avoid tests trying to render SVGs
 const createElementNSOrig = global.document.createElementNS;

@@ -9,6 +9,7 @@ import * as yup from 'yup';
 import { Typography } from '@mui/material';
 
 import { useDocumentTitle } from 'common/document';
+import { transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
@@ -22,14 +23,6 @@ import {
 } from 'group/groupSlice';
 
 import theme from 'theme';
-
-const transformURL = url => {
-  if (url === '' || url.startsWith('http:') || url.startsWith('https:')) {
-    return url;
-  }
-
-  return `https://${url}`;
-};
 
 const VALIDATION_SCHEMA = yup
   .object({
