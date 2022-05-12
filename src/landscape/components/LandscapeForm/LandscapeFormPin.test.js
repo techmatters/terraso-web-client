@@ -68,7 +68,7 @@ test('LandscapeForm: Save form Pin boundary', async () => {
               name: 'Landscape Name',
               description: 'Landscape Description',
               website: 'www.landscape.org',
-              location: 'Ecuador',
+              location: 'EC',
             },
           },
         ],
@@ -81,7 +81,7 @@ test('LandscapeForm: Save form Pin boundary', async () => {
           name: 'Landscape Name',
           description: 'Landscape Description',
           website: 'www.landscape.org',
-          location: 'Ecuador',
+          location: 'EC',
         },
       },
     });
@@ -146,7 +146,7 @@ test('LandscapeForm: Save form Pin boundary', async () => {
       description: 'New description',
       name: 'New name',
       website: 'https://www.other.org',
-      location: 'Argentina',
+      location: 'AR',
       areaPolygon:
         '{"type":"FeatureCollection","bbox":[10,0,11,1],"features":[{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[10,10]}}]}',
     },
