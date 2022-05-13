@@ -16,27 +16,7 @@ import theme from 'theme';
 
 const SharedFilesCard = ({ group }) => {
   const { t } = useTranslation();
-
-  const demoFiles = [
-    {
-      name: 'myfile',
-      description: 'sample file',
-      type: 'xls',
-      size: 32,
-      date: 'March 16, 2022',
-      owner: 'Peppermint Patty',
-      id: 23456,
-    },
-    {
-      name: 'green eggs and ham',
-      description: 'recipe',
-      type: 'json',
-      size: 77,
-      date: 'March 18, 2022',
-      owner: 'Charlie Brown',
-      id: 67890,
-    },
-  ];
+  const { dataEntries: sharedFiles } = group;
 
   return (
     <Card variant="outlined">
@@ -49,7 +29,7 @@ const SharedFilesCard = ({ group }) => {
         }
       />
       <CardContent>
-        {demoFiles.map((item, index) => (
+        {sharedFiles.map((item, index) => (
           <FileCard key={index} file={item} />
         ))}
         <Typography
