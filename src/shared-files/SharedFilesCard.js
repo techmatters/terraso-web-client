@@ -1,5 +1,6 @@
 import React from 'react';
 
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -17,6 +18,10 @@ import theme from 'theme';
 const SharedFilesCard = ({ group }) => {
   const { t } = useTranslation();
   const { dataEntries: sharedFiles } = group;
+
+  if (_.isEmpty(sharedFiles)) {
+    return null;
+  }
 
   return (
     <Card variant="outlined">
