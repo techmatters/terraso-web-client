@@ -4,3 +4,8 @@
 .leaflet-control-geosearch .results > * {
   font-size: 15px;
 }
+
+.leaflet-draw.leaflet-control .leaflet-draw-draw-marker {
+  background-size: 900px 45px;
+  background-position: -413px;
+}
