@@ -4,6 +4,7 @@ import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
+import SharedFilesCard from 'shared-files/SharedFilesCard';
 
 import LaunchIcon from '@mui/icons-material/Launch';
 import PublicIcon from '@mui/icons-material/Public';
@@ -179,6 +180,9 @@ const LandscapeView = () => {
               }
             />
           </GroupContextProvider>
+        </Grid>
+        <Grid item xs={12} md={12}>
+          <SharedFilesCard group={landscape.defaultGroup} />
         </Grid>
       </Grid>
     </PageContainer>
