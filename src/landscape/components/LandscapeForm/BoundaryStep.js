@@ -8,7 +8,7 @@ import PinDropIcon from '@mui/icons-material/PinDrop';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { Button, Link, Paper, Stack, Typography } from '@mui/material';
 
-import { countriesList } from 'common/utils';
+import { countryNameForCode } from 'common/utils';
 import PageHeader from 'layout/PageHeader';
 
 import { getPlaceInfoByName } from 'gis/gisService';
@@ -206,10 +206,7 @@ const BoundaryStep = props => {
   // country and center the map on that country.
   useEffect(() => {
     if (landscape.location) {
-      const countries = countriesList();
-      const currentCountry = countries.find(
-        country => country.code === landscape.location
-      );
+      const currentCountry = countryNameForCode(landscape.location);
 
       getPlaceInfoByName(currentCountry.name).then(data => {
         if (isMounted.current) {

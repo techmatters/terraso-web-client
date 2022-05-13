@@ -21,7 +21,7 @@ import {
 
 import InlineHelp from 'common/components/InlineHelp';
 import { useDocumentTitle } from 'common/document';
-import { countriesList } from 'common/utils';
+import { countryNameForCode } from 'common/utils';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
@@ -105,9 +105,7 @@ const LandscapeView = () => {
     return null;
   }
 
-  const currentCountry = countriesList().find(
-    country => country.code === landscape.location
-  );
+  const currentCountry = countryNameForCode(landscape.location);
 
   return (
     <PageContainer>
