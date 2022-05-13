@@ -59,7 +59,7 @@ const LeafletDraw = props => {
     });
 
     return () => map.removeControl(drawControl);
-  }, [map, setPinLocation]);
+  }, [map, setPinLocation, isSmall]);
   return null;
 };
 
