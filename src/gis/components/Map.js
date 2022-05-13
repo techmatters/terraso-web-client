@@ -35,7 +35,6 @@ const LeafletDraw = props => {
   const map = useMap();
   const { setPinLocation } = props;
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
-  console.log(isSmall);
 
   useEffect(() => {
     const options = {
