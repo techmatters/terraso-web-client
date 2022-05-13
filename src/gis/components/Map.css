@@ -1,1 +1,6 @@
 @import '~leaflet/dist/leaflet.css';
+
+.leaflet-control-geosearch .glass,
+.leaflet-control-geosearch .results > * {
+  font-size: 15px;
+}

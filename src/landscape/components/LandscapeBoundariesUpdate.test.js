@@ -5,7 +5,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import LandscapeBoundaries from 'landscape/components/LandscapeBoundaries';
+import LandscapeBoundaries from 'landscape/components/LandscapeBoundariesUpdate';
 import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('terrasoBackend/api');

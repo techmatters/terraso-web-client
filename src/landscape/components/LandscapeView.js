@@ -21,6 +21,7 @@ import {
 
 import InlineHelp from 'common/components/InlineHelp';
 import { useDocumentTitle } from 'common/document';
+import { countriesList } from 'common/utils';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
@@ -64,14 +65,16 @@ const LandscapeCard = ({ landscape }) => {
           {landscape.description}
         </Typography>
       </CardContent>
-      <CardContent>
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <PublicIcon sx={{ color: 'gray.lite1' }} />
-          <Link href={landscape.website} underline="none">
-            {landscape.website}
-          </Link>
-        </Stack>
-      </CardContent>
+      {landscape.website && (
+        <CardContent>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <PublicIcon sx={{ color: 'gray.lite1' }} />
+            <Link href={landscape.website} underline="none">
+              {landscape.website}
+            </Link>
+          </Stack>
+        </CardContent>
+      )}
     </Card>
   );
 };
@@ -102,6 +105,10 @@ const LandscapeView = () => {
     return null;
   }
 
+  const currentCountry = countriesList().find(
+    country => country.code === landscape.location
+  );
+
   return (
     <PageContainer>
       <PageHeader
@@ -109,10 +116,10 @@ const LandscapeView = () => {
         typographyProps={{ sx: { marginBottom: 0 } }}
       />
       <Typography variant="body2" sx={{ marginBottom: 2 }}>
-        {landscape.location}
+        {currentCountry?.name}
       </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={12}>
           <Card variant="outlined">
             <CardContent>
               <LandscapeMap
