@@ -65,7 +65,9 @@ const CountrySelector = props => {
       onChange={field.onChange}
       labelId="landscape-location-label"
       sx={{
-        width: '25%',
+        width: {
+          md: '25%',
+        },
       }}
     >
       <MenuItem value={''}>{t('landscape.form_location_select')}</MenuItem>
