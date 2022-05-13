@@ -23,3 +23,6 @@ export const getMemberships = groups =>
   )(groups);
 
 export const generateIndexedMembers = _.keyBy(member => member.id);
+
+export const extractDataEntries = group =>
+  _.getOr([], 'dataEntries.edges', group).map(_.get('node'));
