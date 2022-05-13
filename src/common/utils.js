@@ -28,5 +28,6 @@ export const countryNameForCode = code => {
   return list.find(country => country.code === code);
 };
 
+// from https://stackoverflow.com/a/44325124; allow comma operator for speed
 export const countryMap = countries =>
-  countries.reduce((obj, item) => ((obj[item.code] = item.name), obj), {});
+  countries.reduce((obj, item) => ((obj[item.code] = item.name), obj), {}); // eslint-disable-line no-sequences
