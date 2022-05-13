@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as yup from 'yup';
 
-import { MenuItem, Select } from '@mui/material';
+import { MenuItem, Select, Typography } from '@mui/material';
 
-import { countriesList, transformURL } from 'common/utils';
+import { countriesList, countryMap, transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
 import PageHeader from 'layout/PageHeader';
 
@@ -55,8 +55,8 @@ const CountrySelector = props => {
   const { t } = useTranslation();
   const { field } = props;
 
-  // country list for menu contents (must be sorted)
-  const countriesArray = countriesList();
+  const countries = countriesList();
+  const countryHash = countryMap(countries);
 
   return (
     <Select
@@ -69,9 +69,16 @@ const CountrySelector = props => {
           md: '25%',
         },
       }}
+      renderValue={selected =>
+        countryHash[selected] || (
+          <Typography sx={{ color: 'gray.mid2' }}>
+            {t('landscape.form_location_placeholder')}
+          </Typography>
+        )
+      }
     >
       <MenuItem value={''}>{t('landscape.form_location_select')}</MenuItem>
-      {countriesArray.map((country, index) => (
+      {countries.map((country, index) => (
         <MenuItem key={index} value={country.code}>
           {country.name}
         </MenuItem>
