@@ -16,8 +16,11 @@ import {
 
 import ConfirmButton from 'common/components/ConfirmButton';
 
+const formatDate = (language, dateString) =>
+  new Intl.DateTimeFormat(language).format(Date.parse(dateString));
+
 const FileCard = ({ file }) => {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const onConfirm = () => {
     console.log('deleting...');
@@ -40,7 +43,8 @@ const FileCard = ({ file }) => {
             {file.size}MB
           </Grid>
           <Grid item xs={9} md={4} order={{ xs: 7, md: 4 }}>
-            {file.date}, by {file.owner}
+            {formatDate(i18n.resolvedLanguage, file.createdAt)}, by{' '}
+            {t('user.full_name', { user: file.createdBy })}
           </Grid>
           <Grid item xs={1} md={1} order={{ xs: 3, md: 5 }}>
             <Button
