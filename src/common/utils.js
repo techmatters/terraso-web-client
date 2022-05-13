@@ -22,3 +22,11 @@ export const countriesList = () => {
 
   return countriesList;
 };
+
+export const countryNameForCode = code => {
+  const list = countriesList();
+  return list.find(country => country.code === code);
+};
+
+export const countryMap = countries =>
+  countries.reduce((obj, item) => ((obj[item.code] = item.name), obj), {});
