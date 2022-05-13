@@ -8,15 +8,20 @@ import {
   MapContainer,
   Marker,
   TileLayer,
+  ZoomControl,
   useMap,
 } from 'react-leaflet';
 import { v4 as uuidv4 } from 'uuid';
+
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-geosearch/dist/geosearch.css';
 import 'gis/components/Map.css';
+
+import theme from 'theme';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -29,10 +34,12 @@ L.Icon.Default.mergeOptions({
 const LeafletDraw = props => {
   const map = useMap();
   const { setPinLocation } = props;
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+  console.log(isSmall);
 
   useEffect(() => {
     const options = {
-      position: 'topright',
+      position: isSmall ? 'topright' : 'topleft',
       draw: {
         polyline: false,
         polygon: false,
@@ -72,6 +79,7 @@ const LeafletSearch = props => {
     });
 
     map.addControl(searchControl);
+    map.removeControl(map.zoomControl);
 
     const getPinData = event => {
       if (event?.location?.lat) {
@@ -179,6 +187,7 @@ const Location = props => {
 
 const Map = props => {
   const [map, setMap] = useState();
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     if (map?.target && props.center) {
@@ -206,7 +215,9 @@ const Map = props => {
         enableSearch={props.enableSearch}
         enableDraw={props.enableDraw}
       />
-
+      {'undefined' !== typeof props.enableSearch && (
+        <ZoomControl position={isSmall ? 'bottomleft' : 'topleft'} />
+      )}
       {props.children}
     </MapContainer>
   );

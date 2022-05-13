@@ -4,3 +4,21 @@
 .leaflet-control-geosearch .results > * {
   font-size: 15px;
 }
+
+.leaflet-control-geosearch.leaflet-geosearch-bar {
+  margin: 10px;
+  left: 45px;
+}
+
+.leaflet-draw.leaflet-control {
+  left: 410px;
+}
+
+.leaflet-touch .leaflet-draw.leaflet-control {
+  right: 0;
+  left: inherit;
+}
+
+.leaflet-touch .leaflet-geosearch-bar form {
+  width: 130%;
+}
