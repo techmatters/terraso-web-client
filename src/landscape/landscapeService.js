@@ -63,7 +63,8 @@ export const fetchLandscapeToView = (slug, currentUser) => {
       }
     }
     ${landscapeFields}
-    ${defaultGroup}
+    ${dataEntries}
+    ${defaultGroup('...dataEntries')}
   `;
   return (
     terrasoApi
@@ -104,7 +105,7 @@ export const fetchLandscapes = (params, currentUser) => {
       }
     }
     ${landscapeFields}
-    ${defaultGroup}
+    ${defaultGroup()}
   `;
   return terrasoApi
     .request(query, { accountEmail: currentUser.email })
