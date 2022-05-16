@@ -33,6 +33,7 @@ const FileCard = ({ file }) => {
         <Grid container spacing={2}>
           <Grid item xs={1} md={1} order={{ xs: 1, md: 1 }}>
             <Button
+              href={`/files/${file.id}/download`}
               startIcon={<InsertDriveFileOutlinedIcon />}
               sx={{ marginTop: '-5px' }}
             />
@@ -49,7 +50,7 @@ const FileCard = ({ file }) => {
           </Grid>
           <Grid item xs={1} md={1} order={{ xs: 3, md: 5 }}>
             <Button
-              to={`/files/${file.id}/download`}
+              href={`/files/${file.id}/download`}
               startIcon={<FileDownloadIcon />}
             />
           </Grid>
