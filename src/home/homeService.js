@@ -52,7 +52,7 @@ export const fetchHomeData = email => {
     }
     ${groupFields}
     ${landscapeFields}
-    ${defaultGroup}
+    ${defaultGroup()}
   `;
   return terrasoApi.request(query, { accountEmail: email }).then(response => ({
     groups: [
