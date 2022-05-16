@@ -16,11 +16,12 @@ import {
 } from '@mui/material';
 
 import ConfirmButton from 'common/components/ConfirmButton';
+import Restricted from 'permissions/components/Restricted';
 
 const formatDate = (language, dateString) =>
   new Intl.DateTimeFormat(language).format(Date.parse(dateString));
 
-const FileCard = ({ file }) => {
+const FileCard = ({ file, group }) => {
   const { i18n, t } = useTranslation();
 
   const onConfirm = () => {
@@ -32,14 +33,22 @@ const FileCard = ({ file }) => {
       <CardContent>
         <Grid container spacing={2}>
           <Grid item xs={1} md={1} order={{ xs: 1, md: 1 }}>
-            <Button
-              href={`/files/${file.id}/download`}
-              startIcon={<InsertDriveFileOutlinedIcon />}
-              sx={{ marginTop: '-5px' }}
-            />
+            <Restricted permission="file.download" resource={group}>
+              <Button
+                href={`/files/${file.id}/download`}
+                startIcon={<InsertDriveFileOutlinedIcon />}
+                sx={{ marginTop: '-5px' }}
+              />
+            </Restricted>
           </Grid>
           <Grid item xs={9} md={4} order={{ xs: 2, md: 2 }}>
-            <Link href={`/files/${file.id}/download`}>{file.name}</Link>
+            <Restricted
+              permission="file.download"
+              resource={group}
+              FallbackComponent={() => <Typography>{file.name}</Typography>}
+            >
+              <Link href={`/files/${file.id}/download`}>{file.name}</Link>
+            </Restricted>
           </Grid>
           <Grid item xs={2} md={1} order={{ xs: 6, md: 3 }}>
             {filesize(file.size, { round: 0 })}
@@ -49,25 +58,32 @@ const FileCard = ({ file }) => {
             {t('user.full_name', { user: file.createdBy })}
           </Grid>
           <Grid item xs={1} md={1} order={{ xs: 3, md: 5 }}>
-            <Button
-              href={`/files/${file.id}/download`}
-              startIcon={<FileDownloadIcon />}
-            />
+            <Restricted permission="file.download" resource={group}>
+              <Button
+                href={`/files/${file.id}/download`}
+                startIcon={<FileDownloadIcon />}
+              />
+            </Restricted>
           </Grid>
           <Grid item xs={1} md={1} order={{ xs: 4, md: 6 }}>
-            <ConfirmButton
-              onConfirm={onConfirm}
-              variant="text"
-              confirmTitle={t('shared_files.delete_confirm_title', {
-                name: file.name,
-              })}
-              confirmMessage={t('shared_files.delete_confirm_message', {
-                name: file.name,
-              })}
-              confirmButton={t('shared_files.delete_confirm_button')}
+            <Restricted
+              permission="file.delete"
+              resource={{ group: group, file: file }}
             >
-              <DeleteIcon sx={{ marginTop: '-5px', marginLeft: '-35px' }} />
-            </ConfirmButton>
+              <ConfirmButton
+                onConfirm={onConfirm}
+                variant="text"
+                confirmTitle={t('shared_files.delete_confirm_title', {
+                  name: file.name,
+                })}
+                confirmMessage={t('shared_files.delete_confirm_message', {
+                  name: file.name,
+                })}
+                confirmButton={t('shared_files.delete_confirm_button')}
+              >
+                <DeleteIcon sx={{ marginTop: '-5px', marginLeft: '-35px' }} />
+              </ConfirmButton>
+            </Restricted>
           </Grid>
           <Grid item xs={11} md={12} order={{ xs: 9, md: 7 }}>
             <Typography variant="body1">{file.description}</Typography>
