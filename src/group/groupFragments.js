@@ -16,6 +16,7 @@ export const dataEntries = `
           size
           createdAt
           createdBy {
+            id
             lastName
             firstName
           }
