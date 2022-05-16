@@ -214,7 +214,7 @@ const Map = props => {
         enableSearch={props.enableSearch}
         enableDraw={props.enableDraw}
       />
-      {'undefined' !== typeof props.enableSearch && (
+      {props.enableSearch && (
         <ZoomControl position={isSmall ? 'bottomleft' : 'topleft'} />
       )}
       {props.children}
