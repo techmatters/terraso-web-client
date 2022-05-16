@@ -1,5 +1,6 @@
 import React from 'react';
 
+import filesize from 'filesize';
 import { useTranslation } from 'react-i18next';
 
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -40,7 +41,7 @@ const FileCard = ({ file }) => {
             <Link href={`/files/${file.id}/download`}>{file.name}</Link>
           </Grid>
           <Grid item xs={2} md={1} order={{ xs: 6, md: 3 }}>
-            {file.size}MB
+            {filesize(file.size, { round: 0 })}
           </Grid>
           <Grid item xs={9} md={4} order={{ xs: 7, md: 4 }}>
             {formatDate(i18n.resolvedLanguage, file.createdAt)}, by{' '}
