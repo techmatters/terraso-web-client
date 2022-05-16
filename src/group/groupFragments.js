@@ -13,6 +13,7 @@ export const dataEntries = `
           description
           resourceType
           url
+          size
           createdAt
           createdBy {
             lastName
