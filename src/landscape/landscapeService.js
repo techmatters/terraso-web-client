@@ -1,8 +1,12 @@
 import _ from 'lodash/fp';
 
 import * as gisService from 'gis/gisService';
-import { accountMembership } from 'group/groupFragments';
-import { extractAccountMembership, extractMembersInfo } from 'group/groupUtils';
+import { accountMembership, dataEntries } from 'group/groupFragments';
+import {
+  extractAccountMembership,
+  extractDataEntries,
+  extractMembersInfo,
+} from 'group/groupUtils';
 import { defaultGroup, landscapeFields } from 'landscape/landscapeFragments';
 import * as terrasoApi from 'terrasoBackend/api';
 
@@ -47,6 +51,7 @@ const getDefaultGroup = landscape => {
   return {
     ..._.pick(['id', 'slug'], group),
     membersInfo: extractMembersInfo(group),
+    dataEntries: extractDataEntries(group),
   };
 };
 
@@ -63,7 +68,8 @@ export const fetchLandscapeToView = (slug, currentUser) => {
       }
     }
     ${landscapeFields}
-    ${defaultGroup}
+    ${dataEntries}
+    ${defaultGroup('...dataEntries')}
   `;
   return (
     terrasoApi
@@ -104,7 +110,7 @@ export const fetchLandscapes = (params, currentUser) => {
       }
     }
     ${landscapeFields}
-    ${defaultGroup}
+    ${defaultGroup()}
   `;
   return terrasoApi
     .request(query, { accountEmail: currentUser.email })

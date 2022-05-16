@@ -246,6 +246,14 @@
         "form_location_select": "Select location",
         "form_name_placeholder": "Your landscape’s official name"
     },
+    "shared_files": {
+        "title": "Shared files",
+        "description": "Only the members of your group can download the files. Read more about sharing files.",
+        "upload_button": "Upload Files",
+        "delete_confirm_title": "Delete “{{name}}”?",
+        "delete_confirm_message": "Are you sure you wish to delete the file “{{name}}”?",
+        "delete_confirm_button": "Delete File"
+    },
     "common": {
         "dialog_cancel_label": "Cancel",
         "terraso_projectName": "Terraso",

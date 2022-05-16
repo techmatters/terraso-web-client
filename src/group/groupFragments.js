@@ -2,6 +2,28 @@ import { userFields } from 'user/userFragments';
 
 const MEMBERS_INFO_SAMPLE_SIZE = 5;
 
+export const dataEntries = `
+  fragment dataEntries on GroupNode {
+    dataEntries {
+      edges {
+        node {
+          id
+          slug
+          name
+          description
+          resourceType
+          url
+          createdAt
+          createdBy {
+            lastName
+            firstName
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const groupFields = `
   fragment groupFields on GroupNode {
     id
