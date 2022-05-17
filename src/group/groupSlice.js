@@ -67,7 +67,7 @@ export const deleteSharedDataFile = createAsyncThunk(
   groupService.deleteSharedDataFile,
   (group, { file }) => ({
     severity: 'success',
-    content: 'file.deleted',
+    content: 'shared_files.deleted',
     params: { name: file.name },
   })
 );
