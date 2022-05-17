@@ -1,6 +1,7 @@
 import React from 'react';
 
 import filesize from 'filesize';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -156,7 +157,9 @@ const FileCard = ({ file, group }) => {
             </Restricted>
           </Grid>
           <Grid item xs={11} md={12} order={{ xs: 9, md: 7 }}>
-            <Typography variant="body1">{file.description}</Typography>
+            <Typography variant="body1">
+              {_.get('description', file)}
+            </Typography>
           </Grid>
           <Grid item xs={1} order={{ xs: 5 }} display={{ md: 'none' }} />
           <Grid item xs={1} order={{ xs: 8 }} display={{ md: 'none' }} />
