@@ -2,6 +2,7 @@ import React from 'react';
 
 import filesize from 'filesize';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
@@ -18,14 +19,23 @@ import {
 import ConfirmButton from 'common/components/ConfirmButton';
 import Restricted from 'permissions/components/Restricted';
 
+import { deleteSharedDataFile } from 'group/groupSlice';
+
 const formatDate = (language, dateString) =>
   new Intl.DateTimeFormat(language).format(Date.parse(dateString));
 
 const FileCard = ({ file, group }) => {
   const { i18n, t } = useTranslation();
+  const dispatch = useDispatch();
+
+  // TODO: get presigned URL from backend and send user there
+  const handleDownload = e => {
+    e.preventDefault();
+    window.open(file.url, '_blank');
+  };
 
   const onConfirm = () => {
-    console.log('deleting...');
+    dispatch(deleteSharedDataFile({ groupSlug: group.slug, file }));
   };
 
   return (
@@ -35,7 +45,7 @@ const FileCard = ({ file, group }) => {
           <Grid item xs={1} md={1} order={{ xs: 1, md: 1 }}>
             <Restricted permission="file.download" resource={group}>
               <Button
-                href={`/files/${file.id}/download`}
+                onClick={handleDownload}
                 startIcon={<InsertDriveFileOutlinedIcon />}
                 sx={{ marginTop: '-5px' }}
               />
@@ -47,7 +57,13 @@ const FileCard = ({ file, group }) => {
               resource={group}
               FallbackComponent={() => <Typography>{file.name}</Typography>}
             >
-              <Link href={`/files/${file.id}/download`}>{file.name}</Link>
+              <Link
+                href="#"
+                sx={{ cursor: 'pointer' }}
+                onClick={handleDownload}
+              >
+                {file.name}
+              </Link>
             </Restricted>
           </Grid>
           <Grid item xs={2} md={1} order={{ xs: 6, md: 3 }}>
@@ -60,7 +76,7 @@ const FileCard = ({ file, group }) => {
           <Grid item xs={1} md={1} order={{ xs: 3, md: 5 }}>
             <Restricted permission="file.download" resource={group}>
               <Button
-                href={`/files/${file.id}/download`}
+                onClick={handleDownload}
                 startIcon={<FileDownloadIcon />}
               />
             </Restricted>
