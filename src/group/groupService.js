@@ -306,3 +306,21 @@ export const leaveGroup = ({ groupSlug, membershipId }, currentUser) => {
       membersInfo: extractMembersInfo(group),
     }));
 };
+
+export const deleteSharedDataFile = ({ groupSlug, file }, currentUser) => {
+  const query = `
+    mutation deleteSharedDataFile($id: ID!) {
+      deleteDataEntry(input: { id: $id }) {
+        dataEntry {
+          id
+        }
+      }
+    }
+  `;
+  return terrasoApi
+    .request(query, {
+      id: file.id,
+      accountEmail: currentUser.email,
+    })
+    .then(() => fetchGroupToView(groupSlug, currentUser));
+};
