@@ -21,8 +21,14 @@ import Restricted from 'permissions/components/Restricted';
 
 import { deleteSharedDataFile } from 'group/groupSlice';
 
+import theme from 'theme';
+
+const ICON_SIZE = 32;
+
 const formatDate = (language, dateString) =>
-  new Intl.DateTimeFormat(language).format(Date.parse(dateString));
+  new Intl.DateTimeFormat(language, { dateStyle: 'medium' }).format(
+    Date.parse(dateString)
+  );
 
 const FileCard = ({ file, group }) => {
   const { i18n, t } = useTranslation();
@@ -38,16 +44,46 @@ const FileCard = ({ file, group }) => {
     dispatch(deleteSharedDataFile({ groupSlug: group.slug, file }));
   };
 
+  const fileIcon = () => {
+    switch (file.resourceType) {
+      case 'csv':
+      case 'xls':
+      case 'xlsx':
+        return (
+          <img
+            style={{ filter: 'opacity(50%)' }}
+            width="24"
+            height="24"
+            src={`/files/${file.resourceType}.png`}
+            alt={file.resourceType.toUpperCase()}
+          />
+        );
+    }
+
+    return (
+      <InsertDriveFileOutlinedIcon
+        sx={{ fontSize: ICON_SIZE, color: theme.palette.gray.mid2 }}
+      />
+    );
+  };
+
   return (
     <Card variant="outlined">
       <CardContent>
-        <Grid container spacing={2}>
+        <Grid
+          container
+          spacing={2}
+          sx={{ fontSize: 14, color: theme.palette.gray.mid2 }}
+        >
           <Grid item xs={1} md={1} order={{ xs: 1, md: 1 }}>
             <Restricted permission="file.download" resource={group}>
               <Button
                 onClick={handleDownload}
-                startIcon={<InsertDriveFileOutlinedIcon />}
-                sx={{ marginTop: '-5px' }}
+                startIcon={fileIcon()}
+                sx={{
+                  marginTop: '-5px',
+                  color: theme.palette.black,
+                }}
               />
             </Restricted>
           </Grid>
@@ -59,7 +95,11 @@ const FileCard = ({ file, group }) => {
             >
               <Link
                 href="#"
-                sx={{ cursor: 'pointer' }}
+                sx={{
+                  cursor: 'pointer',
+                  fontSize: 18,
+                  color: theme.palette.black,
+                }}
                 onClick={handleDownload}
               >
                 {file.name}
@@ -74,14 +114,6 @@ const FileCard = ({ file, group }) => {
             {t('user.full_name', { user: file.createdBy })}
           </Grid>
           <Grid item xs={1} md={1} order={{ xs: 3, md: 5 }}>
-            <Restricted permission="file.download" resource={group}>
-              <Button
-                onClick={handleDownload}
-                startIcon={<FileDownloadIcon />}
-              />
-            </Restricted>
-          </Grid>
-          <Grid item xs={1} md={1} order={{ xs: 4, md: 6 }}>
             <Restricted
               permission="file.delete"
               resource={{ group: group, file: file }}
@@ -97,8 +129,30 @@ const FileCard = ({ file, group }) => {
                 })}
                 confirmButton={t('shared_files.delete_confirm_button')}
               >
-                <DeleteIcon sx={{ marginTop: '-5px', marginLeft: '-35px' }} />
+                <DeleteIcon
+                  sx={{
+                    fontSize: ICON_SIZE,
+                    color: theme.palette.gray.mid2,
+                  }}
+                />
               </ConfirmButton>
+            </Restricted>
+          </Grid>
+          <Grid item xs={1} md={1} order={{ xs: 4, md: 6 }}>
+            <Restricted permission="file.download" resource={group}>
+              <Button
+                onClick={handleDownload}
+                startIcon={
+                  <FileDownloadIcon
+                    sx={{
+                      marginTop: '2px',
+                      width: ICON_SIZE,
+                      height: ICON_SIZE,
+                      color: theme.palette.gray.mid2,
+                    }}
+                  />
+                }
+              />
             </Restricted>
           </Grid>
           <Grid item xs={11} md={12} order={{ xs: 9, md: 7 }}>
