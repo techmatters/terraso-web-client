@@ -1,13 +1,14 @@
 import React from 'react';
 
 import _ from 'lodash/fp';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import {
   Button,
   Card,
   CardContent,
   CardHeader,
+  Link,
   Typography,
 } from '@mui/material';
 
@@ -40,11 +41,19 @@ const SharedFilesCard = ({ group }) => {
           {sharedFiles.map((item, index) => (
             <FileCard key={index} file={item} group={group} />
           ))}
+
           <Typography
             variant="body1"
             sx={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}
           >
-            {t('shared_files.description')}
+            {' '}
+            <Trans i18nKey="shared_files.description">
+              Prefix
+              <Link href={t('shared_files.learn_more_url')} target="_blank">
+                link
+              </Link>
+              .
+            </Trans>
           </Typography>
           <Button variant="outlined">{t('shared_files.upload_button')}</Button>
         </CardContent>
