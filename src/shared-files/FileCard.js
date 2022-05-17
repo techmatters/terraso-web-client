@@ -68,6 +68,8 @@ const FileCard = ({ file, group }) => {
     );
   };
 
+  const description = _.get('description', file);
+
   return (
     <Card variant="outlined">
       <CardContent>
@@ -156,11 +158,11 @@ const FileCard = ({ file, group }) => {
               />
             </Restricted>
           </Grid>
-          <Grid item xs={11} md={12} order={{ xs: 9, md: 7 }}>
-            <Typography variant="body1">
-              {_.get('description', file)}
-            </Typography>
-          </Grid>
+          {description && (
+            <Grid item xs={11} md={12} order={{ xs: 9, md: 7 }}>
+              <Typography variant="body1">{description}</Typography>
+            </Grid>
+          )}
           <Grid item xs={1} order={{ xs: 5 }} display={{ md: 'none' }} />
           <Grid item xs={1} order={{ xs: 8 }} display={{ md: 'none' }} />
         </Grid>
