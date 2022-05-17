@@ -256,6 +256,16 @@
         "not_found_error_code": "Código de error: 404",
         "not_found_help_message": "Puedes <1>contarnos qué salió mal</1>."
     },
+    "shared_files": {
+        "title": "[TODO]Shared files",
+        "description": "[TODO]Only the members of your group can download the files. <1>Read more about sharing files</1>.",
+        "learn_more_url": "http://terraso.org/es/ayuda/sharing-files/",
+        "upload_button": "[TODO]Upload Files",
+        "delete_confirm_title": "[TODO]Delete “{{name}}”?",
+        "delete_confirm_message": "[TODO]Are you sure you wish to delete the file “{{name}}”?",
+        "delete_confirm_button": "[TODO]Delete File",
+        "deleted": "[TODO]The file “{{name}}” was deleted."
+    },
     "form": {
         "required_label": "Obligatorio",
         "validation_field_invalid": "{{path}} debe ser válido",
