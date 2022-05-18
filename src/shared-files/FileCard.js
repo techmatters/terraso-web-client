@@ -55,7 +55,7 @@ const FileCard = ({ file, group }) => {
             style={{ filter: 'opacity(50%)' }}
             width="24"
             height="24"
-            src={`/files/${file.resourceType}.png`}
+            src={`/files/${file.resourceType.substring(0, 3)}.png`}
             alt={file.resourceType.toUpperCase()}
           />
         );
