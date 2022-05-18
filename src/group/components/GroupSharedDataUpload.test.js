@@ -1,9 +1,9 @@
-import { act, fireEvent, render, screen, within } from 'tests/utils';
+import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 
 import React from 'react';
 
 import _ from 'lodash/fp';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import * as terrasoApi from 'terrasoBackend/api';
 
@@ -14,6 +14,7 @@ jest.mock('terrasoBackend/api');
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(),
+  useNavigate: jest.fn(),
 }));
 
 const setup = async () => {
@@ -99,4 +100,71 @@ test('GroupSharedDataUpload: Error - Empty filename', async () => {
   expect(screen.getByRole('button', { name: 'Upload Files' })).toHaveAttribute(
     'disabled'
   );
+});
+
+test('GroupSharedDataUpload: Error - API', async () => {
+  terrasoApi.request.mockResolvedValue(
+    _.set(
+      'error.all[0]',
+      'Test Error',
+      {}
+    )
+  );
+  await dropFiles(
+    Array(5)
+      .fill(0)
+      .map(
+        (item, index) =>
+          new File(['content'], `test${index}.csv`, { type: 'text/plain' })
+      )
+  );
+  const uploadButton = screen.getByRole('button', { name: 'Upload Files' });
+  await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
+  await act(async () => fireEvent.click(uploadButton));
+  const file = screen.getByRole('region', { name: 'test1' });
+  expect(await within(file).findByText('Test Error')).toBeInTheDocument();
+});
+
+test('GroupSharedDataUpload: Partial Success', async () => {
+  terrasoApi.request.mockResolvedValueOnce(
+    _.set(
+      'error.all[0]',
+      'Test Error',
+      {}
+    )
+  );
+  terrasoApi.request.mockResolvedValueOnce({});
+  await dropFiles(
+    Array(2)
+      .fill(0)
+      .map(
+        (item, index) =>
+          new File(['content'], `test${index}.csv`, { type: 'text/plain' })
+      )
+  );
+  const uploadButton = screen.getByRole('button', { name: 'Upload Files' });
+  await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
+  await act(async () => fireEvent.click(uploadButton));
+  const file0 = screen.getByRole('region', { name: 'test0' });
+  expect(await within(file0).findByText('Test Error')).toBeInTheDocument();
+  const file1 = screen.getByRole('region', { name: 'test1' });
+  expect(await within(file1).findByText('[TODO] File upload succesfuly')).toBeInTheDocument();
+});
+
+test('GroupSharedDataUpload: Complete Success', async () => {
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+  terrasoApi.request.mockResolvedValueOnce({});
+  await dropFiles(
+    Array(2)
+      .fill(0)
+      .map(
+        (item, index) =>
+          new File(['content'], `test${index}.csv`, { type: 'text/plain' })
+      )
+  );
+  const uploadButton = screen.getByRole('button', { name: 'Upload Files' });
+  await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
+  await act(async () => fireEvent.click(uploadButton));
+  expect(navigate.mock.calls[0]).toEqual(['/groups/slug-1']);
 });

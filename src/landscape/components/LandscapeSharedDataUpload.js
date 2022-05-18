@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
@@ -25,16 +25,16 @@ const LandscapeSharedDataUpload = () => {
     dispatch(fetchLandscapeUpload(slug));
   }, [dispatch, slug]);
 
+  const onCompleteSuccess = useCallback(() => {
+    navigate(`/landscapes/${slug}`);
+  }, [navigate, slug]);
+
   if (fetching) {
     return <PageLoader />;
   }
 
   const onCancel = () => {
     navigate(-1);
-  };
-
-  const onCompleteSuccess = () => {
-    navigate(`/landscapes/${slug}`);
   };
 
   return (

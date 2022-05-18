@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,16 +24,16 @@ const GroupSharedDataUpload = () => {
     dispatch(fetchGroupUpload(slug));
   }, [dispatch, slug]);
 
+  const onCompleteSuccess = useCallback(() => {
+    navigate(`/groups/${slug}`);
+  }, [navigate, slug]);
+
   if (fetching) {
     return <PageLoader />;
   }
 
   const onCancel = () => {
     navigate(-1);
-  };
-
-  const onCompleteSuccess = () => {
-    navigate(`/groups/${slug}`);
   };
 
   return (
