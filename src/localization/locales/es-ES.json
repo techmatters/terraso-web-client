@@ -259,6 +259,7 @@
     "shared_files": {
         "title": "[TODO]Shared files",
         "description": "[TODO]Only the members of your group can download the files. <1>Read more about sharing files</1>.",
+        "no_files": "[TODO]No files have been shared with this group.",
         "learn_more_url": "http://terraso.org/es/ayuda/sharing-files/",
         "upload_button": "[TODO]Upload Files",
         "delete_confirm_title": "[TODO]Delete “{{name}}”?",
