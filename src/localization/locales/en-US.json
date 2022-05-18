@@ -249,7 +249,6 @@
     "shared_files": {
         "title": "Shared files",
         "description": "Only the members of your group can download the files. <1>Read more about sharing files</1>.",
-        "no_files": "No files have been shared with this group.",
         "learn_more_url": "http://terraso.org/help/sharing-files/",
         "upload_button": "Upload Files",
         "delete_confirm_title": "Delete “{{name}}”?",

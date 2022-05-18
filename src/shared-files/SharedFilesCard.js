@@ -35,15 +35,10 @@ const SharedFilesCard = ({ group }) => {
           }
         />
         <CardContent>
-          {hasFiles ? (
+          {hasFiles &&
             sharedFiles.map((item, index) => (
               <FileCard key={index} file={item} group={group} />
-            ))
-          ) : (
-            <Typography variant="body1" sx={{ marginBottom: theme.spacing(2) }}>
-              {t('shared_files.no_files')}
-            </Typography>
-          )}
+            ))}
 
           {hasFiles && (
             <Typography
