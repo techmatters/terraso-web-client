@@ -35,28 +35,28 @@ const SharedFilesCard = ({ group }) => {
           }
         />
         <CardContent>
-          {hasFiles &&
-            sharedFiles.map((item, index) => (
-              <FileCard key={index} file={item} group={group} />
-            ))}
-
           {hasFiles && (
-            <Typography
-              variant="body1"
-              sx={{
-                marginTop: theme.spacing(2),
-                marginBottom: theme.spacing(2),
-              }}
-            >
-              {' '}
-              <Trans i18nKey="shared_files.description">
-                Prefix
-                <Link href={t('shared_files.learn_more_url')} target="_blank">
-                  link
-                </Link>
-                .
-              </Trans>
-            </Typography>
+            <>
+              {sharedFiles.map((item, index) => (
+                <FileCard key={index} file={item} group={group} />
+              ))}
+              <Typography
+                variant="body1"
+                sx={{
+                  marginTop: theme.spacing(2),
+                  marginBottom: theme.spacing(2),
+                }}
+              >
+                {' '}
+                <Trans i18nKey="shared_files.description">
+                  Prefix
+                  <Link href={t('shared_files.learn_more_url')} target="_blank">
+                    link
+                  </Link>
+                  .
+                </Trans>
+              </Typography>
+            </>
           )}
           <Button variant="outlined">{t('shared_files.upload_button')}</Button>
         </CardContent>

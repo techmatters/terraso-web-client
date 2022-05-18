@@ -45,7 +45,7 @@ const FileCard = ({ file, group }) => {
     dispatch(deleteSharedDataFile({ groupSlug: group.slug, file }));
   };
 
-  const fileIcon = () => {
+  const FileIcon = () => {
     switch (file.resourceType) {
       case 'csv':
       case 'xls':
@@ -59,13 +59,13 @@ const FileCard = ({ file, group }) => {
             alt={file.resourceType.toUpperCase()}
           />
         );
+      default:
+        return (
+          <InsertDriveFileOutlinedIcon
+            sx={{ fontSize: ICON_SIZE, color: theme.palette.gray.mid2 }}
+          />
+        );
     }
-
-    return (
-      <InsertDriveFileOutlinedIcon
-        sx={{ fontSize: ICON_SIZE, color: theme.palette.gray.mid2 }}
-      />
-    );
   };
 
   const description = _.get('description', file);
@@ -82,7 +82,7 @@ const FileCard = ({ file, group }) => {
             <Restricted permission="file.download" resource={group}>
               <Button
                 onClick={handleDownload}
-                startIcon={fileIcon()}
+                startIcon={<FileIcon />}
                 sx={{
                   marginTop: '-5px',
                   color: theme.palette.black,
