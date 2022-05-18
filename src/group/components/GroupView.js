@@ -29,7 +29,7 @@ import { fetchGroupView } from 'group/groupSlice';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
-import SharedFilesCard from 'sharedData/components/SharedFilesCard';
+import SharedDataCard from 'sharedData/components/SharedDataCard';
 
 import { withProps } from 'react-hoc';
 
@@ -152,7 +152,7 @@ const GroupView = () => {
           </GroupContextProvider>
         </Grid>
         <Grid item xs={12} md={12}>
-          <SharedFilesCard group={group} />
+          <SharedDataCard group={group} />
         </Grid>
       </Grid>
     </PageContainer>

@@ -1,6 +1,6 @@
 import _ from 'lodash/fp';
 
-const isAllowedToDeleteFile = ({ resource: groupAndFile, user }) => {
+const isAllowedToDeleteSharedData = ({ resource: groupAndFile, user }) => {
   const isManager =
     _.get('accountMembership.userRole', groupAndFile.group) === 'MANAGER';
   const isOwner =
@@ -8,12 +8,12 @@ const isAllowedToDeleteFile = ({ resource: groupAndFile, user }) => {
   return Promise.resolve(isManager) || Promise.resolve(isOwner);
 };
 
-const isAllowedToDownloadFile = ({ resource: group }) => {
+const isAllowedToDownloadSharedData = ({ resource: group }) => {
   const isMember = Boolean(_.get('accountMembership.userRole', group));
   return Promise.resolve(isMember);
 };
 
-const isAllowedToAddFile = ({ resource: group }) => {
+const isAllowedToAddSharedData = ({ resource: group }) => {
   const isMember = Boolean(_.get('accountMembership.userRole', group));
   return Promise.resolve(isMember);
 };
@@ -47,9 +47,9 @@ const rules = {
   'group.manageMembers': isAllowedToManagerGroupMembers,
   'group.viewFiles': isAllowedToViewGroupSharedData,
   'landscape.change': isAllowedToChangeLandscape,
-  'file.add': isAllowedToAddFile,
-  'file.download': isAllowedToDownloadFile,
-  'file.delete': isAllowedToDeleteFile,
+  'sharedData.add': isAllowedToAddSharedData,
+  'sharedData.download': isAllowedToDownloadSharedData,
+  'sharedData.delete': isAllowedToDeleteSharedData,
 };
 
 export default rules;

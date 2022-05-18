@@ -129,7 +129,7 @@ const File = props => {
             }}
             severity="success"
           >
-            {t('shared_files.upload_file_success')}
+            {t('shared_data.upload_file_success')}
           </Alert>
         )}
         {apiError && (
@@ -147,7 +147,7 @@ const File = props => {
           <FileField
             required
             id={`filename-${index}`}
-            label={t('shared_files.upload_filename_label')}
+            label={t('shared_data.upload_filename_label')}
             value={file.name}
             onChange={onFieldChange('name')}
             error={_.get(`${file.id}.name`, errors)}
@@ -166,13 +166,13 @@ const File = props => {
         </Stack>
         <FileField
           id={`description-${index}`}
-          label={t('shared_files.upload_description_label')}
+          label={t('shared_data.upload_description_label')}
           value={file.description}
           onChange={onFieldChange('description')}
           error={_.get(`${file.id}.description`, errors)}
           disabled={isUploading}
           inputProps={{
-            placeholder: t('shared_files.upload_description_placeholder'),
+            placeholder: t('shared_data.upload_description_placeholder'),
           }}
         />
       </Stack>
@@ -198,7 +198,7 @@ const SelectedFiles = () => {
     >
       {_.isEmpty(files) ? (
         <Typography align="center">
-          {t('shared_files.upload_no_files')}
+          {t('shared_data.upload_no_files')}
         </Typography>
       ) : (
         files.map((file, index) => (
@@ -285,7 +285,7 @@ const SharedDataUpload = props => {
         _.toPairs,
         // Generate localized messages
         _.map(([errorCode, rejectedFiles]) =>
-          t(`shared_files.upload_rejected_${errorCode}`, {
+          t(`shared_data.upload_rejected_${errorCode}`, {
             rejectedFiles,
             maxSize: SHARED_DATA_MAX_SIZE / 1000000.0,
             maxFiles: SHARED_DATA_MAX_FILES,
@@ -340,7 +340,7 @@ const SharedDataUpload = props => {
         sx={{ padding: 2 }}
       >
         <Typography sx={{ fontWeight: 700 }}>
-          {t('shared_files.upload_description')}
+          {t('shared_data.upload_description')}
         </Typography>
         <Stack direction={{ xs: 'column', md: 'row' }}>
           <DropZone
@@ -380,10 +380,10 @@ const SharedDataUpload = props => {
           onClick={onSave}
           sx={{ paddingLeft: 5, paddingRight: 5 }}
         >
-          {t('shared_files.upload_save')}
+          {t('shared_data.upload_save')}
         </LoadingButton>
         <Button variant="text" onClick={onCancel}>
-          {t('shared_files.upload_cancel')}
+          {t('shared_data.upload_cancel')}
         </Button>
       </Stack>
     </>

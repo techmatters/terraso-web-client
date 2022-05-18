@@ -15,7 +15,7 @@ import {
 
 import Restricted from 'permissions/components/Restricted';
 
-import FileCard from './FileCard';
+import SharedDataEntryCard from './SharedDataEntryCard';
 
 import theme from 'theme';
 
@@ -31,7 +31,7 @@ const SharedFilesCard = ({ group }) => {
           disableTypography
           title={
             <Typography variant="h2" id="group-view-card-title">
-              {t('shared_files.title')}
+              {t('shared_data.title')}
             </Typography>
           }
         />
@@ -39,7 +39,7 @@ const SharedFilesCard = ({ group }) => {
           {hasFiles && (
             <>
               {sharedFiles.map((item, index) => (
-                <FileCard key={index} file={item} group={group} />
+                <SharedDataEntryCard key={index} file={item} group={group} />
               ))}
               <Typography
                 variant="body1"
@@ -49,9 +49,9 @@ const SharedFilesCard = ({ group }) => {
                 }}
               >
                 {' '}
-                <Trans i18nKey="shared_files.description">
+                <Trans i18nKey="shared_data.description">
                   Prefix
-                  <Link href={t('shared_files.learn_more_url')} target="_blank">
+                  <Link href={t('shared_data.learn_more_url')} target="_blank">
                     link
                   </Link>
                   .
@@ -64,7 +64,7 @@ const SharedFilesCard = ({ group }) => {
             component={RouterLink}
             to={`/groups/${group.slug}/upload`}
           >
-            {t('shared_files.upload_button')}
+            {t('shared_data.upload_button')}
           </Button>
         </CardContent>
       </Card>
