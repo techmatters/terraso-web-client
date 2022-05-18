@@ -59,7 +59,7 @@ test('AccountProfile: Display Avatar with missing image', async () => {
 });
 
 test('AccountProfile: Save', async () => {
-  terrasoApi.request.mockResolvedValue(
+  terrasoApi.requestGraphQL.mockResolvedValue(
     _.set(
       'updateUser.user',
       {
@@ -98,8 +98,8 @@ test('AccountProfile: Save', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
   );
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
-  expect(terrasoApi.request.mock.calls[0][1]).toStrictEqual({
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL.mock.calls[0][1]).toStrictEqual({
     input: {
       id: 'user-id',
       firstName: 'Pablo',
@@ -108,7 +108,7 @@ test('AccountProfile: Save', async () => {
   });
 });
 test('AccountProfile: Save language', async () => {
-  terrasoApi.request.mockResolvedValueOnce(
+  terrasoApi.requestGraphQL.mockResolvedValueOnce(
     _.set(
       'updateUser.user',
       {
@@ -124,7 +124,7 @@ test('AccountProfile: Save language', async () => {
       {}
     )
   );
-  terrasoApi.request.mockResolvedValueOnce(
+  terrasoApi.requestGraphQL.mockResolvedValueOnce(
     _.set(
       'updateUserPreference.preference',
       { key: 'language', value: 'es-ES' },
@@ -164,15 +164,15 @@ test('AccountProfile: Save language', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
   );
-  expect(terrasoApi.request).toHaveBeenCalledTimes(2);
-  expect(terrasoApi.request.mock.calls[0][1]).toStrictEqual({
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL.mock.calls[0][1]).toStrictEqual({
     input: {
       id: 'user-id',
       firstName: 'Pablo',
       lastName: 'Perez',
     },
   });
-  expect(terrasoApi.request.mock.calls[1][1]).toStrictEqual({
+  expect(terrasoApi.requestGraphQL.mock.calls[1][1]).toStrictEqual({
     input: {
       key: 'language',
       userEmail: 'group@group.org',
@@ -181,7 +181,7 @@ test('AccountProfile: Save language', async () => {
   });
 });
 test('AccountProfile: Save error', async () => {
-  terrasoApi.request.mockRejectedValueOnce('Save Error');
+  terrasoApi.requestGraphQL.mockRejectedValueOnce('Save Error');
 
   const { inputs } = await setup({
     account: {
@@ -205,7 +205,7 @@ test('AccountProfile: Save error', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
   );
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
   // Test error display
   expect(screen.getByText(/Save Error/i)).toBeInTheDocument();

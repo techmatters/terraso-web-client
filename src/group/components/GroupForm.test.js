@@ -53,12 +53,12 @@ beforeEach(() => {
 });
 
 test('GroupForm: Display error', async () => {
-  terrasoApi.request.mockRejectedValue(['Load error']);
+  terrasoApi.requestGraphQL.mockRejectedValue(['Load error']);
   await render(<GroupForm />);
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
 test('GroupForm: Display loader', async () => {
-  terrasoApi.request.mockReturnValue(new Promise(() => {}));
+  terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
   await render(<GroupForm />);
   const loader = screen.getByRole('progressbar', {
     name: 'Loading',
@@ -67,7 +67,7 @@ test('GroupForm: Display loader', async () => {
   expect(loader).toBeInTheDocument();
 });
 test('GroupForm: Fill form', async () => {
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       groups: {
         edges: [
@@ -85,7 +85,7 @@ test('GroupForm: Fill form', async () => {
   );
   const { inputs } = await setup();
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(inputs.name).toHaveValue('Group name');
   expect(inputs.description).toHaveValue('Group description');
   expect(inputs.email).toHaveValue('group@group.org');
@@ -94,7 +94,7 @@ test('GroupForm: Fill form', async () => {
 test('GroupForm: Show cancel', async () => {
   const navigate = jest.fn();
   useNavigate.mockReturnValue(navigate);
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       groups: {
         edges: [
@@ -112,7 +112,7 @@ test('GroupForm: Show cancel', async () => {
   );
   const { inputs } = await setup();
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(inputs.name).toHaveValue('Group name');
   expect(inputs.description).toHaveValue('Group description');
   expect(inputs.email).toHaveValue('group@group.org');
@@ -124,7 +124,7 @@ test('GroupForm: Show cancel', async () => {
   expect(navigate.mock.calls[0]).toEqual([-1]);
 });
 test('GroupForm: Input change', async () => {
-  terrasoApi.request.mockReturnValueOnce(
+  terrasoApi.requestGraphQL.mockReturnValueOnce(
     Promise.resolve({
       groups: {
         edges: [
@@ -163,7 +163,7 @@ test('GroupForm: Input change', async () => {
   expect(inputs.website).toHaveValue('https://www.other.org');
 });
 test('GroupForm: Input validation', async () => {
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       groups: {
         edges: [
@@ -205,7 +205,7 @@ test('GroupForm: Input validation', async () => {
 });
 
 test('GroupForm: website accepts address without protocol', async () => {
-  terrasoApi.request
+  terrasoApi.requestGraphQL
     .mockResolvedValueOnce({
       groups: {
         edges: [
@@ -237,13 +237,13 @@ test('GroupForm: website accepts address without protocol', async () => {
   fireEvent.change(inputs.website, { target: { value: 'example.org' } });
 
   await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
-  const saveCall = terrasoApi.request.mock.calls[1];
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[1];
 
   expect(saveCall[1].input.website).toEqual('https://example.org');
 });
 
 test('GroupForm: Save form', async () => {
-  terrasoApi.request
+  terrasoApi.requestGraphQL
     .mockResolvedValueOnce({
       groups: {
         edges: [
@@ -283,8 +283,8 @@ test('GroupForm: Save form', async () => {
   });
 
   await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
-  expect(terrasoApi.request).toHaveBeenCalledTimes(2);
-  const saveCall = terrasoApi.request.mock.calls[1];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[1];
   expect(saveCall[1]).toStrictEqual({
     input: {
       id: '1',
@@ -296,7 +296,7 @@ test('GroupForm: Save form', async () => {
   });
 });
 test('GroupForm: Save form error', async () => {
-  terrasoApi.request
+  terrasoApi.requestGraphQL
     .mockReturnValueOnce(
       Promise.resolve({
         groups: {
@@ -328,7 +328,7 @@ test('GroupForm: Save form error', async () => {
   });
 
   await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
-  expect(terrasoApi.request).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
 
   // Test error display
   expect(screen.getByText(/Save Error/i)).toBeInTheDocument();
@@ -339,13 +339,13 @@ test('GroupForm: Save form error', async () => {
   expect(inputs.email).toHaveValue('new.email@group.org');
   expect(inputs.website).toHaveValue('https://www.other.org');
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
 });
 test('GroupForm: Avoid fetch', async () => {
   useParams.mockReturnValue({ id: 'new' });
   const { inputs } = await setup();
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(0);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(0);
 
   expect(inputs.name).toHaveValue('');
   expect(inputs.description).toHaveValue('');
@@ -358,7 +358,7 @@ test('GroupForm: Avoid fetch', async () => {
 });
 test('GroupForm: Save form (add)', async () => {
   useParams.mockReturnValue({});
-  terrasoApi.request.mockResolvedValueOnce({
+  terrasoApi.requestGraphQL.mockResolvedValueOnce({
     addGroup: {
       group: {
         name: 'New name',
@@ -381,8 +381,8 @@ test('GroupForm: Save form (add)', async () => {
   fireEvent.change(inputs.email, { target: { value: 'other@group.org' } });
 
   await act(async () => fireEvent.click(screen.getByText(/Create Group/i)));
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
-  const saveCall = terrasoApi.request.mock.calls[0];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[0];
   expect(saveCall[1]).toStrictEqual({
     input: {
       description: 'New description',

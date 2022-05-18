@@ -39,12 +39,12 @@ beforeEach(() => {
 });
 
 test('GroupView: Display error', async () => {
-  terrasoApi.request.mockRejectedValue(['Load error']);
+  terrasoApi.requestGraphQL.mockRejectedValue(['Load error']);
   await setup();
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
 test('GroupForm: Display loader', async () => {
-  terrasoApi.request.mockReturnValue(new Promise(() => {}));
+  terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
   await setup();
   const loader = screen.getByRole('progressbar', {
     name: 'Loading',
@@ -58,7 +58,7 @@ test('GroupView: Not found', async () => {
       json: () => [],
     })
   );
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       group: null,
     })
@@ -85,7 +85,7 @@ test('GroupView: Display data', async () => {
         },
       })),
   };
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       groups: {
         edges: [

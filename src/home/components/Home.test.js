@@ -37,14 +37,14 @@ beforeEach(() => {
 });
 
 test('Home: Display error', async () => {
-  terrasoApi.request.mockRejectedValue('Load error');
+  terrasoApi.requestGraphQL.mockRejectedValue('Load error');
   await setup();
   expect(
     screen.getByText(/Error loading data. Load error/i)
   ).toBeInTheDocument();
 });
 test('Home: Display loader', async () => {
-  terrasoApi.request.mockReturnValue(new Promise(() => {}));
+  terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
   await setup();
   const loaders = screen.getAllByRole('progressbar', {
     name: 'Loading',
@@ -54,7 +54,7 @@ test('Home: Display loader', async () => {
   loaders.forEach(role => expect(role).toBeInTheDocument());
 });
 test('Home: Display landscapes', async () => {
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       groups: {
         edges: [],
@@ -108,7 +108,7 @@ test('Home: Display landscapes', async () => {
   expect(screen.getByText(/Manager/i)).toBeInTheDocument();
 });
 test('Home: Display groups', async () => {
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       userIndependentGroups: {
         edges: [

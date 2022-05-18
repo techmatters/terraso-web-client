@@ -4,7 +4,6 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
-import SharedFilesCard from 'shared-files/SharedFilesCard';
 
 import EmailIcon from '@mui/icons-material/Email';
 import PublicIcon from '@mui/icons-material/Public';
@@ -30,6 +29,7 @@ import { fetchGroupView } from 'group/groupSlice';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
+import SharedFilesCard from 'sharedData/components/SharedFilesCard';
 
 import { withProps } from 'react-hoc';
 

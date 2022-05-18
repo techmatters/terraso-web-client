@@ -39,29 +39,13 @@ const handleGraphQLError = (data, inputData) => {
   return Promise.reject(messages);
 };
 
-export const request = async (query, variables) => {
-  const response = await fetch(
-    new URL(GRAPH_QL_ENDPOINT, TERRASO_API_URL).href,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${getToken()}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ query, variables }),
-    }
-  ).catch(error => {
-    logger.error('Terraso API: Failed to execute request', error);
-    return Promise.reject(['terraso_api.error_request_response']);
-  });
-
-  if (response.status === 401) {
-    await Promise.reject(UNAUTHENTICATED);
-  }
-
-  const jsonResponse = await response.json().catch(error => {
-    logger.error('Terraso API: Failed to parse response', error);
-    return Promise.reject(['terraso_api.error_request_response']);
+export const requestGraphQL = async (query, variables) => {
+  const jsonResponse = await request({
+    path: GRAPH_QL_ENDPOINT,
+    body: JSON.stringify({ query, variables }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 
   if (_.has('errors', jsonResponse)) {
@@ -78,4 +62,27 @@ export const request = async (query, variables) => {
   }
 
   return jsonResponse.data;
+};
+
+export const request = async ({ path, body, headers = {} }) => {
+  const response = await fetch(new URL(path, TERRASO_API_URL).href, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      ...headers,
+    },
+    body,
+  }).catch(error => {
+    logger.error('Terraso API: Failed to execute request', error);
+    return Promise.reject(['terraso_api.error_request_response']);
+  });
+
+  if (response.status === 401) {
+    await Promise.reject(UNAUTHENTICATED);
+  }
+
+  return await response.json().catch(error => {
+    logger.error('Terraso API: Failed to parse response', error);
+    return Promise.reject(['terraso_api.error_request_response']);
+  });
 };

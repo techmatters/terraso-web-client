@@ -35,13 +35,13 @@ const setup = async initialState => {
 };
 
 test('LandscapeMembers: Display error', async () => {
-  terrasoApi.request.mockRejectedValue('Load error');
+  terrasoApi.requestGraphQL.mockRejectedValue('Load error');
   await setup();
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
 test('LandscapeMembers: Display loader', async () => {
-  terrasoApi.request.mockReturnValue(new Promise(() => {}));
+  terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
   await setup();
   const loader = screen.getByRole('progressbar', {
     name: 'Loading',
@@ -50,7 +50,7 @@ test('LandscapeMembers: Display loader', async () => {
   expect(loader).toBeInTheDocument();
 });
 test('LandscapeMembers: Empty', async () => {
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve(
       _.set(
         'landscapes.edges[0].node',
@@ -104,7 +104,7 @@ test('LandscapeMembers: Display list', async () => {
     },
   };
 
-  terrasoApi.request
+  terrasoApi.requestGraphQL
     .mockReturnValueOnce(
       Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
     )
@@ -181,7 +181,7 @@ test('LandscapeMembers: Display list (small)', async () => {
     },
   };
 
-  terrasoApi.request
+  terrasoApi.requestGraphQL
     .mockReturnValueOnce(
       Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
     )
@@ -242,7 +242,7 @@ test('LandscapeMembers: Display list manager', async () => {
     },
   };
 
-  terrasoApi.request
+  terrasoApi.requestGraphQL
     .mockReturnValueOnce(
       Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
     )
@@ -316,7 +316,7 @@ test('LandscapeMembers: Manager actions', async () => {
     },
   };
 
-  terrasoApi.request
+  terrasoApi.requestGraphQL
     .mockReturnValueOnce(
       Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
     )

@@ -33,12 +33,12 @@ const setup = async initialState => {
 };
 
 test('LandscapeList: Display error', async () => {
-  terrasoApi.request.mockRejectedValue('Load error');
+  terrasoApi.requestGraphQL.mockRejectedValue('Load error');
   await setup();
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
 test('LandscapeList: Display loader', async () => {
-  terrasoApi.request.mockReturnValue(new Promise(() => {}));
+  terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
   await setup();
   const loader = screen.getByRole('progressbar', {
     name: 'Loading',
@@ -47,7 +47,7 @@ test('LandscapeList: Display loader', async () => {
   expect(loader).toBeInTheDocument();
 });
 test('LandscapeList: Empty', async () => {
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       landscapes: {
         edges: [],
@@ -110,7 +110,7 @@ test('LandscapeList: Display list', async () => {
       },
     }));
 
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       landscapes: {
         edges: landscapes,
@@ -189,7 +189,7 @@ test('LandscapeList: List sort', async () => {
       },
     }));
 
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       landscapes: {
         edges: landscapes,
@@ -273,7 +273,7 @@ test('LandscapeList: Display list (small screen)', async () => {
       },
     }));
 
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       landscapes: {
         edges: landscapes,

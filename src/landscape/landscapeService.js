@@ -35,7 +35,7 @@ export const fetchLandscapeToUpdate = slug => {
     ${landscapeFields}
   `;
   return terrasoApi
-    .request(query, { slug })
+    .requestGraphQL(query, { slug })
     .then(_.get('landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('not_found'))
     .then(landscape => ({
@@ -73,7 +73,7 @@ export const fetchLandscapeToView = (slug, currentUser) => {
   `;
   return (
     terrasoApi
-      .request(query, { slug, accountEmail: currentUser.email })
+      .requestGraphQL(query, { slug, accountEmail: currentUser.email })
       .then(_.get('landscapes.edges[0].node'))
       .then(landscape => landscape || Promise.reject('not_found'))
       .then(landscape => ({
@@ -97,6 +97,31 @@ export const fetchLandscapeToView = (slug, currentUser) => {
   );
 };
 
+export const fetchLandscapeToUploadSharedData = (slug, currentUser) => {
+  const query = `
+    query landscapes($slug: String!, $accountEmail: String!){
+      landscapes(slug: $slug) {
+        edges {
+          node {
+            ...landscapeFields
+            ...defaultGroup
+          }
+        }
+      }
+    }
+    ${landscapeFields}
+    ${defaultGroup()}
+  `;
+  return terrasoApi
+    .requestGraphQL(query, { slug, accountEmail: currentUser.email })
+    .then(_.get('landscapes.edges[0].node'))
+    .then(landscape => landscape || Promise.reject('not_found'))
+    .then(landscape => ({
+      ..._.omit('defaultGroup', landscape),
+      defaultGroup: getDefaultGroup(landscape),
+    }));
+};
+
 export const fetchLandscapes = (params, currentUser) => {
   const query = `
     query landscapes($accountEmail: String!){
@@ -113,7 +138,7 @@ export const fetchLandscapes = (params, currentUser) => {
     ${defaultGroup()}
   `;
   return terrasoApi
-    .request(query, { accountEmail: currentUser.email })
+    .requestGraphQL(query, { accountEmail: currentUser.email })
     .then(response => response.landscapes)
     .then(landscapes =>
       landscapes.edges
@@ -151,7 +176,7 @@ export const fetchLandscapeForMembers = (slug, currentUser) => {
     ${accountMembership}
   `;
   return terrasoApi
-    .request(query, { slug, accountEmail: currentUser.email })
+    .requestGraphQL(query, { slug, accountEmail: currentUser.email })
     .then(_.get('landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('not_found'))
     .then(landscape => {
@@ -176,7 +201,7 @@ const updateLandscape = landscape => {
     ${landscapeFields}
   `;
   return terrasoApi
-    .request(query, { input: cleanLandscape(landscape) })
+    .requestGraphQL(query, { input: cleanLandscape(landscape) })
     .then(response => ({ new: false, ...response.updateLandscape.landscape }));
 };
 
@@ -192,7 +217,7 @@ const addLandscape = landscape => {
     ${landscapeFields}
   `;
   return terrasoApi
-    .request(query, { input: cleanLandscape(landscape) })
+    .requestGraphQL(query, { input: cleanLandscape(landscape) })
     .then(response => ({ new: true, ...response.addLandscape.landscape }));
 };
 

@@ -4,7 +4,6 @@ import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
-import SharedFilesCard from 'shared-files/SharedFilesCard';
 
 import LaunchIcon from '@mui/icons-material/Launch';
 import PublicIcon from '@mui/icons-material/Public';
@@ -34,6 +33,7 @@ import GroupMembershipCard from 'group/membership/components/GroupMembershipCard
 import LandscapeMap from 'landscape/components/LandscapeMap';
 import { fetchLandscapeView } from 'landscape/landscapeSlice';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
+import SharedFilesCard from 'sharedData/components/SharedFilesCard';
 
 import { withProps } from 'react-hoc';
 

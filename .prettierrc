@@ -8,7 +8,7 @@
 		"<THIRD_PARTY_MODULES>",
 		"^@mui/(.*)$",
 		"^(common|forms|layout|localization|monitoring|navigation|notifications|permissions|state)/(.*)$",
-		"^(account|contact|gis|group|home|landscape|terrasoBackend|tool|user)/(.*)$",
+		"^(account|contact|gis|group|home|landscape|sharedData|terrasoBackend|tool|user)/(.*)$",
 		"^(config|custom-hooks|react-hoc)$",
 		"^[./]",
 		"^assets/(.*)$",

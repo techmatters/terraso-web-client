@@ -84,7 +84,8 @@
         "list_column_actions_description": "Actions",
         "members_list_column_actions_description": "Actions",
         "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). There should at least be one manager.",
-        "unique": "The group “{{inputData.input.name}}” already exists."
+        "unique": "The group “{{inputData.input.name}}” already exists.",
+        "shared_data_upload_title": "Share files with “{{name}}“"
     },
     "tool": {
         "requirements": "System requirements",
@@ -221,7 +222,6 @@
         "boundaries_format": "Accepted file formats: *.json, *.geojson",
         "boundaries_save": "Save Changes",
         "boundaries_cancel": "Cancel",
-        "boundaries_drop_message": "Drop file to upload",
         "boundaries_file_empty": "The file was empty.",
         "boundaries_file_invalid_json": "The file was not a valid JSON file.",
         "boundaries_file_invalid_geojson": "The file was JSON, but not a valid GeoJSON file.",
@@ -244,7 +244,9 @@
         "form_boundary_geojson_title": "Upload your landscape’s boundary",
         "form_location_placeholder": "Landscape location",
         "form_location_select": "Select location",
-        "form_name_placeholder": "Your landscape’s official name"
+        "form_name_placeholder": "Your landscape’s official name",
+        "boundaries_file_no_accepted": "[TODO] No accepted files",
+        "shared_data_upload_title": "Share files with “{{name}}“"
     },
     "shared_files": {
         "title": "Shared files",
@@ -254,7 +256,18 @@
         "delete_confirm_title": "Delete “{{name}}”?",
         "delete_confirm_message": "Are you sure you wish to delete the file “{{name}}”?",
         "delete_confirm_button": "Delete File",
-        "deleted": "The file “{{name}}” was deleted."
+        "deleted": "The file “{{name}}” was deleted.",
+        "upload_file_success": "[TODO] File upload succesfuly",
+        "upload_filename_label": "File Name",
+        "upload_description_label": "Description",
+        "upload_description_placeholder": "[TODO] e.g. Soil health survey data",
+        "upload_no_files": "No files added",
+        "upload_rejected_too-many-files": "[TODO] Too many files. Max number of files: {{maxFiles}}",
+        "upload_rejected_file-invalid-type": "[TODO] Invalid file type. Accepted extensions: {{fileExtensions}}. Files: {{rejectedFiles}}",
+        "upload_rejected_file-too-large": "[TODO] File too large. Max size: {{maxSize}}MB. Files: {{rejectedFiles}}",
+        "upload_description": "Add one or more data files (xls, xlsx, csv) and descriptions",
+        "upload_save": "Upload Files",
+        "upload_cancel": "Cancel"
     },
     "common": {
         "dialog_cancel_label": "Cancel",
@@ -264,7 +277,11 @@
         "not_found_title": "Page not found",
         "not_found_message": "We couldn’t find the page you were looking for.",
         "not_found_error_code": "Error code: 404",
-        "not_found_help_message": "You can <1>let us know what went wrong</1>."
+        "not_found_help_message": "You can <1>let us know what went wrong</1>.",
+        "drop_zone_drop_message": "Drop file to upload",
+        "drop_zone_select_file": "Select File",
+        "drop_zone_format": "Accepted file formats: {{extensions}}",
+        "drop_zone_size": "Maximum file size: {{size}}"
     },
     "form": {
         "required_label": "required",
