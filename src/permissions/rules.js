@@ -28,8 +28,10 @@ const isAllowedToManagerGroupMembers = ({ resource: group }) => {
   return Promise.resolve(isManager);
 };
 
-const isAllowedToViewGroupFiles = ({ resource: group }) => {
-  const isMember = Boolean(_.get('accountMembership.userRole', group));
+const isAllowedToViewGroupSharedData = ({ resource: group }) => {
+  const isMember = Boolean(
+    _.get('membersInfo.accountMembership.userRole', group)
+  );
   return Promise.resolve(isMember);
 };
 
@@ -43,7 +45,7 @@ const isAllowedToChangeLandscape = ({ resource: landscape }) => {
 const rules = {
   'group.change': isAllowedToChangeGroup,
   'group.manageMembers': isAllowedToManagerGroupMembers,
-  'group.viewFiles': isAllowedToViewGroupFiles,
+  'group.viewFiles': isAllowedToViewGroupSharedData,
   'landscape.change': isAllowedToChangeLandscape,
   'file.add': isAllowedToAddFile,
   'file.download': isAllowedToDownloadFile,
