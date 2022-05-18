@@ -2,6 +2,7 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
+import { Link as RouterLink } from 'react-router-dom';
 
 import {
   Button,
@@ -58,7 +59,13 @@ const SharedFilesCard = ({ group }) => {
               </Typography>
             </>
           )}
-          <Button variant="outlined">{t('shared_files.upload_button')}</Button>
+          <Button
+            variant="outlined"
+            component={RouterLink}
+            to={`/groups/${group.slug}/upload`}
+          >
+            {t('shared_files.upload_button')}
+          </Button>
         </CardContent>
       </Card>
     </Restricted>

@@ -38,7 +38,7 @@ test('LocalePicker: Use saved preference', async () => {
   expect(screen.getByText('Español')).toBeInTheDocument();
 });
 test('LocalePicker: Change locale', async () => {
-  terrasoApi.request.mockResolvedValue(
+  terrasoApi.requestGraphQL.mockResolvedValue(
     _.set(
       'updateUserPreference.preference',
       { key: 'language', value: 'es-ES' },
@@ -57,7 +57,7 @@ test('LocalePicker: Change locale', async () => {
   );
   expect(screen.getByRole('button', { name: /Español/i })).toBeInTheDocument();
 
-  const savePreferenceCall = terrasoApi.request.mock.calls[0];
+  const savePreferenceCall = terrasoApi.requestGraphQL.mock.calls[0];
   expect(savePreferenceCall[1]).toStrictEqual({
     input: {
       key: 'language',
@@ -79,10 +79,10 @@ test('LocalePicker: Dont save if no user', async () => {
     fireEvent.click(listbox.getByRole('option', { name: /Español/i }))
   );
   expect(screen.getByRole('button', { name: /Español/i })).toBeInTheDocument();
-  expect(terrasoApi.request).toHaveBeenCalledTimes(0);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(0);
 });
 test('LocalePicker: Change locale (small screen)', async () => {
-  terrasoApi.request.mockResolvedValue(
+  terrasoApi.requestGraphQL.mockResolvedValue(
     _.set(
       'updateUserPreference.preference',
       { key: 'language', value: 'es-ES' },

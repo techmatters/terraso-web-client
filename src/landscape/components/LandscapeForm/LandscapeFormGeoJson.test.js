@@ -55,7 +55,7 @@ beforeEach(() => {
 });
 
 test('LandscapeForm: Save from GeoJSON', async () => {
-  terrasoApi.request
+  terrasoApi.requestGraphQL
     .mockResolvedValueOnce({
       landscapes: {
         edges: [
@@ -111,7 +111,7 @@ test('LandscapeForm: Save from GeoJSON', async () => {
   );
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1MB',
+    name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB',
   });
 
   const file = new File([GEOJSON], 'test.json', { type: 'application/json' });
@@ -132,7 +132,7 @@ test('LandscapeForm: Save from GeoJSON', async () => {
 
   expect(
     await screen.findByRole('button', {
-      name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1MB test.json 0.8KB',
+      name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB test.json 804 B',
     })
   ).toBeInTheDocument();
 
@@ -140,8 +140,8 @@ test('LandscapeForm: Save from GeoJSON', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Create Landscape' }))
   );
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(2);
-  const saveCall = terrasoApi.request.mock.calls[1];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[1];
   expect(saveCall[1]).toStrictEqual({
     input: {
       id: '1',

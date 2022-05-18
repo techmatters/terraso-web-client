@@ -32,7 +32,7 @@ test('Auth: test redirect', async () => {
   useParams.mockReturnValue({
     slug: 'slug-1',
   });
-  terrasoApi.request.mockRejectedValueOnce('UNAUTHENTICATED');
+  terrasoApi.requestGraphQL.mockRejectedValueOnce('UNAUTHENTICATED');
   global.fetch.mockResolvedValueOnce({
     status: 401,
   });
@@ -59,7 +59,7 @@ test('Auth: test redirect', async () => {
   );
 
   expect(global.fetch).toHaveBeenCalledTimes(2);
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(screen.getByText('To: /account')).toBeInTheDocument();
 });
 test('Auth: test redirect referrer', async () => {
@@ -81,7 +81,7 @@ test('Auth: test refresh tokens', async () => {
   useParams.mockReturnValue({
     slug: 'slug-1',
   });
-  terrasoApi.request
+  terrasoApi.requestGraphQL
     .mockRejectedValueOnce('UNAUTHENTICATED')
     .mockResolvedValueOnce({});
   global.fetch.mockResolvedValueOnce({
@@ -114,7 +114,7 @@ test('Auth: test refresh tokens', async () => {
 });
 test('Auth: test fetch user', async () => {
   getUserEmail.mockReturnValue(Promise.resolve('test@email.com'));
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve(
       _.set(
         'users.edges[0].node',
@@ -141,5 +141,5 @@ test('Auth: test fetch user', async () => {
     }
   );
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 });
