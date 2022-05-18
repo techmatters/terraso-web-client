@@ -248,7 +248,7 @@
         "boundaries_file_no_accepted": "[TODO] No accepted files",
         "shared_data_upload_title": "Share files with “{{name}}“"
     },
-    "shared_files": {
+    "shared_data": {
         "title": "Shared files",
         "description": "Only the members of your group can download the files. <1>Read more about sharing files</1>.",
         "learn_more_url": "http://terraso.org/help/sharing-files/",

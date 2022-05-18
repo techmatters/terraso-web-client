@@ -33,7 +33,7 @@ import GroupMembershipCard from 'group/membership/components/GroupMembershipCard
 import LandscapeMap from 'landscape/components/LandscapeMap';
 import { fetchLandscapeView } from 'landscape/landscapeSlice';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
-import SharedFilesCard from 'sharedData/components/SharedFilesCard';
+import SharedDataCard from 'sharedData/components/SharedDataCard';
 
 import { withProps } from 'react-hoc';
 
@@ -182,7 +182,7 @@ const LandscapeView = () => {
           </GroupContextProvider>
         </Grid>
         <Grid item xs={12} md={12}>
-          <SharedFilesCard group={landscape.defaultGroup} />
+          <SharedDataCard group={landscape.defaultGroup} />
         </Grid>
       </Grid>
     </PageContainer>

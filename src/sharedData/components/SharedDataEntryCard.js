@@ -31,7 +31,7 @@ const formatDate = (language, dateString) =>
     Date.parse(dateString)
   );
 
-const FileCard = ({ file, group }) => {
+const SharedDataEntryCard = ({ file, group }) => {
   const { i18n, t } = useTranslation();
   const dispatch = useDispatch();
 
@@ -79,7 +79,7 @@ const FileCard = ({ file, group }) => {
           sx={{ fontSize: 14, color: theme.palette.gray.mid2 }}
         >
           <Grid item xs={1} md={1} order={{ xs: 1, md: 1 }}>
-            <Restricted permission="file.download" resource={group}>
+            <Restricted permission="sharedData.download" resource={group}>
               <Button
                 onClick={handleDownload}
                 startIcon={<FileIcon />}
@@ -92,7 +92,7 @@ const FileCard = ({ file, group }) => {
           </Grid>
           <Grid item xs={9} md={4} order={{ xs: 2, md: 2 }}>
             <Restricted
-              permission="file.download"
+              permission="sharedData.download"
               resource={group}
               FallbackComponent={() => <Typography>{file.name}</Typography>}
             >
@@ -118,19 +118,19 @@ const FileCard = ({ file, group }) => {
           </Grid>
           <Grid item xs={1} md={1} order={{ xs: 3, md: 5 }}>
             <Restricted
-              permission="file.delete"
+              permission="sharedData.delete"
               resource={{ group: group, file: file }}
             >
               <ConfirmButton
                 onConfirm={onConfirm}
                 variant="text"
-                confirmTitle={t('shared_files.delete_confirm_title', {
+                confirmTitle={t('shared_data.delete_confirm_title', {
                   name: file.name,
                 })}
-                confirmMessage={t('shared_files.delete_confirm_message', {
+                confirmMessage={t('shared_data.delete_confirm_message', {
                   name: file.name,
                 })}
-                confirmButton={t('shared_files.delete_confirm_button')}
+                confirmButton={t('shared_data.delete_confirm_button')}
               >
                 <DeleteIcon
                   sx={{
@@ -142,7 +142,7 @@ const FileCard = ({ file, group }) => {
             </Restricted>
           </Grid>
           <Grid item xs={1} md={1} order={{ xs: 4, md: 6 }}>
-            <Restricted permission="file.download" resource={group}>
+            <Restricted permission="sharedData.download" resource={group}>
               <Button
                 onClick={handleDownload}
                 startIcon={
@@ -171,4 +171,4 @@ const FileCard = ({ file, group }) => {
   );
 };
 
-export default FileCard;
+export default SharedDataEntryCard;

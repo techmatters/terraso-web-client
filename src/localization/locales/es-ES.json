@@ -256,7 +256,7 @@
         "not_found_error_code": "Código de error: 404",
         "not_found_help_message": "Puedes <1>contarnos qué salió mal</1>."
     },
-    "shared_files": {
+    "shared_data": {
         "title": "[TODO]Shared files",
         "description": "[TODO]Only the members of your group can download the files. <1>Read more about sharing files</1>.",
         "learn_more_url": "http://terraso.org/es/ayuda/sharing-files/",
