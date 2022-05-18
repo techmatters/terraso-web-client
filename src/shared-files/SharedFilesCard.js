@@ -21,10 +21,7 @@ import theme from 'theme';
 const SharedFilesCard = ({ group }) => {
   const { t } = useTranslation();
   const { dataEntries: sharedFiles } = group;
-
-  if (_.isEmpty(sharedFiles)) {
-    return null;
-  }
+  const hasFiles = !_.isEmpty(sharedFiles);
 
   return (
     <Restricted permission="group.viewFiles" resource={group}>
@@ -38,23 +35,34 @@ const SharedFilesCard = ({ group }) => {
           }
         />
         <CardContent>
-          {sharedFiles.map((item, index) => (
-            <FileCard key={index} file={item} group={group} />
-          ))}
+          {hasFiles ? (
+            sharedFiles.map((item, index) => (
+              <FileCard key={index} file={item} group={group} />
+            ))
+          ) : (
+            <Typography variant="body1" sx={{ marginBottom: theme.spacing(2) }}>
+              {t('shared_files.no_files')}
+            </Typography>
+          )}
 
-          <Typography
-            variant="body1"
-            sx={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}
-          >
-            {' '}
-            <Trans i18nKey="shared_files.description">
-              Prefix
-              <Link href={t('shared_files.learn_more_url')} target="_blank">
-                link
-              </Link>
-              .
-            </Trans>
-          </Typography>
+          {hasFiles && (
+            <Typography
+              variant="body1"
+              sx={{
+                marginTop: theme.spacing(2),
+                marginBottom: theme.spacing(2),
+              }}
+            >
+              {' '}
+              <Trans i18nKey="shared_files.description">
+                Prefix
+                <Link href={t('shared_files.learn_more_url')} target="_blank">
+                  link
+                </Link>
+                .
+              </Trans>
+            </Typography>
+          )}
           <Button variant="outlined">{t('shared_files.upload_button')}</Button>
         </CardContent>
       </Card>
