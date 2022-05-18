@@ -226,7 +226,7 @@
         "boundaries_file_invalid_json": "The file was not a valid JSON file.",
         "boundaries_file_invalid_geojson": "The file was JSON, but not a valid GeoJSON file.",
         "view_map_boundaries_help": "Something wrong with the map?",
-        "view_map_boundaries_help_details": "Contact your landscape’s manager or <1>send us a message <1 /></1>.",
+        "view_map_boundaries_help_details": "Contact your landscape’s manager or <1>send us a message</1>.",
         "view_map_boundaries_help_url": "/contact",
         "view_map_boundaries_update": "Update Map",
         "form_step_info_label": "Landscape Details",
@@ -248,11 +248,13 @@
     },
     "shared_files": {
         "title": "Shared files",
-        "description": "Only the members of your group can download the files. Read more about sharing files.",
+        "description": "Only the members of your group can download the files. <1>Read more about sharing files</1>.",
+        "learn_more_url": "http://terraso.org/help/sharing-files/",
         "upload_button": "Upload Files",
         "delete_confirm_title": "Delete “{{name}}”?",
         "delete_confirm_message": "Are you sure you wish to delete the file “{{name}}”?",
-        "delete_confirm_button": "Delete File"
+        "delete_confirm_button": "Delete File",
+        "deleted": "The file “{{name}}” was deleted."
     },
     "common": {
         "dialog_cancel_label": "Cancel",

@@ -226,7 +226,7 @@
         "boundaries_file_invalid_json": "El archivo no es un archivo JSON válido.",
         "boundaries_file_invalid_geojson": "El archivo es JSON, pero no es un archivo GeoJSON válido.",
         "view_map_boundaries_help": "¿Algo mal con el mapa?",
-        "view_map_boundaries_help_details": "Comunícate con el administrador de su paisaje o <1>envíanos un mensaje <1 /></1>.",
+        "view_map_boundaries_help_details": "Comunícate con el administrador de su paisaje o <1>envíanos un mensaje</1>.",
         "view_map_boundaries_help_url": "/contact",
         "view_map_boundaries_update": "Actualizar información geográfica",
         "form_step_info_label": "Detalles del paisaje",
@@ -255,6 +255,16 @@
         "not_found_message": "No pudimos encontrar la página que estabas buscando.",
         "not_found_error_code": "Código de error: 404",
         "not_found_help_message": "Puedes <1>contarnos qué salió mal</1>."
+    },
+    "shared_files": {
+        "title": "[TODO]Shared files",
+        "description": "[TODO]Only the members of your group can download the files. <1>Read more about sharing files</1>.",
+        "learn_more_url": "http://terraso.org/es/ayuda/sharing-files/",
+        "upload_button": "[TODO]Upload Files",
+        "delete_confirm_title": "[TODO]Delete “{{name}}”?",
+        "delete_confirm_message": "[TODO]Are you sure you wish to delete the file “{{name}}”?",
+        "delete_confirm_button": "[TODO]Delete File",
+        "deleted": "[TODO]The file “{{name}}” was deleted."
     },
     "form": {
         "required_label": "Obligatorio",

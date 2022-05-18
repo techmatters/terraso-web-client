@@ -62,6 +62,15 @@ export const updateMemberRole = createAsyncThunk(
   'group/updateMemberRole',
   groupService.updateMemberRole
 );
+export const deleteSharedDataFile = createAsyncThunk(
+  'group/deleteSharedDataFile',
+  groupService.deleteSharedDataFile,
+  (group, { file }) => ({
+    severity: 'success',
+    content: 'shared_files.deleted',
+    params: { name: file.name },
+  })
+);
 export const saveGroup = createAsyncThunk(
   'group/saveGroup',
   groupService.saveGroup,
@@ -153,6 +162,17 @@ const groupSlice = createSlice({
       view: initialState.view,
     }),
     [fetchGroupView.fulfilled]: (state, action) => ({
+      ...groupSlice.caseReducers.setMemberships(state, {
+        payload: groupUtils.getMemberships([action.payload]),
+      }),
+      view: {
+        fetching: false,
+        message: null,
+        group: action.payload,
+      },
+    }),
+    // TODO: refactor this to avoid duplication.
+    [deleteSharedDataFile.fulfilled]: (state, action) => ({
       ...groupSlice.caseReducers.setMemberships(state, {
         payload: groupUtils.getMemberships([action.payload]),
       }),
