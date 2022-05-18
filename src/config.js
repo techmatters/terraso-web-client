@@ -22,8 +22,9 @@ export const SHARED_DATA_MAX_SIZE =
 export const SHARED_DATA_MAX_FILES =
   process.env.REACT_SHARED_DATA_MAX_FILES || 20;
 
-export const SHARED_DATA_ACCEPTED_EXTENSIONS =
-  process.env.REACT_APP_SHARED_DATA_ACCEPTED_EXTENSIONS.split(',');
+export const SHARED_DATA_ACCEPTED_EXTENSIONS = (
+  process.env.REACT_APP_SHARED_DATA_ACCEPTED_EXTENSIONS || 'xlsx,xls,csv'
+).split(',');
 
 export const HUBSPOT_FORMS = {
   region: process.env.REACT_APP_HUBSPOT_FORMS_REGION || 'na1',
