@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
 
 import _ from 'lodash/fp';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import * as terrasoApi from 'terrasoBackend/api';
 
@@ -103,13 +103,7 @@ test('GroupSharedDataUpload: Error - Empty filename', async () => {
 });
 
 test('GroupSharedDataUpload: Error - API', async () => {
-  terrasoApi.request.mockResolvedValue(
-    _.set(
-      'error.all[0]',
-      'Test Error',
-      {}
-    )
-  );
+  terrasoApi.request.mockResolvedValue(_.set('error.all[0]', 'Test Error', {}));
   await dropFiles(
     Array(5)
       .fill(0)
@@ -127,11 +121,7 @@ test('GroupSharedDataUpload: Error - API', async () => {
 
 test('GroupSharedDataUpload: Partial Success', async () => {
   terrasoApi.request.mockResolvedValueOnce(
-    _.set(
-      'error.all[0]',
-      'Test Error',
-      {}
-    )
+    _.set('error.all[0]', 'Test Error', {})
   );
   terrasoApi.request.mockResolvedValueOnce({});
   await dropFiles(
@@ -148,7 +138,9 @@ test('GroupSharedDataUpload: Partial Success', async () => {
   const file0 = screen.getByRole('region', { name: 'test0' });
   expect(await within(file0).findByText('Test Error')).toBeInTheDocument();
   const file1 = screen.getByRole('region', { name: 'test1' });
-  expect(await within(file1).findByText('[TODO] File upload succesfuly')).toBeInTheDocument();
+  expect(
+    await within(file1).findByText('[TODO] File upload succesfuly')
+  ).toBeInTheDocument();
 });
 
 test('GroupSharedDataUpload: Complete Success', async () => {
