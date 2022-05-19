@@ -9,12 +9,16 @@ const isAllowedToDeleteSharedData = ({ resource: groupAndFile, user }) => {
 };
 
 const isAllowedToDownloadSharedData = ({ resource: group }) => {
-  const isMember = Boolean(_.get('accountMembership.userRole', group));
+  const isMember = Boolean(
+    _.get('membersInfo.accountMembership.userRole', group)
+  );
   return Promise.resolve(isMember);
 };
 
 const isAllowedToAddSharedData = ({ resource: group }) => {
-  const isMember = Boolean(_.get('accountMembership.userRole', group));
+  const isMember = Boolean(
+    _.get('membersInfo.accountMembership.userRole', group)
+  );
   return Promise.resolve(isMember);
 };
 
