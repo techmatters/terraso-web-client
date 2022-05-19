@@ -281,7 +281,9 @@
         "drop_zone_drop_message": "Drop file to upload",
         "drop_zone_select_file": "Select File",
         "drop_zone_format": "Accepted file formats: {{extensions}}",
-        "drop_zone_size": "Maximum file size: {{size}}"
+        "drop_zone_size": "Maximum file size: {{size}}",
+        "editable_text_save": "Save",
+        "editable_text_cancel": "Cancel"
     },
     "form": {
         "required_label": "required",
