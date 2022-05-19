@@ -14,7 +14,8 @@ import ConfirmButton from 'common/components/ConfirmButton';
 import EditableText from 'common/components/EditableText';
 import Restricted from 'permissions/components/Restricted';
 
-import { deleteSharedDataFile } from 'group/groupSlice';
+import { useGroupContext } from 'group/groupContext';
+import { deleteSharedData, updateSharedData } from 'sharedData/sharedDataSlice';
 
 import theme from 'theme';
 
@@ -48,8 +49,9 @@ const FileIcon = ({ resourceType }) => {
   }
 };
 
-const SharedDataEntryCard = ({ file, group }) => {
+const SharedDataEntryCard = ({ file }) => {
   const { i18n, t } = useTranslation();
+  const { group, updateOwner } = useGroupContext();
   const dispatch = useDispatch();
 
   // TODO: get presigned URL from backend and send user there
@@ -59,12 +61,16 @@ const SharedDataEntryCard = ({ file, group }) => {
   };
 
   const onConfirm = () => {
-    dispatch(deleteSharedDataFile({ groupSlug: group.slug, file }));
+    dispatch(deleteSharedData({ groupSlug: group.slug, file })).then(() =>
+      updateOwner()
+    );
   };
 
-  const onUpdate = field => {
-    
-  }
+  const onUpdate = field => value => {
+    dispatch(updateSharedData({ file: { id: file.id, [field]: value } })).then(
+      () => updateOwner()
+    );
+  };
 
   const description = _.get('description', file);
 
@@ -95,7 +101,11 @@ const SharedDataEntryCard = ({ file, group }) => {
               resource={{ group, file }}
               FallbackComponent={() => <Typography>{file.name}</Typography>}
             >
-              <EditableText value={file.name} viewProps={{ color: 'black' }} />
+              <EditableText
+                value={file.name}
+                onSave={onUpdate('name')}
+                viewProps={{ color: 'black' }}
+              />
             </Restricted>
           </Grid>
           <Grid item xs={2} md={1} order={{ xs: 6, md: 3 }}>
@@ -158,6 +168,7 @@ const SharedDataEntryCard = ({ file, group }) => {
               <EditableText
                 value={description}
                 addMessage={t('shared_data.add_description_message')}
+                onSave={onUpdate('description')}
                 viewProps={{ variant: 'body1' }}
               />
             </Restricted>

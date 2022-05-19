@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
@@ -15,6 +15,11 @@ const EditableText = props => {
   const handleSave = () => {
     onSave(editedValue);
   };
+
+  useEffect(() => {
+    setEditedValue(value);
+    setIsEditing(false);
+  }, [value]);
 
   if (isEditing) {
     return (

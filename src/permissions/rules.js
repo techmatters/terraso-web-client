@@ -3,7 +3,6 @@ import _ from 'lodash/fp';
 const isAllowedToEditSharedData = ({ resource: { group, file }, user }) => {
   const isManager = _.get('membersInfo.accountMembership.userRole', group) === 'MANAGER';
   const isOwner = _.get('createdBy.id', file) === _.get('id', user);
-  console.log({ file, isManager, isOwner });
   return Promise.resolve(isManager || isOwner);
 };
 

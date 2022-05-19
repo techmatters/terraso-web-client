@@ -46,6 +46,10 @@ export const fetchGroupView = createAsyncThunk(
   'group/fetchGroupView',
   groupService.fetchGroupToView
 );
+export const refreshGroupView = createAsyncThunk(
+  'group/refreshGroupView',
+  groupService.fetchGroupToView
+);
 export const fetchGroupUpload = createAsyncThunk(
   'group/fetchGroupUpload',
   groupService.fetchGroupToUploadSharedData
@@ -69,15 +73,6 @@ export const removeMember = createAsyncThunk(
 export const updateMemberRole = createAsyncThunk(
   'group/updateMemberRole',
   groupService.updateMemberRole
-);
-export const deleteSharedDataFile = createAsyncThunk(
-  'group/deleteSharedDataFile',
-  groupService.deleteSharedDataFile,
-  (group, { file }) => ({
-    severity: 'success',
-    content: 'shared_data.deleted',
-    params: { name: file.name },
-  })
 );
 export const saveGroup = createAsyncThunk(
   'group/saveGroup',
@@ -163,33 +158,26 @@ const groupSlice = createSlice({
         success: false,
       },
     }),
+    updateView: (state, action) => ({
+      ...groupSlice.caseReducers.setMemberships(state, {
+        payload: groupUtils.getMemberships([action.payload]),
+      }),
+      view: {
+        fetching: false,
+        message: null,
+        group: action.payload,
+      },
+    }),
   },
   extraReducers: {
     [fetchGroupView.pending]: state => ({
       ...state,
       view: initialState.view,
     }),
-    [fetchGroupView.fulfilled]: (state, action) => ({
-      ...groupSlice.caseReducers.setMemberships(state, {
-        payload: groupUtils.getMemberships([action.payload]),
-      }),
-      view: {
-        fetching: false,
-        message: null,
-        group: action.payload,
-      },
-    }),
-    // TODO: refactor this to avoid duplication.
-    [deleteSharedDataFile.fulfilled]: (state, action) => ({
-      ...groupSlice.caseReducers.setMemberships(state, {
-        payload: groupUtils.getMemberships([action.payload]),
-      }),
-      view: {
-        fetching: false,
-        message: null,
-        group: action.payload,
-      },
-    }),
+    [fetchGroupView.fulfilled]: (state, action) =>
+      groupSlice.caseReducers.updateView(state, action),
+    [refreshGroupView.fulfilled]: (state, action) =>
+      groupSlice.caseReducers.updateView(state, action),
     [fetchGroupView.rejected]: (state, action) => ({
       ...state,
       view: {

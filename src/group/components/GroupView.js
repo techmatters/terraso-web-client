@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +25,7 @@ import PageLoader from 'layout/PageLoader';
 import Restricted from 'permissions/components/Restricted';
 
 import { GroupContextProvider } from 'group/groupContext';
-import { fetchGroupView } from 'group/groupSlice';
+import { fetchGroupView, refreshGroupView } from 'group/groupSlice';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
@@ -102,6 +102,10 @@ const GroupView = () => {
     fetching
   );
 
+  const updateGroup = useCallback(() => {
+    dispatch(refreshGroupView(slug));
+  }, [dispatch, slug]);
+
   useEffect(() => {
     dispatch(fetchGroupView(slug));
   }, [dispatch, slug]);
@@ -115,47 +119,49 @@ const GroupView = () => {
   }
 
   return (
-    <PageContainer>
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="flex-start"
-        sx={{
-          marginBottom: theme.spacing(3),
-        }}
-      >
-        <PageHeader header={group.name} />
-        <Restricted permission="group.change" resource={group}>
-          <Button
-            variant="contained"
-            component={RouterLink}
-            to={`/groups/${group.slug}/edit`}
-          >
-            {t('group.view_update_button')}
-          </Button>
-        </Restricted>
-      </Stack>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <GroupCard group={group} />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <GroupContextProvider
-            owner={group}
-            groupSlug={group.slug}
-            MemberJoinButton={MemberJoinButton}
-            MemberLeaveButton={MemberLeaveButton}
-          >
+    <GroupContextProvider
+      owner={group}
+      group={group}
+      groupSlug={group.slug}
+      MemberJoinButton={MemberJoinButton}
+      MemberLeaveButton={MemberLeaveButton}
+      updateOwner={updateGroup}
+    >
+      <PageContainer>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="flex-start"
+          sx={{
+            marginBottom: theme.spacing(3),
+          }}
+        >
+          <PageHeader header={group.name} />
+          <Restricted permission="group.change" resource={group}>
+            <Button
+              variant="contained"
+              component={RouterLink}
+              to={`/groups/${group.slug}/edit`}
+            >
+              {t('group.view_update_button')}
+            </Button>
+          </Restricted>
+        </Stack>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <GroupCard group={group} />
+          </Grid>
+          <Grid item xs={12} md={6}>
             <GroupMembershipCard
               onViewMembers={() => navigate(`/groups/${group.slug}/members`)}
             />
-          </GroupContextProvider>
+          </Grid>
+          <Grid item xs={12} md={12}>
+            <SharedDataCard group={group} />
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={12}>
-          <SharedDataCard group={group} />
-        </Grid>
-      </Grid>
-    </PageContainer>
+      </PageContainer>
+    </GroupContextProvider>
   );
 };
 

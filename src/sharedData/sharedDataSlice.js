@@ -19,6 +19,24 @@ export const uploadSharedData = createAsyncThunk(
   null,
   false
 );
+export const deleteSharedData = createAsyncThunk(
+  'sharedData/deleteSharedData',
+  sharedDataService.deleteSharedData,
+  (group, { file }) => ({
+    severity: 'success',
+    content: 'shared_data.deleted',
+    params: { name: file.name },
+  })
+);
+export const updateSharedData = createAsyncThunk(
+  'sharedData/updateSharedData',
+  sharedDataService.updateSharedData,
+  (group, { file }) => ({
+    severity: 'success',
+    content: 'shared_data.updated',
+    params: { name: file.name },
+  })
+);
 
 const sharedDataSlice = createSlice({
   name: 'sharedData',
