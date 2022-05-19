@@ -2,7 +2,8 @@ import _ from 'lodash/fp';
 
 const isAllowedToDeleteSharedData = ({ resource: groupAndFile, user }) => {
   const isManager =
-    _.get('accountMembership.userRole', groupAndFile.group) === 'MANAGER';
+    _.get('membersInfo.accountMembership.userRole', groupAndFile.group) ===
+    'MANAGER';
   const isOwner =
     _.get('file.createdBy.id', groupAndFile) === _.get('id', user);
   return Promise.resolve(isManager) || Promise.resolve(isOwner);
