@@ -337,7 +337,7 @@ export const deleteSharedDataFile = ({ groupSlug, file }, currentUser) => {
     }
   `;
   return terrasoApi
-    .request(query, {
+    .requestGraphQL(query, {
       id: file.id,
       accountEmail: currentUser.email,
     })
