@@ -22,7 +22,7 @@ const LandscapeProfileUpdate = () => {
   );
 
   useDocumentTitle(
-    t('landscape.update_document_title', {
+    t('landscape.form_edit_document_title', {
       name: _.get('name', landscape),
     }),
     fetching
