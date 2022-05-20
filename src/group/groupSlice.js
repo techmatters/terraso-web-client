@@ -102,6 +102,17 @@ export const leaveGroup = createAsyncThunk(
   })
 );
 
+const updateView = (state, action) => ({
+  ...groupSlice.caseReducers.setMemberships(state, {
+    payload: groupUtils.getMemberships([action.payload]),
+  }),
+  view: {
+    fetching: false,
+    message: null,
+    group: action.payload,
+  },
+});
+
 const groupSlice = createSlice({
   name: 'group',
   initialState,
@@ -158,26 +169,14 @@ const groupSlice = createSlice({
         success: false,
       },
     }),
-    updateView: (state, action) => ({
-      ...groupSlice.caseReducers.setMemberships(state, {
-        payload: groupUtils.getMemberships([action.payload]),
-      }),
-      view: {
-        fetching: false,
-        message: null,
-        group: action.payload,
-      },
-    }),
   },
   extraReducers: {
     [fetchGroupView.pending]: state => ({
       ...state,
       view: initialState.view,
     }),
-    [fetchGroupView.fulfilled]: (state, action) =>
-      groupSlice.caseReducers.updateView(state, action),
-    [refreshGroupView.fulfilled]: (state, action) =>
-      groupSlice.caseReducers.updateView(state, action),
+    [fetchGroupView.fulfilled]: updateView,
+    [refreshGroupView.fulfilled]: updateView,
     [fetchGroupView.rejected]: (state, action) => ({
       ...state,
       view: {

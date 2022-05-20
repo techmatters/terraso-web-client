@@ -55,6 +55,17 @@ export const fetchLandscapeView = createAsyncThunk(
     return landscape;
   }
 );
+export const refreshLandscapeView = createAsyncThunk(
+  'landscape/refreshLandscapeView',
+  async (params, currentUser, { dispatch }) => {
+    const landscape = await landscapeService.fetchLandscapeToView(
+      params,
+      currentUser
+    );
+    dispatch(setMemberships(getMemberships([landscape])));
+    return landscape;
+  }
+);
 export const fetchLandscapeUpload = createAsyncThunk(
   'landscape/fetchLandscapeUpload',
   landscapeService.fetchLandscapeToUploadSharedData
@@ -76,6 +87,15 @@ export const saveLandscape = createAsyncThunk(
     params: { name: landscape.name },
   })
 );
+
+const updateView = (state, action) => ({
+  ...state,
+  view: {
+    fetching: false,
+    message: null,
+    landscape: action.payload,
+  },
+});
 
 const landscapeSlice = createSlice({
   name: 'landscape',
@@ -124,14 +144,8 @@ const landscapeSlice = createSlice({
         },
       },
     }),
-    [fetchLandscapeView.fulfilled]: (state, action) => ({
-      ...state,
-      view: {
-        fetching: false,
-        message: null,
-        landscape: action.payload,
-      },
-    }),
+    [fetchLandscapeView.fulfilled]: updateView,
+    [refreshLandscapeView.fulfilled]: updateView,
     [fetchLandscapeForm.pending]: state => ({
       ...state,
       form: initialState.form,

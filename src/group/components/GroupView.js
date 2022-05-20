@@ -102,12 +102,12 @@ const GroupView = () => {
     fetching
   );
 
-  const updateGroup = useCallback(() => {
-    dispatch(refreshGroupView(slug));
-  }, [dispatch, slug]);
-
   useEffect(() => {
     dispatch(fetchGroupView(slug));
+  }, [dispatch, slug]);
+
+  const updateGroup = useCallback(() => {
+    dispatch(refreshGroupView(slug));
   }, [dispatch, slug]);
 
   if (fetching) {
@@ -157,7 +157,9 @@ const GroupView = () => {
             />
           </Grid>
           <Grid item xs={12} md={12}>
-            <SharedDataCard group={group} />
+            <SharedDataCard
+              onUploadClick={() => navigate(`/groups/${group.slug}/upload`)}
+            />
           </Grid>
         </Grid>
       </PageContainer>

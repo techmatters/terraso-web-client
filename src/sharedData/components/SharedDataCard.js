@@ -2,7 +2,6 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
 
 import {
   Button,
@@ -15,12 +14,16 @@ import {
 
 import Restricted from 'permissions/components/Restricted';
 
+import { useGroupContext } from 'group/groupContext';
+
 import SharedDataEntryCard from './SharedDataEntryCard';
 
 import theme from 'theme';
 
-const SharedFilesCard = ({ group }) => {
+const SharedFilesCard = props => {
   const { t } = useTranslation();
+  const { onUploadClick } = props;
+  const { group } = useGroupContext();
   const { dataEntries: sharedFiles } = group;
   const hasFiles = !_.isEmpty(sharedFiles);
 
@@ -59,11 +62,7 @@ const SharedFilesCard = ({ group }) => {
               </Typography>
             </>
           )}
-          <Button
-            variant="outlined"
-            component={RouterLink}
-            to={`/groups/${group.slug}/upload`}
-          >
+          <Button variant="outlined" onClick={onUploadClick}>
             {t('shared_data.upload_button')}
           </Button>
         </CardContent>

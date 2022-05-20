@@ -267,7 +267,9 @@
         "upload_rejected_file-too-large": "[TODO] File too large. Max size: {{maxSize}}MB. Files: {{rejectedFiles}}",
         "upload_description": "Add one or more data files (xls, xlsx, csv) and descriptions",
         "upload_save": "Upload Files",
-        "upload_cancel": "Cancel"
+        "upload_cancel": "Cancel",
+        "updated": "The file “{{name}}” was updated.",
+        "add_description_message": "Add File Description"
     },
     "common": {
         "dialog_cancel_label": "Cancel",
