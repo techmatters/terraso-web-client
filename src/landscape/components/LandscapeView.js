@@ -36,6 +36,8 @@ import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMembe
 
 import { withProps } from 'react-hoc';
 
+import theme from 'theme';
+
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   renderLabel: () => 'landscape.view_leave_label',
 });
@@ -109,13 +111,33 @@ const LandscapeView = () => {
 
   return (
     <PageContainer>
-      <PageHeader
-        header={landscape.name}
-        typographyProps={{ sx: { marginBottom: 0 } }}
-      />
-      <Typography variant="body2" sx={{ marginBottom: 2 }}>
-        {currentCountry?.name}
-      </Typography>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="flex-start"
+        sx={{
+          marginBottom: theme.spacing(3),
+        }}
+      >
+        <div>
+          <PageHeader
+            header={landscape.name}
+            typographyProps={{ sx: { marginBottom: 0 } }}
+          />
+          <Typography variant="body2" sx={{ marginBottom: 2 }}>
+            {currentCountry?.name}
+          </Typography>
+        </div>
+        <Restricted permission="landscape.change" resource={landscape}>
+          <Button
+            variant="contained"
+            component={RouterLink}
+            to={`/landscapes/${landscape.slug}/edit`}
+          >
+            {t('landscape.view_update_button')}
+          </Button>
+        </Restricted>
+      </Stack>
       <Grid container spacing={2}>
         <Grid item xs={12} md={12}>
           <Card variant="outlined">
