@@ -38,8 +38,8 @@ const SharedFilesCard = ({ group }) => {
         <CardContent>
           {hasFiles && (
             <>
-              {sharedFiles.map((item, index) => (
-                <SharedDataEntryCard key={index} file={item} group={group} />
+              {sharedFiles.map(file => (
+                <SharedDataEntryCard key={file.id} file={file} group={group} />
               ))}
               <Typography
                 variant="body1"

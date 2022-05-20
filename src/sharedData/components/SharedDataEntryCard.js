@@ -3,7 +3,7 @@ import React from 'react';
 import filesize from 'filesize';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
@@ -52,6 +52,7 @@ const FileIcon = ({ resourceType }) => {
 const SharedDataEntryCard = ({ file }) => {
   const { i18n, t } = useTranslation();
   const { group, updateOwner } = useGroupContext();
+  const processing = useSelector(_.get(`sharedData.processing.${file.id}`));
   const dispatch = useDispatch();
 
   // TODO: get presigned URL from backend and send user there
@@ -104,6 +105,7 @@ const SharedDataEntryCard = ({ file }) => {
               <EditableText
                 value={file.name}
                 onSave={onUpdate('name')}
+                processing={processing}
                 viewProps={{ color: 'black' }}
               />
             </Restricted>
@@ -122,6 +124,7 @@ const SharedDataEntryCard = ({ file }) => {
             >
               <ConfirmButton
                 onConfirm={onConfirm}
+                loading={processing}
                 variant="text"
                 confirmTitle={t('shared_data.delete_confirm_title', {
                   name: file.name,
@@ -167,6 +170,7 @@ const SharedDataEntryCard = ({ file }) => {
             >
               <EditableText
                 value={description}
+                processing={processing}
                 addMessage={t('shared_data.add_description_message')}
                 onSave={onUpdate('description')}
                 viewProps={{ variant: 'body1' }}

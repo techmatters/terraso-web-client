@@ -11,6 +11,7 @@ export const UPLOAD_STATUS_ERROR = 'error';
 
 const initialState = {
   uploads: null,
+  processing: {},
 };
 
 export const uploadSharedData = createAsyncThunk(
@@ -38,6 +39,13 @@ export const updateSharedData = createAsyncThunk(
   })
 );
 
+const setProcessing = (state, action) =>
+  _.set(
+    `processing.${action.meta.arg.file.id}`,
+    action.meta.requestStatus === 'pending',
+    state
+  );
+
 const sharedDataSlice = createSlice({
   name: 'sharedData',
   initialState,
@@ -48,6 +56,12 @@ const sharedDataSlice = createSlice({
     }),
   },
   extraReducers: {
+    [updateSharedData.pending]: setProcessing,
+    [updateSharedData.rejected]: setProcessing,
+    [updateSharedData.fulfilled]: setProcessing,
+    [deleteSharedData.pending]: setProcessing,
+    [deleteSharedData.rejected]: setProcessing,
+    [deleteSharedData.fulfilled]: setProcessing,
     [uploadSharedData.pending]: (state, action) =>
       _.set(
         `uploads.${action.meta.arg.file.id}`,

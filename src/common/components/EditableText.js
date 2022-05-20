@@ -3,17 +3,25 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EditIcon from '@mui/icons-material/Edit';
+import { LoadingButton } from '@mui/lab';
 import { Button, Link, OutlinedInput, Stack, Typography } from '@mui/material';
 
 const EditableText = props => {
   const { t } = useTranslation();
-  const { value, addMessage, viewProps, onSave } = props;
+  const { value, processing, addMessage, viewProps, onSave } = props;
   const [isHovering, setIsHovering] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(value);
 
   const handleSave = () => {
     onSave(editedValue);
+  };
+
+  const onKeyDown = event => {
+    if (event.keyCode === 13) {
+      // Enter key
+      onSave(editedValue);
+    }
   };
 
   useEffect(() => {
@@ -28,12 +36,17 @@ const EditableText = props => {
           size="small"
           value={editedValue}
           onChange={event => setEditedValue(event.target.value)}
+          onKeyDown={onKeyDown}
           sx={{ flexGrow: 1 }}
         />
-        <Button variant="contained" onClick={handleSave}>
+        <LoadingButton
+          variant="contained"
+          loading={processing}
+          onClick={handleSave}
+        >
           {t('common.editable_text_save')}
-        </Button>
-        <Button onClick={() => setIsEditing(false)}>
+        </LoadingButton>
+        <Button disabled={processing} onClick={() => setIsEditing(false)}>
           {t('common.editable_text_cancel')}
         </Button>
       </Stack>
@@ -56,7 +69,7 @@ const EditableText = props => {
       }}
       {...viewProps}
     >
-      {value && value !== '' ? value : <Link>+ {addMessage}</Link>}
+      {value && value !== '' ? value : <Link href="#">+ {addMessage}</Link>}
       {isHovering && <EditIcon sx={{ color: 'blue.dark' }} />}
     </Typography>
   );
