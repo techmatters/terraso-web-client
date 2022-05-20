@@ -16,6 +16,7 @@ import Home from 'home/components/Home';
 import LandscapeBoundariesUpdate from 'landscape/components/LandscapeBoundariesUpdate';
 import LandscapeForm from 'landscape/components/LandscapeForm';
 import LandscapeList from 'landscape/components/LandscapeList';
+import LandscapeProfileUpdate from 'landscape/components/LandscapeProfileUpdate';
 import LandscapeView from 'landscape/components/LandscapeView';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
 import ToolsList from 'tool/components/ToolList';
@@ -35,7 +36,7 @@ const paths = [
   path('/groups/:slug', GroupView),
   path('/landscapes', LandscapeList),
   path('/landscapes/new', LandscapeForm),
-  path('/landscapes/:slug/edit', LandscapeForm),
+  path('/landscapes/:slug/edit', LandscapeProfileUpdate),
   path('/landscapes/:slug/boundaries', LandscapeBoundariesUpdate),
   path('/landscapes/:slug/members', LandscapeMembers),
   path('/landscapes/:slug', LandscapeView),
