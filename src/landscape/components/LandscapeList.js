@@ -9,6 +9,7 @@ import { Button, Link, Typography } from '@mui/material';
 
 import TableResponsive from 'common/components/TableResponsive';
 import { useDocumentTitle } from 'common/document';
+import { countryNameForCode } from 'common/utils';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
@@ -87,6 +88,8 @@ const LandscapeList = () => {
       headerName: t('landscape.list_column_location'),
       flex: 1.5,
       minWidth: 200,
+      valueGetter: ({ row: landscape }) =>
+        landscape.location && countryNameForCode(landscape.location).name,
     },
     {
       field: 'website',
