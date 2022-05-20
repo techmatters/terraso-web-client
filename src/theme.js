@@ -103,6 +103,17 @@ const components = {
   },
 };
 
+const modalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 500,
+  bgcolor: 'background.paper',
+  border: '1px solid #000',
+  p: 4,
+};
+
 const theme = createTheme(colorTheme, {
   typography: {
     h1: {
@@ -131,6 +142,7 @@ const theme = createTheme(colorTheme, {
       fontSize: '1rem',
     },
   },
+  modalStyle,
   components,
 });
 
