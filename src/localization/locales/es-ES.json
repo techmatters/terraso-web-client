@@ -156,7 +156,7 @@
         "create": "Crear un paisaje",
         "home_title": "Paisajes",
         "home_default_title": "Paisaje",
-        "form_edit_title": "Administrar la información del paisaje de “{{name}}”",
+        "form_edit_title": "[TODO]Actualizar el paisaje “{{name}}”",
         "form_new_title": "Describe tu paisaje",
         "view_card_title": "Acerca de {{name}}",
         "list_title": "Paisajes",
