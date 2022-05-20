@@ -304,7 +304,8 @@
         "models": {
             "Membership": "Membership",
             "Group": "Group",
-            "Landscape": "Landscape"
+            "Landscape": "Landscape",
+            "DataEntry": "Shared File"
         },
         "error": "Failed to execute request. {{code, errorParam(label: Code)}} {{field, errorParam(label: Field)}} {{model, errorParam(label: Model)}} {{context, errorParam(label: Context)}}",
         "error_unexpected": "Unexpected error",
