@@ -44,7 +44,7 @@ const LandscapeProfileUpdate = () => {
 
   return (
     <PageContainer>
-      <InfoStep isMultiStep={false} landscape={landscape} />
+      <InfoStep landscape={landscape} />
     </PageContainer>
   );
 };

@@ -118,7 +118,7 @@ const InfoStep = props => {
         }
         cancelLabel="landscape.form_info_cancel"
         onCancel={() => navigate(-1)}
-        isMultiStep
+        isMultiStep={isNew}
       />
     </>
   );
