@@ -22,7 +22,7 @@ import { useGroupContext } from 'group/groupContext';
 
 import { withProps } from 'react-hoc';
 
-import SharedDataEntryCard from './SharedDataEntryCard';
+import SharedDataEntry from './SharedDataEntry';
 
 import theme from 'theme';
 
@@ -63,11 +63,7 @@ const SharedFilesCard = props => {
             <>
               <EntriesList aria-describedby="shared-data-card-title">
                 {sharedFiles.map(file => (
-                  <SharedDataEntryCard
-                    key={file.id}
-                    file={file}
-                    group={group}
-                  />
+                  <SharedDataEntry key={file.id} file={file} group={group} />
                 ))}
               </EntriesList>
               <Typography
