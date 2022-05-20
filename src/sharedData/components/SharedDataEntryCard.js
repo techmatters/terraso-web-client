@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
-import { Button, Card, CardContent, Grid, Typography } from '@mui/material';
+import { Button, Grid, ListItem, Typography } from '@mui/material';
 
 import ConfirmButton from 'common/components/ConfirmButton';
 import EditableText from 'common/components/EditableText';
@@ -76,112 +76,111 @@ const SharedDataEntryCard = ({ file }) => {
   const description = _.get('description', file);
 
   return (
-    <Card variant="outlined">
-      <CardContent>
-        <Grid
-          container
-          spacing={1}
-          alignItems="center"
-          sx={{ fontSize: 14, color: 'gray.mid2' }}
-        >
-          <Grid item xs={1} md={1} order={{ xs: 1, md: 1 }}>
-            <Restricted permission="sharedData.download" resource={group}>
-              <Button
-                onClick={handleDownload}
-                startIcon={<FileIcon resourceType={file.resourceType} />}
+    <ListItem>
+      <Grid
+        container
+        spacing={1}
+        alignItems="center"
+        sx={{ fontSize: 14, color: 'gray.mid2' }}
+      >
+        <Grid item xs={1} md={1} order={{ xs: 1, md: 1 }}>
+          <Restricted permission="sharedData.download" resource={group}>
+            <Button
+              onClick={handleDownload}
+              startIcon={<FileIcon resourceType={file.resourceType} />}
+              sx={{
+                marginTop: '-5px',
+                color: theme.palette.black,
+              }}
+            />
+          </Restricted>
+        </Grid>
+        <Grid item xs={9} md={4} order={{ xs: 2, md: 2 }}>
+          <Restricted
+            permission="sharedData.edit"
+            resource={{ group, file }}
+            FallbackComponent={() => <Typography>{file.name}</Typography>}
+          >
+            <EditableText
+              id={`name-${file.id}`}
+              label={t('shared_data.name_update')}
+              value={file.name}
+              onSave={onUpdate('name')}
+              processing={processing}
+              viewProps={{ color: 'black' }}
+            />
+          </Restricted>
+        </Grid>
+        <Grid item xs={2} md={1} order={{ xs: 6, md: 3 }}>
+          {filesize(file.size, { round: 0 })}
+        </Grid>
+        <Grid item xs={9} md={4} order={{ xs: 7, md: 4 }}>
+          {formatDate(i18n.resolvedLanguage, file.createdAt)}, by{' '}
+          {t('user.full_name', { user: file.createdBy })}
+        </Grid>
+        <Grid item xs={1} md={1} order={{ xs: 3, md: 5 }}>
+          <Restricted permission="sharedData.delete" resource={{ group, file }}>
+            <ConfirmButton
+              onConfirm={onConfirm}
+              loading={processing}
+              variant="text"
+              confirmTitle={t('shared_data.delete_confirm_title', {
+                name: file.name,
+              })}
+              confirmMessage={t('shared_data.delete_confirm_message', {
+                name: file.name,
+              })}
+              confirmButton={t('shared_data.delete_confirm_button')}
+            >
+              <DeleteIcon
                 sx={{
-                  marginTop: '-5px',
-                  color: theme.palette.black,
+                  fontSize: ICON_SIZE,
+                  color: theme.palette.gray.mid2,
                 }}
               />
-            </Restricted>
-          </Grid>
-          <Grid item xs={9} md={4} order={{ xs: 2, md: 2 }}>
-            <Restricted
-              permission="sharedData.edit"
-              resource={{ group, file }}
-              FallbackComponent={() => <Typography>{file.name}</Typography>}
-            >
-              <EditableText
-                value={file.name}
-                onSave={onUpdate('name')}
-                processing={processing}
-                viewProps={{ color: 'black' }}
-              />
-            </Restricted>
-          </Grid>
-          <Grid item xs={2} md={1} order={{ xs: 6, md: 3 }}>
-            {filesize(file.size, { round: 0 })}
-          </Grid>
-          <Grid item xs={9} md={4} order={{ xs: 7, md: 4 }}>
-            {formatDate(i18n.resolvedLanguage, file.createdAt)}, by{' '}
-            {t('user.full_name', { user: file.createdBy })}
-          </Grid>
-          <Grid item xs={1} md={1} order={{ xs: 3, md: 5 }}>
-            <Restricted
-              permission="sharedData.delete"
-              resource={{ group, file }}
-            >
-              <ConfirmButton
-                onConfirm={onConfirm}
-                loading={processing}
-                variant="text"
-                confirmTitle={t('shared_data.delete_confirm_title', {
-                  name: file.name,
-                })}
-                confirmMessage={t('shared_data.delete_confirm_message', {
-                  name: file.name,
-                })}
-                confirmButton={t('shared_data.delete_confirm_button')}
-              >
-                <DeleteIcon
+            </ConfirmButton>
+          </Restricted>
+        </Grid>
+        <Grid item xs={1} md={1} order={{ xs: 4, md: 6 }}>
+          <Restricted permission="sharedData.download" resource={group}>
+            <Button
+              onClick={handleDownload}
+              startIcon={
+                <FileDownloadIcon
                   sx={{
-                    fontSize: ICON_SIZE,
+                    marginTop: '2px',
+                    width: ICON_SIZE,
+                    height: ICON_SIZE,
                     color: theme.palette.gray.mid2,
                   }}
                 />
-              </ConfirmButton>
-            </Restricted>
-          </Grid>
-          <Grid item xs={1} md={1} order={{ xs: 4, md: 6 }}>
-            <Restricted permission="sharedData.download" resource={group}>
-              <Button
-                onClick={handleDownload}
-                startIcon={
-                  <FileDownloadIcon
-                    sx={{
-                      marginTop: '2px',
-                      width: ICON_SIZE,
-                      height: ICON_SIZE,
-                      color: theme.palette.gray.mid2,
-                    }}
-                  />
-                }
-              />
-            </Restricted>
-          </Grid>
-          <Grid item xs={9} md={10} order={{ xs: 9, md: 7 }}>
-            <Restricted
-              permission="sharedData.edit"
-              resource={{ group, file }}
-              FallbackComponent={() => (
-                <Typography variant="body1">{file.description}</Typography>
-              )}
-            >
-              <EditableText
-                value={description}
-                processing={processing}
-                addMessage={t('shared_data.add_description_message')}
-                onSave={onUpdate('description')}
-                viewProps={{ variant: 'body1' }}
-              />
-            </Restricted>
-          </Grid>
-          <Grid item xs={1} order={{ xs: 5 }} display={{ md: 'none' }} />
-          <Grid item xs={1} order={{ xs: 8 }} display={{ md: 'none' }} />
+              }
+            />
+          </Restricted>
         </Grid>
-      </CardContent>
-    </Card>
+        <Grid item xs={9} md={10} order={{ xs: 9, md: 7 }}>
+          <Restricted
+            permission="sharedData.edit"
+            resource={{ group, file }}
+            FallbackComponent={() => (
+              <Typography variant="body1">{file.description}</Typography>
+            )}
+          >
+            <EditableText
+              id={`description-${file.id}`}
+              label={t('shared_data.description_update')}
+              value={description}
+              processing={processing}
+              addMessage={t('shared_data.add_description_message')}
+              onSave={onUpdate('description')}
+              viewProps={{ variant: 'body1' }}
+            />
+          </Restricted>
+        </Grid>
+        <Grid item xs={1} order={{ xs: 5 }} display={{ md: 'none' }} />
+        <Grid item xs={1} order={{ xs: 8 }} display={{ md: 'none' }} />
+      </Grid>
+    </ListItem>
   );
 };
 

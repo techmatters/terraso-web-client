@@ -8,7 +8,11 @@ import {
   Card,
   CardContent,
   CardHeader,
+  Divider,
   Link,
+  List,
+  Paper,
+  Stack,
   Typography,
 } from '@mui/material';
 
@@ -16,9 +20,21 @@ import Restricted from 'permissions/components/Restricted';
 
 import { useGroupContext } from 'group/groupContext';
 
+import { withProps } from 'react-hoc';
+
 import SharedDataEntryCard from './SharedDataEntryCard';
 
 import theme from 'theme';
+
+const EntriesList = withProps(List, {
+  component: withProps(Stack, {
+    divider: <Divider component="li" />,
+    component: withProps(Paper, {
+      variant: 'outlined',
+      component: 'ul',
+    }),
+  }),
+});
 
 const SharedFilesCard = props => {
   const { t } = useTranslation();
@@ -29,11 +45,15 @@ const SharedFilesCard = props => {
 
   return (
     <Restricted permission="group.viewFiles" resource={group}>
-      <Card variant="outlined">
+      <Card
+        component="section"
+        aria-labelledby="shared-data-card-title"
+        variant="outlined"
+      >
         <CardHeader
           disableTypography
           title={
-            <Typography variant="h2" id="group-view-card-title">
+            <Typography variant="h2" id="shared-data-card-title">
               {t('shared_data.title')}
             </Typography>
           }
@@ -41,9 +61,15 @@ const SharedFilesCard = props => {
         <CardContent>
           {hasFiles && (
             <>
-              {sharedFiles.map(file => (
-                <SharedDataEntryCard key={file.id} file={file} group={group} />
-              ))}
+              <EntriesList aria-describedby="shared-data-card-title">
+                {sharedFiles.map(file => (
+                  <SharedDataEntryCard
+                    key={file.id}
+                    file={file}
+                    group={group}
+                  />
+                ))}
+              </EntriesList>
               <Typography
                 variant="body1"
                 sx={{

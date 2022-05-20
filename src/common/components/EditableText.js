@@ -4,11 +4,18 @@ import { useTranslation } from 'react-i18next';
 
 import EditIcon from '@mui/icons-material/Edit';
 import { LoadingButton } from '@mui/lab';
-import { Button, Link, OutlinedInput, Stack, Typography } from '@mui/material';
+import {
+  Button,
+  InputLabel,
+  Link,
+  OutlinedInput,
+  Stack,
+  Typography,
+} from '@mui/material';
 
 const EditableText = props => {
   const { t } = useTranslation();
-  const { value, processing, addMessage, viewProps, onSave } = props;
+  const { id, value, label, processing, addMessage, viewProps, onSave } = props;
   const [isHovering, setIsHovering] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(value);
@@ -32,7 +39,11 @@ const EditableText = props => {
   if (isEditing) {
     return (
       <Stack direction="row" spacing={1}>
+        <InputLabel htmlFor={id} className="visuallyhidden">
+          {label}
+        </InputLabel>
         <OutlinedInput
+          id={id}
           size="small"
           value={editedValue}
           onChange={event => setEditedValue(event.target.value)}
@@ -56,6 +67,7 @@ const EditableText = props => {
   return (
     <Typography
       component={Stack}
+      role="button"
       direction="row"
       justifyContent="space-between"
       onClick={() => setIsEditing(true)}

@@ -269,7 +269,9 @@
         "upload_save": "Upload Files",
         "upload_cancel": "Cancel",
         "updated": "The file “{{name}}” was updated.",
-        "add_description_message": "Add File Description"
+        "add_description_message": "Add File Description",
+        "name_update": "Update name",
+        "description_update": "Update description"
     },
     "common": {
         "dialog_cancel_label": "Cancel",
