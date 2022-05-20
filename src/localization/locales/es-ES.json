@@ -172,6 +172,7 @@
         "membership_leave_confirm_button": "Dejar el paisaje",
         "list_new_button": "Crear paisaje",
         "members_remove_confirmation_button": "Quitar miembro",
+        "view_update_button": "[TODO]Update Landscape",
         "role_member": "Miembro",
         "members_title_member": "Miembros de {{name}}",
         "members_description_member": "",
