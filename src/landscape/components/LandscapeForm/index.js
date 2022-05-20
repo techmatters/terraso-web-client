@@ -71,26 +71,30 @@ const LandscapeForm = () => {
     dispatch(saveLandscape(updatedLandscape));
   };
 
-  const renderStep =
-    Component =>
-    ({ setActiveStepIndex }) =>
-      (
-        <Component
+  const steps = [
+    {
+      label: t('landscape.form_step_info_label'),
+      render: ({ setActiveStepIndex }) => (
+        <InfoStep
+          landscape={updatedLandscape}
+          setActiveStepIndex={setActiveStepIndex}
+          setUpdatedLandscape={updatedLandscape => {
+            setUpdatedLandscape(updatedLandscape);
+            setActiveStepIndex(current => current + 1);
+          }}
+        />
+      ),
+    },
+    {
+      label: t('landscape.form_step_boundaries_options_label'),
+      render: ({ setActiveStepIndex }) => (
+        <BoundaryStep
           landscape={updatedLandscape}
           setActiveStepIndex={setActiveStepIndex}
           setUpdatedLandscape={setUpdatedLandscape}
           save={onSave}
         />
-      );
-
-  const steps = [
-    {
-      label: t('landscape.form_step_info_label'),
-      render: renderStep(InfoStep),
-    },
-    {
-      label: t('landscape.form_step_boundaries_options_label'),
-      render: renderStep(BoundaryStep),
+      ),
     },
   ];
 

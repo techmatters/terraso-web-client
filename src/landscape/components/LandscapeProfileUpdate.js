@@ -10,7 +10,7 @@ import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 
 import InfoStep from 'landscape/components/LandscapeForm/InfoStep';
-import { fetchLandscapeForm } from 'landscape/landscapeSlice';
+import { fetchLandscapeForm, saveLandscape } from 'landscape/landscapeSlice';
 
 const LandscapeProfileUpdate = () => {
   const dispatch = useDispatch();
@@ -20,6 +20,10 @@ const LandscapeProfileUpdate = () => {
   const { fetching, landscape, success } = useSelector(
     state => state.landscape.form
   );
+
+  const onSave = updatedLandscape => {
+    dispatch(saveLandscape(updatedLandscape));
+  };
 
   useDocumentTitle(
     t('landscape.form_edit_document_title', {
@@ -44,7 +48,12 @@ const LandscapeProfileUpdate = () => {
 
   return (
     <PageContainer>
-      <InfoStep landscape={landscape} />
+      <InfoStep
+        landscape={landscape}
+        setUpdatedLandscape={updatedLandscape => {
+          onSave(updatedLandscape);
+        }}
+      />
     </PageContainer>
   );
 };
