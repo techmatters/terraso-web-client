@@ -83,16 +83,19 @@ const LandscapeForm = () => {
         />
       );
 
-  const steps = [
+  let steps = [
     {
       label: t('landscape.form_step_info_label'),
       render: renderStep(InfoStep),
     },
-    {
+  ];
+
+  if (isNew) {
+    steps.push({
       label: t('landscape.form_step_boundaries_options_label'),
       render: renderStep(BoundaryStep),
-    },
-  ];
+    });
+  }
 
   return (
     <PageContainer>

@@ -113,10 +113,12 @@ const InfoStep = props => {
           setUpdatedLandscape(updatedLandscape);
           setActiveStepIndex(current => current + 1);
         }}
-        saveLabel="landscape.form_info_next"
+        saveLabel={
+          isNew ? 'landscape.form_info_next' : 'landscape.form_save_label'
+        }
         cancelLabel="landscape.form_info_cancel"
         onCancel={() => navigate(-1)}
-        isMultiStep
+        isMultiStep={isNew}
       />
     </>
   );
