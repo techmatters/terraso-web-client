@@ -39,7 +39,7 @@ const EditableText = props => {
   if (isEditing) {
     return (
       <Stack direction="row" spacing={1}>
-        <InputLabel htmlFor={id} className="visuallyhidden">
+        <InputLabel htmlFor={id} className="visually-hidden">
           {label}
         </InputLabel>
         <OutlinedInput
