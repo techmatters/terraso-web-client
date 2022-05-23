@@ -105,10 +105,22 @@ const components = {
 
 const modalStyle = {
   position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 500,
+  top: {
+    xs: '25%',
+    md: '50%',
+  },
+  left: {
+    xs: '25%',
+    md: '50%',
+  },
+  transform: {
+    xs: 'translate(-23%, -25%)',
+    md: 'translate(-50%, -50%)',
+  },
+  width: {
+    xs: '70%',
+    md: 500,
+  },
   bgcolor: 'background.paper',
   border: '1px solid #000',
   p: 4,
