@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
@@ -31,7 +31,10 @@ import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
 import LandscapeMap from 'landscape/components/LandscapeMap';
-import { fetchLandscapeView } from 'landscape/landscapeSlice';
+import {
+  fetchLandscapeView,
+  refreshLandscapeView,
+} from 'landscape/landscapeSlice';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 import SharedDataCard from 'sharedData/components/SharedDataCard';
 
@@ -98,6 +101,10 @@ const LandscapeView = () => {
     dispatch(fetchLandscapeView(slug));
   }, [dispatch, slug]);
 
+  const updateLandscape = useCallback(() => {
+    dispatch(refreshLandscapeView(slug));
+  }, [dispatch, slug]);
+
   if (fetching) {
     return <PageLoader />;
   }
@@ -111,81 +118,87 @@ const LandscapeView = () => {
   );
 
   return (
-    <PageContainer>
-      <PageHeader
-        header={landscape.name}
-        typographyProps={{ sx: { marginBottom: 0 } }}
-      />
-      <Typography variant="body2" sx={{ marginBottom: 2 }}>
-        {currentCountry?.name}
-      </Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={12}>
-          <Card variant="outlined">
-            <CardContent>
-              <LandscapeMap
-                landscape={landscape}
-                label={t('landscape.view_map_title')}
-              />
-              <InlineHelp
-                items={[
-                  {
-                    title: t('landscape.view_map_boundaries_help'),
-                    details: (
-                      <Trans i18nKey="landscape.view_map_boundaries_help_details">
-                        Prefix
-                        <Link
-                          href={t('landscape.view_map_boundaries_help_url')}
-                          target="_blank"
-                        >
-                          link
-                          <LaunchIcon
-                            fontSize="small"
-                            sx={{ verticalAlign: 'bottom' }}
-                          />
-                        </Link>
-                        .
-                      </Trans>
-                    ),
-                  },
-                ]}
-              />
-            </CardContent>
-            <Restricted permission="landscape.change" resource={landscape}>
-              <CardActions sx={{ paddingTop: 0 }}>
-                <Button
-                  variant="outlined"
-                  component={RouterLink}
-                  to={`/landscapes/${landscape.slug}/boundaries`}
-                >
-                  {t('landscape.view_map_boundaries_update')}
-                </Button>
-              </CardActions>
-            </Restricted>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <LandscapeCard landscape={landscape} />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <GroupContextProvider
-            owner={landscape}
-            groupSlug={landscape.defaultGroup.slug}
-            MemberJoinButton={MemberJoinButton}
-            MemberLeaveButton={MemberLeaveButton}
-          >
+    <GroupContextProvider
+      owner={landscape}
+      group={landscape.defaultGroup}
+      groupSlug={landscape.defaultGroup.slug}
+      MemberJoinButton={MemberJoinButton}
+      MemberLeaveButton={MemberLeaveButton}
+      updateOwner={updateLandscape}
+    >
+      <PageContainer>
+        <PageHeader
+          header={landscape.name}
+          typographyProps={{ sx: { marginBottom: 0 } }}
+        />
+        <Typography variant="body2" sx={{ marginBottom: 2 }}>
+          {currentCountry?.name}
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={12}>
+            <Card variant="outlined">
+              <CardContent>
+                <LandscapeMap
+                  landscape={landscape}
+                  label={t('landscape.view_map_title')}
+                />
+                <InlineHelp
+                  items={[
+                    {
+                      title: t('landscape.view_map_boundaries_help'),
+                      details: (
+                        <Trans i18nKey="landscape.view_map_boundaries_help_details">
+                          Prefix
+                          <Link
+                            href={t('landscape.view_map_boundaries_help_url')}
+                            target="_blank"
+                          >
+                            link
+                            <LaunchIcon
+                              fontSize="small"
+                              sx={{ verticalAlign: 'bottom' }}
+                            />
+                          </Link>
+                          .
+                        </Trans>
+                      ),
+                    },
+                  ]}
+                />
+              </CardContent>
+              <Restricted permission="landscape.change" resource={landscape}>
+                <CardActions sx={{ paddingTop: 0 }}>
+                  <Button
+                    variant="outlined"
+                    component={RouterLink}
+                    to={`/landscapes/${landscape.slug}/boundaries`}
+                  >
+                    {t('landscape.view_map_boundaries_update')}
+                  </Button>
+                </CardActions>
+              </Restricted>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <LandscapeCard landscape={landscape} />
+          </Grid>
+          <Grid item xs={12} md={6}>
             <GroupMembershipCard
               onViewMembers={() =>
                 navigate(`/landscapes/${landscape.slug}/members`)
               }
             />
-          </GroupContextProvider>
+          </Grid>
+          <Grid item xs={12} md={12}>
+            <SharedDataCard
+              onUploadClick={() =>
+                navigate(`/landscapes/${landscape.slug}/upload`)
+              }
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={12}>
-          <SharedDataCard group={landscape.defaultGroup} />
-        </Grid>
-      </Grid>
-    </PageContainer>
+      </PageContainer>
+    </GroupContextProvider>
   );
 };
 

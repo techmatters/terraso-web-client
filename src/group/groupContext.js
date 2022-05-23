@@ -8,6 +8,7 @@ export const GroupContextProvider = props => {
   const providerValue = _.pick(
     [
       'owner',
+      'group',
       'groupSlug',
       'members',
       'onMemberRemove',
@@ -15,6 +16,7 @@ export const GroupContextProvider = props => {
       'MemberLeaveButton',
       'MemberRemoveButton',
       'MemberJoinButton',
+      'updateOwner',
     ],
     props
   );

@@ -267,7 +267,11 @@
         "upload_rejected_file-too-large": "[TODO] File too large. Max size: {{maxSize}}MB. Files: {{rejectedFiles}}",
         "upload_description": "Add one or more data files (xls, xlsx, csv) and descriptions",
         "upload_save": "Upload Files",
-        "upload_cancel": "Cancel"
+        "upload_cancel": "Cancel",
+        "updated": "The file “{{name}}” was updated.",
+        "add_description_message": "Add File Description",
+        "name_update": "Update name",
+        "description_update": "Update description"
     },
     "common": {
         "dialog_cancel_label": "Cancel",
@@ -281,7 +285,9 @@
         "drop_zone_drop_message": "Drop file to upload",
         "drop_zone_select_file": "Select File",
         "drop_zone_format": "Accepted file formats: {{extensions}}",
-        "drop_zone_size": "Maximum file size: {{size}}"
+        "drop_zone_size": "Maximum file size: {{size}}",
+        "editable_text_save": "Save",
+        "editable_text_cancel": "Cancel"
     },
     "form": {
         "required_label": "required",
@@ -302,7 +308,8 @@
         "models": {
             "Membership": "Membership",
             "Group": "Group",
-            "Landscape": "Landscape"
+            "Landscape": "Landscape",
+            "DataEntry": "Shared File"
         },
         "error": "Failed to execute request. {{code, errorParam(label: Code)}} {{field, errorParam(label: Field)}} {{model, errorParam(label: Model)}} {{context, errorParam(label: Context)}}",
         "error_unexpected": "Unexpected error",

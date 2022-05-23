@@ -46,6 +46,10 @@ export const fetchGroupView = createAsyncThunk(
   'group/fetchGroupView',
   groupService.fetchGroupToView
 );
+export const refreshGroupView = createAsyncThunk(
+  'group/refreshGroupView',
+  groupService.fetchGroupToView
+);
 export const fetchGroupUpload = createAsyncThunk(
   'group/fetchGroupUpload',
   groupService.fetchGroupToUploadSharedData
@@ -69,15 +73,6 @@ export const removeMember = createAsyncThunk(
 export const updateMemberRole = createAsyncThunk(
   'group/updateMemberRole',
   groupService.updateMemberRole
-);
-export const deleteSharedDataFile = createAsyncThunk(
-  'group/deleteSharedDataFile',
-  groupService.deleteSharedDataFile,
-  (group, { file }) => ({
-    severity: 'success',
-    content: 'shared_data.deleted',
-    params: { name: file.name },
-  })
 );
 export const saveGroup = createAsyncThunk(
   'group/saveGroup',
@@ -106,6 +101,17 @@ export const leaveGroup = createAsyncThunk(
     params: { name: ownerName },
   })
 );
+
+const updateView = (state, action) => ({
+  ...groupSlice.caseReducers.setMemberships(state, {
+    payload: groupUtils.getMemberships([action.payload]),
+  }),
+  view: {
+    fetching: false,
+    message: null,
+    group: action.payload,
+  },
+});
 
 const groupSlice = createSlice({
   name: 'group',
@@ -169,27 +175,8 @@ const groupSlice = createSlice({
       ...state,
       view: initialState.view,
     }),
-    [fetchGroupView.fulfilled]: (state, action) => ({
-      ...groupSlice.caseReducers.setMemberships(state, {
-        payload: groupUtils.getMemberships([action.payload]),
-      }),
-      view: {
-        fetching: false,
-        message: null,
-        group: action.payload,
-      },
-    }),
-    // TODO: refactor this to avoid duplication.
-    [deleteSharedDataFile.fulfilled]: (state, action) => ({
-      ...groupSlice.caseReducers.setMemberships(state, {
-        payload: groupUtils.getMemberships([action.payload]),
-      }),
-      view: {
-        fetching: false,
-        message: null,
-        group: action.payload,
-      },
-    }),
+    [fetchGroupView.fulfilled]: updateView,
+    [refreshGroupView.fulfilled]: updateView,
     [fetchGroupView.rejected]: (state, action) => ({
       ...state,
       view: {
