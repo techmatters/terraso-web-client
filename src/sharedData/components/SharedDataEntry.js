@@ -55,7 +55,6 @@ const SharedDataEntryCard = ({ file }) => {
   const processing = useSelector(_.get(`sharedData.processing.${file.id}`));
   const dispatch = useDispatch();
 
-  // TODO: get presigned URL from backend and send user there
   const handleDownload = e => {
     e.preventDefault();
     window.open(file.url, '_blank');
