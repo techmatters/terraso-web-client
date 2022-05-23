@@ -81,7 +81,7 @@ const EditableText = props => {
       }}
       {...viewProps}
     >
-      {value  || <Link href="#">+ {addMessage}</Link>}
+      {value || <Link href="#">+ {addMessage}</Link>}
       {isHovering && <EditIcon sx={{ color: 'blue.dark' }} />}
     </Typography>
   );
