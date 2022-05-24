@@ -16,8 +16,8 @@ import {
   setFormNewValues,
 } from 'landscape/landscapeSlice';
 
-import BoundaryStep from './BoundaryStep';
-import InfoStep from './InfoStep';
+import BoundaryStep from './LandscapeForm/BoundaryStep';
+import InfoStep from './LandscapeForm/InfoStep';
 
 const LandscapeForm = () => {
   const dispatch = useDispatch();

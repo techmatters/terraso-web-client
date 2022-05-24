@@ -89,7 +89,7 @@ const LandscapeList = () => {
       flex: 1.5,
       minWidth: 200,
       valueGetter: ({ row: landscape }) =>
-        landscape.location && countryNameForCode(landscape.location).name,
+        landscape.location && countryNameForCode(landscape.location)?.name,
     },
     {
       field: 'website',
