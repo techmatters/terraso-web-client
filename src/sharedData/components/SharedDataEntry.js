@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import filesize from 'filesize';
 import _ from 'lodash/fp';
@@ -15,7 +15,11 @@ import EditableText from 'common/components/EditableText';
 import Restricted from 'permissions/components/Restricted';
 
 import { useGroupContext } from 'group/groupContext';
-import { deleteSharedData, updateSharedData } from 'sharedData/sharedDataSlice';
+import {
+  deleteSharedData,
+  resetProcessing,
+  updateSharedData,
+} from 'sharedData/sharedDataSlice';
 
 import theme from 'theme';
 
@@ -54,6 +58,10 @@ const SharedDataEntryCard = ({ file }) => {
   const { group, updateOwner } = useGroupContext();
   const processing = useSelector(_.get(`sharedData.processing.${file.id}`));
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(resetProcessing(file.id));
+  }, [dispatch, file]);
 
   const handleDownload = e => {
     e.preventDefault();

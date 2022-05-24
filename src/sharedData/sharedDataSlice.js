@@ -54,14 +54,16 @@ const sharedDataSlice = createSlice({
       ...state,
       uploads: initialState.uploads,
     }),
+    resetProcessing: (state, action) => ({
+      ...state,
+      processing: _.omit(action.payload, state.processing),
+    }),
   },
   extraReducers: {
     [updateSharedData.pending]: setProcessing,
     [updateSharedData.rejected]: setProcessing,
-    [updateSharedData.fulfilled]: setProcessing,
     [deleteSharedData.pending]: setProcessing,
     [deleteSharedData.rejected]: setProcessing,
-    [deleteSharedData.fulfilled]: setProcessing,
     [uploadSharedData.pending]: (state, action) =>
       _.set(
         `uploads.${action.meta.arg.file.id}`,
@@ -92,6 +94,6 @@ const sharedDataSlice = createSlice({
   },
 });
 
-export const { resetUploads } = sharedDataSlice.actions;
+export const { resetUploads, resetProcessing } = sharedDataSlice.actions;
 
 export default sharedDataSlice.reducer;
