@@ -260,7 +260,7 @@
         "title": "[TODO]Shared files",
         "description": "[TODO]Only the members of your group can download the files. <1>Read more about sharing files</1>.",
         "learn_more_url": "http://terraso.org/es/ayuda/sharing-files/",
-        "upload_button": "[TODO]Upload Files",
+        "upload_button": "[TODO]Share Files",
         "delete_confirm_title": "[TODO]Delete “{{name}}”?",
         "delete_confirm_message": "[TODO]Are you sure you wish to delete the file “{{name}}”?",
         "delete_confirm_button": "[TODO]Delete File",

@@ -252,7 +252,7 @@
         "title": "Shared files",
         "description": "Only the members of your group can download the files. <1>Read more about sharing files</1>.",
         "learn_more_url": "http://terraso.org/help/sharing-files/",
-        "upload_button": "Upload Files",
+        "upload_button": "Share Files",
         "delete_confirm_title": "Delete “{{name}}”?",
         "delete_confirm_message": "Are you sure you wish to delete the file “{{name}}”?",
         "delete_confirm_button": "Delete File",
