@@ -6,7 +6,7 @@ import { act } from 'react-dom/test-utils';
 import { useMap } from 'react-leaflet';
 import { useParams } from 'react-router-dom';
 
-import LandscapeForm from 'landscape/components/LandscapeForm';
+import LandscapeForm from 'landscape/components/LandscapeNew';
 import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('terrasoBackend/api');
