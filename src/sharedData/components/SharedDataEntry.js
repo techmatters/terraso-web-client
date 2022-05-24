@@ -115,13 +115,7 @@ const SharedDataEntry = ({ file }) => {
             />
           </Restricted>
         </Grid>
-        <Grid
-          item
-          xs={2}
-          md={1}
-          order={{ xs: 6, md: 3 }}
-          sx={{ paddingLeft: 1 }}
-        >
+        <Grid item xs={2} md={1} order={{ xs: 6, md: 3 }}>
           {filesize(file.size, { round: 0 })}
         </Grid>
         <Grid item xs={9} md={5} order={{ xs: 7, md: 4 }}>
