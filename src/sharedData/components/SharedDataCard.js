@@ -60,30 +60,28 @@ const SharedFilesCard = props => {
         />
         <CardContent>
           {hasFiles && (
-            <>
-              <EntriesList aria-describedby="shared-data-card-title">
-                {sharedFiles.map(file => (
-                  <SharedDataEntry key={file.id} file={file} group={group} />
-                ))}
-              </EntriesList>
-              <Typography
-                variant="body1"
-                sx={{
-                  marginTop: theme.spacing(2),
-                  marginBottom: theme.spacing(2),
-                }}
-              >
-                {' '}
-                <Trans i18nKey="shared_data.description">
-                  Prefix
-                  <Link href={t('shared_data.learn_more_url')} target="_blank">
-                    link
-                  </Link>
-                  .
-                </Trans>
-              </Typography>
-            </>
+            <EntriesList aria-describedby="shared-data-card-title">
+              {sharedFiles.map(file => (
+                <SharedDataEntry key={file.id} file={file} group={group} />
+              ))}
+            </EntriesList>
           )}
+          <Typography
+            variant="body1"
+            sx={{
+              marginTop: theme.spacing(2),
+              marginBottom: theme.spacing(2),
+            }}
+          >
+            {' '}
+            <Trans i18nKey="shared_data.description">
+              Prefix
+              <Link href={t('shared_data.learn_more_url')} target="_blank">
+                link
+              </Link>
+              .
+            </Trans>
+          </Typography>
           <Button variant="outlined" onClick={onUploadClick}>
             {t('shared_data.upload_button')}
           </Button>
