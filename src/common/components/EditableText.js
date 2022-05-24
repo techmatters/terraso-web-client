@@ -73,13 +73,14 @@ const EditableText = props => {
       onClick={() => setIsEditing(true)}
       onMouseOver={() => setIsHovering(true)}
       onMouseOut={() => setIsHovering(false)}
+      {...viewProps}
       sx={{
         padding: 1,
         ...(isHovering
           ? { backgroundColor: 'blue.lite', cursor: 'pointer' }
           : {}),
+        ...(viewProps?.sx || {}),
       }}
-      {...viewProps}
     >
       {value || <Link href="#">+ {addMessage}</Link>}
       {isHovering && <EditIcon sx={{ color: 'blue.dark' }} />}

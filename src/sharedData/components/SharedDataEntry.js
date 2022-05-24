@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
-import { Button, Grid, ListItem, Typography } from '@mui/material';
+import { Button, Grid, ListItem, Stack, Typography } from '@mui/material';
 
 import ConfirmButton from 'common/components/ConfirmButton';
 import EditableText from 'common/components/EditableText';
@@ -23,7 +23,7 @@ import {
 
 import theme from 'theme';
 
-const ICON_SIZE = 32;
+const ICON_SIZE = 24;
 
 const formatDate = (language, dateString) =>
   new Intl.DateTimeFormat(language, { dateStyle: 'medium' }).format(
@@ -53,7 +53,7 @@ const FileIcon = ({ resourceType }) => {
   }
 };
 
-const SharedDataEntryCard = ({ file }) => {
+const SharedDataEntry = ({ file }) => {
   const { i18n, t } = useTranslation();
   const { group, updateOwner } = useGroupContext();
   const processing = useSelector(_.get(`sharedData.processing.${file.id}`));
@@ -90,19 +90,16 @@ const SharedDataEntryCard = ({ file }) => {
         alignItems="center"
         sx={{ fontSize: 14, color: 'gray.mid2' }}
       >
-        <Grid item xs={1} md={1} order={{ xs: 1, md: 1 }}>
-          <Restricted permission="sharedData.download" resource={group}>
-            <Button
-              onClick={handleDownload}
-              startIcon={<FileIcon resourceType={file.resourceType} />}
-              sx={{
-                marginTop: '-5px',
-                color: theme.palette.black,
-              }}
-            />
-          </Restricted>
-        </Grid>
-        <Grid item xs={9} md={4} order={{ xs: 2, md: 2 }}>
+        <Grid
+          item
+          xs={8}
+          md={4}
+          order={{ xs: 2, md: 2 }}
+          component={Stack}
+          direction="row"
+          alignItems="center"
+        >
+          <FileIcon resourceType={file.resourceType} />
           <Restricted
             permission="sharedData.edit"
             resource={{ group, file }}
@@ -114,18 +111,32 @@ const SharedDataEntryCard = ({ file }) => {
               value={file.name}
               onSave={onUpdate('name')}
               processing={processing}
-              viewProps={{ color: 'black' }}
+              viewProps={{ color: 'black', sx: { flexGrow: 1 } }}
             />
           </Restricted>
         </Grid>
-        <Grid item xs={2} md={1} order={{ xs: 6, md: 3 }}>
+        <Grid
+          item
+          xs={2}
+          md={1}
+          order={{ xs: 6, md: 3 }}
+          sx={{ paddingLeft: 1 }}
+        >
           {filesize(file.size, { round: 0 })}
         </Grid>
-        <Grid item xs={9} md={4} order={{ xs: 7, md: 4 }}>
+        <Grid item xs={9} md={5} order={{ xs: 7, md: 4 }}>
           {formatDate(i18n.resolvedLanguage, file.createdAt)}, by{' '}
           {t('user.full_name', { user: file.createdBy })}
         </Grid>
-        <Grid item xs={1} md={1} order={{ xs: 3, md: 5 }}>
+        <Grid
+          item
+          xs={4}
+          md={2}
+          order={{ xs: 3, md: 4 }}
+          component={Stack}
+          direction="row"
+          justifyContent="flex-end"
+        >
           <Restricted permission="sharedData.delete" resource={{ group, file }}>
             <ConfirmButton
               onConfirm={onConfirm}
@@ -147,8 +158,6 @@ const SharedDataEntryCard = ({ file }) => {
               />
             </ConfirmButton>
           </Restricted>
-        </Grid>
-        <Grid item xs={1} md={1} order={{ xs: 4, md: 6 }}>
           <Restricted permission="sharedData.download" resource={group}>
             <Button
               onClick={handleDownload}
@@ -191,4 +200,4 @@ const SharedDataEntryCard = ({ file }) => {
   );
 };
 
-export default SharedDataEntryCard;
+export default SharedDataEntry;
