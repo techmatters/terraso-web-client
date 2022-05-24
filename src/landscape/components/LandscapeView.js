@@ -66,17 +66,27 @@ const LandscapeCard = ({ landscape }) => {
         <Typography variant="body2" color="text.secondary">
           {landscape.description}
         </Typography>
-      </CardContent>
-      {landscape.website && (
-        <CardContent>
+        {landscape.website && (
           <Stack direction="row" alignItems="center" spacing={1}>
             <PublicIcon sx={{ color: 'gray.lite1' }} />
             <Link href={landscape.website} underline="none">
               {landscape.website}
             </Link>
           </Stack>
-        </CardContent>
-      )}
+        )}
+        <Restricted permission="landscape.change" resource={landscape}>
+          <Button
+            variant="outlined"
+            component={RouterLink}
+            to={`/landscapes/${landscape.slug}/edit`}
+            sx={{
+              marginTop: theme.spacing(1),
+            }}
+          >
+            {t('landscape.view_update_button')}
+          </Button>
+        </Restricted>
+      </CardContent>
     </Card>
   );
 };
@@ -128,15 +138,6 @@ const LandscapeView = () => {
             {currentCountry?.name}
           </Typography>
         </div>
-        <Restricted permission="landscape.change" resource={landscape}>
-          <Button
-            variant="contained"
-            component={RouterLink}
-            to={`/landscapes/${landscape.slug}/edit`}
-          >
-            {t('landscape.view_update_button')}
-          </Button>
-        </Restricted>
       </Stack>
       <Grid container spacing={2}>
         <Grid item xs={12} md={12}>
