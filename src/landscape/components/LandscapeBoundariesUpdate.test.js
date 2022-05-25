@@ -244,7 +244,7 @@ test('LandscapeBoundaries: Save', async () => {
       })
     )
     .mockResolvedValueOnce({
-      updateLandscape: {
+      addLandscape: {
         landscape: {
           id: '1',
           name: 'Landscape Name',

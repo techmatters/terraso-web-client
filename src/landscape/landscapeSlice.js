@@ -19,6 +19,7 @@ const initialState = {
   },
   form: {
     fetching: true,
+    saving: false,
     message: null,
     landscape: null,
     success: false,
@@ -75,11 +76,7 @@ const landscapeSlice = createSlice({
   reducers: {
     setFormNewValues: state => ({
       ...state,
-      form: {
-        ...state.form,
-        landscape: null,
-        fetching: false,
-      },
+      form: initialState.form,
     }),
   },
   extraReducers: {
@@ -161,14 +158,14 @@ const landscapeSlice = createSlice({
       ...state,
       form: {
         ...state.form,
-        fetching: true,
+        saving: true,
       },
     }),
     [saveLandscape.fulfilled]: (state, action) => ({
       ...state,
       form: {
         ...state.form,
-        fetching: false,
+        saving: false,
         landscape: action.payload,
         success: true,
       },
@@ -177,7 +174,7 @@ const landscapeSlice = createSlice({
       ...state,
       form: {
         ...state.form,
-        fetching: false,
+        saving: false,
       },
     }),
   },

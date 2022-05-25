@@ -17,7 +17,7 @@ const LandscapeProfileUpdate = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { slug } = useParams();
-  const { fetching, landscape, success } = useSelector(
+  const { fetching, saving, landscape, success } = useSelector(
     state => state.landscape.form
   );
 
@@ -48,6 +48,7 @@ const LandscapeProfileUpdate = () => {
 
   return (
     <PageContainer>
+      {saving && <PageLoader />}
       <InfoStep
         landscape={landscape}
         setUpdatedLandscape={updatedLandscape => {

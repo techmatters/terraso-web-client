@@ -6,7 +6,7 @@ import { act } from 'react-dom/test-utils';
 import { useMap } from 'react-leaflet';
 import { useParams } from 'react-router-dom';
 
-import LandscapeForm from 'landscape/components/LandscapeNew';
+import LandscapeNew from 'landscape/components/LandscapeNew';
 import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('terrasoBackend/api');
@@ -22,7 +22,7 @@ jest.mock('react-leaflet', () => ({
 }));
 
 const setup = async () => {
-  await render(<LandscapeForm />);
+  await render(<LandscapeNew />);
   const name = screen.getByRole('textbox', {
     name: 'Name (required)',
   });
@@ -52,39 +52,21 @@ const setup = async () => {
 };
 
 beforeEach(() => {
-  useParams.mockReturnValue({
-    slug: 'slug-1',
-  });
+  useParams.mockReturnValue({});
 });
 
-test('LandscapeForm: Save form Pin boundary', async () => {
-  terrasoApi.request
-    .mockResolvedValueOnce({
-      landscapes: {
-        edges: [
-          {
-            node: {
-              id: '1',
-              name: 'Landscape Name',
-              description: 'Landscape Description',
-              website: 'www.landscape.org',
-              location: 'EC',
-            },
-          },
-        ],
+test('LandscapeNew: Save form Pin boundary', async () => {
+  terrasoApi.request.mockResolvedValueOnce({
+    addLandscape: {
+      landscape: {
+        id: '1',
+        name: 'Landscape Name',
+        description: 'Landscape Description',
+        website: 'www.landscape.org',
+        location: 'EC',
       },
-    })
-    .mockResolvedValueOnce({
-      updateLandscape: {
-        landscape: {
-          id: '1',
-          name: 'Landscape Name',
-          description: 'Landscape Description',
-          website: 'www.landscape.org',
-          location: 'EC',
-        },
-      },
-    });
+    },
+  });
 
   const eventCallback = {};
   useMap.mockReturnValue({
@@ -138,11 +120,10 @@ test('LandscapeForm: Save form Pin boundary', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Create Landscape' }))
   );
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(2);
-  const saveCall = terrasoApi.request.mock.calls[1];
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  const saveCall = terrasoApi.request.mock.calls[0];
   expect(saveCall[1]).toStrictEqual({
     input: {
-      id: '1',
       description: 'New description',
       name: 'New name',
       website: 'https://www.other.org',

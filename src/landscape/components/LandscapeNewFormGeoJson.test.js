@@ -5,7 +5,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
 
-import LandscapeForm from 'landscape/components/LandscapeNew';
+import LandscapeNew from 'landscape/components/LandscapeNew';
 import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('terrasoBackend/api');
@@ -19,7 +19,7 @@ const GEOJSON =
   '{"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": {"type": "Polygon", "coordinates": [[[-80.02098083496094, 0.8184536092473124], [-80.04364013671875, 0.8177670337355836], [-80.04844665527342, 0.8184536092473124], [-80.04981994628906, 0.8260059320976082], [-80.07247924804686, 0.802662342941431], [-80.09170532226562, 0.779318620539376], [-80.10063171386719, 0.7532284249372649], [-80.09857177734375, 0.7223319390984623], [-80.09307861328125, 0.7140928403610857], [-80.10337829589842, 0.6955548144696846], [-80.09788513183594, 0.6742703246919985], [-80.08827209472656, 0.6488661346824502], [-80.07797241210938, 0.6495527361122139], [-80.06561279296875, 0.6522991408974699], [-80.06235122680664, 0.6468063298344634], [-80.02098083496094, 0.8184536092473124]]]}, "properties": {}}]}';
 
 const setup = async () => {
-  await render(<LandscapeForm />);
+  await render(<LandscapeNew />);
   const name = screen.getByRole('textbox', {
     name: 'Name (required)',
   });
@@ -49,39 +49,21 @@ const setup = async () => {
 };
 
 beforeEach(() => {
-  useParams.mockReturnValue({
-    slug: 'slug-1',
-  });
+  useParams.mockReturnValue({});
 });
 
-test('LandscapeForm: Save from GeoJSON', async () => {
-  terrasoApi.request
-    .mockResolvedValueOnce({
-      landscapes: {
-        edges: [
-          {
-            node: {
-              id: '1',
-              name: 'Landscape Name',
-              description: 'Landscape Description',
-              website: 'www.landscape.org',
-              location: 'EC',
-            },
-          },
-        ],
+test('LandscapeNew: Save from GeoJSON', async () => {
+  terrasoApi.request.mockResolvedValueOnce({
+    addLandscape: {
+      landscape: {
+        id: '1',
+        name: 'Landscape Name',
+        description: 'Landscape Description',
+        website: 'www.landscape.org',
+        location: 'EC',
       },
-    })
-    .mockResolvedValueOnce({
-      updateLandscape: {
-        landscape: {
-          id: '1',
-          name: 'Landscape Name',
-          description: 'Landscape Description',
-          website: 'www.landscape.org',
-          location: 'EC',
-        },
-      },
-    });
+    },
+  });
 
   const { inputs } = await setup();
 
@@ -140,11 +122,10 @@ test('LandscapeForm: Save from GeoJSON', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Create Landscape' }))
   );
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(2);
-  const saveCall = terrasoApi.request.mock.calls[1];
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  const saveCall = terrasoApi.request.mock.calls[0];
   expect(saveCall[1]).toStrictEqual({
     input: {
-      id: '1',
       description: 'New description',
       name: 'New name',
       website: 'https://www.other.org',
