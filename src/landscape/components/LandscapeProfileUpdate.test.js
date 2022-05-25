@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
+import { fireEvent, render, screen, within } from 'tests/utils';
 
 import React from 'react';
 
