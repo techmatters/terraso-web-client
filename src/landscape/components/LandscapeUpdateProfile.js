@@ -12,7 +12,7 @@ import PageLoader from 'layout/PageLoader';
 import InfoStep from 'landscape/components/LandscapeForm/InfoStep';
 import { fetchLandscapeForm, saveLandscape } from 'landscape/landscapeSlice';
 
-const LandscapeProfileUpdate = () => {
+const LandscapeUpdateProfile = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -59,4 +59,4 @@ const LandscapeProfileUpdate = () => {
   );
 };
 
-export default LandscapeProfileUpdate;
+export default LandscapeUpdateProfile;
