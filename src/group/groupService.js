@@ -2,6 +2,7 @@ import _ from 'lodash/fp';
 
 import {
   accountMembership,
+  dataEntries,
   groupFields,
   groupMembers,
   groupMembersInfo,
@@ -10,6 +11,7 @@ import * as terrasoApi from 'terrasoBackend/api';
 
 import {
   extractAccountMembership,
+  extractDataEntries,
   extractMembers,
   extractMembersInfo,
 } from './groupUtils';
@@ -31,7 +33,7 @@ export const fetchGroupToUpdate = slug => {
     ${groupFields}
   `;
   return terrasoApi
-    .request(query, { slug })
+    .requestGraphQL(query, { slug })
     .then(_.get('groups.edges[0].node'))
     .then(group => group || Promise.reject('not_found'));
 };
@@ -45,6 +47,7 @@ export const fetchGroupToView = (slug, currentUser) => {
             ...groupFields
             ...groupMembersInfo
             ...accountMembership
+            ...dataEntries
           }
         }
       }
@@ -52,16 +55,37 @@ export const fetchGroupToView = (slug, currentUser) => {
     ${groupFields}
     ${groupMembersInfo}
     ${accountMembership}
+    ${dataEntries}
   `;
   return terrasoApi
-    .request(query, { slug, accountEmail: currentUser.email })
+    .requestGraphQL(query, { slug, accountEmail: currentUser.email })
     .then(_.get('groups.edges[0].node'))
     .then(group => group || Promise.reject('not_found'))
     .then(group => ({
       ..._.omit(['memberships', 'accountMembership'], group),
       membersInfo: extractMembersInfo(group),
       accountMembership: extractAccountMembership(group),
+      dataEntries: extractDataEntries(group),
     }));
+};
+
+export const fetchGroupToUploadSharedData = slug => {
+  const query = `
+    query group($slug: String!){
+      groups(slug: $slug) {
+        edges {
+          node {
+            id
+            name
+          }
+        }
+      }
+    }
+  `;
+  return terrasoApi
+    .requestGraphQL(query, { slug })
+    .then(_.get('groups.edges[0].node'))
+    .then(group => group || Promise.reject('not_found'));
 };
 
 export const fetchGroups = (params, currentUser) => {
@@ -95,7 +119,7 @@ export const fetchGroups = (params, currentUser) => {
     ${accountMembership}
   `;
   return terrasoApi
-    .request(query, { accountEmail: currentUser.email })
+    .requestGraphQL(query, { accountEmail: currentUser.email })
     .then(response => [
       ..._.getOr([], 'independentGroups.edges', response),
       ..._.getOr([], 'landscapeGroups.edges', response),
@@ -125,7 +149,7 @@ export const fetchGroupForMembers = (slug, currentUser) => {
     ${accountMembership}
   `;
   return terrasoApi
-    .request(query, { slug, accountEmail: currentUser.email })
+    .requestGraphQL(query, { slug, accountEmail: currentUser.email })
     .then(_.get('groups.edges[0].node'))
     .then(group => group || Promise.reject('not_found'))
     .then(group => ({
@@ -148,7 +172,7 @@ export const fetchMembers = (slug, currentUser) => {
     ${groupMembers}
   `;
   return terrasoApi
-    .request(query, { slug, accountEmail: currentUser.email })
+    .requestGraphQL(query, { slug, accountEmail: currentUser.email })
     .then(_.get('groups.edges[0].node'))
     .then(group => group || Promise.reject('not_found'))
     .then(group => ({
@@ -170,7 +194,7 @@ export const removeMember = (member, currentUser) => {
     ${groupMembers}
   `;
   return terrasoApi
-    .request(query, {
+    .requestGraphQL(query, {
       input: { id: member.membershipId },
       accountEmail: currentUser.email,
     })
@@ -194,7 +218,7 @@ export const updateMemberRole = ({ member, newRole }, currentUser) => {
     ${groupMembers}
   `;
   return terrasoApi
-    .request(query, {
+    .requestGraphQL(query, {
       input: { id: member.membershipId, userRole: newRole },
       accountEmail: currentUser.email,
     })
@@ -214,7 +238,7 @@ const updateGroup = group => {
     ${groupFields}
   `;
   return terrasoApi
-    .request(query, { input: cleanGroup(group) })
+    .requestGraphQL(query, { input: cleanGroup(group) })
     .then(response => ({ new: false, ...response.updateGroup.group }));
 };
 
@@ -229,7 +253,7 @@ const addGroup = ({ group, user }) => {
   `;
 
   return terrasoApi
-    .request(query, { input: cleanGroup(group) })
+    .requestGraphQL(query, { input: cleanGroup(group) })
     .then(response => ({ new: true, ...response.addGroup.group }));
 };
 
@@ -257,7 +281,7 @@ export const joinGroup = (
     ${accountMembership}
   `;
   return terrasoApi
-    .request(query, {
+    .requestGraphQL(query, {
       input: {
         userEmail,
         groupSlug,
@@ -291,7 +315,7 @@ export const leaveGroup = ({ groupSlug, membershipId }, currentUser) => {
     ${accountMembership}
   `;
   return terrasoApi
-    .request(query, {
+    .requestGraphQL(query, {
       input: { id: membershipId },
       accountEmail: currentUser.email,
     })

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import _ from 'lodash/fp';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Grid } from '@mui/material';
@@ -103,20 +103,27 @@ const Form = props => {
           item
           xs={12}
           {..._.get('props.gridItemProps', field)}
+          sx={{ paddingBottom: 3 }}
         >
-          <FormField
-            control={control}
-            required={_.includes(field.name, requiredFields)}
-            id={`${prefix}-${field.name}`}
+          <Controller
             name={field.name}
-            label={field.label}
-            info={field.info}
-            {..._.getOr({}, 'props', field)}
-            inputProps={{
-              type: field.type || 'text',
-              placeholder: t(field.placeholder),
-              ..._.getOr({}, 'props.inputProps', field),
-            }}
+            control={control}
+            render={controllerProps => (
+              <FormField
+                field={controllerProps.field}
+                fieldState={controllerProps.fieldState}
+                required={_.includes(field.name, requiredFields)}
+                id={`${prefix}-${field.name}`}
+                label={field.label}
+                info={field.info}
+                inputProps={{
+                  type: field.type || 'text',
+                  placeholder: t(field.placeholder),
+                  ..._.getOr({}, 'props.inputProps', field),
+                }}
+                {..._.getOr({}, 'props', field)}
+              />
+            )}
           />
         </Grid>
       ))}

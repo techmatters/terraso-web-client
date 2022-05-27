@@ -52,28 +52,30 @@ export const fetchHomeData = email => {
     }
     ${groupFields}
     ${landscapeFields}
-    ${defaultGroup}
+    ${defaultGroup()}
   `;
-  return terrasoApi.request(query, { accountEmail: email }).then(response => ({
-    groups: [
-      ..._.getOr([], 'userIndependentGroups.edges', response),
-      ..._.getOr([], 'userLandscapeGroups.edges', response),
-    ]
-      .map(_.get('node'))
-      .filter(group => group)
-      .map(group => ({
-        ..._.omit(['accountMembership'], group),
-        accountMembership: extractAccountMembership(group),
-      })),
-    landscapes: _.getOr([], 'landscapeGroups.edges', response)
-      .flatMap(_.getOr([], 'node.associatedLandscapes.edges'))
-      .map(_.get('node.landscape'))
-      .filter(landscape => landscape)
-      .map(landscape => ({
-        ..._.omit(['associatedGroups'], landscape),
-        accountMembership: extractAccountMembership(
-          _.get('defaultGroup.edges[0].node.group', landscape)
-        ),
-      })),
-  }));
+  return terrasoApi
+    .requestGraphQL(query, { accountEmail: email })
+    .then(response => ({
+      groups: [
+        ..._.getOr([], 'userIndependentGroups.edges', response),
+        ..._.getOr([], 'userLandscapeGroups.edges', response),
+      ]
+        .map(_.get('node'))
+        .filter(group => group)
+        .map(group => ({
+          ..._.omit(['accountMembership'], group),
+          accountMembership: extractAccountMembership(group),
+        })),
+      landscapes: _.getOr([], 'landscapeGroups.edges', response)
+        .flatMap(_.getOr([], 'node.associatedLandscapes.edges'))
+        .map(_.get('node.landscape'))
+        .filter(landscape => landscape)
+        .map(landscape => ({
+          ..._.omit(['associatedGroups'], landscape),
+          accountMembership: extractAccountMembership(
+            _.get('defaultGroup.edges[0].node.group', landscape)
+          ),
+        })),
+    }));
 };

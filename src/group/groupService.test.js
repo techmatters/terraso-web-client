@@ -4,7 +4,7 @@ import * as terrasoApi from 'terrasoBackend/api';
 jest.mock('terrasoBackend/api');
 
 test('GroupService: Fetch group', async () => {
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       groups: {
         edges: [
@@ -27,7 +27,7 @@ test('GroupService: Fetch group', async () => {
   });
 });
 test('GroupService: Fetch group not found', async () => {
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       group: null,
     })
@@ -35,6 +35,6 @@ test('GroupService: Fetch group not found', async () => {
   await expect(groupService.fetchGroupToUpdate()).rejects.toEqual('not_found');
 });
 test('GroupService: Fetch group backend error', async () => {
-  terrasoApi.request.mockReturnValue(Promise.reject('Test error'));
+  terrasoApi.requestGraphQL.mockReturnValue(Promise.reject('Test error'));
   await expect(groupService.fetchGroupToUpdate()).rejects.toEqual('Test error');
 });
