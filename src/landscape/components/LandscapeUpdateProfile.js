@@ -10,7 +10,11 @@ import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 
 import InfoStep from 'landscape/components/LandscapeForm/InfoStep';
-import { fetchLandscapeForm, saveLandscape } from 'landscape/landscapeSlice';
+import {
+  fetchLandscapeForm,
+  saveLandscape,
+  setFormNewValues,
+} from 'landscape/landscapeSlice';
 
 const LandscapeUpdateProfile = () => {
   const dispatch = useDispatch();
@@ -32,15 +36,17 @@ const LandscapeUpdateProfile = () => {
     fetching
   );
 
+  useEffect(() => () => dispatch(setFormNewValues()), [dispatch]);
+
   useEffect(() => {
     dispatch(fetchLandscapeForm(slug));
   }, [dispatch, slug]);
 
   useEffect(() => {
-    if (success) {
-      navigate(`/landscapes/${slug}`);
+    if (success && landscape.slug) {
+      navigate(`/landscapes/${landscape.slug}`);
     }
-  }, [success, slug, navigate, dispatch]);
+  }, [success, landscape?.slug, navigate, dispatch]);
 
   if (fetching) {
     return <PageLoader />;
