@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 
 import InlineHelp from 'common/components/InlineHelp';
+import SocialShare from 'common/components/SocialShare.js';
 import { useDocumentTitle } from 'common/document';
 import { countryNameForCode } from 'common/utils';
 import PageContainer from 'layout/PageContainer';
@@ -138,6 +139,7 @@ const LandscapeView = () => {
             {currentCountry?.name}
           </Typography>
         </div>
+        <SocialShare name={landscape.name} />
       </Stack>
       <Grid container spacing={2}>
         <Grid item xs={12} md={12}>

@@ -1,10 +1,10 @@
-import React from 'react';
+import { useState } from 'react';
 
 import { Stepper as BaseStepper, Step, Typography } from '@mui/material';
 
 const Stepper = props => {
   const { steps } = props;
-  const [activeStepIndex, setActiveStepIndex] = React.useState(0);
+  const [activeStepIndex, setActiveStepIndex] = useState(0);
 
   const activeStep = steps[activeStepIndex];
 

@@ -259,6 +259,19 @@
         "not_found_error_code": "Error code: 404",
         "not_found_help_message": "You can <1>let us know what went wrong</1>."
     },
+    "share": {
+        "button": "Share",
+        "title": "Share {{name}}",
+        "services": "Post the link in",
+        "copy": "Copy the link to share",
+        "copy_button": "Copy Link",
+        "copy_button_done": "Link Copied",
+        "invite_subject": "Join {{name}} on Terraso",
+        "invite_text": "Check out {{name}} on Terraso and join me: {{url}}",
+        "whatsapp": "WhatsApp",
+        "email": "Email",
+        "facebook": "Facebook"
+    },
     "form": {
         "required_label": "required",
         "validation_field_invalid": "{{path}} must be valid",
