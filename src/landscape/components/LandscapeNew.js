@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,7 +22,7 @@ const LandscapeNew = () => {
   const { saving, landscape, success } = useSelector(
     state => state.landscape.form
   );
-  const [updatedLandscape, setUpdatedLandscape] = React.useState();
+  const [updatedLandscape, setUpdatedLandscape] = useState();
 
   useDocumentTitle(t('landscape.form_new_document_title'));
 

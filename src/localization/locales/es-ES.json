@@ -258,6 +258,19 @@
         "not_found_error_code": "Código de error: 404",
         "not_found_help_message": "Puedes <1>contarnos qué salió mal</1>."
     },
+    "share": {
+        "button": "Comparte",
+        "title": "Comparte {{name}}",
+        "services": "Publicar el enlace en",
+        "copy": "Copia el enlace para compartir",
+        "copy_button": "Copia el enlace",
+        "copy_button_done": "Copiada",
+        "invite_subject": "Únete a {{name}} en Terraso",
+        "invite_text": "Echa un vistazo a {{name}} en Terraso y únete: {{url}}",
+        "whatsapp": "WhatsApp",
+        "email": "Email",
+        "facebook": "Facebook"
+    },
     "form": {
         "required_label": "Obligatorio",
         "validation_field_invalid": "{{path}} debe ser válido",

@@ -18,6 +18,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import SocialShare from 'common/components/SocialShare.js';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
@@ -84,6 +85,18 @@ const GroupCard = ({ group }) => {
             </Link>
           </Stack>
         )}
+        <Restricted permission="group.change" resource={group}>
+          <Button
+            variant="outlined"
+            component={RouterLink}
+            to={`/groups/${group.slug}/edit`}
+            sx={{
+              marginTop: theme.spacing(2),
+            }}
+          >
+            {t('group.view_update_button')}
+          </Button>
+        </Restricted>
       </CardContent>
     </Card>
   );
@@ -124,15 +137,7 @@ const GroupView = () => {
         }}
       >
         <PageHeader header={group.name} />
-        <Restricted permission="group.change" resource={group}>
-          <Button
-            variant="contained"
-            component={RouterLink}
-            to={`/groups/${group.slug}/edit`}
-          >
-            {t('group.view_update_button')}
-          </Button>
-        </Restricted>
+        <SocialShare name={group.name} />
       </Stack>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
