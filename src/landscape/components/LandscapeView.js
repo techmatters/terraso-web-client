@@ -36,6 +36,8 @@ import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMembe
 
 import { withProps } from 'react-hoc';
 
+import theme from 'theme';
+
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   renderLabel: () => 'landscape.view_leave_label',
 });
@@ -64,17 +66,27 @@ const LandscapeCard = ({ landscape }) => {
         <Typography variant="body2" color="text.secondary">
           {landscape.description}
         </Typography>
-      </CardContent>
-      {landscape.website && (
-        <CardContent>
+        {landscape.website && (
           <Stack direction="row" alignItems="center" spacing={1}>
             <PublicIcon sx={{ color: 'gray.lite1' }} />
             <Link href={landscape.website} underline="none">
               {landscape.website}
             </Link>
           </Stack>
-        </CardContent>
-      )}
+        )}
+        <Restricted permission="landscape.change" resource={landscape}>
+          <Button
+            variant="outlined"
+            component={RouterLink}
+            to={`/landscapes/${landscape.slug}/edit`}
+            sx={{
+              marginTop: theme.spacing(1),
+            }}
+          >
+            {t('landscape.view_update_button')}
+          </Button>
+        </Restricted>
+      </CardContent>
     </Card>
   );
 };
@@ -109,13 +121,24 @@ const LandscapeView = () => {
 
   return (
     <PageContainer>
-      <PageHeader
-        header={landscape.name}
-        typographyProps={{ sx: { marginBottom: 0 } }}
-      />
-      <Typography variant="body2" sx={{ marginBottom: 2 }}>
-        {currentCountry?.name}
-      </Typography>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="flex-start"
+        sx={{
+          marginBottom: theme.spacing(3),
+        }}
+      >
+        <div>
+          <PageHeader
+            header={landscape.name}
+            typographyProps={{ sx: { marginBottom: 0 } }}
+          />
+          <Typography variant="body2" sx={{ marginBottom: 2 }}>
+            {currentCountry?.name}
+          </Typography>
+        </div>
+      </Stack>
       <Grid container spacing={2}>
         <Grid item xs={12} md={12}>
           <Card variant="outlined">

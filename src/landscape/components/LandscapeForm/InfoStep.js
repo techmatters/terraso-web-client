@@ -92,7 +92,7 @@ const InfoStep = props => {
   const navigate = useNavigate();
   const { slug } = useParams();
   const isNew = !slug;
-  const { setActiveStepIndex, setUpdatedLandscape, landscape } = props;
+  const { setUpdatedLandscape, landscape } = props;
   const title = !isNew
     ? t('landscape.form_edit_title', { name: _.getOr('', 'name', landscape) })
     : t('landscape.form_new_title');
@@ -111,12 +111,13 @@ const InfoStep = props => {
         validationSchema={FORM_VALIDATION_SCHEMA}
         onSave={updatedLandscape => {
           setUpdatedLandscape(updatedLandscape);
-          setActiveStepIndex(current => current + 1);
         }}
-        saveLabel="landscape.form_info_next"
+        saveLabel={
+          isNew ? 'landscape.form_info_next' : 'landscape.form_save_label'
+        }
         cancelLabel="landscape.form_info_cancel"
         onCancel={() => navigate(-1)}
-        isMultiStep
+        isMultiStep={isNew}
       />
     </>
   );

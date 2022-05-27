@@ -5,7 +5,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
 
-import LandscapeForm from 'landscape/components/LandscapeForm';
+import LandscapeNew from 'landscape/components/LandscapeNew';
 import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('terrasoBackend/api');
@@ -16,7 +16,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const setup = async () => {
-  await render(<LandscapeForm />);
+  await render(<LandscapeNew />);
   const name = screen.getByRole('textbox', {
     name: 'Name (required)',
   });
@@ -47,113 +47,43 @@ const setup = async () => {
 
 beforeEach(() => {
   useParams.mockReturnValue({
-    slug: 'slug-1',
+    slug: null,
   });
 });
 
-test('LandscapeForm: Display error', async () => {
-  terrasoApi.request.mockRejectedValue(['Load error']);
-  await render(<LandscapeForm />);
-  expect(screen.getByText(/Load error/i)).toBeInTheDocument();
-});
-test('LandscapeForm: Display loader', async () => {
-  terrasoApi.request.mockReturnValue(new Promise(() => {}));
-  await render(<LandscapeForm />);
-  const loader = screen.getByRole('progressbar', {
-    name: 'Loading',
-    hidden: true,
-  });
-  expect(loader).toBeInTheDocument();
-});
-test('LandscapeForm: Fill form', async () => {
-  terrasoApi.request.mockReturnValue(
-    Promise.resolve({
-      landscapes: {
-        edges: [
-          {
-            node: {
-              name: 'Landscape Name',
-              description: 'Landscape Description',
-              website: 'www.landscape.org',
-              location: 'EC',
-            },
-          },
-        ],
-      },
-    })
-  );
+test('LandscapeNew: Input change', async () => {
   const { inputs } = await setup();
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
-  expect(inputs.name).toHaveValue('Landscape Name');
-  expect(inputs.description).toHaveValue('Landscape Description');
-  expect(inputs.website).toHaveValue('www.landscape.org');
-  expect(inputs.location).toHaveTextContent('Ecuador');
-});
-test('LandscapeForm: Input change', async () => {
-  terrasoApi.request.mockReturnValueOnce(
-    Promise.resolve({
-      landscapes: {
-        edges: [
-          {
-            node: {
-              name: 'Landscape Name',
-              description: 'Landscape Description',
-              website: 'www.landscape.org',
-              location: 'AR',
-            },
-          },
-        ],
-      },
-    })
-  );
-  const { inputs } = await setup();
-
-  expect(inputs.name).toHaveValue('Landscape Name');
+  expect(inputs.name).toHaveValue('');
   fireEvent.change(inputs.name, { target: { value: 'New name' } });
   expect(inputs.name).toHaveValue('New name');
 
-  expect(inputs.description).toHaveValue('Landscape Description');
+  expect(inputs.description).toHaveValue('');
   fireEvent.change(inputs.description, {
     target: { value: 'New description' },
   });
   expect(inputs.description).toHaveValue('New description');
 
-  expect(inputs.website).toHaveValue('www.landscape.org');
+  expect(inputs.website).toHaveValue('');
   fireEvent.change(inputs.website, { target: { value: 'www.other.org' } });
   expect(inputs.website).toHaveValue('www.other.org');
 
-  expect(inputs.location).toHaveTextContent('Argentina');
+  expect(inputs.location).toHaveTextContent('Landscape location');
   await inputs.changeLocation('Ecuador');
   expect(inputs.location).toHaveTextContent('Ecuador');
 });
-test('LandscapeForm: Input validation', async () => {
-  terrasoApi.request.mockReturnValue(
-    Promise.resolve({
-      landscapes: {
-        edges: [
-          {
-            node: {
-              name: 'Landscape Name',
-              description: 'Landscape Description',
-              website: 'www.landscape.org',
-            },
-          },
-        ],
-      },
-    })
-  );
+test('LandscapeNew: Input validation', async () => {
   const { inputs } = await setup();
 
-  expect(inputs.name).toHaveValue('Landscape Name');
+  expect(inputs.name).toHaveValue('');
   fireEvent.change(inputs.name, { target: { value: '' } });
   expect(inputs.name).toHaveValue('');
 
-  expect(inputs.description).toHaveValue('Landscape Description');
+  expect(inputs.description).toHaveValue('');
   fireEvent.change(inputs.description, { target: { value: '' } });
   expect(inputs.description).toHaveValue('');
 
-  expect(inputs.website).toHaveValue('www.landscape.org');
+  expect(inputs.website).toHaveValue('');
   fireEvent.change(inputs.website, { target: { value: 'wwwotherorg' } });
   expect(inputs.website).toHaveValue('wwwotherorg');
 
@@ -164,34 +94,18 @@ test('LandscapeForm: Input validation', async () => {
   expect(screen.getByText(/description is required/i)).toBeInTheDocument();
   expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument();
 });
-test('LandscapeForm: Save form', async () => {
-  terrasoApi.request
-    .mockResolvedValueOnce({
-      landscapes: {
-        edges: [
-          {
-            node: {
-              id: '1',
-              name: 'Landscape Name',
-              description: 'Landscape Description',
-              website: 'www.landscape.org',
-              location: 'EC',
-            },
-          },
-        ],
+test('LandscapeNew: Save form', async () => {
+  terrasoApi.request.mockResolvedValueOnce({
+    addLandscape: {
+      landscape: {
+        id: '1',
+        name: 'Landscape Name',
+        description: 'Landscape Description',
+        website: 'www.landscape.org',
+        location: 'EC',
       },
-    })
-    .mockResolvedValueOnce({
-      updateLandscape: {
-        landscape: {
-          id: '1',
-          name: 'Landscape Name',
-          description: 'Landscape Description',
-          website: 'www.landscape.org',
-          location: 'EC',
-        },
-      },
-    });
+    },
+  });
 
   const { inputs } = await setup();
 
@@ -217,38 +131,19 @@ test('LandscapeForm: Save form', async () => {
       screen.getByRole('button', { name: 'Skip this step for now' })
     )
   );
-  expect(terrasoApi.request).toHaveBeenCalledTimes(2);
-  const saveCall = terrasoApi.request.mock.calls[1];
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  const saveCall = terrasoApi.request.mock.calls[0];
   expect(saveCall[1]).toStrictEqual({
     input: {
-      id: '1',
       description: 'New description',
       name: 'New name',
       website: 'https://www.other.org',
       location: 'AR',
-      areaPolygon: null,
     },
   });
 });
-test('LandscapeForm: Save form error', async () => {
-  terrasoApi.request
-    .mockReturnValueOnce(
-      Promise.resolve({
-        landscapes: {
-          edges: [
-            {
-              node: {
-                name: 'Landscape Name',
-                description: 'Landscape Description',
-                website: 'www.landscape.org',
-                location: 'EC',
-              },
-            },
-          ],
-        },
-      })
-    )
-    .mockRejectedValueOnce('Save Error');
+test('LandscapeNew: Save form error', async () => {
+  terrasoApi.request.mockRejectedValueOnce('Save Error');
 
   const { inputs } = await setup();
 
@@ -284,9 +179,9 @@ test('LandscapeForm: Save form error', async () => {
   expect(inputs.website).toHaveValue('https://www.other.org');
   expect(inputs.location).toHaveTextContent('Argentina');
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
 });
-test('LandscapeForm: Avoid fetch', async () => {
+test('LandscapeNew: Avoid fetch', async () => {
   useParams.mockReturnValue({ slug: null });
   const { inputs } = await setup();
 
@@ -300,7 +195,7 @@ test('LandscapeForm: Avoid fetch', async () => {
     screen.getByRole('progressbar', { name: 'Loading', hidden: true })
   ).toThrow('Unable to find an element');
 });
-test('LandscapeForm: Save form (add)', async () => {
+test('LandscapeNew: Save form (add)', async () => {
   useParams.mockReturnValue({ slug: null });
   terrasoApi.request.mockResolvedValueOnce({
     addLandscape: {
