@@ -43,12 +43,12 @@ const setup = async initialState => {
 };
 
 test('GroupList: Display error', async () => {
-  terrasoApi.request.mockRejectedValue('Load error');
+  terrasoApi.requestGraphQL.mockRejectedValue('Load error');
   await setup();
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
 test('GroupList: Display loader', async () => {
-  terrasoApi.request.mockReturnValue(new Promise(() => {}));
+  terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
   await setup();
   const loader = screen.getByRole('progressbar', {
     name: 'Loading',
@@ -57,7 +57,7 @@ test('GroupList: Display loader', async () => {
   expect(loader).toBeInTheDocument();
 });
 test('GroupList: Empty', async () => {
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       groups: {
         edges: [],
@@ -106,7 +106,7 @@ test('GroupList: Display list', async () => {
       },
     }));
 
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       landscapeGroups: {
         edges: groups,
@@ -176,7 +176,7 @@ test('GroupList: List sort', async () => {
       },
     }));
 
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       landscapeGroups: {
         edges: groups,
@@ -244,7 +244,7 @@ test('GroupList: Display list (small screen)', async () => {
       },
     }));
 
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       independentGroups: {
         edges: groups,
@@ -288,7 +288,7 @@ test('GroupList: URL params', async () => {
       },
     }));
 
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       landscapeGroups: {
         edges: groups,

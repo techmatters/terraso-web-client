@@ -1,8 +1,7 @@
-import { fireEvent, render, screen, waitFor } from 'tests/utils';
+import { act, fireEvent, render, screen, waitFor } from 'tests/utils';
 
 import React from 'react';
 
-import { act } from 'react-dom/test-utils';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import LandscapeBoundaries from 'landscape/components/LandscapeBoundariesUpdate';
@@ -35,7 +34,7 @@ const setup = async () => {
 
 const testGeoJsonParsing = (file, errorMessage) => async () => {
   global.console.error = jest.fn();
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       landscapes: {
         edges: [
@@ -52,10 +51,10 @@ const testGeoJsonParsing = (file, errorMessage) => async () => {
   );
   await setup();
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1MB',
+    name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB',
   });
 
   const data = {
@@ -83,12 +82,12 @@ beforeEach(() => {
 });
 
 test('LandscapeBoundaries: Display error', async () => {
-  terrasoApi.request.mockRejectedValue(['Load error']);
+  terrasoApi.requestGraphQL.mockRejectedValue(['Load error']);
   await setup();
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
 test('LandscapeBoundaries: Display loader', async () => {
-  terrasoApi.request.mockReturnValue(new Promise(() => {}));
+  terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
   await setup();
   const loader = screen.getByRole('progressbar', {
     name: 'Loading',
@@ -156,7 +155,7 @@ test(
 );
 
 test('LandscapeBoundaries: Select file', async () => {
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       landscapes: {
         edges: [
@@ -173,10 +172,10 @@ test('LandscapeBoundaries: Select file', async () => {
   );
   await setup();
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1MB',
+    name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB',
   });
 
   const file = new File([GEOJSON], 'test.json', { type: 'application/json' });
@@ -193,17 +192,17 @@ test('LandscapeBoundaries: Select file', async () => {
       types: ['Files'],
     },
   };
-  fireEvent.drop(dropzone, data);
+  await act(async () => fireEvent.drop(dropzone, data));
   expect(
     await screen.findByRole('button', {
-      name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1MB test.json 0.8KB',
+      name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB test.json 804 B',
     })
   ).toBeInTheDocument();
 });
 test('LandscapeBoundaries: Show cancel', async () => {
   const navigate = jest.fn();
   useNavigate.mockReturnValue(navigate);
-  terrasoApi.request.mockReturnValue(
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       landscapes: {
         edges: [
@@ -226,7 +225,7 @@ test('LandscapeBoundaries: Show cancel', async () => {
   expect(navigate.mock.calls[0]).toEqual(['/landscapes/slug-1']);
 });
 test('LandscapeBoundaries: Save', async () => {
-  terrasoApi.request
+  terrasoApi.requestGraphQL
     .mockReturnValueOnce(
       Promise.resolve({
         landscapes: {
@@ -256,10 +255,10 @@ test('LandscapeBoundaries: Save', async () => {
     });
   await setup();
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1MB',
+    name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB',
   });
 
   const file = new File([GEOJSON], 'test.json', { type: 'application/json' });
@@ -288,8 +287,8 @@ test('LandscapeBoundaries: Save', async () => {
   expect(saveButton).toBeInTheDocument();
   expect(saveButton).not.toHaveAttribute('disabled');
   await act(async () => fireEvent.click(saveButton));
-  expect(terrasoApi.request).toHaveBeenCalledTimes(2);
-  const saveCall = terrasoApi.request.mock.calls[1];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[1];
   expect(saveCall[1]).toStrictEqual({
     input: {
       id: '1',

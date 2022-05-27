@@ -84,7 +84,8 @@
         "list_column_actions_description": "Acciones",
         "members_list_column_actions_description": "Acciones",
         "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). Debe existir al menos un administrador.",
-        "unique": "El grupo “{{inputData.input.name}}” ya existe."
+        "unique": "El grupo “{{inputData.input.name}}” ya existe.",
+        "shared_data_upload_title": "Compartir archivos con “{{nombre}}“"
     },
     "tool": {
         "avilability": "Disponibilidad",
@@ -228,7 +229,7 @@
         "boundaries_file_invalid_json": "El archivo no es un archivo JSON válido.",
         "boundaries_file_invalid_geojson": "El archivo es JSON, pero no es un archivo GeoJSON válido.",
         "view_map_boundaries_help": "¿Algo mal con el mapa?",
-        "view_map_boundaries_help_details": "Comunícate con el administrador de su paisaje o <1>envíanos un mensaje <1 /></1>.",
+        "view_map_boundaries_help_details": "Comunícate con el administrador de su paisaje o <1>envíanos un mensaje</1>.",
         "view_map_boundaries_help_url": "/contact",
         "view_map_boundaries_update": "Actualizar información geográfica",
         "form_step_info_label": "Detalles del paisaje",
@@ -246,7 +247,9 @@
         "form_boundary_geojson_title": "Carga el límite de su paisaje",
         "form_location_placeholder": "Ubicación del paisaje",
         "form_location_select": "Selecciona una ubicación",
-        "form_name_placeholder": "El nombre oficial de tu paisaje"
+        "form_name_placeholder": "El nombre oficial de tu paisaje",
+        "boundaries_file_no_accepted": "No se pueden agregar los archivos.",
+        "shared_data_upload_title": "Compartir archivos con “{{name}}“"
     },
     "common": {
         "dialog_cancel_label": "Cancelar",
@@ -256,7 +259,38 @@
         "not_found_title": "Página no encontrada",
         "not_found_message": "No pudimos encontrar la página que estabas buscando.",
         "not_found_error_code": "Código de error: 404",
-        "not_found_help_message": "Puedes <1>contarnos qué salió mal</1>."
+        "not_found_help_message": "Puedes <1>contarnos qué salió mal</1>.",
+        "drop_zone_drop_message": "Soltar archivo para subir",
+        "drop_zone_select_file": "Seleccione Archivo",
+        "drop_zone_format": "Formatos de archivo aceptados: {{extensions}}",
+        "drop_zone_size": "Tamaño máximo de archivo: {{size}}",
+        "editable_text_save": "Guardar",
+        "editable_text_cancel": "Cancelar"
+    },
+    "shared_data": {
+        "title": "Archivos compartidos",
+        "description": "Solo los miembros de tu grupo pueden descargar los archivos. <1>Más información sobre cómo compartir archivos</1>.",
+        "learn_more_url": "http://terraso.org/es/ayuda/sharing-files/",
+        "upload_button": "Compartir archivos",
+        "delete_confirm_title": "Eliminar “{{name}}”?",
+        "delete_confirm_message": "¿Estás segura/o de que deseas eliminar el archivo “{{name}}”?",
+        "delete_confirm_button": "Eliminar Archivo",
+        "deleted": "Se eliminó el archivo “{{name}}”.",
+        "upload_file_success": "Subido con éxito.",
+        "upload_filename_label": "Nombre del archivo",
+        "upload_description_label": "Descripción",
+        "upload_description_placeholder": "p.ej. Datos de la encuesta de salud del suelo",
+        "upload_no_files": "No se agregaron archivos",
+        "upload_rejected_too-many-files": "No se pueden agregar más de {{maxFiles}} archivos.",
+        "upload_rejected_file-invalid-type": "{{rejectedFiles}} no se pueden agregar porque los tipos de archivo no son compatibles.",
+        "upload_rejected_file-too-large": "{{rejectedFiles}} no se pueden agregar porque uno o más archivos son demasiado grandes.",
+        "upload_description": "Agregue uno o más archivos de datos (xls, xlsx, csv) y descripciones",
+        "upload_save": "Subir archivos",
+        "upload_cancel": "Cancelar",
+        "updated": "Se actualizó el archivo “{{name}}”.",
+        "add_description_message": "Agregar descripción del archivo",
+        "name_update": "Actualizar nombre",
+        "description_update": "Actualizar descripción"
     },
     "share": {
         "button": "Comparte",
@@ -290,7 +324,8 @@
         "models": {
             "Membership": "Afiliación",
             "Group": "Groupo",
-            "Landscape": "Paisaje"
+            "Landscape": "Paisaje",
+            "DataEntry": "Archivo compartido"
         },
         "error": "No se pudo ejecutar la solicitud. {{code, errorParam(label: Codigo)}} {{field, errorParam(label: Campo)}} {{model, errorParam(label: Modelo)}} {{context, errorParam(label: Contexto)}}",
         "error_unexpected": "Error inesperado",

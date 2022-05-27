@@ -14,7 +14,17 @@ export const JEST_TEST_TIMEOUT = process.env.REACT_JEST_TEST_TIMEOUT || 10000;
 
 export const AXE_TEST_TIMEOUT = process.env.REACT_AXE_TEST_TIMEOUT || 20000;
 
-export const GEOJSON_MAX_SIZE = process.env.REACT_GEOJSON_MAX_SIZE || 1000000;
+export const GEOJSON_MAX_SIZE = process.env.REACT_GEOJSON_MAX_SIZE || 1000000; // 10 MB
+
+export const SHARED_DATA_MAX_SIZE =
+  process.env.REACT_SHARED_DATA_MAX_SIZE || 10000000;
+
+export const SHARED_DATA_MAX_FILES =
+  process.env.REACT_SHARED_DATA_MAX_FILES || 20;
+
+export const SHARED_DATA_ACCEPTED_EXTENSIONS = (
+  process.env.REACT_APP_SHARED_DATA_ACCEPTED_EXTENSIONS || 'xlsx,xls,csv'
+).split(',');
 
 export const HUBSPOT_FORMS = {
   region: process.env.REACT_APP_HUBSPOT_FORMS_REGION || 'na1',

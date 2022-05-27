@@ -32,6 +32,10 @@ const initialState = {
     list: null,
     fetching: true,
   },
+  sharedDataUpload: {
+    group: null,
+    fetching: true,
+  },
 };
 
 export const fetchGroupForm = createAsyncThunk(
@@ -41,6 +45,14 @@ export const fetchGroupForm = createAsyncThunk(
 export const fetchGroupView = createAsyncThunk(
   'group/fetchGroupView',
   groupService.fetchGroupToView
+);
+export const refreshGroupView = createAsyncThunk(
+  'group/refreshGroupView',
+  groupService.fetchGroupToView
+);
+export const fetchGroupUpload = createAsyncThunk(
+  'group/fetchGroupUpload',
+  groupService.fetchGroupToUploadSharedData
 );
 export const fetchGroups = createAsyncThunk(
   'group/fetchGroups',
@@ -89,6 +101,17 @@ export const leaveGroup = createAsyncThunk(
     params: { name: ownerName },
   })
 );
+
+const updateView = (state, action) => ({
+  ...groupSlice.caseReducers.setMemberships(state, {
+    payload: groupUtils.getMemberships([action.payload]),
+  }),
+  view: {
+    fetching: false,
+    message: null,
+    group: action.payload,
+  },
+});
 
 const groupSlice = createSlice({
   name: 'group',
@@ -152,16 +175,8 @@ const groupSlice = createSlice({
       ...state,
       view: initialState.view,
     }),
-    [fetchGroupView.fulfilled]: (state, action) => ({
-      ...groupSlice.caseReducers.setMemberships(state, {
-        payload: groupUtils.getMemberships([action.payload]),
-      }),
-      view: {
-        fetching: false,
-        message: null,
-        group: action.payload,
-      },
-    }),
+    [fetchGroupView.fulfilled]: updateView,
+    [refreshGroupView.fulfilled]: updateView,
     [fetchGroupView.rejected]: (state, action) => ({
       ...state,
       view: {
@@ -346,6 +361,25 @@ const groupSlice = createSlice({
           },
         },
       }),
+    [fetchGroupUpload.pending]: state => ({
+      ...state,
+      sharedDataUpload: initialState.sharedDataUpload,
+    }),
+    [fetchGroupUpload.fulfilled]: (state, action) => ({
+      ...state,
+      sharedDataUpload: {
+        ...state.sharedDataUpload,
+        fetching: false,
+        group: action.payload,
+      },
+    }),
+    [fetchGroupUpload.rejected]: (state, action) => ({
+      ...state,
+      sharedDataUpload: {
+        ...state.sharedDataUpload,
+        fetching: false,
+      },
+    }),
   },
 });
 

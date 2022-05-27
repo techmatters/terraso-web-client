@@ -47,7 +47,7 @@ const setup = async initialState => {
 };
 
 test('GroupMembershipCard: Display loader', async () => {
-  terrasoApi.request.mockReturnValue(new Promise(() => {}));
+  terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
   await setup({
     group: {
       memberships: {
@@ -93,7 +93,7 @@ test('GroupMembershipCard: Display description', async () => {
   ).toBeInTheDocument();
 });
 test('GroupMembershipCard: Join error', async () => {
-  terrasoApi.request.mockRejectedValueOnce('Join error');
+  terrasoApi.requestGraphQL.mockRejectedValueOnce('Join error');
   await setup({
     group: {
       memberships: {
@@ -114,7 +114,7 @@ test('GroupMembershipCard: Join error', async () => {
   expect(screen.getByText(/Join error/i)).toBeInTheDocument();
 });
 test('GroupMembershipCard: Join (not found)', async () => {
-  terrasoApi.request.mockReturnValueOnce(
+  terrasoApi.requestGraphQL.mockReturnValueOnce(
     Promise.resolve({
       addMembership: {
         membership: {
@@ -143,11 +143,11 @@ test('GroupMembershipCard: Join (not found)', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Join Label' }))
   );
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(screen.getByText('Group not found')).toBeInTheDocument();
 });
 test('GroupMembershipCard: Join', async () => {
-  terrasoApi.request.mockReturnValueOnce(
+  terrasoApi.requestGraphQL.mockReturnValueOnce(
     Promise.resolve({
       addMembership: {
         membership: {
@@ -193,7 +193,7 @@ test('GroupMembershipCard: Join', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Join Label' }))
   );
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(
     screen.getByText('1 Terraso member joined Owner Name.')
   ).toBeInTheDocument();
@@ -201,7 +201,7 @@ test('GroupMembershipCard: Join', async () => {
   expect(() => screen.getByRole('button', { name: 'Join Label' })).toThrow();
 });
 test('GroupMembershipCard: Leave error', async () => {
-  terrasoApi.request.mockRejectedValueOnce('Leave error');
+  terrasoApi.requestGraphQL.mockRejectedValueOnce('Leave error');
   await setup({
     group: {
       memberships: {
@@ -246,11 +246,11 @@ test('GroupMembershipCard: Leave error', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Leave Group' }))
   );
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(screen.getByText(/Leave error/i)).toBeInTheDocument();
 });
 test('GroupMembershipCard: Leave', async () => {
-  terrasoApi.request.mockReturnValueOnce(
+  terrasoApi.requestGraphQL.mockReturnValueOnce(
     Promise.resolve({
       deleteMembership: {
         membership: {
@@ -300,7 +300,7 @@ test('GroupMembershipCard: Leave', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Leave Group' }))
   );
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
   expect(
     screen.getByText('0 Terraso members joined Owner Name.')

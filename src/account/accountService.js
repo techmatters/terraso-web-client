@@ -46,7 +46,7 @@ export const fetchUser = () => {
     ${userPreferences}
   `;
   return terrasoApi
-    .request(query, { email: getUserEmail() })
+    .requestGraphQL(query, { email: getUserEmail() })
     .then(_.get('users.edges[0].node'))
     .then(user => user || Promise.reject('not_found'))
     .then(user => ({
@@ -65,7 +65,7 @@ export const saveUser = user => {
     ${userFields}
   `;
   return terrasoApi
-    .request(query, {
+    .requestGraphQL(query, {
       input: _.omit(['profileImage', 'email', 'preferences'], user),
     })
     .then(response => ({
@@ -84,7 +84,7 @@ export const savePreference = ({ key, value }, currentUser) => {
     ${userPreferencesFields}
   `;
   return terrasoApi
-    .request(query, {
+    .requestGraphQL(query, {
       input: {
         userEmail: currentUser.email,
         key,

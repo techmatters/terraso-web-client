@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import { Stepper as BaseStepper, Step, Typography } from '@mui/material';
 

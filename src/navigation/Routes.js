@@ -10,12 +10,14 @@ import RequireAuth from 'account/components/RequireAuth';
 import ContactForm from 'contact/ContactForm';
 import GroupForm from 'group/components/GroupForm';
 import GroupList from 'group/components/GroupList';
+import GroupSharedDataUpload from 'group/components/GroupSharedDataUpload';
 import GroupView from 'group/components/GroupView';
 import GroupMembers from 'group/membership/components/GroupMembers';
 import Home from 'home/components/Home';
 import LandscapeBoundariesUpdate from 'landscape/components/LandscapeBoundariesUpdate';
 import LandscapeList from 'landscape/components/LandscapeList';
 import LandscapeNew from 'landscape/components/LandscapeNew';
+import LandscapeSharedDataUpload from 'landscape/components/LandscapeSharedDataUpload';
 import LandscapeUpdateProfile from 'landscape/components/LandscapeUpdateProfile';
 import LandscapeView from 'landscape/components/LandscapeView';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
@@ -33,12 +35,14 @@ const paths = [
   path('/groups/new', GroupForm),
   path('/groups/:slug/edit', GroupForm),
   path('/groups/:slug/members', GroupMembers),
+  path('/groups/:slug/upload', GroupSharedDataUpload),
   path('/groups/:slug', GroupView),
   path('/landscapes', LandscapeList),
   path('/landscapes/new', LandscapeNew),
   path('/landscapes/:slug/edit', LandscapeUpdateProfile),
   path('/landscapes/:slug/boundaries', LandscapeBoundariesUpdate),
   path('/landscapes/:slug/members', LandscapeMembers),
+  path('/landscapes/:slug/upload', LandscapeSharedDataUpload),
   path('/landscapes/:slug', LandscapeView),
   path('/tools', ToolsList),
   path('/account', AccountLogin, false),
