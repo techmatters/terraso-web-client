@@ -56,7 +56,7 @@ beforeEach(() => {
 });
 
 test('LandscapeNew: Save form Pin boundary', async () => {
-  terrasoApi.request.mockResolvedValueOnce({
+  terrasoApi.requestGraphQL.mockResolvedValueOnce({
     addLandscape: {
       landscape: {
         id: '1',
@@ -120,8 +120,8 @@ test('LandscapeNew: Save form Pin boundary', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Create Landscape' }))
   );
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
-  const saveCall = terrasoApi.request.mock.calls[0];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[0];
   expect(saveCall[1]).toStrictEqual({
     input: {
       description: 'New description',

@@ -28,6 +28,10 @@ const initialState = {
     data: null,
     fetching: true,
   },
+  sharedDataUpload: {
+    landscape: null,
+    fetching: true,
+  },
 };
 
 export const fetchLandscapes = createAsyncThunk(
@@ -52,6 +56,21 @@ export const fetchLandscapeView = createAsyncThunk(
     return landscape;
   }
 );
+export const refreshLandscapeView = createAsyncThunk(
+  'landscape/refreshLandscapeView',
+  async (params, currentUser, { dispatch }) => {
+    const landscape = await landscapeService.fetchLandscapeToView(
+      params,
+      currentUser
+    );
+    dispatch(setMemberships(getMemberships([landscape])));
+    return landscape;
+  }
+);
+export const fetchLandscapeUpload = createAsyncThunk(
+  'landscape/fetchLandscapeUpload',
+  landscapeService.fetchLandscapeToUploadSharedData
+);
 export const fetchLandscapeForm = createAsyncThunk(
   'landscape/fetchLandscapeForm',
   landscapeService.fetchLandscapeToUpdate
@@ -69,6 +88,15 @@ export const saveLandscape = createAsyncThunk(
     params: { name: landscape.name },
   })
 );
+
+const updateView = (state, action) => ({
+  ...state,
+  view: {
+    fetching: false,
+    message: null,
+    landscape: action.payload,
+  },
+});
 
 const landscapeSlice = createSlice({
   name: 'landscape',
@@ -113,14 +141,8 @@ const landscapeSlice = createSlice({
         },
       },
     }),
-    [fetchLandscapeView.fulfilled]: (state, action) => ({
-      ...state,
-      view: {
-        fetching: false,
-        message: null,
-        landscape: action.payload,
-      },
-    }),
+    [fetchLandscapeView.fulfilled]: updateView,
+    [refreshLandscapeView.fulfilled]: updateView,
     [fetchLandscapeForm.pending]: state => ({
       ...state,
       form: initialState.form,
@@ -175,6 +197,25 @@ const landscapeSlice = createSlice({
       form: {
         ...state.form,
         saving: false,
+      },
+    }),
+    [fetchLandscapeUpload.pending]: state => ({
+      ...state,
+      sharedDataUpload: initialState.sharedDataUpload,
+    }),
+    [fetchLandscapeUpload.fulfilled]: (state, action) => ({
+      ...state,
+      sharedDataUpload: {
+        ...state.sharedDataUpload,
+        fetching: false,
+        landscape: action.payload,
+      },
+    }),
+    [fetchLandscapeUpload.rejected]: (state, action) => ({
+      ...state,
+      sharedDataUpload: {
+        ...state.sharedDataUpload,
+        fetching: false,
       },
     }),
   },

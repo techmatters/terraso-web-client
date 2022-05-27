@@ -6,6 +6,7 @@ import accountReducer from 'account/accountSlice';
 import groupReducer from 'group/groupSlice';
 import userHomeReducer from 'home/homeSlice';
 import landscapeReducer from 'landscape/landscapeSlice';
+import sharedDataReducer from 'sharedData/sharedDataSlice';
 
 const createStore = intialState =>
   configureStore({
@@ -15,6 +16,7 @@ const createStore = intialState =>
       group: groupReducer,
       landscape: landscapeReducer,
       notifications: notificationsReducer,
+      sharedData: sharedDataReducer,
     },
     preloadedState: intialState,
   });

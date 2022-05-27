@@ -95,7 +95,7 @@ test('LandscapeNew: Input validation', async () => {
   expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument();
 });
 test('LandscapeNew: Save form', async () => {
-  terrasoApi.request.mockResolvedValueOnce({
+  terrasoApi.requestGraphQL.mockResolvedValueOnce({
     addLandscape: {
       landscape: {
         id: '1',
@@ -131,8 +131,8 @@ test('LandscapeNew: Save form', async () => {
       screen.getByRole('button', { name: 'Skip this step for now' })
     )
   );
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
-  const saveCall = terrasoApi.request.mock.calls[0];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[0];
   expect(saveCall[1]).toStrictEqual({
     input: {
       description: 'New description',
@@ -143,7 +143,7 @@ test('LandscapeNew: Save form', async () => {
   });
 });
 test('LandscapeNew: Save form error', async () => {
-  terrasoApi.request.mockRejectedValueOnce('Save Error');
+  terrasoApi.requestGraphQL.mockRejectedValueOnce('Save Error');
 
   const { inputs } = await setup();
 
@@ -179,13 +179,13 @@ test('LandscapeNew: Save form error', async () => {
   expect(inputs.website).toHaveValue('https://www.other.org');
   expect(inputs.location).toHaveTextContent('Argentina');
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 });
 test('LandscapeNew: Avoid fetch', async () => {
   useParams.mockReturnValue({ slug: null });
   const { inputs } = await setup();
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(0);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(0);
 
   expect(inputs.name).toHaveValue('');
   expect(inputs.description).toHaveValue('');
@@ -197,7 +197,7 @@ test('LandscapeNew: Avoid fetch', async () => {
 });
 test('LandscapeNew: Save form (add)', async () => {
   useParams.mockReturnValue({ slug: null });
-  terrasoApi.request.mockResolvedValueOnce({
+  terrasoApi.requestGraphQL.mockResolvedValueOnce({
     addLandscape: {
       landscape: {
         name: 'New name',
@@ -233,8 +233,8 @@ test('LandscapeNew: Save form (add)', async () => {
     )
   );
 
-  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
-  const saveCall = terrasoApi.request.mock.calls[0];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[0];
   expect(saveCall[1]).toStrictEqual({
     input: {
       description: 'New description',
