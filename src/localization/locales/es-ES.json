@@ -290,7 +290,9 @@
         "updated": "Se actualizó el archivo “{{name}}”.",
         "add_description_message": "Agregar descripción del archivo",
         "name_update": "Actualizar nombre",
-        "description_update": "Actualizar descripción"
+        "description_update": "Actualizar descripción",
+        "delete_label": "Elminar “{{name}}”",
+        "download_label": "Descargar “{{name}}”"
     },
     "share": {
         "button": "Comparte",

@@ -274,7 +274,9 @@
         "updated": "The file “{{name}}” was updated.",
         "add_description_message": "Add File Description",
         "name_update": "Update name",
-        "description_update": "Update description"
+        "description_update": "Update description",
+        "delete_label": "Delete “{{name}}”",
+        "download_label": "Download “{{name}}”"
     },
     "common": {
         "dialog_cancel_label": "Cancel",
