@@ -219,7 +219,7 @@ test('LandscapeView: Update Shared Data', async () => {
   });
 });
 
-test('LandscapeView: Leave landscape', async () => {
+test('LandscapeView: Refresh profile', async () => {
   await baseViewTest();
 
   terrasoApi.requestGraphQL.mockResolvedValueOnce({});
