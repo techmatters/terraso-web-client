@@ -11,7 +11,7 @@ import { joinGroup, leaveGroup } from 'group/groupSlice';
 const GroupMembershipJoinLeaveButton = () => {
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
-  const { owner, groupSlug, MemberLeaveButton, MemberJoinButton } =
+  const { owner, groupSlug, MemberLeaveButton, MemberJoinButton, updateOwner } =
     useGroupContext();
   const {
     data: { email: userEmail },
@@ -32,7 +32,7 @@ const GroupMembershipJoinLeaveButton = () => {
         userEmail,
         ownerName: owner.name,
       })
-    );
+    ).then(() => updateOwner?.());
   };
 
   const onLeave = () => {
@@ -43,7 +43,7 @@ const GroupMembershipJoinLeaveButton = () => {
         membershipId: userMembership.id,
         ownerName: owner.name,
       })
-    );
+    ).then(() => updateOwner?.());
   };
 
   if (userMembership) {

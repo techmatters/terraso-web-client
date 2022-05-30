@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import { Box } from '@mui/material';
 
 import AppBar from 'common/components/AppBar';
-import AppWrappers from 'common/components/AppWrappers';
+import AppWrappers from 'layout/AppWrappers';
 import Footer from 'layout/Footer';
 import reportWebVitals from 'monitoring/reportWebVitals';
 import Navigation from 'navigation/Navigation';

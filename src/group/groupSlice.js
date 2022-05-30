@@ -16,6 +16,7 @@ const initialState = {
   view: {
     group: null,
     fetching: true,
+    refreshing: false,
     message: null,
   },
   form: {
@@ -108,6 +109,7 @@ const updateView = (state, action) => ({
   }),
   view: {
     fetching: false,
+    refreshing: false,
     message: null,
     group: action.payload,
   },
@@ -176,7 +178,6 @@ const groupSlice = createSlice({
       view: initialState.view,
     }),
     [fetchGroupView.fulfilled]: updateView,
-    [refreshGroupView.fulfilled]: updateView,
     [fetchGroupView.rejected]: (state, action) => ({
       ...state,
       view: {
@@ -188,6 +189,9 @@ const groupSlice = createSlice({
         },
       },
     }),
+    [refreshGroupView.pending]: _.set('view.refreshing', true),
+    [refreshGroupView.fulfilled]: updateView,
+    [refreshGroupView.rejected]: _.set('view.refreshing', false),
     [fetchGroups.pending]: state => ({
       ...state,
       list: initialState.list,

@@ -14,6 +14,7 @@ const initialState = {
   },
   view: {
     fetching: true,
+    refreshing: false,
     message: null,
     landscape: null,
   },
@@ -93,6 +94,7 @@ const updateView = (state, action) => ({
   ...state,
   view: {
     fetching: false,
+    refreshing: false,
     message: null,
     landscape: action.payload,
   },
@@ -142,7 +144,9 @@ const landscapeSlice = createSlice({
       },
     }),
     [fetchLandscapeView.fulfilled]: updateView,
+    [refreshLandscapeView.pending]: _.set('view.refreshing', true),
     [refreshLandscapeView.fulfilled]: updateView,
+    [refreshLandscapeView.rejected]: _.set('view.refreshing', false),
     [fetchLandscapeForm.pending]: state => ({
       ...state,
       form: initialState.form,

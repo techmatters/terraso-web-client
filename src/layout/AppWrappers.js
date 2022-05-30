@@ -16,6 +16,8 @@ import 'forms/yup';
 // Analytics
 import 'monitoring/analytics';
 
+import RefreshProgressProvider from './RefreshProgressProvider';
+
 // Wrappers
 // Router, Theme, Global State, Permissions, Notifications
 const AppWrappers = ({ children, theme, store, permissionsRules }) => (
@@ -24,9 +26,11 @@ const AppWrappers = ({ children, theme, store, permissionsRules }) => (
       <ThemeProvider theme={theme}>
         <ErrorMonitoringProvider>
           <Provider store={store}>
-            <PermissionsProvider rules={permissionsRules}>
-              <NotificationsWrapper>{children}</NotificationsWrapper>
-            </PermissionsProvider>
+            <RefreshProgressProvider>
+              <PermissionsProvider rules={permissionsRules}>
+                <NotificationsWrapper>{children}</NotificationsWrapper>
+              </PermissionsProvider>
+            </RefreshProgressProvider>
           </Provider>
         </ErrorMonitoringProvider>
       </ThemeProvider>
