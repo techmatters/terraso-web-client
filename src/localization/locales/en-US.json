@@ -290,7 +290,8 @@
         "drop_zone_format": "Accepted file formats: {{extensions}}",
         "drop_zone_size": "Maximum file size: {{size}}",
         "editable_text_save": "Save",
-        "editable_text_cancel": "Cancel"
+        "editable_text_cancel": "Cancel",
+        "refreshing_loader_label": "Refreshing"
     },
     "share": {
         "button": "Share",

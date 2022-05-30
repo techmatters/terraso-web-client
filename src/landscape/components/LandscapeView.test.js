@@ -218,3 +218,28 @@ test('LandscapeView: Update Shared Data', async () => {
     description: 'Description 3',
   });
 });
+
+test('LandscapeView: Leave landscape', async () => {
+  await baseViewTest();
+
+  terrasoApi.requestGraphQL.mockResolvedValueOnce({});
+  terrasoApi.requestGraphQL.mockReturnValueOnce(new Promise(() => {}));
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Leave Landscape' }))
+  );
+
+  const dialog = screen.getByRole('dialog', { name: 'Leave “Landscape Name”' });
+
+  await act(async () =>
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Leave Landscape' })
+    )
+  );
+
+  const loader = screen.getByRole('progressbar', {
+    name: 'Refreshing',
+    hidden: true,
+  });
+  expect(loader).toBeInTheDocument();
+});
