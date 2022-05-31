@@ -271,7 +271,7 @@
     "shared_data": {
         "title": "Archivos compartidos",
         "description": "Solo los miembros de tu grupo pueden descargar los archivos. <1>Más información sobre cómo compartir archivos</1>.",
-        "learn_more_url": "https://terraso.org/es/ayuda/compartir-archivos",
+        "learn_more_url": "https://terraso.org/es/ayuda/compartir-archivos/",
         "upload_button": "Compartir archivos",
         "delete_confirm_title": "Eliminar “{{name}}”?",
         "delete_confirm_message": "¿Estás segura/o de que deseas eliminar el archivo “{{name}}”?",
