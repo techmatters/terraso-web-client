@@ -136,6 +136,11 @@ const SharedDataEntry = ({ file }) => {
               onConfirm={onConfirm}
               loading={processing}
               variant="text"
+              buttonProps={{
+                'aria-label': t('shared_data.delete_label', {
+                  name: file.name,
+                }),
+              }}
               confirmTitle={t('shared_data.delete_confirm_title', {
                 name: file.name,
               })}
@@ -155,6 +160,9 @@ const SharedDataEntry = ({ file }) => {
           <Restricted permission="sharedData.download" resource={group}>
             <Button
               onClick={handleDownload}
+              aria-label={t('shared_data.download_label', {
+                name: file.name,
+              })}
               startIcon={
                 <FileDownloadIcon
                   sx={{
