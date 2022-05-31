@@ -265,7 +265,8 @@
         "drop_zone_format": "Formatos de archivo aceptados: {{extensions}}",
         "drop_zone_size": "Tamaño máximo de archivo: {{size}}",
         "editable_text_save": "Guardar",
-        "editable_text_cancel": "Cancelar"
+        "editable_text_cancel": "Cancelar",
+        "refreshing_loader_label": "Actualizando"
     },
     "shared_data": {
         "title": "Archivos compartidos",

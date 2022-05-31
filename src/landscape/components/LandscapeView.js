@@ -26,6 +26,7 @@ import { countryNameForCode } from 'common/utils';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
+import { useRefreshProgressContext } from 'layout/RefreshProgressProvider';
 import Restricted from 'permissions/components/Restricted';
 
 import { GroupContextProvider } from 'group/groupContext';
@@ -100,7 +101,10 @@ const LandscapeView = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { landscape, fetching } = useSelector(state => state.landscape.view);
+  const { setRefreshing } = useRefreshProgressContext();
+  const { landscape, fetching, refreshing } = useSelector(
+    state => state.landscape.view
+  );
   const { slug } = useParams();
 
   useDocumentTitle(
@@ -117,6 +121,10 @@ const LandscapeView = () => {
   const updateLandscape = useCallback(() => {
     dispatch(refreshLandscapeView(slug));
   }, [dispatch, slug]);
+
+  useEffect(() => {
+    setRefreshing(refreshing);
+  }, [refreshing, setRefreshing]);
 
   if (fetching) {
     return <PageLoader />;
@@ -143,7 +151,7 @@ const LandscapeView = () => {
           justifyContent="space-between"
           alignItems="flex-start"
           sx={{
-            marginBottom: theme.spacing(3),
+            marginBottom: 1,
           }}
         >
           <div>

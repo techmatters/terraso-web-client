@@ -23,6 +23,7 @@ import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
+import { useRefreshProgressContext } from 'layout/RefreshProgressProvider';
 import Restricted from 'permissions/components/Restricted';
 
 import { GroupContextProvider } from 'group/groupContext';
@@ -107,7 +108,10 @@ const GroupView = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { group, fetching } = useSelector(state => state.group.view);
+  const { setRefreshing } = useRefreshProgressContext();
+  const { group, fetching, refreshing } = useSelector(
+    state => state.group.view
+  );
   const { slug } = useParams();
 
   useDocumentTitle(
@@ -122,6 +126,10 @@ const GroupView = () => {
   const updateGroup = useCallback(() => {
     dispatch(refreshGroupView(slug));
   }, [dispatch, slug]);
+
+  useEffect(() => {
+    setRefreshing(refreshing);
+  }, [refreshing, setRefreshing]);
 
   if (fetching) {
     return <PageLoader />;
@@ -146,7 +154,7 @@ const GroupView = () => {
           justifyContent="space-between"
           alignItems="flex-start"
           sx={{
-            marginBottom: theme.spacing(3),
+            marginBottom: 1,
           }}
         >
           <PageHeader header={group.name} />
