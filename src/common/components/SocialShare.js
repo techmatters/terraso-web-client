@@ -67,7 +67,7 @@ const SocialShare = ({ name }) => {
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
-        fullWidth={true}
+        fullWidth
         maxWidth="sm"
       >
         <DialogTitle
