@@ -8,7 +8,6 @@ export const dataEntries = `
       edges {
         node {
           id
-          slug
           name
           description
           resourceType
