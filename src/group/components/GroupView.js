@@ -159,15 +159,6 @@ const GroupView = () => {
         >
           <PageHeader header={group.name} />
           <SocialShare name={group.name} />
-          <Restricted permission="group.change" resource={group}>
-            <Button
-              variant="contained"
-              component={RouterLink}
-              to={`/groups/${group.slug}/edit`}
-            >
-              {t('group.view_update_button')}
-            </Button>
-          </Restricted>
         </Stack>
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
