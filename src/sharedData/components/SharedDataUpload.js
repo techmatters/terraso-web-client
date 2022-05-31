@@ -103,9 +103,11 @@ const File = props => {
     });
   };
 
-  const apiError = _.get(file.id, apiErrors);
+  const apiFileErrors = _.get(file.id, apiErrors);
   const apiSuccess = _.has(file.id, apiSuccesses);
   const isUploading = _.has(file.id, apiUploading);
+
+  console.log({ apiFileErrors });
 
   return (
     <>
@@ -129,25 +131,26 @@ const File = props => {
             }}
             severity="success"
           >
-            {t('shared_data.upload_file_success')}
+            {t('sharedData.upload_file_success')}
           </Alert>
         )}
-        {apiError && (
-          <Alert
-            sx={{
-              width: '100%',
-              boxSizing: 'border-box',
-            }}
-            severity="error"
-          >
-            {apiError}
-          </Alert>
-        )}
+        {!_.isEmpty(apiFileErrors) &&
+          apiFileErrors.map(apiError => (
+            <Alert
+              sx={{
+                width: '100%',
+                boxSizing: 'border-box',
+              }}
+              severity="error"
+            >
+              {t(_.getOr(apiError, 'content', apiError), apiError.params)}
+            </Alert>
+          ))}
         <Stack direction="row">
           <FileField
             required
             id={`filename-${index}`}
-            label={t('shared_data.upload_filename_label')}
+            label={t('sharedData.upload_filename_label')}
             value={file.name}
             onChange={onFieldChange('name')}
             error={_.get(`${file.id}.name`, errors)}
@@ -166,13 +169,13 @@ const File = props => {
         </Stack>
         <FileField
           id={`description-${index}`}
-          label={t('shared_data.upload_description_label')}
+          label={t('sharedData.upload_description_label')}
           value={file.description}
           onChange={onFieldChange('description')}
           error={_.get(`${file.id}.description`, errors)}
           disabled={isUploading}
           inputProps={{
-            placeholder: t('shared_data.upload_description_placeholder'),
+            placeholder: t('sharedData.upload_description_placeholder'),
           }}
         />
       </Stack>
@@ -198,7 +201,7 @@ const SelectedFiles = () => {
     >
       {_.isEmpty(files) ? (
         <Typography align="center">
-          {t('shared_data.upload_no_files')}
+          {t('sharedData.upload_no_files')}
         </Typography>
       ) : (
         files.map((file, index) => (
@@ -285,7 +288,7 @@ const SharedDataUpload = props => {
         _.toPairs,
         // Generate localized messages
         _.map(([errorCode, rejectedFiles]) =>
-          t(`shared_data.upload_rejected_${errorCode}`, {
+          t(`sharedData.upload_rejected_${errorCode}`, {
             rejectedFiles,
             maxSize: SHARED_DATA_MAX_SIZE / 1000000.0,
             maxFiles: SHARED_DATA_MAX_FILES,
@@ -340,7 +343,7 @@ const SharedDataUpload = props => {
         sx={{ padding: 2 }}
       >
         <Typography sx={{ fontWeight: 700 }}>
-          {t('shared_data.upload_description')}
+          {t('sharedData.upload_description')}
         </Typography>
         <Stack direction={{ xs: 'column', md: 'row' }}>
           <DropZone
@@ -380,10 +383,10 @@ const SharedDataUpload = props => {
           onClick={onSave}
           sx={{ paddingLeft: 5, paddingRight: 5 }}
         >
-          {t('shared_data.upload_save')}
+          {t('sharedData.upload_save')}
         </LoadingButton>
         <Button variant="text" onClick={onCancel}>
-          {t('shared_data.upload_cancel')}
+          {t('sharedData.upload_cancel')}
         </Button>
       </Stack>
     </>
