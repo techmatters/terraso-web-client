@@ -189,7 +189,6 @@
         "form_create_label": "Create Landscape",
         "form_website_label": "Website",
         "form_location_label": "Country or region",
-        "form_create_label": "Create Landscape",
         "form_save_label": "Save Changes",
         "view_join_label": "Connect to Landscape",
         "view_leave_label": "Leave Landscape",
@@ -254,7 +253,7 @@
     "shared_data": {
         "title": "Shared files",
         "description": "Only the members of your group can download the files. <1>Read more about sharing files</1>.",
-        "learn_more_url": "http://terraso.org/help/sharing-files/",
+        "learn_more_url": "https://terraso.org/help/shared-files/",
         "upload_button": "Share Files",
         "delete_confirm_title": "Delete “{{name}}”?",
         "delete_confirm_message": "Are you sure you wish to delete the file “{{name}}”?",
