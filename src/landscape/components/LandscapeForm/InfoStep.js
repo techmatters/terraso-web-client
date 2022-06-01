@@ -13,7 +13,7 @@ import PageHeader from 'layout/PageHeader';
 
 import { MAX_DESCRIPTION_LENGTH } from 'config';
 
-const FORM_VALIDATION_SCHEMA = yup
+const VALIDATION_SCHEMA = yup
   .object({
     name: yup.string().trim().required(),
     description: yup
@@ -114,7 +114,7 @@ const InfoStep = props => {
         prefix="landscape"
         fields={FORM_FIELDS}
         values={landscape}
-        validationSchema={FORM_VALIDATION_SCHEMA}
+        validationSchema={VALIDATION_SCHEMA}
         onSave={updatedLandscape => {
           setUpdatedLandscape(updatedLandscape);
         }}
