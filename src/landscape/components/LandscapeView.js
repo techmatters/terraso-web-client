@@ -42,8 +42,6 @@ import SharedDataCard from 'sharedData/components/SharedDataCard';
 
 import { withProps } from 'react-hoc';
 
-import theme from 'theme';
-
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   renderLabel: () => 'landscape.view_leave_label',
 });
@@ -55,23 +53,30 @@ const MemberJoinButton = withProps(GroupMemberJoin, {
 const LandscapeCard = ({ landscape }) => {
   const { t } = useTranslation();
   return (
-    <Card component="section" aria-labelledby="landscape-view-card-title">
+    <Card
+      component="section"
+      aria-labelledby="landscape-view-card-title"
+      style={{
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'flex-start',
+        flexDirection: 'column',
+      }}
+    >
       <CardHeader
         disableTypography
         title={
-          <Typography
-            variant="h2"
-            id="landscape-view-card-title"
-            sx={{ paddingTop: 0 }}
-          >
+          <Typography variant="h2" id="landscape-view-card-title">
             {t('landscape.view_card_title', { name: landscape.name })}
           </Typography>
         }
       />
-      <CardContent>
+      <CardContent sx={{ display: 'flex', flexGrow: 1 }}>
         <Typography variant="body2" color="text.secondary">
           {landscape.description}
         </Typography>
+      </CardContent>
+      <CardContent>
         {landscape.website && (
           <Stack direction="row" alignItems="center" spacing={1}>
             <PublicIcon sx={{ color: 'gray.lite1' }} />
@@ -85,9 +90,6 @@ const LandscapeCard = ({ landscape }) => {
             variant="outlined"
             component={RouterLink}
             to={`/landscapes/${landscape.slug}/edit`}
-            sx={{
-              marginTop: theme.spacing(1),
-            }}
           >
             {t('landscape.view_update_button')}
           </Button>
@@ -210,10 +212,10 @@ const LandscapeView = () => {
               </Restricted>
             </Card>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} style={{ display: 'flex' }}>
             <LandscapeCard landscape={landscape} />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} style={{ display: 'flex' }}>
             <GroupMembershipCard
               onViewMembers={() =>
                 navigate(`/landscapes/${landscape.slug}/members`)
