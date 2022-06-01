@@ -295,7 +295,8 @@
         "name_update": "Actualizar nombre",
         "description_update": "Actualizar descripción",
         "delete_label": "Elminar “{{name}}”",
-        "download_label": "Descargar “{{name}}”"
+        "download_label": "Descargar “{{name}}”",
+        "invalid_extension": "La extensión del archivo ({{file.resourceType}}) no coincide con el contenido del archivo"
     },
     "share": {
         "button": "Comparte",
