@@ -222,7 +222,6 @@ const LandscapeView = () => {
           </Grid>
           <Grid item xs={12} md={12}>
             <SharedDataCard
-              name={landscape.name}
               onUploadClick={() =>
                 navigate(`/landscapes/${landscape.slug}/upload`)
               }
