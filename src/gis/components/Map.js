@@ -100,7 +100,7 @@ const LeafletSearch = props => {
 
     map.on('geosearch/showlocation', getPinData);
     return () => map.removeControl(searchControl);
-  }, [map, setBoundingBox, setPinLocation]);
+  }, [map, setBoundingBox, setPinLocation, t]);
 
   return null;
 };
