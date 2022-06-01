@@ -22,14 +22,20 @@ import {
   setFormNewValues,
 } from 'group/groupSlice';
 
+import { MAX_DESCRIPTION_LENGTH } from 'config';
+
 import theme from 'theme';
 
 const VALIDATION_SCHEMA = yup
   .object({
-    name: yup.string().required(),
-    description: yup.string().maxCustom(600).required(),
-    email: yup.string().email(),
-    website: yup.string().ensure().transform(transformURL).url(),
+    name: yup.string().trim().required(),
+    description: yup
+      .string()
+      .maxCustom(MAX_DESCRIPTION_LENGTH)
+      .trim()
+      .required(),
+    email: yup.string().trim().email(),
+    website: yup.string().trim().ensure().transform(transformURL).url(),
   })
   .required();
 

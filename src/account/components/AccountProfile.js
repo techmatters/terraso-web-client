@@ -20,7 +20,7 @@ import AccountAvatar from './AccountAvatar';
 
 const VALIDATION_SCHEMA = yup
   .object({
-    firstName: yup.string().required(),
+    firstName: yup.string().trim().required(),
   })
   .required();
 

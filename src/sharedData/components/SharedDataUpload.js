@@ -50,8 +50,8 @@ import theme from 'theme';
 
 const VALIDATION_SCHEMA = yup
   .object({
-    name: yup.string().required(),
-    description: yup.string().maxCustom(200),
+    name: yup.string().trim().required(),
+    description: yup.string().maxCustom(200).trim(),
   })
   .required();
 
