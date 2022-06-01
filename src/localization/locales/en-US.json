@@ -253,7 +253,7 @@
     "shared_data": {
         "title": "Shared files",
         "description_with_files": "Only the members of your group can download the files. <1>Read more about sharing files</1>.",
-        "description_without_files": "Upload your data files ({{extensions}}) and share them with the {{group}} members. Only members can download the files. <1>Read more about sharing files</1>.",
+        "description_without_files": "Upload your data files ({{extensions}}) and share them with the {{name}} members. Only members can download the files. <1>Read more about sharing files</1>.",
         "learn_more_url": "https://terraso.org/help/shared-files/",
         "upload_button": "Share Files",
         "delete_confirm_title": "Delete “{{name}}”?",
