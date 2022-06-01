@@ -171,6 +171,7 @@ const GroupView = () => {
           </Grid>
           <Grid item xs={12} md={12}>
             <SharedDataCard
+              name={group.name}
               onUploadClick={() => navigate(`/groups/${group.slug}/upload`)}
             />
           </Grid>
