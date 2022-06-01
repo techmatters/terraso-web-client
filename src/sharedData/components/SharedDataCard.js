@@ -39,8 +39,8 @@ const EntriesList = withProps(List, {
 
 const SharedFilesCard = props => {
   const { t } = useTranslation();
-  const { onUploadClick, name } = props;
-  const { group } = useGroupContext();
+  const { onUploadClick } = props;
+  const { group, owner } = useGroupContext();
   const { dataEntries: sharedFiles } = group;
   const hasFiles = !_.isEmpty(sharedFiles);
 
@@ -85,7 +85,7 @@ const SharedFilesCard = props => {
                 extensions: SHARED_DATA_ACCEPTED_EXTENSIONS.map(
                   ext => `*.${ext}`
                 ).join(', '),
-                group: name,
+                name: owner.name,
               }}
             >
               Prefix
