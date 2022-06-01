@@ -107,8 +107,6 @@ const File = props => {
   const apiSuccess = _.has(file.id, apiSuccesses);
   const isUploading = _.has(file.id, apiUploading);
 
-  console.log({ apiFileErrors });
-
   return (
     <>
       {isUploading && <LinearProgress />}
@@ -135,8 +133,9 @@ const File = props => {
           </Alert>
         )}
         {!_.isEmpty(apiFileErrors) &&
-          apiFileErrors.map(apiError => (
+          apiFileErrors.map((apiError, index) => (
             <Alert
+              key={index}
               sx={{
                 width: '100%',
                 boxSizing: 'border-box',

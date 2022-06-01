@@ -77,7 +77,7 @@ export const createAsyncThunk = (
         parsedErrors.forEach(message => dispatch(addMessage(message)));
       }
 
-      return rejectWithValue(parsedErrors);
+      return rejectWithValue({ error, parsedErrors });
     }
   });
 };

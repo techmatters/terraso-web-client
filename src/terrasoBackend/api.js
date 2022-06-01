@@ -33,6 +33,14 @@ const parseMessage = (message, body) => {
 
 const handleApiErrors = (data, body) => {
   const errors = _.get('errors', data);
+
+  const unauthenticatedError = errors.find(error =>
+    _.includes('AnonymousUser', error.message)
+  );
+  if (unauthenticatedError) {
+    return Promise.reject(UNAUTHENTICATED);
+  }
+
   const messages = _.flatMap(
     error => parseMessage(error.message, body),
     errors

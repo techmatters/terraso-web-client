@@ -35,6 +35,7 @@ beforeEach(() => {
   useParams.mockReturnValue({
     slug: 'slug-1',
   });
+  useNavigate.mockReturnValue(() => {})
 });
 
 const dropFiles = async files => {
@@ -103,7 +104,7 @@ test('GroupSharedDataUpload: Error - Empty filename', async () => {
 });
 
 test('GroupSharedDataUpload: Error - API', async () => {
-  terrasoApi.request.mockResolvedValue(_.set('error.all[0]', 'Test Error', {}));
+  terrasoApi.request.mockRejectedValue('Test Error');
   await dropFiles(
     Array(5)
       .fill(0)
@@ -116,12 +117,12 @@ test('GroupSharedDataUpload: Error - API', async () => {
   await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
   await act(async () => fireEvent.click(uploadButton));
   const file = screen.getByRole('region', { name: 'test1' });
-  expect(await within(file).findByText('Test Error')).toBeInTheDocument();
+  expect(await within(file).findByText('Oops, something went wrong. Please try it again in a few minutes. (Error: Test Error)')).toBeInTheDocument();
 });
 
 test('GroupSharedDataUpload: Partial Success', async () => {
-  terrasoApi.request.mockResolvedValueOnce(
-    _.set('error.all[0]', 'Test Error', {})
+  terrasoApi.request.mockRejectedValueOnce(
+    _.set('[0].content[0]', 'invalid_extension', [])
   );
   terrasoApi.request.mockResolvedValueOnce({});
   await dropFiles(
@@ -136,7 +137,7 @@ test('GroupSharedDataUpload: Partial Success', async () => {
   await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
   await act(async () => fireEvent.click(uploadButton));
   const file0 = screen.getByRole('region', { name: 'test0' });
-  expect(await within(file0).findByText('Test Error')).toBeInTheDocument();
+  expect(await within(file0).findByText('[TODO] File extension different for file content')).toBeInTheDocument();
   const file1 = screen.getByRole('region', { name: 'test1' });
   expect(
     await within(file1).findByText('Uploaded successfully.')

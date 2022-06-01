@@ -85,7 +85,7 @@
         "members_list_column_actions_description": "Acciones",
         "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). Debe existir al menos un administrador.",
         "unique": "El grupo “{{body.variables.input.name}}” ya existe.",
-        "shared_data_upload_title": "Compartir archivos con “{{nombre}}“"
+        "shared_data_upload_title": "Compartir archivos con “{{name}}“"
     },
     "tool": {
         "avilability": "Disponibilidad",

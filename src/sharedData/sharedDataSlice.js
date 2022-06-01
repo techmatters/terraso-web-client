@@ -87,7 +87,7 @@ const sharedDataSlice = createSlice({
         `uploads.${action.meta.arg.file.id}`,
         {
           status: UPLOAD_STATUS_ERROR,
-          data: action.payload,
+          data: action.payload.parsedErrors,
         },
         state
       ),

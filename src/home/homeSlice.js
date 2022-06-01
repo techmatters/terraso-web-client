@@ -33,7 +33,7 @@ export const homeSlice = createSlice({
     [fetchHomeData.rejected]: (state, action) => ({
       ...state,
       fetching: false,
-      error: action.payload,
+      error: action.payload.error,
     }),
   },
 });
