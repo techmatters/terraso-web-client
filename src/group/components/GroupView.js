@@ -69,12 +69,14 @@ const GroupCard = ({ group }) => {
           </Typography>
         }
       />
-      <CardContent sx={{ display: 'flex', flexGrow: 1 }}>
+      <CardContent>
         <Typography variant="body2" color="text.secondary">
           {group.description}
         </Typography>
       </CardContent>
-      <CardContent>
+      <CardContent
+        sx={{ display: 'flex', flexGrow: 1, flexDirection: 'column' }}
+      >
         {group.email && (
           <Stack
             direction="row"
@@ -96,6 +98,8 @@ const GroupCard = ({ group }) => {
             </Link>
           </Stack>
         )}
+      </CardContent>
+      <CardContent>
         <Restricted permission="group.change" resource={group}>
           <Button
             variant="outlined"

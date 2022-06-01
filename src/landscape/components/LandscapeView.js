@@ -71,12 +71,12 @@ const LandscapeCard = ({ landscape }) => {
           </Typography>
         }
       />
-      <CardContent sx={{ display: 'flex', flexGrow: 1 }}>
+      <CardContent>
         <Typography variant="body2" color="text.secondary">
           {landscape.description}
         </Typography>
       </CardContent>
-      <CardContent>
+      <CardContent sx={{ display: 'flex', flexGrow: 1 }}>
         {landscape.website && (
           <Stack direction="row" alignItems="center" spacing={1}>
             <PublicIcon sx={{ color: 'gray.lite1' }} />
@@ -85,6 +85,8 @@ const LandscapeCard = ({ landscape }) => {
             </Link>
           </Stack>
         )}
+      </CardContent>
+      <CardContent>
         <Restricted permission="landscape.change" resource={landscape}>
           <Button
             variant="outlined"
