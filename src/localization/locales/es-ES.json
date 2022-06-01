@@ -271,7 +271,7 @@
     "shared_data": {
         "title": "Archivos compartidos",
         "description_with_files": "Solo los miembros de tu grupo pueden descargar los archivos. <1>Más información sobre cómo compartir archivos</1>.",
-        "description_without_files": "[TODO]Upload your data files ({{extensions}}) and share them with the {{group}} members. Solo los miembros de tu grupo pueden descargar los archivos. <1>Más información sobre cómo compartir archivos</1>.",
+        "description_without_files": "Sube tus archivos de datos ({{extensions}}) y compártelos con los miembros del {{group}}. Solo los miembros de tu grupo pueden descargar los archivos. <1>Más información sobre cómo compartir archivos</1>.",
         "learn_more_url": "https://terraso.org/es/ayuda/compartir-archivos/",
         "upload_button": "Compartir archivos",
         "delete_confirm_title": "Eliminar “{{name}}”?",
