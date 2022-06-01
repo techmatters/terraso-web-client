@@ -35,7 +35,7 @@ beforeEach(() => {
   useParams.mockReturnValue({
     slug: 'slug-1',
   });
-  useNavigate.mockReturnValue(() => {})
+  useNavigate.mockReturnValue(() => {});
 });
 
 const dropFiles = async files => {
@@ -117,7 +117,11 @@ test('GroupSharedDataUpload: Error - API', async () => {
   await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
   await act(async () => fireEvent.click(uploadButton));
   const file = screen.getByRole('region', { name: 'test1' });
-  expect(await within(file).findByText('Oops, something went wrong. Please try it again in a few minutes. (Error: Test Error)')).toBeInTheDocument();
+  expect(
+    await within(file).findByText(
+      'Oops, something went wrong. Please try it again in a few minutes. (Error: Test Error)'
+    )
+  ).toBeInTheDocument();
 });
 
 test('GroupSharedDataUpload: Partial Success', async () => {
@@ -137,7 +141,11 @@ test('GroupSharedDataUpload: Partial Success', async () => {
   await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
   await act(async () => fireEvent.click(uploadButton));
   const file0 = screen.getByRole('region', { name: 'test0' });
-  expect(await within(file0).findByText('[TODO] File extension different for file content')).toBeInTheDocument();
+  expect(
+    await within(file0).findByText(
+      "The file extension (.csv) does not match the file's contents"
+    )
+  ).toBeInTheDocument();
   const file1 = screen.getByRole('region', { name: 'test1' });
   expect(
     await within(file1).findByText('Uploaded successfully.')

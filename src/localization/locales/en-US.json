@@ -277,7 +277,7 @@
         "description_update": "Update description",
         "delete_label": "Delete “{{name}}”",
         "download_label": "Download “{{name}}”",
-        "invalid_extension": "The file extension ({{extension}}) does not match the file's contents"
+        "invalid_extension": "The file extension ({{file.resourceType}}) does not match the file's contents"
     },
     "common": {
         "dialog_cancel_label": "Cancel",

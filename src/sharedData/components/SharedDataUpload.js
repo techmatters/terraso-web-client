@@ -142,7 +142,10 @@ const File = props => {
               }}
               severity="error"
             >
-              {t(_.getOr(apiError, 'content', apiError), apiError.params)}
+              {t(_.getOr(apiError, 'content', apiError), {
+                ...apiError.params,
+                file,
+              })}
             </Alert>
           ))}
         <Stack direction="row">
