@@ -20,6 +20,7 @@ import Restricted from 'permissions/components/Restricted';
 
 import { useGroupContext } from 'group/groupContext';
 
+import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 import { withProps } from 'react-hoc';
 
 import SharedDataEntry from './SharedDataEntry';
@@ -39,7 +40,7 @@ const EntriesList = withProps(List, {
 const SharedFilesCard = props => {
   const { t } = useTranslation();
   const { onUploadClick } = props;
-  const { group } = useGroupContext();
+  const { group, owner } = useGroupContext();
   const { dataEntries: sharedFiles } = group;
   const hasFiles = !_.isEmpty(sharedFiles);
 
@@ -74,7 +75,19 @@ const SharedFilesCard = props => {
             }}
           >
             {' '}
-            <Trans i18nKey="shared_data.description">
+            <Trans
+              i18nKey={
+                hasFiles
+                  ? 'shared_data.description_with_files'
+                  : 'shared_data.description_without_files'
+              }
+              values={{
+                extensions: SHARED_DATA_ACCEPTED_EXTENSIONS.map(
+                  ext => `*.${ext}`
+                ).join(', '),
+                name: owner.name,
+              }}
+            >
               Prefix
               <Link href={t('shared_data.learn_more_url')} target="_blank">
                 link
