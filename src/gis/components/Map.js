@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
 import {
   GeoJSON,
   MapContainer,
@@ -66,6 +67,7 @@ const LeafletDraw = props => {
 const LeafletSearch = props => {
   const map = useMap();
   const { setBoundingBox, setPinLocation } = props;
+  const { t } = useTranslation();
 
   useEffect(() => {
     const provider = new OpenStreetMapProvider();
@@ -75,6 +77,7 @@ const LeafletSearch = props => {
       style: 'bar',
       showMarker: false,
       autoClose: true,
+      searchLabel: t('common.map_search_placeholder'),
     });
 
     map.addControl(searchControl);
@@ -97,7 +100,7 @@ const LeafletSearch = props => {
 
     map.on('geosearch/showlocation', getPinData);
     return () => map.removeControl(searchControl);
-  }, [map, setBoundingBox, setPinLocation]);
+  }, [map, setBoundingBox, setPinLocation, t]);
 
   return null;
 };
