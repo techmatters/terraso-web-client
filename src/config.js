@@ -22,6 +22,8 @@ export const SHARED_DATA_MAX_SIZE =
 export const SHARED_DATA_MAX_FILES =
   process.env.REACT_SHARED_DATA_MAX_FILES || 20;
 
+export const MAX_DESCRIPTION_LENGTH = 600;
+
 export const SHARED_DATA_ACCEPTED_EXTENSIONS = (
   process.env.REACT_APP_SHARED_DATA_ACCEPTED_EXTENSIONS || 'xlsx,xls,csv'
 ).split(',');
