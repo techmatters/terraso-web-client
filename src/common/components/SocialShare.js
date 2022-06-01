@@ -129,9 +129,7 @@ const SocialShare = ({ name }) => {
               {t('share.facebook')}
             </Button>
           </Stack>
-          <Typography variant="h5" component="h2" sx={{ marginTop: 4 }}>
-            {t('share.copy')}
-          </Typography>
+          <Typography sx={{ marginTop: 4 }}>{t('share.copy')}</Typography>
           <Stack direction={isSmall ? 'column' : 'row'} sx={{ width: '100%' }}>
             <TextField
               size="small"
