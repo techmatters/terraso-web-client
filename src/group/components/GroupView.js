@@ -51,7 +51,16 @@ const MemberJoinButton = withProps(GroupMemberJoin, {
 const GroupCard = ({ group }) => {
   const { t } = useTranslation();
   return (
-    <Card component="section" aria-labelledby="group-view-card-title">
+    <Card
+      component="section"
+      aria-labelledby="group-view-card-title"
+      style={{
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'flex-start',
+        flexDirection: 'column',
+      }}
+    >
       <CardHeader
         disableTypography
         title={
@@ -65,7 +74,9 @@ const GroupCard = ({ group }) => {
           {group.description}
         </Typography>
       </CardContent>
-      <CardContent>
+      <CardContent
+        sx={{ display: 'flex', flexGrow: 1, flexDirection: 'column' }}
+      >
         {group.email && (
           <Stack
             direction="row"
@@ -87,6 +98,8 @@ const GroupCard = ({ group }) => {
             </Link>
           </Stack>
         )}
+      </CardContent>
+      <CardContent>
         <Restricted permission="group.change" resource={group}>
           <Button
             variant="outlined"
@@ -161,10 +174,10 @@ const GroupView = () => {
           <SocialShare name={group.name} />
         </Stack>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} style={{ display: 'flex' }}>
             <GroupCard group={group} />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} style={{ display: 'flex' }}>
             <GroupMembershipCard
               onViewMembers={() => navigate(`/groups/${group.slug}/members`)}
             />

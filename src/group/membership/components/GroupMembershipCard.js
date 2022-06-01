@@ -84,7 +84,16 @@ const GroupMembershipCard = props => {
   const membersInfo = _.getOr([], 'membersInfo', group);
 
   return (
-    <Card component="section" aria-labelledby="membership-card-title">
+    <Card
+      component="section"
+      aria-labelledby="membership-card-title"
+      style={{
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+      }}
+    >
       <CardHeader
         disableTypography
         title={
@@ -99,7 +108,7 @@ const GroupMembershipCard = props => {
         onViewMembers={onViewMembers}
       />
       {fetching ? null : (
-        <CardActions>
+        <CardActions sx={{ display: 'block', paddingBottom: '24px' }}>
           <GroupMembershipJoinLeaveButton />
         </CardActions>
       )}
