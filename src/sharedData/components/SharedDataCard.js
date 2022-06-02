@@ -78,8 +78,8 @@ const SharedFilesCard = props => {
             <Trans
               i18nKey={
                 hasFiles
-                  ? 'shared_data.description_with_files'
-                  : 'shared_data.description_without_files'
+                  ? 'sharedData.description_with_files'
+                  : 'sharedData.description_without_files'
               }
               values={{
                 extensions: SHARED_DATA_ACCEPTED_EXTENSIONS.map(
