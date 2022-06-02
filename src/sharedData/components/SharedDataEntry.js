@@ -160,7 +160,7 @@ const SharedDataEntry = ({ file }) => {
           <Restricted permission="sharedData.download" resource={group}>
             <Button
               onClick={handleDownload}
-              aria-label={t('shared_data.download_label', {
+              aria-label={t('sharedData.download_label', {
                 name: file.name,
               })}
               startIcon={
