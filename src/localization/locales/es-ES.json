@@ -273,7 +273,7 @@
         "title": "Archivos compartidos",
         "description_with_files": "Solo los miembros de tu {{entityType}} pueden descargar los archivos. <1>Más información sobre cómo compartir archivos</1>.",
         "entity_type_group": "grupo",
-        "item_landscape": "paisaje",
+        "entity_type_landscape": "paisaje",
         "description_without_files": "Sube tus archivos de datos ({{extensions}}) y compártelos con los miembros del {{name}}. Solo los miembros de tu grupo pueden descargar los archivos. <1>Más información sobre cómo compartir archivos</1>.",
         "learn_more_url": "https://terraso.org/es/ayuda/compartir-archivos/",
         "upload_button": "Compartir archivos",
