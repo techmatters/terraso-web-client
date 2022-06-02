@@ -252,7 +252,7 @@
     },
     "sharedData": {
         "title": "Shared files",
-        "description_with_files": "Only the members of your {{item}} can download the files. <1>Read more about sharing files</1>.",
+        "description_with_files": "Only the members of your {{entityType}} can download the files. <1>Read more about sharing files</1>.",
         "item_group": "group",
         "item_landscape": "landscape",
         "description_without_files": "Upload your data files ({{extensions}}) and share them with the {{name}} members. Only members can download the files. <1>Read more about sharing files</1>.",
