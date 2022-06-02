@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import filesize from 'filesize';
 import _ from 'lodash/fp';
@@ -60,6 +60,8 @@ const StackRow = props => (
 const SharedDataEntry = ({ file }) => {
   const { i18n, t } = useTranslation();
   const { group, updateOwner } = useGroupContext();
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
   const processing = useSelector(_.get(`sharedData.processing.${file.id}`));
   const dispatch = useDispatch();
 
@@ -99,7 +101,13 @@ const SharedDataEntry = ({ file }) => {
         alignItems="center"
         sx={{ fontSize: 14, color: 'gray.mid2' }}
       >
-        <Grid item xs={8} md={4} order={{ xs: 2, md: 2 }} component={StackRow}>
+        <Grid
+          item
+          xs={isEditingName ? 12 : 8}
+          md={4}
+          order={{ xs: 2, md: 2 }}
+          component={StackRow}
+        >
           <FileIcon resourceType={file.resourceType} />
           <Restricted
             permission="sharedData.edit"
@@ -112,6 +120,8 @@ const SharedDataEntry = ({ file }) => {
               value={file.name}
               onSave={onUpdate('name')}
               processing={processing}
+              isEditing={isEditingName}
+              setIsEditing={setIsEditingName}
               viewProps={{ color: 'black', sx: { flexGrow: 1 } }}
             />
           </Restricted>
@@ -130,6 +140,7 @@ const SharedDataEntry = ({ file }) => {
           order={{ xs: 3, md: 4 }}
           component={StackRow}
           justifyContent="flex-end"
+          display={isEditingName ? 'none' : 'inherit'}
         >
           <Restricted permission="sharedData.delete" resource={{ group, file }}>
             <ConfirmButton
@@ -189,6 +200,8 @@ const SharedDataEntry = ({ file }) => {
               label={t('sharedData.description_update')}
               value={description}
               processing={processing}
+              isEditing={isEditingDescription}
+              setIsEditing={setIsEditingDescription}
               addMessage={t('sharedData.add_description_message')}
               onSave={onUpdate('description')}
               viewProps={{ variant: 'body1' }}
