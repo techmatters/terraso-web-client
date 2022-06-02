@@ -11,11 +11,17 @@ import { countriesList, countryMap, transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
 import PageHeader from 'layout/PageHeader';
 
-const FORM_VALIDATION_SCHEMA = yup
+import { MAX_DESCRIPTION_LENGTH } from 'config';
+
+const VALIDATION_SCHEMA = yup
   .object({
-    name: yup.string().required(),
-    description: yup.string().maxCustom(600).required(),
-    website: yup.string().ensure().transform(transformURL).url(),
+    name: yup.string().trim().required(),
+    description: yup
+      .string()
+      .maxCustom(MAX_DESCRIPTION_LENGTH)
+      .trim()
+      .required(),
+    website: yup.string().trim().ensure().transform(transformURL).url(),
   })
   .required();
 
@@ -108,7 +114,7 @@ const InfoStep = props => {
         prefix="landscape"
         fields={FORM_FIELDS}
         values={landscape}
-        validationSchema={FORM_VALIDATION_SCHEMA}
+        validationSchema={VALIDATION_SCHEMA}
         onSave={updatedLandscape => {
           setUpdatedLandscape(updatedLandscape);
         }}
