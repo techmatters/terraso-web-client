@@ -47,7 +47,7 @@ const FileIcon = ({ resourceType }) => {
     default:
       return (
         <InsertDriveFileOutlinedIcon
-          sx={{ fontSize: ICON_SIZE, color: theme.palette.gray.mid2 }}
+          sx={{ fontSize: ICON_SIZE, color: theme.palette.gray.dark1 }}
         />
       );
   }
@@ -97,7 +97,7 @@ const SharedDataEntry = ({ file }) => {
         container
         spacing={1}
         alignItems="center"
-        sx={{ fontSize: 14, color: 'gray.mid2' }}
+        sx={{ fontSize: 14, color: 'gray.dark1' }}
       >
         <Grid item xs={8} md={4} order={{ xs: 2, md: 2 }} component={StackRow}>
           <FileIcon resourceType={file.resourceType} />
@@ -152,7 +152,7 @@ const SharedDataEntry = ({ file }) => {
               <DeleteIcon
                 sx={{
                   fontSize: ICON_SIZE,
-                  color: theme.palette.gray.mid2,
+                  color: theme.palette.gray.dark1,
                 }}
               />
             </ConfirmButton>
@@ -169,7 +169,7 @@ const SharedDataEntry = ({ file }) => {
                     marginTop: '2px',
                     width: ICON_SIZE,
                     height: ICON_SIZE,
-                    color: theme.palette.gray.mid2,
+                    color: theme.palette.gray.dark1,
                   }}
                 />
               }
