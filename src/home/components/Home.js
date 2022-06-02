@@ -57,9 +57,7 @@ const Home = () => {
   }, [dispatch, user]);
 
   if (error) {
-    return (
-      <Alert severity="error">{t('home.error', { error: t(error) })}</Alert>
-    );
+    return <Alert severity="error">{t('home.error', { error })}</Alert>;
   }
 
   return (

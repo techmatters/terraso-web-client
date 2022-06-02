@@ -84,8 +84,8 @@
         "list_column_actions_description": "Acciones",
         "members_list_column_actions_description": "Acciones",
         "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). Debe existir al menos un administrador.",
-        "unique": "El grupo “{{inputData.input.name}}” ya existe.",
-        "shared_data_upload_title": "Compartir archivos con “{{nombre}}“"
+        "unique": "El grupo “{{body.variables.input.name}}” ya existe.",
+        "shared_data_upload_title": "Compartir archivos con “{{name}}“"
     },
     "tool": {
         "avilability": "Disponibilidad",
@@ -269,7 +269,7 @@
         "refreshing_loader_label": "Actualizando",
         "map_search_placeholder": "Ingresa una ciudad, pueblo o región"
     },
-    "shared_data": {
+    "sharedData": {
         "title": "Archivos compartidos",
         "description_with_files": "Solo los miembros de tu grupo pueden descargar los archivos. <1>Más información sobre cómo compartir archivos</1>.",
         "description_without_files": "Sube tus archivos de datos ({{extensions}}) y compártelos con los miembros del {{name}}. Solo los miembros de tu grupo pueden descargar los archivos. <1>Más información sobre cómo compartir archivos</1>.",
@@ -295,7 +295,8 @@
         "name_update": "Actualizar nombre",
         "description_update": "Actualizar descripción",
         "delete_label": "Elminar “{{name}}”",
-        "download_label": "Descargar “{{name}}”"
+        "download_label": "Descargar “{{name}}”",
+        "invalid_extension": "La extensión del archivo ({{file.resourceType}}) no coincide con el contenido del archivo"
     },
     "share": {
         "button": "Comparte",

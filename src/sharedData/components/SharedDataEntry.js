@@ -108,7 +108,7 @@ const SharedDataEntry = ({ file }) => {
           >
             <EditableText
               id={`name-${file.id}`}
-              label={t('shared_data.name_update')}
+              label={t('sharedData.name_update')}
               value={file.name}
               onSave={onUpdate('name')}
               processing={processing}
@@ -137,17 +137,17 @@ const SharedDataEntry = ({ file }) => {
               loading={processing}
               variant="text"
               buttonProps={{
-                'aria-label': t('shared_data.delete_label', {
+                'aria-label': t('sharedData.delete_label', {
                   name: file.name,
                 }),
               }}
-              confirmTitle={t('shared_data.delete_confirm_title', {
+              confirmTitle={t('sharedData.delete_confirm_title', {
                 name: file.name,
               })}
-              confirmMessage={t('shared_data.delete_confirm_message', {
+              confirmMessage={t('sharedData.delete_confirm_message', {
                 name: file.name,
               })}
-              confirmButton={t('shared_data.delete_confirm_button')}
+              confirmButton={t('sharedData.delete_confirm_button')}
             >
               <DeleteIcon
                 sx={{
@@ -186,10 +186,10 @@ const SharedDataEntry = ({ file }) => {
           >
             <EditableText
               id={`description-${file.id}`}
-              label={t('shared_data.description_update')}
+              label={t('sharedData.description_update')}
               value={description}
               processing={processing}
-              addMessage={t('shared_data.add_description_message')}
+              addMessage={t('sharedData.add_description_message')}
               onSave={onUpdate('description')}
               viewProps={{ variant: 'body1' }}
             />

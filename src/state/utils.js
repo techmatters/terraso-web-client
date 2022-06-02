@@ -63,20 +63,21 @@ export const createAsyncThunk = (
     try {
       return await executeAuthRequest(dispatch, executeAction);
     } catch (error) {
+      const parsedErrors = _.flatten([error]).map(error => {
+        const baseMessage = _.has('content', error)
+          ? { severity: 'error', ...error }
+          : { severity: 'error', content: [error], params: { error } };
+        return {
+          ..._.omit('content', baseMessage),
+          content: generateErrorFallbacks(baseMessage.content),
+        };
+      });
+
       if (dispatchErrorMessage) {
-        _.flatten([error]).forEach(error => {
-          const baseMessage = _.has('content', error)
-            ? { severity: 'error', ...error }
-            : { severity: 'error', content: [error], params: { error } };
-          const message = {
-            ..._.omit('content', baseMessage),
-            content: generateErrorFallbacks(baseMessage.content),
-          };
-          dispatch(addMessage(message));
-        });
+        parsedErrors.forEach(message => dispatch(addMessage(message)));
       }
 
-      return rejectWithValue(error);
+      return rejectWithValue({ error, parsedErrors });
     }
   });
 };

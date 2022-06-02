@@ -55,7 +55,7 @@ const SharedFilesCard = props => {
           disableTypography
           title={
             <Typography variant="h2" id="shared-data-card-title">
-              {t('shared_data.title')}
+              {t('sharedData.title')}
             </Typography>
           }
         />
@@ -89,14 +89,14 @@ const SharedFilesCard = props => {
               }}
             >
               Prefix
-              <Link href={t('shared_data.learn_more_url')} target="_blank">
+              <Link href={t('sharedData.learn_more_url')} target="_blank">
                 link
               </Link>
               .
             </Trans>
           </Typography>
           <Button variant="outlined" onClick={onUploadClick}>
-            {t('shared_data.upload_button')}
+            {t('sharedData.upload_button')}
           </Button>
         </CardContent>
       </Card>

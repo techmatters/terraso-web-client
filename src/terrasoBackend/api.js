@@ -7,10 +7,11 @@ import { UNAUTHENTICATED } from 'account/authConstants';
 
 import { GRAPH_QL_ENDPOINT, TERRASO_API_URL } from 'config';
 
-const parseMessage = (message, inputData) => {
+const parseMessage = (message, body) => {
   try {
-    // If JSON return parsed
-    const jsonMessages = JSON.parse(message);
+    // If JSON return parse
+    const jsonMessages =
+      typeof message === 'string' ? JSON.parse(message) : message;
     return jsonMessages.map(message => ({
       content: [
         message.code,
@@ -21,7 +22,7 @@ const parseMessage = (message, inputData) => {
         code: message.code,
         ..._.omit('extra', message.context),
         context: _.get('context.extra', message),
-        inputData,
+        body,
       },
     }));
   } catch (error) {
@@ -30,10 +31,18 @@ const parseMessage = (message, inputData) => {
   }
 };
 
-const handleGraphQLError = (data, inputData) => {
+const handleApiErrors = (data, body) => {
   const errors = _.get('errors', data);
+
+  const unauthenticatedError = errors.find(error =>
+    _.includes('AnonymousUser', error.message)
+  );
+  if (unauthenticatedError) {
+    return Promise.reject(UNAUTHENTICATED);
+  }
+
   const messages = _.flatMap(
-    error => parseMessage(error.message, inputData),
+    error => parseMessage(error.message, body),
     errors
   );
   return Promise.reject(messages);
@@ -42,15 +51,11 @@ const handleGraphQLError = (data, inputData) => {
 export const requestGraphQL = async (query, variables) => {
   const jsonResponse = await request({
     path: GRAPH_QL_ENDPOINT,
-    body: JSON.stringify({ query, variables }),
+    body: { query, variables },
     headers: {
       'Content-Type': 'application/json',
     },
   });
-
-  if (_.has('errors', jsonResponse)) {
-    await handleGraphQLError(jsonResponse, variables);
-  }
 
   if (!_.has('data', jsonResponse)) {
     logger.error(
@@ -71,7 +76,7 @@ export const request = async ({ path, body, headers = {} }) => {
       Authorization: `Bearer ${getToken()}`,
       ...headers,
     },
-    body,
+    body: body instanceof FormData ? body : JSON.stringify(body),
   }).catch(error => {
     logger.error('Terraso API: Failed to execute request', error);
     return Promise.reject(['terraso_api.error_request_response']);
@@ -81,8 +86,14 @@ export const request = async ({ path, body, headers = {} }) => {
     await Promise.reject(UNAUTHENTICATED);
   }
 
-  return await response.json().catch(error => {
+  const jsonResponse = await response.json().catch(error => {
     logger.error('Terraso API: Failed to parse response', error);
     return Promise.reject(['terraso_api.error_request_response']);
   });
+
+  if (_.has('errors', jsonResponse)) {
+    await handleApiErrors(jsonResponse, body);
+  }
+
+  return jsonResponse;
 };
