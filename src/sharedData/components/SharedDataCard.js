@@ -87,8 +87,8 @@ const SharedFilesCard = props => {
                 ).join(', '),
                 name: owner.name,
                 entityType: owner.defaultGroup
-                  ? t('sharedData.item_landscape')
-                  : t('sharedData.item_group'),
+                  ? t('sharedData.entity_type_landscape')
+                  : t('sharedData.entity_type_group'),
               }}
             >
               Prefix
