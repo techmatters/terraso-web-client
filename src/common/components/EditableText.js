@@ -33,7 +33,7 @@ const EditableText = props => {
     setEditedValue(value);
     setIsEditing(false);
     setIsHovering(false);
-  }, [value]);
+  }, [value, setIsEditing]);
 
   const handleSave = () => {
     if (editedValue === value) {
