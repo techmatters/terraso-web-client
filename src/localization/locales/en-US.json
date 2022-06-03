@@ -252,7 +252,9 @@
     },
     "sharedData": {
         "title": "Shared files",
-        "description_with_files": "Only the members of your group can download the files. <1>Read more about sharing files</1>.",
+        "description_with_files": "Only the members of your {{entityType}} can download the files. <1>Read more about sharing files</1>.",
+        "entity_type_group": "group",
+        "entity_type_landscape": "landscape",
         "description_without_files": "Upload your data files ({{extensions}}) and share them with the {{name}} members. Only members can download the files. <1>Read more about sharing files</1>.",
         "learn_more_url": "https://terraso.org/help/shared-files/",
         "upload_button": "Share Files",
