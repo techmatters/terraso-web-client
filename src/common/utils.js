@@ -35,5 +35,5 @@ export const countryMap = countries =>
 export const scrollToNavBar = () => {
   document
     .getElementById('main-navigation')
-    .scrollIntoView({ behavior: 'smooth' });
+    ?.scrollIntoView({ behavior: 'smooth' });
 };
