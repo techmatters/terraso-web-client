@@ -15,16 +15,25 @@ import {
 
 const EditableText = props => {
   const { t } = useTranslation();
-  const { id, value, label, processing, addMessage, viewProps, onSave } = props;
+  const {
+    id,
+    value,
+    label,
+    processing,
+    addMessage,
+    viewProps,
+    onSave,
+    isEditing,
+    setIsEditing,
+  } = props;
   const [isHovering, setIsHovering] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(value);
 
   const reset = useCallback(() => {
     setEditedValue(value);
     setIsEditing(false);
     setIsHovering(false);
-  }, [value]);
+  }, [value, setIsEditing]);
 
   const handleSave = () => {
     if (editedValue === value) {
@@ -70,7 +79,7 @@ const EditableText = props => {
         >
           {t('common.editable_text_save')}
         </LoadingButton>
-        <Button disabled={processing} onClick={() => setIsEditing(false)}>
+        <Button disabled={processing} onClick={reset}>
           {t('common.editable_text_cancel')}
         </Button>
       </Stack>
