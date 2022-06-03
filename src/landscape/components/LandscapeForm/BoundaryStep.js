@@ -8,7 +8,7 @@ import PinDropIcon from '@mui/icons-material/PinDrop';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { Button, Link, Paper, Stack, Typography } from '@mui/material';
 
-import { countryNameForCode } from 'common/utils';
+import { countryNameForCode, scrollToNavBar } from 'common/utils';
 import PageHeader from 'layout/PageHeader';
 
 import { getPlaceInfoByName } from 'gis/gisService';
@@ -160,7 +160,10 @@ const BoundaryOptions = props => {
             key={index}
             fullWidth
             variant="outlined"
-            onClick={option.onClick}
+            onClick={() => {
+              option.onClick();
+              scrollToNavBar();
+            }}
             sx={{
               justifyContent: 'start',
               padding: 4,

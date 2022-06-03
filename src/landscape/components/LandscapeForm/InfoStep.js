@@ -7,7 +7,12 @@ import * as yup from 'yup';
 
 import { MenuItem, Select, Typography } from '@mui/material';
 
-import { countriesList, countryMap, transformURL } from 'common/utils';
+import {
+  countriesList,
+  countryMap,
+  scrollToNavBar,
+  transformURL,
+} from 'common/utils';
 import Form from 'forms/components/Form';
 import PageHeader from 'layout/PageHeader';
 
@@ -117,6 +122,7 @@ const InfoStep = props => {
         validationSchema={VALIDATION_SCHEMA}
         onSave={updatedLandscape => {
           setUpdatedLandscape(updatedLandscape);
+          scrollToNavBar();
         }}
         saveLabel={
           isNew ? 'landscape.form_info_next' : 'landscape.form_save_label'
