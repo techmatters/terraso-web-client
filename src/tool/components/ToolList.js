@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Typography } from '@mui/material';
 
-import { useDocumentTitle } from 'common/document';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 
@@ -18,6 +18,7 @@ const ToolList = ({ tools }) => {
   const toolList = ['kobo'];
 
   useDocumentTitle(t('tool.list_document_title'));
+  useDocumentDescription(t('tool.list_document_description'));
 
   return (
     <PageContainer>

@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Alert, Grid, Stack } from '@mui/material';
 
 import LoaderCard from 'common/components/LoaderCard';
-import { useDocumentTitle } from 'common/document';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 
@@ -51,6 +51,7 @@ const Home = () => {
   const { groups, landscapes, error, fetching } = home;
 
   useDocumentTitle(t('home.document_title'), false, true);
+  useDocumentDescription(t('home.document_description'));
 
   useEffect(() => {
     dispatch(fetchHomeData(user.email));
