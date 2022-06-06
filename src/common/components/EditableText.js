@@ -102,8 +102,8 @@ const EditableText = props => {
       direction="row"
       justifyContent="space-between"
       tabIndex="0"
-      onKeyDown={e => {
-        if (e.keyCode === 13) {
+      onKeyDown={event => {
+        if (event.keyCode === 13 || event.keyCode === 32) {
           setIsEditing(true);
         }
       }}
