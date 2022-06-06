@@ -17,6 +17,8 @@ import { fetchAuthURLs } from 'account/accountSlice';
 
 import logo from 'assets/logo.svg';
 
+import theme from 'theme';
+
 const appendReferrer = (url, referrer) =>
   referrer ? `${url}&state=${referrer}` : url;
 
@@ -42,7 +44,7 @@ const AccountForm = () => {
       direction="column"
       alignItems="center"
       justifyContent="center"
-      style={{ height: '80vh' }}
+      style={{ height: '80vh', margin: `auto ${theme.spacing(2)}` }}
     >
       <Stack sx={{ maxWidth: 'sm' }} alignItems="center">
         <PageHeader header={t('account.welcome_to')} />
