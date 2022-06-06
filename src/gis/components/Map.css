@@ -27,3 +27,9 @@
   background-size: 900px 45px;
   background-position: -413px;
 }
+
+@media screen and (max-width: 600px) {
+    .leaflet-geosearch-bar {
+        width: 65%;
+    }
+}

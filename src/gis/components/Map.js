@@ -35,7 +35,7 @@ L.Icon.Default.mergeOptions({
 const LeafletDraw = props => {
   const map = useMap();
   const { setPinLocation } = props;
-  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+  const isSmall = useMediaQuery(theme.breakpoints.down('xs'));
 
   useEffect(() => {
     const options = {
