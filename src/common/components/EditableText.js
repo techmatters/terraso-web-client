@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
@@ -54,9 +54,17 @@ const EditableText = props => {
     }
   };
 
+  const editableInput = useRef(null);
+
   useEffect(() => {
     reset();
   }, [value, reset]);
+
+  useEffect(() => {
+    if (isEditing) {
+      editableInput.current.querySelector('input').focus();
+    }
+  }, [isEditing]);
 
   if (isEditing) {
     return (
@@ -68,6 +76,7 @@ const EditableText = props => {
           id={id}
           size="small"
           value={editedValue}
+          ref={editableInput}
           onChange={event => setEditedValue(event.target.value)}
           onKeyDown={onKeyDown}
           sx={{ flexGrow: 1 }}
@@ -92,6 +101,12 @@ const EditableText = props => {
       role="button"
       direction="row"
       justifyContent="space-between"
+      tabIndex="0"
+      onKeyDown={e => {
+        if (e.keyCode === 13) {
+          setIsEditing(true);
+        }
+      }}
       onClick={() => setIsEditing(true)}
       onMouseOver={() => setIsHovering(true)}
       onMouseOut={() => setIsHovering(false)}
