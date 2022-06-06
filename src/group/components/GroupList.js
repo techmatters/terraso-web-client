@@ -8,7 +8,7 @@ import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import { Button, Link, Typography } from '@mui/material';
 
 import TableResponsive from 'common/components/TableResponsive';
-import { useDocumentTitle } from 'common/document';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
@@ -61,6 +61,7 @@ const GroupList = () => {
   const { groups, fetching, message } = useSelector(state => state.group.list);
 
   useDocumentTitle(t('group.list_document_title'));
+  useDocumentDescription(t('group.list_document_description'));
 
   useEffect(() => {
     dispatch(fetchGroups());

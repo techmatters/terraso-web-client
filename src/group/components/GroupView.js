@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 
 import SocialShare from 'common/components/SocialShare.js';
-import { useDocumentTitle } from 'common/document';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
@@ -129,6 +129,13 @@ const GroupView = () => {
 
   useDocumentTitle(
     t('group.view_document_title', { name: _.get('name', group) }),
+    fetching
+  );
+
+  useDocumentDescription(
+    t('group.view_document_description', {
+      description: _.get('description', group),
+    }),
     fetching
   );
 

@@ -8,7 +8,7 @@ import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import { Button, Link, Typography } from '@mui/material';
 
 import TableResponsive from 'common/components/TableResponsive';
-import { useDocumentTitle } from 'common/document';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import { countryNameForCode } from 'common/utils';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
@@ -62,6 +62,7 @@ const LandscapeList = () => {
   const { landscapes, fetching } = useSelector(state => state.landscape.list);
 
   useDocumentTitle(t('landscape.list_document_title'));
+  useDocumentDescription(t('landscape.list_document_description'));
 
   useEffect(() => {
     dispatch(fetchLandscapes());

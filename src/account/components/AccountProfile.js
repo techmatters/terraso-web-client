@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 
-import { useDocumentTitle } from 'common/document';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import Form from 'forms/components/Form';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
@@ -93,6 +93,7 @@ const AccountProfile = () => {
   );
 
   useDocumentTitle(t('account.profile_document_title'));
+  useDocumentDescription(t('account.profile_document_description'));
 
   const onSave = updatedProfile => {
     // Save user data

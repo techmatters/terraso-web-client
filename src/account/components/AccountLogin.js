@@ -8,7 +8,7 @@ import AppleIcon from '@mui/icons-material/Apple';
 import GoogleIcon from '@mui/icons-material/Google';
 import { Button, Stack } from '@mui/material';
 
-import { useDocumentTitle } from 'common/document';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePicker from 'localization/components/LocalePicker';
@@ -30,6 +30,7 @@ const AccountForm = () => {
   const referrer = searchParams.get('referrer');
 
   useDocumentTitle(t('account.login_document_title'));
+  useDocumentDescription(t('account.login_document_description'));
 
   useEffect(() => {
     dispatch(fetchAuthURLs());
