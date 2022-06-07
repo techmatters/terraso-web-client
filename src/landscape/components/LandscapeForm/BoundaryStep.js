@@ -124,6 +124,11 @@ const BoundaryOptions = props => {
   const { t } = useTranslation();
   const { landscape, setOption, setActiveStepIndex, save } = props;
 
+  const onOptionClick = option => () => {
+    option.onClick();
+    scrollToNavBar();
+  };
+
   const options = [
     {
       Icon: UploadFileIcon,
@@ -141,6 +146,7 @@ const BoundaryOptions = props => {
       onClick: () => save(landscape),
     },
   ];
+
   return (
     <>
       <PageHeader
@@ -160,10 +166,7 @@ const BoundaryOptions = props => {
             key={index}
             fullWidth
             variant="outlined"
-            onClick={() => {
-              option.onClick();
-              scrollToNavBar();
-            }}
+            onClick={onOptionClick(option)}
             sx={{
               justifyContent: 'start',
               padding: 4,
