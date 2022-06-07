@@ -187,7 +187,12 @@ const SharedDataEntry = ({ file }) => {
             />
           </Restricted>
         </Grid>
-        <Grid item xs={9} md={10} order={{ xs: 9, md: 7 }}>
+        <Grid
+          item
+          xs={isEditingDescription ? 12 : 9}
+          md={10}
+          order={{ xs: 9, md: 7 }}
+        >
           <Restricted
             permission="sharedData.edit"
             resource={{ group, file }}
