@@ -7,7 +7,12 @@ import * as yup from 'yup';
 
 import { MenuItem, Select, Typography } from '@mui/material';
 
-import { countriesList, countryMap, transformURL } from 'common/utils';
+import {
+  countriesList,
+  countryMap,
+  scrollToNavBar,
+  transformURL,
+} from 'common/utils';
 import Form from 'forms/components/Form';
 import PageHeader from 'layout/PageHeader';
 
@@ -103,6 +108,11 @@ const InfoStep = props => {
     ? t('landscape.form_edit_title', { name: _.getOr('', 'name', landscape) })
     : t('landscape.form_new_title');
 
+  const onSave = updatedLandscape => {
+    setUpdatedLandscape(updatedLandscape);
+    scrollToNavBar();
+  };
+
   return (
     <>
       <PageHeader
@@ -115,9 +125,7 @@ const InfoStep = props => {
         fields={FORM_FIELDS}
         values={landscape}
         validationSchema={VALIDATION_SCHEMA}
-        onSave={updatedLandscape => {
-          setUpdatedLandscape(updatedLandscape);
-        }}
+        onSave={onSave}
         saveLabel={
           isNew ? 'landscape.form_info_next' : 'landscape.form_save_label'
         }

@@ -8,7 +8,7 @@ import PinDropIcon from '@mui/icons-material/PinDrop';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { Button, Link, Paper, Stack, Typography } from '@mui/material';
 
-import { countryNameForCode } from 'common/utils';
+import { countryNameForCode, scrollToNavBar } from 'common/utils';
 import PageHeader from 'layout/PageHeader';
 
 import { getPlaceInfoByName } from 'gis/gisService';
@@ -124,6 +124,11 @@ const BoundaryOptions = props => {
   const { t } = useTranslation();
   const { landscape, setOption, setActiveStepIndex, save } = props;
 
+  const onOptionClick = option => () => {
+    option.onClick();
+    scrollToNavBar();
+  };
+
   const options = [
     {
       Icon: UploadFileIcon,
@@ -141,6 +146,7 @@ const BoundaryOptions = props => {
       onClick: () => save(landscape),
     },
   ];
+
   return (
     <>
       <PageHeader
@@ -160,7 +166,7 @@ const BoundaryOptions = props => {
             key={index}
             fullWidth
             variant="outlined"
-            onClick={option.onClick}
+            onClick={onOptionClick(option)}
             sx={{
               justifyContent: 'start',
               padding: 4,
