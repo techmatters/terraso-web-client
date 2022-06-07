@@ -108,6 +108,11 @@ const InfoStep = props => {
     ? t('landscape.form_edit_title', { name: _.getOr('', 'name', landscape) })
     : t('landscape.form_new_title');
 
+  const onSave = updatedLandscape => {
+    setUpdatedLandscape(updatedLandscape);
+    scrollToNavBar();
+  };
+
   return (
     <>
       <PageHeader
@@ -120,10 +125,7 @@ const InfoStep = props => {
         fields={FORM_FIELDS}
         values={landscape}
         validationSchema={VALIDATION_SCHEMA}
-        onSave={updatedLandscape => {
-          setUpdatedLandscape(updatedLandscape);
-          scrollToNavBar();
-        }}
+        onSave={onSave}
         saveLabel={
           isNew ? 'landscape.form_info_next' : 'landscape.form_save_label'
         }
