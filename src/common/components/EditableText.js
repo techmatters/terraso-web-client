@@ -54,7 +54,7 @@ const EditableText = props => {
     }
   };
 
-  const editableInput = useRef(null);
+  const editableInputRef = useRef(null);
 
   useEffect(() => {
     reset();
@@ -62,7 +62,7 @@ const EditableText = props => {
 
   useEffect(() => {
     if (isEditing) {
-      editableInput.current.querySelector('input').focus();
+      editableInputRef.current.focus();
     }
   }, [isEditing]);
 
@@ -76,7 +76,7 @@ const EditableText = props => {
           id={id}
           size="small"
           value={editedValue}
-          ref={editableInput}
+          inputRef={editableInputRef}
           onChange={event => setEditedValue(event.target.value)}
           onKeyDown={onKeyDown}
           sx={{ flexGrow: 1 }}
