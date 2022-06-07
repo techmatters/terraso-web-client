@@ -2,7 +2,6 @@ import _ from 'lodash/fp';
 
 import {
   accountMembership,
-  dataEntries,
   groupFields,
   groupMembers,
   groupMembersInfo,
@@ -11,7 +10,6 @@ import * as terrasoApi from 'terrasoBackend/api';
 
 import {
   extractAccountMembership,
-  extractDataEntries,
   extractMembers,
   extractMembersInfo,
 } from './groupUtils';
@@ -47,7 +45,6 @@ export const fetchGroupToView = (slug, currentUser) => {
             ...groupFields
             ...groupMembersInfo
             ...accountMembership
-            ...dataEntries
           }
         }
       }
@@ -55,7 +52,6 @@ export const fetchGroupToView = (slug, currentUser) => {
     ${groupFields}
     ${groupMembersInfo}
     ${accountMembership}
-    ${dataEntries}
   `;
   return terrasoApi
     .requestGraphQL(query, { slug, accountEmail: currentUser.email })
@@ -65,7 +61,6 @@ export const fetchGroupToView = (slug, currentUser) => {
       ..._.omit(['memberships', 'accountMembership'], group),
       membersInfo: extractMembersInfo(group),
       accountMembership: extractAccountMembership(group),
-      dataEntries: extractDataEntries(group),
     }));
 };
 

@@ -1,5 +1,7 @@
 import _ from 'lodash/fp';
 
+import { dataEntries } from 'group/groupFragments';
+import { extractDataEntries } from 'group/groupUtils';
 import * as terrasoApi from 'terrasoBackend/api';
 
 export const uploadSharedData = async ({ groupSlug, file }) => {
@@ -51,4 +53,24 @@ export const updateSharedData = ({ file }) => {
   return terrasoApi.requestGraphQL(query, {
     input: file,
   });
+};
+
+export const fetchGroupSharedData = slug => {
+  const query = `
+    query group($slug: String!){
+      groups(slug: $slug) {
+        edges {
+          node {
+            ...dataEntries
+          }
+        }
+      }
+    }
+    ${dataEntries}
+  `;
+  return terrasoApi
+    .requestGraphQL(query, { slug })
+    .then(_.get('groups.edges[0].node'))
+    .then(group => group || Promise.reject('not_found'))
+    .then(group => extractDataEntries(group));
 };

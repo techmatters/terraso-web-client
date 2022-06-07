@@ -14,7 +14,7 @@ const Restricted = props => {
     LoadingComponent,
     children,
   } = props;
-  const [loading, allowed] = usePermission(permission, resource);
+  const { loading, allowed } = usePermission(permission, resource);
 
   if (loading) {
     return LoadingComponent ? (

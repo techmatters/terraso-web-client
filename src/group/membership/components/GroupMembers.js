@@ -45,7 +45,7 @@ const Header = () => {
     dispatch(fetchGroupForMembers(slug));
   }, [dispatch, slug]);
 
-  const [loadingPermissions, allowed] = usePermission(
+  const { loading: loadingPermissions, allowed } = usePermission(
     'group.manageMembers',
     group
   );

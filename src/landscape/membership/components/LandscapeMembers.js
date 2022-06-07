@@ -30,7 +30,7 @@ const MemberLeaveButton = withProps(LandscapeMemberLeave, {
 
 const Header = ({ landscape, fetching }) => {
   const { t } = useTranslation();
-  const [loadingPermissions, allowed] = usePermission(
+  const { loading: loadingPermissions, allowed } = usePermission(
     'group.manageMembers',
     landscape
   );

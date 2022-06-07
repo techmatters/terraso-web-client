@@ -12,7 +12,7 @@ export const landscapeFields = `
   }
 `;
 
-export const defaultGroup = (groupFields = '') => `
+export const defaultGroup = `
   fragment defaultGroup on LandscapeNode {
     defaultGroup: associatedGroups(isDefaultLandscapeGroup: true) {
       edges {
@@ -22,7 +22,6 @@ export const defaultGroup = (groupFields = '') => `
             slug
             ...groupMembersInfo
             ...accountMembership
-            ${groupFields}
           }
         }
       }

@@ -12,6 +12,10 @@ export const UPLOAD_STATUS_ERROR = 'error';
 const initialState = {
   uploads: null,
   processing: {},
+  list: {
+    fetching: true,
+    data: null,
+  },
 };
 
 export const uploadSharedData = createAsyncThunk(
@@ -37,6 +41,10 @@ export const updateSharedData = createAsyncThunk(
     content: 'sharedData.updated',
     params: { name: file.name },
   })
+);
+export const fetchGroupSharedData = createAsyncThunk(
+  'sharedData/fetchGroupSharedData',
+  sharedDataService.fetchGroupSharedData
 );
 
 const setProcessing = (state, action) =>
@@ -91,6 +99,13 @@ const sharedDataSlice = createSlice({
         },
         state
       ),
+    [fetchGroupSharedData.fulfilled]: (state, action) => ({
+      ...state,
+      list: {
+        fetching: false,
+        data: action.payload,
+      },
+    }),
   },
 });
 

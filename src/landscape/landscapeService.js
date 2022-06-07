@@ -1,12 +1,8 @@
 import _ from 'lodash/fp';
 
 import * as gisService from 'gis/gisService';
-import { accountMembership, dataEntries } from 'group/groupFragments';
-import {
-  extractAccountMembership,
-  extractDataEntries,
-  extractMembersInfo,
-} from 'group/groupUtils';
+import { accountMembership } from 'group/groupFragments';
+import { extractAccountMembership, extractMembersInfo } from 'group/groupUtils';
 import { defaultGroup, landscapeFields } from 'landscape/landscapeFragments';
 import * as terrasoApi from 'terrasoBackend/api';
 
@@ -51,7 +47,6 @@ const getDefaultGroup = landscape => {
   return {
     ..._.pick(['id', 'slug'], group),
     membersInfo: extractMembersInfo(group),
-    dataEntries: extractDataEntries(group),
   };
 };
 
@@ -68,8 +63,7 @@ export const fetchLandscapeToView = (slug, currentUser) => {
       }
     }
     ${landscapeFields}
-    ${dataEntries}
-    ${defaultGroup('...dataEntries')}
+    ${defaultGroup}
   `;
   return (
     terrasoApi
@@ -110,7 +104,7 @@ export const fetchLandscapeToUploadSharedData = (slug, currentUser) => {
       }
     }
     ${landscapeFields}
-    ${defaultGroup()}
+    ${defaultGroup}
   `;
   return terrasoApi
     .requestGraphQL(query, { slug, accountEmail: currentUser.email })
@@ -135,7 +129,7 @@ export const fetchLandscapes = (params, currentUser) => {
       }
     }
     ${landscapeFields}
-    ${defaultGroup()}
+    ${defaultGroup}
   `;
   return terrasoApi
     .requestGraphQL(query, { accountEmail: currentUser.email })
