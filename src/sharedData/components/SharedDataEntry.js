@@ -12,6 +12,7 @@ import { Button, Grid, ListItem, Stack, Typography } from '@mui/material';
 
 import ConfirmButton from 'common/components/ConfirmButton';
 import EditableText from 'common/components/EditableText';
+import { useAnalytics } from 'monitoring/analytics';
 import Restricted from 'permissions/components/Restricted';
 
 import { useGroupContext } from 'group/groupContext';
@@ -59,11 +60,12 @@ const StackRow = props => (
 
 const SharedDataEntry = ({ file }) => {
   const { i18n, t } = useTranslation();
-  const { group, updateOwner } = useGroupContext();
+  const { group, owner, updateOwner } = useGroupContext();
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const processing = useSelector(_.get(`sharedData.processing.${file.id}`));
   const dispatch = useDispatch();
+  const { trackEvent } = useAnalytics();
 
   useEffect(() => {
     dispatch(resetProcessing(file.id));
@@ -71,13 +73,15 @@ const SharedDataEntry = ({ file }) => {
 
   const handleDownload = e => {
     e.preventDefault();
+    trackEvent('downloadFile', { props: { owner: owner.slug } });
     window.open(file.url, '_blank');
   };
 
   const onConfirm = () => {
-    dispatch(deleteSharedData({ groupSlug: group.slug, file })).then(() =>
-      updateOwner()
-    );
+    dispatch(deleteSharedData({ groupSlug: group.slug, file })).then(() => {
+      updateOwner();
+      trackEvent('deleteFile', { props: { owner: owner.slug } });
+    });
   };
 
   const onUpdate = field => value => {
@@ -88,7 +92,10 @@ const SharedDataEntry = ({ file }) => {
           [field]: value,
         },
       })
-    ).then(() => updateOwner());
+    ).then(() => {
+      updateOwner();
+      trackEvent('editFile', { props: { owner: owner.slug } });
+    });
   };
 
   const description = _.get('description', file);
