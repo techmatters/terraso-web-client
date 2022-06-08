@@ -84,36 +84,44 @@ const baseViewTest = async () => {
       })),
   };
 
-  terrasoApi.requestGraphQL.mockReturnValueOnce(
-    Promise.resolve({
-      landscapes: {
-        edges: [
-          {
-            node: {
-              name: 'Landscape Name',
-              description: 'Landscape Description',
-              website: 'www.landscape.org',
-              location: 'EC',
-              defaultGroup: {
-                edges: [
-                  {
-                    node: {
-                      group: {
-                        slug: 'test-group-slug',
-                        memberships,
-                        accountMembership,
-                        dataEntries,
-                      },
+  terrasoApi.requestGraphQL.mockResolvedValueOnce({
+    landscapes: {
+      edges: [
+        {
+          node: {
+            name: 'Landscape Name',
+            description: 'Landscape Description',
+            website: 'www.landscape.org',
+            location: 'EC',
+            defaultGroup: {
+              edges: [
+                {
+                  node: {
+                    group: {
+                      slug: 'test-group-slug',
+                      memberships,
+                      accountMembership,
                     },
                   },
-                ],
-              },
+                },
+              ],
             },
           },
-        ],
-      },
-    })
-  );
+        },
+      ],
+    },
+  });
+  terrasoApi.requestGraphQL.mockResolvedValueOnce({
+    groups: {
+      edges: [
+        {
+          node: {
+            dataEntries,
+          },
+        },
+      ],
+    },
+  });
   await setup();
 
   // Landscape info
@@ -210,7 +218,7 @@ test('LandscapeView: Update Shared Data', async () => {
       })
     )
   );
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[1];
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
 
   expect(saveCall[1].input).toEqual({
     id: 'de-3',

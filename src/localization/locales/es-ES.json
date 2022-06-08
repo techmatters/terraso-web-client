@@ -298,7 +298,8 @@
         "description_update": "Actualizar descripción",
         "delete_label": "Elminar “{{name}}”",
         "download_label": "Descargar “{{name}}”",
-        "invalid_extension": "La extensión del archivo ({{file.resourceType}}) no coincide con el contenido del archivo"
+        "invalid_extension": "La extensión del archivo ({{file.resourceType}}) no coincide con el contenido del archivo",
+        "loader_label": "Cargando…"
     },
     "share": {
         "button": "Comparte",

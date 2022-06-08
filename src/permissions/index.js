@@ -47,5 +47,5 @@ export const usePermission = (permission, resource) => {
     };
   }, [isAllowedTo, permission, resource, user]);
 
-  return [loading, allowed];
+  return { loading, allowed };
 };
