@@ -280,7 +280,7 @@
         "delete_label": "Delete “{{name}}”",
         "download_label": "Download “{{name}}”",
         "invalid_extension": "The file extension ({{file.resourceType}}) does not match the file's contents",
-        "loader_label": "[TODO] Loading files"
+        "loader_label": "Loading…"
     },
     "common": {
         "dialog_cancel_label": "Cancel",
