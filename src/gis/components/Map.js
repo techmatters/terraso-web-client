@@ -122,9 +122,11 @@ const MapPolygon = props => {
 const Location = props => {
   const map = useMap();
   const markerRef = useRef(null);
-  const [pinLocation, setPinLocation] = useState();
+  const { onPinLocationChange, enableSearch, enableDraw, center } = props;
+  const [pinLocation, setPinLocation] = useState(
+    center ? { lat: center[0], lng: center[1] } : null
+  );
   const [boundingBox, setBoundingBox] = useState();
-  const { onPinLocationChange, enableSearch, enableDraw } = props;
 
   const markerEventHandlers = useMemo(
     () => ({
@@ -216,6 +218,7 @@ const Map = props => {
         onPinLocationChange={props.onPinLocationChange}
         enableSearch={props.enableSearch}
         enableDraw={props.enableDraw}
+        center={props.center}
       />
       {props.enableSearch && (
         <ZoomControl position={isSmall ? 'bottomleft' : 'topleft'} />
