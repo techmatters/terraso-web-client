@@ -31,6 +31,7 @@ import { styled } from '@mui/system';
 
 import BaseDropZone from 'common/components/DropZone';
 import FormField from 'forms/components/FormField';
+import { useAnalytics } from 'monitoring/analytics';
 
 import {
   UPLOAD_STATUS_ERROR,
@@ -231,6 +232,7 @@ const SharedDataUpload = props => {
   const uploads = useSelector(state => state.sharedData.uploads);
   const [files, setFiles] = useState({});
   const [errors, setErrors] = useState({});
+  const { trackEvent } = useAnalytics();
 
   const { apiErrors, apiSuccesses, apiUploading } = useMemo(() => {
     const byStatus = _.flow(
@@ -327,9 +329,10 @@ const SharedDataUpload = props => {
     const pendingFiles = _.toPairs(files).filter(
       ([fileId]) => !_.has(fileId, apiSuccesses)
     );
-    pendingFiles.forEach(([fileId, file]) =>
-      dispatch(uploadSharedData({ groupSlug, file }))
-    );
+    pendingFiles.forEach(([fileId, file]) => {
+      dispatch(uploadSharedData({ groupSlug, file }));
+      trackEvent('uploadFile', { props: { owner: groupSlug } });
+    });
   };
 
   const hasBlockingErrors = !_.isEmpty(
