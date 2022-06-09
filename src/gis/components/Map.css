@@ -29,7 +29,7 @@
 }
 
 @media screen and (max-width: 600px) {
-    .leaflet-geosearch-bar {
-        width: 65%;
-    }
+  .leaflet-geosearch-bar {
+    width: 65%;
+  }
 }
