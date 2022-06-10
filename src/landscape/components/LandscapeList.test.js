@@ -148,7 +148,7 @@ test('LandscapeList: Search', async () => {
   await baseListTest();
 
   const searchInput = screen.getByRole('textbox', {
-    name: 'Enter a landscape name',
+    name: 'Search landscapes',
   });
   expect(searchInput).toBeInTheDocument();
   fireEvent.change(searchInput, { target: { value: 'Landscape Name 1' } });
