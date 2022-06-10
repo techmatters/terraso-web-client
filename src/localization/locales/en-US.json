@@ -303,7 +303,7 @@
         "refreshing_loader_label": "Refreshing",
         "map_search_placeholder": "Enter a city, town or region",
         "table_search_filter_results": "{{rows.length}} match found for “{{query}}“",
-        "table_search_filter_clear": "[TODO] Clear search query",
+        "table_search_filter_clear": "Clear search",
         "table_search_filter_search": "[TODO] Filter results"
     },
     "share": {
