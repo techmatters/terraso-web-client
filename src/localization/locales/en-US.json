@@ -86,7 +86,7 @@
         "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). There should at least be one manager.",
         "unique": "The group “{{body.variables.input.name}}” already exists.",
         "shared_data_upload_title": "Share Files with {{name}}",
-        "list_search_placeholder": "Enter a group name"
+        "list_search_placeholder": "Search groups"
     },
     "tool": {
         "requirements": "System requirements",
