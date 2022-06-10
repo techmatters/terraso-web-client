@@ -150,6 +150,9 @@ const GroupList = () => {
       <TableResponsive
         columns={columns}
         rows={groups}
+        searchEnabled
+        searchPlaceholder={t('group.list_search_placeholder')}
+        searchFilterField="name"
         emptyMessage={t('group.list_empty')}
         tableProps={{
           initialSort: [
