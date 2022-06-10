@@ -250,7 +250,7 @@
         "form_name_placeholder": "Your landscape’s official name",
         "boundaries_file_no_accepted": "The file(s) cannot be added.",
         "shared_data_upload_title": "Share Files with {{name}}",
-        "list_search_placeholder": "Enter a landscape name",
+        "list_search_placeholder": "Search landscapes",
         "list_search_manager_help_url": "https://terraso.org/help/landscape-manager/"
     },
     "sharedData": {
