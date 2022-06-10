@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 
 import _ from 'lodash/fp';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 
-import { Button, Link, Typography } from '@mui/material';
+import { Button, Link, Stack, Typography } from '@mui/material';
 
 import TableResponsive from 'common/components/TableResponsive';
 import { useDocumentTitle } from 'common/document';
@@ -142,6 +142,30 @@ const LandscapeList = () => {
       <TableResponsive
         columns={columns}
         rows={landscapes}
+        searchEnabled
+        searchPlaceholder={t('landscape.list_search_placeholder')}
+        searchFilterField="name"
+        emptyMessage={
+          <Trans i18nKey="landscape.list_empty">
+            <Stack spacing={2}>
+              <Typography>First</Typography>
+              <Typography>
+                Prefix
+                <Link component={RouterLink} to={`/landscapes/new`}>
+                  to add
+                </Link>
+                and
+                <Link
+                  href={t('landscape.list_search_manager_help_url')}
+                  target="_blank"
+                >
+                  to help
+                </Link>
+                .
+              </Typography>
+            </Stack>
+          </Trans>
+        }
         tableProps={{
           initialSort: [
             {
@@ -152,7 +176,6 @@ const LandscapeList = () => {
           searchParams: Object.fromEntries(searchParams.entries()),
           onSearchParamsChange: setSearchParams,
           localeText: {
-            noRowsLabel: t('landscape.list_empty'),
             footerPaginationRowsPerPage: t('common.data_grid_pagination_of'),
           },
         }}

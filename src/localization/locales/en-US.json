@@ -202,7 +202,7 @@
         "not_found": "Landscape not found",
         "list_column_website": "Website",
         "list_column_members": "Members",
-        "list_empty": "No Landscapes",
+        "list_empty": "<0><0>First, double check the spelling of the landscape name.</0><1>If your landscape is missing in Terraso, you can <1>add it below</1> and <3>become the landscape manager</3>.</1></0>",
         "members_list_leave": "Leave",
         "members_list_remove": "Remove",
         "form_email_info": "This email address will be used by interested people to connect with you and your landscape.",
@@ -248,7 +248,9 @@
         "form_location_select": "Select location",
         "form_name_placeholder": "Your landscape’s official name",
         "boundaries_file_no_accepted": "The file(s) cannot be added.",
-        "shared_data_upload_title": "Share Files with {{name}}"
+        "shared_data_upload_title": "Share Files with {{name}}",
+        "list_search_placeholder": "Enter a landscape name",
+        "list_search_manager_help_url": "https://terraso.org/help/landscape-manager/"
     },
     "sharedData": {
         "title": "Shared files",
@@ -298,7 +300,10 @@
         "editable_text_save": "Save",
         "editable_text_cancel": "Cancel",
         "refreshing_loader_label": "Refreshing",
-        "map_search_placeholder": "Enter a city, town or region"
+        "map_search_placeholder": "Enter a city, town or region",
+        "table_search_filter_results": "{{rows.length}} match found for “{{query}}“",
+        "table_search_filter_clear": "[TODO] Clear search query",
+        "table_search_filter_search": "[TODO] Filter results"
     },
     "share": {
         "button": "Share",

@@ -1,11 +1,27 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
 
-import { Card, Grid, List, ListItem, Stack, Typography } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import SearchIcon from '@mui/icons-material/Search';
+import {
+  Card,
+  Divider,
+  Grid,
+  IconButton,
+  List,
+  ListItem,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 
 import BaseTable from 'common/components/Table';
 import ResponsiveSwitch from 'layout/ResponsiveSwitch';
+
+const SEARCH_DEBOUNCE = 100; // milliseconds
 
 const Table = props => {
   const { columns, rows, tableProps } = props;
@@ -95,12 +111,134 @@ const Cards = props => {
   );
 };
 
-const TableResponsive = props => {
+const SearchBar = props => {
+  const { t } = useTranslation();
+  const [query, setQuery] = useState('');
+  const {
+    rows,
+    searchEnabled,
+    searchPlaceholder,
+    searchFilterField,
+    filteredRows,
+    setFilterdRows,
+  } = props;
+
+  const updateFilteredRows = _.debounce(SEARCH_DEBOUNCE, () => {
+    if (!query) {
+      setFilterdRows(rows);
+      return;
+    }
+    setFilterdRows(
+      rows.filter(
+        row =>
+          _.get(searchFilterField, row)
+            .toLowerCase()
+            .indexOf(query.toLowerCase()) !== -1
+      )
+    );
+  });
+
+  useEffect(
+    () => updateFilteredRows(),
+    [rows, query, searchFilterField, updateFilteredRows]
+  );
+
+  if (!searchEnabled) {
+    return null;
+  }
+
+  const handleChange = event => {
+    setQuery(event.target.value);
+  };
+
   return (
-    <ResponsiveSwitch
-      desktop={<Table {...props} />}
-      mobile={<Cards {...props} />}
-    />
+    <Stack
+      direction={{ xs: 'column', md: 'row' }}
+      spacing={{ xs: 1 }}
+      justifyContent="space-between"
+      alignItems="center"
+      sx={{ width: '100%' }}
+    >
+      <Typography sx={{ flexGrow: 3, width: { xs: '100%' } }}>
+        {query &&
+          t('common.table_search_filter_results', {
+            rows: filteredRows,
+            query,
+          })}
+      </Typography>
+      <TextField
+        size="small"
+        variant="outlined"
+        placeholder={searchPlaceholder}
+        onChange={handleChange}
+        value={query}
+        sx={{ flexGrow: 2, width: { xs: '100%' } }}
+        InputProps={{
+          sx: {
+            marginBottom: 2,
+            padding: 0,
+          },
+          endAdornment: (
+            <>
+              {query && (
+                <IconButton
+                  onClick={() => setQuery('')}
+                  sx={{ p: '10px' }}
+                  aria-label={t('common.table_search_filter_clear')}
+                >
+                  <CloseIcon />
+                </IconButton>
+              )}
+              <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+              <IconButton
+                sx={{ p: '10px' }}
+                aria-label={t('common.table_search_filter_search')}
+              >
+                <SearchIcon />
+              </IconButton>
+            </>
+          ),
+        }}
+      />
+    </Stack>
+  );
+};
+
+const EmptyList = props => {
+  return (
+    <Paper variant="outlined" sx={{ padding: 3 }}>
+      {props.emptyMessage}
+    </Paper>
+  );
+};
+
+const TableResponsive = props => {
+  const [filteredRows, setFilterdRows] = useState(props.rows);
+
+  const tableProps = useMemo(
+    () => ({
+      ..._.omit('rows', props),
+      rows: filteredRows,
+    }),
+    [filteredRows, props]
+  );
+
+  return (
+    <>
+      <SearchBar
+        {...props}
+        filteredRows={filteredRows}
+        setFilterdRows={setFilterdRows}
+      />
+      {_.isEmpty(filteredRows) ? (
+        <EmptyList {...props} />
+      ) : (
+        <ResponsiveSwitch
+          desktop={<Table {...tableProps} />}
+          mobile={<Cards {...tableProps} />}
+        />
+      )}
+    </>
   );
 };
 
