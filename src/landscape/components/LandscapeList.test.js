@@ -151,8 +151,10 @@ test('LandscapeList: Search', async () => {
     name: 'Search landscapes',
   });
   expect(searchInput).toBeInTheDocument();
-  fireEvent.change(searchInput, { target: { value: 'Landscape Name 1' } });
-  await new Promise(r => setTimeout(r, 200));
+  await act(async () =>
+    fireEvent.change(searchInput, { target: { value: 'Landscape Name 1' } })
+  );
+  await new Promise(r => setTimeout(r, 300));
   const rows = screen.getAllByRole('row');
   expect(rows.length).toBe(7); // 10 to 15 displayed + header
 });
