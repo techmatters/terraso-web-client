@@ -87,7 +87,7 @@ const Cards = props => {
 
   return (
     <List>
-      {rows.map((row, index) => (
+      {rows.map(row => (
         <ListItem
           key={row.id}
           sx={theme => ({ padding: 0, marginBottom: theme.spacing(2) })}
@@ -164,6 +164,7 @@ const SearchBar = props => {
         {query &&
           t('common.table_search_filter_results', {
             rows: filteredRows,
+            count: filteredRows.length,
             query,
           })}
       </Typography>
@@ -195,10 +196,7 @@ const SearchBar = props => {
                 </IconButton>
               )}
               <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-              <IconButton
-                sx={{ p: '10px' }}
-                aria-label={t('common.table_search_filter_search')}
-              >
+              <IconButton aria-label={searchPlaceholder}>
                 <SearchIcon />
               </IconButton>
             </>

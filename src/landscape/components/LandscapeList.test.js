@@ -139,19 +139,23 @@ test('LandscapeList: Empty', async () => {
     })
   );
   await setup();
-  expect(screen.getByText('First, double check the spelling of the landscape name.')).toBeInTheDocument();
+  expect(
+    screen.getByText('First, double check the spelling of the landscape name.')
+  ).toBeInTheDocument();
 });
 test('LandscapeList: Display list', baseListTest);
 test('LandscapeList: Search', async () => {
   await baseListTest();
 
-  const searchInput = screen.getByRole('textbox', { name: "Enter a landscape name"});
+  const searchInput = screen.getByRole('textbox', {
+    name: 'Enter a landscape name',
+  });
   expect(searchInput).toBeInTheDocument();
   fireEvent.change(searchInput, { target: { value: 'Landscape Name 1' } });
-  await new Promise((r) => setTimeout(r, 200));
+  await new Promise(r => setTimeout(r, 200));
   const rows = screen.getAllByRole('row');
   expect(rows.length).toBe(7); // 10 to 15 displayed + header
-})
+});
 test('LandscapeList: List sort', async () => {
   const isMember = {
     3: true,
