@@ -150,6 +150,7 @@ const GroupList = () => {
       <TableResponsive
         columns={columns}
         rows={groups}
+        emptyMessage={t('group.list_empty')}
         tableProps={{
           initialSort: [
             {
@@ -160,7 +161,6 @@ const GroupList = () => {
           searchParams: Object.fromEntries(searchParams.entries()),
           onSearchParamsChange: setSearchParams,
           localeText: {
-            noRowsLabel: t('group.list_empty'),
             footerPaginationRowsPerPage: t('common.data_grid_pagination_of'),
           },
         }}

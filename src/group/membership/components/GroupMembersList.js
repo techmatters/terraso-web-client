@@ -183,6 +183,7 @@ const GroupMembersList = () => {
       <TableResponsive
         columns={columns}
         rows={_.values(members)}
+        emptyMessage={t('group.members_list_empty')}
         cardsProps={{
           avatarRender: ({ row: member }) => (
             <AccountAvatar sx={{ width: 80, height: 80 }} user={member} />
@@ -197,9 +198,6 @@ const GroupMembersList = () => {
           ],
           searchParams: Object.fromEntries(searchParams.entries()),
           onSearchParamsChange: setSearchParams,
-          localeText: {
-            noRowsLabel: t('group.members_list_empty'),
-          },
         }}
       />
     </GroupMembersListContext.Provider>

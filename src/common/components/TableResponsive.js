@@ -10,6 +10,7 @@ import {
   Divider,
   Grid,
   IconButton,
+  InputLabel,
   List,
   ListItem,
   Paper,
@@ -166,9 +167,13 @@ const SearchBar = props => {
             query,
           })}
       </Typography>
+      <InputLabel htmlFor="table-search" className="visually-hidden">
+        {searchPlaceholder}
+      </InputLabel>
       <TextField
-        size="small"
         variant="outlined"
+        id="table-search"
+        size="small"
         placeholder={searchPlaceholder}
         onChange={handleChange}
         value={query}
