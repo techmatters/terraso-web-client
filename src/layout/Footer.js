@@ -3,7 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Grid, Link, Typography } from '@mui/material';
+import { Grid, Link } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import theme from 'theme';
@@ -63,6 +63,9 @@ const LinksContainer = props => (
       padding: 0,
       margin: 0,
     }}
+    style={{
+      maxWidth: '100%',
+    }}
     justifyContent="flex-start"
     alignItems="center"
     {...props}
@@ -84,38 +87,54 @@ const Footer = () => {
     <Grid
       container
       component="footer"
-      justifyContent="space-between"
       sx={{
-        width: '100%',
         background: palette.secondary.main,
         color: palette.white,
-        padding: spacing(2),
       }}
+      justifyContent="space-between"
     >
-      <Grid item xs={12} md={8} component={LinksContainer}>
-        {footerLinks.map((link, index) => (
-          <FooterLink
-            key={index}
-            link={link}
-            showBorder={isBig && index < footerLinks.length - 1}
-          />
-        ))}
-      </Grid>
       <Grid
-        item
-        xs={12}
-        md="auto"
-        component={Typography}
-        variant="body2"
         sx={{
-          textAlign: 'right',
-          paddingTop: {
-            xs: spacing(1),
-            md: 0,
-          },
+          width: '100%',
+          margin: '0 auto',
+          padding: spacing(2),
+          maxWidth: 1200,
         }}
       >
-        © {year} Tech Matters
+        <Grid item xs={12} sm={8} component={LinksContainer}>
+          {footerLinks.map((link, index) => (
+            <FooterLink
+              key={index}
+              link={link}
+              showBorder={isBig && index < footerLinks.length - 1}
+            />
+          ))}
+          <Grid
+            item
+            component="li"
+            sx={{
+              flexGrow: 1,
+            }}
+          >
+            &nbsp;
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            sm="auto"
+            component="li"
+            variant="body2"
+            sx={{
+              textAlign: 'right',
+              paddingTop: {
+                xs: spacing(1),
+                sm: 0,
+              },
+            }}
+          >
+            © {year} Tech Matters
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
   );
