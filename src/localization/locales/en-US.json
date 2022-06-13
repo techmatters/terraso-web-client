@@ -56,7 +56,7 @@
         "default_content": "Groups connect people with common interests and needs with and across landscapes.",
         "form_new_description": "Create a group to connect people with common interests and needs. Groups exist for people within and across landscapes.",
         "list_description": "A group can be an existing organization (like a landscape partnership or NGO) or any collection of people with a common interest.",
-        "list_new_description": "Can’t find the organizations or groups you are affiliated with? Create a group for it.",
+        "list_new_description": "Can’t find the organizations or groups you are affiliated with? Add it to Terraso.",
         "form_description_placeholder": "A short description of your group (600 characters maximum)",
         "form_email_placeholder": "info@mygroup.org",
         "form_website_placeholder": "https://www.mygroup.org",
