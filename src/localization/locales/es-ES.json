@@ -203,7 +203,7 @@
         "list_column_name": "Paisaje",
         "list_column_website": "Sitio web",
         "list_column_members": "Miembros",
-        "list_empty": "<0><0>Primero, verifica dos veces la ortografía del nombre del paisaje.</0><1>Si tu paisaje no se encuentra en Terraso, puedes <1>hacer click aquí</1> y <3>convertirte en administrador del paisaje</3>.</1></0>",
+        "list_empty": "<0><0>Primero, verifica dos veces la ortografía del nombre del paisaje.</0><1>Si tu paisaje no se encuentra en Terraso, puedes <1>crear un paisaje</1>.</1></0>",
         "form_email_info": "Esta dirección de correo electrónico será utilizada por personas interesadas en conectarse con usted y su paisaje.",
         "list_column_location": "Ubicación",
         "members_list_leave": "Abandonar",
@@ -251,8 +251,7 @@
         "form_name_placeholder": "El nombre oficial de tu paisaje",
         "boundaries_file_no_accepted": "No se pueden agregar los archivos.",
         "shared_data_upload_title": "Compartir archivos con {{name}}",
-        "list_search_placeholder": "Buscar paisajes",
-        "list_search_manager_help_url": "https://terraso.org/es/ayuda/gestor-de-paisaje/"
+        "list_search_placeholder": "Buscar paisajes"
     },
     "common": {
         "dialog_cancel_label": "Cancelar",

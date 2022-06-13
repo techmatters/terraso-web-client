@@ -156,13 +156,6 @@ const LandscapeList = () => {
                 <Link component={RouterLink} to={`/landscapes/new`}>
                   to add
                 </Link>
-                and
-                <Link
-                  href={t('landscape.list_search_manager_help_url')}
-                  target="_blank"
-                >
-                  to help
-                </Link>
                 .
               </Typography>
             </Stack>

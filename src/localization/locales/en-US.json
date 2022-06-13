@@ -203,7 +203,7 @@
         "not_found": "Landscape not found",
         "list_column_website": "Website",
         "list_column_members": "Members",
-        "list_empty": "<0><0>First, double check the spelling of the landscape name.</0><1>If your landscape is missing in Terraso, you can <1>click here</1> and <3>become the landscape manager</3>.</1></0>",
+        "list_empty": "<0><0>First, double check the spelling of the landscape name.</0><1>If your landscape is missing in Terraso, you can <1>create a landscape</1>.</1></0>",
         "members_list_leave": "Leave",
         "members_list_remove": "Remove",
         "form_email_info": "This email address will be used by interested people to connect with you and your landscape.",
@@ -250,8 +250,7 @@
         "form_name_placeholder": "Your landscape’s official name",
         "boundaries_file_no_accepted": "The file(s) cannot be added.",
         "shared_data_upload_title": "Share Files with {{name}}",
-        "list_search_placeholder": "Search landscapes",
-        "list_search_manager_help_url": "https://terraso.org/help/landscape-manager/"
+        "list_search_placeholder": "Search landscapes"
     },
     "sharedData": {
         "title": "Shared files",
