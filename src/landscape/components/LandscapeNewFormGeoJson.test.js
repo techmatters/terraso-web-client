@@ -87,7 +87,7 @@ test('LandscapeNew: Save from GeoJSON', async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a GeoJSON file',
+        name: 'Upload a GeoJSON file (RECOMMENDED)',
       })
     )
   );
