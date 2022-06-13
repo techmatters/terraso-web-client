@@ -24,7 +24,7 @@ import BaseTable from 'common/components/Table';
 import ResponsiveSwitch from 'layout/ResponsiveSwitch';
 
 const SEARCH_DEBOUNCE = 100; // milliseconds
-const VALID_SEARCH_LENGTH = 2;
+const SEARCH_VALID_LENGTH = 2;
 
 const Table = props => {
   const { tableProps } = props;
@@ -140,7 +140,14 @@ const SearchBar = props => {
     onSearchParamsChange,
   } = props;
 
-  const validSearch = query.length > VALID_SEARCH_LENGTH - 1;
+  const validSearch = useMemo(
+    () => query.length > SEARCH_VALID_LENGTH - 1,
+    [query]
+  );
+  const searchQuery = useMemo(
+    () => (validSearch ? query : ''),
+    [query, validSearch]
+  );
 
   const updateFilteredRows = useMemo(
     () =>
@@ -162,8 +169,25 @@ const SearchBar = props => {
   );
 
   useEffect(() => {
-    updateFilteredRows(rows, validSearch ? query : null);
-  }, [rows, query, updateFilteredRows, validSearch]);
+    updateFilteredRows(rows, searchQuery);
+    if (searchQuery !== searchParams.search) {
+      if (searchQuery) {
+        onSearchParamsChange({
+          ...searchParams,
+          search: searchQuery,
+        });
+      } else if (searchParams.search) {
+        onSearchParamsChange(_.omit('search', searchParams));
+      }
+    }
+  }, [
+    rows,
+    searchQuery,
+    updateFilteredRows,
+    validSearch,
+    searchParams,
+    onSearchParamsChange,
+  ]);
 
   useEffect(() => {
     if (searchParams?.search) {
@@ -178,10 +202,6 @@ const SearchBar = props => {
   const handleChange = event => {
     const newQuery = event.target.value;
     setQuery(newQuery);
-    onSearchParamsChange({
-      ...searchParams,
-      search: newQuery,
-    });
   };
 
   return (
@@ -193,12 +213,11 @@ const SearchBar = props => {
       sx={{ width: '100%' }}
     >
       <Typography sx={{ flexGrow: 3, width: { xs: '100%' } }}>
-        {query &&
-          validSearch &&
+        {searchQuery &&
           t('common.table_search_filter_results', {
             rows: filteredRows,
             count: filteredRows.length,
-            query,
+            query: searchQuery,
           })}
       </Typography>
       <InputLabel htmlFor="table-search" className="visually-hidden">
@@ -250,7 +269,9 @@ const EmptyList = props => {
 
 const setSearchHighligthRender = props => {
   const { columns, searchFilterField, searchParams } = props;
-  if (!searchParams.search) {
+  const validSearch =
+    searchParams.search && searchParams.search.length > SEARCH_VALID_LENGTH - 1;
+  if (!validSearch) {
     return columns;
   }
   return columns.map(column => {
@@ -265,7 +286,6 @@ const setSearchHighligthRender = props => {
           : params.value;
         return (
           <Highlighter
-            highlightClassName="YourHighlightClass"
             searchWords={[searchParams.search]}
             autoEscape={true}
             textToHighlight={formattedValue}
