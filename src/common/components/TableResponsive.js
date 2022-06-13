@@ -24,7 +24,7 @@ import BaseTable from 'common/components/Table';
 import ResponsiveSwitch from 'layout/ResponsiveSwitch';
 
 const SEARCH_DEBOUNCE = 100; // milliseconds
-const SEARCH_VALID_LENGTH = 2;
+const SEARCH_MINIMUM_LENGTH = 2;
 
 const Table = props => {
   const { tableProps } = props;
@@ -126,6 +126,36 @@ const Cards = props => {
   );
 };
 
+const cleanSearchValue = value =>
+  value
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+
+const indexOfMatchPartial = query => {
+  const cleanedQuery = cleanSearchValue(query);
+  return fieldValue => cleanSearchValue(fieldValue).indexOf(cleanedQuery);
+};
+
+const getHighlightLimits = ({ textToHighlight, searchWords }) => {
+  if (_.isEmpty(searchWords)) {
+    return [];
+  }
+  const query = searchWords[0];
+  const index = indexOfMatchPartial(query)(textToHighlight);
+  if (index === -1) {
+    return [];
+  }
+
+  return [
+    {
+      start: index,
+      end: index + query.length,
+    },
+  ];
+};
+
 const SearchBar = props => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -141,7 +171,7 @@ const SearchBar = props => {
   } = props;
 
   const validSearch = useMemo(
-    () => query.length > SEARCH_VALID_LENGTH - 1,
+    () => query.length > SEARCH_MINIMUM_LENGTH - 1,
     [query]
   );
   const searchQuery = useMemo(
@@ -156,13 +186,9 @@ const SearchBar = props => {
           setFilterdRows(rows);
           return;
         }
+        const indexOfMatch = indexOfMatchPartial(query);
         setFilterdRows(
-          rows.filter(
-            row =>
-              _.get(searchFilterField, row)
-                .toLowerCase()
-                .indexOf(query.toLowerCase()) !== -1
-          )
+          rows.filter(row => indexOfMatch(_.get(searchFilterField, row)) !== -1)
         );
       }),
     [setFilterdRows, searchFilterField]
@@ -259,18 +285,11 @@ const SearchBar = props => {
   );
 };
 
-const EmptyList = props => {
-  return (
-    <Paper variant="outlined" sx={{ padding: 3 }}>
-      {props.emptyMessage}
-    </Paper>
-  );
-};
-
 const setSearchHighligthRender = props => {
   const { columns, searchFilterField, searchParams } = props;
   const validSearch =
-    searchParams.search && searchParams.search.length > SEARCH_VALID_LENGTH - 1;
+    searchParams.search &&
+    searchParams.search.length > SEARCH_MINIMUM_LENGTH - 1;
   if (!validSearch) {
     return columns;
   }
@@ -289,11 +308,20 @@ const setSearchHighligthRender = props => {
             searchWords={[searchParams.search]}
             autoEscape={true}
             textToHighlight={formattedValue}
+            findChunks={getHighlightLimits}
           />
         );
       },
     };
   });
+};
+
+const EmptyList = props => {
+  return (
+    <Paper variant="outlined" sx={{ padding: 3 }}>
+      {props.emptyMessage}
+    </Paper>
+  );
 };
 
 const TableResponsive = props => {
