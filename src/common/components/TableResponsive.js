@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
 import _ from 'lodash/fp';
+import Highlighter from 'react-highlight-words';
 import { useTranslation } from 'react-i18next';
 
 import CloseIcon from '@mui/icons-material/Close';
@@ -70,10 +71,6 @@ const CardValue = props => {
     return column.cardRender({ row });
   }
 
-  if (column.renderCell) {
-    return column.renderCell({ row });
-  }
-
   if (column.getActions) {
     return (
       <>
@@ -84,11 +81,19 @@ const CardValue = props => {
     );
   }
 
-  if (!value) {
+  const formattedValue = _.has('valueFormatter', column)
+    ? column.valueFormatter({ value })
+    : value;
+
+  if (column.renderCell) {
+    return column.renderCell({ row, formattedValue });
+  }
+
+  if (!formattedValue) {
     return null;
   }
 
-  return <Typography>{value}</Typography>;
+  return <Typography>{formattedValue}</Typography>;
 };
 
 const Cards = props => {
@@ -243,13 +248,44 @@ const EmptyList = props => {
   );
 };
 
+const setSearchHighligthRender = props => {
+  const { columns, searchFilterField, searchParams } = props;
+  if (!searchParams.search) {
+    return columns;
+  }
+  return columns.map(column => {
+    if (column.field !== searchFilterField) {
+      return column;
+    }
+    return {
+      ...column,
+      valueFormatter: params => {
+        const formattedValue = _.has('valueFormatter', column)
+          ? column.valueFormatter(params)
+          : params.value;
+        return (
+          <Highlighter
+            highlightClassName="YourHighlightClass"
+            searchWords={[searchParams.search]}
+            autoEscape={true}
+            textToHighlight={formattedValue}
+          />
+        );
+      },
+    };
+  });
+};
+
 const TableResponsive = props => {
   const [filteredRows, setFilterdRows] = useState(props.rows);
 
   const filteredProps = useMemo(
     () => ({
-      ..._.omit('rows', props),
+      ..._.omit(['rows', 'columns'], props),
       rows: filteredRows,
+      columns: props.searchEnabled
+        ? setSearchHighligthRender(props)
+        : props.columns,
     }),
     [filteredRows, props]
   );

@@ -80,9 +80,9 @@ const GroupList = () => {
       headerName: t('group.list_column_name'),
       flex: 1.5,
       minWidth: 200,
-      renderCell: ({ row: group }) => (
+      renderCell: ({ row: group, formattedValue }) => (
         <Link component={RouterLink} to={`/groups/${group.slug}`}>
-          {group.name}
+          {formattedValue}
         </Link>
       ),
     },

@@ -77,11 +77,14 @@ const LandscapeList = () => {
       headerName: t('landscape.list_column_name'),
       flex: 1.5,
       minWidth: 200,
-      renderCell: ({ row: landscape }) => (
-        <Link component={RouterLink} to={`/landscapes/${landscape.slug}`}>
-          {landscape.name}
-        </Link>
-      ),
+      renderCell: params => {
+        const { row: landscape, formattedValue } = params;
+        return (
+          <Link component={RouterLink} to={`/landscapes/${landscape.slug}`}>
+            {formattedValue}
+          </Link>
+        );
+      },
     },
     {
       field: 'location',
