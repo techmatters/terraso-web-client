@@ -237,7 +237,7 @@
         "form_step_boundaries_options_label": "Límite del paisaje",
         "form_boundary_options_title": "Defina el límite de su paisaje",
         "form_boundary_options_description": "Cuéntanos dónde está tu paisaje. Subir un mapa es lo más preciso. Si no tienes uno, puedes <1>crear un archivo GeoJSON</1>, colocar un pin o definir su límite más adelante.",
-        "form_boundary_options_geojson": "Sube un archivo GeoJSON",
+        "form_boundary_options_geojson": "Sube un archivo GeoJSON (RECOMENDADO)",
         "form_boundary_options_pin": "Coloque un pin en un mapa",
         "form_boundary_options_skip": "Omite este paso por ahora",
         "form_boundary_options_back": "Atrás",
