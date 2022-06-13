@@ -23,6 +23,7 @@ import BaseTable from 'common/components/Table';
 import ResponsiveSwitch from 'layout/ResponsiveSwitch';
 
 const SEARCH_DEBOUNCE = 100; // milliseconds
+const VALID_SEARCH_LENGTH = 2;
 
 const Table = props => {
   const { tableProps } = props;
@@ -134,6 +135,8 @@ const SearchBar = props => {
     onSearchParamsChange,
   } = props;
 
+  const validSearch = query.length > VALID_SEARCH_LENGTH - 1;
+
   const updateFilteredRows = useMemo(
     () =>
       _.debounce(SEARCH_DEBOUNCE, (rows, query) => {
@@ -154,8 +157,8 @@ const SearchBar = props => {
   );
 
   useEffect(() => {
-    updateFilteredRows(rows, query);
-  }, [rows, query, updateFilteredRows]);
+    updateFilteredRows(rows, validSearch ? query : null);
+  }, [rows, query, updateFilteredRows, validSearch]);
 
   useEffect(() => {
     if (searchParams?.search) {
@@ -186,6 +189,7 @@ const SearchBar = props => {
     >
       <Typography sx={{ flexGrow: 3, width: { xs: '100%' } }}>
         {query &&
+          validSearch &&
           t('common.table_search_filter_results', {
             rows: filteredRows,
             count: filteredRows.length,
