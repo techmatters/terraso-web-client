@@ -153,6 +153,8 @@ const GroupList = () => {
         searchEnabled
         searchPlaceholder={t('group.list_search_placeholder')}
         searchFilterField="name"
+        searchParams={Object.fromEntries(searchParams.entries())}
+        onSearchParamsChange={setSearchParams}
         emptyMessage={t('group.list_empty')}
         tableProps={{
           initialSort: [
@@ -161,8 +163,6 @@ const GroupList = () => {
               sort: 'asc',
             },
           ],
-          searchParams: Object.fromEntries(searchParams.entries()),
-          onSearchParamsChange: setSearchParams,
           localeText: {
             footerPaginationRowsPerPage: t('common.data_grid_pagination_of'),
           },

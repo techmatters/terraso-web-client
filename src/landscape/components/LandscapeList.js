@@ -145,6 +145,8 @@ const LandscapeList = () => {
         searchEnabled
         searchPlaceholder={t('landscape.list_search_placeholder')}
         searchFilterField="name"
+        searchParams={Object.fromEntries(searchParams.entries())}
+        onSearchParamsChange={setSearchParams}
         emptyMessage={
           <Trans i18nKey="landscape.list_empty">
             <Stack spacing={2}>
@@ -173,8 +175,6 @@ const LandscapeList = () => {
               sort: 'asc',
             },
           ],
-          searchParams: Object.fromEntries(searchParams.entries()),
-          onSearchParamsChange: setSearchParams,
           localeText: {
             footerPaginationRowsPerPage: t('common.data_grid_pagination_of'),
           },

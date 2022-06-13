@@ -4,6 +4,7 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
+import { useSearchParams } from 'react-router-dom';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 
@@ -16,6 +17,11 @@ global.console.error = jest.fn();
 jest.mock('terrasoBackend/api');
 
 jest.mock('@mui/material/useMediaQuery');
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useSearchParams: jest.fn(),
+}));
 
 const setup = async initialState => {
   await render(<LandscapeList />, {
@@ -115,6 +121,10 @@ const baseListTest = async () => {
     'actions'
   );
 };
+
+beforeEach(() => {
+  useSearchParams.mockReturnValue([new URLSearchParams(), () => {}]);
+});
 
 test('LandscapeList: Display error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValue('Load error');
@@ -233,6 +243,7 @@ test('LandscapeList: List sort', async () => {
     )
   );
   const sortedRows = screen.getAllByRole('row');
+  expect(sortedRows.length).toBe(16); // 15 displayed + header
   expect(
     within(sortedRows[1]).getByRole('cell', { name: 'Landscape Name 9' })
   ).toHaveAttribute('data-field', 'name');

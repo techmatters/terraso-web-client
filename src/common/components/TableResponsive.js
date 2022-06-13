@@ -25,9 +25,17 @@ import ResponsiveSwitch from 'layout/ResponsiveSwitch';
 const SEARCH_DEBOUNCE = 100; // milliseconds
 
 const Table = props => {
-  const { columns, rows, tableProps } = props;
+  const { tableProps } = props;
 
-  return <BaseTable rows={rows} columns={columns} {...tableProps} />;
+  return (
+    <BaseTable
+      {..._.pick(
+        ['rows', 'columns', 'searchParams', 'onSearchParamsChange'],
+        props
+      )}
+      {...tableProps}
+    />
+  );
 };
 
 const CardField = props => {
@@ -122,34 +130,50 @@ const SearchBar = props => {
     searchFilterField,
     filteredRows,
     setFilterdRows,
+    searchParams,
+    onSearchParamsChange,
   } = props;
 
-  const updateFilteredRows = _.debounce(SEARCH_DEBOUNCE, () => {
-    if (!query) {
-      setFilterdRows(rows);
-      return;
-    }
-    setFilterdRows(
-      rows.filter(
-        row =>
-          _.get(searchFilterField, row)
-            .toLowerCase()
-            .indexOf(query.toLowerCase()) !== -1
-      )
-    );
-  });
-
-  useEffect(
-    () => updateFilteredRows(),
-    [rows, query, searchFilterField, updateFilteredRows]
+  const updateFilteredRows = useMemo(
+    () =>
+      _.debounce(SEARCH_DEBOUNCE, (rows, query) => {
+        if (!query) {
+          setFilterdRows(rows);
+          return;
+        }
+        setFilterdRows(
+          rows.filter(
+            row =>
+              _.get(searchFilterField, row)
+                .toLowerCase()
+                .indexOf(query.toLowerCase()) !== -1
+          )
+        );
+      }),
+    [setFilterdRows, searchFilterField]
   );
+
+  useEffect(() => {
+    updateFilteredRows(rows, query);
+  }, [rows, query, updateFilteredRows]);
+
+  useEffect(() => {
+    if (searchParams?.search) {
+      setQuery(searchParams.search);
+    }
+  }, [searchParams]);
 
   if (!searchEnabled) {
     return null;
   }
 
   const handleChange = event => {
-    setQuery(event.target.value);
+    const newQuery = event.target.value;
+    setQuery(newQuery);
+    onSearchParamsChange({
+      ...searchParams,
+      search: newQuery,
+    });
   };
 
   return (
@@ -218,7 +242,7 @@ const EmptyList = props => {
 const TableResponsive = props => {
   const [filteredRows, setFilterdRows] = useState(props.rows);
 
-  const tableProps = useMemo(
+  const filteredProps = useMemo(
     () => ({
       ..._.omit('rows', props),
       rows: filteredRows,
@@ -237,8 +261,8 @@ const TableResponsive = props => {
         <EmptyList {...props} />
       ) : (
         <ResponsiveSwitch
-          desktop={<Table {...tableProps} />}
-          mobile={<Cards {...tableProps} />}
+          desktop={<Table {...filteredProps} />}
+          mobile={<Cards {...filteredProps} />}
         />
       )}
     </>
