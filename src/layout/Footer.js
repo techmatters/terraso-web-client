@@ -89,10 +89,7 @@ const Footer = () => {
         width: '100%',
         background: palette.secondary.main,
         color: palette.white,
-        padding: {
-          xs: spacing(2),
-          md: `${spacing(2)} ${spacing(10)} ${spacing(2)} ${spacing(10)}`,
-        },
+        padding: spacing(2),
       }}
     >
       <Grid item xs={12} md={8} component={LinksContainer}>
