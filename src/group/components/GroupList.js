@@ -80,9 +80,9 @@ const GroupList = () => {
       headerName: t('group.list_column_name'),
       flex: 1.5,
       minWidth: 200,
-      renderCell: ({ row: group }) => (
+      renderCell: ({ row: group, formattedValue }) => (
         <Link component={RouterLink} to={`/groups/${group.slug}`}>
-          {group.name}
+          {formattedValue}
         </Link>
       ),
     },
@@ -150,6 +150,12 @@ const GroupList = () => {
       <TableResponsive
         columns={columns}
         rows={groups}
+        searchEnabled
+        searchPlaceholder={t('group.list_search_placeholder')}
+        searchFilterField="name"
+        searchParams={Object.fromEntries(searchParams.entries())}
+        onSearchParamsChange={setSearchParams}
+        emptyMessage={t('group.list_empty')}
         tableProps={{
           initialSort: [
             {
@@ -157,10 +163,7 @@ const GroupList = () => {
               sort: 'asc',
             },
           ],
-          searchParams: Object.fromEntries(searchParams.entries()),
-          onSearchParamsChange: setSearchParams,
           localeText: {
-            noRowsLabel: t('group.list_empty'),
             footerPaginationRowsPerPage: t('common.data_grid_pagination_of'),
           },
         }}

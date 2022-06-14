@@ -4,6 +4,7 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
+import { useSearchParams } from 'react-router-dom';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 
@@ -16,6 +17,11 @@ global.console.error = jest.fn();
 jest.mock('terrasoBackend/api');
 
 jest.mock('@mui/material/useMediaQuery');
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useSearchParams: jest.fn(),
+}));
 
 const setup = async initialState => {
   await render(<LandscapeList />, {
@@ -32,32 +38,7 @@ const setup = async initialState => {
   });
 };
 
-test('LandscapeList: Display error', async () => {
-  terrasoApi.requestGraphQL.mockRejectedValue('Load error');
-  await setup();
-  expect(screen.getByText(/Load error/i)).toBeInTheDocument();
-});
-test('LandscapeList: Display loader', async () => {
-  terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
-  await setup();
-  const loader = screen.getByRole('progressbar', {
-    name: 'Loading',
-    hidden: true,
-  });
-  expect(loader).toBeInTheDocument();
-});
-test('LandscapeList: Empty', async () => {
-  terrasoApi.requestGraphQL.mockReturnValue(
-    Promise.resolve({
-      landscapes: {
-        edges: [],
-      },
-    })
-  );
-  await setup();
-  expect(screen.getByText(/No Landscapes/i)).toBeInTheDocument();
-});
-test('LandscapeList: Display list', async () => {
+const baseListTest = async () => {
   const isMember = {
     3: true,
   };
@@ -139,6 +120,53 @@ test('LandscapeList: Display list', async () => {
     'data-field',
     'actions'
   );
+};
+
+beforeEach(() => {
+  useSearchParams.mockReturnValue([new URLSearchParams(), () => {}]);
+});
+
+test('LandscapeList: Display error', async () => {
+  terrasoApi.requestGraphQL.mockRejectedValue('Load error');
+  await setup();
+  expect(screen.getByText(/Load error/i)).toBeInTheDocument();
+});
+test('LandscapeList: Display loader', async () => {
+  terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
+  await setup();
+  const loader = screen.getByRole('progressbar', {
+    name: 'Loading',
+    hidden: true,
+  });
+  expect(loader).toBeInTheDocument();
+});
+test('LandscapeList: Empty', async () => {
+  terrasoApi.requestGraphQL.mockReturnValue(
+    Promise.resolve({
+      landscapes: {
+        edges: [],
+      },
+    })
+  );
+  await setup();
+  expect(
+    screen.getByText('First, double check the spelling of the landscape name.')
+  ).toBeInTheDocument();
+});
+test('LandscapeList: Display list', baseListTest);
+test('LandscapeList: Search', async () => {
+  await baseListTest();
+
+  const searchInput = screen.getByRole('textbox', {
+    name: 'Search landscapes',
+  });
+  expect(searchInput).toBeInTheDocument();
+  await act(async () =>
+    fireEvent.change(searchInput, { target: { value: 'Landscape Name 1' } })
+  );
+  await new Promise(r => setTimeout(r, 300));
+  const rows = screen.getAllByRole('row');
+  expect(rows.length).toBe(7); // 10 to 15 displayed + header
 });
 test('LandscapeList: List sort', async () => {
   const isMember = {
@@ -215,6 +243,7 @@ test('LandscapeList: List sort', async () => {
     )
   );
   const sortedRows = screen.getAllByRole('row');
+  expect(sortedRows.length).toBe(16); // 15 displayed + header
   expect(
     within(sortedRows[1]).getByRole('cell', { name: 'Landscape Name 9' })
   ).toHaveAttribute('data-field', 'name');

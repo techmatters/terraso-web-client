@@ -85,7 +85,8 @@
         "members_list_column_actions_description": "Acciones",
         "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). Debe existir al menos un administrador.",
         "unique": "El grupo “{{body.variables.input.name}}” ya existe.",
-        "shared_data_upload_title": "Compartir archivos con {{name}}"
+        "shared_data_upload_title": "Compartir archivos con {{name}}",
+        "list_search_placeholder": "Buscar grupos"
     },
     "tool": {
         "avilability": "Disponibilidad",
@@ -202,7 +203,7 @@
         "list_column_name": "Paisaje",
         "list_column_website": "Sitio web",
         "list_column_members": "Miembros",
-        "list_empty": "No hay paisajes",
+        "list_empty": "<0><0>Primero, verifica dos veces la ortografía del nombre del paisaje.</0><1>Si tu paisaje no se encuentra en Terraso, puedes <1>crear un paisaje</1>.</1></0>",
         "form_email_info": "Esta dirección de correo electrónico será utilizada por personas interesadas en conectarse con usted y su paisaje.",
         "list_column_location": "Ubicación",
         "members_list_leave": "Abandonar",
@@ -249,7 +250,8 @@
         "form_location_select": "Selecciona una ubicación",
         "form_name_placeholder": "El nombre oficial de tu paisaje",
         "boundaries_file_no_accepted": "No se pueden agregar los archivos.",
-        "shared_data_upload_title": "Compartir archivos con {{name}}"
+        "shared_data_upload_title": "Compartir archivos con {{name}}",
+        "list_search_placeholder": "Buscar paisajes"
     },
     "common": {
         "dialog_cancel_label": "Cancelar",
@@ -267,7 +269,10 @@
         "editable_text_save": "Guardar",
         "editable_text_cancel": "Cancelar",
         "refreshing_loader_label": "Actualizando",
-        "map_search_placeholder": "Ingresa una ciudad, pueblo o región"
+        "map_search_placeholder": "Ingresa una ciudad, pueblo o región",
+        "table_search_filter_results_other": "{{rows.length}} resultados encontrados para “{{query}}“",
+        "table_search_filter_results_one": "{{rows.length}} resulatdo encontrado para “{{query}}“",
+        "table_search_filter_clear": "Borrar búsqueda"
     },
     "sharedData": {
         "title": "Archivos compartidos",

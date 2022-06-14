@@ -183,6 +183,9 @@ const GroupMembersList = () => {
       <TableResponsive
         columns={columns}
         rows={_.values(members)}
+        emptyMessage={t('group.members_list_empty')}
+        searchParams={Object.fromEntries(searchParams.entries())}
+        onSearchParamsChange={setSearchParams}
         cardsProps={{
           avatarRender: ({ row: member }) => (
             <AccountAvatar sx={{ width: 80, height: 80 }} user={member} />
@@ -195,11 +198,6 @@ const GroupMembersList = () => {
               sort: 'asc',
             },
           ],
-          searchParams: Object.fromEntries(searchParams.entries()),
-          onSearchParamsChange: setSearchParams,
-          localeText: {
-            noRowsLabel: t('group.members_list_empty'),
-          },
         }}
       />
     </GroupMembersListContext.Provider>
