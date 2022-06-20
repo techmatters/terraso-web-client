@@ -79,6 +79,16 @@ const LeafletSearch = props => {
       autoClose: true,
       searchLabel: t('common.map_search_placeholder'),
     });
+    const currentOnAdd = searchControl.onAdd;
+    searchControl.onAdd = param => {
+      const container = currentOnAdd.bind(searchControl)(param);
+
+      // Move search box to the first position to improve keyboard navigation
+      const parent = searchControl.container.parentElement;
+      parent.prepend(searchControl.container);
+
+      return container;
+    };
 
     map.addControl(searchControl);
     map.removeControl(map.zoomControl);
