@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - feature/shared-files
+      - feature/restrict-membership
   pull_request:
     branches:
       - main
-      - feature/shared-files
+      - feature/restrict-membership
 
 jobs:
   lint:
