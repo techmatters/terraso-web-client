@@ -34,6 +34,7 @@ export const groupFields = `
     email
     website
     email
+    membershipType
   }
 `;
 
@@ -78,6 +79,7 @@ export const accountMembership = `
         node {
           id
           userRole
+          membershipStatus
         }
       }
     }

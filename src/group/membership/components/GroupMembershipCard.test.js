@@ -10,6 +10,7 @@ import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
 import * as terrasoApi from 'terrasoBackend/api';
+import GroupMemberRequestCancel from './GroupMemberRequestCancel';
 
 jest.mock('terrasoBackend/api');
 
@@ -25,6 +26,12 @@ const setup = async initialState => {
       )}
       MemberLeaveButton={props => (
         <GroupMemberLeave renderLabel={() => 'Leave Label'} {...props} />
+      )}
+      MemberRequestJoinButton={props => (
+        <GroupMemberJoin label="Request Join Label" {...props} /> 
+      )}
+      MemberRequestCancelButton={props => (
+        <GroupMemberRequestCancel label="Request Cancel Label" {...props} />
       )}
     >
       <GroupMembershipCard />
@@ -199,6 +206,68 @@ test('GroupMembershipCard: Join', async () => {
   ).toBeInTheDocument();
   expect(() => screen.getByRole('progressbar')).toThrow();
   expect(() => screen.getByRole('button', { name: 'Join Label' })).toThrow();
+});
+test('GroupMembershipCard: Request Join', async () => {
+  terrasoApi.requestGraphQL.mockReturnValueOnce(
+    Promise.resolve({
+      addMembership: {
+        membership: {
+          group: {
+            slug: 'group-slug',
+            membershipType: 'CLOSED',
+            accountMembership: _.flow(
+              _.set('edges[0].node.userRole', 'MEMBER'),
+              _.set('edges[0].node.membershipStatus', 'PENDING')
+            )({}),
+            memberships: {
+              totalCount: 1,
+              edges: [
+                {
+                  node: {
+                    user: {
+                      email: 'email@email.com',
+                      firstName: 'First',
+                      lastName: 'Last',
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
+    })
+  );
+  await setup({
+    group: {
+      memberships: {
+        'group-slug': {
+          group: {
+            slug: 'group-slug',
+            membershipType: 'CLOSED',
+          },
+        },
+      },
+    },
+  });
+  expect(
+    screen.getByText('0 Terraso members joined Owner Name.')
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Request Join Label' })
+  ).toBeInTheDocument();
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Request Join Label' }))
+  );
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  expect(
+    screen.getByText('1 Terraso member joined Owner Name.')
+  ).toBeInTheDocument();
+  expect(() => screen.getByRole('progressbar')).toThrow();
+  expect(() => screen.getByRole('button', { name: 'Join Label' })).toThrow();
+  expect(
+    screen.getByRole('button', { name: 'Request Cancel Label' })
+  ).toBeInTheDocument();
 });
 test('GroupMembershipCard: Leave error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValueOnce('Leave error');

@@ -8,11 +8,23 @@ import { useAnalytics } from 'monitoring/analytics';
 import { useGroupContext } from 'group/groupContext';
 import { joinGroup, leaveGroup } from 'group/groupSlice';
 
+import {
+  MEMBERSHIP_CLOSED,
+  MEMBERSHIP_STATUS_PENDING,
+} from './groupMembershipConstants';
+
 const GroupMembershipJoinLeaveButton = () => {
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
-  const { owner, groupSlug, MemberLeaveButton, MemberJoinButton, updateOwner } =
-    useGroupContext();
+  const {
+    owner,
+    groupSlug,
+    MemberLeaveButton,
+    MemberJoinButton,
+    MemberRequestJoinButton,
+    MemberRequestCancelButton,
+    updateOwner,
+  } = useGroupContext();
   const {
     data: { email: userEmail },
   } = useSelector(state => state.account.currentUser);
@@ -46,8 +58,17 @@ const GroupMembershipJoinLeaveButton = () => {
     ).then(() => updateOwner?.());
   };
 
+  if (
+    userMembership &&
+    userMembership.membershipStatus === MEMBERSHIP_STATUS_PENDING
+  ) {
+    return <MemberRequestCancelButton onConfirm={onLeave} owner={owner} />;
+  }
   if (userMembership) {
     return <MemberLeaveButton onConfirm={onLeave} owner={owner} />;
+  }
+  if (group?.membershipType === MEMBERSHIP_CLOSED) {
+    return <MemberRequestJoinButton onJoin={onJoin} loading={loading} />;
   }
   return <MemberJoinButton onJoin={onJoin} loading={loading} />;
 };

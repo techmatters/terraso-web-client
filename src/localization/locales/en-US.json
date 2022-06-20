@@ -86,7 +86,14 @@
         "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). There should at least be one manager.",
         "unique": "The group “{{body.variables.input.name}}” already exists.",
         "shared_data_upload_title": "Share Files with {{name}}",
-        "list_search_placeholder": "Search groups"
+        "list_search_placeholder": "Search groups",
+        "list_request_join_button": "Request to join",
+        "list_request_cancel_label": "Pending",
+        "view_request_join_button": "Request to join",
+        "view_request_cancel_label": "Cancel Request",
+        "membership_request_cancel_confirm_title": "[TODO] Request cancel title",
+        "membership_request_cancel_confirm_message": "[TODO] Request cancel message",
+        "membership_request_cancel_confirm_button": "[TODO] Accep cancel"
     },
     "tool": {
         "requirements": "System requirements",

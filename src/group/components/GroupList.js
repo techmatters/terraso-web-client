@@ -17,6 +17,7 @@ import { GroupContextProvider } from 'group/groupContext';
 import { fetchGroups } from 'group/groupSlice';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
+import GroupMemberRequestCancel from 'group/membership/components/GroupMemberRequestCancel';
 import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
 import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton';
 
@@ -39,8 +40,16 @@ const MemberLeaveButton = withProps(GroupMemberLeave, {
   },
 });
 
+const MemberRequestCancelButton = withProps(GroupMemberRequestCancel, {
+  label: 'group.list_request_cancel_label',
+});
+
 const MemberJoinButton = withProps(GroupMemberJoin, {
   label: 'group.list_join_button',
+});
+
+const MemberRequestJoinButton = withProps(GroupMemberJoin, {
+  label: 'group.list_request_join_button',
 });
 
 const MembershipButton = ({ group }) => (
@@ -48,6 +57,8 @@ const MembershipButton = ({ group }) => (
     owner={group}
     groupSlug={group.slug}
     MemberJoinButton={MemberJoinButton}
+    MemberRequestJoinButton={MemberRequestJoinButton}
+    MemberRequestCancelButton={MemberRequestCancelButton}
     MemberLeaveButton={MemberLeaveButton}
   >
     <GroupMembershipJoinLeaveButton sx={{ width: '100%' }} />

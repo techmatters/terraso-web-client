@@ -16,6 +16,8 @@ export const GroupContextProvider = props => {
       'MemberLeaveButton',
       'MemberRemoveButton',
       'MemberJoinButton',
+      'MemberRequestJoinButton',
+      'MemberRequestCancelButton',
       'updateOwner',
     ],
     props
