@@ -93,6 +93,7 @@ const GroupMembers = () => {
       <GroupContextProvider
         owner={group}
         groupSlug={slug}
+        group={group}
         MemberLeaveButton={MemberLeaveButton}
         MemberRemoveButton={GroupMemberRemove}
       >

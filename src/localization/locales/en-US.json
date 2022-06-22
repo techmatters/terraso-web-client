@@ -109,7 +109,14 @@
         "membership_card_info_close_description": "<0>1.  Click the “Request to Join.” Status will change to “Pending.”</0><1>2. Group manager will approve or deny the request.</1>",
         "membership_card_info_open_title": "How to join an open group",
         "membership_card_info_open_description": "Click “Join Group.” You become a member immediately.",
-        "membership_card_manage_members": "Manage Members"
+        "membership_card_manage_members": "Manage Members",
+        "members_list_pending_title": "Pending Members",
+        "members_list_pending_message": "{{count}} Pending members are waiting for your approval",
+        "members_list_pending_approve": "Approve",
+        "members_list_pending_confirmation_title": "[TODO] Confirmation Reject title",
+        "members_list_pending_confirmation_message": "[TODO] Confirmation Reject message",
+        "members_list_pending_confirmation_button": "[TODO] Reject confirm",
+        "members_list_pending_reject": "Reject"
     },
     "tool": {
         "requirements": "System requirements",
