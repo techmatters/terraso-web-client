@@ -7,7 +7,7 @@ import { act } from 'react-dom/test-utils';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
+import GroupMembers from 'group/membership/components/GroupMembers';
 import * as terrasoApi from 'terrasoBackend/api';
 
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850
@@ -18,7 +18,7 @@ jest.mock('terrasoBackend/api');
 jest.mock('@mui/material/useMediaQuery');
 
 const setup = async initialState => {
-  await render(<LandscapeMembers />, {
+  await render(<GroupMembers />, {
     account: {
       hasToken: true,
       currentUser: {
@@ -34,13 +34,13 @@ const setup = async initialState => {
   });
 };
 
-test('LandscapeMembers: Display error', async () => {
+test('GroupMembers: Display error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValue('Load error');
   await setup();
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
-test('LandscapeMembers: Display loader', async () => {
+test('GroupMembers: Display loader', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
   await setup();
   const loader = screen.getByRole('progressbar', {
@@ -49,13 +49,13 @@ test('LandscapeMembers: Display loader', async () => {
   });
   expect(loader).toBeInTheDocument();
 });
-test('LandscapeMembers: Empty', async () => {
+test('GroupMembers: Empty', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve(
       _.set(
-        'landscapes.edges[0].node',
+        'groups.edges[0].node',
         {
-          name: 'Landscape Name',
+          name: 'Group Name',
         },
         {}
       )
@@ -64,7 +64,7 @@ test('LandscapeMembers: Empty', async () => {
   await setup();
   expect(screen.getByText(/No members/i)).toBeInTheDocument();
 });
-test('LandscapeMembers: Display list', async () => {
+test('GroupMembers: Display list', async () => {
   const generateMemberhips = (index, count) => ({
     edges: Array(count)
       .fill(0)
@@ -90,34 +90,18 @@ test('LandscapeMembers: Display list', async () => {
     memberships: generateMemberhips(3, 20),
   };
 
-  const landscape = {
-    slug: 'landscape',
-    id: 'landscape',
-    name: 'Landscape Name',
-    description: 'Landscape Description',
-    website: 'www.landscape.org',
-    location: 'Ecuador, Quito',
-    associatedGroups: {
-      edges: [
-        {
-          node: { group },
-        },
-      ],
-    },
-  };
-
   terrasoApi.requestGraphQL
     .mockReturnValueOnce(
-      Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
+      Promise.resolve(_.set('groups.edges[0].node', group, {}))
     )
     .mockReturnValueOnce(
       Promise.resolve(_.set('groups.edges[0].node', group, {}))
     );
   await setup();
 
-  // Landscape info
+  // Group info
   expect(
-    screen.getByRole('heading', { name: 'Landscape Name Members' })
+    screen.getByRole('heading', { name: 'Group Name Members' })
   ).toBeInTheDocument();
   const rows = screen.getAllByRole('row');
   expect(rows.length).toBe(16); // 15 displayed + header
@@ -142,7 +126,7 @@ test('LandscapeMembers: Display list', async () => {
     'actions'
   );
 });
-test('LandscapeMembers: Display list (small)', async () => {
+test('GroupMembers: Display list (small)', async () => {
   useMediaQuery.mockReturnValue(true);
   const generateMemberhips = (index, count) => ({
     edges: Array(count)
@@ -169,34 +153,18 @@ test('LandscapeMembers: Display list (small)', async () => {
     memberships: generateMemberhips(3, 20),
   };
 
-  const landscape = {
-    slug: 'landscape',
-    id: 'landscape',
-    name: 'Landscape Name',
-    description: 'Landscape Description',
-    website: 'www.landscape.org',
-    location: 'Ecuador, Quito',
-    associatedGroups: {
-      edges: [
-        {
-          node: { group },
-        },
-      ],
-    },
-  };
-
   terrasoApi.requestGraphQL
     .mockReturnValueOnce(
-      Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
+      Promise.resolve(_.set('groups.edges[0].node', group, {}))
     )
     .mockReturnValueOnce(
       Promise.resolve(_.set('groups.edges[0].node', group, {}))
     );
   await setup();
 
-  // Landscape info
+  // Group info
   expect(
-    screen.getByRole('heading', { name: 'Landscape Name Members' })
+    screen.getByRole('heading', { name: 'Group Name Members' })
   ).toBeInTheDocument();
   const rows = screen.getAllByRole('listitem');
   expect(rows.length).toBe(20);
@@ -206,7 +174,7 @@ test('LandscapeMembers: Display list (small)', async () => {
   expect(within(rows[8]).getByText('Member')).toBeInTheDocument();
   expect(within(rows[0]).getByText('Member')).toBeInTheDocument();
 });
-test('LandscapeMembers: Display list manager', async () => {
+test('GroupMembers: Display list manager', async () => {
   const generateMemberhips = (index, count) => ({
     edges: Array(count)
       .fill(0)
@@ -232,32 +200,16 @@ test('LandscapeMembers: Display list manager', async () => {
     accountMembership: _.set('edges[0].node.userRole', 'MANAGER', {}),
   };
 
-  const landscape = {
-    slug: 'landscape',
-    id: 'landscape',
-    name: 'Landscape Name',
-    description: 'Landscape Description',
-    website: 'www.landscape.org',
-    location: 'Ecuador, Quito',
-    associatedGroups: {
-      edges: [
-        {
-          node: { group },
-        },
-      ],
-    },
-  };
-
   terrasoApi.requestGraphQL
     .mockReturnValueOnce(
-      Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
+      Promise.resolve(_.set('groups.edges[0].node', group, {}))
     )
     .mockReturnValueOnce(
       Promise.resolve(_.set('groups.edges[0].node', group, {}))
     );
   await setup();
 
-  // Landscape info
+  // Group info
   expect(
     screen.getByRole('heading', { name: 'Manage Members' })
   ).toBeInTheDocument();
@@ -280,64 +232,67 @@ test('LandscapeMembers: Display list manager', async () => {
     'actions'
   );
 });
-test('LandscapeMembers: Manager actions', async () => {
-  const generateMemberhips = (index, count) => ({
-    edges: Array(count)
-      .fill(0)
-      .map((i, index) =>
-        _.flow(
-          _.set('node.user', {
-            id: `index-${index}`,
-            firstName: 'Member name',
-            lastName: 'Member Last Name',
-            email: 'email@email.com',
-          }),
-          _.set('node.userRole', 'MEMBER'),
-          _.set('node.id', `membership-${index}`),
-          _.set('node.membershipStatus', 'APPROVED')
-        )({})
-      ),
+test('GroupMembers: Manager actions', async () => {
+  const generateMemberhips = (approved, pending) => ({
+    edges: [
+      ...Array(approved)
+        .fill(0)
+        .map((i, index) =>
+          _.flow(
+            _.set('node.user', {
+              id: `index-approved-${index}`,
+              firstName: `Member name ${index}`,
+              lastName: 'Member Last Name',
+              email: 'email@email.com',
+            }),
+            _.set('node.userRole', 'MEMBER'),
+            _.set('node.id', `membership-approved-${index}`),
+            _.set('node.membershipStatus', 'APPROVED')
+          )({})
+        ),
+      ...Array(pending)
+        .fill(0)
+        .map((i, index) =>
+          _.flow(
+            _.set('node.user', {
+              id: `index-pending-${index}`,
+              firstName: `Member name Pending ${index}`,
+              lastName: 'Member Last Name',
+              email: 'email@email.com',
+            }),
+            _.set('node.userRole', 'MEMBER'),
+            _.set('node.id', `membership-pending-${index}`),
+            _.set('node.membershipStatus', 'PENDING')
+          )({})
+        ),
+    ],
   });
 
-  const baseGroup = {
+  const group = {
     slug: 'test-group-slug',
     name: 'Group Name',
-    memberships: generateMemberhips(3, 3),
+    memberships: generateMemberhips(3, 2),
     accountMembership: _.set('edges[0].node.userRole', 'MANAGER', {}),
-  };
-
-  const landscape = {
-    slug: 'landscape',
-    id: 'landscape',
-    name: 'Landscape Name',
-    description: 'Landscape Description',
-    website: 'www.landscape.org',
-    location: 'Ecuador, Quito',
-    associatedGroups: {
-      edges: [
-        {
-          node: {
-            group: baseGroup,
-          },
-        },
-      ],
-    },
   };
 
   terrasoApi.requestGraphQL
     .mockReturnValueOnce(
-      Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
+      Promise.resolve(_.set('groups.edges[0].node', group, {}))
     )
     .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', baseGroup, {}))
+      Promise.resolve(_.set('groups.edges[0].node', group, {}))
     )
     .mockReturnValueOnce(
       Promise.resolve(
         _.flow(
-          _.set('updateMembership.membership.group', baseGroup),
+          _.set('updateMembership.membership.group', group),
           _.set(
             'updateMembership.membership.group.memberships.edges[2].node.userRole',
             'MANAGER'
+          ),
+          _.set(
+            'updateMembership.membership.group.memberships.edges[2].node.id',
+            'membership-approved-2'
           )
         )({})
       )
@@ -345,10 +300,40 @@ test('LandscapeMembers: Manager actions', async () => {
     .mockReturnValueOnce(
       Promise.resolve(
         _.flow(
-          _.set('deleteMembership.membership.group', baseGroup),
+          _.set('deleteMembership.membership.group', group),
           _.set(
             'deleteMembership.membership.group.memberships.edges',
-            baseGroup.memberships.edges.slice(0, -1)
+            group.memberships.edges
+              .map(member =>
+                member.node.id === 'membership-approved-2' ? null : member
+              )
+              .filter(member => member)
+          )
+        )({})
+      )
+    )
+    .mockReturnValueOnce(
+      Promise.resolve(
+        _.flow(
+          _.set('deleteMembership.membership.group', group),
+          _.set(
+            'deleteMembership.membership.group.memberships.edges',
+            group.memberships.edges
+              .map(member =>
+                member.node.id === 'membership-pending-0' ? null : member
+              )
+              .filter(member => member)
+          )
+        )({})
+      )
+    )
+    .mockReturnValueOnce(
+      Promise.resolve(
+        _.flow(
+          _.set('updateMembership.membership.group', group),
+          _.set(
+            'updateMembership.membership.group.memberships.edges[4].node.membershipStatus',
+            'APPROVED'
           )
         )({})
       )
@@ -356,11 +341,20 @@ test('LandscapeMembers: Manager actions', async () => {
 
   await setup();
 
-  // Landscape info
+  // Group info
   expect(
     screen.getByRole('heading', { name: 'Manage Members' })
   ).toBeInTheDocument();
-  const rows = screen.getAllByRole('row');
+  const listSection = screen.getByRole('region', {
+    name: 'Group Name Members',
+  });
+  const rows = within(listSection).getAllByRole('row');
+
+  expect(
+    within(rows[3]).getByRole('cell', {
+      name: 'Member name 2 Member Last Name Member name 2 Member Last Name',
+    })
+  ).toHaveAttribute('data-field', 'name');
 
   // Role Change
   expect(within(rows[3]).getByRole('cell', { name: 'Member' })).toHaveAttribute(
@@ -370,8 +364,9 @@ test('LandscapeMembers: Manager actions', async () => {
   const roleButton = within(rows[3]).getByRole('button', { name: 'Member' });
   expect(roleButton).toBeInTheDocument();
   await act(async () => fireEvent.mouseDown(roleButton));
-  await act(async () =>
-    fireEvent.click(screen.getByRole('option', { name: 'Manager' }))
+  await act(
+    async () =>
+      await fireEvent.click(screen.getByRole('option', { name: 'Manager' }))
   );
   await waitFor(() =>
     expect(
@@ -380,14 +375,70 @@ test('LandscapeMembers: Manager actions', async () => {
   );
 
   // Remove member
-  expect(rows.length).toBe(4);
+  expect(within(listSection).getAllByRole('row').length).toBe(4);
   const removeButton = within(rows[3]).getByRole('button', { name: 'Remove' });
   await act(async () => fireEvent.click(removeButton));
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Remove Member' }))
   );
-  await screen.findByRole('region', {
-    name: 'Landscape Name Members',
-  });
-  await waitFor(() => expect(screen.getAllByRole('row').length).toBe(3));
+  await waitFor(() =>
+    expect(within(listSection).getAllByRole('row').length).toBe(3)
+  );
+
+  // Pending members
+  const pendingSection = within(
+    screen.getByRole('region', {
+      name: 'Pending Members',
+    })
+  );
+  expect(pendingSection.getAllByRole('listitem').length).toBe(2);
+
+  // Reject
+  expect(
+    within(pendingSection.getAllByRole('listitem')[0]).getByRole('img', {
+      name: 'Member name Pending 0 Member Last Name',
+    })
+  ).toBeInTheDocument();
+  await act(
+    async () =>
+      await fireEvent.click(
+        within(pendingSection.getAllByRole('listitem')[0]).getByRole('button', {
+          name: 'Reject',
+        })
+      )
+  );
+  await act(
+    async () =>
+      await fireEvent.click(
+        screen.getByRole('button', { name: '[TODO] Reject confirm' })
+      )
+  );
+  await waitFor(() =>
+    expect(pendingSection.getAllByRole('listitem').length).toBe(1)
+  );
+
+  // Approve
+  expect(
+    within(pendingSection.getAllByRole('listitem')[0]).getByRole('img', {
+      name: 'Member name Pending 1 Member Last Name',
+    })
+  ).toBeInTheDocument();
+  await act(
+    async () =>
+      await fireEvent.click(
+        within(pendingSection.getAllByRole('listitem')[0]).getByRole('button', {
+          name: 'Approve',
+        })
+      )
+  );
+
+  expect(pendingSection.getAllByRole('listitem').length).toBe(1);
+  expect(
+    within(pendingSection.getAllByRole('listitem')[0]).getByRole('img', {
+      name: 'Member name Pending 0 Member Last Name',
+    })
+  ).toBeInTheDocument();
+  await waitFor(() =>
+    expect(within(listSection).getAllByRole('row').length).toBe(5)
+  );
 });

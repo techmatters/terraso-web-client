@@ -11,6 +11,7 @@ import { Typography } from '@mui/material';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
+import PageLoader from 'layout/PageLoader';
 
 import { GroupContextProvider } from 'group/groupContext';
 import { fetchGroupForMembers } from 'group/groupSlice';
@@ -27,9 +28,7 @@ const MemberLeaveButton = withProps(GroupMemberLeave, {
 });
 
 const Header = () => {
-  const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { slug } = useParams();
   const { data: group, fetching } = useSelector(
     state => state.group.membersGroup
   );
@@ -40,10 +39,6 @@ const Header = () => {
     }),
     fetching
   );
-
-  useEffect(() => {
-    dispatch(fetchGroupForMembers(slug));
-  }, [dispatch, slug]);
 
   const { loading: loadingPermissions, allowed } = usePermission(
     'group.manageMembers',
@@ -84,8 +79,19 @@ const Header = () => {
 };
 
 const GroupMembers = () => {
+  const dispatch = useDispatch();
   const { slug } = useParams();
-  const { data: group } = useSelector(state => state.group.membersGroup);
+  const { data: group, fetching } = useSelector(
+    state => state.group.membersGroup
+  );
+
+  useEffect(() => {
+    dispatch(fetchGroupForMembers(slug));
+  }, [dispatch, slug]);
+
+  if (fetching) {
+    return <PageLoader />;
+  }
 
   return (
     <PageContainer>

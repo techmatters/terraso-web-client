@@ -35,9 +35,11 @@ const setup = async () => {
   });
   const email = screen.getByRole('textbox', { name: 'Email address' });
   const website = screen.getByRole('textbox', { name: 'Website' });
-  const membershipType = screen.getByRole('radiogroup', { name: 'Membership Type'})
-  const membershipTypeOpen = within(membershipType).getByLabelText('Open')
-  const membershipTypeClose = within(membershipType).getByLabelText('Closed')
+  const membershipType = screen.getByRole('radiogroup', {
+    name: 'Membership Type',
+  });
+  const membershipTypeOpen = within(membershipType).getByLabelText('Open');
+  const membershipTypeClose = within(membershipType).getByLabelText('Closed');
   return {
     inputs: {
       name,
@@ -427,7 +429,7 @@ test('GroupForm: Save form (add)', async () => {
     target: { value: 'https://www.other.org' },
   });
   fireEvent.change(inputs.email, { target: { value: 'other@group.org' } });
-  fireEvent.click(inputs.membershipTypeClose)
+  fireEvent.click(inputs.membershipTypeClose);
 
   await act(async () => fireEvent.click(screen.getByText(/Create Group/i)));
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);

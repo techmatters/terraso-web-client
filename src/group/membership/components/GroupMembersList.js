@@ -123,8 +123,12 @@ const PendingApprovals = () => {
   }
 
   return (
-    <>
-      <Typography variant="h2" sx={{ marginBottom: 2 }}>
+    <section aria-labelledby="members-pending-title-id">
+      <Typography
+        id="members-pending-title-id"
+        variant="h2"
+        sx={{ marginBottom: 2 }}
+      >
         {t('group.members_list_pending_title')}
       </Typography>
       <Stack direction="row" spacing={1} sx={{ marginBottom: 2 }}>
@@ -171,7 +175,7 @@ const PendingApprovals = () => {
           </ListItem>
         ))}
       </List>
-    </>
+    </section>
   );
 };
 
@@ -260,44 +264,50 @@ const GroupMembersList = () => {
     },
   ];
 
+  const membersTitle = t('group.members_list_title', {
+    name: _.get('name', owner),
+  });
+
   return (
     <GroupMembersListContext.Provider value={listContext}>
       <PendingApprovals />
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        sx={{
-          marginTop: 2,
-          marginBottom: 2,
-        }}
-      >
-        <Restricted permission="group.manageMembers" resource={owner}>
-          <Typography variant="h2">
-            {t('group.members_list_title', { name: _.get('name', owner) })}
-          </Typography>
-        </Restricted>
-      </Stack>
-      <TableResponsive
-        columns={columns}
-        rows={listContext.members}
-        emptyMessage={t('group.members_list_empty')}
-        searchParams={Object.fromEntries(searchParams.entries())}
-        onSearchParamsChange={setSearchParams}
-        cardsProps={{
-          avatarRender: ({ row: member }) => (
-            <AccountAvatar sx={{ width: 80, height: 80 }} user={member} />
-          ),
-        }}
-        tableProps={{
-          initialSort: [
-            {
-              field: 'name',
-              sort: 'asc',
-            },
-          ],
-        }}
-      />
+      <section aria-labelledby="members-list-title-id">
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{
+            marginTop: 2,
+            marginBottom: 2,
+          }}
+        >
+          <Restricted permission="group.manageMembers" resource={owner}>
+            <Typography variant="h2" id="members-list-title-id">
+              {membersTitle}
+            </Typography>
+          </Restricted>
+        </Stack>
+        <TableResponsive
+          columns={columns}
+          rows={listContext.members}
+          emptyMessage={t('group.members_list_empty')}
+          searchParams={Object.fromEntries(searchParams.entries())}
+          onSearchParamsChange={setSearchParams}
+          cardsProps={{
+            avatarRender: ({ row: member }) => (
+              <AccountAvatar sx={{ width: 80, height: 80 }} user={member} />
+            ),
+          }}
+          tableProps={{
+            initialSort: [
+              {
+                field: 'name',
+                sort: 'asc',
+              },
+            ],
+          }}
+        />
+      </section>
     </GroupMembersListContext.Provider>
   );
 };
