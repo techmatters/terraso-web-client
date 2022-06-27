@@ -10,6 +10,7 @@ import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
 import * as terrasoApi from 'terrasoBackend/api';
+
 import GroupMemberRequestCancel from './GroupMemberRequestCancel';
 
 jest.mock('terrasoBackend/api');
@@ -28,7 +29,7 @@ const setup = async initialState => {
         <GroupMemberLeave renderLabel={() => 'Leave Label'} {...props} />
       )}
       MemberRequestJoinButton={props => (
-        <GroupMemberJoin label="Request Join Label" {...props} /> 
+        <GroupMemberJoin label="Request Join Label" {...props} />
       )}
       MemberRequestCancelButton={props => (
         <GroupMemberRequestCancel label="Request Cancel Label" {...props} />

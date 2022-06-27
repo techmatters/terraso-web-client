@@ -36,24 +36,26 @@ const GroupMembershipJoinLeaveButton = () => {
 
   const userMembership = _.get('membersInfo.accountMembership', group);
 
-  const onJoin = () => {
+  const onJoin = successMessage => () => {
     trackEvent('joinGroup', { props: { group: groupSlug } });
     dispatch(
       joinGroup({
         groupSlug,
         userEmail,
         ownerName: owner.name,
+        successMessage,
       })
     ).then(() => updateOwner?.());
   };
 
-  const onLeave = () => {
+  const onRemove = successMessage => () => {
     trackEvent('leaveGroup', { props: { group: groupSlug } });
     dispatch(
       leaveGroup({
         groupSlug,
         membershipId: userMembership.id,
         ownerName: owner.name,
+        successMessage,
       })
     ).then(() => updateOwner?.());
   };
@@ -62,15 +64,32 @@ const GroupMembershipJoinLeaveButton = () => {
     userMembership &&
     userMembership.membershipStatus === MEMBERSHIP_STATUS_PENDING
   ) {
-    return <MemberRequestCancelButton onConfirm={onLeave} owner={owner} />;
+    return (
+      <MemberRequestCancelButton
+        onConfirm={onRemove('group.request_cancel_success')}
+        owner={owner}
+      />
+    );
   }
   if (userMembership) {
-    return <MemberLeaveButton onConfirm={onLeave} owner={owner} />;
+    return (
+      <MemberLeaveButton
+        onConfirm={onRemove('group.leave_success')}
+        owner={owner}
+      />
+    );
   }
   if (group?.membershipType === MEMBERSHIP_CLOSED) {
-    return <MemberRequestJoinButton onJoin={onJoin} loading={loading} />;
+    return (
+      <MemberRequestJoinButton
+        onJoin={onJoin('group.request_success')}
+        loading={loading}
+      />
+    );
   }
-  return <MemberJoinButton onJoin={onJoin} loading={loading} />;
+  return (
+    <MemberJoinButton onJoin={onJoin('group.join_success')} loading={loading} />
+  );
 };
 
 export default GroupMembershipJoinLeaveButton;
