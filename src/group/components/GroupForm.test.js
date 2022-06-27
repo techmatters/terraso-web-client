@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from 'tests/utils';
+import { fireEvent, render, screen, within } from 'tests/utils';
 
 import React from 'react';
 
@@ -35,12 +35,17 @@ const setup = async () => {
   });
   const email = screen.getByRole('textbox', { name: 'Email address' });
   const website = screen.getByRole('textbox', { name: 'Website' });
+  const membershipType = screen.getByRole('radiogroup', { name: 'Membership Type (required)'})
+  const membershipTypeOpen = within(membershipType).getByLabelText('Open membership (Default)')
+  const membershipTypeClose = within(membershipType).getByLabelText('Closed membership')
   return {
     inputs: {
       name,
       description,
       email,
       website,
+      membershipTypeOpen,
+      membershipTypeClose,
     },
   };
 };
@@ -216,6 +221,7 @@ test('GroupForm: website accepts address without protocol', async () => {
               description: 'Group description',
               email: 'group@group.org',
               website: 'https://www.group.org',
+              membershipType: 'OPEN',
             },
           },
         ],
@@ -254,6 +260,7 @@ test('GroupForm: Save form', async () => {
               description: 'Group description',
               email: 'group@group.org',
               website: 'https://www.group.org',
+              membershipType: 'OPEN',
             },
           },
         ],
@@ -292,6 +299,7 @@ test('GroupForm: Save form', async () => {
       name: 'New name',
       website: 'https://www.other.org',
       email: 'new.email@group.org',
+      membershipType: 'OPEN',
     },
   });
 });
@@ -308,6 +316,7 @@ test('GroupForm: Save form error', async () => {
                 description: 'Group description',
                 email: 'group@group.org',
                 website: 'https://www.group.org',
+                membershipType: 'OPEN',
               },
             },
           ],
@@ -389,6 +398,7 @@ test('GroupForm: Save form (add)', async () => {
       name: 'New name',
       website: 'https://www.other.org',
       email: 'other@group.org',
+      membershipType: 'OPEN',
     },
   });
 });
