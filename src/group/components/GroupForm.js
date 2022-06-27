@@ -95,7 +95,14 @@ const MembershipRadioButton = props => {
   return (
     <FormControlLabel
       value={value}
-      control={<Radio sx={{ pt: 0 }} />}
+      control={
+        <Radio
+          sx={{ pt: 0 }}
+          inputProps={{
+            'aria-label': label,
+          }}
+        />
+      }
       label={
         <Stack spacing={1}>
           <Typography variant="body1">{label}</Typography>
@@ -116,8 +123,7 @@ const MembershipRadioButtons = props => {
 
   return (
     <RadioGroup
-      aria-labelledby="demo-controlled-radio-buttons-group"
-      name="controlled-radio-buttons-group"
+      aria-labelledby="group-membershipType-label"
       value={value}
       onChange={handleChange}
     >
