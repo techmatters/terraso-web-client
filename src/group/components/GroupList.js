@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 
-import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
@@ -18,7 +17,6 @@ import { fetchGroups } from 'group/groupSlice';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberRequestCancel from 'group/membership/components/GroupMemberRequestCancel';
-import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
 import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton';
 
 import { withProps } from 'react-hoc';
@@ -124,22 +122,12 @@ const GroupList = () => {
         ),
     },
     {
-      field: 'members',
-      headerName: t('group.list_column_members'),
-      align: 'center',
-      cardSize: 6,
-      valueGetter: ({ row: group }) =>
-        _.getOr(0, 'membersInfo.totalCount', group),
-      renderCell: ({ row: group }) => (
-        <GroupMembershipCount groupSlug={group.slug} />
-      ),
-    },
-    {
       field: 'actions',
       type: 'actions',
       headerName: t('group.list_column_actions_description'),
       sortable: false,
       align: 'center',
+      flex: 0.75,
       cardSize: 6,
       getActions: ({ row: group }) => [<MembershipButton group={group} />],
     },
