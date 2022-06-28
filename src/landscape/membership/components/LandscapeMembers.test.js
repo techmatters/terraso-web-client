@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from 'tests/utils';
+import { fireEvent, render, screen, within, waitFor } from 'tests/utils';
 
 import React from 'react';
 
@@ -365,9 +365,9 @@ test('LandscapeMembers: Manager actions', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('option', { name: 'Manager' }))
   );
-  expect(
+  await waitFor(() => expect(
     within(rows[3]).getByRole('cell', { name: 'Manager' })
-  ).toHaveAttribute('data-field', 'role');
+  ).toHaveAttribute('data-field', 'role'));
 
   // Remove member
   expect(rows.length).toBe(4);
@@ -376,6 +376,5 @@ test('LandscapeMembers: Manager actions', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Remove Member' }))
   );
-  const removedRows = screen.getAllByRole('row');
-  expect(removedRows.length).toBe(3);
+  await waitFor(() => expect(screen.getAllByRole('row').length).toBe(3));
 });
