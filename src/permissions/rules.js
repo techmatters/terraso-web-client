@@ -26,7 +26,8 @@ const isAllowedToAddSharedData = ({ resource: group }) => {
 };
 
 const isAllowedToChangeGroup = ({ resource: group }) => {
-  const isManager = _.get('accountMembership.userRole', group) === 'MANAGER';
+  const isManager =
+    _.get('membersInfo.accountMembership.userRole', group) === 'MANAGER';
   return Promise.resolve(isManager);
 };
 

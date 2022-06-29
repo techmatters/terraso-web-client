@@ -21,6 +21,9 @@ const setup = async initialState => {
       owner={{
         name: 'Owner Name',
       }}
+      group={{
+        membershipType: 'OPEN'
+      }}
       groupSlug="group-slug"
       MemberJoinButton={props => (
         <GroupMemberJoin label="Join Label" {...props} />
@@ -252,7 +255,7 @@ test('GroupMembershipCard: Request Join', async () => {
     },
   });
   expect(
-    screen.getByText('0 Terraso members joined Owner Name.')
+    screen.getByText('Owner Name is a closed group, so the member list is not visible to non-members.')
   ).toBeInTheDocument();
   expect(
     screen.getByRole('button', { name: 'Request Join Label' })
@@ -262,7 +265,7 @@ test('GroupMembershipCard: Request Join', async () => {
   );
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(
-    screen.getByText('1 Terraso member joined Owner Name.')
+    screen.getByText(/Your request has been sent to group manager/i)
   ).toBeInTheDocument();
   expect(() => screen.getByRole('progressbar')).toThrow();
   expect(() => screen.getByRole('button', { name: 'Join Label' })).toThrow();

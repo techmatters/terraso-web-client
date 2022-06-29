@@ -32,6 +32,7 @@ import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberRequestCancel from 'group/membership/components/GroupMemberRequestCancel';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
+import GroupMembershipInfo from 'group/membership/components/GroupMembershipInfo';
 import SharedDataCard from 'sharedData/components/SharedDataCard';
 
 import { withProps } from 'react-hoc';
@@ -191,6 +192,7 @@ const GroupView = () => {
           <Grid item xs={12} md={6} style={{ display: 'flex' }}>
             <GroupMembershipCard
               onViewMembers={() => navigate(`/groups/${group.slug}/members`)}
+              InfoComponent={GroupMembershipInfo}
             />
           </Grid>
           <Grid item xs={12} md={12}>
