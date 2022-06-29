@@ -1,0 +1,4 @@
+export const MEMBERSHIP_CLOSED = 'CLOSED';
+export const MEMBERSHIP_OPEN = 'OPEN';
+
+export const MEMBERSHIP_STATUS_PENDING = 'PENDING';
