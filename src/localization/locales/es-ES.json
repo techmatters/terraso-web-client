@@ -95,7 +95,12 @@
         "view_request_cancel_label": "Cancelar Solicitud",
         "membership_request_cancel_confirm_title": "Retirar solicitud de membresía pendiente",
         "membership_request_cancel_confirm_message": "¿Deseas retirar tu solicitud para unirte a {{name}}?",
-        "membership_request_cancel_confirm_button": "Retirar Solicitud"
+        "membership_request_cancel_confirm_button": "Retirar Solicitud",
+        "membership_open_option": "Abierto",
+        "membership_open_description": "Cualquier miembro de Terraso puede unirse",
+        "membership_close_option": "Cerrado",
+        "membership_close_description": "La membresía requiere la aprobación de un administrador de grupo",
+        "form_membershipType_label": "Tipo de membresía"
     },
     "tool": {
         "avilability": "Disponibilidad",

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from 'tests/utils';
+import { fireEvent, render, screen, within } from 'tests/utils';
 
 import React from 'react';
 
@@ -35,12 +35,17 @@ const setup = async () => {
   });
   const email = screen.getByRole('textbox', { name: 'Email address' });
   const website = screen.getByRole('textbox', { name: 'Website' });
+  const membershipType = screen.getByRole('radiogroup', { name: 'Membership Type'})
+  const membershipTypeOpen = within(membershipType).getByLabelText('Open')
+  const membershipTypeClose = within(membershipType).getByLabelText('Closed')
   return {
     inputs: {
       name,
       description,
       email,
       website,
+      membershipTypeOpen,
+      membershipTypeClose,
     },
   };
 };
@@ -216,6 +221,7 @@ test('GroupForm: website accepts address without protocol', async () => {
               description: 'Group description',
               email: 'group@group.org',
               website: 'https://www.group.org',
+              membershipType: 'OPEN',
             },
           },
         ],
@@ -254,6 +260,7 @@ test('GroupForm: Save form', async () => {
               description: 'Group description',
               email: 'group@group.org',
               website: 'https://www.group.org',
+              membershipType: 'OPEN',
             },
           },
         ],
@@ -282,6 +289,8 @@ test('GroupForm: Save form', async () => {
     target: { value: 'https://www.other.org' },
   });
 
+  fireEvent.click(inputs.membershipTypeClose);
+
   await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
   const saveCall = terrasoApi.requestGraphQL.mock.calls[1];
@@ -292,6 +301,7 @@ test('GroupForm: Save form', async () => {
       name: 'New name',
       website: 'https://www.other.org',
       email: 'new.email@group.org',
+      membershipType: 'CLOSED',
     },
   });
 });
@@ -308,6 +318,7 @@ test('GroupForm: Save form error', async () => {
                 description: 'Group description',
                 email: 'group@group.org',
                 website: 'https://www.group.org',
+                membershipType: 'OPEN',
               },
             },
           ],
@@ -356,7 +367,7 @@ test('GroupForm: Avoid fetch', async () => {
     screen.getByRole('progressbar', { name: 'Loading', hidden: true })
   ).toThrow('Unable to find an element');
 });
-test('GroupForm: Save form (add)', async () => {
+test('GroupForm: Save form (add) (Default open)', async () => {
   useParams.mockReturnValue({});
   terrasoApi.requestGraphQL.mockResolvedValueOnce({
     addGroup: {
@@ -389,6 +400,45 @@ test('GroupForm: Save form (add)', async () => {
       name: 'New name',
       website: 'https://www.other.org',
       email: 'other@group.org',
+      membershipType: 'OPEN',
+    },
+  });
+});
+test('GroupForm: Save form (add)', async () => {
+  useParams.mockReturnValue({});
+  terrasoApi.requestGraphQL.mockResolvedValueOnce({
+    addGroup: {
+      group: {
+        name: 'New name',
+        description: 'New description',
+        website: 'https://www.other.org',
+        email: 'group@group.org',
+      },
+    },
+  });
+
+  const { inputs } = await setup();
+
+  fireEvent.change(inputs.name, { target: { value: 'New name' } });
+  fireEvent.change(inputs.description, {
+    target: { value: 'New description' },
+  });
+  fireEvent.change(inputs.website, {
+    target: { value: 'https://www.other.org' },
+  });
+  fireEvent.change(inputs.email, { target: { value: 'other@group.org' } });
+  fireEvent.click(inputs.membershipTypeClose)
+
+  await act(async () => fireEvent.click(screen.getByText(/Create Group/i)));
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[0];
+  expect(saveCall[1]).toStrictEqual({
+    input: {
+      description: 'New description',
+      name: 'New name',
+      website: 'https://www.other.org',
+      email: 'other@group.org',
+      membershipType: 'CLOSED',
     },
   });
 });

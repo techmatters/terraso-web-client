@@ -6,7 +6,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as yup from 'yup';
 
-import { Typography } from '@mui/material';
+import {
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  Stack,
+  Typography,
+} from '@mui/material';
 
 import { useDocumentTitle } from 'common/document';
 import { transformURL } from 'common/utils';
@@ -21,6 +27,10 @@ import {
   saveGroup,
   setFormNewValues,
 } from 'group/groupSlice';
+import {
+  MEMBERSHIP_CLOSED,
+  MEMBERSHIP_OPEN,
+} from 'group/membership/components/groupMembershipConstants';
 
 import { MAX_DESCRIPTION_LENGTH } from 'config';
 
@@ -36,6 +46,7 @@ const VALIDATION_SCHEMA = yup
       .required(),
     email: yup.string().trim().email(),
     website: yup.string().trim().ensure().transform(transformURL).url(),
+    membershipType: yup.string(),
   })
   .required();
 
@@ -67,7 +78,69 @@ const FIELDS = [
     placeholder: 'group.form_website_placeholder',
     type: 'url',
   },
+  {
+    name: 'membershipType',
+    label: 'group.form_membershipType_label',
+    defaultValue: MEMBERSHIP_OPEN,
+    props: {
+      renderInput: ({ field }) => (
+        <MembershipRadioButtons value={field.value} onChange={field.onChange} />
+      ),
+    },
+  },
 ];
+
+const MembershipRadioButton = props => {
+  const { value, label, description, sx } = props;
+  return (
+    <FormControlLabel
+      value={value}
+      control={
+        <Radio
+          sx={{ pt: 0 }}
+          inputProps={{
+            'aria-label': label,
+          }}
+        />
+      }
+      label={
+        <Stack spacing={1}>
+          <Typography variant="body1">{label}</Typography>
+          <Typography variant="body2">{description}</Typography>
+        </Stack>
+      }
+      sx={{ mb: 2, alignItems: 'flex-start', ...sx }}
+    />
+  );
+};
+const MembershipRadioButtons = props => {
+  const { t } = useTranslation();
+  const { value, onChange } = props;
+
+  const handleChange = event => {
+    onChange(event.target.value);
+  };
+
+  return (
+    <RadioGroup
+      aria-labelledby="group-membershipType-label"
+      value={value}
+      onChange={handleChange}
+    >
+      <MembershipRadioButton
+        value={MEMBERSHIP_OPEN}
+        label={t('group.membership_open_option')}
+        description={t('group.membership_open_description')}
+        sx={{ mb: 4 }}
+      />
+      <MembershipRadioButton
+        value={MEMBERSHIP_CLOSED}
+        label={t('group.membership_close_option')}
+        description={t('group.membership_close_description')}
+      />
+    </RadioGroup>
+  );
+};
 
 const GroupForm = () => {
   const dispatch = useDispatch();
@@ -151,7 +224,7 @@ const GroupForm = () => {
         aria-labelledby="group-form-page-title"
         prefix="group"
         fields={FIELDS}
-        values={group}
+        values={isNew ? { membershipType: MEMBERSHIP_OPEN } : group}
         validationSchema={VALIDATION_SCHEMA}
         onSave={onSave}
         saveLabel={isNew ? 'group.form_create_label' : 'group.form_save_label'}
