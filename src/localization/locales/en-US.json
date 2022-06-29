@@ -104,12 +104,11 @@
         "membership_card_pending_description": "<0>Your request has been sent to group manager. <1>Your membership is currently pending</1>.</0>",
         "membership_card_closed_description": "<0>{{name}} is a closed group, so the member list is not visible to non-members.</0><1>Request to join with a single click below. <1>Read more about group membership</1>.</1>",
         "membership_card_closed_help_url": "[TODO] URL",
-        "membership_card_info_title": "[TODO] Join a Closed or Open Group",
         "membership_card_info_close": "Close",
         "membership_card_info_closed_title": "How to join a closed group",
-        "membership_card_info_close_description": "<0>Step 1.  You request to join by clicking the ‘Request to Join’ button in Members box. You will see the pending state message during the process.</0><1>Step2. Group Manager(s) approve or reject the request.</1><2>Step3. You will see the result on your homepage.</2>",
+        "membership_card_info_close_description": "<0>1.  Click the “Request to Join.” Status will change to “Pending.”</0><1>2. Group manager will approve or deny the request.</1>",
         "membership_card_info_open_title": "How to join an open group",
-        "membership_card_info_open_description": "Click/tap ‘Join This Group’ button in Members box. Notice the your membership has granted immediately.",
+        "membership_card_info_open_description": "Click “Join Group.” You become a member immediately.",
         "membership_card_manage_members": "Manage Members"
     },
     "tool": {
