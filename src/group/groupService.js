@@ -199,7 +199,7 @@ export const removeMember = (member, currentUser) => {
     }));
 };
 
-export const updateMemberRole = ({ member, newRole }, currentUser) => {
+export const updateMember = ({ member }, currentUser) => {
   const query = `
     mutation updateMembership($input: MembershipUpdateMutationInput!) {
       updateMembership(input: $input) {
@@ -214,7 +214,7 @@ export const updateMemberRole = ({ member, newRole }, currentUser) => {
   `;
   return terrasoApi
     .requestGraphQL(query, {
-      input: { id: member.membershipId, userRole: newRole },
+      input: member,
       accountEmail: currentUser.email,
     })
     .then(_.get('updateMembership.membership.group'))

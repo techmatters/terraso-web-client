@@ -71,9 +71,9 @@ export const removeMember = createAsyncThunk(
   'group/removeMember',
   groupService.removeMember
 );
-export const updateMemberRole = createAsyncThunk(
-  'group/updateMemberRole',
-  groupService.updateMemberRole
+export const updateMember = createAsyncThunk(
+  'group/updateMember',
+  groupService.updateMember
 );
 export const saveGroup = createAsyncThunk(
   'group/saveGroup',
@@ -278,9 +278,9 @@ const groupSlice = createSlice({
       ),
     [removeMember.rejected]: (state, action) =>
       _.set(`members.list.${action.meta.arg.id}.fetching`, false, state),
-    [updateMemberRole.pending]: (state, action) =>
+    [updateMember.pending]: (state, action) =>
       _.set(`members.list.${action.meta.arg.member.id}.fetching`, true, state),
-    [updateMemberRole.fulfilled]: (state, action) =>
+    [updateMember.fulfilled]: (state, action) =>
       _.set(
         'members',
         {
@@ -289,7 +289,7 @@ const groupSlice = createSlice({
         },
         state
       ),
-    [updateMemberRole.rejected]: (state, action) =>
+    [updateMember.rejected]: (state, action) =>
       _.set(`members.list.${action.meta.arg.member.id}.fetching`, false, state),
     [saveGroup.pending]: state => ({
       ...state,
