@@ -5,12 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import {
+  ListItem as BaseListItem,
   Button,
   CardActions,
   Divider,
   Link,
   List,
-  ListItem,
   Stack,
   Typography,
 } from '@mui/material';
@@ -20,19 +20,20 @@ import Restricted from 'permissions/components/Restricted';
 import GroupMembershipPendingWarning from 'group/membership/components/GroupMembershipPendingWarning';
 import HomeCard from 'home/components/HomeCard';
 
+import { withProps } from 'react-hoc';
+
 import theme from 'theme';
+
+const ListItem = withProps(BaseListItem, {
+  component: withProps(Stack, { component: 'li' }),
+});
 
 const GroupItem = ({ group }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const pendingCount = _.getOr(0, 'membersInfo.pendingCount', group);
   return (
-    <ListItem
-      component={Stack}
-      direction="column"
-      alignItems="flex-start"
-      spacing={2}
-    >
+    <ListItem direction="column" alignItems="flex-start" spacing={2}>
       <Stack direction="row">
         <Link
           component={RouterLink}
