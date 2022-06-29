@@ -61,7 +61,9 @@
         "added": "Grupo agregado “{{name}}.”",
         "updated": "Grupo actualizado “{{name}}.”",
         "join_success": "Se unió {{name}}",
+        "request_success": "Solicitaste unirte al grupo “{{name}}”",
         "leave_success": "Se abandonó {{name}}",
+        "request_cancel_success": "Has retirado tu solicitud para unirte al grupo “{{name}}”",
         "not_found": "Grupo no encontrado",
         "membership_card_description_other": "{{count}} miembros de Terraso se unieron a {{name}}.",
         "membership_card_description_one": "{{count}} miembro de Terraso se unió a {{name}}.",
@@ -86,7 +88,14 @@
         "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). Debe existir al menos un administrador.",
         "unique": "El grupo “{{body.variables.input.name}}” ya existe.",
         "shared_data_upload_title": "Compartir archivos con {{name}}",
-        "list_search_placeholder": "Buscar grupos"
+        "list_search_placeholder": "Buscar grupos",
+        "list_request_join_button": "Solicitud",
+        "list_request_cancel_label": "Pendiente",
+        "view_request_join_button": "Solicitud para unirse",
+        "view_request_cancel_label": "Cancelar Solicitud",
+        "membership_request_cancel_confirm_title": "Retirar solicitud de membresía pendiente",
+        "membership_request_cancel_confirm_message": "¿Deseas retirar tu solicitud para unirte a {{name}}?",
+        "membership_request_cancel_confirm_button": "Retirar Solicitud"
     },
     "tool": {
         "avilability": "Disponibilidad",
