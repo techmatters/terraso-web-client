@@ -89,7 +89,7 @@
         "unique": "The group “{{body.variables.input.name}}” already exists.",
         "shared_data_upload_title": "Share Files with {{name}}",
         "list_search_placeholder": "Search groups",
-        "list_request_join_button": "Request",
+        "list_request_join_button": "Request to join",
         "list_request_cancel_label": "Pending",
         "view_request_join_button": "Request to join",
         "view_request_cancel_label": "Cancel Request",
