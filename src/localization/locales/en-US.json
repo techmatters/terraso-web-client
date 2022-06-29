@@ -22,7 +22,7 @@
         "membership_leave_confirm_title": "Leave “{{name}}”",
         "view_card_title": "About {{name}}",
         "list_title": "Groups",
-        "members_list_title": "{{name}} Members",
+        "members_list_title": "Current Members",
         "members_remove_confirmation_title": "Remove Member",
         "membership_leave_confirm_message": "Are you sure you want to leave the group “{{name}}”?",
         "members_remove_confirmation_message": "You are about to remove “{{userName}}” from the “{{name}}” group.",
@@ -113,10 +113,10 @@
         "members_list_pending_title": "Pending Members",
         "members_list_pending_message": "{{count}} Pending members are waiting for your approval",
         "members_list_pending_approve": "Approve",
-        "members_list_pending_confirmation_title": "[TODO] Confirmation Reject title",
-        "members_list_pending_confirmation_message": "[TODO] Confirmation Reject message",
-        "members_list_pending_confirmation_button": "[TODO] Reject confirm",
-        "members_list_pending_reject": "Reject"
+        "members_list_pending_confirmation_title": "Deny membership request?",
+        "members_list_pending_confirmation_message": "Do you with to deny {{userName}}’s request for membership in {{name}}?",
+        "members_list_pending_confirmation_button": "Deny Request",
+        "members_list_pending_reject": "Deny"
     },
     "tool": {
         "requirements": "System requirements",
