@@ -36,8 +36,8 @@ const setup = async () => {
   const email = screen.getByRole('textbox', { name: 'Email address' });
   const website = screen.getByRole('textbox', { name: 'Website' });
   const membershipType = screen.getByRole('radiogroup', { name: 'Membership Type'})
-  const membershipTypeOpen = within(membershipType).getByLabelText('Open membership (Default)')
-  const membershipTypeClose = within(membershipType).getByLabelText('Closed membership')
+  const membershipTypeOpen = within(membershipType).getByLabelText('Open')
+  const membershipTypeClose = within(membershipType).getByLabelText('Closed')
   return {
     inputs: {
       name,
