@@ -7,7 +7,6 @@ import InfoIcon from '@mui/icons-material/InfoOutlined';
 import {
   Dialog,
   DialogContent,
-  DialogTitle,
   IconButton,
   Stack,
   Typography,
@@ -23,8 +22,7 @@ const GroupMembershipInfo = () => {
         <InfoIcon />
       </IconButton>
       <Dialog open={open}>
-        <DialogTitle component="h1" sx={{ pr: 7 }}>
-          {t('group.membership_card_info_title')}
+        <DialogContent>
           <IconButton
             aria-label={t('group.membership_card_info_close')}
             onClick={() => setOpen(false)}
@@ -37,8 +35,6 @@ const GroupMembershipInfo = () => {
           >
             <CloseIcon />
           </IconButton>
-        </DialogTitle>
-        <DialogContent>
           <Typography variant="h2" sx={{ mb: 2 }}>
             {t('group.membership_card_info_closed_title')}
           </Typography>
@@ -46,7 +42,6 @@ const GroupMembershipInfo = () => {
             <Trans i18nKey="group.membership_card_info_close_description">
               <Typography variant="body1">Step 1</Typography>
               <Typography variant="body1">Step 2</Typography>
-              <Typography variant="body1">Step 3</Typography>
             </Trans>
           </Stack>
           <Typography variant="h2" sx={{ mt: 4, mb: 2 }}>
