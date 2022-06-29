@@ -96,10 +96,10 @@
         "membership_request_cancel_confirm_title": "Withdraw pending membership request",
         "membership_request_cancel_confirm_message": "Would you like to withdraw your request to join {{name}}?",
         "membership_request_cancel_confirm_button": "Withdraw Request",
-        "membership_open_option": "Open membership (Default)",
-        "membership_open_description": "Any Terraso members can join this group.",
-        "membership_close_option": "Closed membership",
-        "membership_close_description": "Joining the group requires a group manager’s approval.",
+        "membership_open_option": "Open",
+        "membership_open_description": "Any Terraso member can join",
+        "membership_close_option": "Closed",
+        "membership_close_description": "Membership requires a group manager’s approval",
         "form_membershipType_label": "Membership Type"
     },
     "tool": {
