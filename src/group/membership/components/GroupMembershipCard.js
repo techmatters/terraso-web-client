@@ -23,6 +23,7 @@ import AccountAvatar from 'account/components/AccountAvatar';
 import { useGroupContext } from 'group/groupContext';
 
 import GroupMembershipJoinLeaveButton from './GroupMembershipJoinLeaveButton';
+import GroupMembershipPendingWarning from './GroupMembershipPendingWarning';
 import {
   MEMBERSHIP_CLOSED,
   MEMBERSHIP_STATUS_PENDING,
@@ -173,6 +174,17 @@ const GroupMembershipCard = props => {
           </Restricted>
         </CardActions>
       )}
+      <Restricted permission="group.change" resource={group}>
+        {membersInfo.pendingCount > 0 && (
+          <CardContent>
+            <GroupMembershipPendingWarning
+              link
+              count={membersInfo.pendingCount}
+              onPendingClick={onViewMembers}
+            />
+          </CardContent>
+        )}
+      </Restricted>
     </Card>
   );
 };

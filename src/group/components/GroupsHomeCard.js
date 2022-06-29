@@ -2,7 +2,7 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import {
   Button,
@@ -11,35 +11,57 @@ import {
   Link,
   List,
   ListItem,
+  Stack,
   Typography,
 } from '@mui/material';
 
+import Restricted from 'permissions/components/Restricted';
+
+import GroupMembershipPendingWarning from 'group/membership/components/GroupMembershipPendingWarning';
 import HomeCard from 'home/components/HomeCard';
 
 import theme from 'theme';
 
 const GroupItem = ({ group }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const pendingCount = _.getOr(0, 'membersInfo.pendingCount', group);
   return (
-    <ListItem>
-      <Link
-        component={RouterLink}
-        underline="none"
-        to={`/groups/${group.slug}`}
-      >
-        {group.name}
-      </Link>
-      <Typography sx={theme => ({ marginLeft: theme.spacing(1) })}>
-        (
-        {t(
-          `group.role_${_.getOr(
-            'member',
-            'accountMembership.userRole',
-            group
-          ).toLowerCase()}`
+    <ListItem
+      component={Stack}
+      direction="column"
+      alignItems="flex-start"
+      spacing={2}
+    >
+      <Stack direction="row">
+        <Link
+          component={RouterLink}
+          underline="none"
+          to={`/groups/${group.slug}`}
+        >
+          {group.name}
+        </Link>
+        <Typography sx={{ ml: 1 }}>
+          (
+          {t(
+            `group.role_${_.getOr(
+              'member',
+              'membersInfo.accountMembership.userRole',
+              group
+            ).toLowerCase()}`
+          )}
+          )
+        </Typography>
+      </Stack>
+      <Restricted permission="group.change" resource={group}>
+        {pendingCount > 0 && (
+          <GroupMembershipPendingWarning
+            link
+            count={pendingCount}
+            onPendingClick={() => navigate(`/groups/${group.slug}/members`)}
+          />
         )}
-        )
-      </Typography>
+      </Restricted>
     </ListItem>
   );
 };
