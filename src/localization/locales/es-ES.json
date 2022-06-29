@@ -89,7 +89,7 @@
         "unique": "El grupo “{{body.variables.input.name}}” ya existe.",
         "shared_data_upload_title": "Compartir archivos con {{name}}",
         "list_search_placeholder": "Buscar grupos",
-        "list_request_join_button": "Solicitud",
+        "list_request_join_button": "Solicitud para unirse",
         "list_request_cancel_label": "Pendiente",
         "view_request_join_button": "Solicitud para unirse",
         "view_request_cancel_label": "Cancelar Solicitud",
