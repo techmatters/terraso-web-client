@@ -46,7 +46,7 @@ const VALIDATION_SCHEMA = yup
       .required(),
     email: yup.string().trim().email(),
     website: yup.string().trim().ensure().transform(transformURL).url(),
-    membershipType: yup.string().required(),
+    membershipType: yup.string(),
   })
   .required();
 
