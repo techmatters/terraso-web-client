@@ -62,6 +62,7 @@ export const groupMembers = `
         node {
           id
           userRole
+          membershipStatus
           user {
             ...userFields
           }

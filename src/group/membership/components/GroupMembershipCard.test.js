@@ -22,7 +22,7 @@ const setup = async initialState => {
         name: 'Owner Name',
       }}
       group={{
-        membershipType: 'OPEN'
+        membershipType: 'OPEN',
       }}
       groupSlug="group-slug"
       MemberJoinButton={props => (
@@ -255,7 +255,9 @@ test('GroupMembershipCard: Request Join', async () => {
     },
   });
   expect(
-    screen.getByText('Owner Name is a closed group, so the member list is not visible to non-members.')
+    screen.getByText(
+      'Owner Name is a closed group, so the member list is not visible to non-members.'
+    )
   ).toBeInTheDocument();
   expect(
     screen.getByRole('button', { name: 'Request Join Label' })

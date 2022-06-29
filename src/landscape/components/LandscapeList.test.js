@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from 'tests/utils';
+import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
 
 import React from 'react';
 
@@ -166,7 +166,7 @@ test('LandscapeList: Search', async () => {
   );
   await new Promise(r => setTimeout(r, 300));
   const rows = screen.getAllByRole('row');
-  expect(rows.length).toBe(7); // 10 to 15 displayed + header
+  await waitFor(() => expect(rows.length).toBe(7)); // 10 to 15 displayed + header
 });
 test('LandscapeList: List sort', async () => {
   const isMember = {

@@ -109,7 +109,15 @@
         "membership_card_info_close_description": "<0>1. Has clic en ”Solicitud para unirse”. El estado cambiará a ”Pendiente”.</0><1>2. El administrador del grupo aprobará o denegará la solicitud.</1>",
         "membership_card_info_open_title": "¿Cómo unirse a un grupo abierto?",
         "membership_card_info_open_description": "Has clic en ”Unirse al grupo”. Te convertirás en miembro inmediatamente.",
-        "membership_card_manage_members": "Administrar miembros"
+        "membership_card_manage_members": "Administrar miembros",
+        "members_list_pending_title": "Miembros pendientes",
+        "members_list_pending_message_one": "{{count}} miembro pendiente está esperando su aprobación",
+        "members_list_pending_message_other": "{{count}} miembros pendientes están esperando tu aprobación",
+        "members_list_pending_approve": "Aprobar",
+        "members_list_pending_confirmation_title": "¿Rechazar la solicitud de membresía?",
+        "members_list_pending_confirmation_message": "¿Quieres denegar la solicitud de membresía de {{userName}} en {{name}}?",
+        "members_list_pending_confirmation_button": "Denegar solicitud",
+        "members_list_pending_reject": "Denegar"
     },
     "tool": {
         "avilability": "Disponibilidad",
