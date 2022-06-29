@@ -346,7 +346,7 @@ test('GroupMembers: Manager actions', async () => {
     screen.getByRole('heading', { name: 'Manage Members' })
   ).toBeInTheDocument();
   const listSection = screen.getByRole('region', {
-    name: 'Group Name Members',
+    name: 'Current Members',
   });
   const rows = within(listSection).getAllByRole('row');
 
@@ -403,14 +403,14 @@ test('GroupMembers: Manager actions', async () => {
     async () =>
       await fireEvent.click(
         within(pendingSection.getAllByRole('listitem')[0]).getByRole('button', {
-          name: 'Reject',
+          name: 'Deny',
         })
       )
   );
   await act(
     async () =>
       await fireEvent.click(
-        screen.getByRole('button', { name: '[TODO] Reject confirm' })
+        screen.getByRole('button', { name: 'Deny Request' })
       )
   );
   await waitFor(() =>

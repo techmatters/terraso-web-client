@@ -387,7 +387,7 @@ test('LandscapeMembers: Manager actions', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Remove Member' }))
   );
   await screen.findByRole('region', {
-    name: 'Landscape Name Members',
+    name: 'Current Members',
   });
   await waitFor(() => expect(screen.getAllByRole('row').length).toBe(3));
 });
