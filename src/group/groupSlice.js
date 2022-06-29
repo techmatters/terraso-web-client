@@ -87,18 +87,18 @@ export const saveGroup = createAsyncThunk(
 export const joinGroup = createAsyncThunk(
   'group/joinGroup',
   groupService.joinGroup,
-  (group, { ownerName }) => ({
+  (group, { ownerName, successMessage }) => ({
     severity: 'success',
-    content: 'group.join_success',
+    content: successMessage,
     params: { name: ownerName },
   })
 );
 export const leaveGroup = createAsyncThunk(
   'group/leaveGroup',
   groupService.leaveGroup,
-  (group, { ownerName }) => ({
+  (group, { ownerName, successMessage }) => ({
     severity: 'success',
-    content: 'group.leave_success',
+    content: successMessage,
     params: { name: ownerName },
   })
 );

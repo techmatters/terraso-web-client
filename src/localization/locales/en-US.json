@@ -63,7 +63,9 @@
         "added": "Added group “{{name}}.”",
         "updated": "Updated group “{{name}}.”",
         "join_success": "You joined “{{name}}”",
+        "request_success": "You requested to join the group “{{name}}”",
         "leave_success": "You left “{{name}}”",
+        "request_cancel_success": "You withdrew your request to join the group “{{name}}”",
         "not_found": "Group not found",
         "membership_card_description_other": "{{count}} Terraso members joined {{name}}.",
         "membership_card_description_one": "{{count}} Terraso member joined {{name}}.",
@@ -86,7 +88,14 @@
         "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). There should at least be one manager.",
         "unique": "The group “{{body.variables.input.name}}” already exists.",
         "shared_data_upload_title": "Share Files with {{name}}",
-        "list_search_placeholder": "Search groups"
+        "list_search_placeholder": "Search groups",
+        "list_request_join_button": "Request",
+        "list_request_cancel_label": "Pending",
+        "view_request_join_button": "Request to join",
+        "view_request_cancel_label": "Cancel Request",
+        "membership_request_cancel_confirm_title": "Withdraw pending membership request",
+        "membership_request_cancel_confirm_message": "Would you like to withdraw your request to join {{name}}?",
+        "membership_request_cancel_confirm_button": "Withdraw Request"
     },
     "tool": {
         "requirements": "System requirements",
