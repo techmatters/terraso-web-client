@@ -197,7 +197,7 @@ test('GroupMembers: Display list manager', async () => {
     slug: 'test-group-slug',
     name: 'Group Name',
     memberships: generateMemberhips(3, 57),
-    accountMembership: _.set('edges[0].node.userRole', 'MANAGER', {}),
+    accountMembership: _.set('edges[0].node', { userRole: 'MANAGER', membershipStatus: 'APPROVED' }, {}),
   };
 
   terrasoApi.requestGraphQL
@@ -272,7 +272,7 @@ test('GroupMembers: Manager actions', async () => {
     slug: 'test-group-slug',
     name: 'Group Name',
     memberships: generateMemberhips(3, 2),
-    accountMembership: _.set('edges[0].node.userRole', 'MANAGER', {}),
+    accountMembership: _.set('edges[0].node', { userRole: 'MANAGER', membershipStatus: 'APPROVED' }, {}),
   };
 
   terrasoApi.requestGraphQL

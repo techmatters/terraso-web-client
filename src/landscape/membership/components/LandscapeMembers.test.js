@@ -229,7 +229,7 @@ test('LandscapeMembers: Display list manager', async () => {
     slug: 'test-group-slug',
     name: 'Group Name',
     memberships: generateMemberhips(3, 57),
-    accountMembership: _.set('edges[0].node.userRole', 'MANAGER', {}),
+    accountMembership: _.set('edges[0].node', { userRole: 'MANAGER', membershipStatus: 'APPROVED' }, {}),
   };
 
   const landscape = {
@@ -288,7 +288,7 @@ test('LandscapeMembers: Manager actions', async () => {
         _.flow(
           _.set('node.user', {
             id: `index-${index}`,
-            firstName: 'Member name',
+            firstName: `Member name ${index}`,
             lastName: 'Member Last Name',
             email: 'email@email.com',
           }),
@@ -303,7 +303,7 @@ test('LandscapeMembers: Manager actions', async () => {
     slug: 'test-group-slug',
     name: 'Group Name',
     memberships: generateMemberhips(3, 3),
-    accountMembership: _.set('edges[0].node.userRole', 'MANAGER', {}),
+    accountMembership: _.set('edges[0].node', { userRole: 'MANAGER', membershipStatus: 'APPROVED' }, {}),
   };
 
   const landscape = {
@@ -338,6 +338,10 @@ test('LandscapeMembers: Manager actions', async () => {
           _.set(
             'updateMembership.membership.group.memberships.edges[2].node.userRole',
             'MANAGER'
+          ),
+          _.set(
+            'updateMembership.membership.group.memberships.edges[2].node.membershipStatus',
+            'APPROVED'
           )
         )({})
       )

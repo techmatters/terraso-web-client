@@ -21,7 +21,7 @@ const GroupMembershipInfo = () => {
       <IconButton onClick={() => setOpen(true)} aria-label="delete">
         <InfoIcon />
       </IconButton>
-      <Dialog open={open}>
+      <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogContent>
           <IconButton
             aria-label={t('group.membership_card_info_close')}
