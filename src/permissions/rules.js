@@ -32,7 +32,7 @@ const hasRole = ({ group, role }) => {
 };
 
 const isAllowedToEditSharedData = ({ resource: { group, file }, user }) => {
-  const isManager = hasRole({ group, user, role: 'MANAGER' });
+  const isManager = hasRole({ group, role: 'MANAGER' });
   const isOwner = _.get('createdBy.id', file) === _.get('id', user);
   return Promise.resolve(isManager || isOwner);
 };

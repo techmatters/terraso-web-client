@@ -229,7 +229,11 @@ test('LandscapeMembers: Display list manager', async () => {
     slug: 'test-group-slug',
     name: 'Group Name',
     memberships: generateMemberhips(3, 57),
-    accountMembership: _.set('edges[0].node', { userRole: 'MANAGER', membershipStatus: 'APPROVED' }, {}),
+    accountMembership: _.set(
+      'edges[0].node',
+      { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
+      {}
+    ),
   };
 
   const landscape = {
@@ -303,7 +307,11 @@ test('LandscapeMembers: Manager actions', async () => {
     slug: 'test-group-slug',
     name: 'Group Name',
     memberships: generateMemberhips(3, 3),
-    accountMembership: _.set('edges[0].node', { userRole: 'MANAGER', membershipStatus: 'APPROVED' }, {}),
+    accountMembership: _.set(
+      'edges[0].node',
+      { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
+      {}
+    ),
   };
 
   const landscape = {

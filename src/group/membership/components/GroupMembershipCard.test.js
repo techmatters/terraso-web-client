@@ -414,7 +414,10 @@ test('GroupMembershipCard: Manager', async () => {
                   lastName: 'Doe',
                 },
               ],
-              accountMembership: { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
+              accountMembership: {
+                userRole: 'MANAGER',
+                membershipStatus: 'APPROVED',
+              },
             },
           },
         },
