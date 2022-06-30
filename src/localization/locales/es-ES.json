@@ -39,6 +39,7 @@
         "members_title_member": "Miembros de {{name}}",
         "members_description_member": "",
         "role_manager": "Administrador",
+        "role_pending": "Pendiente",
         "members_title_manager": "Administrar miembros",
         "members_description_manager": "Agrega o elimina miembros del grupo “{{name}}”.",
         "home_connect_label": "Unirse a otro grupo",
@@ -117,7 +118,8 @@
         "members_list_pending_confirmation_title": "¿Rechazar la solicitud de membresía?",
         "members_list_pending_confirmation_message": "¿Quieres denegar la solicitud de membresía de {{userName}} en {{name}}?",
         "members_list_pending_confirmation_button": "Denegar solicitud",
-        "members_list_pending_reject": "Denegar"
+        "members_list_pending_reject": "Denegar",
+        "home_pending_message": "Esperando la aprobación del administrador del grupo"
     },
     "tool": {
         "avilability": "Disponibilidad",

@@ -1,4 +1,4 @@
-import { render, screen } from 'tests/utils';
+import { render, screen, within } from 'tests/utils';
 
 import React from 'react';
 
@@ -117,7 +117,11 @@ test('Home: Display groups', async () => {
               id: 'id-1',
               slug: 'id-1',
               name: 'Group 1',
-              accountMembership: _.set('edges[0].node.userRole', 'MEMBER', {}),
+              accountMembership: _.set(
+                'edges[0].node',
+                { userRole: 'MEMBER', membershipStatus: 'APPROVED' },
+                {}
+              ),
             },
           },
         ],
@@ -129,7 +133,24 @@ test('Home: Display groups', async () => {
               id: 'id-2',
               slug: 'id-2',
               name: 'Group 2',
-              accountMembership: _.set('edges[0].node.userRole', 'MANAGER', {}),
+              accountMembership: _.set(
+                'edges[0].node',
+                { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
+                {}
+              ),
+              pending: { totalCount: 1 },
+            },
+          },
+          {
+            node: {
+              id: 'id-3',
+              slug: 'id-3',
+              name: 'Group 3',
+              accountMembership: _.set(
+                'edges[0].node',
+                { userRole: 'MEMBER', membershipStatus: 'PENDING' },
+                {}
+              ),
               pending: { totalCount: 1 },
             },
           },
@@ -138,10 +159,21 @@ test('Home: Display groups', async () => {
     })
   );
   await setup();
-  expect(screen.getByText('Group 1')).toBeInTheDocument();
-  expect(screen.getByText('(Member)')).toBeInTheDocument();
-  expect(screen.getByText('Group 2')).toBeInTheDocument();
-  expect(screen.getByText('(Manager)')).toBeInTheDocument();
+
+  const list = within(screen.getByRole('region', { name: 'Groups'}));
+  const items = list.getAllByRole('listitem');
+  expect(items.length).toBe(3);
+
+  expect(within(items[0]).getByText('Group 3')).toBeInTheDocument();
+  expect(within(items[0]).getByText('(Pending)')).toBeInTheDocument();
+  expect(within(items[0]).getByText('Waiting for the group manager’s approval')).toBeInTheDocument();
+
+  expect(within(items[1]).getByText('Group 1')).toBeInTheDocument();
+  expect(within(items[1]).getByText('(Member)')).toBeInTheDocument();
+
+  expect(within(items[2]).getByText('Group 2')).toBeInTheDocument();
+  expect(within(items[2]).getByText('(Manager)')).toBeInTheDocument();
+  expect(within(items[2]).getByText('1 pending member')).toBeInTheDocument();
 });
 test('Home: Display defaults', async () => {
   fetchHomeData.mockReturnValue(
