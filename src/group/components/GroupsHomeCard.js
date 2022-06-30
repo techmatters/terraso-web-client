@@ -18,6 +18,10 @@ import {
 import Restricted from 'permissions/components/Restricted';
 
 import GroupMembershipPendingWarning from 'group/membership/components/GroupMembershipPendingWarning';
+import {
+  MEMBERSHIP_STATUS_APPROVED,
+  MEMBERSHIP_STATUS_PENDING,
+} from 'group/membership/components/groupMembershipConstants';
 import HomeCard from 'home/components/HomeCard';
 
 import { withProps } from 'react-hoc';
@@ -31,7 +35,16 @@ const ListItem = withProps(BaseListItem, {
 const GroupItem = ({ group }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
   const pendingCount = _.getOr(0, 'membersInfo.pendingCount', group);
+  const isApproved =
+    _.get('membersInfo.accountMembership.membershipStatus', group) ===
+    MEMBERSHIP_STATUS_APPROVED;
+
+  const role = isApproved
+    ? _.getOr('member', 'membersInfo.accountMembership.userRole', group)
+    : MEMBERSHIP_STATUS_PENDING;
+
   return (
     <ListItem direction="column" alignItems="flex-start" spacing={2}>
       <Stack direction="row">
@@ -43,17 +56,14 @@ const GroupItem = ({ group }) => {
           {group.name}
         </Link>
         <Typography sx={{ ml: 1 }}>
-          (
-          {t(
-            `group.role_${_.getOr(
-              'member',
-              'membersInfo.accountMembership.userRole',
-              group
-            ).toLowerCase()}`
-          )}
-          )
+          ({t(`group.role_${role.toLowerCase()}`)})
         </Typography>
       </Stack>
+      {!isApproved && (
+        <Typography color="text.secondary">
+          {t('group.home_pending_message')}
+        </Typography>
+      )}
       <Restricted permission="group.change" resource={group}>
         {pendingCount > 0 && (
           <GroupMembershipPendingWarning
@@ -69,6 +79,14 @@ const GroupItem = ({ group }) => {
 
 const GroupsHomeCard = ({ groups }) => {
   const { t } = useTranslation();
+
+  const sortedGroups = _.sortBy(
+    group =>
+      _.get('membersInfo.accountMembership.membershipStatus', group) ===
+      MEMBERSHIP_STATUS_APPROVED,
+    groups
+  );
+
   return (
     <HomeCard
       aria-labelledby="groups-list-title"
@@ -82,7 +100,7 @@ const GroupsHomeCard = ({ groups }) => {
         {t('group.home_title')}
       </Typography>
       <List aria-describedby="groups-list-title">
-        {groups.map((group, index) => (
+        {sortedGroups.map((group, index) => (
           <React.Fragment key={group.slug}>
             <GroupItem group={group} />
             {index !== groups.length - 1 ? (
