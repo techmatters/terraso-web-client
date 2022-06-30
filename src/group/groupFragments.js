@@ -38,9 +38,17 @@ export const groupFields = `
   }
 `;
 
+export const groupMembersPending = `
+  fragment groupMembersPending on GroupNode {
+    pending: memberships(membershipStatus: "pending") {
+      totalCount
+    }
+  }
+`;
+
 export const groupMembersInfo = `
   fragment groupMembersInfo on GroupNode {
-    memberships(first: ${MEMBERS_INFO_SAMPLE_SIZE}) {
+    memberships(first: ${MEMBERS_INFO_SAMPLE_SIZE}, membershipStatus: "approved") {
       totalCount
       edges {
         node {

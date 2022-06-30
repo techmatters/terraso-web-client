@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 
-import WarningIcon from '@mui/icons-material/Warning';
 import { LoadingButton } from '@mui/lab';
 import { ListItem, MenuItem, Select, Stack, Typography } from '@mui/material';
 
@@ -20,6 +19,7 @@ import AccountAvatar from 'account/components/AccountAvatar';
 import { useGroupContext } from 'group/groupContext';
 import { fetchMembers, removeMember, updateMember } from 'group/groupSlice';
 
+import GroupMembershipPendingWarning from './GroupMembershipPendingWarning';
 import {
   MEMBERSHIP_STATUS_APPROVED,
   MEMBERSHIP_STATUS_PENDING,
@@ -131,12 +131,7 @@ const PendingApprovals = () => {
       >
         {t('group.members_list_pending_title')}
       </Typography>
-      <Stack direction="row" spacing={1} sx={{ marginBottom: 2 }}>
-        <WarningIcon sx={{ color: 'gray.mid2' }} />
-        <Typography>
-          {t('group.members_list_pending_message', { count: pending.length })}
-        </Typography>
-      </Stack>
+      <GroupMembershipPendingWarning count={pending.length} sx={{ mb: 2 }} />
       <List>
         {pending.map(member => (
           <ListItem

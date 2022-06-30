@@ -1,7 +1,7 @@
 import _ from 'lodash/fp';
 
-import { groupFields } from 'group/groupFragments';
-import { extractAccountMembership } from 'group/groupUtils';
+import { groupFields, groupMembersPending } from 'group/groupFragments';
+import { extractAccountMembership, extractMembersInfo } from 'group/groupUtils';
 import { defaultGroup, landscapeFields } from 'landscape/landscapeFragments';
 import * as terrasoApi from 'terrasoBackend/api';
 
@@ -34,6 +34,7 @@ export const fetchHomeData = email => {
         edges {
           node {
             ...groupFields
+            ...groupMembersPending
             ...accountMembership
           }
         }
@@ -45,12 +46,14 @@ export const fetchHomeData = email => {
         edges {
           node {
             ...groupFields
+            ...groupMembersPending
             ...accountMembership
           }
         }
       }
     }
     ${groupFields}
+    ${groupMembersPending}
     ${landscapeFields}
     ${defaultGroup}
   `;
@@ -65,7 +68,7 @@ export const fetchHomeData = email => {
         .filter(group => group)
         .map(group => ({
           ..._.omit(['accountMembership'], group),
-          accountMembership: extractAccountMembership(group),
+          membersInfo: extractMembersInfo(group),
         })),
       landscapes: _.getOr([], 'landscapeGroups.edges', response)
         .flatMap(_.getOr([], 'node.associatedLandscapes.edges'))
