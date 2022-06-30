@@ -385,3 +385,44 @@ test('GroupMembershipCard: Leave', async () => {
     screen.getByRole('button', { name: 'Join Label' })
   ).toBeInTheDocument();
 });
+test('GroupMembershipCard: Manager', async () => {
+  terrasoApi.requestGraphQL.mockReturnValueOnce(
+    Promise.resolve({
+      deleteMembership: {
+        membership: {
+          group: {
+            slug: 'group-slug',
+          },
+        },
+      },
+    })
+  );
+  await setup({
+    group: {
+      memberships: {
+        'group-slug': {
+          group: {
+            slug: 'group-slug',
+            membersInfo: {
+              totalCount: 1,
+              pendingCount: 2,
+              membersSample: [
+                {
+                  membershipId: 'membership-id',
+                  email: 'email@email.com',
+                  firstName: 'John',
+                  lastName: 'Doe',
+                },
+              ],
+              accountMembership: { userRole: 'MANAGER' },
+            },
+          },
+        },
+      },
+    },
+  });
+  expect(screen.getByText(/2 pending members/i)).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Manage Members' })
+  ).toBeInTheDocument();
+});

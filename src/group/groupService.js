@@ -5,6 +5,7 @@ import {
   groupFields,
   groupMembers,
   groupMembersInfo,
+  groupMembersPending,
 } from 'group/groupFragments';
 import * as terrasoApi from 'terrasoBackend/api';
 
@@ -44,6 +45,7 @@ export const fetchGroupToView = (slug, currentUser) => {
           node {
             ...groupFields
             ...groupMembersInfo
+            ...groupMembersPending
             ...accountMembership
           }
         }
@@ -51,6 +53,7 @@ export const fetchGroupToView = (slug, currentUser) => {
     }
     ${groupFields}
     ${groupMembersInfo}
+    ${groupMembersPending}
     ${accountMembership}
   `;
   return terrasoApi

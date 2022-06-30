@@ -130,6 +130,7 @@ test('Home: Display groups', async () => {
               slug: 'id-2',
               name: 'Group 2',
               accountMembership: _.set('edges[0].node.userRole', 'MANAGER', {}),
+              pending: { totalCount: 1 },
             },
           },
         ],
