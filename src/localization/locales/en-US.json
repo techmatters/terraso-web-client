@@ -41,6 +41,7 @@
         "members_title_member": "{{name}} Members",
         "members_description_member": "",
         "role_manager": "Manager",
+        "role_pending": "Pending",
         "members_title_manager": "Manage Members",
         "members_description_manager": "Add or remove members in the “{{name}}” group.",
         "home_connect_label": "Join another group",
@@ -117,7 +118,8 @@
         "members_list_pending_confirmation_title": "Deny membership request?",
         "members_list_pending_confirmation_message": "Do you want to deny {{userName}}’s request for membership in {{name}}?",
         "members_list_pending_confirmation_button": "Deny Request",
-        "members_list_pending_reject": "Deny"
+        "members_list_pending_reject": "Deny",
+        "home_pending_message": "Waiting for the group manager’s approval"
     },
     "tool": {
         "requirements": "System requirements",
