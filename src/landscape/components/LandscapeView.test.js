@@ -65,6 +65,7 @@ const baseViewTest = async () => {
     {
       id: 'user-id',
       userRole: 'MEMBER',
+      membershipStatus: 'APPROVED',
     },
     {}
   );
