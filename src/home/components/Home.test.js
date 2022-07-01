@@ -160,13 +160,15 @@ test('Home: Display groups', async () => {
   );
   await setup();
 
-  const list = within(screen.getByRole('region', { name: 'Groups'}));
+  const list = within(screen.getByRole('region', { name: 'Groups' }));
   const items = list.getAllByRole('listitem');
   expect(items.length).toBe(3);
 
   expect(within(items[0]).getByText('Group 3')).toBeInTheDocument();
   expect(within(items[0]).getByText('(Pending)')).toBeInTheDocument();
-  expect(within(items[0]).getByText('Waiting for the group manager’s approval')).toBeInTheDocument();
+  expect(
+    within(items[0]).getByText('Waiting for the group manager’s approval')
+  ).toBeInTheDocument();
 
   expect(within(items[1]).getByText('Group 1')).toBeInTheDocument();
   expect(within(items[1]).getByText('(Member)')).toBeInTheDocument();
