@@ -127,7 +127,7 @@ const GroupList = () => {
       headerName: t('group.list_column_actions_description'),
       sortable: false,
       align: 'center',
-      flex: 0.75,
+      flex: 1,
       cardSize: 6,
       getActions: ({ row: group }) => [<MembershipButton group={group} />],
     },
