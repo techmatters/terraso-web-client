@@ -89,7 +89,7 @@ const LandscapeList = () => {
     {
       field: 'location',
       headerName: t('landscape.list_column_location'),
-      flex: 1.5,
+      flex: 0.5,
       minWidth: 200,
       valueGetter: ({ row: landscape }) =>
         landscape.location && countryNameForCode(landscape.location)?.name,
@@ -124,6 +124,7 @@ const LandscapeList = () => {
       headerName: t('landscape.list_column_actions_description'),
       sortable: false,
       align: 'center',
+      flex: 1,
       cardSize: 6,
       getActions: ({ row: landscape }) => [
         <MembershipButton landscape={landscape} />,
