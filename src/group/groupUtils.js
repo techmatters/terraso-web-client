@@ -2,6 +2,7 @@ import _ from 'lodash/fp';
 
 export const extractMembersInfo = group => ({
   totalCount: _.get('memberships.totalCount', group),
+  pendingCount: _.get('pending.totalCount', group),
   accountMembership: extractAccountMembership(group),
   membersSample: extractMembers(group),
 });
@@ -10,6 +11,7 @@ export const extractMembers = group =>
   _.getOr([], 'memberships.edges', group).map(edge => ({
     membershipId: _.get('node.id', edge),
     role: _.get('node.userRole', edge),
+    membershipStatus: _.get('node.membershipStatus', edge),
     ..._.get('node.user', edge),
   }));
 
@@ -22,7 +24,7 @@ export const getMemberships = groups =>
     _.fromPairs
   )(groups);
 
-export const generateIndexedMembers = _.keyBy(member => member.id);
+export const generateIndexedMembers = _.keyBy(member => member.membershipId);
 
 export const extractDataEntries = group =>
   _.getOr([], 'dataEntries.edges', group).map(_.get('node'));

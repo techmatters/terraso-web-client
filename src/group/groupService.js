@@ -5,6 +5,7 @@ import {
   groupFields,
   groupMembers,
   groupMembersInfo,
+  groupMembersPending,
 } from 'group/groupFragments';
 import * as terrasoApi from 'terrasoBackend/api';
 
@@ -44,6 +45,7 @@ export const fetchGroupToView = (slug, currentUser) => {
           node {
             ...groupFields
             ...groupMembersInfo
+            ...groupMembersPending
             ...accountMembership
           }
         }
@@ -51,6 +53,7 @@ export const fetchGroupToView = (slug, currentUser) => {
     }
     ${groupFields}
     ${groupMembersInfo}
+    ${groupMembersPending}
     ${accountMembership}
   `;
   return terrasoApi
@@ -199,7 +202,7 @@ export const removeMember = (member, currentUser) => {
     }));
 };
 
-export const updateMemberRole = ({ member, newRole }, currentUser) => {
+export const updateMember = ({ member }, currentUser) => {
   const query = `
     mutation updateMembership($input: MembershipUpdateMutationInput!) {
       updateMembership(input: $input) {
@@ -214,7 +217,7 @@ export const updateMemberRole = ({ member, newRole }, currentUser) => {
   `;
   return terrasoApi
     .requestGraphQL(query, {
-      input: { id: member.membershipId, userRole: newRole },
+      input: member,
       accountEmail: currentUser.email,
     })
     .then(_.get('updateMembership.membership.group'))

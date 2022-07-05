@@ -34,12 +34,21 @@ export const groupFields = `
     email
     website
     email
+    membershipType
+  }
+`;
+
+export const groupMembersPending = `
+  fragment groupMembersPending on GroupNode {
+    pending: memberships(membershipStatus: "pending") {
+      totalCount
+    }
   }
 `;
 
 export const groupMembersInfo = `
   fragment groupMembersInfo on GroupNode {
-    memberships(first: ${MEMBERS_INFO_SAMPLE_SIZE}) {
+    memberships(first: ${MEMBERS_INFO_SAMPLE_SIZE}, membershipStatus: "approved") {
       totalCount
       edges {
         node {
@@ -61,6 +70,7 @@ export const groupMembers = `
         node {
           id
           userRole
+          membershipStatus
           user {
             ...userFields
           }
@@ -78,6 +88,7 @@ export const accountMembership = `
         node {
           id
           userRole
+          membershipStatus
         }
       }
     }

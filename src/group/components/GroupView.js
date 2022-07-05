@@ -30,7 +30,9 @@ import { GroupContextProvider } from 'group/groupContext';
 import { fetchGroupView, refreshGroupView } from 'group/groupSlice';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
+import GroupMemberRequestCancel from 'group/membership/components/GroupMemberRequestCancel';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
+import GroupMembershipInfo from 'group/membership/components/GroupMembershipInfo';
 import SharedDataCard from 'sharedData/components/SharedDataCard';
 
 import { withProps } from 'react-hoc';
@@ -44,8 +46,16 @@ const MemberLeaveButton = withProps(GroupMemberLeave, {
   },
 });
 
+const MemberRequestCancelButton = withProps(GroupMemberRequestCancel, {
+  label: 'group.view_request_cancel_label',
+});
+
 const MemberJoinButton = withProps(GroupMemberJoin, {
   label: 'group.view_join_label',
+});
+
+const MemberRequestJoinButton = withProps(GroupMemberJoin, {
+  label: 'group.view_request_join_button',
 });
 
 const GroupCard = ({ group }) => {
@@ -158,6 +168,8 @@ const GroupView = () => {
       group={group}
       groupSlug={group.slug}
       MemberJoinButton={MemberJoinButton}
+      MemberRequestJoinButton={MemberRequestJoinButton}
+      MemberRequestCancelButton={MemberRequestCancelButton}
       MemberLeaveButton={MemberLeaveButton}
       updateOwner={updateGroup}
     >
@@ -180,6 +192,7 @@ const GroupView = () => {
           <Grid item xs={12} md={6} style={{ display: 'flex' }}>
             <GroupMembershipCard
               onViewMembers={() => navigate(`/groups/${group.slug}/members`)}
+              InfoComponent={GroupMembershipInfo}
             />
           </Grid>
           <Grid item xs={12} md={12}>

@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 
-import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
@@ -17,7 +16,7 @@ import { GroupContextProvider } from 'group/groupContext';
 import { fetchGroups } from 'group/groupSlice';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
-import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
+import GroupMemberRequestCancel from 'group/membership/components/GroupMemberRequestCancel';
 import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton';
 
 import { withProps } from 'react-hoc';
@@ -39,8 +38,16 @@ const MemberLeaveButton = withProps(GroupMemberLeave, {
   },
 });
 
+const MemberRequestCancelButton = withProps(GroupMemberRequestCancel, {
+  label: 'group.list_request_cancel_label',
+});
+
 const MemberJoinButton = withProps(GroupMemberJoin, {
   label: 'group.list_join_button',
+});
+
+const MemberRequestJoinButton = withProps(GroupMemberJoin, {
+  label: 'group.list_request_join_button',
 });
 
 const MembershipButton = ({ group }) => (
@@ -48,6 +55,8 @@ const MembershipButton = ({ group }) => (
     owner={group}
     groupSlug={group.slug}
     MemberJoinButton={MemberJoinButton}
+    MemberRequestJoinButton={MemberRequestJoinButton}
+    MemberRequestCancelButton={MemberRequestCancelButton}
     MemberLeaveButton={MemberLeaveButton}
   >
     <GroupMembershipJoinLeaveButton sx={{ width: '100%' }} />
@@ -113,22 +122,12 @@ const GroupList = () => {
         ),
     },
     {
-      field: 'members',
-      headerName: t('group.list_column_members'),
-      align: 'center',
-      cardSize: 6,
-      valueGetter: ({ row: group }) =>
-        _.getOr(0, 'membersInfo.totalCount', group),
-      renderCell: ({ row: group }) => (
-        <GroupMembershipCount groupSlug={group.slug} />
-      ),
-    },
-    {
       field: 'actions',
       type: 'actions',
       headerName: t('group.list_column_actions_description'),
       sortable: false,
       align: 'center',
+      flex: 1,
       cardSize: 6,
       getActions: ({ row: group }) => [<MembershipButton group={group} />],
     },
