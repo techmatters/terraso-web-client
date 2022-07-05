@@ -71,7 +71,7 @@
         "list_column_website": "Website",
         "list_column_contact": "Email",
         "list_column_members": "Members",
-        "list_empty": "<0><0>Double check the spelling of the group name.</0><1>If your group is missing from Terraso, you can <1>create a group</1>.</1></0>",
+        "list_empty": "<0><0>Double-check the spelling of the group name.</0><1>If your group is missing from Terraso, you can <1>create a group</1>.</1></0>",
         "members_list_empty": "No members",
         "members_list_leave": "Leave",
         "members_list_remove": "Remove",
