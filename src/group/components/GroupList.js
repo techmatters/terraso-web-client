@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 
-import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
