@@ -66,7 +66,7 @@ test('GroupList: Empty', async () => {
   );
   await setup();
   expect(
-    screen.getByText(/Double check the spelling of the group name./i)
+    screen.getByText(/Double-check the spelling of the group name./i)
   ).toBeInTheDocument();
 });
 test('GroupList: Display list', async () => {
