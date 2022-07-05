@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 
 import _ from 'lodash/fp';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 
-import { Button, Link, Typography } from '@mui/material';
+import { Button, Link, Stack, Typography } from '@mui/material';
 
 import TableResponsive from 'common/components/TableResponsive';
 import { useDocumentTitle } from 'common/document';
@@ -155,7 +155,20 @@ const GroupList = () => {
         searchFilterField="name"
         searchParams={Object.fromEntries(searchParams.entries())}
         onSearchParamsChange={setSearchParams}
-        emptyMessage={t('group.list_empty')}
+        emptyMessage={
+          <Trans i18nKey="group.list_empty">
+            <Stack spacing={2}>
+              <Typography>First</Typography>
+              <Typography>
+                Prefix
+                <Link component={RouterLink} to={`/groups/new`}>
+                  to add
+                </Link>
+                .
+              </Typography>
+            </Stack>
+          </Trans>
+        }
         tableProps={{
           initialSort: [
             {
