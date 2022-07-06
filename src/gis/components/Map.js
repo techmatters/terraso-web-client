@@ -74,6 +74,7 @@ const LeafletSearch = props => {
 
     const searchControl = new GeoSearchControl({
       provider,
+      position: 'topright',
       style: 'bar',
       showMarker: false,
       autoClose: true,

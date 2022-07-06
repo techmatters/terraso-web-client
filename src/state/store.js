@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import _ from 'lodash/fp';
 
 import notificationsReducer from 'notifications/notificationsSlice';
 
@@ -8,8 +9,21 @@ import userHomeReducer from 'home/homeSlice';
 import landscapeReducer from 'landscape/landscapeSlice';
 import sharedDataReducer from 'sharedData/sharedDataSlice';
 
+const handleAbortMiddleware = store => next => action => {
+  if (_.getOr(false, 'meta.aborted', action)) {
+    next({
+      ...action,
+      type: action.type.replace('rejected', 'aborted'),
+    });
+    return;
+  }
+  next(action);
+};
+
 const createStore = intialState =>
   configureStore({
+    middleware: getDefaultMiddleware =>
+      getDefaultMiddleware().concat(handleAbortMiddleware),
     reducer: {
       account: accountReducer,
       userHome: userHomeReducer,

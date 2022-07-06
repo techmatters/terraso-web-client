@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
+import { useFetchData } from 'state/utils';
 
 import InfoStep from 'landscape/components/LandscapeForm/InfoStep';
 import {
@@ -38,9 +39,7 @@ const LandscapeUpdateProfile = () => {
 
   useEffect(() => () => dispatch(setFormNewValues()), [dispatch]);
 
-  useEffect(() => {
-    dispatch(fetchLandscapeForm(slug));
-  }, [dispatch, slug]);
+  useFetchData(useCallback(() => fetchLandscapeForm(slug), [slug]));
 
   useEffect(() => {
     if (success && landscape.slug) {

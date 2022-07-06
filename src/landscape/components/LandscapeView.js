@@ -28,6 +28,7 @@ import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { useRefreshProgressContext } from 'layout/RefreshProgressProvider';
 import Restricted from 'permissions/components/Restricted';
+import { useFetchData } from 'state/utils';
 
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
@@ -118,9 +119,7 @@ const LandscapeView = () => {
     fetching
   );
 
-  useEffect(() => {
-    dispatch(fetchLandscapeView(slug));
-  }, [dispatch, slug]);
+  useFetchData(useCallback(() => fetchLandscapeView(slug), [slug]));
 
   const updateLandscape = useCallback(() => {
     dispatch(refreshLandscapeView(slug));

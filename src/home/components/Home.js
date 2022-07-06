@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useCallback } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { Alert, Grid, Stack } from '@mui/material';
 
@@ -10,6 +10,7 @@ import LoaderCard from 'common/components/LoaderCard';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
+import { useFetchData } from 'state/utils';
 
 import GroupDefaultCard from 'group/components/GroupDefaultHomeCard';
 import GroupsCard from 'group/components/GroupsHomeCard';
@@ -44,7 +45,6 @@ const Groups = ({ groups, fetching }) => {
 
 const Home = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
 
   const { data: user } = useSelector(state => state.account.currentUser);
   const home = useSelector(state => state.userHome);
@@ -52,9 +52,7 @@ const Home = () => {
 
   useDocumentTitle(t('home.document_title'), false, true);
 
-  useEffect(() => {
-    dispatch(fetchHomeData(user.email));
-  }, [dispatch, user]);
+  useFetchData(useCallback(() => fetchHomeData(user.email), [user.email]));
 
   if (error) {
     return <Alert severity="error">{t('home.error', { error })}</Alert>;

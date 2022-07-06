@@ -164,7 +164,7 @@ test('LandscapeList: Search', async () => {
   await act(async () =>
     fireEvent.change(searchInput, { target: { value: 'Landscape Name 1' } })
   );
-  await new Promise(r => setTimeout(r, 300));
+  await waitFor(() => expect(screen.getAllByRole('row').length).toBe(7));
   const rows = screen.getAllByRole('row');
   await waitFor(() => expect(rows.length).toBe(7)); // 10 to 15 displayed + header
 });

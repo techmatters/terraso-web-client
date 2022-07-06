@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
+import { useFetchData } from 'state/utils';
 
 import { fetchLandscapeForm, saveLandscape } from 'landscape/landscapeSlice';
 
@@ -36,9 +37,7 @@ const LandscapeBoundariesUpdate = () => {
     fetching
   );
 
-  useEffect(() => {
-    dispatch(fetchLandscapeForm(slug));
-  }, [dispatch, slug]);
+  useFetchData(useCallback(() => fetchLandscapeForm(slug), [slug]));
 
   useEffect(() => {
     if (success) {
