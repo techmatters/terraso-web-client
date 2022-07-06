@@ -38,11 +38,25 @@ const LeafletDraw = props => {
   const isSmall = useMediaQuery(theme.breakpoints.down('xs'));
 
   useEffect(() => {
+    const drawnItems = L.featureGroup().addTo(map);
     const options = {
       position: isSmall ? 'topright' : 'topleft',
+      edit: {
+        featureGroup: drawnItems,
+        poly: {
+          allowIntersection: false,
+          icon: new L.DivIcon({
+            iconSize: new L.Point(10, 10),
+            className: 'leaflet-div-icon leaflet-editing-icon',
+          }),
+        },
+      },
       draw: {
         polyline: false,
-        polygon: false,
+        polygon: {
+          allowIntersection: false,
+          showArea: true,
+        },
         circle: false,
         rectangle: false,
         circlemarker: false,
@@ -53,10 +67,14 @@ const LeafletDraw = props => {
 
     map.on(L.Draw.Event.CREATED, event => {
       const { layerType } = event;
+      console.log({ event });
       if (layerType === 'marker') {
         const location = event.layer.getLatLng();
         setPinLocation({ lat: location.lat, lng: location.lng });
+        return;
       }
+      var layer = event.layer;
+      drawnItems.addLayer(layer);
     });
 
     return () => map.removeControl(drawControl);
