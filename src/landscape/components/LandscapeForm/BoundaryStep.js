@@ -101,6 +101,7 @@ const MapPin = props => {
         <LandscapeMap
           enableSearch
           enableDraw
+          drawOptions={{ showMarker: true }}
           mapCenter={mapCenter}
           onPinLocationChange={onPinLocationChange}
         />

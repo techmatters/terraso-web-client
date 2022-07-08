@@ -1,5 +1,6 @@
 import React from 'react';
 
+import PolygonCreationTest from 'PolygonCreationTest';
 import { Route, Routes } from 'react-router-dom';
 
 import NotFound from 'layout/NotFound';
@@ -48,6 +49,7 @@ const paths = [
   path('/account', AccountLogin, false),
   path('/account/profile', AccountProfile),
   path('/contact', ContactForm),
+  path('/polygoncreation', PolygonCreationTest, false),
   path('*', NotFound),
 ];
 

@@ -14,8 +14,10 @@ const LandscapeMap = ({
   landscape,
   label,
   onPinLocationChange,
+  onPolygonCreated,
   enableSearch,
   enableDraw,
+  drawOptions,
   mapCenter,
 }) => {
   const bounds = getLandscapeBoundingBox(landscape);
@@ -31,6 +33,7 @@ const LandscapeMap = ({
         onPinLocationChange={onPinLocationChange}
         enableSearch={enableSearch}
         enableDraw={enableDraw}
+        drawOptions={drawOptions}
         style={{
           width: '100%',
           height: '400px',

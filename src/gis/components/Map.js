@@ -34,18 +34,42 @@ L.Icon.Default.mergeOptions({
 
 const LeafletDraw = props => {
   const map = useMap();
-  const { setPinLocation } = props;
+  const { setPinLocation, drawOptions } = props;
   const isSmall = useMediaQuery(theme.breakpoints.down('xs'));
 
   useEffect(() => {
+    const drawnItems = L.featureGroup().addTo(map);
     const options = {
       position: isSmall ? 'topright' : 'topleft',
+      ...(drawOptions?.showPolygon
+        ? {
+            edit: {
+              featureGroup: drawnItems,
+              poly: {
+                allowIntersection: false,
+                icon: new L.DivIcon({
+                  iconSize: new L.Point(14, 14),
+                  className: 'leaflet-editing-icon',
+                }),
+              },
+            },
+          }
+        : {}),
       draw: {
         polyline: false,
-        polygon: false,
+        polygon: drawOptions?.showPolygon
+          ? {
+              allowIntersection: false,
+              showArea: true,
+              icon: new L.DivIcon({
+                iconSize: new L.Point(14, 14),
+              }),
+            }
+          : false,
         circle: false,
         rectangle: false,
         circlemarker: false,
+        marker: drawOptions?.showMarker || false,
       },
     };
     const drawControl = new L.Control.Draw(options);
@@ -56,11 +80,16 @@ const LeafletDraw = props => {
       if (layerType === 'marker') {
         const location = event.layer.getLatLng();
         setPinLocation({ lat: location.lat, lng: location.lng });
+        return;
+      }
+      if (layerType === 'polygon') {
+        drawnItems.addLayer(event.layer);
+        drawOptions?.onPolygonCreated?.();
       }
     });
 
     return () => map.removeControl(drawControl);
-  }, [map, setPinLocation, isSmall]);
+  }, [map, setPinLocation, isSmall, drawOptions]);
   return null;
 };
 
@@ -132,7 +161,8 @@ const MapPolygon = props => {
 const Location = props => {
   const map = useMap();
   const markerRef = useRef(null);
-  const { onPinLocationChange, enableSearch, enableDraw, center } = props;
+  const { onPinLocationChange, enableSearch, enableDraw, drawOptions, center } =
+    props;
   const [pinLocation, setPinLocation] = useState(
     center ? { lat: center[0], lng: center[1] } : null
   );
@@ -184,6 +214,7 @@ const Location = props => {
         <LeafletDraw
           setPinLocation={setPinLocation}
           setBoundingBox={setBoundingBox}
+          drawOptions={drawOptions}
         />
       )}
 
@@ -228,6 +259,7 @@ const Map = props => {
         onPinLocationChange={props.onPinLocationChange}
         enableSearch={props.enableSearch}
         enableDraw={props.enableDraw}
+        drawOptions={props.drawOptions}
         center={props.center}
       />
       {props.enableSearch && (
