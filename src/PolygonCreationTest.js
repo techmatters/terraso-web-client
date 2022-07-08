@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
 import {
@@ -29,12 +29,27 @@ const Dialog = styled(BaseDialog)`
 
 const PolygonCreationTest = () => {
   const [open, setOpen] = useState(false);
-  const onPolygonCreated = () => {
+  const [dialogContent, setDialogContent] = useState();
+  const onPolygonCreated = useCallback(() => {
+    setDialogContent(
+      "Landscape boundary is complete. Proceed to update your landscape's map or edit the shape."
+    );
     setOpen(true);
-  };
+  }, [setDialogContent, setOpen]);
+  const onEditStart = useCallback(() => {
+    setDialogContent(
+      'Drag a translucent point to add more points. Click the point to remove it. When you’re done adjusting the boundary save to exit the edit mode.'
+    );
+    setOpen(true);
+  }, [setDialogContent, setOpen]);
+
+  const drawOptions = useMemo(
+    () => ({ showPolygon: true, onPolygonCreated, onEditStart }),
+    [onPolygonCreated, onEditStart]
+  );
   return (
     <PageContainer>
-      <PageHeader header={'Polygon Creation'} />
+      <PageHeader header={'Draw Landscape Boundary'} />
       <Dialog open={open} onClose={() => setOpen(false)}>
         <IconButton
           aria-label="close"
@@ -48,15 +63,12 @@ const PolygonCreationTest = () => {
         >
           <CloseIcon />
         </IconButton>
-        <DialogContent sx={{ pr: 7 }}>
-          Landscape boundary is complete. Proceed to update your landscape's map
-          or edit the shape.
-        </DialogContent>
+        <DialogContent sx={{ pr: 7 }}>{dialogContent}</DialogContent>
       </Dialog>
       <LandscapeMap
         enableDraw
         enableSearch
-        drawOptions={{ showPolygon: true, onPolygonCreated: onPolygonCreated }}
+        drawOptions={drawOptions}
         onPinLocationChange={() => {}}
       />
       <Stack direction="row" sx={{ mt: 2 }} spacing={2}>

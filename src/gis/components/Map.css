@@ -39,3 +39,7 @@
     no-repeat;
   border: none;
 }
+
+.leaflet-draw-actions a {
+  color: #fff;
+}

@@ -98,6 +98,10 @@ const LeafletDraw = props => {
         layers.filter(layer => !_.includes(layer, deletedLayers))
       );
     });
+    console.log('renderrrr');
+    map.on(L.Draw.Event.EDITSTART, event => {
+      drawOptions?.onEditStart?.();
+    });
 
     return () => map.removeControl(drawControl);
   }, [map, setPinLocation, isSmall, drawOptions, drawnItems]);
