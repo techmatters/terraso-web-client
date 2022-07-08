@@ -55,7 +55,9 @@ const PolygonCreationTest = () => {
       </Dialog>
       <LandscapeMap
         enableDraw
+        enableSearch
         drawOptions={{ showPolygon: true, onPolygonCreated: onPolygonCreated }}
+        onPinLocationChange={() => {}}
       />
       <Stack direction="row" sx={{ mt: 2 }} spacing={2}>
         <Button variant="contained">Update Map</Button>

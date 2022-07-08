@@ -45,7 +45,7 @@ const LeafletDraw = props => {
 
   useEffect(() => {
     const options = {
-      position: isSmall ? 'topright' : 'topleft',
+      position: isSmall ? 'topright' : 'bottomleft',
       ...(drawOptions?.showPolygon
         ? {
             edit: {
@@ -229,7 +229,7 @@ const Location = props => {
         />
       )}
 
-      {pinLocation && (
+      {drawOptions?.showMarker && pinLocation && (
         <Marker
           draggable
           ref={markerRef}
