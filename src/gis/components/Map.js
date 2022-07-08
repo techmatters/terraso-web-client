@@ -33,6 +33,9 @@ L.Icon.Default.mergeOptions({
 });
 
 L.drawLocal.draw.toolbar.finish.text = 'Close Shape';
+L.drawLocal.edit.handlers.edit.tooltip.text = 'Drag points to adjust shape.';
+L.drawLocal.edit.handlers.edit.tooltip.subtext =
+  'Click the point to remove it.';
 
 const LeafletDraw = props => {
   const [layers, setLayers] = useState([]);
