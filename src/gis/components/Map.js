@@ -32,6 +32,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
+L.drawLocal.draw.toolbar.finish.text = 'Close Shape';
+
 const LeafletDraw = props => {
   const [layers, setLayers] = useState([]);
   const map = useMap();
