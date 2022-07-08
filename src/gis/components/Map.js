@@ -104,6 +104,9 @@ const LeafletDraw = props => {
     map.on(L.Draw.Event.EDITSTART, event => {
       drawOptions?.onEditStart?.();
     });
+    map.on(L.Draw.Event.EDITED, event => {
+      drawOptions?.onPolygonCreated?.();
+    });
 
     return () => map.removeControl(drawControl);
   }, [map, setPinLocation, isSmall, drawOptions, drawnItems]);
