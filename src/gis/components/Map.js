@@ -33,12 +33,17 @@ L.Icon.Default.mergeOptions({
 });
 
 const LeafletDraw = props => {
+  const [layers, setLayers] = useState([]);
   const map = useMap();
+  const drawnItems = useMemo(() => L.featureGroup().addTo(map), [map]);
   const { setPinLocation, drawOptions } = props;
   const isSmall = useMediaQuery(theme.breakpoints.down('xs'));
 
   useEffect(() => {
-    const drawnItems = L.featureGroup().addTo(map);
+    layers.forEach(layer => drawnItems.addLayer(layer));
+  }, [layers, drawnItems]);
+
+  useEffect(() => {
     const options = {
       position: isSmall ? 'topright' : 'topleft',
       ...(drawOptions?.showPolygon
@@ -83,13 +88,19 @@ const LeafletDraw = props => {
         return;
       }
       if (layerType === 'polygon') {
-        drawnItems.addLayer(event.layer);
+        setLayers(layers => [...layers, event.layer]);
         drawOptions?.onPolygonCreated?.();
       }
     });
+    map.on(L.Draw.Event.DELETED, event => {
+      const deletedLayers = event.layers.getLayers();
+      setLayers(layers =>
+        layers.filter(layer => !_.includes(layer, deletedLayers))
+      );
+    });
 
     return () => map.removeControl(drawControl);
-  }, [map, setPinLocation, isSmall, drawOptions]);
+  }, [map, setPinLocation, isSmall, drawOptions, drawnItems]);
   return null;
 };
 
