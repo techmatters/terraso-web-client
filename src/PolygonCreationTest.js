@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
 import {
+  Alert,
   Dialog as BaseDialog,
   Button,
   DialogContent,
@@ -29,6 +30,7 @@ const Dialog = styled(BaseDialog)`
 
 const PolygonCreationTest = () => {
   const [open, setOpen] = useState(false);
+  const [editHelp, setEditHelp] = useState(false);
   const [dialogContent, setDialogContent] = useState();
   const onPolygonCreated = useCallback(() => {
     setDialogContent(
@@ -37,15 +39,15 @@ const PolygonCreationTest = () => {
     setOpen(true);
   }, [setDialogContent, setOpen]);
   const onEditStart = useCallback(() => {
-    setDialogContent(
-      'Drag a translucent point to add more points. Click the point to remove it. When you’re done adjusting the boundary save to exit the edit mode.'
-    );
-    setOpen(true);
-  }, [setDialogContent, setOpen]);
+    setEditHelp(true);
+  }, [setEditHelp]);
+  const onEditStop = useCallback(() => {
+    setEditHelp(false);
+  }, [setEditHelp]);
 
   const drawOptions = useMemo(
-    () => ({ showPolygon: true, onPolygonCreated, onEditStart }),
-    [onPolygonCreated, onEditStart]
+    () => ({ showPolygon: true, onPolygonCreated, onEditStart, onEditStop }),
+    [onPolygonCreated, onEditStart, onEditStop]
   );
   return (
     <PageContainer>
@@ -71,6 +73,13 @@ const PolygonCreationTest = () => {
         drawOptions={drawOptions}
         onPinLocationChange={() => {}}
       />
+      {editHelp && (
+        <Alert severity="info">
+          <b>How to edit:</b> Drag a translucent point to add more points. Click
+          the point to remove it. When you’re done adjusting the boundary save
+          to exit the edit mode.
+        </Alert>
+      )}
       <Stack direction="row" sx={{ mt: 2 }} spacing={2}>
         <Button variant="contained">Update Map</Button>
         <Button>Cancel</Button>

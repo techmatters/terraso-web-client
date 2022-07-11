@@ -118,9 +118,11 @@ const LeafletDraw = props => {
         layers.filter(layer => !_.includes(layer, deletedLayers))
       );
     });
-    console.log('renderrrr');
     map.on(L.Draw.Event.EDITSTART, event => {
       drawOptions?.onEditStart?.();
+    });
+    map.on(L.Draw.Event.EDITSTOP, event => {
+      drawOptions?.onEditStop?.();
     });
     map.on(L.Draw.Event.EDITED, event => {
       onPolygonFinished();
