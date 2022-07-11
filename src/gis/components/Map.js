@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import L from 'leaflet';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
@@ -36,6 +42,10 @@ L.drawLocal.draw.toolbar.finish.text = 'Close Shape';
 L.drawLocal.edit.handlers.edit.tooltip.text = 'Drag points to adjust shape.';
 L.drawLocal.edit.handlers.edit.tooltip.subtext =
   'Click the point to remove it.';
+L.drawLocal.edit.toolbar.buttons.edit = 'Edit polygon';
+L.drawLocal.edit.toolbar.buttons.editDisabled = 'No polygon to edit';
+L.drawLocal.edit.toolbar.buttons.remove = 'Delete polygon';
+L.drawLocal.edit.toolbar.buttons.removeDisabled = 'No polygon to delete';
 
 const LeafletDraw = props => {
   const [layers, setLayers] = useState([]);
@@ -47,6 +57,11 @@ const LeafletDraw = props => {
   useEffect(() => {
     layers.forEach(layer => drawnItems.addLayer(layer));
   }, [layers, drawnItems]);
+
+  const onPolygonFinished = useCallback(() => {
+    drawOptions?.onPolygonCreated?.();
+    map.fitBounds(drawnItems.getBounds());
+  }, [drawnItems, drawOptions, map]);
 
   useEffect(() => {
     const options = {
@@ -94,7 +109,7 @@ const LeafletDraw = props => {
       }
       if (layerType === 'polygon') {
         setLayers(layers => [...layers, event.layer]);
-        drawOptions?.onPolygonCreated?.();
+        onPolygonFinished();
       }
     });
     map.on(L.Draw.Event.DELETED, event => {
@@ -108,11 +123,18 @@ const LeafletDraw = props => {
       drawOptions?.onEditStart?.();
     });
     map.on(L.Draw.Event.EDITED, event => {
-      drawOptions?.onPolygonCreated?.();
+      onPolygonFinished();
     });
 
     return () => map.removeControl(drawControl);
-  }, [map, setPinLocation, isSmall, drawOptions, drawnItems]);
+  }, [
+    map,
+    setPinLocation,
+    isSmall,
+    drawOptions,
+    drawnItems,
+    onPolygonFinished,
+  ]);
   return null;
 };
 
