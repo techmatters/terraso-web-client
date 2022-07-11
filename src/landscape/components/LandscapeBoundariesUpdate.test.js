@@ -51,7 +51,7 @@ const testGeoJsonParsing = (file, errorMessage) => async () => {
   );
   await setup();
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
 
   const dropzone = screen.getByRole('button', {
     name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB',
@@ -172,7 +172,7 @@ test('LandscapeBoundaries: Select file', async () => {
   );
   await setup();
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
 
   const dropzone = screen.getByRole('button', {
     name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB',
@@ -226,22 +226,34 @@ test('LandscapeBoundaries: Show cancel', async () => {
 });
 test('LandscapeBoundaries: Save', async () => {
   terrasoApi.requestGraphQL
-    .mockReturnValueOnce(
-      Promise.resolve({
-        landscapes: {
-          edges: [
-            {
-              node: {
-                id: '1',
-                name: 'Landscape Name',
-                description: 'Landscape Description',
-                website: 'www.landscape.org',
-              },
+    .mockResolvedValueOnce({
+      landscapes: {
+        edges: [
+          {
+            node: {
+              id: '1',
+              name: 'Landscape Name',
+              description: 'Landscape Description',
+              website: 'www.landscape.org',
             },
-          ],
-        },
-      })
-    )
+          },
+        ],
+      },
+    })
+    .mockResolvedValueOnce({
+      landscapes: {
+        edges: [
+          {
+            node: {
+              id: '1',
+              name: 'Landscape Name',
+              description: 'Landscape Description',
+              website: 'www.landscape.org',
+            },
+          },
+        ],
+      },
+    })
     .mockResolvedValueOnce({
       addLandscape: {
         landscape: {
@@ -255,7 +267,7 @@ test('LandscapeBoundaries: Save', async () => {
     });
   await setup();
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
 
   const dropzone = screen.getByRole('button', {
     name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB',
@@ -287,8 +299,8 @@ test('LandscapeBoundaries: Save', async () => {
   expect(saveButton).toBeInTheDocument();
   expect(saveButton).not.toHaveAttribute('disabled');
   await act(async () => fireEvent.click(saveButton));
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[1];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
   expect(saveCall[1]).toStrictEqual({
     input: {
       id: '1',

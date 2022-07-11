@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useCallback } from 'react';
 
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import { Typography } from '@mui/material';
@@ -12,6 +12,7 @@ import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
+import { useFetchData } from 'state/utils';
 
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMembersList from 'group/membership/components/GroupMembersList';
@@ -76,15 +77,12 @@ const Header = ({ landscape, fetching }) => {
 };
 
 const LandscapeMembers = () => {
-  const dispatch = useDispatch();
   const { slug } = useParams();
   const { data: landscape, fetching } = useSelector(
     state => state.landscape.membersLandscape
   );
 
-  useEffect(() => {
-    dispatch(fetchLandscapeForMembers(slug));
-  }, [dispatch, slug]);
+  useFetchData(useCallback(() => fetchLandscapeForMembers(slug), [slug]));
 
   if (fetching) {
     return <PageLoader />;

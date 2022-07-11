@@ -114,9 +114,9 @@ const baseListTest = async () => {
     'members'
   );
   expect(
-    within(rows[2]).getByRole('cell', { name: 'Connect' })
+    within(rows[2]).getByRole('button', { name: 'Connect' }).closest('[role="cell"]')
   ).toHaveAttribute('data-field', 'actions');
-  expect(within(rows[9]).getByRole('cell', { name: 'Member' })).toHaveAttribute(
+  expect(within(rows[9]).getByRole('button', { name: 'Member' }).closest('[role="cell"]')).toHaveAttribute(
     'data-field',
     'actions'
   );
@@ -164,7 +164,7 @@ test('LandscapeList: Search', async () => {
   await act(async () =>
     fireEvent.change(searchInput, { target: { value: 'Landscape Name 1' } })
   );
-  await new Promise(r => setTimeout(r, 300));
+  await waitFor(() => expect(screen.getAllByRole('row').length).toBe(7));
   const rows = screen.getAllByRole('row');
   await waitFor(() => expect(rows.length).toBe(7)); // 10 to 15 displayed + header
 });

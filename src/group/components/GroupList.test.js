@@ -130,11 +130,11 @@ test('GroupList: Display list', async () => {
   expect(
     within(rows[2]).getByRole('cell', { name: 'email@email.com' })
   ).toHaveAttribute('data-field', 'email');
-  expect(within(rows[2]).getByRole('cell', { name: 'Join' })).toHaveAttribute(
+  expect(within(rows[2]).getByRole('button', { name: 'Join' }).closest('[role="cell"]')).toHaveAttribute(
     'data-field',
     'actions'
   );
-  expect(within(rows[9]).getByRole('cell', { name: 'Member' })).toHaveAttribute(
+  expect(within(rows[9]).getByRole('button', { name: 'Member' }).closest('[role="cell"]')).toHaveAttribute(
     'data-field',
     'actions'
   );

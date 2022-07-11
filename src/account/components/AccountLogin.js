@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 
 import AppleIcon from '@mui/icons-material/Apple';
@@ -12,6 +12,7 @@ import { useDocumentTitle } from 'common/document';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePicker from 'localization/components/LocalePicker';
+import { useFetchData } from 'state/utils';
 
 import { fetchAuthURLs } from 'account/accountSlice';
 
@@ -23,7 +24,6 @@ const appendReferrer = (url, referrer) =>
   referrer ? `${url}&state=${referrer}` : url;
 
 const AccountForm = () => {
-  const dispatch = useDispatch();
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const { fetching, urls } = useSelector(state => state.account.login);
@@ -31,9 +31,7 @@ const AccountForm = () => {
 
   useDocumentTitle(t('account.login_document_title'));
 
-  useEffect(() => {
-    dispatch(fetchAuthURLs());
-  }, [dispatch]);
+  useFetchData(fetchAuthURLs);
 
   if (fetching) {
     return <PageLoader />;
