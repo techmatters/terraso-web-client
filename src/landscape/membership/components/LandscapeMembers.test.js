@@ -72,8 +72,8 @@ test('LandscapeMembers: Display list', async () => {
         _.flow(
           _.set('node.user', {
             id: `index-${index}`,
-            firstName: 'Member name',
-            lastName: 'Member Last Name',
+            firstName: 'First name',
+            lastName: 'Last Name',
             email:
               index === 0 ? 'john.doe@email.com' : `email${index}@email.com`,
           }),
@@ -129,21 +129,18 @@ test('LandscapeMembers: Display list', async () => {
   expect(rows.length).toBe(16); // 15 displayed + header
   expect(
     within(rows[2]).getByRole('cell', {
-      name: 'Member name Member Last Name Member name Member Last Name',
+      name: 'First name Last Name First name Last Name',
     })
   ).toHaveAttribute('data-field', 'name');
   expect(
     within(rows[9]).queryByRole('button', { name: 'Member' })
   ).not.toBeInTheDocument();
-  expect(within(rows[9]).getByRole('cell', { name: 'Member' })).toHaveAttribute(
+  expect(within(rows[9]).getByText('Member').closest('[role="cell"]')).toHaveAttribute(
     'data-field',
     'role'
   );
-  expect(within(rows[2]).getByRole('cell', { name: '' })).toHaveAttribute(
-    'data-field',
-    'actions'
-  );
-  expect(within(rows[1]).getByRole('cell', { name: 'Leave' })).toHaveAttribute(
+  expect(within(rows[2]).queryByRole('button', { name: 'Member' })).not.toBeInTheDocument();
+  expect(within(rows[1]).getByRole('button', { name: 'Leave' }).closest('[role="cell"]')).toHaveAttribute(
     'data-field',
     'actions'
   );
@@ -290,14 +287,14 @@ test('LandscapeMembers: Display list manager', async () => {
       name: 'Member name 1 Member Last Name 1 Member name 1 Member Last Name 1',
     })
   ).toHaveAttribute('data-field', 'name');
-  expect(within(rows[9]).getByRole('cell', { name: 'Member' })).toHaveAttribute(
+  expect(within(rows[9]).getByRole('button', { name: 'Member' }).closest('[role="cell"]')).toHaveAttribute(
     'data-field',
     'role'
   );
   expect(
     within(rows[9]).getByRole('button', { name: 'Member' })
   ).toBeInTheDocument();
-  expect(within(rows[2]).getByRole('cell', { name: 'Remove' })).toHaveAttribute(
+  expect(within(rows[2]).getByRole('button', { name: 'Remove' }).closest('[role="cell"]')).toHaveAttribute(
     'data-field',
     'actions'
   );
@@ -401,7 +398,7 @@ test('LandscapeMembers: Manager actions', async () => {
       name: 'Member name 2 Member Last Name 2 Member name 2 Member Last Name 2',
     })
   ).toHaveAttribute('data-field', 'name');
-  expect(within(rows[3]).getByRole('cell', { name: 'Member' })).toHaveAttribute(
+  expect(within(rows[3]).getByRole('button', { name: 'Member' }).closest('[role="cell"]')).toHaveAttribute(
     'data-field',
     'role'
   );
@@ -421,9 +418,9 @@ test('LandscapeMembers: Manager actions', async () => {
   ).toHaveAttribute('data-field', 'name');
   await waitFor(() =>
     expect(
-      within(screen.getAllByRole('row')[3]).getByRole('cell', {
+      within(screen.getAllByRole('row')[3]).getByRole('button', {
         name: 'Manager',
-      })
+      }).closest('[role="cell"]')
     ).toHaveAttribute('data-field', 'role')
   );
 

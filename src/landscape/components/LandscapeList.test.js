@@ -114,9 +114,9 @@ const baseListTest = async () => {
     'members'
   );
   expect(
-    within(rows[2]).getByRole('cell', { name: 'Connect' })
+    within(rows[2]).getByRole('button', { name: 'Connect' }).closest('[role="cell"]')
   ).toHaveAttribute('data-field', 'actions');
-  expect(within(rows[9]).getByRole('cell', { name: 'Member' })).toHaveAttribute(
+  expect(within(rows[9]).getByRole('button', { name: 'Member' }).closest('[role="cell"]')).toHaveAttribute(
     'data-field',
     'actions'
   );

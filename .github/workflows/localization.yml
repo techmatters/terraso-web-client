@@ -25,7 +25,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --force
+        run: npm install
 
       - name: Run missing keys check
         run: npm run localization-check-missing
