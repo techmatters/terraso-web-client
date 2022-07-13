@@ -12,6 +12,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import {
   GeoJSON,
+  LayersControl,
   MapContainer,
   Marker,
   TileLayer,
@@ -297,10 +298,21 @@ const Map = props => {
       center={[0, 0]}
       {..._.omit(['center', 'zoom'], props)}
     >
-      <TileLayer
-        attribution='Data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors Tiles &copy; HOT'
-        url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-      />
+      <LayersControl position="topright">
+        <LayersControl.Overlay checked name="Streets">
+          <TileLayer
+            attribution='Data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors Tiles &copy; HOT'
+            url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+          />
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Satellite">
+          <TileLayer
+            attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+          />
+        </LayersControl.Overlay>
+      </LayersControl>
+
       <MapPolygon {...props} />
       <Location
         onPinLocationChange={props.onPinLocationChange}
