@@ -23,6 +23,8 @@ import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMembe
 
 import { withProps } from 'react-hoc';
 
+import LandscapeListMap from './LandscapeListMap';
+
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
@@ -143,40 +145,73 @@ const LandscapeList = () => {
           marginTop: theme.spacing(2),
         }}
       ></Typography>
-      <TableResponsive
-        columns={columns}
-        rows={landscapes}
-        searchEnabled
-        searchPlaceholder={t('landscape.list_search_placeholder')}
-        searchFilterField="name"
-        searchParams={Object.fromEntries(searchParams.entries())}
-        onSearchParamsChange={setSearchParams}
-        emptyMessage={
-          <Trans i18nKey="landscape.list_empty">
-            <Stack spacing={2}>
-              <Typography>First</Typography>
-              <Typography>
-                Prefix
-                <Link component={RouterLink} to={`/landscapes/new`}>
-                  to add
-                </Link>
-                .
-              </Typography>
-            </Stack>
-          </Trans>
-        }
-        tableProps={{
-          initialSort: [
-            {
-              field: 'name',
-              sort: 'asc',
+      <Stack
+        component="section"
+        spacing={2}
+        aria-labelledby="list-map-description"
+      >
+        <Typography id="list-map-description">
+          {t('landscape.list_map_description')}
+        </Typography>
+        <LandscapeListMap />
+        <Trans i18nKey="landscape.list_map_help">
+          <Typography>
+            Prefix
+            <Link component={RouterLink} to={`/landscapes/new`}>
+              add link
+            </Link>
+            or
+            <Link href={t('landscape.list_map_help_url')} target="_blank">
+              help
+            </Link>
+            .
+          </Typography>
+        </Trans>
+      </Stack>
+      <Stack
+        component="section"
+        spacing={2}
+        aria-labelledby="list-table-title"
+        sx={{ mt: 4 }}
+      >
+        <Typography variant="h2" id="list-table-title">
+          {t('landscape.list_table_title')}
+        </Typography>
+        <TableResponsive
+          columns={columns}
+          rows={landscapes}
+          searchEnabled
+          searchPlaceholder={t('landscape.list_search_placeholder')}
+          searchFilterField="name"
+          searchParams={Object.fromEntries(searchParams.entries())}
+          onSearchParamsChange={setSearchParams}
+          emptyMessage={
+            <Trans i18nKey="landscape.list_empty">
+              <Stack spacing={2}>
+                <Typography>First</Typography>
+                <Typography>
+                  Prefix
+                  <Link component={RouterLink} to={`/landscapes/new`}>
+                    to add
+                  </Link>
+                  .
+                </Typography>
+              </Stack>
+            </Trans>
+          }
+          tableProps={{
+            initialSort: [
+              {
+                field: 'name',
+                sort: 'asc',
+              },
+            ],
+            localeText: {
+              footerPaginationRowsPerPage: t('common.data_grid_pagination_of'),
             },
-          ],
-          localeText: {
-            footerPaginationRowsPerPage: t('common.data_grid_pagination_of'),
-          },
-        }}
-      />
+          }}
+        />
+      </Stack>
       <Typography
         variant="h2"
         sx={{
