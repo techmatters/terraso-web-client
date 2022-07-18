@@ -150,9 +150,6 @@ const LandscapeList = () => {
         spacing={2}
         aria-labelledby="list-map-description"
       >
-        <Typography id="list-map-description">
-          {t('landscape.list_map_description')}
-        </Typography>
         <LandscapeListMap />
         <Trans i18nKey="landscape.list_map_help">
           <Typography>
@@ -174,9 +171,6 @@ const LandscapeList = () => {
         aria-labelledby="list-table-title"
         sx={{ mt: 4 }}
       >
-        <Typography variant="h2" id="list-table-title">
-          {t('landscape.list_table_title')}
-        </Typography>
         <TableResponsive
           columns={columns}
           rows={landscapes}
