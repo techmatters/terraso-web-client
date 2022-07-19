@@ -54,12 +54,12 @@ export const getLandscapePin = landscape => {
     return null;
   }
 
-  const lngDelta = boundingBox[1] + boundingBox[3];
-  const latDelta = boundingBox[0] + boundingBox[2];
+  const latDelta = boundingBox[1] + boundingBox[3];
+  const lngDelta = boundingBox[0] + boundingBox[2];
 
   return [
-    lngDelta === 0 ? boundingBox[0] : lngDelta / 2,
-    latDelta === 0 ? boundingBox[1] : latDelta / 2,
+    latDelta === 0 ? boundingBox[0] : latDelta / 2,
+    lngDelta === 0 ? boundingBox[1] : lngDelta / 2,
   ];
 };
 
