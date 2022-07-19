@@ -149,6 +149,7 @@ const LandscapeList = () => {
         component="section"
         aria-label={t('landscape.list_map_section_label')}
         spacing={2}
+        sx={{ mb: 4 }}
       >
         <LandscapeListMap />
         <Trans i18nKey="landscape.list_map_help">
