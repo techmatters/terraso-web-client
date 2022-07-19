@@ -29,7 +29,6 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const setup = async initialState => {
-
   // TODO Improve testing to test clusters functionality
   MarkerClusterGroup.mockImplementation(({ children }) => <>{children}</>);
 
