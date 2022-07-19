@@ -147,8 +147,8 @@ const LandscapeList = () => {
       ></Typography>
       <Stack
         component="section"
+        aria-label={t('landscape.list_map_section_label')}
         spacing={2}
-        aria-labelledby="list-map-description"
       >
         <LandscapeListMap />
         <Trans i18nKey="landscape.list_map_help">
@@ -165,47 +165,40 @@ const LandscapeList = () => {
           </Typography>
         </Trans>
       </Stack>
-      <Stack
-        component="section"
-        spacing={2}
-        aria-labelledby="list-table-title"
-        sx={{ mt: 4 }}
-      >
-        <TableResponsive
-          columns={columns}
-          rows={landscapes}
-          searchEnabled
-          searchPlaceholder={t('landscape.list_search_placeholder')}
-          searchFilterField="name"
-          searchParams={Object.fromEntries(searchParams.entries())}
-          onSearchParamsChange={setSearchParams}
-          emptyMessage={
-            <Trans i18nKey="landscape.list_empty">
-              <Stack spacing={2}>
-                <Typography>First</Typography>
-                <Typography>
-                  Prefix
-                  <Link component={RouterLink} to={`/landscapes/new`}>
-                    to add
-                  </Link>
-                  .
-                </Typography>
-              </Stack>
-            </Trans>
-          }
-          tableProps={{
-            initialSort: [
-              {
-                field: 'name',
-                sort: 'asc',
-              },
-            ],
-            localeText: {
-              footerPaginationRowsPerPage: t('common.data_grid_pagination_of'),
+      <TableResponsive
+        columns={columns}
+        rows={landscapes}
+        searchEnabled
+        searchPlaceholder={t('landscape.list_search_placeholder')}
+        searchFilterField="name"
+        searchParams={Object.fromEntries(searchParams.entries())}
+        onSearchParamsChange={setSearchParams}
+        emptyMessage={
+          <Trans i18nKey="landscape.list_empty">
+            <Stack spacing={2}>
+              <Typography>First</Typography>
+              <Typography>
+                Prefix
+                <Link component={RouterLink} to={`/landscapes/new`}>
+                  to add
+                </Link>
+                .
+              </Typography>
+            </Stack>
+          </Trans>
+        }
+        tableProps={{
+          initialSort: [
+            {
+              field: 'name',
+              sort: 'asc',
             },
-          }}
-        />
-      </Stack>
+          ],
+          localeText: {
+            footerPaginationRowsPerPage: t('common.data_grid_pagination_of'),
+          },
+        }}
+      />
       <Typography
         variant="h2"
         sx={{

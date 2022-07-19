@@ -107,7 +107,7 @@ const baseListTest = async () => {
 
   // Map
   expect(
-    screen.getByRole('region', { name: '[TODO] Explore landcapes in Terraso' })
+    screen.getByRole('region', { name: 'Landscapes map' })
   ).toBeInTheDocument();
 
   // Table
