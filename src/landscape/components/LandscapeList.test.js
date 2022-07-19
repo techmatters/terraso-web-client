@@ -104,6 +104,13 @@ const baseListTest = async () => {
   expect(
     screen.getByRole('heading', { name: 'Landscapes' })
   ).toBeInTheDocument();
+
+  // Map
+  expect(
+    screen.getByRole('region', { name: 'Landscapes map' })
+  ).toBeInTheDocument();
+
+  // Table
   const rows = screen.getAllByRole('row');
   expect(rows.length).toBe(16); // 15 displayed + header
   expect(
