@@ -8,7 +8,7 @@ import Map from 'gis/components/Map';
 import 'leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
-import { Marker, useMap } from 'react-leaflet';
+import { Marker, Popup, useMap } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { useSelector } from 'react-redux';
 
@@ -16,8 +16,14 @@ import { getLandscapePin } from 'landscape/landscapeUtils';
 
 import './LandscapeListMap.css';
 
+import { useTranslation } from 'react-i18next';
+import { Link as RouterLink } from 'react-router-dom';
+
+import { Link, Typography } from '@mui/material';
+
 const LandscapesClusters = () => {
   const map = useMap();
+  const { t } = useTranslation();
   const { landscapes } = useSelector(state => state.landscape.list);
 
   const clusterRef = useRef();
@@ -62,7 +68,29 @@ const LandscapesClusters = () => {
           })}
           key={index}
           position={landscape.position}
-        />
+        >
+          <Popup className="landscape-marker-popup" closeButton={false}>
+            <Link
+              variant="h6"
+              component={RouterLink}
+              to={`/landscapes/${landscape.data.slug}`}
+            >
+              {landscape.data.name}
+            </Link>
+            <Typography variant="caption" display="block" sx={{ mb: 1 }}>
+              {landscape.data.location}
+            </Typography>
+            <Link
+              variant="body2"
+              component={RouterLink}
+              to={`/landscapes/${landscape.data.slug}`}
+            >
+              {t('landscape.list_map_popup_link', {
+                name: landscape.data.name,
+              })}
+            </Link>
+          </Popup>
+        </Marker>
       ))}
     </MarkerClusterGroup>
   );
