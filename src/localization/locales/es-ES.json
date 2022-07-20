@@ -189,7 +189,7 @@
         "skip_to_main_navigation": "Saltar a la navegación principal"
     },
     "landscape": {
-        "create": "Crear un paisaje",
+        "create": "Agregar un paisaje",
         "home_title": "Paisajes",
         "home_default_title": "Paisaje",
         "form_edit_title": "Actualizar el paisaje “{{name}}”",
@@ -206,7 +206,7 @@
         "list_member_button": "Miembro",
         "list_manager_button": "Administrador",
         "membership_leave_confirm_button": "Dejar el paisaje",
-        "list_new_button": "Crear paisaje",
+        "list_new_button": "Agregar paisaje",
         "members_remove_confirmation_button": "Quitar miembro",
         "view_update_button": "Actualizar paisaje",
         "role_member": "Miembro",
