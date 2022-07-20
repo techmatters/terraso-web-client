@@ -37,6 +37,7 @@
     "react-hook-form": "^7.28.1",
     "react-i18next": "^11.16.2",
     "react-leaflet": "^3.2.5",
+    "react-leaflet-markercluster": "^3.0.0-rc1",
     "react-redux": "^7.2.6",
     "react-router-dom": "^6.2.2",
     "uuid": "^8.3.2",

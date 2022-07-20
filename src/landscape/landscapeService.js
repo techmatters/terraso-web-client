@@ -140,6 +140,9 @@ export const fetchLandscapes = (params, currentUser) => {
         .map(landscape => ({
           ..._.omit(['defaultGroup'], landscape),
           defaultGroup: getDefaultGroup(landscape),
+          areaPolygon: landscape.areaPolygon
+            ? JSON.parse(landscape.areaPolygon)
+            : null,
         }))
     )
     .then(_.orderBy([landscape => landscape.name.toLowerCase()], null));
