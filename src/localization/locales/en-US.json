@@ -189,7 +189,7 @@
         "skip_to_main_navigation": "Skip to main navigation"
     },
     "landscape": {
-        "create": "Create a Landscape",
+        "create": "Add a Landscape",
         "home_title": "Landscapes",
         "home_default_title": "Landscape",
         "form_edit_title": "Update the “{{name}}” Landscape",
@@ -207,7 +207,7 @@
         "list_join_button": "Connect",
         "list_member_button": "Member",
         "list_manager_button": "Manager",
-        "list_new_button": "Create Landscape",
+        "list_new_button": "Add Landscape",
         "members_remove_confirmation_button": "Remove Member",
         "list_column_name": "Landscape",
         "role_member": "Member",
