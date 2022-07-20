@@ -33,7 +33,6 @@
 }
 .landscape-marker-popup .leaflet-popup-tip {
   border: 1px solid transparent;
-  border-left: 1px solid transparent;
   border-right: 1px solid #985329;
   background-color: transparent;
   box-shadow: none;
