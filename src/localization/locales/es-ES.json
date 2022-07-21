@@ -219,7 +219,7 @@
         "form_name_label": "Nombre",
         "form_description_label": "Descripción",
         "form_email_label": "Dirección de correo electrónico",
-        "form_create_label": "Crear un paisaje",
+        "form_add_label": "Crear un paisaje",
         "form_website_label": "Sitio web",
         "form_location_label": "País o Región",
         "form_save_label": "Guardar cambios",

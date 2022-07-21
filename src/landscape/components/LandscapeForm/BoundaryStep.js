@@ -57,7 +57,7 @@ const GeoJson = props => {
           {t('landscape.form_boundary_options_back')}
         </Button>
         <Button variant="contained" sx={{ marginTop: 2 }} onClick={onSave}>
-          {t('landscape.form_create_label')}
+          {t('landscape.form_add_label')}
         </Button>
       </Stack>
     </>

@@ -183,7 +183,7 @@ const LandscapeList = () => {
           marginTop: theme.spacing(4),
         }}
       >
-        {t('landscape.create')}
+        {t('landscape.add')}
       </Typography>
 
       <p>{t('landscape.list_new_description')}</p>
