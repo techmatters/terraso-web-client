@@ -286,7 +286,8 @@
         "list_search_placeholder": "Search landscapes",
         "list_map_help": "<0>Can’t find your landscape on this map? <1>Add it to Terraso</1> or <3>learn more about landscapes</3>.</0>",
         "list_map_help_url": "https://terraso.org/help/add-a-new-landscape-to-terraso/",
-        "list_map_section_label": "Landscapes map"
+        "list_map_section_label": "Landscapes map",
+        "list_map_popup_link": "View details about {{name}}"
     },
     "sharedData": {
         "title": "Shared files",
