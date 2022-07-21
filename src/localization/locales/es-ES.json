@@ -287,7 +287,8 @@
         "list_search_placeholder": "Buscar paisajes",
         "list_map_help": "<0>¿No puedes encontrar tu paisaje en este mapa? <1>Añádelo a Terraso</1> o <3>aprende más sobre paisajes</3>.</0>",
         "list_map_help_url": "https://terraso.org/es/ayuda/anade-un-nuevo-paisaje-a-terraso/",
-        "list_map_section_label": "Mapa de paisajes"
+        "list_map_section_label": "Mapa de paisajes",
+        "list_map_popup_link": "Ver detalles sobre  {{name}}"
     },
     "common": {
         "dialog_cancel_label": "Cancelar",
