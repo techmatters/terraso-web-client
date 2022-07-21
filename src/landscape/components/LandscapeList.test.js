@@ -129,7 +129,7 @@ const baseListTest = async () => {
     )
   );
 
-  within(mapRegion).getByRole('link', { name: '[TODO] View details about Landscape Name 0'}); 
+  within(mapRegion).getByRole('link', { name: 'View details about Landscape Name 0'}); 
 
   // Table
   const rows = screen.getAllByRole('row');
