@@ -21,6 +21,8 @@ import { Link as RouterLink } from 'react-router-dom';
 
 import { Link, Typography } from '@mui/material';
 
+import { countryNameForCode } from 'common/utils';
+
 const LandscapesClusters = () => {
   const map = useMap();
   const { t } = useTranslation();
@@ -78,7 +80,8 @@ const LandscapesClusters = () => {
               {landscape.data.name}
             </Link>
             <Typography variant="caption" display="block" sx={{ mb: 1 }}>
-              {landscape.data.location}
+              {countryNameForCode(landscape.data.location)?.name ||
+                landscape.data.location}
             </Typography>
             <Link
               variant="body2"

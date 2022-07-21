@@ -123,13 +123,11 @@ const baseListTest = async () => {
   const markers = within(mapRegion).getAllByRole('button');
   expect(markers.length).toBe(17); // 15 + zoom buttons
 
-  await act(async () =>
-    fireEvent.click(
-      markers[0]
-    )
-  );
+  await act(async () => fireEvent.click(markers[0]));
 
-  within(mapRegion).getByRole('link', { name: 'View details about Landscape Name 0'}); 
+  within(mapRegion).getByRole('link', {
+    name: 'View details about Landscape Name 0',
+  });
 
   // Table
   const rows = screen.getAllByRole('row');
