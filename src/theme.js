@@ -127,9 +127,6 @@ const theme = createTheme(colorTheme, {
       textTransform: 'none',
       fontWeight: 0,
     },
-    caption: {
-      fontSize: '1rem',
-    },
   },
   components,
 });

@@ -23,6 +23,8 @@ import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMembe
 
 import { withProps } from 'react-hoc';
 
+import LandscapeListMap from './LandscapeListMap';
+
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
@@ -143,6 +145,27 @@ const LandscapeList = () => {
           marginTop: theme.spacing(2),
         }}
       ></Typography>
+      <Stack
+        component="section"
+        aria-label={t('landscape.list_map_section_label')}
+        spacing={2}
+        sx={{ mb: 4 }}
+      >
+        <LandscapeListMap />
+        <Trans i18nKey="landscape.list_map_help">
+          <Typography>
+            Prefix
+            <Link component={RouterLink} to={`/landscapes/new`}>
+              add link
+            </Link>
+            or
+            <Link href={t('landscape.list_map_help_url')} target="_blank">
+              help
+            </Link>
+            .
+          </Typography>
+        </Trans>
+      </Stack>
       <TableResponsive
         columns={columns}
         rows={landscapes}

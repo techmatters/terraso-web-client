@@ -1,0 +1,39 @@
+.landscape-list-map-cluster-icon div {
+  background-clip: padding-box;
+  background-color: #985329;
+  width: 30px;
+  height: 25px;
+  margin-left: 5px;
+  margin-top: 5px;
+  text-align: center;
+  border-radius: 15px;
+  padding-top: 5px;
+  color: #fff;
+}
+
+.landscape-list-map-cluster-icon {
+  background-clip: padding-box;
+  background-color: #98532999;
+  border-radius: 20px;
+}
+
+.landscape-list-map-marker-icon {
+  background-clip: padding-box;
+  background-color: #985329;
+  border-radius: 30px;
+}
+
+.landscape-marker-popup .leaflet-popup-content-wrapper {
+  background: #fff;
+  font-size: 16px;
+  line-height: 24px;
+  border-radius: 3px;
+  border: 1px solid #985329;
+  box-shadow: none;
+}
+.landscape-marker-popup .leaflet-popup-tip {
+  border: 1px solid transparent;
+  border-right: 1px solid #985329;
+  background-color: transparent;
+  box-shadow: none;
+}

@@ -4,6 +4,7 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
+import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { useSearchParams } from 'react-router-dom';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -11,10 +12,14 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import LandscapeList from 'landscape/components/LandscapeList';
 import * as terrasoApi from 'terrasoBackend/api';
 
+const GEOJSON =
+  '{"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": {"type": "Polygon", "coordinates": [[[-80.02098083496094, 0.8184536092473124], [-80.04364013671875, 0.8177670337355836], [-80.04844665527342, 0.8184536092473124], [-80.04981994628906, 0.8260059320976082], [-80.07247924804686, 0.802662342941431], [-80.09170532226562, 0.779318620539376], [-80.10063171386719, 0.7532284249372649], [-80.09857177734375, 0.7223319390984623], [-80.09307861328125, 0.7140928403610857], [-80.10337829589842, 0.6955548144696846], [-80.09788513183594, 0.6742703246919985], [-80.08827209472656, 0.6488661346824502], [-80.07797241210938, 0.6495527361122139], [-80.06561279296875, 0.6522991408974699], [-80.06235122680664, 0.6468063298344634], [-80.02098083496094, 0.8184536092473124]]]}, "properties": {}}]}';
+
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850
 global.console.error = jest.fn();
 
 jest.mock('terrasoBackend/api');
+jest.mock('react-leaflet-markercluster', () => jest.fn());
 
 jest.mock('@mui/material/useMediaQuery');
 
@@ -24,6 +29,9 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const setup = async initialState => {
+  // TODO Improve testing to test clusters functionality
+  MarkerClusterGroup.mockImplementation(({ children }) => <>{children}</>);
+
   await render(<LandscapeList />, {
     account: {
       hasToken: true,
@@ -70,6 +78,7 @@ const baseListTest = async () => {
         description: 'Landscape Description',
         website: 'www.landscape.org',
         location: 'Ecuador, Quito',
+        areaPolygon: GEOJSON,
         defaultGroup: {
           edges: [
             {
@@ -104,6 +113,23 @@ const baseListTest = async () => {
   expect(
     screen.getByRole('heading', { name: 'Landscapes' })
   ).toBeInTheDocument();
+
+  // Map
+  const mapRegion = screen.getByRole('region', {
+    name: 'Landscapes map',
+  });
+  expect(mapRegion).toBeInTheDocument();
+
+  const markers = within(mapRegion).getAllByRole('button');
+  expect(markers.length).toBe(17); // 15 + zoom buttons
+
+  await act(async () => fireEvent.click(markers[0]));
+
+  within(mapRegion).getByRole('link', {
+    name: 'View details about Landscape Name 0',
+  });
+
+  // Table
   const rows = screen.getAllByRole('row');
   expect(rows.length).toBe(16); // 15 displayed + header
   expect(
