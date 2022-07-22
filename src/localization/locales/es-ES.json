@@ -189,7 +189,7 @@
         "skip_to_main_navigation": "Saltar a la navegación principal"
     },
     "landscape": {
-        "create": "Agregar un paisaje",
+        "add": "Agregar un paisaje",
         "home_title": "Paisajes",
         "home_default_title": "Paisaje",
         "form_edit_title": "Actualizar el paisaje “{{name}}”",
