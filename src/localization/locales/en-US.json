@@ -173,7 +173,7 @@
     },
     "footer": {
         "heading": "Footer",
-        "navgiation": "Footer Navigation",
+        "navigation": "Footer Navigation",
         "links": {
             "help": { "text": "Terraso Help", "url": "https://terraso.org/help/" },
             "contact": { "text": "Contact", "to": "/contact" },
