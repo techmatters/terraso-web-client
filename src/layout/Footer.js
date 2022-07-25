@@ -3,8 +3,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Grid, Link } from '@mui/material';
+import { Grid, Link, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { visuallyHidden } from '@mui/utils';
 
 import theme from 'theme';
 
@@ -93,6 +94,9 @@ const Footer = () => {
       }}
       justifyContent="space-between"
     >
+      <Typography sx={visuallyHidden} variant="h2">
+        {t('footer.heading')}
+      </Typography>
       <Grid
         sx={{
           width: '100%',
