@@ -174,7 +174,7 @@
     "footer": {
         "heading": "Footer",
         "navgiation": "Footer Navigation",
-        "llinks": {
+        "links": {
             "help": { "text": "Ayuda de Terraso", "url": "https://terraso.org/es/ayuda/" },
             "contact": { "text": "Contacto", "to": "/contact" },
             "terms": { "text": "Términos de uso", "url": "#" },
