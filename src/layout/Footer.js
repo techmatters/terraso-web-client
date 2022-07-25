@@ -80,7 +80,7 @@ const Footer = () => {
   // Convert to Array. Remove items where URL is #. Return values from new array.
   // IN: {"help":{"text":"Terraso Help","url":"https://terraso.org/help/"}, "terms":{"text":"Terms of Use","url":"#"}}
   // OUT: [{"text":"Terraso Help", "url":"https://terraso.org/help/"}]
-  const footerLinks = Object.entries(t('footer', { returnObjects: true }))
+  const footerLinks = Object.entries(t('footer.links', { returnObjects: true }))
     .filter(item => item[1].url !== '#')
     .map(item => item[1]);
 
@@ -104,7 +104,7 @@ const Footer = () => {
           padding: spacing(2),
           maxWidth: 1200,
         }}
-        aria-label="Footer"
+        aria-label={t('footer.heading')}
         component="nav"
       >
         <Grid
@@ -112,7 +112,7 @@ const Footer = () => {
           xs={12}
           sm={8}
           component={LinksContainer}
-          aria-label="Footer Navigation"
+          aria-label={t('footer.navigation')}
         >
           {footerLinks.map((link, index) => (
             <FooterLink

@@ -172,12 +172,16 @@
         "form_language_label": "Idioma"
     },
     "footer": {
-        "help": { "text": "Ayuda de Terraso", "url": "https://terraso.org/es/ayuda/" },
-        "contact": { "text": "Contacto", "to": "/contact" },
-        "terms": { "text": "Términos de uso", "url": "#" },
-        "privacy": { "text": "Política de privacidad", "url": "https://techmatters.org/privacy-policy/" },
-        "data": { "text": "Política de datos", "url": "#"},
-        "about": { "text": "Acerca de Terraso", "url": "https://terraso.org/es/" }
+        "heading": "Footer",
+        "navgiation": "Footer Navigation",
+        "llinks": {
+            "help": { "text": "Ayuda de Terraso", "url": "https://terraso.org/es/ayuda/" },
+            "contact": { "text": "Contacto", "to": "/contact" },
+            "terms": { "text": "Términos de uso", "url": "#" },
+            "privacy": { "text": "Política de privacidad", "url": "https://techmatters.org/privacy-policy/" },
+            "data": { "text": "Política de datos", "url": "#"},
+            "about": { "text": "Acerca de Terraso", "url": "https://terraso.org/es/" }
+        }
     },
     "navigation": {
         "home": "Inicio",
