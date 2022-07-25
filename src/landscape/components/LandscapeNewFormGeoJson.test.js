@@ -119,7 +119,7 @@ test('LandscapeNew: Save from GeoJSON', async () => {
   ).toBeInTheDocument();
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Create Landscape' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
   );
 
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
