@@ -103,7 +103,13 @@ const Footer = () => {
         aria-label="Footer"
         component="nav"
       >
-        <Grid item xs={12} sm={8} component={LinksContainer}>
+        <Grid
+          item
+          xs={12}
+          sm={8}
+          component={LinksContainer}
+          aria-label="Footer Navigation"
+        >
           {footerLinks.map((link, index) => (
             <FooterLink
               key={index}
