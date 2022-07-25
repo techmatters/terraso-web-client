@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Trans } from 'react-i18next';
 
-import WarningIcon from '@mui/icons-material/Warning';
+import NotificationImportantIcon from '@mui/icons-material/NotificationImportant';
 import { Link, Stack, Typography } from '@mui/material';
 
 import { withProps } from 'react-hoc';
@@ -22,7 +22,7 @@ const GroupMembershipPendingWarning = props => {
 
   return (
     <Stack direction="row" spacing={1} sx={sx}>
-      <WarningIcon sx={{ color: 'gray.mid2' }} />
+      <NotificationImportantIcon sx={{ color: 'gray.mid2' }} />
       <Trans i18nKey="group.members_pending_message" count={count}>
         <Typography>
           <CountComponent>link</CountComponent>
