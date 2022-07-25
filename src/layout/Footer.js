@@ -100,6 +100,8 @@ const Footer = () => {
           padding: spacing(2),
           maxWidth: 1200,
         }}
+        aria-label="Footer"
+        component="nav"
       >
         <Grid item xs={12} sm={8} component={LinksContainer}>
           {footerLinks.map((link, index) => (
