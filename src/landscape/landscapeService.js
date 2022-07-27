@@ -65,34 +65,32 @@ export const fetchLandscapeToView = (slug, currentUser) => {
     ${landscapeFields}
     ${defaultGroup}
   `;
-  return (
-    terrasoApi
-      .requestGraphQL(query, { slug, accountEmail: currentUser.email })
-      .then(_.get('landscapes.edges[0].node'))
-      .then(landscape => landscape || Promise.reject('not_found'))
-      .then(landscape => ({
-        ..._.omit('defaultGroup', landscape),
-        defaultGroup: getDefaultGroup(landscape),
-      }))
-      .then(landscape => ({
-        ...landscape,
-        areaPolygon: landscape.areaPolygon
-          ? JSON.parse(landscape.areaPolygon)
-          : null,
-      }))
-      .then(landscape => {
-        if (landscape.areaPolygon) {
-          return landscape;
-        }
-        // Get Bounding box if no areaPolygon data
-        return gisService
-          .getPlaceInfoByName(landscape.location)
-          .then(placeInfo => ({
-            ...landscape,
-            boundingBox: placeInfo?.boundingbox,
-          }));
-      })
-  );
+  return terrasoApi
+    .requestGraphQL(query, { slug, accountEmail: currentUser.email })
+    .then(_.get('landscapes.edges[0].node'))
+    .then(landscape => landscape || Promise.reject('not_found'))
+    .then(landscape => ({
+      ..._.omit('defaultGroup', landscape),
+      defaultGroup: getDefaultGroup(landscape),
+    }))
+    .then(landscape => ({
+      ...landscape,
+      areaPolygon: landscape.areaPolygon
+        ? JSON.parse(landscape.areaPolygon)
+        : null,
+    }))
+    .then(landscape => {
+      if (landscape.areaPolygon) {
+        return landscape;
+      }
+      // Get Bounding box if no areaPolygon data
+      return gisService
+        .getPlaceInfoByName(landscape.location)
+        .then(placeInfo => ({
+          ...landscape,
+          boundingBox: placeInfo?.boundingbox,
+        }));
+    });
 };
 
 export const fetchLandscapeToUploadSharedData = (slug, currentUser) => {

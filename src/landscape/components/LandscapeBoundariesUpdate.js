@@ -9,7 +9,11 @@ import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 
-import { fetchLandscapeForm, saveLandscape } from 'landscape/landscapeSlice';
+import {
+  fetchLandscapeForm,
+  saveLandscape,
+  setFormNewValues,
+} from 'landscape/landscapeSlice';
 
 import BoundaryStep from './LandscapeForm/BoundaryStep';
 
@@ -37,6 +41,7 @@ const LandscapeBoundariesUpdate = () => {
     if (success) {
       navigate(`/landscapes/${slug}`);
     }
+    return () => dispatch(setFormNewValues());
   }, [success, slug, navigate, dispatch]);
 
   if (fetching) {
@@ -59,7 +64,8 @@ const LandscapeBoundariesUpdate = () => {
           name: _.get('name', landscape),
         })}
         landscape={landscape}
-        onSave={onSave}
+        save={onSave}
+        saveLabel={t('landscape.boundaries_update_save')}
         onCancel={() => navigate(`/landscapes/${slug}`)}
       />
     </PageContainer>

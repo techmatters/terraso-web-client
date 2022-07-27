@@ -130,8 +130,6 @@ const MapGeoJson = () => {
   const [newGeoJson, setNewGeoJson] = useState();
   const { featureGroup, geojson, onGeoJsonChange } = useContext(MapContext);
 
-  console.log({ geojson });
-
   useEffect(() => {
     if (!featureGroup) {
       return;
@@ -198,6 +196,9 @@ const Map = props => {
 
   const updateBounds = useCallback(
     bbox => {
+      if (!onGeoJsonChange) {
+        return;
+      }
       onGeoJsonChange(current => {
         if (!current) {
           return current;

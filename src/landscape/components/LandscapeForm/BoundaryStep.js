@@ -22,7 +22,7 @@ const OPTION_SELECT_OPTIONS = 'options';
 
 const GeoJson = props => {
   const { t } = useTranslation();
-  const { mapCenter, landscape, setOption, save } = props;
+  const { mapCenter, landscape, setOption, save, saveLabel } = props;
   const [areaPolygon, setAreaPolygon] = useState();
 
   const onSave = () => {
@@ -50,7 +50,7 @@ const GeoJson = props => {
           {t('landscape.form_boundary_options_back')}
         </Button>
         <Button variant="contained" sx={{ marginTop: 2 }} onClick={onSave}>
-          {t('landscape.form_add_label')}
+          {saveLabel}
         </Button>
       </Stack>
     </>
@@ -59,7 +59,7 @@ const GeoJson = props => {
 
 const MapPin = props => {
   const { t } = useTranslation();
-  const { landscape, boundingBox, setOption, save } = props;
+  const { landscape, boundingBox, setOption, save, saveLabel } = props;
   const [areaPolygon, setAreaPolygon] = useState();
 
   const onSave = () => {
@@ -90,7 +90,7 @@ const MapPin = props => {
           {t('landscape.form_boundary_options_back')}
         </Button>
         <Button variant="contained" sx={{ marginTop: 2 }} onClick={onSave}>
-          {t('landscape.form_add_label')}
+          {saveLabel}
         </Button>
       </Stack>
     </>
@@ -128,11 +128,16 @@ const BoundaryOptions = props => {
     <>
       <PageHeader header={title} />
       <Trans i18nKey="landscape.form_boundary_options_description">
-        Prefix
-        <Link href={t('landscape.boundaries_help_geojson_url')} target="_blank">
-          link
-        </Link>
-        .
+        <Stack spacing={2} sx={{ mb: 4 }}>
+          <Typography>First</Typography>
+          <Typography variant="body2">second</Typography>
+          <Link
+            href={t('landscape.boundaries_help_geojson_url')}
+            target="_blank"
+          >
+            link
+          </Link>
+        </Stack>
       </Trans>
       <Stack sx={{ marginTop: 2 }} spacing={3}>
         {options.map((option, index) => (

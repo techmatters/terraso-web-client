@@ -73,6 +73,7 @@ const LandscapeNew = () => {
           setUpdatedLandscape={setUpdatedLandscape}
           onCancel={() => setActiveStepIndex(current => current - 1)}
           save={onSave}
+          saveLabel={t('landscape.form_add_label')}
         />
       ),
     },
