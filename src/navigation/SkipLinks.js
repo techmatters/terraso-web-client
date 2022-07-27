@@ -42,19 +42,18 @@ const SkipLinks = props => {
   const links = [
     {
       label: t('navigation.skip_to_main_content'),
-      href: '#content',
+      href: '#main-heading',
       onClick: toContent,
     },
     {
       label: t('navigation.skip_to_main_navigation'),
-      href: '#main-navigation',
+      href: '#main-navigation-0',
       onClick: toNavigation,
     },
   ];
 
   return (
     <>
-      <span tabIndex="-1" ref={initialRef} />
       {links.map((link, index) => (
         <Link
           key={index}
