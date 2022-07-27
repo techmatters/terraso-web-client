@@ -130,7 +130,13 @@ test('LandscapeNew: Save from GeoJSON', async () => {
       name: 'New name',
       website: 'https://www.other.org',
       location: 'AR',
-      areaPolygon: JSON.stringify({...JSON.parse(GEOJSON), bbox:[-80.15625000000001,1.4061088354351594,-80.15625000000001,1.4061088354351594]}),
+      areaPolygon: JSON.stringify({
+        ...JSON.parse(GEOJSON),
+        bbox: [
+          -80.15625000000001, 1.4061088354351594, -80.15625000000001,
+          1.4061088354351594,
+        ],
+      }),
     },
   });
 });

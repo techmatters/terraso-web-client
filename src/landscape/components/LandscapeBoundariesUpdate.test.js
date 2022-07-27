@@ -244,9 +244,13 @@ test('LandscapeBoundaries: Show back', async () => {
   );
 
   expect(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument();
-  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Back' })));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }))
+  );
   expect(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument();
-  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Back' })));
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }))
+  );
   expect(navigate.mock.calls[0]).toEqual(['/landscapes/slug-1']);
 });
 test('LandscapeBoundaries: Save', async () => {
@@ -309,14 +313,10 @@ test('LandscapeBoundaries: Save', async () => {
     },
   };
   fireEvent.drop(dropzone, data);
-  await waitFor(() =>
-    expect(
-      screen.getByRole('button', {
-        name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB test.json 804 B',
-      })
-    ).toBeInTheDocument()
-  );
-  
+  await screen.findByRole('button', {
+    name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB test.json 804 B',
+  });
+
   const saveButton = screen.getByRole('button', {
     name: 'Update Map',
   });
@@ -328,7 +328,13 @@ test('LandscapeBoundaries: Save', async () => {
   expect(saveCall[1]).toStrictEqual({
     input: {
       id: '1',
-      areaPolygon: JSON.stringify({...JSON.parse(GEOJSON), bbox: [-80.15625000000001,1.4061088354351594,-80.15625000000001,1.4061088354351594]}),
+      areaPolygon: JSON.stringify({
+        ...JSON.parse(GEOJSON),
+        bbox: [
+          -80.15625000000001, 1.4061088354351594, -80.15625000000001,
+          1.4061088354351594,
+        ],
+      }),
     },
   });
 });
