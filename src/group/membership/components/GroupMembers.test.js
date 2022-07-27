@@ -107,7 +107,7 @@ test('GroupMembers: Display list', async () => {
   expect(rows.length).toBe(16); // 15 displayed + header
   expect(
     within(rows[2]).getByRole('cell', {
-      name: 'Member name Member Last Name Member name Member Last Name',
+      name: 'Member name Member Last Name',
     })
   ).toHaveAttribute('data-field', 'name');
   expect(
@@ -221,7 +221,7 @@ test('GroupMembers: Display list manager', async () => {
   expect(rows.length).toBe(16); // 15 displayed + header
   expect(
     within(rows[2]).getByRole('cell', {
-      name: 'Member name Member Last Name Member name Member Last Name',
+      name: 'Member name Member Last Name',
     })
   ).toHaveAttribute('data-field', 'name');
   expect(within(rows[9]).getByRole('cell', { name: 'Member' })).toHaveAttribute(
@@ -360,7 +360,7 @@ test('GroupMembers: Manager actions', async () => {
 
   expect(
     within(rows[3]).getByRole('cell', {
-      name: 'Member name 2 Member Last Name Member name 2 Member Last Name',
+      name: 'Member name 2 Member Last Name',
     })
   ).toHaveAttribute('data-field', 'name');
 
@@ -403,9 +403,7 @@ test('GroupMembers: Manager actions', async () => {
 
   // Reject
   expect(
-    within(pendingSection.getAllByRole('listitem')[0]).getByRole('img', {
-      name: 'Member name Pending 0 Member Last Name',
-    })
+    within(pendingSection.getAllByRole('listitem')[0]).getByText('Member name Pending 0 Member Last Name')
   ).toBeInTheDocument();
   await act(
     async () =>
@@ -427,9 +425,7 @@ test('GroupMembers: Manager actions', async () => {
 
   // Approve
   expect(
-    within(pendingSection.getAllByRole('listitem')[0]).getByRole('img', {
-      name: 'Member name Pending 1 Member Last Name',
-    })
+    within(pendingSection.getAllByRole('listitem')[0]).getByText( 'Member name Pending 1 Member Last Name')
   ).toBeInTheDocument();
   await act(
     async () =>
@@ -442,9 +438,7 @@ test('GroupMembers: Manager actions', async () => {
 
   expect(pendingSection.getAllByRole('listitem').length).toBe(1);
   expect(
-    within(pendingSection.getAllByRole('listitem')[0]).getByRole('img', {
-      name: 'Member name Pending 0 Member Last Name',
-    })
+    within(pendingSection.getAllByRole('listitem')[0]).getByText('Member name Pending 0 Member Last Name')
   ).toBeInTheDocument();
   await waitFor(() =>
     expect(within(listSection).getAllByRole('row').length).toBe(5)

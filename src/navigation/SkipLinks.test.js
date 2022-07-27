@@ -23,13 +23,12 @@ const App = () => {
       <SkipLinks contentRef={contentRef} navigationRef={navigationRef} />
       <Box
         component="nav"
-        id="main-navigation"
-        tabIndex="-1"
         ref={navigationRef}
       >
-        Navigation
+        <button id="main-navigation-0">Nav 1</button>
       </Box>
-      <Box component="main" id="content" tabIndex="-1" ref={contentRef}>
+      <Box component="main" ref={contentRef}>
+        <h1 tabIndex="-1" id="main-heading">Main heading</h1>
         Content
       </Box>
     </>
@@ -80,7 +79,7 @@ test('Navigation: To content', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('link', { name: 'Skip to main content' }))
   );
-  expect(screen.getByRole('main')).toHaveFocus();
+  expect(screen.getByRole('heading', { name: 'Main heading'})).toHaveFocus();
 });
 test('Navigation: To navigation', async () => {
   useLocation.mockReturnValue({
@@ -100,5 +99,6 @@ test('Navigation: To navigation', async () => {
       screen.getByRole('link', { name: 'Skip to main navigation' })
     )
   );
-  expect(screen.getByRole('navigation')).toHaveFocus();
+  const navigation = screen.getByRole('navigation')
+  expect(navigation).toHaveFocus();
 });
