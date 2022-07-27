@@ -44,7 +44,7 @@ const NavButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const NavigationLink = ({ path, selected }) => {
+const NavigationLink = ({ path, selected, index }) => {
   const { t } = useTranslation();
   return (
     <ListItem disablePadding dense sx={{ width: 'auto' }}>
@@ -53,6 +53,7 @@ const NavigationLink = ({ path, selected }) => {
         component={RouterLink}
         to={path}
         value={path}
+        id={`main-navigation-${index}`}
         {...(selected ? { 'aria-current': 'page' } : {})}
       >
         {t(PAGES[path].label)}
@@ -96,7 +97,12 @@ const Navigation = React.forwardRef((props, ref) => {
     >
       <List sx={{ display: 'flex', flexDirection: 'row', padding: 0 }}>
         {Object.keys(PAGES).map((path, index) => (
-          <NavigationLink key={path} path={path} selected={index === value} />
+          <NavigationLink
+            key={path}
+            path={path}
+            index={index}
+            selected={index === value}
+          />
         ))}
       </List>
     </Container>
