@@ -185,6 +185,7 @@
         "groups": "Groups",
         "tools": "Tools",
         "nav_label": "Main navigation",
+        "nav_label_short": "Main",
         "skip_to_main_content": "Skip to main content",
         "skip_to_main_navigation": "Skip to main navigation"
     },
