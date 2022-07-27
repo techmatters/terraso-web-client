@@ -13,19 +13,23 @@ const parseGeoJson = areaPolygon => {
 };
 
 export const getLandscapeBoundingBox = (landscape = {}) => {
-  const { areaPolygon, position } = landscape;
+  const { areaPolygon, boundingBox: defaultBoundingBox } = landscape;
 
   const areaBoundingBox = areaPolygon && parseGeoJson(areaPolygon);
-  const positionBoundingBox = position && position.boundingbox;
 
-  const boundingBox = areaBoundingBox || positionBoundingBox;
+  if (areaBoundingBox) {
+    return [
+      [areaBoundingBox[1], areaBoundingBox[0]],
+      [areaBoundingBox[3], areaBoundingBox[2]],
+    ];
+  }
 
-  return (
-    boundingBox && [
-      [boundingBox[1], boundingBox[0]],
-      [boundingBox[3], boundingBox[2]],
-    ]
-  );
+  if (defaultBoundingBox) {
+    return [
+      [defaultBoundingBox[1], defaultBoundingBox[2]],
+      [defaultBoundingBox[0], defaultBoundingBox[3]],
+    ];
+  }
 };
 
 export const getLandscapePin = landscape => {

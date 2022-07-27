@@ -74,20 +74,24 @@ export const fetchLandscapeToView = (slug, currentUser) => {
         ..._.omit('defaultGroup', landscape),
         defaultGroup: getDefaultGroup(landscape),
       }))
-      // TODO temporarily getting position from openstreetmap API.
-      // This should change when we store landscape polygon.
-      .then(landscape =>
-        gisService.getPlaceInfoByName(landscape.location).then(placeInfo => ({
-          ...landscape,
-          position: placeInfo,
-        }))
-      )
       .then(landscape => ({
         ...landscape,
         areaPolygon: landscape.areaPolygon
           ? JSON.parse(landscape.areaPolygon)
           : null,
       }))
+      .then(landscape => {
+        if (landscape.areaPolygon) {
+          return landscape;
+        }
+        // Get Bounding box if no areaPolygon data
+        return gisService
+          .getPlaceInfoByName(landscape.location)
+          .then(placeInfo => ({
+            ...landscape,
+            boundingBox: placeInfo?.boundingbox,
+          }));
+      })
   );
 };
 
