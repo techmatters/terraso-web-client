@@ -6,7 +6,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import AppleIcon from '@mui/icons-material/Apple';
 import GoogleIcon from '@mui/icons-material/Google';
-import { Button, Stack } from '@mui/material';
+import { Box, Button, Stack } from '@mui/material';
 
 import { useDocumentTitle } from 'common/document';
 import PageHeader from 'layout/PageHeader';
@@ -47,13 +47,19 @@ const AccountForm = () => {
       style={{ height: '80vh', margin: `auto ${theme.spacing(2)}` }}
     >
       <Stack sx={{ maxWidth: 'sm' }} alignItems="center">
-        <PageHeader header={t('account.welcome_to')} />
-        <img
-          src={logo}
-          width="125"
-          height="35"
-          alt={t('common.terraso_projectName')}
-        />
+        <PageHeader header={t('account.welcome_to')}>
+          <Box
+            component="img"
+            src={logo}
+            alt={t('common.terraso_projectName')}
+            style={{
+              display: 'block',
+              margin: '24px auto 0',
+              width: 125,
+              height: 35,
+            }}
+          />
+        </PageHeader>
 
         <Stack spacing={3} sx={{ margin: '3em 0 8em' }}>
           {urls.google && (
