@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,6 +10,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import ConditionalLink from 'common/components/ConditionalLink';
 import LocalePicker from 'localization/components/LocalePicker';
+import SkipLinks from 'navigation/SkipLinks';
 
 import { signOut } from 'account/accountSlice';
 import AccountAvatar from 'account/components/AccountAvatar';
@@ -28,6 +29,9 @@ const AppBarComponent = () => {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
 
+  const contentRef = useRef();
+  const navigationRef = useRef();
+
   if (!hasToken || !user) {
     return null;
   }
@@ -39,6 +43,7 @@ const AppBarComponent = () => {
   return (
     <AppBar position="static">
       <Toolbar>
+        <SkipLinks contentRef={contentRef} navigationRef={navigationRef} />
         <ConditionalLink to="/" condition={!isHomePage}>
           <img
             src={isSmall ? logoSquare : logo}

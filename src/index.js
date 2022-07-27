@@ -10,7 +10,6 @@ import Footer from 'layout/Footer';
 import reportWebVitals from 'monitoring/reportWebVitals';
 import Navigation from 'navigation/Navigation';
 import Routes from 'navigation/Routes';
-import SkipLinks from 'navigation/SkipLinks';
 import rules from 'permissions/rules';
 import createStore from 'state/store';
 
@@ -24,7 +23,6 @@ const App = () => {
 
   return (
     <>
-      <SkipLinks contentRef={contentRef} navigationRef={navigationRef} />
       <Box
         sx={{
           bgcolor: 'gray.lite2',
