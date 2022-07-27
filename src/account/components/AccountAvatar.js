@@ -10,8 +10,6 @@ const AccountAvatar = props => {
 
   return (
     <Avatar
-      role="img"
-      aria-label={name}
       alt={name}
       src={user.profileImage}
       imgProps={{
