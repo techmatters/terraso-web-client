@@ -83,7 +83,7 @@ const Navigation = React.forwardRef((props, ref) => {
       tabIndex="-1"
       ref={ref}
       value={value}
-      aria-label={t('navigation.nav_label')}
+      aria-label={t('navigation.nav_label_short')}
       sx={{
         '& .MuiTabs-indicator': {
           backgroundColor: 'black',
