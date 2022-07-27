@@ -44,7 +44,7 @@ const LandscapeBoundariesUpdate = () => {
     return () => dispatch(setFormNewValues());
   }, [success, slug, navigate, dispatch]);
 
-  if (fetching) {
+  if (fetching || !landscape) {
     return <PageLoader />;
   }
 
