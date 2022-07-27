@@ -126,7 +126,6 @@ const LeafletSearch = props => {
 };
 
 const MapGeoJson = () => {
-  // const map = useMap();
   const [newGeoJson, setNewGeoJson] = useState();
   const { featureGroup, geojson, onGeoJsonChange } = useContext(MapContext);
 
