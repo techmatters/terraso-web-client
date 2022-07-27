@@ -5,8 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 
-import { Button, Container, List, ListItem } from '@mui/material';
+import { Button, Container, List, ListItem, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { visuallyHidden } from '@mui/utils';
 
 const PAGES = {
   '/': {
@@ -94,6 +95,9 @@ const Navigation = React.forwardRef((props, ref) => {
         boxSizing: 'border-box',
       }}
     >
+      <Typography sx={visuallyHidden} variant="h2">
+        {t('navigation.nav_label')}
+      </Typography>
       <List sx={{ display: 'flex', flexDirection: 'row', padding: 0 }}>
         {Object.keys(PAGES).map((path, index) => (
           <NavigationLink key={path} path={path} selected={index === value} />
