@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -29,9 +29,6 @@ const AppBarComponent = () => {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
 
-  const contentRef = useRef();
-  const navigationRef = useRef();
-
   if (!hasToken || !user) {
     return null;
   }
@@ -43,7 +40,7 @@ const AppBarComponent = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        <SkipLinks contentRef={contentRef} navigationRef={navigationRef} />
+        <SkipLinks />
         <ConditionalLink to="/" condition={!isHomePage}>
           <img
             src={isSmall ? logoSquare : logo}
