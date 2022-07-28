@@ -80,10 +80,12 @@ export const fetchLandscapeToView = (slug, currentUser) => {
         : null,
     }))
     .then(landscape => {
-      if (landscape.areaPolygon) {
+      if (landscape.areaPolygon || !landscape.location) {
         return landscape;
       }
-      // Get bounding box if no areaPolygon data
+
+      // Get bounding box from nominatim.openstreetmap.org if no areaPolygon data
+      // AreaPolygon is not present when the user decided to skip it.
       return gisService
         .getPlaceInfoByName(landscape.location)
         .then(placeInfo => ({

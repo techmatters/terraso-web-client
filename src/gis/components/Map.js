@@ -137,7 +137,6 @@ const MapGeoJson = () => {
       pointToLayer: (feature, latlng) => {
         const marker = L.marker(latlng, { draggable: true });
         marker.on('dragend', event => {
-          console.log('dragend', { event });
           setNewGeoJson(layerToGeoJSON(featureGroup.getLayers()));
         });
         return marker;
@@ -149,7 +148,6 @@ const MapGeoJson = () => {
     if (!newGeoJson) {
       return;
     }
-    console.log('update geojson');
 
     onGeoJsonChange(newGeoJson);
   }, [newGeoJson, onGeoJsonChange]);
@@ -200,7 +198,7 @@ const Map = props => {
       }
       onGeoJsonChange(current => {
         if (!current) {
-          return current;
+          return null;
         }
         return {
           ...current,

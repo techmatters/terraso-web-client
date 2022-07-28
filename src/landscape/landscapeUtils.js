@@ -12,6 +12,8 @@ const parseGeoJson = areaPolygon => {
   }
 };
 
+// Returns bounding box containing the defined areaPolygon data or
+// the bounding box requested from the landsace.location data
 export const getLandscapeBoundingBox = (landscape = {}) => {
   const { areaPolygon, boundingBox: defaultBoundingBox } = landscape;
 
