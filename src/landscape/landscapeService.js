@@ -83,7 +83,7 @@ export const fetchLandscapeToView = (slug, currentUser) => {
       if (landscape.areaPolygon) {
         return landscape;
       }
-      // Get Bounding box if no areaPolygon data
+      // Get bounding box if no areaPolygon data
       return gisService
         .getPlaceInfoByName(landscape.location)
         .then(placeInfo => ({
