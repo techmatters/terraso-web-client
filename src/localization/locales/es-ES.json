@@ -399,6 +399,7 @@
     },
     "contact": {
         "success": "Tu mensaje ha sido enviado. Terraso hará un seguimiento dentro de dos días hábiles.",
-        "iframe_title": "Contacto Terraso"
+        "iframe_title": "Contacto Terraso",
+        "page_title": "Contacto"
     }
 }
