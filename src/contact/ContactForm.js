@@ -4,6 +4,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 import { addMessage } from 'notifications/notificationsSlice';
@@ -23,6 +24,8 @@ const ContactForm = () => {
   const loading = loadingDependencies || loadingForm;
 
   const iframeTitle = t('contact.iframe_title');
+
+  useDocumentTitle(t('contact.page_title'));
 
   useEffect(() => {
     if (loadingDependencies) {

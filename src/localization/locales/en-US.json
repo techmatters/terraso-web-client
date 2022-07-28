@@ -398,6 +398,7 @@
     },
     "contact": {
         "success": "Your message has been sent. Terraso will follow up within two business days.",
-        "iframe_title": "Contact Terraso"
+        "iframe_title": "Contact Terraso",
+        "page_title": "Contact"
     }
 }
