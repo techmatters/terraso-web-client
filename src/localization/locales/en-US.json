@@ -268,7 +268,7 @@
         "form_step_info_label": "Landscape Details",
         "form_step_boundaries_options_label": "Landscape Boundary",
         "form_boundary_options_title": "Define Your Landscape’s Boundary",
-        "form_boundary_options_description": "<0><0>Select how you’d like to proceed to display the landscape boundary</0><1>We highly recommend updating  the map  with the most accurate boundary of your landscape any time.</1><2>Don’t have a GeoJSON file? Create one by following a simple instruction.</2></0>",
+        "form_boundary_options_description": "<0><0>Select how you’d like to define the landscape boundary</0><1>We recommend updating the map regularly with the most accurate boundary of your landscape.</1><2>Don’t have a GeoJSON file? Create one.</2></0>",
         "form_boundary_options_geojson": "Upload a GeoJSON file",
         "form_boundary_options_pin": "Drop a pin on a map",
         "form_boundary_options_skip": "Skip this step for now",
