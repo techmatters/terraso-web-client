@@ -172,8 +172,8 @@
         "form_language_label": "Idioma"
     },
     "footer": {
-        "heading": "Footer",
-        "navigation": "Footer Navigation",
+        "heading": "Pie de página",
+        "navigation": "Navegación de pie de página",
         "links": {
             "help": { "text": "Ayuda de Terraso", "url": "https://terraso.org/es/ayuda/" },
             "contact": { "text": "Contacto", "to": "/contact" },
