@@ -3,8 +3,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Grid, Link } from '@mui/material';
+import { Grid, Link, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { visuallyHidden } from '@mui/utils';
 
 import theme from 'theme';
 
@@ -79,7 +80,7 @@ const Footer = () => {
   // Convert to Array. Remove items where URL is #. Return values from new array.
   // IN: {"help":{"text":"Terraso Help","url":"https://terraso.org/help/"}, "terms":{"text":"Terms of Use","url":"#"}}
   // OUT: [{"text":"Terraso Help", "url":"https://terraso.org/help/"}]
-  const footerLinks = Object.entries(t('footer', { returnObjects: true }))
+  const footerLinks = Object.entries(t('footer.links', { returnObjects: true }))
     .filter(item => item[1].url !== '#')
     .map(item => item[1]);
 
@@ -93,6 +94,9 @@ const Footer = () => {
       }}
       justifyContent="space-between"
     >
+      <Typography sx={visuallyHidden} variant="h2">
+        {t('footer.heading')}
+      </Typography>
       <Grid
         sx={{
           width: '100%',
@@ -100,8 +104,16 @@ const Footer = () => {
           padding: spacing(2),
           maxWidth: 1200,
         }}
+        aria-label={t('footer.heading')}
+        component="nav"
       >
-        <Grid item xs={12} sm={8} component={LinksContainer}>
+        <Grid
+          item
+          xs={12}
+          sm={8}
+          component={LinksContainer}
+          aria-label={t('footer.navigation')}
+        >
           {footerLinks.map((link, index) => (
             <FooterLink
               key={index}
