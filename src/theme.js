@@ -4,12 +4,12 @@ const colorTheme = createTheme({
   palette: {
     tonalOffset: 0.2,
     primary: {
-      main: '#307F9C',
+      main: '#18404e',
     },
     secondary: {
       main: '#5E5547',
     },
-    link: '#307F9C',
+    link: '#18404e',
     success: {
       main: '#b0d098',
     },
@@ -29,7 +29,7 @@ const colorTheme = createTheme({
     blue: {
       lite: '#F3FAFD',
       mid: '#D2EDF7',
-      dark: '#307F9C',
+      dark: '#18404e',
     },
     black: '#000000',
   },
