@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - main
-      - feature/explore-landscapes
+      - feature/draw-landscape-boundary
     types:
       - opened
       - edited

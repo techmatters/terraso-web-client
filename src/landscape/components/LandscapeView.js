@@ -174,7 +174,8 @@ const LandscapeView = () => {
             <Card variant="outlined">
               <CardContent>
                 <LandscapeMap
-                  landscape={landscape}
+                  areaPolygon={landscape.areaPolygon}
+                  boundingBox={landscape.boundingBox}
                   label={t('landscape.view_map_title')}
                 />
                 <InlineHelp

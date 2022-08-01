@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - feature/explore-landscapes
+      - feature/draw-landscape-boundary
   pull_request:
     branches:
       - main
-      - feature/explore-landscapes
+      - feature/draw-landscape-boundary
 
 jobs:
   lint:

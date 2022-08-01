@@ -273,7 +273,7 @@
         "form_step_info_label": "Landscape Details",
         "form_step_boundaries_options_label": "Landscape Boundary",
         "form_boundary_options_title": "Define Your Landscape’s Boundary",
-        "form_boundary_options_description": "Tell us about where your landscape is. Uploading a map is the most accurate. If you don’t have one, you can <1>create a GeoJSON file</1>, drop a pin, or define your boundary later.",
+        "form_boundary_options_description": "<0><0>Select how you’d like to define the landscape boundary</0><1>We recommend updating the map regularly with the most accurate boundary of your landscape.</1><2>Don’t have a GeoJSON file? Create one.</2></0>",
         "form_boundary_options_geojson": "Upload a GeoJSON file",
         "form_boundary_options_pin": "Drop a pin on a map",
         "form_boundary_options_skip": "Skip this step for now",
@@ -292,7 +292,8 @@
         "list_map_help": "<0>Can’t find your landscape on this map? <1>Add it to Terraso</1> or <3>learn more about landscapes</3>.</0>",
         "list_map_help_url": "https://terraso.org/help/add-a-new-landscape-to-terraso/",
         "list_map_section_label": "Landscapes map",
-        "list_map_popup_link": "View details about {{name}}"
+        "list_map_popup_link": "View details about {{name}}",
+        "boundaries_update_save": "Update Map"
     },
     "sharedData": {
         "title": "Shared files",

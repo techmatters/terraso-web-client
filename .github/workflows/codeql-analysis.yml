@@ -13,10 +13,10 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ main, feature/explore-landscapes ]
+    branches: [ main, feature/draw-landscape-boundary ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ main, feature/explore-landscapes ]
+    branches: [ main, feature/draw-landscape-boundary ]
   schedule:
     - cron: '34 6 * * 4'
 

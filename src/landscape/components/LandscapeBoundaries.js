@@ -88,7 +88,11 @@ const LandscapeBoundaries = props => {
 
   return (
     <>
-      <LandscapeMap mapCenter={mapCenter} landscape={{ areaPolygon }} />
+      <LandscapeMap
+        mapCenter={mapCenter}
+        areaPolygon={areaPolygon}
+        onGeoJsonChange={onFileSelected}
+      />
       <DropZone onFileSelected={onFileSelected} />
       <InlineHelp
         items={[
