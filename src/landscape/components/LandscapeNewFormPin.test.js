@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
 
 import React from 'react';
 
+import L from 'leaflet';
 import { act } from 'react-dom/test-utils';
 import { useMap } from 'react-leaflet';
 import { useParams } from 'react-router-dom';
@@ -112,7 +113,7 @@ test('LandscapeNew: Save form Pin boundary', async () => {
   await act(async () =>
     eventCallback['draw:created']({
       layerType: 'marker',
-      layer: { getLatLng: () => ({ lat: 10, lng: 10 }) },
+      layer: new L.Marker([10, 10]),
     })
   );
 
@@ -129,7 +130,7 @@ test('LandscapeNew: Save form Pin boundary', async () => {
       website: 'https://www.other.org',
       location: 'AR',
       areaPolygon:
-        '{"type":"FeatureCollection","bbox":[10,0,11,1],"features":[{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[10,10]}}]}',
+        '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[10,10]}}],"bbox":[0,0,0,0]}',
     },
   });
 });
