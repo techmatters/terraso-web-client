@@ -298,7 +298,8 @@
         "list_map_section_label": "Mapa de paisajes",
         "list_map_popup_link": "Ver detalles sobre {{name}}",
         "breadcrumbs_view": "{{landscapeName}}",
-        "breadcrumbs_members": "Miembros"
+        "breadcrumbs_members": "Miembros",
+        "boundaries_update_save": "Actualizar mapa"
     },
     "common": {
         "dialog_cancel_label": "Cancelar",
