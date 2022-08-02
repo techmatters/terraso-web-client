@@ -1,17 +1,23 @@
-import { fireEvent, render, screen } from 'tests/utils';
+import { render, screen } from 'tests/utils';
 
 import React, { useRef } from 'react';
 
-import { act } from 'react-dom/test-utils';
 import { useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
-import { Box } from '@mui/material';
-
+import PageHeader from 'layout/PageHeader';
 import SkipLinks from 'navigation/SkipLinks';
+
+import Navigation from './Navigation';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useLocation: jest.fn(),
+}));
+
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useSelector: jest.fn(),
 }));
 
 const App = () => {
@@ -21,16 +27,8 @@ const App = () => {
   return (
     <>
       <SkipLinks contentRef={contentRef} navigationRef={navigationRef} />
-      <Box
-        component="nav"
-        ref={navigationRef}
-      >
-        <button id="main-navigation-0">Nav 1</button>
-      </Box>
-      <Box component="main" ref={contentRef}>
-        <h1 tabIndex="-1" id="main-heading">Main heading</h1>
-        Content
-      </Box>
+      <Navigation />
+      <PageHeader header="Main heading" />
     </>
   );
 };
@@ -38,6 +36,10 @@ const App = () => {
 const setup = async () => {
   await render(<App />);
 };
+
+beforeEach(() => {
+  useSelector.mockReturnValue(true);
+});
 
 test('Navigation: Show links', async () => {
   useLocation.mockReturnValue({
@@ -68,37 +70,33 @@ test('Navigation: To content', async () => {
     pathname: '/',
   });
   await setup();
-  expect(
-    screen.getByRole('link', { name: 'Skip to main content' })
-  ).toBeInTheDocument();
-  expect(
-    screen.getByRole('link', { name: 'Skip to main navigation' })
-  ).toBeInTheDocument();
 
-  expect(screen.getByRole('main')).not.toHaveFocus();
-  await act(async () =>
-    fireEvent.click(screen.getByRole('link', { name: 'Skip to main content' }))
-  );
-  expect(screen.getByRole('heading', { name: 'Main heading'})).toHaveFocus();
+  const skipToContent = screen.getByRole('link', {
+    name: 'Skip to main content',
+  });
+  expect(skipToContent).toBeInTheDocument();
+  expect(screen.getByRole('heading', {
+    name: 'Main heading',
+  })).toHaveAttribute('id', 'main-heading');
+
+  expect(skipToContent).toHaveAttribute('href', '#main-heading');
 });
 test('Navigation: To navigation', async () => {
   useLocation.mockReturnValue({
     pathname: '/',
   });
+  useSelector
+    .mockReturnValue({
+      data: true
+    });
   await setup();
-  expect(
-    screen.getByRole('link', { name: 'Skip to main content' })
-  ).toBeInTheDocument();
-  expect(
-    screen.getByRole('link', { name: 'Skip to main navigation' })
-  ).toBeInTheDocument();
+  const skipToNavigation = screen.getByRole('link', {
+    name: 'Skip to main navigation',
+  });
+  expect(skipToNavigation).toBeInTheDocument();
+  expect(screen.getByRole('link', {
+    name: 'Home',
+  })).toHaveAttribute('id', 'main-navigation-0');
 
-  expect(screen.getByRole('navigation')).not.toHaveFocus();
-  await act(async () =>
-    fireEvent.click(
-      screen.getByRole('link', { name: 'Skip to main navigation' })
-    )
-  );
-  const navigation = screen.getByRole('navigation')
-  expect(navigation).toHaveFocus();
+  expect(skipToNavigation).toHaveAttribute('href', '#main-navigation-0');
 });

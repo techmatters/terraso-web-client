@@ -403,7 +403,9 @@ test('GroupMembers: Manager actions', async () => {
 
   // Reject
   expect(
-    within(pendingSection.getAllByRole('listitem')[0]).getByText('Member name Pending 0 Member Last Name')
+    within(pendingSection.getAllByRole('listitem')[0]).getByText(
+      'Member name Pending 0 Member Last Name'
+    )
   ).toBeInTheDocument();
   await act(
     async () =>
@@ -425,7 +427,9 @@ test('GroupMembers: Manager actions', async () => {
 
   // Approve
   expect(
-    within(pendingSection.getAllByRole('listitem')[0]).getByText( 'Member name Pending 1 Member Last Name')
+    within(pendingSection.getAllByRole('listitem')[0]).getByText(
+      'Member name Pending 1 Member Last Name'
+    )
   ).toBeInTheDocument();
   await act(
     async () =>
@@ -438,7 +442,9 @@ test('GroupMembers: Manager actions', async () => {
 
   expect(pendingSection.getAllByRole('listitem').length).toBe(1);
   expect(
-    within(pendingSection.getAllByRole('listitem')[0]).getByText('Member name Pending 0 Member Last Name')
+    within(pendingSection.getAllByRole('listitem')[0]).getByText(
+      'Member name Pending 0 Member Last Name'
+    )
   ).toBeInTheDocument();
   await waitFor(() =>
     expect(within(listSection).getAllByRole('row').length).toBe(5)
