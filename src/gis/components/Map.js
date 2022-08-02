@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import L from 'leaflet';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
@@ -23,6 +29,21 @@ L.Icon.Default.mergeOptions({
   iconUrl: require('leaflet/dist/images/marker-icon.png'),
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
+
+const LAYER_OSM = L.tileLayer(
+  'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+  {
+    attribution:
+      'Data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors Tiles &copy; HOT',
+  }
+);
+const LAYER_ESRI = L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  {
+    attribution:
+      'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+  }
+);
 
 const MapContext = React.createContext();
 
@@ -53,7 +74,9 @@ const LeafletDraw = () => {
   const isSmall = useMediaQuery(theme.breakpoints.down('xs'));
 
   const { onLayersUpdate, drawOptions, featureGroup } = useContext(MapContext);
+  const { onLayerChange, onEditStart, onEditStop } = drawOptions;
 
+  // Localized strings
   L.drawLocal = t('gis.map_draw', { returnObjects: true });
 
   const updateLayers = useCallback(
@@ -68,13 +91,23 @@ const LeafletDraw = () => {
     [onLayersUpdate]
   );
 
+  const polygonEnabled = useMemo(
+    () => !!drawOptions.polygon,
+    [drawOptions.polygon]
+  );
+  const markerEnabled = useMemo(
+    () => !!drawOptions.marker,
+    [drawOptions.marker]
+  );
+  const editEnabled = useMemo(() => polygonEnabled, [polygonEnabled]);
+
   useEffect(() => {
     if (!featureGroup) {
       return;
     }
     const options = {
       position: isSmall ? 'topright' : 'topleft',
-      ...(drawOptions?.polygon
+      ...(editEnabled
         ? {
             edit: {
               featureGroup,
@@ -89,8 +122,8 @@ const LeafletDraw = () => {
           }
         : {}),
       draw: {
-        marker: !!drawOptions?.marker,
-        polygon: drawOptions?.polygon
+        marker: markerEnabled,
+        polygon: polygonEnabled
           ? {
               allowIntersection: false,
               showArea: true,
@@ -108,7 +141,7 @@ const LeafletDraw = () => {
     const drawControl = new L.Control.Draw(options);
     map.addControl(drawControl);
 
-    const onDrawCreated = event => {
+    const onDrawCreatedListener = event => {
       const { layerType } = event;
       if (layerType === 'marker') {
         updateLayers(L.featureGroup([event.layer]), false);
@@ -120,30 +153,41 @@ const LeafletDraw = () => {
         ]);
         updateLayers(newLayers);
       }
-      drawOptions?.onLayerChange?.();
+      onLayerChange?.();
     };
-    const onDrawDeleted = () => updateLayers(featureGroup);
-    const onEditStart = () => drawOptions?.onEditStart?.();
-    const onEditStop = () => drawOptions?.onEditStop?.();
-    const onEdited = () => {
+    const onDrawDeletedListener = () => updateLayers(featureGroup);
+    const onEditStartListener = () => onEditStart?.();
+    const onEditStopListener = () => onEditStop?.();
+    const onEditedListener = () => {
       updateLayers(featureGroup);
-      drawOptions?.onLayerChange?.();
+      onLayerChange?.();
     };
-    map.on(L.Draw.Event.CREATED, onDrawCreated);
-    map.on(L.Draw.Event.DELETED, onDrawDeleted);
-    map.on(L.Draw.Event.EDITSTART, onEditStart);
-    map.on(L.Draw.Event.EDITSTOP, onEditStop);
-    map.on(L.Draw.Event.EDITED, onEdited);
+    map.on(L.Draw.Event.CREATED, onDrawCreatedListener);
+    map.on(L.Draw.Event.DELETED, onDrawDeletedListener);
+    map.on(L.Draw.Event.EDITSTART, onEditStartListener);
+    map.on(L.Draw.Event.EDITSTOP, onEditStopListener);
+    map.on(L.Draw.Event.EDITED, onEditedListener);
 
     return () => {
       map.removeControl(drawControl);
-      map.off(L.Draw.Event.CREATED, onDrawCreated);
-      map.off(L.Draw.Event.DELETED, onDrawDeleted);
-      map.off(L.Draw.Event.EDITSTART, onEditStart);
-      map.off(L.Draw.Event.EDITSTOP, onEditStop);
-      map.off(L.Draw.Event.EDITED, onEdited);
+      map.off(L.Draw.Event.CREATED, onDrawCreatedListener);
+      map.off(L.Draw.Event.DELETED, onDrawDeletedListener);
+      map.off(L.Draw.Event.EDITSTART, onEditStartListener);
+      map.off(L.Draw.Event.EDITSTOP, onEditStopListener);
+      map.off(L.Draw.Event.EDITED, onEditedListener);
     };
-  }, [map, isSmall, drawOptions, featureGroup, updateLayers]);
+  }, [
+    map,
+    isSmall,
+    featureGroup,
+    updateLayers,
+    editEnabled,
+    markerEnabled,
+    polygonEnabled,
+    onEditStart,
+    onEditStop,
+    onLayerChange,
+  ]);
   return null;
 };
 
@@ -263,30 +307,14 @@ const Map = props => {
     const featureGroup = L.featureGroup().addTo(map);
     setFeatureGroup(featureGroup);
 
-    // Layers
-    const osm = L.tileLayer(
-      'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-      {
-        attribution:
-          'Data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors Tiles &copy; HOT',
-      }
-    );
-    const esri = L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      {
-        attribution:
-          'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-      }
-    );
-
     // Default layer
-    map.addLayer(osm);
+    map.addLayer(LAYER_OSM);
 
     // Layers control
     const layersControl = L.control
       .layers({
-        [t('gis.map_layer_streets')]: osm,
-        [t('gis.map_layer_satellite')]: esri,
+        [t('gis.map_layer_streets')]: LAYER_OSM,
+        [t('gis.map_layer_satellite')]: LAYER_ESRI,
       })
       .addTo(map);
     return () => {

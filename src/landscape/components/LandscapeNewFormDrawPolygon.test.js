@@ -90,15 +90,20 @@ test('LandscapeNew: Save form draw polygon boundary', async () => {
       screen.getByRole('button', {
         name: 'Draw the landscape’s boundary on a map',
       })
-      )
+    )
   );
 
   expect(spy).toHaveBeenCalled();
-  const map = spy.mock.results[spy.mock.results.length - 1].value; 
+  const map = spy.mock.results[spy.mock.results.length - 1].value;
   await act(async () =>
     map.fireEvent(L.Draw.Event.CREATED, {
       layerType: 'polygon',
-      layer: new L.polygon([[37, -109.05],[41, -109.03],[41, -102.05],[37, -102.04]]),
+      layer: new L.polygon([
+        [37, -109.05],
+        [41, -109.03],
+        [41, -102.05],
+        [37, -102.04],
+      ]),
     })
   );
   await act(async () =>

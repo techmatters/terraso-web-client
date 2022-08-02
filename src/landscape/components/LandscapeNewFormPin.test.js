@@ -94,7 +94,7 @@ test('LandscapeNew: Save form Pin boundary', async () => {
   );
 
   expect(spy).toHaveBeenCalled();
-  const map = spy.mock.results[spy.mock.results.length - 1].value; 
+  const map = spy.mock.results[spy.mock.results.length - 1].value;
   await act(async () =>
     map.fireEvent(L.Draw.Event.CREATED, {
       layerType: 'marker',
