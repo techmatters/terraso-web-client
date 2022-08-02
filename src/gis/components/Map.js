@@ -4,13 +4,7 @@ import L from 'leaflet';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import {
-  LayersControl,
-  MapContainer,
-  TileLayer,
-  ZoomControl,
-  useMap,
-} from 'react-leaflet';
+import { MapContainer, ZoomControl, useMap } from 'react-leaflet';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 
@@ -265,9 +259,40 @@ const Map = props => {
   }, [map, bounds]);
 
   useEffect(() => {
+    // Feature Group
     const featureGroup = L.featureGroup().addTo(map);
     setFeatureGroup(featureGroup);
-  }, [map]);
+
+    // Layers
+    const osm = L.tileLayer(
+      'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+      {
+        attribution:
+          'Data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors Tiles &copy; HOT',
+      }
+    );
+    const esri = L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      {
+        attribution:
+          'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+      }
+    );
+
+    // Default layer
+    map.addLayer(osm);
+
+    // Layers control
+    const layersControl = L.control
+      .layers({
+        [t('gis.map_layer_streets')]: osm,
+        [t('gis.map_layer_satellite')]: esri,
+      })
+      .addTo(map);
+    return () => {
+      map.removeControl(layersControl);
+    };
+  }, [map, t]);
 
   const updateBounds = useCallback(
     bbox => {
@@ -330,20 +355,6 @@ const Map = props => {
         onLayersUpdate,
       }}
     >
-      <LayersControl position="topright">
-        <LayersControl.BaseLayer checked name={t('gis.map_layer_streets')}>
-          <TileLayer
-            attribution='Data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors Tiles &copy; HOT'
-            url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-          />
-        </LayersControl.BaseLayer>
-        <LayersControl.BaseLayer name={t('gis.map_layer_satellite')}>
-          <TileLayer
-            attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
-            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-          />
-        </LayersControl.BaseLayer>
-      </LayersControl>
       <MapGeoJson />
 
       <Location
