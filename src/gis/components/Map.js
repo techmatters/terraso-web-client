@@ -377,6 +377,7 @@ const MapWrapper = props => {
     <MapContainer
       zoomDelta={0.5}
       zoomSnap={0.5}
+      maxZoom={18}
       wheelPxPerZoomLevel={200}
       zoom={3}
       center={[0, 0]}
