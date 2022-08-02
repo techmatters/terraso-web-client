@@ -51,7 +51,7 @@ beforeEach(() => {
   useParams.mockReturnValue({});
 });
 
-test('LandscapeNew: Save form Pin boundary', async () => {
+test('LandscapeNew: Save form draw polygon boundary', async () => {
   terrasoApi.requestGraphQL.mockResolvedValueOnce({
     addLandscape: {
       landscape: {
@@ -88,7 +88,7 @@ test('LandscapeNew: Save form Pin boundary', async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Drop a pin on a map',
+        name: 'Draw the landscape’s boundary on a map',
       })
     )
   );
@@ -97,10 +97,23 @@ test('LandscapeNew: Save form Pin boundary', async () => {
   const map = spy.mock.results[spy.mock.results.length - 1].value;
   await act(async () =>
     map.fireEvent(L.Draw.Event.CREATED, {
-      layerType: 'marker',
-      layer: new L.Marker([10, 10]),
+      layerType: 'polygon',
+      layer: new L.polygon([
+        [37, -109.05],
+        [41, -109.03],
+        [41, -102.05],
+        [37, -102.04],
+      ]),
     })
   );
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'close' }))
+  );
+  await waitFor(() => {
+    expect(
+      screen.getByRole('button', { name: 'Add Landscape' })
+    ).toBeInTheDocument();
+  });
 
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
@@ -115,7 +128,7 @@ test('LandscapeNew: Save form Pin boundary', async () => {
       website: 'https://www.other.org',
       location: 'AR',
       areaPolygon:
-        '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[10,10]}}],"bbox":[0,0,0,0]}',
+        '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[-109.05,37],[-109.03,41],[-102.05,41],[-102.04,37],[-109.05,37]]]}}],"bbox":[-105.46875000000001,38.82259097617713,-105.46875000000001,38.82259097617713]}',
     },
   });
 });

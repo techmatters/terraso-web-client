@@ -82,7 +82,7 @@ const DropZone = props => {
   );
 };
 
-const LandscapeBoundaries = props => {
+const LandscapeGeoJsonBoundaries = props => {
   const { t } = useTranslation();
   const { areaPolygon, mapCenter, onFileSelected } = props;
 
@@ -117,4 +117,4 @@ const LandscapeBoundaries = props => {
   );
 };
 
-export default LandscapeBoundaries;
+export default LandscapeGeoJsonBoundaries;
