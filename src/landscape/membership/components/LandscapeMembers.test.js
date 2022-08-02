@@ -123,7 +123,7 @@ test('LandscapeMembers: Display list', async () => {
   expect(rows.length).toBe(16); // 15 displayed + header
   expect(
     within(rows[2]).getByRole('cell', {
-      name: 'Member name Member Last Name Member name Member Last Name',
+      name: 'Member name Member Last Name',
     })
   ).toHaveAttribute('data-field', 'name');
   expect(
@@ -269,7 +269,7 @@ test('LandscapeMembers: Display list manager', async () => {
   expect(rows.length).toBe(16); // 15 displayed + header
   expect(
     within(rows[2]).getByRole('cell', {
-      name: 'Member name Member Last Name Member name Member Last Name',
+      name: 'Member name Member Last Name',
     })
   ).toHaveAttribute('data-field', 'name');
   expect(within(rows[9]).getByRole('cell', { name: 'Member' })).toHaveAttribute(

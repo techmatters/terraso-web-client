@@ -10,6 +10,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import ConditionalLink from 'common/components/ConditionalLink';
 import LocalePicker from 'localization/components/LocalePicker';
+import SkipLinks from 'navigation/SkipLinks';
 
 import { signOut } from 'account/accountSlice';
 import AccountAvatar from 'account/components/AccountAvatar';
@@ -39,6 +40,7 @@ const AppBarComponent = () => {
   return (
     <AppBar position="static">
       <Toolbar>
+        <SkipLinks />
         <ConditionalLink to="/" condition={!isHomePage}>
           <img
             src={isSmall ? logoSquare : logo}
@@ -59,7 +61,7 @@ const AppBarComponent = () => {
         >
           {user.firstName} {user.lastName}
         </Button>
-        |
+        <span aria-hidden="true">|</span>
         <Button
           color="inherit"
           sx={theme => ({ marginRight: theme.spacing(2) })}
