@@ -81,6 +81,8 @@ test('LandscapeNew: Save form Pin boundary', async () => {
     on: (event, callback) => {
       eventCallback[event] = callback;
     },
+    off: () => {},
+    addLayer: () => {}
   });
 
   const { inputs } = await setup();
@@ -130,7 +132,7 @@ test('LandscapeNew: Save form Pin boundary', async () => {
       website: 'https://www.other.org',
       location: 'AR',
       areaPolygon:
-        '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[10,10]}}],"bbox":[0,0,0,0]}',
+        '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[10,10]}}],"bbox":[10,0,11,1]}',
     },
   });
 });

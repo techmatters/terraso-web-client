@@ -112,7 +112,7 @@ test('LandscapeNew: Save from GeoJSON', async () => {
   };
   await act(async () => fireEvent.drop(dropzone, data));
 
-  await waitFor(() => {
+  await waitFor(async () => {
     expect(
       await screen.findByRole('button', {
         name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB test.json 804 B',
