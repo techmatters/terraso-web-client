@@ -42,7 +42,7 @@ const LandscapesClusters = () => {
   useEffect(() => {
     if (!_.isEmpty(landscapesWithPosition)) {
       const bounds = clusterRef.current?.getBounds?.();
-      if (bounds) {
+      if (bounds && bounds.isValid()) {
         map.fitBounds(bounds);
       }
     }

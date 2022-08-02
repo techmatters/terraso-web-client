@@ -293,7 +293,14 @@
         "list_map_help_url": "https://terraso.org/help/add-a-new-landscape-to-terraso/",
         "list_map_section_label": "Landscapes map",
         "list_map_popup_link": "View details about {{name}}",
-        "boundaries_update_save": "Update Map"
+        "boundaries_update_save": "Update Map",
+        "form_boundary_draw_polygon_title": "[TODO] Draw {{name}}’s Boundary",
+        "form_boundary_draw_polygon_description": "[TODO] Click anywhere to start drawing. Save your drawing and return to complete later. You can adjust the boundary in edit mode. ",
+        "form_boundary_draw_polygon_help": "[TODO] Need help?",
+        "form_boundary_draw_polygon_help_url": "[TODO]",
+        "form_boundary_options_draw_polygon": "Draw the landscape’s boundary on a map",
+        "form_boundary_draw_polygon_updated": "Landscape boundary is complete. Proceed to update your landscape's map or edit the shape.",
+        "form_boundary_draw_polygon_edit_help": "<strong>How to edit:</strong> Drag a translucent point to add more points. Click the point to remove it. When you’re done adjusting the boundary save to exit the edit mode."
     },
     "sharedData": {
         "title": "Shared files",
@@ -343,7 +350,6 @@
         "editable_text_save": "Save",
         "editable_text_cancel": "Cancel",
         "refreshing_loader_label": "Refreshing",
-        "map_search_placeholder": "Enter a city, town or region",
         "table_search_filter_results_other": "{{rows.length}} matches found for “{{query}}“",
         "table_search_filter_results_one": "{{rows.length}} match found for “{{query}}“",
         "table_search_filter_clear": "Clear search"
@@ -395,7 +401,116 @@
         "unique": "$t(terraso_api.models.{{model}}) {{field}} must be unique."
     },
     "gis": {
-        "openstreetmap_api_error": "Failed to request data from nominatim.openstreetmap.org API"
+        "openstreetmap_api_error": "Failed to request data from nominatim.openstreetmap.org API",
+        "map_search_placeholder": "Enter a city, town or region",
+        "map_layer_streets": "Streets",
+        "map_layer_satellite": "Satellite",
+        "map_draw": {
+            "draw": {
+                "toolbar": {
+                    "actions": {
+                        "title": "Cancel drawing",
+                        "text": "Cancel"
+                    },
+                    "finish": {
+                        "title": "Finish drawing",
+                        "text": "Close Shape"
+                    },
+                    "undo": {
+                        "title": "Delete last point drawn",
+                        "text": "Delete last point"
+                    },
+                    "buttons": {
+                        "polyline": "Draw a polyline",
+                        "polygon": "Draw a polygon",
+                        "rectangle": "Draw a rectangle",
+                        "circle": "Draw a circle",
+                        "marker": "Draw a marker",
+                        "circlemarker": "Draw a circlemarker"
+                    }
+                },
+                "handlers": {
+                    "circle": {
+                        "tooltip": {
+                            "start": "Click and drag to draw circle."
+                        },
+                        "radius": "Radius"
+                    },
+                    "circlemarker": {
+                        "tooltip": {
+                            "start": "Click map to place circle marker."
+                        }
+                    },
+                    "marker": {
+                        "tooltip": {
+                            "start": "Click map to place marker."
+                        }
+                    },
+                    "polygon": {
+                        "tooltip": {
+                            "start": "Click to start drawing shape.",
+                            "cont": "Click to continue drawing shape.",
+                            "end": "Click first point to close this shape."
+                        }
+                    },
+                    "polyline": {
+                        "error": "<strong>Error:</strong> shape edges cannot cross!",
+                        "tooltip": {
+                            "start": "Click to start drawing line.",
+                            "cont": "Click to continue drawing line.",
+                            "end": "Click last point to finish line."
+                        }
+                    },
+                    "rectangle": {
+                        "tooltip": {
+                            "start": "Click and drag to draw rectangle."
+                        }
+                    },
+                    "simpleshape": {
+                        "tooltip": {
+                            "end": "Release mouse to finish drawing."
+                        }
+                    }
+                }
+            },
+            "edit": {
+                "toolbar": {
+                    "actions": {
+                        "save": {
+                            "title": "Save changes",
+                            "text": "Save"
+                        },
+                        "cancel": {
+                            "title": "Cancel editing, discards all changes",
+                            "text": "Cancel"
+                        },
+                        "clearAll": {
+                            "title": "Clear all layers",
+                            "text": "Clear All"
+                        }
+                    },
+                    "buttons": {
+                        "edit": "Edit polygon",
+                        "editDisabled": "No polygon to edit",
+                        "remove": "Delete polygon",
+                        "removeDisabled": "No polygon to delete"
+                    }
+                },
+                "handlers": {
+                    "edit": {
+                        "tooltip": {
+                            "text": "Drag points to adjust shape.",
+                            "subtext": "Click the point to remove it."
+                        }
+                    },
+                    "remove": {
+                        "tooltip": {
+                            "text": "Click on a feature to remove."
+                        }
+                    }
+                }
+            }
+        }
     },
     "contact": {
         "success": "Your message has been sent. Terraso will follow up within two business days.",

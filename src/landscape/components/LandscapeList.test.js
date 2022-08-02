@@ -121,7 +121,7 @@ const baseListTest = async () => {
   expect(mapRegion).toBeInTheDocument();
 
   const markers = within(mapRegion).getAllByRole('button');
-  expect(markers.length).toBe(17); // 15 + zoom buttons
+  expect(markers.length).toBe(18); // 15 + zoom buttons
 
   await act(async () => fireEvent.click(markers[0]));
 
