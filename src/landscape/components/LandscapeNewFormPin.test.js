@@ -82,7 +82,7 @@ test('LandscapeNew: Save form Pin boundary', async () => {
       eventCallback[event] = callback;
     },
     off: () => {},
-    addLayer: () => {}
+    addLayer: () => {},
   });
 
   const { inputs } = await setup();
