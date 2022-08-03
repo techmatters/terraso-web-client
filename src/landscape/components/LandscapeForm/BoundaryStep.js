@@ -10,8 +10,8 @@ import PinDropIcon from '@mui/icons-material/PinDrop';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import {
   Alert,
-  Dialog as BaseDialog,
   Button,
+  Dialog,
   DialogContent,
   IconButton,
   Link,
@@ -19,7 +19,6 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 
 import { countryNameForCode, scrollToNavBar } from 'common/utils';
 import PageHeader from 'layout/PageHeader';
@@ -82,18 +81,6 @@ const GeoJson = props => {
   );
 };
 
-const MapDrawPolygonDialog = styled(BaseDialog)`
-  .MuiBackdrop-root {
-    background-color: transparent;
-  }
-  .MuiPaper-root {
-    background-color: #055989;
-  }
-  .MuiDialogContent-root {
-    color: #ffffff;
-  }
-`;
-
 const MapDrawPolygon = props => {
   const { t } = useTranslation();
   const {
@@ -138,7 +125,21 @@ const MapDrawPolygon = props => {
 
   return (
     <>
-      <MapDrawPolygonDialog open={open} onClose={() => setOpen(false)}>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        sx={{
+          '& .MuiBackdrop-root': {
+            backgroundColor: 'transparent',
+          },
+          '& .MuiPaper-root': {
+            backgroundColor: '#055989',
+          },
+          '& .MuiDialogContent-root': {
+            color: '#ffffff',
+          },
+        }}
+      >
         <IconButton
           aria-label="close"
           onClick={() => setOpen(false)}
@@ -154,7 +155,7 @@ const MapDrawPolygon = props => {
         <DialogContent sx={{ pr: 7 }}>
           {t('landscape.form_boundary_draw_polygon_updated')}
         </DialogContent>
-      </MapDrawPolygonDialog>
+      </Dialog>
       <PageHeader
         header={t('landscape.form_boundary_draw_polygon_title', {
           name: landscape.name,
@@ -173,7 +174,7 @@ const MapDrawPolygon = props => {
           enableSearch
           enableDraw
           boundingBox={boundingBox}
-          areaPolygon={areaPolygon || landscape.areaPolygon}
+          areaPolygon={areaPolygon}
           onGeoJsonChange={setAreaPolygon}
           geoJsonFilter={POLYGON_FILTER}
           drawOptions={drawOptions}

@@ -73,22 +73,15 @@ const LeafletDraw = () => {
   const map = useMap();
   const isSmall = useMediaQuery(theme.breakpoints.down('xs'));
 
-  const { onLayersUpdate, drawOptions, featureGroup } = useContext(MapContext);
+  const [isEditing, setIsEditing] = useState(false);
+  const { onLayersUpdate, drawOptions, featureGroup, onBoundsUpdate } =
+    useContext(MapContext);
   const { onLayerChange, onEditStart, onEditStop } = drawOptions;
 
   // Localized strings
-  L.drawLocal = t('gis.map_draw', { returnObjects: true });
-
-  const updateLayers = useCallback(
-    (newFeatureGroup, updateBbox = true) => {
-      onLayersUpdate({
-        layers: newFeatureGroup.getLayers(),
-        ...(updateBbox
-          ? { bbox: boundsToGeoJsonBbox(newFeatureGroup.getBounds()) }
-          : {}),
-      });
-    },
-    [onLayersUpdate]
+  L.drawLocal = _.defaultsDeep(
+    L.drawLocal,
+    t('gis.map_draw', { returnObjects: true })
   );
 
   const polygonEnabled = useMemo(
@@ -140,53 +133,86 @@ const LeafletDraw = () => {
     };
     const drawControl = new L.Control.Draw(options);
     map.addControl(drawControl);
+    return () => map.removeControl(drawControl);
+  }, [editEnabled, isSmall, map, featureGroup, markerEnabled, polygonEnabled]);
 
+  useEffect(() => {
     const onDrawCreatedListener = event => {
       const { layerType } = event;
       if (layerType === 'marker') {
-        updateLayers(L.featureGroup([event.layer]), false);
+        onLayersUpdate(() => ({
+          layers: [event.layer],
+        }));
       }
       if (layerType === 'polygon') {
-        const newLayers = L.featureGroup([
-          ...featureGroup.getLayers(),
-          event.layer,
-        ]);
-        updateLayers(newLayers);
+        onLayersUpdate(featureGroup => {
+          const newLayers = L.featureGroup([
+            ...featureGroup.getLayers(),
+            event.layer,
+          ]);
+          return {
+            layers: newLayers.getLayers(),
+            bbox: boundsToGeoJsonBbox(newLayers.getBounds()),
+          };
+        });
       }
       onLayerChange?.();
     };
-    const onDrawDeletedListener = () => updateLayers(featureGroup);
-    const onEditStartListener = () => onEditStart?.();
-    const onEditStopListener = () => onEditStop?.();
+    const onDrawDeletedListener = () => {
+      onLayersUpdate(featureGroup => ({
+        layers: featureGroup.getLayers(),
+        ...(featureGroup.getBounds().isValid()
+          ? {
+              bbox: boundsToGeoJsonBbox(featureGroup.getBounds()),
+            }
+          : {}),
+      }));
+    };
+    const onEditStartListener = () => {
+      setIsEditing(true);
+      onEditStart?.();
+    };
+    const onEditStopListener = () => {
+      setIsEditing(false);
+      onEditStop?.();
+    };
     const onEditedListener = () => {
-      updateLayers(featureGroup);
+      onLayersUpdate(featureGroup => ({
+        layers: featureGroup.getLayers(),
+        bbox: boundsToGeoJsonBbox(featureGroup.getBounds()),
+      }));
       onLayerChange?.();
+    };
+    const onMoveListener = () => {
+      if (isEditing || !map.getBounds().isValid()) {
+        return;
+      }
+      const bbox = boundsToGeoJsonBbox(map.getBounds());
+      onBoundsUpdate(bbox);
     };
     map.on(L.Draw.Event.CREATED, onDrawCreatedListener);
     map.on(L.Draw.Event.DELETED, onDrawDeletedListener);
     map.on(L.Draw.Event.EDITSTART, onEditStartListener);
     map.on(L.Draw.Event.EDITSTOP, onEditStopListener);
     map.on(L.Draw.Event.EDITED, onEditedListener);
+    map.on('moveend', onMoveListener);
 
     return () => {
-      map.removeControl(drawControl);
       map.off(L.Draw.Event.CREATED, onDrawCreatedListener);
       map.off(L.Draw.Event.DELETED, onDrawDeletedListener);
       map.off(L.Draw.Event.EDITSTART, onEditStartListener);
       map.off(L.Draw.Event.EDITSTOP, onEditStopListener);
       map.off(L.Draw.Event.EDITED, onEditedListener);
+      map.off('moveend', onMoveListener);
     };
   }, [
     map,
-    isSmall,
-    featureGroup,
-    updateLayers,
-    editEnabled,
-    markerEnabled,
-    polygonEnabled,
     onEditStart,
     onEditStop,
     onLayerChange,
+    onLayersUpdate,
+    onBoundsUpdate,
+    isEditing,
   ]);
   return null;
 };
@@ -222,14 +248,14 @@ const LeafletSearch = () => {
 
     const getPinData = event => {
       if (event?.location?.lat) {
-        onLayersUpdate({
+        onLayersUpdate(() => ({
           layers: [L.marker([event.location.lat, event.location.lng])],
-        });
+        }));
       }
       if (event?.location?.x) {
-        onLayersUpdate({
+        onLayersUpdate(() => ({
           layers: [L.marker([event.location.y, event.location.x])],
-        });
+        }));
       }
     };
 
@@ -319,10 +345,11 @@ const Map = props => {
       .addTo(map);
     return () => {
       map.removeControl(layersControl);
+      featureGroup.remove();
     };
   }, [map, t]);
 
-  const updateBounds = useCallback(
+  const onBoundsUpdate = useCallback(
     bbox => {
       if (!onGeoJsonChange) {
         return;
@@ -343,23 +370,19 @@ const Map = props => {
     [onGeoJsonChange]
   );
 
-  useEffect(() => {
-    const update = () => {
-      const bbox = boundsToGeoJsonBbox(map.getBounds());
-      updateBounds(bbox);
-    };
-    map.on('moveend', update);
-
-    return () => map.off('moveend', update);
-  }, [map, updateBounds]);
-
-  const getDefaultBbox = useCallback(() => {
-    return boundsToGeoJsonBbox(map.getBounds());
-  }, [map]);
+  const getDefaultBbox = useCallback(
+    () => boundsToGeoJsonBbox(map.getBounds()),
+    [map]
+  );
 
   const onLayersUpdate = useCallback(
-    ({ layers, bbox = getDefaultBbox() }) => {
+    getUpdate => {
+      if (!featureGroup) {
+        return;
+      }
+      const { layers, bbox = getDefaultBbox() } = getUpdate(featureGroup);
       if (_.isEmpty(layers)) {
+        onGeoJsonChange(null);
         return;
       }
 
@@ -369,7 +392,7 @@ const Map = props => {
         bbox,
       });
     },
-    [getDefaultBbox, onGeoJsonChange]
+    [getDefaultBbox, onGeoJsonChange, featureGroup]
   );
 
   return (
@@ -381,6 +404,7 @@ const Map = props => {
         geojson,
         drawOptions,
         onLayersUpdate,
+        onBoundsUpdate,
       }}
     >
       <MapGeoJson />
