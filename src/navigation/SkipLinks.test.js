@@ -2,8 +2,8 @@ import { render, screen } from 'tests/utils';
 
 import React, { useRef } from 'react';
 
-import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 import PageHeader from 'layout/PageHeader';
 import SkipLinks from 'navigation/SkipLinks';
@@ -75,9 +75,11 @@ test('Navigation: To content', async () => {
     name: 'Skip to main content',
   });
   expect(skipToContent).toBeInTheDocument();
-  expect(screen.getByRole('heading', {
-    name: 'Main heading',
-  })).toHaveAttribute('id', 'main-heading');
+  expect(
+    screen.getByRole('heading', {
+      name: 'Main heading',
+    })
+  ).toHaveAttribute('id', 'main-heading');
 
   expect(skipToContent).toHaveAttribute('href', '#main-heading');
 });
@@ -85,18 +87,19 @@ test('Navigation: To navigation', async () => {
   useLocation.mockReturnValue({
     pathname: '/',
   });
-  useSelector
-    .mockReturnValue({
-      data: true
-    });
+  useSelector.mockReturnValue({
+    data: true,
+  });
   await setup();
   const skipToNavigation = screen.getByRole('link', {
     name: 'Skip to main navigation',
   });
   expect(skipToNavigation).toBeInTheDocument();
-  expect(screen.getByRole('link', {
-    name: 'Home',
-  })).toHaveAttribute('id', 'main-navigation-0');
+  expect(
+    screen.getByRole('link', {
+      name: 'Home',
+    })
+  ).toHaveAttribute('id', 'main-navigation-0');
 
   expect(skipToNavigation).toHaveAttribute('href', '#main-navigation-0');
 });
