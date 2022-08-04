@@ -78,6 +78,7 @@ const ProfilePicture = () => {
   const { data: user } = useSelector(state => state.account.currentUser);
   return (
     <AccountAvatar
+      showAlt
       sx={{ width: 80, height: 80, fontSize: '1.5em' }}
       user={user}
     />

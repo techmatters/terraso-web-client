@@ -10,8 +10,7 @@ import 'navigation/SkipLinks.css';
 
 const HIDE_FOR_PATHS = ['/account'];
 
-const SkipLinks = props => {
-  const { contentRef, navigationRef } = props;
+const SkipLinks = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const initialRef = useRef(null);
@@ -27,34 +26,19 @@ const SkipLinks = props => {
     return null;
   }
 
-  const toContent = event => {
-    contentRef.current.focus();
-    event.stopPropagation();
-    event.preventDefault();
-  };
-
-  const toNavigation = event => {
-    navigationRef.current.focus();
-    event.stopPropagation();
-    event.preventDefault();
-  };
-
   const links = [
     {
       label: t('navigation.skip_to_main_content'),
-      href: '#content',
-      onClick: toContent,
+      href: '#main-heading',
     },
     {
       label: t('navigation.skip_to_main_navigation'),
-      href: '#main-navigation',
-      onClick: toNavigation,
+      href: '#main-navigation-0',
     },
   ];
 
   return (
     <>
-      <span tabIndex="-1" ref={initialRef} />
       {links.map((link, index) => (
         <Link
           key={index}
