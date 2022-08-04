@@ -5,16 +5,18 @@ import _ from 'lodash/fp';
 import { Avatar, Typography } from '@mui/material';
 
 const AccountAvatar = props => {
-  const { user } = props;
+  const { user, showAlt } = props;
   const name = `${user.firstName} ${user.lastName}`;
 
   return (
     <Avatar
       alt={name}
       src={user.profileImage}
-      imgProps={{
-        alt: '',
-      }}
+      imgProps={
+        !showAlt && {
+          alt: '',
+        }
+      }
       {..._.omit('user', props)}
     >
       <Typography aria-hidden="true" {..._.pick('sx.fontSize', props)}>
