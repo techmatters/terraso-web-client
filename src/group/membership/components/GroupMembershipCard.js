@@ -17,6 +17,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import ExternalLink from 'common/components/ExternalLink';
 import Restricted from 'permissions/components/Restricted';
 
 import AccountAvatar from 'account/components/AccountAvatar';
@@ -82,12 +83,9 @@ const Content = props => {
           </Typography>
           <Typography variant="body1">
             prefix
-            <Link
-              href={t('group.membership_card_closed_help_url')}
-              target="_blank"
-            >
+            <ExternalLink href={t('group.membership_card_closed_help_url')}>
               link
-            </Link>
+            </ExternalLink>
           </Typography>
         </Trans>
       </CardContent>

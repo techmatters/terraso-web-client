@@ -9,7 +9,6 @@ export const plausible = Plausible({
 });
 
 plausible.enableAutoPageviews();
-plausible.enableAutoOutboundTracking();
 
 export const useAnalytics = () => {
   const { i18n } = useTranslation();

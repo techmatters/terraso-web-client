@@ -14,12 +14,12 @@ import {
   Dialog,
   DialogContent,
   IconButton,
-  Link,
   Paper,
   Stack,
   Typography,
 } from '@mui/material';
 
+import ExternalLink from 'common/components/ExternalLink';
 import { countryNameForCode, scrollToNavBar } from 'common/utils';
 import PageHeader from 'layout/PageHeader';
 
@@ -184,12 +184,9 @@ const MapDrawPolygon = props => {
             <Trans i18nKey="landscape.form_boundary_draw_polygon_edit_help" />
           </Alert>
         )}
-        <Link
-          href={t('landscape.form_boundary_draw_polygon_help_url')}
-          target="_blank"
-        >
+        <ExternalLink href={t('landscape.form_boundary_draw_polygon_help_url')}>
           {t('landscape.form_boundary_draw_polygon_help')}
-        </Link>
+        </ExternalLink>
       </Paper>
       <Stack direction="row" justifyContent="space-between">
         <Button
@@ -294,12 +291,9 @@ const BoundaryOptions = props => {
         <Stack spacing={2} sx={{ mb: 4 }}>
           <Typography>First</Typography>
           <Typography variant="body2">second</Typography>
-          <Link
-            href={t('landscape.boundaries_help_geojson_url')}
-            target="_blank"
-          >
+          <ExternalLink href={t('landscape.boundaries_help_geojson_url')}>
             link
-          </Link>
+          </ExternalLink>
         </Stack>
       </Trans>
       <Stack sx={{ marginTop: 2 }} spacing={3}>
