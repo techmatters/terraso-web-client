@@ -295,7 +295,7 @@
         "list_map_section_label": "Mapa de paisajes",
         "list_map_popup_link": "Ver detalles sobre  {{name}}",
         "boundaries_update_save": "Actualizar mapa",
-        "form_boundary_draw_polygon_help_url": "https://terraso.org/es/ayuda/"
+        "form_boundary_draw_polygon_help_url": "https://terraso.org/es/ayuda/como-dibujar-el-limite-de-tu-paisaje/"
     },
     "common": {
         "dialog_cancel_label": "Cancelar",

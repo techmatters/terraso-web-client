@@ -29,6 +29,8 @@ import LandscapeMap from 'landscape/components/LandscapeMap';
 
 import { useIsMounted } from 'custom-hooks';
 
+import './BoundaryStep.css';
+
 const OPTION_GEOJSON = 'geo-json';
 const OPTION_MAP_DRAW_POLYGON = 'map-draw-polygon';
 const OPTION_MAP_PIN = 'map-pin';
@@ -153,7 +155,14 @@ const MapDrawPolygon = props => {
           <CloseIcon />
         </IconButton>
         <DialogContent sx={{ pr: 7 }}>
-          {t('landscape.form_boundary_draw_polygon_updated')}
+          <Trans i18nKey="landscape.form_boundary_draw_polygon_updated">
+            {{ saveLabel }}
+            <span
+              role="img"
+              aria-label={t('gis.map_draw.edit.toolbar.buttons.edit')}
+              className="landascape-boundary-step-map-icon landascape-boundary-step-draw-icon landascape-boundary-step-draw-edit-icon"
+            />
+          </Trans>
         </DialogContent>
       </Dialog>
       <PageHeader
@@ -167,9 +176,22 @@ const MapDrawPolygon = props => {
         variant="outlined"
         sx={{ padding: 2, marginTop: 2 }}
       >
-        <Typography>
-          {t('landscape.form_boundary_draw_polygon_description')}
-        </Typography>
+        <Trans i18nKey="landscape.form_boundary_draw_polygon_description">
+          <Typography>
+            first
+            <span
+              role="img"
+              aria-label={t('landscape.form_boundary_map_basemap_label')}
+              className="landascape-boundary-step-map-icon landascape-boundary-step-draw-basemap-icon"
+            />
+            third
+            <span
+              role="img"
+              aria-label={t('gis.map_draw.draw.toolbar.buttons.polygon')}
+              className="landascape-boundary-step-map-icon landascape-boundary-step-draw-icon landascape-boundary-step-draw-polygon-icon"
+            />
+          </Typography>
+        </Trans>
         <LandscapeMap
           enableSearch
           enableDraw
@@ -181,7 +203,9 @@ const MapDrawPolygon = props => {
         />
         {editHelp && (
           <Alert severity="info">
-            <Trans i18nKey="landscape.form_boundary_draw_polygon_edit_help" />
+            <Trans i18nKey="landscape.form_boundary_draw_polygon_edit_help">
+              {{ saveLabel }}
+            </Trans>
           </Alert>
         )}
         <ExternalLink href={t('landscape.form_boundary_draw_polygon_help_url')}>

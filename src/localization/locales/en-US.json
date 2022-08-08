@@ -295,12 +295,13 @@
         "list_map_popup_link": "View details about {{name}}",
         "boundaries_update_save": "Update Map",
         "form_boundary_draw_polygon_title": "[TODO] Draw {{name}}’s Boundary",
-        "form_boundary_draw_polygon_description": "[TODO] Click anywhere to start drawing. Save your drawing and return to complete later. You can adjust the boundary in edit mode. ",
+        "form_boundary_draw_polygon_description": "<0>Search for or zoom to your landscape. Use <1/> to change the map below. Use <3/> to start drawing.</0>",
         "form_boundary_draw_polygon_help": "[TODO] Need help?",
-        "form_boundary_draw_polygon_help_url": "https://terraso.org/help/",
+        "form_boundary_draw_polygon_help_url": "https://terraso.org/help/how-to-draw-your-landscape-boundary/",
         "form_boundary_options_draw_polygon": "Draw the landscape’s boundary on a map",
-        "form_boundary_draw_polygon_updated": "Landscape boundary is complete. Proceed to update your landscape's map or edit the shape.",
-        "form_boundary_draw_polygon_edit_help": "<strong>How to edit:</strong> Drag a translucent point to add more points. Click the point to remove it. When you’re done adjusting the boundary save to exit the edit mode."
+        "form_boundary_draw_polygon_updated": "Landscape boundary is complete. Select <1/> to add more detail to your boundary or select {{saveLabel}} to finalize your landscape.",
+        "form_boundary_draw_polygon_edit_help": "<strong>How to edit:</strong> Drag points to adjust the shape. Select points to remove. When you are finished, save and select {{saveLabel}}.",
+        "form_boundary_map_basemap_label": "Basemap"
     },
     "sharedData": {
         "title": "Shared files",
@@ -433,9 +434,9 @@
                     },
                     "polygon": {
                         "tooltip": {
-                            "start": "Click to start drawing shape.",
-                            "cont": "Click to continue drawing shape.",
-                            "end": "Click first point to close this shape."
+                            "start": "Draw a rough outline of your landscape. Start at the boundary of the landscape.",
+                            "cont": "Continue to select points at the edge of your boundary.",
+                            "end": "Select the first point to close this shape."
                         }
                     }
                 }
