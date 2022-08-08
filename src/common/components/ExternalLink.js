@@ -5,7 +5,9 @@ import { Link } from '@mui/material';
 import { useAnalytics } from 'monitoring/analytics';
 
 // Link for external resources. It handles opening it on a new
-// tab and tracking the analytics event 
+// tab and tracking the analytics event.
+// This is neede because of this plausible issue:
+// https://github.com/plausible/plausible-tracker/issues/12
 const ExternalLink = ({ href, children }) => {
   const { trackEvent } = useAnalytics();
   const onClick = event => {
