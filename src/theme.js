@@ -4,12 +4,12 @@ const colorTheme = createTheme({
   palette: {
     tonalOffset: 0.2,
     primary: {
-      main: '#18404e',
+      main: '#2C7690',
     },
     secondary: {
       main: '#5E5547',
     },
-    link: '#18404e',
+    link: '#2C7690',
     success: {
       main: '#b0d098',
     },
@@ -19,7 +19,7 @@ const colorTheme = createTheme({
     cardBorder: '#DADADA',
     white: '#FFFFFF',
     gray: {
-      lite2: '#F5F5F5',
+      lite2: '#f9f9f9',
       lite1: '#DDDDDD',
       mid: '#C4C4C4',
       mid2: '#AAAAAA',
@@ -29,7 +29,7 @@ const colorTheme = createTheme({
     blue: {
       lite: '#F3FAFD',
       mid: '#D2EDF7',
-      dark: '#18404e',
+      dark: '#2C7690',
     },
     black: '#000000',
   },
