@@ -1,32 +1,14 @@
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 
-import {
-  Alert,
-  Box,
-  Button,
-  CardActions,
-  Divider,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, Divider, Typography } from '@mui/material';
+
+import Actions from 'common/components/Actions';
 
 import HomeCard from 'home/components/HomeCard';
 
 import theme from 'theme';
-
-const Actions = () => {
-  const { t } = useTranslation();
-
-  return (
-    <CardActions>
-      <Button component={Link} to="/landscapes" sx={{ width: '100%' }}>
-        {t('landscape.default_connect_button').toUpperCase()}
-      </Button>
-    </CardActions>
-  );
-};
 
 const LandscapeDefaultHomeCard = () => {
   const { t } = useTranslation();
@@ -59,7 +41,7 @@ const LandscapeDefaultHomeCard = () => {
         </Alert>
       </Box>
       <Divider />
-      <Actions />
+      <Actions label={t('landscape.default_connect_button')} to="/landscapes" />
     </HomeCard>
   );
 };
