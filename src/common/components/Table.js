@@ -4,6 +4,8 @@ import _ from 'lodash/fp';
 
 import { DataGrid } from '@mui/x-data-grid';
 
+import theme from 'theme';
+
 const PAGE_SIZE = 15;
 const SORT_DIRECTION_BY_WORD = {
   desc: '-',
@@ -73,6 +75,13 @@ const Table = props => {
       sx={{
         '& .MuiDataGrid-columnHeaders': {
           backgroundColor: 'gray.lite2',
+        },
+        '& .MuiDataGrid-row:hover': {
+          backgroundColor: 'transparent',
+          textDecoration: 'underline',
+        },
+        '.MuiDataGrid-row:nth-of-type(even)': {
+          backgroundColor: theme.palette.gray.lite2,
         },
       }}
       {...props}
