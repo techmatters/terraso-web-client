@@ -75,8 +75,8 @@ const components = {
     },
   },
   MuiOutlinedInput: {
-    defaultProps: {
-      sx: {
+    styleOverrides: {
+      root: {
         '& .MuiOutlinedInput-notchedOutline': {
           borderColor: colorTheme.palette.gray.mid,
         },

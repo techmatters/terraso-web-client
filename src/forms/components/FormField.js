@@ -26,15 +26,9 @@ const FormFieldInput = props => {
       disabled={disabled}
       error={!!fieldState?.error}
       {...(info ? { 'aria-describedby': `${id}-helper-text` } : {})}
-      sx={theme =>
-        _.mergeWith(
-          null,
-          {
-            width: '100%',
-          },
-          theme.components.MuiOutlinedInput.defaultProps.sx
-        )
-      }
+      sx={{
+        width: '100%',
+      }}
       {...field}
       {...inputProps}
     />
