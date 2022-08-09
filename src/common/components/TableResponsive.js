@@ -23,6 +23,8 @@ import {
 import BaseTable from 'common/components/Table';
 import ResponsiveSwitch from 'layout/ResponsiveSwitch';
 
+import theme from 'theme';
+
 const SEARCH_DEBOUNCE = 100; // milliseconds
 const SEARCH_MINIMUM_LENGTH = 2;
 
@@ -259,8 +261,12 @@ const SearchBar = props => {
         sx={{ flexGrow: 2, width: { xs: '100%' } }}
         InputProps={{
           sx: {
+            borderColor: theme.palette.gray.dark2,
             marginBottom: 2,
             padding: 0,
+            '& ::placeholder': {
+              opacity: 0.65,
+            },
           },
           endAdornment: (
             <>
