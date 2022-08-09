@@ -32,6 +32,9 @@ const colorTheme = createTheme({
       dark: '#2C7690',
     },
     black: '#000000',
+    map: {
+      polygon: '#0055CC',
+    },
   },
 });
 

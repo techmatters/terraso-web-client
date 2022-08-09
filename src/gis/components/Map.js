@@ -126,7 +126,13 @@ const MapPolygon = props => {
   }, [map, bounds]);
 
   // Added unique key on every rerender to force GeoJSON update
-  return <GeoJSON key={uuidv4()} data={geojson} />;
+  return (
+    <GeoJSON
+      key={uuidv4()}
+      data={geojson}
+      style={{ color: theme.palette.map.polygon }}
+    />
+  );
 };
 
 const Location = props => {
