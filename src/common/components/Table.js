@@ -78,6 +78,8 @@ const Table = props => {
         },
         '& .MuiDataGrid-row:hover': {
           backgroundColor: 'transparent',
+        },
+        '& .MuiDataGrid-row a:hover': {
           textDecoration: 'underline',
         },
         '.MuiDataGrid-row:nth-of-type(even)': {
