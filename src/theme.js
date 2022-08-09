@@ -21,7 +21,7 @@ const colorTheme = createTheme({
     gray: {
       lite2: '#f9f9f9',
       lite1: '#DDDDDD',
-      mid: '#C4C4C4',
+      mid: '#949494',
       mid2: '#AAAAAA',
       dark1: '#666666',
       dark2: '#333333',
@@ -77,6 +77,9 @@ const components = {
   MuiOutlinedInput: {
     defaultProps: {
       sx: {
+        '& .MuiOutlinedInput-notchedOutline': {
+          borderColor: colorTheme.palette.gray.mid,
+        },
         '& .Mui-disabled': {
           bgcolor: colorTheme.palette.gray.lite1,
         },
