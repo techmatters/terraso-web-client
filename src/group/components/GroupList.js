@@ -34,6 +34,10 @@ const MemberLeaveButton = withProps(GroupMemberLeave, {
       bgcolor: 'gray.lite1',
       color: 'black',
       textTransform: 'uppercase',
+      '&:hover': {
+        bgcolor: 'blue.dark',
+        color: 'white',
+      },
     },
   },
 });
