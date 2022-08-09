@@ -8,7 +8,14 @@ const Actions = ({ label, destination }) => {
       <Button
         component={Link}
         to={destination}
-        sx={{ width: '100%', textTransform: 'uppercase' }}
+        sx={{
+          width: '100%',
+          textTransform: 'uppercase',
+          '&:hover': {
+            backgroundColor: 'transparent',
+            textDecoration: 'underline',
+          },
+        }}
       >
         {label}
       </Button>

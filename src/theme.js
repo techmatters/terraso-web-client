@@ -49,14 +49,6 @@ const components = {
     defaultProps: {
       disableElevation: true,
     },
-    styleOverrides: {
-      root: {
-        '&:hover': {
-          backgroundColor: 'transparent',
-          textDecoration: 'underline',
-        },
-      },
-    },
     variants: [
       {
         props: {
