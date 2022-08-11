@@ -14,7 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import Actions from 'common/components/Actions';
+import CardActionButton from 'common/components/CardActionButton';
 
 import HomeCard from 'home/components/HomeCard';
 
@@ -87,7 +87,10 @@ const LandscapesHomeCard = ({ landscapes }) => {
         ))}
       </List>
       <Divider />
-      <Actions label={t('landscape.home_connect_label')} to="/landscapes" />
+      <CardActionButton
+        label={t('landscape.home_connect_label')}
+        to="/landscapes"
+      />
     </HomeCard>
   );
 };

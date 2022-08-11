@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Button, CardActions, Link } from '@mui/material';
 
-const Actions = ({ label, destination }) => {
+const CardActionButton = ({ label, destination }) => {
   return (
     <CardActions>
       <Button
@@ -23,4 +23,4 @@ const Actions = ({ label, destination }) => {
   );
 };
 
-export default Actions;
+export default CardActionButton;
