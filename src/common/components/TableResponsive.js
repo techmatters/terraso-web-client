@@ -23,8 +23,6 @@ import {
 import BaseTable from 'common/components/Table';
 import ResponsiveSwitch from 'layout/ResponsiveSwitch';
 
-import theme from 'theme';
-
 const SEARCH_DEBOUNCE = 100; // milliseconds
 const SEARCH_MINIMUM_LENGTH = 2;
 
