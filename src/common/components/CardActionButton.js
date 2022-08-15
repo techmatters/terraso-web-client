@@ -1,13 +1,15 @@
 import React from 'react';
 
-import { Button, CardActions, Link } from '@mui/material';
+import { Link } from 'react-router-dom';
 
-const CardActionButton = ({ label, destination }) => {
+import { Button, CardActions } from '@mui/material';
+
+const CardActionButton = ({ label, to }) => {
   return (
     <CardActions>
       <Button
         component={Link}
-        to={destination}
+        to={to}
         sx={{
           width: '100%',
           textTransform: 'uppercase',
