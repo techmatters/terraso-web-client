@@ -1,32 +1,14 @@
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 
-import {
-  Alert,
-  Box,
-  Button,
-  CardActions,
-  Divider,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, Divider, Typography } from '@mui/material';
+
+import CardActionRouterLink from 'common/components/CardActionRouterLink';
 
 import HomeCard from 'home/components/HomeCard';
 
 import theme from 'theme';
-
-const Actions = () => {
-  const { t } = useTranslation();
-
-  return (
-    <CardActions>
-      <Button component={Link} to="/groups" sx={{ width: '100%' }}>
-        {t('group.default_connect_button').toUpperCase()}
-      </Button>
-    </CardActions>
-  );
-};
 
 const GroupDefaultHomeCard = () => {
   const { t } = useTranslation();
@@ -57,7 +39,10 @@ const GroupDefaultHomeCard = () => {
         </Alert>
       </Box>
       <Divider />
-      <Actions />
+      <CardActionRouterLink
+        label={t('group.default_connect_button')}
+        to="/groups"
+      />
     </HomeCard>
   );
 };

@@ -6,8 +6,6 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import {
   ListItem as BaseListItem,
-  Button,
-  CardActions,
   Divider,
   Link,
   List,
@@ -15,6 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import CardActionRouterLink from 'common/components/CardActionRouterLink';
 import Restricted from 'permissions/components/Restricted';
 
 import GroupMembershipPendingWarning from 'group/membership/components/GroupMembershipPendingWarning';
@@ -115,11 +114,10 @@ const GroupsHomeCard = ({ groups }) => {
         ))}
       </List>
       <Divider />
-      <CardActions>
-        <Button component={RouterLink} to="/groups" sx={{ width: '100%' }}>
-          {t('group.home_connect_label').toUpperCase()}
-        </Button>
-      </CardActions>
+      <CardActionRouterLink
+        label={t('group.home_connect_label')}
+        to="/groups"
+      />
     </HomeCard>
   );
 };

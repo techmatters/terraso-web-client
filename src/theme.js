@@ -4,12 +4,12 @@ const colorTheme = createTheme({
   palette: {
     tonalOffset: 0.2,
     primary: {
-      main: '#307F9C',
+      main: '#2C7690',
     },
     secondary: {
       main: '#5E5547',
     },
-    link: '#307F9C',
+    link: '#2C7690',
     success: {
       main: '#b0d098',
     },
@@ -19,9 +19,9 @@ const colorTheme = createTheme({
     cardBorder: '#DADADA',
     white: '#FFFFFF',
     gray: {
-      lite2: '#F5F5F5',
+      lite2: '#f9f9f9',
       lite1: '#DDDDDD',
-      mid: '#C4C4C4',
+      mid: '#949494',
       mid2: '#AAAAAA',
       dark1: '#666666',
       dark2: '#333333',
@@ -29,9 +29,12 @@ const colorTheme = createTheme({
     blue: {
       lite: '#F3FAFD',
       mid: '#D2EDF7',
-      dark: '#307F9C',
+      dark: '#2C7690',
     },
     black: '#000000',
+    map: {
+      polygon: '#0055CC',
+    },
   },
 });
 
@@ -72,8 +75,11 @@ const components = {
     },
   },
   MuiOutlinedInput: {
-    defaultProps: {
-      sx: {
+    styleOverrides: {
+      root: {
+        '& .MuiOutlinedInput-notchedOutline': {
+          borderColor: colorTheme.palette.gray.mid,
+        },
         '& .Mui-disabled': {
           bgcolor: colorTheme.palette.gray.lite1,
         },

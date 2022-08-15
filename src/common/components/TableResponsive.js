@@ -258,10 +258,14 @@ const SearchBar = props => {
         value={query}
         sx={{ flexGrow: 2, width: { xs: '100%' } }}
         InputProps={{
-          sx: {
+          sx: theme => ({
+            borderColor: theme.palette.gray.dark2,
             marginBottom: 2,
             padding: 0,
-          },
+            '& ::placeholder': {
+              opacity: 0.65,
+            },
+          }),
           endAdornment: (
             <>
               {query && (

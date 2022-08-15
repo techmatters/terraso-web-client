@@ -7,14 +7,14 @@ import { Link as RouterLink } from 'react-router-dom';
 import {
   Avatar,
   Box,
-  Button,
-  CardActions,
   Divider,
   Link,
   List,
   ListItem,
   Typography,
 } from '@mui/material';
+
+import CardActionRouterLink from 'common/components/CardActionRouterLink';
 
 import HomeCard from 'home/components/HomeCard';
 
@@ -87,11 +87,10 @@ const LandscapesHomeCard = ({ landscapes }) => {
         ))}
       </List>
       <Divider />
-      <CardActions>
-        <Button component={RouterLink} to="/landscapes" sx={{ width: '100%' }}>
-          {t('landscape.home_connect_label').toUpperCase()}
-        </Button>
-      </CardActions>
+      <CardActionRouterLink
+        label={t('landscape.home_connect_label')}
+        to="/landscapes"
+      />
     </HomeCard>
   );
 };
