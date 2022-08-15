@@ -13,7 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import CardActionButton from 'common/components/CardActionButton';
+import CardActionRouterLink from 'common/components/CardActionRouterLink';
 import Restricted from 'permissions/components/Restricted';
 
 import GroupMembershipPendingWarning from 'group/membership/components/GroupMembershipPendingWarning';
@@ -114,7 +114,10 @@ const GroupsHomeCard = ({ groups }) => {
         ))}
       </List>
       <Divider />
-      <CardActionButton label={t('group.home_connect_label')} to="/groups" />
+      <CardActionRouterLink
+        label={t('group.home_connect_label')}
+        to="/groups"
+      />
     </HomeCard>
   );
 };

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Alert, Box, Divider, Typography } from '@mui/material';
 
-import CardActionButton from 'common/components/CardActionButton';
+import CardActionRouterLink from 'common/components/CardActionRouterLink';
 
 import HomeCard from 'home/components/HomeCard';
 
@@ -39,7 +39,7 @@ const GroupDefaultHomeCard = () => {
         </Alert>
       </Box>
       <Divider />
-      <CardActionButton
+      <CardActionRouterLink
         label={t('group.default_connect_button')}
         to="/groups"
       />

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Alert, Box, Divider, Typography } from '@mui/material';
 
-import CardActionButton from 'common/components/CardActionButton';
+import CardActionRouterLink from 'common/components/CardActionRouterLink';
 
 import HomeCard from 'home/components/HomeCard';
 
@@ -41,7 +41,7 @@ const LandscapeDefaultHomeCard = () => {
         </Alert>
       </Box>
       <Divider />
-      <CardActionButton
+      <CardActionRouterLink
         label={t('landscape.default_connect_button')}
         to="/landscapes"
       />

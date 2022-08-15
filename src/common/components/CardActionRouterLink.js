@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 import { Button, CardActions } from '@mui/material';
 
-const CardActionButton = ({ label, to }) => {
+const CardActionRouterLink = ({ label, to }) => {
   return (
     <CardActions>
       <Button
@@ -25,4 +25,4 @@ const CardActionButton = ({ label, to }) => {
   );
 };
 
-export default CardActionButton;
+export default CardActionRouterLink;
