@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
@@ -27,6 +27,7 @@ import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { useRefreshProgressContext } from 'layout/RefreshProgressProvider';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import Restricted from 'permissions/components/Restricted';
 
 import { GroupContextProvider } from 'group/groupContext';
@@ -116,6 +117,13 @@ const LandscapeView = () => {
       name: _.get('name', landscape),
     }),
     fetching
+  );
+
+  useBreadcrumbsParams(
+    useMemo(
+      () => ({ landscapeName: landscape?.name, loading: !landscape?.name }),
+      [landscape?.name]
+    )
   );
 
   useEffect(() => {

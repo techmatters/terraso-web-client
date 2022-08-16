@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
@@ -12,6 +12,7 @@ import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMembersList from 'group/membership/components/GroupMembersList';
@@ -40,6 +41,13 @@ const Header = ({ landscape, fetching }) => {
       name: _.get('name', landscape),
     }),
     fetching
+  );
+
+  useBreadcrumbsParams(
+    useMemo(
+      () => ({ landscapeName: landscape?.name, loading: !landscape?.name }),
+      [landscape?.name]
+    )
   );
 
   if (loadingPermissions) {

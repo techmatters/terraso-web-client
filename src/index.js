@@ -17,6 +17,8 @@ import theme from 'theme';
 
 import 'index.css';
 
+import Breadcrumbs from 'navigation/Breadcrumbs';
+
 const App = () => {
   const contentRef = useRef();
   const navigationRef = useRef();
@@ -43,6 +45,7 @@ const App = () => {
             flex: 1,
           }}
         >
+          <Breadcrumbs />
           <Routes />
         </Box>
         <Footer />

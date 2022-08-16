@@ -16,10 +16,12 @@ import 'forms/yup';
 // Analytics
 import 'monitoring/analytics';
 
+import { BreadcrumbsContextProvider } from 'navigation/breadcrumbsContext';
+
 import RefreshProgressProvider from './RefreshProgressProvider';
 
 // Wrappers
-// Router, Theme, Global State, Permissions, Notifications
+// Router, Theme, Global State, Permissions, Notifications, Breadcrumbs
 const AppWrappers = ({ children, theme, store, permissionsRules }) => (
   <React.StrictMode>
     <BrowserRouter>
@@ -28,7 +30,11 @@ const AppWrappers = ({ children, theme, store, permissionsRules }) => (
           <Provider store={store}>
             <RefreshProgressProvider>
               <PermissionsProvider rules={permissionsRules}>
-                <NotificationsWrapper>{children}</NotificationsWrapper>
+                <NotificationsWrapper>
+                  <BreadcrumbsContextProvider>
+                    {children}
+                  </BreadcrumbsContextProvider>
+                </NotificationsWrapper>
               </PermissionsProvider>
             </RefreshProgressProvider>
           </Provider>

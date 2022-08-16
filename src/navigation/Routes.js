@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, matchPath, useLocation } from 'react-router-dom';
 
 import NotFound from 'layout/NotFound';
 
@@ -23,33 +23,86 @@ import LandscapeView from 'landscape/components/LandscapeView';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
 import ToolsList from 'tool/components/ToolList';
 
-const path = (path, Component, auth = true) => ({
+const path = (path, Component, { auth = true, breadcrumbsLabel } = {}) => ({
   path,
   Component,
   auth,
+  breadcrumbsLabel,
 });
 
 const paths = [
   path('/', Home),
   path('/groups', GroupList),
+  path('/groups/:slug', GroupView, {
+    breadcrumbsLabel: 'group.breadcrumbs_view',
+  }),
   path('/groups/new', GroupForm),
   path('/groups/:slug/edit', GroupForm),
-  path('/groups/:slug/members', GroupMembers),
+  path('/groups/:slug/members', GroupMembers, {
+    breadcrumbsLabel: 'group.breadcrumbs_members',
+  }),
   path('/groups/:slug/upload', GroupSharedDataUpload),
-  path('/groups/:slug', GroupView),
   path('/landscapes', LandscapeList),
   path('/landscapes/new', LandscapeNew),
+  path('/landscapes/:slug', LandscapeView, {
+    breadcrumbsLabel: 'landscape.breadcrumbs_view',
+  }),
   path('/landscapes/:slug/edit', LandscapeUpdateProfile),
   path('/landscapes/:slug/boundaries', LandscapeBoundariesUpdate),
-  path('/landscapes/:slug/members', LandscapeMembers),
+  path('/landscapes/:slug/members', LandscapeMembers, {
+    breadcrumbsLabel: 'landscape.breadcrumbs_members',
+  }),
   path('/landscapes/:slug/upload', LandscapeSharedDataUpload),
-  path('/landscapes/:slug', LandscapeView),
   path('/tools', ToolsList),
-  path('/account', AccountLogin, false),
+  path('/account', AccountLogin, { auth: false }),
   path('/account/profile', AccountProfile),
   path('/contact', ContactForm),
   path('*', NotFound),
 ];
+
+const getPath = to => paths.find(path => matchPath({ path: path.path }, to));
+
+export const useBreadcrumbs = () => {
+  const { pathname: currentPathname } = useLocation();
+  const pathnames = useMemo(
+    () => currentPathname.split('/'),
+    [currentPathname]
+  );
+  const currentPath = useMemo(
+    () => getPath(currentPathname),
+    [currentPathname]
+  );
+  const items = useMemo(() => {
+    if (!currentPath.breadcrumbsLabel) {
+      return null;
+    }
+    return pathnames
+      .map((item, index) => {
+        const to = `/${pathnames.slice(1, index + 1).join('/')}`;
+        if (to === currentPathname) {
+          return {
+            to,
+            label: currentPath.breadcrumbsLabel,
+            current: true,
+          };
+        }
+        const path = getPath(to);
+        if (!path || !path.breadcrumbsLabel) {
+          return null;
+        }
+
+        return {
+          to,
+          label: path.breadcrumbsLabel,
+        };
+      })
+      .filter(pathname => pathname);
+  }, [pathnames, currentPath, currentPathname]);
+
+  console.log({ items });
+
+  return items;
+};
 
 const RoutesComponent = () => (
   <Routes>
