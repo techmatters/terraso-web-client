@@ -296,13 +296,14 @@
         "list_map_popup_link": "Ver detalles sobre  {{name}}",
         "boundaries_update_save": "Actualizar mapa",
         "form_boundary_draw_polygon_title": "Dibuja el límite de {{name}}",
-        "form_boundary_draw_polygon_description": "<0>Busca o haz zoom en tu paisaje. Usa <1/> para cambiar el mapa a continuación. Usa <3/> para empezar a dibujar.</0>",
+        "form_boundary_draw_polygon_description": "<0>Busca o haz zoom en tu paisaje. Usa <1/> para cambiar el mapa de fondo a continuación. Usa <3/> para empezar a dibujar.</0>",
         "form_boundary_draw_polygon_help": "¿Necesitas ayuda?",
         "form_boundary_draw_polygon_help_url": "https://terraso.org/es/ayuda/como-dibujar-el-limite-de-tu-paisaje/",
         "form_boundary_options_draw_polygon": "Dibujar el límite del paisaje en un mapa",
-        "form_boundary_draw_polygon_updated": "El límite del paisaje está completo. Selecciona <1/> para agregar más detalles a tu límite o selecciona {{saveLabel}} para finalizar tu paisaje.",
+        "form_boundary_draw_polygon_saved_create": "Tu límite de paisaje está completo. Selecciona <1/> para agregar más detalles a tu límite o selecciona Crear un paisaje para agregar su paisaje a Terraso.",
+        "form_boundary_draw_polygon_saved_update": "Tu límite de paisaje está completo. Selecciona <1/> para agregar más detalles a tu límite o seleccione Actualizar mapa para enviar tus cambios.",
         "form_boundary_draw_polygon_edit_help": "<strong>Cómo editar:</strong> Arrastra puntos para ajustar la forma. Seleccionar puntos para eliminar. Cuando hayas terminado, guarda y selecciona {{saveLabel}}.",
-        "form_boundary_map_basemap_label": "Mapa base"
+        "form_boundary_map_basemap_label": "Mapa de fondo"
     },
     "common": {
         "dialog_cancel_label": "Cancelar",
@@ -474,7 +475,7 @@
                     },
                     "remove": {
                         "tooltip": {
-                            "text": "Haz clic en una función para eliminar."
+                            "text": "Seleccione una forma para eliminarla."
                         }
                     }
                 }

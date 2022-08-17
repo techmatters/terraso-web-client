@@ -43,3 +43,7 @@
 .leaflet-draw-actions a {
   color: #fff;
 }
+
+.leaflet-disabled {
+  opacity: 0.6;
+}

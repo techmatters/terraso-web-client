@@ -87,6 +87,7 @@ const MapDrawPolygon = props => {
   const { t } = useTranslation();
   const {
     landscape,
+    isNew,
     boundingBox,
     setOption,
     save,
@@ -155,7 +156,10 @@ const MapDrawPolygon = props => {
           <CloseIcon />
         </IconButton>
         <DialogContent sx={{ pr: 7 }}>
-          <Trans i18nKey="landscape.form_boundary_draw_polygon_updated">
+          <Trans
+            i18nKey="landscape.form_boundary_draw_polygon_saved"
+            context={isNew ? 'create' : 'update'}
+          >
             {{ saveLabel }}
             <span
               role="img"
