@@ -119,7 +119,9 @@
         "members_list_pending_confirmation_message": "¿Quieres denegar la solicitud de membresía de {{userName}} en {{name}}?",
         "members_list_pending_confirmation_button": "Denegar solicitud",
         "members_list_pending_reject": "Denegar",
-        "home_pending_message": "Esperando la aprobación del administrador del grupo"
+        "home_pending_message": "Esperando la aprobación del administrador del grupo",
+        "breadcrumbs_view": "{{groupName}}",
+        "breadcrumbs_members": "Miembros"
     },
     "tool": {
         "avilability": "Disponibilidad",
@@ -191,7 +193,8 @@
         "nav_label": "Navegación principal",
         "nav_label_short": "Principal",
         "skip_to_main_content": "Saltar al contenido principal",
-        "skip_to_main_navigation": "Saltar a la navegación principal"
+        "skip_to_main_navigation": "Saltar a la navegación principal",
+        "breadcrumbs_label": "Árbol de navegación"
     },
     "landscape": {
         "add": "Agregar un paisaje",
@@ -293,7 +296,9 @@
         "list_map_help": "<0>¿No puedes encontrar tu paisaje en este mapa? <1>Añádelo a Terraso</1> o <3>aprende más sobre paisajes</3>.</0>",
         "list_map_help_url": "https://terraso.org/es/ayuda/anade-un-nuevo-paisaje-a-terraso/",
         "list_map_section_label": "Mapa de paisajes",
-        "list_map_popup_link": "Ver detalles sobre  {{name}}"
+        "list_map_popup_link": "Ver detalles sobre  {{name}}",
+        "breadcrumbs_view": "{{landscapeName}}",
+        "breadcrumbs_members": "Miembros"
     },
     "common": {
         "dialog_cancel_label": "Cancelar",
