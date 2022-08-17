@@ -1,8 +1,7 @@
-import { fireEvent, render, screen } from 'tests/utils';
+import { render, screen } from 'tests/utils';
 
 import React, { useMemo } from 'react';
 
-import { act } from 'react-dom/test-utils';
 import { useLocation } from 'react-router-dom';
 
 import Breadcrumbs from './Breadcrumbs';
@@ -28,14 +27,18 @@ test('Breadcrumbs: Dont Show items', async () => {
     pathname: '/groups',
   });
   await setup();
-  expect(screen.queryByRole('navigation', { name: 'Breadcrumbs' })).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('navigation', { name: 'Breadcrumbs' })
+  ).not.toBeInTheDocument();
 });
 test('Breadcrumbs: Show items', async () => {
   useLocation.mockReturnValue({
     pathname: '/groups/group-1/members',
   });
   await setup();
-  expect(screen.queryByRole('navigation', { name: 'Breadcrumbs' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('navigation', { name: 'Breadcrumbs' })
+  ).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
     'href',
     '/'
@@ -51,7 +54,7 @@ test('Breadcrumbs: Show items', async () => {
   expect(screen.getByRole('link', { name: 'Members' })).toHaveAttribute(
     'href',
     '/groups/group-1/members'
-  )
+  );
   expect(screen.getByRole('link', { name: 'Members' })).toHaveAttribute(
     'aria-current',
     'page'
