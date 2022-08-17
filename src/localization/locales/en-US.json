@@ -183,8 +183,7 @@
             "privacy": { "text": "Privacy Policy", "url": "https://techmatters.org/privacy-policy/" },
             "data": { "text": "Data Policy", "url": "#"},
             "about": { "text": "About Terraso", "url": "https://terraso.org/" }
-        },
-        "breadcrumbs_label": "[TODO] Breadcrumbs"
+        }
     },
     "navigation": {
         "home": "Home",
@@ -194,7 +193,8 @@
         "nav_label": "Main navigation",
         "nav_label_short": "Main",
         "skip_to_main_content": "Skip to main content",
-        "skip_to_main_navigation": "Skip to main navigation"
+        "skip_to_main_navigation": "Skip to main navigation",
+        "breadcrumbs_label": "Breadcrumbs"
     },
     "landscape": {
         "add": "Add a Landscape",

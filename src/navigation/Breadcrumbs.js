@@ -4,12 +4,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
-import {
-  Container,
-  Link,
-  Breadcrumbs as MuiBreadcrumbs,
-  Typography,
-} from '@mui/material';
+import { Container, Link, Breadcrumbs as MuiBreadcrumbs } from '@mui/material';
 
 import { useBreadcrumbs } from './Routes';
 import { useBreadcrumbsContext } from './breadcrumbsContext';
@@ -35,17 +30,21 @@ const Breadcrumbs = () => {
       <Link component={RouterLink} to="/">
         {t('home.title')}
       </Link>
-      {breadcrumbs.map(({ to, label, current }) =>
-        current ? (
-          <Typography color="text.primary" key={to}>
-            {t(label, breadcrumbsParams)}
-          </Typography>
-        ) : (
-          <Link component={RouterLink} to={to} key={to}>
-            {t(label, breadcrumbsParams)}
-          </Link>
-        )
-      )}
+      {breadcrumbs.map(({ to, label, current }) => (
+        <Link
+          component={RouterLink}
+          to={to}
+          key={to}
+          {...(current
+            ? {
+                color: 'gray.dark1',
+                'aria-current': 'page',
+              }
+            : {})}
+        >
+          {t(label, breadcrumbsParams)}
+        </Link>
+      ))}
     </Container>
   );
 };

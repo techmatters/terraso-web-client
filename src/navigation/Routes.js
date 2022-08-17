@@ -23,33 +23,46 @@ import LandscapeView from 'landscape/components/LandscapeView';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
 import ToolsList from 'tool/components/ToolList';
 
-const path = (path, Component, { auth = true, breadcrumbsLabel } = {}) => ({
+const path = (
+  path,
+  Component,
+  { auth = true, showBreadcrumbs = false, breadcrumbsLabel } = {}
+) => ({
   path,
   Component,
   auth,
+  showBreadcrumbs,
   breadcrumbsLabel,
 });
 
 const paths = [
   path('/', Home),
-  path('/groups', GroupList),
+  path('/groups', GroupList, {
+    breadcrumbsLabel: 'group.home_title',
+  }),
   path('/groups/:slug', GroupView, {
+    showBreadcrumbs: true,
     breadcrumbsLabel: 'group.breadcrumbs_view',
   }),
   path('/groups/new', GroupForm),
   path('/groups/:slug/edit', GroupForm),
   path('/groups/:slug/members', GroupMembers, {
+    showBreadcrumbs: true,
     breadcrumbsLabel: 'group.breadcrumbs_members',
   }),
   path('/groups/:slug/upload', GroupSharedDataUpload),
-  path('/landscapes', LandscapeList),
+  path('/landscapes', LandscapeList, {
+    breadcrumbsLabel: 'landscape.home_title',
+  }),
   path('/landscapes/new', LandscapeNew),
   path('/landscapes/:slug', LandscapeView, {
+    showBreadcrumbs: true,
     breadcrumbsLabel: 'landscape.breadcrumbs_view',
   }),
   path('/landscapes/:slug/edit', LandscapeUpdateProfile),
   path('/landscapes/:slug/boundaries', LandscapeBoundariesUpdate),
   path('/landscapes/:slug/members', LandscapeMembers, {
+    showBreadcrumbs: true,
     breadcrumbsLabel: 'landscape.breadcrumbs_members',
   }),
   path('/landscapes/:slug/upload', LandscapeSharedDataUpload),
@@ -73,7 +86,7 @@ export const useBreadcrumbs = () => {
     [currentPathname]
   );
   const items = useMemo(() => {
-    if (!currentPath.breadcrumbsLabel) {
+    if (!currentPath.showBreadcrumbs) {
       return null;
     }
     return pathnames
@@ -98,8 +111,6 @@ export const useBreadcrumbs = () => {
       })
       .filter(pathname => pathname);
   }, [pathnames, currentPath, currentPathname]);
-
-  console.log({ items });
 
   return items;
 };
