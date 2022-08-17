@@ -20,7 +20,6 @@ const Breadcrumbs = () => {
   }
   return (
     <Container
-      maxWidth="xl"
       component={MuiBreadcrumbs}
       aria-label={t('navigation.breadcrumbs_label')}
       sx={{
