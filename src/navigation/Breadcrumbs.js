@@ -4,7 +4,13 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Container, Link, Breadcrumbs as MuiBreadcrumbs } from '@mui/material';
+import {
+  Container,
+  Link,
+  Breadcrumbs as MuiBreadcrumbs,
+  Typography,
+} from '@mui/material';
+import { visuallyHidden } from '@mui/utils';
 
 import { useBreadcrumbs } from './Routes';
 import { useBreadcrumbsContext } from './breadcrumbsContext';
@@ -19,32 +25,37 @@ const Breadcrumbs = () => {
     return null;
   }
   return (
-    <Container
-      component={MuiBreadcrumbs}
-      aria-label={t('navigation.breadcrumbs_label')}
-      sx={{
-        mt: 3,
-      }}
-    >
-      <Link component={RouterLink} to="/">
-        {t('home.title')}
-      </Link>
-      {breadcrumbs.map(({ to, label, current }) => (
-        <Link
-          component={RouterLink}
-          to={to}
-          key={to}
-          {...(current
-            ? {
-                color: 'gray.dark1',
-                'aria-current': 'page',
-              }
-            : {})}
-        >
-          {t(label, breadcrumbsParams)}
+    <>
+      <Typography sx={visuallyHidden} variant="h2">
+        {t('navigation.breadcrumbs_label')}
+      </Typography>
+      <Container
+        component={MuiBreadcrumbs}
+        aria-label={t('navigation.breadcrumbs_label')}
+        sx={{
+          mt: 3,
+        }}
+      >
+        <Link component={RouterLink} to="/">
+          {t('home.title')}
         </Link>
-      ))}
-    </Container>
+        {breadcrumbs.map(({ to, label, current }) => (
+          <Link
+            component={RouterLink}
+            to={to}
+            key={to}
+            {...(current
+              ? {
+                  color: 'gray.dark1',
+                  'aria-current': 'page',
+                }
+              : {})}
+          >
+            {t(label, breadcrumbsParams)}
+          </Link>
+        ))}
+      </Container>
+    </>
   );
 };
 
