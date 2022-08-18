@@ -295,7 +295,7 @@
         "list_map_popup_link": "View details about {{name}}",
         "boundaries_update_save": "Update Map",
         "form_boundary_draw_polygon_title": "Draw {{name}}’s Boundary",
-        "form_boundary_draw_polygon_description": "<0>Search for or zoom to your landscape. Use <1/> to change the background map below. Use <3/> to start drawing.</0>",
+        "form_boundary_draw_polygon_description": "<0>Search for or zoom to your landscape. Use <1/> to change the background map. Use <3/> to start drawing.</0>",
         "form_boundary_draw_polygon_help": "Need help?",
         "form_boundary_draw_polygon_help_url": "https://terraso.org/help/how-to-draw-your-landscape-boundary/",
         "form_boundary_options_draw_polygon": "Draw the landscape’s boundary on a map",
@@ -416,7 +416,7 @@
                     },
                     "finish": {
                         "title": "Finish drawing",
-                        "text": "Close Shape"
+                        "text": "Close shape"
                     },
                     "undo": {
                         "title": "Delete last point drawn",
@@ -430,7 +430,7 @@
                 "handlers": {
                     "marker": {
                         "tooltip": {
-                            "start": "Click map to place marker."
+                            "start": "Place marker on map."
                         }
                     },
                     "polygon": {
@@ -450,7 +450,7 @@
                             "text": "Save"
                         },
                         "cancel": {
-                            "title": "Cancel editing, discards all changes",
+                            "title": "Cancel editing, discarding all changes",
                             "text": "Cancel"
                         },
                         "clearAll": {
@@ -469,7 +469,7 @@
                     "edit": {
                         "tooltip": {
                             "text": "Drag points to adjust shape.",
-                            "subtext": "Click the point to remove it."
+                            "subtext": "Click a point to remove it."
                         }
                     },
                     "remove": {

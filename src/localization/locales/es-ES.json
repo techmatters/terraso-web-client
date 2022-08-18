@@ -296,7 +296,7 @@
         "list_map_popup_link": "Ver detalles sobre  {{name}}",
         "boundaries_update_save": "Actualizar mapa",
         "form_boundary_draw_polygon_title": "Dibuja el límite de {{name}}",
-        "form_boundary_draw_polygon_description": "<0>Busca o haz zoom en tu paisaje. Usa <1/> para cambiar el mapa de fondo a continuación. Usa <3/> para empezar a dibujar.</0>",
+        "form_boundary_draw_polygon_description": "<0>Busca o haz zoom en tu paisaje. Usa <1/> para cambiar el mapa de fondo. Usa <3/> para empezar a dibujar.</0>",
         "form_boundary_draw_polygon_help": "¿Necesitas ayuda?",
         "form_boundary_draw_polygon_help_url": "https://terraso.org/es/ayuda/como-dibujar-el-limite-de-tu-paisaje/",
         "form_boundary_options_draw_polygon": "Dibujar el límite del paisaje en un mapa",
@@ -431,7 +431,7 @@
                 "handlers": {
                     "marker": {
                         "tooltip": {
-                            "start": "Haz clic en el mapa para colocar el marcador."
+                            "start": "Coloque el marcador en el mapa."
                         }
                     },
                     "polygon": {
@@ -451,7 +451,7 @@
                             "text": "Guardar"
                         },
                         "cancel": {
-                            "title": "Cancelar edición, descarta todos los cambios",
+                            "title": "Cancelar edición, descartando todos los cambios",
                             "text": "Cancelar"
                         },
                         "clearAll": {
@@ -470,7 +470,7 @@
                     "edit": {
                         "tooltip": {
                             "text": "Arrastra puntos para ajustar la forma.",
-                            "subtext": "Haz clic en el punto para eliminarlo."
+                            "subtext": "Haga clic en un punto para eliminarlo."
                         }
                     },
                     "remove": {
