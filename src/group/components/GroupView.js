@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +24,7 @@ import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { useRefreshProgressContext } from 'layout/RefreshProgressProvider';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import Restricted from 'permissions/components/Restricted';
 
 import { GroupContextProvider } from 'group/groupContext';
@@ -140,6 +141,13 @@ const GroupView = () => {
   useDocumentTitle(
     t('group.view_document_title', { name: _.get('name', group) }),
     fetching
+  );
+
+  useBreadcrumbsParams(
+    useMemo(
+      () => ({ groupName: group?.name, loading: !group?.name }),
+      [group?.name]
+    )
   );
 
   useEffect(() => {

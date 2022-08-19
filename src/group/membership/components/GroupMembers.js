@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
@@ -12,6 +12,7 @@ import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 
 import { GroupContextProvider } from 'group/groupContext';
 import { fetchGroupForMembers } from 'group/groupSlice';
@@ -38,6 +39,13 @@ const Header = () => {
       name: _.get('name', group),
     }),
     fetching
+  );
+
+  useBreadcrumbsParams(
+    useMemo(
+      () => ({ groupName: group?.name, loading: !group?.name }),
+      [group?.name]
+    )
   );
 
   const { loading: loadingPermissions, allowed } = usePermission(
