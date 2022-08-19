@@ -33,3 +33,17 @@
     width: 65%;
   }
 }
+
+.leaflet-marker-icon.leaflet-interactive {
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14'><circle cx='7' cy='7' r='5' stroke='white' stroke-width='2' fill='%23055989' /></svg>")
+    no-repeat;
+  border: none;
+}
+
+.leaflet-draw-actions a {
+  color: #fff;
+}
+
+.leaflet-disabled {
+  opacity: 0.6;
+}

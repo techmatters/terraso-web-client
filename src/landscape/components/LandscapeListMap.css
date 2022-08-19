@@ -11,15 +11,15 @@
   color: #fff;
 }
 
-.landscape-list-map-cluster-icon {
+.landscape-list-map-cluster-icon.leaflet-marker-icon.leaflet-interactive {
   background-clip: padding-box;
-  background-color: #98532999;
+  background: #98532999;
   border-radius: 20px;
 }
 
-.landscape-list-map-marker-icon {
+.landscape-list-map-marker-icon.leaflet-marker-icon.leaflet-interactive {
   background-clip: padding-box;
-  background-color: #985329;
+  background: #985329;
   border-radius: 30px;
 }
 

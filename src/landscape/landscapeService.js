@@ -65,30 +65,34 @@ export const fetchLandscapeToView = (slug, currentUser) => {
     ${landscapeFields}
     ${defaultGroup}
   `;
-  return (
-    terrasoApi
-      .requestGraphQL(query, { slug, accountEmail: currentUser.email })
-      .then(_.get('landscapes.edges[0].node'))
-      .then(landscape => landscape || Promise.reject('not_found'))
-      .then(landscape => ({
-        ..._.omit('defaultGroup', landscape),
-        defaultGroup: getDefaultGroup(landscape),
-      }))
-      // TODO temporarily getting position from openstreetmap API.
-      // This should change when we store landscape polygon.
-      .then(landscape =>
-        gisService.getPlaceInfoByName(landscape.location).then(placeInfo => ({
+  return terrasoApi
+    .requestGraphQL(query, { slug, accountEmail: currentUser.email })
+    .then(_.get('landscapes.edges[0].node'))
+    .then(landscape => landscape || Promise.reject('not_found'))
+    .then(landscape => ({
+      ..._.omit('defaultGroup', landscape),
+      defaultGroup: getDefaultGroup(landscape),
+    }))
+    .then(landscape => ({
+      ...landscape,
+      areaPolygon: landscape.areaPolygon
+        ? JSON.parse(landscape.areaPolygon)
+        : null,
+    }))
+    .then(landscape => {
+      if (landscape.areaPolygon || !landscape.location) {
+        return landscape;
+      }
+
+      // Get bounding box from nominatim.openstreetmap.org if no areaPolygon data
+      // AreaPolygon is not present when the user decided to skip it.
+      return gisService
+        .getPlaceInfoByName(landscape.location)
+        .then(placeInfo => ({
           ...landscape,
-          position: placeInfo,
-        }))
-      )
-      .then(landscape => ({
-        ...landscape,
-        areaPolygon: landscape.areaPolygon
-          ? JSON.parse(landscape.areaPolygon)
-          : null,
-      }))
-  );
+          boundingBox: placeInfo?.boundingbox,
+        }));
+    });
 };
 
 export const fetchLandscapeToUploadSharedData = (slug, currentUser) => {

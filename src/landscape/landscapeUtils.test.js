@@ -22,22 +22,19 @@ test('Landscape Utils: get bounding box by area geojson', () => {
 test('Landscape Utils: get bounding box by position', () => {
   const landscape = {
     areaPolygon: null,
-    position: {
-      boundingbox: [1, 2, 3, 4],
-    },
+    boundingBox: [1, 2, 3, 4],
   };
   const boundingBox = getLandscapeBoundingBox(landscape);
 
   expect(boundingBox).toStrictEqual([
-    [2, 1],
-    [4, 3],
+    [2, 3],
+    [1, 4],
   ]);
 });
 
 test('Landscape Utils: get bounding box without area nor position', () => {
   const landscape = {
     areaPolygon: null,
-    position: null,
   };
   const boundingBox = getLandscapeBoundingBox(landscape);
 

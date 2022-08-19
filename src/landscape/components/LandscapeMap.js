@@ -1,6 +1,4 @@
-import React from 'react';
-
-import _ from 'lodash/fp';
+import React, { useMemo } from 'react';
 
 import { Box } from '@mui/material';
 
@@ -11,26 +9,34 @@ import {
 } from 'landscape/landscapeUtils';
 
 const LandscapeMap = ({
-  landscape,
+  areaPolygon,
+  boundingBox,
   label,
   onPinLocationChange,
   enableSearch,
   enableDraw,
   mapCenter,
+  onGeoJsonChange,
+  geoJsonFilter,
+  drawOptions,
 }) => {
-  const bounds = getLandscapeBoundingBox(landscape);
-  const areaPolygon = _.get('areaPolygon', landscape);
+  const bounds = useMemo(
+    () => getLandscapeBoundingBox({ areaPolygon, boundingBox }),
+    [areaPolygon, boundingBox]
+  );
   const geojson = isValidGeoJson(areaPolygon) ? areaPolygon : null;
-  const defaultProps = areaPolygon ? {} : { center: mapCenter };
   return (
     <Box component="section" aria-label={label}>
       <Map
-        {...defaultProps}
+        center={areaPolygon ? null : mapCenter}
         bounds={bounds}
         geojson={geojson}
         onPinLocationChange={onPinLocationChange}
         enableSearch={enableSearch}
         enableDraw={enableDraw}
+        onGeoJsonChange={onGeoJsonChange}
+        geoJsonFilter={geoJsonFilter}
+        drawOptions={drawOptions}
         style={{
           width: '100%',
           height: '400px',

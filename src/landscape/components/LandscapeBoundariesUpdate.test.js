@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from 'tests/utils';
+import { act, fireEvent, render, screen } from 'tests/utils';
 
 import React from 'react';
 
@@ -52,6 +52,14 @@ const testGeoJsonParsing = (file, errorMessage) => async () => {
   await setup();
 
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Upload a GeoJSON file',
+      })
+    )
+  );
 
   const dropzone = screen.getByRole('button', {
     name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB',
@@ -174,6 +182,14 @@ test('LandscapeBoundaries: Select file', async () => {
 
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Upload a GeoJSON file',
+      })
+    )
+  );
+
   const dropzone = screen.getByRole('button', {
     name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB',
   });
@@ -199,7 +215,7 @@ test('LandscapeBoundaries: Select file', async () => {
     })
   ).toBeInTheDocument();
 });
-test('LandscapeBoundaries: Show cancel', async () => {
+test('LandscapeBoundaries: Show back', async () => {
   const navigate = jest.fn();
   useNavigate.mockReturnValue(navigate);
   terrasoApi.requestGraphQL.mockReturnValue(
@@ -219,9 +235,22 @@ test('LandscapeBoundaries: Show cancel', async () => {
   );
   await setup();
 
-  const cancelButton = screen.getByRole('button', { name: 'Cancel' });
-  expect(cancelButton).toBeInTheDocument();
-  await act(async () => fireEvent.click(cancelButton));
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Upload a GeoJSON file',
+      })
+    )
+  );
+
+  expect(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument();
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }))
+  );
+  expect(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument();
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }))
+  );
   expect(navigate.mock.calls[0]).toEqual(['/landscapes/slug-1']);
 });
 test('LandscapeBoundaries: Save', async () => {
@@ -257,6 +286,14 @@ test('LandscapeBoundaries: Save', async () => {
 
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Upload a GeoJSON file',
+      })
+    )
+  );
+
   const dropzone = screen.getByRole('button', {
     name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB',
   });
@@ -276,13 +313,12 @@ test('LandscapeBoundaries: Save', async () => {
     },
   };
   fireEvent.drop(dropzone, data);
-  await waitFor(() =>
-    expect(
-      screen.getByRole('button', { name: 'Save Changes' })
-    ).not.toHaveAttribute('disabled')
-  );
+  await screen.findByRole('button', {
+    name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB test.json 804 B',
+  });
+
   const saveButton = screen.getByRole('button', {
-    name: 'Save Changes',
+    name: 'Update Map',
   });
   expect(saveButton).toBeInTheDocument();
   expect(saveButton).not.toHaveAttribute('disabled');

@@ -1,18 +1,16 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import L from 'leaflet';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import {
-  GeoJSON,
-  MapContainer,
-  Marker,
-  TileLayer,
-  ZoomControl,
-  useMap,
-} from 'react-leaflet';
-import { v4 as uuidv4 } from 'uuid';
+import { MapContainer, ZoomControl, useMap } from 'react-leaflet';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 
@@ -32,17 +30,102 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
-const LeafletDraw = props => {
+const LAYER_OSM = L.tileLayer(
+  'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+  {
+    attribution:
+      'Data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors Tiles &copy; HOT',
+  }
+);
+const LAYER_ESRI = L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  {
+    attribution:
+      'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+  }
+);
+
+const MapContext = React.createContext();
+
+function geojsonToLayer(geojson, layer, options = {}) {
+  layer.clearLayers();
+  L.geoJson(geojson, options).eachLayer(l => l.addTo(layer));
+}
+
+function layerToGeoJSON(layers) {
+  const features = layers
+    .filter(layer => layer.toGeoJSON)
+    .map(layer => layer.toGeoJSON());
+  return {
+    type: 'FeatureCollection',
+    features,
+  };
+}
+
+function boundsToGeoJsonBbox(bounds) {
+  const southWest = bounds.getSouthWest();
+  const northEast = bounds.getNorthEast();
+  return [southWest.lng, southWest.lat, northEast.lng, northEast.lat];
+}
+
+const LeafletDraw = () => {
+  const { t } = useTranslation();
   const map = useMap();
-  const { setPinLocation } = props;
   const isSmall = useMediaQuery(theme.breakpoints.down('xs'));
 
+  const [isEditing, setIsEditing] = useState(false);
+  const { onLayersUpdate, drawOptions, featureGroup, onBoundsUpdate } =
+    useContext(MapContext);
+  const { onLayerChange, onEditStart, onEditStop } = drawOptions;
+
+  // Localized strings
+  L.drawLocal = _.defaultsDeep(
+    L.drawLocal,
+    t('gis.map_draw', { returnObjects: true })
+  );
+
+  const polygonEnabled = useMemo(
+    () => !!drawOptions.polygon,
+    [drawOptions.polygon]
+  );
+  const markerEnabled = useMemo(
+    () => !!drawOptions.marker,
+    [drawOptions.marker]
+  );
+  const editEnabled = useMemo(() => polygonEnabled, [polygonEnabled]);
+
   useEffect(() => {
+    if (!featureGroup) {
+      return;
+    }
     const options = {
       position: isSmall ? 'topright' : 'topleft',
+      ...(editEnabled
+        ? {
+            edit: {
+              featureGroup,
+              poly: {
+                allowIntersection: false,
+                icon: new L.DivIcon({
+                  iconSize: new L.Point(14, 14),
+                  className: 'leaflet-editing-icon',
+                }),
+              },
+            },
+          }
+        : {}),
       draw: {
+        marker: markerEnabled,
+        polygon: polygonEnabled
+          ? {
+              allowIntersection: false,
+              showArea: true,
+              icon: new L.DivIcon({
+                iconSize: new L.Point(14, 14),
+              }),
+            }
+          : false,
         polyline: false,
-        polygon: false,
         circle: false,
         rectangle: false,
         circlemarker: false,
@@ -50,23 +133,93 @@ const LeafletDraw = props => {
     };
     const drawControl = new L.Control.Draw(options);
     map.addControl(drawControl);
+    return () => map.removeControl(drawControl);
+  }, [editEnabled, isSmall, map, featureGroup, markerEnabled, polygonEnabled]);
 
-    map.on(L.Draw.Event.CREATED, event => {
+  useEffect(() => {
+    const onDrawCreatedListener = event => {
       const { layerType } = event;
       if (layerType === 'marker') {
-        const location = event.layer.getLatLng();
-        setPinLocation({ lat: location.lat, lng: location.lng });
+        onLayersUpdate(() => ({
+          layers: [event.layer],
+        }));
       }
-    });
+      if (layerType === 'polygon') {
+        onLayersUpdate(featureGroup => {
+          const newLayers = L.featureGroup([
+            ...featureGroup.getLayers(),
+            event.layer,
+          ]);
+          return {
+            layers: newLayers.getLayers(),
+            bbox: boundsToGeoJsonBbox(newLayers.getBounds()),
+          };
+        });
+      }
+      onLayerChange?.();
+    };
+    const onDrawDeletedListener = () => {
+      onLayersUpdate(featureGroup => ({
+        layers: featureGroup.getLayers(),
+        ...(featureGroup.getBounds().isValid()
+          ? {
+              bbox: boundsToGeoJsonBbox(featureGroup.getBounds()),
+            }
+          : {}),
+      }));
+    };
+    const onEditStartListener = () => {
+      setIsEditing(true);
+      onEditStart?.();
+    };
+    const onEditStopListener = () => {
+      setIsEditing(false);
+      onEditStop?.();
+    };
+    const onEditedListener = () => {
+      onLayersUpdate(featureGroup => ({
+        layers: featureGroup.getLayers(),
+        bbox: boundsToGeoJsonBbox(featureGroup.getBounds()),
+      }));
+      onLayerChange?.();
+    };
+    const onMoveListener = () => {
+      if (isEditing || !map.getBounds().isValid()) {
+        return;
+      }
+      const bbox = boundsToGeoJsonBbox(map.getBounds());
+      onBoundsUpdate(bbox);
+    };
+    map.on(L.Draw.Event.CREATED, onDrawCreatedListener);
+    map.on(L.Draw.Event.DELETED, onDrawDeletedListener);
+    map.on(L.Draw.Event.EDITSTART, onEditStartListener);
+    map.on(L.Draw.Event.EDITSTOP, onEditStopListener);
+    map.on(L.Draw.Event.EDITED, onEditedListener);
+    map.on('moveend', onMoveListener);
 
-    return () => map.removeControl(drawControl);
-  }, [map, setPinLocation, isSmall]);
+    return () => {
+      map.off(L.Draw.Event.CREATED, onDrawCreatedListener);
+      map.off(L.Draw.Event.DELETED, onDrawDeletedListener);
+      map.off(L.Draw.Event.EDITSTART, onEditStartListener);
+      map.off(L.Draw.Event.EDITSTOP, onEditStopListener);
+      map.off(L.Draw.Event.EDITED, onEditedListener);
+      map.off('moveend', onMoveListener);
+    };
+  }, [
+    map,
+    onEditStart,
+    onEditStop,
+    onLayerChange,
+    onLayersUpdate,
+    onBoundsUpdate,
+    isEditing,
+  ]);
   return null;
 };
 
-const LeafletSearch = props => {
+const LeafletSearch = () => {
   const map = useMap();
-  const { setBoundingBox, setPinLocation } = props;
+  const { onLayersUpdate } = useContext(MapContext);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -77,7 +230,7 @@ const LeafletSearch = props => {
       style: 'bar',
       showMarker: false,
       autoClose: true,
-      searchLabel: t('common.map_search_placeholder'),
+      searchLabel: t('gis.map_search_placeholder'),
     });
     const currentOnAdd = searchControl.onAdd;
     searchControl.onAdd = param => {
@@ -95,29 +248,81 @@ const LeafletSearch = props => {
 
     const getPinData = event => {
       if (event?.location?.lat) {
-        setPinLocation({
-          lat: event.location.lat,
-          lng: event.location.lng,
-        });
+        onLayersUpdate(() => ({
+          layers: [L.marker([event.location.lat, event.location.lng])],
+        }));
       }
       if (event?.location?.x) {
-        setPinLocation({
-          lat: event.location.y,
-          lng: event.location.x,
-        });
+        onLayersUpdate(() => ({
+          layers: [L.marker([event.location.y, event.location.x])],
+        }));
       }
     };
 
     map.on('geosearch/showlocation', getPinData);
     return () => map.removeControl(searchControl);
-  }, [map, setBoundingBox, setPinLocation, t]);
+  }, [map, onLayersUpdate, t]);
 
   return null;
 };
 
-const MapPolygon = props => {
-  const { bounds, geojson } = props;
+const MapGeoJson = () => {
+  const [newGeoJson, setNewGeoJson] = useState();
+  const { featureGroup, geojson, onGeoJsonChange, geoJsonFilter } =
+    useContext(MapContext);
+
+  useEffect(() => {
+    if (!featureGroup) {
+      return;
+    }
+
+    geojsonToLayer(geojson, featureGroup, {
+      style: { color: theme.palette.map.polygon },
+      pointToLayer: (feature, latlng) => {
+        const marker = L.marker(latlng, { draggable: true });
+        marker.on('dragend', event => {
+          setNewGeoJson(layerToGeoJSON(featureGroup.getLayers()));
+        });
+        return marker;
+      },
+      ...(geoJsonFilter ? { filter: geoJsonFilter } : {}),
+    });
+  }, [featureGroup, geojson, onGeoJsonChange, geoJsonFilter]);
+
+  useEffect(() => {
+    if (!newGeoJson) {
+      return;
+    }
+    onGeoJsonChange(newGeoJson);
+  }, [newGeoJson, onGeoJsonChange]);
+
+  return null;
+};
+
+const Location = props => {
+  const { enableSearch, enableDraw } = props;
+
+  return (
+    <>
+      {enableSearch && <LeafletSearch />}
+      {enableDraw && <LeafletDraw />}
+    </>
+  );
+};
+
+const Map = props => {
   const map = useMap();
+  const { t } = useTranslation();
+  const [featureGroup, setFeatureGroup] = useState();
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+  const { bounds, geojson, onGeoJsonChange, geoJsonFilter, drawOptions } =
+    props;
+
+  useEffect(() => {
+    if (props.center) {
+      map.flyTo(props.center, 3);
+    }
+  }, [props.center, map]);
 
   useEffect(() => {
     if (bounds) {
@@ -125,123 +330,116 @@ const MapPolygon = props => {
     }
   }, [map, bounds]);
 
-  // Added unique key on every rerender to force GeoJSON update
-  return (
-    <GeoJSON
-      key={uuidv4()}
-      data={geojson}
-      style={{ color: theme.palette.map.polygon }}
-    />
-  );
-};
-
-const Location = props => {
-  const map = useMap();
-  const markerRef = useRef(null);
-  const { onPinLocationChange, enableSearch, enableDraw, center } = props;
-  const [pinLocation, setPinLocation] = useState(
-    center ? { lat: center[0], lng: center[1] } : null
-  );
-  const [boundingBox, setBoundingBox] = useState();
-
-  const markerEventHandlers = useMemo(
-    () => ({
-      dragend: () => {
-        const marker = markerRef.current;
-        if (marker != null) {
-          setPinLocation(marker.getLatLng());
-        }
-      },
-    }),
-    []
-  );
-
   useEffect(() => {
-    if (pinLocation && boundingBox) {
-      onPinLocationChange({
-        pinLocation,
-        boundingBox,
-      });
-    }
-  }, [boundingBox, pinLocation, onPinLocationChange]);
+    // Feature Group
+    const featureGroup = L.featureGroup().addTo(map);
+    setFeatureGroup(featureGroup);
 
-  useEffect(() => {
-    const getZoomData = () => {
-      const southWest = map.getBounds().getSouthWest();
-      const northEast = map.getBounds().getNorthEast();
-      const bbox = [southWest.lng, southWest.lat, northEast.lng, northEast.lat];
-      if (bbox) {
-        setBoundingBox(bbox);
-      }
+    // Default layer
+    map.addLayer(LAYER_OSM);
+
+    // Layers control
+    const layersControl = L.control
+      .layers({
+        [t('gis.map_layer_streets')]: LAYER_OSM,
+        [t('gis.map_layer_satellite')]: LAYER_ESRI,
+      })
+      .addTo(map);
+    return () => {
+      map.removeControl(layersControl);
+      featureGroup.remove();
     };
-    getZoomData();
-    map.on('zoomend', getZoomData);
-  }, [map]);
-  return (
-    <>
-      {enableSearch && (
-        <LeafletSearch
-          setPinLocation={setPinLocation}
-          setBoundingBox={setBoundingBox}
-        />
-      )}
+  }, [map, t]);
 
-      {enableDraw && (
-        <LeafletDraw
-          setPinLocation={setPinLocation}
-          setBoundingBox={setBoundingBox}
-        />
-      )}
-
-      {pinLocation && (
-        <Marker
-          draggable
-          ref={markerRef}
-          position={pinLocation}
-          eventHandlers={markerEventHandlers}
-        />
-      )}
-    </>
+  const onBoundsUpdate = useCallback(
+    bbox => {
+      if (!onGeoJsonChange) {
+        return;
+      }
+      onGeoJsonChange(current => {
+        if (!current) {
+          return null;
+        }
+        if (_.isEqual(current.bbox, bbox)) {
+          return current;
+        }
+        return {
+          ...current,
+          bbox,
+        };
+      });
+    },
+    [onGeoJsonChange]
   );
-};
 
-const Map = props => {
-  const [map, setMap] = useState();
-  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+  const getDefaultBbox = useCallback(
+    () => boundsToGeoJsonBbox(map.getBounds()),
+    [map]
+  );
 
-  useEffect(() => {
-    if (map?.target && props.center) {
-      map.target.flyTo(props.center, 3);
-    }
-  }, [props.center, map]);
+  const onLayersUpdate = useCallback(
+    getUpdate => {
+      if (!featureGroup) {
+        return;
+      }
+      const { layers, bbox = getDefaultBbox() } = getUpdate(featureGroup);
+      if (_.isEmpty(layers)) {
+        onGeoJsonChange(null);
+        return;
+      }
+
+      const newGeojson = layerToGeoJSON(layers);
+      onGeoJsonChange({
+        ...newGeojson,
+        bbox,
+      });
+    },
+    [getDefaultBbox, onGeoJsonChange, featureGroup]
+  );
 
   return (
-    <MapContainer
-      zoomDelta={0.5}
-      zoomSnap={0.5}
-      wheelPxPerZoomLevel={200}
-      whenReady={setMap}
-      zoom={3}
-      center={[0, 0]}
-      {..._.omit(['center', 'zoom'], props)}
+    <MapContext.Provider
+      value={{
+        featureGroup,
+        geoJsonFilter,
+        bounds,
+        geojson,
+        drawOptions,
+        onLayersUpdate,
+        onBoundsUpdate,
+      }}
     >
-      <TileLayer
-        attribution='Data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors Tiles &copy; HOT'
-        url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-      />
-      <MapPolygon {...props} />
+      <MapGeoJson />
+
       <Location
         onPinLocationChange={props.onPinLocationChange}
         enableSearch={props.enableSearch}
         enableDraw={props.enableDraw}
-        center={props.center}
+        initialPinLocation={props.initialPinLocation}
       />
+
       {props.enableSearch && (
         <ZoomControl position={isSmall ? 'bottomleft' : 'topleft'} />
       )}
       {props.children}
+    </MapContext.Provider>
+  );
+};
+
+const MapWrapper = props => {
+  return (
+    <MapContainer
+      zoomDelta={0.5}
+      zoomSnap={0.5}
+      maxZoom={18}
+      wheelPxPerZoomLevel={200}
+      zoom={3}
+      center={[0, 0]}
+      {..._.omit(['center', 'zoom', 'children'], props)}
+    >
+      <Map {...props} />
     </MapContainer>
   );
 };
 
-export default Map;
+export default MapWrapper;

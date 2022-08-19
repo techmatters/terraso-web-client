@@ -2,7 +2,9 @@ import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
 
 import React from 'react';
 
+import L from 'leaflet';
 import { act } from 'react-dom/test-utils';
+import * as reactLeaflet from 'react-leaflet';
 import { useParams } from 'react-router-dom';
 
 import LandscapeNew from 'landscape/components/LandscapeNew';
@@ -14,9 +16,6 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(),
 }));
-
-const GEOJSON =
-  '{"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": {"type": "Polygon", "coordinates": [[[-80.02098083496094, 0.8184536092473124], [-80.04364013671875, 0.8177670337355836], [-80.04844665527342, 0.8184536092473124], [-80.04981994628906, 0.8260059320976082], [-80.07247924804686, 0.802662342941431], [-80.09170532226562, 0.779318620539376], [-80.10063171386719, 0.7532284249372649], [-80.09857177734375, 0.7223319390984623], [-80.09307861328125, 0.7140928403610857], [-80.10337829589842, 0.6955548144696846], [-80.09788513183594, 0.6742703246919985], [-80.08827209472656, 0.6488661346824502], [-80.07797241210938, 0.6495527361122139], [-80.06561279296875, 0.6522991408974699], [-80.06235122680664, 0.6468063298344634], [-80.02098083496094, 0.8184536092473124]]]}, "properties": {}}]}';
 
 const setup = async () => {
   await render(<LandscapeNew />);
@@ -52,7 +51,7 @@ beforeEach(() => {
   useParams.mockReturnValue({});
 });
 
-test('LandscapeNew: Save from GeoJSON', async () => {
+test('LandscapeNew: Save form draw polygon boundary', async () => {
   terrasoApi.requestGraphQL.mockResolvedValueOnce({
     addLandscape: {
       landscape: {
@@ -64,6 +63,8 @@ test('LandscapeNew: Save from GeoJSON', async () => {
       },
     },
   });
+
+  const spy = jest.spyOn(reactLeaflet, 'useMap');
 
   const { inputs } = await setup();
 
@@ -87,36 +88,30 @@ test('LandscapeNew: Save from GeoJSON', async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a GeoJSON file',
+        name: 'Draw the landscape’s boundary on a map',
       })
     )
   );
 
-  const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB',
-  });
-
-  const file = new File([GEOJSON], 'test.json', { type: 'application/json' });
-  const data = {
-    dataTransfer: {
-      files: [file],
-      items: [
-        {
-          kind: 'file',
-          type: file.type,
-          getAsFile: () => file,
-        },
-      ],
-      types: ['Files'],
-    },
-  };
-  await act(async () => fireEvent.drop(dropzone, data));
-
-  await waitFor(async () => {
+  expect(spy).toHaveBeenCalled();
+  const map = spy.mock.results[spy.mock.results.length - 1].value;
+  await act(async () =>
+    map.fireEvent(L.Draw.Event.CREATED, {
+      layerType: 'polygon',
+      layer: new L.polygon([
+        [37, -109.05],
+        [41, -109.03],
+        [41, -102.05],
+        [37, -102.04],
+      ]),
+    })
+  );
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'close' }))
+  );
+  await waitFor(() => {
     expect(
-      await screen.findByRole('button', {
-        name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB test.json 804 B',
-      })
+      screen.getByRole('button', { name: 'Add Landscape' })
     ).toBeInTheDocument();
   });
 
@@ -132,7 +127,8 @@ test('LandscapeNew: Save from GeoJSON', async () => {
       name: 'New name',
       website: 'https://www.other.org',
       location: 'AR',
-      areaPolygon: JSON.stringify(JSON.parse(GEOJSON)),
+      areaPolygon:
+        '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[-109.05,37],[-109.03,41],[-102.05,41],[-102.04,37],[-109.05,37]]]}}],"bbox":[-105.46875000000001,38.82259097617713,-105.46875000000001,38.82259097617713]}',
     },
   });
 });

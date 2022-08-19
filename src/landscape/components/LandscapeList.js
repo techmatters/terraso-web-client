@@ -7,6 +7,7 @@ import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 
 import { Button, Link, Stack, Typography } from '@mui/material';
 
+import ExternalLink from 'common/components/ExternalLink';
 import TableResponsive from 'common/components/TableResponsive';
 import { useDocumentTitle } from 'common/document';
 import { countryNameForCode } from 'common/utils';
@@ -163,9 +164,9 @@ const LandscapeList = () => {
               add link
             </Link>
             or
-            <Link href={t('landscape.list_map_help_url')} target="_blank">
+            <ExternalLink href={t('landscape.list_map_help_url')}>
               help
-            </Link>
+            </ExternalLink>
             .
           </Typography>
         </Trans>

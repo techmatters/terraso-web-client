@@ -19,6 +19,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
 import SocialShare from 'common/components/SocialShare.js';
 import { useDocumentTitle } from 'common/document';
@@ -182,7 +183,8 @@ const LandscapeView = () => {
             <Card variant="outlined">
               <CardContent>
                 <LandscapeMap
-                  landscape={landscape}
+                  areaPolygon={landscape.areaPolygon}
+                  boundingBox={landscape.boundingBox}
                   label={t('landscape.view_map_title')}
                 />
                 <InlineHelp
@@ -192,16 +194,15 @@ const LandscapeView = () => {
                       details: (
                         <Trans i18nKey="landscape.view_map_boundaries_help_details">
                           Prefix
-                          <Link
+                          <ExternalLink
                             href={t('landscape.view_map_boundaries_help_url')}
-                            target="_blank"
                           >
                             link
                             <LaunchIcon
                               fontSize="small"
                               sx={{ verticalAlign: 'bottom' }}
                             />
-                          </Link>
+                          </ExternalLink>
                           .
                         </Trans>
                       ),
