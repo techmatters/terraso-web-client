@@ -79,7 +79,11 @@ const SocialShare = ({ name }) => {
           <Typography variant="h2" sx={{ padding: 0 }}>
             {t('share.title', { name: name })}
           </Typography>
-          <IconButton onClick={handleClose} sx={{ marginLeft: 3 }}>
+          <IconButton
+            onClick={handleClose}
+            sx={{ marginLeft: 3 }}
+            aria-label={t('share.close')}
+          >
             <CloseIcon fontSize="small" />
           </IconButton>
         </DialogTitle>

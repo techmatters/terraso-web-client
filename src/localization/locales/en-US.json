@@ -372,7 +372,8 @@
         "invite_text": "Check out {{name}} on Terraso and join me: {{url}}",
         "whatsapp": "WhatsApp",
         "email": "Email",
-        "facebook": "Facebook"
+        "facebook": "Facebook",
+        "close": "Close"
     },
     "form": {
         "required_label": "required",

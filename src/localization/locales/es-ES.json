@@ -373,7 +373,8 @@
         "invite_text": "Echa un vistazo a {{name}} en Terraso y únete: {{url}}",
         "whatsapp": "WhatsApp",
         "email": "Email",
-        "facebook": "Facebook"
+        "facebook": "Facebook",
+        "close": "Cerrar"
     },
     "form": {
         "required_label": "Obligatorio",
