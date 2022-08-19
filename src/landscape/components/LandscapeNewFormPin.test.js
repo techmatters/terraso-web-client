@@ -4,7 +4,7 @@ import React from 'react';
 
 import L from 'leaflet';
 import { act } from 'react-dom/test-utils';
-import { useMap } from 'react-leaflet';
+import * as reactLeaflet from 'react-leaflet';
 import { useParams } from 'react-router-dom';
 
 import LandscapeNew from 'landscape/components/LandscapeNew';
@@ -15,11 +15,6 @@ jest.mock('terrasoBackend/api');
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(),
-}));
-
-jest.mock('react-leaflet', () => ({
-  ...jest.requireActual('react-leaflet'),
-  useMap: jest.fn(),
 }));
 
 const setup = async () => {
@@ -69,19 +64,7 @@ test('LandscapeNew: Save form Pin boundary', async () => {
     },
   });
 
-  const eventCallback = {};
-  useMap.mockReturnValue({
-    getBounds: () => ({
-      getSouthWest: () => ({ lat: 0, lng: 10 }),
-      getNorthEast: () => ({ lat: 1, lng: 11 }),
-    }),
-    fitBounds: () => {},
-    addControl: () => {},
-    removeControl: () => {},
-    on: (event, callback) => {
-      eventCallback[event] = callback;
-    },
-  });
+  const spy = jest.spyOn(reactLeaflet, 'useMap');
 
   const { inputs } = await setup();
 
@@ -110,8 +93,10 @@ test('LandscapeNew: Save form Pin boundary', async () => {
     )
   );
 
+  expect(spy).toHaveBeenCalled();
+  const map = spy.mock.results[spy.mock.results.length - 1].value;
   await act(async () =>
-    eventCallback['draw:created']({
+    map.fireEvent(L.Draw.Event.CREATED, {
       layerType: 'marker',
       layer: new L.Marker([10, 10]),
     })

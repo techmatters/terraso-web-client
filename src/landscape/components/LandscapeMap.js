@@ -17,6 +17,8 @@ const LandscapeMap = ({
   enableDraw,
   mapCenter,
   onGeoJsonChange,
+  geoJsonFilter,
+  drawOptions,
 }) => {
   const bounds = useMemo(
     () => getLandscapeBoundingBox({ areaPolygon, boundingBox }),
@@ -33,6 +35,8 @@ const LandscapeMap = ({
         enableSearch={enableSearch}
         enableDraw={enableDraw}
         onGeoJsonChange={onGeoJsonChange}
+        geoJsonFilter={geoJsonFilter}
+        drawOptions={drawOptions}
         style={{
           width: '100%',
           height: '400px',

@@ -11,10 +11,10 @@ import {
   CardContent,
   CardHeader,
   CircularProgress,
-  Link,
   Typography,
 } from '@mui/material';
 
+import ExternalLink from 'common/components/ExternalLink';
 import List from 'common/components/List';
 
 import { useGroupContext } from 'group/groupContext';
@@ -97,9 +97,9 @@ const SharedFilesCard = props => {
             }}
           >
             Prefix
-            <Link href={t('sharedData.learn_more_url')} target="_blank">
+            <ExternalLink href={t('sharedData.learn_more_url')}>
               link
-            </Link>
+            </ExternalLink>
             .
           </Trans>
         </Typography>

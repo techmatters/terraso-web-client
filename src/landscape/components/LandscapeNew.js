@@ -67,6 +67,7 @@ const LandscapeNew = () => {
       label: t('landscape.form_step_boundaries_options_label'),
       render: ({ setActiveStepIndex }) => (
         <BoundaryStep
+          isNew
           title={t('landscape.form_boundary_pin_title')}
           landscape={updatedLandscape}
           setActiveStepIndex={setActiveStepIndex}

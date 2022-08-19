@@ -3,9 +3,8 @@ import React, { useCallback, useState } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Link } from '@mui/material';
-
 import BaseDropZone from 'common/components/DropZone';
+import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
 import { sendToRollbar } from 'monitoring/logger';
 
@@ -82,7 +81,7 @@ const DropZone = props => {
   );
 };
 
-const LandscapeBoundaries = props => {
+const LandscapeGeoJsonBoundaries = props => {
   const { t } = useTranslation();
   const { areaPolygon, mapCenter, onFileSelected } = props;
 
@@ -101,12 +100,9 @@ const LandscapeBoundaries = props => {
             details: (
               <Trans i18nKey="landscape.boundaries_help_geojson_detail">
                 Prefix
-                <Link
-                  href={t('landscape.boundaries_help_geojson_url')}
-                  target="_blank"
-                >
+                <ExternalLink href={t('landscape.boundaries_help_geojson_url')}>
                   link
-                </Link>
+                </ExternalLink>
                 .
               </Trans>
             ),
@@ -117,4 +113,4 @@ const LandscapeBoundaries = props => {
   );
 };
 
-export default LandscapeBoundaries;
+export default LandscapeGeoJsonBoundaries;

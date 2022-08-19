@@ -328,13 +328,7 @@ test('LandscapeBoundaries: Save', async () => {
   expect(saveCall[1]).toStrictEqual({
     input: {
       id: '1',
-      areaPolygon: JSON.stringify({
-        ...JSON.parse(GEOJSON),
-        bbox: [
-          -80.15625000000001, 1.4061088354351594, -80.15625000000001,
-          1.4061088354351594,
-        ],
-      }),
+      areaPolygon: JSON.stringify(JSON.parse(GEOJSON)),
     },
   });
 });
