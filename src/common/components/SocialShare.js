@@ -155,6 +155,7 @@ const SocialShare = ({ name }) => {
                 sx: {
                   paddingRight: 0,
                 },
+                readOnly: true,
                 endAdornment: (
                   <Button
                     variant="outlined"
