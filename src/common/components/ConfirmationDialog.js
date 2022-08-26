@@ -35,7 +35,9 @@ const ConfirmationDialog = props => {
       onClose={onCancel}
       aria-labelledby="confirmation-dialog-title"
     >
-      <DialogTitle id="confirmation-dialog-title">{title}</DialogTitle>
+      <DialogTitle component="h1" id="confirmation-dialog-title">
+        {title}
+      </DialogTitle>
       <DialogContent>
         <DialogContentText>{message}</DialogContentText>
       </DialogContent>
