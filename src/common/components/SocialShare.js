@@ -58,6 +58,13 @@ const SocialShare = ({ name }) => {
     setButtonCopied(true);
   };
 
+  // focus on the close button on open
+  const onCloseRefChange = ref => {
+    if (ref) {
+      ref.focus();
+    }
+  };
+
   return (
     <>
       <Button variant="outlined" onClick={handleOpen}>
@@ -81,6 +88,7 @@ const SocialShare = ({ name }) => {
             {t('share.title', { name: name })}
           </Typography>
           <IconButton
+            ref={onCloseRefChange}
             onClick={handleClose}
             sx={{ marginLeft: 3 }}
             aria-label={t('share.close')}
