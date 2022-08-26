@@ -92,46 +92,57 @@ const SocialShare = ({ name }) => {
             {t('share.services')}
           </Typography>
           <Stack
+            component="ul"
             direction={isSmall ? 'column' : 'row'}
             justifyContent="space-between"
+            sx={{
+              listStyle: 'none',
+              padding: 0,
+            }}
           >
-            <Button
-              variant="outlined"
-              startIcon={<EmailIcon sx={{ paddingRight: 1 }} />}
-              onClick={shareViaEmail}
-            >
-              {t('share.email')}
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={
-                <WhatsAppIcon
-                  sx={{
-                    paddingRight: 1,
-                  }}
-                />
-              }
-              onClick={shareViaWhatsApp}
-              sx={{
-                marginTop: {
-                  xs: 2,
-                  sm: 'auto',
-                },
-                marginBottom: {
-                  xs: 2,
-                  sm: 'auto',
-                },
-              }}
-            >
-              {t('share.whatsapp')}
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<FacebookIcon sx={{ paddingRight: 1 }} />}
-              onClick={shareViaFacebook}
-            >
-              {t('share.facebook')}
-            </Button>
+            <li>
+              <Button
+                variant="outlined"
+                startIcon={<EmailIcon sx={{ paddingRight: 1 }} />}
+                onClick={shareViaEmail}
+              >
+                {t('share.email')}
+              </Button>
+            </li>
+            <li>
+              <Button
+                variant="outlined"
+                startIcon={
+                  <WhatsAppIcon
+                    sx={{
+                      paddingRight: 1,
+                    }}
+                  />
+                }
+                onClick={shareViaWhatsApp}
+                sx={{
+                  marginTop: {
+                    xs: 2,
+                    sm: 'auto',
+                  },
+                  marginBottom: {
+                    xs: 2,
+                    sm: 'auto',
+                  },
+                }}
+              >
+                {t('share.whatsapp')}
+              </Button>
+            </li>
+            <li>
+              <Button
+                variant="outlined"
+                startIcon={<FacebookIcon sx={{ paddingRight: 1 }} />}
+                onClick={shareViaFacebook}
+              >
+                {t('share.facebook')}
+              </Button>
+            </li>
           </Stack>
           <Typography sx={{ marginTop: 4 }}>{t('share.copy')}</Typography>
           <Stack direction={isSmall ? 'column' : 'row'} sx={{ width: '100%' }}>
