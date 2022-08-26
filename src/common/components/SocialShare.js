@@ -76,7 +76,7 @@ const SocialShare = ({ name }) => {
           alignItems="center"
           justifyContent="space-between"
         >
-          <Typography variant="h2" sx={{ padding: 0 }}>
+          <Typography component="h1" variant="h2" sx={{ padding: 0 }}>
             {t('share.title', { name: name })}
           </Typography>
           <IconButton
