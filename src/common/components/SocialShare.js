@@ -12,6 +12,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  InputLabel,
   Stack,
   TextField,
   Typography,
@@ -144,7 +145,16 @@ const SocialShare = ({ name }) => {
               </Button>
             </li>
           </Stack>
-          <Typography sx={{ marginTop: 4 }}>{t('share.copy')}</Typography>
+          <InputLabel
+            htmlFor="share-link"
+            sx={{
+              marginTop: 4,
+              color: theme.palette.black,
+              fontSize: '1.3rem',
+            }}
+          >
+            {t('share.copy')}
+          </InputLabel>
           <Stack direction={isSmall ? 'column' : 'row'} sx={{ width: '100%' }}>
             <TextField
               size="small"
@@ -152,6 +162,7 @@ const SocialShare = ({ name }) => {
               value={pageUrl}
               fullWidth
               InputProps={{
+                id: 'share-link',
                 sx: {
                   paddingRight: 0,
                 },
