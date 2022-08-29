@@ -314,7 +314,14 @@ const BoundaryOptions = props => {
 
   return (
     <>
-      <PageHeader header={title} />
+      <PageHeader
+        typographyProps={{
+          id: 'landscape-form-page-title',
+          variant: 'h1',
+          component: 'h2',
+        }}
+        header={title}
+      />
       <Trans i18nKey="landscape.form_boundary_options_description">
         <Stack spacing={2} sx={{ mb: 4 }}>
           <Typography>First</Typography>

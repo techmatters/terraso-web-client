@@ -4,6 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
+import { Typography } from '@mui/material';
+import { visuallyHidden } from '@mui/utils';
+
 import Stepper from 'common/components/Stepper';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
@@ -83,6 +86,9 @@ const LandscapeNew = () => {
   return (
     <PageContainer>
       {saving && <PageLoader />}
+      <Typography variant="h1" sx={visuallyHidden}>
+        {t('landscape.form_new_document_title')}
+      </Typography>
       <Stepper steps={steps} />
     </PageContainer>
   );
