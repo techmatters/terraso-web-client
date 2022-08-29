@@ -106,10 +106,7 @@ const GroupsHomeCard = ({ groups }) => {
       >
         {t('group.home_title')}
       </Typography>
-      <List
-        aria-describedby="groups-list-title"
-        sx={{ pl: 2, pr: 2 }}
-      >
+      <List aria-describedby="groups-list-title" sx={{ pl: 2, pr: 2 }}>
         {sortedGroups.map((group, index) => (
           <React.Fragment key={group.slug}>
             <GroupItem group={group} index={index} />
