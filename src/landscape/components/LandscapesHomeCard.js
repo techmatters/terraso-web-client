@@ -22,10 +22,17 @@ import theme from 'theme';
 
 const getAcronym = name => name.match(/\b(\w)/g).join('');
 
-const LandscapeItem = ({ landscape }) => {
+const LandscapeItem = ({ landscape, index }) => {
   const { t } = useTranslation();
   return (
-    <ListItem sx={{ display: 'flex', padding: theme.spacing(1) }}>
+    <ListItem
+      sx={{
+        display: 'flex',
+        padding: theme.spacing(1),
+        paddingLeft: 0,
+        borderTop: index && `1px solid ${theme.palette.gray.lite1}`, // skip first item
+      }}
+    >
       <Avatar sx={{ width: 80, height: 80 }} variant="square">
         {getAcronym(landscape.name).toUpperCase()}
       </Avatar>
@@ -71,18 +78,16 @@ const LandscapesHomeCard = ({ landscapes }) => {
       >
         {t('landscape.home_title')}
       </Typography>
-      <List aria-describedby="landscapes-list-title">
+      <List
+        aria-describedby="landscapes-list-title"
+        sx={{
+          paddingLeft: theme.spacing(2),
+          paddingRight: theme.spacing(2),
+        }}
+      >
         {landscapes.map((landscape, index) => (
           <React.Fragment key={landscape.slug}>
-            <LandscapeItem landscape={landscape} />
-            {index !== landscapes.length - 1 ? (
-              <Divider
-                component="li"
-                sx={{
-                  margin: theme.spacing(2),
-                }}
-              />
-            ) : null}
+            <LandscapeItem landscape={landscape} index={index} />
           </React.Fragment>
         ))}
       </List>

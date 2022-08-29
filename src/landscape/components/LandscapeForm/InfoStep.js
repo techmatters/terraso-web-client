@@ -116,7 +116,11 @@ const InfoStep = props => {
   return (
     <>
       <PageHeader
-        typographyProps={{ id: 'landscape-form-page-title' }}
+        typographyProps={{
+          id: 'landscape-form-page-title',
+          variant: 'h1',
+          component: 'h2',
+        }}
         header={title}
       />
       <Form

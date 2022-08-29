@@ -31,7 +31,7 @@ const ListItem = withProps(BaseListItem, {
   component: withProps(Stack, { component: 'li' }),
 });
 
-const GroupItem = ({ group }) => {
+const GroupItem = ({ group, index }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -45,7 +45,15 @@ const GroupItem = ({ group }) => {
     : MEMBERSHIP_STATUS_PENDING;
 
   return (
-    <ListItem direction="column" alignItems="flex-start" spacing={2}>
+    <ListItem
+      direction="column"
+      alignItems="flex-start"
+      spacing={2}
+      sx={{
+        paddingLeft: 0,
+        borderTop: index && `1px solid ${theme.palette.gray.lite1}`, // skip first item
+      }}
+    >
       <Stack direction="row">
         <Link
           component={RouterLink}
@@ -98,18 +106,10 @@ const GroupsHomeCard = ({ groups }) => {
       >
         {t('group.home_title')}
       </Typography>
-      <List aria-describedby="groups-list-title">
+      <List aria-describedby="groups-list-title" sx={{ pl: 2, pr: 2 }}>
         {sortedGroups.map((group, index) => (
           <React.Fragment key={group.slug}>
-            <GroupItem group={group} />
-            {index !== groups.length - 1 ? (
-              <Divider
-                component="li"
-                sx={{
-                  margin: theme.spacing(2),
-                }}
-              />
-            ) : null}
+            <GroupItem group={group} index={index} />
           </React.Fragment>
         ))}
       </List>

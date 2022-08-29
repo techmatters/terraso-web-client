@@ -12,6 +12,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  InputLabel,
   Stack,
   TextField,
   Typography,
@@ -57,6 +58,13 @@ const SocialShare = ({ name }) => {
     setButtonCopied(true);
   };
 
+  // focus on the close button on open
+  const onCloseRefChange = ref => {
+    if (ref) {
+      ref.focus();
+    }
+  };
+
   return (
     <>
       <Button variant="outlined" onClick={handleOpen}>
@@ -76,10 +84,15 @@ const SocialShare = ({ name }) => {
           alignItems="center"
           justifyContent="space-between"
         >
-          <Typography variant="h2" sx={{ padding: 0 }}>
+          <Typography component="h1" variant="h2" sx={{ padding: 0 }}>
             {t('share.title', { name: name })}
           </Typography>
-          <IconButton onClick={handleClose} sx={{ marginLeft: 3 }}>
+          <IconButton
+            ref={onCloseRefChange}
+            onClick={handleClose}
+            sx={{ marginLeft: 3 }}
+            aria-label={t('share.close')}
+          >
             <CloseIcon fontSize="small" />
           </IconButton>
         </DialogTitle>
@@ -88,48 +101,69 @@ const SocialShare = ({ name }) => {
             {t('share.services')}
           </Typography>
           <Stack
+            component="ul"
+            role="list"
             direction={isSmall ? 'column' : 'row'}
             justifyContent="space-between"
+            sx={{
+              listStyle: 'none',
+              padding: 0,
+            }}
           >
-            <Button
-              variant="outlined"
-              startIcon={<EmailIcon sx={{ paddingRight: 1 }} />}
-              onClick={shareViaEmail}
-            >
-              {t('share.email')}
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={
-                <WhatsAppIcon
-                  sx={{
-                    paddingRight: 1,
-                  }}
-                />
-              }
-              onClick={shareViaWhatsApp}
-              sx={{
-                marginTop: {
-                  xs: 2,
-                  sm: 'auto',
-                },
-                marginBottom: {
-                  xs: 2,
-                  sm: 'auto',
-                },
-              }}
-            >
-              {t('share.whatsapp')}
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<FacebookIcon sx={{ paddingRight: 1 }} />}
-              onClick={shareViaFacebook}
-            >
-              {t('share.facebook')}
-            </Button>
+            <li>
+              <Button
+                variant="outlined"
+                startIcon={<EmailIcon sx={{ paddingRight: 1 }} />}
+                onClick={shareViaEmail}
+              >
+                {t('share.email')}
+              </Button>
+            </li>
+            <li>
+              <Button
+                variant="outlined"
+                startIcon={
+                  <WhatsAppIcon
+                    sx={{
+                      paddingRight: 1,
+                    }}
+                  />
+                }
+                onClick={shareViaWhatsApp}
+                sx={{
+                  marginTop: {
+                    xs: 2,
+                    sm: 'auto',
+                  },
+                  marginBottom: {
+                    xs: 2,
+                    sm: 'auto',
+                  },
+                }}
+              >
+                {t('share.whatsapp')}
+              </Button>
+            </li>
+            <li>
+              <Button
+                variant="outlined"
+                startIcon={<FacebookIcon sx={{ paddingRight: 1 }} />}
+                onClick={shareViaFacebook}
+              >
+                {t('share.facebook')}
+              </Button>
+            </li>
           </Stack>
-          <Typography sx={{ marginTop: 4 }}>{t('share.copy')}</Typography>
+          <InputLabel
+            htmlFor="share-link"
+            sx={{
+              marginTop: 4,
+              color: theme.palette.black,
+              fontSize: '1.3rem',
+            }}
+          >
+            {t('share.copy')}
+          </InputLabel>
           <Stack direction={isSmall ? 'column' : 'row'} sx={{ width: '100%' }}>
             <TextField
               size="small"
@@ -137,9 +171,11 @@ const SocialShare = ({ name }) => {
               value={pageUrl}
               fullWidth
               InputProps={{
+                id: 'share-link',
                 sx: {
                   paddingRight: 0,
                 },
+                readOnly: true,
                 endAdornment: (
                   <Button
                     variant="outlined"
