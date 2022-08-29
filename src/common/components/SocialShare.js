@@ -102,6 +102,7 @@ const SocialShare = ({ name }) => {
           </Typography>
           <Stack
             component="ul"
+            role="list"
             direction={isSmall ? 'column' : 'row'}
             justifyContent="space-between"
             sx={{
