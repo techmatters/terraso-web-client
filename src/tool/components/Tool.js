@@ -37,15 +37,12 @@ const Tool = ({ tool }) => {
           <section>
             <Link href={t(`tools.${tool}.url`)}>
               <img
-                alt={toolTitle}
+                alt=""
                 height={t(`tools.${tool}.img.height`)}
                 width={t(`tools.${tool}.img.width`)}
                 src={t(`tools.${tool}.img.src`)}
               />
-            </Link>
-
-            <p>
-              <Link href={t(`tools.${tool}.url`)}>
+              <p>
                 {t('tool.go_to', { tool: toolTitle })}
                 <LaunchIcon
                   sx={{
@@ -55,8 +52,8 @@ const Tool = ({ tool }) => {
                     verticalAlign: 'bottom',
                   }}
                 />
-              </Link>
-            </p>
+              </p>
+            </Link>
           </section>
         </Stack>
       </Card>
