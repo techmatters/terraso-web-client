@@ -40,7 +40,7 @@ const LandscapeDefaultHomeCard = () => {
           </Typography>
         </Alert>
       </Box>
-      <Divider />
+      <Divider aria-hidden="true" />
       <CardActionRouterLink
         label={t('landscape.default_connect_button')}
         to="/landscapes"

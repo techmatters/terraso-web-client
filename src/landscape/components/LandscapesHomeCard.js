@@ -91,7 +91,7 @@ const LandscapesHomeCard = ({ landscapes }) => {
           </React.Fragment>
         ))}
       </List>
-      <Divider />
+      <Divider aria-hidden="true" />
       <CardActionRouterLink
         label={t('landscape.home_connect_label')}
         to="/landscapes"
