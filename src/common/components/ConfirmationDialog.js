@@ -28,7 +28,7 @@ const ConfirmationDialog = props => {
   } = props;
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-  // focus on the close button on open
+  // focus on the cancel button on open
   const onCancelRefChange = ref => {
     if (ref) {
       ref.focus();
