@@ -28,6 +28,13 @@ const ConfirmationDialog = props => {
   } = props;
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
+  // focus on the close button on open
+  const onCancelRefChange = ref => {
+    if (ref) {
+      ref.focus();
+    }
+  };
+
   return (
     <Dialog
       fullScreen={fullScreen}
@@ -47,7 +54,9 @@ const ConfirmationDialog = props => {
           padding: '20px',
         }}
       >
-        <Button onClick={onCancel}>{t('common.dialog_cancel_label')}</Button>
+        <Button ref={onCancelRefChange} onClick={onCancel}>
+          {t('common.dialog_cancel_label')}
+        </Button>
 
         <LoadingButton
           variant="contained"
