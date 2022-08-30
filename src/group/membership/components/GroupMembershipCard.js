@@ -112,7 +112,7 @@ const Content = props => {
           <AccountAvatar key={index} user={member} />
         ))}
       </AvatarGroup>
-      <Link component="button" onClick={onViewMembers}>
+      <Link sx={{ cursor: 'pointer' }} onClick={onViewMembers}>
         {t('group.membership_view_all')}
       </Link>
     </CardContent>
