@@ -11,6 +11,7 @@ const ConfirmButton = props => {
     confirmMessage,
     confirmButton,
     buttonLabel,
+    ariaLabel,
     loading,
     buttonProps,
     onConfirm,
@@ -41,6 +42,7 @@ const ConfirmButton = props => {
         onClick={onClick}
         loading={loading}
         variant={variant || 'outlined'}
+        aria-label={ariaLabel}
         {...(buttonProps || {})}
       >
         {buttonLabel || props.children}

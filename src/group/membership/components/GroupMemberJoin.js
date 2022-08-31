@@ -9,6 +9,7 @@ const GroupMemberJoin = props => {
   return (
     <LoadingButton
       variant="outlined"
+      aria-label={t(props.ariaLabel)}
       onClick={props.onJoin}
       loading={props.loading}
       sx={{ flexGrow: 1 }}
