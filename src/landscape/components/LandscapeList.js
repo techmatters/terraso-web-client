@@ -32,6 +32,7 @@ const MemberLeaveButton = withProps(LandscapeMemberLeave);
 
 const MemberJoinButton = withProps(GroupMemberJoin, {
   label: 'landscape.list_join_button',
+  ariaLabel: 'landscape.list_join_label',
 });
 
 const MembershipButton = ({ landscape }) => (
