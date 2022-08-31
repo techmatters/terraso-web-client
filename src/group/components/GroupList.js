@@ -23,24 +23,7 @@ import { withProps } from 'react-hoc';
 
 import theme from 'theme';
 
-const MemberLeaveButton = withProps(GroupMemberLeave, {
-  renderLabel: role =>
-    role === 'MANAGER'
-      ? 'group.list_manager_button'
-      : 'group.list_member_button',
-  buttonProps: {
-    variant: 'contained',
-    sx: {
-      bgcolor: 'gray.lite1',
-      color: 'black',
-      textTransform: 'uppercase',
-      '&:hover': {
-        bgcolor: 'blue.dark',
-        color: 'white',
-      },
-    },
-  },
-});
+const MemberLeaveButton = withProps(GroupMemberLeave);
 
 const MemberRequestCancelButton = withProps(GroupMemberRequestCancel, {
   label: 'group.list_request_cancel_label',

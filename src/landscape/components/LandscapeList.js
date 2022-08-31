@@ -28,24 +28,7 @@ import LandscapeListMap from './LandscapeListMap';
 
 import theme from 'theme';
 
-const MemberLeaveButton = withProps(LandscapeMemberLeave, {
-  renderLabel: role =>
-    role === 'MANAGER'
-      ? 'landscape.list_manager_button'
-      : 'landscape.list_member_button',
-  buttonProps: {
-    variant: 'contained',
-    sx: {
-      bgcolor: 'gray.lite1',
-      color: 'black',
-      textTransform: 'uppercase',
-      '&:hover': {
-        bgcolor: 'blue.dark',
-        color: 'white',
-      },
-    },
-  },
-});
+const MemberLeaveButton = withProps(LandscapeMemberLeave);
 
 const MemberJoinButton = withProps(GroupMemberJoin, {
   label: 'landscape.list_join_button',
