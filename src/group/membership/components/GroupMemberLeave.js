@@ -7,7 +7,7 @@ import ConfirmButton from 'common/components/ConfirmButton';
 
 const GroupMemberLeave = props => {
   const { t } = useTranslation();
-  const { owner, onConfirm, buttonProps, loading } = props;
+  const { label, owner, onConfirm, buttonProps, loading } = props;
 
   return (
     <ConfirmButton
@@ -19,7 +19,7 @@ const GroupMemberLeave = props => {
         name: _.get('name', owner),
       })}
       confirmButton={t('group.membership_leave_confirm_button')}
-      buttonLabel={t('group.list_leave_button')}
+      buttonLabel={t(label)}
       ariaLabel={t('landscape.list_leave_label', {
         name: _.get('name', owner),
       })}

@@ -26,7 +26,7 @@ import LandscapeMemberRemove from './LandscapeMemberRemove';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
-  renderLabel: () => 'landscape.members_list_leave',
+  label: 'landscape.members_list_leave',
 });
 
 const Header = ({ landscape, fetching }) => {

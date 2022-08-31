@@ -28,7 +28,9 @@ import LandscapeListMap from './LandscapeListMap';
 
 import theme from 'theme';
 
-const MemberLeaveButton = withProps(LandscapeMemberLeave);
+const MemberLeaveButton = withProps(LandscapeMemberLeave, {
+  label: 'landscape.list_leave_bitton',
+});
 
 const MemberJoinButton = withProps(GroupMemberJoin, {
   label: 'landscape.list_join_button',

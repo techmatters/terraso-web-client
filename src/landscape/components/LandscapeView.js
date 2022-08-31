@@ -45,7 +45,7 @@ import SharedDataCard from 'sharedData/components/SharedDataCard';
 import { withProps } from 'react-hoc';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
-  renderLabel: () => 'landscape.view_leave_label',
+  label: 'landscape.view_leave_label',
 });
 
 const MemberJoinButton = withProps(GroupMemberJoin, {

@@ -41,7 +41,7 @@ import { withProps } from 'react-hoc';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
-  renderLabel: () => 'group.view_leave_label',
+  label: 'group.view_leave_label',
   buttonProps: {
     sx: { flexGrow: 1 },
   },
