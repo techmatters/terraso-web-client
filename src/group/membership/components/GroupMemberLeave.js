@@ -22,6 +22,9 @@ const GroupMemberLeave = props => {
       })}
       confirmButton={t('group.membership_leave_confirm_button')}
       buttonLabel={t(renderLabel(role))}
+      ariaLabel={t('landscape.list_leave_label', {
+        name: _.get('name', owner),
+      })}
       buttonProps={buttonProps}
       loading={loading}
     />
