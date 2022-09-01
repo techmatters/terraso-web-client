@@ -29,7 +29,7 @@ import LandscapeListMap from './LandscapeListMap';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
-  label: 'landscape.list_leave_bitton',
+  label: 'landscape.list_leave_button',
 });
 
 const MemberJoinButton = withProps(GroupMemberJoin, {

@@ -24,7 +24,7 @@ import { withProps } from 'react-hoc';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
-  label: 'group.list_leave_bitton',
+  label: 'group.list_leave_button',
 });
 
 const MemberRequestCancelButton = withProps(GroupMemberRequestCancel, {
