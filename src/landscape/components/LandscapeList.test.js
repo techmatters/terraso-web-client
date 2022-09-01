@@ -142,7 +142,7 @@ const baseListTest = async () => {
   expect(
     within(rows[2]).getByRole('cell', { name: 'Connect' })
   ).toHaveAttribute('data-field', 'actions');
-  expect(within(rows[9]).getByRole('cell', { name: 'Member' })).toHaveAttribute(
+  expect(within(rows[9]).getByRole('cell', { name: 'Leave' })).toHaveAttribute(
     'data-field',
     'actions'
   );
