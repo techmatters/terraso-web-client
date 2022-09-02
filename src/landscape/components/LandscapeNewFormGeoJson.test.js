@@ -27,7 +27,9 @@ const setup = async () => {
     name: 'Description (required)',
   });
   const website = screen.getByRole('textbox', { name: 'Website' });
-  const location = screen.getByRole('button', { name: 'Country or region' });
+  const location = screen.getByRole('button', {
+    name: 'Country or region Landscape location',
+  });
 
   const changeLocation = async newLocation => {
     await act(async () => fireEvent.mouseDown(location));

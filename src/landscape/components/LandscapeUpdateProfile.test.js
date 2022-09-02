@@ -15,7 +15,7 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(),
 }));
 
-const setup = async () => {
+const setup = async (countryName = 'Landscape location') => {
   await render(<LandscapeProfileUpdate />);
   const name = screen.getByRole('textbox', {
     name: 'Name (required)',
@@ -24,7 +24,9 @@ const setup = async () => {
     name: 'Description (required)',
   });
   const website = screen.getByRole('textbox', { name: 'Website' });
-  const location = screen.getByRole('button', { name: 'Country or region' });
+  const location = screen.getByRole('button', {
+    name: `Country or region ${countryName}`,
+  });
 
   const changeLocation = async newLocation => {
     await act(async () => fireEvent.mouseDown(location));
@@ -82,7 +84,7 @@ test('LandscapeProfileUpdate: Fill form', async () => {
       },
     })
   );
-  const { inputs } = await setup();
+  const { inputs } = await setup('Ecuador');
 
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(inputs.name).toHaveValue('Landscape Name');
@@ -107,7 +109,7 @@ test('LandscapeProfileUpdate: Input change', async () => {
       },
     })
   );
-  const { inputs } = await setup();
+  const { inputs } = await setup('Argentina');
 
   expect(inputs.name).toHaveValue('Landscape Name');
   fireEvent.change(inputs.name, { target: { value: 'New name' } });
@@ -193,7 +195,7 @@ test('LandscapeProfileUpdate: Save form', async () => {
       },
     });
 
-  const { inputs } = await setup();
+  const { inputs } = await setup('Ecuador');
 
   fireEvent.change(inputs.name, { target: { value: 'New name' } });
   fireEvent.change(inputs.description, {
@@ -240,7 +242,7 @@ test('LandscapeProfileUpdate: Save form error', async () => {
     )
     .mockRejectedValueOnce('Save Error');
 
-  const { inputs } = await setup();
+  const { inputs } = await setup('Ecuador');
 
   fireEvent.change(inputs.name, { target: { value: 'New name' } });
   fireEvent.change(inputs.description, {
