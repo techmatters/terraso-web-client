@@ -75,6 +75,7 @@ const CountrySelector = props => {
       value={field.value}
       onChange={field.onChange}
       labelId="landscape-location-label"
+      id="landscape-country"
       renderValue={selected =>
         countryHash[selected] || (
           <Typography sx={{ color: 'gray.mid2' }}>
