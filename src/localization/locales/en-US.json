@@ -289,6 +289,7 @@
         "form_location_placeholder": "Landscape location",
         "form_location_select": "Select location",
         "form_name_placeholder": "Your landscape’s official name",
+        "form_map_section_lanel": "Landscape map",
         "boundaries_file_no_accepted": "The file(s) cannot be added.",
         "shared_data_upload_title": "Share Files with {{name}}",
         "list_search_placeholder": "Search landscapes",
