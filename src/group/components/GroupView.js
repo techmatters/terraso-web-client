@@ -104,7 +104,7 @@ const GroupCard = ({ group }) => {
         {group.website && (
           <Stack direction="row" alignItems="center" spacing={1}>
             <PublicIcon sx={{ color: 'gray.lite1' }} />
-            <Link href={group.website} underline="none">
+            <Link href={group.website} underline="none" className="wrap-url">
               {group.website}
             </Link>
           </Stack>
