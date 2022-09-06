@@ -102,6 +102,7 @@ const Content = props => {
       </Typography>
       <AvatarGroup
         component="ul"
+        aria-labelledby="membership-card-title"
         total={totalCount}
         sx={{
           flexDirection: 'row',
