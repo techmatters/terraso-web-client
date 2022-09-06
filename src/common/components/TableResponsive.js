@@ -32,7 +32,13 @@ const Table = props => {
   return (
     <BaseTable
       {..._.pick(
-        ['rows', 'columns', 'searchParams', 'onSearchParamsChange'],
+        [
+          'rows',
+          'columns',
+          'searchParams',
+          'onSearchParamsChange',
+          'ariaLabel',
+        ],
         props
       )}
       {...tableProps}

@@ -16,7 +16,7 @@ const SORT_DIRECTION_BY_SYMBOL = _.invert(SORT_DIRECTION_BY_WORD);
 const Table = props => {
   const [sortModel, setSortModel] = useState();
   const [page, setPage] = useState();
-  const { searchParams, onSearchParamsChange } = props;
+  const { searchParams, onSearchParamsChange, ariaLabel } = props;
 
   const parseSortQuery = value =>
     _.flow(
@@ -72,6 +72,7 @@ const Table = props => {
       disableColumnSelector
       hideFooterSelectedRowCount
       onPageChange={onPageChange}
+      aria-labelledby={ariaLabel}
       sx={{
         '& .MuiDataGrid-columnHeaders': {
           backgroundColor: 'gray.lite2',

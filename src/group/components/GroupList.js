@@ -158,6 +158,7 @@ const GroupList = () => {
         searchFilterField="name"
         searchParams={Object.fromEntries(searchParams.entries())}
         onSearchParamsChange={setSearchParams}
+        ariaLabel="main-heading"
         emptyMessage={
           <Trans i18nKey="group.list_empty">
             <Stack spacing={2}>
