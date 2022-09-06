@@ -38,7 +38,7 @@ const GroupDefaultHomeCard = () => {
           <Typography variant="body1">{t('group.default_content')}</Typography>
         </Alert>
       </Box>
-      <Divider />
+      <Divider aria-hidden="true" />
       <CardActionRouterLink
         label={t('group.default_connect_button')}
         to="/groups"

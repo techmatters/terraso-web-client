@@ -113,7 +113,7 @@ const GroupsHomeCard = ({ groups }) => {
           </React.Fragment>
         ))}
       </List>
-      <Divider />
+      <Divider aria-hidden="true" />
       <CardActionRouterLink
         label={t('group.home_connect_label')}
         to="/groups"
