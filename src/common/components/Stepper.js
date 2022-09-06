@@ -20,6 +20,7 @@ const Stepper = props => {
         {steps.map((step, index) => (
           <Step
             component="li"
+            key={index}
             sx={{
               borderBottom: '8px solid',
               borderColor:
