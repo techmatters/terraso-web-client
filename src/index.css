@@ -23,3 +23,7 @@ code {
   white-space: nowrap;
   width: 1px;
 }
+
+.wrap-url {
+  word-break: break-word;
+}

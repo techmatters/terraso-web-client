@@ -82,7 +82,11 @@ const LandscapeCard = ({ landscape }) => {
         {landscape.website && (
           <Stack direction="row" alignItems="center" spacing={1}>
             <PublicIcon sx={{ color: 'gray.lite1' }} />
-            <Link href={landscape.website} underline="none">
+            <Link
+              href={landscape.website}
+              underline="none"
+              className="wrap-url"
+            >
               {landscape.website}
             </Link>
           </Stack>
