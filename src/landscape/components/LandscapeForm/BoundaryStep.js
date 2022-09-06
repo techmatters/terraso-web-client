@@ -204,6 +204,7 @@ const MapDrawPolygon = props => {
           onGeoJsonChange={setAreaPolygon}
           geoJsonFilter={POLYGON_FILTER}
           drawOptions={drawOptions}
+          label={t('landscape.form_map_section_lanel')}
         />
         {editHelp && (
           <Alert severity="info">

@@ -290,6 +290,7 @@
         "form_location_placeholder": "Ubicación del paisaje",
         "form_location_select": "Selecciona una ubicación",
         "form_name_placeholder": "El nombre oficial de tu paisaje",
+        "form_map_section_lanel": "Mapa del paisaje",
         "boundaries_file_no_accepted": "No se pueden agregar los archivos.",
         "shared_data_upload_title": "Compartir archivos con {{name}}",
         "list_search_placeholder": "Buscar paisajes",
