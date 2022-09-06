@@ -29,7 +29,7 @@ const setup = async initialState => {
         <GroupMemberJoin label="Join Label" {...props} />
       )}
       MemberLeaveButton={props => (
-        <GroupMemberLeave renderLabel={() => 'Leave Label'} {...props} />
+        <GroupMemberLeave label="Leave Label" {...props} />
       )}
       MemberRequestJoinButton={props => (
         <GroupMemberJoin label="Request Join Label" {...props} />
@@ -272,7 +272,7 @@ test('GroupMembershipCard: Request Join', async () => {
   expect(() => screen.getByRole('progressbar')).toThrow();
   expect(() => screen.getByRole('button', { name: 'Join Label' })).toThrow();
   expect(
-    screen.getByRole('button', { name: 'Request Cancel Label' })
+    screen.getByRole('button', { name: 'Pending: Owner Name' })
   ).toBeInTheDocument();
 });
 test('GroupMembershipCard: Leave error', async () => {
@@ -304,10 +304,10 @@ test('GroupMembershipCard: Leave error', async () => {
     screen.getByText('1 Terraso member joined Owner Name.')
   ).toBeInTheDocument();
   expect(
-    screen.getByRole('button', { name: 'Leave Label' })
+    screen.getByRole('button', { name: 'Leave: Owner Name' })
   ).toBeInTheDocument();
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Leave Label' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Leave: Owner Name' }))
   );
   // Confirm dialog
   expect(screen.getByText('Leave “Owner Name”')).toBeInTheDocument();
@@ -363,10 +363,10 @@ test('GroupMembershipCard: Leave', async () => {
     screen.getByText('1 Terraso member joined Owner Name.')
   ).toBeInTheDocument();
   expect(
-    screen.getByRole('button', { name: 'Leave Label' })
+    screen.getByRole('button', { name: 'Leave: Owner Name' })
   ).toBeInTheDocument();
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Leave Label' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Leave: Owner Name' }))
   );
   // Confirm dialog
   expect(

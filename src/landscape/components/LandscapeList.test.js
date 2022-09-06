@@ -142,7 +142,7 @@ const baseListTest = async () => {
   expect(
     within(rows[2]).getByRole('cell', { name: 'Connect' })
   ).toHaveAttribute('data-field', 'actions');
-  expect(within(rows[9]).getByRole('cell', { name: 'Member' })).toHaveAttribute(
+  expect(within(rows[9]).getByRole('cell', { name: 'Leave' })).toHaveAttribute(
     'data-field',
     'actions'
   );
@@ -350,5 +350,5 @@ test('LandscapeList: Display list (small screen)', async () => {
   ).toBeInTheDocument();
   expect(within(rows[1]).getByText('23')).toBeInTheDocument();
   expect(within(rows[1]).getByText('Connect')).toBeInTheDocument();
-  expect(within(rows[8]).getByText('Member')).toBeInTheDocument();
+  expect(within(rows[8]).getByText('Leave')).toBeInTheDocument();
 });

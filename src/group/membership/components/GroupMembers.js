@@ -25,7 +25,7 @@ import { withProps } from 'react-hoc';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
-  renderLabel: () => 'group.members_list_leave',
+  label: 'group.members_list_leave',
 });
 
 const Header = () => {

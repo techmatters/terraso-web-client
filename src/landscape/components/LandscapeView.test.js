@@ -141,7 +141,7 @@ const baseViewTest = async () => {
   ).toBeInTheDocument();
   expect(screen.getByText(/\+2/i)).toBeInTheDocument();
   expect(
-    screen.getByRole('button', { name: 'Leave Landscape' })
+    screen.getByRole('button', { name: 'Leave: Landscape Name' })
   ).toBeInTheDocument();
 
   // Map
@@ -235,7 +235,9 @@ test('LandscapeView: Refresh profile', async () => {
   terrasoApi.requestGraphQL.mockReturnValueOnce(new Promise(() => {}));
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Leave Landscape' }))
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Leave: Landscape Name' })
+    )
   );
 
   const dialog = screen.getByRole('dialog', { name: 'Leave “Landscape Name”' });

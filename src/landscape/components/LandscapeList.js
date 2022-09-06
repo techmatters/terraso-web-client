@@ -29,26 +29,12 @@ import LandscapeListMap from './LandscapeListMap';
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
-  renderLabel: role =>
-    role === 'MANAGER'
-      ? 'landscape.list_manager_button'
-      : 'landscape.list_member_button',
-  buttonProps: {
-    variant: 'contained',
-    sx: {
-      bgcolor: 'gray.lite1',
-      color: 'black',
-      textTransform: 'uppercase',
-      '&:hover': {
-        bgcolor: 'blue.dark',
-        color: 'white',
-      },
-    },
-  },
+  label: 'landscape.list_leave_button',
 });
 
 const MemberJoinButton = withProps(GroupMemberJoin, {
   label: 'landscape.list_join_button',
+  ariaLabel: 'landscape.list_join_label',
 });
 
 const MembershipButton = ({ landscape }) => (
