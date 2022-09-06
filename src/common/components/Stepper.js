@@ -15,6 +15,7 @@ const Stepper = props => {
         connector={null}
         sx={{ marginBottom: 2, paddingLeft: 0, listStylePosition: 'inside' }}
         component="ol"
+        aria-labelledby={props.ariaLabel}
       >
         {steps.map((step, index) => (
           <Step
