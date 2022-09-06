@@ -28,18 +28,28 @@ const ConfirmationDialog = props => {
   } = props;
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
+  // focus on the cancel button on open
+  const onCancelRefChange = ref => {
+    if (ref) {
+      ref.focus();
+    }
+  };
+
   return (
     <Dialog
       fullScreen={fullScreen}
       open={open}
       onClose={onCancel}
       aria-labelledby="confirmation-dialog-title"
+      aria-describedby="confirmation-dialog-content-text"
     >
       <DialogTitle component="h1" id="confirmation-dialog-title">
         {title}
       </DialogTitle>
       <DialogContent>
-        <DialogContentText>{message}</DialogContentText>
+        <DialogContentText id="confirmation-dialog-content-text">
+          {message}
+        </DialogContentText>
       </DialogContent>
       <DialogActions
         sx={{
@@ -47,7 +57,9 @@ const ConfirmationDialog = props => {
           padding: '20px',
         }}
       >
-        <Button onClick={onCancel}>{t('common.dialog_cancel_label')}</Button>
+        <Button ref={onCancelRefChange} onClick={onCancel}>
+          {t('common.dialog_cancel_label')}
+        </Button>
 
         <LoadingButton
           variant="contained"
