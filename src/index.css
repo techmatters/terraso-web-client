@@ -30,5 +30,5 @@ code {
 
 :focus {
   outline: 2px solid #2C7690 ! important;
-  outline-offset: 1px;
+  outline-offset: 3px;
 }
