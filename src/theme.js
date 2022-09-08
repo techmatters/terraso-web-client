@@ -87,6 +87,13 @@ const components = {
     },
   },
   MuiLink: {
+    styleOverrides: {
+      root: {
+        ':focus': {
+          textDecoration: 'underline ! important',
+        },
+      },
+    },
     defaultProps: {
       underline: 'hover',
     },
