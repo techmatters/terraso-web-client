@@ -43,11 +43,7 @@ const LandscapeItem = ({ landscape, index }) => {
           marginLeft: theme.spacing(2),
         }}
       >
-        <Link
-          component={RouterLink}
-          underline="none"
-          to={`/landscapes/${landscape.slug}`}
-        >
+        <Link component={RouterLink} to={`/landscapes/${landscape.slug}`}>
           {landscape.name}
         </Link>
         <Typography>

@@ -88,7 +88,7 @@ const components = {
   },
   MuiLink: {
     defaultProps: {
-      underline: 'none',
+      underline: 'hover',
     },
   },
   MuiCardActions: {

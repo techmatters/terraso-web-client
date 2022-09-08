@@ -95,9 +95,7 @@ const LandscapeList = () => {
       minWidth: 200,
       renderCell: ({ row: landscape }) =>
         landscape.website && (
-          <Link href={landscape.website} underline="none">
-            {landscape.website}
-          </Link>
+          <Link href={landscape.website}>{landscape.website}</Link>
         ),
     },
     {

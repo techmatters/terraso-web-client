@@ -55,11 +55,7 @@ const GroupItem = ({ group, index }) => {
       }}
     >
       <Stack direction="row">
-        <Link
-          component={RouterLink}
-          underline="none"
-          to={`/groups/${group.slug}`}
-        >
+        <Link component={RouterLink} to={`/groups/${group.slug}`}>
           {group.name}
         </Link>
         <Typography sx={{ ml: 1 }}>

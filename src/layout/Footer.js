@@ -38,7 +38,6 @@ const FooterLink = ({ link, showBorder }) => {
       >
         <Link
           variant="body2"
-          underline="none"
           {...(link.to
             ? { component: RouterLink, to: t(link.to) }
             : { href: t(link.url) })}
