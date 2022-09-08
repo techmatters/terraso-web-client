@@ -48,6 +48,11 @@ const components = {
       elevation: 0,
     },
   },
+  MuiButtonBase: {
+    defaultProps: {
+      disableRipple: true,
+    },
+  },
   MuiButton: {
     defaultProps: {
       disableElevation: true,
