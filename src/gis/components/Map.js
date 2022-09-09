@@ -133,6 +133,9 @@ const LeafletDraw = () => {
     };
     const drawControl = new L.Control.Draw(options);
     map.addControl(drawControl);
+
+    drawControl._container.querySelector('a').setAttribute('role', 'button');
+
     return () => map.removeControl(drawControl);
   }, [editEnabled, isSmall, map, featureGroup, markerEnabled, polygonEnabled]);
 
