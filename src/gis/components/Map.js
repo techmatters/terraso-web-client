@@ -243,6 +243,10 @@ const LeafletSearch = () => {
         .querySelector('input')
         .setAttribute('aria-label', t('gis.map_search_placeholder'));
 
+      searchControl.container
+        .querySelector('a[class="reset"]')
+        .setAttribute('aria-label', t('gis.map_search_clear'));
+
       return container;
     };
 

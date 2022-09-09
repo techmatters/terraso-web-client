@@ -416,6 +416,7 @@
     "gis": {
         "openstreetmap_api_error": "Failed to request data from nominatim.openstreetmap.org API",
         "map_search_placeholder": "Enter a city, town or region",
+        "map_search_clear": "Clear search",
         "map_layer_streets": "Streets",
         "map_layer_satellite": "Satellite",
         "map_draw": {
