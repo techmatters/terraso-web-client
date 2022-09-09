@@ -239,9 +239,10 @@ const LeafletSearch = () => {
       // Move search box to the first position to improve keyboard navigation
       const parent = searchControl.container.parentElement;
       parent.prepend(searchControl.container);
-      searchControl.container
-        .querySelector('input')
-        .setAttribute('aria-label', t('gis.map_search_placeholder'));
+
+      const inputField = searchControl.container.querySelector('input');
+      inputField.setAttribute('aria-label', t('gis.map_search_placeholder'));
+      inputField.setAttribute('role', 'combobox');
 
       searchControl.container
         .querySelector('a[class="reset"]')
