@@ -239,6 +239,9 @@ const LeafletSearch = () => {
       // Move search box to the first position to improve keyboard navigation
       const parent = searchControl.container.parentElement;
       parent.prepend(searchControl.container);
+      searchControl.container
+        .querySelector('input')
+        .setAttribute('aria-label', t('gis.map_search_placeholder'));
 
       return container;
     };
