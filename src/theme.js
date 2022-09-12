@@ -54,6 +54,14 @@ const components = {
     },
   },
   MuiButton: {
+    styleOverrides: {
+      root: {
+        '&:focus': {
+          outline: `2px solid ${colorTheme.palette.blue.dark}`,
+          outlineOffset: '3px',
+        },
+      },
+    },
     defaultProps: {
       disableElevation: true,
     },
