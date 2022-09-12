@@ -1,5 +1,9 @@
 import bbox from '@turf/bbox';
+import turfCenter from '@turf/center';
+import * as turf from '@turf/helpers';
 import _ from 'lodash/fp';
+
+import { normalizeLongitude } from 'gis/gisUtils';
 
 const parseGeoJson = areaPolygon => {
   if (!areaPolygon) {
@@ -39,34 +43,42 @@ export const getLandscapePin = landscape => {
     return null;
   }
 
-  const isPin =
-    _.get('areaPolygon.features[0].geometry.type', landscape) === 'Point';
+  const point = (() => {
+    const isPin =
+      _.get('areaPolygon.features[0].geometry.type', landscape) === 'Point';
 
-  if (isPin) {
-    return _.flow(
-      _.get('areaPolygon.features[0].geometry.coordinates'),
-      _.reverse
-    )(landscape);
-  }
+    if (isPin) {
+      return _.flow(
+        _.get('areaPolygon.features[0].geometry.coordinates'),
+        _.reverse
+      )(landscape);
+    }
 
-  const { areaPolygon, position } = landscape;
+    const { areaPolygon, position } = landscape;
 
-  const areaBoundingBox = areaPolygon && parseGeoJson(areaPolygon);
-  const positionBoundingBox = position && position.boundingbox;
+    const areaBoundingBox = areaPolygon && parseGeoJson(areaPolygon);
+    const positionBoundingBox = position && position.boundingbox;
 
-  const boundingBox = areaBoundingBox || positionBoundingBox;
+    const boundingBox = areaBoundingBox || positionBoundingBox;
 
-  if (!boundingBox) {
+    if (!boundingBox) {
+      return null;
+    }
+
+    const center = turfCenter(
+      turf.points([
+        [boundingBox[0], boundingBox[1]],
+        [boundingBox[2], boundingBox[3]],
+      ])
+    );
+    return [center.geometry.coordinates[1], center.geometry.coordinates[0]];
+  })();
+
+  if (!point) {
     return null;
   }
 
-  const latDelta = boundingBox[1] + boundingBox[3];
-  const lngDelta = boundingBox[0] + boundingBox[2];
-
-  return [
-    latDelta === 0 ? boundingBox[0] : latDelta / 2,
-    lngDelta === 0 ? boundingBox[1] : lngDelta / 2,
-  ];
+  return [point[0], normalizeLongitude(point[1])];
 };
 
 export const isValidGeoJson = areaPolygon => !!parseGeoJson(areaPolygon);
