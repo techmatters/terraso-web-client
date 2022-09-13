@@ -133,6 +133,9 @@ const LeafletDraw = () => {
     };
     const drawControl = new L.Control.Draw(options);
     map.addControl(drawControl);
+
+    drawControl._container.querySelector('a').setAttribute('role', 'button');
+
     return () => map.removeControl(drawControl);
   }, [editEnabled, isSmall, map, featureGroup, markerEnabled, polygonEnabled]);
 
@@ -239,6 +242,15 @@ const LeafletSearch = () => {
       // Move search box to the first position to improve keyboard navigation
       const parent = searchControl.container.parentElement;
       parent.prepend(searchControl.container);
+
+      const inputField = searchControl.container.querySelector('input');
+      inputField.setAttribute('aria-label', t('gis.map_search_placeholder'));
+      inputField.setAttribute('role', 'combobox');
+
+      const clearButton =
+        searchControl.container.querySelector('a[class="reset"]');
+      clearButton.setAttribute('aria-label', t('gis.map_search_clear'));
+      clearButton.setAttribute('role', 'button');
 
       return container;
     };
