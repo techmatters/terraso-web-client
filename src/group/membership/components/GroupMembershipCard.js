@@ -101,11 +101,14 @@ const Content = props => {
         })}
       </Typography>
       <AvatarGroup
+        component="ul"
+        aria-labelledby="membership-card-title"
         total={totalCount}
         sx={{
           flexDirection: 'row',
           marginTop: theme.spacing(2),
           marginBottom: theme.spacing(2),
+          paddingLeft: 0,
         }}
       >
         {membersSample.map((member, index) => (

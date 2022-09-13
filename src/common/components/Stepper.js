@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Stepper as BaseStepper, Step, Typography } from '@mui/material';
+import { Stepper as BaseStepper, Step } from '@mui/material';
 
 const Stepper = props => {
   const { steps } = props;
@@ -13,12 +13,13 @@ const Stepper = props => {
       <BaseStepper
         activeStep={activeStepIndex}
         connector={null}
-        sx={{ marginBottom: 2 }}
+        sx={{ marginBottom: 2, paddingLeft: 0, listStylePosition: 'inside' }}
+        component="ol"
+        aria-labelledby={props.ariaLabel}
       >
         {steps.map((step, index) => (
-          <Typography
-            variant="body2"
-            component={Step}
+          <Step
+            component="li"
             key={index}
             sx={{
               borderBottom: '8px solid',
@@ -28,12 +29,13 @@ const Stepper = props => {
               marginRight: '2px',
               flexGrow: 1,
               paddingBottom: 1,
+              paddingLeft: 0,
               overflowWrap: 'break-word',
               textTransform: 'uppercase',
             }}
           >
-            {index + 1}. {step.label}
-          </Typography>
+            {step.label}
+          </Step>
         ))}
       </BaseStepper>
       {activeStep.render({ setActiveStepIndex })}

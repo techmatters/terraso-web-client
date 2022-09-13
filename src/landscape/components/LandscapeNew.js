@@ -86,10 +86,10 @@ const LandscapeNew = () => {
   return (
     <PageContainer>
       {saving && <PageLoader />}
-      <Typography variant="h1" sx={visuallyHidden}>
+      <Typography variant="h1" sx={visuallyHidden} id="landscape-page-title">
         {t('landscape.form_new_document_title')}
       </Typography>
-      <Stepper steps={steps} />
+      <Stepper steps={steps} ariaLabel="landscape-page-title" />
     </PageContainer>
   );
 };

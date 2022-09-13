@@ -104,7 +104,11 @@ const MemberName = ({ member }) => {
       alignItems="center"
       spacing={2}
     >
-      <AccountAvatar sx={{ width: 34, height: 34 }} user={member} />
+      <AccountAvatar
+        component="div"
+        sx={{ width: 34, height: 34 }}
+        user={member}
+      />
       <Typography>{t('user.full_name', { user: member })}</Typography>
     </Stack>
   );
@@ -290,7 +294,11 @@ const GroupMembersList = () => {
           onSearchParamsChange={setSearchParams}
           cardsProps={{
             avatarRender: ({ row: member }) => (
-              <AccountAvatar sx={{ width: 80, height: 80 }} user={member} />
+              <AccountAvatar
+                component="div"
+                sx={{ width: 80, height: 80 }}
+                user={member}
+              />
             ),
           }}
           tableProps={{

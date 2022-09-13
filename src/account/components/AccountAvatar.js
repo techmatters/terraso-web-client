@@ -12,6 +12,7 @@ const AccountAvatar = props => {
     <Avatar
       alt={name}
       src={user.profileImage}
+      component="li"
       imgProps={
         !showAlt && {
           alt: '',
