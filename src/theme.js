@@ -87,8 +87,15 @@ const components = {
     },
   },
   MuiLink: {
+    styleOverrides: {
+      root: {
+        ':focus': {
+          textDecoration: 'underline ! important',
+        },
+      },
+    },
     defaultProps: {
-      underline: 'none',
+      underline: 'hover',
     },
   },
   MuiCardActions: {

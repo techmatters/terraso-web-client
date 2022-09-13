@@ -95,9 +95,7 @@ const GroupList = () => {
       minWidth: 200,
       renderCell: ({ row: group }) =>
         group.email && (
-          <Link href={`mailto:${group.email}`} underline="none">
-            {group.email}
-          </Link>
+          <Link href={`mailto:${group.email}`}>{group.email}</Link>
         ),
     },
     {
@@ -107,11 +105,7 @@ const GroupList = () => {
       flex: 1.5,
       minWidth: 200,
       renderCell: ({ row: group }) =>
-        group.website && (
-          <Link href={group.website} underline="none">
-            {group.website}
-          </Link>
-        ),
+        group.website && <Link href={group.website}>{group.website}</Link>,
     },
     {
       field: 'actions',

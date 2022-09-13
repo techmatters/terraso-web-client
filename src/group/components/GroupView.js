@@ -96,9 +96,7 @@ const GroupCard = ({ group }) => {
             sx={{ marginBottom: theme.spacing(2) }}
           >
             <EmailIcon sx={{ color: 'gray.lite1' }} />
-            <Link href={`mailto:${group.email}`} underline="none">
-              {group.email}
-            </Link>
+            <Link href={`mailto:${group.email}`}>{group.email}</Link>
           </Stack>
         )}
         {group.website && (
