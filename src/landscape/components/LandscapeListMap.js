@@ -23,6 +23,8 @@ import { Link, Typography } from '@mui/material';
 
 import { countryNameForCode } from 'common/utils';
 
+import { isValidLatitude, isValidLongitude } from 'gis/gisUtils';
+
 const LandscapesClusters = () => {
   const map = useMap();
   const { t } = useTranslation();
@@ -36,7 +38,12 @@ const LandscapesClusters = () => {
         position: getLandscapePin(landscape),
         data: landscape,
       }))
-      .filter(landscape => !!landscape.position);
+      .filter(landscape => !!landscape.position)
+      .filter(landscape => {
+        const validLat = isValidLatitude(landscape.position[0]);
+        const validLng = isValidLongitude(landscape.position[1]);
+        return validLat && validLng;
+      });
   }, [landscapes]);
 
   useEffect(() => {
