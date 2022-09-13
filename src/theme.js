@@ -48,7 +48,20 @@ const components = {
       elevation: 0,
     },
   },
+  MuiButtonBase: {
+    defaultProps: {
+      disableRipple: true,
+    },
+  },
   MuiButton: {
+    styleOverrides: {
+      root: {
+        '&:focus': {
+          outline: `2px solid ${colorTheme.palette.blue.dark}`,
+          outlineOffset: '3px',
+        },
+      },
+    },
     defaultProps: {
       disableElevation: true,
     },
