@@ -77,9 +77,12 @@ const Content = props => {
   if (!userMembership && closedGroup) {
     return (
       <CardContent>
-        <Trans i18nKey="group.membership_card_closed_description">
+        <Trans
+          i18nKey="group.membership_card_closed_description"
+          values={{ name: owner.name }}
+        >
           <Typography variant="body1" sx={{ mb: 2 }}>
-            {{ name: owner.name }} description
+            description
           </Typography>
           <Typography variant="body1">
             prefix
