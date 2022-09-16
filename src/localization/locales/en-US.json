@@ -334,7 +334,7 @@
         "upload_rejected_too-many-files": "Cannot add more than {{maxFiles}} files.",
         "upload_rejected_file-invalid-type": "{{rejectedFiles}} cannot be added because the file type(s) are not supported.",
         "upload_rejected_file-too-large": "{{rejectedFiles}} cannot be added because one or more files are too large.",
-        "upload_description": "Add one or more files ({{fileTypes}}) and descriptions",
+        "upload_description": "Add files and descriptions:",
         "upload_save": "Upload Files",
         "upload_cancel": "Cancel",
         "updated": "The file “{{name}}” was updated.",
