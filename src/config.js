@@ -25,7 +25,8 @@ export const SHARED_DATA_MAX_FILES =
 export const MAX_DESCRIPTION_LENGTH = 600;
 
 export const SHARED_DATA_ACCEPTED_EXTENSIONS = (
-  process.env.REACT_APP_SHARED_DATA_ACCEPTED_EXTENSIONS || 'csv,doc,docx,pdf,ppt,pptx,xlsx,xls'
+  process.env.REACT_APP_SHARED_DATA_ACCEPTED_EXTENSIONS ||
+  'csv,doc,docx,pdf,ppt,pptx,xlsx,xls'
 ).split(',');
 
 export const HUBSPOT_FORMS = {
