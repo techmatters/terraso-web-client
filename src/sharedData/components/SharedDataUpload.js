@@ -348,7 +348,9 @@ const SharedDataUpload = props => {
         sx={{ padding: 2 }}
       >
         <Typography sx={{ fontWeight: 700 }}>
-          {t('sharedData.upload_description')}
+          {t('sharedData.upload_description', {
+            fileTypes: SHARED_DATA_ACCEPTED_EXTENSIONS.join(', '),
+          })}
         </Typography>
         <Stack direction={{ xs: 'column', md: 'row' }}>
           <DropZone
