@@ -355,7 +355,7 @@
         "upload_rejected_too-many-files": "No se pueden agregar más de {{maxFiles}} archivos.",
         "upload_rejected_file-invalid-type": "{{rejectedFiles}} no se pueden agregar porque los tipos de archivo no son compatibles.",
         "upload_rejected_file-too-large": "{{rejectedFiles}} no se pueden agregar porque uno o más archivos son demasiado grandes.",
-        "upload_description": "Agregue uno o más archivos de datos (xls, xlsx, csv) y descripciones",
+        "upload_description": "Agregue archivos y descripciones:",
         "upload_save": "Subir archivos",
         "upload_cancel": "Cancelar",
         "updated": "Se actualizó el archivo “{{name}}”.",

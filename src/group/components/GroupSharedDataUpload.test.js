@@ -41,7 +41,7 @@ beforeEach(() => {
 const dropFiles = async files => {
   await setup();
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.xlsx, *.xls, *.csv Maximum file size: 10 MB',
+    name: 'Select File Accepted file formats: *.csv, *.doc, *.docx, *.pdf, *.ppt, *.pptx, *.xlsx, *.xls Maximum file size: 10 MB',
   });
 
   const data = {
@@ -162,6 +162,57 @@ test('GroupSharedDataUpload: Complete Success', async () => {
       .map(
         (item, index) =>
           new File(['content'], `test${index}.csv`, { type: 'text/plain' })
+      )
+  );
+  const uploadButton = screen.getByRole('button', { name: 'Upload Files' });
+  await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
+  await act(async () => fireEvent.click(uploadButton));
+  expect(navigate.mock.calls[0]).toEqual(['/groups/slug-1']);
+});
+
+test('GroupSharedDataUpload: PDF Success', async () => {
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+  terrasoApi.request.mockResolvedValueOnce({});
+  await dropFiles([
+    new File(['content'], 'test.pdf', { type: 'application/pdf' }),
+  ]);
+  const uploadButton = screen.getByRole('button', { name: 'Upload Files' });
+  await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
+  await act(async () => fireEvent.click(uploadButton));
+  expect(navigate.mock.calls[0]).toEqual(['/groups/slug-1']);
+});
+
+test('GroupSharedDataUpload: MS Office Success', async () => {
+  const fileTypes = [
+    ['doc', 'application/msword'],
+    ['xls', 'application/vnd.ms-excel'],
+    ['ppt', 'application/vnd.ms-powerpoint'],
+    [
+      'docx',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ],
+    [
+      'pptx',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    ],
+    [
+      'xlsx',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ],
+  ];
+
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+  terrasoApi.request.mockResolvedValueOnce({});
+  await dropFiles(
+    Array(6)
+      .fill(0)
+      .map(
+        (item, index) =>
+          new File(['content'], `test${index}.${fileTypes[index][0]}`, {
+            type: fileTypes[index][1],
+          })
       )
   );
   const uploadButton = screen.getByRole('button', { name: 'Upload Files' });
