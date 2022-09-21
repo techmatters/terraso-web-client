@@ -169,3 +169,54 @@ test('GroupSharedDataUpload: Complete Success', async () => {
   await act(async () => fireEvent.click(uploadButton));
   expect(navigate.mock.calls[0]).toEqual(['/groups/slug-1']);
 });
+
+test('GroupSharedDataUpload: PDF Success', async () => {
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+  terrasoApi.request.mockResolvedValueOnce({});
+  await dropFiles([
+    new File(['content'], 'test.pdf', { type: 'application/pdf' }),
+  ]);
+  const uploadButton = screen.getByRole('button', { name: 'Upload Files' });
+  await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
+  await act(async () => fireEvent.click(uploadButton));
+  expect(navigate.mock.calls[0]).toEqual(['/groups/slug-1']);
+});
+
+test('GroupSharedDataUpload: MS Office Success', async () => {
+  const fileTypes = [
+    ['doc', 'application/msword'],
+    ['xls', 'application/vnd.ms-excel'],
+    ['ppt', 'application/vnd.ms-powerpoint'],
+    [
+      'docx',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ],
+    [
+      'pptx',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    ],
+    [
+      'xlsx',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ],
+  ];
+
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+  terrasoApi.request.mockResolvedValueOnce({});
+  await dropFiles(
+    Array(6)
+      .fill(0)
+      .map(
+        (item, index) =>
+          new File(['content'], `test${index}.${fileTypes[index][0]}`, {
+            type: fileTypes[index][1],
+          })
+      )
+  );
+  const uploadButton = screen.getByRole('button', { name: 'Upload Files' });
+  await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
+  await act(async () => fireEvent.click(uploadButton));
+  expect(navigate.mock.calls[0]).toEqual(['/groups/slug-1']);
+});
