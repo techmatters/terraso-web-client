@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 
 import ConfirmButton from 'common/components/ConfirmButton';
+import SocialShare from 'common/components/SocialShare';
 import PageHeader from 'layout/PageHeader';
 import { formatDate } from 'localization/utils';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
@@ -170,7 +171,8 @@ const VisualizationWrapper = props => {
                     <Typography>First</Typography>
                     <Typography sx={{ mt: 1 }}>Second</Typography>
                   </Trans>
-                  <Stack alignItems="flex-start">
+                  <Stack alignItems="flex-start" direction="row" spacing={2}>
+                    <SocialShare name={mapTitle} />
                     <Button variant="outlined" onClick={handleDownloadPng}>
                       {t('sharedData.visualization_download_png')}
                     </Button>
