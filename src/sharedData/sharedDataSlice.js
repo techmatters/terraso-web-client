@@ -16,6 +16,14 @@ const initialState = {
     fetching: true,
     data: null,
   },
+  visualizationConfigForm: {
+    saving: false,
+  },
+  visualizationConfig: {
+    fetching: true,
+    data: null,
+    deleting: false,
+  },
 };
 
 export const uploadSharedData = createAsyncThunk(
@@ -45,6 +53,31 @@ export const updateSharedData = createAsyncThunk(
 export const fetchGroupSharedData = createAsyncThunk(
   'sharedData/fetchGroupSharedData',
   sharedDataService.fetchGroupSharedData
+);
+
+export const addVisualizationConfig = createAsyncThunk(
+  'sharedData/addVisualizationConfig',
+  sharedDataService.addVisualizationConfig,
+  (visualization, { selectedFile }) => ({
+    severity: 'success',
+    content: 'sharedData.added_visualization_config',
+    params: { name: selectedFile.name },
+  })
+);
+export const fetchVisualizationConfig = createAsyncThunk(
+  'sharedData/fetchVisualizationConfig',
+  sharedDataService.fetchVisualizationConfig
+);
+export const deleteVisualizationConfig = createAsyncThunk(
+  'sharedData/deleteVisualizationConfig',
+  sharedDataService.deleteVisualizationConfig,
+  (visualization, config) => ({
+    severity: 'success',
+    content: 'sharedData.deleted_visualization_config',
+    params: {
+      mapTitle: _.get('configuration.annotateConfig.mapTitle', config),
+    },
+  })
 );
 
 const setProcessing = (state, action) =>
@@ -102,6 +135,41 @@ const sharedDataSlice = createSlice({
     [fetchGroupSharedData.fulfilled]: (state, action) => ({
       ...state,
       list: {
+        fetching: false,
+        data: action.payload,
+      },
+    }),
+    [addVisualizationConfig.pending]: state => ({
+      ...state,
+      visualizationConfigForm: {
+        saving: true,
+      },
+    }),
+    [addVisualizationConfig.rejected]: state => ({
+      ...state,
+      visualizationConfigForm: {
+        saving: false,
+      },
+    }),
+    [addVisualizationConfig.fulfilled]: state => ({
+      ...state,
+      visualizationConfigForm: {
+        saving: false,
+      },
+    }),
+    [fetchVisualizationConfig.pending]: state => ({
+      ...state,
+      visualizationConfig: initialState.visualizationConfig,
+    }),
+    [fetchVisualizationConfig.rejected]: state => ({
+      ...state,
+      visualizationConfig: {
+        fetching: false,
+      },
+    }),
+    [fetchVisualizationConfig.fulfilled]: (state, action) => ({
+      ...state,
+      visualizationConfig: {
         fetching: false,
         data: action.payload,
       },

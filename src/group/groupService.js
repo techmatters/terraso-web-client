@@ -74,6 +74,7 @@ export const fetchGroupToUploadSharedData = slug => {
         edges {
           node {
             id
+            slug
             name
           }
         }

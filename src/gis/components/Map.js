@@ -108,7 +108,7 @@ const LeafletDraw = () => {
                 allowIntersection: false,
                 icon: new L.DivIcon({
                   iconSize: new L.Point(14, 14),
-                  className: 'leaflet-editing-icon',
+                  className: 'leaflet-draw-marker-icon',
                 }),
               },
             },
@@ -122,6 +122,7 @@ const LeafletDraw = () => {
               showArea: true,
               icon: new L.DivIcon({
                 iconSize: new L.Point(14, 14),
+                className: 'leaflet-draw-marker-icon',
               }),
             }
           : false,
@@ -292,9 +293,11 @@ const MapGeoJson = () => {
       style: { color: theme.palette.map.polygon },
       pointToLayer: (feature, latlng) => {
         const marker = L.marker(latlng, { draggable: true });
-        marker.on('dragend', event => {
-          setNewGeoJson(layerToGeoJSON(featureGroup.getLayers()));
-        });
+        if (onGeoJsonChange) {
+          marker.on('dragend', event => {
+            setNewGeoJson(layerToGeoJSON(featureGroup.getLayers()));
+          });
+        }
         return marker;
       },
       ...(geoJsonFilter ? { filter: geoJsonFilter } : {}),
@@ -302,7 +305,7 @@ const MapGeoJson = () => {
   }, [featureGroup, geojson, onGeoJsonChange, geoJsonFilter]);
 
   useEffect(() => {
-    if (!newGeoJson) {
+    if (!newGeoJson || !onGeoJsonChange) {
       return;
     }
     onGeoJsonChange(newGeoJson);
@@ -327,8 +330,14 @@ const Map = props => {
   const { t } = useTranslation();
   const [featureGroup, setFeatureGroup] = useState();
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
-  const { bounds, geojson, onGeoJsonChange, geoJsonFilter, drawOptions } =
-    props;
+  const {
+    bounds,
+    onBoundsChange,
+    geojson,
+    onGeoJsonChange,
+    geoJsonFilter,
+    drawOptions,
+  } = props;
 
   useEffect(() => {
     if (props.center) {
@@ -357,11 +366,16 @@ const Map = props => {
         [t('gis.map_layer_satellite')]: LAYER_ESRI,
       })
       .addTo(map);
+
+    // Move listener
+    const onMoveListener = () => onBoundsChange?.(map.getBounds());
+    map.on('moveend', onMoveListener);
     return () => {
       map.removeControl(layersControl);
+      map.on('moveend', onMoveListener);
       featureGroup.remove();
     };
-  }, [map, t]);
+  }, [map, t, onBoundsChange]);
 
   const onBoundsUpdate = useCallback(
     bbox => {

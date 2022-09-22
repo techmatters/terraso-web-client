@@ -1,0 +1,29 @@
+.leaflet-draw-marker-icon {
+  background: none;
+  border: none;
+}
+
+.visualization-marker-popup .leaflet-popup-content-wrapper {
+  background: #666666;
+  font-size: 16px;
+  line-height: 24px;
+  border-radius: 3px;
+  border: 1px solid #666666;
+  box-shadow: none;
+  color: white;
+}
+.visualization-marker-popup .leaflet-popup-tip {
+  border: 1px solid #666666;
+  background-color: #666666;
+  box-shadow: none;
+}
+
+.visualization-marker-popup p {
+  margin: 0;
+}
+
+.visualization-marker-popup .leaflet-popup-scrolled {
+  border: none;
+  margin: 0;
+  overflow: scroll;
+}

@@ -18,5 +18,8 @@ export const useBreadcrumbsContext = () => useContext(BreadcrumbsContext);
 
 export const useBreadcrumbsParams = params => {
   const { setBreadcrumbsParams } = useBreadcrumbsContext();
-  useEffect(() => setBreadcrumbsParams(params), [params, setBreadcrumbsParams]);
+  useEffect(
+    () => setBreadcrumbsParams(current => ({ ...current, ...params })),
+    [params, setBreadcrumbsParams]
+  );
 };

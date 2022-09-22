@@ -11,6 +11,8 @@ import ContactForm from 'contact/ContactForm';
 import GroupForm from 'group/components/GroupForm';
 import GroupList from 'group/components/GroupList';
 import GroupSharedDataUpload from 'group/components/GroupSharedDataUpload';
+import GroupSharedDataVisualization from 'group/components/GroupSharedDataVisualization';
+import GroupSharedDataVisualizationConfig from 'group/components/GroupSharedDataVisualizationConfig';
 import GroupView from 'group/components/GroupView';
 import GroupMembers from 'group/membership/components/GroupMembers';
 import Home from 'home/components/Home';
@@ -18,6 +20,8 @@ import LandscapeBoundariesUpdate from 'landscape/components/LandscapeBoundariesU
 import LandscapeList from 'landscape/components/LandscapeList';
 import LandscapeNew from 'landscape/components/LandscapeNew';
 import LandscapeSharedDataUpload from 'landscape/components/LandscapeSharedDataUpload';
+import LandscapeSharedDataVisualization from 'landscape/components/LandscapeSharedDataVisualization';
+import LandscapeSharedDataVisualizationConfig from 'landscape/components/LandscapeSharedDataVisualizationConfig';
 import LandscapeUpdateProfile from 'landscape/components/LandscapeUpdateProfile';
 import LandscapeView from 'landscape/components/LandscapeView';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
@@ -51,6 +55,14 @@ const paths = [
     breadcrumbsLabel: 'group.breadcrumbs_members',
   }),
   path('/groups/:slug/upload', GroupSharedDataUpload),
+  path(
+    '/groups/:slug/visualization-config',
+    GroupSharedDataVisualizationConfig
+  ),
+  path('/groups/:slug/visualization/:configId', GroupSharedDataVisualization, {
+    showBreadcrumbs: true,
+    breadcrumbsLabel: 'group.breadcrumbs_visualization',
+  }),
   path('/landscapes', LandscapeList, {
     breadcrumbsLabel: 'landscape.home_title',
   }),
@@ -66,6 +78,18 @@ const paths = [
     breadcrumbsLabel: 'landscape.breadcrumbs_members',
   }),
   path('/landscapes/:slug/upload', LandscapeSharedDataUpload),
+  path(
+    '/landscapes/:slug/visualization-config',
+    LandscapeSharedDataVisualizationConfig
+  ),
+  path(
+    '/landscapes/:slug/visualization/:configId',
+    LandscapeSharedDataVisualization,
+    {
+      showBreadcrumbs: true,
+      breadcrumbsLabel: 'landscape.breadcrumbs_visualization',
+    }
+  ),
   path('/tools', ToolsList),
   path('/account', AccountLogin, { auth: false }),
   path('/account/profile', AccountProfile),

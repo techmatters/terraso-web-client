@@ -156,6 +156,7 @@ const LandscapeView = () => {
   return (
     <GroupContextProvider
       owner={landscape}
+      baseOwnerUrl={`/landscapes/${landscape.slug}`}
       group={landscape.defaultGroup}
       groupSlug={landscape.defaultGroup.slug}
       MemberJoinButton={MemberJoinButton}
@@ -241,6 +242,9 @@ const LandscapeView = () => {
             <SharedDataCard
               onUploadClick={() =>
                 navigate(`/landscapes/${landscape.slug}/upload`)
+              }
+              onAddVisualizationClick={() =>
+                navigate(`/landscapes/${landscape.slug}/visualization-config`)
               }
             />
           </Grid>

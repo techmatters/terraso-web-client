@@ -4,6 +4,8 @@ import { dataEntries } from 'group/groupFragments';
 import { extractDataEntries } from 'group/groupUtils';
 import * as terrasoApi from 'terrasoBackend/api';
 
+import { dataEntry, visualizationConfig } from './sharedDataFragments';
+
 export const uploadSharedData = async ({ groupSlug, file }) => {
   const path = '/shared-data/upload/';
 
@@ -73,4 +75,72 @@ export const fetchGroupSharedData = slug => {
     .then(_.get('groups.edges[0].node'))
     .then(group => group || Promise.reject('not_found'))
     .then(group => extractDataEntries(group));
+};
+
+export const addVisualizationConfig = ({
+  selectedFile,
+  visualizationConfig,
+}) => {
+  const query = `
+    mutation addVisualizationConfig($input: VisualizationConfigAddMutationInput!) {
+      addVisualizationConfig(input: $input) {
+        visualizationConfig {
+          id
+        }
+      }
+    }
+  `;
+  const configuration = JSON.stringify(
+    _.omit('selectedFile', visualizationConfig)
+  );
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: {
+        configuration,
+        dataEntryId: selectedFile.id,
+      },
+    })
+    .then(response => ({
+      id: _.get('addVisualizationConfig.visualizationConfig.id', response),
+    }));
+};
+
+export const deleteVisualizationConfig = config => {
+  const query = `
+    mutation deleteVisualizationConfig($id: ID!) {
+      deleteVisualizationConfig(input: { id: $id }) {
+        visualizationConfig {
+          ...visualizationConfig
+        }
+      }
+    }
+    ${visualizationConfig}
+  `;
+  return terrasoApi.requestGraphQL(query, {
+    id: config.id,
+  });
+};
+
+export const fetchVisualizationConfig = id => {
+  const query = `
+    query fetchVisualizationConfig($id: ID!){
+      visualizationConfig(id: $id) {
+        ...visualizationConfig
+        dataEntry {
+          ...dataEntry
+        }
+      }
+    }
+    ${dataEntry}
+    ${visualizationConfig}
+  `;
+  return terrasoApi
+    .requestGraphQL(query, { id })
+    .then(
+      response => response.visualizationConfig || Promise.reject('not_found')
+    )
+    .then(visualizationConfig => ({
+      ...visualizationConfig,
+      configuration: JSON.parse(visualizationConfig.configuration),
+    }));
 };

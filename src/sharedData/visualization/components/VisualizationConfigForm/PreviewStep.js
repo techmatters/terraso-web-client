@@ -1,0 +1,94 @@
+import React, { useCallback, useEffect, useState } from 'react';
+
+import _ from 'lodash/fp';
+import { Trans, useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { Typography } from '@mui/material';
+
+import StepperStep from 'common/components/StepperStep';
+import PageLoader from 'layout/PageLoader';
+
+import { useGroupContext } from 'group/groupContext';
+import { addVisualizationConfig } from 'sharedData/sharedDataSlice';
+import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
+
+import VisualizationPreview from './VisualizationPreview';
+
+const PreviewStep = props => {
+  const { t } = useTranslation();
+  const { onBack, onSaved } = props;
+  const dispatch = useDispatch();
+  const { saving } = useSelector(
+    state => state.sharedData.visualizationConfigForm
+  );
+  const visualizationContext = useVisualizationContext();
+  const { visualizationConfig, sheetContext: { selectedFile } = {} } =
+    visualizationContext;
+  const [viewportConfig, setViewportConfig] = useState(
+    visualizationConfig.viewportConfig
+  );
+  const { owner, entityType } = useGroupContext();
+
+  useEffect(() => {
+    setViewportConfig(visualizationConfig.viewportConfig);
+  }, [visualizationConfig.viewportConfig]);
+
+  const onBoundsChange = useCallback(bounds => {
+    setViewportConfig({
+      bounds: {
+        northEast: bounds.getNorthEast(),
+        southWest: bounds.getSouthWest(),
+      },
+    });
+  }, []);
+
+  const onPublish = () => {
+    const completeConfig = {
+      ...visualizationConfig,
+      viewportConfig,
+    };
+    const filteredConfig = _.omit(
+      ['datasetConfig.preview', 'annotateConfig.dataPointsTitle'],
+      completeConfig
+    );
+    dispatch(
+      addVisualizationConfig({
+        visualizationConfig: filteredConfig,
+        selectedFile,
+      })
+    ).then(data => {
+      const success = _.get('meta.requestStatus', data) === 'fulfilled';
+      if (success) {
+        onSaved(data.payload.id);
+      }
+    });
+  };
+
+  return (
+    <>
+      {saving && <PageLoader />}
+      <StepperStep
+        title={t('sharedData.form_step_preview_step_title')}
+        backLabel={t('sharedData.form_back')}
+        onBack={onBack}
+        nextLabel={t('sharedData.form_step_preview_step_save')}
+        onNext={onPublish}
+      >
+        <Typography sx={{ mb: 2 }}>
+          {t('sharedData.form_step_preview_step_description')}
+        </Typography>
+        <VisualizationPreview onBoundsChange={onBoundsChange} />
+        <Trans
+          i18nKey="sharedData.form_step_preview_step_map_description"
+          values={{ ownerName: owner.name, entityType }}
+        >
+          <Typography sx={{ mt: 2 }}>First</Typography>
+          <Typography sx={{ mt: 1 }}>Second</Typography>
+        </Trans>
+      </StepperStep>
+    </>
+  );
+};
+
+export default PreviewStep;
