@@ -24,6 +24,7 @@ import { formatDate } from 'localization/utils';
 import { useGroupContext } from 'group/groupContext';
 import SharedFileIcon from 'sharedData/components/SharedFileIcon';
 import { fetchGroupSharedData } from 'sharedData/sharedDataSlice';
+import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 
 const ACCEPTED_RESOURCE_TYPES = ['csv', 'xls', 'xlsx'];
 
@@ -34,10 +35,17 @@ const StackRow = props => (
 const SelectDataFileStep = props => {
   const dispatch = useDispatch();
   const { i18n, t } = useTranslation();
+  const { visualizationConfig } = useVisualizationContext();
   const { onNext, onBack } = props;
   const { group } = useGroupContext();
   const { data: sharedFiles, fetching } = useSelector(_.get('sharedData.list'));
   const [selected, setSelected] = useState();
+
+  useEffect(() => {
+    if (visualizationConfig?.selectedFile) {
+      setSelected(visualizationConfig?.selectedFile);
+    }
+  }, [visualizationConfig?.selectedFile]);
 
   useEffect(() => {
     dispatch(
@@ -98,7 +106,7 @@ const SelectDataFileStep = props => {
               <ListItemIcon>
                 <Radio
                   edge="start"
-                  checked={file === selected}
+                  checked={file?.id === selected?.id}
                   tabIndex={-1}
                   inputProps={{
                     'aria-labelledby': `selectable-file-${file.id}`,
