@@ -148,7 +148,7 @@ const DataPoints = props => {
     [dataPoints, onChange]
   );
 
-  if (dataPoints.length <= 1) {
+  if (_.isEmpty(dataPoints)) {
     return <></>;
   }
 
