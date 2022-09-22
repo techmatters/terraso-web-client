@@ -5,7 +5,7 @@ const MEMBERS_INFO_SAMPLE_SIZE = 5;
 
 export const dataEntries = `
   fragment dataEntries on GroupNode {
-    dataEntries {
+    dataEntries(resourceType_In: $resourceTypes) {
       edges {
         node {
           id

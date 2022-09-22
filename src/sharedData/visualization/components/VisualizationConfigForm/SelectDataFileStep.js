@@ -25,6 +25,8 @@ import { useGroupContext } from 'group/groupContext';
 import SharedFileIcon from 'sharedData/components/SharedFileIcon';
 import { fetchGroupSharedData } from 'sharedData/sharedDataSlice';
 
+const ACCEPTED_RESOURCE_TYPES = ['csv', 'xls', 'xlsx'];
+
 const StackRow = props => (
   <Stack direction="row" alignItems="center" spacing={1} {...props} />
 );
@@ -38,7 +40,12 @@ const SelectDataFileStep = props => {
   const [selected, setSelected] = useState();
 
   useEffect(() => {
-    dispatch(fetchGroupSharedData(group.slug));
+    dispatch(
+      fetchGroupSharedData({
+        slug: group.slug,
+        resourceTypes: ACCEPTED_RESOURCE_TYPES,
+      })
+    );
   }, [dispatch, group.slug]);
 
   const onNextWrapper = () => {

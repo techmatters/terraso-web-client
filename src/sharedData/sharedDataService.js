@@ -4,6 +4,8 @@ import { dataEntries } from 'group/groupFragments';
 import { extractDataEntries } from 'group/groupUtils';
 import * as terrasoApi from 'terrasoBackend/api';
 
+import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
+
 import { dataEntry, visualizationConfig } from './sharedDataFragments';
 
 export const uploadSharedData = async ({ groupSlug, file }) => {
@@ -57,9 +59,12 @@ export const updateSharedData = ({ file }) => {
   });
 };
 
-export const fetchGroupSharedData = slug => {
+export const fetchGroupSharedData = ({
+  slug,
+  resourceTypes = SHARED_DATA_ACCEPTED_EXTENSIONS,
+}) => {
   const query = `
-    query group($slug: String!){
+    query group($slug: String!, $resourceTypes: [String]!){
       groups(slug: $slug) {
         edges {
           node {
@@ -71,7 +76,7 @@ export const fetchGroupSharedData = slug => {
     ${dataEntries}
   `;
   return terrasoApi
-    .requestGraphQL(query, { slug })
+    .requestGraphQL(query, { slug, resourceTypes })
     .then(_.get('groups.edges[0].node'))
     .then(group => group || Promise.reject('not_found'))
     .then(group => extractDataEntries(group));

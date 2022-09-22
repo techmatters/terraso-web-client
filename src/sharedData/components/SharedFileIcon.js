@@ -7,6 +7,11 @@ const ICON_SIZE = 24;
 const SharedFileIcon = ({ resourceType }) => {
   switch (resourceType) {
     case 'csv':
+    case 'doc':
+    case 'docx':
+    case 'pdf':
+    case 'ppt':
+    case 'pptx':
     case 'xls':
     case 'xlsx':
       return (

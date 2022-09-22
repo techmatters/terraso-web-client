@@ -35,7 +35,7 @@ const SharedFilesCard = props => {
 
   useEffect(() => {
     if (allowed) {
-      dispatch(fetchGroupSharedData(group.slug));
+      dispatch(fetchGroupSharedData({ slug: group.slug }));
     }
   }, [dispatch, group, allowed]);
 
