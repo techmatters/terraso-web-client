@@ -148,6 +148,10 @@ const DataPoints = props => {
     [dataPoints, onChange]
   );
 
+  if (dataPoints.length <= 1) {
+    return <></>;
+  }
+
   return (
     <>
       <Typography id="data-points-description" sx={{ mb: 2 }}>
