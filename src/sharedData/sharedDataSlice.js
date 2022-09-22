@@ -132,6 +132,13 @@ const sharedDataSlice = createSlice({
         },
         state
       ),
+    [fetchGroupSharedData.pending]: (state, action) => ({
+      ...state,
+      list: {
+        fetching: true,
+        data: null,
+      },
+    }),
     [fetchGroupSharedData.fulfilled]: (state, action) => ({
       ...state,
       list: {
