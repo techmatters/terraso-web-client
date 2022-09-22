@@ -93,7 +93,7 @@ const SharedFilesCard = props => {
           </>
         )}
         <Stack direction="row" spacing={2}>
-          <Button variant="outlined" onClick={onUploadClick}>
+          <Button variant="contained" onClick={onUploadClick}>
             {t('sharedData.upload_button')}
           </Button>
           {onAddVisualizationClick && (

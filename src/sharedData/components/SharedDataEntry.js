@@ -62,12 +62,12 @@ const Visualizations = props => {
           container
           component={ListItem}
           key={visualization.id}
-          sx={{ bgcolor: 'gray.lite2' }}
+          sx={{ bgcolor: 'gray.lite2', fontSize: 14, color: 'gray.dark1' }}
         >
           <Grid item xs={1}>
             <MapIcon />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={4}>
             <Link
               component={RouterLink}
               to={`${baseOwnerUrl}/visualization/${visualization.id}`}
@@ -76,10 +76,8 @@ const Visualizations = props => {
             </Link>
           </Grid>
           <Grid item xs={4}>
-            <Typography>
-              {formatDate(i18n.resolvedLanguage, visualization.createdAt)}, by{' '}
-              {t('user.full_name', { user: visualization.createdBy })}
-            </Typography>
+            {formatDate(i18n.resolvedLanguage, visualization.createdAt)}, by{' '}
+            {t('user.full_name', { user: visualization.createdBy })}
           </Grid>
         </Grid>
       ))}
