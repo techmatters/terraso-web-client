@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,20 @@ const VisualizationPreview = props => {
   const { t } = useTranslation();
   const { title } = props;
   const visualizationContext = useVisualizationContext();
+  const { setVisualizationConfig } = visualizationContext;
+
+  const onBaseMapChange = useCallback(
+    layer => {
+      setVisualizationConfig(current => ({
+        ...current,
+        viewportConfig: {
+          ...(current.viewportConfig || {}),
+          baseMapUrl: layer._url,
+        },
+      }));
+    },
+    [setVisualizationConfig]
+  );
 
   return (
     <Paper
@@ -30,7 +44,7 @@ const VisualizationPreview = props => {
             visualizationContext
           )}
       </Typography>
-      <Visualization {...props} />
+      <Visualization onBaseMapChange={onBaseMapChange} {...props} />
     </Paper>
   );
 };

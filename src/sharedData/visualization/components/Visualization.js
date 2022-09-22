@@ -171,13 +171,13 @@ const SetBaseLayer = props => {
   const { visualizationConfig } = props;
 
   useEffect(() => {
-    const baseMapUrl = visualizationConfig?.viewportConfig?.baseMapeUrl;
+    const baseMapUrl = visualizationConfig?.viewportConfig?.baseMapUrl;
     if (!baseMapUrl) {
       return;
     }
 
     LAYERS_BY_URL[baseMapUrl].addTo(map);
-  }, [map, visualizationConfig?.viewportConfig?.baseMapeUrl]);
+  }, [map, visualizationConfig?.viewportConfig?.baseMapUrl]);
   return null;
 };
 

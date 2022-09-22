@@ -111,7 +111,10 @@ const VisualizationConfigForm = props => {
   ];
 
   return (
-    <VisualizationContextProvider visualizationConfig={visualizationConfig}>
+    <VisualizationContextProvider
+      visualizationConfig={visualizationConfig}
+      setVisualizationConfig={setVisualizationConfig}
+    >
       <Stepper steps={steps} />
     </VisualizationContextProvider>
   );

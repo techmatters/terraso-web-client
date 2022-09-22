@@ -12,7 +12,7 @@ export const VisualizationContext = React.createContext();
 
 export const VisualizationContextProvider = props => {
   const dispatch = useDispatch();
-  const { visualizationConfig, children } = props;
+  const { visualizationConfig, setVisualizationConfig, children } = props;
   const [sheetContext, setSheetContext] = useState();
   const [loadingFile, setLoadingFile] = useState(true);
   const [loadingFileError, setLoadingFileError] = useState();
@@ -97,6 +97,7 @@ export const VisualizationContextProvider = props => {
     <VisualizationContext.Provider
       value={{
         visualizationConfig,
+        setVisualizationConfig,
         sheetContext,
         loadingFile,
         loadingFileError,
