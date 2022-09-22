@@ -75,7 +75,7 @@ const Visualizations = props => {
               {_.get('configuration.annotateConfig.mapTitle', visualization)}
             </Link>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={6}>
             {formatDate(i18n.resolvedLanguage, visualization.createdAt)}, by{' '}
             {t('user.full_name', { user: visualization.createdBy })}
           </Grid>
