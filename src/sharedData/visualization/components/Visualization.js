@@ -4,7 +4,7 @@ import L from 'leaflet';
 import _ from 'lodash/fp';
 import * as SheetsJs from 'xlsx';
 
-import Map from 'gis/components/Map';
+import Map, { LAYERS_BY_URL } from 'gis/components/Map';
 
 import './Visualization.css';
 
@@ -166,12 +166,28 @@ const OpenSamplePopup = ({ marker }) => {
   return null;
 };
 
+const SetBaseLayer = props => {
+  const map = useMap();
+  const { visualizationConfig } = props;
+
+  useEffect(() => {
+    const baseMapUrl = visualizationConfig?.viewportConfig?.baseMapeUrl;
+    if (!baseMapUrl) {
+      return;
+    }
+
+    LAYERS_BY_URL[baseMapUrl].addTo(map);
+  }, [map, visualizationConfig?.viewportConfig?.baseMapeUrl]);
+  return null;
+};
+
 const Visualization = props => {
   const {
     customConfig,
     showPopup = false,
     sampleSize,
     onBoundsChange,
+    onBaseMapChange,
     children,
   } = props;
   const visualizationContext = useVisualizationContext();
@@ -215,6 +231,7 @@ const Visualization = props => {
   return (
     <Map
       onBoundsChange={onBoundsChange}
+      onBaseMapChange={onBaseMapChange}
       style={{
         width: '100%',
         height: '400px',
@@ -228,6 +245,7 @@ const Visualization = props => {
         setSampleMarker={setSampleMarker}
       />
       {showPopup && <OpenSamplePopup marker={sampleMarker} />}
+      <SetBaseLayer visualizationConfig={visualizationConfig} />
       {children}
     </Map>
   );

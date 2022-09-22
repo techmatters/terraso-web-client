@@ -45,6 +45,11 @@ const LAYER_ESRI = L.tileLayer(
   }
 );
 
+export const LAYERS_BY_URL = _.flow(
+  _.map(layer => [layer._url, layer]),
+  _.fromPairs
+)([LAYER_OSM, LAYER_ESRI]);
+
 const MapContext = React.createContext();
 
 function geojsonToLayer(geojson, layer, options = {}) {
@@ -333,6 +338,7 @@ const Map = props => {
   const {
     bounds,
     onBoundsChange,
+    onBaseMapChange,
     geojson,
     onGeoJsonChange,
     geoJsonFilter,
@@ -367,15 +373,27 @@ const Map = props => {
       })
       .addTo(map);
 
-    // Move listener
+    return () => {
+      map.removeControl(layersControl);
+      featureGroup.remove();
+    };
+  }, [map, t]);
+
+  useEffect(() => {
     const onMoveListener = () => onBoundsChange?.(map.getBounds());
     map.on('moveend', onMoveListener);
     return () => {
-      map.removeControl(layersControl);
       map.on('moveend', onMoveListener);
-      featureGroup.remove();
     };
-  }, [map, t, onBoundsChange]);
+  }, [map, onBoundsChange]);
+
+  useEffect(() => {
+    const onBaseMapChangeListener = event => onBaseMapChange?.(event.layer);
+    map.on('baselayerchange', onBaseMapChangeListener);
+    return () => {
+      map.on('baselayerchange', onBaseMapChangeListener);
+    };
+  }, [map, onBaseMapChange]);
 
   const onBoundsUpdate = useCallback(
     bbox => {

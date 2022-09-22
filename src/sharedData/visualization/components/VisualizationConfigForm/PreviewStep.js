@@ -35,12 +35,20 @@ const PreviewStep = props => {
   }, [visualizationConfig.viewportConfig]);
 
   const onBoundsChange = useCallback(bounds => {
-    setViewportConfig({
+    setViewportConfig(current => ({
+      ...current,
       bounds: {
         northEast: bounds.getNorthEast(),
         southWest: bounds.getSouthWest(),
       },
-    });
+    }));
+  }, []);
+
+  const onBaseMapChange = useCallback(layer => {
+    setViewportConfig(current => ({
+      ...current,
+      baseMapeUrl: layer._url,
+    }));
   }, []);
 
   const onPublish = () => {
@@ -78,7 +86,10 @@ const PreviewStep = props => {
         <Typography sx={{ mb: 2 }}>
           {t('sharedData.form_step_preview_step_description')}
         </Typography>
-        <VisualizationPreview onBoundsChange={onBoundsChange} />
+        <VisualizationPreview
+          onBoundsChange={onBoundsChange}
+          onBaseMapChange={onBaseMapChange}
+        />
         <Trans
           i18nKey="sharedData.form_step_preview_step_map_description"
           values={{ ownerName: owner.name, entityType }}
