@@ -9,7 +9,12 @@ import Map from 'gis/components/Map';
 import './Visualization.css';
 
 import { useTranslation } from 'react-i18next';
-import { FeatureGroup, Marker, Popup, useMap } from 'react-leaflet';
+import {
+  Marker as BaseMarker,
+  FeatureGroup,
+  Popup,
+  useMap,
+} from 'react-leaflet';
 
 import { Box, Stack, Typography } from '@mui/material';
 
@@ -17,8 +22,46 @@ import { normalizeLongitude } from 'gis/gisUtils';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 import { getImageData } from 'sharedData/visualization/visualizationMarkers';
 
-const Markers = props => {
+const Marker = props => {
   const { t } = useTranslation();
+  const { point, index, icon } = props;
+
+  const showPopup = point.title || !_.isEmpty(point.fields);
+  return (
+    <BaseMarker
+      key={index}
+      position={point.position}
+      icon={icon}
+      alt={point.title || `${t('gis.default_marker_label')} ${index + 1}`}
+    >
+      {showPopup && (
+        <Popup
+          className="visualization-marker-popup"
+          closeButton={false}
+          maxHeight={150}
+        >
+          <Box sx={{ p: 1 }}>
+            {point.title && (
+              <Typography variant="h6" component="h2" gutterBottom>
+                {point.title}
+              </Typography>
+            )}
+            <Stack spacing={1}>
+              {point.fields.map((field, index) => (
+                <Stack key={index} direction="row" spacing={1}>
+                  <Typography>{field.label}:</Typography>
+                  <Typography>{_.toString(field.value)}</Typography>
+                </Stack>
+              ))}
+            </Stack>
+          </Box>
+        </Popup>
+      )}
+    </BaseMarker>
+  );
+};
+
+const Markers = props => {
   const featureGroupRef = useRef();
   const map = useMap();
   const { visualizationConfig, rows, sampleSize, icon, setSampleMarker } =
@@ -93,34 +136,7 @@ const Markers = props => {
   return (
     <FeatureGroup ref={featureGroupRef}>
       {points.map((point, index) => (
-        <Marker
-          key={index}
-          position={point.position}
-          icon={icon}
-          alt={point.title || `${t('gis.default_marker_label')} ${index + 1}`}
-        >
-          <Popup
-            className="visualization-marker-popup"
-            closeButton={false}
-            maxHeight={150}
-          >
-            <Box sx={{ p: 1 }}>
-              {point.title && (
-                <Typography variant="h6" component="h2" gutterBottom>
-                  {point.title}
-                </Typography>
-              )}
-              <Stack spacing={1}>
-                {point.fields.map((field, index) => (
-                  <Stack key={index} direction="row" spacing={1}>
-                    <Typography>{field.label}:</Typography>
-                    <Typography>{_.toString(field.value)}</Typography>
-                  </Stack>
-                ))}
-              </Stack>
-            </Box>
-          </Popup>
-        </Marker>
+        <Marker key={index} point={point} icon={icon} index={index} />
       ))}
     </FeatureGroup>
   );
