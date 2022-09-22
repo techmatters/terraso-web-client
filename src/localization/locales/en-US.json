@@ -410,7 +410,8 @@
         "form_visualization_preview_label": "Preview",
         "deleted_visualization_config": "{{mapTitle}} has been deleted.",
         "form_step_annotate_data_points_input_label": "Data point {{index}} label",
-        "visualization_file_load_error": "[TODO] Failed to load file. Try again."
+        "visualization_file_load_error": "[TODO] Failed to load file. Try again.",
+        "form_step_set_dataset.form.validation_array_min": "Please select at least one data column to display."
     },
     "common": {
         "dialog_cancel_label": "Cancel",
