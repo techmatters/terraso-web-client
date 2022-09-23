@@ -81,14 +81,14 @@ const changeSelectOption = async (name, newValue) => {
 
 const testSetDatasetStep = async () => {
   await waitFor(() =>
-    expect(screen.getByRole('heading', { name: 'Choose Your Data' }))
+    expect(screen.getByRole('heading', { name: 'Select Data from File 1' }))
   );
 
   await changeSelectOption('Latitude (required)', 'col3');
   await validateSelectValue('Longitude (required)', 'col_longitude');
 
-  await changeSelectOption('Data column 1', 'col1');
-  await changeSelectOption('Data column 3', 'col4');
+  await changeSelectOption('Column 1', 'col1');
+  await changeSelectOption('Column 3', 'col4');
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Next' }))
   );

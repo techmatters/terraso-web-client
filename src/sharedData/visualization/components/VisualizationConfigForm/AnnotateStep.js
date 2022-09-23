@@ -144,7 +144,7 @@ const DataPoints = props => {
 
   return (
     <>
-      <InputLabel sx={{ textTransform: 'uppercase' }} for="droppable-list">
+      <InputLabel sx={{ textTransform: 'uppercase' }} htmlFor="droppable-list">
         {t('sharedData.form_step_annotate_data_points_label')}
       </InputLabel>
       <Typography id="data-points-description" sx={{ mb: 2 }}>

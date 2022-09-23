@@ -443,9 +443,12 @@ const SetDatasetStep = props => {
     <>
       {loadingFile && <PageLoader />}
       <StepperStep
-        title={t('sharedData.form_step_set_dataset_step_title', {
-          selectedFile,
-        })}
+        title={
+          selectedFile &&
+          t('sharedData.form_step_set_dataset_step_title', {
+            selectedFile,
+          })
+        }
         backLabel={t('sharedData.form_back')}
         onBack={() => onBack(cleaneadData)}
         nextLabel={t('sharedData.form_next')}
