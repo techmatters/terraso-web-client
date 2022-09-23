@@ -206,7 +206,7 @@ const GroupView = () => {
             <SharedDataCard
               onUploadClick={() => navigate(`/groups/${group.slug}/upload`)}
               onAddVisualizationClick={() =>
-                navigate(`/groups/${group.slug}/map-config`)
+                navigate(`/groups/${group.slug}/map/new`)
               }
             />
           </Grid>

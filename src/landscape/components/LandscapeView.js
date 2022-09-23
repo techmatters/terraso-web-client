@@ -244,7 +244,7 @@ const LandscapeView = () => {
                 navigate(`/landscapes/${landscape.slug}/upload`)
               }
               onAddVisualizationClick={() =>
-                navigate(`/landscapes/${landscape.slug}/map-config`)
+                navigate(`/landscapes/${landscape.slug}/map/new`)
               }
             />
           </Grid>
