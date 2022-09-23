@@ -96,7 +96,7 @@ const SharedFilesCard = props => {
           <Button variant="contained" onClick={onUploadClick}>
             {t('sharedData.upload_button')}
           </Button>
-          {onAddVisualizationClick && (
+          {onAddVisualizationClick && hasFiles && (
             <Button variant="outlined" onClick={onAddVisualizationClick}>
               {t('sharedData.add_visualization_button')}
             </Button>
