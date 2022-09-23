@@ -76,6 +76,7 @@ export const VisualizationContextProvider = props => {
           addMessage({
             severity: 'error',
             content: 'sharedData.visualization_file_load_error',
+            params: { name: visualizationConfig.selectedFile.name },
           })
         );
       });
