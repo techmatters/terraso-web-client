@@ -30,7 +30,7 @@ const PreviewStep = props => {
   const [viewportConfig, setViewportConfig] = useState(
     visualizationConfig.viewportConfig
   );
-  const { entityType } = useGroupContext();
+  const { owner, entityType } = useGroupContext();
 
   useEffect(() => {
     setViewportConfig(visualizationConfig.viewportConfig);
