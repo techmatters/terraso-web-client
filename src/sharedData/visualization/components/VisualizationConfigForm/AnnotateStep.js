@@ -15,6 +15,7 @@ import * as yup from 'yup';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import {
   Grid,
+  InputLabel,
   ListItem,
   ListItemAvatar,
   OutlinedInput,
@@ -43,12 +44,6 @@ const FORM_FIELDS = [
     label: 'sharedData.form_step_annotate_map_title_label',
   },
   {
-    name: 'dataPointsTitle',
-    props: {
-      renderInput: () => <DataPointsTitle />,
-    },
-  },
-  {
     name: 'annotationTitle',
     label: 'sharedData.form_step_annotate_annotation_title_label',
     props: {
@@ -73,15 +68,6 @@ const FORM_FIELDS = [
     },
   },
 ];
-
-const DataPointsTitle = () => {
-  const { t } = useTranslation();
-  return (
-    <Typography>
-      {t('sharedData.form_step_annotate_data_points_title')}
-    </Typography>
-  );
-};
 
 const DataPoints = props => {
   const { t } = useTranslation();
@@ -158,6 +144,9 @@ const DataPoints = props => {
 
   return (
     <>
+      <InputLabel sx={{ textTransform: 'uppercase' }} for="droppable-list">
+        {t('sharedData.form_step_annotate_data_points_label')}
+      </InputLabel>
       <Typography id="data-points-description" sx={{ mb: 2 }}>
         {t('sharedData.form_step_annotate_data_points_description')}
       </Typography>
@@ -257,9 +246,6 @@ const AnnotateStep = props => {
       nextLabel={t('sharedData.form_next')}
       onNext={onNextWrapper}
     >
-      <Typography sx={{ mb: 4 }} id="visualization-annotate-step-description">
-        {t('sharedData.form_step_annotate_step_description')}
-      </Typography>
       <Grid container>
         <Grid item container direction="column" xs={12} md={6}>
           <Form
