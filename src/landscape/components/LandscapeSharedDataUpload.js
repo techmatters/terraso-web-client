@@ -1,13 +1,15 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 
 import { fetchLandscapeUpload } from 'landscape/landscapeSlice';
 import SharedDataUpload from 'sharedData/components/SharedDataUpload';
@@ -19,6 +21,20 @@ const LandscapeSharedDataUpload = () => {
   const { slug } = useParams();
   const { fetching, landscape } = useSelector(
     state => state.landscape.sharedDataUpload
+  );
+
+  useDocumentTitle(
+    t('sharedData.upload_title', {
+      name: landscape?.name,
+    }),
+    fetching
+  );
+
+  useBreadcrumbsParams(
+    useMemo(
+      () => ({ landscapeName: landscape?.name, loading: !landscape?.name }),
+      [landscape?.name]
+    )
   );
 
   useEffect(() => {

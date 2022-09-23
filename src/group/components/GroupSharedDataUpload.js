@@ -1,12 +1,14 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 
 import { fetchGroupUpload } from 'group/groupSlice';
 import SharedDataUpload from 'sharedData/components/SharedDataUpload';
@@ -18,6 +20,20 @@ const GroupSharedDataUpload = () => {
   const { slug } = useParams();
   const { fetching, group } = useSelector(
     state => state.group.sharedDataUpload
+  );
+
+  useDocumentTitle(
+    t('sharedData.upload_title', {
+      name: group?.name,
+    }),
+    fetching
+  );
+
+  useBreadcrumbsParams(
+    useMemo(
+      () => ({ groupName: group?.name, loading: !group?.name }),
+      [group?.name]
+    )
   );
 
   useEffect(() => {

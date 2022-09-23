@@ -54,7 +54,10 @@ const paths = [
     showBreadcrumbs: true,
     breadcrumbsLabel: 'group.breadcrumbs_members',
   }),
-  path('/groups/:slug/upload', GroupSharedDataUpload),
+  path('/groups/:slug/upload', GroupSharedDataUpload, {
+    showBreadcrumbs: true,
+    breadcrumbsLabel: 'group.breadcrumbs_upload',
+  }),
   path('/groups/:slug/map/new', GroupSharedDataVisualizationConfig, {
     showBreadcrumbs: true,
     breadcrumbsLabel: 'group.breadcrumbs_visualization_new',
@@ -77,7 +80,10 @@ const paths = [
     showBreadcrumbs: true,
     breadcrumbsLabel: 'landscape.breadcrumbs_members',
   }),
-  path('/landscapes/:slug/upload', LandscapeSharedDataUpload),
+  path('/landscapes/:slug/upload', LandscapeSharedDataUpload, {
+    showBreadcrumbs: true,
+    breadcrumbsLabel: 'group.breadcrumbs_upload',
+  }),
   path('/landscapes/:slug/map/new', LandscapeSharedDataVisualizationConfig, {
     showBreadcrumbs: true,
     breadcrumbsLabel: 'landscape.breadcrumbs_visualization_new',
