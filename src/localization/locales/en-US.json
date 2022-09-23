@@ -397,7 +397,7 @@
         "visualization_source_data": "<0>SOURCE DATA: <1>{{file.name}}.{{file.resourceType}}</1></0>",
         "visualization_created_by": "Created by {{user}} on {{date}}",
         "visualization_delete": "Delete",
-        "visualization_delete_confirm_title": "Delete map, “{{visualization.configuration.annotateConfig.mapTitle}}“?",
+        "visualization_delete_confirm_title": "Delete map “{{visualization.configuration.annotateConfig.mapTitle}}“?",
         "visualization_delete_confirm_message": "Are you sure you wish to delete the map “{{visualization.configuration.annotateConfig.mapTitle}}“",
         "visualization_confirm_delete": "Delete map",
         "add_visualization_button": "Make Map",
