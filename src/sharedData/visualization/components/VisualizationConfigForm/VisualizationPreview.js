@@ -11,7 +11,7 @@ import Visualization from '../Visualization';
 
 const VisualizationPreview = props => {
   const { t } = useTranslation();
-  const { title } = props;
+  const { title, customConfig } = props;
   const visualizationContext = useVisualizationContext();
   const { setVisualizationConfig } = visualizationContext;
 
@@ -37,13 +37,20 @@ const VisualizationPreview = props => {
         p: 2,
       })}
     >
-      <Typography sx={{ mb: 2, fontWeight: 600 }}>
-        {title ||
-          _.get(
-            'visualizationConfig.annotateConfig.mapTitle',
-            visualizationContext
+      {title ? (
+        <Typography sx={{ mb: 2, fontWeight: 600 }}>{title}</Typography>
+      ) : (
+        <Typography variant="h1" sx={{ mb: 2 }}>
+          {_.getOr(
+            _.get(
+              'visualizationConfig.annotateConfig.mapTitle',
+              visualizationContext
+            ),
+            'annotateConfig.mapTitle',
+            customConfig
           )}
-      </Typography>
+        </Typography>
+      )}
       <Visualization onBaseMapChange={onBaseMapChange} {...props} />
     </Paper>
   );

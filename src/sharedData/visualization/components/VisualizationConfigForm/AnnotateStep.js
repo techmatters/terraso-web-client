@@ -267,7 +267,6 @@ const AnnotateStep = props => {
               annotateConfig: updatedValues,
             }}
             sampleSize={1}
-            title={updatedValues?.mapTitle}
           />
         </Grid>
       </Grid>
