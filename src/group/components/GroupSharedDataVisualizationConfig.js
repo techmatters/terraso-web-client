@@ -24,7 +24,7 @@ const GroupSharedDataVisualizationConfig = () => {
 
   const onCompleteSuccess = useCallback(
     visualizationId => {
-      navigate(`/groups/${slug}/visualization/${visualizationId}`);
+      navigate(`/groups/${slug}/map/${visualizationId}`);
     },
     [navigate, slug]
   );

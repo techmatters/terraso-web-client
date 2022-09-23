@@ -70,7 +70,7 @@ const Visualizations = props => {
           <Grid item xs={4}>
             <Link
               component={RouterLink}
-              to={`${baseOwnerUrl}/visualization/${visualization.id}`}
+              to={`${baseOwnerUrl}/map/${visualization.id}`}
             >
               {_.get('configuration.annotateConfig.mapTitle', visualization)}
             </Link>
