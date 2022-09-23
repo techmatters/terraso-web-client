@@ -8,6 +8,7 @@ import { Typography } from '@mui/material';
 
 import StepperStep from 'common/components/StepperStep';
 import PageLoader from 'layout/PageLoader';
+import { useAnalytics } from 'monitoring/analytics';
 
 import { useGroupContext } from 'group/groupContext';
 import { addVisualizationConfig } from 'sharedData/sharedDataSlice';
@@ -17,6 +18,7 @@ import VisualizationPreview from './VisualizationPreview';
 
 const PreviewStep = props => {
   const { t } = useTranslation();
+  const { trackEvent } = useAnalytics();
   const { onBack, onSaved } = props;
   const dispatch = useDispatch();
   const { saving } = useSelector(
@@ -68,6 +70,12 @@ const PreviewStep = props => {
     ).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
       if (success) {
+        trackEvent('Map: Created', {
+          props: {
+            owner: owner.name,
+            file: visualizationConfig?.selectedFile.name,
+          },
+        });
         onSaved(data.payload.id);
       }
     });
