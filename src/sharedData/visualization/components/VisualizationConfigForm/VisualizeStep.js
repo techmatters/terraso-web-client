@@ -186,9 +186,6 @@ const VisualizeStep = props => {
           md={6}
         >
           <Grid container alignItems="center" spacing={2}>
-            <Grid item xs={12} component={Typography} sx={{ pb: 2 }}>
-              {t('sharedData.form_step_visualize_step_settings_title')}
-            </Grid>
             <Shape shape={shape} setShape={setShape} />
             <Size size={size} setSize={setSize} />
             <Color color={color} setColor={setColor} />
