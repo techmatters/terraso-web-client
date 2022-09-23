@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo } from 'react';
 
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
@@ -12,11 +14,19 @@ import { fetchLandscapeUpload } from 'landscape/landscapeSlice';
 import VisualizationWrapper from 'sharedData/visualization/components/VisualizationWrapper';
 
 const LandscapeSharedDataVisualization = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { slug, configId } = useParams();
   const { landscape, fetching } = useSelector(
     state => state.landscape.sharedDataUpload
+  );
+
+  useDocumentTitle(
+    t('sharedData.map_view_document_title', {
+      name: landscape?.name,
+    }),
+    fetching
   );
 
   useEffect(() => {
