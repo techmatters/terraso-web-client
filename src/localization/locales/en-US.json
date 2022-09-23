@@ -125,7 +125,8 @@
         "home_pending_message": "Waiting for the group manager’s approval",
         "breadcrumbs_view": "{{groupName}}",
         "breadcrumbs_members": "Members",
-        "breadcrumbs_visualization": "{{mapTitle}}"
+        "breadcrumbs_visualization": "{{mapTitle}}",
+        "breadcrumbs_visualization_new": "New Map"
     },
     "tool": {
         "requirements": "System requirements",
@@ -314,7 +315,8 @@
         "form_boundary_draw_polygon_saved_update": "Your landscape boundary is complete. Select <1/> to add more detail to your boundary or select Update Map to submit your changes.",
         "form_boundary_draw_polygon_edit_help": "<strong>How to edit:</strong> Drag points to adjust the shape. Select points to remove. When you are finished, save and select {{saveLabel}}.",
         "form_boundary_map_basemap_label": "Background map",
-        "breadcrumbs_visualization": "{{mapTitle}}"
+        "breadcrumbs_visualization": "{{mapTitle}}",
+        "breadcrumbs_visualization_new": "New Map"
     },
     "sharedData": {
         "title": "Shared files",
