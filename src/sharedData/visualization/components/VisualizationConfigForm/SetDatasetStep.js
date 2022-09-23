@@ -25,6 +25,7 @@ import {
 
 import StepperStep from 'common/components/StepperStep';
 import Form from 'forms/components/Form';
+import { FormContextProvider, useFormGetContext } from 'forms/formContext';
 import PageLoader from 'layout/PageLoader';
 
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
@@ -369,6 +370,8 @@ const SetDatasetStep = props => {
   const [datasetConfig, setDatasetStepConfig] = useState(
     visualizationConfig.datasetConfig || {}
   );
+  const [updatedValues, setUpdatedValues] = useState();
+  const { trigger } = useFormGetContext();
 
   useEffect(() => {
     if (loadingFileError) {
@@ -407,10 +410,6 @@ const SetDatasetStep = props => {
     }));
   }, [headers, datasetConfig.latitude, datasetConfig.longitude, sheetContext]);
 
-  const onNextWrapper = datasetConfig => {
-    onNext(_.omit('context', datasetConfig));
-  };
-
   const datasetConfigWithContext = useMemo(
     () => ({
       ...datasetConfig,
@@ -421,10 +420,27 @@ const SetDatasetStep = props => {
     [datasetConfig, sheetContext]
   );
 
+  const cleaneadData = useMemo(() => {
+    return VALIDATION_SCHEMA.cast(_.omit('context', updatedValues));
+  }, [updatedValues]);
+
+  const onNextWrapper = useCallback(async () => {
+    const success = await trigger?.();
+    if (success) {
+      onNext(cleaneadData);
+    }
+  }, [trigger, cleaneadData, onNext]);
+
   return (
     <>
       {loadingFile && <PageLoader />}
-      <StepperStep title={t('sharedData.form_step_set_dataset_step_title')}>
+      <StepperStep
+        title={t('sharedData.form_step_set_dataset_step_title')}
+        backLabel={t('sharedData.form_back')}
+        onBack={() => onBack(cleaneadData)}
+        nextLabel={t('sharedData.form_next')}
+        onNext={onNextWrapper}
+      >
         {!(loadingFile || loadingFileError) && (
           <>
             <Typography sx={{ mb: 4 }}>
@@ -442,11 +458,8 @@ const SetDatasetStep = props => {
               fields={FORM_FIELDS}
               values={datasetConfigWithContext}
               validationSchema={VALIDATION_SCHEMA}
-              onSave={onNextWrapper}
-              saveLabel="sharedData.form_next"
-              cancelLabel="sharedData.form_back"
-              onCancel={onBack}
               isMultiStep
+              onChange={setUpdatedValues}
             />
           </>
         )}
@@ -455,4 +468,10 @@ const SetDatasetStep = props => {
   );
 };
 
-export default SetDatasetStep;
+const ContextWrapper = props => (
+  <FormContextProvider>
+    <SetDatasetStep {...props} />
+  </FormContextProvider>
+);
+
+export default ContextWrapper;

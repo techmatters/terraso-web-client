@@ -37,16 +37,19 @@ const VisualizationConfigForm = props => {
     setActiveStepIndex(0);
   };
 
+  const onStepUpdate = update =>
+    setVisualizationConfig(current => ({
+      ...current,
+      ...update,
+    }));
+
   const steps = [
     {
       label: t('sharedData.form_step_select_file_label'),
       render: ({ setActiveStepIndex }) => (
         <SelectDataFileStep
           onNext={selectedFile => {
-            setVisualizationConfig({
-              ...initialConfig,
-              selectedFile,
-            });
+            onStepUpdate({ selectedFile });
             setActiveStepIndex(current => current + 1);
           }}
           onBack={onCancel}
@@ -57,12 +60,12 @@ const VisualizationConfigForm = props => {
       label: t('sharedData.form_step_set_dataset_label'),
       render: ({ setActiveStepIndex }) => (
         <SetDatasetStep
-          onBack={() => setActiveStepIndex(current => current - 1)}
+          onBack={datasetConfig => {
+            onStepUpdate({ datasetConfig });
+            setActiveStepIndex(current => current - 1);
+          }}
           onNext={datasetConfig => {
-            setVisualizationConfig(current => ({
-              ...current,
-              datasetConfig,
-            }));
+            onStepUpdate({ datasetConfig });
             setActiveStepIndex(current => current + 1);
           }}
           onReadFileFails={onReadFileFails(setActiveStepIndex)}
@@ -73,12 +76,12 @@ const VisualizationConfigForm = props => {
       label: t('sharedData.form_step_visualize_label'),
       render: ({ setActiveStepIndex }) => (
         <VisualizeStep
-          onBack={() => setActiveStepIndex(current => current - 1)}
+          onBack={visualizeConfig => {
+            onStepUpdate({ visualizeConfig });
+            setActiveStepIndex(current => current - 1);
+          }}
           onNext={visualizeConfig => {
-            setVisualizationConfig(current => ({
-              ...current,
-              visualizeConfig,
-            }));
+            onStepUpdate({ visualizeConfig });
             setActiveStepIndex(current => current + 1);
           }}
         />
@@ -88,12 +91,12 @@ const VisualizationConfigForm = props => {
       label: t('sharedData.form_step_annotate_label'),
       render: ({ setActiveStepIndex }) => (
         <AnnotateStep
-          onBack={() => setActiveStepIndex(current => current - 1)}
+          onBack={annotateConfig => {
+            onStepUpdate({ annotateConfig });
+            setActiveStepIndex(current => current - 1);
+          }}
           onNext={annotateConfig => {
-            setVisualizationConfig(current => ({
-              ...current,
-              annotateConfig,
-            }));
+            onStepUpdate({ annotateConfig });
             setActiveStepIndex(current => current + 1);
           }}
         />
@@ -103,7 +106,10 @@ const VisualizationConfigForm = props => {
       label: t('sharedData.form_step_preview_label'),
       render: ({ setActiveStepIndex }) => (
         <PreviewStep
-          onBack={() => setActiveStepIndex(current => current - 1)}
+          onBack={viewportConfig => {
+            onStepUpdate({ viewportConfig });
+            setActiveStepIndex(current => current - 1);
+          }}
           onSaved={onCompleteSuccess}
         />
       ),

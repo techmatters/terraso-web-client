@@ -49,7 +49,7 @@ const PreviewStep = props => {
   const onBaseMapChange = useCallback(layer => {
     setViewportConfig(current => ({
       ...current,
-      baseMapeUrl: layer._url,
+      baseMapUrl: layer._url,
     }));
   }, []);
 
@@ -87,7 +87,7 @@ const PreviewStep = props => {
       <StepperStep
         title={t('sharedData.form_step_preview_step_title')}
         backLabel={t('sharedData.form_back')}
-        onBack={onBack}
+        onBack={() => onBack(viewportConfig)}
         nextLabel={t('sharedData.form_step_preview_step_save')}
         onNext={onPublish}
       >

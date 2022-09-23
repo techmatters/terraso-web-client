@@ -249,7 +249,7 @@ const AnnotateStep = props => {
     <StepperStep
       title={t('sharedData.form_step_annotate_step_title')}
       backLabel={t('sharedData.form_back')}
-      onBack={onBack}
+      onBack={() => onBack(updatedValues)}
       nextLabel={t('sharedData.form_next')}
       onNext={onNextWrapper}
     >

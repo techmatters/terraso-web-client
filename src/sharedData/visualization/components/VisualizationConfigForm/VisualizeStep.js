@@ -136,7 +136,7 @@ const Color = props => {
             type: 'color',
             'aria-labelledby': 'color-label',
           }}
-          sx={{ width: '50px', height: '50px', p: 0 }}
+          sx={{ width: '50px', height: '50px' }}
         />
       </Grid>
     </>
@@ -170,7 +170,7 @@ const VisualizeStep = props => {
     <StepperStep
       title={t('sharedData.form_step_visualize_step_title')}
       backLabel={t('sharedData.form_back')}
-      onBack={onBack}
+      onBack={() => onBack(visualizeConfig)}
       nextLabel={t('sharedData.form_next')}
       onNext={() => onNext(visualizeConfig)}
     >
