@@ -403,7 +403,7 @@
         "add_visualization_button": "Make Map",
         "form_step_annotate_fields.mapTitle": "Map Title",
         "visualization_share_description": "<0>Select “share” to publish your map to your {{ownerName}}. Only members of your {{ownerName}} will be able to access the map.</0><1>Adjust map center and zoom to explore the map or download this file as an image.</1>",
-        "visualization_download_png": "Download (PNG)",
+        "visualization_download_png": "Download PNG",
         "form_step_visualize_shape_circle": "Circle",
         "form_step_visualize_shape_square": "Square",
         "form_step_visualize_shape_hexagon": "Hexagon",

@@ -129,7 +129,7 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
   visualizationMarkers.getImageData.mockReturnValue('markerImageData');
 
   await setup();
-  await screen.findByRole('button', { name: 'Download (PNG)' });
+  await screen.findByRole('button', { name: 'Download PNG' });
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
   expect(global.fetch).toHaveBeenCalledTimes(1);
 
