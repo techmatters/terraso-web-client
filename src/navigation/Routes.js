@@ -80,7 +80,7 @@ const paths = [
   path('/landscapes/:slug/upload', LandscapeSharedDataUpload),
   path('/landscapes/:slug/map/new', LandscapeSharedDataVisualizationConfig, {
     showBreadcrumbs: true,
-    breadcrumbsLabel: 'lanscape.breadcrumbs_visualization_new',
+    breadcrumbsLabel: 'landscape.breadcrumbs_visualization_new',
   }),
   path('/landscapes/:slug/map/:configId', LandscapeSharedDataVisualization, {
     showBreadcrumbs: true,
