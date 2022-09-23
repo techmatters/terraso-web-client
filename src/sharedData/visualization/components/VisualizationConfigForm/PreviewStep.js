@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import _ from 'lodash/fp';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Typography } from '@mui/material';
@@ -30,7 +30,7 @@ const PreviewStep = props => {
   const [viewportConfig, setViewportConfig] = useState(
     visualizationConfig.viewportConfig
   );
-  const { owner, entityType } = useGroupContext();
+  const { entityType } = useGroupContext();
 
   useEffect(() => {
     setViewportConfig(visualizationConfig.viewportConfig);
@@ -92,19 +92,17 @@ const PreviewStep = props => {
         onNext={onPublish}
       >
         <Typography sx={{ mb: 2 }}>
-          {t('sharedData.form_step_preview_step_description')}
+          {t('sharedData.form_step_preview_step_description', { entityType })}
         </Typography>
         <VisualizationPreview
           onBoundsChange={onBoundsChange}
           onBaseMapChange={onBaseMapChange}
         />
-        <Trans
-          i18nKey="sharedData.form_step_preview_step_map_description"
-          values={{ ownerName: owner.name, entityType }}
-        >
-          <Typography sx={{ mt: 2 }}>First</Typography>
-          <Typography sx={{ mt: 1 }}>Second</Typography>
-        </Trans>
+        <Typography sx={{ mt: 2 }}>
+          {t('sharedData.form_step_preview_step_map_description', {
+            entityType,
+          })}
+        </Typography>
       </StepperStep>
     </>
   );
