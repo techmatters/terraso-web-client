@@ -57,7 +57,11 @@ const FORM_FIELDS = [
           showSelected
           id={id}
           field={field}
-          placeholder="sharedData.form_step_annotate_annotation_title_placeholder"
+          placeholder={
+            field.value
+              ? 'sharedData.form_step_annotate_annotation_title_empty_option'
+              : 'sharedData.form_step_annotate_annotation_title_placeholder'
+          }
         />
       ),
     },

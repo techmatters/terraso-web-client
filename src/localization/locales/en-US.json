@@ -375,6 +375,7 @@
         "form_step_annotate_map_title_label": "Map Title",
         "form_step_annotate_annotation_title_label": "Pop-up Title",
         "form_step_annotate_annotation_title_placeholder": "Select column",
+        "form_step_annotate_annotation_title_empty_option": "No title",
         "form_step_annotate_data_points_description": "Drag the data label to change its appearance on the pop-up. You can change the name of the data label.",
         "form_step_data_file_step_title": "Select a Data File",
         "form_step_data_file_step_description": "<0>Data files can be used to make a map if they:</0><1><0>Are  Excel or CSV files </0><1>Contain a column with latitude and a column with longitude information</1></1><2>Only the first tab of an Excel file will be used. Read more about how to <1>prepare your data file for mapping</1>.</2>",
