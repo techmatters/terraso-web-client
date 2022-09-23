@@ -115,7 +115,7 @@ const Content = props => {
         }}
       >
         {membersSample.map((member, index) => (
-          <AccountAvatar key={index} user={member} />
+          <AccountAvatar key={index} user={member} component="li" />
         ))}
       </AvatarGroup>
       <Link sx={{ cursor: 'pointer' }} onClick={onViewMembers}>
