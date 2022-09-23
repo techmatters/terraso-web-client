@@ -125,7 +125,7 @@ const FORM_FIELDS = [
 const DatasetPreview = () => {
   const { t } = useTranslation();
   const { sheetContext } = useVisualizationContext();
-  const { sheet, colCount, rowCount, headers, selectedFile } = sheetContext;
+  const { sheet, colCount, rowCount, headers } = sheetContext;
 
   const sampleRange = useMemo(
     () =>
@@ -146,10 +146,12 @@ const DatasetPreview = () => {
 
   return (
     <>
-      <Typography sx={{ mb: 1 }} id="dataset-previwe-table-description">
-        {t('sharedData.form_step_set_dataset_preview_description', {
-          selectedFile,
-        })}
+      <Typography
+        variant="h2"
+        sx={{ mb: 1 }}
+        id="dataset-previwe-table-description"
+      >
+        {t('sharedData.form_step_set_dataset_preview_description')}
       </Typography>
       <TableContainer>
         <Table
@@ -308,7 +310,13 @@ const DataColumns = props => {
           label={t('sharedData.form_step_set_dataset_dataColumns_custom')}
         />
       </RadioGroup>
-      <Grid container direction="row" spacing={2} alignItems="center">
+      <Grid
+        container
+        direction="row"
+        spacing={2}
+        alignItems="center"
+        sx={{ ml: 2.5 }}
+      >
         {selectedColumns.map((column, index) => (
           <React.Fragment key={index}>
             <Grid
@@ -435,7 +443,9 @@ const SetDatasetStep = props => {
     <>
       {loadingFile && <PageLoader />}
       <StepperStep
-        title={t('sharedData.form_step_set_dataset_step_title')}
+        title={t('sharedData.form_step_set_dataset_step_title', {
+          selectedFile,
+        })}
         backLabel={t('sharedData.form_back')}
         onBack={() => onBack(cleaneadData)}
         nextLabel={t('sharedData.form_next')}
@@ -443,10 +453,8 @@ const SetDatasetStep = props => {
       >
         {!(loadingFile || loadingFileError) && (
           <>
-            <Typography sx={{ mb: 4 }}>
-              {t('sharedData.form_step_set_dataset_step_description', {
-                selectedFile,
-              })}
+            <Typography variant="h2">
+              {t('sharedData.form_step_set_dataset_step_description')}
             </Typography>
             <Typography sx={{ mb: 2 }}>
               {t('sharedData.form_step_set_dataset_step_lat_lng_descriptionn')}
