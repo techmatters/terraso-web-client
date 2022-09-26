@@ -56,6 +56,13 @@ const SelectDataFileStep = props => {
     );
   }, [dispatch, group.slug]);
 
+  // If there are no files to map, go back to the landscape/group index page.
+  useEffect(() => {
+    if (!fetching && _.isEmpty(sharedFiles)) {
+      onBack();
+    }
+  }, [fetching, sharedFiles]);
+
   const onNextWrapper = () => {
     onNext(selected);
   };
