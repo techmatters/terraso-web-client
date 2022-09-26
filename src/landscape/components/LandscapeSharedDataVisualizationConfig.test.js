@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 
 import * as reactLeaflet from 'react-leaflet';
+import { useParams } from 'react-router-dom';
 
 import * as visualizationMarkers from 'sharedData/visualization/visualizationMarkers';
 import * as terrasoApi from 'terrasoBackend/api';
@@ -9,6 +10,10 @@ import LandscapeSharedDataVisualizationConfig from './LandscapeSharedDataVisuali
 
 jest.mock('terrasoBackend/api');
 jest.mock('sharedData/visualization/visualizationMarkers');
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: jest.fn(),
+}));
 
 const TEST_CSV = `
 col1,col2,col_longitude,col3,col4
@@ -175,6 +180,9 @@ const testPreviewStep = async useMapSpy => {
 };
 
 test('LandscapeSharedDataVisualizationConfig: Create visualization', async () => {
+  useParams.mockReturnValue({
+    slug: 'landscape-slug',
+  });
   terrasoApi.requestGraphQL.mockResolvedValueOnce({
     landscapes: {
       edges: [
@@ -192,8 +200,8 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
             description: 'dsadsad',
             id: 'e9a65bef-4ef1-4058-bba3-fc73b53eb779',
             location: 'CM',
-            name: 'José Landscape Deafult Test 4',
-            slug: 'jose-landscape-deafult-test-4',
+            name: 'Landscape Test',
+            slug: 'landscape-slug',
             website: '',
           },
         },
