@@ -136,7 +136,7 @@ const Color = props => {
             type: 'color',
             'aria-labelledby': 'color-label',
           }}
-          sx={{ width: '50px', height: '50px' }}
+          sx={{ width: '75px', height: '50px' }}
         />
       </Grid>
     </>
