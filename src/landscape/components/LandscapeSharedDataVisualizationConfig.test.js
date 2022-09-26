@@ -86,7 +86,7 @@ const changeSelectOption = async (name, newValue) => {
 
 const testSetDatasetStep = async () => {
   await waitFor(() =>
-    expect(screen.getByRole('heading', { name: 'Select Data from File 1' }))
+    expect(screen.getByRole('heading', { name: 'Select Data from “File 1”' }))
   );
 
   await changeSelectOption('Latitude (required)', 'col3');
