@@ -51,7 +51,7 @@ const LandscapeSharedDataVisualizationConfig = () => {
     navigate(-1);
   }, [navigate]);
 
-  if (fetching) {
+  if (fetching || landscape?.slug !== slug) {
     return <PageLoader />;
   }
 

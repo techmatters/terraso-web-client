@@ -16,27 +16,30 @@ export const GroupContextProvider = props => {
     [props?.owner?.defaultGroup, t]
   );
 
-  const providerValue = {
-    entityType,
-    ..._.pick(
-      [
-        'owner',
-        'baseOwnerUrl',
-        'group',
-        'groupSlug',
-        'members',
-        'onMemberRemove',
-        'onMemberRoleChange',
-        'MemberLeaveButton',
-        'MemberRemoveButton',
-        'MemberJoinButton',
-        'MemberRequestJoinButton',
-        'MemberRequestCancelButton',
-        'updateOwner',
-      ],
-      props
-    ),
-  };
+  const providerValue = useMemo(
+    () => ({
+      entityType,
+      ..._.pick(
+        [
+          'owner',
+          'baseOwnerUrl',
+          'group',
+          'groupSlug',
+          'members',
+          'onMemberRemove',
+          'onMemberRoleChange',
+          'MemberLeaveButton',
+          'MemberRemoveButton',
+          'MemberJoinButton',
+          'MemberRequestJoinButton',
+          'MemberRequestCancelButton',
+          'updateOwner',
+        ],
+        props
+      ),
+    }),
+    [entityType, props]
+  );
 
   return (
     <GroupContext.Provider value={providerValue}>
