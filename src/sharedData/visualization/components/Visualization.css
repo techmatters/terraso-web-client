@@ -27,3 +27,11 @@
   margin: 0;
   overflow: scroll;
 }
+
+.visualization-marker-popup .leaflet-popup-content-wrapper {
+  padding: 0;
+}
+
+.visualization-marker-popup .leaflet-popup-content {
+  margin: 5px;
+}

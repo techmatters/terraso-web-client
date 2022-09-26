@@ -42,15 +42,21 @@ const Marker = props => {
         >
           <Box sx={{ p: 1 }}>
             {point.title && (
-              <Typography variant="h6" component="h2" gutterBottom>
+              <Typography
+                variant="h6"
+                component="h2"
+                gutterBottom
+                sx={{ fontSize: '1rem' }}
+              >
                 {point.title}
               </Typography>
             )}
             <Stack spacing={1}>
               {point.fields.map((field, index) => (
                 <Stack key={index} direction="row" spacing={1}>
-                  <Typography>{field.label}:</Typography>
-                  <Typography>{_.toString(field.value)}</Typography>
+                  <Typography sx={{ fontSize: '0.8rem' }}>
+                    {field.label}: {_.toString(field.value)}
+                  </Typography>
                 </Stack>
               ))}
             </Stack>
