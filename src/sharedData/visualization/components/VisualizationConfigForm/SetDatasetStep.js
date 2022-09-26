@@ -188,8 +188,8 @@ const DatasetPreview = () => {
   );
 };
 
-const LAT_COLUMN_OPTIONS = ['latitude', 'latitud', 'lat'];
-const LNG_COLUMN_OPTIONS = ['longitude', 'longitud', 'lng', 'lon', 'long'];
+const LAT_COLUMN_OPTIONS = ['latitude', 'latitud', 'lat', 'x'];
+const LNG_COLUMN_OPTIONS = ['longitude', 'longitud', 'lng', 'lon', 'long', 'y'];
 
 const getScore = (options, header) => {
   const score = _.min(
