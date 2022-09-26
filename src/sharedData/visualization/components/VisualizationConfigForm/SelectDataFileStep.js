@@ -61,7 +61,7 @@ const SelectDataFileStep = props => {
     if (!fetching && _.isEmpty(sharedFiles)) {
       onBack();
     }
-  }, [fetching, sharedFiles]);
+  }, [fetching, sharedFiles, onBack]);
 
   const onNextWrapper = () => {
     onNext(selected);
