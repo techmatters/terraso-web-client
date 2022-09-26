@@ -374,7 +374,7 @@
         "form_step_set_dataset_dataColumns_label": "Columns to display on the map",
         "form_step_set_dataset_dataColumns_all": "All columns",
         "form_step_set_dataset_dataColumns_custom": "Only the columns below",
-        "form_step_set_dataset_dataColumns_add_more": "+ Add columns",
+        "form_step_set_dataset_dataColumns_add_more": "+ Add column",
         "form_back": "Back",
         "form_next": "Next",
         "form_step_set_dataset_dataColumns_custom_placeholder": "select column",
