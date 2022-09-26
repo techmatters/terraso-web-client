@@ -127,30 +127,6 @@ const VisualizationWrapper = props => {
               sx={{ p: 2 }}
               spacing={2}
             >
-              {!fetching && (
-                <Stack alignItems="flex-end">
-                  <Typography sx={{ fontWeight: 600 }}>
-                    {t('sharedData.visualization_created_by', {
-                      date: formatDate(i18n.resolvedLanguage, data.createdAt),
-                      user: t('user.full_name', { user: data.createdBy }),
-                    })}
-                  </Typography>
-                  <Trans
-                    i18nKey="sharedData.visualization_source_data"
-                    values={{ file: data.dataEntry }}
-                  >
-                    <Typography>
-                      Source data:
-                      <Link
-                        href={data.dataEntry.url}
-                        onClick={handleDownload(data.dataEntry)}
-                      >
-                        File
-                      </Link>
-                    </Typography>
-                  </Trans>
-                </Stack>
-              )}
               {(loadingFile || fetching) && (
                 <CircularProgress aria-label={t('common.loader_label')} />
               )}
@@ -162,26 +138,51 @@ const VisualizationWrapper = props => {
                 </Alert>
               )}
               {!(loadingFile || loadingFileError || fetching) && (
-                <>
-                  <Visualization>
-                    <MapExport onImagePrinterChange={setImagePrinter} />
-                  </Visualization>
-                  <Trans
-                    i18nKey="sharedData.visualization_share_description"
-                    values={{ ownerName: owner.name }}
-                  >
-                    <Typography>First</Typography>
-                    <Typography sx={{ mt: 1 }}>Second</Typography>
-                  </Trans>
-                  <Stack alignItems="flex-start" direction="row" spacing={2}>
-                    <SocialShare name={mapTitle} />
-                    <Button variant="outlined" onClick={handleDownloadPng}>
-                      {t('sharedData.visualization_download_png')}
-                    </Button>
-                  </Stack>
-                </>
+                <Visualization>
+                  <MapExport onImagePrinterChange={setImagePrinter} />
+                </Visualization>
+              )}
+              {!fetching && (
+                <Trans
+                  i18nKey="sharedData.visualization_source_data"
+                  values={{
+                    date: formatDate(i18n.resolvedLanguage, data.createdAt),
+                    user: t('user.full_name', { user: data.createdBy }),
+                    file: data.dataEntry,
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 600 }}>
+                    Source data:
+                    <Link
+                      href={data.dataEntry.url}
+                      onClick={handleDownload(data.dataEntry)}
+                    >
+                      File
+                    </Link>
+                  </Typography>
+                </Trans>
               )}
             </Stack>
+            {!(loadingFile || loadingFileError || fetching) && (
+              <>
+                <Typography sx={{ mt: 2 }}>
+                  {t('sharedData.visualization_share_description', {
+                    ownerName: owner.name,
+                  })}
+                </Typography>
+                <Stack
+                  alignItems="flex-start"
+                  direction="row"
+                  spacing={2}
+                  sx={{ mt: 2 }}
+                >
+                  <SocialShare name={mapTitle} />
+                  <Button variant="outlined" onClick={handleDownloadPng}>
+                    {t('sharedData.visualization_download_png')}
+                  </Button>
+                </Stack>
+              </>
+            )}
           </>
         )}
       </VisualizationContext.Consumer>
