@@ -96,11 +96,10 @@ export const addVisualizationConfig = ({
     mutation addVisualizationConfig($input: VisualizationConfigAddMutationInput!) {
       addVisualizationConfig(input: $input) {
         visualizationConfig {
-          ...visualizationConfig
+          slug
         }
       }
     }
-    ${visualizationConfig}
   `;
   const configuration = JSON.stringify(
     _.omit('selectedFile', visualizationConfig)
