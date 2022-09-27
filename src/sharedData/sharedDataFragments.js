@@ -18,7 +18,8 @@ export const dataEntry = `
 export const visualizationConfig = `
   fragment visualizationConfig on VisualizationConfigNode {
     id
-    configuration
+    title
+    slug
     createdAt
     createdBy {
       id
@@ -26,4 +27,12 @@ export const visualizationConfig = `
       firstName
     }
   }
+`;
+
+export const visualizationConfigWithConfiguration = `
+  fragment visualizationConfigWithConfiguration on VisualizationConfigNode {
+    ...visualizationConfig
+    configuration
+  }
+  ${visualizationConfig}
 `;

@@ -41,8 +41,8 @@ const GroupSharedDataVisualizationConfig = () => {
   }, [dispatch, slug]);
 
   const onCompleteSuccess = useCallback(
-    visualizationId => {
-      navigate(`/groups/${slug}/map/${visualizationId}`);
+    configSlug => {
+      navigate(`/groups/${slug}/map/${configSlug}`);
     },
     [navigate, slug]
   );
@@ -51,7 +51,7 @@ const GroupSharedDataVisualizationConfig = () => {
     navigate(-1);
   }, [navigate]);
 
-  if (fetching) {
+  if (fetching || group?.slug !== slug) {
     return <PageLoader />;
   }
 

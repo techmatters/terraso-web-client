@@ -6,7 +6,11 @@ import * as terrasoApi from 'terrasoBackend/api';
 
 import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
-import { dataEntry, visualizationConfig } from './sharedDataFragments';
+import {
+  dataEntry,
+  visualizationConfig,
+  visualizationConfigWithConfiguration,
+} from './sharedDataFragments';
 
 export const uploadSharedData = async ({ groupSlug, file }) => {
   const path = '/shared-data/upload/';
@@ -83,6 +87,8 @@ export const fetchGroupSharedData = ({
 };
 
 export const addVisualizationConfig = ({
+  title,
+  group,
   selectedFile,
   visualizationConfig,
 }) => {
@@ -90,10 +96,11 @@ export const addVisualizationConfig = ({
     mutation addVisualizationConfig($input: VisualizationConfigAddMutationInput!) {
       addVisualizationConfig(input: $input) {
         visualizationConfig {
-          id
+          ...visualizationConfig
         }
       }
     }
+    ${visualizationConfig}
   `;
   const configuration = JSON.stringify(
     _.omit('selectedFile', visualizationConfig)
@@ -101,12 +108,14 @@ export const addVisualizationConfig = ({
   return terrasoApi
     .requestGraphQL(query, {
       input: {
+        title,
         configuration,
         dataEntryId: selectedFile.id,
+        groupId: group.id,
       },
     })
     .then(response => ({
-      id: _.get('addVisualizationConfig.visualizationConfig.id', response),
+      slug: _.get('addVisualizationConfig.visualizationConfig.slug', response),
     }));
 };
 
@@ -126,23 +135,28 @@ export const deleteVisualizationConfig = config => {
   });
 };
 
-export const fetchVisualizationConfig = id => {
+export const fetchVisualizationConfig = ({ groupSlug, configSlug }) => {
   const query = `
-    query fetchVisualizationConfig($id: ID!){
-      visualizationConfig(id: $id) {
-        ...visualizationConfig
-        dataEntry {
-          ...dataEntry
+    query fetchVisualizationConfig($groupSlug: String!, $configSlug: String!){
+      visualizationConfigs(dataEntry_Groups_Slug: $groupSlug, slug: $configSlug) {
+        edges {
+          node {
+            ...visualizationConfigWithConfiguration
+            dataEntry {
+              ...dataEntry
+            }
+          }
         }
       }
     }
     ${dataEntry}
-    ${visualizationConfig}
+    ${visualizationConfigWithConfiguration}
   `;
   return terrasoApi
-    .requestGraphQL(query, { id })
+    .requestGraphQL(query, { groupSlug, configSlug })
+    .then(_.get('visualizationConfigs.edges[0].node'))
     .then(
-      response => response.visualizationConfig || Promise.reject('not_found')
+      visualizationConfig => visualizationConfig || Promise.reject('not_found')
     )
     .then(visualizationConfig => ({
       ...visualizationConfig,

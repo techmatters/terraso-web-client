@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useDocumentTitle } from 'common/document';
-import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 
@@ -17,7 +16,7 @@ const LandscapeSharedDataVisualization = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { slug, configId } = useParams();
+  const { landscapeSlug, configSlug } = useParams();
   const { landscape, fetching } = useSelector(
     state => state.landscape.sharedDataUpload
   );
@@ -30,8 +29,8 @@ const LandscapeSharedDataVisualization = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchLandscapeUpload(slug));
-  }, [dispatch, slug]);
+    dispatch(fetchLandscapeUpload(landscapeSlug));
+  }, [dispatch, landscapeSlug]);
 
   useBreadcrumbsParams(
     useMemo(
@@ -45,14 +44,13 @@ const LandscapeSharedDataVisualization = () => {
   }
 
   return (
-    <PageContainer>
-      <GroupContextProvider group={landscape.defaultGroup} owner={landscape}>
-        <VisualizationWrapper
-          configId={configId}
-          onDeleted={() => navigate(`/landscapes/${slug}`)}
-        />
-      </GroupContextProvider>
-    </PageContainer>
+    <GroupContextProvider group={landscape.defaultGroup} owner={landscape}>
+      <VisualizationWrapper
+        configSlug={configSlug}
+        groupSlug={landscape.defaultGroup.slug}
+        onDeleted={() => navigate(`/landscapes/${landscapeSlug}`)}
+      />
+    </GroupContextProvider>
   );
 };
 

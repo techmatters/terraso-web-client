@@ -30,7 +30,7 @@ const PreviewStep = props => {
   const [viewportConfig, setViewportConfig] = useState(
     visualizationConfig.viewportConfig
   );
-  const { owner, entityType } = useGroupContext();
+  const { owner, entityType, group } = useGroupContext();
 
   useEffect(() => {
     setViewportConfig(visualizationConfig.viewportConfig);
@@ -59,13 +59,19 @@ const PreviewStep = props => {
       viewportConfig,
     };
     const filteredConfig = _.omit(
-      ['datasetConfig.preview', 'annotateConfig.dataPointsTitle'],
+      [
+        'datasetConfig.preview',
+        'annotateConfig.dataPointsTitle',
+        'annotateConfig.mapTitle',
+      ],
       completeConfig
     );
     dispatch(
       addVisualizationConfig({
+        title: _.get('annotateConfig.mapTitle', completeConfig),
         visualizationConfig: filteredConfig,
         selectedFile,
+        group,
       })
     ).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
@@ -76,7 +82,7 @@ const PreviewStep = props => {
             file: visualizationConfig?.selectedFile.name,
           },
         });
-        onSaved(data.payload.id);
+        onSaved(data.payload.slug);
       }
     });
   };

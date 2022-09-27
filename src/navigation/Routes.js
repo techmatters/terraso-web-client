@@ -62,7 +62,7 @@ const paths = [
     showBreadcrumbs: true,
     breadcrumbsLabel: 'group.breadcrumbs_visualization_new',
   }),
-  path('/groups/:slug/map/:configId', GroupSharedDataVisualization, {
+  path('/groups/:groupSlug/map/:configSlug', GroupSharedDataVisualization, {
     showBreadcrumbs: true,
     breadcrumbsLabel: 'group.breadcrumbs_visualization',
   }),
@@ -88,10 +88,14 @@ const paths = [
     showBreadcrumbs: true,
     breadcrumbsLabel: 'landscape.breadcrumbs_visualization_new',
   }),
-  path('/landscapes/:slug/map/:configId', LandscapeSharedDataVisualization, {
-    showBreadcrumbs: true,
-    breadcrumbsLabel: 'landscape.breadcrumbs_visualization',
-  }),
+  path(
+    '/landscapes/:landscapeSlug/map/:configSlug',
+    LandscapeSharedDataVisualization,
+    {
+      showBreadcrumbs: true,
+      breadcrumbsLabel: 'landscape.breadcrumbs_visualization',
+    }
+  ),
   path('/tools', ToolsList),
   path('/account', AccountLogin, { auth: false }),
   path('/account/profile', AccountProfile),
