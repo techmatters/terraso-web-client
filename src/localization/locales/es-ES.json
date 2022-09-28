@@ -440,7 +440,8 @@
         "form_step_set_dataset.form.validation_array_min": "Selecciona al menos una columna de datos para mostrar.",
         "map_create_document_title": "Crear mapa: {{name}}",
         "map_view_document_title": "Ver el mapa: {{name}}",
-        "fetchVisualizationConfig.not_found": "Mapa no encontrado"
+        "fetchVisualizationConfig.not_found": "Mapa no encontrado",
+        "addVisualizationConfig.unique": "El nombre “{{body.variables.input.title}}“ está siendo utilizado por otro mapa. Utiliza un nombre diferente."
     },
     "share": {
         "button": "Comparte",
