@@ -1,17 +1,13 @@
 import { render, screen } from 'tests/utils';
 
-import React, { useEffect } from 'react';
-
-import { useDispatch } from 'react-redux';
+import React from 'react';
 
 import { fetchAuthURLs } from 'account/accountSlice';
 
-const TestComponent = () => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(fetchAuthURLs());
-  }, [dispatch]);
+import { useFetchData } from './utils';
 
+const TestComponent = () => {
+  useFetchData(fetchAuthURLs);
   return <div></div>;
 };
 

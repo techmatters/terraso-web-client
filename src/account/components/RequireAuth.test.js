@@ -32,13 +32,22 @@ test('Auth: test redirect', async () => {
   useParams.mockReturnValue({
     slug: 'slug-1',
   });
-  terrasoApi.requestGraphQL.mockRejectedValueOnce('UNAUTHENTICATED');
-  global.fetch.mockResolvedValueOnce({
-    status: 401,
-  });
-  global.fetch.mockResolvedValueOnce({
-    status: 200,
-  });
+  terrasoApi.requestGraphQL
+    .mockRejectedValueOnce('UNAUTHENTICATED')
+    .mockRejectedValueOnce('UNAUTHENTICATED');
+  global.fetch
+    .mockResolvedValueOnce({
+      status: 401,
+    })
+    .mockResolvedValueOnce({
+      status: 401,
+    })
+    .mockResolvedValueOnce({
+      status: 200,
+    })
+    .mockResolvedValueOnce({
+      status: 200,
+    });
   await render(
     <RequireAuth>
       <GroupView />
@@ -58,8 +67,8 @@ test('Auth: test redirect', async () => {
     }
   );
 
-  expect(global.fetch).toHaveBeenCalledTimes(2);
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  expect(global.fetch).toHaveBeenCalledTimes(4);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
   expect(screen.getByText('To: /account')).toBeInTheDocument();
 });
 test('Auth: test redirect referrer', async () => {
@@ -83,6 +92,7 @@ test('Auth: test refresh tokens', async () => {
   });
   terrasoApi.requestGraphQL
     .mockRejectedValueOnce('UNAUTHENTICATED')
+    .mockResolvedValueOnce({})
     .mockResolvedValueOnce({});
   global.fetch.mockResolvedValueOnce({
     status: 200,
@@ -109,6 +119,7 @@ test('Auth: test refresh tokens', async () => {
       },
     }
   );
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
 
   expect(screen.getByText('Group not found')).toBeInTheDocument();
 });
@@ -141,5 +152,5 @@ test('Auth: test fetch user', async () => {
     }
   );
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
 });

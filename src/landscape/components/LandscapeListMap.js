@@ -8,8 +8,8 @@ import Map from 'gis/components/Map';
 import 'leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
+import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import { Marker, Popup, useMap } from 'react-leaflet';
-import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { useSelector } from 'react-redux';
 
 import { getLandscapePin } from 'landscape/landscapeUtils';

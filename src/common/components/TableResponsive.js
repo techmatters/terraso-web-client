@@ -220,7 +220,7 @@ const SearchBar = props => {
     if (searchParams?.search) {
       setQuery(searchParams.search);
     }
-  }, [searchParams]);
+  }, [searchParams?.search]);
 
   if (!searchEnabled) {
     return null;

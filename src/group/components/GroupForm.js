@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +20,7 @@ import Form from 'forms/components/Form';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
+import { useFetchData } from 'state/utils';
 
 import {
   fetchGroupForm,
@@ -165,10 +166,12 @@ const GroupForm = () => {
   useEffect(() => {
     if (isNew) {
       dispatch(setFormNewValues());
-      return;
     }
-    dispatch(fetchGroupForm(slug));
-  }, [dispatch, slug, isNew]);
+  }, [dispatch, isNew]);
+
+  useFetchData(
+    useCallback(() => (!isNew ? fetchGroupForm(slug) : null), [slug, isNew])
+  );
 
   useEffect(
     () => () => {

@@ -26,6 +26,7 @@ import PageLoader from 'layout/PageLoader';
 import { useRefreshProgressContext } from 'layout/RefreshProgressProvider';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import Restricted from 'permissions/components/Restricted';
+import { useFetchData } from 'state/utils';
 
 import { GroupContextProvider } from 'group/groupContext';
 import { fetchGroupView, refreshGroupView } from 'group/groupSlice';
@@ -148,9 +149,7 @@ const GroupView = () => {
     )
   );
 
-  useEffect(() => {
-    dispatch(fetchGroupView(slug));
-  }, [dispatch, slug]);
+  useFetchData(useCallback(() => fetchGroupView(slug), [slug]));
 
   const updateGroup = useCallback(() => {
     dispatch(refreshGroupView(slug));

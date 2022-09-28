@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import { Box } from '@mui/material';
 
@@ -54,11 +54,10 @@ const App = () => {
   );
 };
 
-ReactDOM.render(
+createRoot(document.getElementById('root')).render(
   <AppWrappers store={createStore()} theme={theme} permissionsRules={rules}>
     <App />
-  </AppWrappers>,
-  document.getElementById('root')
+  </AppWrappers>
 );
 
 // If you want to start measuring performance in your app, pass a function

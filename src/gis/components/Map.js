@@ -199,19 +199,19 @@ const LeafletDraw = () => {
       const bbox = boundsToGeoJsonBbox(map.getBounds());
       onBoundsUpdate(bbox);
     };
-    map.on(L.Draw.Event.CREATED, onDrawCreatedListener);
-    map.on(L.Draw.Event.DELETED, onDrawDeletedListener);
-    map.on(L.Draw.Event.EDITSTART, onEditStartListener);
-    map.on(L.Draw.Event.EDITSTOP, onEditStopListener);
-    map.on(L.Draw.Event.EDITED, onEditedListener);
+    map.on('draw:created', onDrawCreatedListener);
+    map.on('draw:deleted', onDrawDeletedListener);
+    map.on('draw:editstart', onEditStartListener);
+    map.on('draw:editstop', onEditStopListener);
+    map.on('draw:edited', onEditedListener);
     map.on('moveend', onMoveListener);
 
     return () => {
-      map.off(L.Draw.Event.CREATED, onDrawCreatedListener);
-      map.off(L.Draw.Event.DELETED, onDrawDeletedListener);
-      map.off(L.Draw.Event.EDITSTART, onEditStartListener);
-      map.off(L.Draw.Event.EDITSTOP, onEditStopListener);
-      map.off(L.Draw.Event.EDITED, onEditedListener);
+      map.off('draw:created', onDrawCreatedListener);
+      map.off('draw:deleted', onDrawDeletedListener);
+      map.off('draw:editstart', onEditStartListener);
+      map.off('draw:editstop', onEditStopListener);
+      map.off('draw:edited', onEditedListener);
       map.off('moveend', onMoveListener);
     };
   }, [
@@ -236,6 +236,7 @@ const LeafletSearch = () => {
 
     const searchControl = new GeoSearchControl({
       provider,
+      position: 'topright',
       style: 'bar',
       showMarker: false,
       autoClose: true,

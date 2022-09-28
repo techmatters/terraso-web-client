@@ -14,6 +14,10 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(),
 }));
+jest.mock('react-leaflet', () => ({
+  ...jest.requireActual('react-leaflet'),
+  useMap: jest.fn(),
+}));
 
 const TEST_CSV = `
 col1,col2,col_longitude,col3,col4
@@ -36,6 +40,9 @@ const setup = async () => {
 
 beforeEach(() => {
   global.fetch = jest.fn();
+  reactLeaflet.useMap.mockImplementation(
+    jest.requireActual('react-leaflet').useMap
+  );
 });
 
 const testSelectDataFileStep = async () => {
@@ -166,6 +173,7 @@ const testPreviewStep = async useMapSpy => {
   // Move viewport
   await waitFor(() => expect(useMapSpy).toHaveBeenCalled());
   const map = useMapSpy.mock.results[useMapSpy.mock.results.length - 1].value;
+
   jest.spyOn(map, 'getBounds').mockReturnValue({
     getNorthEast: () => ({
       lat: 11.325606896067784,
@@ -183,67 +191,76 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
   useParams.mockReturnValue({
     slug: 'landscape-slug',
   });
-  terrasoApi.requestGraphQL.mockResolvedValueOnce({
-    landscapes: {
-      edges: [
-        {
-          node: {
-            defaultGroup: {
-              edges: [
-                {
-                  node: {
-                    group: { id: '6a625efb-4ec8-45e8-ad6a-eb052cc3fe65' },
-                  },
-                },
-              ],
-            },
-            description: 'dsadsad',
-            id: 'e9a65bef-4ef1-4058-bba3-fc73b53eb779',
-            location: 'CM',
-            name: 'Landscape Test',
-            slug: 'landscape-slug',
-            website: '',
-          },
-        },
-      ],
-    },
-  });
-  terrasoApi.requestGraphQL.mockResolvedValueOnce({
-    groups: {
-      edges: [
-        {
-          node: {
-            dataEntries: {
-              edges: [
-                {
-                  node: {
-                    createdAt: '2022-05-17T23:32:50.606587+00:00',
-                    createdBy: {
-                      id: 'dc695d00-d6b4-45b2-ab8d-f48206d998da',
-                      lastName: 'Buitrón',
-                      firstName: 'José',
+  terrasoApi.requestGraphQL.mockImplementation(query => {
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.startsWith('query landscapes')) {
+      return Promise.resolve({
+        landscapes: {
+          edges: [
+            {
+              node: {
+                defaultGroup: {
+                  edges: [
+                    {
+                      node: {
+                        group: { id: '6a625efb-4ec8-45e8-ad6a-eb052cc3fe65' },
+                      },
                     },
-                    description: '',
-                    id: 'f00c5564-cf93-471a-94c2-b930cbb0a4f8',
-                    name: 'File 1',
-                    resourceType: 'application/csv',
-                    size: 3565,
-                    url: 'https://file-url',
-                  },
+                  ],
                 },
-              ],
+                description: 'dsadsad',
+                id: 'e9a65bef-4ef1-4058-bba3-fc73b53eb779',
+                location: 'CM',
+                name: 'Landscape Test',
+                slug: 'landscape-slug',
+                website: '',
+              },
             },
-          },
+          ],
         },
-      ],
-    },
+      });
+    }
+    if (trimmedQuery.startsWith('query group')) {
+      return Promise.resolve({
+        groups: {
+          edges: [
+            {
+              node: {
+                dataEntries: {
+                  edges: [
+                    {
+                      node: {
+                        createdAt: '2022-05-17T23:32:50.606587+00:00',
+                        createdBy: {
+                          id: 'dc695d00-d6b4-45b2-ab8d-f48206d998da',
+                          lastName: 'Buitrón',
+                          firstName: 'José',
+                        },
+                        description: '',
+                        id: 'f00c5564-cf93-471a-94c2-b930cbb0a4f8',
+                        name: 'File 1',
+                        resourceType: 'application/csv',
+                        size: 3565,
+                        url: 'https://file-url',
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      });
+    }
+    if (trimmedQuery.startsWith('mutation addVisualizationConfig')) {
+      return Promise.resolve({
+        addVisualizationConfig: {
+          visualizationConfig: { id: 'b50b761e-faf8-471d-94ee-4991dc1cbd7f' },
+        },
+      });
+    }
   });
-  terrasoApi.requestGraphQL.mockResolvedValueOnce({
-    addVisualizationConfig: {
-      visualizationConfig: { id: 'b50b761e-faf8-471d-94ee-4991dc1cbd7f' },
-    },
-  });
-  global.fetch.mockResolvedValueOnce({
+  global.fetch.mockResolvedValue({
     status: 200,
     arrayBuffer: () => {
       const file = new File([TEST_CSV], `test.csv`, { type: 'text/plain' });
@@ -263,6 +280,7 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
     },
   });
   visualizationMarkers.getImageData.mockReturnValue('markerImageData');
+
   const useMapSpy = jest.spyOn(reactLeaflet, 'useMap');
 
   await setup();
@@ -277,8 +295,8 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Publish' }))
   );
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(5);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[4];
   expect(saveCall[1]).toStrictEqual({
     input: {
       groupId: '6a625efb-4ec8-45e8-ad6a-eb052cc3fe65',

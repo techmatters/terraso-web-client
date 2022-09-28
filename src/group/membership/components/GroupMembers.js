@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import { Typography } from '@mui/material';
@@ -13,6 +13,7 @@ import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
+import { useFetchData } from 'state/utils';
 
 import { GroupContextProvider } from 'group/groupContext';
 import { fetchGroupForMembers } from 'group/groupSlice';
@@ -28,11 +29,9 @@ const MemberLeaveButton = withProps(GroupMemberLeave, {
   label: 'group.members_list_leave',
 });
 
-const Header = () => {
+const Header = props => {
   const { t } = useTranslation();
-  const { data: group, fetching } = useSelector(
-    state => state.group.membersGroup
-  );
+  const { group, fetching } = props;
 
   useDocumentTitle(
     t('group.members_document_title', {
@@ -87,15 +86,12 @@ const Header = () => {
 };
 
 const GroupMembers = () => {
-  const dispatch = useDispatch();
   const { slug } = useParams();
   const { data: group, fetching } = useSelector(
     state => state.group.membersGroup
   );
 
-  useEffect(() => {
-    dispatch(fetchGroupForMembers(slug));
-  }, [dispatch, slug]);
+  useFetchData(useCallback(() => fetchGroupForMembers(slug), [slug]));
 
   if (fetching) {
     return <PageLoader />;
@@ -103,7 +99,7 @@ const GroupMembers = () => {
 
   return (
     <PageContainer>
-      <Header />
+      <Header group={group} fetching={fetching} />
       <GroupContextProvider
         owner={group}
         groupSlug={slug}

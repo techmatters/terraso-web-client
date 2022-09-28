@@ -1,26 +1,27 @@
-import React, { useEffect } from 'react';
+import React, { useCallback } from 'react';
 
 import _ from 'lodash/fp';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 
 import PageLoader from 'layout/PageLoader';
+import { useFetchData } from 'state/utils';
 
 import { fetchUser } from 'account/accountSlice';
 
 const RequireAuth = ({ children }) => {
-  const dispatch = useDispatch();
   const location = useLocation();
   const { data: user, fetching } = useSelector(
     state => state.account.currentUser
   );
   const hasToken = useSelector(state => state.account.hasToken);
 
-  useEffect(() => {
-    if (hasToken && !user) {
-      dispatch(fetchUser());
-    }
-  }, [hasToken, user, dispatch]);
+  useFetchData(
+    useCallback(
+      () => (hasToken && !user ? fetchUser() : null),
+      [hasToken, user]
+    )
+  );
 
   if (hasToken && fetching) {
     return <PageLoader />;

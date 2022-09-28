@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useCallback } from 'react';
 
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import {
   Button,
@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 
 import List from 'common/components/List';
+import { useFetchData } from 'state/utils';
 
 import { useGroupContext } from 'group/groupContext';
 import { fetchGroupSharedData } from 'sharedData/sharedDataSlice';
@@ -26,18 +27,18 @@ import SharedDataEntry from './SharedDataEntry';
 
 const SharedFilesCard = props => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
   const { onUploadClick, onAddVisualizationClick } = props;
   const { group, owner, entityType } = useGroupContext();
   const { allowed } = usePermission('group.viewFiles', group);
   const { data: sharedFiles, fetching } = useSelector(_.get('sharedData.list'));
   const hasFiles = !_.isEmpty(sharedFiles);
 
-  useEffect(() => {
-    if (allowed) {
-      dispatch(fetchGroupSharedData({ slug: group.slug }));
-    }
-  }, [dispatch, group, allowed]);
+  useFetchData(
+    useCallback(
+      () => (allowed ? fetchGroupSharedData({ slug: group.slug }) : null),
+      [group.slug, allowed]
+    )
+  );
 
   if (!allowed) {
     return null;

@@ -1,5 +1,8 @@
+import { useEffect } from 'react';
+
 import { createAsyncThunk as createAsyncThunkBase } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
+import { useDispatch } from 'react-redux';
 
 import { addMessage } from 'notifications/notificationsSlice';
 
@@ -63,6 +66,7 @@ export const createAsyncThunk = (
     try {
       return await executeAuthRequest(dispatch, executeAction);
     } catch (error) {
+      const isAborted = _.getOr(false, 'signal.aborted', thunkAPI);
       const parsedErrors = _.flatten([error]).map(error => {
         const baseMessage = _.has('content', error)
           ? { severity: 'error', ...error }
@@ -73,11 +77,23 @@ export const createAsyncThunk = (
         };
       });
 
-      if (dispatchErrorMessage) {
+      if (dispatchErrorMessage && !isAborted) {
         parsedErrors.forEach(message => dispatch(addMessage(message)));
       }
 
       return rejectWithValue({ error, parsedErrors });
     }
   });
+};
+
+export const useFetchData = dataFetchCallback => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const dataFetchRequest = dataFetchCallback();
+    if (!dataFetchRequest) {
+      return;
+    }
+    const req = dispatch(dataFetchRequest);
+    return () => req.abort();
+  }, [dispatch, dataFetchCallback]);
 };
