@@ -4,64 +4,86 @@ import filesize from 'filesize';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link as RouterLink } from 'react-router-dom';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
-import { Button, Grid, ListItem, Stack, Typography } from '@mui/material';
+import MapIcon from '@mui/icons-material/Map';
+import {
+  Button,
+  Divider,
+  Grid,
+  Link,
+  ListItem,
+  Stack,
+  Typography,
+} from '@mui/material';
 
 import ConfirmButton from 'common/components/ConfirmButton';
 import EditableText from 'common/components/EditableText';
+import { formatDate } from 'localization/utils';
 import { useAnalytics } from 'monitoring/analytics';
 import Restricted from 'permissions/components/Restricted';
 
 import { useGroupContext } from 'group/groupContext';
+import { useSharedData } from 'sharedData/sharedDataHooks';
 import {
   deleteSharedData,
   resetProcessing,
   updateSharedData,
 } from 'sharedData/sharedDataSlice';
 
+import SharedFileIcon from './SharedFileIcon';
+
 import theme from 'theme';
 
 const ICON_SIZE = 24;
 
-const formatDate = (language, dateString) =>
-  new Intl.DateTimeFormat(language, { dateStyle: 'medium' }).format(
-    Date.parse(dateString)
-  );
-
-const FileIcon = ({ resourceType }) => {
-  switch (resourceType) {
-    case 'csv':
-    case 'doc':
-    case 'docx':
-    case 'pdf':
-    case 'ppt':
-    case 'pptx':
-    case 'xls':
-    case 'xlsx':
-      return (
-        <img
-          style={{ filter: 'opacity(50%)' }}
-          width="24"
-          height="24"
-          src={`/files/${resourceType.substring(0, 3)}.png`}
-          alt={resourceType.toUpperCase()}
-        />
-      );
-    default:
-      return (
-        <InsertDriveFileOutlinedIcon
-          sx={{ fontSize: ICON_SIZE, color: theme.palette.gray.dark1 }}
-        />
-      );
-  }
-};
-
 const StackRow = props => (
   <Stack direction="row" alignItems="center" {...props} />
 );
+
+const Visualizations = props => {
+  const { baseOwnerUrl } = useGroupContext();
+  const { i18n, t } = useTranslation();
+  const { file } = props;
+  if (_.isEmpty(file.visualizations)) {
+    return null;
+  }
+
+  return (
+    <Stack
+      component="ul"
+      sx={{ width: '100%', listStyle: 'none', p: 0 }}
+      divider={<Divider component="li" />}
+    >
+      {file.visualizations.map(visualization => (
+        <Grid
+          container
+          component={ListItem}
+          key={visualization.id}
+          sx={{ bgcolor: 'gray.lite2', fontSize: 14, color: 'gray.dark1' }}
+        >
+          <Grid item xs={1}>
+            <MapIcon />
+          </Grid>
+          <Grid item xs={4}>
+            <Link
+              component={RouterLink}
+              to={`${baseOwnerUrl}/map/${visualization.slug}`}
+            >
+              {_.get('title', visualization)}
+            </Link>
+          </Grid>
+          <Grid item xs={6}>
+            {formatDate(i18n.resolvedLanguage, visualization.createdAt)}, by{' '}
+            {t('user.full_name', { user: visualization.createdBy })}
+          </Grid>
+        </Grid>
+      ))}
+    </Stack>
+  );
+};
 
 const SharedDataEntry = ({ file }) => {
   const { i18n, t } = useTranslation();
@@ -71,6 +93,7 @@ const SharedDataEntry = ({ file }) => {
   const processing = useSelector(_.get(`sharedData.processing.${file.id}`));
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
+  const { downloadFile } = useSharedData();
 
   useEffect(() => {
     dispatch(resetProcessing(file.id));
@@ -78,8 +101,7 @@ const SharedDataEntry = ({ file }) => {
 
   const handleDownload = e => {
     e.preventDefault();
-    trackEvent('downloadFile', { props: { owner: owner.slug } });
-    window.open(file.url, '_blank');
+    downloadFile(file);
   };
 
   const onConfirm = () => {
@@ -106,12 +128,12 @@ const SharedDataEntry = ({ file }) => {
   const description = _.get('description', file);
 
   return (
-    <ListItem>
+    <ListItem sx={{ p: 0, flexDirection: 'column' }}>
       <Grid
         container
         spacing={1}
         alignItems="center"
-        sx={{ fontSize: 14, color: 'gray.dark1' }}
+        sx={{ fontSize: 14, color: 'gray.dark1', p: 1 }}
       >
         <Grid
           item
@@ -120,7 +142,7 @@ const SharedDataEntry = ({ file }) => {
           order={{ xs: 2, md: 2 }}
           component={StackRow}
         >
-          <FileIcon resourceType={file.resourceType} />
+          <SharedFileIcon resourceType={file.resourceType} />
           <Restricted
             permission="sharedData.edit"
             resource={{ group, file }}
@@ -228,6 +250,7 @@ const SharedDataEntry = ({ file }) => {
         <Grid item xs={1} order={{ xs: 5 }} display={{ md: 'none' }} />
         <Grid item xs={1} order={{ xs: 8 }} display={{ md: 'none' }} />
       </Grid>
+      <Visualizations file={file} />
     </ListItem>
   );
 };

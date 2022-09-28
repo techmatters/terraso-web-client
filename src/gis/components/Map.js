@@ -45,6 +45,11 @@ const LAYER_ESRI = L.tileLayer(
   }
 );
 
+export const LAYERS_BY_URL = _.flow(
+  _.map(layer => [layer._url, layer]),
+  _.fromPairs
+)([LAYER_OSM, LAYER_ESRI]);
+
 const MapContext = React.createContext();
 
 function geojsonToLayer(geojson, layer, options = {}) {
@@ -108,7 +113,7 @@ const LeafletDraw = () => {
                 allowIntersection: false,
                 icon: new L.DivIcon({
                   iconSize: new L.Point(14, 14),
-                  className: 'leaflet-editing-icon',
+                  className: 'leaflet-draw-marker-icon',
                 }),
               },
             },
@@ -122,6 +127,7 @@ const LeafletDraw = () => {
               showArea: true,
               icon: new L.DivIcon({
                 iconSize: new L.Point(14, 14),
+                className: 'leaflet-draw-marker-icon',
               }),
             }
           : false,
@@ -292,9 +298,11 @@ const MapGeoJson = () => {
       style: { color: theme.palette.map.polygon },
       pointToLayer: (feature, latlng) => {
         const marker = L.marker(latlng, { draggable: true });
-        marker.on('dragend', event => {
-          setNewGeoJson(layerToGeoJSON(featureGroup.getLayers()));
-        });
+        if (onGeoJsonChange) {
+          marker.on('dragend', event => {
+            setNewGeoJson(layerToGeoJSON(featureGroup.getLayers()));
+          });
+        }
         return marker;
       },
       ...(geoJsonFilter ? { filter: geoJsonFilter } : {}),
@@ -302,7 +310,7 @@ const MapGeoJson = () => {
   }, [featureGroup, geojson, onGeoJsonChange, geoJsonFilter]);
 
   useEffect(() => {
-    if (!newGeoJson) {
+    if (!newGeoJson || !onGeoJsonChange) {
       return;
     }
     onGeoJsonChange(newGeoJson);
@@ -327,8 +335,15 @@ const Map = props => {
   const { t } = useTranslation();
   const [featureGroup, setFeatureGroup] = useState();
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
-  const { bounds, geojson, onGeoJsonChange, geoJsonFilter, drawOptions } =
-    props;
+  const {
+    bounds,
+    onBoundsChange,
+    onBaseMapChange,
+    geojson,
+    onGeoJsonChange,
+    geoJsonFilter,
+    drawOptions,
+  } = props;
 
   useEffect(() => {
     if (props.center) {
@@ -357,11 +372,28 @@ const Map = props => {
         [t('gis.map_layer_satellite')]: LAYER_ESRI,
       })
       .addTo(map);
+
     return () => {
       map.removeControl(layersControl);
       featureGroup.remove();
     };
   }, [map, t]);
+
+  useEffect(() => {
+    const onMoveListener = () => onBoundsChange?.(map.getBounds());
+    map.on('moveend', onMoveListener);
+    return () => {
+      map.on('moveend', onMoveListener);
+    };
+  }, [map, onBoundsChange]);
+
+  useEffect(() => {
+    const onBaseMapChangeListener = event => onBaseMapChange?.(event.layer);
+    map.on('baselayerchange', onBaseMapChangeListener);
+    return () => {
+      map.on('baselayerchange', onBaseMapChangeListener);
+    };
+  }, [map, onBaseMapChange]);
 
   const onBoundsUpdate = useCallback(
     bbox => {

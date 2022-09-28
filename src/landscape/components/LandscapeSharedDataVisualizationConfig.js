@@ -1,30 +1,29 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
-import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
-import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 
+import { GroupContextProvider } from 'group/groupContext';
 import { fetchLandscapeUpload } from 'landscape/landscapeSlice';
-import SharedDataUpload from 'sharedData/components/SharedDataUpload';
+import VisualizationConfigForm from 'sharedData/visualization/components/VisualizationConfigForm';
 
-const LandscapeSharedDataUpload = () => {
-  const dispatch = useDispatch();
+const LandscapeSharedDataVisualizationConfig = () => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { slug } = useParams();
-  const { fetching, landscape } = useSelector(
+  const { landscape, fetching } = useSelector(
     state => state.landscape.sharedDataUpload
   );
 
   useDocumentTitle(
-    t('sharedData.upload_title', {
+    t('sharedData.map_create_document_title', {
       name: landscape?.name,
     }),
     fetching
@@ -41,32 +40,31 @@ const LandscapeSharedDataUpload = () => {
     dispatch(fetchLandscapeUpload(slug));
   }, [dispatch, slug]);
 
-  const onCompleteSuccess = useCallback(() => {
-    navigate(`/landscapes/${slug}`);
-  }, [navigate, slug]);
+  const onCompleteSuccess = useCallback(
+    configSlug => {
+      navigate(`/landscapes/${slug}/map/${configSlug}`);
+    },
+    [navigate, slug]
+  );
 
-  if (fetching) {
+  const onCancel = useCallback(() => {
+    navigate(-1);
+  }, [navigate]);
+
+  if (fetching || landscape?.slug !== slug) {
     return <PageLoader />;
   }
 
-  const onCancel = () => {
-    navigate(-1);
-  };
-
   return (
     <PageContainer>
-      <PageHeader
-        header={t('landscape.shared_data_upload_title', {
-          name: landscape.name,
-        })}
-      />
-      <SharedDataUpload
-        groupSlug={_.get('defaultGroup.slug', landscape)}
-        onCancel={onCancel}
-        onCompleteSuccess={onCompleteSuccess}
-      />
+      <GroupContextProvider group={landscape.defaultGroup} owner={landscape}>
+        <VisualizationConfigForm
+          onCompleteSuccess={onCompleteSuccess}
+          onCancel={onCancel}
+        />
+      </GroupContextProvider>
     </PageContainer>
   );
 };
 
-export default LandscapeSharedDataUpload;
+export default LandscapeSharedDataVisualizationConfig;

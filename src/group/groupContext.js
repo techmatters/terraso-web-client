@@ -1,26 +1,44 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 
 import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
 
 const GroupContext = React.createContext();
 
 export const GroupContextProvider = props => {
-  const providerValue = _.pick(
-    [
-      'owner',
-      'group',
-      'groupSlug',
-      'members',
-      'onMemberRemove',
-      'onMemberRoleChange',
-      'MemberLeaveButton',
-      'MemberRemoveButton',
-      'MemberJoinButton',
-      'MemberRequestJoinButton',
-      'MemberRequestCancelButton',
-      'updateOwner',
-    ],
-    props
+  const { t } = useTranslation();
+
+  const entityType = useMemo(
+    () =>
+      props?.owner?.defaultGroup
+        ? t('sharedData.entity_type_landscape')
+        : t('sharedData.entity_type_group'),
+    [props?.owner?.defaultGroup, t]
+  );
+
+  const providerValue = useMemo(
+    () => ({
+      entityType,
+      ..._.pick(
+        [
+          'owner',
+          'baseOwnerUrl',
+          'group',
+          'groupSlug',
+          'members',
+          'onMemberRemove',
+          'onMemberRoleChange',
+          'MemberLeaveButton',
+          'MemberRemoveButton',
+          'MemberJoinButton',
+          'MemberRequestJoinButton',
+          'MemberRequestCancelButton',
+          'updateOwner',
+        ],
+        props
+      ),
+    }),
+    [entityType, props]
   );
 
   return (

@@ -1,10 +1,11 @@
+import { visualizationConfig } from 'sharedData/sharedDataFragments';
 import { userFields } from 'user/userFragments';
 
 const MEMBERS_INFO_SAMPLE_SIZE = 5;
 
 export const dataEntries = `
   fragment dataEntries on GroupNode {
-    dataEntries {
+    dataEntries(resourceType_In: $resourceTypes) {
       edges {
         node {
           id
@@ -19,10 +20,18 @@ export const dataEntries = `
             lastName
             firstName
           }
+          visualizations {
+            edges {
+              node {
+                ...visualizationConfig
+              }
+            }
+          }
         }
       }
     }
   }
+  ${visualizationConfig}
 `;
 
 export const groupFields = `

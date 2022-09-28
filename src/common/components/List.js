@@ -6,7 +6,7 @@ import { withProps } from 'react-hoc';
 
 const List = withProps(BaseList, {
   component: withProps(Stack, {
-    divider: <Divider component="li" />,
+    divider: <Divider aria-hidden="true" component="li" />,
     component: withProps(Paper, {
       variant: 'outlined',
       component: 'ul',

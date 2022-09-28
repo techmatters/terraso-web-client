@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import Highlighter from 'react-highlight-words';
 import { useTranslation } from 'react-i18next';
+import { cleanSensitiveCharacters } from 'stringUtils';
 
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
@@ -132,16 +133,10 @@ const Cards = props => {
   );
 };
 
-const cleanSearchValue = value =>
-  value
-    .trim()
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
-
 const indexOfMatchPartial = query => {
-  const cleanedQuery = cleanSearchValue(query);
-  return fieldValue => cleanSearchValue(fieldValue).indexOf(cleanedQuery);
+  const cleanedQuery = cleanSensitiveCharacters(query);
+  return fieldValue =>
+    cleanSensitiveCharacters(fieldValue).indexOf(cleanedQuery);
 };
 
 const getHighlightLimits = ({ textToHighlight, searchWords }) => {

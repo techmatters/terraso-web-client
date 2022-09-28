@@ -171,6 +171,7 @@ const GroupView = () => {
   return (
     <GroupContextProvider
       owner={group}
+      baseOwnerUrl={`/groups/${group.slug}`}
       group={group}
       groupSlug={group.slug}
       MemberJoinButton={MemberJoinButton}
@@ -204,6 +205,9 @@ const GroupView = () => {
           <Grid item xs={12} md={12}>
             <SharedDataCard
               onUploadClick={() => navigate(`/groups/${group.slug}/upload`)}
+              onAddVisualizationClick={() =>
+                navigate(`/groups/${group.slug}/map/new`)
+              }
             />
           </Grid>
         </Grid>

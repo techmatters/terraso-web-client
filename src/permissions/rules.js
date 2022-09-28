@@ -41,6 +41,16 @@ const isAllowedToDeleteSharedData = ({ resource, user }) => {
   return isAllowedToEditSharedData({ resource, user });
 };
 
+const isAllowedToDeleteVisualization = ({
+  resource: { group, visualizationConfig },
+  user,
+}) => {
+  const isManager = hasRole({ group, role: 'MANAGER' });
+  const isOwner =
+    _.get('createdBy.id', visualizationConfig) === _.get('id', user);
+  return Promise.resolve(isManager || isOwner);
+};
+
 const isAllowedToDownloadSharedData = ({ resource: group }) => {
   const isMember = isApprovedMember(group);
   return Promise.resolve(isMember);
@@ -80,6 +90,7 @@ const rules = {
   'sharedData.download': isAllowedToDownloadSharedData,
   'sharedData.edit': isAllowedToEditSharedData,
   'sharedData.delete': isAllowedToDeleteSharedData,
+  'visualization.delete': isAllowedToDeleteVisualization,
 };
 
 export default rules;

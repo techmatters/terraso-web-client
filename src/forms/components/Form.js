@@ -2,12 +2,13 @@ import React, { useEffect } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import _ from 'lodash/fp';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Grid } from '@mui/material';
 
 import FormField from 'forms/components/FormField';
+import { useFormSetContext } from 'forms/formContext';
 
 const getInitialEmptyValues = _.flow(
   _.map(field => [field.name, '']),
@@ -17,7 +18,9 @@ const getInitialEmptyValues = _.flow(
 const Form = props => {
   const { t } = useTranslation();
   const {
+    mode = 'onSubmit',
     prefix,
+    localizationPrefix,
     fields,
     values,
     validationSchema,
@@ -27,15 +30,25 @@ const Form = props => {
     onCancel,
     children,
     isMultiStep,
+    onChange,
   } = props;
+  const setFormContext = useFormSetContext();
 
-  const { control, handleSubmit, reset } = useForm({
+  const formProps = useForm({
+    mode,
     defaultValues: {
       ...getInitialEmptyValues(fields),
       ...values,
     },
     resolver: yupResolver(validationSchema),
   });
+  const { control, handleSubmit, reset, watch, getValues } = formProps;
+
+  useEffect(() => {
+    setFormContext?.(formProps);
+  }, [setFormContext, formProps]);
+
+  watch((data, { name, type }) => onChange?.(data, name, type));
 
   const requiredFields = _.flow(
     _.toPairs,
@@ -64,17 +77,19 @@ const Form = props => {
   const buttonPadding = isMultiStep ? 0 : 5;
 
   const actions = [
-    <Button
-      key="submit"
-      type="submit"
-      variant="contained"
-      sx={{
-        paddingLeft: 5,
-        paddingRight: 5,
-      }}
-    >
-      {t(saveLabel)}
-    </Button>,
+    saveLabel && (
+      <Button
+        key="submit"
+        type="submit"
+        variant="contained"
+        sx={{
+          paddingLeft: 5,
+          paddingRight: 5,
+        }}
+      >
+        {t(saveLabel)}
+      </Button>
+    ),
     onCancel && (
       <Button
         key="cancel"
@@ -88,57 +103,60 @@ const Form = props => {
   ];
 
   return (
-    <Grid
-      component="form"
-      {...ariaProps}
-      noValidate
-      container
-      spacing={2}
-      onSubmit={handleSubmit(onSubmit)}
-      sx={{ width: '100%' }}
-    >
-      {fields.map(field => (
-        <Grid
-          key={field.name}
-          item
-          xs={12}
-          {..._.get('props.gridItemProps', field)}
-          sx={{ paddingBottom: 3 }}
-        >
-          <Controller
-            name={field.name}
-            control={control}
-            render={controllerProps => (
-              <FormField
-                field={controllerProps.field}
-                fieldState={controllerProps.fieldState}
-                required={_.includes(field.name, requiredFields)}
-                id={`${prefix}-${field.name}`}
-                label={field.label}
-                info={field.info}
-                inputProps={{
-                  type: field.type || 'text',
-                  placeholder: t(field.placeholder),
-                  ..._.getOr({}, 'props.inputProps', field),
-                }}
-                {..._.getOr({}, 'props', field)}
-              />
-            )}
-          />
-        </Grid>
-      ))}
-      {children}
+    <FormProvider watch={watch} getValues={getValues}>
       <Grid
-        item
+        component="form"
+        {...ariaProps}
+        noValidate
         container
-        xs={12}
-        direction="row"
-        justifyContent={isMultiStep ? 'space-between' : 'start'}
-        sx={{ marginTop: 2 }}
+        spacing={2}
+        onSubmit={handleSubmit(onSubmit)}
+        sx={{ width: '100%' }}
       >
-        {isMultiStep ? actions.reverse() : actions}
+        {fields.map(field => (
+          <Grid
+            key={field.name}
+            item
+            xs={12}
+            {..._.get('props.gridItemProps', field)}
+            sx={{ paddingBottom: 3 }}
+          >
+            <Controller
+              name={field.name}
+              control={control}
+              render={controllerProps => (
+                <FormField
+                  field={controllerProps.field}
+                  fieldState={controllerProps.fieldState}
+                  required={_.includes(field.name, requiredFields)}
+                  id={`${prefix}-${field.name}`}
+                  label={field.label}
+                  info={field.info}
+                  inputProps={{
+                    type: field.type || 'text',
+                    placeholder: t(field.placeholder),
+                    ..._.getOr({}, 'props.inputProps', field),
+                  }}
+                  localizationPrefix={localizationPrefix}
+                  {..._.getOr({}, 'props', field)}
+                />
+              )}
+            />
+          </Grid>
+        ))}
+        {children}
+        <Grid
+          item
+          container
+          xs={12}
+          direction="row"
+          justifyContent={isMultiStep ? 'space-between' : 'start'}
+          sx={{ marginTop: 2 }}
+        >
+          {isMultiStep ? actions.reverse() : actions}
+        </Grid>
       </Grid>
-    </Grid>
+    </FormProvider>
   );
 };
 

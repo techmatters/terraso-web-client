@@ -6,24 +6,24 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
-import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 
+import { GroupContextProvider } from 'group/groupContext';
 import { fetchGroupUpload } from 'group/groupSlice';
-import SharedDataUpload from 'sharedData/components/SharedDataUpload';
+import VisualizationConfigForm from 'sharedData/visualization/components/VisualizationConfigForm';
 
-const GroupSharedDataUpload = () => {
-  const dispatch = useDispatch();
+const GroupSharedDataVisualizationConfig = () => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { slug } = useParams();
-  const { fetching, group } = useSelector(
+  const { group, fetching } = useSelector(
     state => state.group.sharedDataUpload
   );
 
   useDocumentTitle(
-    t('sharedData.upload_title', {
+    t('sharedData.map_create_document_title', {
       name: group?.name,
     }),
     fetching
@@ -40,30 +40,31 @@ const GroupSharedDataUpload = () => {
     dispatch(fetchGroupUpload(slug));
   }, [dispatch, slug]);
 
-  const onCompleteSuccess = useCallback(() => {
-    navigate(`/groups/${slug}`);
-  }, [navigate, slug]);
+  const onCompleteSuccess = useCallback(
+    configSlug => {
+      navigate(`/groups/${slug}/map/${configSlug}`);
+    },
+    [navigate, slug]
+  );
 
-  if (fetching) {
+  const onCancel = useCallback(() => {
+    navigate(-1);
+  }, [navigate]);
+
+  if (fetching || group?.slug !== slug) {
     return <PageLoader />;
   }
 
-  const onCancel = () => {
-    navigate(-1);
-  };
-
   return (
     <PageContainer>
-      <PageHeader
-        header={t('group.shared_data_upload_title', { name: group.name })}
-      />
-      <SharedDataUpload
-        groupSlug={slug}
-        onCancel={onCancel}
-        onCompleteSuccess={onCompleteSuccess}
-      />
+      <GroupContextProvider group={group} owner={group}>
+        <VisualizationConfigForm
+          onCompleteSuccess={onCompleteSuccess}
+          onCancel={onCancel}
+        />
+      </GroupContextProvider>
     </PageContainer>
   );
 };
 
-export default GroupSharedDataUpload;
+export default GroupSharedDataVisualizationConfig;

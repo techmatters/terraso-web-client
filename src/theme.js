@@ -35,6 +35,9 @@ const colorTheme = createTheme({
     map: {
       polygon: '#0055CC',
     },
+    visualization: {
+      markerDefaultColor: '#A96F14',
+    },
   },
 });
 
