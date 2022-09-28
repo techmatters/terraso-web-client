@@ -419,7 +419,8 @@
         "form_step_set_dataset.form.validation_array_min": "Please select at least one data column to display.",
         "map_create_document_title": "Create Map: {{name}}",
         "map_view_document_title": "View Map: {{name}}",
-        "fetchVisualizationConfig.not_found": "Map not found"
+        "fetchVisualizationConfig.not_found": "Map not found",
+        "addVisualizationConfig.unique": "[TODO] The title “{{body.variables.input.title}}“ is being used by other map, change it and try again."
     },
     "common": {
         "dialog_cancel_label": "Cancel",
