@@ -281,6 +281,8 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
   const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
   expect(saveCall[1]).toStrictEqual({
     input: {
+      groupId: '6a625efb-4ec8-45e8-ad6a-eb052cc3fe65',
+      title: 'Test Title',
       configuration: JSON.stringify({
         datasetConfig: {
           dataColumns: { option: 'custom', selectedColumns: ['col1', 'col4'] },
@@ -289,7 +291,6 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
         },
         visualizeConfig: { shape: 'triangle', size: '30', color: '#A96F14' },
         annotateConfig: {
-          mapTitle: 'Test Title',
           annotationTitle: 'col4',
           dataPoints: [{ column: 'col1', label: 'Custom Label' }],
         },

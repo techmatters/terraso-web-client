@@ -16,6 +16,8 @@ import {
 
 import ConfirmButton from 'common/components/ConfirmButton';
 import SocialShare from 'common/components/SocialShare';
+import NotFound from 'layout/NotFound';
+import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import { formatDate } from 'localization/utils';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
@@ -39,7 +41,7 @@ const VisualizationWrapper = props => {
   const dispatch = useDispatch();
   const { i18n, t } = useTranslation();
   const { downloadFile } = useSharedData();
-  const { configId, onDeleted } = props;
+  const { groupSlug, configSlug, onDeleted } = props;
   const { data, fetching, deleting } = useSelector(
     state => state.sharedData.visualizationConfig
   );
@@ -47,12 +49,12 @@ const VisualizationWrapper = props => {
   const [imagePrinter, setImagePrinter] = useState();
 
   useEffect(() => {
-    dispatch(fetchVisualizationConfig(configId));
-  }, [dispatch, configId]);
+    dispatch(fetchVisualizationConfig({ groupSlug, configSlug }));
+  }, [dispatch, groupSlug, configSlug]);
 
   const visualizationConfig = useMemo(
     () =>
-      fetching
+      fetching || !data
         ? {}
         : {
             ...data.configuration,
@@ -61,17 +63,9 @@ const VisualizationWrapper = props => {
     [data, fetching]
   );
 
-  const mapTitle = useMemo(
-    () => _.get('annotateConfig.mapTitle', visualizationConfig),
-    [visualizationConfig]
-  );
+  const mapTitle = useMemo(() => _.get('title', data), [data]);
 
-  useBreadcrumbsParams(
-    useMemo(
-      () => ({ mapTitle: visualizationConfig?.annotateConfig?.mapTitle }),
-      [visualizationConfig?.annotateConfig?.mapTitle]
-    )
-  );
+  useBreadcrumbsParams(useMemo(() => ({ mapTitle }), [mapTitle]));
 
   const handleDownload = file => e => {
     e.preventDefault();
@@ -91,102 +85,108 @@ const VisualizationWrapper = props => {
     });
   };
 
+  if (!data && !fetching) {
+    return <NotFound />;
+  }
+
   return (
-    <VisualizationContextProvider visualizationConfig={visualizationConfig}>
-      <VisualizationContext.Consumer>
-        {({ loadingFile, loadingFileError }) => (
-          <>
-            <PageHeader header={mapTitle} />
-            <Restricted
-              permission="visualization.delete"
-              resource={{ group, visualizationConfig: data }}
-            >
-              <ConfirmButton
-                onConfirm={onDelete}
-                confirmTitle={t(
-                  'sharedData.visualization_delete_confirm_title',
-                  {
-                    visualization: data,
-                  }
+    <PageContainer>
+      <VisualizationContextProvider visualizationConfig={visualizationConfig}>
+        <VisualizationContext.Consumer>
+          {({ loadingFile, loadingFileError }) => (
+            <>
+              <PageHeader header={mapTitle} />
+              <Restricted
+                permission="visualization.delete"
+                resource={{ group, visualizationConfig: data }}
+              >
+                <ConfirmButton
+                  onConfirm={onDelete}
+                  confirmTitle={t(
+                    'sharedData.visualization_delete_confirm_title',
+                    {
+                      visualization: data,
+                    }
+                  )}
+                  confirmMessage={t(
+                    'sharedData.visualization_delete_confirm_message',
+                    {
+                      visualization: data,
+                    }
+                  )}
+                  confirmButton={t('sharedData.visualization_confirm_delete')}
+                  buttonLabel={t('sharedData.visualization_delete')}
+                  buttonProps={{ sx: { mb: 2 } }}
+                  loading={deleting}
+                />
+              </Restricted>
+              <Stack
+                component={Paper}
+                variant="outlined"
+                sx={{ p: 2 }}
+                spacing={2}
+              >
+                {(loadingFile || fetching) && (
+                  <CircularProgress aria-label={t('common.loader_label')} />
                 )}
-                confirmMessage={t(
-                  'sharedData.visualization_delete_confirm_message',
-                  {
-                    visualization: data,
-                  }
+                {loadingFileError && (
+                  <Alert severity="error">
+                    {t('sharedData.visualization_file_load_error', {
+                      name: data.dataEntry,
+                    })}
+                  </Alert>
                 )}
-                confirmButton={t('sharedData.visualization_confirm_delete')}
-                buttonLabel={t('sharedData.visualization_delete')}
-                buttonProps={{ sx: { mb: 2 } }}
-                loading={deleting}
-              />
-            </Restricted>
-            <Stack
-              component={Paper}
-              variant="outlined"
-              sx={{ p: 2 }}
-              spacing={2}
-            >
-              {(loadingFile || fetching) && (
-                <CircularProgress aria-label={t('common.loader_label')} />
-              )}
-              {loadingFileError && (
-                <Alert severity="error">
-                  {t('sharedData.visualization_file_load_error', {
-                    name: data.dataEntry,
-                  })}
-                </Alert>
-              )}
+                {!(loadingFile || loadingFileError || fetching) && (
+                  <Visualization>
+                    <MapExport onImagePrinterChange={setImagePrinter} />
+                  </Visualization>
+                )}
+                {!fetching && (
+                  <Trans
+                    i18nKey="sharedData.visualization_source_data"
+                    values={{
+                      date: formatDate(i18n.resolvedLanguage, data.createdAt),
+                      user: t('user.full_name', { user: data.createdBy }),
+                      file: data.dataEntry,
+                    }}
+                  >
+                    <Typography sx={{ fontWeight: 600 }}>
+                      Source data:
+                      <Link
+                        href={data.dataEntry.url}
+                        onClick={handleDownload(data.dataEntry)}
+                      >
+                        File
+                      </Link>
+                    </Typography>
+                  </Trans>
+                )}
+              </Stack>
               {!(loadingFile || loadingFileError || fetching) && (
-                <Visualization>
-                  <MapExport onImagePrinterChange={setImagePrinter} />
-                </Visualization>
-              )}
-              {!fetching && (
-                <Trans
-                  i18nKey="sharedData.visualization_source_data"
-                  values={{
-                    date: formatDate(i18n.resolvedLanguage, data.createdAt),
-                    user: t('user.full_name', { user: data.createdBy }),
-                    file: data.dataEntry,
-                  }}
-                >
-                  <Typography sx={{ fontWeight: 600 }}>
-                    Source data:
-                    <Link
-                      href={data.dataEntry.url}
-                      onClick={handleDownload(data.dataEntry)}
-                    >
-                      File
-                    </Link>
+                <>
+                  <Typography sx={{ mt: 2 }}>
+                    {t('sharedData.visualization_share_description', {
+                      ownerName: owner.name,
+                    })}
                   </Typography>
-                </Trans>
+                  <Stack
+                    alignItems="flex-start"
+                    direction="row"
+                    spacing={2}
+                    sx={{ mt: 2 }}
+                  >
+                    <SocialShare name={mapTitle} />
+                    <Button variant="outlined" onClick={handleDownloadPng}>
+                      {t('sharedData.visualization_download_png')}
+                    </Button>
+                  </Stack>
+                </>
               )}
-            </Stack>
-            {!(loadingFile || loadingFileError || fetching) && (
-              <>
-                <Typography sx={{ mt: 2 }}>
-                  {t('sharedData.visualization_share_description', {
-                    ownerName: owner.name,
-                  })}
-                </Typography>
-                <Stack
-                  alignItems="flex-start"
-                  direction="row"
-                  spacing={2}
-                  sx={{ mt: 2 }}
-                >
-                  <SocialShare name={mapTitle} />
-                  <Button variant="outlined" onClick={handleDownloadPng}>
-                    {t('sharedData.visualization_download_png')}
-                  </Button>
-                </Stack>
-              </>
-            )}
-          </>
-        )}
-      </VisualizationContext.Consumer>
-    </VisualizationContextProvider>
+            </>
+          )}
+        </VisualizationContext.Consumer>
+      </VisualizationContextProvider>
+    </PageContainer>
   );
 };
 

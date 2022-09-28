@@ -43,8 +43,8 @@ beforeEach(() => {
 
 test('LandscapeSharedDataVisualization: Display visualization', async () => {
   useParams.mockReturnValue({
-    slug: 'slug-1',
-    configId: 'config-id',
+    groupSlug: 'slug-1',
+    configSlug: 'config-slug',
   });
   terrasoApi.requestGraphQL.mockResolvedValueOnce({
     landscapes: {
@@ -72,39 +72,58 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
     },
   });
   terrasoApi.requestGraphQL.mockResolvedValueOnce({
-    visualizationConfig: {
-      configuration: JSON.stringify({
-        datasetConfig: {
-          dataColumns: { option: 'custom', selectedColumns: ['col1', 'col4'] },
-          longitude: 'col_longitude',
-          latitude: 'col3',
-        },
-        visualizeConfig: { shape: 'triangle', size: '30', color: '#A96F14' },
-        annotateConfig: {
-          mapTitle: 'Test Title',
-          annotationTitle: 'col4',
-          dataPoints: [{ column: 'col1', label: 'Custom Label' }],
-        },
-        viewportConfig: {
-          bounds: {
-            northEast: { lat: 11.325606896067784, lng: -67.62077603784013 },
-            southWest: { lat: 8.263885173441716, lng: -76.29042998100137 },
+    visualizationConfigs: {
+      edges: [
+        {
+          node: {
+            title: 'Test Title',
+            configuration: JSON.stringify({
+              datasetConfig: {
+                dataColumns: {
+                  option: 'custom',
+                  selectedColumns: ['col1', 'col4'],
+                },
+                longitude: 'col_longitude',
+                latitude: 'col3',
+              },
+              visualizeConfig: {
+                shape: 'triangle',
+                size: '30',
+                color: '#A96F14',
+              },
+              annotateConfig: {
+                annotationTitle: 'col4',
+                dataPoints: [{ column: 'col1', label: 'Custom Label' }],
+              },
+              viewportConfig: {
+                bounds: {
+                  northEast: {
+                    lat: 11.325606896067784,
+                    lng: -67.62077603784013,
+                  },
+                  southWest: {
+                    lat: 8.263885173441716,
+                    lng: -76.29042998100137,
+                  },
+                },
+              },
+            }),
+            createdAt: '2022-09-16T18:03:40.653296+00:00',
+            createdBy: {
+              id: 'dc695d00-d6b4-45b2-ab8d-f48206d998da',
+              lastName: 'Buitrón',
+              firstName: 'José',
+            },
+            dataEntry: {
+              id: '1ccb0208-a693-4ee1-9d29-cd099e28bf72',
+              name: 'BD_ANEI',
+              description: '',
+              resourceType: 'xlsx',
+            },
+            id: 'a9f5587b-35a2-4d43-9acf-dc9a7919f1e4',
           },
         },
-      }),
-      createdAt: '2022-09-16T18:03:40.653296+00:00',
-      createdBy: {
-        id: 'dc695d00-d6b4-45b2-ab8d-f48206d998da',
-        lastName: 'Buitrón',
-        firstName: 'José',
-      },
-      dataEntry: {
-        id: '1ccb0208-a693-4ee1-9d29-cd099e28bf72',
-        name: 'BD_ANEI',
-        description: '',
-        resourceType: 'xlsx',
-      },
-      id: 'a9f5587b-35a2-4d43-9acf-dc9a7919f1e4',
+      ],
     },
   });
   global.fetch.mockResolvedValueOnce({

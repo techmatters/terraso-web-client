@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useDocumentTitle } from 'common/document';
-import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 
@@ -17,7 +16,7 @@ const GroupSharedDataVisualization = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { slug, configId } = useParams();
+  const { groupSlug, configSlug } = useParams();
   const { group, fetching } = useSelector(
     state => state.group.sharedDataUpload
   );
@@ -30,8 +29,8 @@ const GroupSharedDataVisualization = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchGroupUpload(slug));
-  }, [dispatch, slug]);
+    dispatch(fetchGroupUpload(groupSlug));
+  }, [dispatch, groupSlug]);
 
   useBreadcrumbsParams(
     useMemo(
@@ -45,14 +44,13 @@ const GroupSharedDataVisualization = () => {
   }
 
   return (
-    <PageContainer>
-      <GroupContextProvider group={group} owner={group}>
-        <VisualizationWrapper
-          configId={configId}
-          onDeleted={() => navigate(`/groups/${slug}`)}
-        />
-      </GroupContextProvider>
-    </PageContainer>
+    <GroupContextProvider group={group} owner={group}>
+      <VisualizationWrapper
+        configSlug={configSlug}
+        groupSlug={groupSlug}
+        onDeleted={() => navigate(`/groups/${groupSlug}`)}
+      />
+    </GroupContextProvider>
   );
 };
 

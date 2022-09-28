@@ -31,13 +31,7 @@ export const extractDataEntries = group =>
     .map(_.get('node'))
     .map(dataEntry => ({
       ...dataEntry,
-      visualizations: _.getOr([], 'visualizations.edges', dataEntry)
-        .map(_.get('node'))
-        .map(visualization => ({
-          ...visualization,
-          configuration: _.pick(
-            ['annotateConfig.mapTitle'],
-            JSON.parse(visualization.configuration)
-          ),
-        })),
+      visualizations: _.getOr([], 'visualizations.edges', dataEntry).map(
+        _.get('node')
+      ),
     }));

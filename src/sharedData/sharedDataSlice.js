@@ -75,7 +75,7 @@ export const deleteVisualizationConfig = createAsyncThunk(
     severity: 'success',
     content: 'sharedData.deleted_visualization_config',
     params: {
-      mapTitle: _.get('configuration.annotateConfig.mapTitle', config),
+      mapTitle: _.get('title', config),
     },
   })
 );

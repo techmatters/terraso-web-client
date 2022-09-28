@@ -41,8 +41,8 @@ const LandscapeSharedDataVisualizationConfig = () => {
   }, [dispatch, slug]);
 
   const onCompleteSuccess = useCallback(
-    visualizationId => {
-      navigate(`/landscapes/${slug}/map/${visualizationId}`);
+    configSlug => {
+      navigate(`/landscapes/${slug}/map/${configSlug}`);
     },
     [navigate, slug]
   );
