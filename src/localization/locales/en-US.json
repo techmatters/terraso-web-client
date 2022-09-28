@@ -420,7 +420,7 @@
         "map_create_document_title": "Create Map: {{name}}",
         "map_view_document_title": "View Map: {{name}}",
         "fetchVisualizationConfig.not_found": "Map not found",
-        "addVisualizationConfig.unique": "[TODO] The title “{{body.variables.input.title}}“ is being used by other map, change it and try again."
+        "addVisualizationConfig.unique": "The name “{{body.variables.input.title}}“ is in use by another map. Please use a different name."
     },
     "common": {
         "dialog_cancel_label": "Cancel",
