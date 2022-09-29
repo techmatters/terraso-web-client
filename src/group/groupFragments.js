@@ -49,7 +49,7 @@ export const groupFields = `
 
 export const groupMembersPending = `
   fragment groupMembersPending on GroupNode {
-    pending: memberships(membershipStatus: "pending") {
+    pending: memberships(membershipStatus: PENDING) {
       totalCount
     }
   }
@@ -57,7 +57,7 @@ export const groupMembersPending = `
 
 export const groupMembersInfo = `
   fragment groupMembersInfo on GroupNode {
-    memberships(first: ${MEMBERS_INFO_SAMPLE_SIZE}, membershipStatus: "approved") {
+    memberships(first: ${MEMBERS_INFO_SAMPLE_SIZE}, membershipStatus: APPROVED) {
       totalCount
       edges {
         node {
