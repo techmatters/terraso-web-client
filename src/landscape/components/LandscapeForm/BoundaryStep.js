@@ -22,6 +22,7 @@ import {
 import ExternalLink from 'common/components/ExternalLink';
 import { countryNameForCode, scrollToNavBar } from 'common/utils';
 import PageHeader from 'layout/PageHeader';
+import { useAnalytics } from 'monitoring/analytics';
 
 import { getPlaceInfoByName } from 'gis/gisService';
 import LandscapeGeoJsonBoundaries from 'landscape/components/LandscapeGeoJsonBoundaries';
@@ -41,6 +42,7 @@ const POINT_FILTER = feature => _.get('geometry.type', feature) === 'Point';
 
 const GeoJson = props => {
   const { t } = useTranslation();
+  const { trackEvent } = useAnalytics();
   const {
     mapCenter,
     landscape,
@@ -56,6 +58,7 @@ const GeoJson = props => {
       ...landscape,
       areaPolygon,
     });
+    trackEvent('Landscape created', { props: { option: OPTION_GEOJSON } });
   };
 
   return (
@@ -97,6 +100,7 @@ const MapDrawPolygon = props => {
   } = props;
   const [editHelp, setEditHelp] = useState(false);
   const [open, setOpen] = useState(false);
+  const { trackEvent } = useAnalytics();
 
   const onPolygonChange = useCallback(() => {
     setOpen(true);
@@ -112,6 +116,9 @@ const MapDrawPolygon = props => {
     save({
       ...landscape,
       areaPolygon,
+    });
+    trackEvent('Landscape created', {
+      props: { option: OPTION_MAP_DRAW_POLYGON },
     });
   };
 
@@ -243,12 +250,14 @@ const MapPin = props => {
     areaPolygon,
     setAreaPolygon,
   } = props;
+  const { trackEvent } = useAnalytics();
 
   const onSave = () => {
     save({
       ...landscape,
       areaPolygon,
     });
+    trackEvent('Landscape created', { props: { option: OPTION_MAP_PIN } });
   };
 
   return (
