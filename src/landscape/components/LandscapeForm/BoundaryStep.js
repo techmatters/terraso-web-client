@@ -57,8 +57,9 @@ const GeoJson = props => {
     save({
       ...landscape,
       areaPolygon,
-    });
-    trackEvent('Landscape created', { props: { option: OPTION_GEOJSON } });
+    }).then(() =>
+      trackEvent('Landscape created', { props: { option: OPTION_GEOJSON } })
+    );
   };
 
   return (
@@ -116,10 +117,11 @@ const MapDrawPolygon = props => {
     save({
       ...landscape,
       areaPolygon,
-    });
-    trackEvent('Landscape created', {
-      props: { option: OPTION_MAP_DRAW_POLYGON },
-    });
+    }).then(() =>
+      trackEvent('Landscape created', {
+        props: { option: OPTION_MAP_DRAW_POLYGON },
+      })
+    );
   };
 
   const drawOptions = useMemo(
@@ -256,8 +258,9 @@ const MapPin = props => {
     save({
       ...landscape,
       areaPolygon,
-    });
-    trackEvent('Landscape created', { props: { option: OPTION_MAP_PIN } });
+    }).then(() =>
+      trackEvent('Landscape created', { props: { option: OPTION_MAP_PIN } })
+    );
   };
 
   return (
