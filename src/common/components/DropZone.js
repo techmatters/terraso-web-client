@@ -1,6 +1,6 @@
 import React from 'react';
 
-import filesize from 'filesize';
+import { filesize } from 'filesize';
 import { useDropzone } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
 
