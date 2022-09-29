@@ -58,7 +58,9 @@ const GeoJson = props => {
       ...landscape,
       areaPolygon,
     }).then(() =>
-      trackEvent('Landscape created', { props: { option: OPTION_GEOJSON } })
+      trackEvent('Landscape created', {
+        props: { option: OPTION_GEOJSON, country: landscape.location },
+      })
     );
   };
 
@@ -119,7 +121,7 @@ const MapDrawPolygon = props => {
       areaPolygon,
     }).then(() =>
       trackEvent('Landscape created', {
-        props: { option: OPTION_MAP_DRAW_POLYGON },
+        props: { option: OPTION_MAP_DRAW_POLYGON, country: landscape.location },
       })
     );
   };
@@ -259,7 +261,9 @@ const MapPin = props => {
       ...landscape,
       areaPolygon,
     }).then(() =>
-      trackEvent('Landscape created', { props: { option: OPTION_MAP_PIN } })
+      trackEvent('Landscape created', {
+        props: { option: OPTION_MAP_PIN, country: landscape.location },
+      })
     );
   };
 
