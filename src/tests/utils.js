@@ -15,7 +15,7 @@ import theme from 'theme';
 const executeAxe = process.env['TEST_A11Y'] === 'true';
 
 jest.setTimeout(JEST_TEST_TIMEOUT);
-jest.retryTimes(0);
+jest.retryTimes(1);
 
 // Work around to avoid tests trying to render SVGs
 const createElementNSOrig = global.document.createElementNS;
