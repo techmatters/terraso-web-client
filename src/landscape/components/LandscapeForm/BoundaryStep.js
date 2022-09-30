@@ -57,11 +57,15 @@ const GeoJson = props => {
     save({
       ...landscape,
       areaPolygon,
-    }).then(() =>
-      trackEvent('Landscape created', {
-        props: { option: OPTION_GEOJSON, country: landscape.location },
-      })
-    );
+    }).then(() => {
+      // props.isNew is set when the landscape is being created
+      // otherwise it seems to be undefined
+      if (props.isNew) {
+        trackEvent('Landscape created', {
+          props: { option: OPTION_GEOJSON, country: landscape.location },
+        });
+      }
+    });
   };
 
   return (
@@ -119,11 +123,16 @@ const MapDrawPolygon = props => {
     save({
       ...landscape,
       areaPolygon,
-    }).then(() =>
-      trackEvent('Landscape created', {
-        props: { option: OPTION_MAP_DRAW_POLYGON, country: landscape.location },
-      })
-    );
+    }).then(() => {
+      if (props.isNew) {
+        trackEvent('Landscape created', {
+          props: {
+            option: OPTION_MAP_DRAW_POLYGON,
+            country: landscape.location,
+          },
+        });
+      }
+    });
   };
 
   const drawOptions = useMemo(
@@ -260,11 +269,13 @@ const MapPin = props => {
     save({
       ...landscape,
       areaPolygon,
-    }).then(() =>
-      trackEvent('Landscape created', {
-        props: { option: OPTION_MAP_PIN, country: landscape.location },
-      })
-    );
+    }).then(() => {
+      if (props.isNew) {
+        trackEvent('Landscape created', {
+          props: { option: OPTION_MAP_PIN, country: landscape.location },
+        });
+      }
+    });
   };
 
   return (
@@ -310,9 +321,11 @@ const BoundaryOptions = props => {
 
   const saveWithoutBoundary = async () => {
     await save(landscape);
-    trackEvent('Landscape created', {
-      props: { option: 'skip-boundary', country: landscape.location },
-    });
+    if (props.isNew) {
+      trackEvent('Landscape created', {
+        props: { option: 'skip-boundary', country: landscape.location },
+      });
+    }
   };
 
   const options = [
