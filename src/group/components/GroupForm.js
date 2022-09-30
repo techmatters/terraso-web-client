@@ -20,6 +20,7 @@ import Form from 'forms/components/Form';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
+import { useAnalytics } from 'monitoring/analytics';
 import { useFetchData } from 'state/utils';
 
 import {
@@ -147,6 +148,7 @@ const GroupForm = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { trackEvent } = useAnalytics();
 
   const { slug } = useParams();
   const { fetching, group, success } = useSelector(state => state.group.form);
@@ -190,13 +192,18 @@ const GroupForm = () => {
     };
   }, [success, group, navigate, dispatch]);
 
-  const onSave = group =>
+  const onSave = group => {
     dispatch(
       saveGroup({
         group,
         user,
       })
-    );
+    ).then(() => {
+      if (isNew) {
+        trackEvent('Create Group', {});
+      }
+    });
+  };
 
   const onCancel = () => {
     navigate(-1);
