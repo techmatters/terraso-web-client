@@ -301,9 +301,18 @@ const BoundaryOptions = props => {
   const { t } = useTranslation();
   const { landscape, setOption, save, onCancel, title } = props;
 
+  const { trackEvent } = useAnalytics();
+
   const onOptionClick = option => () => {
     option.onClick();
     scrollToNavBar();
+  };
+
+  const saveWithoutBoundary = async () => {
+    await save(landscape);
+    trackEvent('Landscape created', {
+      props: { option: 'skip-boundary', country: landscape.location },
+    });
   };
 
   const options = [
@@ -325,7 +334,7 @@ const BoundaryOptions = props => {
     {
       Icon: ArrowRightAltIcon,
       label: 'landscape.form_boundary_options_skip',
-      onClick: () => save(landscape),
+      onClick: saveWithoutBoundary,
     },
   ];
 
