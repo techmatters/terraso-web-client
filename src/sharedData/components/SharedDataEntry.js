@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import filesize from 'filesize';
+import { filesize } from 'filesize';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
