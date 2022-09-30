@@ -41,7 +41,7 @@ test('AccountProfile: Display Avatar', async () => {
   expect(screen.getByRole('img', { name: 'John Doe' })).toBeInTheDocument();
 });
 
-test.skip('AccountProfile: Display Avatar with missing image', async () => {
+test('AccountProfile: Avatar with missing image', async () => {
   await render(<AccountProfile />, {
     account: {
       hasToken: true,
@@ -55,7 +55,7 @@ test.skip('AccountProfile: Display Avatar with missing image', async () => {
       },
     },
   });
-  expect(screen.getByRole('img', { name: 'John Doe' })).toBeInTheDocument();
+  expect(screen.queryByRole('img', { name: 'John Doe' })).not.toBeInTheDocument();
 });
 
 test('AccountProfile: Save', async () => {
