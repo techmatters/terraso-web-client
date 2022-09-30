@@ -16,6 +16,11 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(),
 }));
 
+jest.mock('leaflet', () => ({
+  ...jest.requireActual('leaflet'),
+  easyPrint: jest.requireActual('leaflet').easyPrint,
+}));
+
 const TEST_CSV = `
 col1,col2,col_longitude,col3,col4
 val1,val2,10,30,val4
@@ -46,87 +51,94 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
     groupSlug: 'slug-1',
     configSlug: 'config-slug',
   });
-  terrasoApi.requestGraphQL.mockResolvedValueOnce({
-    landscapes: {
-      edges: [
-        {
-          node: {
-            defaultGroup: {
-              edges: [
-                {
-                  node: {
-                    group: { id: '6a625efb-4ec8-45e8-ad6a-eb052cc3fe65' },
-                  },
+  terrasoApi.requestGraphQL.mockImplementation(query => {
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.startsWith('query landscapes')) {
+      return Promise.resolve({
+        landscapes: {
+          edges: [
+            {
+              node: {
+                defaultGroup: {
+                  edges: [
+                    {
+                      node: {
+                        group: { id: '6a625efb-4ec8-45e8-ad6a-eb052cc3fe65' },
+                      },
+                    },
+                  ],
                 },
-              ],
+                description: 'dsadsad',
+                id: 'e9a65bef-4ef1-4058-bba3-fc73b53eb779',
+                location: 'CM',
+                name: 'José Landscape Deafult Test 4',
+                slug: 'jose-landscape-deafult-test-4',
+                website: '',
+              },
             },
-            description: 'dsadsad',
-            id: 'e9a65bef-4ef1-4058-bba3-fc73b53eb779',
-            location: 'CM',
-            name: 'José Landscape Deafult Test 4',
-            slug: 'jose-landscape-deafult-test-4',
-            website: '',
-          },
+          ],
         },
-      ],
-    },
-  });
-  terrasoApi.requestGraphQL.mockResolvedValueOnce({
-    visualizationConfigs: {
-      edges: [
-        {
-          node: {
-            title: 'Test Title',
-            configuration: JSON.stringify({
-              datasetConfig: {
-                dataColumns: {
-                  option: 'custom',
-                  selectedColumns: ['col1', 'col4'],
-                },
-                longitude: 'col_longitude',
-                latitude: 'col3',
-              },
-              visualizeConfig: {
-                shape: 'triangle',
-                size: '30',
-                color: '#A96F14',
-              },
-              annotateConfig: {
-                annotationTitle: 'col4',
-                dataPoints: [{ column: 'col1', label: 'Custom Label' }],
-              },
-              viewportConfig: {
-                bounds: {
-                  northEast: {
-                    lat: 11.325606896067784,
-                    lng: -67.62077603784013,
+      });
+    }
+    if (trimmedQuery.startsWith('query fetchVisualizationConfig')) {
+      return Promise.resolve({
+        visualizationConfigs: {
+          edges: [
+            {
+              node: {
+                title: 'Test Title',
+                configuration: JSON.stringify({
+                  datasetConfig: {
+                    dataColumns: {
+                      option: 'custom',
+                      selectedColumns: ['col1', 'col4'],
+                    },
+                    longitude: 'col_longitude',
+                    latitude: 'col3',
                   },
-                  southWest: {
-                    lat: 8.263885173441716,
-                    lng: -76.29042998100137,
+                  visualizeConfig: {
+                    shape: 'triangle',
+                    size: '30',
+                    color: '#A96F14',
                   },
+                  annotateConfig: {
+                    annotationTitle: 'col4',
+                    dataPoints: [{ column: 'col1', label: 'Custom Label' }],
+                  },
+                  viewportConfig: {
+                    bounds: {
+                      northEast: {
+                        lat: 11.325606896067784,
+                        lng: -67.62077603784013,
+                      },
+                      southWest: {
+                        lat: 8.263885173441716,
+                        lng: -76.29042998100137,
+                      },
+                    },
+                  },
+                }),
+                createdAt: '2022-09-16T18:03:40.653296+00:00',
+                createdBy: {
+                  id: 'dc695d00-d6b4-45b2-ab8d-f48206d998da',
+                  lastName: 'Buitrón',
+                  firstName: 'José',
                 },
+                dataEntry: {
+                  id: '1ccb0208-a693-4ee1-9d29-cd099e28bf72',
+                  name: 'BD_ANEI',
+                  description: '',
+                  resourceType: 'xlsx',
+                },
+                id: 'a9f5587b-35a2-4d43-9acf-dc9a7919f1e4',
               },
-            }),
-            createdAt: '2022-09-16T18:03:40.653296+00:00',
-            createdBy: {
-              id: 'dc695d00-d6b4-45b2-ab8d-f48206d998da',
-              lastName: 'Buitrón',
-              firstName: 'José',
             },
-            dataEntry: {
-              id: '1ccb0208-a693-4ee1-9d29-cd099e28bf72',
-              name: 'BD_ANEI',
-              description: '',
-              resourceType: 'xlsx',
-            },
-            id: 'a9f5587b-35a2-4d43-9acf-dc9a7919f1e4',
-          },
+          ],
         },
-      ],
-    },
+      });
+    }
   });
-  global.fetch.mockResolvedValueOnce({
+  global.fetch.mockResolvedValue({
     status: 200,
     arrayBuffer: () => {
       const file = new File([TEST_CSV], `test.csv`, { type: 'text/plain' });
@@ -149,7 +161,7 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
 
   await setup();
   await screen.findByRole('button', { name: 'Download PNG' });
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(4);
   expect(global.fetch).toHaveBeenCalledTimes(1);
 
   expect(

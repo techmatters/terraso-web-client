@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useCallback, useContext } from 'react';
 
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
@@ -14,6 +14,7 @@ import List from 'common/components/List';
 import TableResponsive from 'common/components/TableResponsive';
 import PageLoader from 'layout/PageLoader';
 import Restricted from 'permissions/components/Restricted';
+import { useFetchData } from 'state/utils';
 
 import AccountAvatar from 'account/components/AccountAvatar';
 import { useGroupContext } from 'group/groupContext';
@@ -186,9 +187,7 @@ const GroupMembersList = () => {
 
   const { owner, groupSlug } = useGroupContext();
 
-  useEffect(() => {
-    dispatch(fetchMembers(groupSlug));
-  }, [dispatch, groupSlug]);
+  useFetchData(useCallback(() => fetchMembers(groupSlug), [groupSlug]));
 
   if (fetching) {
     return <PageLoader />;

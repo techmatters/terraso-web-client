@@ -17,6 +17,11 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(),
 }));
 
+jest.mock('react-leaflet', () => ({
+  ...jest.requireActual('react-leaflet'),
+  useMap: jest.fn(),
+}));
+
 const setup = async () => {
   await render(<LandscapeNew />);
   const name = screen.getByRole('textbox', {
@@ -51,6 +56,9 @@ const setup = async () => {
 
 beforeEach(() => {
   useParams.mockReturnValue({});
+  reactLeaflet.useMap.mockImplementation(
+    jest.requireActual('react-leaflet').useMap
+  );
 });
 
 test('LandscapeNew: Save form Pin boundary', async () => {
@@ -98,7 +106,7 @@ test('LandscapeNew: Save form Pin boundary', async () => {
   expect(spy).toHaveBeenCalled();
   const map = spy.mock.results[spy.mock.results.length - 1].value;
   await act(async () =>
-    map.fireEvent(L.Draw.Event.CREATED, {
+    map.fireEvent('draw:created', {
       layerType: 'marker',
       layer: new L.Marker([10, 10]),
     })

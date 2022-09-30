@@ -2,9 +2,9 @@ import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
 
 import React from 'react';
 
+import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
-import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { useSearchParams } from 'react-router-dom';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -19,7 +19,7 @@ const GEOJSON =
 global.console.error = jest.fn();
 
 jest.mock('terrasoBackend/api');
-jest.mock('react-leaflet-markercluster', () => jest.fn());
+jest.mock('@changey/react-leaflet-markercluster', () => jest.fn());
 
 jest.mock('@mui/material/useMediaQuery');
 
@@ -140,12 +140,15 @@ const baseListTest = async () => {
     'members'
   );
   expect(
-    within(rows[2]).getByRole('cell', { name: 'Connect' })
+    within(rows[2])
+      .getByRole('button', { name: 'Connect: Landscape Name 1' })
+      .closest('[role="cell"]')
   ).toHaveAttribute('data-field', 'actions');
-  expect(within(rows[9]).getByRole('cell', { name: 'Leave' })).toHaveAttribute(
-    'data-field',
-    'actions'
-  );
+  expect(
+    within(rows[9])
+      .getByRole('button', { name: 'Leave: Landscape Name 3' })
+      .closest('[role="cell"]')
+  ).toHaveAttribute('data-field', 'actions');
 };
 
 beforeEach(() => {
@@ -190,7 +193,7 @@ test('LandscapeList: Search', async () => {
   await act(async () =>
     fireEvent.change(searchInput, { target: { value: 'Landscape Name 1' } })
   );
-  await new Promise(r => setTimeout(r, 300));
+  await waitFor(() => expect(screen.getAllByRole('row').length).toBe(7));
   const rows = screen.getAllByRole('row');
   await waitFor(() => expect(rows.length).toBe(7)); // 10 to 15 displayed + header
 });

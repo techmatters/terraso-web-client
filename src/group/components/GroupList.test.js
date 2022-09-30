@@ -130,14 +130,16 @@ test('GroupList: Display list', async () => {
   expect(
     within(rows[2]).getByRole('cell', { name: 'email@email.com' })
   ).toHaveAttribute('data-field', 'email');
-  expect(within(rows[2]).getByRole('cell', { name: 'Join' })).toHaveAttribute(
-    'data-field',
-    'actions'
-  );
-  expect(within(rows[9]).getByRole('cell', { name: 'Leave' })).toHaveAttribute(
-    'data-field',
-    'actions'
-  );
+  expect(
+    within(rows[2])
+      .getByRole('button', { name: 'Join: Group name 1' })
+      .closest('[role="cell"]')
+  ).toHaveAttribute('data-field', 'actions');
+  expect(
+    within(rows[9])
+      .getByRole('button', { name: 'Leave: Group name 3' })
+      .closest('[role="cell"]')
+  ).toHaveAttribute('data-field', 'actions');
 });
 test('GroupList: List sort', async () => {
   const isMember = {

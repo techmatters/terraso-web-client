@@ -37,7 +37,7 @@ const setup = async initialState => {
 test('LandscapeMembers: Display error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValue('Load error');
   await setup();
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
 test('LandscapeMembers: Display loader', async () => {
@@ -72,8 +72,8 @@ test('LandscapeMembers: Display list', async () => {
         _.flow(
           _.set('node.user', {
             id: `index-${index}`,
-            firstName: 'Member name',
-            lastName: 'Member Last Name',
+            firstName: 'First name',
+            lastName: 'Last Name',
             email:
               index === 0 ? 'john.doe@email.com' : `email${index}@email.com`,
           }),
@@ -111,6 +111,12 @@ test('LandscapeMembers: Display list', async () => {
       Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
     )
     .mockReturnValueOnce(
+      Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
+    )
+    .mockReturnValueOnce(
+      Promise.resolve(_.set('groups.edges[0].node', group, {}))
+    )
+    .mockReturnValueOnce(
       Promise.resolve(_.set('groups.edges[0].node', group, {}))
     );
   await setup();
@@ -123,24 +129,23 @@ test('LandscapeMembers: Display list', async () => {
   expect(rows.length).toBe(16); // 15 displayed + header
   expect(
     within(rows[2]).getByRole('cell', {
-      name: 'Member name Member Last Name',
+      name: 'First name Last Name',
     })
   ).toHaveAttribute('data-field', 'name');
   expect(
     within(rows[9]).queryByRole('button', { name: 'Member' })
   ).not.toBeInTheDocument();
-  expect(within(rows[9]).getByRole('cell', { name: 'Member' })).toHaveAttribute(
-    'data-field',
-    'role'
-  );
-  expect(within(rows[2]).getByRole('cell', { name: '' })).toHaveAttribute(
-    'data-field',
-    'actions'
-  );
-  expect(within(rows[1]).getByRole('cell', { name: 'Leave' })).toHaveAttribute(
-    'data-field',
-    'actions'
-  );
+  expect(
+    within(rows[9]).getByText('Member').closest('[role="cell"]')
+  ).toHaveAttribute('data-field', 'role');
+  expect(
+    within(rows[2]).queryByRole('button', { name: 'Member' })
+  ).not.toBeInTheDocument();
+  expect(
+    within(rows[1])
+      .getByRole('button', { name: 'Leave: Landscape Name' })
+      .closest('[role="cell"]')
+  ).toHaveAttribute('data-field', 'actions');
 });
 test('LandscapeMembers: Display list (small)', async () => {
   useMediaQuery.mockReturnValue(true);
@@ -190,6 +195,12 @@ test('LandscapeMembers: Display list (small)', async () => {
       Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
     )
     .mockReturnValueOnce(
+      Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
+    )
+    .mockReturnValueOnce(
+      Promise.resolve(_.set('groups.edges[0].node', group, {}))
+    )
+    .mockReturnValueOnce(
       Promise.resolve(_.set('groups.edges[0].node', group, {}))
     );
   await setup();
@@ -214,9 +225,9 @@ test('LandscapeMembers: Display list manager', async () => {
         _.flow(
           _.set('node.user', {
             id: `index-${index}`,
-            firstName: 'Member name',
-            lastName: 'Member Last Name',
-            email: 'email@email.com',
+            firstName: `Member name ${index}`,
+            lastName: `Member Last Name ${index}`,
+            email: `email${index}@email.com`,
           }),
           _.set('node.userRole', 'MEMBER'),
           _.set('node.id', `membership-${index}`),
@@ -257,6 +268,12 @@ test('LandscapeMembers: Display list manager', async () => {
       Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
     )
     .mockReturnValueOnce(
+      Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
+    )
+    .mockReturnValueOnce(
+      Promise.resolve(_.set('groups.edges[0].node', group, {}))
+    )
+    .mockReturnValueOnce(
       Promise.resolve(_.set('groups.edges[0].node', group, {}))
     );
   await setup();
@@ -269,20 +286,22 @@ test('LandscapeMembers: Display list manager', async () => {
   expect(rows.length).toBe(16); // 15 displayed + header
   expect(
     within(rows[2]).getByRole('cell', {
-      name: 'Member name Member Last Name',
+      name: 'Member name 1 Member Last Name 1',
     })
   ).toHaveAttribute('data-field', 'name');
-  expect(within(rows[9]).getByRole('cell', { name: 'Member' })).toHaveAttribute(
-    'data-field',
-    'role'
-  );
+  expect(
+    within(rows[9])
+      .getByRole('button', { name: 'Member' })
+      .closest('[role="cell"]')
+  ).toHaveAttribute('data-field', 'role');
   expect(
     within(rows[9]).getByRole('button', { name: 'Member' })
   ).toBeInTheDocument();
-  expect(within(rows[2]).getByRole('cell', { name: 'Remove' })).toHaveAttribute(
-    'data-field',
-    'actions'
-  );
+  expect(
+    within(rows[2])
+      .getByRole('button', { name: 'Remove' })
+      .closest('[role="cell"]')
+  ).toHaveAttribute('data-field', 'actions');
 });
 test('LandscapeMembers: Manager actions', async () => {
   const generateMemberhips = (index, count) => ({
@@ -293,8 +312,8 @@ test('LandscapeMembers: Manager actions', async () => {
           _.set('node.user', {
             id: `index-${index}`,
             firstName: `Member name ${index}`,
-            lastName: 'Member Last Name',
-            email: 'email@email.com',
+            lastName: `Member Last Name ${index}`,
+            email: `email${index}@email.com`,
           }),
           _.set('node.userRole', 'MEMBER'),
           _.set('node.id', `membership-${index}`),
@@ -332,15 +351,16 @@ test('LandscapeMembers: Manager actions', async () => {
     },
   };
 
-  terrasoApi.requestGraphQL
-    .mockReturnValueOnce(
-      Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', baseGroup, {}))
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(
+  terrasoApi.requestGraphQL.mockImplementation(query => {
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.startsWith('query landscapes')) {
+      return Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}));
+    }
+    if (trimmedQuery.startsWith('query group')) {
+      return Promise.resolve(_.set('groups.edges[0].node', baseGroup, {}));
+    }
+    if (trimmedQuery.startsWith('mutation updateMembership')) {
+      return Promise.resolve(
         _.flow(
           _.set('updateMembership.membership.group', baseGroup),
           _.set(
@@ -352,10 +372,10 @@ test('LandscapeMembers: Manager actions', async () => {
             'APPROVED'
           )
         )({})
-      )
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(
+      );
+    }
+    if (trimmedQuery.startsWith('mutation deleteMembership')) {
+      return Promise.resolve(
         _.flow(
           _.set('deleteMembership.membership.group', baseGroup),
           _.set(
@@ -363,10 +383,12 @@ test('LandscapeMembers: Manager actions', async () => {
             baseGroup.memberships.edges.slice(0, -1)
           )
         )({})
-      )
-    );
-
+      );
+    }
+  });
   await setup();
+
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(4);
 
   // Landscape info
   expect(
@@ -375,19 +397,37 @@ test('LandscapeMembers: Manager actions', async () => {
   const rows = screen.getAllByRole('row');
 
   // Role Change
-  expect(within(rows[3]).getByRole('cell', { name: 'Member' })).toHaveAttribute(
-    'data-field',
-    'role'
-  );
+  expect(
+    within(rows[3]).getByRole('cell', {
+      name: 'Member name 2 Member Last Name 2',
+    })
+  ).toHaveAttribute('data-field', 'name');
+  expect(
+    within(rows[3])
+      .getByRole('button', { name: 'Member' })
+      .closest('[role="cell"]')
+  ).toHaveAttribute('data-field', 'role');
   const roleButton = within(rows[3]).getByRole('button', { name: 'Member' });
   expect(roleButton).toBeInTheDocument();
   await act(async () => fireEvent.mouseDown(roleButton));
-  await act(async () =>
-    fireEvent.click(screen.getByRole('option', { name: 'Manager' }))
+  expect(screen.getByRole('option', { name: 'Manager' })).toBeInTheDocument();
+  await act(
+    async () =>
+      await fireEvent.click(screen.getByRole('option', { name: 'Manager' }))
   );
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(5);
+  expect(
+    within(screen.getAllByRole('row')[3]).getByRole('cell', {
+      name: 'Member name 2 Member Last Name 2',
+    })
+  ).toHaveAttribute('data-field', 'name');
   await waitFor(() =>
     expect(
-      within(rows[3]).getByRole('cell', { name: 'Manager' })
+      within(screen.getAllByRole('row')[3])
+        .getByRole('button', {
+          name: 'Manager',
+        })
+        .closest('[role="cell"]')
     ).toHaveAttribute('data-field', 'role')
   );
 
@@ -395,11 +435,17 @@ test('LandscapeMembers: Manager actions', async () => {
   expect(rows.length).toBe(4);
   const removeButton = within(rows[3]).getByRole('button', { name: 'Remove' });
   await act(async () => fireEvent.click(removeButton));
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Remove Member' }))
+  await act(
+    async () =>
+      await fireEvent.click(
+        screen.getByRole('button', { name: 'Remove Member' })
+      )
   );
   await screen.findByRole('region', {
     name: 'Current Members',
   });
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(6);
   await waitFor(() => expect(screen.getAllByRole('row').length).toBe(3));
+  const removedRows = screen.getAllByRole('row');
+  expect(removedRows.length).toBe(3);
 });

@@ -1,12 +1,13 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
+import { useFetchData } from 'state/utils';
 
 import { GroupContextProvider } from 'group/groupContext';
 import { fetchLandscapeUpload } from 'landscape/landscapeSlice';
@@ -14,7 +15,6 @@ import VisualizationWrapper from 'sharedData/visualization/components/Visualizat
 
 const LandscapeSharedDataVisualization = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { landscapeSlug, configSlug } = useParams();
   const { landscape, fetching } = useSelector(
@@ -28,9 +28,9 @@ const LandscapeSharedDataVisualization = () => {
     fetching
   );
 
-  useEffect(() => {
-    dispatch(fetchLandscapeUpload(landscapeSlug));
-  }, [dispatch, landscapeSlug]);
+  useFetchData(
+    useCallback(() => fetchLandscapeUpload(landscapeSlug), [landscapeSlug])
+  );
 
   useBreadcrumbsParams(
     useMemo(

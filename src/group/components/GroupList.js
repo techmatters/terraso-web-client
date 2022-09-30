@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { Trans, useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 
 import { Button, Link, Stack, Typography } from '@mui/material';
@@ -11,6 +11,7 @@ import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
+import { useFetchData } from 'state/utils';
 
 import { GroupContextProvider } from 'group/groupContext';
 import { fetchGroups } from 'group/groupSlice';
@@ -56,16 +57,13 @@ const MembershipButton = ({ group }) => (
 );
 
 const GroupList = () => {
-  const dispatch = useDispatch();
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { groups, fetching, message } = useSelector(state => state.group.list);
 
   useDocumentTitle(t('group.list_document_title'));
 
-  useEffect(() => {
-    dispatch(fetchGroups());
-  }, [dispatch]);
+  useFetchData(fetchGroups);
 
   if (fetching) {
     return <PageLoader />;

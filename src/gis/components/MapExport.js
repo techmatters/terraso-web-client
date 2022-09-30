@@ -11,7 +11,7 @@ const MapExport = props => {
   const map = useMap();
 
   useEffect(() => {
-    const control = L.easyPrint({
+    const control = new L.Control.EasyPrint({
       position: 'bottomright',
       sizeModes: ['Current'],
       exportOnly: true,

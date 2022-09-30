@@ -37,7 +37,7 @@ const setup = async initialState => {
 test('GroupMembers: Display error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValue('Load error');
   await setup();
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
 test('GroupMembers: Display loader', async () => {
@@ -72,8 +72,8 @@ test('GroupMembers: Display list', async () => {
         _.flow(
           _.set('node.user', {
             id: `index-${index}`,
-            firstName: 'Member name',
-            lastName: 'Member Last Name',
+            firstName: 'First name',
+            lastName: 'Last Name',
             email:
               index === 0 ? 'john.doe@email.com' : `email${index}@email.com`,
           }),
@@ -90,13 +90,9 @@ test('GroupMembers: Display list', async () => {
     memberships: generateMemberhips(3, 20),
   };
 
-  terrasoApi.requestGraphQL
-    .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', group, {}))
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', group, {}))
-    );
+  terrasoApi.requestGraphQL.mockReturnValue(
+    Promise.resolve(_.set('groups.edges[0].node', group, {}))
+  );
   await setup();
 
   // Group info
@@ -107,24 +103,21 @@ test('GroupMembers: Display list', async () => {
   expect(rows.length).toBe(16); // 15 displayed + header
   expect(
     within(rows[2]).getByRole('cell', {
-      name: 'Member name Member Last Name',
+      name: 'First name Last Name',
     })
   ).toHaveAttribute('data-field', 'name');
   expect(
     within(rows[9]).queryByRole('button', { name: 'Member' })
   ).not.toBeInTheDocument();
-  expect(within(rows[9]).getByRole('cell', { name: 'Member' })).toHaveAttribute(
-    'data-field',
-    'role'
-  );
-  expect(within(rows[2]).getByRole('cell', { name: '' })).toHaveAttribute(
-    'data-field',
-    'actions'
-  );
-  expect(within(rows[1]).getByRole('cell', { name: 'Leave' })).toHaveAttribute(
-    'data-field',
-    'actions'
-  );
+  expect(
+    within(rows[9]).getByText('Member').closest('[role="cell"]')
+  ).toHaveAttribute('data-field', 'role');
+  expect(within(rows[2]).queryByRole('button')).not.toBeInTheDocument();
+  expect(
+    within(rows[1])
+      .getByRole('button', { name: 'Leave: Group Name' })
+      .closest('[role="cell"]')
+  ).toHaveAttribute('data-field', 'actions');
 });
 test('GroupMembers: Display list (small)', async () => {
   useMediaQuery.mockReturnValue(true);
@@ -153,13 +146,9 @@ test('GroupMembers: Display list (small)', async () => {
     memberships: generateMemberhips(3, 20),
   };
 
-  terrasoApi.requestGraphQL
-    .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', group, {}))
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', group, {}))
-    );
+  terrasoApi.requestGraphQL.mockReturnValue(
+    Promise.resolve(_.set('groups.edges[0].node', group, {}))
+  );
   await setup();
 
   // Group info
@@ -204,13 +193,9 @@ test('GroupMembers: Display list manager', async () => {
     ),
   };
 
-  terrasoApi.requestGraphQL
-    .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', group, {}))
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', group, {}))
-    );
+  terrasoApi.requestGraphQL.mockReturnValue(
+    Promise.resolve(_.set('groups.edges[0].node', group, {}))
+  );
   await setup();
 
   // Group info
@@ -224,45 +209,159 @@ test('GroupMembers: Display list manager', async () => {
       name: 'Member name Member Last Name',
     })
   ).toHaveAttribute('data-field', 'name');
-  expect(within(rows[9]).getByRole('cell', { name: 'Member' })).toHaveAttribute(
-    'data-field',
-    'role'
-  );
+  expect(
+    within(rows[9])
+      .getByRole('button', { name: 'Member' })
+      .closest('[role="cell"]')
+  ).toHaveAttribute('data-field', 'role');
   expect(
     within(rows[9]).getByRole('button', { name: 'Member' })
   ).toBeInTheDocument();
-  expect(within(rows[2]).getByRole('cell', { name: 'Remove' })).toHaveAttribute(
-    'data-field',
-    'actions'
-  );
+  expect(
+    within(rows[2])
+      .getByRole('button', { name: 'Remove' })
+      .closest('[role="cell"]')
+  ).toHaveAttribute('data-field', 'actions');
 });
 test('GroupMembers: Manager actions', async () => {
-  const generateMemberhips = (approved, pending) => ({
+  const generateMemberhips = (index, count) => ({
     edges: [
-      ...Array(approved)
+      ...Array(count)
         .fill(0)
         .map((i, index) =>
           _.flow(
             _.set('node.user', {
-              id: `index-approved-${index}`,
+              id: `index-${index}`,
               firstName: `Member name ${index}`,
-              lastName: 'Member Last Name',
-              email: 'email@email.com',
+              lastName: `Member Last Name ${index}`,
+              email: `email${index}@email.com`,
             }),
             _.set('node.userRole', 'MEMBER'),
-            _.set('node.id', `membership-approved-${index}`),
+            _.set('node.id', `membership-${index}`),
             _.set('node.membershipStatus', 'APPROVED')
           )({})
         ),
-      ...Array(pending)
+    ],
+  });
+
+  const baseGroup = {
+    slug: 'test-group-slug',
+    name: 'Group Name',
+    memberships: generateMemberhips(3, 3),
+    accountMembership: _.set(
+      'edges[0].node',
+      { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
+      {}
+    ),
+  };
+
+  terrasoApi.requestGraphQL.mockImplementation(query => {
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.startsWith('query group')) {
+      return Promise.resolve(_.set('groups.edges[0].node', baseGroup, {}));
+    }
+    if (trimmedQuery.startsWith('mutation updateMembership')) {
+      return Promise.resolve(
+        _.flow(
+          _.set('updateMembership.membership.group', baseGroup),
+          _.set(
+            'updateMembership.membership.group.memberships.edges[2].node.userRole',
+            'MANAGER'
+          ),
+          _.set(
+            'updateMembership.membership.group.memberships.edges[2].node.membershipStatus',
+            'APPROVED'
+          )
+        )({})
+      );
+    }
+    if (trimmedQuery.startsWith('mutation deleteMembership')) {
+      return Promise.resolve(
+        _.flow(
+          _.set('deleteMembership.membership.group', baseGroup),
+          _.set(
+            'deleteMembership.membership.group.memberships.edges',
+            baseGroup.memberships.edges.slice(0, -1)
+          )
+        )({})
+      );
+    }
+  });
+  await setup();
+
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(4);
+
+  // Group info
+  expect(
+    screen.getByRole('heading', { name: 'Manage Members' })
+  ).toBeInTheDocument();
+  const rows = screen.getAllByRole('row');
+
+  // Role Change
+  expect(
+    within(rows[3]).getByRole('cell', {
+      name: 'Member name 2 Member Last Name 2',
+    })
+  ).toHaveAttribute('data-field', 'name');
+  expect(
+    within(rows[3])
+      .getByRole('button', { name: 'Member' })
+      .closest('[role="cell"]')
+  ).toHaveAttribute('data-field', 'role');
+  const roleButton = within(rows[3]).getByRole('button', { name: 'Member' });
+  expect(roleButton).toBeInTheDocument();
+  await act(async () => fireEvent.mouseDown(roleButton));
+  expect(screen.getByRole('option', { name: 'Manager' })).toBeInTheDocument();
+  await act(
+    async () =>
+      await fireEvent.click(screen.getByRole('option', { name: 'Manager' }))
+  );
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(5);
+  expect(
+    within(screen.getAllByRole('row')[3]).getByRole('cell', {
+      name: 'Member name 2 Member Last Name 2',
+    })
+  ).toHaveAttribute('data-field', 'name');
+  await waitFor(() =>
+    expect(
+      within(screen.getAllByRole('row')[3])
+        .getByRole('button', {
+          name: 'Manager',
+        })
+        .closest('[role="cell"]')
+    ).toHaveAttribute('data-field', 'role')
+  );
+
+  // Remove member
+  expect(rows.length).toBe(4);
+  const removeButton = within(rows[3]).getByRole('button', { name: 'Remove' });
+  await act(async () => fireEvent.click(removeButton));
+  await act(
+    async () =>
+      await fireEvent.click(
+        screen.getByRole('button', { name: 'Remove Member' })
+      )
+  );
+  await screen.findByRole('region', {
+    name: 'Current Members',
+  });
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(6);
+  await waitFor(() => expect(screen.getAllByRole('row').length).toBe(3));
+  const removedRows = screen.getAllByRole('row');
+  expect(removedRows.length).toBe(3);
+});
+test('GroupMembers: Closed group manager actions', async () => {
+  const generateMemberhips = (index, count) => ({
+    edges: [
+      ...Array(count)
         .fill(0)
         .map((i, index) =>
           _.flow(
             _.set('node.user', {
               id: `index-pending-${index}`,
-              firstName: `Member name Pending ${index}`,
-              lastName: 'Member Last Name',
-              email: 'email@email.com',
+              firstName: `Pending Member name ${index}`,
+              lastName: `Pending Member Last Name ${index}`,
+              email: `email${index}@email.com`,
             }),
             _.set('node.userRole', 'MEMBER'),
             _.set('node.id', `membership-pending-${index}`),
@@ -272,10 +371,10 @@ test('GroupMembers: Manager actions', async () => {
     ],
   });
 
-  const group = {
+  const baseGroup = {
     slug: 'test-group-slug',
     name: 'Group Name',
-    memberships: generateMemberhips(3, 2),
+    memberships: generateMemberhips(3, 3),
     accountMembership: _.set(
       'edges[0].node',
       { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
@@ -283,115 +382,44 @@ test('GroupMembers: Manager actions', async () => {
     ),
   };
 
-  terrasoApi.requestGraphQL
-    .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', group, {}))
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', group, {}))
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(
+  terrasoApi.requestGraphQL.mockImplementation(query => {
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.startsWith('query group')) {
+      return Promise.resolve(_.set('groups.edges[0].node', baseGroup, {}));
+    }
+    if (trimmedQuery.startsWith('mutation updateMembership')) {
+      return Promise.resolve(
         _.flow(
-          _.set('updateMembership.membership.group', group),
+          _.set('updateMembership.membership.group', baseGroup),
           _.set(
-            'updateMembership.membership.group.memberships.edges[2].node.userRole',
-            'MANAGER'
-          ),
-          _.set(
-            'updateMembership.membership.group.memberships.edges[2].node.id',
-            'membership-approved-2'
+            'updateMembership.membership.group.memberships.edges[1].node.membershipStatus',
+            'APPROVED'
           )
         )({})
-      )
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(
+      );
+    }
+    if (trimmedQuery.startsWith('mutation deleteMembership')) {
+      return Promise.resolve(
         _.flow(
-          _.set('deleteMembership.membership.group', group),
+          _.set('deleteMembership.membership.group', baseGroup),
           _.set(
             'deleteMembership.membership.group.memberships.edges',
-            group.memberships.edges
-              .map(member =>
-                member.node.id === 'membership-approved-2' ? null : member
-              )
-              .filter(member => member)
-          )
-        )({})
-      )
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(
-        _.flow(
-          _.set('deleteMembership.membership.group', group),
-          _.set(
-            'deleteMembership.membership.group.memberships.edges',
-            group.memberships.edges
+            baseGroup.memberships.edges
               .map(member =>
                 member.node.id === 'membership-pending-0' ? null : member
               )
               .filter(member => member)
           )
         )({})
-      )
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(
-        _.flow(
-          _.set('updateMembership.membership.group', group),
-          _.set(
-            'updateMembership.membership.group.memberships.edges[4].node.membershipStatus',
-            'APPROVED'
-          )
-        )({})
-      )
-    );
-
+      );
+    }
+  });
   await setup();
 
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(4);
+
   // Group info
-  expect(
-    screen.getByRole('heading', { name: 'Manage Members' })
-  ).toBeInTheDocument();
-  const listSection = screen.getByRole('region', {
-    name: 'Current Members',
-  });
-  const rows = within(listSection).getAllByRole('row');
-
-  expect(
-    within(rows[3]).getByRole('cell', {
-      name: 'Member name 2 Member Last Name',
-    })
-  ).toHaveAttribute('data-field', 'name');
-
-  // Role Change
-  expect(within(rows[3]).getByRole('cell', { name: 'Member' })).toHaveAttribute(
-    'data-field',
-    'role'
-  );
-  const roleButton = within(rows[3]).getByRole('button', { name: 'Member' });
-  expect(roleButton).toBeInTheDocument();
-  await act(async () => fireEvent.mouseDown(roleButton));
-  await act(
-    async () =>
-      await fireEvent.click(screen.getByRole('option', { name: 'Manager' }))
-  );
-  await waitFor(() =>
-    expect(
-      within(rows[3]).getByRole('cell', { name: 'Manager' })
-    ).toHaveAttribute('data-field', 'role')
-  );
-
-  // Remove member
-  expect(within(listSection).getAllByRole('row').length).toBe(4);
-  const removeButton = within(rows[3]).getByRole('button', { name: 'Remove' });
-  await act(async () => fireEvent.click(removeButton));
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Remove Member' }))
-  );
-  await waitFor(() =>
-    expect(within(listSection).getAllByRole('row').length).toBe(3)
-  );
+  await screen.findByRole('heading', { name: 'Manage Members' });
 
   // Pending members
   const pendingSection = within(
@@ -399,12 +427,12 @@ test('GroupMembers: Manager actions', async () => {
       name: 'Pending Members',
     })
   );
-  expect(pendingSection.getAllByRole('listitem').length).toBe(2);
+  expect(pendingSection.getAllByRole('listitem').length).toBe(3);
 
   // Reject
   expect(
     within(pendingSection.getAllByRole('listitem')[0]).getByText(
-      'Member name Pending 0 Member Last Name'
+      'Pending Member name 0 Pending Member Last Name 0'
     )
   ).toBeInTheDocument();
   await act(
@@ -422,13 +450,13 @@ test('GroupMembers: Manager actions', async () => {
       )
   );
   await waitFor(() =>
-    expect(pendingSection.getAllByRole('listitem').length).toBe(1)
+    expect(pendingSection.getAllByRole('listitem').length).toBe(2)
   );
 
   // Approve
   expect(
     within(pendingSection.getAllByRole('listitem')[0]).getByText(
-      'Member name Pending 1 Member Last Name'
+      'Pending Member name 1 Pending Member Last Name 1'
     )
   ).toBeInTheDocument();
   await act(
@@ -440,13 +468,16 @@ test('GroupMembers: Manager actions', async () => {
       )
   );
 
-  expect(pendingSection.getAllByRole('listitem').length).toBe(1);
+  expect(pendingSection.getAllByRole('listitem').length).toBe(2);
   expect(
     within(pendingSection.getAllByRole('listitem')[0]).getByText(
-      'Member name Pending 0 Member Last Name'
+      'Pending Member name 0 Pending Member Last Name 0'
     )
   ).toBeInTheDocument();
+  const listSection = screen.getByRole('region', {
+    name: 'Current Members',
+  });
   await waitFor(() =>
-    expect(within(listSection).getAllByRole('row').length).toBe(5)
+    expect(within(listSection).getAllByRole('row').length).toBe(2)
   );
 });
