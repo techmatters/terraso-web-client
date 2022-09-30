@@ -47,9 +47,9 @@ const LandscapeNew = () => {
     }
   }, [success, landscape, navigate, dispatch]);
 
-  const onSave = updatedLandscape => {
+  const onSave = async updatedLandscape => {
     setUpdatedLandscape(updatedLandscape);
-    dispatch(saveLandscape(updatedLandscape));
+    return dispatch(saveLandscape(updatedLandscape));
   };
 
   const steps = [
