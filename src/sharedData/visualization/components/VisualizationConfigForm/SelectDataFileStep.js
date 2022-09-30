@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import fileSize from 'filesize';
+import { filesize } from 'filesize';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -128,7 +128,7 @@ const SelectDataFileStep = props => {
                   </Typography>
                 </Grid>
                 <Grid item xs={2} md={1}>
-                  {fileSize(file.size, { round: 0 })}
+                  {filesize(file.size, { round: 0 })}
                 </Grid>
                 <Grid item xs={9} md={5}>
                   {formatDate(i18n.resolvedLanguage, file.createdAt)}, by{' '}
