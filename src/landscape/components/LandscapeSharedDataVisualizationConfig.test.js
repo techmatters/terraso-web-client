@@ -239,7 +239,7 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
                         description: '',
                         id: 'f00c5564-cf93-471a-94c2-b930cbb0a4f8',
                         name: 'File 1',
-                        resourceType: 'application/csv',
+                        resourceType: 'text/csv',
                         size: 3565,
                         url: 'https://file-url',
                       },
