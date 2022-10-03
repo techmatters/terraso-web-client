@@ -92,6 +92,14 @@ const Table = props => {
       onPaginationModelChange={onPageChange}
       aria-labelledby={ariaLabel}
       sx={{
+        '& .MuiDataGrid-columnHeader .MuiDataGrid-iconButtonContainer': {
+          width: 'auto',
+          visibility: 'visible',
+        },
+        '& .MuiDataGrid-columnHeader:not(.MuiDataGrid-columnHeader--sorted) .MuiDataGrid-sortIcon':
+          {
+            opacity: 1,
+          },
         '& .MuiDataGrid-columnHeaders': {
           backgroundColor: 'gray.lite2',
         },
