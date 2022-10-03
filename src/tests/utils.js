@@ -1,6 +1,10 @@
 import React from 'react';
 
-import { cleanup, render as rtlRender, waitFor as baseWaitFor } from '@testing-library/react';
+import {
+  waitFor as baseWaitFor,
+  cleanup,
+  render as rtlRender,
+} from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import { act } from 'react-dom/test-utils';
 
@@ -67,9 +71,9 @@ const render = async (component, intialState, permissionsRules) => {
 };
 
 const waitFor = async (callback, options) =>
-  baseWaitFor(callback, { timeout: WAIT_FOR_TIMEOUT, ...options })
+  baseWaitFor(callback, { timeout: WAIT_FOR_TIMEOUT, ...options });
 
 // re-export everything
 export * from '@testing-library/react';
 // override render method
-export { render };
+export { render, waitFor };

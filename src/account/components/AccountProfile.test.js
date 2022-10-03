@@ -55,7 +55,9 @@ test('AccountProfile: Avatar with missing image', async () => {
       },
     },
   });
-  expect(screen.queryByRole('img', { name: 'John Doe' })).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('img', { name: 'John Doe' })
+  ).not.toBeInTheDocument();
 });
 
 test('AccountProfile: Save', async () => {
