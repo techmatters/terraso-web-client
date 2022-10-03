@@ -263,7 +263,7 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
   global.fetch.mockResolvedValue({
     status: 200,
     arrayBuffer: () => {
-      const file = new File([TEST_CSV], `test.csv`, { type: 'text/plain' });
+      const file = new File([TEST_CSV], `test.csv`, { type: 'text/csv' });
       return new Promise(function (resolve, reject) {
         const reader = new FileReader();
 
