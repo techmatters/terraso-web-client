@@ -1,5 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
+import Cookies from 'js-cookie';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -10,6 +11,7 @@ import LoaderCard from 'common/components/LoaderCard';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
+import { useAnalytics } from 'monitoring/analytics';
 import { useFetchData } from 'state/utils';
 
 import GroupDefaultCard from 'group/components/GroupDefaultHomeCard';
@@ -50,9 +52,21 @@ const Home = () => {
   const home = useSelector(state => state.userHome);
   const { groups, landscapes, error, fetching } = home;
 
+  const { trackEvent } = useAnalytics();
+
   useDocumentTitle(t('home.document_title'), false, true);
 
   useFetchData(useCallback(() => fetchHomeData(user.email), [user.email]));
+
+  useEffect(() => {
+    const service = Cookies.get('new_signup');
+    if (service) {
+      trackEvent('Account created', {
+        props: { service },
+        callback: () => Cookies.remove('new_signup'),
+      });
+    }
+  }, [trackEvent]);
 
   if (error) {
     return <Alert severity="error">{t('home.error', { error })}</Alert>;
