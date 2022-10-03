@@ -10,17 +10,21 @@ export const COOKIES_DOMAIN =
 
 export const ROLLBAR_TOKEN = process.env.REACT_APP_ROLLBAR_TOKEN;
 
-export const JEST_TEST_TIMEOUT = process.env.REACT_JEST_TEST_TIMEOUT || 15000;
+export const WAIT_FOR_TIMEOUT = process.env.REACT_APP_WAIT_FOR_TIMEOUT || 3000;
 
-export const AXE_TEST_TIMEOUT = process.env.REACT_AXE_TEST_TIMEOUT || 20000;
+export const JEST_TEST_TIMEOUT =
+  process.env.REACT_APP_JEST_TEST_TIMEOUT || 15000;
 
-export const GEOJSON_MAX_SIZE = process.env.REACT_GEOJSON_MAX_SIZE || 1000000; // 10 MB
+export const AXE_TEST_TIMEOUT = process.env.REACT_APP_AXE_TEST_TIMEOUT || 20000;
+
+export const GEOJSON_MAX_SIZE =
+  process.env.REACT_APP_GEOJSON_MAX_SIZE || 1000000; // 10 MB
 
 export const SHARED_DATA_MAX_SIZE =
-  process.env.REACT_SHARED_DATA_MAX_SIZE || 10000000;
+  process.env.REACT_APP_SHARED_DATA_MAX_SIZE || 10000000;
 
 export const SHARED_DATA_MAX_FILES =
-  process.env.REACT_SHARED_DATA_MAX_FILES || 20;
+  process.env.REACT_APP_SHARED_DATA_MAX_FILES || 20;
 
 export const MAX_DESCRIPTION_LENGTH = 600;
 

@@ -1,6 +1,10 @@
 import React from 'react';
 
-import { cleanup, render as rtlRender } from '@testing-library/react';
+import {
+  waitFor as baseWaitFor,
+  cleanup,
+  render as rtlRender,
+} from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import { act } from 'react-dom/test-utils';
 
@@ -8,7 +12,7 @@ import AppWrappers from 'layout/AppWrappers';
 import rules from 'permissions/rules';
 import createStore from 'state/store';
 
-import { AXE_TEST_TIMEOUT, JEST_TEST_TIMEOUT } from 'config';
+import { AXE_TEST_TIMEOUT, JEST_TEST_TIMEOUT, WAIT_FOR_TIMEOUT } from 'config';
 
 import theme from 'theme';
 
@@ -66,7 +70,10 @@ const render = async (component, intialState, permissionsRules) => {
   return renderResult;
 };
 
+const waitFor = async (callback, options) =>
+  baseWaitFor(callback, { timeout: WAIT_FOR_TIMEOUT, ...options });
+
 // re-export everything
 export * from '@testing-library/react';
 // override render method
-export { render };
+export { render, waitFor };

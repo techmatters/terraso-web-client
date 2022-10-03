@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import _ from 'lodash/fp';
 import Highlighter from 'react-highlight-words';
 import { useTranslation } from 'react-i18next';
 import { cleanSensitiveCharacters } from 'stringUtils';
+import { useDebounce } from 'use-debounce';
 
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
@@ -160,6 +161,7 @@ const getHighlightLimits = ({ textToHighlight, searchWords }) => {
 const SearchBar = props => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
+  const [debouncedQuery] = useDebounce(query, SEARCH_DEBOUNCE);
   const {
     rows,
     searchEnabled,
@@ -172,31 +174,33 @@ const SearchBar = props => {
   } = props;
 
   const validSearch = useMemo(
-    () => query.length > SEARCH_MINIMUM_LENGTH - 1,
-    [query]
+    () => debouncedQuery.length > SEARCH_MINIMUM_LENGTH - 1,
+    [debouncedQuery]
   );
   const searchQuery = useMemo(
-    () => (validSearch ? query : ''),
-    [query, validSearch]
+    () => (validSearch ? debouncedQuery : ''),
+    [debouncedQuery, validSearch]
   );
 
-  const updateFilteredRows = useMemo(
-    () =>
-      _.debounce(SEARCH_DEBOUNCE, (rows, query) => {
-        if (!query) {
-          setFilterdRows(rows);
-          return;
-        }
-        const indexOfMatch = indexOfMatchPartial(query);
-        setFilterdRows(
-          rows.filter(row => indexOfMatch(_.get(searchFilterField, row)) !== -1)
-        );
-      }),
-    [setFilterdRows, searchFilterField]
+  const updateFilteredRows = useCallback(
+    (rows, query) => {
+      if (!query) {
+        setFilterdRows(rows);
+        return;
+      }
+      const indexOfMatch = indexOfMatchPartial(query);
+      setFilterdRows(
+        rows.filter(row => indexOfMatch(_.get(searchFilterField, row)) !== -1)
+      );
+    },
+    [searchFilterField, setFilterdRows]
   );
 
   useEffect(() => {
     updateFilteredRows(rows, searchQuery);
+  }, [rows, searchQuery, updateFilteredRows]);
+
+  useEffect(() => {
     if (searchQuery !== searchParams.search) {
       if (searchQuery) {
         onSearchParamsChange({
@@ -207,20 +211,13 @@ const SearchBar = props => {
         onSearchParamsChange(_.omit('search', searchParams));
       }
     }
-  }, [
-    rows,
-    searchQuery,
-    updateFilteredRows,
-    validSearch,
-    searchParams,
-    onSearchParamsChange,
-  ]);
+  }, [searchQuery, searchParams, onSearchParamsChange]);
 
   useEffect(() => {
-    if (searchParams?.search) {
+    if (!query && searchParams?.search) {
       setQuery(searchParams.search);
     }
-  }, [searchParams?.search]);
+  }, [searchParams?.search, query]);
 
   if (!searchEnabled) {
     return null;
