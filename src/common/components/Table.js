@@ -93,6 +93,9 @@ const Table = props => {
       hideFooterSelectedRowCount
       onPaginationModelChange={onPageChange}
       aria-labelledby={ariaLabel}
+      // Show the sort button in the column at all times, not just on hover.
+      // Improve accessibility.
+      // Based on https://github.com/mui/mui-x/issues/1076#issuecomment-926943642
       sx={{
         '& .MuiDataGrid-columnHeader .MuiDataGrid-iconButtonContainer': {
           width: 'auto',
