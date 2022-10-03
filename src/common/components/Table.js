@@ -18,6 +18,7 @@ import React, { useEffect, useState } from 'react';
 
 import _ from 'lodash/fp';
 
+import ImportExportIcon from '@mui/icons-material/ImportExport';
 import { DataGrid } from '@mui/x-data-grid';
 
 import theme from 'theme';
@@ -74,6 +75,7 @@ const Table = props => {
     <DataGrid
       components={{
         Panel: () => <div></div>,
+        ColumnUnsortedIcon: ImportExportIcon,
       }}
       paginationModel={{
         pageSize: PAGE_SIZE,
