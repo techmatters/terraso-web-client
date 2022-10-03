@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { cleanup, render as rtlRender } from '@testing-library/react';
+import { cleanup, render as rtlRender, waitFor as baseWaitFor } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import { act } from 'react-dom/test-utils';
 
@@ -8,14 +8,13 @@ import AppWrappers from 'layout/AppWrappers';
 import rules from 'permissions/rules';
 import createStore from 'state/store';
 
-import { AXE_TEST_TIMEOUT, JEST_TEST_TIMEOUT } from 'config';
+import { AXE_TEST_TIMEOUT, JEST_TEST_TIMEOUT, WAIT_FOR_TIMEOUT } from 'config';
 
 import theme from 'theme';
 
 const executeAxe = process.env['TEST_A11Y'] === 'true';
 
 jest.setTimeout(JEST_TEST_TIMEOUT);
-jest.retryTimes(2);
 
 // Work around to avoid tests trying to render SVGs
 const createElementNSOrig = global.document.createElementNS;
@@ -66,6 +65,9 @@ const render = async (component, intialState, permissionsRules) => {
   }
   return renderResult;
 };
+
+const waitFor = async (callback, options) =>
+  baseWaitFor(callback, { timeout: WAIT_FOR_TIMEOUT, ...options })
 
 // re-export everything
 export * from '@testing-library/react';
