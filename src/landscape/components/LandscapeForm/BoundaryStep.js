@@ -36,6 +36,7 @@ const OPTION_GEOJSON = 'geo-json';
 const OPTION_MAP_DRAW_POLYGON = 'map-draw-polygon';
 const OPTION_MAP_PIN = 'map-pin';
 const OPTION_SELECT_OPTIONS = 'options';
+const OPTION_SKIP_BOUNDARY = 'skip-boundary';
 
 const POLYGON_FILTER = feature => _.get('geometry.type', feature) === 'Polygon';
 const POINT_FILTER = feature => _.get('geometry.type', feature) === 'Point';
@@ -323,7 +324,7 @@ const BoundaryOptions = props => {
     await save(landscape);
     if (props.isNew) {
       trackEvent('Landscape created', {
-        props: { option: 'skip-boundary', country: landscape.location },
+        props: { option: OPTION_SKIP_BOUNDARY, country: landscape.location },
       });
     }
   };
