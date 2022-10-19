@@ -132,7 +132,7 @@ const VisualizationWrapper = props => {
                 {loadingFileError && (
                   <Alert severity="error">
                     {t('sharedData.visualization_file_load_error', {
-                      name: data.dataEntry,
+                      name: data.dataEntry.name,
                     })}
                   </Alert>
                 )}
