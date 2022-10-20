@@ -103,7 +103,6 @@ const LandscapeProfile = () => {
           <Grid item xs={12} md={6} style={{ display: 'flex' }}>
             <ProfileCard landscape={landscape} />
           </Grid>
-          <Grid item xs={12} md={12}></Grid>
         </Grid>
       </PageContainer>
     </GroupContextProvider>
