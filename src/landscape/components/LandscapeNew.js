@@ -14,8 +14,10 @@ import PageLoader from 'layout/PageLoader';
 
 import { saveLandscape, setFormNewValues } from 'landscape/landscapeSlice';
 
+import AffiliationStep from './LandscapeForm/AffiliationStep';
 import BoundaryStep from './LandscapeForm/BoundaryStep';
 import InfoStep from './LandscapeForm/InfoStep';
+import ProfileStep from './LandscapeForm/ProfileStep';
 
 const LandscapeNew = () => {
   const dispatch = useDispatch();
@@ -57,8 +59,8 @@ const LandscapeNew = () => {
       label: t('landscape.form_step_info_label'),
       render: ({ setActiveStepIndex }) => (
         <InfoStep
+          isNew
           landscape={updatedLandscape}
-          setActiveStepIndex={setActiveStepIndex}
           setUpdatedLandscape={updatedLandscape => {
             setUpdatedLandscape(updatedLandscape);
             setActiveStepIndex(current => current + 1);
@@ -73,11 +75,42 @@ const LandscapeNew = () => {
           isNew
           title={t('landscape.form_boundary_pin_title')}
           landscape={updatedLandscape}
-          setActiveStepIndex={setActiveStepIndex}
-          setUpdatedLandscape={setUpdatedLandscape}
           onCancel={() => setActiveStepIndex(current => current - 1)}
-          save={onSave}
+          onSkip={() => setActiveStepIndex(current => current + 1)}
+          onSave={updatedLandscape => {
+            setUpdatedLandscape(updatedLandscape);
+            setActiveStepIndex(current => current + 1);
+          }}
           saveLabel={t('landscape.form_add_label')}
+        />
+      ),
+    },
+    {
+      label: t('landscape.form_step_profile_label'),
+      render: ({ setActiveStepIndex }) => (
+        <ProfileStep
+          isNew
+          landscape={updatedLandscape}
+          setUpdatedLandscape={updatedLandscape => {
+            setUpdatedLandscape(updatedLandscape);
+            setActiveStepIndex(current => current + 1);
+          }}
+          onCancel={() => setActiveStepIndex(current => current - 1)}
+        />
+      ),
+    },
+    {
+      label: t('landscape.form_step_affiliation_label'),
+      render: ({ setActiveStepIndex }) => (
+        <AffiliationStep
+          isNew
+          landscape={updatedLandscape}
+          setUpdatedLandscape={updatedLandscape => {
+            setUpdatedLandscape(updatedLandscape);
+            setActiveStepIndex(current => current + 1);
+          }}
+          onCancel={() => setActiveStepIndex(current => current - 1)}
+          onSave={onSave}
         />
       ),
     },
