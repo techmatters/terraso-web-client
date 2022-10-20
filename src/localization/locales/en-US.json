@@ -337,6 +337,8 @@
         "profile_profile_card_commodities_label": "Commodities",
         "profile_profile_card_population_label": "Population",
         "profile_profile_card_update_button": "Update Profile",
+        "form_step_profile_label": "Landscape Profile",
+        "form_step_affiliation_label": "Affiliation & Partnership",
         "form_profile_new_title": "Landscape Profile (optional)",
         "form_profile_edit_title": "Update Landscape Profile",
         "form_profile_area_types": "What best describes my landscape area?",
