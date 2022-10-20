@@ -52,14 +52,14 @@ const GeoJson = props => {
     mapCenter,
     landscape,
     setOption,
-    save,
+    onSave,
     saveLabel,
     areaPolygon,
     setAreaPolygon,
   } = props;
 
-  const onSave = () => {
-    save({
+  const onSaveWrapper = () => {
+    onSave({
       ...landscape,
       areaPolygon,
     }).then(() => {
@@ -90,7 +90,11 @@ const GeoJson = props => {
         >
           {t('landscape.form_boundary_options_back')}
         </Button>
-        <Button variant="contained" sx={{ marginTop: 2 }} onClick={onSave}>
+        <Button
+          variant="contained"
+          sx={{ marginTop: 2 }}
+          onClick={onSaveWrapper}
+        >
           {saveLabel}
         </Button>
       </Stack>
@@ -105,7 +109,7 @@ const MapDrawPolygon = props => {
     isNew,
     boundingBox,
     setOption,
-    save,
+    onSave,
     saveLabel,
     areaPolygon,
     setAreaPolygon,
@@ -124,8 +128,8 @@ const MapDrawPolygon = props => {
     setEditHelp(false);
   }, [setEditHelp]);
 
-  const onSave = () => {
-    save({
+  const onSaveWrapper = () => {
+    onSave({
       ...landscape,
       areaPolygon,
     }).then(() => {
@@ -250,7 +254,11 @@ const MapDrawPolygon = props => {
         >
           {t('landscape.form_boundary_options_back')}
         </Button>
-        <Button variant="contained" sx={{ marginTop: 2 }} onClick={onSave}>
+        <Button
+          variant="contained"
+          sx={{ marginTop: 2 }}
+          onClick={onSaveWrapper}
+        >
           {saveLabel}
         </Button>
       </Stack>
@@ -264,15 +272,15 @@ const MapPin = props => {
     landscape,
     boundingBox,
     setOption,
-    save,
+    onSave,
     saveLabel,
     areaPolygon,
     setAreaPolygon,
   } = props;
   const { trackEvent } = useAnalytics();
 
-  const onSave = () => {
-    save({
+  const onSaveWrapper = () => {
+    onSave({
       ...landscape,
       areaPolygon,
     }).then(() => {
@@ -306,7 +314,11 @@ const MapPin = props => {
         >
           {t('landscape.form_boundary_options_back')}
         </Button>
-        <Button variant="contained" sx={{ marginTop: 2 }} onClick={onSave}>
+        <Button
+          variant="contained"
+          sx={{ marginTop: 2 }}
+          onClick={onSaveWrapper}
+        >
           {saveLabel}
         </Button>
       </Stack>
@@ -316,7 +328,7 @@ const MapPin = props => {
 
 const BoundaryOptions = props => {
   const { t } = useTranslation();
-  const { landscape, setOption, save, onCancel, title } = props;
+  const { landscape, setOption, onSkip, onCancel, title } = props;
 
   const { trackEvent } = useAnalytics();
 

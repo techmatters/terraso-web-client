@@ -63,7 +63,8 @@ const LandscapeBoundariesUpdate = () => {
           name: _.get('name', landscape),
         })}
         landscape={landscape}
-        save={onSave}
+        onSkip={onSave}
+        onSave={onSave}
         saveLabel={t('landscape.boundaries_update_save')}
         onCancel={() => navigate(`/landscapes/${slug}`)}
       />

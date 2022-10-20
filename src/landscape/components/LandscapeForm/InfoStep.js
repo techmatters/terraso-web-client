@@ -2,7 +2,7 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 
 import { MenuItem, Select, Typography } from '@mui/material';
@@ -93,9 +93,7 @@ const CountrySelector = props => {
 const InfoStep = props => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { slug } = useParams();
-  const isNew = !slug;
-  const { setUpdatedLandscape, landscape } = props;
+  const { setUpdatedLandscape, landscape, isNew } = props;
   const title = !isNew
     ? t('landscape.form_edit_title', { name: _.getOr('', 'name', landscape) })
     : t('landscape.form_new_title');
