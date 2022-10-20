@@ -10,14 +10,14 @@ import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 import { useFetchData } from 'state/utils';
 
-import InfoStep from 'landscape/components/LandscapeForm/InfoStep';
+import InfoStep from 'landscape/components/LandscapeForm/KeyInfoStep';
 import {
   fetchLandscapeForm,
   saveLandscape,
   setFormNewValues,
 } from 'landscape/landscapeSlice';
 
-const LandscapeUpdateProfile = () => {
+const KeyInfoUpdate = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -64,4 +64,4 @@ const LandscapeUpdateProfile = () => {
   );
 };
 
-export default LandscapeUpdateProfile;
+export default KeyInfoUpdate;

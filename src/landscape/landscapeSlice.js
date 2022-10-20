@@ -12,6 +12,11 @@ const initialState = {
     fetching: true,
     landscapes: [],
   },
+  profile: {
+    fetching: true,
+    message: null,
+    landscape: null,
+  },
   view: {
     fetching: true,
     refreshing: false,
@@ -45,6 +50,10 @@ export const fetchLandscapes = createAsyncThunk(
     dispatch(setMemberships(getMemberships(landscapes)));
     return landscapes;
   }
+);
+export const fetchLandscapeProfile = createAsyncThunk(
+  'landscape/fetchLandscapeProfile',
+  landscapeService.fetchLandscapeProfile
 );
 export const fetchLandscapeView = createAsyncThunk(
   'landscape/fetchLandscapeView',
@@ -126,6 +135,29 @@ const landscapeSlice = createSlice({
       list: {
         fetching: false,
         landscapes: action.payload,
+      },
+    }),
+    [fetchLandscapeProfile.pending]: state => ({
+      ...state,
+      profile: initialState.profile,
+    }),
+    [fetchLandscapeProfile.rejected]: (state, action) => ({
+      ...state,
+      profile: {
+        ...state.profile,
+        fetching: false,
+        message: {
+          severity: 'error',
+          content: action.payload,
+        },
+      },
+    }),
+    [fetchLandscapeProfile.fulfilled]: (state, action) => ({
+      ...state,
+      profile: {
+        fetching: false,
+        message: null,
+        landscape: action.payload,
       },
     }),
     [fetchLandscapeView.pending]: state => ({

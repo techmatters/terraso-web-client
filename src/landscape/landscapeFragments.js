@@ -12,6 +12,23 @@ export const landscapeFields = `
   }
 `;
 
+export const landscapeProfileFields = `
+  fragment landscapeProfileFields on LandscapeNode {
+    areaTypes
+    population
+    taxonomyTerms {
+      edges {
+        node {
+          type
+          valueOriginal
+          valueEs
+          valueEn
+        }
+      }
+    }
+  }
+`;
+
 export const defaultGroup = `
   fragment defaultGroup on LandscapeNode {
     defaultGroup: associatedGroups(isDefaultLandscapeGroup: true) {

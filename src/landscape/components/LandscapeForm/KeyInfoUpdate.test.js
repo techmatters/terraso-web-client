@@ -5,7 +5,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
 
-import LandscapeProfileUpdate from 'landscape/components/LandscapeUpdateProfile';
+import LandscapeProfileUpdate from 'landscape/components/LandscapeForm/KeyInfoUpdate';
 import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('terrasoBackend/api');
