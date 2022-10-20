@@ -203,8 +203,6 @@ const ProfileStep = props => {
   const { setUpdatedLandscape, landscape, isNew, onCancel, onSave } = props;
   const [updatedValues, setUpdatedValues] = useState();
 
-  console.log({ landscape });
-
   const title = !isNew
     ? t('landscape.form_profile_edit_title', {
         name: _.getOr('', 'name', landscape),
