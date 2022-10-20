@@ -96,7 +96,6 @@ const LandscapeProfile = () => {
           <SocialShare name={landscape.name} />
         </Stack>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={12}></Grid>
           <Grid item xs={12} md={6} style={{ display: 'flex' }}>
             <KeyInfoCard landscape={landscape} />
           </Grid>
