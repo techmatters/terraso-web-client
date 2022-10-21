@@ -2,6 +2,7 @@ import _ from 'lodash/fp';
 
 import * as terrasoApi from 'terrasoBackend/api';
 
+import { taxonomyTermLanguages } from './taxonomiesFragments';
 import { extractTerms } from './taxonomiesUtils';
 
 export const fetchTermsForTypes = ({ types }) => {
@@ -13,12 +14,12 @@ export const fetchTermsForTypes = ({ types }) => {
             slug
             type
             valueOriginal
-            valueEn
-            valueEs
+            ...taxonomyTermLanguages
           }
         }
       }
     }
+    ${taxonomyTermLanguages}
   `;
   return terrasoApi
     .requestGraphQL(query, { types })

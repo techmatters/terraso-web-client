@@ -115,7 +115,9 @@ const Form = props => {
       >
         {fields.map(field =>
           field.notControlledRender ? (
-            field.notControlledRender()
+            <React.Fragment key={field.name}>
+              {field.notControlledRender()}
+            </React.Fragment>
           ) : (
             <Grid
               key={field.name}

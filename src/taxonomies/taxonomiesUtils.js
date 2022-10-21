@@ -2,6 +2,11 @@ import _ from 'lodash/fp';
 
 import { ALL_TYPES } from './taxonomiesConstants';
 
+const LOCALE_MAPPING = {
+  'en-US': 'valueEn',
+  'es-ES': 'valueEs',
+};
+
 export const extractTerms = terms =>
   _.flow(
     _.map(edge => {
@@ -12,9 +17,6 @@ export const extractTerms = terms =>
   )(terms);
 
 export const getTermLabel = (option, language) => {
-  const languageKey = language.startsWith('en') ? 'valueEn' : 'valueEs';
-  const valueKey = option[languageKey]
-    ? languageKey
-    : _.head(Object.keys(option).filter(key => key.startsWith('value')));
+  const valueKey = LOCALE_MAPPING[language] || 'valueOriginal';
   return option[valueKey] || '';
 };

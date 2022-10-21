@@ -1,3 +1,5 @@
+import { taxonomyTermLanguages } from 'taxonomies/taxonomiesFragments';
+
 import { accountMembership, groupMembersInfo } from 'group/groupFragments';
 
 export const landscapeFields = `
@@ -21,12 +23,12 @@ export const landscapeProfileFields = `
         node {
           type
           valueOriginal
-          valueEs
-          valueEn
+          ...taxonomyTermLanguages
         }
       }
     }
   }
+  ${taxonomyTermLanguages}
 `;
 
 export const defaultGroup = `

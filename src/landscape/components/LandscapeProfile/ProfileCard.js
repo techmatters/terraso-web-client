@@ -99,7 +99,6 @@ const ProfileCard = props => {
       component="section"
       aria-label={t('landscape.profile_profile_card_label')}
       style={{
-        width: '100%',
         display: 'flex',
         justifyContent: 'flex-start',
         flexDirection: 'column',

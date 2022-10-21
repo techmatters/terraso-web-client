@@ -75,6 +75,7 @@ const FORM_FIELDS = [
     placeholder: 'landscape.form_profile_population_placeholder',
   },
   {
+    name: 'livelihoods-info',
     notControlledRender: () => <LivelihoodsInfo />,
   },
   {
@@ -92,6 +93,7 @@ const FORM_FIELDS = [
     },
   },
   {
+    name: 'commondities-info',
     notControlledRender: () => <CommoditiesInfo />,
   },
   {
@@ -221,7 +223,7 @@ const ProfileStep = props => {
       />
       <Form
         aria-labelledby="main-heading"
-        prefix="dataset-config"
+        prefix="landscape-profile"
         localizationPrefix="landscape.form_profile"
         fields={FORM_FIELDS}
         values={landscape}
