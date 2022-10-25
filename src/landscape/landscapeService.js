@@ -1,18 +1,37 @@
 import _ from 'lodash/fp';
+import { extractTerms } from 'taxonomies/taxonomiesUtils';
 
 import * as gisService from 'gis/gisService';
 import { accountMembership } from 'group/groupFragments';
 import { extractAccountMembership, extractMembersInfo } from 'group/groupUtils';
-import { defaultGroup, landscapeFields } from 'landscape/landscapeFragments';
+import {
+  defaultGroup,
+  landscapeFields,
+  landscapeProfileFields,
+} from 'landscape/landscapeFragments';
 import * as terrasoApi from 'terrasoBackend/api';
 
 const cleanLandscape = landscape =>
   _.flow(
-    _.omit('slug'),
+    _.pick([
+      'id',
+      'name',
+      'description',
+      'website',
+      'location',
+      'areaPolygon',
+      'areaTypes',
+      'population',
+      'taxonomyTypeTerms',
+    ]),
     _.toPairs,
     _.map(([key, value]) => {
-      if (key === 'areaPolygon' && value) {
-        return [key, JSON.stringify(value)];
+      const jsonFields = ['areaPolygon', 'areaTypes', 'taxonomyTypeTerms'];
+      if (_.includes(key, jsonFields)) {
+        return [key, value ? JSON.stringify(value) : null];
+      }
+      if (key === 'population' && _.isEmpty(value)) {
+        return [key, null];
       }
       return [key, value];
     }),
@@ -24,11 +43,15 @@ export const fetchLandscapeToUpdate = slug => {
     query landscapes($slug: String!){
       landscapes(slug: $slug) {
         edges {
-          node { ...landscapeFields }
+          node {
+            ...landscapeFields
+            ...landscapeProfileFields
+          }
         }
       }
     }
     ${landscapeFields}
+    ${landscapeProfileFields}
   `;
   return terrasoApi
     .requestGraphQL(query, { slug })
@@ -36,6 +59,7 @@ export const fetchLandscapeToUpdate = slug => {
     .then(landscape => landscape || Promise.reject('not_found'))
     .then(landscape => ({
       ...landscape,
+      taxonomyTypeTerms: extractTerms(_.get('taxonomyTerms.edges', landscape)),
       areaPolygon: landscape.areaPolygon
         ? JSON.parse(landscape.areaPolygon)
         : null,
@@ -93,6 +117,34 @@ export const fetchLandscapeToView = (slug, currentUser) => {
           boundingBox: placeInfo?.boundingbox,
         }));
     });
+};
+
+export const fetchLandscapeProfile = (slug, currentUser) => {
+  const query = `
+    query landscapes($slug: String!, $accountEmail: String!){
+      landscapes(slug: $slug) {
+        edges {
+          node {
+            ...landscapeFields
+            ...landscapeProfileFields
+            ...defaultGroup
+          }
+        }
+      }
+    }
+    ${landscapeFields}
+    ${landscapeProfileFields}
+    ${defaultGroup}
+  `;
+  return terrasoApi
+    .requestGraphQL(query, { slug, accountEmail: currentUser.email })
+    .then(_.get('landscapes.edges[0].node'))
+    .then(landscape => landscape || Promise.reject('not_found'))
+    .then(landscape => ({
+      ..._.omit('defaultGroup', landscape),
+      defaultGroup: getDefaultGroup(landscape),
+      taxonomyTerms: extractTerms(_.get('taxonomyTerms.edges', landscape)),
+    }));
 };
 
 export const fetchLandscapeToUploadSharedData = (slug, currentUser) => {

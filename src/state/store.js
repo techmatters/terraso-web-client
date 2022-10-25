@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
+import taxonomiesReducer from 'taxonomies/taxonomiesSlice';
 
 import notificationsReducer from 'notifications/notificationsSlice';
 
@@ -31,6 +32,7 @@ const createStore = intialState =>
       landscape: landscapeReducer,
       notifications: notificationsReducer,
       sharedData: sharedDataReducer,
+      taxonomies: taxonomiesReducer,
     },
     preloadedState: intialState,
   });
