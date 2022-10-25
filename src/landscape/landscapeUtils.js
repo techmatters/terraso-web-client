@@ -100,3 +100,6 @@ export const extractAffiliatedGroups = landscape =>
     _.filter(groupAssociation => !groupAssociation.isPartnership),
     _.map(_.get('group'))
   )(_.get('associatedGroups.edges', landscape));
+
+export const extractDevelopmentStrategy = landscape =>
+  _.get('associatedDevelopmentStrategy.edges[0].node', landscape);

@@ -26,6 +26,7 @@ import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMembe
 import { withProps } from 'react-hoc';
 
 import AffiliationCard from './AffiliationCard';
+import DevelopmentStrategyCard from './DevelopmentStrategyCard';
 import KeyInfoCard from './KeyInfoCard';
 import ProfileCard from './ProfileCard';
 
@@ -44,7 +45,7 @@ const LandscapeProfile = () => {
   const { slug } = useParams();
 
   useDocumentTitle(
-    t('landscape.view_document_title', {
+    t('landscape.profile_document_title', {
       name: _.get('name', landscape),
     }),
     fetching
@@ -110,6 +111,9 @@ const LandscapeProfile = () => {
             style={{ display: 'flex', alignItems: 'flex-start' }}
           >
             <ProfileCard landscape={landscape} />
+          </Grid>
+          <Grid item xs={12} md={12}>
+            <DevelopmentStrategyCard landscape={landscape} />
           </Grid>
         </Grid>
       </PageContainer>
