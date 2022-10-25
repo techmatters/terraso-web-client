@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
-import * as taxonomiesService from 'taxonomies/taxonomiesService';
 
 import { createAsyncThunk } from 'state/utils';
+
+import * as taxonomiesService from 'taxonomies/taxonomiesService';
 
 const initialState = {
   terms: {},
@@ -16,15 +17,7 @@ export const fetchTermsForTypes = createAsyncThunk(
 const taxonomiesSlice = createSlice({
   name: 'taxonomies',
   initialState,
-  reducers: {
-    setTerms: (state, action) => ({
-      ...state,
-      terms: {
-        ...state.terms,
-        [action.payload.type]: action.payload.terms,
-      },
-    }),
-  },
+  reducers: {},
   extraReducers: {
     [fetchTermsForTypes.pending]: (state, action) => ({
       ...state,
@@ -59,7 +52,5 @@ const taxonomiesSlice = createSlice({
     }),
   },
 });
-
-export const { setTerms } = taxonomiesSlice.actions;
 
 export default taxonomiesSlice.reducer;

@@ -3,13 +3,6 @@ import React, { useMemo, useState } from 'react';
 import languages from '@cospired/i18n-iso-languages';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import TaxonomyAutocomplete from 'taxonomies/components/TaxonomyAutocomplete';
-import {
-  TYPE_COMMODITY,
-  TYPE_ECOSYSTEM_TYPE,
-  TYPE_LANGUAGE,
-  TYPE_LIVELIHOOD,
-} from 'taxonomies/taxonomiesConstants';
 import * as yup from 'yup';
 
 import { Checkbox, FormControlLabel, Stack, Typography } from '@mui/material';
@@ -17,6 +10,14 @@ import { Checkbox, FormControlLabel, Stack, Typography } from '@mui/material';
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
+
+import TaxonomyAutocomplete from 'taxonomies/components/TaxonomyAutocomplete';
+import {
+  TYPE_COMMODITY,
+  TYPE_ECOSYSTEM_TYPE,
+  TYPE_LANGUAGE,
+  TYPE_LIVELIHOOD,
+} from 'taxonomies/taxonomiesConstants';
 
 import Actions from './Actions';
 

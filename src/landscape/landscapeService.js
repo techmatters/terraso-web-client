@@ -1,5 +1,4 @@
 import _ from 'lodash/fp';
-import { extractTerms } from 'taxonomies/taxonomiesUtils';
 
 import * as gisService from 'gis/gisService';
 import { accountMembership } from 'group/groupFragments';
@@ -9,6 +8,7 @@ import {
   landscapeFields,
   landscapeProfileFields,
 } from 'landscape/landscapeFragments';
+import { extractTerms } from 'taxonomies/taxonomiesUtils';
 import * as terrasoApi from 'terrasoBackend/api';
 
 const cleanLandscape = landscape =>
