@@ -25,6 +25,7 @@ import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMembe
 
 import { withProps } from 'react-hoc';
 
+import AffiliationCard from './AffiliationCard';
 import KeyInfoCard from './KeyInfoCard';
 import ProfileCard from './ProfileCard';
 
@@ -96,10 +97,18 @@ const LandscapeProfile = () => {
           <SocialShare name={landscape.name} />
         </Stack>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6} style={{ display: 'flex' }}>
-            <KeyInfoCard landscape={landscape} />
+          <Grid item xs={12} md={6}>
+            <Stack spacing={2} direction="column">
+              <KeyInfoCard landscape={landscape} />
+              <AffiliationCard landscape={landscape} />
+            </Stack>
           </Grid>
-          <Grid item xs={12} md={6} style={{ display: 'flex' }}>
+          <Grid
+            item
+            xs={12}
+            md={6}
+            style={{ display: 'flex', alignItems: 'flex-start' }}
+          >
             <ProfileCard landscape={landscape} />
           </Grid>
         </Grid>
