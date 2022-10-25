@@ -3,12 +3,13 @@ import React, { useMemo } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
-import { getTermLabel } from 'taxonomies/taxonomiesUtils';
 
 import { Button, Card, CardContent, Grid, Typography } from '@mui/material';
 
 import { countryNameForCode } from 'common/utils';
 import Restricted from 'permissions/components/Restricted';
+
+import { getTermLabel } from 'taxonomies/taxonomiesUtils';
 
 const FIELDS = [
   {

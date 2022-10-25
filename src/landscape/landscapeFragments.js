@@ -1,6 +1,5 @@
-import { taxonomyTermLanguages } from 'taxonomies/taxonomiesFragments';
-
 import { accountMembership, groupMembersInfo } from 'group/groupFragments';
+import { taxonomyTermLanguages } from 'taxonomies/taxonomiesFragments';
 
 export const landscapeFields = `
   fragment landscapeFields on LandscapeNode {
