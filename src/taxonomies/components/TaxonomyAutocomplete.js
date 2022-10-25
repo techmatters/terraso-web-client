@@ -3,9 +3,10 @@ import React, { useCallback } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { getTermLabel } from 'taxonomies/taxonomiesUtils';
 
 import { Autocomplete, TextField } from '@mui/material';
+
+import { getTermLabel } from 'taxonomies/taxonomiesUtils';
 
 const TaxonomyAutocomplete = props => {
   const { i18n, t } = useTranslation();

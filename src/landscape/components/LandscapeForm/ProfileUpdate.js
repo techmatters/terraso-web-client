@@ -4,12 +4,6 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  TYPE_COMMODITY,
-  TYPE_ECOSYSTEM_TYPE,
-  TYPE_LIVELIHOOD,
-} from 'taxonomies/taxonomiesConstants';
-import { fetchTermsForTypes } from 'taxonomies/taxonomiesSlice';
 
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
@@ -22,6 +16,12 @@ import {
   saveLandscape,
   setFormNewValues,
 } from 'landscape/landscapeSlice';
+import {
+  TYPE_COMMODITY,
+  TYPE_ECOSYSTEM_TYPE,
+  TYPE_LIVELIHOOD,
+} from 'taxonomies/taxonomiesConstants';
+import { fetchTermsForTypes } from 'taxonomies/taxonomiesSlice';
 
 const ProfileUpdate = () => {
   const dispatch = useDispatch();
