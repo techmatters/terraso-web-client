@@ -1,8 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import {
+  TYPE_COMMODITY,
+  TYPE_ECOSYSTEM_TYPE,
+  TYPE_LIVELIHOOD,
+} from 'taxonomies/taxonomiesConstants';
+import { fetchTermsForTypes } from 'taxonomies/taxonomiesSlice';
 
 import { Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
@@ -11,18 +18,22 @@ import Stepper from 'common/components/Stepper';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
+import { useFetchData } from 'state/utils';
 
 import { saveLandscape, setFormNewValues } from 'landscape/landscapeSlice';
 
 import AffiliationStep from './LandscapeForm/AffiliationStep';
 import BoundaryStep from './LandscapeForm/BoundaryStep';
-import InfoStep from './LandscapeForm/InfoStep';
+import InfoStep from './LandscapeForm/KeyInfoStep';
 import ProfileStep from './LandscapeForm/ProfileStep';
 
 const LandscapeNew = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { fetching = true } = useSelector(
+    _.getOr({}, `taxonomies.terms.${TYPE_ECOSYSTEM_TYPE}`)
+  );
 
   const { saving, landscape, success } = useSelector(
     state => state.landscape.form
@@ -34,6 +45,16 @@ const LandscapeNew = () => {
   useEffect(() => {
     dispatch(setFormNewValues());
   }, [dispatch]);
+
+  useFetchData(
+    useCallback(
+      () =>
+        fetchTermsForTypes({
+          types: [TYPE_ECOSYSTEM_TYPE, TYPE_LIVELIHOOD, TYPE_COMMODITY],
+        }),
+      []
+    )
+  );
 
   useEffect(
     () => () => {
@@ -96,6 +117,7 @@ const LandscapeNew = () => {
             setActiveStepIndex(current => current + 1);
           }}
           onCancel={() => setActiveStepIndex(current => current - 1)}
+          onSave={onSave}
         />
       ),
     },
@@ -115,6 +137,10 @@ const LandscapeNew = () => {
       ),
     },
   ];
+
+  if (fetching) {
+    return <PageLoader />;
+  }
 
   return (
     <PageContainer>

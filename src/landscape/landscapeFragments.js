@@ -1,3 +1,5 @@
+import { taxonomyTermLanguages } from 'taxonomies/taxonomiesFragments';
+
 import { accountMembership, groupMembersInfo } from 'group/groupFragments';
 
 export const landscapeFields = `
@@ -10,6 +12,23 @@ export const landscapeFields = `
     website
     areaPolygon
   }
+`;
+
+export const landscapeProfileFields = `
+  fragment landscapeProfileFields on LandscapeNode {
+    areaTypes
+    population
+    taxonomyTerms {
+      edges {
+        node {
+          type
+          valueOriginal
+          ...taxonomyTermLanguages
+        }
+      }
+    }
+  }
+  ${taxonomyTermLanguages}
 `;
 
 export const defaultGroup = `
