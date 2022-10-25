@@ -65,7 +65,11 @@ const AffiliatedGroups = props => {
       </Typography>
       <List>
         {sorted.map(group => (
-          <ListItem component={RouterLink} to={`/groups/${group.slug}`}>
+          <ListItem
+            key={group.slug}
+            component={RouterLink}
+            to={`/groups/${group.slug}`}
+          >
             {group.name}
           </ListItem>
         ))}

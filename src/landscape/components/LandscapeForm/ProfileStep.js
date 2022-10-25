@@ -177,7 +177,7 @@ const AreaTypesCheckboxes = props => {
   const handleChange = key => event => {
     const isChecked = event.target.checked;
     if (isChecked) {
-      field.onChange([...field.value, key]);
+      field.onChange([...(field.value || []), key]);
       return;
     }
     field.onChange(field.value.filter(item => item !== key));
