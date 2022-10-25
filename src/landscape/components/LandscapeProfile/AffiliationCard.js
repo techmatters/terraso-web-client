@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { getTermLabel } from 'taxonomies/taxonomiesUtils';
 
 import {
   Button,
@@ -16,6 +15,8 @@ import {
 
 import RouterLink from 'common/components/RouterLink';
 import Restricted from 'permissions/components/Restricted';
+
+import { getTermLabel } from 'taxonomies/taxonomiesUtils';
 
 const Partnership = props => {
   const { t } = useTranslation();

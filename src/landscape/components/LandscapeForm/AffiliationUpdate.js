@@ -4,8 +4,6 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { TYPE_ORGANIZATION } from 'taxonomies/taxonomiesConstants';
-import { fetchTermsForTypes } from 'taxonomies/taxonomiesSlice';
 
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
@@ -19,6 +17,8 @@ import {
   saveLandscape,
   setFormNewValues,
 } from 'landscape/landscapeSlice';
+import { TYPE_ORGANIZATION } from 'taxonomies/taxonomiesConstants';
+import { fetchTermsForTypes } from 'taxonomies/taxonomiesSlice';
 
 const AffiliationUpdate = () => {
   const dispatch = useDispatch();

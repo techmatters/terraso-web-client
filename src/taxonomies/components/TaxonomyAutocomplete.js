@@ -6,9 +6,9 @@ import { useSelector } from 'react-redux';
 
 import { Autocomplete, TextField, createFilterOptions } from '@mui/material';
 
-const FILTER = createFilterOptions();
-
 import { getTermLabel } from 'taxonomies/taxonomiesUtils';
+
+const FILTER = createFilterOptions();
 
 const TaxonomyAutocomplete = props => {
   const { i18n, t } = useTranslation();

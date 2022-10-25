@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import TaxonomyAutocomplete from 'taxonomies/components/TaxonomyAutocomplete';
-import { TYPE_ORGANIZATION } from 'taxonomies/taxonomiesConstants';
 import * as yup from 'yup';
 
 import {
@@ -19,6 +17,8 @@ import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
 
 import GroupAutocomplete from 'group/components/GroupAutocomplete';
+import TaxonomyAutocomplete from 'taxonomies/components/TaxonomyAutocomplete';
+import { TYPE_ORGANIZATION } from 'taxonomies/taxonomiesConstants';
 
 import Actions from './Actions';
 
