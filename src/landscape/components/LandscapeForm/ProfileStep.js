@@ -77,7 +77,7 @@ const FORM_FIELDS = [
   },
   {
     name: 'livelihoods-info',
-    notControlledRender: () => <LivelihoodsInfo />,
+    renderStaticElement: () => <LivelihoodsInfo />,
   },
   {
     name: 'taxonomyTypeTerms.livelihood',
@@ -95,7 +95,7 @@ const FORM_FIELDS = [
   },
   {
     name: 'commondities-info',
-    notControlledRender: () => <CommoditiesInfo />,
+    renderStaticElement: () => <CommoditiesInfo />,
   },
   {
     name: 'taxonomyTypeTerms.commodity',

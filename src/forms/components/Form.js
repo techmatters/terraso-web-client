@@ -122,9 +122,9 @@ const Form = props => {
             return filterField(field, formProps);
           })
           .map(field =>
-            field.notControlledRender ? (
+            field.renderStaticElement ? (
               <React.Fragment key={field.name}>
-                {field.notControlledRender()}
+                {field.renderStaticElement()}
               </React.Fragment>
             ) : (
               <Grid

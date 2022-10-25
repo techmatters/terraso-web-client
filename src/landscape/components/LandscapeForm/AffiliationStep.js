@@ -22,6 +22,8 @@ import { TYPE_ORGANIZATION } from 'taxonomies/taxonomiesConstants';
 
 import Actions from './Actions';
 
+const PARTNERSHIP_START_YEAR = 1900;
+
 const VALIDATION_SCHEMA = yup.object().shape({}).required();
 
 const FORM_FIELDS = [
@@ -101,7 +103,7 @@ const YearSelect = props => {
       <MenuItem value={''}>
         {t('landscape.form_profile_partnership_year_placeholder')}
       </MenuItem>
-      {_.range(1900, new Date().getFullYear() + 1)
+      {_.range(PARTNERSHIP_START_YEAR, new Date().getFullYear() + 1)
         .reverse()
         .map(year => (
           <MenuItem key={year} value={year}>
