@@ -50,6 +50,8 @@ const LandscapeProfile = () => {
   );
   const [isEmptySections, setIsEmptySections] = useState({
     developmentStrategy: false,
+    affiliation: false,
+    profile: false,
   });
 
   const setSectionIsEmpty = useCallback((section, hasData) => {
@@ -116,17 +118,27 @@ const LandscapeProfile = () => {
           <Grid item xs={12} md={6}>
             <Stack spacing={2} direction="column">
               <KeyInfoCard landscape={landscape} />
-              <AffiliationCard landscape={landscape} />
+              {(!isEmptySections.affiliation || allowed) && (
+                <AffiliationCard
+                  landscape={landscape}
+                  setIsEmpty={setSectionIsEmpty}
+                />
+              )}
             </Stack>
           </Grid>
-          <Grid
-            item
-            xs={12}
-            md={6}
-            style={{ display: 'flex', alignItems: 'flex-start' }}
-          >
-            <ProfileCard landscape={landscape} />
-          </Grid>
+          {(!isEmptySections.profile || allowed) && (
+            <Grid
+              item
+              xs={12}
+              md={6}
+              style={{ display: 'flex', alignItems: 'flex-start' }}
+            >
+              <ProfileCard
+                landscape={landscape}
+                setIsEmpty={setSectionIsEmpty}
+              />
+            </Grid>
+          )}
           {(!isEmptySections.developmentStrategy || allowed) && (
             <Grid item xs={12} md={12}>
               <DevelopmentStrategyCard

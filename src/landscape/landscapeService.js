@@ -41,7 +41,7 @@ const cleanLandscape = landscape =>
           ? [
               {
                 slug: landscape.partnership.group.slug,
-                partnershipYear: landscape.partnership.year,
+                partnershipYear: landscape.partnership.year || null,
                 isPartnership: true,
               },
             ]
@@ -54,7 +54,7 @@ const cleanLandscape = landscape =>
         ) {
           return {
             ..._.omit(['partnership', 'affiliatedGroups'], landscape),
-            groupAssociations: '[]',
+            groupAssociations: [],
           };
         }
         return landscape;
