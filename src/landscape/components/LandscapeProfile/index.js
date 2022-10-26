@@ -1,6 +1,7 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import _ from 'lodash/fp';
+import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -43,6 +44,20 @@ const LandscapeProfile = () => {
   const dispatch = useDispatch();
   const { landscape, fetching } = useSelector(state => state.landscape.profile);
   const { slug } = useParams();
+  const { loading: loadingPermissions, allowed } = usePermission(
+    'landscape.change',
+    landscape
+  );
+  const [isEmptySections, setIsEmptySections] = useState({
+    developmentStrategy: false,
+  });
+
+  const setSectionIsEmpty = useCallback((section, hasData) => {
+    setIsEmptySections(current => ({
+      ...current,
+      [section]: hasData,
+    }));
+  }, []);
 
   useDocumentTitle(
     t('landscape.profile_document_title', {
@@ -64,7 +79,7 @@ const LandscapeProfile = () => {
     dispatch(refreshLandscapeView(slug));
   }, [dispatch, slug]);
 
-  if (fetching) {
+  if (fetching || loadingPermissions) {
     return <PageLoader />;
   }
 
@@ -112,9 +127,14 @@ const LandscapeProfile = () => {
           >
             <ProfileCard landscape={landscape} />
           </Grid>
-          <Grid item xs={12} md={12}>
-            <DevelopmentStrategyCard landscape={landscape} />
-          </Grid>
+          {(!isEmptySections.developmentStrategy || allowed) && (
+            <Grid item xs={12} md={12}>
+              <DevelopmentStrategyCard
+                landscape={landscape}
+                setIsEmpty={setSectionIsEmpty}
+              />
+            </Grid>
+          )}
         </Grid>
       </PageContainer>
     </GroupContextProvider>
