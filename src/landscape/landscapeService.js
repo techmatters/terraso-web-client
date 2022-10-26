@@ -11,6 +11,9 @@ import {
 import { extractTerms } from 'taxonomies/taxonomiesUtils';
 import * as terrasoApi from 'terrasoBackend/api';
 
+import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
+import { extractAffiliatedGroups, extractPartnership } from './landscapeUtils';
+
 const cleanLandscape = landscape =>
   _.flow(
     _.pick([
@@ -23,6 +26,9 @@ const cleanLandscape = landscape =>
       'areaTypes',
       'population',
       'taxonomyTypeTerms',
+      'partnershipStatus',
+      'partnership',
+      'affiliatedGroups',
     ]),
     _.toPairs,
     _.map(([key, value]) => {
@@ -35,7 +41,39 @@ const cleanLandscape = landscape =>
       }
       return [key, value];
     }),
-    _.fromPairs
+    _.fromPairs,
+    _.cloneWith(landscape => {
+      const partnershipGroups =
+        landscape.partnership && _.get('partnership.group.slug', landscape)
+          ? [
+              {
+                slug: landscape.partnership.group.slug,
+                partnershipYear: landscape.partnership.year,
+                isPartnership: true,
+              },
+            ]
+          : [];
+      const affiliatedGroups = landscape.affiliatedGroups || [];
+      if (_.isEmpty(partnershipGroups) && _.isEmpty(affiliatedGroups)) {
+        if (
+          _.has('partnership', landscape) ||
+          _.has('affiliatedGroups', landscape)
+        ) {
+          return {
+            ..._.omit(['partnership', 'affiliatedGroups'], landscape),
+            groupAssociations: '[]',
+          };
+        }
+        return landscape;
+      }
+      return {
+        ..._.omit(['partnership', 'affiliatedGroups'], landscape),
+        groupAssociations: JSON.stringify([
+          ...partnershipGroups,
+          ...affiliatedGroups,
+        ]),
+      };
+    })
   )(landscape);
 
 export const fetchLandscapeToUpdate = slug => {
@@ -60,6 +98,9 @@ export const fetchLandscapeToUpdate = slug => {
     .then(landscape => ({
       ...landscape,
       taxonomyTypeTerms: extractTerms(_.get('taxonomyTerms.edges', landscape)),
+      partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
+      partnership: extractPartnership(landscape),
+      affiliatedGroups: extractAffiliatedGroups(landscape),
       areaPolygon: landscape.areaPolygon
         ? JSON.parse(landscape.areaPolygon)
         : null,
@@ -144,6 +185,9 @@ export const fetchLandscapeProfile = (slug, currentUser) => {
       ..._.omit('defaultGroup', landscape),
       defaultGroup: getDefaultGroup(landscape),
       taxonomyTerms: extractTerms(_.get('taxonomyTerms.edges', landscape)),
+      partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
+      partnership: extractPartnership(landscape),
+      affiliatedGroups: extractAffiliatedGroups(landscape),
     }));
 };
 

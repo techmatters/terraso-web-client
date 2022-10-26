@@ -13,6 +13,10 @@ const initialState = {
     groups: [],
     message: null,
   },
+  autocomplete: {
+    fetching: true,
+    groups: [],
+  },
   view: {
     group: null,
     fetching: true,
@@ -58,6 +62,10 @@ export const fetchGroupUpload = createAsyncThunk(
 export const fetchGroups = createAsyncThunk(
   'group/fetchGroups',
   groupService.fetchGroups
+);
+export const fetchGroupsAutocompleteList = createAsyncThunk(
+  'group/fetchGroupsAutocompleteList',
+  groupService.fetchGroupsAutocompleteList
 );
 export const fetchGroupForMembers = createAsyncThunk(
   'group/fetchGroupForMembers',
@@ -214,6 +222,23 @@ const groupSlice = createSlice({
       list: {
         fetching: false,
         message: null,
+        groups: action.payload,
+      },
+    }),
+    [fetchGroupsAutocompleteList.pending]: state => ({
+      ...state,
+      autocomplete: initialState.autocomplete,
+    }),
+    [fetchGroupsAutocompleteList.rejected]: (state, action) => ({
+      ...state,
+      autocomplete: {
+        ...state.autocomplete,
+        fetching: false,
+      },
+    }),
+    [fetchGroupsAutocompleteList.fulfilled]: (state, action) => ({
+      autocomplete: {
+        fetching: false,
         groups: action.payload,
       },
     }),

@@ -95,3 +95,21 @@ export const getLandscapePin = landscape => {
 };
 
 export const isValidGeoJson = areaPolygon => !!parseGeoJson(areaPolygon);
+
+export const extractPartnership = landscape =>
+  _.flow(
+    _.map(_.get('node')),
+    _.filter(_.get('isPartnership')),
+    _.map(groupAssociation => ({
+      year: groupAssociation.partnershipYear,
+      group: groupAssociation.group,
+    })),
+    _.head
+  )(_.get('associatedGroups.edges', landscape));
+
+export const extractAffiliatedGroups = landscape =>
+  _.flow(
+    _.map(_.get('node')),
+    _.filter(groupAssociation => !groupAssociation.isPartnership),
+    _.map(_.get('group'))
+  )(_.get('associatedGroups.edges', landscape));

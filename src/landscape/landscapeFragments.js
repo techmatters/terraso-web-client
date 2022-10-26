@@ -17,12 +17,25 @@ export const landscapeProfileFields = `
   fragment landscapeProfileFields on LandscapeNode {
     areaTypes
     population
+    partnershipStatus
     taxonomyTerms {
       edges {
         node {
           type
           valueOriginal
           ...taxonomyTermLanguages
+        }
+      }
+    }
+    associatedGroups(isDefaultLandscapeGroup: false) {
+      edges {
+        node {
+          isPartnership
+          partnershipYear
+          group {
+            slug
+            name
+          }
         }
       }
     }
