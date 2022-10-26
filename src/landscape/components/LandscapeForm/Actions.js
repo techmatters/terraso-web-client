@@ -8,7 +8,14 @@ import { useFormGetContext } from 'forms/formContext';
 
 const Actions = props => {
   const { t } = useTranslation();
-  const { isNew, onCancel, updatedValues, setUpdatedLandscape, onSave } = props;
+  const {
+    isNew,
+    onCancel,
+    updatedValues,
+    setUpdatedLandscape,
+    onSave,
+    nextLabel,
+  } = props;
   const { trigger } = useFormGetContext();
 
   const onNext = useCallback(async () => {
@@ -43,7 +50,7 @@ const Actions = props => {
             {t('landscape.form_save_now')}
           </Button>
           <Button variant="contained" onClick={onNext} sx={{ pl: 6, pr: 6 }}>
-            {t('landscape.form_next')}
+            {nextLabel || t('landscape.form_next')}
           </Button>
         </Stack>
       </Stack>

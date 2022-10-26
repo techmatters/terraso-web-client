@@ -103,6 +103,7 @@ const ProfileCard = props => {
         display: 'flex',
         justifyContent: 'flex-start',
         flexDirection: 'column',
+        width: '100%',
       }}
     >
       <CardContent sx={{ display: 'flex', flexGrow: 1 }}>

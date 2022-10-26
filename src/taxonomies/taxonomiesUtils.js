@@ -17,6 +17,6 @@ export const extractTerms = terms =>
   )(terms);
 
 export const getTermLabel = (option, language) => {
-  const valueKey = LOCALE_MAPPING[language] || 'valueOriginal';
-  return option[valueKey] || '';
+  const valueKey = LOCALE_MAPPING[language];
+  return option[valueKey] || option['valueOriginal'] || '';
 };

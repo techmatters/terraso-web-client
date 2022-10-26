@@ -34,6 +34,7 @@ const FormFieldInput = props => {
       }}
       {...field}
       {...inputProps}
+      value={field.value || ''}
     />
   );
 };

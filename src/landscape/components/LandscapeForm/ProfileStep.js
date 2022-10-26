@@ -77,7 +77,7 @@ const FORM_FIELDS = [
   },
   {
     name: 'livelihoods-info',
-    notControlledRender: () => <LivelihoodsInfo />,
+    renderStaticElement: () => <LivelihoodsInfo />,
   },
   {
     name: 'taxonomyTypeTerms.livelihood',
@@ -95,7 +95,7 @@ const FORM_FIELDS = [
   },
   {
     name: 'commondities-info',
-    notControlledRender: () => <CommoditiesInfo />,
+    renderStaticElement: () => <CommoditiesInfo />,
   },
   {
     name: 'taxonomyTypeTerms.commodity',
@@ -177,7 +177,7 @@ const AreaTypesCheckboxes = props => {
   const handleChange = key => event => {
     const isChecked = event.target.checked;
     if (isChecked) {
-      field.onChange([...field.value, key]);
+      field.onChange([...(field.value || []), key]);
       return;
     }
     field.onChange(field.value.filter(item => item !== key));
