@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 
+import { Typography } from '@mui/material';
+
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
@@ -13,8 +15,16 @@ const VALIDATION_SCHEMA = yup.object().shape({}).required();
 
 const FORM_FIELDS = [
   {
+    renderStaticElement: ({ t }) => (
+      <Typography sx={{ pl: 2 }}>
+        {t('landscape.form_development_objectives_description')}
+      </Typography>
+    ),
+  },
+  {
     name: 'developmentStrategy.objectives',
     label: 'landscape.form_development_objectives',
+    placeholder: 'landscape.form_development_objectives_placeholder',
     props: {
       inputProps: {
         multiline: true,
@@ -23,8 +33,16 @@ const FORM_FIELDS = [
     },
   },
   {
+    renderStaticElement: ({ t }) => (
+      <Typography sx={{ pl: 2 }}>
+        {t('landscape.form_development_problem_situtation_description')}
+      </Typography>
+    ),
+  },
+  {
     name: 'developmentStrategy.problemSitutation',
     label: 'landscape.form_development_problem_situtation',
+    placeholder: 'landscape.form_development_problem_situtation_placeholder',
     props: {
       inputProps: {
         multiline: true,
@@ -35,6 +53,7 @@ const FORM_FIELDS = [
   {
     name: 'developmentStrategy.interventionStrategy',
     label: 'landscape.form_development_intervention_strategy',
+    placeholder: 'landscape.form_development_intervention_strategy_placeholder',
     props: {
       inputProps: {
         multiline: true,
@@ -43,8 +62,16 @@ const FORM_FIELDS = [
     },
   },
   {
+    renderStaticElement: ({ t }) => (
+      <Typography sx={{ pl: 2 }}>
+        {t('landscape.form_development_other_information_description')}
+      </Typography>
+    ),
+  },
+  {
     name: 'developmentStrategy.otherInformation',
     label: 'landscape.form_development_other_information',
+    placeholder: 'landscape.form_development_other_information_placeholder',
     props: {
       inputProps: {
         multiline: true,
