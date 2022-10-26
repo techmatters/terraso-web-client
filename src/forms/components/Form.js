@@ -115,12 +115,7 @@ const Form = props => {
         sx={{ width: '100%' }}
       >
         {fields
-          .filter(field => {
-            if (!filterField) {
-              return true;
-            }
-            return filterField(field, formProps);
-          })
+          .filter(field => (filterField ? filterField(field, formProps) : true))
           .map(field =>
             field.renderStaticElement ? (
               <React.Fragment key={field.name}>
