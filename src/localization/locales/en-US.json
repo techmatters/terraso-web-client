@@ -375,7 +375,7 @@
         "form_profile_organizations": "Active organizations in the landscape",
         "form_profile_organizations_placeholder": "Enter an organization name",
         "form_affiliation_edit_title": "Update Landscape Partnership and Afflilations",
-        "form_affiliation_new_title": "Landscape Partnership and Afflilations (Optional)"
+        "form_affiliation_new_title": "Landscape Partnership and Affiliations"
     },
     "sharedData": {
         "title": "Shared files",
