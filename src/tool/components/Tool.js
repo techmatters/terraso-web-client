@@ -3,8 +3,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import LaunchIcon from '@mui/icons-material/Launch';
-import { Card, Link, Stack, Typography } from '@mui/material';
+import { Card, Stack, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
+
+import ExternalLink from 'common/components/ExternalLink';
 
 import theme from 'theme';
 
@@ -35,7 +37,7 @@ const Tool = ({ tool }) => {
           </section>
 
           <section>
-            <Link href={t(`tools.${tool}.url`)}>
+            <ExternalLink href={t(`tools.${tool}.url`)}>
               <img
                 alt=""
                 height={t(`tools.${tool}.img.height`)}
@@ -53,7 +55,7 @@ const Tool = ({ tool }) => {
                   }}
                 />
               </p>
-            </Link>
+            </ExternalLink>
           </section>
         </Stack>
       </Card>

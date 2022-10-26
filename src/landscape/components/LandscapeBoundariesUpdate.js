@@ -47,8 +47,8 @@ const LandscapeBoundariesUpdate = () => {
     return <PageLoader />;
   }
 
-  const onSave = updatedLandscape => {
-    dispatch(
+  const onSave = async updatedLandscape => {
+    return dispatch(
       saveLandscape({
         id: landscape.id,
         areaPolygon: updatedLandscape.areaPolygon,

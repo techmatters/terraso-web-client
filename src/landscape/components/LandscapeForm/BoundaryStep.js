@@ -22,6 +22,7 @@ import {
 import ExternalLink from 'common/components/ExternalLink';
 import { countryNameForCode, scrollToNavBar } from 'common/utils';
 import PageHeader from 'layout/PageHeader';
+import { useAnalytics } from 'monitoring/analytics';
 
 import { getPlaceInfoByName } from 'gis/gisService';
 import LandscapeGeoJsonBoundaries from 'landscape/components/LandscapeGeoJsonBoundaries';
@@ -35,12 +36,14 @@ const OPTION_GEOJSON = 'geo-json';
 const OPTION_MAP_DRAW_POLYGON = 'map-draw-polygon';
 const OPTION_MAP_PIN = 'map-pin';
 const OPTION_SELECT_OPTIONS = 'options';
+const OPTION_SKIP_BOUNDARY = 'skip-boundary';
 
 const POLYGON_FILTER = feature => _.get('geometry.type', feature) === 'Polygon';
 const POINT_FILTER = feature => _.get('geometry.type', feature) === 'Point';
 
 const GeoJson = props => {
   const { t } = useTranslation();
+  const { trackEvent } = useAnalytics();
   const {
     mapCenter,
     landscape,
@@ -55,6 +58,14 @@ const GeoJson = props => {
     save({
       ...landscape,
       areaPolygon,
+    }).then(() => {
+      // props.isNew is set when the landscape is being created
+      // otherwise it seems to be undefined
+      if (props.isNew) {
+        trackEvent('Landscape created', {
+          props: { option: OPTION_GEOJSON, country: landscape.location },
+        });
+      }
     });
   };
 
@@ -97,6 +108,7 @@ const MapDrawPolygon = props => {
   } = props;
   const [editHelp, setEditHelp] = useState(false);
   const [open, setOpen] = useState(false);
+  const { trackEvent } = useAnalytics();
 
   const onPolygonChange = useCallback(() => {
     setOpen(true);
@@ -112,6 +124,15 @@ const MapDrawPolygon = props => {
     save({
       ...landscape,
       areaPolygon,
+    }).then(() => {
+      if (props.isNew) {
+        trackEvent('Landscape created', {
+          props: {
+            option: OPTION_MAP_DRAW_POLYGON,
+            country: landscape.location,
+          },
+        });
+      }
     });
   };
 
@@ -243,11 +264,18 @@ const MapPin = props => {
     areaPolygon,
     setAreaPolygon,
   } = props;
+  const { trackEvent } = useAnalytics();
 
   const onSave = () => {
     save({
       ...landscape,
       areaPolygon,
+    }).then(() => {
+      if (props.isNew) {
+        trackEvent('Landscape created', {
+          props: { option: OPTION_MAP_PIN, country: landscape.location },
+        });
+      }
     });
   };
 
@@ -285,9 +313,20 @@ const BoundaryOptions = props => {
   const { t } = useTranslation();
   const { landscape, setOption, save, onCancel, title } = props;
 
+  const { trackEvent } = useAnalytics();
+
   const onOptionClick = option => () => {
     option.onClick();
     scrollToNavBar();
+  };
+
+  const saveWithoutBoundary = async () => {
+    await save(landscape);
+    if (props.isNew) {
+      trackEvent('Landscape created', {
+        props: { option: OPTION_SKIP_BOUNDARY, country: landscape.location },
+      });
+    }
   };
 
   const options = [
@@ -309,7 +348,7 @@ const BoundaryOptions = props => {
     {
       Icon: ArrowRightAltIcon,
       label: 'landscape.form_boundary_options_skip',
-      onClick: () => save(landscape),
+      onClick: saveWithoutBoundary,
     },
   ];
 

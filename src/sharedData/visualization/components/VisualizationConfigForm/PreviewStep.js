@@ -80,6 +80,7 @@ const PreviewStep = props => {
           props: {
             owner: owner.name,
             file: visualizationConfig?.selectedFile.name,
+            fileID: visualizationConfig?.selectedFile.id,
           },
         });
         onSaved(data.payload.slug);
