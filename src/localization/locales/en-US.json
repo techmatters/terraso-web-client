@@ -127,7 +127,8 @@
         "breadcrumbs_members": "Members",
         "breadcrumbs_visualization": "{{mapTitle}}",
         "breadcrumbs_visualization_new": "New Map",
-        "breadcrumbs_upload": "Share Files"
+        "breadcrumbs_upload": "Share Files",
+        "autocomplete_no_options": "No options"
     },
     "tool": {
         "requirements": "System requirements",
@@ -355,7 +356,26 @@
         "form_profile_livelihoods_info": "Please indicate what the major sources of employment are in your landscape. Select all that apply.",
         "form_profile_commondities": "Commodities",
         "form_profile_commondities_placeholder": "Select one or more products",
-        "form_profile_commondities_info": "Which agricultural products and commodities are produced in your landscapes?"
+        "form_profile_commondities_info": "Which agricultural products and commodities are produced in your landscapes?",
+        "profile_affiliation_card_title": "Partnerships & Affiliations",
+        "profile_affiliation_card_partnership_description": "Landscape partnership since {{year}}",
+        "profile_affiliation_card_affiliated_groups_title": "Affiliated Organizations",
+        "profile_affiliation_card_organizations_title": "Active Organizations",
+        "profile_affiliation_card_update_button": "Update Parntership Info",
+        "form_profile_partnership_status": "Is a landscape partnership managing this landscape?",
+        "profile_profile_card_partnership_status_yes": "Yes",
+        "profile_profile_card_partnership_status_in_progress": "In progress",
+         "profile_profile_card_partnership_status_no": "No",
+        "form_profile_partnership_year": "Approximate date of landscape partnership inception",
+        "form_profile_partnership_year_placeholder": "Select a year",
+        "form_profile_partnership_group": "Landscape partnership Terraso Groups",
+        "form_profile_partnership_group_placeholder": "Select Landscaoe Partnership Grroup",
+        "form_profile_affiliated_groups": "Affiliated Terraso Groups",
+        "form_profile_affiliated_groups_placeholder": "Select one or more groups",
+        "form_profile_organizations": "Active organizations in the landscape",
+        "form_profile_organizations_placeholder": "Enter an organization name",
+        "form_affiliation_edit_title": "Update Landscape Partnership and Afflilations",
+        "form_affiliation_new_title": "Landscape Partnership and Affiliations"
     },
     "sharedData": {
         "title": "Shared files",
@@ -617,5 +637,9 @@
         "success": "Your message has been sent. Terraso will follow up within two business days.",
         "iframe_title": "Contact Terraso",
         "page_title": "Contact"
+    },
+    "taxonomies": {
+        "add_option": "Add “{{value}}“",
+        "no_options": "No options"
     }
 }

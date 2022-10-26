@@ -17,6 +17,7 @@ import GroupView from 'group/components/GroupView';
 import GroupMembers from 'group/membership/components/GroupMembers';
 import Home from 'home/components/Home';
 import LandscapeBoundariesUpdate from 'landscape/components/LandscapeBoundariesUpdate';
+import LandscapeAffiliationUpdate from 'landscape/components/LandscapeForm/AffiliationUpdate';
 import LandscapeKeyInfoUpdate from 'landscape/components/LandscapeForm/KeyInfoUpdate';
 import LandscapeProfileUpdate from 'landscape/components/LandscapeForm/ProfileUpdate';
 import LandscapeList from 'landscape/components/LandscapeList';
@@ -82,6 +83,7 @@ const paths = [
     breadcrumbsLabel: 'landscape.breadcrumbs_profile',
   }),
   path('/landscapes/:slug/profile/edit', LandscapeProfileUpdate),
+  path('/landscapes/:slug/affiliation/edit', LandscapeAffiliationUpdate),
   path('/landscapes/:slug/boundaries', LandscapeBoundariesUpdate),
   path('/landscapes/:slug/members', LandscapeMembers, {
     showBreadcrumbs: true,

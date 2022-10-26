@@ -14,11 +14,13 @@ import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 import { useFetchData } from 'state/utils';
 
+import { fetchGroupsAutocompleteList } from 'group/groupSlice';
 import { saveLandscape, setFormNewValues } from 'landscape/landscapeSlice';
 import {
   TYPE_COMMODITY,
   TYPE_ECOSYSTEM_TYPE,
   TYPE_LIVELIHOOD,
+  TYPE_ORGANIZATION,
 } from 'taxonomies/taxonomiesConstants';
 import { fetchTermsForTypes } from 'taxonomies/taxonomiesSlice';
 
@@ -31,14 +33,19 @@ const LandscapeNew = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { fetching = true } = useSelector(
+  const { fetching: fetchingTaxonomyTerms = true } = useSelector(
     _.getOr({}, `taxonomies.terms.${TYPE_ECOSYSTEM_TYPE}`)
+  );
+  const { fetching: fetchingGroupsList } = useSelector(
+    _.get(`group.autocomplete`)
   );
 
   const { saving, landscape, success } = useSelector(
     state => state.landscape.form
   );
-  const [updatedLandscape, setUpdatedLandscape] = useState();
+  const [updatedLandscape, setUpdatedLandscape] = useState({
+    partnershipStatus: 'no',
+  });
 
   useDocumentTitle(t('landscape.form_new_document_title'));
 
@@ -50,11 +57,17 @@ const LandscapeNew = () => {
     useCallback(
       () =>
         fetchTermsForTypes({
-          types: [TYPE_ECOSYSTEM_TYPE, TYPE_LIVELIHOOD, TYPE_COMMODITY],
+          types: [
+            TYPE_ECOSYSTEM_TYPE,
+            TYPE_LIVELIHOOD,
+            TYPE_COMMODITY,
+            TYPE_ORGANIZATION,
+          ],
         }),
       []
     )
   );
+  useFetchData(fetchGroupsAutocompleteList);
 
   useEffect(
     () => () => {
@@ -127,10 +140,7 @@ const LandscapeNew = () => {
         <AffiliationStep
           isNew
           landscape={updatedLandscape}
-          setUpdatedLandscape={updatedLandscape => {
-            setUpdatedLandscape(updatedLandscape);
-            setActiveStepIndex(current => current + 1);
-          }}
+          setUpdatedLandscape={onSave}
           onCancel={() => setActiveStepIndex(current => current - 1)}
           onSave={onSave}
         />
@@ -138,7 +148,7 @@ const LandscapeNew = () => {
     },
   ];
 
-  if (fetching) {
+  if (fetchingTaxonomyTerms || fetchingGroupsList) {
     return <PageLoader />;
   }
 

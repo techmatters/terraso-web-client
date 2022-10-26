@@ -1,4 +1,5 @@
 import _ from 'lodash/fp';
+import { cleanSensitiveCharacters } from 'stringUtils';
 
 import {
   accountMembership,
@@ -6,6 +7,7 @@ import {
   groupMembers,
   groupMembersInfo,
   groupMembersPending,
+  groupsListFields,
 } from 'group/groupFragments';
 import * as terrasoApi from 'terrasoBackend/api';
 
@@ -130,6 +132,40 @@ export const fetchGroups = (params, currentUser) => {
       }))
     )
     .then(_.orderBy([group => group.name.toLowerCase()], null));
+};
+
+export const fetchGroupsAutocompleteList = () => {
+  const query = `
+    query groups {
+      independentGroups: groups(
+        associatedLandscapes_Isnull: true
+      ) {
+        edges {
+          node {
+            ...groupsListFields
+          }
+        }
+      }
+      landscapeGroups: groups(
+        associatedLandscapes_IsDefaultLandscapeGroup: false
+      ) {
+        edges {
+          node {
+            ...groupsListFields
+          }
+        }
+      }
+    }
+    ${groupsListFields}
+  `;
+  return terrasoApi
+    .requestGraphQL(query)
+    .then(response => [
+      ..._.getOr([], 'independentGroups.edges', response),
+      ..._.getOr([], 'landscapeGroups.edges', response),
+    ])
+    .then(groups => groups.map(_.get('node')))
+    .then(_.orderBy([group => cleanSensitiveCharacters(group.name)], null));
 };
 
 export const fetchGroupForMembers = (slug, currentUser) => {
