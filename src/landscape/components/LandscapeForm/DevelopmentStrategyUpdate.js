@@ -42,6 +42,7 @@ const DevelopmentStrategyUpdate = () => {
     fetching
   );
 
+  // Clean form values on unmount
   useEffect(() => () => dispatch(setFormNewValues()), [dispatch]);
 
   useFetchData(useCallback(() => fetchLandscapeForm(slug), [slug]));
