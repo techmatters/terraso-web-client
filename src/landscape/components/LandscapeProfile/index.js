@@ -48,6 +48,7 @@ const LandscapeProfile = () => {
     'landscape.change',
     landscape
   );
+
   const [isEmptySections, setIsEmptySections] = useState({
     developmentStrategy: false,
     affiliation: false,

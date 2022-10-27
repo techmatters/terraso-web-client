@@ -16,6 +16,7 @@ import {
 import RouterLink from 'common/components/RouterLink';
 import Restricted from 'permissions/components/Restricted';
 
+import { PARTNERSHIP_STATUS_NO } from 'landscape/landscapeConstants';
 import { getTermLabel } from 'taxonomies/taxonomiesUtils';
 
 const Partnership = props => {
@@ -24,7 +25,7 @@ const Partnership = props => {
     landscape: { partnership, partnershipStatus },
   } = props;
 
-  if (!partnership || partnershipStatus === 'no') {
+  if (!partnership || partnershipStatus === PARTNERSHIP_STATUS_NO) {
     return null;
   }
 
@@ -122,7 +123,8 @@ const AffiliationCard = ({ landscape, setIsEmpty }) => {
     () =>
       _.isEmpty(_.get('taxonomyTerms.organization', landscape)) &&
       _.isEmpty(landscape.affiliatedGroups) &&
-      (!landscape.partnership || landscape.partnershipStatus === 'no'),
+      (!landscape.partnership ||
+        landscape.partnershipStatus === PARTNERSHIP_STATUS_NO),
     [landscape]
   );
   useEffect(() => {
