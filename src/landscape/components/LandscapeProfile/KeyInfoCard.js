@@ -3,6 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
+import EmailIcon from '@mui/icons-material/Email';
 import PublicIcon from '@mui/icons-material/Public';
 import {
   Button,
@@ -42,7 +43,13 @@ const KeyInfoCard = ({ landscape }) => {
           {landscape.description}
         </Typography>
       </CardContent>
-      <CardContent sx={{ display: 'flex', flexGrow: 1 }}>
+      <CardContent component={Stack} sx={{ display: 'flex', flexGrow: 1 }}>
+        {landscape.email && (
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+            <EmailIcon sx={{ color: 'gray.lite1' }} />
+            <Link href={`mailto:${landscape.email}`}>{landscape.email}</Link>
+          </Stack>
+        )}
         {landscape.website && (
           <Stack direction="row" alignItems="center" spacing={1}>
             <PublicIcon sx={{ color: 'gray.lite1' }} />

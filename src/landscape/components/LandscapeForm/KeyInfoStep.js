@@ -26,6 +26,7 @@ const VALIDATION_SCHEMA = yup
       .maxCustom(MAX_DESCRIPTION_LENGTH)
       .trim()
       .required(),
+    email: yup.string().trim().email(),
     website: yup.string().trim().ensure().transform(transformURL).url(),
   })
   .required();
@@ -53,6 +54,12 @@ const FORM_FIELDS = [
     props: {
       renderInput: ({ field }) => <CountrySelector field={field} />,
     },
+  },
+  {
+    name: 'email',
+    label: 'landscape.form_email_label',
+    placeholder: 'landscape.form_email_placeholder',
+    type: 'url',
   },
   {
     name: 'website',

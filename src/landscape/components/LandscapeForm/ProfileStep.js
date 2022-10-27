@@ -233,6 +233,7 @@ const ProfileStep = props => {
         onChange={setUpdatedValues}
       />
       <Actions
+        isForm
         isNew={isNew}
         onCancel={onCancel}
         onSave={onSave}
