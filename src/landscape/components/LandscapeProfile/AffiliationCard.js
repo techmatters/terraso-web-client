@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
@@ -16,15 +16,16 @@ import {
 import RouterLink from 'common/components/RouterLink';
 import Restricted from 'permissions/components/Restricted';
 
+import { PARTNERSHIP_STATUS_NO } from 'landscape/landscapeConstants';
 import { getTermLabel } from 'taxonomies/taxonomiesUtils';
 
 const Partnership = props => {
   const { t } = useTranslation();
   const {
-    landscape: { partnership },
+    landscape: { partnership, partnershipStatus },
   } = props;
 
-  if (!partnership) {
+  if (!partnership || partnershipStatus === PARTNERSHIP_STATUS_NO) {
     return null;
   }
 
@@ -115,8 +116,20 @@ const Organizations = props => {
   );
 };
 
-const AffiliationCard = ({ landscape }) => {
+const AffiliationCard = ({ landscape, setIsEmpty }) => {
   const { t } = useTranslation();
+
+  const isEmpty = useMemo(
+    () =>
+      _.isEmpty(_.get('taxonomyTerms.organization', landscape)) &&
+      _.isEmpty(landscape.affiliatedGroups) &&
+      (!landscape.partnership ||
+        landscape.partnershipStatus === PARTNERSHIP_STATUS_NO),
+    [landscape]
+  );
+  useEffect(() => {
+    setIsEmpty('affiliation', isEmpty);
+  }, [setIsEmpty, isEmpty]);
   return (
     <Card
       component="section"
@@ -139,6 +152,11 @@ const AffiliationCard = ({ landscape }) => {
           </Typography>
         }
       />
+      {isEmpty && (
+        <CardContent>
+          {t('landscape.profile_affiliation_card_empty')}
+        </CardContent>
+      )}
       <Partnership landscape={landscape} />
 
       <AffiliatedGroups landscape={landscape} />

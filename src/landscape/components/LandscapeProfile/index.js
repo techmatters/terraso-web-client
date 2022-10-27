@@ -1,6 +1,7 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import _ from 'lodash/fp';
+import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -26,6 +27,7 @@ import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMembe
 import { withProps } from 'react-hoc';
 
 import AffiliationCard from './AffiliationCard';
+import DevelopmentStrategyCard from './DevelopmentStrategyCard';
 import KeyInfoCard from './KeyInfoCard';
 import ProfileCard from './ProfileCard';
 
@@ -42,9 +44,26 @@ const LandscapeProfile = () => {
   const dispatch = useDispatch();
   const { landscape, fetching } = useSelector(state => state.landscape.profile);
   const { slug } = useParams();
+  const { loading: loadingPermissions, allowed } = usePermission(
+    'landscape.change',
+    landscape
+  );
+
+  const [isEmptySections, setIsEmptySections] = useState({
+    developmentStrategy: false,
+    affiliation: false,
+    profile: false,
+  });
+
+  const setSectionIsEmpty = useCallback((section, hasData) => {
+    setIsEmptySections(current => ({
+      ...current,
+      [section]: hasData,
+    }));
+  }, []);
 
   useDocumentTitle(
-    t('landscape.view_document_title', {
+    t('landscape.profile_document_title', {
       name: _.get('name', landscape),
     }),
     fetching
@@ -63,7 +82,7 @@ const LandscapeProfile = () => {
     dispatch(refreshLandscapeView(slug));
   }, [dispatch, slug]);
 
-  if (fetching) {
+  if (fetching || loadingPermissions) {
     return <PageLoader />;
   }
 
@@ -100,17 +119,35 @@ const LandscapeProfile = () => {
           <Grid item xs={12} md={6}>
             <Stack spacing={2} direction="column">
               <KeyInfoCard landscape={landscape} />
-              <AffiliationCard landscape={landscape} />
+              {(!isEmptySections.affiliation || allowed) && (
+                <AffiliationCard
+                  landscape={landscape}
+                  setIsEmpty={setSectionIsEmpty}
+                />
+              )}
             </Stack>
           </Grid>
-          <Grid
-            item
-            xs={12}
-            md={6}
-            style={{ display: 'flex', alignItems: 'flex-start' }}
-          >
-            <ProfileCard landscape={landscape} />
-          </Grid>
+          {(!isEmptySections.profile || allowed) && (
+            <Grid
+              item
+              xs={12}
+              md={6}
+              style={{ display: 'flex', alignItems: 'flex-start' }}
+            >
+              <ProfileCard
+                landscape={landscape}
+                setIsEmpty={setSectionIsEmpty}
+              />
+            </Grid>
+          )}
+          {(!isEmptySections.developmentStrategy || allowed) && (
+            <Grid item xs={12} md={12}>
+              <DevelopmentStrategyCard
+                landscape={landscape}
+                setIsEmpty={setSectionIsEmpty}
+              />
+            </Grid>
+          )}
         </Grid>
       </PageContainer>
     </GroupContextProvider>
