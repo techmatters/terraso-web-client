@@ -16,6 +16,7 @@ import { useAnalytics } from 'monitoring/analytics';
 import { useFetchData } from 'state/utils';
 
 import { fetchGroupsAutocompleteList } from 'group/groupSlice';
+import { PARTNERSHIP_STATUS_NO } from 'landscape/landscapeConstants';
 import { saveLandscape, setFormNewValues } from 'landscape/landscapeSlice';
 import {
   TYPE_COMMODITY,
@@ -42,11 +43,9 @@ const LandscapeNew = () => {
     _.get(`group.autocomplete`)
   );
 
-  const { saving, landscape, success } = useSelector(
-    state => state.landscape.form
-  );
+  const { saving, landscape } = useSelector(state => state.landscape.form);
   const [updatedLandscape, setUpdatedLandscape] = useState({
-    partnershipStatus: 'no',
+    partnershipStatus: PARTNERSHIP_STATUS_NO,
   });
 
   useDocumentTitle(t('landscape.form_new_document_title'));
@@ -54,6 +53,10 @@ const LandscapeNew = () => {
   useEffect(() => {
     dispatch(setFormNewValues());
   }, [dispatch]);
+
+  useEffect(() => {
+    setUpdatedLandscape(landscape);
+  }, [landscape]);
 
   useFetchData(
     useCallback(
@@ -79,21 +82,33 @@ const LandscapeNew = () => {
     [dispatch]
   );
 
-  useEffect(() => {
-    if (success) {
-      navigate(`/landscapes/${landscape.slug}`);
-    }
-  }, [success, landscape, navigate, dispatch]);
-
-  const onSave = async updatedLandscape => {
+  const onUpdate = async updatedLandscape => {
     setUpdatedLandscape(updatedLandscape);
-    return dispatch(saveLandscape(updatedLandscape)).then(() => {
-      trackEvent('Landscape created', {
-        props: {
-          option: updatedLandscape.boundaryOption,
-          country: updatedLandscape.location,
-        },
-      });
+    return dispatch(saveLandscape(updatedLandscape)).then(data => {
+      const success = _.get('meta.requestStatus', data) === 'fulfilled';
+      if (success) {
+        navigate(`/landscapes/${landscape.slug}`);
+        trackEvent('Landscape created - Optional Steps', {
+          props: {
+            option: updatedLandscape.boundaryOption,
+            country: updatedLandscape.location,
+          },
+        });
+      }
+    });
+  };
+
+  const onCreate = async updatedLandscape => {
+    setUpdatedLandscape(updatedLandscape);
+    return dispatch(saveLandscape(updatedLandscape)).then(data => {
+      const success = _.get('meta.requestStatus', data) === 'fulfilled';
+      if (success) {
+        trackEvent('Landscape created', {
+          props: {
+            country: updatedLandscape.location,
+          },
+        });
+      }
     });
   };
 
@@ -105,8 +120,9 @@ const LandscapeNew = () => {
           isNew
           landscape={updatedLandscape}
           setUpdatedLandscape={updatedLandscape => {
-            setUpdatedLandscape(updatedLandscape);
-            setActiveStepIndex(current => current + 1);
+            onCreate(updatedLandscape).then(() => {
+              setActiveStepIndex(current => current + 1);
+            });
           }}
         />
       ),
@@ -124,7 +140,7 @@ const LandscapeNew = () => {
             setUpdatedLandscape(updatedLandscape);
             setActiveStepIndex(current => current + 1);
           }}
-          onSave={onSave}
+          onSave={onUpdate}
           saveLabel={t('landscape.form_add_label')}
         />
       ),
@@ -140,7 +156,7 @@ const LandscapeNew = () => {
             setActiveStepIndex(current => current + 1);
           }}
           onCancel={() => setActiveStepIndex(current => current - 1)}
-          onSave={onSave}
+          onSave={onUpdate}
         />
       ),
     },
@@ -150,9 +166,9 @@ const LandscapeNew = () => {
         <AffiliationStep
           isNew
           landscape={updatedLandscape}
-          setUpdatedLandscape={onSave}
+          setUpdatedLandscape={onUpdate}
           onCancel={() => setActiveStepIndex(current => current - 1)}
-          onSave={onSave}
+          onSave={onUpdate}
         />
       ),
     },
