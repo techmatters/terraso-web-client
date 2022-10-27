@@ -43,7 +43,7 @@ const KeyInfoUpdate = () => {
 
   useEffect(() => {
     if (success && landscape.slug) {
-      navigate(`/landscapes/${landscape.slug}`);
+      navigate(`/landscapes/${landscape.slug}/profile`);
     }
   }, [success, landscape?.slug, navigate, dispatch]);
 

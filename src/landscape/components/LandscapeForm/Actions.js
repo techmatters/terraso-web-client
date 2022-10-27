@@ -15,22 +15,23 @@ const Actions = props => {
     setUpdatedLandscape,
     onSave,
     nextLabel,
+    isForm,
   } = props;
-  const { trigger } = useFormGetContext();
+  const formContext = useFormGetContext();
 
   const onNext = useCallback(async () => {
-    const success = await trigger?.();
+    const success = isForm ? await formContext.trigger?.() : true;
     if (success) {
       setUpdatedLandscape(updatedValues);
     }
-  }, [trigger, updatedValues, setUpdatedLandscape]);
+  }, [formContext, updatedValues, setUpdatedLandscape, isForm]);
 
   const onSaveWrapper = useCallback(async () => {
-    const success = await trigger?.();
+    const success = isForm ? await formContext.trigger?.() : true;
     if (success) {
       onSave(updatedValues);
     }
-  }, [trigger, updatedValues, onSave]);
+  }, [formContext, updatedValues, onSave, isForm]);
 
   if (isNew) {
     return (

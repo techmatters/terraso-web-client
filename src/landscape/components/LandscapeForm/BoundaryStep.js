@@ -36,6 +36,8 @@ import { scrollToNavBar } from 'navigation/scrollTo';
 
 import { LAYER_ESRI } from 'gis/components/Map';
 
+import Actions from './Actions';
+
 const OPTION_GEOJSON = 'geo-json';
 const OPTION_MAP_DRAW_POLYGON = 'map-draw-polygon';
 const OPTION_MAP_PIN = 'map-pin';
@@ -47,57 +49,39 @@ const POINT_FILTER = feature => _.get('geometry.type', feature) === 'Point';
 
 const GeoJson = props => {
   const { t } = useTranslation();
-  const { trackEvent } = useAnalytics();
   const {
     mapCenter,
     landscape,
     setOption,
     onSave,
-    saveLabel,
     areaPolygon,
     setAreaPolygon,
+    setUpdatedLandscape,
+    isNew,
   } = props;
 
-  const onSaveWrapper = () => {
-    onSave({
-      ...landscape,
-      areaPolygon,
-    }).then(() => {
-      // props.isNew is set when the landscape is being created
-      // otherwise it seems to be undefined
-      if (props.isNew) {
-        trackEvent('Landscape created', {
-          props: { option: OPTION_GEOJSON, country: landscape.location },
-        });
-      }
-    });
-  };
+  const updatedValues = useMemo(
+    () => ({ ...landscape, areaPolygon }),
+    [landscape, areaPolygon]
+  );
 
   return (
     <>
       <PageHeader header={t('landscape.form_boundary_geojson_title')} />
-      <Paper variant="outlined" sx={{ padding: 2, marginTop: 2 }}>
+      <Paper variant="outlined" sx={{ p: 2, mt: 2, mb: 2 }}>
         <LandscapeGeoJsonBoundaries
           mapCenter={mapCenter}
           areaPolygon={areaPolygon || landscape?.areaPolygon}
           onFileSelected={setAreaPolygon}
         />
       </Paper>
-      <Stack direction="row" justifyContent="space-between">
-        <Button
-          sx={{ marginTop: 2 }}
-          onClick={() => setOption(OPTION_SELECT_OPTIONS)}
-        >
-          {t('landscape.form_boundary_options_back')}
-        </Button>
-        <Button
-          variant="contained"
-          sx={{ marginTop: 2 }}
-          onClick={onSaveWrapper}
-        >
-          {saveLabel}
-        </Button>
-      </Stack>
+      <Actions
+        isNew={isNew}
+        onCancel={() => setOption(OPTION_SELECT_OPTIONS)}
+        onSave={onSave}
+        updatedValues={updatedValues}
+        setUpdatedLandscape={setUpdatedLandscape}
+      />
     </>
   );
 };
@@ -113,10 +97,10 @@ const MapDrawPolygon = props => {
     saveLabel,
     areaPolygon,
     setAreaPolygon,
+    setUpdatedLandscape,
   } = props;
   const [editHelp, setEditHelp] = useState(false);
   const [open, setOpen] = useState(false);
-  const { trackEvent } = useAnalytics();
 
   const onPolygonChange = useCallback(() => {
     setOpen(true);
@@ -128,21 +112,10 @@ const MapDrawPolygon = props => {
     setEditHelp(false);
   }, [setEditHelp]);
 
-  const onSaveWrapper = () => {
-    onSave({
-      ...landscape,
-      areaPolygon,
-    }).then(() => {
-      if (props.isNew) {
-        trackEvent('Landscape created', {
-          props: {
-            option: OPTION_MAP_DRAW_POLYGON,
-            country: landscape.location,
-          },
-        });
-      }
-    });
-  };
+  const updatedValues = useMemo(
+    () => ({ ...landscape, areaPolygon }),
+    [landscape, areaPolygon]
+  );
 
   const drawOptions = useMemo(
     () => ({
@@ -207,7 +180,7 @@ const MapDrawPolygon = props => {
         component={Stack}
         spacing={2}
         variant="outlined"
-        sx={{ padding: 2, marginTop: 2 }}
+        sx={{ p: 2, mt: 2, mb: 2 }}
       >
         <Trans i18nKey="landscape.form_boundary_draw_polygon_description">
           <Typography>
@@ -247,21 +220,13 @@ const MapDrawPolygon = props => {
           {t('landscape.form_boundary_draw_polygon_help')}
         </ExternalLink>
       </Paper>
-      <Stack direction="row" justifyContent="space-between">
-        <Button
-          sx={{ marginTop: 2 }}
-          onClick={() => setOption(OPTION_SELECT_OPTIONS)}
-        >
-          {t('landscape.form_boundary_options_back')}
-        </Button>
-        <Button
-          variant="contained"
-          sx={{ marginTop: 2 }}
-          onClick={onSaveWrapper}
-        >
-          {saveLabel}
-        </Button>
-      </Stack>
+      <Actions
+        isNew={isNew}
+        onCancel={() => setOption(OPTION_SELECT_OPTIONS)}
+        onSave={onSave}
+        updatedValues={updatedValues}
+        setUpdatedLandscape={setUpdatedLandscape}
+      />
     </>
   );
 };
@@ -273,30 +238,22 @@ const MapPin = props => {
     boundingBox,
     setOption,
     onSave,
-    saveLabel,
+    setUpdatedLandscape,
     areaPolygon,
     setAreaPolygon,
+    isNew,
   } = props;
-  const { trackEvent } = useAnalytics();
 
-  const onSaveWrapper = () => {
-    onSave({
-      ...landscape,
-      areaPolygon,
-    }).then(() => {
-      if (props.isNew) {
-        trackEvent('Landscape created', {
-          props: { option: OPTION_MAP_PIN, country: landscape.location },
-        });
-      }
-    });
-  };
+  const updatedValues = useMemo(
+    () => ({ ...landscape, areaPolygon }),
+    [landscape, areaPolygon]
+  );
 
   return (
     <>
       <PageHeader header={t('landscape.form_boundary_pin_title')} />
       <Typography>{t('landscape.form_boundary_pin_description')}</Typography>
-      <Paper variant="outlined" sx={{ padding: 2, marginTop: 2 }}>
+      <Paper variant="outlined" sx={{ p: 2, mt: 2, mb: 2 }}>
         <LandscapeMap
           enableSearch
           enableDraw
@@ -307,28 +264,20 @@ const MapPin = props => {
           drawOptions={{ marker: true }}
         />
       </Paper>
-      <Stack direction="row" justifyContent="space-between">
-        <Button
-          sx={{ marginTop: 2 }}
-          onClick={() => setOption(OPTION_SELECT_OPTIONS)}
-        >
-          {t('landscape.form_boundary_options_back')}
-        </Button>
-        <Button
-          variant="contained"
-          sx={{ marginTop: 2 }}
-          onClick={onSaveWrapper}
-        >
-          {saveLabel}
-        </Button>
-      </Stack>
+      <Actions
+        isNew={isNew}
+        onCancel={() => setOption(OPTION_SELECT_OPTIONS)}
+        onSave={onSave}
+        updatedValues={updatedValues}
+        setUpdatedLandscape={setUpdatedLandscape}
+      />
     </>
   );
 };
 
 const BoundaryOptions = props => {
   const { t } = useTranslation();
-  const { landscape, setOption, onSkip, onCancel, title } = props;
+  const { landscape, setOption, onCancel, title, onSave } = props;
 
   const { trackEvent } = useAnalytics();
 
@@ -338,7 +287,7 @@ const BoundaryOptions = props => {
   };
 
   const saveWithoutBoundary = async () => {
-    await save(landscape);
+    await onSave(landscape);
     if (props.isNew) {
       trackEvent('Landscape created', {
         props: { option: OPTION_SKIP_BOUNDARY, country: landscape.location },
@@ -431,11 +380,12 @@ const getOptionComponent = option => {
 };
 
 const BoundaryStep = props => {
+  const { trackEvent } = useAnalytics();
   const [option, setOption] = useState(OPTION_SELECT_OPTIONS);
   const [boundingBox, setBoundingBox] = useState();
   const isMounted = useIsMounted();
   const OptionComponent = getOptionComponent(option);
-  const { landscape } = props;
+  const { landscape, onSave, isNew } = props;
   const [areaPolygon, setAreaPolygon] = useState(landscape.areaPolygon);
 
   useEffect(() => {
@@ -456,6 +406,19 @@ const BoundaryStep = props => {
     }
   }, [landscape, isMounted]);
 
+  const onSaveWrapper = useCallback(
+    updatedValues => {
+      onSave(updatedValues).then(() => {
+        if (isNew) {
+          trackEvent('Landscape created', {
+            props: { option, country: landscape.location },
+          });
+        }
+      });
+    },
+    [onSave, trackEvent, landscape.location, isNew, option]
+  );
+
   return (
     <OptionComponent
       boundingBox={boundingBox}
@@ -463,6 +426,7 @@ const BoundaryStep = props => {
       areaPolygon={areaPolygon}
       setAreaPolygon={setAreaPolygon}
       {...props}
+      onSave={onSaveWrapper}
     />
   );
 };

@@ -3,8 +3,9 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
+import EmailIcon from '@mui/icons-material/Email';
 import LaunchIcon from '@mui/icons-material/Launch';
 import PublicIcon from '@mui/icons-material/Public';
 import {
@@ -23,6 +24,7 @@ import {
 
 import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
+import RouterLink from 'common/components/RouterLink';
 import SocialShare from 'common/components/SocialShare.js';
 import { useDocumentTitle } from 'common/document';
 import { countryNameForCode } from 'common/utils';
@@ -48,6 +50,8 @@ import SharedDataCard from 'sharedData/components/SharedDataCard';
 
 import { withProps } from 'react-hoc';
 
+import { Partnership } from './LandscapeProfile/AffiliationCard';
+
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
@@ -58,7 +62,34 @@ const MemberJoinButton = withProps(GroupMemberJoin, {
   label: 'landscape.view_join_label',
 });
 
-const LandscapeCard = ({ landscape }) => {
+const Affiliation = props => {
+  const { t } = useTranslation();
+  const { landscape } = props;
+
+  const {
+    landscape: { partnership, partnershipStatus },
+  } = props;
+
+  if (!partnership || partnershipStatus === 'no') {
+    return null;
+  }
+
+  return (
+    <>
+      <CardHeader
+        disableTypography
+        title={
+          <Typography variant="h2">
+            {t('landscape.profile_affiliation_card_title')}
+          </Typography>
+        }
+      />
+      <Partnership landscape={landscape} />
+    </>
+  );
+};
+
+const LandscapeAboutCard = ({ landscape }) => {
   const { t } = useTranslation();
   return (
     <Card
@@ -84,7 +115,13 @@ const LandscapeCard = ({ landscape }) => {
           {landscape.description}
         </Typography>
       </CardContent>
-      <CardContent sx={{ display: 'flex', flexGrow: 1 }}>
+      <CardContent component={Stack} sx={{ display: 'flex', flexGrow: 1 }}>
+        {landscape.email && (
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+            <EmailIcon sx={{ color: 'gray.lite1' }} />
+            <Link href={`mailto:${landscape.email}`}>{landscape.email}</Link>
+          </Stack>
+        )}
         {landscape.website && (
           <Stack direction="row" alignItems="center" spacing={1}>
             <PublicIcon sx={{ color: 'gray.lite1' }} />
@@ -98,16 +135,11 @@ const LandscapeCard = ({ landscape }) => {
           </Stack>
         )}
       </CardContent>
+      <Affiliation landscape={landscape} />
       <CardContent>
-        <Restricted permission="landscape.change" resource={landscape}>
-          <Button
-            variant="outlined"
-            component={RouterLink}
-            to={`/landscapes/${landscape.slug}/edit`}
-          >
-            {t('landscape.view_update_button')}
-          </Button>
-        </Restricted>
+        <RouterLink to={`/landscapes/${landscape.slug}/profile`}>
+          {t('landscape.view_card_title_profile_link')}
+        </RouterLink>
       </CardContent>
     </Card>
   );
@@ -297,9 +329,14 @@ const LandscapeView = () => {
             </Card>
           </Grid>
           <Grid item xs={12} md={6} style={{ display: 'flex' }}>
-            <LandscapeCard landscape={landscape} />
+            <LandscapeAboutCard landscape={landscape} />
           </Grid>
-          <Grid item xs={12} md={6} style={{ display: 'flex' }}>
+          <Grid
+            item
+            xs={12}
+            md={6}
+            style={{ display: 'flex', alignItems: 'flex-start' }}
+          >
             <GroupMembershipCard
               onViewMembers={() =>
                 navigate(`/landscapes/${landscape.slug}/members`)

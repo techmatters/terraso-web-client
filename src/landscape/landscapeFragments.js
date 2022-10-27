@@ -8,6 +8,7 @@ export const landscapeFields = `
     name
     location
     description
+    email
     website
     areaPolygon
   }
@@ -51,6 +52,24 @@ export const landscapeProfileFields = `
     }
   }
   ${taxonomyTermLanguages}
+`;
+
+export const landscapePartnershipField = `
+  fragment landscapePartnershipField on LandscapeNode {
+    partnershipStatus
+    associatedGroups(isPartnership:true) {
+      edges {
+        node {
+          isPartnership
+          partnershipYear
+          group {
+            slug
+            name
+          }
+        }
+      }
+    } 
+  }
 `;
 
 export const defaultGroup = `
