@@ -47,7 +47,7 @@ beforeEach(() => {
 
 const testSelectDataFileStep = async () => {
   const filesList = within(
-    screen.getByRole('list', { name: 'Select a Data File' })
+    screen.getByRole('list', { name: 'Data File' })
   );
   const nextButton = screen.getByRole('button', { name: 'Next' });
 
@@ -93,7 +93,7 @@ const changeSelectOption = async (name, newValue) => {
 
 const testSetDatasetStep = async () => {
   await waitFor(() =>
-    expect(screen.getByRole('heading', { name: 'Select Data from “File 1”' }))
+    expect(screen.getByRole('heading', { name: 'Data from “File 1”' }))
   );
 
   await changeSelectOption('Latitude (required)', 'col3');
