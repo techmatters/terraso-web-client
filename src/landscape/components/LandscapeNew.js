@@ -94,7 +94,9 @@ const LandscapeNew = () => {
             country: updatedLandscape.location,
           },
         });
+        return;
       }
+      return Promise.reject();
     });
   };
 
@@ -108,7 +110,9 @@ const LandscapeNew = () => {
             country: updatedLandscape.location,
           },
         });
+        return;
       }
+      return Promise.reject();
     });
   };
 
@@ -134,7 +138,7 @@ const LandscapeNew = () => {
           isNew
           title={t('landscape.form_boundary_pin_title')}
           landscape={updatedLandscape}
-          onCancel={() => setActiveStepIndex(current => current - 1)}
+          onCancel={() => navigate(`/landscapes/${landscape.slug}`)}
           onSkip={() => setActiveStepIndex(current => current + 1)}
           setUpdatedLandscape={updatedLandscape => {
             setUpdatedLandscape(updatedLandscape);
