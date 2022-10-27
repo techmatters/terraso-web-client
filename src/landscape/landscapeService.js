@@ -12,7 +12,11 @@ import { extractTerms } from 'taxonomies/taxonomiesUtils';
 import * as terrasoApi from 'terrasoBackend/api';
 
 import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
-import { extractAffiliatedGroups, extractPartnership } from './landscapeUtils';
+import {
+  extractAffiliatedGroups,
+  extractDevelopmentStrategy,
+  extractPartnership,
+} from './landscapeUtils';
 
 const cleanLandscape = landscape =>
   _.flow(
@@ -29,26 +33,15 @@ const cleanLandscape = landscape =>
       'partnershipStatus',
       'partnership',
       'affiliatedGroups',
+      'developmentStrategy',
     ]),
-    _.toPairs,
-    _.map(([key, value]) => {
-      const jsonFields = ['areaPolygon', 'areaTypes', 'taxonomyTypeTerms'];
-      if (_.includes(key, jsonFields)) {
-        return [key, value ? JSON.stringify(value) : null];
-      }
-      if (key === 'population' && _.isEmpty(value)) {
-        return [key, null];
-      }
-      return [key, value];
-    }),
-    _.fromPairs,
     _.cloneWith(landscape => {
       const partnershipGroups =
         landscape.partnership && _.get('partnership.group.slug', landscape)
           ? [
               {
                 slug: landscape.partnership.group.slug,
-                partnershipYear: landscape.partnership.year,
+                partnershipYear: landscape.partnership.year || null,
                 isPartnership: true,
               },
             ]
@@ -61,19 +54,34 @@ const cleanLandscape = landscape =>
         ) {
           return {
             ..._.omit(['partnership', 'affiliatedGroups'], landscape),
-            groupAssociations: '[]',
+            groupAssociations: [],
           };
         }
         return landscape;
       }
       return {
         ..._.omit(['partnership', 'affiliatedGroups'], landscape),
-        groupAssociations: JSON.stringify([
-          ...partnershipGroups,
-          ...affiliatedGroups,
-        ]),
+        groupAssociations: [...partnershipGroups, ...affiliatedGroups],
       };
-    })
+    }),
+    _.toPairs,
+    _.map(([key, value]) => {
+      const jsonFields = [
+        'areaPolygon',
+        'areaTypes',
+        'taxonomyTypeTerms',
+        'developmentStrategy',
+        'groupAssociations',
+      ];
+      if (_.includes(key, jsonFields)) {
+        return [key, value ? JSON.stringify(value) : null];
+      }
+      if (key === 'population' && _.isEmpty(value)) {
+        return [key, null];
+      }
+      return [key, value];
+    }),
+    _.fromPairs
   )(landscape);
 
 export const fetchLandscapeToUpdate = slug => {
@@ -101,6 +109,7 @@ export const fetchLandscapeToUpdate = slug => {
       partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
       partnership: extractPartnership(landscape),
       affiliatedGroups: extractAffiliatedGroups(landscape),
+      developmentStrategy: extractDevelopmentStrategy(landscape),
       areaPolygon: landscape.areaPolygon
         ? JSON.parse(landscape.areaPolygon)
         : null,
@@ -188,6 +197,7 @@ export const fetchLandscapeProfile = (slug, currentUser) => {
       partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
       partnership: extractPartnership(landscape),
       affiliatedGroups: extractAffiliatedGroups(landscape),
+      developmentStrategy: extractDevelopmentStrategy(landscape),
     }));
 };
 

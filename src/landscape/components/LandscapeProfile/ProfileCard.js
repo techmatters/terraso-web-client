@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
@@ -14,11 +14,11 @@ import { getTermLabel } from 'taxonomies/taxonomiesUtils';
 const FIELDS = [
   {
     label: 'landscape.profile_profile_card_location_label',
-    customValue: landscape => countryNameForCode(landscape.location)?.name,
+    getValue: landscape => countryNameForCode(landscape.location)?.name,
   },
   {
     label: 'landscape.profile_profile_card_area_types_label',
-    customValue: (landscape, { t }) =>
+    getValue: (landscape, { t }) =>
       _.isEmpty(landscape.areaTypes)
         ? null
         : landscape.areaTypes
@@ -29,26 +29,26 @@ const FIELDS = [
   },
   {
     label: 'landscape.profile_profile_card_ecosystem_types_label',
-    customValue: (landscape, { i18n }) =>
+    getValue: (landscape, { i18n }) =>
       getTermsList('ecosystem-type', landscape, i18n),
   },
   {
     label: 'landscape.profile_profile_card_languages_label',
-    customValue: (landscape, { i18n }) =>
+    getValue: (landscape, { i18n }) =>
       getTermsList('language', landscape, i18n),
   },
   {
-    path: 'population',
     label: 'landscape.profile_profile_card_population_label',
+    getValue: landscape => landscape.population,
   },
   {
     label: 'landscape.profile_profile_card_livelihoods_label',
-    customValue: (landscape, { i18n }) =>
+    getValue: (landscape, { i18n }) =>
       getTermsList('livelihood', landscape, i18n),
   },
   {
     label: 'landscape.profile_profile_card_commodities_label',
-    customValue: (landscape, { i18n }) =>
+    getValue: (landscape, { i18n }) =>
       getTermsList('commodity', landscape, i18n),
   },
 ];
@@ -61,13 +61,7 @@ const getTermsList = (type, landscape, i18n) =>
         .join(', ');
 
 const ProfileField = props => {
-  const translation = useTranslation();
-  const { path, label, landscape, customValue } = props;
-
-  const value = useMemo(
-    () => (customValue ? customValue(landscape, translation) : landscape[path]),
-    [customValue, landscape, path, translation]
-  );
+  const { label, value } = props;
 
   if (!value) {
     return null;
@@ -92,8 +86,23 @@ const ProfileField = props => {
 };
 
 const ProfileCard = props => {
-  const { t } = useTranslation();
-  const { landscape } = props;
+  const { t, i18n } = useTranslation();
+  const { landscape, setIsEmpty } = props;
+
+  const values = useMemo(
+    () =>
+      _.fromPairs(
+        FIELDS.map((field, index) => [
+          index,
+          field.getValue(landscape, { t, i18n }),
+        ]).filter(([index, value]) => !!value)
+      ),
+    [landscape, t, i18n]
+  );
+
+  useEffect(() => {
+    setIsEmpty('profile', _.isEmpty(values));
+  }, [setIsEmpty, values]);
 
   return (
     <Card
@@ -106,15 +115,18 @@ const ProfileCard = props => {
         width: '100%',
       }}
     >
+      {_.isEmpty(values) && (
+        <CardContent sx={{ mt: 2 }}>
+          {t('landscape.profile_profile_card_empty')}
+        </CardContent>
+      )}
       <CardContent sx={{ display: 'flex', flexGrow: 1 }}>
         <Grid container spacing={2} sx={{ pt: 2, pl: 2, pr: 2 }}>
           {FIELDS.map((field, index) => (
             <ProfileField
               key={index}
-              path={field.path}
               label={t(field.label)}
-              customValue={field.customValue}
-              landscape={landscape}
+              value={values[index]}
             />
           ))}
         </Grid>

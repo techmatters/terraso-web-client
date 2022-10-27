@@ -119,7 +119,7 @@ const Form = props => {
           .map(field =>
             field.renderStaticElement ? (
               <React.Fragment key={field.name}>
-                {field.renderStaticElement()}
+                {field.renderStaticElement({ t })}
               </React.Fragment>
             ) : (
               <Grid
@@ -140,13 +140,13 @@ const Form = props => {
                       id={`${prefix}-${field.name}`}
                       label={field.label}
                       info={field.info}
+                      localizationPrefix={localizationPrefix}
+                      {..._.getOr({}, 'props', field)}
                       inputProps={{
                         type: field.type || 'text',
                         placeholder: t(field.placeholder),
                         ..._.getOr({}, 'props.inputProps', field),
                       }}
-                      localizationPrefix={localizationPrefix}
-                      {..._.getOr({}, 'props', field)}
                     />
                   )}
                 />
