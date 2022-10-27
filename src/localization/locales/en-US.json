@@ -385,7 +385,7 @@
         "form_step_annotate_annotation_title_empty_option": "No title",
         "form_step_annotate_data_points_label": "Data",
         "form_step_annotate_data_points_description": "Customize the names of the labels. Drag to reorder the columns.",
-        "form_step_data_file_step_title": "Data File",
+        "form_step_data_file_step_title": "Archivo de datos",
         "form_step_data_file_step_description": "<0>Files can be used to make a map if they:</0><1><0>are Excel or CSV files </0><1>contain a column with latitude and a column with longitude information</1></1><2>Only the first tab of an Excel file will be used. Read more about how to <1>prepare your data file for mapping</1>.</2>",
         "form_step_data_file_step_description_help_url": "https://terraso.org/help/prepare-your-data-file-for-mapping/",
         "form_step_set_dataset_step_title": "Data from “{{selectedFile.name}}”",
