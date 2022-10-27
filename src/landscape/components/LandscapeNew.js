@@ -12,6 +12,7 @@ import Stepper from 'common/components/Stepper';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
+import { useAnalytics } from 'monitoring/analytics';
 import { useFetchData } from 'state/utils';
 
 import { fetchGroupsAutocompleteList } from 'group/groupSlice';
@@ -33,6 +34,7 @@ const LandscapeNew = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { trackEvent } = useAnalytics();
   const { fetching: fetchingTaxonomyTerms = true } = useSelector(
     _.getOr({}, `taxonomies.terms.${TYPE_ECOSYSTEM_TYPE}`)
   );
@@ -85,7 +87,14 @@ const LandscapeNew = () => {
 
   const onSave = async updatedLandscape => {
     setUpdatedLandscape(updatedLandscape);
-    return dispatch(saveLandscape(updatedLandscape));
+    return dispatch(saveLandscape(updatedLandscape)).then(() => {
+      trackEvent('Landscape created', {
+        props: {
+          option: updatedLandscape.boundaryOption,
+          country: updatedLandscape.location,
+        },
+      });
+    });
   };
 
   const steps = [
