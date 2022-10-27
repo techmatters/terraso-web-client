@@ -19,7 +19,7 @@ import Restricted from 'permissions/components/Restricted';
 import { PARTNERSHIP_STATUS_NO } from 'landscape/landscapeConstants';
 import { getTermLabel } from 'taxonomies/taxonomiesUtils';
 
-const Partnership = props => {
+export const Partnership = props => {
   const { t } = useTranslation();
   const {
     landscape: { partnership, partnershipStatus },

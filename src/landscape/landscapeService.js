@@ -6,6 +6,7 @@ import { extractAccountMembership, extractMembersInfo } from 'group/groupUtils';
 import {
   defaultGroup,
   landscapeFields,
+  landscapePartnershipField,
   landscapeProfileFields,
 } from 'landscape/landscapeFragments';
 import { extractTerms } from 'taxonomies/taxonomiesUtils';
@@ -25,6 +26,7 @@ const cleanLandscape = landscape =>
       'name',
       'description',
       'website',
+      'email',
       'location',
       'areaPolygon',
       'areaTypes',
@@ -131,12 +133,14 @@ export const fetchLandscapeToView = (slug, currentUser) => {
         edges {
           node {
             ...landscapeFields
+            ...landscapePartnershipField
             ...defaultGroup
           }
         }
       }
     }
     ${landscapeFields}
+    ${landscapePartnershipField}
     ${defaultGroup}
   `;
   return terrasoApi
@@ -152,6 +156,8 @@ export const fetchLandscapeToView = (slug, currentUser) => {
       areaPolygon: landscape.areaPolygon
         ? JSON.parse(landscape.areaPolygon)
         : null,
+      partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
+      partnership: extractPartnership(landscape),
     }))
     .then(landscape => {
       if (landscape.areaPolygon || !landscape.location) {

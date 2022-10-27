@@ -196,6 +196,7 @@ const AffiliationStep = props => {
         }}
       />
       <Actions
+        isForm
         isNew={isNew}
         onCancel={onCancel}
         onSave={onSave}

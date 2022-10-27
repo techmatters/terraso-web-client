@@ -111,10 +111,11 @@ const LandscapeNew = () => {
           landscape={updatedLandscape}
           onCancel={() => setActiveStepIndex(current => current - 1)}
           onSkip={() => setActiveStepIndex(current => current + 1)}
-          onSave={updatedLandscape => {
+          setUpdatedLandscape={updatedLandscape => {
             setUpdatedLandscape(updatedLandscape);
             setActiveStepIndex(current => current + 1);
           }}
+          onSave={onSave}
           saveLabel={t('landscape.form_add_label')}
         />
       ),
