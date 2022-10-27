@@ -32,7 +32,7 @@ const ValueSection = props => {
   return (
     <CardContent>
       <Typography variant="h3">
-        {t(`landscape.development_card_${field}_title`)}
+        {t(`landscape.profile_development_card_${field}_title`)}
       </Typography>
       <Typography sx={{ mt: 1, whiteSpace: 'pre-wrap' }}>{value}</Typography>
     </CardContent>
@@ -74,15 +74,17 @@ const DevelopmentStrategyCard = ({ landscape, setIsEmpty }) => {
         disableTypography
         title={
           <Typography variant="h2" id="landscape-development-card-title">
-            {t('landscape.development_card_update_title', {
+            {t('landscape.profile_development_card_update_title', {
               name: landscape.name,
             })}
           </Typography>
         }
       />
-      {_.isEmpty(values) ? (
-        <CardContent>{t('landscape.development_card_empty')}</CardContent>
-      ) : null}
+      {_.isEmpty(values) && (
+        <CardContent>
+          {t('landscape.profile_development_card_empty')}
+        </CardContent>
+      )}
       {Object.keys(values).map(field => (
         <ValueSection
           key={field}
@@ -98,7 +100,7 @@ const DevelopmentStrategyCard = ({ landscape, setIsEmpty }) => {
             component={RouterLink}
             to={`/landscapes/${landscape.slug}/development-strategy/edit`}
           >
-            {t('landscape.development_update_button')}
+            {t('landscape.profile_development_update_button')}
           </Button>
         </Restricted>
       </CardContent>

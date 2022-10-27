@@ -115,6 +115,11 @@ const ProfileCard = props => {
         width: '100%',
       }}
     >
+      {_.isEmpty(values) && (
+        <CardContent sx={{ mt: 2 }}>
+          {t('landscape.profile_profile_card_empty')}
+        </CardContent>
+      )}
       <CardContent sx={{ display: 'flex', flexGrow: 1 }}>
         <Grid container spacing={2} sx={{ pt: 2, pl: 2, pr: 2 }}>
           {FIELDS.map((field, index) => (

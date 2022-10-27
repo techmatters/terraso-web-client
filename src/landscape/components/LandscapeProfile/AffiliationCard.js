@@ -150,6 +150,11 @@ const AffiliationCard = ({ landscape, setIsEmpty }) => {
           </Typography>
         }
       />
+      {isEmpty && (
+        <CardContent>
+          {t('landscape.profile_affiliation_card_empty')}
+        </CardContent>
+      )}
       <Partnership landscape={landscape} />
 
       <AffiliatedGroups landscape={landscape} />
