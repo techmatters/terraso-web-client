@@ -22,7 +22,6 @@ import {
 import ExternalLink from 'common/components/ExternalLink';
 import { countryNameForCode } from 'common/utils';
 import PageHeader from 'layout/PageHeader';
-import { useAnalytics } from 'monitoring/analytics';
 
 import { getPlaceInfoByName } from 'gis/gisService';
 import LandscapeGeoJsonBoundaries from 'landscape/components/LandscapeGeoJsonBoundaries';
@@ -277,22 +276,11 @@ const MapPin = props => {
 
 const BoundaryOptions = props => {
   const { t } = useTranslation();
-  const { landscape, setOption, onCancel, title, onSave } = props;
-
-  const { trackEvent } = useAnalytics();
+  const { landscape, setOption, onCancel, title, setUpdatedLandscape } = props;
 
   const onOptionClick = option => () => {
     option.onClick();
     scrollToNavBar();
-  };
-
-  const saveWithoutBoundary = async () => {
-    await onSave(landscape);
-    if (props.isNew) {
-      trackEvent('Landscape created', {
-        props: { option: OPTION_SKIP_BOUNDARY, country: landscape.location },
-      });
-    }
   };
 
   const options = [
@@ -314,7 +302,11 @@ const BoundaryOptions = props => {
     {
       Icon: ArrowRightAltIcon,
       label: 'landscape.form_boundary_options_skip',
-      onClick: saveWithoutBoundary,
+      onClick: () =>
+        setUpdatedLandscape({
+          ...landscape,
+          boundaryOption: OPTION_SKIP_BOUNDARY,
+        }),
     },
   ];
 
@@ -380,12 +372,11 @@ const getOptionComponent = option => {
 };
 
 const BoundaryStep = props => {
-  const { trackEvent } = useAnalytics();
   const [option, setOption] = useState(OPTION_SELECT_OPTIONS);
   const [boundingBox, setBoundingBox] = useState();
   const isMounted = useIsMounted();
   const OptionComponent = getOptionComponent(option);
-  const { landscape, onSave, isNew } = props;
+  const { landscape, onSave, setUpdatedLandscape } = props;
   const [areaPolygon, setAreaPolygon] = useState(landscape.areaPolygon);
 
   useEffect(() => {
@@ -408,15 +399,16 @@ const BoundaryStep = props => {
 
   const onSaveWrapper = useCallback(
     updatedValues => {
-      onSave(updatedValues).then(() => {
-        if (isNew) {
-          trackEvent('Landscape created', {
-            props: { option, country: landscape.location },
-          });
-        }
-      });
+      onSave({ boundaryOption: option, ...updatedValues });
     },
-    [onSave, trackEvent, landscape.location, isNew, option]
+    [onSave, option]
+  );
+
+  const setUpdatedLandscapeWrapper = useCallback(
+    updatedValues => {
+      setUpdatedLandscape({ boundaryOption: option, ...updatedValues });
+    },
+    [setUpdatedLandscape, option]
   );
 
   return (
@@ -427,6 +419,7 @@ const BoundaryStep = props => {
       setAreaPolygon={setAreaPolygon}
       {...props}
       onSave={onSaveWrapper}
+      setUpdatedLandscape={setUpdatedLandscapeWrapper}
     />
   );
 };
