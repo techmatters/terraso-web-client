@@ -39,6 +39,16 @@ export const landscapeProfileFields = `
         }
       }
     }
+    associatedDevelopmentStrategy {
+      edges {
+        node {
+          objectives
+          problemSitutation
+          interventionStrategy
+          otherInformation
+        }
+      }
+    }
   }
   ${taxonomyTermLanguages}
 `;

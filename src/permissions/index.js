@@ -16,7 +16,9 @@ export const PermissionsProvider = ({ rules, children }) => {
       permission,
       rules
     );
-    return ruleResolver({ user, resource });
+    return !resource
+      ? Promise.resolve(false)
+      : ruleResolver({ user, resource });
   };
 
   return (
