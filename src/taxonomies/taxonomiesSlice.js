@@ -6,7 +6,10 @@ import { createAsyncThunk } from 'state/utils';
 import * as taxonomiesService from 'taxonomies/taxonomiesService';
 
 const initialState = {
-  terms: {},
+  terms: {
+    fetching: true,
+    values: {},
+  },
 };
 
 export const fetchTermsForTypes = createAsyncThunk(
@@ -23,31 +26,36 @@ const taxonomiesSlice = createSlice({
       ...state,
       terms: {
         ...state.terms,
-        ..._.flow(
-          _.map(type => [type, { fetching: true }]),
-          _.fromPairs
-        )(action.meta.arg.types),
+        fetching: true,
       },
     }),
     [fetchTermsForTypes.fulfilled]: (state, action) => ({
       ...state,
       terms: {
         ...state.terms,
-        ..._.flow(
-          _.toPairs,
-          _.map(([type, list]) => [type, { list, fetching: false }]),
-          _.fromPairs
-        )(action.payload),
+        fetching: false,
+        values: {
+          ...state.terms.values,
+          ..._.flow(
+            _.toPairs,
+            _.map(([type, list]) => [type, { list }]),
+            _.fromPairs
+          )(action.payload),
+        },
       },
     }),
     [fetchTermsForTypes.rejected]: (state, action) => ({
       ...state,
       form: {
         ...state.terms,
-        ..._.flow(
-          _.map(type => [type, { fetching: false, error: true }]),
-          _.fromPairs
-        )(action.meta.arg.types),
+        fetching: false,
+        values: {
+          ...state.terms.values,
+          ..._.flow(
+            _.map(type => [type, { error: true }]),
+            _.fromPairs
+          )(action.meta.arg.types),
+        },
       },
     }),
   },

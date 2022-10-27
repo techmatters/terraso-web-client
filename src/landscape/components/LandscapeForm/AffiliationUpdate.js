@@ -29,7 +29,7 @@ const AffiliationUpdate = () => {
     state => state.landscape.form
   );
   const { fetching: fetchingTaxonomies = true } = useSelector(
-    _.getOr({}, `taxonomies.terms.${TYPE_ORGANIZATION}`)
+    _.getOr({}, `taxonomies.terms`)
   );
   const { fetching: fetchingGroupsList } = useSelector(
     _.get(`group.autocomplete`)

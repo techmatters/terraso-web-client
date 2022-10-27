@@ -32,7 +32,7 @@ const ProfileUpdate = () => {
     state => state.landscape.form
   );
   const { fetching: fetchingTaxonomies = true } = useSelector(
-    _.getOr({}, `taxonomies.terms.${TYPE_ECOSYSTEM_TYPE}`)
+    _.getOr({}, 'taxonomies.terms')
   );
 
   const onSave = updatedLandscape => {
