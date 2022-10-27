@@ -391,7 +391,7 @@
         "form_development_other_information": "Other relevant general information",
         "form_development_other_information_placeholder": "Enter other information",
         "profile_development_card_update_title": "Goals and Strategy",
-        "profile_development_card_empty": "[TBD] UC: no data found, display a nudge message.  e.g. Share the landscape’s shared vision and strategy, so others can learn from your landscape",
+        "profile_development_card_empty": "[TODO] UC: no data found, display a nudge message.  e.g. Share the landscape’s shared vision and strategy, so others can learn from your landscape",
         "profile_development_card_objectives_title": "Landscape (sustainable) development objectives",
         "profile_development_card_problemSitutation_title": "Landscape problem situation",
         "profile_development_card_interventionStrategy_title": "Landscape intervention strategy",
