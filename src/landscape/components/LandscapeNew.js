@@ -138,7 +138,7 @@ const LandscapeNew = () => {
           isNew
           title={t('landscape.form_boundary_pin_title')}
           landscape={updatedLandscape}
-          onCancel={() => navigate(`/landscapes/${landscape.slug}`)}
+          onCancel={() => setActiveStepIndex(current => current - 1)}
           onSkip={() => setActiveStepIndex(current => current + 1)}
           setUpdatedLandscape={updatedLandscape => {
             setUpdatedLandscape(updatedLandscape);
