@@ -41,16 +41,11 @@ const VALIDATION_SCHEMA = yup
 
 const FORM_FIELDS = [
   {
-    name: 'areaTypes',
-    label: 'landscape.form_profile_area_types',
-    props: {
-      renderInput: ({ id, field }) => <AreaTypesCheckboxes field={field} />,
-    },
+    name: 'areatypes-info',
+    renderStaticElement: () => <AreaTypesInfo />,
   },
   {
-    name: 'taxonomyTypeTerms.ecosystem-type',
-    label: 'landscape.form_profile_ecosystem_types',
-    info: 'landscape.form_profile_ecosystem_types_info',
+    name: 'areaTypes',
     props: {
       renderInput: ({ id, field }) => (
         <TaxonomyAutocomplete
@@ -75,6 +70,24 @@ const FORM_FIELDS = [
     type: 'number',
     label: 'landscape.form_profile_population',
     placeholder: 'landscape.form_profile_population_placeholder',
+  },
+  {
+    name: 'ecosystem-info',
+    renderStaticElement: () => <EcosystemInfo />,
+  },
+  {
+    name: 'taxonomyTypeTerms.ecosystem-type',
+    label: 'landscape.form_profile_ecosystem_types',
+    props: {
+      renderInput: ({ id, field }) => (
+        <TaxonomyAutocomplete
+          type={TYPE_ECOSYSTEM_TYPE}
+          value={field.value}
+          onChange={field.onChange}
+          placeholder="landscape.form_profile_ecosystem_types_placeholder"
+        />
+      ),
+    },
   },
   {
     name: 'livelihoods-info',
@@ -116,22 +129,25 @@ const FORM_FIELDS = [
   },
 ];
 
-const LivelihoodsInfo = () => {
+const Subheader = ({ text }) => {
   const { t } = useTranslation();
-  return (
-    <Typography sx={{ pl: 2 }}>
-      {t('landscape.form_profile_livelihoods_info')}
-    </Typography>
-  );
+  return <Typography sx={{ pl: 2 }}>{t(text)}</Typography>;
+};
+
+const AreaTypesInfo = () => {
+  return <Subheader text="landscape.form_profile_area_types" />;
+};
+
+const LivelihoodsInfo = () => {
+  return <Subheader text="landscape.form_profile_livelihoods_info" />;
+};
+
+const EcosystemInfo = () => {
+  return <Subheader text="landscape.form_profile_ecosystem_types_info" />;
 };
 
 const CommoditiesInfo = () => {
-  const { t } = useTranslation();
-  return (
-    <Typography sx={{ pl: 2 }}>
-      {t('landscape.form_profile_commondities_info')}
-    </Typography>
-  );
+  return <Subheader text="landscape.form_profile_commondities_info" />;
 };
 
 const LanguageAutocomplete = props => {
@@ -193,6 +209,7 @@ const AreaTypesCheckboxes = props => {
           key={option.key}
           control={
             <Checkbox
+              sx={{ pt: 0, pb: 0 }}
               checked={_.includes(option.key, field.value)}
               onChange={handleChange(option.key)}
             />
@@ -225,6 +242,9 @@ const ProfileStep = props => {
         }}
         header={title}
       />
+      <Typography sx={{ mb: 4 }}>
+        {t('landscape.form_profile_description')}
+      </Typography>
       <Form
         aria-labelledby="main-heading"
         prefix="landscape-profile"
