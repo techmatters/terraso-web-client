@@ -47,15 +47,7 @@ const FORM_FIELDS = [
   {
     name: 'areaTypes',
     props: {
-      renderInput: ({ id, field }) => (
-        <TaxonomyAutocomplete
-          freeSolo
-          type={TYPE_ECOSYSTEM_TYPE}
-          value={field.value}
-          onChange={field.onChange}
-          placeholder="landscape.form_profile_ecosystem_types_placeholder"
-        />
-      ),
+      renderInput: ({ id, field }) => <AreaTypesCheckboxes field={field} />,
     },
   },
   {
@@ -78,9 +70,11 @@ const FORM_FIELDS = [
   {
     name: 'taxonomyTypeTerms.ecosystem-type',
     label: 'landscape.form_profile_ecosystem_types',
+    info: 'landscape.form_profile_ecosystem_types_info',
     props: {
       renderInput: ({ id, field }) => (
         <TaxonomyAutocomplete
+          freeSolo
           type={TYPE_ECOSYSTEM_TYPE}
           value={field.value}
           onChange={field.onChange}
