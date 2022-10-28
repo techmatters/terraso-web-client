@@ -36,7 +36,7 @@ const LandscapeNew = () => {
   const navigate = useNavigate();
   const { trackEvent } = useAnalytics();
   const { fetching: fetchingTaxonomyTerms = true } = useSelector(
-    _.getOr({}, `taxonomies.terms.${TYPE_ECOSYSTEM_TYPE}`)
+    _.getOr({}, `taxonomies.terms`)
   );
   const { fetching: fetchingGroupsList } = useSelector(
     _.get(`group.autocomplete`)

@@ -54,6 +54,7 @@ const FORM_FIELDS = [
     props: {
       renderInput: ({ id, field }) => (
         <TaxonomyAutocomplete
+          freeSolo
           type={TYPE_ECOSYSTEM_TYPE}
           value={field.value}
           onChange={field.onChange}
@@ -85,6 +86,7 @@ const FORM_FIELDS = [
     props: {
       renderInput: ({ id, field }) => (
         <TaxonomyAutocomplete
+          freeSolo
           type={TYPE_LIVELIHOOD}
           value={field.value}
           onChange={field.onChange}
@@ -103,6 +105,7 @@ const FORM_FIELDS = [
     props: {
       renderInput: ({ id, field }) => (
         <TaxonomyAutocomplete
+          freeSolo
           type={TYPE_COMMODITY}
           value={field.value}
           onChange={field.onChange}

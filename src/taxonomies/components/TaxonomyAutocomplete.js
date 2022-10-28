@@ -13,7 +13,7 @@ const FILTER = createFilterOptions();
 const TaxonomyAutocomplete = props => {
   const { i18n, t } = useTranslation();
   const { type, placeholder, terms, value, onChange, freeSolo } = props;
-  const stateTerms = useSelector(_.get(`taxonomies.terms.${type}.list`));
+  const stateTerms = useSelector(_.get(`taxonomies.terms.values.${type}.list`));
   const options = useMemo(() => terms || stateTerms || [], [terms, stateTerms]);
 
   const getLabel = useCallback(
