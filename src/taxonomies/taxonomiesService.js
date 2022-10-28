@@ -24,6 +24,6 @@ export const fetchTermsForTypes = ({ types }) => {
   return terrasoApi
     .requestGraphQL(query, { types })
     .then(_.get('taxonomyTerms.edges'))
-    .then(terms => (_.isEmpty(terms) ? Promise.reject('not_found') : terms))
+    .then(terms => (_.isEmpty(terms) ? [] : terms))
     .then(extractTerms);
 };
