@@ -121,7 +121,7 @@ const ProfileCard = props => {
         </CardContent>
       )}
       <CardContent sx={{ display: 'flex', flexGrow: 1 }}>
-        <Grid container spacing={2} sx={{ pt: 2, pl: 2, pr: 2 }}>
+        <Grid container spacing={2} sx={{ pt: 2, pl: 0, pr: 2 }}>
           {FIELDS.map((field, index) => (
             <ProfileField
               key={index}
