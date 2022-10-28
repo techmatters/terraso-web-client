@@ -34,6 +34,7 @@ const FIELDS = [
   },
   {
     label: 'landscape.profile_profile_card_languages_label',
+    getCount: landscape => getTermsCount('language', landscape),
     getValue: (landscape, { i18n }) =>
       getTermsList('language', landscape, i18n),
   },
@@ -52,6 +53,11 @@ const FIELDS = [
       getTermsList('commodity', landscape, i18n),
   },
 ];
+
+const getTermsCount = (type, landscape) =>
+  _.isEmpty(landscape?.taxonomyTerms[type])
+    ? null
+    : landscape?.taxonomyTerms[type].length;
 
 const getTermsList = (type, landscape, i18n) =>
   _.isEmpty(landscape?.taxonomyTerms[type])
@@ -100,6 +106,17 @@ const ProfileCard = props => {
     [landscape, t, i18n]
   );
 
+  const counts = useMemo(
+    () =>
+      _.fromPairs(
+        FIELDS.map((field, index) => [
+          index,
+          field.getCount ? field.getCount(landscape, { t }) : 1,
+        ]).filter(([index, value]) => !!value)
+      ),
+    [landscape, t]
+  );
+
   useEffect(() => {
     setIsEmpty('profile', _.isEmpty(values));
   }, [setIsEmpty, values]);
@@ -125,7 +142,7 @@ const ProfileCard = props => {
           {FIELDS.map((field, index) => (
             <ProfileField
               key={index}
-              label={t(field.label)}
+              label={t(field.label, { count: counts[index] })}
               value={values[index]}
             />
           ))}
