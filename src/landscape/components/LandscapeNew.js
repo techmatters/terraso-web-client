@@ -31,6 +31,10 @@ import BoundaryStep from './LandscapeForm/BoundaryStep';
 import InfoStep from './LandscapeForm/KeyInfoStep';
 import ProfileStep from './LandscapeForm/ProfileStep';
 
+const STEP_BOUNDARY = 'boundary';
+const STEP_PROFILE = 'profile';
+const STEP_AFFILIATION = 'affiliation';
+
 const LandscapeNew = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -82,38 +86,43 @@ const LandscapeNew = () => {
     [dispatch]
   );
 
-  const onUpdate = async updatedLandscape => {
+  const onUpdate = step => updatedLandscape => {
     setUpdatedLandscape(updatedLandscape);
     return dispatch(saveLandscape(updatedLandscape)).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
-      if (success) {
-        navigate(`/landscapes/${landscape.slug}`);
-        trackEvent('Landscape created - Optional Steps', {
-          props: {
-            option: updatedLandscape.boundaryOption,
-            country: updatedLandscape.location,
-          },
-        });
-        return;
+      if (!success) {
+        return Promise.reject();
       }
-      return Promise.reject();
+      navigate(`/landscapes/${landscape.slug}`);
+      trackEvent('Landscape creation - exit', {
+        props: {
+          landscapeName: updatedLandscape.name,
+          country: updatedLandscape.location,
+          lastStep: step,
+          boundaryOption: updatedLandscape.boundaryOption,
+        },
+      });
     });
   };
 
   const onCreate = async updatedLandscape => {
     setUpdatedLandscape(updatedLandscape);
-    return dispatch(saveLandscape(updatedLandscape)).then(data => {
-      const success = _.get('meta.requestStatus', data) === 'fulfilled';
-      if (success) {
-        trackEvent('Landscape created', {
-          props: {
-            country: updatedLandscape.location,
-          },
-        });
-        return;
-      }
-      return Promise.reject();
-    });
+    return dispatch(saveLandscape(updatedLandscape))
+      .then(data => {
+        const success = _.get('meta.requestStatus', data) === 'fulfilled';
+        if (!success) {
+          return Promise.reject();
+        }
+        if (!updatedLandscape.id) {
+          trackEvent('Landscape created', {
+            props: {
+              landscapeName: updatedLandscape.name,
+              country: updatedLandscape.location,
+            },
+          });
+        }
+      })
+      .catch(console.error);
   };
 
   const steps = [
@@ -144,7 +153,7 @@ const LandscapeNew = () => {
             setUpdatedLandscape(updatedLandscape);
             setActiveStepIndex(current => current + 1);
           }}
-          onSave={onUpdate}
+          onSave={onUpdate(STEP_BOUNDARY)}
           saveLabel={t('landscape.form_add_label')}
         />
       ),
@@ -160,7 +169,7 @@ const LandscapeNew = () => {
             setActiveStepIndex(current => current + 1);
           }}
           onCancel={() => setActiveStepIndex(current => current - 1)}
-          onSave={onUpdate}
+          onSave={onUpdate(STEP_PROFILE)}
         />
       ),
     },
@@ -170,9 +179,9 @@ const LandscapeNew = () => {
         <AffiliationStep
           isNew
           landscape={updatedLandscape}
-          setUpdatedLandscape={onUpdate}
+          setUpdatedLandscape={onUpdate(STEP_AFFILIATION)}
           onCancel={() => setActiveStepIndex(current => current - 1)}
-          onSave={onUpdate}
+          onSave={onUpdate(STEP_AFFILIATION)}
         />
       ),
     },
