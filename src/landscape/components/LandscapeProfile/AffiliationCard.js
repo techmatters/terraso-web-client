@@ -70,6 +70,7 @@ const AffiliatedGroups = props => {
           <ListItem
             key={group.slug}
             component={RouterLink}
+            sx={{ pl: 0 }}
             to={`/groups/${group.slug}`}
           >
             {group.name}
@@ -109,7 +110,9 @@ const Organizations = props => {
       </Typography>
       <List>
         {sorted.map(term => (
-          <ListItem key={term.key}>{term.label}</ListItem>
+          <ListItem sx={{ pl: 0 }} key={term.key}>
+            {term.label}
+          </ListItem>
         ))}
       </List>
     </CardContent>
