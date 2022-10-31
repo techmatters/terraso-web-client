@@ -28,9 +28,11 @@ const TaxonomyAutocomplete = props => {
     (event, newValue) => {
       onChange(
         newValue.map(option => {
-          if (option.newTerm) {
+          const isNewValue = option.newTerm || typeof option === 'string';
+          if (isNewValue) {
+            const valueOriginal = option.newTerm || option;
             return {
-              valueOriginal: option.newTerm,
+              valueOriginal,
               type,
             };
           }
