@@ -55,16 +55,51 @@ beforeEach(() => {
 });
 
 test('LandscapeNew: Save from GeoJSON', async () => {
-  terrasoApi.requestGraphQL.mockResolvedValueOnce({
-    addLandscape: {
-      landscape: {
-        id: '1',
-        name: 'Landscape Name',
-        description: 'Landscape Description',
-        website: 'www.landscape.org',
-        location: 'EC',
-      },
-    },
+  terrasoApi.requestGraphQL.mockImplementation(query => {
+    const trimmedQuery = query.trim();
+
+    if (trimmedQuery.startsWith('query taxonomyTerms')) {
+      return Promise.resolve({
+        taxonomyTerms: {
+          edges: [],
+        },
+      });
+    }
+    if (trimmedQuery.startsWith('query groups')) {
+      return Promise.resolve({
+        independentGroups: {
+          edges: [],
+        },
+        landscapeGroups: {
+          edges: [],
+        },
+      });
+    }
+    if (trimmedQuery.startsWith('mutation addLandscape')) {
+      return Promise.resolve({
+        addLandscape: {
+          landscape: {
+            name: 'New name',
+            description: 'New description',
+            email: 'info@other.org',
+            website: 'https://www.other.org',
+            location: 'AR',
+          },
+        },
+      });
+    }
+    if (trimmedQuery.startsWith('mutation updateLandscape')) {
+      return Promise.resolve({
+        updateLandscape: {
+          landscape: {
+            name: 'New name',
+            description: 'New description',
+            website: 'https://www.other.org',
+            location: 'AR',
+          },
+        },
+      });
+    }
   });
 
   const { inputs } = await setup();
@@ -123,18 +158,24 @@ test('LandscapeNew: Save from GeoJSON', async () => {
   });
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+  );
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save For Now' }))
   );
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[0];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(6);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[5];
   expect(saveCall[1]).toStrictEqual({
     input: {
       description: 'New description',
       name: 'New name',
+      email: 'info@other.org',
       website: 'https://www.other.org',
       location: 'AR',
       areaPolygon: JSON.stringify(JSON.parse(GEOJSON)),
+      areaTypes: null,
+      population: null,
     },
   });
 });

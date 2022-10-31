@@ -62,16 +62,51 @@ beforeEach(() => {
 });
 
 test('LandscapeNew: Save form draw polygon boundary', async () => {
-  terrasoApi.requestGraphQL.mockResolvedValueOnce({
-    addLandscape: {
-      landscape: {
-        id: '1',
-        name: 'Landscape Name',
-        description: 'Landscape Description',
-        website: 'www.landscape.org',
-        location: 'EC',
-      },
-    },
+  terrasoApi.requestGraphQL.mockImplementation(query => {
+    const trimmedQuery = query.trim();
+
+    if (trimmedQuery.startsWith('query taxonomyTerms')) {
+      return Promise.resolve({
+        taxonomyTerms: {
+          edges: [],
+        },
+      });
+    }
+    if (trimmedQuery.startsWith('query groups')) {
+      return Promise.resolve({
+        independentGroups: {
+          edges: [],
+        },
+        landscapeGroups: {
+          edges: [],
+        },
+      });
+    }
+    if (trimmedQuery.startsWith('mutation addLandscape')) {
+      return Promise.resolve({
+        addLandscape: {
+          landscape: {
+            name: 'New name',
+            description: 'New description',
+            email: 'info@other.org',
+            website: 'https://www.other.org',
+            location: 'AR',
+          },
+        },
+      });
+    }
+    if (trimmedQuery.startsWith('mutation updateLandscape')) {
+      return Promise.resolve({
+        updateLandscape: {
+          landscape: {
+            name: 'New name',
+            description: 'New description',
+            website: 'https://www.other.org',
+            location: 'AR',
+          },
+        },
+      });
+    }
   });
 
   const spy = jest.spyOn(reactLeaflet, 'useMap');
@@ -120,26 +155,30 @@ test('LandscapeNew: Save form draw polygon boundary', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'close' }))
   );
-  await waitFor(() => {
-    expect(
-      screen.getByRole('button', { name: 'Add Landscape' })
-    ).toBeInTheDocument();
-  });
 
+  await waitFor(() => {
+    expect(screen.getByRole('button', { name: 'Next' })).toBeInTheDocument();
+  });
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+  );
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save For Now' }))
   );
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[0];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(6);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[5];
   expect(saveCall[1]).toStrictEqual({
     input: {
       description: 'New description',
       name: 'New name',
+      email: 'info@other.org',
       website: 'https://www.other.org',
       location: 'AR',
       areaPolygon:
         '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[-109.05,37],[-109.03,41],[-102.05,41],[-102.04,37],[-109.05,37]]]}}],"bbox":[-105.46875000000001,38.82259097617713,-105.46875000000001,38.82259097617713]}',
+      areaTypes: null,
+      population: null,
     },
   });
 });

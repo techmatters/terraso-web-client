@@ -243,9 +243,9 @@ test('LandscapeBoundaries: Show back', async () => {
     )
   );
 
-  expect(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Back' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
   );
   expect(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument();
   await act(async () =>
@@ -330,7 +330,7 @@ test('LandscapeBoundaries: Save', async () => {
   });
 
   const saveButton = screen.getByRole('button', {
-    name: 'Update Map',
+    name: 'Update',
   });
   expect(saveButton).toBeInTheDocument();
   expect(saveButton).not.toHaveAttribute('disabled');
