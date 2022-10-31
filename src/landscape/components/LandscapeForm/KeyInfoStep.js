@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
@@ -9,10 +9,13 @@ import { MenuItem, Select, Typography } from '@mui/material';
 
 import { countriesList, countryMap, transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
+import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
 import { scrollToNavBar } from 'navigation/scrollTo';
 
 import { MAX_DESCRIPTION_LENGTH } from 'config';
+
+import Actions from './Actions';
 
 const VALIDATION_SCHEMA = yup
   .object({
@@ -101,6 +104,7 @@ const InfoStep = props => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { setUpdatedLandscape, landscape, isNew } = props;
+  const [updatedValues, setUpdatedValues] = useState();
   const title = !isNew
     ? t('landscape.form_edit_title', { name: _.getOr('', 'name', landscape) })
     : t('landscape.form_new_title');
@@ -126,16 +130,27 @@ const InfoStep = props => {
         fields={FORM_FIELDS}
         values={landscape}
         validationSchema={VALIDATION_SCHEMA}
-        onSave={onSave}
-        saveLabel={
-          isNew ? 'landscape.form_info_next' : 'landscape.form_save_label'
-        }
         cancelLabel="landscape.form_info_cancel"
-        onCancel={() => navigate(-1)}
         isMultiStep={isNew}
+        onChange={setUpdatedValues}
+      />
+      <Actions
+        isForm
+        isNew={isNew}
+        onCancel={() => navigate(-1)}
+        onSave={onSave}
+        updatedValues={updatedValues}
+        setUpdatedLandscape={setUpdatedLandscape}
+        nextLabel={isNew ? null : 'landscape.form_save_label'}
       />
     </>
   );
 };
 
-export default InfoStep;
+const ContextWrapper = props => (
+  <FormContextProvider>
+    <InfoStep {...props} />
+  </FormContextProvider>
+);
+
+export default ContextWrapper;

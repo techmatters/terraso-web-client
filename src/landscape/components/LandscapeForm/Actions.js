@@ -59,14 +59,11 @@ const Actions = props => {
   }
 
   return (
-    <Stack
-      direction={{ xs: 'column', sm: 'row' }}
-      justifyContent="space-between"
-    >
-      <Button variant="contained" onClick={onSaveWrapper}>
+    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+      <Button variant="contained" onClick={onSaveWrapper} sx={{ pl: 6, pr: 6 }}>
         {t('landscape.form_update')}
       </Button>
-      <Button variant="text" onClick={onCancel}>
+      <Button variant="text" onClick={onCancel} sx={{ pl: 6, pr: 6 }}>
         {t('landscape.form_cancel')}
       </Button>
     </Stack>
