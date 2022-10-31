@@ -23,6 +23,7 @@ const setup = async (countryName = 'Landscape location') => {
   const description = screen.getByRole('textbox', {
     name: 'Description (required)',
   });
+  const email = screen.getByRole('textbox', { name: 'Email address' });
   const website = screen.getByRole('textbox', { name: 'Website' });
   const location = screen.getByRole('button', {
     name: `Country or region ${countryName}`,
@@ -40,6 +41,7 @@ const setup = async (countryName = 'Landscape location') => {
     inputs: {
       name,
       description,
+      email,
       website,
       location,
       changeLocation,
@@ -139,6 +141,7 @@ test('LandscapeProfileUpdate: Input validation', async () => {
               name: 'Landscape Name',
               description: 'Landscape Description',
               website: 'www.landscape.org',
+              email: 'info@landscape.org',
             },
           },
         ],
@@ -155,16 +158,21 @@ test('LandscapeProfileUpdate: Input validation', async () => {
   fireEvent.change(inputs.description, { target: { value: '' } });
   expect(inputs.description).toHaveValue('');
 
+  expect(inputs.email).toHaveValue('info@landscape.org');
+  fireEvent.change(inputs.email, { target: { value: 'wwwotherorg' } });
+  expect(inputs.email).toHaveValue('wwwotherorg');
+
   expect(inputs.website).toHaveValue('www.landscape.org');
   fireEvent.change(inputs.website, { target: { value: 'wwwotherorg' } });
   expect(inputs.website).toHaveValue('wwwotherorg');
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Update' }))
   );
   expect(screen.getByText(/name is required/i)).toBeInTheDocument();
   expect(screen.getByText(/description is required/i)).toBeInTheDocument();
   expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument();
+  expect(screen.getByText(/email must be a valid email/i)).toBeInTheDocument();
 });
 test('LandscapeProfileUpdate: Save form', async () => {
   terrasoApi.requestGraphQL
@@ -176,7 +184,8 @@ test('LandscapeProfileUpdate: Save form', async () => {
               id: '1',
               name: 'Landscape Name',
               description: 'Landscape Description',
-              website: 'www.landscape.org',
+              email: 'info@landscape.org',
+              website: 'https://www.landscape.org',
               location: 'EC',
             },
           },
@@ -191,7 +200,8 @@ test('LandscapeProfileUpdate: Save form', async () => {
               id: '1',
               name: 'Landscape Name',
               description: 'Landscape Description',
-              website: 'www.landscape.org',
+              email: 'info@landscape.org',
+              website: 'https://www.landscape.org',
               location: 'EC',
             },
           },
@@ -216,13 +226,16 @@ test('LandscapeProfileUpdate: Save form', async () => {
   fireEvent.change(inputs.description, {
     target: { value: 'New description' },
   });
+  fireEvent.change(inputs.email, {
+    target: { value: 'new@other.org' },
+  });
   fireEvent.change(inputs.website, {
     target: { value: 'https://www.other.org' },
   });
   await inputs.changeLocation('Argentina');
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Update' }))
   );
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
   const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
@@ -231,9 +244,9 @@ test('LandscapeProfileUpdate: Save form', async () => {
       id: '1',
       description: 'New description',
       name: 'New name',
+      email: 'new@other.org',
       website: 'https://www.other.org',
       location: 'AR',
-      areaPolygon: null,
     },
   });
 });
@@ -285,7 +298,7 @@ test('LandscapeProfileUpdate: Save form error', async () => {
   await inputs.changeLocation('Argentina');
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Update' }))
   );
 
   // Test error display

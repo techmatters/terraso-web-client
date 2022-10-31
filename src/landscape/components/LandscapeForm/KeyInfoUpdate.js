@@ -27,7 +27,14 @@ const KeyInfoUpdate = () => {
   );
 
   const onSave = updatedLandscape => {
-    dispatch(saveLandscape(updatedLandscape));
+    dispatch(
+      saveLandscape(
+        _.pick(
+          ['id', 'name', 'description', 'location', 'email', 'website'],
+          updatedLandscape
+        )
+      )
+    );
   };
 
   useDocumentTitle(
