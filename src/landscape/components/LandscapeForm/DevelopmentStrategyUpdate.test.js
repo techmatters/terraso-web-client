@@ -19,16 +19,16 @@ const setup = async () => {
   await render(<DevelopmentStrategyUpdate />);
 
   const objectives = screen.getByRole('textbox', {
-    name: 'Landscape (sustainable) development objectives',
+    name: 'Sustainable development objectives',
   });
   const problemSitutation = screen.getByRole('textbox', {
-    name: 'Landscape problem situation',
+    name: 'Main challenges',
   });
   const interventionStrategy = screen.getByRole('textbox', {
     name: 'Landscape intervention strategy',
   });
   const otherInformation = screen.getByRole('textbox', {
-    name: 'Other relevant general information',
+    name: 'Other information',
   });
 
   return {

@@ -15,6 +15,7 @@ const VALIDATION_SCHEMA = yup.object().shape({}).required();
 
 const FORM_FIELDS = [
   {
+    name: 'form_development_objectives_description',
     renderStaticElement: ({ t }) => (
       <Typography sx={{ pl: 2 }}>
         {t('landscape.form_development_objectives_description')}
@@ -33,6 +34,7 @@ const FORM_FIELDS = [
     },
   },
   {
+    name: 'form_development_problem_situtation_description',
     renderStaticElement: ({ t }) => (
       <Typography sx={{ pl: 2 }}>
         {t('landscape.form_development_problem_situtation_description')}
@@ -62,6 +64,7 @@ const FORM_FIELDS = [
     },
   },
   {
+    name: 'form_development_other_information_description',
     renderStaticElement: ({ t }) => (
       <Typography sx={{ pl: 2 }}>
         {t('landscape.form_development_other_information_description')}

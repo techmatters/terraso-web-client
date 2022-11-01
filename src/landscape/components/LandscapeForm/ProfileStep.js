@@ -54,7 +54,9 @@ const FORM_FIELDS = [
     name: 'taxonomyTypeTerms.language',
     label: 'landscape.form_profile_languages',
     props: {
-      renderInput: ({ id, field }) => <LanguageAutocomplete id={id} field={field} />,
+      renderInput: ({ id, field }) => (
+        <LanguageAutocomplete id={id} field={field} />
+      ),
     },
   },
   {

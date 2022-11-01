@@ -143,10 +143,10 @@ test('ProfileUpdate: Save form', async () => {
 
   fireEvent.change(inputs.population, { target: { value: '1000932' } });
 
-  await inputs.changeCombobox('Ecosystem Type', 'Eco1 En', false);
-  await inputs.changeCombobox('Ecosystem Type', 'Test New Eco 2');
+  await inputs.changeCombobox('Ecosystems', 'Eco1 En', false);
+  await inputs.changeCombobox('Ecosystems', 'Test New Eco 2');
 
-  await inputs.changeCombobox('Language(s)', 'Spanish', false);
+  await inputs.changeCombobox('Languages', 'Spanish', false);
 
   await inputs.changeCombobox('Livelihoods', 'Livelihood 1');
 
@@ -163,6 +163,14 @@ test('ProfileUpdate: Save form', async () => {
       areaTypes: '["peri-urban","rural"]',
       population: '1000932',
       taxonomyTypeTerms: JSON.stringify({
+        language: [
+          {
+            type: 'language',
+            valueOriginal: 'es',
+            valueEn: 'Spanish',
+            valueEs: 'Español',
+          },
+        ],
         'ecosystem-type': [
           {
             slug: 'eco1',
@@ -172,14 +180,6 @@ test('ProfileUpdate: Save form', async () => {
             valueEs: 'Eco1 Es',
           },
           { valueOriginal: 'Test New Eco 2', type: 'ecosystem-type' },
-        ],
-        language: [
-          {
-            type: 'language',
-            valueOriginal: 'es',
-            valueEn: 'Spanish',
-            valueEs: 'Español',
-          },
         ],
         livelihood: [{ valueOriginal: 'Livelihood 1', type: 'livelihood' }],
         commodity: [{ valueOriginal: 'Commodity 1', type: 'commodity' }],
