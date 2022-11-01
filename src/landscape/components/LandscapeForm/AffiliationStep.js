@@ -10,6 +10,7 @@ import {
   Radio,
   RadioGroup,
   Select,
+  Typography,
 } from '@mui/material';
 
 import Form from 'forms/components/Form';
@@ -176,6 +177,9 @@ const AffiliationStep = props => {
         }}
         header={title}
       />
+      <Typography sx={{ mb: 4 }}>
+        {t('landscape.form_affiliation_description')}
+      </Typography>
       <Form
         aria-labelledby="main-heading"
         prefix="landscape-affiliation"

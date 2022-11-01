@@ -322,9 +322,12 @@ const BoundaryOptions = props => {
       />
       <Trans i18nKey="landscape.form_boundary_options_description">
         <Stack spacing={2} sx={{ mb: 4 }}>
-          <Typography>First</Typography>
+          <Typography variant="body2">First</Typography>
           <Typography variant="body2">second</Typography>
-          <ExternalLink href={t('landscape.boundaries_help_geojson_url')}>
+          <ExternalLink
+            linkProps={{ fontSize: 14 }}
+            href={t('landscape.boundaries_help_geojson_url')}
+          >
             link
           </ExternalLink>
         </Stack>
