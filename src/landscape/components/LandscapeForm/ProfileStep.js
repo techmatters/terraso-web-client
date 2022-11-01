@@ -54,7 +54,7 @@ const FORM_FIELDS = [
     name: 'taxonomyTypeTerms.language',
     label: 'landscape.form_profile_languages',
     props: {
-      renderInput: ({ id, field }) => <LanguageAutocomplete field={field} />,
+      renderInput: ({ id, field }) => <LanguageAutocomplete id={id} field={field} />,
     },
   },
   {
@@ -74,6 +74,7 @@ const FORM_FIELDS = [
     props: {
       renderInput: ({ id, field }) => (
         <TaxonomyAutocomplete
+          id={id}
           freeSolo
           type={TYPE_ECOSYSTEM_TYPE}
           value={field.value}
@@ -93,6 +94,7 @@ const FORM_FIELDS = [
     props: {
       renderInput: ({ id, field }) => (
         <TaxonomyAutocomplete
+          id={id}
           freeSolo
           type={TYPE_LIVELIHOOD}
           value={field.value}
@@ -112,6 +114,7 @@ const FORM_FIELDS = [
     props: {
       renderInput: ({ id, field }) => (
         <TaxonomyAutocomplete
+          id={id}
           freeSolo
           type={TYPE_COMMODITY}
           value={field.value}
@@ -145,7 +148,7 @@ const CommoditiesInfo = () => {
 };
 
 const LanguageAutocomplete = props => {
-  const { field } = props;
+  const { field, id } = props;
   const languagesEn = useMemo(() => languages.getNames('en'), []);
   const languagesEs = useMemo(() => languages.getNames('es'), []);
   const terms = useMemo(
@@ -161,6 +164,7 @@ const LanguageAutocomplete = props => {
 
   return (
     <TaxonomyAutocomplete
+      id={id}
       terms={terms}
       value={field.value}
       onChange={field.onChange}

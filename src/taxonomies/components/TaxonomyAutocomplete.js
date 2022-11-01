@@ -12,7 +12,7 @@ const FILTER = createFilterOptions();
 
 const TaxonomyAutocomplete = props => {
   const { i18n, t } = useTranslation();
-  const { type, placeholder, terms, value, onChange, freeSolo } = props;
+  const { type, placeholder, terms, value, onChange, freeSolo, id } = props;
   const stateTerms = useSelector(_.get(`taxonomies.terms.values.${type}.list`));
   const options = useMemo(() => terms || stateTerms || [], [terms, stateTerms]);
 
@@ -45,6 +45,7 @@ const TaxonomyAutocomplete = props => {
 
   return (
     <Autocomplete
+      id={id}
       freeSolo={freeSolo}
       clearOnBlur
       multiple
@@ -57,6 +58,10 @@ const TaxonomyAutocomplete = props => {
           {...params}
           variant="outlined"
           placeholder={t(placeholder)}
+          inputProps={{
+            ...params.inputProps,
+            'aria-labelledby': `${id}-label`,
+          }}
         />
       )}
       isOptionEqualToValue={(option, value) =>

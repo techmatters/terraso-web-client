@@ -27,7 +27,9 @@ const DevelopmentStrategyUpdate = () => {
   );
 
   const onSave = updatedLandscape => {
-    dispatch(saveLandscape(updatedLandscape)).then(data => {
+    dispatch(
+      saveLandscape(_.pick(['id', 'developmentStrategy'], updatedLandscape))
+    ).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
       if (success) {
         navigate(`/landscapes/${landscape.slug}/profile`);

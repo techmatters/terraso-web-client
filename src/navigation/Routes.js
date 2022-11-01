@@ -16,13 +16,13 @@ import GroupSharedDataVisualizationConfig from 'group/components/GroupSharedData
 import GroupView from 'group/components/GroupView';
 import GroupMembers from 'group/membership/components/GroupMembers';
 import Home from 'home/components/Home';
-import LandscapeBoundariesUpdate from 'landscape/components/LandscapeBoundariesUpdate';
 import LandscapeAffiliationUpdate from 'landscape/components/LandscapeForm/AffiliationUpdate';
+import LandscapeBoundariesUpdate from 'landscape/components/LandscapeForm/BoundaryStepUpdate';
 import LandscapeDevelopmentStrategyUpdate from 'landscape/components/LandscapeForm/DevelopmentStrategyUpdate';
 import LandscapeKeyInfoUpdate from 'landscape/components/LandscapeForm/KeyInfoUpdate';
+import LandscapeNew from 'landscape/components/LandscapeForm/New';
 import LandscapeProfileUpdate from 'landscape/components/LandscapeForm/ProfileUpdate';
 import LandscapeList from 'landscape/components/LandscapeList';
-import LandscapeNew from 'landscape/components/LandscapeNew';
 import LandscapeProfile from 'landscape/components/LandscapeProfile';
 import LandscapeSharedDataUpload from 'landscape/components/LandscapeSharedDataUpload';
 import LandscapeSharedDataVisualization from 'landscape/components/LandscapeSharedDataVisualization';

@@ -4,7 +4,7 @@ import React from 'react';
 
 import { useNavigate, useParams } from 'react-router-dom';
 
-import LandscapeBoundaries from 'landscape/components/LandscapeBoundariesUpdate';
+import LandscapeBoundaries from 'landscape/components/LandscapeForm/BoundaryStepUpdate';
 import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('terrasoBackend/api');
@@ -99,7 +99,6 @@ test('LandscapeBoundaries: Display loader', async () => {
   await setup();
   const loader = screen.getByRole('progressbar', {
     name: 'Loading',
-    hidden: true,
   });
   expect(loader).toBeInTheDocument();
 });

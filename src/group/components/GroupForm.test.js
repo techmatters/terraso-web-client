@@ -69,7 +69,6 @@ test('GroupForm: Display loader', async () => {
   await render(<GroupForm />);
   const loader = screen.getByRole('progressbar', {
     name: 'Loading',
-    hidden: true,
   });
   expect(loader).toBeInTheDocument();
 });
