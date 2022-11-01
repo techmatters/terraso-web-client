@@ -128,6 +128,9 @@ const InfoStep = props => {
         }}
         header={title}
       />
+      <Typography sx={{ mb: 4 }}>
+        {t('landscape.form_new_description')}
+      </Typography>
       <Form
         aria-labelledby="landscape-form-page-title"
         prefix="landscape"

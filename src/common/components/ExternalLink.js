@@ -8,7 +8,7 @@ import { useAnalytics } from 'monitoring/analytics';
 // tab and tracking the analytics event.
 // This is neede because of this plausible issue:
 // https://github.com/plausible/plausible-tracker/issues/12
-const ExternalLink = ({ href, children }) => {
+const ExternalLink = ({ href, children, linkProps }) => {
   const { trackEvent } = useAnalytics();
   const onClick = event => {
     window.open(href, '_blank', 'noopener,noreferrer');
@@ -17,7 +17,7 @@ const ExternalLink = ({ href, children }) => {
   };
 
   return (
-    <Link href={href} onClick={onClick}>
+    <Link href={href} onClick={onClick} {...linkProps}>
       {children}
     </Link>
   );

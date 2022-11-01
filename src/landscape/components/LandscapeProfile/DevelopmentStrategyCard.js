@@ -31,7 +31,7 @@ const ValueSection = props => {
 
   return (
     <CardContent>
-      <Typography variant="h3">
+      <Typography variant="h3" sx={{ fontWeight: 600 }}>
         {t(`landscape.profile_development_card_${field}_title`)}
       </Typography>
       <Typography sx={{ mt: 1, whiteSpace: 'pre-wrap' }}>{value}</Typography>

@@ -62,7 +62,7 @@ const AffiliatedGroups = props => {
 
   return (
     <CardContent>
-      <Typography variant="h3" sx={{ p: 0 }}>
+      <Typography variant="h3" sx={{ p: 0, fontWeight: 600 }}>
         {t('landscape.profile_affiliation_card_affiliated_groups_title')}
       </Typography>
       <List>
@@ -70,6 +70,7 @@ const AffiliatedGroups = props => {
           <ListItem
             key={group.slug}
             component={RouterLink}
+            sx={{ pl: 0, pt: 0 }}
             to={`/groups/${group.slug}`}
           >
             {group.name}
@@ -104,12 +105,14 @@ const Organizations = props => {
 
   return (
     <CardContent>
-      <Typography variant="h3" sx={{ p: 0 }}>
+      <Typography variant="h3" sx={{ p: 0, fontWeight: 600 }}>
         {t('landscape.profile_affiliation_card_organizations_title')}
       </Typography>
       <List>
         {sorted.map(term => (
-          <ListItem key={term.key}>{term.label}</ListItem>
+          <ListItem sx={{ pl: 0, pt: 0 }} key={term.key}>
+            {term.label}
+          </ListItem>
         ))}
       </List>
     </CardContent>
