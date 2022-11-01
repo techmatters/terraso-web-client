@@ -209,7 +209,7 @@ const AffiliationStep = props => {
         onCancel={onCancel}
         onSave={onSave}
         updatedValues={updatedValues}
-        setUpdatedLandscape={setUpdatedLandscape}
+        onNext={setUpdatedLandscape}
         nextLabel={t('landscape.form_add_label')}
       />
     </>

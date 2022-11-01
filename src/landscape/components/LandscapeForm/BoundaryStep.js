@@ -75,7 +75,7 @@ const GeoJson = props => {
         onCancel={() => setOption(OPTION_SELECT_OPTIONS)}
         onSave={onSave}
         updatedValues={updatedValues}
-        setUpdatedLandscape={setUpdatedLandscape}
+        onNext={setUpdatedLandscape}
       />
     </>
   );
@@ -219,7 +219,7 @@ const MapDrawPolygon = props => {
         onCancel={() => setOption(OPTION_SELECT_OPTIONS)}
         onSave={onSave}
         updatedValues={updatedValues}
-        setUpdatedLandscape={setUpdatedLandscape}
+        onNext={setUpdatedLandscape}
       />
     </>
   );
@@ -263,7 +263,7 @@ const MapPin = props => {
         onCancel={() => setOption(OPTION_SELECT_OPTIONS)}
         onSave={onSave}
         updatedValues={updatedValues}
-        setUpdatedLandscape={setUpdatedLandscape}
+        onNext={setUpdatedLandscape}
       />
     </>
   );
