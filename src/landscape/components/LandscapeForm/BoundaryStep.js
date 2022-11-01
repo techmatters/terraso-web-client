@@ -370,11 +370,13 @@ const getOptionComponent = option => {
 };
 
 const BoundaryStep = props => {
-  const [option, setOption] = useState(OPTION_SELECT_OPTIONS);
   const [boundingBox, setBoundingBox] = useState();
   const isMounted = useIsMounted();
-  const OptionComponent = getOptionComponent(option);
   const { landscape, onSave, setUpdatedLandscape } = props;
+  const [option, setOption] = useState(
+    landscape.boundaryOption || OPTION_SELECT_OPTIONS
+  );
+  const OptionComponent = getOptionComponent(option);
   const [areaPolygon, setAreaPolygon] = useState(landscape.areaPolygon);
 
   useEffect(() => {
@@ -393,7 +395,11 @@ const BoundaryStep = props => {
         }
       });
     }
-  }, [landscape, isMounted]);
+  }, [landscape.location, isMounted]);
+
+  useEffect(() => {
+    setAreaPolygon(landscape.areaPolygon);
+  }, [landscape.areaPolygon]);
 
   const onSaveWrapper = useCallback(
     updatedValues => {
