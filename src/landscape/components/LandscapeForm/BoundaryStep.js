@@ -36,7 +36,7 @@ import Actions from './Actions';
 const OPTION_GEOJSON = 'geo-json';
 const OPTION_MAP_DRAW_POLYGON = 'map-draw-polygon';
 const OPTION_MAP_PIN = 'map-pin';
-const OPTION_SELECT_OPTIONS = 'options';
+const OPTION_BOUNDARY_CHOICES = 'options';
 const OPTION_SKIP_BOUNDARY = 'skip-boundary';
 
 const POLYGON_FILTER = feature => _.get('geometry.type', feature) === 'Polygon';
@@ -72,7 +72,7 @@ const GeoJson = props => {
       </Paper>
       <Actions
         isNew={isNew}
-        onCancel={() => setOption(OPTION_SELECT_OPTIONS)}
+        onCancel={() => setOption(OPTION_BOUNDARY_CHOICES)}
         onSave={onSave}
         updatedValues={updatedValues}
         onNext={setUpdatedLandscape}
@@ -216,7 +216,7 @@ const MapDrawPolygon = props => {
       </Paper>
       <Actions
         isNew={isNew}
-        onCancel={() => setOption(OPTION_SELECT_OPTIONS)}
+        onCancel={() => setOption(OPTION_BOUNDARY_CHOICES)}
         onSave={onSave}
         updatedValues={updatedValues}
         onNext={setUpdatedLandscape}
@@ -260,7 +260,7 @@ const MapPin = props => {
       </Paper>
       <Actions
         isNew={isNew}
-        onCancel={() => setOption(OPTION_SELECT_OPTIONS)}
+        onCancel={() => setOption(OPTION_BOUNDARY_CHOICES)}
         onSave={onSave}
         updatedValues={updatedValues}
         onNext={setUpdatedLandscape}
@@ -374,7 +374,7 @@ const BoundaryStep = props => {
   const isMounted = useIsMounted();
   const { landscape, onSave, setUpdatedLandscape } = props;
   const [option, setOption] = useState(
-    landscape.boundaryOption || OPTION_SELECT_OPTIONS
+    landscape.boundaryOption || OPTION_BOUNDARY_CHOICES
   );
   const OptionComponent = getOptionComponent(option);
   const [areaPolygon, setAreaPolygon] = useState(landscape.areaPolygon);
