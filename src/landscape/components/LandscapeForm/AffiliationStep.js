@@ -33,7 +33,7 @@ const FORM_FIELDS = [
     label: 'landscape.form_profile_partnership_status',
     props: {
       renderInput: ({ id, field }) => (
-        <PartnershipStatusRadioGroup field={field} />
+        <PartnershipStatusRadioGroup id={id} field={field} />
       ),
     },
   },
@@ -42,7 +42,7 @@ const FORM_FIELDS = [
     label: 'landscape.form_profile_partnership_year',
     type: 'number',
     props: {
-      renderInput: ({ id, field }) => <YearSelect field={field} />,
+      renderInput: ({ id, field }) => <YearSelect id={id} field={field} />,
     },
   },
   {
@@ -51,6 +51,7 @@ const FORM_FIELDS = [
     props: {
       renderInput: ({ id, field }) => (
         <GroupAutocomplete
+          id={id}
           value={field.value}
           onChange={field.onChange}
           placeholder="landscape.form_profile_partnership_group_placeholder"
@@ -64,6 +65,7 @@ const FORM_FIELDS = [
     props: {
       renderInput: ({ id, field }) => (
         <GroupAutocomplete
+          id={id}
           multiple
           value={field.value}
           onChange={field.onChange}
@@ -78,6 +80,7 @@ const FORM_FIELDS = [
     props: {
       renderInput: ({ id, field }) => (
         <TaxonomyAutocomplete
+          id={id}
           freeSolo
           type={TYPE_ORGANIZATION}
           value={field.value}
@@ -91,7 +94,7 @@ const FORM_FIELDS = [
 
 const YearSelect = props => {
   const { t } = useTranslation();
-  const { field } = props;
+  const { field, id } = props;
 
   return (
     <Select
@@ -99,7 +102,7 @@ const YearSelect = props => {
       value={field.value}
       onChange={field.onChange}
       labelId="TODO"
-      id="year-select"
+      id={id}
     >
       <MenuItem value={''}>
         {t('landscape.form_profile_partnership_year_placeholder')}
@@ -117,7 +120,7 @@ const YearSelect = props => {
 
 const PartnershipStatusRadioGroup = props => {
   const { t } = useTranslation();
-  const { field } = props;
+  const { field, id } = props;
   const options = [
     {
       key: 'yes',
@@ -139,9 +142,10 @@ const PartnershipStatusRadioGroup = props => {
 
   return (
     <RadioGroup
+      id={id}
       row
       aria-labelledby="landscape-affiliation-partnershipStatus-label"
-      value={field.value}
+      value={field.value || ''}
       onChange={handleChange}
     >
       {options.map(option => (

@@ -69,7 +69,7 @@ test('GroupMembershipCard: Display loader', async () => {
     },
   });
   expect(
-    screen.getByRole('progressbar', { name: 'Loading', hidden: true })
+    screen.getByRole('progressbar', { name: 'Loading' })
   ).toBeInTheDocument();
 });
 test('GroupMembershipCard: Display join button', async () => {

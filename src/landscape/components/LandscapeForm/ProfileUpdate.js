@@ -36,7 +36,14 @@ const ProfileUpdate = () => {
   );
 
   const onSave = updatedLandscape => {
-    dispatch(saveLandscape(updatedLandscape)).then(data => {
+    dispatch(
+      saveLandscape(
+        _.pick(
+          ['id', 'areaTypes', 'taxonomyTypeTerms', 'population'],
+          updatedLandscape
+        )
+      )
+    ).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
       if (success) {
         navigate(`/landscapes/${landscape.slug}/profile`);

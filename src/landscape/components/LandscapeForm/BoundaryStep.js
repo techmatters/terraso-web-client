@@ -24,7 +24,7 @@ import { countryNameForCode } from 'common/utils';
 import PageHeader from 'layout/PageHeader';
 
 import { getPlaceInfoByName } from 'gis/gisService';
-import LandscapeGeoJsonBoundaries from 'landscape/components/LandscapeGeoJsonBoundaries';
+import LandscapeGeoJsonBoundaries from 'landscape/components/LandscapeForm/BoundaryStepGeoJsonBoundaries';
 import LandscapeMap from 'landscape/components/LandscapeMap';
 
 import { useIsMounted } from 'custom-hooks';

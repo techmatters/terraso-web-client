@@ -26,10 +26,10 @@ import {
 } from 'taxonomies/taxonomiesConstants';
 import { fetchTermsForTypes } from 'taxonomies/taxonomiesSlice';
 
-import AffiliationStep from './LandscapeForm/AffiliationStep';
-import BoundaryStep from './LandscapeForm/BoundaryStep';
-import InfoStep from './LandscapeForm/KeyInfoStep';
-import ProfileStep from './LandscapeForm/ProfileStep';
+import AffiliationStep from './AffiliationStep';
+import BoundaryStep from './BoundaryStep';
+import InfoStep from './KeyInfoStep';
+import ProfileStep from './ProfileStep';
 
 const STEP_BOUNDARY = 'boundary';
 const STEP_PROFILE = 'profile';
