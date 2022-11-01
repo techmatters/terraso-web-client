@@ -5,7 +5,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
 
-import LandscapeProfileUpdate from 'landscape/components/LandscapeForm/KeyInfoUpdate';
+import KeyInfoUpdate from 'landscape/components/LandscapeForm/KeyInfoUpdate';
 import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('terrasoBackend/api');
@@ -16,7 +16,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const setup = async (countryName = 'Landscape location') => {
-  await render(<LandscapeProfileUpdate />);
+  await render(<KeyInfoUpdate />);
   const name = screen.getByRole('textbox', {
     name: 'Name (required)',
   });
@@ -55,21 +55,20 @@ beforeEach(() => {
   });
 });
 
-test('LandscapeProfileUpdate: Display error', async () => {
+test('KeyInfoUpdate: Display error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValue(['Load error']);
-  await render(<LandscapeProfileUpdate />);
+  await render(<KeyInfoUpdate />);
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
-test('LandscapeProfileUpdate: Display loader', async () => {
+test('KeyInfoUpdate: Display loader', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
-  await render(<LandscapeProfileUpdate />);
+  await render(<KeyInfoUpdate />);
   const loader = screen.getByRole('progressbar', {
     name: 'Loading',
-    hidden: true,
   });
   expect(loader).toBeInTheDocument();
 });
-test('LandscapeProfileUpdate: Fill form', async () => {
+test('KeyInfoUpdate: Fill form', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       landscapes: {
@@ -94,7 +93,7 @@ test('LandscapeProfileUpdate: Fill form', async () => {
   expect(inputs.website).toHaveValue('www.landscape.org');
   expect(inputs.location).toHaveTextContent('Ecuador');
 });
-test('LandscapeProfileUpdate: Input change', async () => {
+test('KeyInfoUpdate: Input change', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       landscapes: {
@@ -131,7 +130,7 @@ test('LandscapeProfileUpdate: Input change', async () => {
   await inputs.changeLocation('Ecuador');
   expect(inputs.location).toHaveTextContent('Ecuador');
 });
-test('LandscapeProfileUpdate: Input validation', async () => {
+test('KeyInfoUpdate: Input validation', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       landscapes: {
@@ -174,7 +173,7 @@ test('LandscapeProfileUpdate: Input validation', async () => {
   expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument();
   expect(screen.getByText(/email must be a valid email/i)).toBeInTheDocument();
 });
-test('LandscapeProfileUpdate: Save form', async () => {
+test('KeyInfoUpdate: Save form', async () => {
   terrasoApi.requestGraphQL
     .mockResolvedValueOnce({
       landscapes: {
@@ -250,7 +249,7 @@ test('LandscapeProfileUpdate: Save form', async () => {
     },
   });
 });
-test('LandscapeProfileUpdate: Save form error', async () => {
+test('KeyInfoUpdate: Save form error', async () => {
   terrasoApi.requestGraphQL
     .mockReturnValueOnce(
       Promise.resolve({

@@ -8,7 +8,7 @@ import { Autocomplete, TextField } from '@mui/material';
 
 const GroupAutocomplete = props => {
   const { t } = useTranslation();
-  const { placeholder, onChange, multiple } = props;
+  const { placeholder, onChange, multiple, id } = props;
   const options = useSelector(_.get('group.autocomplete.groups'));
 
   const onChangeWrapper = useCallback(
@@ -25,6 +25,7 @@ const GroupAutocomplete = props => {
 
   return (
     <Autocomplete
+      id={id}
       noOptionsText={t('group.autocomplete_no_options')}
       multiple={multiple}
       value={value}
@@ -38,6 +39,10 @@ const GroupAutocomplete = props => {
           {...params}
           variant="outlined"
           placeholder={t(placeholder)}
+          inputProps={{
+            ...params.inputProps,
+            'aria-labelledby': `${id}-label`,
+          }}
         />
       )}
       isOptionEqualToValue={(option, value) => option.slug === value.slug}

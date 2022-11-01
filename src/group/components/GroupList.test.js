@@ -52,7 +52,6 @@ test('GroupList: Display loader', async () => {
   await setup();
   const loader = screen.getByRole('progressbar', {
     name: 'Loading',
-    hidden: true,
   });
   expect(loader).toBeInTheDocument();
 });
