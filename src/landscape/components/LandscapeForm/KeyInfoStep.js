@@ -125,6 +125,7 @@ const InfoStep = props => {
       <Form
         aria-labelledby="landscape-form-page-title"
         prefix="landscape"
+        localizationPrefix="landscape.form_key_info"
         fields={FORM_FIELDS}
         values={landscape}
         validationSchema={VALIDATION_SCHEMA}
