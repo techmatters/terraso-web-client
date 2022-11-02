@@ -115,7 +115,7 @@ const DevelopmentStrategyStep = props => {
         onCancel={onCancel}
         onSave={onSave}
         updatedValues={updatedValues}
-        setUpdatedLandscape={setUpdatedLandscape}
+        onNext={setUpdatedLandscape}
       />
     </>
   );
