@@ -330,7 +330,7 @@
         "form_cancel": "Cancel",
         "form_back": "Back",
         "form_next": "Next",
-        "form_save_now": "Save For Now",
+        "form_save_now": "Save",
         "profile_profile_card_label": "[TODO] Profile card label",
         "profile_profile_card_location_label": "Location",
         "profile_profile_card_area_types_label": "Area Type",
@@ -404,7 +404,10 @@
         "profile_development_card_problemSitutation_title": "Main challenges",
         "profile_development_card_interventionStrategy_title": "Intervention strategy",
         "profile_development_card_otherInformation_title": "General information",
-        "profile_development_update_button": "Update Goals and Strategy"
+        "profile_development_update_button": "Update Goals and Strategy",
+        "form_key_info.name": "name",
+        "form_key_info.description": "description",
+        "form_key_info.location": "country or region"
     },
     "sharedData": {
         "title": "Shared files",

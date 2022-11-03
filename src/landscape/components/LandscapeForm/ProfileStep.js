@@ -72,7 +72,6 @@ const FORM_FIELDS = [
   {
     name: 'taxonomyTypeTerms.ecosystem-type',
     label: 'landscape.form_profile_ecosystem_types',
-    info: 'landscape.form_profile_ecosystem_types_info',
     props: {
       renderInput: ({ id, field }) => (
         <TaxonomyAutocomplete
