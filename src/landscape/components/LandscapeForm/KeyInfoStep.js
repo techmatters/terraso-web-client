@@ -24,6 +24,7 @@ const VALIDATION_SCHEMA = yup
       .maxCustom(MAX_DESCRIPTION_LENGTH)
       .trim()
       .required(),
+    location: yup.string().trim().required(),
     email: yup.string().trim().email(),
     website: yup.string().trim().ensure().transform(transformURL).url(),
   })
@@ -124,6 +125,7 @@ const InfoStep = props => {
       <Form
         aria-labelledby="landscape-form-page-title"
         prefix="landscape"
+        localizationPrefix="landscape.form_key_info"
         fields={FORM_FIELDS}
         values={landscape}
         validationSchema={VALIDATION_SCHEMA}
