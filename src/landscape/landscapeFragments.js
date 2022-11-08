@@ -19,6 +19,8 @@ export const landscapeProfileFields = `
     areaTypes
     population
     partnershipStatus
+    profileImage
+    profileImageDescription
     taxonomyTerms {
       edges {
         node {

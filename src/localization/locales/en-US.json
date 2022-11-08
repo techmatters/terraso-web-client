@@ -407,7 +407,8 @@
         "profile_development_update_button": "Update Goals and Strategy",
         "form_key_info.name": "name",
         "form_key_info.description": "description",
-        "form_key_info.location": "country or region"
+        "form_key_info.location": "country or region",
+        "form_profile_image_zoom_label": "Zoom"
     },
     "sharedData": {
         "title": "Shared files",
