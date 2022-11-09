@@ -82,10 +82,14 @@ const ProfileImage = props => {
     }
     if (typeof value === 'string') {
       setOpeningImage(true);
-      openImageUrl(value).then(image => {
-        setImage(image);
-        setOpeningImage(false);
-      });
+      openImageUrl(value)
+        .then(image => {
+          setImage(image);
+          setOpeningImage(false);
+        })
+        .catch(() => {
+          setOpeningImage(false);
+        });
     }
   }, [value, onChange]);
 
