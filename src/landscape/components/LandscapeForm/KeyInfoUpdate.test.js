@@ -26,7 +26,7 @@ const setup = async (countryName = 'Landscape location') => {
   const email = screen.getByRole('textbox', { name: 'Email address' });
   const website = screen.getByRole('textbox', { name: 'Website' });
   const location = screen.getByRole('button', {
-    name: `Country or region ${countryName}`,
+    name: `Country or region (required) ${countryName}`,
   });
 
   const changeLocation = async newLocation => {

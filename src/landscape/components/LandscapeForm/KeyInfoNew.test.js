@@ -26,7 +26,7 @@ const setup = async () => {
   const email = screen.getByRole('textbox', { name: 'Email address' });
   const website = screen.getByRole('textbox', { name: 'Website' });
   const location = screen.getByRole('button', {
-    name: 'Country or region Landscape location',
+    name: 'Country or region (required) Landscape location',
   });
 
   const changeLocation = async newLocation => {
@@ -291,7 +291,7 @@ test('LandscapeNew: Save form (add)', async () => {
     )
   );
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save For Now' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
   );
 
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(6);
