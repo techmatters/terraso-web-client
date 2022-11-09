@@ -1,15 +1,26 @@
 import React, { useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
+import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Button, Card, CardContent, Grid, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  Stack,
+  Typography,
+} from '@mui/material';
 
 import { countryNameForCode } from 'common/utils';
 import Restricted from 'permissions/components/Restricted';
 
 import { getTermLabel } from 'taxonomies/taxonomiesUtils';
+
+import profileImageDefault from './profile-image-default.jpg';
 
 const FIELDS = [
   {
@@ -91,6 +102,55 @@ const ProfileField = props => {
   );
 };
 
+const ProfileImage = props => {
+  const { t } = useTranslation();
+  const { landscape } = props;
+  const { allowed } = usePermission('landscape.change', landscape);
+
+  const hasProfileImage = !!landscape.profileImage;
+
+  if (!allowed && !hasProfileImage) {
+    return null;
+  }
+
+  return (
+    <Box
+      sx={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+    >
+      {allowed && (
+        <Stack sx={{ position: 'absolute', mb: 2, color: 'white' }} spacing={2}>
+          {!hasProfileImage && (
+            <Typography>
+              {t(
+                'landscape.profile_profile_card_profile_image_placeholder_message'
+              )}
+            </Typography>
+          )}
+          <Button
+            variant="contained"
+            component={RouterLink}
+            to={`/landscapes/${landscape.slug}/profile-image/edit`}
+            sx={{
+              backgroundColor: 'white',
+              color: 'black',
+            }}
+          >
+            {t('landscape.profile_profile_card_profile_image_update')}
+          </Button>
+        </Stack>
+      )}
+      <img
+        src={hasProfileImage ? landscape.profileImage : profileImageDefault}
+        alt={
+          landscape.profileImageDescription ||
+          t('landscape.profile_profile_card_profile_image_alt')
+        }
+        style={{ width: '100%' }}
+      />
+    </Box>
+  );
+};
+
 const ProfileCard = props => {
   const { t, i18n } = useTranslation();
   const { landscape, setIsEmpty } = props;
@@ -134,6 +194,7 @@ const ProfileCard = props => {
         width: '100%',
       }}
     >
+      <ProfileImage landscape={landscape} />
       {_.isEmpty(values) ? (
         <>
           <CardContent sx={{ mt: 2 }}>
