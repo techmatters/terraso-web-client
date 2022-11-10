@@ -207,6 +207,7 @@ const ProfileImageStep = props => {
         updatedValues={updatedValues}
         onNext={setUpdatedLandscape}
         nextLabel={'landscape.form_save_label'}
+        saveDisabled={!updatedValues?.profileImage?.result}
       />
     </>
   );

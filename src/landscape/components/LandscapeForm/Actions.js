@@ -8,8 +8,16 @@ import { useFormGetContext } from 'forms/formContext';
 
 const Actions = props => {
   const { t } = useTranslation();
-  const { isNew, onCancel, updatedValues, onNext, onSave, nextLabel, isForm } =
-    props;
+  const {
+    isNew,
+    onCancel,
+    updatedValues,
+    onNext,
+    onSave,
+    nextLabel,
+    isForm,
+    saveDisabled = false,
+  } = props;
   const formContext = useFormGetContext();
 
   const onNextWrapper = useCallback(async () => {
@@ -40,6 +48,7 @@ const Actions = props => {
             <Button
               variant="outlined"
               onClick={onSaveWrapper}
+              disabled={saveDisabled}
               sx={{ pl: 2, pr: 2 }}
             >
               {t('landscape.form_save_now')}
@@ -62,6 +71,7 @@ const Actions = props => {
       <Button
         variant="contained"
         onClick={onSave ? onSaveWrapper : onNextWrapper}
+        disabled={saveDisabled}
         sx={{ pl: 6, pr: 6 }}
       >
         {t('landscape.form_update')}
