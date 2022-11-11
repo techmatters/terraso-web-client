@@ -42,7 +42,10 @@ const LandscapeSharedDataUpload = () => {
   }, [dispatch, slug]);
 
   const onCompleteSuccess = useCallback(() => {
-    navigate(`/landscapes/${slug}`);
+    navigate({
+      pathname: `/landscapes/${slug}`,
+      search: 'scrollTo=shared-data-card-title',
+    });
   }, [navigate, slug]);
 
   if (fetching) {

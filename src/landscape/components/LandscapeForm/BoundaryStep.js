@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 
 import ExternalLink from 'common/components/ExternalLink';
-import { countryNameForCode, scrollToNavBar } from 'common/utils';
+import { countryNameForCode } from 'common/utils';
 import PageHeader from 'layout/PageHeader';
 import { useAnalytics } from 'monitoring/analytics';
 
@@ -31,6 +31,8 @@ import LandscapeMap from 'landscape/components/LandscapeMap';
 import { useIsMounted } from 'custom-hooks';
 
 import './BoundaryStep.css';
+
+import { scrollToNavBar } from 'navigation/scrollTo';
 
 const OPTION_GEOJSON = 'geo-json';
 const OPTION_MAP_DRAW_POLYGON = 'map-draw-polygon';

@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 
 import List from 'common/components/List';
+import { ScrollTo } from 'navigation/scrollTo';
 import { useFetchData } from 'state/utils';
 
 import { useGroupContext } from 'group/groupContext';
@@ -91,6 +92,7 @@ const SharedFilesCard = props => {
             >
               {t('sharedData.description_with_files', { entityType })}
             </Typography>
+            <ScrollTo />
           </>
         )}
         <Stack direction="row" spacing={2}>
