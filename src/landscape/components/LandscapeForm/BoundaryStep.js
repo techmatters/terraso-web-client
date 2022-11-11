@@ -34,6 +34,8 @@ import './BoundaryStep.css';
 
 import { scrollToNavBar } from 'navigation/scrollTo';
 
+import { LAYER_ESRI } from 'gis/components/Map';
+
 const OPTION_GEOJSON = 'geo-json';
 const OPTION_MAP_DRAW_POLYGON = 'map-draw-polygon';
 const OPTION_MAP_PIN = 'map-pin';
@@ -228,6 +230,7 @@ const MapDrawPolygon = props => {
           geoJsonFilter={POLYGON_FILTER}
           drawOptions={drawOptions}
           label={t('landscape.form_map_section_lanel')}
+          defaultLayer={LAYER_ESRI}
         />
         {editHelp && (
           <Alert severity="info">
