@@ -15,7 +15,9 @@ import {
   CardHeader,
   Grid,
   Link,
+  Paper,
   Stack,
+  SvgIcon,
   Typography,
 } from '@mui/material';
 
@@ -108,6 +110,64 @@ const LandscapeCard = ({ landscape }) => {
   );
 };
 
+const BoundaryIcon = () => (
+  <SvgIcon viewBox="0 0 50 14" sx={{ width: '50px' }} aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg">
+      <rect
+        x="0.25"
+        y="0.25"
+        width="48.6703"
+        height="13.5"
+        fill="#D6E7FF"
+        stroke="#368AFD"
+        strokeWidth="0.5"
+      />
+    </svg>
+  </SvgIcon>
+);
+
+const LandscapeBoundaryDownload = props => {
+  const { t } = useTranslation();
+  const { landscape } = props;
+  const { areaPolygon, slug } = landscape;
+
+  const url = useMemo(
+    () =>
+      URL.createObjectURL(
+        new Blob([JSON.stringify(areaPolygon)], {
+          type: 'application/geo+json',
+        })
+      ),
+    [areaPolygon]
+  );
+
+  if (!areaPolygon) {
+    return null;
+  }
+
+  return (
+    <Stack
+      direction="row"
+      justifyContent="space-between"
+      alignItems="center"
+      sx={{ p: 2 }}
+    >
+      <Stack direction="row" spacing={1}>
+        <BoundaryIcon />
+        <Typography>{t('landscape.view_boundary_download_label')}</Typography>
+      </Stack>
+      <Button
+        variant="outlined"
+        component="a"
+        href={url}
+        download={`${slug}.geojson`}
+      >
+        {t('landscape.view_boundary_download_button')}
+      </Button>
+    </Stack>
+  );
+};
+
 const LandscapeView = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -186,11 +246,14 @@ const LandscapeView = () => {
           <Grid item xs={12} md={12}>
             <Card variant="outlined">
               <CardContent>
-                <LandscapeMap
-                  areaPolygon={landscape.areaPolygon}
-                  boundingBox={landscape.boundingBox}
-                  label={t('landscape.view_map_title')}
-                />
+                <Paper variant="outlined" sx={{ mb: 2 }}>
+                  <LandscapeMap
+                    areaPolygon={landscape.areaPolygon}
+                    boundingBox={landscape.boundingBox}
+                    label={t('landscape.view_map_title')}
+                  />
+                  <LandscapeBoundaryDownload landscape={landscape} />
+                </Paper>
                 <InlineHelp
                   items={[
                     {

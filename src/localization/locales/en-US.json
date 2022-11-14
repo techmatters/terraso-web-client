@@ -318,7 +318,9 @@
         "form_boundary_map_basemap_label": "Background map",
         "breadcrumbs_visualization": "{{mapTitle}}",
         "breadcrumbs_visualization_new": "New Map",
-        "breadcrumbs_upload": "Share Files"
+        "breadcrumbs_upload": "Share Files",
+        "view_boundary_download_label": "Landscape boundary",
+        "view_boundary_download_button": "Download boundary (GeoJSON)"
     },
     "sharedData": {
         "title": "Shared files",
