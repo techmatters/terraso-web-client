@@ -7,14 +7,10 @@ import * as yup from 'yup';
 
 import { MenuItem, Select, Typography } from '@mui/material';
 
-import {
-  countriesList,
-  countryMap,
-  scrollToNavBar,
-  transformURL,
-} from 'common/utils';
+import { countriesList, countryMap, transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
 import PageHeader from 'layout/PageHeader';
+import { scrollToNavBar } from 'navigation/scrollTo';
 
 import { MAX_DESCRIPTION_LENGTH } from 'config';
 

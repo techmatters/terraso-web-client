@@ -46,9 +46,7 @@ beforeEach(() => {
 });
 
 const testSelectDataFileStep = async () => {
-  const filesList = within(
-    screen.getByRole('list', { name: 'Data File' })
-  );
+  const filesList = within(screen.getByRole('list', { name: 'Data File' }));
   const nextButton = screen.getByRole('button', { name: 'Next' });
 
   expect(nextButton).toHaveAttribute('disabled');
