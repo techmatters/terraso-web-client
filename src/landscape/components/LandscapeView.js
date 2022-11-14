@@ -47,6 +47,8 @@ import SharedDataCard from 'sharedData/components/SharedDataCard';
 
 import { withProps } from 'react-hoc';
 
+import theme from 'theme';
+
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.view_leave_label',
 });
@@ -118,8 +120,8 @@ const BoundaryIcon = () => (
         y="0.25"
         width="48.6703"
         height="13.5"
-        fill="#D6E7FF"
-        stroke="#368AFD"
+        fill={theme.palette.map.polygonFill}
+        stroke={theme.palette.map.polygon}
         strokeWidth="0.5"
       />
     </svg>
