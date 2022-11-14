@@ -319,7 +319,9 @@
         "form_boundary_map_basemap_label": "Mapa de fondo",
         "breadcrumbs_visualization": "{{mapTitle}}",
         "breadcrumbs_visualization_new": "Nuevo mapa",
-        "breadcrumbs_upload": "Compartir archivos"
+        "breadcrumbs_upload": "Compartir archivos",
+        "view_boundary_download_label": "Límite del paisaje",
+        "view_boundary_download_button": "Descargar límite (GeoJSON)"
     },
     "common": {
         "dialog_cancel_label": "Cancelar",
