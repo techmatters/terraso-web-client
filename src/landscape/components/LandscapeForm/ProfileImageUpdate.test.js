@@ -145,7 +145,11 @@ test('ProfileImageUpdate: Save form', async () => {
       type: `image/jpeg`,
     }),
   ]);
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Update' })).not.toHaveAttribute('disabled'));
+  await waitFor(() =>
+    expect(screen.getByRole('button', { name: 'Update' })).not.toHaveAttribute(
+      'disabled'
+    )
+  );
 
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Update' }))

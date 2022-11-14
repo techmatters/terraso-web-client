@@ -20,6 +20,9 @@ import { LANDSCAPE_PROFILE_IMAGE_MAX_SIZE } from 'config';
 
 import Actions from './Actions';
 
+const ASPECT_RATIO_X = 16;
+const ASPECT_RATIO_Y = 9;
+
 const VALIDATION_SCHEMA = yup.object({}).required();
 
 const FORM_FIELDS = [
@@ -36,32 +39,24 @@ const FORM_FIELDS = [
   },
 ];
 
-const openFile = file =>
+const dataURItoBlob = dataURI => fetch(dataURI).then(res => res.blob());
+
+const readAsDataURL = data =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = event => {
-      const contents = event.target.result;
-      resolve(contents);
+    reader.onloadend = () => {
+      resolve(reader.result);
     };
     reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(data);
   });
 
-const dataURItoBlob = dataURI => fetch(dataURI).then(res => res.blob());
+const openFile = file => readAsDataURL(file);
 
 const openImageUrl = url =>
   fetch(url)
     .then(res => res.blob())
-    .then(blob => {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          resolve(reader.result);
-        };
-        reader.onerror = () => reject(reader.error);
-        reader.readAsDataURL(blob);
-      });
-    });
+    .then(readAsDataURL);
 
 const ProfileImage = props => {
   const { t } = useTranslation();
@@ -127,7 +122,7 @@ const ProfileImage = props => {
             rotate={0}
             onImageReady={() => {
               const width = containerRef.current.offsetWidth - editorBorder * 2;
-              const height = (width * 9) / 16;
+              const height = (width * ASPECT_RATIO_Y) / ASPECT_RATIO_X;
               setSize({ width, height });
               dataURItoBlob(image).then(blob => {
                 onChange({ result: blob });
