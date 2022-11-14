@@ -30,14 +30,14 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
-const LAYER_OSM = L.tileLayer(
+export const LAYER_OSM = L.tileLayer(
   'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
   {
     attribution:
       'Data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors Tiles &copy; HOT',
   }
 );
-const LAYER_ESRI = L.tileLayer(
+export const LAYER_ESRI = L.tileLayer(
   'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
   {
     attribution:
@@ -344,6 +344,7 @@ const Map = props => {
     onGeoJsonChange,
     geoJsonFilter,
     drawOptions,
+    defaultLayer,
   } = props;
 
   useEffect(() => {
@@ -364,7 +365,7 @@ const Map = props => {
     setFeatureGroup(featureGroup);
 
     // Default layer
-    map.addLayer(LAYER_OSM);
+    map.addLayer(defaultLayer || LAYER_OSM);
 
     // Layers control
     const layersControl = L.control
@@ -378,7 +379,7 @@ const Map = props => {
       map.removeControl(layersControl);
       featureGroup.remove();
     };
-  }, [map, t]);
+  }, [map, t, defaultLayer]);
 
   useEffect(() => {
     const onMoveListener = () => onBoundsChange?.(map.getBounds());

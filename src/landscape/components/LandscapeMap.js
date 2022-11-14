@@ -19,6 +19,7 @@ const LandscapeMap = ({
   onGeoJsonChange,
   geoJsonFilter,
   drawOptions,
+  defaultLayer,
 }) => {
   const bounds = useMemo(
     () => getLandscapeBoundingBox({ areaPolygon, boundingBox }),
@@ -37,6 +38,7 @@ const LandscapeMap = ({
         onGeoJsonChange={onGeoJsonChange}
         geoJsonFilter={geoJsonFilter}
         drawOptions={drawOptions}
+        defaultLayer={defaultLayer}
         style={{
           width: '100%',
           height: '400px',
