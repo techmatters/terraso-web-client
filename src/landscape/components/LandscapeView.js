@@ -149,9 +149,10 @@ const LandscapeBoundaryDownload = props => {
 
   return (
     <Stack
-      direction="row"
+      direction={{ xs: 'column', sm: 'row' }}
       justifyContent="space-between"
       alignItems="center"
+      spacing={1}
       sx={{ p: 2 }}
     >
       <Stack direction="row" spacing={1}>
