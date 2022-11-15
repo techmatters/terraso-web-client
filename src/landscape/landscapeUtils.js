@@ -38,14 +38,27 @@ export const getLandscapeBoundingBox = (landscape = {}) => {
   }
 };
 
+export const isBoundaryPin = landscape => {
+  if (!landscape) {
+    return false;
+  }
+
+  const features = _.getOr([], 'areaPolygon.features', landscape);
+
+  if (_.isEmpty(features) || _.size(features) > 1) {
+    return false;
+  }
+
+  return _.get('[0].geometry.type', features) === 'Point';
+};
+
 export const getLandscapePin = landscape => {
   if (!landscape) {
     return null;
   }
 
   const point = (() => {
-    const isPin =
-      _.get('areaPolygon.features[0].geometry.type', landscape) === 'Point';
+    const isPin = isBoundaryPin(landscape);
 
     if (isPin) {
       return _.flow(

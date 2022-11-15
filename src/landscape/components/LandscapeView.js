@@ -42,6 +42,7 @@ import {
   fetchLandscapeView,
   refreshLandscapeView,
 } from 'landscape/landscapeSlice';
+import { isBoundaryPin } from 'landscape/landscapeUtils';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 import SharedDataCard from 'sharedData/components/SharedDataCard';
 
@@ -143,7 +144,9 @@ const LandscapeBoundaryDownload = props => {
     [areaPolygon]
   );
 
-  if (!areaPolygon) {
+  const isPin = useMemo(() => isBoundaryPin(landscape), [landscape]);
+
+  if (!areaPolygon || isPin) {
     return null;
   }
 
