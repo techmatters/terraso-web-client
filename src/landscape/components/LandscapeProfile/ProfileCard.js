@@ -20,8 +20,6 @@ import Restricted from 'permissions/components/Restricted';
 
 import { getTermLabel } from 'taxonomies/taxonomiesUtils';
 
-import profileImageDefault from './profile-image-default.jpg';
-
 const FIELDS = [
   {
     label: 'landscape.profile_profile_card_location_label',
@@ -140,7 +138,11 @@ const ProfileImage = props => {
         </Stack>
       )}
       <img
-        src={hasProfileImage ? landscape.profileImage : profileImageDefault}
+        src={
+          hasProfileImage
+            ? landscape.profileImage
+            : '/landscape/profile-image-default.jpg'
+        }
         alt={
           landscape.profileImageDescription ||
           t('landscape.profile_profile_card_profile_image_alt')

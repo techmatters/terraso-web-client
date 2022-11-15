@@ -23,6 +23,9 @@ import Actions from './Actions';
 const ASPECT_RATIO_X = 16;
 const ASPECT_RATIO_Y = 9;
 
+const EDITOR_INITIAL_ZOOM = 1;
+const EDITOR_INITIAL_SIZE = { width: 418, height: 235 };
+
 const VALIDATION_SCHEMA = yup.object({}).required();
 
 const FORM_FIELDS = [
@@ -65,8 +68,8 @@ const ProfileImage = props => {
   } = props;
   const [error, setError] = useState();
   const [image, setImage] = useState();
-  const [zoom, setZoom] = useState(1);
-  const [size, setSize] = useState({ width: 418, height: 235 });
+  const [zoom, setZoom] = useState(EDITOR_INITIAL_ZOOM);
+  const [size, setSize] = useState(EDITOR_INITIAL_SIZE);
   const [openingImage, setOpeningImage] = useState(false);
   const cropTool = useRef(null);
   const containerRef = useRef(null);
