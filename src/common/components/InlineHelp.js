@@ -12,7 +12,11 @@ const Item = props => {
   const { id, item } = props;
 
   return (
-    <Accordion disableGutters elevation={0}>
+    <Accordion
+      disableGutters
+      elevation={0}
+      sx={{ '&:before': { display: 'none' } }}
+    >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={`${id}-details`}
