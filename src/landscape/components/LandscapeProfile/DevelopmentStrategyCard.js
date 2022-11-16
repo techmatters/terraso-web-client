@@ -81,9 +81,16 @@ const DevelopmentStrategyCard = ({ landscape, setIsEmpty }) => {
         }
       />
       {_.isEmpty(values) && (
-        <CardContent>
-          {t('landscape.profile_development_card_empty')}
-        </CardContent>
+        <>
+          <CardContent>
+            {t('landscape.profile_development_card_empty')}
+          </CardContent>
+          <Restricted permission="landscape.change" resource={landscape}>
+            <CardContent sx={{ mt: 2 }}>
+              {t('landscape.profile_development_card_enter')}
+            </CardContent>
+          </Restricted>
+        </>
       )}
       {Object.keys(values).map(field => (
         <ValueSection
