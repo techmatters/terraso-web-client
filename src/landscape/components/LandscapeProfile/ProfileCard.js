@@ -120,11 +120,15 @@ const ProfileImage = props => {
       {allowed && (
         <Stack sx={{ position: 'absolute', mb: 2, color: 'white' }} spacing={2}>
           {!hasProfileImage && (
-            <Typography>
-              {t(
-                'landscape.profile_profile_card_profile_image_placeholder_message'
-              )}
-            </Typography>
+            <Restricted permission="landscape.change" resource={landscape}>
+              <Typography
+                sx={{ background: 'black', p: 2, fontWeight: 'bold' }}
+              >
+                {t(
+                  'landscape.profile_profile_card_profile_image_placeholder_message'
+                )}
+              </Typography>
+            </Restricted>
           )}
           <Button
             variant="contained"
@@ -133,6 +137,10 @@ const ProfileImage = props => {
             sx={{
               backgroundColor: 'white',
               color: 'black',
+              '&:hover': {
+                color: 'white',
+                fontWeight: 'bold',
+              },
             }}
           >
             {t('landscape.profile_profile_card_profile_image_update')}
