@@ -124,7 +124,9 @@ const ProfileCard = props => {
   return (
     <Card
       component="section"
-      aria-label={t('landscape.profile_profile_card_label')}
+      aria-label={t('landscape.profile_profile_card_label', {
+        name: landscape.name,
+      })}
       style={{
         display: 'flex',
         justifyContent: 'flex-start',
@@ -132,22 +134,30 @@ const ProfileCard = props => {
         width: '100%',
       }}
     >
-      {_.isEmpty(values) && (
-        <CardContent sx={{ mt: 2 }}>
-          {t('landscape.profile_profile_card_empty')}
+      {_.isEmpty(values) ? (
+        <>
+          <CardContent sx={{ mt: 2 }}>
+            {t('landscape.profile_profile_card_empty')}
+          </CardContent>
+          <Restricted permission="landscape.change" resource={landscape}>
+            <CardContent sx={{ mt: 2 }}>
+              {t('landscape.profile_profile_card_empty_enter')}
+            </CardContent>
+          </Restricted>
+        </>
+      ) : (
+        <CardContent sx={{ display: 'flex', flexGrow: 1 }}>
+          <Grid container spacing={2} sx={{ pt: 2, pl: 0, pr: 2 }}>
+            {FIELDS.map((field, index) => (
+              <ProfileField
+                key={index}
+                label={t(field.label, { count: counts[index] })}
+                value={values[index]}
+              />
+            ))}
+          </Grid>
         </CardContent>
       )}
-      <CardContent sx={{ display: 'flex', flexGrow: 1 }}>
-        <Grid container spacing={2} sx={{ pt: 2, pl: 0, pr: 2 }}>
-          {FIELDS.map((field, index) => (
-            <ProfileField
-              key={index}
-              label={t(field.label, { count: counts[index] })}
-              value={values[index]}
-            />
-          ))}
-        </Grid>
-      </CardContent>
       <CardContent>
         <Restricted permission="landscape.change" resource={landscape}>
           <Button
