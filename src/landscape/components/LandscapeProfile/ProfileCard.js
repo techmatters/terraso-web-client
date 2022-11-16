@@ -141,7 +141,7 @@ const ProfileCard = props => {
           </CardContent>
           <Restricted permission="landscape.change" resource={landscape}>
             <CardContent sx={{ mt: 2 }}>
-              {t('landscape.profile_profile_card_empty_enter')}
+              {t('landscape.profile_profile_card_enter')}
             </CardContent>
           </Restricted>
         </>
