@@ -16,7 +16,10 @@ import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 
-import { LANDSCAPE_PROFILE_IMAGE_MAX_SIZE } from 'config';
+import {
+  IMAGE_ACCEPTED_EXTENSIONS,
+  LANDSCAPE_PROFILE_IMAGE_MAX_SIZE,
+} from 'config';
 
 import Actions from './Actions';
 
@@ -141,7 +144,7 @@ const ProfileImage = props => {
       )}
       <DropZone
         errors={error ? [error] : null}
-        fileExtensions={['jpeg', 'jpg']}
+        fileExtensions={IMAGE_ACCEPTED_EXTENSIONS}
         maxSize={LANDSCAPE_PROFILE_IMAGE_MAX_SIZE}
         onDrop={onDrop}
       />
