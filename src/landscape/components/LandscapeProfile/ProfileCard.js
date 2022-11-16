@@ -143,7 +143,9 @@ const ProfileImage = props => {
         src={hasProfileImage ? landscape.profileImage : PROFILE_IMAGE_DEFAULT}
         alt={
           landscape.profileImageDescription ||
-          t('landscape.profile_profile_card_profile_image_alt')
+          t('landscape.profile_profile_card_profile_image_alt', {
+            name: landscape.name,
+          })
         }
         style={{ width: '100%' }}
       />
