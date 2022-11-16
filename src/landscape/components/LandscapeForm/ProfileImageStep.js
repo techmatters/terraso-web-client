@@ -20,8 +20,7 @@ import { LANDSCAPE_PROFILE_IMAGE_MAX_SIZE } from 'config';
 
 import Actions from './Actions';
 
-const ASPECT_RATIO_X = 16;
-const ASPECT_RATIO_Y = 9;
+const ASPECT_RATIO = 0.5625; // 9 / 16
 
 const EDITOR_INITIAL_ZOOM = 1;
 const EDITOR_INITIAL_SIZE = { width: 418, height: 235 };
