@@ -14,15 +14,12 @@ import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 
 import DeleteIcon from '@mui/icons-material/Delete';
-import { LoadingButton } from '@mui/lab';
 import {
   Alert,
-  Button,
   Divider,
   IconButton,
   InputAdornment,
   LinearProgress,
-  Paper,
   Stack,
   Typography,
 } from '@mui/material';
@@ -31,21 +28,16 @@ import { styled } from '@mui/system';
 
 import BaseDropZone from 'common/components/DropZone';
 import FormField from 'forms/components/FormField';
-import { useAnalytics } from 'monitoring/analytics';
 
-import {
-  UPLOAD_STATUS_ERROR,
-  UPLOAD_STATUS_SUCCESS,
-  UPLOAD_STATUS_UPLOADING,
-  resetUploads,
-  uploadSharedDataFile,
-} from 'sharedData/sharedDataSlice';
+import { resetUploads } from 'sharedData/sharedDataSlice';
 
 import {
   SHARED_DATA_ACCEPTED_EXTENSIONS,
   SHARED_DATA_MAX_FILES,
   SHARED_DATA_MAX_SIZE,
 } from 'config';
+
+import { groupByStatus } from './utils';
 
 import theme from 'theme';
 
@@ -240,27 +232,10 @@ const ShareDataFiles = props => {
   const [errors, setErrors] = useState({});
   const [dropErrors, setDropErrors] = useState();
 
-  const { apiErrors, apiSuccesses, apiUploading } = useMemo(() => {
-    const byStatus = _.flow(
-      _.toPairs,
-      _.filter(([fileId]) => _.has(fileId, files)),
-      _.groupBy(([fileId, result]) => result.status),
-      _.toPairs,
-      _.map(([status, statusFiles]) => [
-        status,
-        _.flow(
-          _.map(([fileId, result]) => [fileId, result.data]),
-          _.fromPairs
-        )(statusFiles),
-      ]),
-      _.fromPairs
-    )(uploads);
-    return {
-      apiErrors: byStatus[UPLOAD_STATUS_ERROR],
-      apiSuccesses: byStatus[UPLOAD_STATUS_SUCCESS],
-      apiUploading: byStatus[UPLOAD_STATUS_UPLOADING],
-    };
-  }, [uploads, files]);
+  const { apiErrors, apiSuccesses, apiUploading } = useMemo(
+    () => groupByStatus(_.pick(Object.keys(files), uploads)),
+    [uploads, files]
+  );
 
   useEffect(() => {
     const pendingFiles = _.toPairs(files).filter(
@@ -379,92 +354,4 @@ const ShareDataFiles = props => {
   );
 };
 
-const SharedDataUpload = props => {
-  const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const { trackEvent } = useAnalytics();
-
-  const { groupSlug, onCancel, onCompleteSuccess } = props;
-
-  const [filesPending, setFilesPending] = useState([]);
-  const [filesErrors, setFilesErrors] = useState([]);
-  const [filesUploading, setFilesUploading] = useState(false);
-  const [filesSuccess, setFilesSuccess] = useState(false);
-
-  useEffect(() => {
-    dispatch(resetUploads());
-  }, [dispatch]);
-
-  useEffect(() => {
-    const isCompleteSuccess = filesSuccess;
-    if (isCompleteSuccess) {
-      onCompleteSuccess(true);
-    }
-  }, [filesSuccess, onCompleteSuccess]);
-
-  const onSave = useCallback(() => {
-    const promises = filesPending.map(([fileId, file]) =>
-      dispatch(uploadSharedDataFile({ groupSlug, file }))
-    );
-    Promise.allSettled(promises).then(results =>
-      results
-        .filter(result => result.status === 'fulfilled')
-        .forEach(result => {
-          trackEvent('uploadFile', { props: { owner: groupSlug } });
-        })
-    );
-  }, [filesPending, groupSlug, dispatch, trackEvent]);
-
-  const hasBlockingErrors = useMemo(
-    () =>
-      !_.isEmpty(Object.values(filesErrors).filter(error => !_.isEmpty(error))),
-    [filesErrors]
-  );
-
-  console.log({ filesPending, hasBlockingErrors });
-  const isSaveDisabled = useMemo(
-    () => _.isEmpty(filesPending) || hasBlockingErrors,
-    [filesPending, hasBlockingErrors]
-  );
-
-  const isUploading = useMemo(() => filesUploading, [filesUploading]);
-
-  return (
-    <>
-      <Paper
-        component={Stack}
-        spacing={2}
-        variant="outlined"
-        sx={{ padding: 2 }}
-      >
-        <ShareDataFiles
-          setFilesPending={setFilesPending}
-          setFilesErrors={setFilesErrors}
-          setFilesUploading={setFilesUploading}
-          setFilesSuccess={setFilesSuccess}
-        />
-      </Paper>
-      <Stack
-        direction="row"
-        spacing={2}
-        justifyContent="space-between"
-        sx={{ marginTop: 3 }}
-      >
-        <LoadingButton
-          variant="contained"
-          disabled={isSaveDisabled}
-          loading={isUploading}
-          onClick={onSave}
-          sx={{ paddingLeft: 5, paddingRight: 5 }}
-        >
-          {t('sharedData.upload_save')}
-        </LoadingButton>
-        <Button variant="text" onClick={onCancel}>
-          {t('sharedData.upload_cancel')}
-        </Button>
-      </Stack>
-    </>
-  );
-};
-
-export default SharedDataUpload;
+export default ShareDataFiles;
