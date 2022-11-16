@@ -38,7 +38,7 @@ import {
   UPLOAD_STATUS_SUCCESS,
   UPLOAD_STATUS_UPLOADING,
   resetUploads,
-  uploadSharedData,
+  uploadSharedDataFile,
 } from 'sharedData/sharedDataSlice';
 
 import {
@@ -225,14 +225,20 @@ const fileWrapper = file => {
   };
 };
 
-const SharedDataUpload = props => {
+const ShareDataFiles = props => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const { groupSlug, onCancel, onCompleteSuccess } = props;
-  const uploads = useSelector(state => state.sharedData.uploads);
+  const {
+    setFilesPending,
+    setFilesErrors,
+    setFilesUploading,
+    setFilesSuccess,
+  } = props;
+
+  const uploads = useSelector(_.get('sharedData.uploads.files'));
   const [files, setFiles] = useState({});
   const [errors, setErrors] = useState({});
-  const { trackEvent } = useAnalytics();
+  const [dropErrors, setDropErrors] = useState();
 
   const { apiErrors, apiSuccesses, apiUploading } = useMemo(() => {
     const byStatus = _.flow(
@@ -255,11 +261,26 @@ const SharedDataUpload = props => {
       apiUploading: byStatus[UPLOAD_STATUS_UPLOADING],
     };
   }, [uploads, files]);
-  const [dropErrors, setDropErrors] = useState();
+
+  useEffect(() => {
+    const pendingFiles = _.toPairs(files).filter(
+      ([fileId]) => !_.has(fileId, apiSuccesses)
+    );
+    setFilesPending(pendingFiles);
+  }, [files, apiSuccesses, setFilesPending]);
+
+  useEffect(() => {
+    setFilesErrors(errors);
+  }, [errors, setFilesErrors]);
+
+  useEffect(() => {
+    setFilesUploading(!_.isEmpty(apiUploading));
+  }, [apiUploading, setFilesUploading]);
 
   useEffect(() => {
     dispatch(resetUploads());
   }, [dispatch]);
+
   useEffect(() => {
     const isCompleteSuccess =
       !_.isEmpty(Object.values(files)) &&
@@ -267,9 +288,9 @@ const SharedDataUpload = props => {
       _.isEmpty(apiErrors) &&
       _.isEmpty(apiUploading);
     if (isCompleteSuccess) {
-      onCompleteSuccess();
+      setFilesSuccess(true);
     }
-  }, [files, apiErrors, apiSuccesses, apiUploading, onCompleteSuccess]);
+  }, [files, apiErrors, apiSuccesses, apiUploading, setFilesSuccess]);
 
   const onDrop = useCallback(
     acceptedFiles => {
@@ -325,19 +346,88 @@ const SharedDataUpload = props => {
     setFiles(_.omit(id));
   };
 
-  const onSave = () => {
-    const pendingFiles = _.toPairs(files).filter(
-      ([fileId]) => !_.has(fileId, apiSuccesses)
-    );
-    pendingFiles.forEach(([fileId, file]) => {
-      dispatch(uploadSharedData({ groupSlug, file }));
-      trackEvent('uploadFile', { props: { owner: groupSlug } });
-    });
-  };
-
-  const hasBlockingErrors = !_.isEmpty(
-    Object.values(errors).filter(error => !_.isEmpty(error))
+  return (
+    <>
+      <Typography sx={{ fontWeight: 700 }}>
+        {t('sharedData.upload_description')}
+      </Typography>
+      <Stack direction={{ xs: 'column', md: 'row' }}>
+        <DropZone
+          multiple
+          errors={dropErrors}
+          onDrop={onDrop}
+          onDropRejected={onDropRejected}
+          maxSize={SHARED_DATA_MAX_SIZE}
+          maxFiles={SHARED_DATA_MAX_FILES}
+          fileExtensions={SHARED_DATA_ACCEPTED_EXTENSIONS}
+        />
+        <FilesContext.Provider
+          value={{
+            files: Object.values(files),
+            errors,
+            apiErrors,
+            apiSuccesses,
+            apiUploading,
+            onFileChange,
+            onFileDelete,
+          }}
+        >
+          <SelectedFiles />
+        </FilesContext.Provider>
+      </Stack>
+    </>
   );
+};
+
+const SharedDataUpload = props => {
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const { trackEvent } = useAnalytics();
+
+  const { groupSlug, onCancel, onCompleteSuccess } = props;
+
+  const [filesPending, setFilesPending] = useState([]);
+  const [filesErrors, setFilesErrors] = useState([]);
+  const [filesUploading, setFilesUploading] = useState(false);
+  const [filesSuccess, setFilesSuccess] = useState(false);
+
+  useEffect(() => {
+    dispatch(resetUploads());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const isCompleteSuccess = filesSuccess;
+    if (isCompleteSuccess) {
+      onCompleteSuccess(true);
+    }
+  }, [filesSuccess, onCompleteSuccess]);
+
+  const onSave = useCallback(() => {
+    const promises = filesPending.map(([fileId, file]) =>
+      dispatch(uploadSharedDataFile({ groupSlug, file }))
+    );
+    Promise.allSettled(promises).then(results =>
+      results
+        .filter(result => result.status === 'fulfilled')
+        .forEach(result => {
+          trackEvent('uploadFile', { props: { owner: groupSlug } });
+        })
+    );
+  }, [filesPending, groupSlug, dispatch, trackEvent]);
+
+  const hasBlockingErrors = useMemo(
+    () =>
+      !_.isEmpty(Object.values(filesErrors).filter(error => !_.isEmpty(error))),
+    [filesErrors]
+  );
+
+  console.log({ filesPending, hasBlockingErrors });
+  const isSaveDisabled = useMemo(
+    () => _.isEmpty(filesPending) || hasBlockingErrors,
+    [filesPending, hasBlockingErrors]
+  );
+
+  const isUploading = useMemo(() => filesUploading, [filesUploading]);
 
   return (
     <>
@@ -347,33 +437,12 @@ const SharedDataUpload = props => {
         variant="outlined"
         sx={{ padding: 2 }}
       >
-        <Typography sx={{ fontWeight: 700 }}>
-          {t('sharedData.upload_description')}
-        </Typography>
-        <Stack direction={{ xs: 'column', md: 'row' }}>
-          <DropZone
-            multiple
-            errors={dropErrors}
-            onDrop={onDrop}
-            onDropRejected={onDropRejected}
-            maxSize={SHARED_DATA_MAX_SIZE}
-            maxFiles={SHARED_DATA_MAX_FILES}
-            fileExtensions={SHARED_DATA_ACCEPTED_EXTENSIONS}
-          />
-          <FilesContext.Provider
-            value={{
-              files: Object.values(files),
-              errors,
-              apiErrors,
-              apiSuccesses,
-              apiUploading,
-              onFileChange,
-              onFileDelete,
-            }}
-          >
-            <SelectedFiles />
-          </FilesContext.Provider>
-        </Stack>
+        <ShareDataFiles
+          setFilesPending={setFilesPending}
+          setFilesErrors={setFilesErrors}
+          setFilesUploading={setFilesUploading}
+          setFilesSuccess={setFilesSuccess}
+        />
       </Paper>
       <Stack
         direction="row"
@@ -383,8 +452,8 @@ const SharedDataUpload = props => {
       >
         <LoadingButton
           variant="contained"
-          disabled={_.isEmpty(files) || hasBlockingErrors}
-          loading={!_.isEmpty(apiUploading)}
+          disabled={isSaveDisabled}
+          loading={isUploading}
           onClick={onSave}
           sx={{ paddingLeft: 5, paddingRight: 5 }}
         >

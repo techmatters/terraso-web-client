@@ -10,7 +10,10 @@ export const UPLOAD_STATUS_SUCCESS = 'success';
 export const UPLOAD_STATUS_ERROR = 'error';
 
 const initialState = {
-  uploads: null,
+  uploads: {
+    files: {},
+    links: {},
+  },
   processing: {},
   list: {
     fetching: true,
@@ -26,9 +29,9 @@ const initialState = {
   },
 };
 
-export const uploadSharedData = createAsyncThunk(
-  'sharedData/uploadSharedData',
-  sharedDataService.uploadSharedData,
+export const uploadSharedDataFile = createAsyncThunk(
+  'sharedData/uploadSharedDataFile',
+  sharedDataService.uploadSharedDataFile,
   null,
   false
 );
@@ -105,27 +108,27 @@ const sharedDataSlice = createSlice({
     [updateSharedData.rejected]: setProcessing,
     [deleteSharedData.pending]: setProcessing,
     [deleteSharedData.rejected]: setProcessing,
-    [uploadSharedData.pending]: (state, action) =>
+    [uploadSharedDataFile.pending]: (state, action) =>
       _.set(
-        `uploads.${action.meta.arg.file.id}`,
+        `uploads.files.${action.meta.arg.file.id}`,
         {
           status: UPLOAD_STATUS_UPLOADING,
           data: null,
         },
         state
       ),
-    [uploadSharedData.fulfilled]: (state, action) =>
+    [uploadSharedDataFile.fulfilled]: (state, action) =>
       _.set(
-        `uploads.${action.meta.arg.file.id}`,
+        `uploads.files.${action.meta.arg.file.id}`,
         {
           status: UPLOAD_STATUS_SUCCESS,
           data: action.payload,
         },
         state
       ),
-    [uploadSharedData.rejected]: (state, action) =>
+    [uploadSharedDataFile.rejected]: (state, action) =>
       _.set(
-        `uploads.${action.meta.arg.file.id}`,
+        `uploads.files.${action.meta.arg.file.id}`,
         {
           status: UPLOAD_STATUS_ERROR,
           data: action.payload.parsedErrors,

@@ -12,7 +12,7 @@ import {
   visualizationConfigWithConfiguration,
 } from './sharedDataFragments';
 
-export const uploadSharedData = async ({ groupSlug, file }) => {
+export const uploadSharedDataFile = async ({ groupSlug, file }) => {
   const path = '/shared-data/upload/';
 
   const body = new FormData();
