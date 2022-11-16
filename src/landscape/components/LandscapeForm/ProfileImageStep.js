@@ -124,7 +124,7 @@ const ProfileImage = props => {
             rotate={0}
             onImageReady={() => {
               const width = containerRef.current.offsetWidth - editorBorder * 2;
-              const height = (width * ASPECT_RATIO_Y) / ASPECT_RATIO_X;
+              const height = width * ASPECT_RATIO;
               setSize({ width, height });
               dataURItoBlob(image).then(blob => {
                 onChange({ result: blob });
