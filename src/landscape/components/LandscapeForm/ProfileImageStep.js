@@ -96,7 +96,11 @@ const ProfileImage = props => {
   const onDrop = useCallback(
     acceptedFiles => {
       if (_.isEmpty(acceptedFiles)) {
-        setError(t('landscape.form_profile_image_file_no_accepted'));
+        setError(
+          t('landscape.form_profile_image_file_no_accepted', {
+            extensions: IMAGE_ACCEPTED_EXTENSIONS.join(', '),
+          })
+        );
         return;
       }
       setError(null);
