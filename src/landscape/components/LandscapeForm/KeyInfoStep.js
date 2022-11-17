@@ -11,7 +11,6 @@ import { countriesList, countryMap, transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
-import { scrollToNavBar } from 'navigation/scrollTo';
 
 import { MAX_DESCRIPTION_LENGTH } from 'config';
 
