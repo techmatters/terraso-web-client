@@ -336,3 +336,26 @@ const addLandscape = landscape => {
 
 export const saveLandscape = landscape =>
   landscape.id ? updateLandscape(landscape) : addLandscape(landscape);
+
+export const uploadProfileImage = async ({
+  landscapeSlug,
+  blob,
+  description,
+}) => {
+  const path = '/storage/landscape-profile-image';
+
+  const body = new FormData();
+  body.append('landscape', landscapeSlug);
+  if (description) {
+    body.append('description', description);
+  }
+  body.append('data_file', blob);
+
+  const jsonResponse = await terrasoApi.request({ path, body });
+
+  if (_.has('error', jsonResponse)) {
+    await Promise.reject(Object.values(jsonResponse.error).join('. '));
+  }
+
+  return jsonResponse;
+};

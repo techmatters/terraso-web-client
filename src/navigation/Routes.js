@@ -21,6 +21,7 @@ import LandscapeBoundariesUpdate from 'landscape/components/LandscapeForm/Bounda
 import LandscapeDevelopmentStrategyUpdate from 'landscape/components/LandscapeForm/DevelopmentStrategyUpdate';
 import LandscapeKeyInfoUpdate from 'landscape/components/LandscapeForm/KeyInfoUpdate';
 import LandscapeNew from 'landscape/components/LandscapeForm/New';
+import LandscapeProfileImageUpdate from 'landscape/components/LandscapeForm/ProfileImageUpdate';
 import LandscapeProfileUpdate from 'landscape/components/LandscapeForm/ProfileUpdate';
 import LandscapeList from 'landscape/components/LandscapeList';
 import LandscapeProfile from 'landscape/components/LandscapeProfile';
@@ -89,6 +90,7 @@ const paths = [
     '/landscapes/:slug/development-strategy/edit',
     LandscapeDevelopmentStrategyUpdate
   ),
+  path('/landscapes/:slug/profile-image/edit', LandscapeProfileImageUpdate),
   path('/landscapes/:slug/boundaries', LandscapeBoundariesUpdate),
   path('/landscapes/:slug/members', LandscapeMembers, {
     showBreadcrumbs: true,

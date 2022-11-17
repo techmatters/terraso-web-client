@@ -38,6 +38,9 @@ const initialState = {
     landscape: null,
     fetching: true,
   },
+  uploadProfileImage: {
+    uploading: false,
+  },
 };
 
 export const fetchLandscapes = createAsyncThunk(
@@ -96,6 +99,14 @@ export const saveLandscape = createAsyncThunk(
     severity: 'success',
     content: landscape.new ? 'landscape.added' : 'landscape.updated',
     params: { name: landscape.name },
+  })
+);
+export const uploadProfileImage = createAsyncThunk(
+  'landscape/uploadProfileImage',
+  landscapeService.uploadProfileImage,
+  () => ({
+    severity: 'success',
+    content: 'landscape.form_profile_profile_image_success',
   })
 );
 
@@ -252,6 +263,24 @@ const landscapeSlice = createSlice({
       sharedDataUpload: {
         ...state.sharedDataUpload,
         fetching: false,
+      },
+    }),
+    [uploadProfileImage.rejected]: (state, action) => ({
+      ...state,
+      uploadProfileImage: {
+        uploading: false,
+      },
+    }),
+    [uploadProfileImage.fulfilled]: (state, action) => ({
+      ...state,
+      uploadProfileImage: {
+        uploading: false,
+      },
+    }),
+    [uploadProfileImage.pending]: state => ({
+      ...state,
+      uploadProfileImage: {
+        uploading: true,
       },
     }),
   },
