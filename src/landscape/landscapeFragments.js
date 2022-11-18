@@ -16,6 +16,7 @@ export const landscapeFields = `
 
 export const landscapeProfileFields = `
   fragment landscapeProfileFields on LandscapeNode {
+    areaScalarHa
     areaTypes
     population
     partnershipStatus

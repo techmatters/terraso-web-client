@@ -346,6 +346,7 @@
         "profile_profile_card_update_button": "Update Details",
         "profile_profile_card_empty": "No information about this landscape’s people and livelihoods is available.",
         "profile_profile_card_enter": "Please provide details about the people within your landscape and their livelihoods.",
+        "profile_profile_card_landscape_size_label": "Landscape Size",
         "form_step_profile_label": "Details",
         "form_step_affiliation_label": "Affiliations",
         "form_profile_new_title": "People and Businesses",
