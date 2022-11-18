@@ -75,7 +75,7 @@ test('GroupSharedDataUpload: Error - Invalid number', async () => {
       .fill(0)
       .map(
         (item, index) =>
-          new File(['content'], `test${index}.csv`, { type: 'text/plain' })
+          new File(['content'], `test${index}.csv`, { type: 'text/csv' })
       )
   );
   expect(
@@ -89,7 +89,7 @@ test('GroupSharedDataUpload: Error - Empty filename', async () => {
       .fill(0)
       .map(
         (item, index) =>
-          new File(['content'], `test${index}.csv`, { type: 'text/plain' })
+          new File(['content'], `test${index}.csv`, { type: 'text/csv' })
       )
   );
   const file = screen.getByRole('region', { name: 'test1' });
@@ -110,7 +110,7 @@ test('GroupSharedDataUpload: Error - API', async () => {
       .fill(0)
       .map(
         (item, index) =>
-          new File(['content'], `test${index}.csv`, { type: 'text/plain' })
+          new File(['content'], `test${index}.csv`, { type: 'text/csv' })
       )
   );
   const uploadButton = screen.getByRole('button', { name: 'Upload Files' });
@@ -134,7 +134,7 @@ test('GroupSharedDataUpload: Partial Success', async () => {
       .fill(0)
       .map(
         (item, index) =>
-          new File(['content'], `test${index}.csv`, { type: 'text/plain' })
+          new File(['content'], `test${index}.csv`, { type: 'text/csv' })
       )
   );
   const uploadButton = screen.getByRole('button', { name: 'Upload Files' });
@@ -161,7 +161,7 @@ test('GroupSharedDataUpload: Complete Success', async () => {
       .fill(0)
       .map(
         (item, index) =>
-          new File(['content'], `test${index}.csv`, { type: 'text/plain' })
+          new File(['content'], `test${index}.csv`, { type: 'text/csv' })
       )
   );
   const uploadButton = screen.getByRole('button', { name: 'Upload Files' });

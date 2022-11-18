@@ -237,7 +237,7 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
                         description: '',
                         id: 'f00c5564-cf93-471a-94c2-b930cbb0a4f8',
                         name: 'File 1',
-                        resourceType: 'application/csv',
+                        resourceType: 'text/csv',
                         size: 3565,
                         url: 'https://file-url',
                       },
@@ -261,7 +261,7 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
   global.fetch.mockResolvedValue({
     status: 200,
     arrayBuffer: () => {
-      const file = new File([TEST_CSV], `test.csv`, { type: 'text/plain' });
+      const file = new File([TEST_CSV], `test.csv`, { type: 'text/csv' });
       return new Promise(function (resolve, reject) {
         const reader = new FileReader();
 
