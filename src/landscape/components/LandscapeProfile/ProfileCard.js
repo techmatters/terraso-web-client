@@ -55,7 +55,10 @@ const FIELDS = [
   },
   {
     label: 'landscape.profile_profile_card_landscape_size_label',
-    getValue: landscape => landscape.areaScalarHa.toLocaleString() + ' ha',
+    getValue: landscape =>
+      landscape.areaScalarHa
+        ? landscape.areaScalarHa.toLocaleString() + ' ha'
+        : null,
   },
   {
     label: 'landscape.profile_profile_card_livelihoods_label',
