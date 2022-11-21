@@ -66,10 +66,6 @@ const FORM_FIELDS = [
     placeholder: 'landscape.form_profile_population_placeholder',
   },
   {
-    name: 'ecosystem-info',
-    renderStaticElement: () => <EcosystemInfo />,
-  },
-  {
     name: 'taxonomyTypeTerms.ecosystem-type',
     label: 'landscape.form_profile_ecosystem_types',
     props: {
@@ -138,10 +134,6 @@ const AreaTypesInfo = () => {
 
 const LivelihoodsInfo = () => {
   return <Subheader text="landscape.form_profile_livelihoods_info" />;
-};
-
-const EcosystemInfo = () => {
-  return <Subheader text="landscape.form_profile_ecosystem_types_info" />;
 };
 
 const CommoditiesInfo = () => {
