@@ -359,7 +359,7 @@
         "form_profile_languages": "Languages",
         "form_profile_languages_placeholder": "Select one or more spoken languages",
         "form_profile_population": "Approximate landscape population",
-        "form_profile_population_placeholder": "Enter a rough number",
+        "form_profile_population_placeholder": "Enter a number",
         "form_profile.population": "Population",
         "form_profile_livelihoods": "Livelihoods",
         "form_profile_livelihoods_placeholder": "Select one or more options",
