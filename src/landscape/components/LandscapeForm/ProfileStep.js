@@ -35,7 +35,7 @@ const VALIDATION_SCHEMA = yup
     )
   )
   .shape({
-    population: yup.number().notRequired().positive().integer(),
+    population: yup.number().notRequired().positive().integer().max(2147483647),
   })
   .required();
 
