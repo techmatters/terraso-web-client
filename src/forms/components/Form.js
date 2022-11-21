@@ -127,7 +127,10 @@ const Form = props => {
                 item
                 xs={12}
                 {..._.get('props.gridItemProps', field)}
-                sx={{ paddingBottom: 3 }}
+                sx={{
+                  pb: 3,
+                  ..._.getOr({}, 'props.gridItemProps.sx', field),
+                }}
               >
                 <Controller
                   name={field.name}

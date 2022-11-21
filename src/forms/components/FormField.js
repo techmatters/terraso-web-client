@@ -16,26 +16,38 @@ import {
 import { parseError } from 'forms/yup';
 
 const FormFieldInput = props => {
-  const { disabled, id, inputProps, field, fieldState, renderInput, info } =
-    props;
+  const {
+    disabled,
+    id,
+    inputProps,
+    field,
+    fieldState,
+    renderInput,
+    InputWrapper,
+    info,
+  } = props;
 
   if (renderInput) {
     return renderInput(props);
   }
 
+  const Wrapper = InputWrapper || React.Fragment;
+
   return (
-    <OutlinedInput
-      id={id}
-      disabled={disabled}
-      error={!!fieldState?.error}
-      {...(info ? { 'aria-describedby': `${id}-helper-text` } : {})}
-      sx={{
-        width: '100%',
-      }}
-      {...field}
-      {...inputProps}
-      value={field.value || ''}
-    />
+    <Wrapper>
+      <OutlinedInput
+        id={id}
+        disabled={disabled}
+        error={!!fieldState?.error}
+        {...(info ? { 'aria-describedby': `${id}-helper-text` } : {})}
+        sx={{
+          width: '100%',
+        }}
+        {...field}
+        {...inputProps}
+        value={field.value || ''}
+      />
+    </Wrapper>
   );
 };
 

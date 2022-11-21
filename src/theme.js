@@ -12,6 +12,7 @@ const colorTheme = createTheme({
     link: '#2C7690',
     success: {
       main: '#b0d098',
+      background: 'rgb(248, 251, 246)',
     },
     info: {
       main: '#76a7ec',
@@ -129,6 +130,13 @@ const components = {
       root: {
         backgroundColor: colorTheme.palette.gray.lite1,
         color: colorTheme.palette.gray.dark2,
+      },
+    },
+  },
+  MuiAlert: {
+    styleOverrides: {
+      standardSuccess: {
+        backgroundColor: colorTheme.palette.success.background,
       },
     },
   },

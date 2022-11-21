@@ -9,9 +9,15 @@ import { Box, Button, Paper, Stack, Tab } from '@mui/material';
 
 import { useAnalytics } from 'monitoring/analytics';
 
-import { resetUploads, uploadSharedDataFile } from 'sharedData/sharedDataSlice';
+import {
+  addSharedDataLink,
+  resetUploads,
+  uploadSharedDataFile,
+} from 'sharedData/sharedDataSlice';
 
 import ShareDataFiles from './ShareDataFiles';
+import ShareDataLinks from './ShareDataLinks';
+import { validateLink } from './utils';
 
 const SharedDataUpload = props => {
   const { t } = useTranslation();
@@ -21,47 +27,87 @@ const SharedDataUpload = props => {
   const { groupSlug, onCancel, onCompleteSuccess } = props;
 
   const [section, setSection] = useState('files');
+
   const [filesPending, setFilesPending] = useState([]);
   const [filesErrors, setFilesErrors] = useState([]);
   const [filesUploading, setFilesUploading] = useState(false);
   const [filesSuccess, setFilesSuccess] = useState(false);
+
+  const [linksState, setLinksState] = useState({});
+  const [linksPending, setLinksPending] = useState([]);
+  const [linksErrors, setLinksErrors] = useState([]);
+  const [linksUploading, setLinksUploading] = useState(false);
+  const [linksSuccess, setLinksSuccess] = useState(false);
 
   useEffect(() => {
     dispatch(resetUploads());
   }, [dispatch]);
 
   useEffect(() => {
-    const isCompleteSuccess = filesSuccess;
+    const isCompleteSuccess =
+      (filesSuccess || linksSuccess) &&
+      _.isEmpty(filesPending) &&
+      _.isEmpty(linksPending);
+
     if (isCompleteSuccess) {
       onCompleteSuccess(true);
     }
-  }, [filesSuccess, onCompleteSuccess]);
+  }, [
+    filesPending,
+    filesSuccess,
+    linksPending,
+    linksSuccess,
+    onCompleteSuccess,
+  ]);
+
+  const toUpload = useMemo(() => {
+    const links = linksPending.map(validateLink).filter(_.isObject);
+
+    return {
+      links,
+      files: filesPending,
+      count: links.length + filesPending.length,
+    };
+  }, [filesPending, linksPending]);
 
   const onSave = useCallback(() => {
-    const promises = filesPending.map(([fileId, file]) =>
+    const linksPromises = toUpload.links.map(link =>
+      dispatch(addSharedDataLink({ groupSlug, link }))
+    );
+    const filesPromises = toUpload.files.map(file =>
       dispatch(uploadSharedDataFile({ groupSlug, file }))
     );
-    Promise.allSettled(promises).then(results =>
+
+    const allPromises = [...filesPromises, ...linksPromises];
+    Promise.allSettled(allPromises).then(results => {
       results
         .filter(result => result.status === 'fulfilled')
         .forEach(result => {
+          // TODO send type of shared data
           trackEvent('uploadFile', { props: { owner: groupSlug } });
-        })
-    );
-  }, [filesPending, groupSlug, dispatch, trackEvent]);
+        });
+    });
+  }, [toUpload, groupSlug, dispatch, trackEvent]);
 
   const hasBlockingErrors = useMemo(
     () =>
-      !_.isEmpty(Object.values(filesErrors).filter(error => !_.isEmpty(error))),
-    [filesErrors]
+      !_.isEmpty(
+        [...Object.values(filesErrors), ...Object.values(linksErrors)].filter(
+          error => !_.isEmpty(error)
+        )
+      ),
+    [filesErrors, linksErrors]
   );
 
   const isSaveDisabled = useMemo(
-    () => _.isEmpty(filesPending) || hasBlockingErrors,
-    [filesPending, hasBlockingErrors]
+    () => toUpload.count === 0 || hasBlockingErrors,
+    [toUpload, hasBlockingErrors]
   );
 
-  const isUploading = useMemo(() => filesUploading, [filesUploading]);
+  const isUploading = useMemo(
+    () => filesUploading || linksUploading,
+    [filesUploading, linksUploading]
+  );
 
   return (
     <>
@@ -84,7 +130,16 @@ const SharedDataUpload = props => {
               setFilesSuccess={setFilesSuccess}
             />
           </TabPanel>
-          <TabPanel value="links">Item Two</TabPanel>
+          <TabPanel value="links">
+            <ShareDataLinks
+              linksState={linksState}
+              setLinksState={setLinksState}
+              setLinksPending={setLinksPending}
+              setLinksErrors={setLinksErrors}
+              setLinksUploading={setLinksUploading}
+              setLinksSuccess={setLinksSuccess}
+            />
+          </TabPanel>
         </TabContext>
       </Paper>
       <Stack

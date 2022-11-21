@@ -35,6 +35,12 @@ export const uploadSharedDataFile = createAsyncThunk(
   null,
   false
 );
+export const addSharedDataLink = createAsyncThunk(
+  'sharedData/addSharedDataLink',
+  sharedDataService.addSharedDataLink,
+  null,
+  false
+);
 export const deleteSharedData = createAsyncThunk(
   'sharedData/deleteSharedData',
   sharedDataService.deleteSharedData,
@@ -129,6 +135,33 @@ const sharedDataSlice = createSlice({
     [uploadSharedDataFile.rejected]: (state, action) =>
       _.set(
         `uploads.files.${action.meta.arg.file.id}`,
+        {
+          status: UPLOAD_STATUS_ERROR,
+          data: action.payload.parsedErrors,
+        },
+        state
+      ),
+    [addSharedDataLink.pending]: (state, action) =>
+      _.set(
+        `uploads.links.${action.meta.arg.link.id}`,
+        {
+          status: UPLOAD_STATUS_UPLOADING,
+          data: null,
+        },
+        state
+      ),
+    [addSharedDataLink.fulfilled]: (state, action) =>
+      _.set(
+        `uploads.links.${action.meta.arg.link.id}`,
+        {
+          status: UPLOAD_STATUS_SUCCESS,
+          data: action.payload,
+        },
+        state
+      ),
+    [addSharedDataLink.rejected]: (state, action) =>
+      _.set(
+        `uploads.links.${action.meta.arg.link.id}`,
         {
           status: UPLOAD_STATUS_ERROR,
           data: action.payload.parsedErrors,

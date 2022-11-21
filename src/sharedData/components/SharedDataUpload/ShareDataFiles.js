@@ -9,7 +9,7 @@ import React, {
 import _ from 'lodash/fp';
 import path from 'path-browserify';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 
@@ -28,8 +28,6 @@ import { styled } from '@mui/system';
 
 import BaseDropZone from 'common/components/DropZone';
 import FormField from 'forms/components/FormField';
-
-import { resetUploads } from 'sharedData/sharedDataSlice';
 
 import {
   SHARED_DATA_ACCEPTED_EXTENSIONS,
@@ -219,7 +217,6 @@ const fileWrapper = file => {
 
 const ShareDataFiles = props => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
   const {
     setFilesPending,
     setFilesErrors,
@@ -238,8 +235,8 @@ const ShareDataFiles = props => {
   );
 
   useEffect(() => {
-    const pendingFiles = _.toPairs(files).filter(
-      ([fileId]) => !_.has(fileId, apiSuccesses)
+    const pendingFiles = Object.values(files).filter(
+      file => !_.has(file.id, apiSuccesses)
     );
     setFilesPending(pendingFiles);
   }, [files, apiSuccesses, setFilesPending]);
@@ -251,10 +248,6 @@ const ShareDataFiles = props => {
   useEffect(() => {
     setFilesUploading(!_.isEmpty(apiUploading));
   }, [apiUploading, setFilesUploading]);
-
-  useEffect(() => {
-    dispatch(resetUploads());
-  }, [dispatch]);
 
   useEffect(() => {
     const isCompleteSuccess =

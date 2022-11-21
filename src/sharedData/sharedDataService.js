@@ -48,6 +48,29 @@ export const deleteSharedData = ({ file }) => {
   });
 };
 
+export const addSharedDataLink = ({ groupSlug, link }) => {
+  const query = `
+    mutation addDataEntry($input: DataEntryAddMutationInput!) {
+      addDataEntry(input: $input) {
+        dataEntry {
+          id
+          name
+          url
+        }
+      }
+    }
+  `;
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: {
+        ..._.pick(['name', 'url', 'description'], link),
+        entryType: 'link',
+        groupSlug,
+      },
+    })
+    .then(_.get('addDataEntry.dataEntry'));
+};
+
 export const updateSharedData = ({ file }) => {
   const query = `
     mutation updateSharedData($input: DataEntryUpdateMutationInput!) {
