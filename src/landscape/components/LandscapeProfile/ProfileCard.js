@@ -54,6 +54,10 @@ const FIELDS = [
     getValue: landscape => landscape.population,
   },
   {
+    label: 'landscape.profile_profile_card_landscape_size_label',
+    getValue: landscape => landscape.areaScalarHa.toLocaleString() + ' ha',
+  },
+  {
     label: 'landscape.profile_profile_card_livelihoods_label',
     getValue: (landscape, { i18n }) =>
       getTermsList('livelihood', landscape, i18n),
