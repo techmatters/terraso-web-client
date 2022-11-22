@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 
-import languages from '@cospired/i18n-iso-languages';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -19,11 +18,9 @@ import {
   TYPE_LIVELIHOOD,
 } from 'taxonomies/taxonomiesConstants';
 
+import iso639en from '../../../localization/iso639/en.json';
+import iso639es from '../../../localization/iso639/es.json';
 import Actions from './Actions';
-
-// Support spanish & english languages.
-languages.registerLocale(require('@cospired/i18n-iso-languages/langs/en.json'));
-languages.registerLocale(require('@cospired/i18n-iso-languages/langs/es.json'));
 
 const VALIDATION_SCHEMA = yup
   .object()
@@ -142,16 +139,18 @@ const CommoditiesInfo = () => {
 
 const LanguageAutocomplete = props => {
   const { field, id } = props;
-  const languagesEn = useMemo(() => languages.getNames('en'), []);
-  const languagesEs = useMemo(() => languages.getNames('es'), []);
+  const languagesEn = useMemo(() => iso639en);
+  const languagesEs = useMemo(() => iso639es);
   const terms = useMemo(
     () =>
-      Object.keys(languagesEn).map(langCode => ({
-        type: TYPE_LANGUAGE,
-        valueOriginal: langCode,
-        valueEn: languagesEn[langCode],
-        valueEs: languagesEs[langCode],
-      })),
+      Object.keys(languagesEn)
+        .map(langCode => ({
+          type: TYPE_LANGUAGE,
+          valueOriginal: langCode,
+          valueEn: languagesEn[langCode],
+          valueEs: languagesEs[langCode],
+        }))
+        .sort((a, b) => a.valueEn.localeCompare(b.valueEn)),
     [languagesEn, languagesEs]
   );
 
