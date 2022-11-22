@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 
-import { MenuItem, Select, Typography } from '@mui/material';
+import { MenuItem, Select, TextareaAutosize, Typography } from '@mui/material';
 
 import { countriesList, countryMap, transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
@@ -42,8 +42,10 @@ const FORM_FIELDS = [
     placeholder: 'landscape.form_description_placeholder',
     props: {
       inputProps: {
-        multiline: true,
-        rows: 4,
+        inputComponent: TextareaAutosize,
+        inputProps: {
+          minRows: 4,
+        },
       },
     },
   },

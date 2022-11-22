@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 
-import { Typography } from '@mui/material';
+import { TextareaAutosize, Typography } from '@mui/material';
 
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
@@ -12,6 +12,15 @@ import PageHeader from 'layout/PageHeader';
 import Actions from './Actions';
 
 const VALIDATION_SCHEMA = yup.object().shape({}).required();
+
+const getTextAreaProps = minRows => ({
+  inputProps: {
+    inputComponent: TextareaAutosize,
+    inputProps: {
+      minRows,
+    },
+  },
+});
 
 const FORM_FIELDS = [
   {
@@ -26,12 +35,7 @@ const FORM_FIELDS = [
     name: 'developmentStrategy.objectives',
     label: 'landscape.form_development_objectives',
     placeholder: 'landscape.form_development_objectives_placeholder',
-    props: {
-      inputProps: {
-        multiline: true,
-        rows: 6,
-      },
-    },
+    props: getTextAreaProps(6),
   },
   {
     name: 'form_development_problem_situtation_description',
@@ -45,23 +49,13 @@ const FORM_FIELDS = [
     name: 'developmentStrategy.problemSitutation',
     label: 'landscape.form_development_problem_situtation',
     placeholder: 'landscape.form_development_problem_situtation_placeholder',
-    props: {
-      inputProps: {
-        multiline: true,
-        rows: 2,
-      },
-    },
+    props: getTextAreaProps(2),
   },
   {
     name: 'developmentStrategy.interventionStrategy',
     label: 'landscape.form_development_intervention_strategy',
     placeholder: 'landscape.form_development_intervention_strategy_placeholder',
-    props: {
-      inputProps: {
-        multiline: true,
-        rows: 3,
-      },
-    },
+    props: getTextAreaProps(3),
   },
   {
     name: 'form_development_other_information_description',
@@ -75,12 +69,7 @@ const FORM_FIELDS = [
     name: 'developmentStrategy.otherInformation',
     label: 'landscape.form_development_other_information',
     placeholder: 'landscape.form_development_other_information_placeholder',
-    props: {
-      inputProps: {
-        multiline: true,
-        rows: 3,
-      },
-    },
+    props: getTextAreaProps(3),
   },
 ];
 
