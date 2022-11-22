@@ -16,7 +16,15 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const setup = async (countryName = 'Landscape location') => {
-  await render(<KeyInfoUpdate />);
+  await render(<KeyInfoUpdate />, {
+    account: {
+      currentUser: {
+        data: {
+          email: 'email@account.org',
+        },
+      },
+    },
+  });
   const name = screen.getByRole('textbox', {
     name: 'Name (required)',
   });
@@ -57,7 +65,15 @@ beforeEach(() => {
 
 test('KeyInfoUpdate: Display error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValue(['Load error']);
-  await render(<KeyInfoUpdate />);
+  await render(<KeyInfoUpdate />, {
+    account: {
+      currentUser: {
+        data: {
+          email: 'email@account.org',
+        },
+      },
+    },
+  });
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
 test('KeyInfoUpdate: Display loader', async () => {
