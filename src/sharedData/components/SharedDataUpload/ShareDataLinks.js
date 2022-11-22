@@ -219,7 +219,7 @@ const ShareDataLinks = props => {
   const { t } = useTranslation();
   const {
     linksState,
-    setLinksState,
+    setLinksState: setState,
     setLinksPending,
     setLinksUploading,
     setLinksSuccess,
@@ -227,14 +227,6 @@ const ShareDataLinks = props => {
 
   const uploads = useSelector(_.get('sharedData.uploads.links'));
 
-  const setState = useCallback(
-    (field, newValue) =>
-      setLinksState(state => ({
-        ...state,
-        [field]: newValue(state[field]),
-      })),
-    [setLinksState]
-  );
   const links = useMemo(() => linksState.links || {}, [linksState.links]);
   const linkIds = useMemo(() => Object.keys(links), [links]);
 

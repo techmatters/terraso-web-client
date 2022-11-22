@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import path from 'path-browserify';
@@ -218,6 +212,8 @@ const fileWrapper = file => {
 const ShareDataFiles = props => {
   const { t } = useTranslation();
   const {
+    filesState,
+    setFilesState: setState,
     setFilesPending,
     setFilesErrors,
     setFilesUploading,
@@ -225,9 +221,13 @@ const ShareDataFiles = props => {
   } = props;
 
   const uploads = useSelector(_.get('sharedData.uploads.files'));
-  const [files, setFiles] = useState({});
-  const [errors, setErrors] = useState({});
-  const [dropErrors, setDropErrors] = useState();
+
+  const files = useMemo(() => filesState.files || {}, [filesState.files]);
+  const errors = useMemo(() => filesState.errors || {}, [filesState.errors]);
+  const dropErrors = useMemo(
+    () => filesState.dropErrors,
+    [filesState.dropErrors]
+  );
 
   const { apiErrors, apiSuccesses, apiUploading } = useMemo(
     () => groupByStatus(_.pick(Object.keys(files), uploads)),
@@ -262,13 +262,13 @@ const ShareDataFiles = props => {
 
   const onDrop = useCallback(
     acceptedFiles => {
-      setDropErrors(null);
-      setFiles(files => ({
+      setState('dropErrors', () => null);
+      setState('files', files => ({
         ...files,
         ..._.flow(_.map(fileWrapper), _.keyBy('id'))(acceptedFiles),
       }));
     },
-    [setFiles]
+    [setState]
   );
 
   const onDropRejected = useCallback(
@@ -289,19 +289,19 @@ const ShareDataFiles = props => {
           })
         )
       )(rejections);
-      setDropErrors(messages);
+      setState('dropErrors', () => messages);
     },
-    [t]
+    [t, setState]
   );
 
   const onFileChange = (id, newFile) => {
-    setFiles(files => ({
+    setState('files', files => ({
       ...files,
       [id]: newFile,
     }));
-    setErrors(_.omit(id));
+    setState('errors', _.omit(id));
     VALIDATION_SCHEMA.validate(newFile).catch(error => {
-      setErrors(errors => ({
+      setState('errors', errors => ({
         ...errors,
         [id]: {
           [error.path]: error.message,
@@ -310,8 +310,8 @@ const ShareDataFiles = props => {
     });
   };
   const onFileDelete = id => {
-    setErrors(_.omit(id));
-    setFiles(_.omit(id));
+    setState('errors', _.omit(id));
+    setState('files', _.omit(id));
   };
 
   return (

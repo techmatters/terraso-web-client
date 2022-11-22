@@ -28,6 +28,7 @@ const SharedDataUpload = props => {
 
   const [section, setSection] = useState('files');
 
+  const [filesState, setFilesState] = useState({});
   const [filesPending, setFilesPending] = useState([]);
   const [filesErrors, setFilesErrors] = useState([]);
   const [filesUploading, setFilesUploading] = useState(false);
@@ -38,6 +39,15 @@ const SharedDataUpload = props => {
   const [linksErrors, setLinksErrors] = useState([]);
   const [linksUploading, setLinksUploading] = useState(false);
   const [linksSuccess, setLinksSuccess] = useState(false);
+
+  const setState = useCallback(
+    setter => (field, newValue) =>
+      setter(state => ({
+        ...state,
+        [field]: newValue(state[field]),
+      })),
+    []
+  );
 
   useEffect(() => {
     dispatch(resetUploads());
@@ -124,6 +134,8 @@ const SharedDataUpload = props => {
           </Box>
           <TabPanel value="files">
             <ShareDataFiles
+              filesState={filesState}
+              setFilesState={useMemo(() => setState(setFilesState), [setState])}
               setFilesPending={setFilesPending}
               setFilesErrors={setFilesErrors}
               setFilesUploading={setFilesUploading}
@@ -133,7 +145,7 @@ const SharedDataUpload = props => {
           <TabPanel value="links">
             <ShareDataLinks
               linksState={linksState}
-              setLinksState={setLinksState}
+              setLinksState={useMemo(() => setState(setLinksState), [setState])}
               setLinksPending={setLinksPending}
               setLinksErrors={setLinksErrors}
               setLinksUploading={setLinksUploading}
