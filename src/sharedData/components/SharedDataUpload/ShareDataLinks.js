@@ -236,6 +236,10 @@ const ShareDataLinks = props => {
   );
 
   useEffect(() => {
+    setState('links', links => (_.isEmpty(links) ? addLink(links) : links));
+  }, [setState]);
+
+  useEffect(() => {
     const pendingLinkIds = linkIds.filter(
       linkId => !_.has(linkId, apiSuccesses)
     );

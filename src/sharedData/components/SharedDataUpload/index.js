@@ -125,8 +125,18 @@ const SharedDataUpload = props => {
               onChange={(event, newValue) => setSection(newValue)}
               aria-label="lab API tabs example"
             >
-              <Tab label={t('sharedData.tab_files')} value="files" />
-              <Tab label={t('sharedData.tab_links')} value="links" />
+              <Tab
+                label={t('sharedData.tab_files', {
+                  count: filesPending.length,
+                })}
+                value="files"
+              />
+              <Tab
+                label={t('sharedData.tab_links', {
+                  count: linksPending.length,
+                })}
+                value="links"
+              />
             </TabList>
           </Box>
           <TabPanel value="files">

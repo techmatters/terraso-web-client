@@ -458,7 +458,7 @@
         "upload_rejected_file-invalid-type": "{{rejectedFiles}} cannot be added because the file type(s) are not supported.",
         "upload_rejected_file-too-large": "{{rejectedFiles}} cannot be added because one or more files are too large.",
         "upload_description": "Add files and descriptions:",
-        "upload_save": "Upload Files",
+        "upload_save": "Share Files and Links",
         "upload_cancel": "Cancel",
         "upload_title": "Upload: {{name}}",
         "updated": "The file “{{name}}” was updated.",
@@ -538,7 +538,11 @@
         "map_create_document_title": "Create Map: {{name}}",
         "map_view_document_title": "View Map: {{name}}",
         "fetchVisualizationConfig.not_found": "Map not found",
-        "addVisualizationConfig.unique": "The name “{{body.variables.input.title}}“ is in use by another map. Please use a different name."
+        "addVisualizationConfig.unique": "The name “{{body.variables.input.title}}“ is in use by another map. Please use a different name.",
+        "tab_files_zero": "Upload files",
+        "tab_files": "Upload files ({{count}})",
+        "tab_links_zero": "Share links",
+        "tab_links": "Share links ({{count}})"
     },
     "common": {
         "dialog_cancel_label": "Cancel",
