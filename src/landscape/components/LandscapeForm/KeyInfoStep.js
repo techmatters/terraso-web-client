@@ -41,9 +41,9 @@ const FORM_FIELDS = [
     name: 'description',
     label: 'landscape.form_description_label',
     placeholder: 'landscape.form_description_placeholder',
-    info: ({ field: { value } }) => {
-      return <CharacterCounter text={value} max={MAX_DESCRIPTION_LENGTH} />;
-    },
+    info: ({ field: { value } }) => (
+      <CharacterCounter text={value} max={MAX_DESCRIPTION_LENGTH} />
+    ),
     props: {
       inputProps: {
         inputComponent: TextareaAutosize,
