@@ -51,21 +51,6 @@ const FORM_FIELDS = [
     },
   },
   {
-    name: 'taxonomyTypeTerms.language',
-    label: 'landscape.form_profile_languages',
-    props: {
-      renderInput: ({ id, field }) => (
-        <LanguageAutocomplete id={id} field={field} />
-      ),
-    },
-  },
-  {
-    name: 'population',
-    type: 'number',
-    label: 'landscape.form_profile_population',
-    placeholder: 'landscape.form_profile_population_placeholder',
-  },
-  {
     name: 'taxonomyTypeTerms.ecosystem-type',
     label: 'landscape.form_profile_ecosystem_types',
     props: {
@@ -80,6 +65,21 @@ const FORM_FIELDS = [
         />
       ),
     },
+  },
+  {
+    name: 'taxonomyTypeTerms.language',
+    label: 'landscape.form_profile_languages',
+    props: {
+      renderInput: ({ id, field }) => (
+        <LanguageAutocomplete id={id} field={field} />
+      ),
+    },
+  },
+  {
+    name: 'population',
+    type: 'number',
+    label: 'landscape.form_profile_population',
+    placeholder: 'landscape.form_profile_population_placeholder',
   },
   {
     name: 'livelihoods-info',
