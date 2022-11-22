@@ -1,23 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
-import { filesize } from 'filesize';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link as RouterLink } from 'react-router-dom';
 
 import DeleteIcon from '@mui/icons-material/Delete';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import MapIcon from '@mui/icons-material/Map';
-import {
-  Button,
-  Divider,
-  Grid,
-  Link,
-  ListItem,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Grid, ListItem, Stack, Typography } from '@mui/material';
 
 import ConfirmButton from 'common/components/ConfirmButton';
 import EditableText from 'common/components/EditableText';
@@ -26,106 +14,60 @@ import { useAnalytics } from 'monitoring/analytics';
 import Restricted from 'permissions/components/Restricted';
 
 import { useGroupContext } from 'group/groupContext';
-import { useSharedData } from 'sharedData/sharedDataHooks';
 import {
   deleteSharedData,
   resetProcessing,
   updateSharedData,
 } from 'sharedData/sharedDataSlice';
 
-import SharedFileIcon from './SharedFileIcon';
-
 import theme from 'theme';
 
-const ICON_SIZE = 24;
+export const ICON_SIZE = 24;
 
 const StackRow = props => (
-  <Stack direction="row" alignItems="center" {...props} />
+  <Stack direction="row" alignItems="center" spacing={1} {...props} />
 );
 
-const Visualizations = props => {
-  const { baseOwnerUrl } = useGroupContext();
-  const { i18n, t } = useTranslation();
-  const { file } = props;
-  if (_.isEmpty(file.visualizations)) {
-    return null;
-  }
-
-  return (
-    <Stack
-      component="ul"
-      sx={{ width: '100%', listStyle: 'none', p: 0 }}
-      divider={<Divider component="li" />}
-    >
-      {file.visualizations.map(visualization => (
-        <Grid
-          container
-          component={ListItem}
-          key={visualization.id}
-          sx={{ bgcolor: 'gray.lite2', fontSize: 14, color: 'gray.dark1' }}
-        >
-          <Grid item xs={1}>
-            <MapIcon />
-          </Grid>
-          <Grid item xs={4}>
-            <Link
-              component={RouterLink}
-              to={`${baseOwnerUrl}/map/${visualization.slug}`}
-            >
-              {_.get('title', visualization)}
-            </Link>
-          </Grid>
-          <Grid item xs={6}>
-            {formatDate(i18n.resolvedLanguage, visualization.createdAt)}, by{' '}
-            {t('user.full_name', { user: visualization.createdBy })}
-          </Grid>
-        </Grid>
-      ))}
-    </Stack>
-  );
-};
-
-const SharedDataEntry = ({ file }) => {
+const SharedDataEntryBase = props => {
   const { i18n, t } = useTranslation();
   const { group, owner, updateOwner } = useGroupContext();
+  const { dataEntry, children, EntryTypeIcon, DownloadComponent, info } = props;
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
-  const processing = useSelector(_.get(`sharedData.processing.${file.id}`));
+  const processing = useSelector(
+    _.get(`sharedData.processing.${dataEntry.id}`)
+  );
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
-  const { downloadFile } = useSharedData();
 
   useEffect(() => {
-    dispatch(resetProcessing(file.id));
-  }, [dispatch, file]);
-
-  const handleDownload = e => {
-    e.preventDefault();
-    downloadFile(file);
-  };
+    dispatch(resetProcessing(dataEntry.id));
+  }, [dispatch, dataEntry]);
 
   const onConfirm = () => {
-    dispatch(deleteSharedData({ groupSlug: group.slug, file })).then(() => {
-      updateOwner();
-      trackEvent('deleteFile', { props: { owner: owner.slug } });
-    });
+    dispatch(deleteSharedData({ groupSlug: group.slug, dataEntry })).then(
+      () => {
+        updateOwner();
+        trackEvent('deletedataEntry', { props: { owner: owner.slug } });
+      }
+    );
   };
 
   const onUpdate = field => value => {
     dispatch(
       updateSharedData({
-        file: {
-          ..._.pick(['id', 'name', 'description'], file),
+        dataEntry: {
+          ..._.pick(['id', 'name', 'description'], dataEntry),
           [field]: value,
         },
       })
     ).then(() => {
       updateOwner();
-      trackEvent('editFile', { props: { owner: owner.slug } });
+      trackEvent('editdataEntry', { props: { owner: owner.slug } });
     });
   };
 
-  const description = _.get('description', file);
+  const description = _.get('description', dataEntry);
 
   return (
     <ListItem sx={{ p: 0, flexDirection: 'column' }}>
@@ -142,16 +84,16 @@ const SharedDataEntry = ({ file }) => {
           order={{ xs: 2, md: 2 }}
           component={StackRow}
         >
-          <SharedFileIcon resourceType={file.resourceType} />
+          <EntryTypeIcon resourceType={dataEntry.resourceType} />
           <Restricted
             permission="sharedData.edit"
-            resource={{ group, file }}
-            FallbackComponent={() => <Typography>{file.name}</Typography>}
+            resource={{ group, dataEntry }}
+            FallbackComponent={() => <Typography>{dataEntry.name}</Typography>}
           >
             <EditableText
-              id={`name-${file.id}`}
+              id={`name-${dataEntry.id}`}
               label={t('sharedData.name_update')}
-              value={file.name}
+              value={dataEntry.name}
               onSave={onUpdate('name')}
               processing={processing}
               isEditing={isEditingName}
@@ -160,12 +102,20 @@ const SharedDataEntry = ({ file }) => {
             />
           </Restricted>
         </Grid>
-        <Grid item xs={2} md={1} order={{ xs: 6, md: 3 }}>
-          {filesize(file.size, { round: 0 })}
+        <Grid item xs={1} order={{ xs: 5 }} display={{ md: 'none' }} />
+        <Grid
+          item
+          xs={11}
+          md={3}
+          order={{ xs: 6, md: 3 }}
+          sx={{ wordWrap: 'break-word' }}
+        >
+          {info}
         </Grid>
-        <Grid item xs={9} md={5} order={{ xs: 7, md: 4 }}>
-          {formatDate(i18n.resolvedLanguage, file.createdAt)}, by{' '}
-          {t('user.full_name', { user: file.createdBy })}
+        <Grid item xs={1} order={{ xs: 7 }} display={{ md: 'none' }} />
+        <Grid item xs={11} md={3} order={{ xs: 8, md: 4 }}>
+          {formatDate(i18n.resolvedLanguage, dataEntry.createdAt)}, by{' '}
+          {t('user.full_name', { user: dataEntry.createdBy })}
         </Grid>
         <Grid
           item
@@ -176,21 +126,24 @@ const SharedDataEntry = ({ file }) => {
           justifyContent="flex-end"
           display={isEditingName ? 'none' : 'inherit'}
         >
-          <Restricted permission="sharedData.delete" resource={{ group, file }}>
+          <Restricted
+            permission="sharedData.delete"
+            resource={{ group, dataEntry }}
+          >
             <ConfirmButton
               onConfirm={onConfirm}
               loading={processing}
               variant="text"
               buttonProps={{
                 'aria-label': t('sharedData.delete_label', {
-                  name: file.name,
+                  name: dataEntry.name,
                 }),
               }}
               confirmTitle={t('sharedData.delete_confirm_title', {
-                name: file.name,
+                name: dataEntry.name,
               })}
               confirmMessage={t('sharedData.delete_confirm_message', {
-                name: file.name,
+                name: dataEntry.name,
               })}
               confirmButton={t('sharedData.delete_confirm_button')}
             >
@@ -203,39 +156,25 @@ const SharedDataEntry = ({ file }) => {
             </ConfirmButton>
           </Restricted>
           <Restricted permission="sharedData.download" resource={group}>
-            <Button
-              onClick={handleDownload}
-              aria-label={t('sharedData.download_label', {
-                name: file.name,
-              })}
-              startIcon={
-                <FileDownloadIcon
-                  sx={{
-                    marginTop: '2px',
-                    width: ICON_SIZE,
-                    height: ICON_SIZE,
-                    color: theme.palette.gray.dark1,
-                  }}
-                />
-              }
-            />
+            <DownloadComponent dataEntry={dataEntry} />
           </Restricted>
         </Grid>
+        <Grid item xs={1} order={{ xs: 9 }} display={{ md: 'none' }} />
         <Grid
           item
           xs={isEditingDescription ? 12 : 9}
           md={10}
-          order={{ xs: 9, md: 7 }}
+          order={{ xs: 10, md: 7 }}
         >
           <Restricted
             permission="sharedData.edit"
-            resource={{ group, file }}
+            resource={{ group, dataEntry }}
             FallbackComponent={() => (
-              <Typography variant="body1">{file.description}</Typography>
+              <Typography variant="body1">{dataEntry.description}</Typography>
             )}
           >
             <EditableText
-              id={`description-${file.id}`}
+              id={`description-${dataEntry.id}`}
               label={t('sharedData.description_update')}
               value={description}
               processing={processing}
@@ -247,12 +186,10 @@ const SharedDataEntry = ({ file }) => {
             />
           </Restricted>
         </Grid>
-        <Grid item xs={1} order={{ xs: 5 }} display={{ md: 'none' }} />
-        <Grid item xs={1} order={{ xs: 8 }} display={{ md: 'none' }} />
       </Grid>
-      <Visualizations file={file} />
+      {children}
     </ListItem>
   );
 };
 
-export default SharedDataEntry;
+export default SharedDataEntryBase;

@@ -22,9 +22,10 @@ import { useFetchData } from 'state/utils';
 import { useGroupContext } from 'group/groupContext';
 import { fetchGroupSharedData } from 'sharedData/sharedDataSlice';
 
-import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
+import { SHARED_DATA_ACCEPTED_RESOURCE_TYPES } from 'config';
 
-import SharedDataEntry from './SharedDataEntry';
+import SharedDataEntryFile from './SharedDataEntryFile';
+import SharedDataEntryLink from './SharedDataEntryLink';
 
 const SharedFilesCard = props => {
   const { t } = useTranslation();
@@ -69,7 +70,7 @@ const SharedFilesCard = props => {
       <CardContent>
         <Typography sx={{ mb: 2 }}>
           {t('sharedData.card_description', {
-            extensions: SHARED_DATA_ACCEPTED_EXTENSIONS.map(
+            extensions: SHARED_DATA_ACCEPTED_RESOURCE_TYPES.map(
               ext => `*.${ext}`
             ).join(', '),
             name: owner.name,
@@ -79,9 +80,21 @@ const SharedFilesCard = props => {
         {hasFiles && (
           <>
             <List aria-describedby="shared-data-card-title">
-              {sharedFiles.map(file => (
-                <SharedDataEntry key={file.id} file={file} group={group} />
-              ))}
+              {sharedFiles.map(dateEnty =>
+                dateEnty.entryType === 'FILE' ? (
+                  <SharedDataEntryFile
+                    key={dateEnty.id}
+                    dataEntry={dateEnty}
+                    group={group}
+                  />
+                ) : (
+                  <SharedDataEntryLink
+                    key={dateEnty.id}
+                    dataEntry={dateEnty}
+                    group={group}
+                  />
+                )
+              )}
             </List>
             <Typography
               variant="body1"

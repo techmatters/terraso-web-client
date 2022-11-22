@@ -4,7 +4,7 @@ import { dataEntries } from 'group/groupFragments';
 import { extractDataEntries } from 'group/groupUtils';
 import * as terrasoApi from 'terrasoBackend/api';
 
-import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
+import { SHARED_DATA_ACCEPTED_RESOURCE_TYPES } from 'config';
 
 import {
   dataEntry,
@@ -65,6 +65,7 @@ export const addSharedDataLink = ({ groupSlug, link }) => {
       input: {
         ..._.pick(['name', 'url', 'description'], link),
         entryType: 'link',
+        resourceType: 'link',
         groupSlug,
       },
     })
@@ -88,7 +89,7 @@ export const updateSharedData = ({ file }) => {
 
 export const fetchGroupSharedData = ({
   slug,
-  resourceTypes = SHARED_DATA_ACCEPTED_EXTENSIONS,
+  resourceTypes = SHARED_DATA_ACCEPTED_RESOURCE_TYPES,
 }) => {
   const query = `
     query group($slug: String!, $resourceTypes: [String]!){
