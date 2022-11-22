@@ -163,14 +163,6 @@ test('ProfileUpdate: Save form', async () => {
       areaTypes: '["peri-urban","rural"]',
       population: '1000932',
       taxonomyTypeTerms: JSON.stringify({
-        language: [
-          {
-            type: 'language',
-            valueOriginal: 'es',
-            valueEn: 'Spanish',
-            valueEs: 'Español',
-          },
-        ],
         'ecosystem-type': [
           {
             slug: 'eco1',
@@ -180,6 +172,14 @@ test('ProfileUpdate: Save form', async () => {
             valueEs: 'Eco1 Es',
           },
           { valueOriginal: 'Test New Eco 2', type: 'ecosystem-type' },
+        ],
+        language: [
+          {
+            type: 'language',
+            valueOriginal: 'es',
+            valueEn: 'Spanish',
+            valueEs: 'Español',
+          },
         ],
         livelihood: [{ valueOriginal: 'Livelihood 1', type: 'livelihood' }],
         commodity: [{ valueOriginal: 'Commodity 1', type: 'commodity' }],

@@ -162,7 +162,7 @@ test('AffiliationUpdate: Save form', async () => {
   await inputs.changeYear('1999');
 
   await inputs.changeCombobox(
-    'Landscape partnership Terraso Groups',
+    'Landscape partnership Terraso group',
     'Group Ind 2',
     false
   );
