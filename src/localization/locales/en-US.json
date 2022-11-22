@@ -160,7 +160,7 @@
     },
     "account": {
         "welcome": "Welcome",
-        "disclaimer": "If you don’t already have a Terraso account, signing in will create one in accordance with our <a href='#'>Terms of Service</a>.",
+        "disclaimer": "If you don’t already have a Terraso account, signing in will create one in accordance with our <a href='https://techmatters.org/privacy-policy/'>Privacy Policy</a>.",
         "unauthenticated_message": "Your Terraso session has expired. Please log in again.",
         "form_first_name_label": "Given names",
         "form_last_name_label": "Family names",
