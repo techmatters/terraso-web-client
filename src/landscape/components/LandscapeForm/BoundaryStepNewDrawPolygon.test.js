@@ -23,7 +23,15 @@ jest.mock('react-leaflet', () => ({
 }));
 
 const setup = async () => {
-  await render(<LandscapeNew />);
+  await render(<LandscapeNew />, {
+    account: {
+      currentUser: {
+        data: {
+          email: 'email@account.org',
+        },
+      },
+    },
+  });
   const name = screen.getByRole('textbox', {
     name: 'Name (required)',
   });

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 
@@ -109,11 +110,17 @@ const CountrySelector = props => {
 const InfoStep = props => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { data: user } = useSelector(_.get('account.currentUser'));
   const { setUpdatedLandscape, landscape, isNew } = props;
   const [updatedValues, setUpdatedValues] = useState();
   const title = !isNew
     ? t('landscape.form_edit_title', { name: _.getOr('', 'name', landscape) })
     : t('landscape.form_new_title');
+
+  const baseFormValues = useMemo(
+    () => (isNew ? { ...landscape, email: user.email } : landscape),
+    [isNew, landscape, user.email]
+  );
 
   return (
     <>
@@ -134,7 +141,7 @@ const InfoStep = props => {
         prefix="landscape"
         localizationPrefix="landscape.form_key_info"
         fields={FORM_FIELDS}
-        values={landscape}
+        values={baseFormValues}
         validationSchema={VALIDATION_SCHEMA}
         isMultiStep={isNew}
         onChange={setUpdatedValues}
