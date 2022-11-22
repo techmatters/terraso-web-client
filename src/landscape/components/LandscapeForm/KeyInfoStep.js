@@ -7,6 +7,7 @@ import * as yup from 'yup';
 
 import { MenuItem, Select, TextareaAutosize, Typography } from '@mui/material';
 
+import CharacterCounter from 'common/components/CharacterCounter';
 import { countriesList, countryMap, transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
@@ -40,6 +41,9 @@ const FORM_FIELDS = [
     name: 'description',
     label: 'landscape.form_description_label',
     placeholder: 'landscape.form_description_placeholder',
+    info: ({ field: { value } }) => {
+      return <CharacterCounter text={value} max={MAX_DESCRIPTION_LENGTH} />;
+    },
     props: {
       inputProps: {
         inputComponent: TextareaAutosize,
@@ -125,13 +129,13 @@ const InfoStep = props => {
         {t('landscape.form_new_description')}
       </Typography>
       <Form
+        mode="onChange"
         aria-labelledby="landscape-form-page-title"
         prefix="landscape"
         localizationPrefix="landscape.form_key_info"
         fields={FORM_FIELDS}
         values={landscape}
         validationSchema={VALIDATION_SCHEMA}
-        cancelLabel="landscape.form_info_cancel"
         isMultiStep={isNew}
         onChange={setUpdatedValues}
       />
