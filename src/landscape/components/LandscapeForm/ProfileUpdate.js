@@ -37,12 +37,13 @@ const ProfileUpdate = () => {
 
   const onSave = updatedLandscape => {
     dispatch(
-      saveLandscape(
-        _.pick(
+      saveLandscape({
+        successKey: 'landscape.profile_success',
+        landscape: _.pick(
           ['id', 'areaTypes', 'taxonomyTypeTerms', 'population'],
           updatedLandscape
-        )
-      )
+        ),
+      })
     ).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
       if (success) {

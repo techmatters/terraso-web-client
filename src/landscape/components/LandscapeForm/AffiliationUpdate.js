@@ -37,8 +37,9 @@ const AffiliationUpdate = () => {
 
   const onSave = updatedLandscape => {
     dispatch(
-      saveLandscape(
-        _.pick(
+      saveLandscape({
+        successKey: 'landscape.affiliation_success',
+        landscape: _.pick(
           [
             'id',
             'partnership',
@@ -47,8 +48,8 @@ const AffiliationUpdate = () => {
             'taxonomyTypeTerms',
           ],
           updatedLandscape
-        )
-      )
+        ),
+      })
     ).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
       if (success) {

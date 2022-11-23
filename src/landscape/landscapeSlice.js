@@ -95,9 +95,9 @@ export const fetchLandscapeForMembers = createAsyncThunk(
 export const saveLandscape = createAsyncThunk(
   'landscape/saveLandscape',
   landscapeService.saveLandscape,
-  landscape => ({
+  (landscape, { successKey }) => ({
     severity: 'success',
-    content: landscape.new ? 'landscape.added' : 'landscape.updated',
+    content: successKey,
     params: { name: landscape.name },
   })
 );

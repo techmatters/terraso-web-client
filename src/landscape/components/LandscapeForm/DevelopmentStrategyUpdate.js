@@ -28,7 +28,10 @@ const DevelopmentStrategyUpdate = () => {
 
   const onSave = updatedLandscape => {
     dispatch(
-      saveLandscape(_.pick(['id', 'developmentStrategy'], updatedLandscape))
+      saveLandscape({
+        successKey: 'landscape.development_strategy_success',
+        landscape: _.pick(['id', 'developmentStrategy'], updatedLandscape),
+      })
     ).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
       if (success) {

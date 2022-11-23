@@ -399,7 +399,7 @@
         "form_development_other_information_description": "What other information is crucial to describing your landscape?",
         "form_development_other_information": "Other information",
         "form_development_other_information_placeholder": "",
-        "profile_development_card_update_title": "Goals and Strategy",
+        "profile_development_card_title": "Goals and Strategy",
         "profile_development_card_empty": "No information about the landscape’s goal and strategy is available",
         "profile_development_card_enter": "Describe the landscape’s shared vision and strategy, so others can learn from your landscape.",
         "profile_development_card_objectives_title": "Sustainable development objectives",
@@ -418,7 +418,12 @@
         "form_profile_profile_image_success": "Your landscape profile photo has been updated.",
         "profile_profile_card_profile_image_placeholder_message": "Upload an image of your landscape.",
         "profile_profile_card_profile_image_update": "Update Landscape Photo",
-        "profile_profile_card_profile_image_alt": "Photo of {{name}} landscape"
+        "profile_profile_card_profile_image_alt": "Photo of {{name}} landscape",
+        "key_info_success": "$t(landscape.view_card_title) is updated",
+        "affiliation_success": "$t(landscape.profile_affiliation_card_title) is updated",
+        "profile_success": "Profile is updated",
+        "development_strategy_success": "$t(landscape.profile_development_card_title) is updated",
+        "boundary_success": "[TODO] Boundary is updated"
     },
     "sharedData": {
         "title": "Shared files",
