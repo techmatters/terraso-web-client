@@ -119,22 +119,20 @@ const LandscapeNew = () => {
           : 'landscape.added',
         landscape: updatedLandscape,
       })
-    )
-      .then(data => {
-        const success = _.get('meta.requestStatus', data) === 'fulfilled';
-        if (!success) {
-          return Promise.reject();
-        }
-        if (!updatedLandscape.id) {
-          trackEvent('Landscape created', {
-            props: {
-              landscapeName: updatedLandscape.name,
-              country: updatedLandscape.location,
-            },
-          });
-        }
-      })
-      .catch(console.error);
+    ).then(data => {
+      const success = _.get('meta.requestStatus', data) === 'fulfilled';
+      if (!success) {
+        return Promise.reject();
+      }
+      if (!updatedLandscape.id) {
+        trackEvent('Landscape created', {
+          props: {
+            landscapeName: updatedLandscape.name,
+            country: updatedLandscape.location,
+          },
+        });
+      }
+    });
   };
 
   const steps = [
@@ -144,11 +142,11 @@ const LandscapeNew = () => {
         <InfoStep
           isNew
           landscape={updatedLandscape}
-          setUpdatedLandscape={updatedLandscape => {
+          setUpdatedLandscape={updatedLandscape =>
             onCreate(updatedLandscape).then(() => {
               setActiveStepIndex(current => current + 1);
-            });
-          }}
+            })
+          }
         />
       ),
     },
