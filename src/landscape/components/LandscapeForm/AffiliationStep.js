@@ -18,6 +18,7 @@ import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
 
 import GroupAutocomplete from 'group/components/GroupAutocomplete';
+import { Subheader } from 'landscape/landscapeUtils';
 import TaxonomyAutocomplete from 'taxonomies/components/TaxonomyAutocomplete';
 import { TYPE_ORGANIZATION } from 'taxonomies/taxonomiesConstants';
 
@@ -29,8 +30,12 @@ const VALIDATION_SCHEMA = yup.object().shape({}).required();
 
 const FORM_FIELDS = [
   {
+    name: 'partnershipStatus-info',
+    renderStaticElement: () => <PartnershipStatusInfo />,
+  },
+
+  {
     name: 'partnershipStatus',
-    label: 'landscape.form_profile_partnership_status',
     props: {
       renderInput: ({ id, field }) => (
         <PartnershipStatusRadioGroup id={id} field={field} />
@@ -116,6 +121,10 @@ const YearSelect = props => {
         ))}
     </Select>
   );
+};
+
+const PartnershipStatusInfo = props => {
+  return <Subheader text="landscape.form_profile_partnership_status" />;
 };
 
 const PartnershipStatusRadioGroup = props => {
