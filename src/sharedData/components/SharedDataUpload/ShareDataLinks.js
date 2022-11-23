@@ -68,13 +68,21 @@ const UrlWrapper = props => {
 
 const Link = props => {
   const { t } = useTranslation();
-  const { trigger } = useFormGetContext();
+  const { trigger, formState } = useFormGetContext();
   const { apiSuccesses, apiErrors, apiUploading, onLinkChange } = useContext(
     LinksContextFunctions
   );
   const { linkId, link } = props;
   const [updatedValues, setUpdatedValues] = useState({ id: linkId });
   const [baseFormData] = useState(link);
+
+  const formErrors = useMemo(
+    () => formState?.errors,
+    [updatedValues, formState?.errors]
+  );
+  useEffect(() => {
+    console.log({ formErrors });
+  }, [formErrors]);
 
   const fields = useMemo(
     () => [
