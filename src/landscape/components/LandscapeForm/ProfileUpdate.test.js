@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 
 import ProfileUpdate from 'landscape/components/LandscapeForm/ProfileUpdate';
 import * as terrasoApi from 'terrasoBackend/api';
+import { iso639en, iso639es } from 'localization/iso639';
 
 jest.mock('terrasoBackend/api');
 
@@ -14,6 +15,8 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(),
 }));
+
+jest.mock('localization/iso639');
 
 const setup = async () => {
   await render(<ProfileUpdate />);
@@ -58,6 +61,12 @@ beforeEach(() => {
   useParams.mockReturnValue({
     slug: 'slug-1',
   });
+  iso639en.mockReturnValue({
+    spa: 'Spanish'
+  })
+  iso639es.mockReturnValue({
+    spa: 'Español'
+  })
 });
 
 test('ProfileUpdate: Display error', async () => {

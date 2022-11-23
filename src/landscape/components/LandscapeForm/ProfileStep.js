@@ -9,6 +9,7 @@ import { Checkbox, FormControlLabel, Stack, Typography } from '@mui/material';
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
+import { iso639en, iso639es } from 'localization/iso639';
 
 import { Subheader } from 'landscape/landscapeUtils';
 import TaxonomyAutocomplete from 'taxonomies/components/TaxonomyAutocomplete';
@@ -19,8 +20,6 @@ import {
   TYPE_LIVELIHOOD,
 } from 'taxonomies/taxonomiesConstants';
 
-import iso639en from '../../../localization/iso639/en.json';
-import iso639es from '../../../localization/iso639/es.json';
 import Actions from './Actions';
 
 const VALIDATION_SCHEMA = yup
@@ -135,8 +134,8 @@ const CommoditiesInfo = () => {
 
 const LanguageAutocomplete = props => {
   const { field, id } = props;
-  const languagesEn = useMemo(() => iso639en, []);
-  const languagesEs = useMemo(() => iso639es, []);
+  const languagesEn = useMemo(() => iso639en(), []);
+  const languagesEs = useMemo(() => iso639es(), []);
   const terms = useMemo(
     () =>
       Object.keys(languagesEn)
