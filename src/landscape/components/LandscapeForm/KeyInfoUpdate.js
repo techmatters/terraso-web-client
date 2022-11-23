@@ -28,12 +28,13 @@ const KeyInfoUpdate = () => {
 
   const onSave = updatedLandscape => {
     dispatch(
-      saveLandscape(
-        _.pick(
+      saveLandscape({
+        successKey: 'landscape.key_info_success',
+        landscape: _.pick(
           ['id', 'name', 'description', 'location', 'email', 'website'],
           updatedLandscape
-        )
-      )
+        ),
+      })
     );
   };
 

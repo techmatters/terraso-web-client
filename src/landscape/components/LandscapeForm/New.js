@@ -88,7 +88,12 @@ const LandscapeNew = () => {
 
   const onUpdate = step => updatedLandscape => {
     setUpdatedLandscape(updatedLandscape);
-    return dispatch(saveLandscape(updatedLandscape)).then(data => {
+    return dispatch(
+      saveLandscape({
+        successKey: 'landscape.updated',
+        landscape: updatedLandscape,
+      })
+    ).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
       if (!success) {
         return Promise.reject();
@@ -107,7 +112,14 @@ const LandscapeNew = () => {
 
   const onCreate = async updatedLandscape => {
     setUpdatedLandscape(updatedLandscape);
-    return dispatch(saveLandscape(updatedLandscape))
+    return dispatch(
+      saveLandscape({
+        successKey: updatedLandscape.id
+          ? 'landscape.updated'
+          : 'landscape.added',
+        landscape: updatedLandscape,
+      })
+    )
       .then(data => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (!success) {

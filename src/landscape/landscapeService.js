@@ -334,7 +334,7 @@ const addLandscape = landscape => {
     .then(response => ({ new: true, ...response.addLandscape.landscape }));
 };
 
-export const saveLandscape = landscape =>
+export const saveLandscape = ({ landscape }) =>
   landscape.id ? updateLandscape(landscape) : addLandscape(landscape);
 
 export const uploadProfileImage = async ({

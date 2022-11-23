@@ -50,8 +50,11 @@ const LandscapeBoundariesUpdate = () => {
   const onSave = async updatedLandscape => {
     return dispatch(
       saveLandscape({
-        id: landscape.id,
-        areaPolygon: updatedLandscape.areaPolygon,
+        successKey: 'landscape.boundary_success',
+        landscape: {
+          id: landscape.id,
+          areaPolygon: updatedLandscape.areaPolygon,
+        },
       })
     );
   };
