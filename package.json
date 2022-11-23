@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "@changey/react-leaflet-markercluster": "^4.0.0-rc1",
-    "@cospired/i18n-iso-languages": "^4.0.0",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@hookform/resolvers": "^2.9.8",
