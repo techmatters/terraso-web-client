@@ -5,9 +5,10 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
 
+import { iso639en, iso639es } from 'localization/iso639';
+
 import ProfileUpdate from 'landscape/components/LandscapeForm/ProfileUpdate';
 import * as terrasoApi from 'terrasoBackend/api';
-import { iso639en, iso639es } from 'localization/iso639';
 
 jest.mock('terrasoBackend/api');
 
@@ -62,11 +63,11 @@ beforeEach(() => {
     slug: 'slug-1',
   });
   iso639en.mockReturnValue({
-    spa: 'Spanish'
-  })
+    spa: 'Spanish',
+  });
   iso639es.mockReturnValue({
-    spa: 'Español'
-  })
+    spa: 'Español',
+  });
 });
 
 test('ProfileUpdate: Display error', async () => {
