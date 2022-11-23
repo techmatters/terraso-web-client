@@ -140,7 +140,7 @@ const CommoditiesInfo = () => {
 const LanguageAutocomplete = props => {
   const { field, id } = props;
   const languagesEn = useMemo(() => iso639en, []);
-  const languagesEs = useMemo(() => iso639es);
+  const languagesEs = useMemo(() => iso639es, []);
   const terms = useMemo(
     () =>
       Object.keys(languagesEn)
