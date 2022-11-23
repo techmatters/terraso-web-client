@@ -10,6 +10,7 @@ import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
 
+import { Subheader } from 'landscape/landscapeUtils';
 import TaxonomyAutocomplete from 'taxonomies/components/TaxonomyAutocomplete';
 import {
   TYPE_COMMODITY,
@@ -119,11 +120,6 @@ const FORM_FIELDS = [
     },
   },
 ];
-
-const Subheader = ({ text }) => {
-  const { t } = useTranslation();
-  return <Typography sx={{ pl: 2 }}>{t(text)}</Typography>;
-};
 
 const AreaTypesInfo = () => {
   return <Subheader text="landscape.form_profile_area_types" />;

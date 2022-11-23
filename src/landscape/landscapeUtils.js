@@ -2,6 +2,9 @@ import bbox from '@turf/bbox';
 import turfCenter from '@turf/center';
 import * as turf from '@turf/helpers';
 import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
+
+import { Typography } from '@mui/material';
 
 import { normalizeLongitude } from 'gis/gisUtils';
 
@@ -116,3 +119,8 @@ export const extractAffiliatedGroups = landscape =>
 
 export const extractDevelopmentStrategy = landscape =>
   _.get('associatedDevelopmentStrategy.edges[0].node', landscape);
+
+export const Subheader = ({ text }) => {
+  const { t } = useTranslation();
+  return <Typography sx={{ pl: 2 }}>{t(text)}</Typography>;
+};
