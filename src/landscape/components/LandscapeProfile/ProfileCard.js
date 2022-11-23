@@ -149,8 +149,8 @@ const ProfileImage = props => {
             position: 'absolute',
             bottom: 0,
             width: '100%',
-            pt: 1,
-            pb: 4,
+            pt: hasProfileImage ? 2 : 1,
+            pb: hasProfileImage ? 2 : 4,
           }}
           spacing={2}
         >
