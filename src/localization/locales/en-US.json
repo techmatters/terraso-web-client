@@ -419,11 +419,11 @@
         "profile_profile_card_profile_image_placeholder_message": "Upload an image of your landscape.",
         "profile_profile_card_profile_image_update": "Update Landscape Photo",
         "profile_profile_card_profile_image_alt": "Photo of {{name}} landscape",
-        "key_info_success": "$t(landscape.view_card_title) is updated",
-        "affiliation_success": "$t(landscape.profile_affiliation_card_title) is updated",
-        "profile_success": "Profile is updated",
-        "development_strategy_success": "$t(landscape.profile_development_card_title) is updated",
-        "boundary_success": "[TODO] Boundary is updated"
+        "key_info_success": "$t(landscape.view_card_title) was updated",
+        "affiliation_success": "$t(landscape.profile_affiliation_card_title) was updated",
+        "profile_success": "Profile was updated",
+        "development_strategy_success": "$t(landscape.profile_development_card_title) was updated",
+        "boundary_success": "Boundary was updated"
     },
     "sharedData": {
         "title": "Shared files",
