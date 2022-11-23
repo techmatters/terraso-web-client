@@ -413,10 +413,10 @@
         "form_profile_image_zoom_label": "Zoom",
         "form_profile_image_description_label": "Photo Description",
         "form_profile_image_description_placeholder": "Describe the photo. This helps people who cannot see the image.",
-        "form_profile_image_file_no_accepted": "Please upload images with one of the following extensions: {{extensions}}",
+        "form_profile_image_file_no_accepted": "Upload images with one of the following extensions: {{extensions}}",
         "form_profile_profile_image_title": "Landscape Profile Photo",
         "form_profile_profile_image_success": "Your landscape profile photo has been updated.",
-        "profile_profile_card_profile_image_placeholder_message": "Please upload an image of your landscape.",
+        "profile_profile_card_profile_image_placeholder_message": "Upload an image of your landscape.",
         "profile_profile_card_profile_image_update": "Update Landscape Photo",
         "profile_profile_card_profile_image_alt": "Photo of {{name}} landscape"
     },
