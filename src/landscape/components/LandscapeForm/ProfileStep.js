@@ -247,6 +247,7 @@ const ProfileStep = props => {
         onCancel={onCancel}
         onSave={onSave}
         updatedValues={updatedValues}
+        nextLabel={t('landscape.form_add_profile_label')}
         onNext={setUpdatedLandscape}
       />
     </>
