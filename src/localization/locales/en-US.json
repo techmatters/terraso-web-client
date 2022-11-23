@@ -263,7 +263,7 @@
         "form_new_document_title": "Add Landscape",
         "list_document_title": "Landscapes",
         "view_document_title": "{{name}}",
-        "profile_document_title": "{{name}} | Profile",
+        "profile_document_title": "{{name}} Profile",
         "members_document_title": "Members: {{name}}",
         "boundaries_document_title": "Edit boundary: {{name}}",
         "list_column_actions_description": "Actions",
