@@ -121,15 +121,46 @@ const ProfileImage = props => {
   }
 
   return (
-    <Box
-      sx={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+    <Stack
+      sx={{
+        background: 'orange',
+        position: 'relative',
+      }}
     >
+      <img
+        src={hasProfileImage ? landscape.profileImage : PROFILE_IMAGE_DEFAULT}
+        alt={
+          landscape.profileImageDescription ||
+          t('landscape.profile_profile_card_profile_image_alt', {
+            name: landscape.name,
+          })
+        }
+        style={{ width: '100%' }}
+      />
       {allowed && (
-        <Stack sx={{ position: 'absolute', mb: 2, color: 'white' }} spacing={2}>
+        <Box
+          sx={{
+            color: 'white',
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+            position: 'absolute',
+            bottom: 0,
+            width: '100%',
+            pt: 1,
+            pb: 4,
+          }}
+          spacing={2}
+        >
           {!hasProfileImage && (
             <Restricted permission="landscape.change" resource={landscape}>
               <Typography
-                sx={{ background: 'black', p: 2, fontWeight: 'bold' }}
+                sx={{
+                  p: 2,
+                  fontWeight: 'bold',
+                }}
               >
                 {t(
                   'landscape.profile_profile_card_profile_image_placeholder_message'
@@ -144,6 +175,7 @@ const ProfileImage = props => {
             sx={{
               backgroundColor: 'white',
               color: 'black',
+              display: 'inline',
               '&:hover': {
                 color: 'white',
                 fontWeight: 'bold',
@@ -152,19 +184,9 @@ const ProfileImage = props => {
           >
             {t('landscape.profile_profile_card_profile_image_update')}
           </Button>
-        </Stack>
+        </Box>
       )}
-      <img
-        src={hasProfileImage ? landscape.profileImage : PROFILE_IMAGE_DEFAULT}
-        alt={
-          landscape.profileImageDescription ||
-          t('landscape.profile_profile_card_profile_image_alt', {
-            name: landscape.name,
-          })
-        }
-        style={{ width: '100%' }}
-      />
-    </Box>
+    </Stack>
   );
 };
 
