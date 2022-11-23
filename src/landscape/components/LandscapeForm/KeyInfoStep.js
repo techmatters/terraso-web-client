@@ -152,11 +152,8 @@ const InfoStep = props => {
         onCancel={() => navigate(-1)}
         updatedValues={updatedValues}
         onNext={setUpdatedLandscape}
-        nextLabel={
-          isNew
-            ? t('landscape.form_add_landscape_label')
-            : 'landscape.form_save_label'
-        }
+        nextLabel={t('landscape.form_add_landscape_label')}
+        updateLabel={t('landscape.form_save_label')}
       />
     </>
   );

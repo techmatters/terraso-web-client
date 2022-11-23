@@ -15,6 +15,7 @@ const Actions = props => {
     onNext,
     onSave,
     nextLabel,
+    updateLabel,
     isForm,
     saveDisabled = false,
   } = props;
@@ -74,7 +75,7 @@ const Actions = props => {
         disabled={saveDisabled}
         sx={{ pl: 6, pr: 6 }}
       >
-        {t('landscape.form_update')}
+        {updateLabel || t('landscape.form_update')}
       </Button>
       <Button variant="text" onClick={onCancel} sx={{ pl: 6, pr: 6 }}>
         {t('landscape.form_cancel')}
