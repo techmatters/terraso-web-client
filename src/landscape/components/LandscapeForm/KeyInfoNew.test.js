@@ -136,7 +136,7 @@ test('LandscapeNew: Input validation', async () => {
   expect(inputs.website).toHaveValue('wwwotherorg');
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
   );
   expect(screen.getByText(/name is required/i)).toBeInTheDocument();
   expect(screen.getByText(/description is required/i)).toBeInTheDocument();
@@ -181,7 +181,7 @@ test('LandscapeNew: Save form', async () => {
   await inputs.changeLocation('Argentina');
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
   );
 
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(5);
@@ -222,7 +222,7 @@ test('LandscapeNew: Save form error', async () => {
   await inputs.changeLocation('Argentina');
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
   );
 
   // Test error display
@@ -286,7 +286,7 @@ test('LandscapeNew: Save form (add)', async () => {
   await inputs.changeLocation('Ecuador');
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
   );
   await waitFor(() => {
     expect(

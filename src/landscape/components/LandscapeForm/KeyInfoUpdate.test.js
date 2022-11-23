@@ -182,7 +182,7 @@ test('KeyInfoUpdate: Input validation', async () => {
   expect(inputs.website).toHaveValue('wwwotherorg');
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Update' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
   );
   expect(screen.getByText(/name is required/i)).toBeInTheDocument();
   expect(screen.getByText(/description is required/i)).toBeInTheDocument();
@@ -250,7 +250,7 @@ test('KeyInfoUpdate: Save form', async () => {
   await inputs.changeLocation('Argentina');
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Update' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
   );
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
   const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
@@ -313,7 +313,7 @@ test('KeyInfoUpdate: Save form error', async () => {
   await inputs.changeLocation('Argentina');
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Update' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
   );
 
   // Test error display

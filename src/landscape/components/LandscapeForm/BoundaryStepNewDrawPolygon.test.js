@@ -131,7 +131,7 @@ test('LandscapeNew: Save form draw polygon boundary', async () => {
   await inputs.changeLocation('Argentina');
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
   );
   await waitFor(() => {
     expect(
