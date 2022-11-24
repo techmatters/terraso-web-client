@@ -110,9 +110,9 @@ const LandscapeNew = () => {
     });
   };
 
-  const onCreate = async updatedLandscape => {
+  const onCreate = (updatedLandscape, setActiveStepIndex) => {
     setUpdatedLandscape(updatedLandscape);
-    return dispatch(
+    dispatch(
       saveLandscape({
         successKey: updatedLandscape.id
           ? 'landscape.updated'
@@ -122,7 +122,7 @@ const LandscapeNew = () => {
     ).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
       if (!success) {
-        return Promise.reject();
+        return;
       }
       if (!updatedLandscape.id) {
         trackEvent('Landscape created', {
@@ -132,6 +132,7 @@ const LandscapeNew = () => {
           },
         });
       }
+      setActiveStepIndex(current => current + 1);
     });
   };
 
@@ -142,11 +143,9 @@ const LandscapeNew = () => {
         <InfoStep
           isNew
           landscape={updatedLandscape}
-          setUpdatedLandscape={updatedLandscape =>
-            onCreate(updatedLandscape).then(() => {
-              setActiveStepIndex(current => current + 1);
-            })
-          }
+          setUpdatedLandscape={updatedLandscape => {
+            onCreate(updatedLandscape, setActiveStepIndex);
+          }}
         />
       ),
     },
