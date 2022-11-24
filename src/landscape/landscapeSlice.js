@@ -16,6 +16,7 @@ const initialState = {
     fetching: true,
     message: null,
     landscape: null,
+    deletingProfileImage: false,
   },
   view: {
     fetching: true,
@@ -107,6 +108,15 @@ export const uploadProfileImage = createAsyncThunk(
   () => ({
     severity: 'success',
     content: 'landscape.form_profile_profile_image_success',
+  })
+);
+export const deleteProfileImage = createAsyncThunk(
+  'landscape/deleteProfileImage',
+  landscapeService.saveLandscape,
+  (landscape, { successKey }) => ({
+    severity: 'success',
+    content: successKey,
+    params: { name: landscape.name },
   })
 );
 
@@ -238,6 +248,16 @@ const landscapeSlice = createSlice({
         landscape: action.payload,
         success: true,
       },
+      profile: {
+        ...state.profile,
+        landscape: {
+          ...state.profile.landscape,
+          ..._.pick(
+            ['payload.profileImage', 'payload.profileImageDescription'],
+            action
+          ),
+        },
+      },
     }),
     [saveLandscape.rejected]: (state, action) => ({
       ...state,
@@ -281,6 +301,32 @@ const landscapeSlice = createSlice({
       ...state,
       uploadProfileImage: {
         uploading: true,
+      },
+    }),
+    [deleteProfileImage.pending]: state => ({
+      ...state,
+      profile: {
+        ...state.profile,
+        deletingProfileImage: true,
+      },
+    }),
+    [deleteProfileImage.rejected]: state => ({
+      ...state,
+      profile: {
+        ...state.profile,
+        deletingProfileImage: false,
+      },
+    }),
+    [deleteProfileImage.fulfilled]: (state, action) => ({
+      ...state,
+      profile: {
+        ...state.profile,
+        deletingProfileImage: false,
+        landscape: {
+          ...state.profile.landscape,
+          profileImage: '',
+          profileImageDescription: '',
+        },
       },
     }),
   },
