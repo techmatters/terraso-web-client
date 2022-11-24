@@ -163,7 +163,7 @@ const LandscapeNew = () => {
             setActiveStepIndex(current => current + 1);
           }}
           onSave={onUpdate(STEP_BOUNDARY)}
-          saveLabel={t('landscape.form_add_label')}
+          saveLabel={t('landscape.form_next')}
         />
       ),
     },

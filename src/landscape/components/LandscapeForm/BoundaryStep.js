@@ -161,7 +161,7 @@ const MapDrawPolygon = props => {
             i18nKey="landscape.form_boundary_draw_polygon_saved"
             context={isNew ? 'create' : 'update'}
           >
-            {{ saveLabel }}
+            prefix
             <span
               role="img"
               aria-label={t('gis.map_draw.edit.toolbar.buttons.edit')}
