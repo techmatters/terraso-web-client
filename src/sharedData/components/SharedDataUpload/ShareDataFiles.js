@@ -256,7 +256,7 @@ const ShareDataFiles = props => {
       _.isEmpty(apiErrors) &&
       _.isEmpty(apiUploading);
     if (isCompleteSuccess) {
-      setFilesSuccess(true);
+      setFilesSuccess(Object.keys(apiSuccesses).length);
     }
   }, [files, apiErrors, apiSuccesses, apiUploading, setFilesSuccess]);
 

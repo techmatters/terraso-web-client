@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
 import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab';
-import { Box, Button, Paper, Stack, Tab } from '@mui/material';
+import { Box, Button, Paper, Stack, Tab, Typography } from '@mui/material';
 
 import { useAnalytics } from 'monitoring/analytics';
 
@@ -25,6 +25,15 @@ const setState = setter => (field, newValue) =>
     [field]: newValue(state[field]),
   }));
 
+const localizedCounts = (t, files, links) =>
+  [
+    { count: files, key: 'sharedData.upload_summary_files' },
+    { count: links, key: 'sharedData.upload_summary_links' },
+  ]
+    .filter(({ count }) => count > 0)
+    .map(({ count, key }) => t(key, { count }))
+    .join(t('sharedData.upload_summary_separator'));
+
 const SharedDataUpload = props => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -38,13 +47,13 @@ const SharedDataUpload = props => {
   const [filesPending, setFilesPending] = useState([]);
   const [filesErrors, setFilesErrors] = useState([]);
   const [filesUploading, setFilesUploading] = useState(false);
-  const [filesSuccess, setFilesSuccess] = useState(false);
+  const [filesSuccess, setFilesSuccess] = useState(0);
 
   const [linksState, setLinksState] = useState({});
   const [linksPending, setLinksPending] = useState([]);
   const [linksErrors, setLinksErrors] = useState([]);
   const [linksUploading, setLinksUploading] = useState(false);
-  const [linksSuccess, setLinksSuccess] = useState(false);
+  const [linksSuccess, setLinksSuccess] = useState(0);
 
   useEffect(() => {
     dispatch(resetUploads());
@@ -52,7 +61,7 @@ const SharedDataUpload = props => {
 
   useEffect(() => {
     const isCompleteSuccess =
-      (filesSuccess || linksSuccess) &&
+      (filesSuccess > 0 || linksSuccess > 0) &&
       _.isEmpty(filesPending) &&
       _.isEmpty(linksPending);
 
@@ -161,6 +170,19 @@ const SharedDataUpload = props => {
           </TabPanel>
         </TabContext>
       </Paper>
+      <Typography>
+        {t('sharedData.upload_summary', {
+          count: filesSuccess + linksSuccess,
+          successCount: filesSuccess + linksSuccess,
+          errorCount: filesPending.length + linksPending.length,
+          successCounts: localizedCounts(t, filesSuccess, linksSuccess),
+          errorCounts: localizedCounts(
+            t,
+            filesPending.length,
+            linksPending.length
+          ),
+        })}
+      </Typography>
       <Stack
         direction="row"
         spacing={2}

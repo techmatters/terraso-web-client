@@ -542,7 +542,19 @@
         "tab_files_zero": "Upload files",
         "tab_files": "Upload files ({{count}})",
         "tab_links_zero": "Share links",
-        "tab_links": "Share links ({{count}})"
+        "tab_links": "Share links ({{count}})",
+        "upload_summary_files_one": "1 file",
+        "upload_summary_files": "{{count}} files",
+        "upload_summary_links_one": "1 link",
+        "upload_summary_links": "{{count}} links",
+        "upload_summary_separator": " and ",
+        "upload_summary_success_zero": "",
+        "upload_summary_success_one": "{{successCounts}} has been shared sucessfully. ",
+        "upload_summary_success": "{{successCounts}} have been shared sucessfully. ",
+        "upload_summary_error_zero": "",
+        "upload_summary_error": "{{errorCounts}} could not be shared. ",
+        "upload_summary_zero": "",
+        "upload_summary": "[TBD] $t(sharedData.upload_summary_success, {\"count\": {{successCount}} })$t(sharedData.upload_summary_error, {\"count\": {{errorCount}} })Fix the issues and share again or skip sharing files or links with issues."
     },
     "common": {
         "dialog_cancel_label": "Cancel",

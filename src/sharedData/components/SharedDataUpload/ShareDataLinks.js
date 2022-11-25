@@ -68,7 +68,7 @@ const UrlWrapper = props => {
 
 const Link = props => {
   const { t } = useTranslation();
-  const { trigger, formState } = useFormGetContext();
+  const { trigger, errors: formErrors } = useFormGetContext();
   const { apiSuccesses, apiErrors, apiUploading, onLinkChange } = useContext(
     LinksContextFunctions
   );
@@ -76,13 +76,7 @@ const Link = props => {
   const [updatedValues, setUpdatedValues] = useState({ id: linkId });
   const [baseFormData] = useState(link);
 
-  const formErrors = useMemo(
-    () => formState?.errors,
-    [updatedValues, formState?.errors]
-  );
-  useEffect(() => {
-    console.log({ formErrors });
-  }, [formErrors]);
+  const hasErrors = useMemo(() => !_.isEmpty(formErrors), [formErrors]);
 
   const fields = useMemo(
     () => [
@@ -145,8 +139,9 @@ const Link = props => {
         sx={{
           paddingLeft: 2,
           paddingRight: 2,
-          paddingTop: 1,
+          paddingTop: 2,
           paddingBottom: 1,
+          ...(hasErrors ? { bgcolor: 'error.background' } : {}),
         }}
       >
         {!_.isEmpty(apiLinkErrors) &&
@@ -266,7 +261,7 @@ const ShareDataLinks = props => {
       _.isEmpty(apiErrors) &&
       _.isEmpty(apiUploading);
     if (isCompleteSuccess) {
-      setLinksSuccess(true);
+      setLinksSuccess(Object.keys(apiSuccesses).length);
     }
   }, [links, apiErrors, apiSuccesses, apiUploading, setLinksSuccess]);
 

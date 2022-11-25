@@ -43,11 +43,12 @@ const Form = props => {
     },
     resolver: yupResolver(validationSchema),
   });
-  const { control, handleSubmit, reset, watch, getValues } = formProps;
+  const { control, handleSubmit, reset, watch, getValues, trigger, formState } =
+    formProps;
 
   useEffect(() => {
-    setFormContext?.(formProps);
-  }, [setFormContext, formProps]);
+    setFormContext?.({ trigger, errors: formState?.errors });
+  }, [setFormContext, trigger, formState?.errors]);
 
   watch((data, { name, type }) => onChange?.(data, name, type));
 
