@@ -247,7 +247,7 @@
         "form_save_label": "Save Changes",
         "profile_image_delete_label": "Delete landscape photo",
         "profile_image_delete_confirm_title": "Delete your landscape photo?",
-        "profile_image_delete_confirm_message": "[TBD] You cannot undo this. Once it's deleted a placeholder image will be displayed instead.",
+        "profile_image_delete_confirm_message": "Are you sure you wish to delete the landscape photo? This cannot be undone.",
         "profile_image_delete_confirm_button": "Delete",
         "profile_image_deleted": "Your landscape profile photo has been deleted",
         "view_join_label": "Connect to Landscape",
