@@ -246,7 +246,7 @@
         "form_add_profile_label": "Add Profile",
         "form_save_label": "Save Changes",
         "profile_image_delete_label": "Delete landscape photo",
-        "profile_image_delete_confirm_title": "Delete your landscape photo?",
+        "profile_image_delete_confirm_title": "Delete the landscape photo?",
         "profile_image_delete_confirm_message": "Are you sure you wish to delete the landscape photo? This cannot be undone.",
         "profile_image_delete_confirm_button": "Delete",
         "profile_image_deleted": "Your landscape profile photo has been deleted",
