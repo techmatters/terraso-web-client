@@ -22,7 +22,7 @@ import { useFetchData } from 'state/utils';
 import { useGroupContext } from 'group/groupContext';
 import { fetchGroupSharedData } from 'sharedData/sharedDataSlice';
 
-import { SHARED_DATA_ACCEPTED_RESOURCE_TYPES } from 'config';
+import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
 import SharedDataEntryFile from './SharedDataEntryFile';
 import SharedDataEntryLink from './SharedDataEntryLink';
@@ -70,7 +70,7 @@ const SharedFilesCard = props => {
       <CardContent>
         <Typography sx={{ mb: 2 }}>
           {t('sharedData.card_description', {
-            extensions: SHARED_DATA_ACCEPTED_RESOURCE_TYPES.map(
+            extensions: SHARED_DATA_ACCEPTED_EXTENSIONS.map(
               ext => `*.${ext}`
             ).join(', '),
             name: owner.name,

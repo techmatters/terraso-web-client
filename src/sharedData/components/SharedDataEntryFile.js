@@ -44,9 +44,10 @@ const Visualizations = props => {
     >
       {file.visualizations.map(visualization => (
         <ListItem
+          key={visualization.id}
           sx={{ bgcolor: 'gray.lite2', fontSize: 14, color: 'gray.dark1' }}
         >
-          <Grid container key={visualization.id} spacing={1}>
+          <Grid container spacing={1}>
             <Grid item sm={7} xs={12} component={StackRow}>
               <MapIcon />
               <Link

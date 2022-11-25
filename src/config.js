@@ -28,9 +28,9 @@ export const SHARED_DATA_MAX_FILES =
 
 export const MAX_DESCRIPTION_LENGTH = 600;
 
-export const SHARED_DATA_ACCEPTED_RESOURCE_TYPES = (
-  process.env.REACT_APP_SHARED_DATA_ACCEPTED_RESOURCE_TYPES ||
-  'csv,doc,docx,pdf,ppt,pptx,xlsx,xls,link'
+export const SHARED_DATA_ACCEPTED_EXTENSIONS = (
+  process.env.REACT_APP_SHARED_DATA_ACCEPTED_EXTENSIONS ||
+  'csv,doc,docx,pdf,ppt,pptx,xlsx,xls'
 ).split(',');
 
 export const IMAGE_ACCEPTED_EXTENSIONS = (

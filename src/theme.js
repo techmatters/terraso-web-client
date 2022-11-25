@@ -17,6 +17,10 @@ const colorTheme = createTheme({
     info: {
       main: '#76a7ec',
     },
+    error: {
+      main: '#d32f2f',
+      background: 'rgb(253, 237, 237)',
+    },
     cardBorder: '#DADADA',
     white: '#FFFFFF',
     gray: {
@@ -96,6 +100,9 @@ const components = {
   MuiOutlinedInput: {
     styleOverrides: {
       root: {
+        '& .MuiInputBase-input': {
+          backgroundColor: colorTheme.palette.white,
+        },
         '& .MuiOutlinedInput-notchedOutline': {
           borderColor: colorTheme.palette.gray.mid,
         },
@@ -137,6 +144,9 @@ const components = {
     styleOverrides: {
       standardSuccess: {
         backgroundColor: colorTheme.palette.success.background,
+      },
+      standardError: {
+        backgroundColor: colorTheme.palette.error.background,
       },
     },
   },
