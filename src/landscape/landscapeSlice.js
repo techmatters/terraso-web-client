@@ -248,16 +248,6 @@ const landscapeSlice = createSlice({
         landscape: action.payload,
         success: true,
       },
-      profile: {
-        ...state.profile,
-        landscape: {
-          ...state.profile.landscape,
-          ..._.pick(
-            ['payload.profileImage', 'payload.profileImageDescription'],
-            action
-          ),
-        },
-      },
     }),
     [saveLandscape.rejected]: (state, action) => ({
       ...state,
