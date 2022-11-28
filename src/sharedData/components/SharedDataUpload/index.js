@@ -170,7 +170,7 @@ const SharedDataUpload = props => {
           </TabPanel>
         </TabContext>
       </Paper>
-      <Typography>
+      <Typography sx={{ mt: 2 }}>
         {t('sharedData.upload_summary', {
           count: filesSuccess + linksSuccess,
           successCount: filesSuccess + linksSuccess,

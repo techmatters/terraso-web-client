@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 
+import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Alert,
@@ -285,8 +286,8 @@ const ShareDataLinks = props => {
 
   return (
     <>
-      <Typography sx={{ fontWeight: 700 }}>
-        {t('sharedData.upload_description')}
+      <Typography sx={{ fontWeight: 700, mb: 2 }}>
+        {t('sharedData.upload_links_description')}
       </Typography>
       <LinksContextFunctions.Provider
         value={{
@@ -299,7 +300,12 @@ const ShareDataLinks = props => {
       >
         <SelectedLinks links={Object.values(links)} />
       </LinksContextFunctions.Provider>
-      <Button variant="outlined" onClick={onNewLink} sx={{ mt: 2 }}>
+      <Button
+        variant="outlined"
+        onClick={onNewLink}
+        sx={{ mt: 2 }}
+        startIcon={<AddIcon />}
+      >
         {t('sharedData.upload_links_add')}
       </Button>
     </>
