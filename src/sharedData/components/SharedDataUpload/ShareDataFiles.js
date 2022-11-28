@@ -29,6 +29,7 @@ import {
   SHARED_DATA_MAX_SIZE,
 } from 'config';
 
+import SuccessContainer from './SuccessContainer';
 import { groupByStatus } from './utils';
 
 import theme from 'theme';
@@ -89,8 +90,16 @@ const File = props => {
   };
 
   const apiFileErrors = _.get(file.id, apiErrors);
-  const apiSuccess = _.has(file.id, apiSuccesses);
+  const apiSuccess = _.get(file.id, apiSuccesses);
   const isUploading = _.has(file.id, apiUploading);
+
+  if (apiSuccess) {
+    return (
+      <SuccessContainer message={t('sharedData.upload_file_success')}>
+        <Typography sx={{ pl: 4 }}>{apiSuccess.name}</Typography>
+      </SuccessContainer>
+    );
+  }
 
   return (
     <>
@@ -106,17 +115,6 @@ const File = props => {
           paddingBottom: 1,
         }}
       >
-        {apiSuccess && (
-          <Alert
-            sx={{
-              width: '100%',
-              boxSizing: 'border-box',
-            }}
-            severity="success"
-          >
-            {t('sharedData.upload_file_success')}
-          </Alert>
-        )}
         {!_.isEmpty(apiFileErrors) &&
           apiFileErrors.map((apiError, index) => (
             <Alert
@@ -316,8 +314,8 @@ const ShareDataFiles = props => {
 
   return (
     <>
-      <Typography sx={{ fontWeight: 700 }}>
-        {t('sharedData.upload_description')}
+      <Typography sx={{ fontWeight: 700, mb: 2 }}>
+        {t('sharedData.upload_files_description')}
       </Typography>
       <Stack direction={{ xs: 'column', md: 'row' }}>
         <DropZone
