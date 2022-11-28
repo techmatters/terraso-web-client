@@ -167,12 +167,13 @@ const ProfileImage = props => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            flexDirection: 'column',
+            flexDirection: hasProfileImage ? 'row' : 'column',
             position: 'absolute',
             bottom: 0,
             width: '100%',
             pt: hasProfileImage ? 2 : 1,
             pb: hasProfileImage ? 2 : 4,
+            paddingLeft: hasProfileImage ? '10%' : '0',
           }}
           spacing={2}
         >
@@ -209,8 +210,7 @@ const ProfileImage = props => {
           {hasProfileImage && (
             <Box
               sx={{
-                display: 'relative',
-                left: '50px',
+                paddingLeft: '5px',
               }}
             >
               <Restricted permission="landscape.change" resource={landscape}>
@@ -231,7 +231,7 @@ const ProfileImage = props => {
                     'landscape.profile_image_delete_confirm_button'
                   )}
                 >
-                  <DeleteIcon />
+                  <DeleteIcon sx={{ color: 'white' }} />
                 </ConfirmButton>
               </Restricted>
             </Box>
