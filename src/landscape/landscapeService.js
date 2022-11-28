@@ -36,6 +36,8 @@ const cleanLandscape = landscape =>
       'partnership',
       'affiliatedGroups',
       'developmentStrategy',
+      'profileImage',
+      'profileImageDescription',
     ]),
     _.cloneWith(landscape => {
       const partnershipGroups =

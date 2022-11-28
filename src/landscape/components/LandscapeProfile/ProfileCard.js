@@ -3,8 +3,10 @@ import React, { useEffect, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
 
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Box,
   Button,
@@ -15,9 +17,11 @@ import {
   Typography,
 } from '@mui/material';
 
+import ConfirmButton from 'common/components/ConfirmButton';
 import { countryNameForCode } from 'common/utils';
 import Restricted from 'permissions/components/Restricted';
 
+import { deleteProfileImage } from 'landscape/landscapeSlice';
 import { getTermLabel } from 'taxonomies/taxonomiesUtils';
 
 const PROFILE_IMAGE_DEFAULT = '/landscape/profile-image-default.jpg';
@@ -116,9 +120,27 @@ const ProfileImage = props => {
 
   const hasProfileImage = !!landscape.profileImage;
 
+  const processing = useSelector(
+    _.get('landscape.profile.deletingProfileImage')
+  );
+  const dispatch = useDispatch();
+
   if (!allowed && !hasProfileImage) {
     return null;
   }
+
+  const confirmProfileImageDelete = () => {
+    return dispatch(
+      deleteProfileImage({
+        successKey: 'landscape.profile_image_deleted',
+        landscape: {
+          ...landscape,
+          profileImage: '',
+          profileImageDescription: '',
+        },
+      })
+    );
+  };
 
   return (
     <Stack
@@ -145,12 +167,13 @@ const ProfileImage = props => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            flexDirection: 'column',
+            flexDirection: hasProfileImage ? 'row' : 'column',
             position: 'absolute',
             bottom: 0,
             width: '100%',
             pt: hasProfileImage ? 2 : 1,
             pb: hasProfileImage ? 2 : 4,
+            paddingLeft: hasProfileImage ? '10%' : '0',
           }}
           spacing={2}
         >
@@ -184,6 +207,35 @@ const ProfileImage = props => {
           >
             {t('landscape.profile_profile_card_profile_image_update')}
           </Button>
+          {hasProfileImage && (
+            <Box
+              sx={{
+                paddingLeft: '5px',
+              }}
+            >
+              <Restricted permission="landscape.change" resource={landscape}>
+                <ConfirmButton
+                  onConfirm={confirmProfileImageDelete}
+                  loading={processing}
+                  variant="text"
+                  buttonProps={{
+                    'aria-label': t('landscape.profile_image_delete_label'),
+                  }}
+                  confirmTitle={t(
+                    'landscape.profile_image_delete_confirm_title'
+                  )}
+                  confirmMessage={t(
+                    'landscape.profile_image_delete_confirm_message'
+                  )}
+                  confirmButton={t(
+                    'landscape.profile_image_delete_confirm_button'
+                  )}
+                >
+                  <DeleteIcon sx={{ color: 'white' }} />
+                </ConfirmButton>
+              </Restricted>
+            </Box>
+          )}
         </Box>
       )}
     </Stack>
