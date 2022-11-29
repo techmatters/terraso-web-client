@@ -183,11 +183,17 @@
         "heading": "Footer",
         "navigation": "Footer Navigation",
         "links": {
-            "help": { "text": "Terraso Help", "url": "https://terraso.org/help/" },
+            "help": {
+                "text": "Terraso Help",
+                "url": "https://terraso.org/help/"
+            },
             "contact": { "text": "Contact", "to": "/contact" },
             "terms": { "text": "Terms of Use", "url": "#" },
-            "privacy": { "text": "Privacy Policy", "url": "https://techmatters.org/privacy-policy/" },
-            "data": { "text": "Data Policy", "url": "#"},
+            "privacy": {
+                "text": "Privacy Policy",
+                "url": "https://techmatters.org/privacy-policy/"
+            },
+            "data": { "text": "Data Policy", "url": "#" },
             "about": { "text": "About Terraso", "url": "https://terraso.org/" }
         }
     },

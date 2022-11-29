@@ -183,12 +183,21 @@
         "heading": "Pie de página",
         "navigation": "Navegación de pie de página",
         "links": {
-            "help": { "text": "Ayuda de Terraso", "url": "https://terraso.org/es/ayuda/" },
+            "help": {
+                "text": "Ayuda de Terraso",
+                "url": "https://terraso.org/es/ayuda/"
+            },
             "contact": { "text": "Contacto", "to": "/contact" },
             "terms": { "text": "Términos de uso", "url": "#" },
-            "privacy": { "text": "Política de privacidad", "url": "https://techmatters.org/privacy-policy/" },
-            "data": { "text": "Política de datos", "url": "#"},
-            "about": { "text": "Acerca de Terraso", "url": "https://terraso.org/es/" }
+            "privacy": {
+                "text": "Política de privacidad",
+                "url": "https://techmatters.org/privacy-policy/"
+            },
+            "data": { "text": "Política de datos", "url": "#" },
+            "about": {
+                "text": "Acerca de Terraso",
+                "url": "https://terraso.org/es/"
+            }
         }
     },
     "navigation": {
