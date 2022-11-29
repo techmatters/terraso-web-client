@@ -219,7 +219,7 @@ const ProfileImage = props => {
                   loading={processing}
                   variant="text"
                   buttonProps={{
-                    'aria-label': t('landscape.profile_image_delete_label'),
+                    title: t('landscape.profile_image_delete_label'),
                   }}
                   confirmTitle={t(
                     'landscape.profile_image_delete_confirm_title'
