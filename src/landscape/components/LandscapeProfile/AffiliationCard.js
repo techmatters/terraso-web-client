@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
+import { Link as RouterLink } from 'react-router-dom';
 
 import {
   Button,
@@ -13,7 +14,6 @@ import {
   Typography,
 } from '@mui/material';
 
-import RouterLink from 'common/components/RouterLink';
 import Restricted from 'permissions/components/Restricted';
 
 import { PARTNERSHIP_STATUS_NO } from 'landscape/landscapeConstants';
@@ -170,11 +170,6 @@ const AffiliationCard = ({ landscape, setIsEmpty }) => {
           <Button
             variant="outlined"
             component={RouterLink}
-            sx={{
-              '&:focus': {
-                textDecoration: 'none ! important', // override theme.js:111
-              },
-            }}
             to={`/landscapes/${landscape.slug}/affiliation/edit`}
           >
             {t('landscape.profile_affiliation_card_update_button')}
