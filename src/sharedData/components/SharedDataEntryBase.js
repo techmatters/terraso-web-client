@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
@@ -40,15 +40,15 @@ const SharedDataEntryBase = props => {
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
 
-  useEffect(() => {
-    dispatch(resetProcessing(dataEntry.id));
-  }, [dispatch, dataEntry]);
-
   const onConfirm = () => {
     dispatch(deleteSharedData({ groupSlug: group.slug, dataEntry })).then(
-      () => {
-        updateOwner();
-        trackEvent('deletedataEntry', { props: { owner: owner.slug } });
+      data => {
+        const success = _.get('meta.requestStatus', data) === 'fulfilled';
+        if (success) {
+          updateOwner();
+          trackEvent('deletedataEntry', { props: { owner: owner.slug } });
+          dispatch(resetProcessing(dataEntry.id));
+        }
       }
     );
   };
@@ -61,9 +61,12 @@ const SharedDataEntryBase = props => {
           [field]: value,
         },
       })
-    ).then(() => {
-      updateOwner();
-      trackEvent('editdataEntry', { props: { owner: owner.slug } });
+    ).then(data => {
+      const success = _.get('meta.requestStatus', data) === 'fulfilled';
+      if (success) {
+        updateOwner();
+        trackEvent('editdataEntry', { props: { owner: owner.slug } });
+      }
     });
   };
 

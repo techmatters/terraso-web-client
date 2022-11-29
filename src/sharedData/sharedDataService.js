@@ -33,7 +33,7 @@ export const uploadSharedDataFile = async ({ groupSlug, file }) => {
   return jsonResponse;
 };
 
-export const deleteSharedData = ({ file }) => {
+export const deleteSharedData = ({ dataEntry }) => {
   const query = `
     mutation deleteSharedData($id: ID!) {
       deleteDataEntry(input: { id: $id }) {
@@ -44,7 +44,7 @@ export const deleteSharedData = ({ file }) => {
     }
   `;
   return terrasoApi.requestGraphQL(query, {
-    id: file.id,
+    id: dataEntry.id,
   });
 };
 
@@ -72,7 +72,7 @@ export const addSharedDataLink = ({ groupSlug, link }) => {
     .then(_.get('addDataEntry.dataEntry'));
 };
 
-export const updateSharedData = ({ file }) => {
+export const updateSharedData = ({ dataEntry }) => {
   const query = `
     mutation updateSharedData($input: DataEntryUpdateMutationInput!) {
       updateDataEntry(input: $input) {
@@ -83,7 +83,7 @@ export const updateSharedData = ({ file }) => {
     }
   `;
   return terrasoApi.requestGraphQL(query, {
-    input: file,
+    input: dataEntry,
   });
 };
 

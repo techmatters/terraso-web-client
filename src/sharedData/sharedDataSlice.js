@@ -44,19 +44,19 @@ export const addSharedDataLink = createAsyncThunk(
 export const deleteSharedData = createAsyncThunk(
   'sharedData/deleteSharedData',
   sharedDataService.deleteSharedData,
-  (group, { file }) => ({
+  (group, { dataEntry }) => ({
     severity: 'success',
     content: 'sharedData.deleted',
-    params: { name: file.name },
+    params: { name: dataEntry.name },
   })
 );
 export const updateSharedData = createAsyncThunk(
   'sharedData/updateSharedData',
   sharedDataService.updateSharedData,
-  (group, { file }) => ({
+  (group, { dataEntry }) => ({
     severity: 'success',
     content: 'sharedData.updated',
-    params: { name: file.name },
+    params: { name: dataEntry.name },
   })
 );
 export const fetchGroupSharedData = createAsyncThunk(
@@ -91,7 +91,7 @@ export const deleteVisualizationConfig = createAsyncThunk(
 
 const setProcessing = (state, action) =>
   _.set(
-    `processing.${action.meta.arg.file.id}`,
+    `processing.${action.meta.arg.dataEntry.id}`,
     action.meta.requestStatus === 'pending',
     state
   );
