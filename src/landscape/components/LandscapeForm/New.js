@@ -59,7 +59,9 @@ const LandscapeNew = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    setUpdatedLandscape(landscape);
+    if (landscape) {
+      setUpdatedLandscape(landscape);
+    }
   }, [landscape]);
 
   useFetchData(

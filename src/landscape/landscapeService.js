@@ -305,15 +305,19 @@ const updateLandscape = landscape => {
     mutation updateLandscape($input: LandscapeUpdateMutationInput!) {
       updateLandscape(input: $input) {
         landscape {
-          ...landscapeFields
+          ...landscapeProfileFields
         }
       }
     }
-    ${landscapeFields}
+    ${landscapeProfileFields}
   `;
   return terrasoApi
     .requestGraphQL(query, { input: cleanLandscape(landscape) })
-    .then(response => ({ new: false, ...response.updateLandscape.landscape }));
+    .then(response => ({ new: false, ...response.updateLandscape.landscape }))
+    .then(landscape => ({
+      ...landscape,
+      partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
+    }));
 };
 
 const addLandscape = landscape => {
@@ -321,15 +325,19 @@ const addLandscape = landscape => {
     mutation addLandscape($input: LandscapeAddMutationInput!){
       addLandscape(input: $input) {
         landscape {
-          ...landscapeFields
+          ...landscapeProfileFields
         }
       }
     }
-    ${landscapeFields}
+    ${landscapeProfileFields}
   `;
   return terrasoApi
     .requestGraphQL(query, { input: cleanLandscape(landscape) })
-    .then(response => ({ new: true, ...response.addLandscape.landscape }));
+    .then(response => ({ new: true, ...response.addLandscape.landscape }))
+    .then(landscape => ({
+      ...landscape,
+      partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
+    }));
 };
 
 export const saveLandscape = ({ landscape }) =>
