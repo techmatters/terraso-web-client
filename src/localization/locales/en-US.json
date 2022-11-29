@@ -1,4 +1,7 @@
 {
+    "generic": {
+        "delete_tooltip": "Delete"
+    },
     "home": {
         "title": "Home",
         "error": "Error loading data. {{error}}",

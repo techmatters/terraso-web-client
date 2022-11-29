@@ -231,7 +231,12 @@ const ProfileImage = props => {
                     'landscape.profile_image_delete_confirm_button'
                   )}
                 >
-                  <DeleteIcon sx={{ color: 'white' }} />
+                  <DeleteIcon
+                    sx={{
+                      color: 'white',
+                      accessTitle: t('generic.delete_tooltip'),
+                    }}
+                  />
                 </ConfirmButton>
               </Restricted>
             </Box>
