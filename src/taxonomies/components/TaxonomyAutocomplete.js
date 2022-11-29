@@ -82,10 +82,10 @@ const TaxonomyAutocomplete = props => {
               }
 
               return [
+                ...filtered,
                 {
                   newTerm: inputValue,
                 },
-                ...filtered,
               ];
             },
           }
