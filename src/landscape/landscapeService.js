@@ -94,13 +94,11 @@ export const fetchLandscapeToUpdate = slug => {
       landscapes(slug: $slug) {
         edges {
           node {
-            ...landscapeFields
             ...landscapeProfileFields
           }
         }
       }
     }
-    ${landscapeFields}
     ${landscapeProfileFields}
   `;
   return terrasoApi
@@ -183,14 +181,12 @@ export const fetchLandscapeProfile = (slug, currentUser) => {
       landscapes(slug: $slug) {
         edges {
           node {
-            ...landscapeFields
             ...landscapeProfileFields
             ...defaultGroup
           }
         }
       }
     }
-    ${landscapeFields}
     ${landscapeProfileFields}
     ${defaultGroup}
   `;
