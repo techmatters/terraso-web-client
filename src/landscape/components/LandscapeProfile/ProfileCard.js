@@ -134,7 +134,7 @@ const ProfileImage = props => {
       deleteProfileImage({
         successKey: 'landscape.profile_image_deleted',
         landscape: {
-          ...landscape,
+          id: landscape.id,
           profileImage: '',
           profileImageDescription: '',
         },

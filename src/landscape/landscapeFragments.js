@@ -16,6 +16,13 @@ export const landscapeFields = `
 
 export const landscapeProfileFields = `
   fragment landscapeProfileFields on LandscapeNode {
+    id
+    slug
+    name
+    location
+    description
+    email
+    website
     areaScalarHa
     areaTypes
     population
