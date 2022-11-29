@@ -198,7 +198,7 @@ const AffiliationStep = props => {
         prefix="landscape-affiliation"
         localizationPrefix="landscape.form_affiliation"
         fields={FORM_FIELDS}
-        values={landscape}
+        values={_.assign(landscape, { partnershipStatus: 'no' })}
         validationSchema={VALIDATION_SCHEMA}
         isMultiStep
         onChange={setUpdatedValues}
