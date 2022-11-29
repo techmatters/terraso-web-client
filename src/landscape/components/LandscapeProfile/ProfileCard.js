@@ -192,18 +192,15 @@ const ProfileImage = props => {
             </Restricted>
           )}
           <Button
-            variant="contained"
+            variant="outlined"
             component={RouterLink}
             to={`/landscapes/${landscape.slug}/profile-image/edit`}
-            sx={{
+            sx={({ palette }) => ({
               backgroundColor: 'white',
-              color: 'black',
-              display: 'inline',
               '&:hover': {
-                color: 'white',
-                fontWeight: 'bold',
+                backgroundColor: palette.blue.background,
               },
-            }}
+            })}
           >
             {t('landscape.profile_profile_card_profile_image_update')}
           </Button>
