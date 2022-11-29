@@ -170,6 +170,11 @@ const AffiliationCard = ({ landscape, setIsEmpty }) => {
           <Button
             variant="outlined"
             component={RouterLink}
+            sx={{
+              '&:focus': {
+                textDecoration: 'none ! important', // override theme.js:111
+              },
+            }}
             to={`/landscapes/${landscape.slug}/affiliation/edit`}
           >
             {t('landscape.profile_affiliation_card_update_button')}
