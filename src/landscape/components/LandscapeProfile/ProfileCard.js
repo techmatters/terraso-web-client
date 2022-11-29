@@ -143,99 +143,100 @@ const ProfileImage = props => {
   };
 
   return (
-    <Stack
-      sx={{
-        background: 'orange',
-        position: 'relative',
-      }}
-    >
-      <img
-        src={hasProfileImage ? landscape.profileImage : PROFILE_IMAGE_DEFAULT}
-        alt={
-          landscape.profileImageDescription ||
-          t('landscape.profile_profile_card_profile_image_alt', {
-            name: landscape.name,
-          })
-        }
-        style={{ width: '100%' }}
-      />
-      {allowed && (
-        <Box
-          sx={{
-            color: 'white',
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: hasProfileImage ? 'row' : 'column',
-            position: 'absolute',
-            bottom: 0,
-            width: '100%',
-            pt: hasProfileImage ? 2 : 1,
-            pb: hasProfileImage ? 2 : 4,
-            paddingLeft: hasProfileImage ? '10%' : '0',
-          }}
-          spacing={2}
-        >
-          {!hasProfileImage && (
-            <Restricted permission="landscape.change" resource={landscape}>
-              <Typography
+    <figure style={{ margin: 0 }}>
+      <Stack
+        sx={{
+          position: 'relative',
+        }}
+      >
+        <img
+          src={hasProfileImage ? landscape.profileImage : PROFILE_IMAGE_DEFAULT}
+          alt=""
+          style={{ width: '100%' }}
+        />
+        {allowed && (
+          <Box
+            sx={{
+              color: 'white',
+              background: 'rgba(0,0,0,0.5)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexDirection: hasProfileImage ? 'row' : 'column',
+              position: 'absolute',
+              bottom: 0,
+              width: '100%',
+              pt: hasProfileImage ? 2 : 1,
+              pb: hasProfileImage ? 2 : 4,
+              paddingLeft: hasProfileImage ? '10%' : '0',
+            }}
+            spacing={2}
+          >
+            {!hasProfileImage && (
+              <Restricted permission="landscape.change" resource={landscape}>
+                <Typography
+                  sx={{
+                    p: 2,
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {t(
+                    'landscape.profile_profile_card_profile_image_placeholder_message'
+                  )}
+                </Typography>
+              </Restricted>
+            )}
+            <Button
+              variant="outlined"
+              component={RouterLink}
+              to={`/landscapes/${landscape.slug}/profile-image/edit`}
+              sx={({ palette }) => ({
+                backgroundColor: 'white',
+                '&:hover': {
+                  backgroundColor: palette.blue.background,
+                },
+              })}
+            >
+              {t('landscape.profile_profile_card_profile_image_update')}
+            </Button>
+            {hasProfileImage && (
+              <Box
                 sx={{
-                  p: 2,
-                  fontWeight: 'bold',
+                  paddingLeft: '5px',
                 }}
               >
-                {t(
-                  'landscape.profile_profile_card_profile_image_placeholder_message'
-                )}
-              </Typography>
-            </Restricted>
-          )}
-          <Button
-            variant="outlined"
-            component={RouterLink}
-            to={`/landscapes/${landscape.slug}/profile-image/edit`}
-            sx={({ palette }) => ({
-              backgroundColor: 'white',
-              '&:hover': {
-                backgroundColor: palette.blue.background,
-              },
-            })}
-          >
-            {t('landscape.profile_profile_card_profile_image_update')}
-          </Button>
-          {hasProfileImage && (
-            <Box
-              sx={{
-                paddingLeft: '5px',
-              }}
-            >
-              <Restricted permission="landscape.change" resource={landscape}>
-                <ConfirmButton
-                  onConfirm={confirmProfileImageDelete}
-                  loading={processing}
-                  variant="text"
-                  buttonProps={{
-                    title: t('landscape.profile_image_delete_label'),
-                  }}
-                  confirmTitle={t(
-                    'landscape.profile_image_delete_confirm_title'
-                  )}
-                  confirmMessage={t(
-                    'landscape.profile_image_delete_confirm_message'
-                  )}
-                  confirmButton={t(
-                    'landscape.profile_image_delete_confirm_button'
-                  )}
-                >
-                  <DeleteIcon sx={{ color: 'white' }} />
-                </ConfirmButton>
-              </Restricted>
-            </Box>
-          )}
-        </Box>
+                <Restricted permission="landscape.change" resource={landscape}>
+                  <ConfirmButton
+                    onConfirm={confirmProfileImageDelete}
+                    loading={processing}
+                    variant="text"
+                    buttonProps={{
+                      title: t('landscape.profile_image_delete_label'),
+                    }}
+                    confirmTitle={t(
+                      'landscape.profile_image_delete_confirm_title'
+                    )}
+                    confirmMessage={t(
+                      'landscape.profile_image_delete_confirm_message'
+                    )}
+                    confirmButton={t(
+                      'landscape.profile_image_delete_confirm_button'
+                    )}
+                  >
+                    <DeleteIcon sx={{ color: 'white' }} />
+                  </ConfirmButton>
+                </Restricted>
+              </Box>
+            )}
+          </Box>
+        )}
+      </Stack>
+      {hasProfileImage && landscape.profileImageDescription && (
+        <Typography component="figcaption" sx={{ background: 'white', p: 2 }}>
+          {landscape.profileImageDescription}
+        </Typography>
       )}
-    </Stack>
+    </figure>
   );
 };
 
