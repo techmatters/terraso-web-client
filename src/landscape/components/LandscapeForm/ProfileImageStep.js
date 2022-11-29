@@ -133,9 +133,6 @@ const ProfileImage = props => {
               const width = containerRef.current.offsetWidth - editorBorder * 2;
               const height = width * ASPECT_RATIO;
               setSize({ width, height });
-              dataURItoBlob(image).then(blob => {
-                onChange({ result: blob });
-              });
             }}
             onImageChange={() => {
               const image = cropTool.current.getImage();
