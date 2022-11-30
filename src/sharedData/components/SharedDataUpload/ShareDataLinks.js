@@ -121,7 +121,10 @@ const Link = props => {
 
   if (apiSuccess) {
     return (
-      <SuccessContainer message={t('sharedData.upload_link_success')}>
+      <SuccessContainer
+        label={apiSuccess.name}
+        message={t('sharedData.upload_link_success')}
+      >
         <Stack direction="row" alignItems="center" spacing={1}>
           <ExternalLink href={transformURL(apiSuccess.url)}>
             {apiSuccess.name}

@@ -97,7 +97,10 @@ const File = props => {
 
   if (apiSuccess) {
     return (
-      <SuccessContainer message={t('sharedData.upload_file_success')}>
+      <SuccessContainer
+        label={apiSuccess.name}
+        message={t('sharedData.upload_file_success')}
+      >
         <Typography sx={{ pl: 4 }}>{apiSuccess.name}</Typography>
       </SuccessContainer>
     );

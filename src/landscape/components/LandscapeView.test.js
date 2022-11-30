@@ -85,6 +85,7 @@ const baseViewTest = async () => {
           createdBy: { id: 'user-id', firstName: 'First', lastName: 'Last' },
           description: `Description ${index}`,
           size: 3456,
+          entryType: 'FILE',
         },
       })),
   };
