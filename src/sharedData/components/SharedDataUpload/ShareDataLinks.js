@@ -33,7 +33,7 @@ import { MAX_DESCRIPTION_CHARACTERS } from 'sharedData/sharedDataConstants';
 
 import LinkIcon from '../LinkIcon';
 import SuccessContainer from './SuccessContainer';
-import { groupByStatus } from './utils';
+import { groupDataEntryUploadsByStatus } from './utils';
 
 export const VALIDATION_SCHEMA = yup
   .object({
@@ -237,7 +237,7 @@ const ShareDataLinks = props => {
   const linkIds = useMemo(() => Object.keys(links), [links]);
 
   const { apiErrors, apiSuccesses, apiUploading } = useMemo(
-    () => groupByStatus(_.pick(linkIds, uploads)),
+    () => groupDataEntryUploadsByStatus(_.pick(linkIds, uploads)),
     [uploads, linkIds]
   );
 

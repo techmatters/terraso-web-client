@@ -32,7 +32,7 @@ import {
 } from 'config';
 
 import SuccessContainer from './SuccessContainer';
-import { groupByStatus } from './utils';
+import { groupDataEntryUploadsByStatus } from './utils';
 
 import theme from 'theme';
 
@@ -236,7 +236,7 @@ const ShareDataFiles = props => {
   );
 
   const { apiErrors, apiSuccesses, apiUploading } = useMemo(
-    () => groupByStatus(_.pick(Object.keys(files), uploads)),
+    () => groupDataEntryUploadsByStatus(_.pick(Object.keys(files), uploads)),
     [uploads, files]
   );
 

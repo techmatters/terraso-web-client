@@ -8,7 +8,7 @@ import {
 
 import { VALIDATION_SCHEMA as LINK_VALIDATION_SCHEMA } from './ShareDataLinks';
 
-export const groupByStatus = uploads => {
+export const groupDataEntryUploadsByStatus = uploads => {
   const byStatus = _.flow(
     _.toPairs,
     _.groupBy(([id, result]) => result.status),
