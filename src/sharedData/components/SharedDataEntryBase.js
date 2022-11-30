@@ -47,8 +47,8 @@ const SharedDataEntryBase = props => {
         if (success) {
           updateOwner();
           trackEvent('deletedataEntry', { props: { owner: owner.slug } });
-          dispatch(resetProcessing(dataEntry.id));
         }
+        dispatch(resetProcessing(dataEntry.id));
       }
     );
   };
@@ -67,6 +67,7 @@ const SharedDataEntryBase = props => {
         updateOwner();
         trackEvent('editdataEntry', { props: { owner: owner.slug } });
       }
+      dispatch(resetProcessing(dataEntry.id));
     });
   };
 

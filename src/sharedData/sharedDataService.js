@@ -1,16 +1,18 @@
 import _ from 'lodash/fp';
 
 import { dataEntries } from 'group/groupFragments';
-import { extractDataEntries } from 'group/groupUtils';
+import { extractDataEntry, extractGroupDataEntries } from 'group/groupUtils';
 import * as terrasoApi from 'terrasoBackend/api';
 
 import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
 import {
-  dataEntry,
+  dataEntry as dataEntryFragment,
   visualizationConfig,
   visualizationConfigWithConfiguration,
 } from './sharedDataFragments';
+
+const ALL_RESOURCE_TYPES = [...SHARED_DATA_ACCEPTED_EXTENSIONS, 'link'];
 
 export const uploadSharedDataFile = async ({ groupSlug, file }) => {
   const path = '/shared-data/upload/';
@@ -77,19 +79,31 @@ export const updateSharedData = ({ dataEntry }) => {
     mutation updateSharedData($input: DataEntryUpdateMutationInput!) {
       updateDataEntry(input: $input) {
         dataEntry {
-          id
+          ...dataEntry
+          visualizations {
+            edges {
+              node {
+                ...visualizationConfigWithConfiguration
+              }
+            }
+          }
         }
       }
     }
+    ${dataEntryFragment}
+    ${visualizationConfigWithConfiguration}
   `;
-  return terrasoApi.requestGraphQL(query, {
-    input: dataEntry,
-  });
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: dataEntry,
+    })
+    .then(_.get('updateDataEntry.dataEntry'))
+    .then(extractDataEntry);
 };
 
 export const fetchGroupSharedData = ({
   slug,
-  resourceTypes = [...SHARED_DATA_ACCEPTED_EXTENSIONS, 'link'],
+  resourceTypes = ALL_RESOURCE_TYPES,
 }) => {
   const query = `
     query group($slug: String!, $resourceTypes: [String]!){
@@ -107,7 +121,7 @@ export const fetchGroupSharedData = ({
     .requestGraphQL(query, { slug, resourceTypes })
     .then(_.get('groups.edges[0].node'))
     .then(group => group || Promise.reject('not_found'))
-    .then(group => extractDataEntries(group));
+    .then(group => extractGroupDataEntries(group));
 };
 
 export const addVisualizationConfig = ({
@@ -172,7 +186,7 @@ export const fetchVisualizationConfig = ({ groupSlug, configSlug }) => {
         }
       }
     }
-    ${dataEntry}
+    ${dataEntryFragment}
     ${visualizationConfigWithConfiguration}
   `;
   return terrasoApi

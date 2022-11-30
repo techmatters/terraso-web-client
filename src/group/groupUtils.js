@@ -26,12 +26,14 @@ export const getMemberships = groups =>
 
 export const generateIndexedMembers = _.keyBy(member => member.membershipId);
 
-export const extractDataEntries = group =>
+export const extractDataEntry = dataEntry => ({
+  ...dataEntry,
+  visualizations: _.getOr([], 'visualizations.edges', dataEntry).map(
+    _.get('node')
+  ),
+});
+
+export const extractGroupDataEntries = group =>
   _.getOr([], 'dataEntries.edges', group)
     .map(_.get('node'))
-    .map(dataEntry => ({
-      ...dataEntry,
-      visualizations: _.getOr([], 'visualizations.edges', dataEntry).map(
-        _.get('node')
-      ),
-    }));
+    .map(extractDataEntry);

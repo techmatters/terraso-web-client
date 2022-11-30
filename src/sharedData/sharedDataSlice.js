@@ -112,8 +112,26 @@ const sharedDataSlice = createSlice({
   extraReducers: {
     [updateSharedData.pending]: setProcessing,
     [updateSharedData.rejected]: setProcessing,
+    [updateSharedData.fulfilled]: (state, action) => ({
+      ...state,
+      list: {
+        ...state.list,
+        data: state.list.data.map(item =>
+          item.id === action.meta.arg.dataEntry.id ? action.payload : item
+        ),
+      },
+    }),
     [deleteSharedData.pending]: setProcessing,
     [deleteSharedData.rejected]: setProcessing,
+    [deleteSharedData.fulfilled]: (state, action) => ({
+      ...state,
+      list: {
+        ...state.list,
+        data: state.list.data.filter(
+          item => item.id !== action.meta.arg.dataEntry.id
+        ),
+      },
+    }),
     [uploadSharedDataFile.pending]: (state, action) =>
       _.set(
         `uploads.files.${action.meta.arg.file.id}`,
