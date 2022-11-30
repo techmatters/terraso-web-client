@@ -29,6 +29,8 @@ import { transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
 import { FormContextProvider, useFormGetContext } from 'forms/formContext';
 
+import { MAX_DESCRIPTION_CHARACTERS } from 'sharedData/sharedDataConstants';
+
 import LinkIcon from '../LinkIcon';
 import SuccessContainer from './SuccessContainer';
 import { groupByStatus } from './utils';
@@ -37,7 +39,7 @@ export const VALIDATION_SCHEMA = yup
   .object({
     url: yup.string().trim().ensure().transform(transformURL).url().required(),
     name: yup.string().trim().required(),
-    description: yup.string().maxCustom(200).trim(),
+    description: yup.string().max(MAX_DESCRIPTION_CHARACTERS).trim(),
   })
   .required();
 
@@ -162,7 +164,7 @@ const Link = props => {
             </Alert>
           ))}
         <Form
-          mode="onTouched"
+          mode="onChange"
           aria-labelledby="TODO"
           fields={fields}
           values={baseFormData}

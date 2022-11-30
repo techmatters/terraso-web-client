@@ -23,6 +23,8 @@ import { styled } from '@mui/system';
 import BaseDropZone from 'common/components/DropZone';
 import FormField from 'forms/components/FormField';
 
+import { MAX_DESCRIPTION_CHARACTERS } from 'sharedData/sharedDataConstants';
+
 import {
   SHARED_DATA_ACCEPTED_EXTENSIONS,
   SHARED_DATA_MAX_FILES,
@@ -37,7 +39,7 @@ import theme from 'theme';
 const VALIDATION_SCHEMA = yup
   .object({
     name: yup.string().trim().required(),
-    description: yup.string().maxCustom(200).trim(),
+    description: yup.string().max(MAX_DESCRIPTION_CHARACTERS).trim(),
   })
   .required();
 
