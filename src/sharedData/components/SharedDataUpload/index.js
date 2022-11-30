@@ -97,10 +97,16 @@ const SharedDataUpload = props => {
     const allPromises = [...filesPromises, ...linksPromises];
     Promise.allSettled(allPromises).then(results => {
       results
-        .filter(result => result.status === 'fulfilled')
+        .filter(
+          result => _.get('value.meta.requestStatus', result) === 'fulfilled'
+        )
         .forEach(result => {
-          // TODO send type of shared data
-          trackEvent('uploadFile', { props: { owner: groupSlug } });
+          const isLink = _.has('value.meta.arg.link', result);
+          if (isLink) {
+            trackEvent('uploadLink', { props: { owner: groupSlug } });
+          } else {
+            trackEvent('uploadFile', { props: { owner: groupSlug } });
+          }
         });
     });
   }, [toUpload, groupSlug, dispatch, trackEvent]);
