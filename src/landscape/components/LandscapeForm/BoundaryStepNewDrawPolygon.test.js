@@ -99,6 +99,7 @@ test('LandscapeNew: Save form draw polygon boundary', async () => {
             email: 'info@other.org',
             website: 'https://www.other.org',
             location: 'AR',
+            partnershipStatus: 'NO',
           },
         },
       });
@@ -111,6 +112,7 @@ test('LandscapeNew: Save form draw polygon boundary', async () => {
             description: 'New description',
             website: 'https://www.other.org',
             location: 'AR',
+            partnershipStatus: 'NO',
           },
         },
       });
@@ -187,6 +189,7 @@ test('LandscapeNew: Save form draw polygon boundary', async () => {
         '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[-109.05,37],[-109.03,41],[-102.05,41],[-102.04,37],[-109.05,37]]]}}],"bbox":[-105.46875000000001,38.82259097617713,-105.46875000000001,38.82259097617713]}',
       areaTypes: null,
       population: null,
+      partnershipStatus: 'no'
     },
   });
 });

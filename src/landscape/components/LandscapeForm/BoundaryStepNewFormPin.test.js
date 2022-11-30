@@ -99,6 +99,7 @@ test('LandscapeNew: Save form Pin boundary', async () => {
             email: 'info@other.org',
             website: 'https://www.other.org',
             location: 'AR',
+            partnershipStatus: 'NO',
           },
         },
       });
@@ -111,6 +112,7 @@ test('LandscapeNew: Save form Pin boundary', async () => {
             description: 'New description',
             website: 'https://www.other.org',
             location: 'AR',
+            partnershipStatus: 'NO',
           },
         },
       });
@@ -175,6 +177,7 @@ test('LandscapeNew: Save form Pin boundary', async () => {
         '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[10,10]}}],"bbox":[0,0,0,0]}',
       areaTypes: null,
       population: null,
+      partnershipStatus: 'no'
     },
   });
 });

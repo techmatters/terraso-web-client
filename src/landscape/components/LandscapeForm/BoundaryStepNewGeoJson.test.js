@@ -92,6 +92,7 @@ test('LandscapeNew: Save from GeoJSON', async () => {
             email: 'info@other.org',
             website: 'https://www.other.org',
             location: 'AR',
+            partnershipStatus: 'NO',
           },
         },
       });
@@ -104,6 +105,7 @@ test('LandscapeNew: Save from GeoJSON', async () => {
             description: 'New description',
             website: 'https://www.other.org',
             location: 'AR',
+            partnershipStatus: 'NO',
           },
         },
       });
@@ -184,6 +186,7 @@ test('LandscapeNew: Save from GeoJSON', async () => {
       areaPolygon: JSON.stringify(JSON.parse(GEOJSON)),
       areaTypes: null,
       population: null,
+      partnershipStatus: 'no'
     },
   });
 });
