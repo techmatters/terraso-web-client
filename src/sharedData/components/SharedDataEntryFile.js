@@ -40,7 +40,7 @@ const Visualizations = props => {
     <Stack
       component="ul"
       sx={{ width: '100%', listStyle: 'none', p: 0 }}
-      divider={<Divider component="li" />}
+      divider={<Divider aria-hidden="true" component="li" />}
     >
       {file.visualizations.map(visualization => (
         <ListItem

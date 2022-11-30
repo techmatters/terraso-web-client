@@ -177,7 +177,13 @@ const SelectedFiles = () => {
 
   return (
     <Stack
-      divider={<Divider flexItem sx={{ backgroundColor: 'black' }} />}
+      divider={
+        <Divider
+          aria-hidden="true"
+          flexItem
+          sx={{ backgroundColor: 'black' }}
+        />
+      }
       sx={({ palette }) => ({
         border: `2px dashed ${palette.blue.dark}`,
         ...(isSmall ? { borderTop: 'none' } : { borderLeft: 'none' }),
