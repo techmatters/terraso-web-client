@@ -5,7 +5,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
 
-import LandscapeProfileUpdate from 'landscape/components/LandscapeUpdateProfile';
+import KeyInfoUpdate from 'landscape/components/LandscapeForm/KeyInfoUpdate';
 import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('terrasoBackend/api');
@@ -16,16 +16,25 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const setup = async (countryName = 'Landscape location') => {
-  await render(<LandscapeProfileUpdate />);
+  await render(<KeyInfoUpdate />, {
+    account: {
+      currentUser: {
+        data: {
+          email: 'email@account.org',
+        },
+      },
+    },
+  });
   const name = screen.getByRole('textbox', {
     name: 'Name (required)',
   });
   const description = screen.getByRole('textbox', {
     name: 'Description (required)',
   });
+  const email = screen.getByRole('textbox', { name: 'Email address' });
   const website = screen.getByRole('textbox', { name: 'Website' });
   const location = screen.getByRole('button', {
-    name: `Country or region ${countryName}`,
+    name: `Country or region (required) ${countryName}`,
   });
 
   const changeLocation = async newLocation => {
@@ -40,6 +49,7 @@ const setup = async (countryName = 'Landscape location') => {
     inputs: {
       name,
       description,
+      email,
       website,
       location,
       changeLocation,
@@ -53,21 +63,28 @@ beforeEach(() => {
   });
 });
 
-test('LandscapeProfileUpdate: Display error', async () => {
+test('KeyInfoUpdate: Display error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValue(['Load error']);
-  await render(<LandscapeProfileUpdate />);
+  await render(<KeyInfoUpdate />, {
+    account: {
+      currentUser: {
+        data: {
+          email: 'email@account.org',
+        },
+      },
+    },
+  });
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
-test('LandscapeProfileUpdate: Display loader', async () => {
+test('KeyInfoUpdate: Display loader', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
-  await render(<LandscapeProfileUpdate />);
+  await render(<KeyInfoUpdate />);
   const loader = screen.getByRole('progressbar', {
     name: 'Loading',
-    hidden: true,
   });
   expect(loader).toBeInTheDocument();
 });
-test('LandscapeProfileUpdate: Fill form', async () => {
+test('KeyInfoUpdate: Fill form', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       landscapes: {
@@ -92,7 +109,7 @@ test('LandscapeProfileUpdate: Fill form', async () => {
   expect(inputs.website).toHaveValue('www.landscape.org');
   expect(inputs.location).toHaveTextContent('Ecuador');
 });
-test('LandscapeProfileUpdate: Input change', async () => {
+test('KeyInfoUpdate: Input change', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       landscapes: {
@@ -129,7 +146,7 @@ test('LandscapeProfileUpdate: Input change', async () => {
   await inputs.changeLocation('Ecuador');
   expect(inputs.location).toHaveTextContent('Ecuador');
 });
-test('LandscapeProfileUpdate: Input validation', async () => {
+test('KeyInfoUpdate: Input validation', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       landscapes: {
@@ -139,6 +156,7 @@ test('LandscapeProfileUpdate: Input validation', async () => {
               name: 'Landscape Name',
               description: 'Landscape Description',
               website: 'www.landscape.org',
+              email: 'info@landscape.org',
             },
           },
         ],
@@ -155,6 +173,10 @@ test('LandscapeProfileUpdate: Input validation', async () => {
   fireEvent.change(inputs.description, { target: { value: '' } });
   expect(inputs.description).toHaveValue('');
 
+  expect(inputs.email).toHaveValue('info@landscape.org');
+  fireEvent.change(inputs.email, { target: { value: 'wwwotherorg' } });
+  expect(inputs.email).toHaveValue('wwwotherorg');
+
   expect(inputs.website).toHaveValue('www.landscape.org');
   fireEvent.change(inputs.website, { target: { value: 'wwwotherorg' } });
   expect(inputs.website).toHaveValue('wwwotherorg');
@@ -165,8 +187,9 @@ test('LandscapeProfileUpdate: Input validation', async () => {
   expect(screen.getByText(/name is required/i)).toBeInTheDocument();
   expect(screen.getByText(/description is required/i)).toBeInTheDocument();
   expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument();
+  expect(screen.getByText(/email must be a valid email/i)).toBeInTheDocument();
 });
-test('LandscapeProfileUpdate: Save form', async () => {
+test('KeyInfoUpdate: Save form', async () => {
   terrasoApi.requestGraphQL
     .mockResolvedValueOnce({
       landscapes: {
@@ -176,7 +199,8 @@ test('LandscapeProfileUpdate: Save form', async () => {
               id: '1',
               name: 'Landscape Name',
               description: 'Landscape Description',
-              website: 'www.landscape.org',
+              email: 'info@landscape.org',
+              website: 'https://www.landscape.org',
               location: 'EC',
             },
           },
@@ -191,7 +215,8 @@ test('LandscapeProfileUpdate: Save form', async () => {
               id: '1',
               name: 'Landscape Name',
               description: 'Landscape Description',
-              website: 'www.landscape.org',
+              email: 'info@landscape.org',
+              website: 'https://www.landscape.org',
               location: 'EC',
             },
           },
@@ -216,6 +241,9 @@ test('LandscapeProfileUpdate: Save form', async () => {
   fireEvent.change(inputs.description, {
     target: { value: 'New description' },
   });
+  fireEvent.change(inputs.email, {
+    target: { value: 'new@other.org' },
+  });
   fireEvent.change(inputs.website, {
     target: { value: 'https://www.other.org' },
   });
@@ -231,13 +259,13 @@ test('LandscapeProfileUpdate: Save form', async () => {
       id: '1',
       description: 'New description',
       name: 'New name',
+      email: 'new@other.org',
       website: 'https://www.other.org',
       location: 'AR',
-      areaPolygon: null,
     },
   });
 });
-test('LandscapeProfileUpdate: Save form error', async () => {
+test('KeyInfoUpdate: Save form error', async () => {
   terrasoApi.requestGraphQL
     .mockReturnValueOnce(
       Promise.resolve({

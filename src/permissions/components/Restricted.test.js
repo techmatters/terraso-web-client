@@ -30,6 +30,7 @@ test('Restricted: Display default loader', async () => {
   };
   await setup(
     {
+      resource: {},
       permission: 'resource.action',
       children: <div>Restricted content</div>,
     },
@@ -44,6 +45,7 @@ test('Restricted: Display custom loader', async () => {
   };
   await setup(
     {
+      resource: {},
       permission: 'resource.action',
       LoadingComponent: () => <div>Loading...</div>,
       children: <div>Restricted content</div>,
@@ -60,6 +62,7 @@ test('Restricted: Display allowed component', async () => {
   };
   await setup(
     {
+      resource: {},
       permission: 'resource.action',
       children: <div>Restricted content</div>,
     },
@@ -73,6 +76,7 @@ test('Restricted: Hide denied component', async () => {
   };
   await setup(
     {
+      resource: {},
       permission: 'resource.action',
       children: <div>Restricted content</div>,
     },
@@ -83,6 +87,7 @@ test('Restricted: Hide denied component', async () => {
 });
 test('Restricted: Display fallback component', async () => {
   await setup({
+    resource: {},
     permission: 'resource.action',
     FallbackComponent: () => <div>Fallback content</div>,
     children: <div>Restricted content</div>,

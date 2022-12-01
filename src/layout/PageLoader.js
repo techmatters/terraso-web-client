@@ -7,7 +7,11 @@ import { Backdrop, CircularProgress } from '@mui/material';
 const PageLoader = () => {
   const { t } = useTranslation();
   return (
-    <Backdrop sx={{ zIndex: theme => theme.zIndex.drawer + 1 }} open={true}>
+    <Backdrop
+      sx={{ zIndex: theme => theme.zIndex.drawer + 1 }}
+      open={true}
+      aria-hidden={false}
+    >
       <CircularProgress aria-label={t('common.loader_label')} color="inherit" />
     </Backdrop>
   );

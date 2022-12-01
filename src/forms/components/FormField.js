@@ -34,6 +34,7 @@ const FormFieldInput = props => {
       }}
       {...field}
       {...inputProps}
+      value={field.value || ''}
     />
   );
 };
@@ -98,7 +99,9 @@ const FormField = props => {
       </Stack>
       <FormFieldInput field={field} fieldState={fieldState} {...props} />
       {info && (
-        <FormHelperText id={`${id}-helper-text`}>{t(info)}</FormHelperText>
+        <FormHelperText id={`${id}-helper-text`}>
+          {typeof info === 'function' ? info({ fieldState, field }) : t(info)}
+        </FormHelperText>
       )}
       {error && (
         <FormHelperText

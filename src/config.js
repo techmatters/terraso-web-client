@@ -33,6 +33,10 @@ export const SHARED_DATA_ACCEPTED_EXTENSIONS = (
   'csv,doc,docx,pdf,ppt,pptx,xlsx,xls'
 ).split(',');
 
+export const IMAGE_ACCEPTED_EXTENSIONS = (
+  process.env.REACT_APP_IMAGE_ACCEPTED_EXTENSIONS || 'jpg,jpeg'
+).split(',');
+
 export const HUBSPOT_FORMS = {
   region: process.env.REACT_APP_HUBSPOT_FORMS_REGION || 'na1',
   portalId: process.env.REACT_APP_HUBSPOT_FORMS_PORTAL_ID,
@@ -43,3 +47,6 @@ export const HUBSPOT_FORMS = {
 };
 
 export const PLAUSIBLE_DOMAIN = process.env.REACT_APP_PLAUSIBLE_DOMAIN;
+
+export const LANDSCAPE_PROFILE_IMAGE_MAX_SIZE =
+  process.env.REACT_APP_LANDSCAPE_PROFILE_IMAGE_MAX_SIZE || 10000000; // 10 MB

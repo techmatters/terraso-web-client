@@ -2,6 +2,9 @@ import bbox from '@turf/bbox';
 import turfCenter from '@turf/center';
 import * as turf from '@turf/helpers';
 import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
+
+import { Typography } from '@mui/material';
 
 import { normalizeLongitude } from 'gis/gisUtils';
 
@@ -95,3 +98,33 @@ export const getLandscapePin = landscape => {
 };
 
 export const isValidGeoJson = areaPolygon => !!parseGeoJson(areaPolygon);
+
+export const extractPartnership = landscape =>
+  _.flow(
+    _.map(_.get('node')),
+    _.filter(_.get('isPartnership')),
+    _.map(groupAssociation => ({
+      year: groupAssociation.partnershipYear,
+      group: groupAssociation.group,
+    })),
+    _.head
+  )(_.get('associatedGroups.edges', landscape));
+
+export const extractAffiliatedGroups = landscape =>
+  _.flow(
+    _.map(_.get('node')),
+    _.filter(groupAssociation => !groupAssociation.isPartnership),
+    _.map(_.get('group'))
+  )(_.get('associatedGroups.edges', landscape));
+
+export const extractDevelopmentStrategy = landscape =>
+  _.get('associatedDevelopmentStrategy.edges[0].node', landscape);
+
+export const Subheader = ({ id, text }) => {
+  const { t } = useTranslation();
+  return (
+    <Typography id={id} sx={{ pl: 2 }}>
+      {t(text)}
+    </Typography>
+  );
+};

@@ -31,6 +31,7 @@ const Form = props => {
     children,
     isMultiStep,
     onChange,
+    filterField,
   } = props;
   const setFormContext = useFormSetContext();
 
@@ -113,37 +114,45 @@ const Form = props => {
         onSubmit={handleSubmit(onSubmit)}
         sx={{ width: '100%' }}
       >
-        {fields.map(field => (
-          <Grid
-            key={field.name}
-            item
-            xs={12}
-            {..._.get('props.gridItemProps', field)}
-            sx={{ paddingBottom: 3 }}
-          >
-            <Controller
-              name={field.name}
-              control={control}
-              render={controllerProps => (
-                <FormField
-                  field={controllerProps.field}
-                  fieldState={controllerProps.fieldState}
-                  required={_.includes(field.name, requiredFields)}
-                  id={`${prefix}-${field.name}`}
-                  label={field.label}
-                  info={field.info}
-                  inputProps={{
-                    type: field.type || 'text',
-                    placeholder: t(field.placeholder),
-                    ..._.getOr({}, 'props.inputProps', field),
-                  }}
-                  localizationPrefix={localizationPrefix}
-                  {..._.getOr({}, 'props', field)}
+        {fields
+          .filter(field => (filterField ? filterField(field, formProps) : true))
+          .map(field =>
+            field.renderStaticElement ? (
+              <React.Fragment key={field.name}>
+                {field.renderStaticElement({ t })}
+              </React.Fragment>
+            ) : (
+              <Grid
+                key={field.name}
+                item
+                xs={12}
+                {..._.get('props.gridItemProps', field)}
+                sx={{ paddingBottom: 3 }}
+              >
+                <Controller
+                  name={field.name}
+                  control={control}
+                  render={controllerProps => (
+                    <FormField
+                      field={controllerProps.field}
+                      fieldState={controllerProps.fieldState}
+                      required={_.includes(field.name, requiredFields)}
+                      id={`${prefix}-${field.name}`}
+                      label={field.label}
+                      info={field.info}
+                      localizationPrefix={localizationPrefix}
+                      {..._.getOr({}, 'props', field)}
+                      inputProps={{
+                        type: field.type || 'text',
+                        placeholder: t(field.placeholder),
+                        ..._.getOr({}, 'props.inputProps', field),
+                      }}
+                    />
+                  )}
                 />
-              )}
-            />
-          </Grid>
-        ))}
+              </Grid>
+            )
+          )}
         {children}
         <Grid
           item

@@ -8,6 +8,7 @@ import groupReducer from 'group/groupSlice';
 import userHomeReducer from 'home/homeSlice';
 import landscapeReducer from 'landscape/landscapeSlice';
 import sharedDataReducer from 'sharedData/sharedDataSlice';
+import taxonomiesReducer from 'taxonomies/taxonomiesSlice';
 
 const handleAbortMiddleware = store => next => action => {
   if (_.getOr(false, 'meta.aborted', action)) {
@@ -31,6 +32,7 @@ const createStore = intialState =>
       landscape: landscapeReducer,
       notifications: notificationsReducer,
       sharedData: sharedDataReducer,
+      taxonomies: taxonomiesReducer,
     },
     preloadedState: intialState,
   });

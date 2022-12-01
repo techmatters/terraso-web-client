@@ -7,7 +7,7 @@ import { act } from 'react-dom/test-utils';
 import * as reactLeaflet from 'react-leaflet';
 import { useParams } from 'react-router-dom';
 
-import LandscapeNew from 'landscape/components/LandscapeNew';
+import LandscapeNew from 'landscape/components/LandscapeForm/New';
 import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('terrasoBackend/api');
@@ -23,7 +23,15 @@ jest.mock('react-leaflet', () => ({
 }));
 
 const setup = async () => {
-  await render(<LandscapeNew />);
+  await render(<LandscapeNew />, {
+    account: {
+      currentUser: {
+        data: {
+          email: 'email@account.org',
+        },
+      },
+    },
+  });
   const name = screen.getByRole('textbox', {
     name: 'Name (required)',
   });
@@ -32,7 +40,7 @@ const setup = async () => {
   });
   const website = screen.getByRole('textbox', { name: 'Website' });
   const location = screen.getByRole('button', {
-    name: 'Country or region Landscape location',
+    name: 'Country or region (required) Landscape location',
   });
 
   const changeLocation = async newLocation => {
@@ -62,16 +70,53 @@ beforeEach(() => {
 });
 
 test('LandscapeNew: Save form draw polygon boundary', async () => {
-  terrasoApi.requestGraphQL.mockResolvedValueOnce({
-    addLandscape: {
-      landscape: {
-        id: '1',
-        name: 'Landscape Name',
-        description: 'Landscape Description',
-        website: 'www.landscape.org',
-        location: 'EC',
-      },
-    },
+  terrasoApi.requestGraphQL.mockImplementation(query => {
+    const trimmedQuery = query.trim();
+
+    if (trimmedQuery.startsWith('query taxonomyTerms')) {
+      return Promise.resolve({
+        taxonomyTerms: {
+          edges: [],
+        },
+      });
+    }
+    if (trimmedQuery.startsWith('query groups')) {
+      return Promise.resolve({
+        independentGroups: {
+          edges: [],
+        },
+        landscapeGroups: {
+          edges: [],
+        },
+      });
+    }
+    if (trimmedQuery.startsWith('mutation addLandscape')) {
+      return Promise.resolve({
+        addLandscape: {
+          landscape: {
+            name: 'New name',
+            description: 'New description',
+            email: 'info@other.org',
+            website: 'https://www.other.org',
+            location: 'AR',
+            partnershipStatus: 'NO',
+          },
+        },
+      });
+    }
+    if (trimmedQuery.startsWith('mutation updateLandscape')) {
+      return Promise.resolve({
+        updateLandscape: {
+          landscape: {
+            name: 'New name',
+            description: 'New description',
+            website: 'https://www.other.org',
+            location: 'AR',
+            partnershipStatus: 'NO',
+          },
+        },
+      });
+    }
   });
 
   const spy = jest.spyOn(reactLeaflet, 'useMap');
@@ -88,7 +133,7 @@ test('LandscapeNew: Save form draw polygon boundary', async () => {
   await inputs.changeLocation('Argentina');
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
   );
   await waitFor(() => {
     expect(
@@ -120,26 +165,31 @@ test('LandscapeNew: Save form draw polygon boundary', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'close' }))
   );
-  await waitFor(() => {
-    expect(
-      screen.getByRole('button', { name: 'Add Landscape' })
-    ).toBeInTheDocument();
-  });
 
+  await waitFor(() => {
+    expect(screen.getByRole('button', { name: 'Next' })).toBeInTheDocument();
+  });
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+  );
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
   );
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[0];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(6);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[5];
   expect(saveCall[1]).toStrictEqual({
     input: {
       description: 'New description',
       name: 'New name',
+      email: 'info@other.org',
       website: 'https://www.other.org',
       location: 'AR',
       areaPolygon:
         '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[-109.05,37],[-109.03,41],[-102.05,41],[-102.04,37],[-109.05,37]]]}}],"bbox":[-105.46875000000001,38.82259097617713,-105.46875000000001,38.82259097617713]}',
+      areaTypes: null,
+      population: null,
+      partnershipStatus: 'no',
     },
   });
 });

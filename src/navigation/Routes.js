@@ -16,13 +16,18 @@ import GroupSharedDataVisualizationConfig from 'group/components/GroupSharedData
 import GroupView from 'group/components/GroupView';
 import GroupMembers from 'group/membership/components/GroupMembers';
 import Home from 'home/components/Home';
-import LandscapeBoundariesUpdate from 'landscape/components/LandscapeBoundariesUpdate';
+import LandscapeAffiliationUpdate from 'landscape/components/LandscapeForm/AffiliationUpdate';
+import LandscapeBoundariesUpdate from 'landscape/components/LandscapeForm/BoundaryStepUpdate';
+import LandscapeDevelopmentStrategyUpdate from 'landscape/components/LandscapeForm/DevelopmentStrategyUpdate';
+import LandscapeKeyInfoUpdate from 'landscape/components/LandscapeForm/KeyInfoUpdate';
+import LandscapeNew from 'landscape/components/LandscapeForm/New';
+import LandscapeProfileImageUpdate from 'landscape/components/LandscapeForm/ProfileImageUpdate';
+import LandscapeProfileUpdate from 'landscape/components/LandscapeForm/ProfileUpdate';
 import LandscapeList from 'landscape/components/LandscapeList';
-import LandscapeNew from 'landscape/components/LandscapeNew';
+import LandscapeProfile from 'landscape/components/LandscapeProfile';
 import LandscapeSharedDataUpload from 'landscape/components/LandscapeSharedDataUpload';
 import LandscapeSharedDataVisualization from 'landscape/components/LandscapeSharedDataVisualization';
 import LandscapeSharedDataVisualizationConfig from 'landscape/components/LandscapeSharedDataVisualizationConfig';
-import LandscapeUpdateProfile from 'landscape/components/LandscapeUpdateProfile';
 import LandscapeView from 'landscape/components/LandscapeView';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
 import ToolsList from 'tool/components/ToolList';
@@ -74,7 +79,18 @@ const paths = [
     showBreadcrumbs: true,
     breadcrumbsLabel: 'landscape.breadcrumbs_view',
   }),
-  path('/landscapes/:slug/edit', LandscapeUpdateProfile),
+  path('/landscapes/:slug/edit', LandscapeKeyInfoUpdate),
+  path('/landscapes/:slug/profile', LandscapeProfile, {
+    showBreadcrumbs: true,
+    breadcrumbsLabel: 'landscape.breadcrumbs_profile',
+  }),
+  path('/landscapes/:slug/profile/edit', LandscapeProfileUpdate),
+  path('/landscapes/:slug/affiliation/edit', LandscapeAffiliationUpdate),
+  path(
+    '/landscapes/:slug/development-strategy/edit',
+    LandscapeDevelopmentStrategyUpdate
+  ),
+  path('/landscapes/:slug/profile-image/edit', LandscapeProfileImageUpdate),
   path('/landscapes/:slug/boundaries', LandscapeBoundariesUpdate),
   path('/landscapes/:slug/members', LandscapeMembers, {
     showBreadcrumbs: true,

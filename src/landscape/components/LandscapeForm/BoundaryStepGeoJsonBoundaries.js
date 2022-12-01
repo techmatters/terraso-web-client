@@ -12,7 +12,7 @@ import { isValidGeoJson } from 'landscape/landscapeUtils';
 
 import { GEOJSON_MAX_SIZE } from 'config';
 
-import LandscapeMap from './LandscapeMap';
+import LandscapeMap from '../LandscapeMap';
 
 const openFile = file =>
   new Promise((resolve, reject) => {

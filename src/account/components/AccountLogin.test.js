@@ -29,7 +29,6 @@ test('AccountLogin: Display loader', async () => {
   await render(<AccountLogin />);
   const loader = screen.getByRole('progressbar', {
     name: 'Loading',
-    hidden: true,
   });
   expect(loader).toBeInTheDocument();
 });

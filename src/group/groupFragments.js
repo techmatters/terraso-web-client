@@ -47,6 +47,13 @@ export const groupFields = `
   }
 `;
 
+export const groupsListFields = `
+  fragment groupsListFields on GroupNode {
+    slug
+    name
+  }
+`;
+
 export const groupMembersPending = `
   fragment groupMembersPending on GroupNode {
     pending: memberships(membershipStatus: "pending") {

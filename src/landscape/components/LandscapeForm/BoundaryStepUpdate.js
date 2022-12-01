@@ -16,7 +16,7 @@ import {
   setFormNewValues,
 } from 'landscape/landscapeSlice';
 
-import BoundaryStep from './LandscapeForm/BoundaryStep';
+import BoundaryStep from './BoundaryStep';
 
 const LandscapeBoundariesUpdate = () => {
   const dispatch = useDispatch();
@@ -50,8 +50,11 @@ const LandscapeBoundariesUpdate = () => {
   const onSave = async updatedLandscape => {
     return dispatch(
       saveLandscape({
-        id: landscape.id,
-        areaPolygon: updatedLandscape.areaPolygon,
+        successKey: 'landscape.boundary_success',
+        landscape: {
+          id: landscape.id,
+          areaPolygon: updatedLandscape.areaPolygon,
+        },
       })
     );
   };
@@ -63,7 +66,8 @@ const LandscapeBoundariesUpdate = () => {
           name: _.get('name', landscape),
         })}
         landscape={landscape}
-        save={onSave}
+        onSkip={onSave}
+        onSave={onSave}
         saveLabel={t('landscape.boundaries_update_save')}
         onCancel={() => navigate(`/landscapes/${slug}`)}
       />

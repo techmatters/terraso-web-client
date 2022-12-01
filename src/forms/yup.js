@@ -27,6 +27,8 @@ yup.setLocale({
   number: {
     default: params => ({ key: 'form.validation_number_default', params }),
     required: params => ({ key: 'form.validation_number_required', params }),
+    integer: params => ({ key: 'form.validation_number_integer', params }),
+    max: params => ({ key: 'form.validation_number_max', params }),
   },
 });
 

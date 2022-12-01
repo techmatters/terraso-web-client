@@ -211,7 +211,6 @@ test('LandscapeForm: Display loader', async () => {
   await setup();
   const loader = screen.getByRole('progressbar', {
     name: 'Loading',
-    hidden: true,
   });
   expect(loader).toBeInTheDocument();
 });
@@ -291,7 +290,6 @@ test('LandscapeView: Refresh profile', async () => {
 
   const loader = screen.getByRole('progressbar', {
     name: 'Refreshing',
-    hidden: true,
   });
   expect(loader).toBeInTheDocument();
 });

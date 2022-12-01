@@ -3,16 +3,85 @@ import _ from 'lodash/fp';
 import * as gisService from 'gis/gisService';
 import { accountMembership } from 'group/groupFragments';
 import { extractAccountMembership, extractMembersInfo } from 'group/groupUtils';
-import { defaultGroup, landscapeFields } from 'landscape/landscapeFragments';
+import {
+  defaultGroup,
+  landscapeFields,
+  landscapePartnershipField,
+  landscapeProfileFields,
+} from 'landscape/landscapeFragments';
+import { extractTerms } from 'taxonomies/taxonomiesUtils';
 import * as terrasoApi from 'terrasoBackend/api';
+
+import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
+import {
+  extractAffiliatedGroups,
+  extractDevelopmentStrategy,
+  extractPartnership,
+} from './landscapeUtils';
 
 const cleanLandscape = landscape =>
   _.flow(
-    _.omit('slug'),
+    _.pick([
+      'id',
+      'name',
+      'description',
+      'website',
+      'email',
+      'location',
+      'areaPolygon',
+      'areaTypes',
+      'population',
+      'taxonomyTypeTerms',
+      'partnershipStatus',
+      'partnership',
+      'affiliatedGroups',
+      'developmentStrategy',
+      'profileImage',
+      'profileImageDescription',
+    ]),
+    _.cloneWith(landscape => {
+      const partnershipGroups =
+        landscape.partnership && _.get('partnership.group.slug', landscape)
+          ? [
+              {
+                slug: landscape.partnership.group.slug,
+                partnershipYear: landscape.partnership.year || null,
+                isPartnership: true,
+              },
+            ]
+          : [];
+      const affiliatedGroups = landscape.affiliatedGroups || [];
+      if (_.isEmpty(partnershipGroups) && _.isEmpty(affiliatedGroups)) {
+        if (
+          _.has('partnership', landscape) ||
+          _.has('affiliatedGroups', landscape)
+        ) {
+          return {
+            ..._.omit(['partnership', 'affiliatedGroups'], landscape),
+            groupAssociations: [],
+          };
+        }
+        return landscape;
+      }
+      return {
+        ..._.omit(['partnership', 'affiliatedGroups'], landscape),
+        groupAssociations: [...partnershipGroups, ...affiliatedGroups],
+      };
+    }),
     _.toPairs,
     _.map(([key, value]) => {
-      if (key === 'areaPolygon' && value) {
-        return [key, JSON.stringify(value)];
+      const jsonFields = [
+        'areaPolygon',
+        'areaTypes',
+        'taxonomyTypeTerms',
+        'developmentStrategy',
+        'groupAssociations',
+      ];
+      if (_.includes(key, jsonFields)) {
+        return [key, value ? JSON.stringify(value) : null];
+      }
+      if (key === 'population' && _.isEmpty(value)) {
+        return [key, null];
       }
       return [key, value];
     }),
@@ -24,11 +93,13 @@ export const fetchLandscapeToUpdate = slug => {
     query landscapes($slug: String!){
       landscapes(slug: $slug) {
         edges {
-          node { ...landscapeFields }
+          node {
+            ...landscapeProfileFields
+          }
         }
       }
     }
-    ${landscapeFields}
+    ${landscapeProfileFields}
   `;
   return terrasoApi
     .requestGraphQL(query, { slug })
@@ -36,6 +107,11 @@ export const fetchLandscapeToUpdate = slug => {
     .then(landscape => landscape || Promise.reject('not_found'))
     .then(landscape => ({
       ...landscape,
+      taxonomyTypeTerms: extractTerms(_.get('taxonomyTerms.edges', landscape)),
+      partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
+      partnership: extractPartnership(landscape),
+      affiliatedGroups: extractAffiliatedGroups(landscape),
+      developmentStrategy: extractDevelopmentStrategy(landscape),
       areaPolygon: landscape.areaPolygon
         ? JSON.parse(landscape.areaPolygon)
         : null,
@@ -57,12 +133,14 @@ export const fetchLandscapeToView = (slug, currentUser) => {
         edges {
           node {
             ...landscapeFields
+            ...landscapePartnershipField
             ...defaultGroup
           }
         }
       }
     }
     ${landscapeFields}
+    ${landscapePartnershipField}
     ${defaultGroup}
   `;
   return terrasoApi
@@ -78,6 +156,8 @@ export const fetchLandscapeToView = (slug, currentUser) => {
       areaPolygon: landscape.areaPolygon
         ? JSON.parse(landscape.areaPolygon)
         : null,
+      partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
+      partnership: extractPartnership(landscape),
     }))
     .then(landscape => {
       if (landscape.areaPolygon || !landscape.location) {
@@ -93,6 +173,36 @@ export const fetchLandscapeToView = (slug, currentUser) => {
           boundingBox: placeInfo?.boundingbox,
         }));
     });
+};
+
+export const fetchLandscapeProfile = (slug, currentUser) => {
+  const query = `
+    query landscapes($slug: String!, $accountEmail: String!){
+      landscapes(slug: $slug) {
+        edges {
+          node {
+            ...landscapeProfileFields
+            ...defaultGroup
+          }
+        }
+      }
+    }
+    ${landscapeProfileFields}
+    ${defaultGroup}
+  `;
+  return terrasoApi
+    .requestGraphQL(query, { slug, accountEmail: currentUser.email })
+    .then(_.get('landscapes.edges[0].node'))
+    .then(landscape => landscape || Promise.reject('not_found'))
+    .then(landscape => ({
+      ..._.omit('defaultGroup', landscape),
+      defaultGroup: getDefaultGroup(landscape),
+      taxonomyTerms: extractTerms(_.get('taxonomyTerms.edges', landscape)),
+      partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
+      partnership: extractPartnership(landscape),
+      affiliatedGroups: extractAffiliatedGroups(landscape),
+      developmentStrategy: extractDevelopmentStrategy(landscape),
+    }));
 };
 
 export const fetchLandscapeToUploadSharedData = (slug, currentUser) => {
@@ -195,15 +305,19 @@ const updateLandscape = landscape => {
     mutation updateLandscape($input: LandscapeUpdateMutationInput!) {
       updateLandscape(input: $input) {
         landscape {
-          ...landscapeFields
+          ...landscapeProfileFields
         }
       }
     }
-    ${landscapeFields}
+    ${landscapeProfileFields}
   `;
   return terrasoApi
     .requestGraphQL(query, { input: cleanLandscape(landscape) })
-    .then(response => ({ new: false, ...response.updateLandscape.landscape }));
+    .then(response => ({ new: false, ...response.updateLandscape.landscape }))
+    .then(landscape => ({
+      ...landscape,
+      partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
+    }));
 };
 
 const addLandscape = landscape => {
@@ -211,16 +325,43 @@ const addLandscape = landscape => {
     mutation addLandscape($input: LandscapeAddMutationInput!){
       addLandscape(input: $input) {
         landscape {
-          ...landscapeFields
+          ...landscapeProfileFields
         }
       }
     }
-    ${landscapeFields}
+    ${landscapeProfileFields}
   `;
   return terrasoApi
     .requestGraphQL(query, { input: cleanLandscape(landscape) })
-    .then(response => ({ new: true, ...response.addLandscape.landscape }));
+    .then(response => ({ new: true, ...response.addLandscape.landscape }))
+    .then(landscape => ({
+      ...landscape,
+      partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
+    }));
 };
 
-export const saveLandscape = landscape =>
+export const saveLandscape = ({ landscape }) =>
   landscape.id ? updateLandscape(landscape) : addLandscape(landscape);
+
+export const uploadProfileImage = async ({
+  landscapeSlug,
+  blob,
+  description,
+}) => {
+  const path = '/storage/landscape-profile-image';
+
+  const body = new FormData();
+  body.append('landscape', landscapeSlug);
+  if (description) {
+    body.append('description', description);
+  }
+  body.append('data_file', blob);
+
+  const jsonResponse = await terrasoApi.request({ path, body });
+
+  if (_.has('error', jsonResponse)) {
+    await Promise.reject(Object.values(jsonResponse.error).join('. '));
+  }
+
+  return jsonResponse;
+};

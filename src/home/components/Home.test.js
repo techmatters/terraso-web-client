@@ -48,7 +48,6 @@ test('Home: Display loader', async () => {
   await setup();
   const loaders = screen.getAllByRole('progressbar', {
     name: 'Loading',
-    hidden: true,
   });
   expect(loaders.length).toBe(2);
   loaders.forEach(role => expect(role).toBeInTheDocument());

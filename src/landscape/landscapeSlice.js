@@ -12,6 +12,12 @@ const initialState = {
     fetching: true,
     landscapes: [],
   },
+  profile: {
+    fetching: true,
+    message: null,
+    landscape: null,
+    deletingProfileImage: false,
+  },
   view: {
     fetching: true,
     refreshing: false,
@@ -33,6 +39,9 @@ const initialState = {
     landscape: null,
     fetching: true,
   },
+  uploadProfileImage: {
+    uploading: false,
+  },
 };
 
 export const fetchLandscapes = createAsyncThunk(
@@ -45,6 +54,10 @@ export const fetchLandscapes = createAsyncThunk(
     dispatch(setMemberships(getMemberships(landscapes)));
     return landscapes;
   }
+);
+export const fetchLandscapeProfile = createAsyncThunk(
+  'landscape/fetchLandscapeProfile',
+  landscapeService.fetchLandscapeProfile
 );
 export const fetchLandscapeView = createAsyncThunk(
   'landscape/fetchLandscapeView',
@@ -83,9 +96,26 @@ export const fetchLandscapeForMembers = createAsyncThunk(
 export const saveLandscape = createAsyncThunk(
   'landscape/saveLandscape',
   landscapeService.saveLandscape,
-  landscape => ({
+  (landscape, { successKey }) => ({
     severity: 'success',
-    content: landscape.new ? 'landscape.added' : 'landscape.updated',
+    content: successKey,
+    params: { name: landscape.name },
+  })
+);
+export const uploadProfileImage = createAsyncThunk(
+  'landscape/uploadProfileImage',
+  landscapeService.uploadProfileImage,
+  () => ({
+    severity: 'success',
+    content: 'landscape.form_profile_profile_image_success',
+  })
+);
+export const deleteProfileImage = createAsyncThunk(
+  'landscape/deleteProfileImage',
+  landscapeService.saveLandscape,
+  (landscape, { successKey }) => ({
+    severity: 'success',
+    content: successKey,
     params: { name: landscape.name },
   })
 );
@@ -126,6 +156,29 @@ const landscapeSlice = createSlice({
       list: {
         fetching: false,
         landscapes: action.payload,
+      },
+    }),
+    [fetchLandscapeProfile.pending]: state => ({
+      ...state,
+      profile: initialState.profile,
+    }),
+    [fetchLandscapeProfile.rejected]: (state, action) => ({
+      ...state,
+      profile: {
+        ...state.profile,
+        fetching: false,
+        message: {
+          severity: 'error',
+          content: action.payload,
+        },
+      },
+    }),
+    [fetchLandscapeProfile.fulfilled]: (state, action) => ({
+      ...state,
+      profile: {
+        fetching: false,
+        message: null,
+        landscape: action.payload,
       },
     }),
     [fetchLandscapeView.pending]: state => ({
@@ -220,6 +273,50 @@ const landscapeSlice = createSlice({
       sharedDataUpload: {
         ...state.sharedDataUpload,
         fetching: false,
+      },
+    }),
+    [uploadProfileImage.rejected]: (state, action) => ({
+      ...state,
+      uploadProfileImage: {
+        uploading: false,
+      },
+    }),
+    [uploadProfileImage.fulfilled]: (state, action) => ({
+      ...state,
+      uploadProfileImage: {
+        uploading: false,
+      },
+    }),
+    [uploadProfileImage.pending]: state => ({
+      ...state,
+      uploadProfileImage: {
+        uploading: true,
+      },
+    }),
+    [deleteProfileImage.pending]: state => ({
+      ...state,
+      profile: {
+        ...state.profile,
+        deletingProfileImage: true,
+      },
+    }),
+    [deleteProfileImage.rejected]: state => ({
+      ...state,
+      profile: {
+        ...state.profile,
+        deletingProfileImage: false,
+      },
+    }),
+    [deleteProfileImage.fulfilled]: (state, action) => ({
+      ...state,
+      profile: {
+        ...state.profile,
+        deletingProfileImage: false,
+        landscape: {
+          ...state.profile.landscape,
+          profileImage: '',
+          profileImageDescription: '',
+        },
       },
     }),
   },

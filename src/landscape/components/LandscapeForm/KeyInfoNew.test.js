@@ -5,7 +5,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
 
-import LandscapeNew from 'landscape/components/LandscapeNew';
+import LandscapeNew from 'landscape/components/LandscapeForm/New';
 import * as terrasoApi from 'terrasoBackend/api';
 
 jest.mock('terrasoBackend/api');
@@ -16,16 +16,25 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const setup = async () => {
-  await render(<LandscapeNew />);
+  await render(<LandscapeNew />, {
+    account: {
+      currentUser: {
+        data: {
+          email: 'email@account.org',
+        },
+      },
+    },
+  });
   const name = screen.getByRole('textbox', {
     name: 'Name (required)',
   });
   const description = screen.getByRole('textbox', {
     name: 'Description (required)',
   });
+  const email = screen.getByRole('textbox', { name: 'Email address' });
   const website = screen.getByRole('textbox', { name: 'Website' });
   const location = screen.getByRole('button', {
-    name: 'Country or region Landscape location',
+    name: 'Country or region (required) Landscape location',
   });
 
   const changeLocation = async newLocation => {
@@ -40,11 +49,32 @@ const setup = async () => {
     inputs: {
       name,
       description,
+      email,
       website,
       location,
       changeLocation,
     },
   };
+};
+
+const handleQueryRequests = query => {
+  if (query.startsWith('query taxonomyTerms')) {
+    return Promise.resolve({
+      taxonomyTerms: {
+        edges: [],
+      },
+    });
+  }
+  if (query.startsWith('query groups')) {
+    return Promise.resolve({
+      independentGroups: {
+        edges: [],
+      },
+      landscapeGroups: {
+        edges: [],
+      },
+    });
+  }
 };
 
 beforeEach(() => {
@@ -54,6 +84,14 @@ beforeEach(() => {
 });
 
 test('LandscapeNew: Input change', async () => {
+  terrasoApi.requestGraphQL.mockImplementation(query => {
+    const trimmedQuery = query.trim();
+
+    const queryRequests = handleQueryRequests(trimmedQuery);
+    if (queryRequests) {
+      return queryRequests;
+    }
+  });
   const { inputs } = await setup();
 
   expect(inputs.name).toHaveValue('');
@@ -75,6 +113,14 @@ test('LandscapeNew: Input change', async () => {
   expect(inputs.location).toHaveTextContent('Ecuador');
 });
 test('LandscapeNew: Input validation', async () => {
+  terrasoApi.requestGraphQL.mockImplementation(query => {
+    const trimmedQuery = query.trim();
+
+    const queryRequests = handleQueryRequests(trimmedQuery);
+    if (queryRequests) {
+      return queryRequests;
+    }
+  });
   const { inputs } = await setup();
 
   expect(inputs.name).toHaveValue('');
@@ -90,23 +136,34 @@ test('LandscapeNew: Input validation', async () => {
   expect(inputs.website).toHaveValue('wwwotherorg');
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
   );
   expect(screen.getByText(/name is required/i)).toBeInTheDocument();
   expect(screen.getByText(/description is required/i)).toBeInTheDocument();
   expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument();
 });
 test('LandscapeNew: Save form', async () => {
-  terrasoApi.requestGraphQL.mockResolvedValueOnce({
-    addLandscape: {
-      landscape: {
-        id: '1',
-        name: 'Landscape Name',
-        description: 'Landscape Description',
-        website: 'www.landscape.org',
-        location: 'EC',
-      },
-    },
+  terrasoApi.requestGraphQL.mockImplementation(query => {
+    const trimmedQuery = query.trim();
+
+    const queryRequests = handleQueryRequests(trimmedQuery);
+    if (queryRequests) {
+      return queryRequests;
+    }
+
+    if (trimmedQuery.startsWith('mutation addLandscape')) {
+      return Promise.resolve({
+        addLandscape: {
+          landscape: {
+            id: '1',
+            name: 'Landscape Name',
+            description: 'Landscape Description',
+            website: 'www.landscape.org',
+            location: 'EC',
+          },
+        },
+      });
+    }
   });
 
   const { inputs } = await setup();
@@ -115,37 +172,44 @@ test('LandscapeNew: Save form', async () => {
   fireEvent.change(inputs.description, {
     target: { value: 'New description' },
   });
+  fireEvent.change(inputs.email, {
+    target: { value: 'info@other.org' },
+  });
   fireEvent.change(inputs.website, {
     target: { value: 'https://www.other.org' },
   });
   await inputs.changeLocation('Argentina');
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
   );
-  await waitFor(() => {
-    expect(
-      screen.getByRole('button', { name: 'Skip this step for now' })
-    ).toBeInTheDocument();
-  });
-  await act(async () =>
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Skip this step for now' })
-    )
-  );
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[0];
+
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(5);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[4];
   expect(saveCall[1]).toStrictEqual({
     input: {
       description: 'New description',
       name: 'New name',
+      email: 'info@other.org',
+      partnershipStatus: 'no',
       website: 'https://www.other.org',
       location: 'AR',
     },
   });
 });
 test('LandscapeNew: Save form error', async () => {
-  terrasoApi.requestGraphQL.mockRejectedValueOnce('Save Error');
+  terrasoApi.requestGraphQL.mockImplementation(query => {
+    const trimmedQuery = query.trim();
+
+    const queryRequests = handleQueryRequests(trimmedQuery);
+    if (queryRequests) {
+      return queryRequests;
+    }
+
+    if (trimmedQuery.startsWith('mutation addLandscape')) {
+      return Promise.reject('Save Error');
+    }
+  });
 
   const { inputs } = await setup();
 
@@ -159,17 +223,7 @@ test('LandscapeNew: Save form error', async () => {
   await inputs.changeLocation('Argentina');
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
-  );
-  await waitFor(() => {
-    expect(
-      screen.getByRole('button', { name: 'Skip this step for now' })
-    ).toBeInTheDocument();
-  });
-  await act(async () =>
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Skip this step for now' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
   );
 
   // Test error display
@@ -180,34 +234,42 @@ test('LandscapeNew: Save form error', async () => {
   expect(inputs.description).toHaveValue('New description');
   expect(inputs.website).toHaveValue('https://www.other.org');
   expect(inputs.location).toHaveTextContent('Argentina');
-
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
-});
-test('LandscapeNew: Avoid fetch', async () => {
-  useParams.mockReturnValue({ slug: null });
-  const { inputs } = await setup();
-
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(0);
-
-  expect(inputs.name).toHaveValue('');
-  expect(inputs.description).toHaveValue('');
-  expect(inputs.website).toHaveValue('');
-
-  expect(() =>
-    screen.getByRole('progressbar', { name: 'Loading', hidden: true })
-  ).toThrow('Unable to find an element');
 });
 test('LandscapeNew: Save form (add)', async () => {
   useParams.mockReturnValue({ slug: null });
-  terrasoApi.requestGraphQL.mockResolvedValueOnce({
-    addLandscape: {
-      landscape: {
-        name: 'New name',
-        description: 'New description',
-        website: 'http://www.other.org',
-        location: 'AR',
-      },
-    },
+  terrasoApi.requestGraphQL.mockImplementation(query => {
+    const trimmedQuery = query.trim();
+
+    const queryRequests = handleQueryRequests(trimmedQuery);
+    if (queryRequests) {
+      return queryRequests;
+    }
+
+    if (trimmedQuery.startsWith('mutation addLandscape')) {
+      return Promise.resolve({
+        addLandscape: {
+          landscape: {
+            name: 'New name',
+            description: 'New description',
+            email: 'info@other.org',
+            website: 'http://www.other.org',
+            location: 'AR',
+          },
+        },
+      });
+    }
+    if (trimmedQuery.startsWith('mutation updateLandscape')) {
+      return Promise.resolve({
+        updateLandscape: {
+          landscape: {
+            name: 'New name',
+            description: 'New description',
+            website: 'http://www.other.org',
+            location: 'AR',
+          },
+        },
+      });
+    }
   });
 
   const { inputs } = await setup();
@@ -216,13 +278,16 @@ test('LandscapeNew: Save form (add)', async () => {
   fireEvent.change(inputs.description, {
     target: { value: 'New description' },
   });
+  fireEvent.change(inputs.email, {
+    target: { value: 'other@other.org' },
+  });
   fireEvent.change(inputs.website, {
     target: { value: 'http://www.other.org' },
   });
   await inputs.changeLocation('Ecuador');
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
   );
   await waitFor(() => {
     expect(
@@ -234,13 +299,18 @@ test('LandscapeNew: Save form (add)', async () => {
       screen.getByRole('button', { name: 'Skip this step for now' })
     )
   );
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+  );
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[0];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(6);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[4];
   expect(saveCall[1]).toStrictEqual({
     input: {
       description: 'New description',
       name: 'New name',
+      email: 'other@other.org',
+      partnershipStatus: 'no',
       website: 'http://www.other.org',
       location: 'EC',
     },
