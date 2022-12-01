@@ -120,7 +120,11 @@ export const extractAffiliatedGroups = landscape =>
 export const extractDevelopmentStrategy = landscape =>
   _.get('associatedDevelopmentStrategy.edges[0].node', landscape);
 
-export const Subheader = ({ text }) => {
+export const Subheader = ({ id, text }) => {
   const { t } = useTranslation();
-  return <Typography sx={{ pl: 2 }}>{t(text)}</Typography>;
+  return (
+    <Typography id={id} sx={{ pl: 2 }}>
+      {t(text)}
+    </Typography>
+  );
 };

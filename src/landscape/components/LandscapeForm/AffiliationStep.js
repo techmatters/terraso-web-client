@@ -106,7 +106,7 @@ const YearSelect = props => {
       displayEmpty
       value={field.value}
       onChange={field.onChange}
-      labelId="TODO"
+      labelId={`${id}-label`}
       id={id}
     >
       <MenuItem value={''}>
@@ -124,7 +124,12 @@ const YearSelect = props => {
 };
 
 const PartnershipStatusInfo = props => {
-  return <Subheader text="landscape.form_profile_partnership_status" />;
+  return (
+    <Subheader
+      id="landscape-affiliation-partnershipStatus-info"
+      text="landscape.form_profile_partnership_status"
+    />
+  );
 };
 
 const PartnershipStatusRadioGroup = props => {
@@ -153,7 +158,7 @@ const PartnershipStatusRadioGroup = props => {
     <RadioGroup
       id={id}
       row
-      aria-labelledby="landscape-affiliation-partnershipStatus-label"
+      aria-labelledby="landscape-affiliation-partnershipStatus-info"
       value={field.value || ''}
       onChange={handleChange}
     >
