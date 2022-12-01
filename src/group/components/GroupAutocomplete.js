@@ -19,7 +19,7 @@ const GroupAutocomplete = props => {
   );
 
   const value = useMemo(
-    () => (_.isEmpty(props.value) ? (multiple ? [] : '') : props.value),
+    () => (_.isEmpty(props.value) ? (multiple ? [] : null) : props.value),
     [props.value, multiple]
   );
 
@@ -27,7 +27,7 @@ const GroupAutocomplete = props => {
     <Autocomplete
       id={id}
       noOptionsText={t('group.autocomplete_no_options')}
-      multiple={multiple}
+      multiple={!!multiple}
       value={value}
       onChange={onChangeWrapper}
       options={options}
@@ -45,7 +45,9 @@ const GroupAutocomplete = props => {
           }}
         />
       )}
-      isOptionEqualToValue={(option, value) => option.slug === value.slug}
+      isOptionEqualToValue={(option, value) =>
+        value?.slug && option.slug === value.slug
+      }
     />
   );
 };
