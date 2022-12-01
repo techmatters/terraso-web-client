@@ -186,7 +186,7 @@ test('LandscapeNew: Save from GeoJSON', async () => {
       areaPolygon: JSON.stringify(JSON.parse(GEOJSON)),
       areaTypes: null,
       population: null,
-      partnershipStatus: 'no'
+      partnershipStatus: 'no',
     },
   });
 });

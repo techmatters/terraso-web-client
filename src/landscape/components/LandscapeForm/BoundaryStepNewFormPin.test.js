@@ -177,7 +177,7 @@ test('LandscapeNew: Save form Pin boundary', async () => {
         '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Point","coordinates":[10,10]}}],"bbox":[0,0,0,0]}',
       areaTypes: null,
       population: null,
-      partnershipStatus: 'no'
+      partnershipStatus: 'no',
     },
   });
 });
