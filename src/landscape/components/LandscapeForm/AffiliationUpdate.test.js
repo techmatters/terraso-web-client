@@ -42,7 +42,9 @@ const setup = async () => {
   };
 
   const changeYear = async newYear => {
-    const yearSelect = screen.getByRole('button', { name: 'Select a year' });
+    const yearSelect = screen.getByRole('button', {
+      name: 'Approximate date of landscape partnership inception Select a year',
+    });
     await act(async () => fireEvent.mouseDown(yearSelect));
     const listbox = within(screen.getByRole('listbox'));
     await act(async () =>
