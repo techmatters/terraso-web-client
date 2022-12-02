@@ -55,7 +55,7 @@ const FIELDS = [
   },
   {
     label: 'landscape.profile_profile_card_population_label',
-    getValue: landscape => landscape.population.toLocaleString(),
+    getValue: landscape => landscape.population?.toLocaleString(),
   },
   {
     label: 'landscape.profile_profile_card_landscape_size_label',
