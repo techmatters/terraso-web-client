@@ -172,6 +172,7 @@ const Link = props => {
         <Form
           mode="onChange"
           prefix={`link-${index}`}
+          localizationPrefix="sharedData.upload_link_form"
           aria-label={updatedValues.name}
           fields={fields}
           values={baseFormData}
