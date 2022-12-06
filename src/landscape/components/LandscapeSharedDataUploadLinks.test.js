@@ -68,7 +68,7 @@ test('LandscapeSharedDataUpload: Error - Empty name', async () => {
   fireEvent.change(name, { target: { value: 'value' } });
   fireEvent.change(name, { target: { value: '' } });
   expect(
-    await within(linkSection).findByText('name is required')
+    await within(linkSection).findByText('Name is required')
   ).toBeInTheDocument();
   await waitFor(() =>
     expect(
