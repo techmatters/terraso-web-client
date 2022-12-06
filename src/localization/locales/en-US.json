@@ -559,7 +559,8 @@
         "upload_name_label": "Name",
         "upload_links_add": "Add link",
         "upload_links_description": "Add links and descriptions.",
-        "upload_link_success": "This link has been shared successfully."
+        "upload_link_success": "This link has been shared successfully.",
+        "upload_link_no_name": "Link {{index}}"
     },
     "common": {
         "dialog_cancel_label": "Cancel",

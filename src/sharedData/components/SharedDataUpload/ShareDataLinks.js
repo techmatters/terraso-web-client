@@ -75,7 +75,7 @@ const Link = props => {
   const { apiSuccesses, apiErrors, apiUploading, onLinkChange } = useContext(
     LinksContextFunctions
   );
-  const { linkId, link } = props;
+  const { linkId, link, index } = props;
   const [updatedValues, setUpdatedValues] = useState({ id: linkId });
   const [baseFormData] = useState(link);
 
@@ -140,7 +140,10 @@ const Link = props => {
       {isUploading && <LinearProgress />}
       <Stack
         component="section"
-        aria-label={updatedValues.name}
+        aria-label={
+          updatedValues.name ||
+          t('sharedData.upload_link_no_name', { index: index + 1 })
+        }
         spacing={1}
         sx={{
           paddingLeft: 2,
@@ -168,6 +171,7 @@ const Link = props => {
           ))}
         <Form
           mode="onChange"
+          prefix={`link-${index}`}
           aria-label={updatedValues.name}
           fields={fields}
           values={baseFormData}
@@ -206,9 +210,9 @@ const SelectedLinks = props => {
           {t('sharedData.upload_no_links')}
         </Typography>
       ) : (
-        links.map(link => (
+        links.map((link, index) => (
           <FormContextProvider key={link.id}>
-            <Link linkId={link.id} link={link} />
+            <Link linkId={link.id} link={link} index={index} />
           </FormContextProvider>
         ))
       )}
