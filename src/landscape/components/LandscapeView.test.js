@@ -249,9 +249,7 @@ test('LandscapeView: Update Shared Data', async () => {
       {}
     )
   );
-  terrasoApi.requestGraphQL.mockResolvedValueOnce(
-    {}
-  );
+  terrasoApi.requestGraphQL.mockResolvedValueOnce({});
 
   const sharedDataRegion = within(
     screen.getByRole('region', { name: 'Shared files' })
