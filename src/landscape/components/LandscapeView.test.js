@@ -235,8 +235,23 @@ test('LandscapeView: Display data', baseViewTest);
 test('LandscapeView: Update Shared Data', async () => {
   await baseViewTest();
 
-  terrasoApi.requestGraphQL.mockResolvedValueOnce({});
-  terrasoApi.requestGraphQL.mockResolvedValueOnce({});
+  terrasoApi.requestGraphQL.mockResolvedValueOnce(
+    _.set(
+      'updateDataEntry.dataEntry',
+      {
+        id: `de-3`,
+        createdAt: '2022-05-20T16:25:21.536679+00:00',
+        name: `Data Entry 3`,
+        createdBy: { id: 'user-id', firstName: 'First', lastName: 'Last' },
+        size: 3456,
+        entryType: 'FILE',
+      },
+      {}
+    )
+  );
+  terrasoApi.requestGraphQL.mockResolvedValueOnce(
+    {}
+  );
 
   const sharedDataRegion = within(
     screen.getByRole('region', { name: 'Shared files' })

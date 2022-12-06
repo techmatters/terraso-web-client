@@ -80,17 +80,17 @@ const SharedFilesCard = props => {
         {hasFiles && (
           <>
             <List aria-describedby="shared-data-card-title">
-              {sharedFiles.map(dateEnty =>
-                dateEnty.entryType === 'LINK' ? (
+              {sharedFiles.map(dataEntry =>
+                dataEntry.entryType === 'LINK' ? (
                   <SharedDataEntryLink
-                    key={dateEnty.id}
-                    dataEntry={dateEnty}
+                    key={dataEntry.id}
+                    dataEntry={dataEntry}
                     group={group}
                   />
                 ) : (
                   <SharedDataEntryFile
-                    key={dateEnty.id}
-                    dataEntry={dateEnty}
+                    key={dataEntry.id}
+                    dataEntry={dataEntry}
                     group={group}
                   />
                 )
