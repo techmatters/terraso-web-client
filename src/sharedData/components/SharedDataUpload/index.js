@@ -49,6 +49,7 @@ const SharedDataUpload = props => {
     linksErrors = {},
   } = linksState;
 
+  const [showSummary, setShowSummary] = useState(false);
 
   useEffect(() => {
     dispatch(resetUploads());
@@ -82,6 +83,7 @@ const SharedDataUpload = props => {
   }, [filesPending, linksPending]);
 
   const onSave = useCallback(() => {
+    setShowSummary(false);
     const linksPromises = toUpload.links.map(link =>
       dispatch(addSharedDataLink({ groupSlug, link }))
     );
@@ -103,6 +105,7 @@ const SharedDataUpload = props => {
             trackEvent('uploadFile', { props: { owner: groupSlug } });
           }
         });
+      setShowSummary(true);
     });
   }, [toUpload, groupSlug, dispatch, trackEvent]);
 
@@ -157,19 +160,21 @@ const SharedDataUpload = props => {
           </TabPanel>
         </TabContext>
       </Paper>
-      <Typography sx={{ mt: 2 }}>
-        {t('sharedData.upload_summary', {
-          count: filesSuccess + linksSuccess,
-          successCount: filesSuccess + linksSuccess,
-          errorCount: filesPending.length + linksPending.length,
-          successCounts: localizedCounts(t, filesSuccess, linksSuccess),
-          errorCounts: localizedCounts(
-            t,
-            filesPending.length,
-            linksPending.length
-          ),
-        })}
-      </Typography>
+      {showSummary && (
+        <Typography sx={{ mt: 2 }}>
+          {t('sharedData.upload_summary', {
+            count: filesSuccess + linksSuccess,
+            successCount: filesSuccess + linksSuccess,
+            errorCount: filesPending.length + linksPending.length,
+            successCounts: localizedCounts(t, filesSuccess, linksSuccess),
+            errorCounts: localizedCounts(
+              t,
+              filesPending.length,
+              linksPending.length
+            ),
+          })}
+        </Typography>
+      )}
       <Stack
         direction="row"
         spacing={2}
