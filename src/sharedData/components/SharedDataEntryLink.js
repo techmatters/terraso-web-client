@@ -35,6 +35,7 @@ const DownloadComponent = props => {
 };
 
 const SharedDataEntryLink = props => {
+  const { t } = useTranslation();
   const { dataEntry } = props;
 
   const domain = useMemo(() => {
@@ -48,6 +49,9 @@ const SharedDataEntryLink = props => {
       EntryTypeIcon={() => <LinkIcon />}
       DownloadComponent={DownloadComponent}
       info={domain}
+      deleteTooltip={t('sharedData.link_delete_tooltip', {
+        name: dataEntry.name,
+      })}
     />
   );
 };

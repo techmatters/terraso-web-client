@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { LoadingButton } from '@mui/lab';
+import { Tooltip } from '@mui/material';
 
 import ConfirmationDialog from 'common/components/ConfirmationDialog';
 
@@ -16,6 +17,7 @@ const ConfirmButton = props => {
     buttonProps,
     onConfirm,
     variant,
+    tooltip,
   } = props;
 
   useEffect(() => {
@@ -27,6 +29,9 @@ const ConfirmButton = props => {
     event.stopPropagation();
   };
 
+  const TooltipWrapper = tooltip
+    ? ({ children }) => <Tooltip title={tooltip}>{children}</Tooltip>
+    : React.Fragment;
   return (
     <>
       <ConfirmationDialog
@@ -38,15 +43,17 @@ const ConfirmButton = props => {
         onConfirm={onConfirm}
         loading={loading}
       />
-      <LoadingButton
-        onClick={onClick}
-        loading={loading}
-        variant={variant || 'outlined'}
-        aria-label={ariaLabel}
-        {...(buttonProps || {})}
-      >
-        {buttonLabel || props.children}
-      </LoadingButton>
+      <TooltipWrapper>
+        <LoadingButton
+          onClick={onClick}
+          loading={loading}
+          variant={variant || 'outlined'}
+          aria-label={ariaLabel}
+          {...(buttonProps || {})}
+        >
+          {buttonLabel || props.children}
+        </LoadingButton>
+      </TooltipWrapper>
     </>
   );
 };

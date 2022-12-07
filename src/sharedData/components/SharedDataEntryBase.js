@@ -31,7 +31,14 @@ const StackRow = props => (
 const SharedDataEntryBase = props => {
   const { i18n, t } = useTranslation();
   const { group, owner, updateOwner } = useGroupContext();
-  const { dataEntry, children, EntryTypeIcon, DownloadComponent, info } = props;
+  const {
+    dataEntry,
+    children,
+    EntryTypeIcon,
+    DownloadComponent,
+    info,
+    deleteTooltip,
+  } = props;
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const processing = useSelector(
@@ -150,6 +157,7 @@ const SharedDataEntryBase = props => {
                 name: dataEntry.name,
               })}
               confirmButton={t('sharedData.delete_confirm_button')}
+              tooltip={deleteTooltip}
             >
               <DeleteIcon
                 sx={{
