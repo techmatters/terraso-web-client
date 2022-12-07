@@ -439,7 +439,7 @@
         "boundary_success": "Boundary was updated"
     },
     "sharedData": {
-        "title": "Shared files",
+        "title": "Shared files and Links",
         "description_with_files": "Only members of your {{entityType}} can download these files or create a map with them.",
         "entity_type_group": "group",
         "entity_type_landscape": "landscape",
