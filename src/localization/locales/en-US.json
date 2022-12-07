@@ -562,7 +562,8 @@
         "upload_link_success": "This link has been shared successfully.",
         "upload_link_no_name": "Link {{index}}",
         "upload_link_form.url": "$t(sharedData.upload_url_label)",
-        "upload_link_form.name": "$t(sharedData.upload_name_label)"
+        "upload_link_form.name": "$t(sharedData.upload_name_label)",
+        "addSharedDataLink.terraso_api.invalid": "Invalid $t(sharedData.upload_{{field}}_label)"
     },
     "common": {
         "dialog_cancel_label": "Cancel",
