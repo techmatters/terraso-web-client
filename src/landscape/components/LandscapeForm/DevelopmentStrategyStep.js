@@ -48,6 +48,7 @@ const FORM_FIELDS = [
   {
     name: 'developmentStrategy.problemSitutation',
     label: 'landscape.form_development_problem_situtation',
+    helperText: 'landscape.form_development_problem_situtation_helper_text',
     placeholder: 'landscape.form_development_problem_situtation_placeholder',
     props: getTextAreaProps(2),
   },

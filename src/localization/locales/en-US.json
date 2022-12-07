@@ -436,7 +436,8 @@
         "affiliation_success": "$t(landscape.profile_affiliation_card_title) was updated",
         "profile_success": "Profile was updated",
         "development_strategy_success": "$t(landscape.profile_development_card_title) was updated",
-        "boundary_success": "Boundary was updated"
+        "boundary_success": "Boundary was updated",
+        "form_development_problem_situtation_helper_text": "Describe, in a paragraph, the landscape’s main challenges(s) and opportunities"
     },
     "sharedData": {
         "title": "Shared files and Links",

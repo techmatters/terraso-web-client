@@ -1,14 +1,17 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 
 import { FormControlUnstyled } from '@mui/base';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
 import ErrorIcon from '@mui/icons-material/Report';
 import {
   FormHelperText,
+  IconButton,
   InputLabel,
   OutlinedInput,
+  Popover,
   Stack,
   Typography,
 } from '@mui/material';
@@ -59,6 +62,53 @@ const getMessages = error => {
   return errors;
 };
 
+const HelperText = props => {
+  const { t } = useTranslation();
+  const { helperText, label } = props;
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  if (!helperText) {
+    return null;
+  }
+
+  const handleClick = event => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const content =
+    typeof helperText === 'string' ? (
+      <Typography sx={{ p: 2 }}>{t(helperText)}</Typography>
+    ) : (
+      helperText
+    );
+
+  return (
+    <>
+      <IconButton
+        aria-label={t('form.helper_text_info_label', { label })}
+        onClick={handleClick}
+      >
+        <InfoIcon />
+      </IconButton>
+      <Popover
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+      >
+        {content}
+      </Popover>
+    </>
+  );
+};
+
 const FormField = props => {
   const {
     field,
@@ -69,6 +119,7 @@ const FormField = props => {
     label,
     info,
     localizationPrefix,
+    helperText,
   } = props;
   const { t } = useTranslation();
 
@@ -99,6 +150,7 @@ const FormField = props => {
         disabled={disabled}
         error={!!fieldState?.error}
         htmlFor={id}
+        alignItems="center"
       >
         <Typography
           sx={{
@@ -108,6 +160,7 @@ const FormField = props => {
           {t(label)}
         </Typography>
         {required && <Typography>({t('form.required_label')})</Typography>}
+        <HelperText helperText={helperText} label={label} />
       </Stack>
       <FormFieldInput field={field} fieldState={fieldState} {...props} />
       {info && (

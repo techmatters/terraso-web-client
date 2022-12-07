@@ -165,6 +165,7 @@ const Form = props => {
                       id={`${prefix}-${field.name}`}
                       label={field.label}
                       info={field.info}
+                      helperText={field.helperText}
                       localizationPrefix={localizationPrefix}
                       {..._.getOr({}, 'props', field)}
                       inputProps={{
