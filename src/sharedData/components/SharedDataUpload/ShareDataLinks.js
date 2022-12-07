@@ -233,8 +233,8 @@ const ShareDataLinks = props => {
   const { t } = useTranslation();
   const { linksState } = props;
 
-  const { apiErrors, apiSuccesses, apiUploading, links, setLinks } = linksState; 
-  
+  const { apiErrors, apiSuccesses, apiUploading, links, setLinks } = linksState;
+
   useEffect(() => {
     setLinks(links => (_.isEmpty(links) ? addLink(links) : links));
   }, [links, setLinks]);
