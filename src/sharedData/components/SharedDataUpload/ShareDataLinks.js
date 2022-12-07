@@ -231,68 +231,31 @@ const addLink = links => {
 
 const ShareDataLinks = props => {
   const { t } = useTranslation();
-  const {
-    linksState,
-    setLinksState: setState,
-    setLinksPending,
-    setLinksUploading,
-    setLinksSuccess,
-  } = props;
+  const { linksState } = props;
 
-  const uploads = useSelector(_.get('sharedData.uploads.links'));
-
-  const links = useMemo(() => linksState.links || {}, [linksState.links]);
-  const linkIds = useMemo(() => Object.keys(links), [links]);
-
-  const { apiErrors, apiSuccesses, apiUploading } = useMemo(
-    () => groupDataEntryUploadsByStatus(_.pick(linkIds, uploads)),
-    [uploads, linkIds]
-  );
-
+  const { apiErrors, apiSuccesses, apiUploading, links, setLinks } = linksState; 
+  
   useEffect(() => {
-    setState('links', links => (_.isEmpty(links) ? addLink(links) : links));
-  }, [setState]);
-
-  useEffect(() => {
-    const pendingLinkIds = linkIds.filter(
-      linkId => !_.has(linkId, apiSuccesses)
-    );
-    const pendingLinks = Object.values(_.pick(pendingLinkIds, links));
-    setLinksPending(pendingLinks);
-  }, [links, linkIds, apiSuccesses, setLinksPending]);
-
-  useEffect(() => {
-    setLinksUploading(!_.isEmpty(apiUploading));
-  }, [apiUploading, setLinksUploading]);
-
-  useEffect(() => {
-    const isCompleteSuccess =
-      !_.isEmpty(Object.values(links)) &&
-      !_.isEmpty(apiSuccesses) &&
-      _.isEmpty(apiErrors) &&
-      _.isEmpty(apiUploading);
-    if (isCompleteSuccess) {
-      setLinksSuccess(Object.keys(apiSuccesses).length);
-    }
-  }, [links, apiErrors, apiSuccesses, apiUploading, setLinksSuccess]);
+    setLinks(links => (_.isEmpty(links) ? addLink(links) : links));
+  }, [links, setLinks]);
 
   const onLinkChange = useCallback(
     (id, newLink) => {
-      setState('links', links => ({
+      setLinks(links => ({
         ...links,
         [id]: newLink,
       }));
     },
-    [setState]
+    [setLinks]
   );
   const onLinkDelete = useCallback(
     id => {
-      setState('links', _.omit(id));
+      setLinks(_.omit(id));
     },
-    [setState]
+    [setLinks]
   );
 
-  const onNewLink = () => setState('links', addLink);
+  const onNewLink = () => setLinks(addLink);
 
   return (
     <>
@@ -320,6 +283,56 @@ const ShareDataLinks = props => {
       </Button>
     </>
   );
+};
+
+export const useLinksState = () => {
+  const [linksPending, setLinksPending] = useState([]);
+  const [linksUploading, setLinksUploading] = useState(false);
+  const [linksSuccess, setLinksSuccess] = useState(0);
+
+  const uploads = useSelector(_.get('sharedData.uploads.links'));
+
+  const [links, setLinks] = useState({});
+  const linkIds = useMemo(() => Object.keys(links), [links]);
+
+  const { apiErrors, apiSuccesses, apiUploading } = useMemo(
+    () => groupDataEntryUploadsByStatus(_.pick(linkIds, uploads)),
+    [uploads, linkIds]
+  );
+
+  useEffect(() => {
+    const pendingLinkIds = linkIds.filter(
+      linkId => !_.has(linkId, apiSuccesses)
+    );
+    const pendingLinks = Object.values(_.pick(pendingLinkIds, links));
+    setLinksPending(pendingLinks);
+  }, [links, linkIds, apiSuccesses, setLinksPending]);
+
+  useEffect(() => {
+    setLinksUploading(!_.isEmpty(apiUploading));
+  }, [apiUploading, setLinksUploading]);
+
+  useEffect(() => {
+    const isCompleteSuccess =
+      !_.isEmpty(Object.values(links)) &&
+      !_.isEmpty(apiSuccesses) &&
+      _.isEmpty(apiErrors) &&
+      _.isEmpty(apiUploading);
+    if (isCompleteSuccess) {
+      setLinksSuccess(Object.keys(apiSuccesses).length);
+    }
+  }, [links, apiErrors, apiSuccesses, apiUploading, setLinksSuccess]);
+
+  return {
+    apiErrors,
+    apiSuccesses,
+    apiUploading,
+    linksPending,
+    linksUploading,
+    linksSuccess,
+    links,
+    setLinks,
+  };
 };
 
 export default ShareDataLinks;

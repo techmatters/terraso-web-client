@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useEffect, useMemo } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import _ from 'lodash/fp';
 import path from 'path-browserify';
@@ -220,64 +226,27 @@ const fileWrapper = file => {
 
 const ShareDataFiles = props => {
   const { t } = useTranslation();
+  const { filesState } = props;
   const {
-    filesState,
-    setFilesState: setState,
-    setFilesPending,
+    filesErrors,
     setFilesErrors,
-    setFilesUploading,
-    setFilesSuccess,
-  } = props;
-
-  const uploads = useSelector(_.get('sharedData.uploads.files'));
-
-  const files = useMemo(() => filesState.files || {}, [filesState.files]);
-  const errors = useMemo(() => filesState.errors || {}, [filesState.errors]);
-  const dropErrors = useMemo(
-    () => filesState.dropErrors,
-    [filesState.dropErrors]
-  );
-
-  const { apiErrors, apiSuccesses, apiUploading } = useMemo(
-    () => groupDataEntryUploadsByStatus(_.pick(Object.keys(files), uploads)),
-    [uploads, files]
-  );
-
-  useEffect(() => {
-    const pendingFiles = Object.values(files).filter(
-      file => !_.has(file.id, apiSuccesses)
-    );
-    setFilesPending(pendingFiles);
-  }, [files, apiSuccesses, setFilesPending]);
-
-  useEffect(() => {
-    setFilesErrors(errors);
-  }, [errors, setFilesErrors]);
-
-  useEffect(() => {
-    setFilesUploading(!_.isEmpty(apiUploading));
-  }, [apiUploading, setFilesUploading]);
-
-  useEffect(() => {
-    const isCompleteSuccess =
-      !_.isEmpty(Object.values(files)) &&
-      !_.isEmpty(apiSuccesses) &&
-      _.isEmpty(apiErrors) &&
-      _.isEmpty(apiUploading);
-    if (isCompleteSuccess) {
-      setFilesSuccess(Object.keys(apiSuccesses).length);
-    }
-  }, [files, apiErrors, apiSuccesses, apiUploading, setFilesSuccess]);
+    apiErrors,
+    apiSuccesses,
+    apiUploading,
+    files,
+    setFiles,
+  } = filesState;
+  const [dropErrors, setDropErrors] = useState();
 
   const onDrop = useCallback(
     acceptedFiles => {
-      setState('dropErrors', () => null);
-      setState('files', files => ({
+      setDropErrors(() => null);
+      setFiles(files => ({
         ...files,
         ..._.flow(_.map(fileWrapper), _.keyBy('id'))(acceptedFiles),
       }));
     },
-    [setState]
+    [setFiles, setDropErrors]
   );
 
   const onDropRejected = useCallback(
@@ -298,19 +267,19 @@ const ShareDataFiles = props => {
           })
         )
       )(rejections);
-      setState('dropErrors', () => messages);
+      setDropErrors(() => messages);
     },
-    [t, setState]
+    [t, setDropErrors]
   );
 
   const onFileChange = (id, newFile) => {
-    setState('files', files => ({
+    setFiles(files => ({
       ...files,
       [id]: newFile,
     }));
-    setState('errors', _.omit(id));
+    setFilesErrors(_.omit(id));
     VALIDATION_SCHEMA.validate(newFile).catch(error => {
-      setState('errors', errors => ({
+      setFilesErrors(errors => ({
         ...errors,
         [id]: {
           [error.path]: error.message,
@@ -319,8 +288,8 @@ const ShareDataFiles = props => {
     });
   };
   const onFileDelete = id => {
-    setState('errors', _.omit(id));
-    setState('files', _.omit(id));
+    setFilesErrors(_.omit(id));
+    setFiles(_.omit(id));
   };
 
   return (
@@ -341,7 +310,7 @@ const ShareDataFiles = props => {
         <FilesContext.Provider
           value={{
             files: Object.values(files),
-            errors,
+            errors: filesErrors,
             apiErrors,
             apiSuccesses,
             apiUploading,
@@ -354,6 +323,66 @@ const ShareDataFiles = props => {
       </Stack>
     </>
   );
+};
+
+export const useFilesState = () => {
+  const uploads = useSelector(_.get('sharedData.uploads.files'));
+
+  const [filesPending, setFilesPending] = useState([]);
+  const [filesErrors, setFilesErrors] = useState([]);
+  const [filesUploading, setFilesUploading] = useState(false);
+  const [filesSuccess, setFilesSuccess] = useState(0);
+
+  const [files, setFiles] = useState({});
+  // const [errors, setErrors] = useState({});
+
+  // useEffect(() => {
+  //   setFilesErrors(errors);
+  // }, [errors, setFilesErrors]);
+
+  const { apiErrors, apiSuccesses, apiUploading } = useMemo(
+    () => groupDataEntryUploadsByStatus(_.pick(Object.keys(files), uploads)),
+    [uploads, files]
+  );
+
+  // useEffect(() => {
+  //   console.log({ apiErrors });
+  // }, [apiErrors]);
+
+  useEffect(() => {
+    const pendingFiles = Object.values(files).filter(
+      file => !_.has(file.id, apiSuccesses)
+    );
+    setFilesPending(pendingFiles);
+  }, [files, apiSuccesses, setFilesPending]);
+
+  useEffect(() => {
+    setFilesUploading(!_.isEmpty(apiUploading));
+  }, [apiUploading, setFilesUploading]);
+
+  useEffect(() => {
+    const isCompleteSuccess =
+      !_.isEmpty(Object.values(files)) &&
+      !_.isEmpty(apiSuccesses) &&
+      _.isEmpty(apiErrors) &&
+      _.isEmpty(apiUploading);
+    if (isCompleteSuccess) {
+      setFilesSuccess(Object.keys(apiSuccesses).length);
+    }
+  }, [files, apiErrors, apiSuccesses, apiUploading, setFilesSuccess]);
+
+  return {
+    filesPending,
+    filesErrors,
+    setFilesErrors,
+    filesUploading,
+    filesSuccess,
+    files,
+    setFiles,
+    apiErrors,
+    apiSuccesses,
+    apiUploading,
+  };
 };
 
 export default ShareDataFiles;

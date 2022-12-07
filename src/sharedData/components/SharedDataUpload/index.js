@@ -15,15 +15,9 @@ import {
   uploadSharedDataFile,
 } from 'sharedData/sharedDataSlice';
 
-import ShareDataFiles from './ShareDataFiles';
-import ShareDataLinks from './ShareDataLinks';
+import ShareDataFiles, { useFilesState } from './ShareDataFiles';
+import ShareDataLinks, { useLinksState } from './ShareDataLinks';
 import { validateLink } from './utils';
-
-const setState = setter => (field, newValue) =>
-  setter(state => ({
-    ...state,
-    [field]: newValue(state[field]),
-  }));
 
 const localizedCounts = (t, files, links) =>
   [
@@ -43,17 +37,18 @@ const SharedDataUpload = props => {
 
   const [section, setSection] = useState('files');
 
-  const [filesState, setFilesState] = useState({});
-  const [filesPending, setFilesPending] = useState([]);
-  const [filesErrors, setFilesErrors] = useState([]);
-  const [filesUploading, setFilesUploading] = useState(false);
-  const [filesSuccess, setFilesSuccess] = useState(0);
+  const filesState = useFilesState();
+  const { filesPending, filesErrors, filesUploading, filesSuccess } =
+    filesState;
 
-  const [linksState, setLinksState] = useState({});
-  const [linksPending, setLinksPending] = useState([]);
-  const [linksErrors, setLinksErrors] = useState([]);
-  const [linksUploading, setLinksUploading] = useState(false);
-  const [linksSuccess, setLinksSuccess] = useState(0);
+  const linksState = useLinksState();
+  const {
+    linksPending,
+    linksUploading,
+    linksSuccess,
+    linksErrors = {},
+  } = linksState;
+
 
   useEffect(() => {
     dispatch(resetUploads());
@@ -155,24 +150,10 @@ const SharedDataUpload = props => {
             </TabList>
           </Box>
           <TabPanel value="files">
-            <ShareDataFiles
-              filesState={filesState}
-              setFilesState={useMemo(() => setState(setFilesState), [])}
-              setFilesPending={setFilesPending}
-              setFilesErrors={setFilesErrors}
-              setFilesUploading={setFilesUploading}
-              setFilesSuccess={setFilesSuccess}
-            />
+            <ShareDataFiles filesState={filesState} />
           </TabPanel>
           <TabPanel value="links">
-            <ShareDataLinks
-              linksState={linksState}
-              setLinksState={useMemo(() => setState(setLinksState), [])}
-              setLinksPending={setLinksPending}
-              setLinksErrors={setLinksErrors}
-              setLinksUploading={setLinksUploading}
-              setLinksSuccess={setLinksSuccess}
-            />
+            <ShareDataLinks linksState={linksState} />
           </TabPanel>
         </TabContext>
       </Paper>
