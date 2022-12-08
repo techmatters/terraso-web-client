@@ -437,7 +437,24 @@
         "profile_success": "Profile was updated",
         "development_strategy_success": "$t(landscape.profile_development_card_title) was updated",
         "boundary_success": "Boundary was updated",
-        "form_development_problem_situtation_helper_text": "Describe, in a paragraph, the landscape’s main challenges(s) and opportunities"
+        "form_development_problem_situtation_helper_text": "Describe, in a paragraph, the landscape’s main challenges(s) and opportunities",
+        "form_development_intervention_strategy_helper_text": "Describe your landscape intervention strategy",
+        "form_development_objectives_helper_text": "Please describe the short- and/or long-term conservation and sustainable development goals of your landscape: - Conserve and restore biodiversity<1><0>Improve crop and livestock yields sustainably</0><1>Achieve food and livelihood security</1><2>Strengthen access to health, education and other human services</2><3>Enhance social capital and social equity</3></1>",
+        "form_profile_commondities_helper_text": "Which agricultural products and commodities are produced in your landscapes?",
+        "form_profile_livelihoods_helper_text": "Please indicate what the major sources of employment are in your landscape. Check all that apply.",
+        "form_profile_population_helper_text": "Roughly, how many people live in this landscape?",
+        "form_profile_languages_helper_text": "Which languages are spoken in your landscape? Please include minority languages.",
+        "form_profile_organizations_helper_text": "Please list any institutions that are important to your landscape objectives. These may include government agencies, non-government organizations, education institutions, religious organizations and businesses.",
+        "form_profile_affiliated_groups_helper_text": "What groups operate in this landscape?",
+        "form_profile_partnership_group_helper_text": "Which Terraso Group represents the Landscape Partnership?",
+        "form_profile_partnership_year_helper_text": "When did the partnership form?",
+        "form_profile_partnership_status_helper_text": "A landscape partnership is group of organizations working together for the future of the landscape.",
+        "form_location_helper_text": "In what country (or countries) is the landscape?",
+        "form_email_helper_text": "What email should be contacted with inquiries about the landscape?",
+        "form_description_helper_text": "Provide a brief overview of the landscape in a few sentences",
+        "form_name_helper_text": "Your landscape's formal or common name",
+        "form_profile_image_description_helper_text": "Please describe your Landscape Profile Image in a couple of sentences",
+        "form_profile_profile_image_helper_text": "Upload a high-resolution image to represent your landscape"
     },
     "sharedData": {
         "title": "Shared files and Links",
@@ -615,7 +632,8 @@
         "validation_field_max_length": "$t({{path}}) must be fewer than {{max}} characters.",
         "validation_array_min": "$t({{path}}) must have at least {{min}} item.",
         "validation_number_integer": "$t({{path}}) must be an integer.",
-        "validation_number_max": "$t({{path}}) must be less than {{max, number()}}."
+        "validation_number_max": "$t({{path}}) must be less than {{max, number()}}.",
+        "helper_text_info_label": "[TODO] Help for: $t({{label}})"
     },
     "localization": {
         "locale_select_label": "Selected language: {{name}}",

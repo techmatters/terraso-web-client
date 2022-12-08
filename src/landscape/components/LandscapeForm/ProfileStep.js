@@ -66,6 +66,9 @@ const FORM_FIELDS = [
   {
     name: 'taxonomyTypeTerms.language',
     label: 'landscape.form_profile_languages',
+    helperText: {
+      i18nKey: 'landscape.form_profile_languages_helper_text',
+    },
     props: {
       renderInput: ({ id, field }) => (
         <LanguageAutocomplete id={id} field={field} />
@@ -76,6 +79,9 @@ const FORM_FIELDS = [
     name: 'population',
     type: 'number',
     label: 'landscape.form_profile_population',
+    helperText: {
+      i18nKey: 'landscape.form_profile_population_helper_text',
+    },
     placeholder: 'landscape.form_profile_population_placeholder',
   },
   {
@@ -85,6 +91,9 @@ const FORM_FIELDS = [
   {
     name: 'taxonomyTypeTerms.livelihood',
     label: 'landscape.form_profile_livelihoods',
+    helperText: {
+      i18nKey: 'landscape.form_profile_livelihoods_helper_text',
+    },
     props: {
       renderInput: ({ id, field }) => (
         <TaxonomyAutocomplete
@@ -105,6 +114,9 @@ const FORM_FIELDS = [
   {
     name: 'taxonomyTypeTerms.commodity',
     label: 'landscape.form_profile_commondities',
+    helperText: {
+      i18nKey: 'landscape.form_profile_commondities_helper_text',
+    },
     props: {
       renderInput: ({ id, field }) => (
         <TaxonomyAutocomplete

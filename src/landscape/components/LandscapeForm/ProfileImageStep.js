@@ -12,6 +12,7 @@ import { Paper, Slider, Stack, Typography } from '@mui/material';
 
 import DropZone from 'common/components/DropZone';
 import Form from 'forms/components/Form';
+import HelperText from 'forms/components/HelperText';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
@@ -40,6 +41,9 @@ const FORM_FIELDS = [
   {
     name: 'profileImageDescription',
     label: 'landscape.form_profile_image_description_label',
+    helperText: {
+      i18nKey: 'landscape.orm_profile_image_description_helper_text',
+    },
     placeholder: 'landscape.form_profile_image_description_placeholder',
   },
 ];
@@ -191,7 +195,12 @@ const ProfileImageStep = props => {
           component: 'h2',
         }}
         header={t('landscape.form_profile_profile_image_title')}
-      />
+      >
+        <HelperText
+          i18nKey="landscape.form_profile_profile_image_helper_text"
+          label="landscape.form_profile_profile_image_title"
+        />
+      </PageHeader>
       <Form
         aria-labelledby="landscape-form-page-title"
         prefix="landscape"
