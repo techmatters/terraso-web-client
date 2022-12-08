@@ -109,6 +109,33 @@ test('KeyInfoUpdate: Fill form', async () => {
   expect(inputs.website).toHaveValue('www.landscape.org');
   expect(inputs.location).toHaveTextContent('Ecuador');
 });
+test('KeyInfoUpdate: Helper Text', async () => {
+  terrasoApi.requestGraphQL.mockReturnValue(
+    Promise.resolve({
+      landscapes: {
+        edges: [
+          {
+            node: {
+              name: 'Landscape Name',
+              description: 'Landscape Description',
+              website: 'www.landscape.org',
+              location: 'EC',
+            },
+          },
+        ],
+      },
+    })
+  );
+  await setup('Ecuador');
+
+  const helpButton = screen.getByRole('button', {
+    name: '[TODO] Help for: Name',
+  });
+  await act(async () => fireEvent.click(helpButton));
+  expect(
+    screen.getByText("Your landscape's formal or common name")
+  ).toBeInTheDocument();
+});
 test('KeyInfoUpdate: Input change', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
