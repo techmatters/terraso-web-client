@@ -555,7 +555,7 @@
         "upload_summary_error_zero": "",
         "upload_summary_error": "{{errorCounts}} were not be shared because of errors.",
         "upload_summary_zero": "",
-        "upload_summary": "[TBD] $t(sharedData.upload_summary_success, {\"count\": {{successCount}} })$t(sharedData.upload_summary_error, {\"count\": {{errorCount}} })Fix the issues and share again or skip sharing files or links with issues.",
+        "upload_summary": "[TBD] $t(sharedData.upload_summary_success, {\"count\": {{successCount}} })$t(sharedData.upload_summary_error, {\"count\": {{errorCount}} })",
         "upload_url_label": "Web Address",
         "upload_name_label": "Name",
         "upload_links_add": "Add link",
