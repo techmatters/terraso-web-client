@@ -44,6 +44,7 @@ export const VALIDATION_SCHEMA = yup
   .required();
 
 const LinksContextFunctions = React.createContext();
+const LinksContext = React.createContext();
 
 const BASE_FIELD_PROPS = {
   inputProps: {
@@ -59,15 +60,28 @@ const BASE_FIELD_PROPS = {
 const UrlWrapper = props => {
   const { linkId, children } = props;
   const { onLinkDelete } = useContext(LinksContextFunctions);
+  const links = useContext(LinksContext);
+
+  const isLastLink = useMemo(() => links.length === 1, [links]);
+
   return (
     <Stack direction="row">
       {children}
-      <IconButton aria-label="delete" onClick={() => onLinkDelete(linkId)}>
-        <DeleteIcon />
-      </IconButton>
+      {!isLastLink && (
+        <IconButton aria-label="delete" onClick={() => onLinkDelete(linkId)}>
+          <DeleteIcon />
+        </IconButton>
+      )}
     </Stack>
   );
 };
+
+const isObjectValuesEmpty = _.flow(
+  _.omit('id'),
+  _.values,
+  _.compact,
+  _.isEmpty
+);
 
 const Link = props => {
   const { t } = useTranslation();
@@ -76,7 +90,7 @@ const Link = props => {
     LinksContextFunctions
   );
   const { linkId, link, index } = props;
-  const [updatedValues, setUpdatedValues] = useState({ id: linkId });
+  const [updatedValues, setUpdatedValues] = useState(link);
   const [baseFormData] = useState(link);
 
   const hasErrors = useMemo(() => !_.isEmpty(formErrors), [formErrors]);
@@ -110,7 +124,8 @@ const Link = props => {
   }, [linkId, updatedValues, onLinkChange]);
 
   useEffect(() => {
-    if (Object.keys(baseFormData).length > 1 && _.isEqual(baseFormData, link)) {
+    const isEmpty = isObjectValuesEmpty(baseFormData);
+    if (!isEmpty && _.isEqual(baseFormData, link)) {
       trigger?.();
     }
   }, [baseFormData, link, trigger]);
@@ -184,9 +199,9 @@ const Link = props => {
   );
 };
 
-const SelectedLinks = props => {
+const SelectedLinks = () => {
   const { t } = useTranslation();
-  const { links } = props;
+  const links = useContext(LinksContext);
 
   return (
     <Stack
@@ -235,10 +250,6 @@ const ShareDataLinks = props => {
 
   const { apiErrors, apiSuccesses, apiUploading, links, setLinks } = linksState;
 
-  useEffect(() => {
-    setLinks(links => (_.isEmpty(links) ? addLink(links) : links));
-  }, [links, setLinks]);
-
   const onLinkChange = useCallback(
     (id, newLink) => {
       setLinks(links => ({
@@ -271,7 +282,9 @@ const ShareDataLinks = props => {
           apiUploading,
         }}
       >
-        <SelectedLinks links={Object.values(links)} />
+        <LinksContext.Provider value={Object.values(links)}>
+          <SelectedLinks />
+        </LinksContext.Provider>
       </LinksContextFunctions.Provider>
       <Button
         variant="outlined"
@@ -301,12 +314,22 @@ export const useLinksState = () => {
   );
 
   useEffect(() => {
+    if (_.isEmpty(links)) {
+      setLinks(addLink());
+    }
+  }, [links]);
+
+  useEffect(() => {
     const pendingLinkIds = linkIds.filter(
       linkId => !_.has(linkId, apiSuccesses)
     );
-    const pendingLinks = Object.values(_.pick(pendingLinkIds, links));
+    const pendingLinks = _.flow(
+      _.pick(pendingLinkIds),
+      _.values,
+      _.filter(link => !isObjectValuesEmpty(link))
+    )(links);
     setLinksPending(pendingLinks);
-  }, [links, linkIds, apiSuccesses, setLinksPending]);
+  }, [links, linkIds, apiSuccesses]);
 
   useEffect(() => {
     setLinksUploading(!_.isEmpty(apiUploading));
