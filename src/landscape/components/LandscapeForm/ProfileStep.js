@@ -1,12 +1,21 @@
 import React, { useMemo, useState } from 'react';
 
 import _ from 'lodash/fp';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 
-import { Checkbox, FormControlLabel, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  Paper,
+  Stack,
+  Typography,
+} from '@mui/material';
 
 import Form from 'forms/components/Form';
+import HelperText from 'forms/components/HelperText';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
 import { iso639en, iso639es } from 'localization/iso639';
@@ -50,6 +59,10 @@ const FORM_FIELDS = [
   {
     name: 'taxonomyTypeTerms.ecosystem-type',
     label: 'landscape.form_profile_ecosystem_types',
+    helperText: {
+      titleKey: 'landscape.form_profile_ecosystem_types_helper_text_title',
+      i18nKey: 'landscape.form_profile_ecosystem_types_helper_text',
+    },
     props: {
       renderInput: ({ id, field }) => (
         <TaxonomyAutocomplete
@@ -132,8 +145,56 @@ const FORM_FIELDS = [
   },
 ];
 
+const AreaTypeImage = props => {
+  const { t } = useTranslation();
+  const { areaType } = props;
+
+  return (
+    <Grid item>
+      <Paper
+        square
+        variant="outlined"
+        component={Stack}
+        alignItems="center"
+        justifyContent="center"
+        sx={{ border: 'black', bgcolor: 'black', color: 'white' }}
+      >
+        <Typography>
+          {t(`landscape.profile_profile_card_area_types_${areaType}`)}
+        </Typography>
+        <img
+          src={`/landscape/${areaType}.jpg`}
+          alt={t(`landscape.profile_profile_card_area_types_${areaType}`)}
+        />
+      </Paper>
+    </Grid>
+  );
+};
+
+const AreaTypesHelperText = () => {
+  return (
+    <Box sx={{ p: 2 }}>
+      <Trans i18nKey="landscape.form_profile_area_types_helper_text" />
+      <Grid container spacing={2} justifyContent="center">
+        <AreaTypeImage areaType="peri-urban" />
+        <AreaTypeImage areaType="urban" />
+        <AreaTypeImage areaType="rural" />
+      </Grid>
+    </Box>
+  );
+};
+
 const AreaTypesInfo = () => {
-  return <Subheader text="landscape.form_profile_area_types" />;
+  return (
+    <Stack direction="row" alignItems="center">
+      <Subheader text="landscape.form_profile_area_types" />
+      <HelperText
+        Component={AreaTypesHelperText}
+        titleKey={'landscape.form_profile_area_types_helper_text_title'}
+        label="landscape.form_profile_area_types"
+      />
+    </Stack>
+  );
 };
 
 const LivelihoodsInfo = () => {

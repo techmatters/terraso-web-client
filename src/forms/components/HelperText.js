@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import CloseIcon from '@mui/icons-material/Close';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
@@ -22,7 +22,9 @@ const HelperText = props => {
   };
 
   const content = i18nKey ? (
-    <Typography sx={{ p: 2 }}>{t(i18nKey)}</Typography>
+    <Typography sx={{ p: 2 }}>
+      <Trans i18nKey={i18nKey} />
+    </Typography>
   ) : (
     <Component />
   );
@@ -46,7 +48,13 @@ const HelperText = props => {
       >
         {titleKey && (
           <Stack direction="row">
-            <Typography>{t(titleKey)}</Typography>
+            <Typography
+              variant="h6"
+              component="h1"
+              sx={{ pl: 2, pr: 2, pt: 2 }}
+            >
+              {t(titleKey)}
+            </Typography>
             <IconButton
               aria-label={t('form.helper_text_info_close')}
               onClick={handleClose}
