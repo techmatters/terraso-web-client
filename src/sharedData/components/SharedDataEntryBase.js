@@ -192,7 +192,11 @@ const SharedDataEntryBase = props => {
               processing={processing}
               isEditing={isEditingDescription}
               setIsEditing={setIsEditingDescription}
-              addMessage={t('sharedData.add_description_message')}
+              addMessage={t(
+                dataEntry.entryType === 'LINK'
+                  ? 'sharedData.add_link_description_message'
+                  : 'sharedData.add_file_description_message'
+              )}
               onSave={onUpdate('description')}
               viewProps={{ variant: 'body1' }}
             />
