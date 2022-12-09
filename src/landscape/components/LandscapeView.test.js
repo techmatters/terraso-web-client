@@ -184,10 +184,10 @@ const baseViewTest = async () => {
 
   // Shared Data
   const sharedDataRegion = within(
-    screen.getByRole('region', { name: 'Shared files' })
+    screen.getByRole('region', { name: 'Shared files and Links' })
   );
   expect(
-    sharedDataRegion.getByRole('heading', { name: 'Shared files' })
+    sharedDataRegion.getByRole('heading', { name: 'Shared files and Links' })
   ).toBeInTheDocument();
   const entriesList = within(sharedDataRegion.getByRole('list'));
   const items = entriesList.getAllByRole('listitem');
@@ -252,7 +252,7 @@ test('LandscapeView: Update Shared Data', async () => {
   terrasoApi.requestGraphQL.mockResolvedValueOnce({});
 
   const sharedDataRegion = within(
-    screen.getByRole('region', { name: 'Shared files' })
+    screen.getByRole('region', { name: 'Shared files and Links' })
   );
   const entriesList = within(sharedDataRegion.getByRole('list'));
   const items = entriesList.getAllByRole('listitem');
