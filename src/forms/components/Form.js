@@ -47,8 +47,12 @@ const Form = props => {
     formProps;
 
   useEffect(() => {
-    setFormContext?.({ trigger, errors: formState?.errors });
-  }, [setFormContext, trigger, formState?.errors]);
+    setFormContext?.({
+      trigger,
+      errors: formState?.errors,
+      isValid: formState?.isValid,
+    });
+  }, [setFormContext, trigger, formState?.errors, formState?.isValid]);
 
   watch((data, { name, type }) => onChange?.(data, name, type));
 
