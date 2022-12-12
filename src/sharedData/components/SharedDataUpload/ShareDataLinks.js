@@ -144,10 +144,10 @@ const Link = props => {
         message={t('sharedData.upload_link_success')}
       >
         <Stack direction="row" alignItems="center" spacing={1}>
+          <LinkIcon />
           <ExternalLink href={transformURL(apiSuccess.url)}>
             {apiSuccess.name}
           </ExternalLink>
-          <LinkIcon />
         </Stack>
       </SuccessContainer>
     );
