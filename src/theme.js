@@ -63,6 +63,17 @@ const components = {
       disableRipple: true,
     },
   },
+  MuiIconButton: {
+    styleOverrides: {
+      root: {
+        borderRadius: '2px',
+        '&:focus': {
+          outline: `2px solid ${colorTheme.palette.blue.dark}`,
+          outlineOffset: '3px',
+        },
+      },
+    },
+  },
   MuiButton: {
     styleOverrides: {
       root: {
