@@ -122,7 +122,7 @@ const FORM_FIELDS = [
   },
 ];
 
-const DatasetPreview = () => {
+export const DatasetPreview = () => {
   const { t } = useTranslation();
   const { sheetContext } = useVisualizationContext();
   const { sheet, colCount, rowCount, headers } = sheetContext;
