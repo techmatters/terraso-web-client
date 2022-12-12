@@ -175,12 +175,7 @@ const SharedDataUpload = props => {
           })}
         </Typography>
       )}
-      <Stack
-        direction="row"
-        spacing={2}
-        justifyContent="space-between"
-        sx={{ marginTop: 3 }}
-      >
+      <Stack direction="row" spacing={2} sx={{ marginTop: 3 }}>
         <LoadingButton
           variant="contained"
           disabled={isSaveDisabled}
