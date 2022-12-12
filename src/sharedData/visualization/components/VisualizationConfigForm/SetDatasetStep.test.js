@@ -66,3 +66,20 @@ test('Dataset Preview rendered', async () => {
     '6',
   ]);
 });
+
+test('Dataset Preview with null columns', async () => {
+  const defectiveArray = [];
+  defectiveArray[0] = 1;
+  defectiveArray[2] = 3;
+  const value = mockCSVProps(['foo', 'bar', 'baz'], [defectiveArray]);
+  render(
+    <VisualizationContext.Provider value={value}>
+      <DatasetPreview />
+    </VisualizationContext.Provider>
+  );
+  expect(screen.queryAllByRole('cell').map(node => node.textContent)).toEqual([
+    '1',
+    '',
+    '3',
+  ]);
+});
