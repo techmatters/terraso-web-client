@@ -1,8 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import _ from 'lodash/fp';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
+import {
+  Controller,
+  FormProvider,
+  useForm,
+  useFormState,
+} from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Grid } from '@mui/material';
@@ -35,7 +40,7 @@ const Form = props => {
   } = props;
   const setFormContext = useFormSetContext();
 
-  const formProps = useForm({
+  const { control, handleSubmit, reset, watch, getValues, trigger } = useForm({
     mode,
     defaultValues: {
       ...getInitialEmptyValues(fields),
@@ -43,26 +48,32 @@ const Form = props => {
     },
     resolver: yupResolver(validationSchema),
   });
-  const { control, handleSubmit, reset, watch, getValues, trigger, formState } =
-    formProps;
+
+  const { errors, isValid, touchedFields } = useFormState({
+    control,
+  });
 
   useEffect(() => {
     setFormContext?.({
       trigger,
-      errors: formState?.errors,
-      isValid: formState?.isValid,
+      errors,
+      touchedFields,
     });
-  }, [setFormContext, trigger, formState?.errors, formState?.isValid]);
+  }, [setFormContext, trigger, watch, errors, isValid, touchedFields]);
 
   watch((data, { name, type }) => onChange?.(data, name, type));
 
-  const requiredFields = _.flow(
-    _.toPairs,
-    _.filter(([name, field]) =>
-      _.getOr(false, 'exclusiveTests.required', field)
-    ),
-    _.map(([name]) => name)
-  )(_.getOr({}, 'fields', validationSchema));
+  const requiredFields = useMemo(
+    () =>
+      _.flow(
+        _.toPairs,
+        _.filter(([name, field]) =>
+          _.getOr(false, 'exclusiveTests.required', field)
+        ),
+        _.map(([name]) => name)
+      )(_.getOr({}, 'fields', validationSchema)),
+    [validationSchema]
+  );
 
   useEffect(() => {
     if (values) {
@@ -73,40 +84,42 @@ const Form = props => {
     }
   }, [values, fields, reset]);
 
-  const onSubmit = data => onSave(data);
+  const onSubmit = useCallback(data => onSave(data), [onSave]);
 
   const ariaProps = _.pickBy(
     (value, propName) => propName.startsWith('aria-'),
     props
   );
 
-  const buttonPadding = isMultiStep ? 0 : 5;
+  const actions = useMemo(() => {
+    const buttonPadding = isMultiStep ? 0 : 5;
 
-  const actions = [
-    saveLabel && (
-      <Button
-        key="submit"
-        type="submit"
-        variant="contained"
-        sx={{
-          paddingLeft: 5,
-          paddingRight: 5,
-        }}
-      >
-        {t(saveLabel)}
-      </Button>
-    ),
-    onCancel && (
-      <Button
-        key="cancel"
-        variant="text"
-        onClick={onCancel}
-        sx={{ paddingLeft: buttonPadding, paddingRight: buttonPadding }}
-      >
-        {t(cancelLabel)}
-      </Button>
-    ),
-  ];
+    return [
+      saveLabel && (
+        <Button
+          key="submit"
+          type="submit"
+          variant="contained"
+          sx={{
+            paddingLeft: 5,
+            paddingRight: 5,
+          }}
+        >
+          {t(saveLabel)}
+        </Button>
+      ),
+      onCancel && (
+        <Button
+          key="cancel"
+          variant="text"
+          onClick={onCancel}
+          sx={{ paddingLeft: buttonPadding, paddingRight: buttonPadding }}
+        >
+          {t(cancelLabel)}
+        </Button>
+      ),
+    ];
+  }, [saveLabel, t, onCancel, cancelLabel, isMultiStep]);
 
   return (
     <FormProvider watch={watch} getValues={getValues}>
@@ -120,7 +133,9 @@ const Form = props => {
         sx={{ width: '100%' }}
       >
         {fields
-          .filter(field => (filterField ? filterField(field, formProps) : true))
+          .filter(field =>
+            filterField ? filterField(field, { getValues }) : true
+          )
           .map(field =>
             field.renderStaticElement ? (
               <React.Fragment key={field.name}>

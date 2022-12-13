@@ -85,7 +85,7 @@ const isObjectValuesEmpty = _.flow(
 
 const Link = props => {
   const { t } = useTranslation();
-  const { trigger, isValid } = useFormGetContext();
+  const { trigger, isValid, touchedFields } = useFormGetContext();
   const { apiSuccesses, apiErrors, apiUploading, onLinkChange } = useContext(
     LinksContextFunctions
   );
@@ -93,10 +93,8 @@ const Link = props => {
   const [updatedValues, setUpdatedValues] = useState(link);
   const [baseFormData] = useState(link);
 
-  const hasErrors = useMemo(() => {
-    const hasErrors = !isObjectValuesEmpty(updatedValues) && !isValid;
-    return hasErrors;
-  }, [isValid, updatedValues]);
+  const touchedKeys = touchedFields ? Object.keys(touchedFields) : [];
+  const hasErrors = !_.isEmpty(touchedKeys) && !isValid;
 
   const fields = useMemo(
     () => [
@@ -188,7 +186,7 @@ const Link = props => {
             </Alert>
           ))}
         <Form
-          mode="onChange"
+          mode="onTouched"
           prefix={`link-${index}`}
           localizationPrefix="sharedData.upload_link_form"
           aria-label={updatedValues.name}
