@@ -49,7 +49,7 @@ const Form = props => {
     resolver: yupResolver(validationSchema),
   });
 
-  const { errors, isValid, touchedFields } = useFormState({
+  const { errors, isValidating, isValid, touchedFields } = useFormState({
     control,
   });
 
@@ -58,8 +58,10 @@ const Form = props => {
       trigger,
       errors,
       touchedFields,
+      isValid,
+      isValidating,
     });
-  }, [setFormContext, trigger, watch, errors, isValid, touchedFields]);
+  }, [setFormContext, trigger, errors, isValid, touchedFields, isValidating]);
 
   watch((data, { name, type }) => onChange?.(data, name, type));
 
