@@ -32,6 +32,7 @@ import { FormContextProvider, useFormGetContext } from 'forms/formContext';
 import { MAX_DESCRIPTION_CHARACTERS } from 'sharedData/sharedDataConstants';
 
 import LinkIcon from '../LinkIcon';
+import { useShareDataUploadContext } from './ShareDataUploadContext';
 import SuccessContainer from './SuccessContainer';
 import { groupDataEntryUploadsByStatus } from './utils';
 
@@ -89,6 +90,7 @@ const Link = props => {
   const { apiSuccesses, apiErrors, apiUploading, onLinkChange } = useContext(
     LinksContextFunctions
   );
+  const { showSummary } = useShareDataUploadContext();
   const { linkId, link, index } = props;
   const [updatedValues, setUpdatedValues] = useState(link);
   const [baseFormData] = useState(link);
@@ -132,6 +134,13 @@ const Link = props => {
       trigger?.();
     }
   }, [baseFormData, link, trigger]);
+
+  useEffect(() => {
+    const isEmpty = isObjectValuesEmpty(updatedValues);
+    if (!isEmpty && showSummary) {
+      trigger?.();
+    }
+  }, [showSummary, trigger, updatedValues]);
 
   const apiLinkErrors = _.get(linkId, apiErrors);
   const apiSuccess = _.get(linkId, apiSuccesses);

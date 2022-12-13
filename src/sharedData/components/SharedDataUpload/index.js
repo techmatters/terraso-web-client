@@ -17,6 +17,7 @@ import {
 
 import ShareDataFiles, { useFilesState } from './ShareDataFiles';
 import ShareDataLinks, { useLinksState } from './ShareDataLinks';
+import { ShareDataUploadContextProvider } from './ShareDataUploadContext';
 import { validateLink } from './utils';
 
 const localizedCounts = (t, files, links) =>
@@ -162,12 +163,14 @@ const SharedDataUpload = props => {
               />
             </TabList>
           </Box>
-          <TabPanel value="files">
-            <ShareDataFiles filesState={filesState} />
-          </TabPanel>
-          <TabPanel value="links">
-            <ShareDataLinks linksState={linksState} />
-          </TabPanel>
+          <ShareDataUploadContextProvider showSummary={showSummary}>
+            <TabPanel value="files">
+              <ShareDataFiles filesState={filesState} />
+            </TabPanel>
+            <TabPanel value="links">
+              <ShareDataLinks linksState={linksState} />
+            </TabPanel>
+          </ShareDataUploadContextProvider>
         </TabContext>
       </Paper>
       {showSummary && errorCount > 0 && (
