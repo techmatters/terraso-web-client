@@ -48,7 +48,7 @@ const setup = async () => {
     },
   });
 
-  const linksTab = screen.getByRole('tab', { name: 'Share links' });
+  const linksTab = screen.getByRole('tab', { name: 'Share Links' });
   await act(async () => fireEvent.click(linksTab));
 };
 
@@ -67,6 +67,8 @@ test('LandscapeSharedDataUpload: Error - Empty name', async () => {
   });
   fireEvent.change(name, { target: { value: 'value' } });
   fireEvent.change(name, { target: { value: '' } });
+  fireEvent.blur(name);
+
   expect(
     await within(linkSection).findByText('Name is required')
   ).toBeInTheDocument();
@@ -117,7 +119,7 @@ test('LandscapeSharedDataUpload: Partial Success', async () => {
     )
   );
   const addLinkButton = screen.getByRole('button', {
-    name: 'Add link',
+    name: 'Add Another Link',
   });
   await act(async () => fireEvent.click(addLinkButton));
   const uploadButton = screen.getByRole('button', {
