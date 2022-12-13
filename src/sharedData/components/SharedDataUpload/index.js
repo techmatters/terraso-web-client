@@ -129,6 +129,16 @@ const SharedDataUpload = props => {
     [filesUploading, linksUploading]
   );
 
+  const successCount = useMemo(
+    () => filesSuccess + linksSuccess,
+    [filesSuccess, linksSuccess]
+  );
+
+  const errorCount = useMemo(
+    () => filesPending.length + linksPending.length,
+    [filesPending, linksPending]
+  );
+
   return (
     <>
       <Paper component={Stack} spacing={2} variant="outlined" sx={{ p: 1 }}>
@@ -160,18 +170,23 @@ const SharedDataUpload = props => {
           </TabPanel>
         </TabContext>
       </Paper>
-      {showSummary && (
+      {showSummary && errorCount > 0 && (
         <Typography sx={{ mt: 2 }}>
-          {t('sharedData.upload_summary', {
-            count: filesSuccess + linksSuccess,
-            successCount: filesSuccess + linksSuccess,
-            errorCount: filesPending.length + linksPending.length,
-            successCounts: localizedCounts(t, filesSuccess, linksSuccess),
+          {t('sharedData.upload_summary_error', {
+            count: errorCount,
             errorCounts: localizedCounts(
               t,
               filesPending.length,
               linksPending.length
             ),
+          })}
+        </Typography>
+      )}
+      {showSummary && successCount > 0 && (
+        <Typography sx={{ mt: 2 }}>
+          {t('sharedData.upload_summary_success', {
+            count: successCount,
+            successCounts: localizedCounts(t, filesSuccess, linksSuccess),
           })}
         </Typography>
       )}
