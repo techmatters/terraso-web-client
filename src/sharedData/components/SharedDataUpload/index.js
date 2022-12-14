@@ -151,13 +151,13 @@ const SharedDataUpload = props => {
             >
               <Tab
                 label={t('sharedData.tab_files', {
-                  count: filesPending.length,
+                  count: showSummary ? 0 : filesPending.length,
                 })}
                 value="files"
               />
               <Tab
                 label={t('sharedData.tab_links', {
-                  count: linksPending.length,
+                  count: showSummary ? 0 : linksPending.length,
                 })}
                 value="links"
               />
