@@ -86,7 +86,7 @@ const isObjectValuesEmpty = _.flow(
 
 const Link = props => {
   const { t } = useTranslation();
-  const { trigger, isValid, touchedFields, errors } = useFormGetContext();
+  const { trigger } = useFormGetContext();
   const { apiSuccesses, apiErrors, apiUploading, onLinkChange } = useContext(
     LinksContextFunctions
   );
@@ -94,11 +94,6 @@ const Link = props => {
   const { linkId, link, index } = props;
   const [updatedValues, setUpdatedValues] = useState(link);
   const [baseFormData] = useState(link);
-
-  const touchedKeys = touchedFields ? Object.keys(touchedFields) : [];
-  const errorKeys = errors ? Object.keys(errors) : [];
-  const hasErrors =
-    !_.isEmpty(touchedKeys) && !_.isEmpty(errorKeys) && !isValid;
 
   const fields = useMemo(
     () => [
@@ -177,7 +172,6 @@ const Link = props => {
           paddingRight: 2,
           paddingTop: 2,
           paddingBottom: 1,
-          ...(hasErrors ? { bgcolor: 'error.background' } : {}),
         }}
       >
         {!_.isEmpty(apiLinkErrors) &&
