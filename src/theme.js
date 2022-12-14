@@ -1,3 +1,4 @@
+import ErrorIcon from '@mui/icons-material/Report';
 import { createTheme } from '@mui/material/styles';
 
 const colorTheme = createTheme({
@@ -158,6 +159,11 @@ const components = {
       },
       standardError: {
         backgroundColor: colorTheme.palette.error.background,
+      },
+    },
+    defaultProps: {
+      iconMapping: {
+        error: <ErrorIcon fontSize="inherit" />,
       },
     },
   },
