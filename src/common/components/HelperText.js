@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -8,17 +8,16 @@ import { IconButton, Popover, Stack, Typography } from '@mui/material';
 
 const HelperText = props => {
   const { t } = useTranslation();
-  const { label, Component, i18nKey, titleKey } = props;
-  const [anchorEl, setAnchorEl] = useState(null);
+  const { label, Component, i18nKey, titleKey, useAnchor = true } = props;
+  const anchorEl = useRef(null);
+  const [open, setOpen] = useState(false);
 
-  const open = Boolean(anchorEl);
-
-  const handleClick = event => {
-    setAnchorEl(event.currentTarget);
+  const handleClick = () => {
+    setOpen(true);
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
+    setOpen(false);
   };
 
   const content = i18nKey ? (
@@ -32,6 +31,7 @@ const HelperText = props => {
   return (
     <>
       <IconButton
+        ref={anchorEl}
         aria-label={t('form.helper_text_info_label', { label })}
         onClick={handleClick}
       >
@@ -39,12 +39,8 @@ const HelperText = props => {
       </IconButton>
       <Popover
         open={open}
-        anchorEl={anchorEl}
         onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
+        {...(useAnchor ? { anchorEl: anchorEl.current } : {})}
       >
         {titleKey && (
           <Stack direction="row">

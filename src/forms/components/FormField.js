@@ -13,9 +13,8 @@ import {
   Typography,
 } from '@mui/material';
 
+import HelperText from 'common/components/HelperText';
 import { parseError } from 'forms/yup';
-
-import HelperText from './HelperText';
 
 const FormFieldInput = props => {
   const {

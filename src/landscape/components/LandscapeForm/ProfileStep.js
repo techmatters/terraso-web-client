@@ -14,8 +14,8 @@ import {
   Typography,
 } from '@mui/material';
 
+import HelperText from 'common/components/HelperText';
 import Form from 'forms/components/Form';
-import HelperText from 'forms/components/HelperText';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
 import { iso639en, iso639es } from 'localization/iso639';
@@ -192,6 +192,7 @@ const AreaTypesInfo = () => {
         Component={AreaTypesHelperText}
         titleKey={'landscape.form_profile_area_types_helper_text_title'}
         label="landscape.form_profile_area_types"
+        useAnchor={false}
       />
     </Stack>
   );

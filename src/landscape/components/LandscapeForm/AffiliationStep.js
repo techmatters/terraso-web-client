@@ -14,8 +14,8 @@ import {
   Typography,
 } from '@mui/material';
 
+import HelperText from 'common/components/HelperText';
 import Form from 'forms/components/Form';
-import HelperText from 'forms/components/HelperText';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
 
