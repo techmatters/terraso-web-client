@@ -41,4 +41,8 @@ i18n.services.formatter.add('errorParam', (value, lng, options) =>
   value ? `(${options.label}: ${value})` : null
 );
 
+i18n.services.formatter.add('lowercase', (value, lng, options) => {
+  return i18n.t(value).toLowerCase();
+});
+
 export default i18n;
