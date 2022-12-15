@@ -118,7 +118,7 @@ test('KeyInfoUpdate: Helper Text', async () => {
             node: {
               name: 'Landscape Name',
               description: 'Landscape Description',
-              website: 'www.landscape.org',
+              website: 'https://www.landscape.org',
               location: 'EC',
             },
           },
