@@ -202,10 +202,10 @@ test('GroupForm: Input validation', async () => {
   expect(inputs.website).toHaveValue('wwwotherorg');
 
   await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
-  expect(screen.getByText(/name is required/i)).toBeInTheDocument();
-  expect(screen.getByText(/description is required/i)).toBeInTheDocument();
-  expect(screen.getByText(/email must be a valid email/i)).toBeInTheDocument();
-  expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument();
+  expect(screen.getByText(/Enter a name/i)).toBeInTheDocument();
+  expect(screen.getByText(/Enter a description/i)).toBeInTheDocument();
+  expect(screen.getByText(/Enter a valid email address/i)).toBeInTheDocument();
+  expect(screen.getByText(/Enter a valid web address/i)).toBeInTheDocument();
 });
 
 test('GroupForm: website accepts address without protocol', async () => {

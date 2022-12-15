@@ -63,14 +63,14 @@ test('LandscapeSharedDataUpload: Error - Empty name', async () => {
   await setup();
   const linkSection = screen.getByRole('region', { name: 'Link 1' });
   const name = within(linkSection).getByRole('textbox', {
-    name: 'Name (required)',
+    name: 'Title (required)',
   });
   fireEvent.change(name, { target: { value: 'value' } });
   fireEvent.change(name, { target: { value: '' } });
   fireEvent.blur(name);
 
   expect(
-    await within(linkSection).findByText('Name is required')
+    await within(linkSection).findByText('Enter a title.')
   ).toBeInTheDocument();
   await waitFor(() =>
     expect(
@@ -88,7 +88,7 @@ test('LandscapeSharedDataUpload: Error - API', async () => {
   const linkSection = screen.getByRole('region', { name: 'Link 1' });
   fireEvent.change(
     within(linkSection).getByRole('textbox', {
-      name: 'Name (required)',
+      name: 'Title (required)',
     }),
     { target: { value: 'name' } }
   );
@@ -129,7 +129,7 @@ test('LandscapeSharedDataUpload: Partial Success', async () => {
   const linkSection1 = screen.getByRole('region', { name: 'Link 1' });
   fireEvent.change(
     within(linkSection1).getByRole('textbox', {
-      name: 'Name (required)',
+      name: 'Title (required)',
     }),
     { target: { value: 'name 1' } }
   );
@@ -143,7 +143,7 @@ test('LandscapeSharedDataUpload: Partial Success', async () => {
   const linkSection2 = screen.getByRole('region', { name: 'Link 2' });
   fireEvent.change(
     within(linkSection2).getByRole('textbox', {
-      name: 'Name (required)',
+      name: 'Title (required)',
     }),
     { target: { value: 'name 2' } }
   );
@@ -186,7 +186,7 @@ test('LandscapeSharedDataUpload: Complete Success', async () => {
   const linkSection1 = screen.getByRole('region', { name: 'Link 1' });
   fireEvent.change(
     within(linkSection1).getByRole('textbox', {
-      name: 'Name (required)',
+      name: 'Title (required)',
     }),
     { target: { value: 'name 1' } }
   );

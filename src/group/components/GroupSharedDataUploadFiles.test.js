@@ -97,7 +97,7 @@ test('GroupSharedDataUpload: Error - Empty filename', async () => {
     name: 'File Name (required)',
   });
   fireEvent.change(name, { target: { value: '' } });
-  expect(await within(file).findByText('name is required')).toBeInTheDocument();
+  expect(await within(file).findByText('Enter a name.')).toBeInTheDocument();
   await waitFor(() =>
     expect(
       screen.getByRole('button', { name: 'Share Files and Links' })
