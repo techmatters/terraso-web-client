@@ -21,11 +21,14 @@ import { iso639en, iso639es } from 'localization/iso639';
 
 import TaxonomyAutocomplete from 'taxonomies/components/TaxonomyAutocomplete';
 import {
+  TYPE_AGRICULTURAL_PRODUCTION_METHOD,
   TYPE_COMMODITY,
   TYPE_ECOSYSTEM_TYPE,
   TYPE_LANGUAGE,
   TYPE_LIVELIHOOD,
 } from 'taxonomies/taxonomiesConstants';
+
+import { AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS } from 'config';
 
 import Actions from './Actions';
 
@@ -172,6 +175,26 @@ const FORM_FIELDS = [
     },
   },
   {
+    name: 'taxonomyTypeTerms.agricultural-production-method',
+    label: 'landscape.form_profile_agricultural_production_methods',
+    helperText: {
+      i18nKey:
+        'landscape.form_profile_agricultural_production_methods_helper_text',
+    },
+    props: {
+      renderInput: ({ id, field }) => (
+        <TaxonomyAutocomplete
+          id={id}
+          freeSolo
+          type={TYPE_AGRICULTURAL_PRODUCTION_METHOD}
+          value={field.value}
+          onChange={field.onChange}
+          placeholder="landscape.form_profile_agricultural_production_methods_placeholder"
+        />
+      ),
+    },
+  },
+  {
     name: 'taxonomyTypeTerms.commodity',
     label: 'landscape.form_profile_commondities',
     helperText: {
@@ -298,6 +321,23 @@ const ProfileStep = props => {
         validationSchema={VALIDATION_SCHEMA}
         isMultiStep
         onChange={setUpdatedValues}
+        filterField={(field, { getValues }) => {
+          if (
+            field.name !== 'taxonomyTypeTerms.agricultural-production-method'
+          ) {
+            return true;
+          }
+          const livelihoods = getValues('taxonomyTypeTerms.livelihood');
+          if (_.isEmpty(livelihoods)) {
+            return false;
+          }
+          const values = livelihoods.map(
+            livelihood => livelihood.valueOriginal
+          );
+          return !_.isEmpty(
+            _.intersection(values, AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS)
+          );
+        }}
       />
       <Actions
         isForm

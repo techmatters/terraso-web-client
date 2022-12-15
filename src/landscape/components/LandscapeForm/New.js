@@ -19,6 +19,7 @@ import { fetchGroupsAutocompleteList } from 'group/groupSlice';
 import { PARTNERSHIP_STATUS_NO } from 'landscape/landscapeConstants';
 import { saveLandscape, setFormNewValues } from 'landscape/landscapeSlice';
 import {
+  TYPE_AGRICULTURAL_PRODUCTION_METHOD,
   TYPE_COMMODITY,
   TYPE_ECOSYSTEM_TYPE,
   TYPE_LIVELIHOOD,
@@ -73,6 +74,7 @@ const LandscapeNew = () => {
             TYPE_LIVELIHOOD,
             TYPE_COMMODITY,
             TYPE_ORGANIZATION,
+            TYPE_AGRICULTURAL_PRODUCTION_METHOD,
           ],
         }),
       []
