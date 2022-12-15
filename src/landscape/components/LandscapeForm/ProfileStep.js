@@ -45,6 +45,14 @@ const VALIDATION_SCHEMA = yup
   })
   .required();
 
+const EcosystemTypesHelperText = () => {
+  return (
+    <Box sx={{ p: 2 }}>
+      <Trans i18nKey="landscape.form_profile_ecosystem_types_helper_text" />
+    </Box>
+  );
+};
+
 const FORM_FIELDS = [
   {
     name: 'areatypes-info',
@@ -61,7 +69,7 @@ const FORM_FIELDS = [
     label: 'landscape.form_profile_ecosystem_types',
     helperText: {
       titleKey: 'landscape.form_profile_ecosystem_types_helper_text_title',
-      i18nKey: 'landscape.form_profile_ecosystem_types_helper_text',
+      Component: EcosystemTypesHelperText,
     },
     props: {
       renderInput: ({ id, field }) => (

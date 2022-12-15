@@ -1,10 +1,12 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 import { Trans, useTranslation } from 'react-i18next';
 
 import CloseIcon from '@mui/icons-material/Close';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
-import { IconButton, Popover, Stack, Typography } from '@mui/material';
+import { Dialog, IconButton, Popover, Stack, Typography } from '@mui/material';
+
+import { withProps } from 'react-hoc';
 
 const HelperText = props => {
   const { t } = useTranslation();
@@ -28,6 +30,23 @@ const HelperText = props => {
     <Component />
   );
 
+  const Container = useMemo(
+    () =>
+      useAnchor
+        ? Popover
+        : withProps(Dialog, {
+            fullWidth: true,
+            maxWidth: false,
+            BackdropProps: {
+              style: {
+                backgroundColor: 'transparent',
+                boxShadow: 'none',
+              },
+            },
+          }),
+    [useAnchor]
+  );
+
   return (
     <>
       <IconButton
@@ -37,36 +56,38 @@ const HelperText = props => {
       >
         <InfoIcon />
       </IconButton>
-      <Popover
+      <Container
         open={open}
         onClose={handleClose}
         {...(useAnchor ? { anchorEl: anchorEl.current } : {})}
       >
-        {titleKey && (
-          <Stack direction="row">
-            <Typography
-              variant="h6"
-              component="h1"
-              sx={{ pl: 2, pr: 2, pt: 2 }}
-            >
-              {t(titleKey)}
-            </Typography>
-            <IconButton
-              aria-label={t('form.helper_text_info_close')}
-              onClick={handleClose}
-              sx={{
-                position: 'absolute',
-                right: 8,
-                top: 8,
-                color: theme => theme.palette.grey[500],
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </Stack>
-        )}
-        {content}
-      </Popover>
+        <>
+          {titleKey && (
+            <Stack direction="row">
+              <Typography
+                variant="h6"
+                component="h1"
+                sx={{ pl: 2, pr: 2, pt: 2 }}
+              >
+                {t(titleKey)}
+              </Typography>
+              <IconButton
+                aria-label={t('form.helper_text_info_close')}
+                onClick={handleClose}
+                sx={{
+                  position: 'absolute',
+                  right: 8,
+                  top: 8,
+                  color: theme => theme.palette.grey[500],
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+            </Stack>
+          )}
+          {content}
+        </>
+      </Container>
     </>
   );
 };
