@@ -455,7 +455,7 @@
         "form_profile_ecosystem_types_helper_text_title": "Ecosystem Types",
         "form_profile_ecosystem_types_helper_text": "<p><strong>Deserts:</strong> Excessive temperature and extreme sunshine, barren land with little precipitation, hostile living conditions for plant and animal life</p><p><strong>Temperate Forest:</strong> Found near the cooler coastal areas further north or south of the equator</p><p><strong>Tropical Forest:</strong> Found closer to the equator where it is warm. Hot and moist biome, rains all year long</p><p><strong>Marine/coastal:</strong> Area on the shore, may be composed of coastline, rocks, sea cliffs, offshore islands, dunes, marine or freshwater lakes</p><p><strong>Polar/Alpine:</strong> Cliffs, talus fields, boulder fields and rock glaciers; permanent and persistent snow and icefields, including glaciers; and various water bodies</p><p><strong>Savannas:</strong> Grassland with scattered trees</p><p><strong>Shrublands:</strong>  Woody or herbaceous shrubs and trees</p><p><strong>Wetlands:</strong>  Covered or saturated with water, often groundwater, seeping up from an aquifer or spring. Includes peatlands, marshes, and bogs. Water may be temporary or permanent.</p>",
         "form_profile_agricultural_production_methods": "Agricultural Production Method",
-        "form_profile_agricultural_production_methods_helper_text": "Which agricultural production method(s) do you use in your landscape? Check all that apply",
+        "form_profile_agricultural_production_methods_helper_text": "Which agricultural production methods do you use in your landscape?",
         "form_profile_agricultural_production_methods_placeholder": "Select one or more methods"
     },
     "sharedData": {
