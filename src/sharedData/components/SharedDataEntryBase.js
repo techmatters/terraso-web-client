@@ -153,10 +153,19 @@ const SharedDataEntryBase = props => {
               confirmTitle={t('sharedData.delete_confirm_title', {
                 name: dataEntry.name,
               })}
-              confirmMessage={t('sharedData.delete_confirm_message', {
-                name: dataEntry.name,
-              })}
-              confirmButton={t('sharedData.delete_confirm_button')}
+              confirmMessage={t(
+                dataEntry.entryType === 'LINK'
+                  ? 'sharedData.delete_link_confirm_message'
+                  : 'sharedData.delete_file_confirm_message',
+                {
+                  name: dataEntry.name,
+                }
+              )}
+              confirmButton={t(
+                dataEntry.entryType === 'LINK'
+                  ? 'sharedData.delete_link_confirm_button'
+                  : 'sharedData.delete_file_confirm_button'
+              )}
               tooltip={deleteTooltip}
             >
               <DeleteIcon
