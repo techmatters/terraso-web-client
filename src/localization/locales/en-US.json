@@ -556,7 +556,7 @@
         "upload_summary_error_one": "{{errorCounts}} was not shared. Fix the errors and share again.",
         "upload_summary_error": "{{errorCounts}} were not shared. Fix the errors and share again.",
         "upload_url_label": "Web Address",
-        "upload_name_label": "Name",
+        "upload_name_label": "Title",
         "upload_links_add": "Add Another Link",
         "upload_links_description": "Add links with titles and descriptions.",
         "upload_link_success": "This link has been shared successfully.",
