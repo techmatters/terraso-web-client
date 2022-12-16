@@ -198,7 +198,6 @@ const AreaTypesInfo = () => {
       <Subheader text="landscape.form_profile_area_types" />
       <HelperText
         Component={AreaTypesHelperText}
-        titleKey={'landscape.form_profile_area_types_helper_text_title'}
         label="landscape.form_profile_area_types"
         useAnchor={false}
       />
