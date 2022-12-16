@@ -171,7 +171,7 @@ const File = props => {
           error={_.get(`${file.id}.description`, errors)}
           disabled={isUploading}
           inputProps={{
-            placeholder: t('sharedData.upload_description_placeholder'),
+            placeholder: t('sharedData.upload_description_file_placeholder'),
           }}
         />
       </Stack>

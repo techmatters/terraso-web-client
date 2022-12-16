@@ -113,6 +113,7 @@ const Link = props => {
       {
         name: 'description',
         label: 'sharedData.upload_description_label',
+        placeholder: 'sharedData.upload_description_link_placeholder',
         props: BASE_FIELD_PROPS,
       },
     ],
