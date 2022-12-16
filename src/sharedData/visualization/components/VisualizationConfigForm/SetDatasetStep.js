@@ -122,7 +122,7 @@ const FORM_FIELDS = [
   },
 ];
 
-const DatasetPreview = () => {
+export const DatasetPreview = () => {
   const { t } = useTranslation();
   const { sheetContext } = useVisualizationContext();
   const { sheet, colCount, rowCount, headers } = sheetContext;
@@ -135,13 +135,14 @@ const DatasetPreview = () => {
       }),
     [colCount, rowCount]
   );
+
   const sample = useMemo(
     () =>
       SheetsJs.utils.sheet_to_json(sheet, {
         range: sampleRange,
-        header: 1,
+        header: headers,
       }),
-    [sheet, sampleRange]
+    [sheet, sampleRange, headers]
   );
 
   return (
@@ -176,8 +177,8 @@ const DatasetPreview = () => {
           <TableBody>
             {_.tail(sample).map((row, rowIndex) => (
               <TableRow key={rowIndex}>
-                {row.map((cell, colIndex) => (
-                  <TableCell key={colIndex}>{_.toString(cell)}</TableCell>
+                {headers.map((header, colIndex) => (
+                  <TableCell key={header}>{_.toString(row[header])}</TableCell>
                 ))}
               </TableRow>
             ))}
