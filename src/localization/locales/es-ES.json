@@ -479,7 +479,7 @@
         "upload_filename_label": "Nombre del archivo",
         "upload_description_label": "Descripción",
         "upload_description_file_placeholder": "p.ej. Datos de la encuesta de salud del suelo",
-        "upload_description_link_placeholder": "[TODO]p.ej. Datos de la encuesta de salud del suelo",
+        "upload_description_link_placeholder": "p.ej. Encuesta de salud del suelo",
         "upload_no_files": "No se agregaron archivos",
         "upload_rejected_too-many-files": "No se pueden agregar más de {{maxFiles}} archivos.",
         "upload_rejected_file-invalid-type": "{{rejectedFiles}} no se pueden agregar porque los tipos de archivo no son compatibles.",
