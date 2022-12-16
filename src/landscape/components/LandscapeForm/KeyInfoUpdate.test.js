@@ -129,7 +129,7 @@ test('KeyInfoUpdate: Helper Text', async () => {
   await setup('Ecuador');
 
   const helpButton = screen.getByRole('button', {
-    name: '[TODO] Help for: Name',
+    name: 'Information about Name',
   });
   await act(async () => fireEvent.click(helpButton));
   expect(
