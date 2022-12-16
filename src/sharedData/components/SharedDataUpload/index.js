@@ -4,6 +4,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
+import ErrorIcon from '@mui/icons-material/Report';
 import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Button, Paper, Stack, Tab, Typography } from '@mui/material';
 
@@ -174,19 +175,22 @@ const SharedDataUpload = props => {
         </TabContext>
       </Paper>
       {showSummary && errorCount > 0 && (
-        <Typography sx={{ mt: 2 }}>
-          {t('sharedData.upload_summary_error', {
-            count: errorCount,
-            errorCounts: localizedCounts(
-              t,
-              filesPending.length,
-              linksPending.length
-            ),
-          })}
-        </Typography>
+        <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
+          <ErrorIcon color="error" />
+          <Typography sx={{ color: 'error.main' }}>
+            {t('sharedData.upload_summary_error', {
+              count: errorCount,
+              errorCounts: localizedCounts(
+                t,
+                filesPending.length,
+                linksPending.length
+              ),
+            })}
+          </Typography>
+        </Stack>
       )}
       {showSummary && successCount > 0 && (
-        <Typography sx={{ mt: 2 }}>
+        <Typography sx={{ mt: 1, pl: 4 }}>
           {t('sharedData.upload_summary_success', {
             count: successCount,
             successCounts: localizedCounts(t, filesSuccess, linksSuccess),
