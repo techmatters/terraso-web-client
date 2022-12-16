@@ -10,7 +10,14 @@ import { withProps } from 'react-hoc';
 
 const HelperText = props => {
   const { t } = useTranslation();
-  const { label, Component, i18nKey, titleKey, useAnchor = true } = props;
+  const {
+    label,
+    Component,
+    i18nKey,
+    titleKey,
+    closeIcon,
+    useAnchor = true,
+  } = props;
   const anchorEl = useRef(null);
   const [open, setOpen] = useState(false);
 
@@ -29,6 +36,25 @@ const HelperText = props => {
   ) : (
     <Component />
   );
+
+  const CloseIconButton = () => {
+    const { t } = useTranslation();
+
+    return (
+      <IconButton
+        aria-label={t('form.helper_text_info_close')}
+        onClick={handleClose}
+        sx={{
+          position: 'absolute',
+          right: 8,
+          top: 8,
+          color: theme => theme.palette.grey[500],
+        }}
+      >
+        <CloseIcon />
+      </IconButton>
+    );
+  };
 
   const Container = useMemo(
     () =>
@@ -62,7 +88,7 @@ const HelperText = props => {
         {...(useAnchor ? { anchorEl: anchorEl.current } : {})}
       >
         <>
-          {titleKey && (
+          {titleKey ? (
             <Stack direction="row">
               <Typography
                 variant="h6"
@@ -71,19 +97,10 @@ const HelperText = props => {
               >
                 {t(titleKey)}
               </Typography>
-              <IconButton
-                aria-label={t('form.helper_text_info_close')}
-                onClick={handleClose}
-                sx={{
-                  position: 'absolute',
-                  right: 8,
-                  top: 8,
-                  color: theme => theme.palette.grey[500],
-                }}
-              >
-                <CloseIcon />
-              </IconButton>
+              {closeIcon && <CloseIconButton />}
             </Stack>
+          ) : (
+            closeIcon && <CloseIconButton />
           )}
           {content}
         </>
