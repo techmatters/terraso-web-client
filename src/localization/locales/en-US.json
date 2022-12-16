@@ -637,7 +637,7 @@
         "validation_array_min": "$t({{path}}) must have at least {{min}} item.",
         "validation_number_integer": "$t({{path}}) must be an integer.",
         "validation_number_max": "$t({{path}}) must be less than {{max, number()}}.",
-        "helper_text_info_label": "[TODO] Help for: $t({{label}})"
+        "helper_text_info_label": "Information about $t({{label}})"
     },
     "localization": {
         "locale_select_label": "Selected language: {{name}}",
