@@ -70,6 +70,12 @@ const FIELDS = [
       getTermsList('livelihood', landscape, i18n),
   },
   {
+    label:
+      'landscape.profile_profile_card_agricultural_production_methods_label',
+    getValue: (landscape, { i18n }) =>
+      getTermsList('agricultural-production-method', landscape, i18n),
+  },
+  {
     label: 'landscape.profile_profile_card_commodities_label',
     getValue: (landscape, { i18n }) =>
       getTermsList('commodity', landscape, i18n),
@@ -297,7 +303,12 @@ const ProfileCard = props => {
         </>
       ) : (
         <CardContent sx={{ display: 'flex', flexGrow: 1 }}>
-          <Grid container spacing={2} sx={{ pt: 2, pl: 0, pr: 2 }}>
+          <Grid
+            container
+            spacing={2}
+            sx={{ pt: 2, pl: 0, pr: 2 }}
+            alignItems="center"
+          >
             {FIELDS.map((field, index) => (
               <ProfileField
                 key={index}
