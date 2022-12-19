@@ -3,12 +3,6 @@ import * as yup from 'yup';
 
 const ARRAY_INDEX_REGEX = /\[([^)]+)\]/;
 
-yup.addMethod(yup.string, 'maxCustom', max =>
-  yup
-    .string()
-    .max(max, params => ({ key: 'form.validation_field_max_length', params }))
-);
-
 // Localization codes form Yup schema validation
 // Check: https://github.com/jquense/yup#api to know the format to add more codes here
 yup.setLocale({
@@ -20,6 +14,7 @@ yup.setLocale({
   string: {
     email: params => ({ key: 'form.validation_email_invalid', params }),
     url: params => ({ key: 'form.validation_url_invalid', params }),
+    max: params => ({ key: 'form.validation_field_max_length', params }),
   },
   array: {
     min: params => ({ key: 'form.validation_array_min', params }),

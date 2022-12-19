@@ -1,3 +1,4 @@
+import ErrorIcon from '@mui/icons-material/Report';
 import { createTheme } from '@mui/material/styles';
 
 const colorTheme = createTheme({
@@ -12,9 +13,14 @@ const colorTheme = createTheme({
     link: '#2C7690',
     success: {
       main: '#b0d098',
+      background: 'rgb(248, 251, 246)',
     },
     info: {
       main: '#76a7ec',
+    },
+    error: {
+      main: '#d32f2f',
+      background: 'rgb(253, 237, 237)',
     },
     cardBorder: '#DADADA',
     white: '#FFFFFF',
@@ -58,6 +64,17 @@ const components = {
       disableRipple: true,
     },
   },
+  MuiIconButton: {
+    styleOverrides: {
+      root: {
+        borderRadius: '2px',
+        '&:focus': {
+          outline: `2px solid ${colorTheme.palette.blue.dark}`,
+          outlineOffset: '3px',
+        },
+      },
+    },
+  },
   MuiButton: {
     styleOverrides: {
       root: {
@@ -95,6 +112,9 @@ const components = {
   MuiOutlinedInput: {
     styleOverrides: {
       root: {
+        '& .MuiInputBase-input': {
+          backgroundColor: colorTheme.palette.white,
+        },
         '& .MuiOutlinedInput-notchedOutline': {
           borderColor: colorTheme.palette.gray.mid,
         },
@@ -129,6 +149,21 @@ const components = {
       root: {
         backgroundColor: colorTheme.palette.gray.lite1,
         color: colorTheme.palette.gray.dark2,
+      },
+    },
+  },
+  MuiAlert: {
+    styleOverrides: {
+      standardSuccess: {
+        backgroundColor: colorTheme.palette.success.background,
+      },
+      standardError: {
+        backgroundColor: colorTheme.palette.error.background,
+      },
+    },
+    defaultProps: {
+      iconMapping: {
+        error: <ErrorIcon fontSize="inherit" />,
       },
     },
   },

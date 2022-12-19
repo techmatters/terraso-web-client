@@ -3,6 +3,7 @@ export const dataEntry = `
     id
     name
     description
+    entryType
     resourceType
     url
     size

@@ -9,20 +9,17 @@ import React, {
 import _ from 'lodash/fp';
 import path from 'path-browserify';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 
 import DeleteIcon from '@mui/icons-material/Delete';
-import { LoadingButton } from '@mui/lab';
 import {
   Alert,
-  Button,
   Divider,
   IconButton,
   InputAdornment,
   LinearProgress,
-  Paper,
   Stack,
   Typography,
 } from '@mui/material';
@@ -31,15 +28,8 @@ import { styled } from '@mui/system';
 
 import BaseDropZone from 'common/components/DropZone';
 import FormField from 'forms/components/FormField';
-import { useAnalytics } from 'monitoring/analytics';
 
-import {
-  UPLOAD_STATUS_ERROR,
-  UPLOAD_STATUS_SUCCESS,
-  UPLOAD_STATUS_UPLOADING,
-  resetUploads,
-  uploadSharedData,
-} from 'sharedData/sharedDataSlice';
+import { MAX_DESCRIPTION_CHARACTERS } from 'sharedData/sharedDataConstants';
 
 import {
   SHARED_DATA_ACCEPTED_EXTENSIONS,
@@ -47,12 +37,15 @@ import {
   SHARED_DATA_MAX_SIZE,
 } from 'config';
 
+import SuccessContainer from './SuccessContainer';
+import { groupDataEntryUploadsByStatus } from './utils';
+
 import theme from 'theme';
 
 const VALIDATION_SCHEMA = yup
   .object({
     name: yup.string().trim().required(),
-    description: yup.string().maxCustom(200).trim(),
+    description: yup.string().max(MAX_DESCRIPTION_CHARACTERS).trim(),
   })
   .required();
 
@@ -105,8 +98,19 @@ const File = props => {
   };
 
   const apiFileErrors = _.get(file.id, apiErrors);
-  const apiSuccess = _.has(file.id, apiSuccesses);
+  const apiSuccess = _.get(file.id, apiSuccesses);
   const isUploading = _.has(file.id, apiUploading);
+
+  if (apiSuccess) {
+    return (
+      <SuccessContainer
+        label={apiSuccess.name}
+        message={t('sharedData.upload_file_success')}
+      >
+        <Typography sx={{ pl: 4 }}>{apiSuccess.name}</Typography>
+      </SuccessContainer>
+    );
+  }
 
   return (
     <>
@@ -122,17 +126,6 @@ const File = props => {
           paddingBottom: 1,
         }}
       >
-        {apiSuccess && (
-          <Alert
-            sx={{
-              width: '100%',
-              boxSizing: 'border-box',
-            }}
-            severity="success"
-          >
-            {t('sharedData.upload_file_success')}
-          </Alert>
-        )}
         {!_.isEmpty(apiFileErrors) &&
           apiFileErrors.map((apiError, index) => (
             <Alert
@@ -178,7 +171,7 @@ const File = props => {
           error={_.get(`${file.id}.description`, errors)}
           disabled={isUploading}
           inputProps={{
-            placeholder: t('sharedData.upload_description_placeholder'),
+            placeholder: t('sharedData.upload_description_file_placeholder'),
           }}
         />
       </Stack>
@@ -193,7 +186,13 @@ const SelectedFiles = () => {
 
   return (
     <Stack
-      divider={<Divider flexItem sx={{ backgroundColor: 'black' }} />}
+      divider={
+        <Divider
+          aria-hidden="true"
+          flexItem
+          sx={{ backgroundColor: 'black' }}
+        />
+      }
       sx={({ palette }) => ({
         border: `2px dashed ${palette.blue.dark}`,
         ...(isSmall ? { borderTop: 'none' } : { borderLeft: 'none' }),
@@ -225,61 +224,29 @@ const fileWrapper = file => {
   };
 };
 
-const SharedDataUpload = props => {
+const ShareDataFiles = props => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const { groupSlug, onCancel, onCompleteSuccess } = props;
-  const uploads = useSelector(state => state.sharedData.uploads);
-  const [files, setFiles] = useState({});
-  const [errors, setErrors] = useState({});
-  const { trackEvent } = useAnalytics();
-
-  const { apiErrors, apiSuccesses, apiUploading } = useMemo(() => {
-    const byStatus = _.flow(
-      _.toPairs,
-      _.filter(([fileId]) => _.has(fileId, files)),
-      _.groupBy(([fileId, result]) => result.status),
-      _.toPairs,
-      _.map(([status, statusFiles]) => [
-        status,
-        _.flow(
-          _.map(([fileId, result]) => [fileId, result.data]),
-          _.fromPairs
-        )(statusFiles),
-      ]),
-      _.fromPairs
-    )(uploads);
-    return {
-      apiErrors: byStatus[UPLOAD_STATUS_ERROR],
-      apiSuccesses: byStatus[UPLOAD_STATUS_SUCCESS],
-      apiUploading: byStatus[UPLOAD_STATUS_UPLOADING],
-    };
-  }, [uploads, files]);
+  const { filesState } = props;
+  const {
+    filesErrors,
+    setFilesErrors,
+    apiErrors,
+    apiSuccesses,
+    apiUploading,
+    files,
+    setFiles,
+  } = filesState;
   const [dropErrors, setDropErrors] = useState();
-
-  useEffect(() => {
-    dispatch(resetUploads());
-  }, [dispatch]);
-  useEffect(() => {
-    const isCompleteSuccess =
-      !_.isEmpty(Object.values(files)) &&
-      !_.isEmpty(apiSuccesses) &&
-      _.isEmpty(apiErrors) &&
-      _.isEmpty(apiUploading);
-    if (isCompleteSuccess) {
-      onCompleteSuccess();
-    }
-  }, [files, apiErrors, apiSuccesses, apiUploading, onCompleteSuccess]);
 
   const onDrop = useCallback(
     acceptedFiles => {
-      setDropErrors(null);
+      setDropErrors(() => null);
       setFiles(files => ({
         ...files,
         ..._.flow(_.map(fileWrapper), _.keyBy('id'))(acceptedFiles),
       }));
     },
-    [setFiles]
+    [setFiles, setDropErrors]
   );
 
   const onDropRejected = useCallback(
@@ -300,9 +267,9 @@ const SharedDataUpload = props => {
           })
         )
       )(rejections);
-      setDropErrors(messages);
+      setDropErrors(() => messages);
     },
-    [t]
+    [t, setDropErrors]
   );
 
   const onFileChange = (id, newFile) => {
@@ -310,9 +277,9 @@ const SharedDataUpload = props => {
       ...files,
       [id]: newFile,
     }));
-    setErrors(_.omit(id));
+    setFilesErrors(_.omit(id));
     VALIDATION_SCHEMA.validate(newFile).catch(error => {
-      setErrors(errors => ({
+      setFilesErrors(errors => ({
         ...errors,
         [id]: {
           [error.path]: error.message,
@@ -321,81 +288,101 @@ const SharedDataUpload = props => {
     });
   };
   const onFileDelete = id => {
-    setErrors(_.omit(id));
+    setFilesErrors(_.omit(id));
     setFiles(_.omit(id));
   };
 
-  const onSave = () => {
-    const pendingFiles = _.toPairs(files).filter(
-      ([fileId]) => !_.has(fileId, apiSuccesses)
-    );
-    pendingFiles.forEach(([fileId, file]) => {
-      dispatch(uploadSharedData({ groupSlug, file }));
-      trackEvent('uploadFile', { props: { owner: groupSlug } });
-    });
-  };
-
-  const hasBlockingErrors = !_.isEmpty(
-    Object.values(errors).filter(error => !_.isEmpty(error))
-  );
-
   return (
     <>
-      <Paper
-        component={Stack}
-        spacing={2}
-        variant="outlined"
-        sx={{ padding: 2 }}
-      >
-        <Typography sx={{ fontWeight: 700 }}>
-          {t('sharedData.upload_description')}
-        </Typography>
-        <Stack direction={{ xs: 'column', md: 'row' }}>
-          <DropZone
-            multiple
-            errors={dropErrors}
-            onDrop={onDrop}
-            onDropRejected={onDropRejected}
-            maxSize={SHARED_DATA_MAX_SIZE}
-            maxFiles={SHARED_DATA_MAX_FILES}
-            fileExtensions={SHARED_DATA_ACCEPTED_EXTENSIONS}
-          />
-          <FilesContext.Provider
-            value={{
-              files: Object.values(files),
-              errors,
-              apiErrors,
-              apiSuccesses,
-              apiUploading,
-              onFileChange,
-              onFileDelete,
-            }}
-          >
-            <SelectedFiles />
-          </FilesContext.Provider>
-        </Stack>
-      </Paper>
-      <Stack
-        direction="row"
-        spacing={2}
-        justifyContent="space-between"
-        sx={{ marginTop: 3 }}
-      >
-        <LoadingButton
-          variant="contained"
-          disabled={_.isEmpty(files) || hasBlockingErrors}
-          loading={!_.isEmpty(apiUploading)}
-          onClick={onSave}
-          sx={{ paddingLeft: 5, paddingRight: 5 }}
+      <Typography sx={{ fontWeight: 700, mb: 2 }}>
+        {t('sharedData.upload_files_description')}
+      </Typography>
+      <Stack direction={{ xs: 'column', md: 'row' }}>
+        <DropZone
+          multiple
+          errors={dropErrors}
+          onDrop={onDrop}
+          onDropRejected={onDropRejected}
+          maxSize={SHARED_DATA_MAX_SIZE}
+          maxFiles={SHARED_DATA_MAX_FILES}
+          fileExtensions={SHARED_DATA_ACCEPTED_EXTENSIONS}
+        />
+        <FilesContext.Provider
+          value={{
+            files: Object.values(files),
+            errors: filesErrors,
+            apiErrors,
+            apiSuccesses,
+            apiUploading,
+            onFileChange,
+            onFileDelete,
+          }}
         >
-          {t('sharedData.upload_save')}
-        </LoadingButton>
-        <Button variant="text" onClick={onCancel}>
-          {t('sharedData.upload_cancel')}
-        </Button>
+          <SelectedFiles />
+        </FilesContext.Provider>
       </Stack>
     </>
   );
 };
 
-export default SharedDataUpload;
+export const useFilesState = () => {
+  const uploads = useSelector(_.get('sharedData.uploads.files'));
+
+  const [filesPending, setFilesPending] = useState([]);
+  const [filesErrors, setFilesErrors] = useState([]);
+  const [filesUploading, setFilesUploading] = useState(false);
+  const [filesSuccess, setFilesSuccess] = useState(0);
+
+  const [files, setFiles] = useState({});
+  // const [errors, setErrors] = useState({});
+
+  // useEffect(() => {
+  //   setFilesErrors(errors);
+  // }, [errors, setFilesErrors]);
+
+  const { apiErrors, apiSuccesses, apiUploading } = useMemo(
+    () => groupDataEntryUploadsByStatus(_.pick(Object.keys(files), uploads)),
+    [uploads, files]
+  );
+
+  // useEffect(() => {
+  //   console.log({ apiErrors });
+  // }, [apiErrors]);
+
+  useEffect(() => {
+    const pendingFiles = Object.values(files).filter(
+      file => !_.has(file.id, apiSuccesses)
+    );
+    setFilesPending(pendingFiles);
+  }, [files, apiSuccesses, setFilesPending]);
+
+  useEffect(() => {
+    setFilesUploading(!_.isEmpty(apiUploading));
+  }, [apiUploading, setFilesUploading]);
+
+  useEffect(() => {
+    const isCompleteSuccess =
+      !_.isEmpty(Object.values(files)) &&
+      !_.isEmpty(apiSuccesses) &&
+      _.isEmpty(apiErrors) &&
+      _.isEmpty(apiUploading);
+    if (isCompleteSuccess) {
+      setFilesSuccess(Object.keys(apiSuccesses).length);
+    }
+  }, [files, apiErrors, apiSuccesses, apiUploading, setFilesSuccess]);
+
+  return {
+    filesPending,
+    filesErrors,
+    setFilesErrors,
+    filesUploading,
+    filesSuccess,
+    files,
+    setFiles,
+    apiErrors,
+    apiSuccesses,
+    apiUploading,
+  };
+};
+
+export default ShareDataFiles;

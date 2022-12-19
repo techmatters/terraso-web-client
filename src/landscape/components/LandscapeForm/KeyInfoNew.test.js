@@ -138,9 +138,9 @@ test('LandscapeNew: Input validation', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
   );
-  expect(screen.getByText(/name is required/i)).toBeInTheDocument();
-  expect(screen.getByText(/description is required/i)).toBeInTheDocument();
-  expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument();
+  expect(screen.getByText(/Enter a name/i)).toBeInTheDocument();
+  expect(screen.getByText(/Enter a description/i)).toBeInTheDocument();
+  expect(screen.getByText(/Enter a valid web address/i)).toBeInTheDocument();
 });
 test('LandscapeNew: Save form', async () => {
   terrasoApi.requestGraphQL.mockImplementation(query => {

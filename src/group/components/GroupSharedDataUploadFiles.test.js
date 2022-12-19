@@ -97,9 +97,11 @@ test('GroupSharedDataUpload: Error - Empty filename', async () => {
     name: 'File Name (required)',
   });
   fireEvent.change(name, { target: { value: '' } });
-  expect(await within(file).findByText('name is required')).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Upload Files' })).toHaveAttribute(
-    'disabled'
+  expect(await within(file).findByText('Enter a name.')).toBeInTheDocument();
+  await waitFor(() =>
+    expect(
+      screen.getByRole('button', { name: 'Share Files and Links' })
+    ).toHaveAttribute('disabled')
   );
 });
 
@@ -113,7 +115,9 @@ test('GroupSharedDataUpload: Error - API', async () => {
           new File(['content'], `test${index}.csv`, { type: 'text/csv' })
       )
   );
-  const uploadButton = screen.getByRole('button', { name: 'Upload Files' });
+  const uploadButton = screen.getByRole('button', {
+    name: 'Share Files and Links',
+  });
   await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
   await act(async () => fireEvent.click(uploadButton));
   const file = screen.getByRole('region', { name: 'test1' });
@@ -128,7 +132,7 @@ test('GroupSharedDataUpload: Partial Success', async () => {
   terrasoApi.request.mockRejectedValueOnce(
     _.set('[0].content[0]', 'invalid_extension', [])
   );
-  terrasoApi.request.mockResolvedValueOnce({});
+  terrasoApi.request.mockResolvedValueOnce({ name: 'test1' });
   await dropFiles(
     Array(2)
       .fill(0)
@@ -137,8 +141,14 @@ test('GroupSharedDataUpload: Partial Success', async () => {
           new File(['content'], `test${index}.csv`, { type: 'text/csv' })
       )
   );
-  const uploadButton = screen.getByRole('button', { name: 'Upload Files' });
+  const uploadButton = screen.getByRole('button', {
+    name: 'Share Files and Links',
+  });
   await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
+
+  expect(screen.getByRole('region', { name: 'test0' })).toBeInTheDocument();
+  expect(screen.getByRole('region', { name: 'test1' })).toBeInTheDocument();
+
   await act(async () => fireEvent.click(uploadButton));
   const file0 = screen.getByRole('region', { name: 'test0' });
   expect(
@@ -164,7 +174,9 @@ test('GroupSharedDataUpload: Complete Success', async () => {
           new File(['content'], `test${index}.csv`, { type: 'text/csv' })
       )
   );
-  const uploadButton = screen.getByRole('button', { name: 'Upload Files' });
+  const uploadButton = screen.getByRole('button', {
+    name: 'Share Files and Links',
+  });
   await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
   await act(async () => fireEvent.click(uploadButton));
   expect(navigate.mock.calls[0]).toEqual(['/groups/slug-1']);
@@ -177,7 +189,9 @@ test('GroupSharedDataUpload: PDF Success', async () => {
   await dropFiles([
     new File(['content'], 'test.pdf', { type: 'application/pdf' }),
   ]);
-  const uploadButton = screen.getByRole('button', { name: 'Upload Files' });
+  const uploadButton = screen.getByRole('button', {
+    name: 'Share Files and Links',
+  });
   await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
   await act(async () => fireEvent.click(uploadButton));
   expect(navigate.mock.calls[0]).toEqual(['/groups/slug-1']);
@@ -215,7 +229,9 @@ test('GroupSharedDataUpload: MS Office Success', async () => {
           })
       )
   );
-  const uploadButton = screen.getByRole('button', { name: 'Upload Files' });
+  const uploadButton = screen.getByRole('button', {
+    name: 'Share Files and Links',
+  });
   await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
   await act(async () => fireEvent.click(uploadButton));
   expect(navigate.mock.calls[0]).toEqual(['/groups/slug-1']);

@@ -24,7 +24,8 @@ import { fetchGroupSharedData } from 'sharedData/sharedDataSlice';
 
 import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
-import SharedDataEntry from './SharedDataEntry';
+import SharedDataEntryFile from './SharedDataEntryFile';
+import SharedDataEntryLink from './SharedDataEntryLink';
 
 const SharedFilesCard = props => {
   const { t } = useTranslation();
@@ -79,9 +80,21 @@ const SharedFilesCard = props => {
         {hasFiles && (
           <>
             <List aria-describedby="shared-data-card-title">
-              {sharedFiles.map(file => (
-                <SharedDataEntry key={file.id} file={file} group={group} />
-              ))}
+              {sharedFiles.map(dataEntry =>
+                dataEntry.entryType === 'LINK' ? (
+                  <SharedDataEntryLink
+                    key={dataEntry.id}
+                    dataEntry={dataEntry}
+                    group={group}
+                  />
+                ) : (
+                  <SharedDataEntryFile
+                    key={dataEntry.id}
+                    dataEntry={dataEntry}
+                    group={group}
+                  />
+                )
+              )}
             </List>
             <Typography
               variant="body1"

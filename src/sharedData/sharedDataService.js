@@ -1,18 +1,20 @@
 import _ from 'lodash/fp';
 
 import { dataEntries } from 'group/groupFragments';
-import { extractDataEntries } from 'group/groupUtils';
+import { extractDataEntry, extractGroupDataEntries } from 'group/groupUtils';
 import * as terrasoApi from 'terrasoBackend/api';
 
 import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
 import {
-  dataEntry,
+  dataEntry as dataEntryFragment,
   visualizationConfig,
   visualizationConfigWithConfiguration,
 } from './sharedDataFragments';
 
-export const uploadSharedData = async ({ groupSlug, file }) => {
+const ALL_RESOURCE_TYPES = [...SHARED_DATA_ACCEPTED_EXTENSIONS, 'link'];
+
+export const uploadSharedDataFile = async ({ groupSlug, file }) => {
   const path = '/shared-data/upload/';
 
   const body = new FormData();
@@ -33,7 +35,7 @@ export const uploadSharedData = async ({ groupSlug, file }) => {
   return jsonResponse;
 };
 
-export const deleteSharedData = ({ file }) => {
+export const deleteSharedData = ({ dataEntry }) => {
   const query = `
     mutation deleteSharedData($id: ID!) {
       deleteDataEntry(input: { id: $id }) {
@@ -44,28 +46,64 @@ export const deleteSharedData = ({ file }) => {
     }
   `;
   return terrasoApi.requestGraphQL(query, {
-    id: file.id,
+    id: dataEntry.id,
   });
 };
 
-export const updateSharedData = ({ file }) => {
+export const addSharedDataLink = ({ groupSlug, link }) => {
   const query = `
-    mutation updateSharedData($input: DataEntryUpdateMutationInput!) {
-      updateDataEntry(input: $input) {
+    mutation addDataEntry($input: DataEntryAddMutationInput!) {
+      addDataEntry(input: $input) {
         dataEntry {
           id
+          name
+          url
         }
       }
     }
   `;
-  return terrasoApi.requestGraphQL(query, {
-    input: file,
-  });
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: {
+        ..._.pick(['name', 'url', 'description'], link),
+        entryType: 'link',
+        resourceType: 'link',
+        groupSlug,
+      },
+    })
+    .then(_.get('addDataEntry.dataEntry'));
+};
+
+export const updateSharedData = ({ dataEntry }) => {
+  const query = `
+    mutation updateSharedData($input: DataEntryUpdateMutationInput!) {
+      updateDataEntry(input: $input) {
+        dataEntry {
+          ...dataEntry
+          visualizations {
+            edges {
+              node {
+                ...visualizationConfigWithConfiguration
+              }
+            }
+          }
+        }
+      }
+    }
+    ${dataEntryFragment}
+    ${visualizationConfigWithConfiguration}
+  `;
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: dataEntry,
+    })
+    .then(_.get('updateDataEntry.dataEntry'))
+    .then(extractDataEntry);
 };
 
 export const fetchGroupSharedData = ({
   slug,
-  resourceTypes = SHARED_DATA_ACCEPTED_EXTENSIONS,
+  resourceTypes = ALL_RESOURCE_TYPES,
 }) => {
   const query = `
     query group($slug: String!, $resourceTypes: [String]!){
@@ -83,7 +121,7 @@ export const fetchGroupSharedData = ({
     .requestGraphQL(query, { slug, resourceTypes })
     .then(_.get('groups.edges[0].node'))
     .then(group => group || Promise.reject('not_found'))
-    .then(group => extractDataEntries(group));
+    .then(group => extractGroupDataEntries(group));
 };
 
 export const addVisualizationConfig = ({
@@ -148,7 +186,7 @@ export const fetchVisualizationConfig = ({ groupSlug, configSlug }) => {
         }
       }
     }
-    ${dataEntry}
+    ${dataEntryFragment}
     ${visualizationConfigWithConfiguration}
   `;
   return terrasoApi

@@ -144,7 +144,7 @@ const testAnnotateStep = async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Next' }))
   );
-  expect(screen.getByText(/Map Title is required/i)).toBeInTheDocument();
+  expect(screen.getByText(/Enter a map title/i)).toBeInTheDocument();
   await act(async () =>
     fireEvent.change(mapTitle, { target: { value: 'Test Title' } })
   );

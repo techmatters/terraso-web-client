@@ -10,7 +10,10 @@ export const UPLOAD_STATUS_SUCCESS = 'success';
 export const UPLOAD_STATUS_ERROR = 'error';
 
 const initialState = {
-  uploads: null,
+  uploads: {
+    files: {},
+    links: {},
+  },
   processing: {},
   list: {
     fetching: true,
@@ -26,28 +29,34 @@ const initialState = {
   },
 };
 
-export const uploadSharedData = createAsyncThunk(
-  'sharedData/uploadSharedData',
-  sharedDataService.uploadSharedData,
+export const uploadSharedDataFile = createAsyncThunk(
+  'sharedData/uploadSharedDataFile',
+  sharedDataService.uploadSharedDataFile,
+  null,
+  false
+);
+export const addSharedDataLink = createAsyncThunk(
+  'sharedData/addSharedDataLink',
+  sharedDataService.addSharedDataLink,
   null,
   false
 );
 export const deleteSharedData = createAsyncThunk(
   'sharedData/deleteSharedData',
   sharedDataService.deleteSharedData,
-  (group, { file }) => ({
+  (group, { dataEntry }) => ({
     severity: 'success',
     content: 'sharedData.deleted',
-    params: { name: file.name },
+    params: { name: dataEntry.name },
   })
 );
 export const updateSharedData = createAsyncThunk(
   'sharedData/updateSharedData',
   sharedDataService.updateSharedData,
-  (group, { file }) => ({
+  (group, { dataEntry }) => ({
     severity: 'success',
     content: 'sharedData.updated',
-    params: { name: file.name },
+    params: { name: dataEntry.name },
   })
 );
 export const fetchGroupSharedData = createAsyncThunk(
@@ -82,7 +91,7 @@ export const deleteVisualizationConfig = createAsyncThunk(
 
 const setProcessing = (state, action) =>
   _.set(
-    `processing.${action.meta.arg.file.id}`,
+    `processing.${action.meta.arg.dataEntry.id}`,
     action.meta.requestStatus === 'pending',
     state
   );
@@ -103,29 +112,74 @@ const sharedDataSlice = createSlice({
   extraReducers: {
     [updateSharedData.pending]: setProcessing,
     [updateSharedData.rejected]: setProcessing,
+    [updateSharedData.fulfilled]: (state, action) => ({
+      ...state,
+      list: {
+        ...state.list,
+        data: state.list.data.map(item =>
+          item.id === action.meta.arg.dataEntry.id ? action.payload : item
+        ),
+      },
+    }),
     [deleteSharedData.pending]: setProcessing,
     [deleteSharedData.rejected]: setProcessing,
-    [uploadSharedData.pending]: (state, action) =>
+    [deleteSharedData.fulfilled]: (state, action) => ({
+      ...state,
+      list: {
+        ...state.list,
+        data: state.list.data.filter(
+          item => item.id !== action.meta.arg.dataEntry.id
+        ),
+      },
+    }),
+    [uploadSharedDataFile.pending]: (state, action) =>
       _.set(
-        `uploads.${action.meta.arg.file.id}`,
+        `uploads.files.${action.meta.arg.file.id}`,
         {
           status: UPLOAD_STATUS_UPLOADING,
           data: null,
         },
         state
       ),
-    [uploadSharedData.fulfilled]: (state, action) =>
+    [uploadSharedDataFile.fulfilled]: (state, action) =>
       _.set(
-        `uploads.${action.meta.arg.file.id}`,
+        `uploads.files.${action.meta.arg.file.id}`,
         {
           status: UPLOAD_STATUS_SUCCESS,
           data: action.payload,
         },
         state
       ),
-    [uploadSharedData.rejected]: (state, action) =>
+    [uploadSharedDataFile.rejected]: (state, action) =>
       _.set(
-        `uploads.${action.meta.arg.file.id}`,
+        `uploads.files.${action.meta.arg.file.id}`,
+        {
+          status: UPLOAD_STATUS_ERROR,
+          data: action.payload.parsedErrors,
+        },
+        state
+      ),
+    [addSharedDataLink.pending]: (state, action) =>
+      _.set(
+        `uploads.links.${action.meta.arg.link.id}`,
+        {
+          status: UPLOAD_STATUS_UPLOADING,
+          data: null,
+        },
+        state
+      ),
+    [addSharedDataLink.fulfilled]: (state, action) =>
+      _.set(
+        `uploads.links.${action.meta.arg.link.id}`,
+        {
+          status: UPLOAD_STATUS_SUCCESS,
+          data: action.payload,
+        },
+        state
+      ),
+    [addSharedDataLink.rejected]: (state, action) =>
+      _.set(
+        `uploads.links.${action.meta.arg.link.id}`,
         {
           status: UPLOAD_STATUS_ERROR,
           data: action.payload.parsedErrors,

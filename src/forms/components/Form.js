@@ -1,8 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import _ from 'lodash/fp';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
+import {
+  Controller,
+  FormProvider,
+  useForm,
+  useFormState,
+} from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Grid } from '@mui/material';
@@ -35,7 +40,7 @@ const Form = props => {
   } = props;
   const setFormContext = useFormSetContext();
 
-  const formProps = useForm({
+  const { control, handleSubmit, reset, watch, getValues, trigger } = useForm({
     mode,
     defaultValues: {
       ...getInitialEmptyValues(fields),
@@ -43,21 +48,34 @@ const Form = props => {
     },
     resolver: yupResolver(validationSchema),
   });
-  const { control, handleSubmit, reset, watch, getValues } = formProps;
+
+  const { errors, isValidating, isValid, touchedFields } = useFormState({
+    control,
+  });
 
   useEffect(() => {
-    setFormContext?.(formProps);
-  }, [setFormContext, formProps]);
+    setFormContext?.({
+      trigger,
+      errors,
+      touchedFields,
+      isValid,
+      isValidating,
+    });
+  }, [setFormContext, trigger, errors, isValid, touchedFields, isValidating]);
 
   watch((data, { name, type }) => onChange?.(data, name, type));
 
-  const requiredFields = _.flow(
-    _.toPairs,
-    _.filter(([name, field]) =>
-      _.getOr(false, 'exclusiveTests.required', field)
-    ),
-    _.map(([name]) => name)
-  )(_.getOr({}, 'fields', validationSchema));
+  const requiredFields = useMemo(
+    () =>
+      _.flow(
+        _.toPairs,
+        _.filter(([name, field]) =>
+          _.getOr(false, 'exclusiveTests.required', field)
+        ),
+        _.map(([name]) => name)
+      )(_.getOr({}, 'fields', validationSchema)),
+    [validationSchema]
+  );
 
   useEffect(() => {
     if (values) {
@@ -68,40 +86,42 @@ const Form = props => {
     }
   }, [values, fields, reset]);
 
-  const onSubmit = data => onSave(data);
+  const onSubmit = useCallback(data => onSave(data), [onSave]);
 
   const ariaProps = _.pickBy(
     (value, propName) => propName.startsWith('aria-'),
     props
   );
 
-  const buttonPadding = isMultiStep ? 0 : 5;
+  const actions = useMemo(() => {
+    const buttonPadding = isMultiStep ? 0 : 5;
 
-  const actions = [
-    saveLabel && (
-      <Button
-        key="submit"
-        type="submit"
-        variant="contained"
-        sx={{
-          paddingLeft: 5,
-          paddingRight: 5,
-        }}
-      >
-        {t(saveLabel)}
-      </Button>
-    ),
-    onCancel && (
-      <Button
-        key="cancel"
-        variant="text"
-        onClick={onCancel}
-        sx={{ paddingLeft: buttonPadding, paddingRight: buttonPadding }}
-      >
-        {t(cancelLabel)}
-      </Button>
-    ),
-  ];
+    return [
+      saveLabel && (
+        <Button
+          key="submit"
+          type="submit"
+          variant="contained"
+          sx={{
+            paddingLeft: 5,
+            paddingRight: 5,
+          }}
+        >
+          {t(saveLabel)}
+        </Button>
+      ),
+      onCancel && (
+        <Button
+          key="cancel"
+          variant="text"
+          onClick={onCancel}
+          sx={{ paddingLeft: buttonPadding, paddingRight: buttonPadding }}
+        >
+          {t(cancelLabel)}
+        </Button>
+      ),
+    ];
+  }, [saveLabel, t, onCancel, cancelLabel, isMultiStep]);
 
   return (
     <FormProvider watch={watch} getValues={getValues}>
@@ -115,7 +135,9 @@ const Form = props => {
         sx={{ width: '100%' }}
       >
         {fields
-          .filter(field => (filterField ? filterField(field, formProps) : true))
+          .filter(field =>
+            filterField ? filterField(field, { getValues }) : true
+          )
           .map(field =>
             field.renderStaticElement ? (
               <React.Fragment key={field.name}>
@@ -127,7 +149,10 @@ const Form = props => {
                 item
                 xs={12}
                 {..._.get('props.gridItemProps', field)}
-                sx={{ paddingBottom: 3 }}
+                sx={{
+                  pb: 3,
+                  ..._.getOr({}, 'props.gridItemProps.sx', field),
+                }}
               >
                 <Controller
                   name={field.name}

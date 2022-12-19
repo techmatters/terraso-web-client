@@ -184,10 +184,10 @@ test('KeyInfoUpdate: Input validation', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
   );
-  expect(screen.getByText(/name is required/i)).toBeInTheDocument();
-  expect(screen.getByText(/description is required/i)).toBeInTheDocument();
-  expect(screen.getByText(/website must be a valid URL/i)).toBeInTheDocument();
-  expect(screen.getByText(/email must be a valid email/i)).toBeInTheDocument();
+  expect(screen.getByText(/Enter a name/i)).toBeInTheDocument();
+  expect(screen.getByText(/Enter a description/i)).toBeInTheDocument();
+  expect(screen.getByText(/Enter a valid web address/i)).toBeInTheDocument();
+  expect(screen.getByText(/Enter a valid email address/i)).toBeInTheDocument();
 });
 test('KeyInfoUpdate: Save form', async () => {
   terrasoApi.requestGraphQL

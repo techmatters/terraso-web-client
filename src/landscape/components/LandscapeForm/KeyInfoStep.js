@@ -21,11 +21,7 @@ import Actions from './Actions';
 const VALIDATION_SCHEMA = yup
   .object({
     name: yup.string().trim().required(),
-    description: yup
-      .string()
-      .maxCustom(MAX_DESCRIPTION_LENGTH)
-      .trim()
-      .required(),
+    description: yup.string().max(MAX_DESCRIPTION_LENGTH).trim().required(),
     location: yup.string().trim().required(),
     email: yup.string().trim().email(),
     website: yup.string().trim().ensure().transform(transformURL).url(),

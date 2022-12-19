@@ -107,12 +107,16 @@ const EditableText = props => {
           setIsEditing(true);
         }
       }}
-      onClick={() => setIsEditing(true)}
+      onClick={event => {
+        setIsEditing(true);
+        event.preventDefault();
+      }}
       onMouseOver={() => setIsHovering(true)}
       onMouseOut={() => setIsHovering(false)}
       {...viewProps}
       sx={{
-        padding: 1,
+        pt: 1,
+        pb: 1,
         ...(isHovering
           ? { backgroundColor: 'blue.lite', cursor: 'pointer' }
           : {}),
