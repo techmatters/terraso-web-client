@@ -123,7 +123,7 @@ test('GroupSharedDataUpload: Error - API', async () => {
   const file = screen.getByRole('region', { name: 'test1' });
   expect(
     await within(file).findByText(
-      'Oops, something went wrong. Please try it again in a few minutes. (Error: Test Error)'
+      'Oops, something went wrong. Try again in a few minutes. (Error: Test Error)'
     )
   ).toBeInTheDocument();
 });

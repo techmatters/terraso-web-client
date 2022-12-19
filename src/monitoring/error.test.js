@@ -47,7 +47,7 @@ test('ErrorMonitoringProvider: component error', async () => {
   // Show error page
   expect(
     screen.getByText(
-      'Oops, something went wrong. Please try it again in a few minutes.'
+      'Oops, something went wrong. Try again in a few minutes.'
     )
   ).toBeInTheDocument();
 });

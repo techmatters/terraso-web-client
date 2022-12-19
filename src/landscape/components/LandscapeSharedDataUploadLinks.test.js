@@ -103,7 +103,7 @@ test('LandscapeSharedDataUpload: Error - API', async () => {
   const linkSectionWithName = screen.getByRole('region', { name: 'name' });
   expect(
     await within(linkSectionWithName).findByText(
-      'Oops, something went wrong. Please try it again in a few minutes. (Error: Test Error)'
+      'Oops, something went wrong. Try again in a few minutes. (Error: Test Error)'
     )
   ).toBeInTheDocument();
 });
@@ -163,7 +163,7 @@ test('LandscapeSharedDataUpload: Partial Success', async () => {
   const link1 = screen.getByRole('region', { name: 'name 1' });
   expect(
     await within(link1).findByText(
-      'Oops, something went wrong. Please try it again in a few minutes. (Error: Test Error)'
+      'Oops, something went wrong. Try again in a few minutes. (Error: Test Error)'
     )
   ).toBeInTheDocument();
   const link2 = screen.getByRole('region', { name: 'name 2' });
