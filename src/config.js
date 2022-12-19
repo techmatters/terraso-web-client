@@ -51,6 +51,7 @@ export const PLAUSIBLE_DOMAIN = process.env.REACT_APP_PLAUSIBLE_DOMAIN;
 export const LANDSCAPE_PROFILE_IMAGE_MAX_SIZE =
   process.env.REACT_APP_LANDSCAPE_PROFILE_IMAGE_MAX_SIZE || 10000000; // 10 MB
 
+// List of Livelihoods that if selected will show the agricultural production method field
 export const AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS = process.env
   .REACT_APP_AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS || [
   'Industry',
