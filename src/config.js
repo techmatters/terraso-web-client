@@ -54,7 +54,6 @@ export const LANDSCAPE_PROFILE_IMAGE_MAX_SIZE =
 // List of Livelihoods that if selected will show the agricultural production method field
 export const AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS = process.env
   .REACT_APP_AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS || [
-  'Industry',
-  'Fishing',
+  'Cattle and livestock farming',
   'Crop farming',
 ];
