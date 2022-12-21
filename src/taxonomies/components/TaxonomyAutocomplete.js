@@ -24,6 +24,11 @@ const TaxonomyAutocomplete = props => {
     [i18n.resolvedLanguage, t]
   );
 
+  const sortedOptions = useMemo(
+    () => _.sortBy(getLabel, options),
+    [getLabel, options]
+  );
+
   const onChangeWrapper = useCallback(
     (event, newValue) => {
       onChange(
@@ -51,7 +56,7 @@ const TaxonomyAutocomplete = props => {
       multiple
       value={value || []}
       onChange={onChangeWrapper}
-      options={options}
+      options={sortedOptions}
       getOptionLabel={getLabel}
       renderInput={params => (
         <TextField
