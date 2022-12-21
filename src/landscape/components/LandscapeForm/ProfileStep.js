@@ -69,7 +69,6 @@ const FORM_FIELDS = [
     label: 'landscape.form_profile_ecosystem_types',
     helperText: {
       titleKey: 'landscape.form_profile_ecosystem_types_helper_text_title',
-      closeIcon: true,
       Component: EcosystemTypesHelperText,
     },
     props: {
@@ -200,7 +199,6 @@ const AreaTypesInfo = () => {
       <HelperText
         Component={AreaTypesHelperText}
         label="landscape.form_profile_area_types"
-        closeIcon="true"
         useAnchor={false}
       />
     </Stack>

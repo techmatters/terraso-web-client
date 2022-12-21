@@ -102,6 +102,7 @@ const FormField = props => {
         error={!!fieldState?.error}
         htmlFor={id}
         alignItems="center"
+        sx={{ overflow: 'visible' }}
       >
         <Typography
           sx={{

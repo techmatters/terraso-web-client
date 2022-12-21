@@ -10,14 +10,7 @@ import { withProps } from 'react-hoc';
 
 const HelperText = props => {
   const { t } = useTranslation();
-  const {
-    label,
-    Component,
-    i18nKey,
-    titleKey,
-    closeIcon,
-    useAnchor = true,
-  } = props;
+  const { label, Component, i18nKey, titleKey, useAnchor = true } = props;
   const anchorEl = useRef(null);
   const [open, setOpen] = useState(false);
 
@@ -30,7 +23,7 @@ const HelperText = props => {
   };
 
   const content = i18nKey ? (
-    <Typography sx={{ p: 2 }}>
+    <Typography sx={{ p: 2, maxWidth: '30rem' }}>
       <Trans i18nKey={i18nKey} />
     </Typography>
   ) : (
@@ -42,6 +35,7 @@ const HelperText = props => {
 
     return (
       <IconButton
+        size="small"
         aria-label={t('form.helper_text_info_close')}
         onClick={handleClose}
         sx={{
@@ -51,27 +45,39 @@ const HelperText = props => {
           color: theme => theme.palette.grey[500],
         }}
       >
-        <CloseIcon />
+        <CloseIcon fontSize="small" />
       </IconButton>
     );
   };
 
-  const Container = useMemo(
-    () =>
-      useAnchor
-        ? Popover
-        : withProps(Dialog, {
-            fullWidth: true,
-            maxWidth: false,
-            BackdropProps: {
-              style: {
-                backgroundColor: 'transparent',
-                boxShadow: 'none',
-              },
+  const Container = useMemo(() => {
+    const paperProps = {
+      sx: { pr: 4 },
+    };
+    return useAnchor
+      ? withProps(Popover, {
+          PaperProps: paperProps,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+          transformOrigin: {
+            vertical: 'top',
+            horizontal: 'left',
+          },
+        })
+      : withProps(Dialog, {
+          fullWidth: true,
+          maxWidth: false,
+          PaperProps: paperProps,
+          BackdropProps: {
+            style: {
+              backgroundColor: 'transparent',
+              boxShadow: 'none',
             },
-          }),
-    [useAnchor]
-  );
+          },
+        });
+  }, [useAnchor]);
 
   return (
     <>
@@ -88,7 +94,7 @@ const HelperText = props => {
         {...(useAnchor ? { anchorEl: anchorEl.current } : {})}
       >
         <>
-          {titleKey ? (
+          {titleKey && (
             <Stack direction="row">
               <Typography
                 variant="h6"
@@ -97,11 +103,9 @@ const HelperText = props => {
               >
                 {t(titleKey)}
               </Typography>
-              {closeIcon && <CloseIconButton />}
             </Stack>
-          ) : (
-            closeIcon && <CloseIconButton />
           )}
+          <CloseIconButton />
           {content}
         </>
       </Container>
