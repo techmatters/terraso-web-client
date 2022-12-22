@@ -40,9 +40,6 @@ const FORM_FIELDS = [
   {
     name: 'description',
     label: 'landscape.form_description_label',
-    helperText: {
-      i18nKey: 'landscape.form_description_helper_text',
-    },
     placeholder: 'landscape.form_description_placeholder',
     info: ({ field: { value } }) => (
       <CharacterCounter text={value} max={MAX_DESCRIPTION_LENGTH} />
@@ -59,9 +56,6 @@ const FORM_FIELDS = [
   {
     name: 'location',
     label: 'landscape.form_location_label',
-    helperText: {
-      i18nKey: 'landscape.form_location_helper_text',
-    },
     props: {
       renderInput: ({ field }) => <CountrySelector field={field} />,
     },
