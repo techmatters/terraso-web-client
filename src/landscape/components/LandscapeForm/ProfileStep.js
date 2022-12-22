@@ -43,6 +43,45 @@ const VALIDATION_SCHEMA = yup
   })
   .required();
 
+const AreaTypeImage = props => {
+  const { t } = useTranslation();
+  const { areaType } = props;
+
+  return (
+    <Grid item>
+      <Paper
+        square
+        variant="outlined"
+        component={Stack}
+        alignItems="center"
+        justifyContent="center"
+        sx={{ border: 'black', bgcolor: 'black', color: 'white' }}
+      >
+        <Typography>
+          {t(`landscape.profile_profile_card_area_types_${areaType}`)}
+        </Typography>
+        <img
+          src={`/landscape/${areaType}.jpg`}
+          alt={t(`landscape.profile_profile_card_area_types_${areaType}`)}
+        />
+      </Paper>
+    </Grid>
+  );
+};
+
+const AreaTypesHelperText = () => {
+  return (
+    <Box sx={{ p: 2, pt: 0 }}>
+      <Trans i18nKey="landscape.form_profile_area_types_helper_text" />
+      <Grid container spacing={2} justifyContent="center">
+        <AreaTypeImage areaType="rural" />
+        <AreaTypeImage areaType="peri-urban" />
+        <AreaTypeImage areaType="urban" />
+      </Grid>
+    </Box>
+  );
+};
+
 const EcosystemTypesHelperText = () => {
   return (
     <Box sx={{ p: 2 }}>
@@ -143,45 +182,6 @@ const FORM_FIELDS = [
     },
   },
 ];
-
-const AreaTypeImage = props => {
-  const { t } = useTranslation();
-  const { areaType } = props;
-
-  return (
-    <Grid item>
-      <Paper
-        square
-        variant="outlined"
-        component={Stack}
-        alignItems="center"
-        justifyContent="center"
-        sx={{ border: 'black', bgcolor: 'black', color: 'white' }}
-      >
-        <Typography>
-          {t(`landscape.profile_profile_card_area_types_${areaType}`)}
-        </Typography>
-        <img
-          src={`/landscape/${areaType}.jpg`}
-          alt={t(`landscape.profile_profile_card_area_types_${areaType}`)}
-        />
-      </Paper>
-    </Grid>
-  );
-};
-
-const AreaTypesHelperText = () => {
-  return (
-    <Box sx={{ p: 2, pt: 0 }}>
-      <Trans i18nKey="landscape.form_profile_area_types_helper_text" />
-      <Grid container spacing={2} justifyContent="center">
-        <AreaTypeImage areaType="rural" />
-        <AreaTypeImage areaType="peri-urban" />
-        <AreaTypeImage areaType="urban" />
-      </Grid>
-    </Box>
-  );
-};
 
 const LanguageAutocomplete = props => {
   const { field, id } = props;
