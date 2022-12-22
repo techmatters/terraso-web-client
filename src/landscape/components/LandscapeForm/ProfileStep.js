@@ -14,7 +14,6 @@ import {
   Typography,
 } from '@mui/material';
 
-import HelperText from 'common/components/HelperText';
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
@@ -55,13 +54,14 @@ const EcosystemTypesHelperText = () => {
 
 const FORM_FIELDS = [
   {
-    name: 'areatypes-info',
-    renderStaticElement: () => <AreaTypesInfo />,
-  },
-  {
     name: 'areaTypes',
+    label: 'landscape.form_profile_area_types',
     props: {
       renderInput: ({ id, field }) => <AreaTypesCheckboxes field={field} />,
+    },
+    helperText: {
+      titleKey: 'landscape.form_profile_area_types',
+      Component: AreaTypesHelperText,
     },
   },
   {
@@ -104,10 +104,6 @@ const FORM_FIELDS = [
       i18nKey: 'landscape.form_profile_population_helper_text',
     },
     placeholder: 'landscape.form_profile_population_placeholder',
-  },
-  {
-    name: 'livelihoods-info',
-    renderStaticElement: () => <LivelihoodsInfo />,
   },
   {
     name: 'taxonomyTypeTerms.livelihood',
@@ -190,23 +186,6 @@ const AreaTypesHelperText = () => {
       </Grid>
     </Box>
   );
-};
-
-const AreaTypesInfo = () => {
-  return (
-    <Stack direction="row" alignItems="center">
-      <Subheader text="landscape.form_profile_area_types" />
-      <HelperText
-        Component={AreaTypesHelperText}
-        label="landscape.form_profile_area_types"
-        useAnchor={false}
-      />
-    </Stack>
-  );
-};
-
-const LivelihoodsInfo = () => {
-  return <Subheader text="landscape.form_profile_livelihoods_info" />;
 };
 
 const CommoditiesInfo = () => {
