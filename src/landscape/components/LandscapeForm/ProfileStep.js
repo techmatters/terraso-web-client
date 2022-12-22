@@ -19,7 +19,6 @@ import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
 import { iso639en, iso639es } from 'localization/iso639';
 
-import { Subheader } from 'landscape/landscapeUtils';
 import TaxonomyAutocomplete from 'taxonomies/components/TaxonomyAutocomplete';
 import {
   TYPE_COMMODITY,
@@ -125,10 +124,6 @@ const FORM_FIELDS = [
     },
   },
   {
-    name: 'commondities-info',
-    renderStaticElement: () => <CommoditiesInfo />,
-  },
-  {
     name: 'taxonomyTypeTerms.commodity',
     label: 'landscape.form_profile_commondities',
     helperText: {
@@ -186,10 +181,6 @@ const AreaTypesHelperText = () => {
       </Grid>
     </Box>
   );
-};
-
-const CommoditiesInfo = () => {
-  return <Subheader text="landscape.form_profile_commondities_info" />;
 };
 
 const LanguageAutocomplete = props => {
