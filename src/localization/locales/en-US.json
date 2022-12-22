@@ -154,7 +154,7 @@
                 "width": "377",
                 "src": "kobo.png"
             },
-            "description": "Design and build forms quickly\nCollect data offline and online'\nAnalyze and manage data",
+            "description": "Design and build forms quickly\nCollect data offline and online\nAnalyze and manage data",
             "requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
             "availability": "KoBoToolbox will be integrated into Terraso in 2022. Use Kobo independently for now."
         }
