@@ -99,6 +99,7 @@ const FORM_FIELDS = [
     },
     helperText: {
       titleKey: 'landscape.form_profile_area_types',
+      useAnchor: false,
       Component: AreaTypesHelperText,
     },
   },

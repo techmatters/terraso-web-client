@@ -8,6 +8,27 @@ import { Dialog, IconButton, Popover, Stack, Typography } from '@mui/material';
 
 import { withProps } from 'react-hoc';
 
+const CloseIconButton = props => {
+  const { t } = useTranslation();
+  const { onClick } = props;
+
+  return (
+    <IconButton
+      size="small"
+      aria-label={t('form.helper_text_info_close')}
+      onClick={onClick}
+      sx={{
+        position: 'absolute',
+        right: 8,
+        top: 8,
+        color: theme => theme.palette.grey[500],
+      }}
+    >
+      <CloseIcon fontSize="small" />
+    </IconButton>
+  );
+};
+
 const HelperText = props => {
   const { t } = useTranslation();
   const { label, Component, i18nKey, titleKey, useAnchor = true } = props;
@@ -29,26 +50,6 @@ const HelperText = props => {
   ) : (
     <Component />
   );
-
-  const CloseIconButton = () => {
-    const { t } = useTranslation();
-
-    return (
-      <IconButton
-        size="small"
-        aria-label={t('form.helper_text_info_close')}
-        onClick={handleClose}
-        sx={{
-          position: 'absolute',
-          right: 8,
-          top: 8,
-          color: theme => theme.palette.grey[500],
-        }}
-      >
-        <CloseIcon fontSize="small" />
-      </IconButton>
-    );
-  };
 
   const Container = useMemo(() => {
     const paperProps = {

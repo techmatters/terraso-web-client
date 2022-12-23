@@ -63,27 +63,23 @@ const components = {
     defaultProps: {
       disableRipple: true,
     },
+    styleOverrides: {
+      root: {
+        '&:focus': {
+          outline: `2px solid ${colorTheme.palette.blue.dark}`,
+          outlineOffset: '3px',
+        },
+      },
+    },
   },
   MuiIconButton: {
     styleOverrides: {
       root: {
         borderRadius: '2px',
-        '&:focus': {
-          outline: `2px solid ${colorTheme.palette.blue.dark}`,
-          outlineOffset: '3px',
-        },
       },
     },
   },
   MuiButton: {
-    styleOverrides: {
-      root: {
-        '&:focus': {
-          outline: `2px solid ${colorTheme.palette.blue.dark}`,
-          outlineOffset: '3px',
-        },
-      },
-    },
     defaultProps: {
       disableElevation: true,
     },
