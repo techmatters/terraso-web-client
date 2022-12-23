@@ -253,7 +253,6 @@ const AreaTypesCheckboxes = props => {
           key={option.key}
           control={
             <Checkbox
-              sx={{ pt: 0, pb: 0 }}
               checked={_.includes(option.key, field.value)}
               onChange={handleChange(option.key)}
             />

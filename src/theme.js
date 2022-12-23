@@ -49,6 +49,11 @@ const colorTheme = createTheme({
   },
 });
 
+const focusOutline = {
+  outline: `2px solid ${colorTheme.palette.blue.dark}`,
+  outlineOffset: '3px',
+};
+
 const components = {
   MuiAppBar: {
     defaultProps: {
@@ -65,10 +70,7 @@ const components = {
     },
     styleOverrides: {
       root: {
-        '&:focus': {
-          outline: `2px solid ${colorTheme.palette.blue.dark}`,
-          outlineOffset: '3px',
-        },
+        '&:focus': focusOutline,
       },
     },
   },
@@ -160,6 +162,20 @@ const components = {
     defaultProps: {
       iconMapping: {
         error: <ErrorIcon fontSize="inherit" />,
+      },
+    },
+  },
+  MuiCheckbox: {
+    styleOverrides: {
+      root: {
+        '&.Mui-focusVisible': focusOutline,
+      },
+    },
+  },
+  MuiRadio: {
+    styleOverrides: {
+      root: {
+        '&.Mui-focusVisible': focusOutline,
       },
     },
   },
