@@ -59,7 +59,9 @@ const DropZone = props => {
         minHeight: '125px',
         cursor: 'pointer',
       })}
-      {...getRootProps()}
+      {...getRootProps({
+        role: 'button',
+      })}
     >
       <input {...getInputProps()} />
       {isDragActive ? (
