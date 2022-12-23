@@ -84,7 +84,7 @@ const AreaTypesHelperText = () => {
 
 const EcosystemTypesHelperText = () => {
   return (
-    <Box sx={{ p: 2 }}>
+    <Box sx={{ p: 2, maxWidth: '40rem' }}>
       <Trans i18nKey="landscape.form_profile_ecosystem_types_helper_text" />
     </Box>
   );
