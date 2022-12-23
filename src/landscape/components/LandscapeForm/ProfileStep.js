@@ -142,6 +142,13 @@ const FORM_FIELDS = [
       i18nKey: 'landscape.form_profile_population_helper_text',
     },
     placeholder: 'landscape.form_profile_population_placeholder',
+    props: {
+      inputProps: {
+        inputProps: {
+          min: 1,
+        },
+      },
+    },
   },
   {
     name: 'taxonomyTypeTerms.livelihood',
