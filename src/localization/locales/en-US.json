@@ -286,8 +286,6 @@
         "boundaries_help_geojson_detail": "<1>Learn how to create one</1>.",
         "boundaries_help_geojson_url": "https://terraso.org/help/draw-landscape-boundary/",
         "boundaries_select_file": "Select File",
-        "boundaries_size": "Maximum file size: {{size}}MB",
-        "boundaries_format": "Accepted file formats: *.json, *.geojson",
         "boundaries_save": "Save Changes",
         "boundaries_cancel": "Cancel",
         "boundaries_file_empty": "The file was empty.",

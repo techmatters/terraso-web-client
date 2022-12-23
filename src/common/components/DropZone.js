@@ -23,6 +23,7 @@ const DropZone = props => {
     maxSize,
     maxFiles,
     fileExtensions,
+    fileTypes,
     multiple,
     onDrop,
     onDropRejected,
@@ -30,11 +31,10 @@ const DropZone = props => {
     errors,
     className,
   } = props;
-  const accept = fileExtensions.map(extension => `.${extension}`).join(',');
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     onDropRejected,
-    accept,
+    accept: fileTypes,
     useFsAccessApi: false,
     multiple,
     maxSize,

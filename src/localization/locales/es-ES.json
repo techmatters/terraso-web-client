@@ -290,8 +290,6 @@
         "boundaries_help_geojson_url": "https://terraso.org/es/ayuda/dibujar-limites-del-paisaje/",
         "boundaries_select_file": "Selecciona Archivo",
         "boundaries_size": "Tamaño máximo de archivo: {{size}}MB",
-        "boundaries_format": "Formatos de archivo aceptados: *.json, *.geojson",
-        "boundaries_save": "Guardar cambios",
         "boundaries_cancel": "Cancelar",
         "boundaries_drop_message": "Soltar el archivo para subirlo",
         "boundaries_file_empty": "El archivo está vacío.",

@@ -189,8 +189,8 @@ test('LandscapeBoundaries: Select file', async () => {
     )
   );
 
-  const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB',
+  const dropzone = screen.getByRole('presentation', {
+    name: 'Select File Accepted file formats: *.geojson, *.json Maximum file size: 1 MB',
   });
 
   const file = new File([GEOJSON], 'test.json', { type: 'application/json' });
@@ -210,7 +210,7 @@ test('LandscapeBoundaries: Select file', async () => {
   await act(async () => fireEvent.drop(dropzone, data));
   expect(
     await screen.findByRole('button', {
-      name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB test.json 804 B',
+      name: 'Select File Accepted file formats: *.geojson, *.json Maximum file size: 1 MB test.json 804 B',
     })
   ).toBeInTheDocument();
 });
@@ -306,7 +306,7 @@ test('LandscapeBoundaries: Save', async () => {
   );
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB',
+    name: 'Select File Accepted file formats: *.geojson, *.json Maximum file size: 1 MB',
   });
 
   const file = new File([GEOJSON], 'test.json', { type: 'application/json' });
@@ -324,8 +324,8 @@ test('LandscapeBoundaries: Save', async () => {
     },
   };
   fireEvent.drop(dropzone, data);
-  await screen.findByRole('button', {
-    name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB test.json 804 B',
+  await screen.findByRole('presentation', {
+    name: 'Select File Accepted file formats: *.geojson, *.json Maximum file size: 1 MB test.json 804 B',
   });
 
   const saveButton = screen.getByRole('button', {
