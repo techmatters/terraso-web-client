@@ -4,7 +4,14 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import CloseIcon from '@mui/icons-material/Close';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
-import { Dialog, IconButton, Popover, Stack, Typography } from '@mui/material';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Popover,
+  Typography,
+} from '@mui/material';
 
 import { withProps } from 'react-hoc';
 
@@ -44,7 +51,7 @@ const HelperText = props => {
   };
 
   const content = i18nKey ? (
-    <Typography sx={{ p: 2, maxWidth: '30rem' }}>
+    <Typography sx={{ p: 2, pr: 4, maxWidth: '30rem' }}>
       <Trans i18nKey={i18nKey} />
     </Typography>
   ) : (
@@ -52,12 +59,8 @@ const HelperText = props => {
   );
 
   const Container = useMemo(() => {
-    const paperProps = {
-      sx: { pr: 4 },
-    };
     return useAnchor
       ? withProps(Popover, {
-          PaperProps: paperProps,
           anchorOrigin: {
             vertical: 'bottom',
             horizontal: 'center',
@@ -70,7 +73,6 @@ const HelperText = props => {
       : withProps(Dialog, {
           fullWidth: true,
           maxWidth: false,
-          PaperProps: paperProps,
           BackdropProps: {
             style: {
               backgroundColor: 'transparent',
@@ -79,6 +81,23 @@ const HelperText = props => {
           },
         });
   }, [useAnchor]);
+
+  const TitleContainer = useMemo(
+    () =>
+      useAnchor
+        ? withProps(Typography, {
+            variant: 'h6',
+            component: 'h1',
+            sx: { pl: 2, pr: 2, pt: 2 },
+          })
+        : withProps(DialogTitle, { component: 'h1' }),
+    [useAnchor]
+  );
+
+  const ContentContainer = useMemo(
+    () => (useAnchor ? React.Fragment : DialogContent),
+    [useAnchor]
+  );
 
   return (
     <>
@@ -95,19 +114,9 @@ const HelperText = props => {
         {...(useAnchor ? { anchorEl: anchorEl.current } : {})}
       >
         <>
-          {titleKey && (
-            <Stack direction="row">
-              <Typography
-                variant="h6"
-                component="h1"
-                sx={{ pl: 2, pr: 2, pt: 2 }}
-              >
-                {t(titleKey)}
-              </Typography>
-            </Stack>
-          )}
-          <CloseIconButton />
-          {content}
+          <CloseIconButton onClick={handleClose} />
+          {titleKey && <TitleContainer>{t(titleKey)}</TitleContainer>}
+          <ContentContainer>{content}</ContentContainer>
         </>
       </Container>
     </>

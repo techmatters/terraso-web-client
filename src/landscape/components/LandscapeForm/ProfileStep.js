@@ -71,14 +71,14 @@ const AreaTypeImage = props => {
 
 const AreaTypesHelperText = () => {
   return (
-    <Box sx={{ p: 2, pt: 0 }}>
+    <>
       <Trans i18nKey="landscape.form_profile_area_types_helper_text" />
       <Grid container spacing={2} justifyContent="center">
         <AreaTypeImage areaType="rural" />
         <AreaTypeImage areaType="peri-urban" />
         <AreaTypeImage areaType="urban" />
       </Grid>
-    </Box>
+    </>
   );
 };
 
