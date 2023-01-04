@@ -52,6 +52,7 @@ const colorTheme = createTheme({
 const focusOutline = {
   outline: `2px solid ${colorTheme.palette.blue.dark}`,
   outlineOffset: '3px',
+  borderRadius: '2px',
 };
 
 const components = {
