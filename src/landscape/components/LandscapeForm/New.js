@@ -16,7 +16,6 @@ import { useAnalytics } from 'monitoring/analytics';
 import { useFetchData } from 'state/utils';
 
 import { fetchGroupsAutocompleteList } from 'group/groupSlice';
-import { PARTNERSHIP_STATUS_NO } from 'landscape/landscapeConstants';
 import { saveLandscape, setFormNewValues } from 'landscape/landscapeSlice';
 import {
   TYPE_COMMODITY,
@@ -48,9 +47,7 @@ const LandscapeNew = () => {
   );
 
   const { saving, landscape } = useSelector(state => state.landscape.form);
-  const [updatedLandscape, setUpdatedLandscape] = useState({
-    partnershipStatus: PARTNERSHIP_STATUS_NO,
-  });
+  const [updatedLandscape, setUpdatedLandscape] = useState({});
 
   useDocumentTitle(t('landscape.form_new_document_title'));
 
