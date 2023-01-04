@@ -4,9 +4,16 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
-import { Autocomplete, TextField, createFilterOptions } from '@mui/material';
+import {
+  Autocomplete,
+  Paper,
+  TextField,
+  createFilterOptions,
+} from '@mui/material';
 
 import { getTermLabel } from 'taxonomies/taxonomiesUtils';
+
+import { withProps } from 'react-hoc';
 
 const FILTER = createFilterOptions();
 
@@ -54,6 +61,8 @@ const TaxonomyAutocomplete = props => {
       freeSolo={freeSolo}
       clearOnBlur
       multiple
+      openOnFocus
+      PaperComponent={withProps(Paper, { elevation: 3 })}
       value={value || []}
       onChange={onChangeWrapper}
       options={sortedOptions}
