@@ -82,7 +82,8 @@ const TaxonomyAutocomplete = props => {
               const isExisting = options.some(
                 option => inputValue === option.valueOriginal
               );
-              if (inputValue === '' || isExisting) {
+              const newTerm = _.trim(inputValue);
+              if (_.isEmpty(newTerm) || isExisting) {
                 return filtered;
               }
 
