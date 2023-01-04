@@ -24,7 +24,7 @@ const getTextAreaProps = minRows => ({
 
 const ObjectivesHelperText = () => {
   return (
-    <Box sx={{ p: 2 }}>
+    <Box sx={{ p: 2, pr: 5 }}>
       <Trans i18nKey="landscape.form_development_objectives_helper_text">
         prefix
         <ul>
