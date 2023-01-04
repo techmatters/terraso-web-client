@@ -28,10 +28,40 @@ export const SHARED_DATA_MAX_FILES =
 
 export const MAX_DESCRIPTION_LENGTH = 600;
 
-export const SHARED_DATA_ACCEPTED_EXTENSIONS = (
-  process.env.REACT_APP_SHARED_DATA_ACCEPTED_EXTENSIONS ||
-  'csv,doc,docx,pdf,ppt,pptx,xlsx,xls'
-).split(',');
+export const MAP_DATA_ACCEPTED_TYPES = {
+  'application/json': ['.json', '.geojson'],
+};
+
+export const MAP_DATA_ACCEPTED_EXTENSIONS = Object.values(
+  MAP_DATA_ACCEPTED_TYPES
+)
+  .flat()
+  .map(ext => ext.substr(1))
+  .sort();
+
+export const SHARED_DATA_ACCEPTED_TYPES = {
+  'text/csv': ['.csv'],
+  'application/msword': ['.doc'],
+  'application/pdf': ['.pdf'],
+  'application/vnd.ms-excel': ['.xls'],
+  'application/vnd.ms-powerpoint': ['.ppt'],
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation': [
+    '.pptx',
+  ],
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': [
+    '.xlsx',
+  ],
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': [
+    '.docx',
+  ],
+};
+
+export const SHARED_DATA_ACCEPTED_EXTENSIONS = Object.values(
+  SHARED_DATA_ACCEPTED_TYPES
+)
+  .flat()
+  .map(ext => ext.substr(1))
+  .sort();
 
 export const IMAGE_ACCEPTED_EXTENSIONS = (
   process.env.REACT_APP_IMAGE_ACCEPTED_EXTENSIONS || 'jpg,jpeg'

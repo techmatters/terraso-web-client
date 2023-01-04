@@ -33,6 +33,7 @@ import { MAX_DESCRIPTION_CHARACTERS } from 'sharedData/sharedDataConstants';
 
 import {
   SHARED_DATA_ACCEPTED_EXTENSIONS,
+  SHARED_DATA_ACCEPTED_TYPES,
   SHARED_DATA_MAX_FILES,
   SHARED_DATA_MAX_SIZE,
 } from 'config';
@@ -263,7 +264,7 @@ const ShareDataFiles = props => {
             rejectedFiles,
             maxSize: SHARED_DATA_MAX_SIZE / 1000000.0,
             maxFiles: SHARED_DATA_MAX_FILES,
-            fileExtensions: SHARED_DATA_ACCEPTED_EXTENSIONS.join(', '),
+            fileExtensions: SHARED_DATA_ACCEPTED_EXTENSIONS,
           })
         )
       )(rejections);
@@ -305,6 +306,7 @@ const ShareDataFiles = props => {
           onDropRejected={onDropRejected}
           maxSize={SHARED_DATA_MAX_SIZE}
           maxFiles={SHARED_DATA_MAX_FILES}
+          fileTypes={SHARED_DATA_ACCEPTED_TYPES}
           fileExtensions={SHARED_DATA_ACCEPTED_EXTENSIONS}
         />
         <FilesContext.Provider

@@ -41,7 +41,7 @@ beforeEach(() => {
 const dropFiles = async files => {
   await setup();
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.csv, *.doc, *.docx, *.pdf, *.ppt, *.pptx, *.xlsx, *.xls Maximum file size: 10 MB',
+    name: 'Select File Accepted file formats: *.csv, *.doc, *.docx, *.pdf, *.ppt, *.pptx, *.xls, *.xlsx Maximum file size: 10 MB',
   });
 
   const data = {

@@ -10,7 +10,11 @@ import { sendToRollbar } from 'monitoring/logger';
 
 import { isValidGeoJson } from 'landscape/landscapeUtils';
 
-import { GEOJSON_MAX_SIZE } from 'config';
+import {
+  GEOJSON_MAX_SIZE,
+  MAP_DATA_ACCEPTED_EXTENSIONS,
+  MAP_DATA_ACCEPTED_TYPES,
+} from 'config';
 
 import LandscapeMap from '../LandscapeMap';
 
@@ -76,7 +80,7 @@ const DropZone = props => {
       currentFile={currentFile}
       onDrop={onDrop}
       maxSize={GEOJSON_MAX_SIZE}
-      fileExtensions={['json', 'geojson']}
+      fileExtensions={MAP_DATA_ACCEPTED_EXTENSIONS}
     />
   );
 };
@@ -92,7 +96,11 @@ const LandscapeGeoJsonBoundaries = props => {
         areaPolygon={areaPolygon}
         onGeoJsonChange={onFileSelected}
       />
-      <DropZone onFileSelected={onFileSelected} />
+      <DropZone
+        onFileSelected={onFileSelected}
+        fileTypes={MAP_DATA_ACCEPTED_TYPES}
+        fileExtensions={MAP_DATA_ACCEPTED_EXTENSIONS}
+      />
       <InlineHelp
         items={[
           {

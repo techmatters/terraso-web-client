@@ -140,7 +140,7 @@ test('LandscapeNew: Save from GeoJSON', async () => {
   );
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB',
+    name: 'Select File Accepted file formats: *.geojson, *.json Maximum file size: 1 MB',
   });
 
   const file = new File([GEOJSON], 'test.json', { type: 'application/json' });
@@ -162,7 +162,7 @@ test('LandscapeNew: Save from GeoJSON', async () => {
   await waitFor(async () => {
     expect(
       await screen.findByRole('button', {
-        name: 'Select File Accepted file formats: *.json, *.geojson Maximum file size: 1 MB test.json 804 B',
+        name: 'Select File Accepted file formats: *.geojson, *.json Maximum file size: 1 MB test.json 804 B',
       })
     ).toBeInTheDocument();
   });
