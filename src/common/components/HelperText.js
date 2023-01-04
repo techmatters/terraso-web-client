@@ -38,7 +38,14 @@ const CloseIconButton = props => {
 
 const HelperText = props => {
   const { t } = useTranslation();
-  const { label, Component, i18nKey, titleKey, useAnchor = true } = props;
+  const {
+    label,
+    Component,
+    i18nKey,
+    titleKey,
+    useAnchor = true,
+    maxWidth = '40rem',
+  } = props;
   const anchorEl = useRef(null);
   const [open, setOpen] = useState(false);
 
@@ -69,10 +76,20 @@ const HelperText = props => {
             vertical: 'top',
             horizontal: 'left',
           },
+          PaperProps: {
+            sx: {
+              maxWidth,
+            },
+          },
         })
       : withProps(Dialog, {
           fullWidth: true,
           maxWidth: false,
+          PaperProps: {
+            sx: {
+              maxWidth,
+            },
+          },
           BackdropProps: {
             style: {
               backgroundColor: 'transparent',
@@ -80,7 +97,7 @@ const HelperText = props => {
             },
           },
         });
-  }, [useAnchor]);
+  }, [useAnchor, maxWidth]);
 
   const TitleContainer = useMemo(
     () =>
