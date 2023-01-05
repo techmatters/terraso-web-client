@@ -73,24 +73,6 @@ const FORM_FIELDS = [
     },
   },
   {
-    name: 'affiliatedGroups',
-    label: 'landscape.form_profile_affiliated_groups',
-    helperText: {
-      i18nKey: 'landscape.form_profile_affiliated_groups_helper_text',
-    },
-    props: {
-      renderInput: ({ id, field }) => (
-        <GroupAutocomplete
-          id={id}
-          multiple
-          value={field.value}
-          onChange={field.onChange}
-          placeholder="landscape.form_profile_affiliated_groups_placeholder"
-        />
-      ),
-    },
-  },
-  {
     name: 'taxonomyTypeTerms.organization',
     label: 'landscape.form_profile_organizations',
     helperText: {
@@ -105,6 +87,24 @@ const FORM_FIELDS = [
           value={field.value}
           onChange={field.onChange}
           placeholder="landscape.form_profile_organizations_placeholder"
+        />
+      ),
+    },
+  },
+  {
+    name: 'affiliatedGroups',
+    label: 'landscape.form_profile_affiliated_groups',
+    helperText: {
+      i18nKey: 'landscape.form_profile_affiliated_groups_helper_text',
+    },
+    props: {
+      renderInput: ({ id, field }) => (
+        <GroupAutocomplete
+          id={id}
+          multiple
+          value={field.value}
+          onChange={field.onChange}
+          placeholder="landscape.form_profile_affiliated_groups_placeholder"
         />
       ),
     },
