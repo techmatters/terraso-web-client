@@ -9,6 +9,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  Link,
   List,
   ListItem,
   Typography,
@@ -18,6 +19,8 @@ import Restricted from 'permissions/components/Restricted';
 
 import { PARTNERSHIP_STATUS_NO } from 'landscape/landscapeConstants';
 import { getTermLabel } from 'taxonomies/taxonomiesUtils';
+
+import theme from 'theme';
 
 export const Partnership = props => {
   const { t } = useTranslation();
@@ -31,11 +34,16 @@ export const Partnership = props => {
 
   return (
     <CardContent>
-      <RouterLink to={`/groups/${partnership.group.slug}`}>
-        {partnership.group.name}
-      </RouterLink>
+      <Typography variant="h3" sx={{ p: 0, pb: 1, fontWeight: 600 }}>
+        {t('landscape.profile_affiliation_card_partnership_title')}
+      </Typography>
+      <Typography>
+        <Link href={`/groups/${partnership.group.slug}`}>
+          {partnership.group.name}
+        </Link>
+      </Typography>
       {partnership.year && (
-        <Typography sx={{ mt: 1 }}>
+        <Typography sx={{ mt: 0 }}>
           {t('landscape.profile_affiliation_card_partnership_description', {
             year: partnership.year,
           })}
@@ -70,7 +78,12 @@ const AffiliatedGroups = props => {
           <ListItem
             key={group.slug}
             component={RouterLink}
-            sx={{ pl: 0, pt: 0 }}
+            sx={{
+              pl: 0,
+              pt: 0,
+              color: theme.palette.link,
+              '&:hover': { textDecoration: 'underline' },
+            }}
             to={`/groups/${group.slug}`}
           >
             {group.name}
