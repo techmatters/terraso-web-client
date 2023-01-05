@@ -158,7 +158,7 @@ test('ProfileUpdate: Save form', async () => {
 
   await inputs.changeCombobox('Languages', 'Spanish', false);
 
-  await inputs.changeCombobox('Occupations', 'Livelihood 1');
+  await inputs.changeCombobox('Occupations and employment', 'Livelihood 1');
 
   await inputs.changeCombobox('Commodities', 'Commodity 1');
 

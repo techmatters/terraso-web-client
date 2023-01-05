@@ -132,8 +132,9 @@ test('KeyInfoUpdate: Helper Text', async () => {
     name: 'Information about Name',
   });
   await act(async () => fireEvent.click(helpButton));
+
   expect(
-    screen.getByText("Your landscape's formal or common name")
+    screen.getByText(/Your landscape’s formal or common name/i)
   ).toBeInTheDocument();
 });
 test('KeyInfoUpdate: Input change', async () => {
