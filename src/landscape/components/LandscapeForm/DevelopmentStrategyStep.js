@@ -57,14 +57,6 @@ const FORM_FIELDS = [
     props: getTextAreaProps(6),
   },
   {
-    name: 'form_development_problem_situtation_description',
-    renderStaticElement: ({ t }) => (
-      <Typography sx={{ pl: 2 }}>
-        {t('landscape.form_development_problem_situtation_description')}
-      </Typography>
-    ),
-  },
-  {
     name: 'developmentStrategy.problemSitutation',
     label: 'landscape.form_development_problem_situtation',
     helperText: {
@@ -80,20 +72,6 @@ const FORM_FIELDS = [
       i18nKey: 'landscape.form_development_intervention_strategy_helper_text',
     },
     placeholder: 'landscape.form_development_intervention_strategy_placeholder',
-    props: getTextAreaProps(3),
-  },
-  {
-    name: 'form_development_other_information_description',
-    renderStaticElement: ({ t }) => (
-      <Typography sx={{ pl: 2 }}>
-        {t('landscape.form_development_other_information_description')}
-      </Typography>
-    ),
-  },
-  {
-    name: 'developmentStrategy.otherInformation',
-    label: 'landscape.form_development_other_information',
-    placeholder: 'landscape.form_development_other_information_placeholder',
     props: getTextAreaProps(3),
   },
 ];
