@@ -14,6 +14,8 @@ import {
 
 import Restricted from 'permissions/components/Restricted';
 
+import theme from 'theme';
+
 const FIELDS = [
   'objectives',
   'problemSitutation',
@@ -81,11 +83,18 @@ const DevelopmentStrategyCard = ({ landscape, setIsEmpty }) => {
         }
       />
       {_.isEmpty(values) && (
-        <>
-          <CardContent>
-            {t('landscape.profile_development_card_empty')}
-          </CardContent>
-        </>
+        <CardContent
+          sx={{
+            a: {
+              textDecoration: 'none',
+              '&:hover': { textDecoration: 'underline' },
+              '&:visited': { color: theme.palette.link },
+            },
+          }}
+          dangerouslySetInnerHTML={{
+            __html: t('landscape.profile_development_card_empty'),
+          }}
+        ></CardContent>
       )}
       {Object.keys(values).map(field => (
         <ValueSection
