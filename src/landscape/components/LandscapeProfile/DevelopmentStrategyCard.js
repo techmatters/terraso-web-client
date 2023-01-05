@@ -102,7 +102,11 @@ const DevelopmentStrategyCard = ({ landscape, setIsEmpty }) => {
             component={RouterLink}
             to={`/landscapes/${landscape.slug}/development-strategy/edit`}
           >
-            {t('landscape.profile_development_update_button')}
+            {t(
+              _.isEmpty(values)
+                ? 'landscape.profile_development_add_button'
+                : 'landscape.profile_development_update_button'
+            )}
           </Button>
         </Restricted>
       </CardContent>
