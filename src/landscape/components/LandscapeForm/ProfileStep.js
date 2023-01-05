@@ -8,12 +8,11 @@ import {
   Box,
   Checkbox,
   FormControlLabel,
-  Grid,
-  Paper,
   Stack,
   Typography,
 } from '@mui/material';
 
+import HelperText from 'common/components/HelperText';
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
@@ -29,6 +28,7 @@ import {
 } from 'taxonomies/taxonomiesConstants';
 
 import { AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS } from 'config';
+import { withProps } from 'react-hoc';
 
 import Actions from './Actions';
 
@@ -46,42 +46,21 @@ const VALIDATION_SCHEMA = yup
   })
   .required();
 
-const AreaTypeImage = props => {
+const AreaTypesHelperText = props => {
   const { t } = useTranslation();
-  const { areaType } = props;
 
   return (
-    <Grid item>
-      <Paper
-        square
-        variant="outlined"
-        component={Stack}
-        alignItems="center"
-        justifyContent="center"
-        sx={{ border: 'black', bgcolor: 'black', color: 'white' }}
-      >
-        <Typography>
-          {t(`landscape.profile_profile_card_area_types_${areaType}`)}
-        </Typography>
-        <img
-          src={`/landscape/${areaType}.jpg`}
-          alt={t(`landscape.profile_profile_card_area_types_${areaType}`)}
+    <Box sx={{ p: 2, pt: 0, width: 340 }}>
+      <Typography sx={{ maxWidth: 307 }}>
+        <Trans
+          i18nKey={`landscape.form_profile_area_types_helper_text_${props.areaType}`}
         />
-      </Paper>
-    </Grid>
-  );
-};
-
-const AreaTypesHelperText = () => {
-  return (
-    <>
-      <Trans i18nKey="landscape.form_profile_area_types_helper_text" />
-      <Grid container spacing={2} justifyContent="center">
-        <AreaTypeImage areaType="rural" />
-        <AreaTypeImage areaType="peri-urban" />
-        <AreaTypeImage areaType="urban" />
-      </Grid>
-    </>
+      </Typography>
+      <img
+        src={`/landscape/${props.areaType}.jpg`}
+        alt={t(`landscape.profile_profile_card_area_types_${props.areaType}`)}
+      />
+    </Box>
   );
 };
 
@@ -99,12 +78,6 @@ const FORM_FIELDS = [
     label: 'landscape.form_profile_area_types',
     props: {
       renderInput: ({ id, field }) => <AreaTypesCheckboxes field={field} />,
-    },
-    helperText: {
-      titleKey: 'landscape.form_profile_area_types',
-      useAnchor: false,
-      maxWidth: null,
-      Component: AreaTypesHelperText,
     },
   },
   {
@@ -271,18 +244,33 @@ const AreaTypesCheckboxes = props => {
   };
 
   return (
-    <Stack direction="row">
+    <Stack direction="row" spacing={3}>
       {options.map(option => (
-        <FormControlLabel
-          key={option.key}
-          control={
-            <Checkbox
-              checked={_.includes(option.key, field.value)}
-              onChange={handleChange(option.key)}
-            />
-          }
-          label={t(option.labelKey)}
-        />
+        <>
+          <FormControlLabel
+            key={option.key}
+            control={
+              <>
+                <Checkbox
+                  checked={_.includes(option.key, field.value)}
+                  onChange={handleChange(option.key)}
+                />
+              </>
+            }
+            label={
+              <>
+                {t(option.labelKey)}
+
+                <HelperText
+                  Component={withProps(AreaTypesHelperText, {
+                    areaType: option.key,
+                  })}
+                  label="landscape.form_profile_partnership_status"
+                />
+              </>
+            }
+          />
+        </>
       ))}
     </Stack>
   );
