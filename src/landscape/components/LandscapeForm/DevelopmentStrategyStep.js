@@ -5,6 +5,7 @@ import * as yup from 'yup';
 
 import { Box, TextareaAutosize, Typography } from '@mui/material';
 
+import ExternalLink from 'common/components/ExternalLink';
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
@@ -22,7 +23,28 @@ const getTextAreaProps = minRows => ({
   },
 });
 
+const DevelopmentStrategyHelperText = () => {
+  const { t } = useTranslation();
+
+  return (
+    <Box sx={{ p: 2, pr: 5 }}>
+      <Trans i18nKey="landscape.form_development_problem_situtation_helper_text">
+        prefix
+        <ExternalLink
+          href={t(
+            'landscape.form_development_problem_situtation_helper_text_url'
+          )}
+        >
+          text
+        </ExternalLink>
+      </Trans>
+    </Box>
+  );
+};
+
 const ObjectivesHelperText = () => {
+  const { t } = useTranslation();
+
   return (
     <Box sx={{ p: 2, pr: 5 }}>
       <Trans i18nKey="landscape.form_development_objectives_helper_text">
@@ -33,6 +55,11 @@ const ObjectivesHelperText = () => {
           <li>item</li>
           <li>item</li>
         </ul>
+        <ExternalLink
+          href={t('landscape.form_development_objectives_helper_text_url')}
+        >
+          text
+        </ExternalLink>
       </Trans>
     </Box>
   );
@@ -60,7 +87,7 @@ const FORM_FIELDS = [
     name: 'developmentStrategy.problemSitutation',
     label: 'landscape.form_development_problem_situtation',
     helperText: {
-      i18nKey: 'landscape.form_development_problem_situtation_helper_text',
+      Component: DevelopmentStrategyHelperText,
     },
     placeholder: 'landscape.form_development_problem_situtation_placeholder',
     props: getTextAreaProps(2),
