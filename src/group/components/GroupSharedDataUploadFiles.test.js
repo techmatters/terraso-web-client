@@ -153,7 +153,7 @@ test('GroupSharedDataUpload: Partial Success', async () => {
   const file0 = screen.getByRole('region', { name: 'test0' });
   expect(
     await within(file0).findByText(
-      "The file extension (.csv) does not match the file's contents"
+      'The file extension (.csv) does not match the file’s contents'
     )
   ).toBeInTheDocument();
   const file1 = screen.getByRole('region', { name: 'test1' });
