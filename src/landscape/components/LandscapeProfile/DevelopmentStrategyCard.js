@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
+import { Trans } from 'react-i18next';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -12,9 +13,8 @@ import {
   Typography,
 } from '@mui/material';
 
+import ExternalLink from 'common/components/ExternalLink';
 import Restricted from 'permissions/components/Restricted';
-
-import theme from 'theme';
 
 const FIELDS = [
   'objectives',
@@ -83,18 +83,15 @@ const DevelopmentStrategyCard = ({ landscape, setIsEmpty }) => {
         }
       />
       {_.isEmpty(values) && (
-        <CardContent
-          sx={{
-            a: {
-              textDecoration: 'none',
-              '&:hover': { textDecoration: 'underline' },
-              '&:visited': { color: theme.palette.link },
-            },
-          }}
-          dangerouslySetInnerHTML={{
-            __html: t('landscape.profile_development_card_empty'),
-          }}
-        ></CardContent>
+        <CardContent>
+          <Trans i18nKey="landscape.profile_development_card_empty">
+            prefix
+            <ExternalLink
+              href={t('landscape.profile_development_card_empty_url')}
+            ></ExternalLink>
+            .
+          </Trans>
+        </CardContent>
       )}
       {Object.keys(values).map(field => (
         <ValueSection

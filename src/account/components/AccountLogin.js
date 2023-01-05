@@ -1,13 +1,16 @@
 import React from 'react';
 
+import { Trans } from 'react-i18next';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 
 import AppleIcon from '@mui/icons-material/Apple';
 import GoogleIcon from '@mui/icons-material/Google';
+import { Typography } from '@mui/material';
 import { Box, Button, Stack } from '@mui/material';
 
+import ExternalLink from 'common/components/ExternalLink';
 import { useDocumentTitle } from 'common/document';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
@@ -81,7 +84,12 @@ const AccountForm = () => {
           )}
         </Stack>
 
-        <p dangerouslySetInnerHTML={{ __html: t('account.disclaimer') }} />
+        <Typography sx={{ mb: 4 }}>
+          <Trans i18nKey="account.disclaimer">
+            prefix
+            <ExternalLink href={t('account.disclaimer_url')}>text</ExternalLink>
+          </Trans>
+        </Typography>
 
         <LocalePicker />
       </Stack>
