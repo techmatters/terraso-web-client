@@ -56,7 +56,6 @@ export const landscapeProfileFields = `
           objectives
           problemSitutation
           interventionStrategy
-          otherInformation
         }
       }
     }

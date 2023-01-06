@@ -20,7 +20,6 @@ const FIELDS = [
   'objectives',
   'problemSitutation',
   'interventionStrategy',
-  'otherInformation',
 ];
 
 const ValueSection = props => {
