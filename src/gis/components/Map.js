@@ -254,11 +254,6 @@ const LeafletSearch = () => {
       inputField.setAttribute('aria-label', t('gis.map_search_placeholder'));
       inputField.setAttribute('role', 'combobox');
 
-      const clearButton =
-        searchControl.container.querySelector('a[class="reset"]');
-      clearButton.setAttribute('aria-label', t('gis.map_search_clear'));
-      clearButton.setAttribute('role', 'button');
-
       return container;
     };
 
