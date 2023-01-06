@@ -246,31 +246,27 @@ const AreaTypesCheckboxes = props => {
   return (
     <Stack direction="row" spacing={3}>
       {options.map(option => (
-        <>
-          <FormControlLabel
-            key={option.key}
-            control={
-              <>
-                <Checkbox
-                  checked={_.includes(option.key, field.value)}
-                  onChange={handleChange(option.key)}
-                />
-              </>
-            }
-            label={
-              <>
-                {t(option.labelKey)}
+        <FormControlLabel
+          key={option.key}
+          control={
+            <Checkbox
+              checked={_.includes(option.key, field.value)}
+              onChange={handleChange(option.key)}
+            />
+          }
+          label={
+            <>
+              {t(option.labelKey)}
 
-                <HelperText
-                  Component={withProps(AreaTypesHelperText, {
-                    areaType: option.key,
-                  })}
-                  label="landscape.form_profile_partnership_status"
-                />
-              </>
-            }
-          />
-        </>
+              <HelperText
+                Component={withProps(AreaTypesHelperText, {
+                  areaType: option.key,
+                })}
+                label="landscape.form_profile_partnership_status"
+              />
+            </>
+          }
+        />
       ))}
     </Stack>
   );
