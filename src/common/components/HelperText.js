@@ -119,11 +119,12 @@ const HelperText = props => {
   return (
     <>
       <IconButton
+        size="small"
         ref={anchorEl}
         aria-label={t('form.helper_text_info_label', { label })}
         onClick={handleClick}
       >
-        <InfoIcon />
+        <InfoIcon fontSize="1rem" />
       </IconButton>
       <Container
         open={open}
