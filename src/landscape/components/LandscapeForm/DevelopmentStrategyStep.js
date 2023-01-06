@@ -90,7 +90,7 @@ const ObjectivesHelperText = () => {
 
   return (
     <Box sx={{ p: 2, pr: 5 }}>
-      <Trans i18nKey="landscape.form_development_objectives_helper_text">
+      <Trans i18nKey="landscape.form_development_goals_helper_text">
         prefix
         <ul>
           <li>item</li>
@@ -99,7 +99,7 @@ const ObjectivesHelperText = () => {
           <li>item</li>
         </ul>
         <ExternalLink
-          href={t('landscape.form_development_objectives_helper_text_url')}
+          href={t('landscape.form_development_goals_helper_text_url')}
         >
           text
         </ExternalLink>
@@ -110,20 +110,20 @@ const ObjectivesHelperText = () => {
 
 const FORM_FIELDS = [
   {
-    name: 'form_development_objectives_description',
+    name: 'form_development_goals_description',
     renderStaticElement: ({ t }) => (
       <Typography sx={{ pl: 2 }}>
-        {t('landscape.form_development_objectives_description')}
+        {t('landscape.form_development_goals_description')}
       </Typography>
     ),
   },
   {
     name: 'developmentStrategy.objectives',
-    label: 'landscape.form_development_objectives',
+    label: 'landscape.form_development_goals',
     helperText: {
       Component: ObjectivesHelperText,
     },
-    placeholder: 'landscape.form_development_objectives_placeholder',
+    placeholder: 'landscape.form_development_goals_placeholder',
     props: getTextAreaProps(6),
   },
   {
@@ -142,13 +142,13 @@ const FORM_FIELDS = [
       Component: DevelopmentStrategyHelperText,
     },
     placeholder: 'landscape.form_development_problem_situtation_placeholder',
-    props: getTextAreaProps(2),
+    props: getTextAreaProps(3),
   },
   {
     name: 'developmentStrategy.interventionStrategy',
     label: 'landscape.form_development_intervention_strategy',
     helperText: {
-      i18nKey: 'landscape.form_development_intervention_strategy_helper_text',
+      Component: InterventionStrategyHelperText,
     },
     placeholder: 'landscape.form_development_intervention_strategy_placeholder',
     props: getTextAreaProps(3),
