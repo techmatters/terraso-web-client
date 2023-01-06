@@ -54,6 +54,7 @@ export const landscapeProfileFields = `
       edges {
         node {
           objectives
+          opportunities
           problemSitutation
           interventionStrategy
         }
