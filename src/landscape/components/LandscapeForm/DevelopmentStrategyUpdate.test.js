@@ -25,7 +25,7 @@ const setup = async () => {
     name: 'Main challenges',
   });
   const interventionStrategy = screen.getByRole('textbox', {
-    name: 'Landscape intervention strategy and opportunities',
+    name: 'Landscape intervention strategy',
   });
 
   return {
@@ -118,6 +118,7 @@ test('DevelopmentStrategyUpdate: Save form', async () => {
       id: '1',
       developmentStrategy: JSON.stringify({
         objectives: 'Test Objectives',
+        opportunities: '',
         problemSitutation: 'Test Problem Situation',
         interventionStrategy: 'Test Intervention Strategy',
       }),
