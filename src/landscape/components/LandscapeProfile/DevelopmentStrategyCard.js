@@ -16,11 +16,7 @@ import {
 import ExternalLink from 'common/components/ExternalLink';
 import Restricted from 'permissions/components/Restricted';
 
-const FIELDS = [
-  'objectives',
-  'problemSitutation',
-  'interventionStrategy',
-];
+const FIELDS = ['objectives', 'problemSitutation', 'interventionStrategy'];
 
 const ValueSection = props => {
   const { t } = useTranslation();
