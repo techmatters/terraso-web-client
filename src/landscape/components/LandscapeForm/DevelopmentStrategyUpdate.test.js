@@ -19,16 +19,13 @@ const setup = async () => {
   await render(<DevelopmentStrategyUpdate />);
 
   const objectives = screen.getByRole('textbox', {
-    name: 'Sustainable development objectives',
+    name: 'Sustainable development goals',
   });
   const problemSitutation = screen.getByRole('textbox', {
     name: 'Main challenges',
   });
   const interventionStrategy = screen.getByRole('textbox', {
-    name: 'Landscape intervention strategy',
-  });
-  const otherInformation = screen.getByRole('textbox', {
-    name: 'Other information',
+    name: 'Landscape intervention strategy and opportunities',
   });
 
   return {
@@ -36,7 +33,6 @@ const setup = async () => {
       objectives,
       problemSitutation,
       interventionStrategy,
-      otherInformation,
     },
   };
 };
@@ -111,9 +107,6 @@ test('DevelopmentStrategyUpdate: Save form', async () => {
   fireEvent.change(inputs.interventionStrategy, {
     target: { value: 'Test Intervention Strategy' },
   });
-  fireEvent.change(inputs.otherInformation, {
-    target: { value: 'Test Other Information' },
-  });
 
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Update' }))
@@ -127,7 +120,6 @@ test('DevelopmentStrategyUpdate: Save form', async () => {
         objectives: 'Test Objectives',
         problemSitutation: 'Test Problem Situation',
         interventionStrategy: 'Test Intervention Strategy',
-        otherInformation: 'Test Other Information',
       }),
     },
   });
