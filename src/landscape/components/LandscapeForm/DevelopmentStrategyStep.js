@@ -23,6 +23,23 @@ const getTextAreaProps = minRows => ({
   },
 });
 
+const OpportunitiesHelperText = () => {
+  const { t } = useTranslation();
+
+  return (
+    <Box sx={{ p: 2, pr: 5 }}>
+      <Trans i18nKey="landscape.form_development_opportunities_helper_text">
+        prefix
+        <ExternalLink
+          href={t('landscape.form_development_opportunities_helper_text_url')}
+        >
+          text
+        </ExternalLink>
+      </Trans>
+    </Box>
+  );
+};
+
 const DevelopmentStrategyHelperText = () => {
   const { t } = useTranslation();
 
@@ -33,6 +50,32 @@ const DevelopmentStrategyHelperText = () => {
         <ExternalLink
           href={t(
             'landscape.form_development_problem_situtation_helper_text_url'
+          )}
+        >
+          text
+        </ExternalLink>
+      </Trans>
+    </Box>
+  );
+};
+
+const InterventionStrategyHelperText = () => {
+  const { t } = useTranslation();
+
+  return (
+    <Box sx={{ p: 2, pr: 5 }}>
+      <Trans i18nKey="landscape.form_development_intervention_strategy_helper_text">
+        prefix
+        <ExternalLink
+          href={t(
+            'landscape.form_development_intervention_strategy_helper_text_url_landscape'
+          )}
+        >
+          text
+        </ExternalLink>
+        <ExternalLink
+          href={t(
+            'landscape.form_development_intervention_strategy_helper_text_url_finance'
           )}
         >
           text
@@ -82,6 +125,15 @@ const FORM_FIELDS = [
     },
     placeholder: 'landscape.form_development_objectives_placeholder',
     props: getTextAreaProps(6),
+  },
+  {
+    name: 'developmentStrategy.opportunities',
+    label: 'landscape.form_development_opportunities',
+    helperText: {
+      Component: OpportunitiesHelperText,
+    },
+    placeholder: 'landscape.form_development_opportunities_placeholder',
+    props: getTextAreaProps(3),
   },
   {
     name: 'developmentStrategy.problemSitutation',

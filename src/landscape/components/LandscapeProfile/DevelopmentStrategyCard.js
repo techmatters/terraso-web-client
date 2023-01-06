@@ -18,6 +18,7 @@ import Restricted from 'permissions/components/Restricted';
 
 const FIELDS = [
   'objectives',
+  'opportunities',
   'problemSitutation',
   'interventionStrategy',
 ];
