@@ -431,7 +431,7 @@ test('LandscapeBoundaries: Save KML', async () => {
   );
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.json, *.geojson, *.kml, *.kmz, *.zip Maximum file size: 10 MB',
+    name: 'Select File Accepted file formats: *.geojson, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB',
   });
 
   const dataTransfer = {
