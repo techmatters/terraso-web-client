@@ -28,14 +28,17 @@ const OpportunitiesHelperText = () => {
 
   return (
     <Box sx={{ p: 2, pr: 5 }}>
-      <Trans i18nKey="landscape.form_development_opportunities_helper_text">
-        prefix
-        <ExternalLink
-          href={t('landscape.form_development_opportunities_helper_text_url')}
-        >
-          text
-        </ExternalLink>
-      </Trans>
+      <Typography>
+        <Trans i18nKey="landscape.form_development_opportunities_helper_text">
+          prefix
+          <ExternalLink
+            linkProps={{ display: 'inline-block', mt: 2 }}
+            href={t('landscape.form_development_opportunities_helper_text_url')}
+          >
+            text
+          </ExternalLink>
+        </Trans>
+      </Typography>
     </Box>
   );
 };
@@ -45,16 +48,19 @@ const DevelopmentStrategyHelperText = () => {
 
   return (
     <Box sx={{ p: 2, pr: 5 }}>
-      <Trans i18nKey="landscape.form_development_problem_situtation_helper_text">
-        prefix
-        <ExternalLink
-          href={t(
-            'landscape.form_development_problem_situtation_helper_text_url'
-          )}
-        >
-          text
-        </ExternalLink>
-      </Trans>
+      <Typography>
+        <Trans i18nKey="landscape.form_development_problem_situtation_helper_text">
+          prefix
+          <ExternalLink
+            linkProps={{ display: 'inline-block', mt: 2 }}
+            href={t(
+              'landscape.form_development_problem_situtation_helper_text_url'
+            )}
+          >
+            text
+          </ExternalLink>
+        </Trans>
+      </Typography>
     </Box>
   );
 };
@@ -65,21 +71,23 @@ const InterventionStrategyHelperText = () => {
   return (
     <Box sx={{ p: 2, pr: 5 }}>
       <Trans i18nKey="landscape.form_development_intervention_strategy_helper_text">
-        prefix
-        <ExternalLink
-          href={t(
-            'landscape.form_development_intervention_strategy_helper_text_url_landscape'
-          )}
-        >
-          text
-        </ExternalLink>
-        <ExternalLink
-          href={t(
-            'landscape.form_development_intervention_strategy_helper_text_url_finance'
-          )}
-        >
-          text
-        </ExternalLink>
+        <Typography>prefix</Typography>
+        <Typography sx={{ mt: 2 }}>
+          <ExternalLink
+            href={t(
+              'landscape.form_development_intervention_strategy_helper_text_url_landscape'
+            )}
+          >
+            text
+          </ExternalLink>
+          <ExternalLink
+            href={t(
+              'landscape.form_development_intervention_strategy_helper_text_url_finance'
+            )}
+          >
+            text
+          </ExternalLink>
+        </Typography>
       </Trans>
     </Box>
   );
@@ -90,20 +98,22 @@ const ObjectivesHelperText = () => {
 
   return (
     <Box sx={{ p: 2, pr: 5 }}>
-      <Trans i18nKey="landscape.form_development_goals_helper_text">
-        prefix
-        <ul>
-          <li>item</li>
-          <li>item</li>
-          <li>item</li>
-          <li>item</li>
-        </ul>
-        <ExternalLink
-          href={t('landscape.form_development_goals_helper_text_url')}
-        >
-          text
-        </ExternalLink>
-      </Trans>
+      <Typography>
+        <Trans i18nKey="landscape.form_development_goals_helper_text">
+          prefix
+          <ul>
+            <li>item</li>
+            <li>item</li>
+            <li>item</li>
+            <li>item</li>
+          </ul>
+          <ExternalLink
+            href={t('landscape.form_development_goals_helper_text_url')}
+          >
+            text
+          </ExternalLink>
+        </Trans>
+      </Typography>
     </Box>
   );
 };
