@@ -451,7 +451,7 @@ test('LandscapeBoundaries: Save KML', async () => {
   await waitFor(async () => {
     expect(
       screen.getByRole('button', {
-        name: 'Select File Accepted file formats: *.json, *.geojson, *.kml, *.kmz, *.zip Maximum file size: 10 MB valid.kml 406 B',
+        name: 'Select File Accepted file formats: *.geojson, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB valid.kml 406 B',
       })
     ).toBeInTheDocument();
   });
