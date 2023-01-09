@@ -32,6 +32,9 @@ const FORM_FIELDS = [
   {
     name: 'name',
     label: 'landscape.form_name_label',
+    helperText: {
+      i18nKey: 'landscape.form_name_helper_text',
+    },
     placeholder: 'landscape.form_name_placeholder',
   },
   {
@@ -60,6 +63,9 @@ const FORM_FIELDS = [
   {
     name: 'email',
     label: 'landscape.form_email_label',
+    helperText: {
+      i18nKey: 'landscape.form_email_helper_text',
+    },
     placeholder: 'landscape.form_email_placeholder',
     type: 'url',
   },

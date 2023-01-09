@@ -13,6 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import HelperText from 'common/components/HelperText';
 import { parseError } from 'forms/yup';
 
 const FormFieldInput = props => {
@@ -69,6 +70,7 @@ const FormField = props => {
     label,
     info,
     localizationPrefix,
+    helperText,
   } = props;
   const { t } = useTranslation();
 
@@ -92,22 +94,37 @@ const FormField = props => {
   return (
     <FormControlUnstyled style={{ flexGrow: 1 }}>
       <Stack
-        component={InputLabel}
-        id={`${id}-label`}
         direction="row"
+        alignItems="center"
         spacing={1}
-        disabled={disabled}
-        error={!!fieldState?.error}
-        htmlFor={id}
+        sx={{ overflow: 'visible', mb: 1 }}
       >
         <Typography
+          variant="caption"
+          component={InputLabel}
+          disableAnimation
+          size="small"
+          id={`${id}-label`}
+          htmlFor={id}
+          disabled={disabled}
+          error={!!fieldState?.error}
           sx={{
             textTransform: 'uppercase',
+            '-webkit-transform': 'none',
+            transform: 'none',
           }}
         >
           {t(label)}
+          {required && (
+            <Typography
+              variant="caption"
+              sx={{ textTransform: 'lowercase', ml: 1 }}
+            >
+              ({t('form.required_label')})
+            </Typography>
+          )}
         </Typography>
-        {required && <Typography>({t('form.required_label')})</Typography>}
+        {helperText && <HelperText label={label} {...helperText} />}
       </Stack>
       <FormFieldInput field={field} fieldState={fieldState} {...props} />
       {info && (

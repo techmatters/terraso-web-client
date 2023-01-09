@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
+import { Trans } from 'react-i18next';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -12,13 +13,14 @@ import {
   Typography,
 } from '@mui/material';
 
+import ExternalLink from 'common/components/ExternalLink';
 import Restricted from 'permissions/components/Restricted';
 
 const FIELDS = [
   'objectives',
+  'opportunities',
   'problemSitutation',
   'interventionStrategy',
-  'otherInformation',
 ];
 
 const ValueSection = props => {
@@ -81,16 +83,15 @@ const DevelopmentStrategyCard = ({ landscape, setIsEmpty }) => {
         }
       />
       {_.isEmpty(values) && (
-        <>
-          <CardContent>
-            {t('landscape.profile_development_card_empty')}
-          </CardContent>
-          <Restricted permission="landscape.change" resource={landscape}>
-            <CardContent sx={{ mt: 2 }}>
-              {t('landscape.profile_development_card_enter')}
-            </CardContent>
-          </Restricted>
-        </>
+        <CardContent>
+          <Trans i18nKey="landscape.profile_development_card_empty">
+            prefix
+            <ExternalLink
+              href={t('landscape.profile_development_card_empty_url')}
+            ></ExternalLink>
+            .
+          </Trans>
+        </CardContent>
       )}
       {Object.keys(values).map(field => (
         <ValueSection
@@ -107,7 +108,11 @@ const DevelopmentStrategyCard = ({ landscape, setIsEmpty }) => {
             component={RouterLink}
             to={`/landscapes/${landscape.slug}/development-strategy/edit`}
           >
-            {t('landscape.profile_development_update_button')}
+            {t(
+              _.isEmpty(values)
+                ? 'landscape.profile_development_add_button'
+                : 'landscape.profile_development_update_button'
+            )}
           </Button>
         </Restricted>
       </CardContent>

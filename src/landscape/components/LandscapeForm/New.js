@@ -16,9 +16,9 @@ import { useAnalytics } from 'monitoring/analytics';
 import { useFetchData } from 'state/utils';
 
 import { fetchGroupsAutocompleteList } from 'group/groupSlice';
-import { PARTNERSHIP_STATUS_NO } from 'landscape/landscapeConstants';
 import { saveLandscape, setFormNewValues } from 'landscape/landscapeSlice';
 import {
+  TYPE_AGRICULTURAL_PRODUCTION_METHOD,
   TYPE_COMMODITY,
   TYPE_ECOSYSTEM_TYPE,
   TYPE_LIVELIHOOD,
@@ -48,9 +48,7 @@ const LandscapeNew = () => {
   );
 
   const { saving, landscape } = useSelector(state => state.landscape.form);
-  const [updatedLandscape, setUpdatedLandscape] = useState({
-    partnershipStatus: PARTNERSHIP_STATUS_NO,
-  });
+  const [updatedLandscape, setUpdatedLandscape] = useState({});
 
   useDocumentTitle(t('landscape.form_new_document_title'));
 
@@ -73,6 +71,7 @@ const LandscapeNew = () => {
             TYPE_LIVELIHOOD,
             TYPE_COMMODITY,
             TYPE_ORGANIZATION,
+            TYPE_AGRICULTURAL_PRODUCTION_METHOD,
           ],
         }),
       []

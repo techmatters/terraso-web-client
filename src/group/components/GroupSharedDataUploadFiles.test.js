@@ -123,7 +123,7 @@ test('GroupSharedDataUpload: Error - API', async () => {
   const file = screen.getByRole('region', { name: 'test1' });
   expect(
     await within(file).findByText(
-      'Oops, something went wrong. Please try it again in a few minutes. (Error: Test Error)'
+      'Oops, something went wrong. Try again in a few minutes. (Error: Test Error)'
     )
   ).toBeInTheDocument();
 });
@@ -153,7 +153,7 @@ test('GroupSharedDataUpload: Partial Success', async () => {
   const file0 = screen.getByRole('region', { name: 'test0' });
   expect(
     await within(file0).findByText(
-      "The file extension (.csv) does not match the file's contents"
+      'The file extension (.csv) does not match the file’s contents'
     )
   ).toBeInTheDocument();
   const file1 = screen.getByRole('region', { name: 'test1' });

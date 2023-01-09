@@ -10,9 +10,11 @@ import {
   Radio,
   RadioGroup,
   Select,
+  Stack,
   Typography,
 } from '@mui/material';
 
+import HelperText from 'common/components/HelperText';
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
@@ -45,6 +47,9 @@ const FORM_FIELDS = [
   {
     name: 'partnership.year',
     label: 'landscape.form_profile_partnership_year',
+    helperText: {
+      i18nKey: 'landscape.form_profile_partnership_year_helper_text',
+    },
     type: 'number',
     props: {
       renderInput: ({ id, field }) => <YearSelect id={id} field={field} />,
@@ -53,6 +58,9 @@ const FORM_FIELDS = [
   {
     name: 'partnership.group',
     label: 'landscape.form_profile_partnership_group',
+    helperText: {
+      i18nKey: 'landscape.form_profile_partnership_group_helper_text',
+    },
     props: {
       renderInput: ({ id, field }) => (
         <GroupAutocomplete
@@ -65,23 +73,11 @@ const FORM_FIELDS = [
     },
   },
   {
-    name: 'affiliatedGroups',
-    label: 'landscape.form_profile_affiliated_groups',
-    props: {
-      renderInput: ({ id, field }) => (
-        <GroupAutocomplete
-          id={id}
-          multiple
-          value={field.value}
-          onChange={field.onChange}
-          placeholder="landscape.form_profile_affiliated_groups_placeholder"
-        />
-      ),
-    },
-  },
-  {
     name: 'taxonomyTypeTerms.organization',
     label: 'landscape.form_profile_organizations',
+    helperText: {
+      i18nKey: 'landscape.form_profile_organizations_helper_text',
+    },
     props: {
       renderInput: ({ id, field }) => (
         <TaxonomyAutocomplete
@@ -91,6 +87,24 @@ const FORM_FIELDS = [
           value={field.value}
           onChange={field.onChange}
           placeholder="landscape.form_profile_organizations_placeholder"
+        />
+      ),
+    },
+  },
+  {
+    name: 'affiliatedGroups',
+    label: 'landscape.form_profile_affiliated_groups',
+    helperText: {
+      i18nKey: 'landscape.form_profile_affiliated_groups_helper_text',
+    },
+    props: {
+      renderInput: ({ id, field }) => (
+        <GroupAutocomplete
+          id={id}
+          multiple
+          value={field.value}
+          onChange={field.onChange}
+          placeholder="landscape.form_profile_affiliated_groups_placeholder"
         />
       ),
     },
@@ -125,10 +139,16 @@ const YearSelect = props => {
 
 const PartnershipStatusInfo = props => {
   return (
-    <Subheader
-      id="landscape-affiliation-partnershipStatus-info"
-      text="landscape.form_profile_partnership_status"
-    />
+    <Stack direction="row" alignItems="center">
+      <Subheader
+        id="landscape-affiliation-partnershipStatus-info"
+        text="landscape.form_profile_partnership_status"
+      />
+      <HelperText
+        i18nKey="landscape.form_profile_partnership_status_helper_text"
+        label="landscape.form_profile_partnership_status"
+      />
+    </Stack>
   );
 };
 

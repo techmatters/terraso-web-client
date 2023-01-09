@@ -1,24 +1,34 @@
 import React, { useMemo, useState } from 'react';
 
 import _ from 'lodash/fp';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 
-import { Checkbox, FormControlLabel, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  Stack,
+  Typography,
+} from '@mui/material';
 
+import HelperText from 'common/components/HelperText';
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
 import { iso639en, iso639es } from 'localization/iso639';
 
-import { Subheader } from 'landscape/landscapeUtils';
 import TaxonomyAutocomplete from 'taxonomies/components/TaxonomyAutocomplete';
 import {
+  TYPE_AGRICULTURAL_PRODUCTION_METHOD,
   TYPE_COMMODITY,
   TYPE_ECOSYSTEM_TYPE,
   TYPE_LANGUAGE,
   TYPE_LIVELIHOOD,
 } from 'taxonomies/taxonomiesConstants';
+
+import { AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS } from 'config';
+import { withProps } from 'react-hoc';
 
 import Actions from './Actions';
 
@@ -36,13 +46,36 @@ const VALIDATION_SCHEMA = yup
   })
   .required();
 
+const AreaTypesHelperText = props => {
+  const { t } = useTranslation();
+
+  return (
+    <Box sx={{ p: 2, pt: 0, width: 340 }}>
+      <Typography sx={{ maxWidth: 307 }}>
+        <Trans
+          i18nKey={`landscape.form_profile_area_types_helper_text_${props.areaType}`}
+        />
+      </Typography>
+      <img
+        src={`/landscape/${props.areaType}.jpg`}
+        alt={t(`landscape.profile_profile_card_area_types_${props.areaType}`)}
+      />
+    </Box>
+  );
+};
+
+const EcosystemTypesHelperText = () => {
+  return (
+    <Box sx={{ p: 2 }}>
+      <Trans i18nKey="landscape.form_profile_ecosystem_types_helper_text" />
+    </Box>
+  );
+};
+
 const FORM_FIELDS = [
   {
-    name: 'areatypes-info',
-    renderStaticElement: () => <AreaTypesInfo />,
-  },
-  {
     name: 'areaTypes',
+    label: 'landscape.form_profile_area_types',
     props: {
       renderInput: ({ id, field }) => <AreaTypesCheckboxes field={field} />,
     },
@@ -50,6 +83,10 @@ const FORM_FIELDS = [
   {
     name: 'taxonomyTypeTerms.ecosystem-type',
     label: 'landscape.form_profile_ecosystem_types',
+    helperText: {
+      titleKey: 'landscape.form_profile_ecosystem_types_helper_text_title',
+      Component: EcosystemTypesHelperText,
+    },
     props: {
       renderInput: ({ id, field }) => (
         <TaxonomyAutocomplete
@@ -66,6 +103,9 @@ const FORM_FIELDS = [
   {
     name: 'taxonomyTypeTerms.language',
     label: 'landscape.form_profile_languages',
+    helperText: {
+      i18nKey: 'landscape.form_profile_languages_helper_text',
+    },
     props: {
       renderInput: ({ id, field }) => (
         <LanguageAutocomplete id={id} field={field} />
@@ -76,15 +116,24 @@ const FORM_FIELDS = [
     name: 'population',
     type: 'number',
     label: 'landscape.form_profile_population',
+    helperText: {
+      i18nKey: 'landscape.form_profile_population_helper_text',
+    },
     placeholder: 'landscape.form_profile_population_placeholder',
-  },
-  {
-    name: 'livelihoods-info',
-    renderStaticElement: () => <LivelihoodsInfo />,
+    props: {
+      inputProps: {
+        inputProps: {
+          min: 1,
+        },
+      },
+    },
   },
   {
     name: 'taxonomyTypeTerms.livelihood',
     label: 'landscape.form_profile_livelihoods',
+    helperText: {
+      i18nKey: 'landscape.form_profile_livelihoods_helper_text',
+    },
     props: {
       renderInput: ({ id, field }) => (
         <TaxonomyAutocomplete
@@ -99,12 +148,31 @@ const FORM_FIELDS = [
     },
   },
   {
-    name: 'commondities-info',
-    renderStaticElement: () => <CommoditiesInfo />,
+    name: 'taxonomyTypeTerms.agricultural-production-method',
+    label: 'landscape.form_profile_agricultural_production_methods',
+    helperText: {
+      i18nKey:
+        'landscape.form_profile_agricultural_production_methods_helper_text',
+    },
+    props: {
+      renderInput: ({ id, field }) => (
+        <TaxonomyAutocomplete
+          id={id}
+          freeSolo
+          type={TYPE_AGRICULTURAL_PRODUCTION_METHOD}
+          value={field.value}
+          onChange={field.onChange}
+          placeholder="landscape.form_profile_agricultural_production_methods_placeholder"
+        />
+      ),
+    },
   },
   {
     name: 'taxonomyTypeTerms.commodity',
     label: 'landscape.form_profile_commondities',
+    helperText: {
+      i18nKey: 'landscape.form_profile_commondities_helper_text',
+    },
     props: {
       renderInput: ({ id, field }) => (
         <TaxonomyAutocomplete
@@ -119,18 +187,6 @@ const FORM_FIELDS = [
     },
   },
 ];
-
-const AreaTypesInfo = () => {
-  return <Subheader text="landscape.form_profile_area_types" />;
-};
-
-const LivelihoodsInfo = () => {
-  return <Subheader text="landscape.form_profile_livelihoods_info" />;
-};
-
-const CommoditiesInfo = () => {
-  return <Subheader text="landscape.form_profile_commondities_info" />;
-};
 
 const LanguageAutocomplete = props => {
   const { field, id } = props;
@@ -188,18 +244,28 @@ const AreaTypesCheckboxes = props => {
   };
 
   return (
-    <Stack direction="row">
+    <Stack direction="row" spacing={3}>
       {options.map(option => (
         <FormControlLabel
           key={option.key}
           control={
             <Checkbox
-              sx={{ pt: 0, pb: 0 }}
               checked={_.includes(option.key, field.value)}
               onChange={handleChange(option.key)}
             />
           }
-          label={t(option.labelKey)}
+          label={
+            <>
+              {t(option.labelKey)}
+
+              <HelperText
+                Component={withProps(AreaTypesHelperText, {
+                  areaType: option.key,
+                })}
+                label="landscape.form_profile_partnership_status"
+              />
+            </>
+          }
         />
       ))}
     </Stack>
@@ -239,6 +305,23 @@ const ProfileStep = props => {
         validationSchema={VALIDATION_SCHEMA}
         isMultiStep
         onChange={setUpdatedValues}
+        filterField={(field, { getValues }) => {
+          if (
+            field.name !== 'taxonomyTypeTerms.agricultural-production-method'
+          ) {
+            return true;
+          }
+          const livelihoods = getValues('taxonomyTypeTerms.livelihood');
+          if (_.isEmpty(livelihoods)) {
+            return false;
+          }
+          const values = livelihoods.map(
+            livelihood => livelihood.valueOriginal
+          );
+          return !_.isEmpty(
+            _.intersection(values, AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS)
+          );
+        }}
       />
       <Actions
         isForm

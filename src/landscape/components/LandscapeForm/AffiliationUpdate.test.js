@@ -43,7 +43,7 @@ const setup = async () => {
 
   const changeYear = async newYear => {
     const yearSelect = screen.getByRole('button', {
-      name: 'Approximate date of landscape partnership inception Select a year',
+      name: 'Year of landscape partnership inception Select a year',
     });
     await act(async () => fireEvent.mouseDown(yearSelect));
     const listbox = within(screen.getByRole('listbox'));
@@ -163,11 +163,7 @@ test('AffiliationUpdate: Save form', async () => {
 
   await inputs.changeYear('1999');
 
-  await inputs.changeCombobox(
-    'Landscape partnership (Terraso group)',
-    'Group Ind 2',
-    false
-  );
+  await inputs.changeCombobox('Landscape partnership', 'Group Ind 2', false);
 
   await inputs.changeCombobox(
     'Affiliated Terraso Groups',
@@ -175,7 +171,10 @@ test('AffiliationUpdate: Save form', async () => {
     false
   );
 
-  await inputs.changeCombobox('Active organizations in the landscape', 'Org 1');
+  await inputs.changeCombobox(
+    'Other active organizations in the landscape',
+    'Org 1'
+  );
 
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Update' }))

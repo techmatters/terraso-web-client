@@ -34,7 +34,7 @@ test('AsyncThunk: Complex error message', async () => {
   await render(<TestComponent />);
   expect(
     screen.getByText(
-      /Oops, something went wrong. Please try it again in a few minutes. \(Error: Unexpected\)/i
+      /Oops, something went wrong. Try again in a few minutes. \(Error: Unexpected\)/i
     )
   ).toBeInTheDocument();
 });

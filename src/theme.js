@@ -49,6 +49,12 @@ const colorTheme = createTheme({
   },
 });
 
+const focusOutline = {
+  outline: `2px solid ${colorTheme.palette.blue.dark}`,
+  outlineOffset: '3px',
+  borderRadius: '2px',
+};
+
 const components = {
   MuiAppBar: {
     defaultProps: {
@@ -63,27 +69,20 @@ const components = {
     defaultProps: {
       disableRipple: true,
     },
+    styleOverrides: {
+      root: {
+        '&:focus': focusOutline,
+      },
+    },
   },
   MuiIconButton: {
     styleOverrides: {
       root: {
         borderRadius: '2px',
-        '&:focus': {
-          outline: `2px solid ${colorTheme.palette.blue.dark}`,
-          outlineOffset: '3px',
-        },
       },
     },
   },
   MuiButton: {
-    styleOverrides: {
-      root: {
-        '&:focus': {
-          outline: `2px solid ${colorTheme.palette.blue.dark}`,
-          outlineOffset: '3px',
-        },
-      },
-    },
     defaultProps: {
       disableElevation: true,
     },
@@ -164,6 +163,20 @@ const components = {
     defaultProps: {
       iconMapping: {
         error: <ErrorIcon fontSize="inherit" />,
+      },
+    },
+  },
+  MuiCheckbox: {
+    styleOverrides: {
+      root: {
+        '&.Mui-focusVisible': focusOutline,
+      },
+    },
+  },
+  MuiRadio: {
+    styleOverrides: {
+      root: {
+        '&.Mui-focusVisible': focusOutline,
       },
     },
   },

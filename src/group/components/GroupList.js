@@ -1,5 +1,6 @@
 import React from 'react';
 
+import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
@@ -59,7 +60,7 @@ const MembershipButton = ({ group }) => (
 const GroupList = () => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { groups, fetching, message } = useSelector(state => state.group.list);
+  const { groups, fetching, message } = useSelector(_.getOr({}, 'group.list'));
 
   useDocumentTitle(t('group.list_document_title'));
 

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 
-import { TextareaAutosize, Typography } from '@mui/material';
+import { Box, TextareaAutosize, Typography } from '@mui/material';
 
+import ExternalLink from 'common/components/ExternalLink';
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
@@ -22,53 +23,134 @@ const getTextAreaProps = minRows => ({
   },
 });
 
+const OpportunitiesHelperText = () => {
+  const { t } = useTranslation();
+
+  return (
+    <Box sx={{ p: 2, pr: 5 }}>
+      <Trans i18nKey="landscape.form_development_opportunities_helper_text">
+        prefix
+        <ExternalLink
+          href={t('landscape.form_development_opportunities_helper_text_url')}
+        >
+          text
+        </ExternalLink>
+      </Trans>
+    </Box>
+  );
+};
+
+const DevelopmentStrategyHelperText = () => {
+  const { t } = useTranslation();
+
+  return (
+    <Box sx={{ p: 2, pr: 5 }}>
+      <Trans i18nKey="landscape.form_development_problem_situtation_helper_text">
+        prefix
+        <ExternalLink
+          href={t(
+            'landscape.form_development_problem_situtation_helper_text_url'
+          )}
+        >
+          text
+        </ExternalLink>
+      </Trans>
+    </Box>
+  );
+};
+
+const InterventionStrategyHelperText = () => {
+  const { t } = useTranslation();
+
+  return (
+    <Box sx={{ p: 2, pr: 5 }}>
+      <Trans i18nKey="landscape.form_development_intervention_strategy_helper_text">
+        prefix
+        <ExternalLink
+          href={t(
+            'landscape.form_development_intervention_strategy_helper_text_url_landscape'
+          )}
+        >
+          text
+        </ExternalLink>
+        <ExternalLink
+          href={t(
+            'landscape.form_development_intervention_strategy_helper_text_url_finance'
+          )}
+        >
+          text
+        </ExternalLink>
+      </Trans>
+    </Box>
+  );
+};
+
+const ObjectivesHelperText = () => {
+  const { t } = useTranslation();
+
+  return (
+    <Box sx={{ p: 2, pr: 5 }}>
+      <Trans i18nKey="landscape.form_development_goals_helper_text">
+        prefix
+        <ul>
+          <li>item</li>
+          <li>item</li>
+          <li>item</li>
+          <li>item</li>
+        </ul>
+        <ExternalLink
+          href={t('landscape.form_development_goals_helper_text_url')}
+        >
+          text
+        </ExternalLink>
+      </Trans>
+    </Box>
+  );
+};
+
 const FORM_FIELDS = [
   {
-    name: 'form_development_objectives_description',
+    name: 'form_development_goals_description',
     renderStaticElement: ({ t }) => (
       <Typography sx={{ pl: 2 }}>
-        {t('landscape.form_development_objectives_description')}
+        {t('landscape.form_development_goals_description')}
       </Typography>
     ),
   },
   {
     name: 'developmentStrategy.objectives',
-    label: 'landscape.form_development_objectives',
-    placeholder: 'landscape.form_development_objectives_placeholder',
+    label: 'landscape.form_development_goals',
+    helperText: {
+      Component: ObjectivesHelperText,
+    },
+    placeholder: 'landscape.form_development_goals_placeholder',
     props: getTextAreaProps(6),
   },
   {
-    name: 'form_development_problem_situtation_description',
-    renderStaticElement: ({ t }) => (
-      <Typography sx={{ pl: 2 }}>
-        {t('landscape.form_development_problem_situtation_description')}
-      </Typography>
-    ),
+    name: 'developmentStrategy.opportunities',
+    label: 'landscape.form_development_opportunities',
+    helperText: {
+      Component: OpportunitiesHelperText,
+    },
+    placeholder: 'landscape.form_development_opportunities_placeholder',
+    props: getTextAreaProps(3),
   },
   {
     name: 'developmentStrategy.problemSitutation',
     label: 'landscape.form_development_problem_situtation',
+    helperText: {
+      Component: DevelopmentStrategyHelperText,
+    },
     placeholder: 'landscape.form_development_problem_situtation_placeholder',
-    props: getTextAreaProps(2),
+    props: getTextAreaProps(3),
   },
   {
     name: 'developmentStrategy.interventionStrategy',
     label: 'landscape.form_development_intervention_strategy',
+    helperText: {
+      Component: InterventionStrategyHelperText,
+    },
     placeholder: 'landscape.form_development_intervention_strategy_placeholder',
-    props: getTextAreaProps(3),
-  },
-  {
-    name: 'form_development_other_information_description',
-    renderStaticElement: ({ t }) => (
-      <Typography sx={{ pl: 2 }}>
-        {t('landscape.form_development_other_information_description')}
-      </Typography>
-    ),
-  },
-  {
-    name: 'developmentStrategy.otherInformation',
-    label: 'landscape.form_development_other_information',
-    placeholder: 'landscape.form_development_other_information_placeholder',
     props: getTextAreaProps(3),
   },
 ];

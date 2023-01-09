@@ -17,6 +17,7 @@ import {
   setFormNewValues,
 } from 'landscape/landscapeSlice';
 import {
+  TYPE_AGRICULTURAL_PRODUCTION_METHOD,
   TYPE_COMMODITY,
   TYPE_ECOSYSTEM_TYPE,
   TYPE_LIVELIHOOD,
@@ -66,7 +67,12 @@ const ProfileUpdate = () => {
     useCallback(
       () =>
         fetchTermsForTypes({
-          types: [TYPE_ECOSYSTEM_TYPE, TYPE_LIVELIHOOD, TYPE_COMMODITY],
+          types: [
+            TYPE_ECOSYSTEM_TYPE,
+            TYPE_LIVELIHOOD,
+            TYPE_COMMODITY,
+            TYPE_AGRICULTURAL_PRODUCTION_METHOD,
+          ],
         }),
       []
     )

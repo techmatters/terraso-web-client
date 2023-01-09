@@ -153,14 +153,17 @@ test('ProfileUpdate: Save form', async () => {
 
   fireEvent.change(inputs.population, { target: { value: '1000932' } });
 
-  await inputs.changeCombobox('Ecosystems', 'Eco1 En', false);
-  await inputs.changeCombobox('Ecosystems', 'Test New Eco 2');
+  await inputs.changeCombobox('Ecosystem Types', 'Eco1 En', false);
+  await inputs.changeCombobox('Ecosystem Types', 'Test New Eco 2');
 
   await inputs.changeCombobox('Languages', 'Spanish', false);
 
-  await inputs.changeCombobox('Occupations', 'Livelihood 1');
+  await inputs.changeCombobox('Livelihoods', 'Livelihood 1');
 
-  await inputs.changeCombobox('Commodities', 'Commodity 1');
+  await inputs.changeCombobox(
+    'Agricultural products and commodities',
+    'Commodity 1'
+  );
 
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Update' }))
