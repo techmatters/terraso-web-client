@@ -5,6 +5,7 @@ import { accountMembership } from 'group/groupFragments';
 import { extractAccountMembership, extractMembersInfo } from 'group/groupUtils';
 import {
   defaultGroup,
+  landscapeAreaPolygon,
   landscapeFields,
   landscapePartnershipField,
   landscapeProfileFields,
@@ -133,6 +134,7 @@ export const fetchLandscapeToView = (slug, currentUser) => {
         edges {
           node {
             ...landscapeFields
+            ...landscapeAreaPolygon
             ...landscapePartnershipField
             ...defaultGroup
           }
@@ -140,6 +142,7 @@ export const fetchLandscapeToView = (slug, currentUser) => {
       }
     }
     ${landscapeFields}
+    ${landscapeAreaPolygon}
     ${landscapePartnershipField}
     ${defaultGroup}
   `;
@@ -230,6 +233,7 @@ export const fetchLandscapeToUploadSharedData = (slug, currentUser) => {
     }));
 };
 
+// TODO: Remove landscapeAreaPolygon fragment when the backend is updated
 export const fetchLandscapes = (params, currentUser) => {
   const query = `
     query landscapes($accountEmail: String!){
@@ -237,12 +241,14 @@ export const fetchLandscapes = (params, currentUser) => {
         edges {
           node {
             ...landscapeFields
+            ...landscapeAreaPolygon
             ...defaultGroup
           }
         }
       }
     }
     ${landscapeFields}
+    ${landscapeAreaPolygon}
     ${defaultGroup}
   `;
   return terrasoApi

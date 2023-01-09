@@ -289,9 +289,6 @@
         "boundaries_select_file": "Select File",
         "boundaries_save": "Save Changes",
         "boundaries_cancel": "Cancel",
-        "boundaries_file_empty": "The file was empty.",
-        "boundaries_file_invalid_json": "The file was not a valid JSON file.",
-        "boundaries_file_invalid_geojson": "The file was JSON, but not a valid GeoJSON file.",
         "view_map_boundaries_help": "Something wrong with the map?",
         "view_map_boundaries_help_details": "Contact your landscape’s manager or <1>send us a message</1>.",
         "view_map_boundaries_help_url": "/contact",
@@ -681,6 +678,10 @@
         "default_marker_label": "Marker",
         "latitude": "latitude",
         "longitude": "longitude",
+        "boundaries_file_empty": "The file was empty.",
+        "boundaries_file_invalid_json": "The file was not a valid JSON file.",
+        "boundaries_file_invalid_geojson": "The file was JSON, but not a valid GeoJSON file.",
+        "invalid_shapefile": "[TODO] Invalid shapefile",
         "map_draw": {
             "draw": {
                 "toolbar": {

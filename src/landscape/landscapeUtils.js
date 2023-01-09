@@ -1,4 +1,3 @@
-import bbox from '@turf/bbox';
 import turfCenter from '@turf/center';
 import * as turf from '@turf/helpers';
 import _ from 'lodash/fp';
@@ -6,18 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Typography } from '@mui/material';
 
-import { normalizeLongitude } from 'gis/gisUtils';
-
-const parseGeoJson = areaPolygon => {
-  if (!areaPolygon) {
-    return null;
-  }
-  try {
-    return areaPolygon.bbox || bbox(areaPolygon);
-  } catch (error) {
-    return null;
-  }
-};
+import { normalizeLongitude, parseGeoJson } from 'gis/gisUtils';
 
 // Returns bounding box containing the defined areaPolygon data or
 // the bounding box requested from the landsace.location data
@@ -55,6 +43,7 @@ export const isBoundaryPin = landscape => {
   return _.get('[0].geometry.type', features) === 'Point';
 };
 
+// TODO Move logic to API?, with the new formats the processing time for this might take too long
 export const getLandscapePin = landscape => {
   if (!landscape) {
     return null;
@@ -96,8 +85,6 @@ export const getLandscapePin = landscape => {
 
   return [point[0], normalizeLongitude(point[1])];
 };
-
-export const isValidGeoJson = areaPolygon => !!parseGeoJson(areaPolygon);
 
 export const extractPartnership = landscape =>
   _.flow(

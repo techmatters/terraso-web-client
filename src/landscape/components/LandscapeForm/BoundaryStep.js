@@ -24,7 +24,7 @@ import { countryNameForCode } from 'common/utils';
 import PageHeader from 'layout/PageHeader';
 
 import { getPlaceInfoByName } from 'gis/gisService';
-import LandscapeGeoJsonBoundaries from 'landscape/components/LandscapeForm/BoundaryStepGeoJsonBoundaries';
+import LandscapeBoundariesFile from 'landscape/components/LandscapeForm/BoundaryStepBoundariesFile';
 import LandscapeMap from 'landscape/components/LandscapeMap';
 
 import { useIsMounted } from 'custom-hooks';
@@ -68,7 +68,7 @@ const GeoJson = props => {
     <>
       <PageHeader header={t('landscape.form_boundary_geojson_title')} />
       <Paper variant="outlined" sx={{ p: 2, mt: 2, mb: 2 }}>
-        <LandscapeGeoJsonBoundaries
+        <LandscapeBoundariesFile
           mapCenter={mapCenter}
           areaPolygon={areaPolygon || landscape?.areaPolygon}
           onFileSelected={setAreaPolygon}
