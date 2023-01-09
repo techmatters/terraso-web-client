@@ -435,7 +435,7 @@
         "boundary_success": "Boundary was updated",
         "form_development_problem_situtation_helper_text": "Examples of challenges include deforestation, poverty, lack of economic opportunities and funding. <1>Learn more about assessment of landscape challenges</1>.",
         "form_development_problem_situtation_helper_text_url": "https://terraso.org/guide/shared-understanding/assessment-of-landscape-challenges-and-opportunities/",
-        "form_development_intervention_strategy_helper_text": "<0>Examples include convening landscape partners to identify  solutions, conducting policy campaigns and building capacity of stakeholders.</0> <1>Learn more about <1>landscape action plan</1> and <1>finance strategy</2>.</1>",
+        "form_development_intervention_strategy_helper_text": "<0>Examples include convening landscape partners to identify  solutions, conducting policy campaigns and building capacity of stakeholders.</0> <1>Learn more about <0>landscape action plan</0> and <1>finance strategy</1>.</1>",
         "form_development_intervention_strategy_helper_text_url_landscape": "https://terraso.org/guide/vision-and-planning/landscape-action-plan-short-term/",
         "form_development_intervention_strategy_helper_text_url_finance": "https://terraso.org/guide/vision-and-planning/landscape-finance-strategy/",
         "form_development_goals_helper_text_url": "https://terraso.org/guide/vision-and-planning/",
