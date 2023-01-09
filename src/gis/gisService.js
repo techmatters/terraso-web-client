@@ -24,7 +24,7 @@ export const getPlaceInfoByName = name =>
     });
 
 const sendFileToTerrasoApi = async file => {
-  const path = '/gis/parseFile/';
+  const path = '/gis/parse/';
   const body = new FormData();
   body.append('file', file);
   const jsonResponse = await terrasoApi.request({ path, body });
