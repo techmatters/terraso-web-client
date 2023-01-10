@@ -678,10 +678,10 @@
         "default_marker_label": "Marker",
         "latitude": "latitude",
         "longitude": "longitude",
-        "boundaries_file_empty": "The file was empty.",
-        "boundaries_file_invalid_json": "The file was not a valid JSON file.",
-        "boundaries_file_invalid_geojson": "The file was JSON, but not a valid GeoJSON file.",
-        "invalid_shapefile": "[TODO] Invalid shapefile",
+        "boundaries_file_empty": "The file {{name}} is empty.",
+        "boundaries_file_invalid_json": "The file {{name}}  is a valid JSON file.",
+        "boundaries_file_invalid_geojson": "The file {{name}} is JSON, but is not a valid GeoJSON file.",
+        "invalid_shapefile": "The file {{name}} is not a valid shapefile",
         "map_draw": {
             "draw": {
                 "toolbar": {
