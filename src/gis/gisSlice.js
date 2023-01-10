@@ -44,6 +44,7 @@ const gisSlice = createSlice({
       ...state,
       parsing: {
         processing: false,
+        fileName: action.meta.arg.name,
         error: action.payload.parsedErrors,
       },
     }),

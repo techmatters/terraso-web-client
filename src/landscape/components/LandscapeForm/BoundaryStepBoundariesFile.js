@@ -28,6 +28,7 @@ const DropZone = props => {
   const [dropError, setDropError] = useState();
   const {
     processing: processingFile,
+    fileName: processingFileName,
     error: processingError,
     geojson,
   } = useSelector(_.get('gis.parsing'));
@@ -65,10 +66,15 @@ const DropZone = props => {
       _.compact(
         _.concat(
           dropError,
-          processingError?.map(error => t(error.content, error.params))
+          processingError?.map(error =>
+            t(error.content, {
+              ...error.params,
+              name: processingFileName,
+            })
+          )
         )
       ),
-    [dropError, processingError, t]
+    [dropError, processingError, processingFileName, t]
   );
 
   return (

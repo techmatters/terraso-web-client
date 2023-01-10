@@ -124,7 +124,7 @@ const plainTextFile = new File(['hello'], 'test.json', {
 });
 test(
   'LandscapeBoundaries: Select file (plain text, not JSON)',
-  testGeoJsonParsing(plainTextFile, 'The file was not a valid JSON file.')
+  testGeoJsonParsing(plainTextFile, 'The file test.json is a valid JSON file.')
 );
 
 const invalidJsonFile = new File(
@@ -138,7 +138,10 @@ const invalidJsonFile = new File(
 );
 test(
   'LandscapeBoundaries: Select file (invalid JSON)',
-  testGeoJsonParsing(invalidJsonFile, 'The file was not a valid JSON file.')
+  testGeoJsonParsing(
+    invalidJsonFile,
+    'The file test.json is a valid JSON file.'
+  )
 );
 
 const invalidGeoJsonFile = new File(['{"key": "value"}'], 'test.json', {
@@ -148,7 +151,7 @@ test(
   'LandscapeBoundaries: Select file (Invalid GeoJSON)',
   testGeoJsonParsing(
     invalidGeoJsonFile,
-    'The file was JSON, but not a valid GeoJSON file.'
+    'The file test.json is JSON, but is not a valid GeoJSON file.'
   )
 );
 
@@ -165,7 +168,7 @@ test(
   'LandscapeBoundaries: Select file (Invalid GeoJSON Boundary)',
   testGeoJsonParsing(
     invalidGeomtryinGeoJsonFile,
-    'The file was JSON, but not a valid GeoJSON file.'
+    'The file test.json is JSON, but is not a valid GeoJSON file.'
   )
 );
 
@@ -174,7 +177,7 @@ const emptyGeoJsonFile = new File([''], 'test.json', {
 });
 test(
   'LandscapeBoundaries: Select file (empty)',
-  testGeoJsonParsing(emptyGeoJsonFile, 'The file was empty.')
+  testGeoJsonParsing(emptyGeoJsonFile, 'The file test.json is empty.')
 );
 
 test('LandscapeBoundaries: Select file', async () => {
