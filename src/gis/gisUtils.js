@@ -28,19 +28,17 @@ export const openGeoJsonFile = file =>
     if (!contents.length) {
       return Promise.reject('boundaries_file_empty');
     }
-    let json;
 
     try {
-      json = JSON.parse(contents);
+      const json = JSON.parse(contents);
+      if (isValidGeoJson(json)) {
+        return json;
+      }
     } catch (error) {
       return Promise.reject('boundaries_file_invalid_json');
     }
 
-    if (isValidGeoJson(json)) {
-      return json;
-    } else {
-      return Promise.reject('boundaries_file_invalid_geojson');
-    }
+    return Promise.reject('boundaries_file_invalid_geojson');
   });
 
 export const parseGeoJson = areaPolygon => {
