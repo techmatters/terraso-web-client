@@ -7,7 +7,7 @@ import { extractTerms } from './taxonomiesUtils';
 
 export const fetchTermsForTypes = ({ types }) => {
   const query = `
-    query taxonomyTerms($types: [String]!){
+    query taxonomyTerms($types: [CoreTaxonomyTermTypeChoices]!){
       taxonomyTerms(type_In: $types) {
         edges {
           node {

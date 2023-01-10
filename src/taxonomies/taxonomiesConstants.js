@@ -1,10 +1,10 @@
-export const TYPE_ECOSYSTEM_TYPE = 'ecosystem-type';
-export const TYPE_LANGUAGE = 'language';
-export const TYPE_LIVELIHOOD = 'livelihood';
-export const TYPE_COMMODITY = 'commodity';
-export const TYPE_ORGANIZATION = 'organization';
+export const TYPE_ECOSYSTEM_TYPE = 'ECOSYSTEM_TYPE';
+export const TYPE_LANGUAGE = 'LANGUAGE';
+export const TYPE_LIVELIHOOD = 'LIVELIHOOD';
+export const TYPE_COMMODITY = 'COMMODITY';
+export const TYPE_ORGANIZATION = 'ORGANIZATION';
 export const TYPE_AGRICULTURAL_PRODUCTION_METHOD =
-  'agricultural-production-method';
+  'AGRICULTURAL_PRODUCTION_METHOD';
 
 export const ALL_TYPES = {
   ECOSYSTEM_TYPE: TYPE_ECOSYSTEM_TYPE,
