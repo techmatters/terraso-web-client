@@ -282,6 +282,7 @@ const addGroup = ({ group, user }) => {
     mutation addGroup($input: GroupAddMutationInput!){
       addGroup(input: $input) {
         group { ...groupFields }
+        errors
       }
     }
     ${groupFields}
