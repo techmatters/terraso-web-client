@@ -60,6 +60,7 @@ export const saveUser = user => {
     mutation updateUser($input: UserUpdateMutationInput!) {
       updateUser(input: $input) {
         user { ...userFields }
+        errors
       }
     }
     ${userFields}
@@ -79,6 +80,7 @@ export const savePreference = ({ key, value }, currentUser) => {
     mutation updateUserPreference($input: UserPreferenceUpdateInput!) {
       updateUserPreference(input: $input) {
         preference { ...userPreferencesFields }
+        errors
       }
     }
     ${userPreferencesFields}

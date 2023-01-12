@@ -224,6 +224,7 @@ export const removeMember = (member, currentUser) => {
             ...groupMembers
           }
         }
+        errors
       }
     }
     ${groupMembers}
@@ -248,6 +249,7 @@ export const updateMember = ({ member }, currentUser) => {
             ...groupMembers
           }
         }
+        errors
       }
     }
     ${groupMembers}
@@ -268,6 +270,7 @@ const updateGroup = group => {
     mutation updateGroup($input: GroupUpdateMutationInput!) {
       updateGroup(input: $input) {
         group { ...groupFields }
+        errors
       }
     }
     ${groupFields}
@@ -310,6 +313,7 @@ export const joinGroup = (
             ...accountMembership
           }
         }
+        errors
       }
     }
     ${groupFields}
@@ -344,6 +348,7 @@ export const leaveGroup = ({ groupSlug, membershipId }, currentUser) => {
             ...accountMembership
           }
         }
+        errors
       }
     }
     ${groupFields}

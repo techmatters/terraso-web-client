@@ -307,6 +307,7 @@ const updateLandscape = landscape => {
         landscape {
           ...landscapeProfileFields
         }
+        errors
       }
     }
     ${landscapeProfileFields}
@@ -327,6 +328,7 @@ const addLandscape = landscape => {
         landscape {
           ...landscapeProfileFields
         }
+        errors
       }
     }
     ${landscapeProfileFields}

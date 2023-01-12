@@ -32,7 +32,11 @@ const parseMessage = (message, body) => {
 };
 
 const handleApiErrors = (data, body) => {
-  const errors = _.get('errors', data);
+  const errors = _.getOr(
+    _.flow(_.get('data'), _.values, _.first, _.get('errors'))(data),
+    'errors',
+    data
+  );
 
   const unauthenticatedError = errors.find(error =>
     _.includes('AnonymousUser', error.message)
@@ -49,9 +53,10 @@ const handleApiErrors = (data, body) => {
 };
 
 export const requestGraphQL = async (query, variables) => {
+  const body = { query, variables };
   const jsonResponse = await request({
     path: GRAPH_QL_ENDPOINT,
-    body: { query, variables },
+    body,
     headers: {
       'Content-Type': 'application/json',
     },
@@ -64,6 +69,16 @@ export const requestGraphQL = async (query, variables) => {
       jsonResponse
     );
     await Promise.reject(['terraso_api.error_unexpected']);
+  }
+
+  const hasErrors = _.flow(
+    _.values,
+    _.first,
+    _.has('errors')
+  )(jsonResponse.data);
+
+  if (hasErrors) {
+    await handleApiErrors(jsonResponse, body);
   }
 
   return jsonResponse.data;
