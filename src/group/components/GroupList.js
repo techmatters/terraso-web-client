@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
@@ -63,6 +63,19 @@ const GroupList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { groups, fetching, message } = useSelector(_.getOr({}, 'group.list'));
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+  const linkStyle = useMemo(
+    () =>
+      isSmall
+        ? {
+            wordBreak: 'break-word',
+          }
+        : {
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+          },
+    [isSmall]
+  );
 
   useDocumentTitle(t('group.list_document_title'));
 
@@ -96,20 +109,7 @@ const GroupList = () => {
       minWidth: 200,
       renderCell: ({ row: group }) =>
         group.email && (
-          <Link
-            href={`mailto:${group.email}`}
-            sx={
-              isSmall
-                ? {
-                    wordBreak: 'break-word',
-                  }
-                : {
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                  }
-            }
-          >
+          <Link href={`mailto:${group.email}`} sx={linkStyle}>
             {group.email}
           </Link>
         ),
@@ -122,20 +122,7 @@ const GroupList = () => {
       minWidth: 200,
       renderCell: ({ row: group }) =>
         group.website && (
-          <Link
-            href={group.website}
-            sx={
-              isSmall
-                ? {
-                    wordBreak: 'break-word',
-                  }
-                : {
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                  }
-            }
-          >
+          <Link href={group.website} sx={linkStyle}>
             {group.website.replace(/^https?:\/\//, '')}
           </Link>
         ),
