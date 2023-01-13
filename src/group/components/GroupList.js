@@ -94,7 +94,16 @@ const GroupList = () => {
       minWidth: 200,
       renderCell: ({ row: group }) =>
         group.email && (
-          <Link href={`mailto:${group.email}`}>{group.email}</Link>
+          <Link
+            href={`mailto:${group.email}`}
+            sx={{
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {group.email}
+          </Link>
         ),
     },
     {
@@ -104,7 +113,18 @@ const GroupList = () => {
       flex: 1.5,
       minWidth: 200,
       renderCell: ({ row: group }) =>
-        group.website && <Link href={group.website}>{group.website}</Link>,
+        group.website && (
+          <Link
+            href={group.website}
+            sx={{
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {group.website.replace(/^https?:\/\//, '')}
+          </Link>
+        ),
     },
     {
       field: 'actions',
