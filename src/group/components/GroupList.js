@@ -78,7 +78,7 @@ const GroupList = () => {
     {
       field: 'name',
       headerName: t('group.list_column_name'),
-      flex: 1.5,
+      flex: 2,
       minWidth: 200,
       renderCell: ({ row: group, formattedValue }) => (
         <Link component={RouterLink} to={`/groups/${group.slug}`}>
@@ -90,7 +90,7 @@ const GroupList = () => {
       field: 'email',
       headerName: t('group.list_column_contact'),
       sortable: false,
-      flex: 1.5,
+      flex: 1.25,
       minWidth: 200,
       renderCell: ({ row: group }) =>
         group.email && (
@@ -110,7 +110,7 @@ const GroupList = () => {
       field: 'website',
       headerName: t('group.list_column_website'),
       sortable: false,
-      flex: 1.5,
+      flex: 1.25,
       minWidth: 200,
       renderCell: ({ row: group }) =>
         group.website && (
@@ -132,7 +132,7 @@ const GroupList = () => {
       headerName: t('group.list_column_actions_description'),
       sortable: false,
       align: 'center',
-      flex: 1,
+      flex: 0.5,
       cardSize: 6,
       getActions: ({ row: group }) => [<MembershipButton group={group} />],
     },
