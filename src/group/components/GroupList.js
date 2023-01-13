@@ -105,7 +105,7 @@ const GroupList = () => {
       field: 'email',
       headerName: t('group.list_column_contact'),
       sortable: false,
-      flex: 1.25,
+      flex: 1.2,
       minWidth: 200,
       renderCell: ({ row: group }) =>
         group.email && (
@@ -118,7 +118,7 @@ const GroupList = () => {
       field: 'website',
       headerName: t('group.list_column_website'),
       sortable: false,
-      flex: 1.25,
+      flex: 1.2,
       minWidth: 200,
       renderCell: ({ row: group }) =>
         group.website && (
@@ -133,7 +133,7 @@ const GroupList = () => {
       headerName: t('group.list_column_actions_description'),
       sortable: false,
       align: 'center',
-      flex: 0.5,
+      flex: 0.6,
       cardSize: 6,
       getActions: ({ row: group }) => [<MembershipButton group={group} />],
     },
