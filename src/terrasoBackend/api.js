@@ -71,10 +71,11 @@ export const requestGraphQL = async (query, variables) => {
     await Promise.reject(['terraso_api.error_unexpected']);
   }
 
-  const hasErrors = _.flow(
+  const hasErrors = !_.flow(
     _.values,
     _.first,
-    _.has('errors')
+    _.get('errors'),
+    _.isEmpty
   )(jsonResponse.data);
 
   if (hasErrors) {
@@ -106,7 +107,7 @@ export const request = async ({ path, body, headers = {} }) => {
     return Promise.reject(['terraso_api.error_request_response']);
   });
 
-  if (_.has('errors', jsonResponse)) {
+  if (!_.isEmpty(_.get('errors', jsonResponse))) {
     await handleApiErrors(jsonResponse, body);
   }
 
