@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 
 import { Button, Link, Stack, Typography } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import TableResponsive from 'common/components/TableResponsive';
 import { useDocumentTitle } from 'common/document';
@@ -61,6 +62,7 @@ const GroupList = () => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { groups, fetching, message } = useSelector(_.getOr({}, 'group.list'));
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
   useDocumentTitle(t('group.list_document_title'));
 
@@ -96,11 +98,17 @@ const GroupList = () => {
         group.email && (
           <Link
             href={`mailto:${group.email}`}
-            sx={{
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-              whiteSpace: 'nowrap',
-            }}
+            sx={
+              isSmall
+                ? {
+                    wordBreak: 'break-word',
+                  }
+                : {
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                  }
+            }
           >
             {group.email}
           </Link>
@@ -116,11 +124,17 @@ const GroupList = () => {
         group.website && (
           <Link
             href={group.website}
-            sx={{
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-              whiteSpace: 'nowrap',
-            }}
+            sx={
+              isSmall
+                ? {
+                    wordBreak: 'break-word',
+                  }
+                : {
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                  }
+            }
           >
             {group.website.replace(/^https?:\/\//, '')}
           </Link>
