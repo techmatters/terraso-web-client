@@ -18,6 +18,7 @@ import {
 import Restricted from 'permissions/components/Restricted';
 
 import { PARTNERSHIP_STATUS_NO } from 'landscape/landscapeConstants';
+import { TYPE_ORGANIZATION } from 'taxonomies/taxonomiesConstants';
 import { getTermLabel } from 'taxonomies/taxonomiesUtils';
 
 import theme from 'theme';
@@ -97,7 +98,11 @@ const AffiliatedGroups = props => {
 const Organizations = props => {
   const { t, i18n } = useTranslation();
   const { landscape } = props;
-  const organizations = _.getOr([], 'taxonomyTerms.organization', landscape);
+  const organizations = _.getOr(
+    [],
+    `taxonomyTerms.${TYPE_ORGANIZATION}`,
+    landscape
+  );
 
   const sorted = useMemo(
     () =>

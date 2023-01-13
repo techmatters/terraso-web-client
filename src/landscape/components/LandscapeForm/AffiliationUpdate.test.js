@@ -190,7 +190,7 @@ test('AffiliationUpdate: Save form', async () => {
         { slug: 'group-land-1', name: 'Group Land 1' },
       ]),
       taxonomyTypeTerms: JSON.stringify({
-        organization: [{ valueOriginal: 'Org 1', type: 'organization' }],
+        ORGANIZATION: [{ valueOriginal: 'Org 1', type: 'ORGANIZATION' }],
       }),
     },
   });

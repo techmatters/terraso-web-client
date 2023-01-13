@@ -83,7 +83,7 @@ const FORM_FIELDS = [
     },
   },
   {
-    name: 'taxonomyTypeTerms.ecosystem-type',
+    name: `taxonomyTypeTerms.${TYPE_ECOSYSTEM_TYPE}`,
     label: 'landscape.form_profile_ecosystem_types',
     helperText: {
       titleKey: 'landscape.form_profile_ecosystem_types_helper_text_title',
@@ -103,7 +103,7 @@ const FORM_FIELDS = [
     },
   },
   {
-    name: 'taxonomyTypeTerms.language',
+    name: `taxonomyTypeTerms.${TYPE_LANGUAGE}`,
     label: 'landscape.form_profile_languages',
     helperText: {
       i18nKey: 'landscape.form_profile_languages_helper_text',
@@ -131,7 +131,7 @@ const FORM_FIELDS = [
     },
   },
   {
-    name: 'taxonomyTypeTerms.livelihood',
+    name: `taxonomyTypeTerms.${TYPE_LIVELIHOOD}`,
     label: 'landscape.form_profile_livelihoods',
     helperText: {
       i18nKey: 'landscape.form_profile_livelihoods_helper_text',
@@ -150,7 +150,7 @@ const FORM_FIELDS = [
     },
   },
   {
-    name: 'taxonomyTypeTerms.agricultural-production-method',
+    name: `taxonomyTypeTerms.${TYPE_AGRICULTURAL_PRODUCTION_METHOD}`,
     label: 'landscape.form_profile_agricultural_production_methods',
     helperText: {
       i18nKey:
@@ -170,7 +170,7 @@ const FORM_FIELDS = [
     },
   },
   {
-    name: 'taxonomyTypeTerms.commodity',
+    name: `taxonomyTypeTerms.${TYPE_COMMODITY}`,
     label: 'landscape.form_profile_commondities',
     helperText: {
       i18nKey: 'landscape.form_profile_commondities_helper_text',
@@ -309,11 +309,12 @@ const ProfileStep = props => {
         onChange={setUpdatedValues}
         filterField={(field, { getValues }) => {
           if (
-            field.name !== 'taxonomyTypeTerms.agricultural-production-method'
+            field.name !==
+            `taxonomyTypeTerms.${TYPE_AGRICULTURAL_PRODUCTION_METHOD}`
           ) {
             return true;
           }
-          const livelihoods = getValues('taxonomyTypeTerms.livelihood');
+          const livelihoods = getValues(`taxonomyTypeTerms.${TYPE_LIVELIHOOD}`);
           if (_.isEmpty(livelihoods)) {
             return false;
           }

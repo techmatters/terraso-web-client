@@ -22,6 +22,13 @@ import { countryNameForCode } from 'common/utils';
 import Restricted from 'permissions/components/Restricted';
 
 import { deleteProfileImage } from 'landscape/landscapeSlice';
+import {
+  TYPE_AGRICULTURAL_PRODUCTION_METHOD,
+  TYPE_COMMODITY,
+  TYPE_ECOSYSTEM_TYPE,
+  TYPE_LANGUAGE,
+  TYPE_LIVELIHOOD,
+} from 'taxonomies/taxonomiesConstants';
 import { getTermLabel } from 'taxonomies/taxonomiesUtils';
 
 const PROFILE_IMAGE_DEFAULT = '/landscape/profile-image-default.jpg';
@@ -45,13 +52,13 @@ const FIELDS = [
   {
     label: 'landscape.profile_profile_card_ecosystem_types_label',
     getValue: (landscape, { i18n }) =>
-      getTermsList('ecosystem-type', landscape, i18n),
+      getTermsList(TYPE_ECOSYSTEM_TYPE, landscape, i18n),
   },
   {
     label: 'landscape.profile_profile_card_languages_label',
-    getCount: landscape => getTermsCount('language', landscape),
+    getCount: landscape => getTermsCount(TYPE_LANGUAGE, landscape),
     getValue: (landscape, { i18n }) =>
-      getTermsList('language', landscape, i18n),
+      getTermsList(TYPE_LANGUAGE, landscape, i18n),
   },
   {
     label: 'landscape.profile_profile_card_population_label',
@@ -67,18 +74,18 @@ const FIELDS = [
   {
     label: 'landscape.profile_profile_card_livelihoods_label',
     getValue: (landscape, { i18n }) =>
-      getTermsList('livelihood', landscape, i18n),
+      getTermsList(TYPE_LIVELIHOOD, landscape, i18n),
   },
   {
     label:
       'landscape.profile_profile_card_agricultural_production_methods_label',
     getValue: (landscape, { i18n }) =>
-      getTermsList('agricultural-production-method', landscape, i18n),
+      getTermsList(TYPE_AGRICULTURAL_PRODUCTION_METHOD, landscape, i18n),
   },
   {
     label: 'landscape.profile_profile_card_commodities_label',
     getValue: (landscape, { i18n }) =>
-      getTermsList('commodity', landscape, i18n),
+      getTermsList(TYPE_COMMODITY, landscape, i18n),
   },
 ];
 

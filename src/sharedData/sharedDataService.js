@@ -42,6 +42,7 @@ export const deleteSharedData = ({ dataEntry }) => {
         dataEntry {
           id
         }
+        errors
       }
     }
   `;
@@ -59,6 +60,7 @@ export const addSharedDataLink = ({ groupSlug, link }) => {
           name
           url
         }
+        errors
       }
     }
   `;
@@ -88,6 +90,7 @@ export const updateSharedData = ({ dataEntry }) => {
             }
           }
         }
+        errors
       }
     }
     ${dataEntryFragment}
@@ -136,6 +139,7 @@ export const addVisualizationConfig = ({
         visualizationConfig {
           slug
         }
+        errors
       }
     }
   `;
@@ -163,6 +167,7 @@ export const deleteVisualizationConfig = config => {
         visualizationConfig {
           ...visualizationConfig
         }
+        errors
       }
     }
     ${visualizationConfig}

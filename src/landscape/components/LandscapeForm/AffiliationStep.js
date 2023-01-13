@@ -73,7 +73,7 @@ const FORM_FIELDS = [
     },
   },
   {
-    name: 'taxonomyTypeTerms.organization',
+    name: `taxonomyTypeTerms.${TYPE_ORGANIZATION}`,
     label: 'landscape.form_profile_organizations',
     helperText: {
       i18nKey: 'landscape.form_profile_organizations_helper_text',
