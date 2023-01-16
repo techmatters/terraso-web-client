@@ -202,7 +202,11 @@ const groupSlice = createSlice({
       },
     }));
 
+    builder.addCase(refreshGroupView.pending, _.set('view.refreshing', true));
+
     builder.addCase(refreshGroupView.fulfilled, updateView);
+
+    builder.addCase(refreshGroupView.rejected, _.set('view.refreshing', false));
 
     builder.addCase(fetchGroups.pending, state => ({
       ...state,
