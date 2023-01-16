@@ -50,6 +50,33 @@ test('Terraso API: no data error', async () => {
   ]);
   expect(console.error).toHaveBeenCalledTimes(1);
 });
+test('Terraso API: mutation errors', async () => {
+  global.fetch.mockResolvedValue({
+    json: () =>
+      Promise.resolve({
+        data: {
+          testMutation: {
+            errors: [{ message: 'Test error' }],
+          },
+        },
+      }),
+  });
+  await expect(terrasoApi.requestGraphQL()).rejects.toEqual(['Test error']);
+});
+test('Terraso API: No mutation errors', async () => {
+  global.fetch.mockResolvedValue({
+    json: () =>
+      Promise.resolve({
+        data: {
+          testMutation: {
+            errors: null,
+          },
+        },
+      }),
+  });
+  const result = await terrasoApi.requestGraphQL();
+  expect(result).toEqual({ testMutation: { errors: null } });
+});
 test('Terraso API: success', async () => {
   global.fetch.mockResolvedValue({
     json: () =>
