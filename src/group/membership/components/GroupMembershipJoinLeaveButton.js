@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { useDispatch, useSelector } from 'react-redux';
@@ -32,7 +32,7 @@ const GroupMembershipJoinLeaveButton = () => {
     _.getOr({}, `group.memberships.${groupSlug}`)
   );
 
-  const loading = fetching || joining;
+  const loading = useMemo(() => fetching || joining, [fetching, joining]);
 
   const userMembership = _.get('membersInfo.accountMembership', group);
 

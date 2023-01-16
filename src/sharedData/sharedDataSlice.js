@@ -99,6 +99,7 @@ const setProcessing = (state, action) =>
 const sharedDataSlice = createSlice({
   name: 'sharedData',
   initialState,
+
   reducers: {
     resetUploads: state => ({
       ...state,
@@ -109,10 +110,12 @@ const sharedDataSlice = createSlice({
       processing: _.omit(action.payload, state.processing),
     }),
   },
-  extraReducers: {
-    [updateSharedData.pending]: setProcessing,
-    [updateSharedData.rejected]: setProcessing,
-    [updateSharedData.fulfilled]: (state, action) => ({
+
+  extraReducers: builder => {
+    builder.addCase(updateSharedData.pending, setProcessing);
+    builder.addCase(updateSharedData.rejected, setProcessing);
+
+    builder.addCase(updateSharedData.fulfilled, (state, action) => ({
       ...state,
       list: {
         ...state.list,
@@ -120,10 +123,12 @@ const sharedDataSlice = createSlice({
           item.id === action.meta.arg.dataEntry.id ? action.payload : item
         ),
       },
-    }),
-    [deleteSharedData.pending]: setProcessing,
-    [deleteSharedData.rejected]: setProcessing,
-    [deleteSharedData.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(deleteSharedData.pending, setProcessing);
+    builder.addCase(deleteSharedData.rejected, setProcessing);
+
+    builder.addCase(deleteSharedData.fulfilled, (state, action) => ({
       ...state,
       list: {
         ...state.list,
@@ -131,8 +136,9 @@ const sharedDataSlice = createSlice({
           item => item.id !== action.meta.arg.dataEntry.id
         ),
       },
-    }),
-    [uploadSharedDataFile.pending]: (state, action) =>
+    }));
+
+    builder.addCase(uploadSharedDataFile.pending, (state, action) =>
       _.set(
         `uploads.files.${action.meta.arg.file.id}`,
         {
@@ -140,8 +146,10 @@ const sharedDataSlice = createSlice({
           data: null,
         },
         state
-      ),
-    [uploadSharedDataFile.fulfilled]: (state, action) =>
+      )
+    );
+
+    builder.addCase(uploadSharedDataFile.fulfilled, (state, action) =>
       _.set(
         `uploads.files.${action.meta.arg.file.id}`,
         {
@@ -149,8 +157,10 @@ const sharedDataSlice = createSlice({
           data: action.payload,
         },
         state
-      ),
-    [uploadSharedDataFile.rejected]: (state, action) =>
+      )
+    );
+
+    builder.addCase(uploadSharedDataFile.rejected, (state, action) =>
       _.set(
         `uploads.files.${action.meta.arg.file.id}`,
         {
@@ -158,8 +168,10 @@ const sharedDataSlice = createSlice({
           data: action.payload.parsedErrors,
         },
         state
-      ),
-    [addSharedDataLink.pending]: (state, action) =>
+      )
+    );
+
+    builder.addCase(addSharedDataLink.pending, (state, action) =>
       _.set(
         `uploads.links.${action.meta.arg.link.id}`,
         {
@@ -167,8 +179,10 @@ const sharedDataSlice = createSlice({
           data: null,
         },
         state
-      ),
-    [addSharedDataLink.fulfilled]: (state, action) =>
+      )
+    );
+
+    builder.addCase(addSharedDataLink.fulfilled, (state, action) =>
       _.set(
         `uploads.links.${action.meta.arg.link.id}`,
         {
@@ -176,8 +190,10 @@ const sharedDataSlice = createSlice({
           data: action.payload,
         },
         state
-      ),
-    [addSharedDataLink.rejected]: (state, action) =>
+      )
+    );
+
+    builder.addCase(addSharedDataLink.rejected, (state, action) =>
       _.set(
         `uploads.links.${action.meta.arg.link.id}`,
         {
@@ -185,56 +201,65 @@ const sharedDataSlice = createSlice({
           data: action.payload.parsedErrors,
         },
         state
-      ),
-    [fetchGroupSharedData.pending]: (state, action) => ({
+      )
+    );
+
+    builder.addCase(fetchGroupSharedData.pending, (state, action) => ({
       ...state,
       list: {
         fetching: true,
         data: null,
       },
-    }),
-    [fetchGroupSharedData.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchGroupSharedData.fulfilled, (state, action) => ({
       ...state,
       list: {
         fetching: false,
         data: action.payload,
       },
-    }),
-    [addVisualizationConfig.pending]: state => ({
+    }));
+
+    builder.addCase(addVisualizationConfig.pending, state => ({
       ...state,
       visualizationConfigForm: {
         saving: true,
       },
-    }),
-    [addVisualizationConfig.rejected]: state => ({
+    }));
+
+    builder.addCase(addVisualizationConfig.rejected, state => ({
       ...state,
       visualizationConfigForm: {
         saving: false,
       },
-    }),
-    [addVisualizationConfig.fulfilled]: state => ({
+    }));
+
+    builder.addCase(addVisualizationConfig.fulfilled, state => ({
       ...state,
       visualizationConfigForm: {
         saving: false,
       },
-    }),
-    [fetchVisualizationConfig.pending]: state => ({
+    }));
+
+    builder.addCase(fetchVisualizationConfig.pending, state => ({
       ...state,
       visualizationConfig: initialState.visualizationConfig,
-    }),
-    [fetchVisualizationConfig.rejected]: state => ({
+    }));
+
+    builder.addCase(fetchVisualizationConfig.rejected, state => ({
       ...state,
       visualizationConfig: {
         fetching: false,
       },
-    }),
-    [fetchVisualizationConfig.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchVisualizationConfig.fulfilled, (state, action) => ({
       ...state,
       visualizationConfig: {
         fetching: false,
         data: action.payload,
       },
-    }),
+    }));
   },
 });
 

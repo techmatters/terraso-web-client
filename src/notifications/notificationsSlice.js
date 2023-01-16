@@ -9,6 +9,7 @@ const initialState = {
 const notificationsSlice = createSlice({
   name: 'notifications',
   initialState,
+
   reducers: {
     addMessage: (state, action) => ({
       ...state,
@@ -22,7 +23,8 @@ const notificationsSlice = createSlice({
       messages: _.omit(action.payload, state.messages),
     }),
   },
-  extraReducers: {},
+
+  extraReducers: () => {},
 });
 
 export const { addMessage, removeMessage } = notificationsSlice.actions;

@@ -20,21 +20,24 @@ export const homeSlice = createSlice({
   name: 'home',
   initialState,
   reducers: {},
-  extraReducers: {
-    [fetchHomeData.pending]: () => initialState,
-    [fetchHomeData.fulfilled]: (state, action) => ({
+
+  extraReducers: builder => {
+    builder.addCase(fetchHomeData.pending, () => initialState);
+
+    builder.addCase(fetchHomeData.fulfilled, (state, action) => ({
       ...state,
       fetching: false,
       error: null,
       groups: action.payload.groups,
       landscapes: action.payload.landscapes,
       landscapesDiscovery: action.payload.landscapesDiscovery,
-    }),
-    [fetchHomeData.rejected]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchHomeData.rejected, (state, action) => ({
       ...state,
       fetching: false,
       error: action.payload.error,
-    }),
+    }));
   },
 });
 
