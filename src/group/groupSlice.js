@@ -126,6 +126,7 @@ const updateView = (state, action) => ({
 const groupSlice = createSlice({
   name: 'group',
   initialState,
+
   reducers: {
     setFormNewValues: state => ({
       ...state,
@@ -180,13 +181,16 @@ const groupSlice = createSlice({
       },
     }),
   },
-  extraReducers: {
-    [fetchGroupView.pending]: state => ({
+
+  extraReducers: builder => {
+    builder.addCase(fetchGroupView.pending, state => ({
       ...state,
       view: initialState.view,
-    }),
-    [fetchGroupView.fulfilled]: updateView,
-    [fetchGroupView.rejected]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchGroupView.fulfilled, updateView);
+
+    builder.addCase(fetchGroupView.rejected, (state, action) => ({
       ...state,
       view: {
         ...state.form,
@@ -196,15 +200,16 @@ const groupSlice = createSlice({
           content: action.payload,
         },
       },
-    }),
-    [refreshGroupView.pending]: _.set('view.refreshing', true),
-    [refreshGroupView.fulfilled]: updateView,
-    [refreshGroupView.rejected]: _.set('view.refreshing', false),
-    [fetchGroups.pending]: state => ({
+    }));
+
+    builder.addCase(refreshGroupView.fulfilled, updateView);
+
+    builder.addCase(fetchGroups.pending, state => ({
       ...state,
       list: initialState.list,
-    }),
-    [fetchGroups.rejected]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchGroups.rejected, (state, action) => ({
       ...state,
       list: {
         ...state.list,
@@ -214,8 +219,9 @@ const groupSlice = createSlice({
           content: action.payload,
         },
       },
-    }),
-    [fetchGroups.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchGroups.fulfilled, (state, action) => ({
       ...groupSlice.caseReducers.setMemberships(state, {
         payload: groupUtils.getMemberships(action.payload),
       }),
@@ -224,37 +230,43 @@ const groupSlice = createSlice({
         message: null,
         groups: action.payload,
       },
-    }),
-    [fetchGroupsAutocompleteList.pending]: state => ({
+    }));
+
+    builder.addCase(fetchGroupsAutocompleteList.pending, state => ({
       ...state,
       autocomplete: initialState.autocomplete,
-    }),
-    [fetchGroupsAutocompleteList.rejected]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchGroupsAutocompleteList.rejected, (state, action) => ({
       ...state,
       autocomplete: {
         ...state.autocomplete,
         fetching: false,
       },
-    }),
-    [fetchGroupsAutocompleteList.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchGroupsAutocompleteList.fulfilled, (state, action) => ({
       autocomplete: {
         fetching: false,
         groups: action.payload,
       },
-    }),
-    [fetchGroupForm.pending]: state => ({
+    }));
+
+    builder.addCase(fetchGroupForm.pending, state => ({
       ...state,
       form: initialState.form,
-    }),
-    [fetchGroupForm.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchGroupForm.fulfilled, (state, action) => ({
       ...state,
       form: {
         fetching: false,
         message: null,
         group: action.payload,
       },
-    }),
-    [fetchGroupForm.rejected]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchGroupForm.rejected, (state, action) => ({
       ...state,
       form: {
         ...state.form,
@@ -264,10 +276,14 @@ const groupSlice = createSlice({
           content: action.payload,
         },
       },
-    }),
-    [fetchGroupForMembers.pending]: state =>
-      _.set('membersGroup', initialState.membersGroup, state),
-    [fetchGroupForMembers.fulfilled]: (state, action) =>
+    }));
+
+    builder.addCase(
+      fetchGroupForMembers.pending,
+      _.set('membersGroup', initialState.membersGroup)
+    );
+
+    builder.addCase(fetchGroupForMembers.fulfilled, (state, action) =>
       _.set(
         'membersGroup',
         {
@@ -275,12 +291,20 @@ const groupSlice = createSlice({
           data: action.payload,
         },
         state
-      ),
-    [fetchGroupForMembers.rejected]: state =>
-      _.set('membersGroup', initialState.membersGroup, state),
-    [fetchMembers.pending]: state =>
-      _.set('members', initialState.members, state),
-    [fetchMembers.fulfilled]: (state, action) =>
+      )
+    );
+
+    builder.addCase(
+      fetchGroupForMembers.rejected,
+      _.set('membersGroup', initialState.membersGroup)
+    );
+
+    builder.addCase(
+      fetchMembers.pending,
+      _.set('members', initialState.members)
+    );
+
+    builder.addCase(fetchMembers.fulfilled, (state, action) =>
       _.set(
         'members',
         {
@@ -288,11 +312,16 @@ const groupSlice = createSlice({
           list: groupUtils.generateIndexedMembers(action.payload.members),
         },
         state
-      ),
-    [fetchMembers.rejected]: state => _.set('members.fetching', false, state),
-    [removeMember.pending]: (state, action) =>
-      _.set(`members.list.${action.meta.arg.id}.fetching`, true, state),
-    [removeMember.fulfilled]: (state, action) =>
+      )
+    );
+
+    builder.addCase(fetchMembers.rejected, _.set('members.fetching', false));
+
+    builder.addCase(removeMember.pending, (state, action) =>
+      _.set(`members.list.${action.meta.arg.id}.fetching`, true, state)
+    );
+
+    builder.addCase(removeMember.fulfilled, (state, action) =>
       _.set(
         'members',
         {
@@ -300,12 +329,18 @@ const groupSlice = createSlice({
           list: groupUtils.generateIndexedMembers(action.payload.members),
         },
         state
-      ),
-    [removeMember.rejected]: (state, action) =>
-      _.set(`members.list.${action.meta.arg.id}.fetching`, false, state),
-    [updateMember.pending]: (state, action) =>
-      _.set(`members.list.${action.meta.arg.member.id}.fetching`, true, state),
-    [updateMember.fulfilled]: (state, action) =>
+      )
+    );
+
+    builder.addCase(removeMember.rejected, (state, action) =>
+      _.set(`members.list.${action.meta.arg.id}.fetching`, false, state)
+    );
+
+    builder.addCase(updateMember.pending, (state, action) =>
+      _.set(`members.list.${action.meta.arg.member.id}.fetching`, true, state)
+    );
+
+    builder.addCase(updateMember.fulfilled, (state, action) =>
       _.set(
         'members',
         {
@@ -313,17 +348,22 @@ const groupSlice = createSlice({
           list: groupUtils.generateIndexedMembers(action.payload.members),
         },
         state
-      ),
-    [updateMember.rejected]: (state, action) =>
-      _.set(`members.list.${action.meta.arg.member.id}.fetching`, false, state),
-    [saveGroup.pending]: state => ({
+      )
+    );
+
+    builder.addCase(updateMember.rejected, (state, action) =>
+      _.set(`members.list.${action.meta.arg.member.id}.fetching`, false, state)
+    );
+
+    builder.addCase(saveGroup.pending, state => ({
       ...state,
       form: {
         ...state.form,
         fetching: true,
       },
-    }),
-    [saveGroup.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(saveGroup.fulfilled, (state, action) => ({
       ...state,
       form: {
         ...state.form,
@@ -331,23 +371,27 @@ const groupSlice = createSlice({
         success: true,
         group: action.payload,
       },
-    }),
-    [saveGroup.rejected]: (state, action) => ({
+    }));
+
+    builder.addCase(saveGroup.rejected, (state, action) => ({
       ...state,
       form: {
         ...state.form,
         fetching: false,
       },
-    }),
-    [joinGroup.pending]: (state, action) =>
+    }));
+
+    builder.addCase(joinGroup.pending, (state, action) =>
       groupSlice.caseReducers.setMemberships(state, {
         payload: {
           [action.meta.arg.groupSlug]: {
             joining: true,
           },
         },
-      }),
-    [joinGroup.fulfilled]: (state, action) =>
+      })
+    );
+
+    builder.addCase(joinGroup.fulfilled, (state, action) =>
       groupSlice.caseReducers.setMemberships(state, {
         payload: {
           [action.meta.arg.groupSlug]: {
@@ -355,16 +399,20 @@ const groupSlice = createSlice({
             group: action.payload,
           },
         },
-      }),
-    [joinGroup.rejected]: (state, action) =>
+      })
+    );
+
+    builder.addCase(joinGroup.rejected, (state, action) =>
       groupSlice.caseReducers.setMemberships(state, {
         payload: {
           [action.meta.arg.groupSlug]: {
             joining: false,
           },
         },
-      }),
-    [leaveGroup.pending]: (state, action) =>
+      })
+    );
+
+    builder.addCase(leaveGroup.pending, (state, action) =>
       groupSlice.caseReducers.setMemberships(state, {
         payload: {
           [action.meta.arg.groupSlug]: {
@@ -372,8 +420,10 @@ const groupSlice = createSlice({
             message: null,
           },
         },
-      }),
-    [leaveGroup.fulfilled]: (state, action) =>
+      })
+    );
+
+    builder.addCase(leaveGroup.fulfilled, (state, action) =>
       groupSlice.caseReducers.setMemberships(state, {
         payload: {
           [action.payload.slug]: {
@@ -381,34 +431,40 @@ const groupSlice = createSlice({
             group: action.payload,
           },
         },
-      }),
-    [leaveGroup.rejected]: (state, action) =>
+      })
+    );
+
+    builder.addCase(leaveGroup.rejected, (state, action) =>
       groupSlice.caseReducers.setMemberships(state, {
         payload: {
           [action.meta.arg.groupSlug]: {
             joining: false,
           },
         },
-      }),
-    [fetchGroupUpload.pending]: state => ({
+      })
+    );
+
+    builder.addCase(fetchGroupUpload.pending, state => ({
       ...state,
       sharedDataUpload: initialState.sharedDataUpload,
-    }),
-    [fetchGroupUpload.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchGroupUpload.fulfilled, (state, action) => ({
       ...state,
       sharedDataUpload: {
         ...state.sharedDataUpload,
         fetching: false,
         group: action.payload,
       },
-    }),
-    [fetchGroupUpload.rejected]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchGroupUpload.rejected, (state, action) => ({
       ...state,
       sharedDataUpload: {
         ...state.sharedDataUpload,
         fetching: false,
       },
-    }),
+    }));
   },
 });
 

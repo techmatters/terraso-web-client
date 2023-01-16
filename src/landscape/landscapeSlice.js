@@ -133,36 +133,42 @@ const updateView = (state, action) => ({
 const landscapeSlice = createSlice({
   name: 'landscape',
   initialState,
+
   reducers: {
     setFormNewValues: state => ({
       ...state,
       form: initialState.form,
     }),
   },
-  extraReducers: {
-    [fetchLandscapes.pending]: state => ({
+
+  extraReducers: builder => {
+    builder.addCase(fetchLandscapes.pending, state => ({
       ...state,
       list: initialState.list,
-    }),
-    [fetchLandscapes.rejected]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchLandscapes.rejected, (state, action) => ({
       ...state,
       list: {
         fetching: false,
         landscapes: [],
       },
-    }),
-    [fetchLandscapes.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchLandscapes.fulfilled, (state, action) => ({
       ...state,
       list: {
         fetching: false,
         landscapes: action.payload,
       },
-    }),
-    [fetchLandscapeProfile.pending]: state => ({
+    }));
+
+    builder.addCase(fetchLandscapeProfile.pending, state => ({
       ...state,
       profile: initialState.profile,
-    }),
-    [fetchLandscapeProfile.rejected]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchLandscapeProfile.rejected, (state, action) => ({
       ...state,
       profile: {
         ...state.profile,
@@ -172,20 +178,23 @@ const landscapeSlice = createSlice({
           content: action.payload,
         },
       },
-    }),
-    [fetchLandscapeProfile.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchLandscapeProfile.fulfilled, (state, action) => ({
       ...state,
       profile: {
         fetching: false,
         message: null,
         landscape: action.payload,
       },
-    }),
-    [fetchLandscapeView.pending]: state => ({
+    }));
+
+    builder.addCase(fetchLandscapeView.pending, state => ({
       ...state,
       view: initialState.view,
-    }),
-    [fetchLandscapeView.rejected]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchLandscapeView.rejected, (state, action) => ({
       ...state,
       view: {
         ...state.view,
@@ -195,16 +204,17 @@ const landscapeSlice = createSlice({
           content: action.payload,
         },
       },
-    }),
-    [fetchLandscapeView.fulfilled]: updateView,
-    [refreshLandscapeView.pending]: _.set('view.refreshing', true),
-    [refreshLandscapeView.fulfilled]: updateView,
-    [refreshLandscapeView.rejected]: _.set('view.refreshing', false),
-    [fetchLandscapeForm.pending]: state => ({
+    }));
+
+    builder.addCase(fetchLandscapeView.fulfilled, updateView);
+    builder.addCase(refreshLandscapeView.fulfilled, updateView);
+
+    builder.addCase(fetchLandscapeForm.pending, state => ({
       ...state,
       form: initialState.form,
-    }),
-    [fetchLandscapeForm.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchLandscapeForm.fulfilled, (state, action) => ({
       ...state,
       form: {
         fetching: false,
@@ -212,17 +222,22 @@ const landscapeSlice = createSlice({
         landscape: action.payload,
         success: false,
       },
-    }),
-    [fetchLandscapeForm.rejected]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchLandscapeForm.rejected, (state, action) => ({
       ...state,
       form: {
         ...state.form,
         fetching: false,
       },
-    }),
-    [fetchLandscapeForMembers.pending]: state =>
-      _.set('membersLandscape', initialState.membersLandscape, state),
-    [fetchLandscapeForMembers.fulfilled]: (state, action) =>
+    }));
+
+    builder.addCase(
+      fetchLandscapeForMembers.pending,
+      _.set('membersLandscape', initialState.membersLandscape)
+    );
+
+    builder.addCase(fetchLandscapeForMembers.fulfilled, (state, action) =>
       _.set(
         'membersLandscape',
         {
@@ -230,17 +245,23 @@ const landscapeSlice = createSlice({
           data: action.payload,
         },
         state
-      ),
-    [fetchLandscapeForMembers.rejected]: state =>
-      _.set('membersLandscape', initialState.membersLandscape, state),
-    [saveLandscape.pending]: state => ({
+      )
+    );
+
+    builder.addCase(
+      fetchLandscapeForMembers.rejected,
+      _.set('membersLandscape', initialState.membersLandscape)
+    );
+
+    builder.addCase(saveLandscape.pending, state => ({
       ...state,
       form: {
         ...state.form,
         saving: true,
       },
-    }),
-    [saveLandscape.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(saveLandscape.fulfilled, (state, action) => ({
       ...state,
       form: {
         ...state.form,
@@ -248,66 +269,76 @@ const landscapeSlice = createSlice({
         landscape: action.payload,
         success: true,
       },
-    }),
-    [saveLandscape.rejected]: (state, action) => ({
+    }));
+
+    builder.addCase(saveLandscape.rejected, (state, action) => ({
       ...state,
       form: {
         ...state.form,
         saving: false,
       },
-    }),
-    [fetchLandscapeUpload.pending]: state => ({
+    }));
+
+    builder.addCase(fetchLandscapeUpload.pending, state => ({
       ...state,
       sharedDataUpload: initialState.sharedDataUpload,
-    }),
-    [fetchLandscapeUpload.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchLandscapeUpload.fulfilled, (state, action) => ({
       ...state,
       sharedDataUpload: {
         ...state.sharedDataUpload,
         fetching: false,
         landscape: action.payload,
       },
-    }),
-    [fetchLandscapeUpload.rejected]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchLandscapeUpload.rejected, (state, action) => ({
       ...state,
       sharedDataUpload: {
         ...state.sharedDataUpload,
         fetching: false,
       },
-    }),
-    [uploadProfileImage.rejected]: (state, action) => ({
+    }));
+
+    builder.addCase(uploadProfileImage.rejected, (state, action) => ({
       ...state,
       uploadProfileImage: {
         uploading: false,
       },
-    }),
-    [uploadProfileImage.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(uploadProfileImage.fulfilled, (state, action) => ({
       ...state,
       uploadProfileImage: {
         uploading: false,
       },
-    }),
-    [uploadProfileImage.pending]: state => ({
+    }));
+
+    builder.addCase(uploadProfileImage.pending, state => ({
       ...state,
       uploadProfileImage: {
         uploading: true,
       },
-    }),
-    [deleteProfileImage.pending]: state => ({
+    }));
+
+    builder.addCase(deleteProfileImage.pending, state => ({
       ...state,
       profile: {
         ...state.profile,
         deletingProfileImage: true,
       },
-    }),
-    [deleteProfileImage.rejected]: state => ({
+    }));
+
+    builder.addCase(deleteProfileImage.rejected, state => ({
       ...state,
       profile: {
         ...state.profile,
         deletingProfileImage: false,
       },
-    }),
-    [deleteProfileImage.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(deleteProfileImage.fulfilled, (state, action) => ({
       ...state,
       profile: {
         ...state.profile,
@@ -318,7 +349,7 @@ const landscapeSlice = createSlice({
           profileImageDescription: '',
         },
       },
-    }),
+    }));
   },
 });
 

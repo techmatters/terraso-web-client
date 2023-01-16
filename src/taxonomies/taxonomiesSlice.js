@@ -21,15 +21,17 @@ const taxonomiesSlice = createSlice({
   name: 'taxonomies',
   initialState,
   reducers: {},
-  extraReducers: {
-    [fetchTermsForTypes.pending]: (state, action) => ({
+
+  extraReducers: builder => {
+    builder.addCase(fetchTermsForTypes.pending, (state, action) => ({
       ...state,
       terms: {
         ...state.terms,
         fetching: true,
       },
-    }),
-    [fetchTermsForTypes.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchTermsForTypes.fulfilled, (state, action) => ({
       ...state,
       terms: {
         ...state.terms,
@@ -43,8 +45,9 @@ const taxonomiesSlice = createSlice({
           )(action.payload),
         },
       },
-    }),
-    [fetchTermsForTypes.rejected]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchTermsForTypes.rejected, (state, action) => ({
       ...state,
       form: {
         ...state.terms,
@@ -57,7 +60,7 @@ const taxonomiesSlice = createSlice({
           )(action.meta.arg.types),
         },
       },
-    }),
+    }));
   },
 });
 

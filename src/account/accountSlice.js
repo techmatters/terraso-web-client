@@ -43,6 +43,7 @@ export const savePreference = createAsyncThunk(
 export const userSlice = createSlice({
   name: 'user',
   initialState,
+
   reducers: {
     setUser: (state, action) => ({
       ...state,
@@ -53,29 +54,33 @@ export const userSlice = createSlice({
       hasToken: action.payload,
     }),
   },
-  extraReducers: {
-    [saveUser.pending]: state => ({
+
+  extraReducers: builder => {
+    builder.addCase(saveUser.pending, state => ({
       ...state,
       currentUser: {
         ...state.currentUser,
         fetching: true,
       },
-    }),
-    [saveUser.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(saveUser.fulfilled, (state, action) => ({
       ...state,
       currentUser: {
         fetching: false,
         data: action.payload,
       },
-    }),
-    [saveUser.rejected]: state => ({
+    }));
+
+    builder.addCase(saveUser.rejected, state => ({
       ...state,
       currentUser: {
         ...state.currentUser,
         fetching: false,
       },
-    }),
-    [savePreference.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(savePreference.fulfilled, (state, action) => ({
       ...state,
       currentUser: {
         fetching: false,
@@ -85,43 +90,49 @@ export const userSlice = createSlice({
           state.currentUser.data
         ),
       },
-    }),
-    [fetchUser.pending]: state => ({
+    }));
+
+    builder.addCase(fetchUser.pending, state => ({
       ...state,
       currentUser: initialState.currentUser,
-    }),
-    [fetchUser.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchUser.fulfilled, (state, action) => ({
       ...state,
       currentUser: {
         fetching: false,
         data: action.payload,
       },
-    }),
-    [fetchUser.rejected]: state => ({
+    }));
+
+    builder.addCase(fetchUser.rejected, state => ({
       ...state,
       currentUser: {
         fetching: false,
         data: null,
       },
-    }),
-    [fetchAuthURLs.pending]: state => ({
+    }));
+
+    builder.addCase(fetchAuthURLs.pending, state => ({
       ...state,
       login: initialState.login,
-    }),
-    [fetchAuthURLs.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(fetchAuthURLs.fulfilled, (state, action) => ({
       ...state,
       login: {
         fetching: false,
         urls: action.payload,
       },
-    }),
-    [fetchAuthURLs.rejected]: state => ({
+    }));
+
+    builder.addCase(fetchAuthURLs.rejected, state => ({
       ...state,
       login: {
         fetching: false,
         urls: {},
       },
-    }),
+    }));
   },
 });
 
