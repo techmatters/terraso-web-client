@@ -207,7 +207,18 @@ const landscapeSlice = createSlice({
     }));
 
     builder.addCase(fetchLandscapeView.fulfilled, updateView);
+
+    builder.addCase(
+      refreshLandscapeView.pending,
+      _.set('view.refreshing', true)
+    );
+
     builder.addCase(refreshLandscapeView.fulfilled, updateView);
+
+    builder.addCase(
+      refreshLandscapeView.rejected,
+      _.set('view.refreshing', false)
+    );
 
     builder.addCase(fetchLandscapeForm.pending, state => ({
       ...state,
