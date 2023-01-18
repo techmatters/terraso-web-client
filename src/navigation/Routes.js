@@ -47,6 +47,7 @@ import LandscapeSharedDataVisualizationConfig from 'landscape/components/Landsca
 import LandscapeView from 'landscape/components/LandscapeView';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
 import ToolsList from 'tool/components/ToolList';
+import UserStoryMap from 'user/components/UserStoryMap';
 
 const path = (
   path,
@@ -132,6 +133,7 @@ const paths = [
   path('/account', AccountLogin, { auth: false }),
   path('/account/profile', AccountProfile),
   path('/contact', ContactForm),
+  path('/story-map/', UserStoryMap),
   path('*', NotFound),
 ];
 
