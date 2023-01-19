@@ -23,31 +23,34 @@ const gisSlice = createSlice({
   name: 'gis',
   initialState,
   reducers: {},
-  extraReducers: {
-    [parseFileToGeoJSON.pending]: state => ({
+
+  extraReducers: builder => {
+    builder.addCase(parseFileToGeoJSON.pending, state => ({
       ...state,
       parsing: {
         processing: true,
         error: null,
         geojson: null,
       },
-    }),
-    [parseFileToGeoJSON.fulfilled]: (state, action) => ({
+    }));
+
+    builder.addCase(parseFileToGeoJSON.fulfilled, (state, action) => ({
       ...state,
       parsing: {
         processing: false,
         error: null,
         geojson: action.payload,
       },
-    }),
-    [parseFileToGeoJSON.rejected]: (state, action) => ({
+    }));
+
+    builder.addCase(parseFileToGeoJSON.rejected, (state, action) => ({
       ...state,
       parsing: {
         processing: false,
         fileName: action.meta.arg.name,
         error: action.payload.parsedErrors,
       },
-    }),
+    }));
   },
 });
 

@@ -48,7 +48,7 @@ const setup = async () => {
   });
 };
 
-const testGeoJsonParsing = async (file, errorMessage) => {
+const testGeoJsonParsing = (file, errorMessage) => async () => {
   global.console.error = jest.fn();
   terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
@@ -122,11 +122,13 @@ test('LandscapeBoundaries: Display loader', async () => {
 const plainTextFile = new File(['hello'], 'test.json', {
   type: 'application/json',
 });
-test('LandscapeBoundaries: Select file (plain text, not JSON)', () =>
+test(
+  'LandscapeBoundaries: Select file (plain text, not JSON)',
   testGeoJsonParsing(
     plainTextFile,
-    'The file test.json is an invalid JSON file.'
-  ));
+    'The file test.json is not a valid JSON file.'
+  )
+);
 
 const invalidJsonFile = new File(
   [
@@ -137,20 +139,24 @@ const invalidJsonFile = new File(
     type: 'application/json',
   }
 );
-test('LandscapeBoundaries: Select file (invalid JSON)', () =>
+test(
+  'LandscapeBoundaries: Select file (invalid JSON)',
   testGeoJsonParsing(
     invalidJsonFile,
-    'The file test.json is an invalid JSON file.'
-  ));
+    'The file test.json is not a valid JSON file.'
+  )
+);
 
 const invalidGeoJsonFile = new File(['{"key": "value"}'], 'test.json', {
   type: 'application/json',
 });
-test('LandscapeBoundaries: Select file (Invalid GeoJSON)', () =>
+test(
+  'LandscapeBoundaries: Select file (Invalid GeoJSON)',
   testGeoJsonParsing(
     invalidGeoJsonFile,
     'The file test.json is JSON, but is not a valid GeoJSON file.'
-  ));
+  )
+);
 
 const invalidGeomtryinGeoJsonFile = new File(
   [
@@ -161,17 +167,21 @@ const invalidGeomtryinGeoJsonFile = new File(
     type: 'application/json',
   }
 );
-test('LandscapeBoundaries: Select file (Invalid GeoJSON Boundary)', () =>
+test(
+  'LandscapeBoundaries: Select file (Invalid GeoJSON Boundary)',
   testGeoJsonParsing(
     invalidGeomtryinGeoJsonFile,
     'The file test.json is JSON, but is not a valid GeoJSON file.'
-  ));
+  )
+);
 
 const emptyGeoJsonFile = new File([''], 'test.json', {
   type: 'application/json',
 });
-test('LandscapeBoundaries: Select file (empty)', () =>
-  testGeoJsonParsing(emptyGeoJsonFile, 'The file test.json is empty.'));
+test(
+  'LandscapeBoundaries: Select file (empty)',
+  testGeoJsonParsing(emptyGeoJsonFile, 'The file test.json is empty.')
+);
 
 test('LandscapeBoundaries: Select file', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
