@@ -687,6 +687,7 @@
         "boundaries_file_invalid_json": "El archivo {{name}} es un archivo JSON no válido.",
         "boundaries_file_invalid_geojson": "El archivo {{name}} es JSON, pero no es un archivo GeoJSON válido.",
         "invalid_shapefile": "El archivo {{name}} no es un archivo de shapefile válido",
+        "invalid_kml_file": "El archivo {{name}} no es un archivo KML válido",
         "map_draw": {
             "draw": {
                 "toolbar": {
