@@ -23,7 +23,7 @@ const LandscapeBoundariesUpdate = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { slug } = useParams();
-  const { fetching, landscape, success } = useSelector(
+  const { fetching, saving, landscape, success } = useSelector(
     state => state.landscape.form
   );
 
@@ -61,6 +61,7 @@ const LandscapeBoundariesUpdate = () => {
 
   return (
     <PageContainer>
+      {saving && <PageLoader />}
       <BoundaryStep
         title={t('landscape.boundaries_title', {
           name: _.get('name', landscape),

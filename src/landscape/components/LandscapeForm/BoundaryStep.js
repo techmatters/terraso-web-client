@@ -286,22 +286,33 @@ const BoundaryOptions = props => {
   const options = [
     {
       Icon: UploadFileIcon,
-      label: 'landscape.form_boundary_options_geojson',
+      label: (
+        <Stack spacing={1} alignItems="flex-start">
+          <Trans i18nKey="landscape.form_boundary_options_geojson">
+            <Typography>Formats</Typography>
+            <ExternalLink
+              href={t('landscape.form_boundary_options_geojson_help_url')}
+            >
+              Help Link
+            </ExternalLink>
+          </Trans>
+        </Stack>
+      ),
       onClick: () => setOption(OPTION_GEOJSON),
     },
     {
       Icon: MapIcon,
-      label: 'landscape.form_boundary_options_draw_polygon',
+      label: t('landscape.form_boundary_options_draw_polygon'),
       onClick: () => setOption(OPTION_MAP_DRAW_POLYGON),
     },
     {
       Icon: PinDropIcon,
-      label: 'landscape.form_boundary_options_pin',
+      label: t('landscape.form_boundary_options_pin'),
       onClick: () => setOption(OPTION_MAP_PIN),
     },
     {
       Icon: ArrowRightAltIcon,
-      label: 'landscape.form_boundary_options_skip',
+      label: t('landscape.form_boundary_options_skip'),
       onClick: () =>
         setUpdatedLandscape({
           ...landscape,
@@ -348,7 +359,7 @@ const BoundaryOptions = props => {
             <option.Icon
               sx={{ fontSize: '40px', marginRight: 2, color: 'gray.mid2' }}
             />
-            {t(option.label)}
+            {option.label}
           </Button>
         ))}
       </Stack>
