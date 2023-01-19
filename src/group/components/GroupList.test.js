@@ -124,7 +124,7 @@ test('GroupList: Display list', async () => {
     within(rows[2]).getByRole('cell', { name: 'Group name 1' })
   ).toHaveAttribute('data-field', 'name');
   expect(
-    within(rows[2]).getByRole('cell', { name: 'https://www.group.org' })
+    within(rows[2]).getByRole('cell', { name: 'www.group.org' })
   ).toHaveAttribute('data-field', 'website');
   expect(
     within(rows[2]).getByRole('cell', { name: 'email@email.com' })
@@ -259,7 +259,7 @@ test('GroupList: Display list (small screen)', async () => {
   expect(rows.length).toBe(15);
   expect(within(rows[1]).getByText('Group name 1')).toBeInTheDocument();
   expect(
-    within(rows[1]).getByText('https://www.group.org')
+    within(rows[1]).getByText('www.group.org')
   ).toBeInTheDocument();
   expect(within(rows[1]).getByText('email@email.com')).toBeInTheDocument();
   expect(within(rows[1]).getByText('Join')).toBeInTheDocument();
