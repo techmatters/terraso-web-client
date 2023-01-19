@@ -32,6 +32,8 @@ import { withProps } from 'react-hoc';
 
 import Actions from './Actions';
 
+import theme from 'theme';
+
 const VALIDATION_SCHEMA = yup
   .object()
   .transform(
@@ -66,7 +68,7 @@ const AreaTypesHelperText = props => {
 
 const EcosystemTypesHelperText = () => {
   return (
-    <Box sx={{ p: 2, fontFamily: 'Roboto, Helvetica, Arial, sans-serif' }}>
+    <Box sx={{ p: 2, fontFamily: theme.typography.fontFamily }}>
       <Trans i18nKey="landscape.form_profile_ecosystem_types_helper_text" />
     </Box>
   );
