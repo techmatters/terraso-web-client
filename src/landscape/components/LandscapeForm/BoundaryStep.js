@@ -10,6 +10,7 @@ import PinDropIcon from '@mui/icons-material/PinDrop';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import {
   Alert,
+  Box,
   Button,
   Dialog,
   DialogContent,
@@ -286,7 +287,14 @@ const BoundaryOptions = props => {
   const options = [
     {
       Icon: UploadFileIcon,
-      label: <Trans i18nKey="landscape.form_boundary_options_geojson" />,
+      label: (
+        <Trans i18nKey="landscape.form_boundary_options_geojson">
+          <Box component="strong" sx={{ mr: 1 }}>
+            first
+          </Box>
+          suffix
+        </Trans>
+      ),
       onClick: () => setOption(OPTION_GEOJSON),
     },
     {
@@ -343,6 +351,7 @@ const BoundaryOptions = props => {
               justifyContent: 'start',
               padding: 4,
               borderColor: 'gray.mid',
+              fontWeight: 500,
             }}
           >
             <option.Icon
