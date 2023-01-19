@@ -145,6 +145,9 @@ const getHighlightLimits = ({ textToHighlight, searchWords }) => {
     return [];
   }
   const query = searchWords[0];
+  if (!query) {
+    return [];
+  }
   const index = indexOfMatchPartial(query)(textToHighlight);
   if (index === -1) {
     return [];
@@ -196,22 +199,33 @@ const SearchBar = props => {
     [searchFilterField, setFilterdRows]
   );
 
+  const onClickClear = useCallback(() => {
+    onSearchParamsChange(_.omit('search', searchParams));
+    setQuery('');
+  }, [onSearchParamsChange, searchParams]);
+
   useEffect(() => {
     updateFilteredRows(rows, searchQuery);
   }, [rows, searchQuery, updateFilteredRows]);
 
   useEffect(() => {
-    if (searchQuery !== searchParams.search) {
-      if (searchQuery) {
-        onSearchParamsChange({
-          ...searchParams,
-          search: searchQuery,
-        });
-      } else if (searchParams.search) {
-        onSearchParamsChange(_.omit('search', searchParams));
-      }
+    if (
+      searchQuery &&
+      query === searchQuery &&
+      searchQuery !== searchParams.search
+    ) {
+      onSearchParamsChange({
+        ...searchParams,
+        search: searchQuery,
+      });
     }
-  }, [searchQuery, searchParams, onSearchParamsChange]);
+  }, [query, searchQuery, searchParams, onSearchParamsChange]);
+
+  useEffect(() => {
+    if (!validSearch && searchParams?.search) {
+      onSearchParamsChange(_.omit('search', searchParams));
+    }
+  }, [validSearch, searchParams, onSearchParamsChange]);
 
   useEffect(() => {
     if (!query && searchParams?.search) {
@@ -268,7 +282,7 @@ const SearchBar = props => {
             <>
               {query && (
                 <IconButton
-                  onClick={() => setQuery('')}
+                  onClick={onClickClear}
                   sx={{ p: '10px' }}
                   aria-label={t('common.table_search_filter_clear')}
                 >
@@ -289,12 +303,6 @@ const SearchBar = props => {
 
 const setSearchHighligthRender = props => {
   const { columns, searchFilterField, searchParams } = props;
-  const validSearch =
-    searchParams.search &&
-    searchParams.search.length > SEARCH_MINIMUM_LENGTH - 1;
-  if (!validSearch) {
-    return columns;
-  }
   return columns.map(column => {
     if (column.field !== searchFilterField) {
       return column;
@@ -309,7 +317,7 @@ const setSearchHighligthRender = props => {
           <Highlighter
             searchWords={[searchParams.search]}
             autoEscape={true}
-            textToHighlight={formattedValue}
+            textToHighlight={formattedValue || ''}
             findChunks={getHighlightLimits}
           />
         );

@@ -128,27 +128,6 @@ const baseListTest = async () => {
   within(mapRegion).getByRole('link', {
     name: 'View details about Landscape Name 0',
   });
-
-  // Table
-  const rows = screen.getAllByRole('row');
-  expect(rows.length).toBe(16); // 15 displayed + header
-  expect(
-    within(rows[2]).getByRole('cell', { name: 'Landscape Name 1' })
-  ).toHaveAttribute('data-field', 'name');
-  expect(within(rows[2]).getByRole('cell', { name: '23' })).toHaveAttribute(
-    'data-field',
-    'members'
-  );
-  expect(
-    within(rows[2])
-      .getByRole('button', { name: 'Connect: Landscape Name 1' })
-      .closest('[role="cell"]')
-  ).toHaveAttribute('data-field', 'actions');
-  expect(
-    within(rows[9])
-      .getByRole('button', { name: 'Leave: Landscape Name 3' })
-      .closest('[role="cell"]')
-  ).toHaveAttribute('data-field', 'actions');
 };
 
 beforeEach(() => {
@@ -181,7 +160,29 @@ test('LandscapeList: Empty', async () => {
     screen.getByText('First, double check the spelling of the landscape name.')
   ).toBeInTheDocument();
 });
-test('LandscapeList: Display list', baseListTest);
+test('LandscapeList: Display list', async () => {
+  await baseListTest();
+
+  const rows = screen.getAllByRole('row');
+  expect(rows.length).toBe(16); // 15 displayed + header
+  expect(
+    within(rows[2]).getByRole('cell', { name: 'Landscape Name 1' })
+  ).toHaveAttribute('data-field', 'name');
+  expect(within(rows[2]).getByRole('cell', { name: '23' })).toHaveAttribute(
+    'data-field',
+    'members'
+  );
+  expect(
+    within(rows[2])
+      .getByRole('button', { name: 'Connect: Landscape Name 1' })
+      .closest('[role="cell"]')
+  ).toHaveAttribute('data-field', 'actions');
+  expect(
+    within(rows[9])
+      .getByRole('button', { name: 'Leave: Landscape Name 3' })
+      .closest('[role="cell"]')
+  ).toHaveAttribute('data-field', 'actions');
+});
 test('LandscapeList: Search', async () => {
   await baseListTest();
 
@@ -195,6 +196,24 @@ test('LandscapeList: Search', async () => {
   await waitFor(() => expect(screen.getAllByRole('row').length).toBe(7));
   const rows = screen.getAllByRole('row');
   await waitFor(() => expect(rows.length).toBe(7)); // 10 to 15 displayed + header
+});
+test('LandscapeList: Clear search', async () => {
+  const searchParams = new URLSearchParams('search=Landscape Name 1');
+  const setSearchParams = jest.fn();
+  useSearchParams.mockReturnValue([searchParams, setSearchParams]);
+  await baseListTest();
+
+  await waitFor(() => expect(screen.getAllByRole('row').length).toBe(7));
+  const rows = screen.getAllByRole('row');
+  await waitFor(() => expect(rows.length).toBe(7));
+
+  // Clear search button
+  const clearSearchButton = screen.getByRole('button', {
+    name: 'Clear search',
+  });
+  await act(async () => fireEvent.click(clearSearchButton));
+  expect(setSearchParams).toHaveBeenCalledTimes(3);
+  expect(setSearchParams.mock.calls[2][0]).toStrictEqual({});
 });
 test('LandscapeList: List sort', async () => {
   const isMember = {
