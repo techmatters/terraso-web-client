@@ -439,7 +439,8 @@
 // Base on the HTLM code above, I want to create a React component with the same functionality
 import React from 'react';
 
-import mapboxgl from 'mapbox-gl';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import mapboxgl from '!mapbox-gl';
 import Scrollama from 'scrollama';
 
 const StoryMap = props => {
@@ -626,9 +627,23 @@ const StoryMap = props => {
 
   return (
     <>
-      <div id="map"></div>
-      <div id="mapInset"></div>
-      <div id="story"></div>
+      <div id="map" ref={mapContainer}></div>
+      <div id="mapInset" ref={mapInsetContainer}></div>
+      <div id="story">
+        {config.chapters.map((chapter, i) => (
+          <div
+            key={i}
+            className="step"
+            id={chapter.id}
+            data-story={chapter.story}
+          >
+            <div className="story-content">
+              <h3>{chapter.title}</h3>
+              <p>{chapter.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
     </>
   );
 };
