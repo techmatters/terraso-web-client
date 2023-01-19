@@ -134,7 +134,7 @@ test('LandscapeNew: Save from GeoJSON', async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a GeoJSON file',
+        name: 'Upload a map file. Accepted file formats: GeoJSON, JSON, KML, KMZ, ESRI Shapefile',
       })
     )
   );

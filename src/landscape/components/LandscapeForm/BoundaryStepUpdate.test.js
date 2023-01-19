@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from 'tests/utils';
+import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 
 import React from 'react';
 
@@ -48,7 +48,7 @@ const setup = async () => {
   });
 };
 
-const testGeoJsonParsing = (file, errorMessage) => async () => {
+const testGeoJsonParsing = async (file, errorMessage) => {
   global.console.error = jest.fn();
   terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
@@ -72,7 +72,7 @@ const testGeoJsonParsing = (file, errorMessage) => async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a GeoJSON file',
+        name: 'Upload a map file. Accepted file formats: GeoJSON, JSON, KML, KMZ, ESRI Shapefile',
       })
     )
   );
@@ -95,7 +95,7 @@ const testGeoJsonParsing = (file, errorMessage) => async () => {
     },
   };
   fireEvent.drop(dropzone, data);
-  expect(await screen.findByText(errorMessage)).toBeInTheDocument();
+  expect(await within(dropzone).findByText(errorMessage)).toBeInTheDocument();
 };
 
 beforeEach(() => {
@@ -122,10 +122,11 @@ test('LandscapeBoundaries: Display loader', async () => {
 const plainTextFile = new File(['hello'], 'test.json', {
   type: 'application/json',
 });
-test(
-  'LandscapeBoundaries: Select file (plain text, not JSON)',
-  testGeoJsonParsing(plainTextFile, 'The file test.json is a valid JSON file.')
-);
+test('LandscapeBoundaries: Select file (plain text, not JSON)', () =>
+  testGeoJsonParsing(
+    plainTextFile,
+    'The file test.json is an invalid JSON file.'
+  ));
 
 const invalidJsonFile = new File(
   [
@@ -136,24 +137,20 @@ const invalidJsonFile = new File(
     type: 'application/json',
   }
 );
-test(
-  'LandscapeBoundaries: Select file (invalid JSON)',
+test('LandscapeBoundaries: Select file (invalid JSON)', () =>
   testGeoJsonParsing(
     invalidJsonFile,
-    'The file test.json is a valid JSON file.'
-  )
-);
+    'The file test.json is an invalid JSON file.'
+  ));
 
 const invalidGeoJsonFile = new File(['{"key": "value"}'], 'test.json', {
   type: 'application/json',
 });
-test(
-  'LandscapeBoundaries: Select file (Invalid GeoJSON)',
+test('LandscapeBoundaries: Select file (Invalid GeoJSON)', () =>
   testGeoJsonParsing(
     invalidGeoJsonFile,
     'The file test.json is JSON, but is not a valid GeoJSON file.'
-  )
-);
+  ));
 
 const invalidGeomtryinGeoJsonFile = new File(
   [
@@ -164,21 +161,17 @@ const invalidGeomtryinGeoJsonFile = new File(
     type: 'application/json',
   }
 );
-test(
-  'LandscapeBoundaries: Select file (Invalid GeoJSON Boundary)',
+test('LandscapeBoundaries: Select file (Invalid GeoJSON Boundary)', () =>
   testGeoJsonParsing(
     invalidGeomtryinGeoJsonFile,
     'The file test.json is JSON, but is not a valid GeoJSON file.'
-  )
-);
+  ));
 
 const emptyGeoJsonFile = new File([''], 'test.json', {
   type: 'application/json',
 });
-test(
-  'LandscapeBoundaries: Select file (empty)',
-  testGeoJsonParsing(emptyGeoJsonFile, 'The file test.json is empty.')
-);
+test('LandscapeBoundaries: Select file (empty)', () =>
+  testGeoJsonParsing(emptyGeoJsonFile, 'The file test.json is empty.'));
 
 test('LandscapeBoundaries: Select file', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
@@ -203,7 +196,7 @@ test('LandscapeBoundaries: Select file', async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a GeoJSON file',
+        name: 'Upload a map file. Accepted file formats: GeoJSON, JSON, KML, KMZ, ESRI Shapefile',
       })
     )
   );
@@ -256,7 +249,7 @@ test('LandscapeBoundaries: Show back', async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a GeoJSON file',
+        name: 'Upload a map file. Accepted file formats: GeoJSON, JSON, KML, KMZ, ESRI Shapefile',
       })
     )
   );
@@ -312,7 +305,7 @@ test('LandscapeBoundaries: Save GeoJSON', async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a GeoJSON file',
+        name: 'Upload a map file. Accepted file formats: GeoJSON, JSON, KML, KMZ, ESRI Shapefile',
       })
     )
   );
@@ -428,7 +421,7 @@ test('LandscapeBoundaries: Save KML', async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a GeoJSON file',
+        name: 'Upload a map file. Accepted file formats: GeoJSON, JSON, KML, KMZ, ESRI Shapefile',
       })
     )
   );
