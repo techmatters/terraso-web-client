@@ -286,18 +286,7 @@ const BoundaryOptions = props => {
   const options = [
     {
       Icon: UploadFileIcon,
-      label: (
-        <Stack spacing={1} alignItems="flex-start">
-          <Trans i18nKey="landscape.form_boundary_options_geojson">
-            <Typography>Formats</Typography>
-            <ExternalLink
-              href={t('landscape.form_boundary_options_geojson_help_url')}
-            >
-              Help Link
-            </ExternalLink>
-          </Trans>
-        </Stack>
-      ),
+      label: <Trans i18nKey="landscape.form_boundary_options_geojson" />,
       onClick: () => setOption(OPTION_GEOJSON),
     },
     {
