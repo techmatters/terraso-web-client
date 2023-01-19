@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 
 import { Button, Link, Stack, Typography } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import TableResponsive from 'common/components/TableResponsive';
 import { useDocumentTitle } from 'common/document';
@@ -61,6 +62,20 @@ const GroupList = () => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { groups, fetching, message } = useSelector(_.getOr({}, 'group.list'));
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+  const linkStyle = useMemo(
+    () =>
+      isSmall
+        ? {
+            wordBreak: 'break-word',
+          }
+        : {
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+          },
+    [isSmall]
+  );
 
   useDocumentTitle(t('group.list_document_title'));
 
@@ -78,7 +93,7 @@ const GroupList = () => {
     {
       field: 'name',
       headerName: t('group.list_column_name'),
-      flex: 1.5,
+      flex: 2,
       minWidth: 200,
       renderCell: ({ row: group, formattedValue }) => (
         <Link component={RouterLink} to={`/groups/${group.slug}`}>
@@ -90,21 +105,27 @@ const GroupList = () => {
       field: 'email',
       headerName: t('group.list_column_contact'),
       sortable: false,
-      flex: 1.5,
+      flex: 1.15,
       minWidth: 200,
       renderCell: ({ row: group }) =>
         group.email && (
-          <Link href={`mailto:${group.email}`}>{group.email}</Link>
+          <Link href={`mailto:${group.email}`} sx={linkStyle}>
+            {group.email}
+          </Link>
         ),
     },
     {
       field: 'website',
       headerName: t('group.list_column_website'),
       sortable: false,
-      flex: 1.5,
+      flex: 1.15,
       minWidth: 200,
       renderCell: ({ row: group }) =>
-        group.website && <Link href={group.website}>{group.website}</Link>,
+        group.website && (
+          <Link href={group.website} sx={linkStyle}>
+            {group.website.replace(/^https?:\/\//, '')}
+          </Link>
+        ),
     },
     {
       field: 'actions',
@@ -112,7 +133,7 @@ const GroupList = () => {
       headerName: t('group.list_column_actions_description'),
       sortable: false,
       align: 'center',
-      flex: 1,
+      flex: 0.7,
       cardSize: 6,
       getActions: ({ row: group }) => [<MembershipButton group={group} />],
     },
