@@ -476,6 +476,28 @@ const transformRequest = url => {
   };
 };
 
+const getBoundsJson = bounds => ({
+  type: 'FeatureCollection',
+  features: [
+    {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [bounds._sw.lng, bounds._sw.lat],
+            [bounds._ne.lng, bounds._sw.lat],
+            [bounds._ne.lng, bounds._ne.lat],
+            [bounds._sw.lng, bounds._ne.lat],
+            [bounds._sw.lng, bounds._sw.lat],
+          ],
+        ],
+      },
+    },
+  ],
+});
+
 function Chapter({ theme, record }) {
   const classList = [
     'step',
@@ -496,17 +518,11 @@ function Chapter({ theme, record }) {
 const StoryMap = props => {
   const { config } = props;
   const mapContainer = React.useRef(null);
-  // const mapInsetContainer = React.useRef(null);
+  const mapInsetContainer = React.useRef(null);
   const [map, setMap] = React.useState(null);
-  // const [insetMap, setInsetMap] = React.useState(null);
-  // const [marker, setMarker] = React.useState(null);
-  // const [scroller, setScroller] = React.useState(null);
-  // const [currentChapter, setCurrentChapter] = React.useState(
-  //   config.chapters[0]
-  // );
-  // const [initLoad, setInitLoad] = React.useState(true);
-
-  // console.log({ setCurrentChapter });
+  const [insetMap, setInsetMap] = React.useState(null);
+  // TODO Marker not working
+  const [marker, setMarker] = React.useState(null);
 
   const getLayerPaintType = useCallback(
     layer => {
@@ -566,17 +582,96 @@ const StoryMap = props => {
           },
         });
       }
-      setMap(map);
+      if (config.showMarkers) {
+        const marker = new mapboxgl.Marker({
+          color: config.markerColor,
+        })
+          .setLngLat(config.chapters[0].location.center)
+          .addTo(map);
 
-      // As the map moves, grab and update bounds in inset map.
-      // if (config.inset) {
-      //   map.on('move', getInsetBounds);
-      // }
+        setMarker(marker);
+      }
+      setMap(map);
     });
+    return () => map.remove();
   }, [config]);
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || !config.inset) return;
+
+    console.log('insetMap', { config });
+
+    const newInsetMap = new mapboxgl.Map({
+      container: mapInsetContainer.current,
+      style: 'mapbox://styles/mapbox/dark-v10', //hosted style id
+      center: config.chapters[0].location.center,
+      // Hardcode above center value if you want insetMap to be static.
+      zoom: 3, // starting zoom
+      hash: false,
+      interactive: false,
+      attributionControl: false,
+      //Future: Once official mapbox-gl-js has globe view enabled,
+      //insetmap can be a globe with the following parameter.
+      //projection: 'globe'
+    });
+
+    newInsetMap.on('load', function () {
+      function addInsetLayer(bounds) {
+        newInsetMap.addSource('boundsSource', {
+          type: 'geojson',
+          data: bounds,
+        });
+
+        newInsetMap.addLayer({
+          id: 'boundsLayer',
+          type: 'fill',
+          source: 'boundsSource', // reference the data source
+          layout: {},
+          paint: {
+            'fill-color': '#fff', // blue color fill
+            'fill-opacity': 0.2,
+          },
+        });
+        // // Add a black outline around the polygon.
+        newInsetMap.addLayer({
+          id: 'outlineLayer',
+          type: 'line',
+          source: 'boundsSource',
+          layout: {},
+          paint: {
+            'line-color': '#000',
+            'line-width': 1,
+          },
+        });
+      }
+      addInsetLayer(map.getBounds());
+      setInsetMap(newInsetMap);
+    });
+    return () => newInsetMap.remove();
+  }, [map, config]);
+
+  useEffect(() => {
+    if (!map && !insetMap) return;
+
+    function updateInsetLayer(bounds) {
+      insetMap.getSource('boundsSource').setData(bounds);
+    }
+
+    function getInsetBounds() {
+      let bounds = map.getBounds();
+      updateInsetLayer(getBoundsJson(bounds));
+    }
+
+    // As the map moves, grab and update bounds in inset map.
+    map.on('move', getInsetBounds);
+    return () => {
+      map.off('move', getInsetBounds);
+    };
+  }, [map, insetMap]);
+
+  useEffect(() => {
+    if (!map || (config.inset && !insetMap) || (config.showMarkers && !marker))
+      return;
 
     const scroller = scrollama();
     scroller
@@ -597,17 +692,16 @@ const StoryMap = props => {
         // Incase you do not want to have a dynamic inset map,
         // rather want to keep it a static view but still change the
         // bbox as main map move: comment out the below if section.
-        // if (config.inset) {
-        //   if (chapter.location.zoom < 5) {
-        //     insetMap.flyTo({center: chapter.location.center, zoom: 0});
-        //   }
-        //   else {
-        //     insetMap.flyTo({center: chapter.location.center, zoom: 3});
-        //   }
-        // }
-        // if (config.showMarkers) {
-        //     marker.setLngLat(chapter.location.center);
-        // }
+        if (config.inset) {
+          if (chapter.location.zoom < 5) {
+            insetMap.flyTo({ center: chapter.location.center, zoom: 0 });
+          } else {
+            insetMap.flyTo({ center: chapter.location.center, zoom: 3 });
+          }
+        }
+        if (config.showMarkers) {
+          marker.setLngLat(chapter.location.center);
+        }
         if (chapter.onChapterEnter.length > 0) {
           chapter.onChapterEnter.forEach(setLayerOpacity);
         }
@@ -644,16 +738,25 @@ const StoryMap = props => {
         }
       });
     window.addEventListener('resize', scroller.resize);
-  }, [map, setLayerOpacity, config.chapters, config.auto]);
+    return () => {
+      window.removeEventListener('resize', scroller.resize);
+    };
+  }, [
+    map,
+    insetMap,
+    marker,
+    setLayerOpacity,
+    config.chapters,
+    config.auto,
+    config.inset,
+    config.showMarkers,
+  ]);
 
   return (
     <>
       <div>
-        <div
-          id="map"
-          ref={mapContainer}
-          className="absolute top right left bottom"
-        />
+        <div id="map" ref={mapContainer} />
+        <div id="mapInset" ref={mapInsetContainer}></div>
         <div id="story">
           {config.title && (
             <div id="header" className={config.theme}>
