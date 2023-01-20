@@ -117,3 +117,5 @@ export const AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS = process.env
   'Cattle and livestock farming',
   'Crop farming',
 ];
+
+export const MAPBOX_ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
