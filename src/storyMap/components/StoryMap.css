@@ -1,9 +1,12 @@
 header {
   z-index: 2;
 }
-nav {
+nav#main-navigation {
   z-index: 2;
   background-color: #f9f9f9;
+}
+footer {
+  z-index: 2;
 }
 
 #map {
