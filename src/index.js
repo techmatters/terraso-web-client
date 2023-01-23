@@ -49,7 +49,7 @@ const App = () => {
           minHeight: '100vh',
         }}
       >
-        <Box class="header-container">
+        <Box className="header-container">
           <AppBar />
           <Navigation ref={navigationRef} />
         </Box>
