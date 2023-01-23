@@ -1,7 +1,4 @@
-header {
-  z-index: 2;
-}
-nav#main-navigation {
+.header-container {
   z-index: 2;
   background-color: #f9f9f9;
 }
