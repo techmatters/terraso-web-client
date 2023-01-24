@@ -32,8 +32,6 @@ import { withProps } from 'react-hoc';
 
 import Actions from './Actions';
 
-import theme from 'theme';
-
 const VALIDATION_SCHEMA = yup
   .object()
   .transform(
