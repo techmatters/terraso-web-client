@@ -35,6 +35,8 @@ import { scrollToNavBar } from 'navigation/scrollTo';
 
 import { LAYER_ESRI } from 'gis/components/Map';
 
+import { MAP_DATA_ACCEPTED_TYPES_NAMES } from 'config';
+
 import Actions from './Actions';
 
 const OPTION_GEOJSON = 'geo-json';
@@ -287,7 +289,10 @@ const BoundaryOptions = props => {
     {
       Icon: UploadFileIcon,
       label: (
-        <Trans i18nKey="landscape.form_boundary_options_geojson">
+        <Trans
+          i18nKey="landscape.form_boundary_options_geojson"
+          values={{ formats: MAP_DATA_ACCEPTED_TYPES_NAMES.join(', ') }}
+        >
           prefix
           <Typography sx={{ ml: 1, fontSize: 'inherit' }}>Formats</Typography>
         </Trans>

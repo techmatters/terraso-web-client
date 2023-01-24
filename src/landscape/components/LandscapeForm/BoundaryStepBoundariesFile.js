@@ -83,6 +83,7 @@ const DropZone = props => {
       currentFile={currentFile}
       onDrop={onDrop}
       maxSize={GEOJSON_MAX_SIZE}
+      fileTypes={MAP_DATA_ACCEPTED_TYPES}
       fileExtensions={MAP_DATA_ACCEPTED_EXTENSIONS}
       loading={processingFile}
     />
@@ -100,11 +101,7 @@ const LandscapeGeoJsonBoundaries = props => {
         areaPolygon={areaPolygon}
         onGeoJsonChange={onFileSelected}
       />
-      <DropZone
-        onFileSelected={onFileSelected}
-        fileTypes={MAP_DATA_ACCEPTED_TYPES}
-        fileExtensions={MAP_DATA_ACCEPTED_EXTENSIONS}
-      />
+      <DropZone onFileSelected={onFileSelected} />
       <InlineHelp
         items={[
           {

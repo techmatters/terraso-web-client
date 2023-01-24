@@ -28,6 +28,14 @@ export const SHARED_DATA_MAX_FILES =
 
 export const MAX_DESCRIPTION_LENGTH = 600;
 
+export const MAP_DATA_ACCEPTED_TYPES_NAMES = [
+  'GeoJSON',
+  'JSON',
+  'KML',
+  'KMZ',
+  'ESRI Shapefile',
+];
+
 export const MAP_DATA_ACCEPTED_TYPES = {
   'application/json': ['.json', '.geojson', '.kml', '.kmz', '.zip'],
 };
