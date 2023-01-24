@@ -68,7 +68,7 @@ const AreaTypesHelperText = props => {
 
 const EcosystemTypesHelperText = () => {
   return (
-    <Box sx={{ p: 2, fontFamily: theme.typography.fontFamily }}>
+    <Box sx={theme => ({ p: 2, fontFamily: theme.typography.fontFamily })}>
       <Trans i18nKey="landscape.form_profile_ecosystem_types_helper_text" />
     </Box>
   );
