@@ -174,7 +174,7 @@ test('ProfileUpdate: Save form', async () => {
     input: {
       id: '1',
       areaTypes: '["peri-urban","rural"]',
-      population: '1000932',
+      population: 1000932,
       taxonomyTypeTerms: JSON.stringify({
         ECOSYSTEM_TYPE: [
           {

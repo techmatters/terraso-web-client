@@ -81,8 +81,8 @@ const cleanLandscape = landscape =>
       if (_.includes(key, jsonFields)) {
         return [key, value ? JSON.stringify(value) : null];
       }
-      if (key === 'population' && _.isEmpty(value)) {
-        return [key, null];
+      if (key === 'population') {
+        return [key, _.isEmpty(value) ? null : _.toInteger(value)];
       }
       return [key, value];
     }),
