@@ -9,11 +9,15 @@ import scrollama from 'scrollama';
 
 import './StoryMap.css';
 
+import _ from 'lodash/fp';
+
+import { Box } from '@mui/material';
+
 import { MAPBOX_ACCESS_TOKEN } from 'config';
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
-var layerTypes = {
+const layerTypes = {
   fill: ['fill-opacity'],
   line: ['line-opacity'],
   circle: ['circle-opacity', 'circle-stroke-opacity'],
@@ -23,7 +27,7 @@ var layerTypes = {
   heatmap: ['heatmap-opacity'],
 };
 
-var alignments = {
+const alignments = {
   left: 'lefty',
   center: 'centered',
   right: 'righty',
@@ -69,18 +73,35 @@ function Chapter({ theme, record }) {
     ...(record.hidden ? ['hidden'] : []),
   ].join(' ');
   return (
-    <div id={record.id} className={classList}>
-      <div className={theme}>
+    <Box id={record.id} className={classList}>
+      <Box className={theme}>
         {record.title && <h3 className="title">{record.title}</h3>}
         {record.image && <img src={record.image} alt={record.title}></img>}
         {record.description && <p>{record.description}</p>}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 
-const StoryMap = props => {
+const Title = props => {
   const { config } = props;
+
+  if (!config.title) return null;
+
+  return (
+    <Box id="header" className="step">
+      <Box className={config.theme}>
+        <h1>{config.title}</h1>
+        {config.subtitle && <h2>{config.subtitle}</h2>}
+        {config.byline && <p>{config.byline}</p>}
+      </Box>
+    </Box>
+  );
+};
+
+const StoryMap = props => {
+  const { config, mapCss = { height: '100vh', width: '100vw', top: 0 } } =
+    props;
   const mapContainer = React.useRef(null);
   const mapInsetContainer = React.useRef(null);
   const [map, setMap] = React.useState(null);
@@ -89,7 +110,7 @@ const StoryMap = props => {
 
   const getLayerPaintType = useCallback(
     layer => {
-      var layerType = map.getLayer(layer).type;
+      const layerType = map.getLayer(layer).type;
       return layerTypes[layerType];
     },
     [map]
@@ -97,12 +118,11 @@ const StoryMap = props => {
 
   const setLayerOpacity = useCallback(
     layer => {
-      var paintProps = getLayerPaintType(layer.layer);
+      const paintProps = getLayerPaintType(layer.layer);
       paintProps.forEach(function (prop) {
-        var options = {};
+        const options = layer.duration ? { duration: layer.duration } : {};
         if (layer.duration) {
-          var transitionProp = prop + '-transition';
-          options = { duration: layer.duration };
+          const transitionProp = prop + '-transition';
           map.setPaintProperty(layer.layer, transitionProp, options);
         }
         map.setPaintProperty(layer.layer, prop, layer.opacity, options);
@@ -112,17 +132,18 @@ const StoryMap = props => {
   );
 
   useEffect(() => {
-    var map = new mapboxgl.Map({
+    const map = new mapboxgl.Map({
       container: mapContainer.current,
       style: config.style,
-      center: config.chapters[0].location.center,
-      zoom: config.chapters[0].location.zoom,
-      bearing: config.chapters[0].location.bearing,
-      pitch: config.chapters[0].location.pitch,
+      center: _.get('chapters[0].location.center', config),
+      zoom: _.get('chapters[0].location.zoom', config),
+      bearing: _.get('chapters[0].location.bearing', config),
+      pitch: _.get('chapters[0].location.pitch', config),
       interactive: false,
       transformRequest: transformRequest,
       projection: config.projection,
     });
+
     map.on('load', function () {
       if (config.use3dTerrain) {
         map.addSource('mapbox-dem', {
@@ -145,15 +166,7 @@ const StoryMap = props => {
           },
         });
       }
-      if (config.showMarkers) {
-        const marker = new mapboxgl.Marker({
-          color: config.markerColor,
-        })
-          .setLngLat(config.chapters[0].location.center)
-          .addTo(map);
 
-        setMarker(marker);
-      }
       setMap(map);
     });
     return () => map.remove();
@@ -161,8 +174,6 @@ const StoryMap = props => {
 
   useEffect(() => {
     if (!map || !config.inset) return;
-
-    console.log('insetMap', { config });
 
     const newInsetMap = new mapboxgl.Map({
       container: mapInsetContainer.current,
@@ -214,7 +225,7 @@ const StoryMap = props => {
   }, [map, config]);
 
   useEffect(() => {
-    if (!map || !insetMap) return;
+    if (!map || !config.inset || !insetMap) return;
 
     function updateInsetLayer(bounds) {
       insetMap.getSource('boundsSource').setData(bounds);
@@ -230,11 +241,60 @@ const StoryMap = props => {
     return () => {
       map.off('move', getInsetBounds);
     };
-  }, [map, insetMap]);
+  }, [map, insetMap, config.inset]);
+
+  const startChapter = useCallback(
+    chapter => {
+      if (!map || (config.inset && !insetMap) || !chapter) return;
+
+      map[chapter.mapAnimation || 'flyTo'](chapter.location);
+
+      // Incase you do not want to have a dynamic inset map,
+      // rather want to keep it a static view but still change the
+      // bbox as main map move: comment out the below if section.
+      if (config.inset) {
+        if (chapter.location.zoom < 5) {
+          insetMap.flyTo({ center: chapter.location.center, zoom: 0 });
+        } else {
+          insetMap.flyTo({ center: chapter.location.center, zoom: 3 });
+        }
+      }
+      if (config.showMarkers) {
+        if (!marker) {
+          const newMarker = new mapboxgl.Marker({
+            color: config.markerColor,
+          })
+            .setLngLat(chapter.location.center)
+            .addTo(map);
+
+          setMarker(newMarker);
+        } else {
+          marker.setLngLat(chapter.location.center);
+        }
+      }
+      if (chapter.onChapterEnter.length > 0) {
+        chapter.onChapterEnter.forEach(setLayerOpacity);
+      }
+      if (chapter.callback) {
+        window[chapter.callback]();
+      }
+      if (chapter.rotateAnimation) {
+        map.once('moveend', () => {
+          const rotateNumber = map.getBearing();
+          map.rotateTo(rotateNumber + 180, {
+            duration: 30000,
+            easing: t => t,
+          });
+        });
+      }
+    },
+    [map, config, insetMap, marker, setLayerOpacity]
+  );
 
   useEffect(() => {
-    if (!map || (config.inset && !insetMap) || (config.showMarkers && !marker))
+    if (!map || (config.inset && !insetMap) || _.isEmpty(config.chapters)) {
       return;
+    }
 
     const scroller = scrollama();
     scroller
@@ -244,44 +304,15 @@ const StoryMap = props => {
         progress: true,
       })
       .onStepEnter(async response => {
-        var current_chapter = config.chapters.findIndex(
+        const current_chapter = config.chapters.findIndex(
           chap => chap.id === response.element.id
         );
-        var chapter = config.chapters[current_chapter];
-
+        const chapter = config.chapters[current_chapter];
         response.element.classList.add('active');
-        map[chapter.mapAnimation || 'flyTo'](chapter.location);
+        startChapter(chapter);
 
-        // Incase you do not want to have a dynamic inset map,
-        // rather want to keep it a static view but still change the
-        // bbox as main map move: comment out the below if section.
-        if (config.inset) {
-          if (chapter.location.zoom < 5) {
-            insetMap.flyTo({ center: chapter.location.center, zoom: 0 });
-          } else {
-            insetMap.flyTo({ center: chapter.location.center, zoom: 3 });
-          }
-        }
-        if (config.showMarkers) {
-          marker.setLngLat(chapter.location.center);
-        }
-        if (chapter.onChapterEnter.length > 0) {
-          chapter.onChapterEnter.forEach(setLayerOpacity);
-        }
-        if (chapter.callback) {
-          window[chapter.callback]();
-        }
-        if (chapter.rotateAnimation) {
-          map.once('moveend', () => {
-            const rotateNumber = map.getBearing();
-            map.rotateTo(rotateNumber + 180, {
-              duration: 30000,
-              easing: t => t,
-            });
-          });
-        }
         if (config.auto) {
-          var next_chapter = (current_chapter + 1) % config.chapters.length;
+          const next_chapter = (current_chapter + 1) % config.chapters.length;
           map.once('moveend', () => {
             document
               .querySelectorAll(
@@ -292,7 +323,7 @@ const StoryMap = props => {
         }
       })
       .onStepExit(response => {
-        var chapter = config.chapters.find(
+        const chapter = config.chapters.find(
           chap => chap.id === response.element.id
         );
         response.element.classList.remove('active');
@@ -309,6 +340,7 @@ const StoryMap = props => {
     insetMap,
     marker,
     setLayerOpacity,
+    startChapter,
     config.chapters,
     config.auto,
     config.inset,
@@ -317,29 +349,21 @@ const StoryMap = props => {
 
   return (
     <>
-      <div>
-        <div id="map" ref={mapContainer} />
-        <div id="mapInset" ref={mapInsetContainer}></div>
-        <div id="story">
-          {config.title && (
-            <div id="header" className={config.theme}>
-              <h1>{config.title}</h1>
-              {config.subtitle && <h2>{config.subtitle}</h2>}
-              {config.byline && <p>{config.byline}</p>}
-            </div>
-          )}
-          <div id="features" className={alignments[config.alignment]}>
-            {config.chapters.map(chapter => (
-              <Chapter key={chapter.id} theme={config.theme} record={chapter} />
-            ))}
-          </div>
-          {config.footer && (
-            <div id="footer" className={config.theme}>
-              <p>{config.footer}</p>
-            </div>
-          )}
-        </div>
-      </div>
+      <Box id="map" ref={mapContainer} sx={{ ...mapCss }} />
+      <Box id="mapInset" ref={mapInsetContainer}></Box>
+      <Box id="story">
+        <Box id="features" className={alignments[config.alignment]}>
+          <Title config={config} />
+          {config.chapters.map(chapter => (
+            <Chapter key={chapter.id} theme={config.theme} record={chapter} />
+          ))}
+        </Box>
+        {config.footer && (
+          <Box id="footer" className={config.theme}>
+            <p>{config.footer}</p>
+          </Box>
+        )}
+      </Box>
     </>
   );
 };

@@ -119,3 +119,6 @@ export const AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS = process.env
 ];
 
 export const MAPBOX_ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
+export const MAPBOX_STYLE_DEFAULT =
+  process.env.REACT_APP_MAPBOX_STYLE_DEFAULT ||
+  'mapbox://styles/mapbox/streets-v11';

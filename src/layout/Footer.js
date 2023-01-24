@@ -103,6 +103,7 @@ const Footer = () => {
     <Grid
       container
       component="footer"
+      className="footer"
       sx={{
         background: palette.secondary.main,
         color: palette.white,
