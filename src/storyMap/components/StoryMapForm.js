@@ -1,10 +1,23 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { useTranslation } from 'react-i18next';
 
 import { Button, Grid, List, ListItemButton } from '@mui/material';
 
 import { MAPBOX_STYLE_DEFAULT } from 'config';
 
 import StoryMap from './StoryMap';
+
+const BASE_CHAPTER = {
+  alignment: 'left',
+  title: '',
+  description: '',
+  mapAnimation: 'jumpTo',
+  rotateAnimation: false,
+  callback: '',
+  onChapterEnter: [],
+  onChapterExit: [],
+};
 
 const BASE_CONFIG = {
   style: MAPBOX_STYLE_DEFAULT,
@@ -52,13 +65,32 @@ const BASE_CONFIG = {
 };
 
 const Chapters = props => {
-  const { config } = props;
+  const { t } = useTranslation();
+  const { config, currentStepId, onAdd } = props;
   const { chapters } = config;
 
   const scrollTo = id => {
     const element = document.getElementById(id);
     element?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   };
+
+  const listItems = useMemo(
+    () => [
+      {
+        label: `0. ${t('storyMap.form_title_chapter_label')}`,
+        id: 'header',
+        active: currentStepId === 'header',
+      },
+      ...chapters.map((chapter, index) => ({
+        label: `${index + 1}. ${
+          chapter.title || t('storyMap.form_chapter_no_title_label')
+        }`,
+        id: chapter.id,
+        active: currentStepId === chapter.id,
+      })),
+    ],
+    [chapters, currentStepId, t]
+  );
 
   return (
     <Grid
@@ -68,20 +100,28 @@ const Chapters = props => {
       xs={2}
       sx={{ height: '100%' }}
     >
-      <ListItemButton onClick={() => scrollTo('header')}>Title</ListItemButton>
-      {chapters.map(chapter => (
-        <ListItemButton key={chapter.id} onClick={() => scrollTo(chapter.id)}>
-          {chapter.title}
+      {listItems.map(item => (
+        <ListItemButton
+          key={item.id}
+          sx={{
+            bgcolor: item.active ? 'blue.mid' : 'transparent',
+            '&:hover': { bgcolor: item.active ? 'blue.mid' : 'gray.lite1' },
+          }}
+          onClick={() => scrollTo(item.id)}
+        >
+          {item.label}
         </ListItemButton>
       ))}
+      <ListItemButton onClick={onAdd}>Add</ListItemButton>
     </Grid>
   );
 };
 
 const StoryMapForm = () => {
-  const [height, setHeight] = React.useState('100vh');
-  const [mapCss, setMapCss] = React.useState();
-  const [config, setConfig] = React.useState(BASE_CONFIG);
+  const [height, setHeight] = useState('100vh');
+  const [mapCss, setMapCss] = useState();
+  const [config, setConfig] = useState(BASE_CONFIG);
+  const [currentStepId, setCurrentStepId] = useState();
 
   useEffect(() => {
     const headerHeight =
@@ -100,6 +140,19 @@ const StoryMapForm = () => {
     });
   }, []);
 
+  const onAdd = useCallback(() => {
+    setConfig(config => ({
+      ...config,
+      chapters: [
+        ...config.chapters,
+        {
+          ...BASE_CHAPTER,
+          id: `chapter-${config.chapters.length + 1}`,
+        },
+      ],
+    }));
+  }, []);
+
   return (
     <Grid container sx={{ height }}>
       <Grid
@@ -109,14 +162,33 @@ const StoryMapForm = () => {
         sx={{ backgroundColor: 'red', width: '100%', zIndex: 2 }}
       >
         <Button
-          onClick={() => setConfig(config => ({ ...config, title: 'Test' }))}
+          onClick={() =>
+            setConfig(config => ({
+              ...config,
+              chapters: config.chapters.map(chapter => {
+                if (chapter.id === 'fourth-chapter') {
+                  return {
+                    ...chapter,
+                    title: 'Chapter 2 - Updated',
+                  };
+                }
+                return chapter;
+              }),
+            }))
+          }
         >
           Test
         </Button>
       </Grid>
-      <Chapters config={config} />
+      <Chapters config={config} currentStepId={currentStepId} onAdd={onAdd} />
       <Grid item xs={10} sx={{ overflow: 'hidden', height: '100%' }}>
-        {mapCss && <StoryMap config={config} mapCss={mapCss} />}
+        {mapCss && (
+          <StoryMap
+            config={config}
+            mapCss={mapCss}
+            onStepChange={setCurrentStepId}
+          />
+        )}
       </Grid>
     </Grid>
   );
