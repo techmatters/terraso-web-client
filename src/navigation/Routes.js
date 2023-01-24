@@ -17,6 +17,7 @@
 import React, { useMemo } from 'react';
 
 import { Route, Routes, matchPath, useLocation } from 'react-router-dom';
+import StoryMapForm from 'storyMap/components/StoryMapForm';
 
 import NotFound from 'layout/NotFound';
 
@@ -134,6 +135,7 @@ const paths = [
   path('/account/profile', AccountProfile),
   path('/contact', ContactForm),
   path('/story-map/', UserStoryMap),
+  path('/story-map-form/', StoryMapForm),
   path('*', NotFound),
 ];
 
