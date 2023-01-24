@@ -45,8 +45,12 @@ const handleApiErrors = (data, body) => {
     return Promise.reject(UNAUTHENTICATED);
   }
 
+  // Parsed body formData to object
+  const parsedBody =
+    body instanceof FormData ? JSON.parse(JSON.stringify(body)) : body;
+
   const messages = _.flatMap(
-    error => parseMessage(error.message, body),
+    error => parseMessage(error.message, parsedBody),
     errors
   );
   return Promise.reject(messages);

@@ -289,9 +289,6 @@
         "boundaries_select_file": "Select File",
         "boundaries_save": "Save Changes",
         "boundaries_cancel": "Cancel",
-        "boundaries_file_empty": "The file was empty.",
-        "boundaries_file_invalid_json": "The file was not a valid JSON file.",
-        "boundaries_file_invalid_geojson": "The file was JSON, but not a valid GeoJSON file.",
         "view_map_boundaries_help": "Something wrong with the map?",
         "view_map_boundaries_help_details": "Contact your landscape’s manager or <1>send us a message</1>.",
         "view_map_boundaries_help_url": "/contact",
@@ -300,7 +297,7 @@
         "form_step_boundaries_options_label": "Boundary",
         "form_boundary_options_title": "Define Your Landscape’s Boundary",
         "form_boundary_options_description": "<0><0>Select how you’d like to define where your landscape is.</0><1>We recommend updating the map regularly with the most accurate boundary of your landscape.</1><2>Don’t have a GeoJSON file? Create one.</2></0>",
-        "form_boundary_options_geojson": "Upload a GeoJSON file",
+        "form_boundary_options_geojson": "Upload a map file. <1>Accepted file formats: {{formats}}</1>",
         "form_boundary_options_pin": "Drop a pin on a map",
         "form_boundary_options_skip": "Skip this step for now",
         "form_boundary_options_back": "Back",
@@ -681,6 +678,12 @@
         "default_marker_label": "Marker",
         "latitude": "latitude",
         "longitude": "longitude",
+        "boundaries_file_empty": "The file {{name}} is empty.",
+        "boundaries_file_invalid_json": "The file {{name}} is not a valid JSON file.",
+        "boundaries_file_invalid_geojson": "The file {{name}} is JSON, but is not a valid GeoJSON file.",
+        "invalid_shapefile": "The file {{name}} is not a valid shapefile",
+        "invalid_kml_file": "The file {{name}} is not a valid KML file",
+        "invalid_kmz_file": "The file {{name}} is not a valid KMZ file",
         "map_draw": {
             "draw": {
                 "toolbar": {

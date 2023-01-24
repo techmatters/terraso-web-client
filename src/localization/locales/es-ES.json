@@ -293,9 +293,6 @@
         "boundaries_save": "Guardar cambios",
         "boundaries_cancel": "Cancelar",
         "boundaries_drop_message": "Soltar el archivo para subirlo",
-        "boundaries_file_empty": "El archivo está vacío.",
-        "boundaries_file_invalid_json": "El archivo no es un archivo JSON válido.",
-        "boundaries_file_invalid_geojson": "El archivo es JSON, pero no es un archivo GeoJSON válido.",
         "view_map_boundaries_help": "¿Algo mal con el mapa?",
         "view_map_boundaries_help_details": "Comunícate con el administrador de su paisaje o <1>envíanos un mensaje</1>.",
         "view_map_boundaries_help_url": "/contact",
@@ -304,7 +301,7 @@
         "form_step_boundaries_options_label": "Límite",
         "form_boundary_options_title": "Defina el límite de su paisaje",
         "form_boundary_options_description": "<0><0>Selecciona cómo te gustaría definir dónde está tu paisaje.</0><1>Recomendamos actualizar el mapa regularmente con el límite más preciso de tu paisaje.</1><2>No tiened un archivo GeoJSON? Crea uno.</2></0>",
-        "form_boundary_options_geojson": "Sube un archivo GeoJSON",
+        "form_boundary_options_geojson": "Cargar un archivo de mapa. <1>Formatos de archivo aceptados: {{formats}}</1>",
         "form_boundary_options_pin": "Coloque un pin en un mapa",
         "form_boundary_options_skip": "Omite este paso por ahora",
         "form_boundary_options_back": "Atrás",
@@ -686,6 +683,12 @@
         "default_marker_label": "Marcador",
         "latitude": "latitud",
         "longitude": "longitud",
+        "boundaries_file_empty": "El archivo {{name}} está vacío.",
+        "boundaries_file_invalid_json": "El archivo {{name}} es un archivo JSON no válido.",
+        "boundaries_file_invalid_geojson": "El archivo {{name}} es JSON, pero no es un archivo GeoJSON válido.",
+        "invalid_shapefile": "El archivo {{name}} no es un archivo de shapefile válido",
+        "invalid_kml_file": "El archivo {{name}} no es un archivo KML válido",
+        "invalid_kmz_file": "El archivo {{name}} no es un archivo KMZ válido",
         "map_draw": {
             "draw": {
                 "toolbar": {

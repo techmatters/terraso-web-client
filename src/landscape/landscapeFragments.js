@@ -10,6 +10,11 @@ export const landscapeFields = `
     description
     email
     website
+  }
+`;
+
+export const landscapeAreaPolygon = `
+  fragment landscapeAreaPolygon on LandscapeNode {
     areaPolygon
   }
 `;

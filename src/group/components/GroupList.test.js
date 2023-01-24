@@ -258,9 +258,7 @@ test('GroupList: Display list (small screen)', async () => {
   const rows = screen.getAllByRole('listitem');
   expect(rows.length).toBe(15);
   expect(within(rows[1]).getByText('Group name 1')).toBeInTheDocument();
-  expect(
-    within(rows[1]).getByText('www.group.org')
-  ).toBeInTheDocument();
+  expect(within(rows[1]).getByText('www.group.org')).toBeInTheDocument();
   expect(within(rows[1]).getByText('email@email.com')).toBeInTheDocument();
   expect(within(rows[1]).getByText('Join')).toBeInTheDocument();
   expect(within(rows[8]).getByText('Leave')).toBeInTheDocument();

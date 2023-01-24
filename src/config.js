@@ -18,7 +18,7 @@ export const JEST_TEST_TIMEOUT =
 export const AXE_TEST_TIMEOUT = process.env.REACT_APP_AXE_TEST_TIMEOUT || 20000;
 
 export const GEOJSON_MAX_SIZE =
-  process.env.REACT_APP_GEOJSON_MAX_SIZE || 1000000; // 10 MB
+  process.env.REACT_APP_GEOJSON_MAX_SIZE || 10000000; // 10 MB
 
 export const SHARED_DATA_MAX_SIZE =
   process.env.REACT_APP_SHARED_DATA_MAX_SIZE || 10000000;
@@ -28,8 +28,16 @@ export const SHARED_DATA_MAX_FILES =
 
 export const MAX_DESCRIPTION_LENGTH = 600;
 
+export const MAP_DATA_ACCEPTED_TYPES_NAMES = [
+  'GeoJSON',
+  'JSON',
+  'KML',
+  'KMZ',
+  'ESRI Shapefile',
+];
+
 export const MAP_DATA_ACCEPTED_TYPES = {
-  'application/json': ['.json', '.geojson'],
+  'application/json': ['.json', '.geojson', '.kml', '.kmz', '.zip'],
 };
 
 export const MAP_DATA_ACCEPTED_EXTENSIONS = Object.values(

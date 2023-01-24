@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from 'tests/utils';
+import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 
 import React from 'react';
 
@@ -17,7 +17,23 @@ jest.mock('react-router-dom', () => ({
 
 const GEOJSON =
   '{"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": {"type": "Polygon", "coordinates": [[[-80.02098083496094, 0.8184536092473124], [-80.04364013671875, 0.8177670337355836], [-80.04844665527342, 0.8184536092473124], [-80.04981994628906, 0.8260059320976082], [-80.07247924804686, 0.802662342941431], [-80.09170532226562, 0.779318620539376], [-80.10063171386719, 0.7532284249372649], [-80.09857177734375, 0.7223319390984623], [-80.09307861328125, 0.7140928403610857], [-80.10337829589842, 0.6955548144696846], [-80.09788513183594, 0.6742703246919985], [-80.08827209472656, 0.6488661346824502], [-80.07797241210938, 0.6495527361122139], [-80.06561279296875, 0.6522991408974699], [-80.06235122680664, 0.6468063298344634], [-80.02098083496094, 0.8184536092473124]]]}, "properties": {}}]}';
-
+const KML = `
+  <?xml version="1.0" encoding="UTF-8"?>
+  <kml xmlns="http://www.opengis.net/kml/2.2">
+    <Document>
+      <Placemark>
+        <name>Test Polygon</name>
+        <Polygon>
+          <outerBoundaryIs>
+            <LinearRing>
+              <coordinates>1,1 2,2 3,3 4,4 1,1</coordinates>
+            </LinearRing>
+          </outerBoundaryIs>
+        </Polygon>
+      </Placemark>
+    </Document>
+  </kml>
+`;
 const setup = async () => {
   return await render(<LandscapeBoundaries />, {
     account: {
@@ -56,13 +72,13 @@ const testGeoJsonParsing = (file, errorMessage) => async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a GeoJSON file',
+        name: 'Upload a map file. Accepted file formats: GeoJSON, JSON, KML, KMZ, ESRI Shapefile',
       })
     )
   );
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.geojson, *.json Maximum file size: 1 MB',
+    name: 'Select File Accepted file formats: *.geojson, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB',
   });
 
   const data = {
@@ -79,7 +95,7 @@ const testGeoJsonParsing = (file, errorMessage) => async () => {
     },
   };
   fireEvent.drop(dropzone, data);
-  expect(await screen.findByText(errorMessage)).toBeInTheDocument();
+  expect(await within(dropzone).findByText(errorMessage)).toBeInTheDocument();
 };
 
 beforeEach(() => {
@@ -108,7 +124,10 @@ const plainTextFile = new File(['hello'], 'test.json', {
 });
 test(
   'LandscapeBoundaries: Select file (plain text, not JSON)',
-  testGeoJsonParsing(plainTextFile, 'The file was not a valid JSON file.')
+  testGeoJsonParsing(
+    plainTextFile,
+    'The file test.json is not a valid JSON file.'
+  )
 );
 
 const invalidJsonFile = new File(
@@ -122,7 +141,10 @@ const invalidJsonFile = new File(
 );
 test(
   'LandscapeBoundaries: Select file (invalid JSON)',
-  testGeoJsonParsing(invalidJsonFile, 'The file was not a valid JSON file.')
+  testGeoJsonParsing(
+    invalidJsonFile,
+    'The file test.json is not a valid JSON file.'
+  )
 );
 
 const invalidGeoJsonFile = new File(['{"key": "value"}'], 'test.json', {
@@ -132,7 +154,7 @@ test(
   'LandscapeBoundaries: Select file (Invalid GeoJSON)',
   testGeoJsonParsing(
     invalidGeoJsonFile,
-    'The file was JSON, but not a valid GeoJSON file.'
+    'The file test.json is JSON, but is not a valid GeoJSON file.'
   )
 );
 
@@ -149,7 +171,7 @@ test(
   'LandscapeBoundaries: Select file (Invalid GeoJSON Boundary)',
   testGeoJsonParsing(
     invalidGeomtryinGeoJsonFile,
-    'The file was JSON, but not a valid GeoJSON file.'
+    'The file test.json is JSON, but is not a valid GeoJSON file.'
   )
 );
 
@@ -158,7 +180,7 @@ const emptyGeoJsonFile = new File([''], 'test.json', {
 });
 test(
   'LandscapeBoundaries: Select file (empty)',
-  testGeoJsonParsing(emptyGeoJsonFile, 'The file was empty.')
+  testGeoJsonParsing(emptyGeoJsonFile, 'The file test.json is empty.')
 );
 
 test('LandscapeBoundaries: Select file', async () => {
@@ -184,13 +206,13 @@ test('LandscapeBoundaries: Select file', async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a GeoJSON file',
+        name: 'Upload a map file. Accepted file formats: GeoJSON, JSON, KML, KMZ, ESRI Shapefile',
       })
     )
   );
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.geojson, *.json Maximum file size: 1 MB',
+    name: 'Select File Accepted file formats: *.geojson, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB',
   });
 
   const file = new File([GEOJSON], 'test.json', { type: 'application/json' });
@@ -210,7 +232,7 @@ test('LandscapeBoundaries: Select file', async () => {
   await act(async () => fireEvent.drop(dropzone, data));
   expect(
     await screen.findByRole('button', {
-      name: 'Select File Accepted file formats: *.geojson, *.json Maximum file size: 1 MB test.json 804 B',
+      name: 'Select File Accepted file formats: *.geojson, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB test.json 804 B',
     })
   ).toBeInTheDocument();
 });
@@ -237,7 +259,7 @@ test('LandscapeBoundaries: Show back', async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a GeoJSON file',
+        name: 'Upload a map file. Accepted file formats: GeoJSON, JSON, KML, KMZ, ESRI Shapefile',
       })
     )
   );
@@ -252,38 +274,28 @@ test('LandscapeBoundaries: Show back', async () => {
   );
   expect(navigate.mock.calls[0]).toEqual(['/landscapes/slug-1']);
 });
-test('LandscapeBoundaries: Save', async () => {
+test('LandscapeBoundaries: Save GeoJSON', async () => {
+  const landscapes = {
+    edges: [
+      {
+        node: {
+          id: '1',
+          name: 'Landscape Name',
+          description: 'Landscape Description',
+          website: 'https://www.landscape.org',
+        },
+      },
+    ],
+  };
   terrasoApi.requestGraphQL
     .mockResolvedValueOnce({
-      landscapes: {
-        edges: [
-          {
-            node: {
-              id: '1',
-              name: 'Landscape Name',
-              description: 'Landscape Description',
-              website: 'www.landscape.org',
-            },
-          },
-        ],
-      },
+      landscapes,
     })
     .mockResolvedValueOnce({
-      landscapes: {
-        edges: [
-          {
-            node: {
-              id: '1',
-              name: 'Landscape Name',
-              description: 'Landscape Description',
-              website: 'www.landscape.org',
-            },
-          },
-        ],
-      },
+      landscapes,
     })
     .mockResolvedValueOnce({
-      addLandscape: {
+      updateLandscape: {
         landscape: {
           id: '1',
           name: 'Landscape Name',
@@ -293,6 +305,9 @@ test('LandscapeBoundaries: Save', async () => {
         },
       },
     });
+  terrasoApi.request.mockResolvedValueOnce({
+    geogeojson: '',
+  });
   await setup();
 
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
@@ -300,13 +315,13 @@ test('LandscapeBoundaries: Save', async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a GeoJSON file',
+        name: 'Upload a map file. Accepted file formats: GeoJSON, JSON, KML, KMZ, ESRI Shapefile',
       })
     )
   );
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.geojson, *.json Maximum file size: 1 MB',
+    name: 'Select File Accepted file formats: *.geojson, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB',
   });
 
   const file = new File([GEOJSON], 'test.json', { type: 'application/json' });
@@ -326,7 +341,7 @@ test('LandscapeBoundaries: Save', async () => {
   await act(async () => fireEvent.drop(dropzone, data));
   expect(
     await screen.findByRole('button', {
-      name: 'Select File Accepted file formats: *.geojson, *.json Maximum file size: 1 MB test.json 804 B',
+      name: 'Select File Accepted file formats: *.geojson, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB test.json 804 B',
     })
   ).toBeInTheDocument();
 
@@ -342,6 +357,123 @@ test('LandscapeBoundaries: Save', async () => {
     input: {
       id: '1',
       areaPolygon: JSON.stringify(JSON.parse(GEOJSON)),
+    },
+  });
+});
+
+test('LandscapeBoundaries: Save KML', async () => {
+  const file = new File([KML], 'valid.kml', {
+    type: 'application/vnd.google-earth.kml+xml',
+  });
+
+  const landscapes = {
+    edges: [
+      {
+        node: {
+          id: '1',
+          name: 'Landscape Name',
+          description: 'Landscape Description',
+          website: 'www.landscape.org',
+        },
+      },
+    ],
+  };
+  terrasoApi.requestGraphQL
+    .mockResolvedValueOnce({
+      landscapes,
+    })
+    .mockResolvedValueOnce({
+      landscapes,
+    })
+    .mockResolvedValueOnce({
+      updateLandscape: {
+        landscape: {
+          id: '1',
+          name: 'Landscape Name',
+          description: 'Landscape Description',
+          website: 'www.landscape.org',
+          location: 'Location',
+        },
+      },
+    });
+  const geojson = {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [102.0, 0.5] },
+        properties: { prop0: 'value0' },
+      },
+      {
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [100.0, 0.0],
+              [101.0, 0.0],
+              [101.0, 1.0],
+              [100.0, 1.0],
+              [100.0, 0.0],
+            ],
+          ],
+        },
+      },
+    ],
+  };
+  terrasoApi.request.mockResolvedValueOnce({
+    geojson,
+  });
+  await setup();
+
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Upload a map file. Accepted file formats: GeoJSON, JSON, KML, KMZ, ESRI Shapefile',
+      })
+    )
+  );
+
+  const dropzone = screen.getByRole('button', {
+    name: 'Select File Accepted file formats: *.geojson, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB',
+  });
+
+  const dataTransfer = {
+    dataTransfer: {
+      files: [file],
+      items: [
+        {
+          kind: 'file',
+          type: file.type,
+          getAsFile: () => file,
+        },
+      ],
+      types: ['Files'],
+    },
+  };
+  fireEvent.drop(dropzone, dataTransfer);
+  await waitFor(async () => {
+    expect(
+      screen.getByRole('button', {
+        name: 'Select File Accepted file formats: *.geojson, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB valid.kml 406 B',
+      })
+    ).toBeInTheDocument();
+  });
+
+  const saveButton = screen.getByRole('button', {
+    name: 'Update',
+  });
+  expect(saveButton).toBeInTheDocument();
+  expect(saveButton).not.toHaveAttribute('disabled');
+  await act(async () => fireEvent.click(saveButton));
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
+  expect(saveCall[1]).toStrictEqual({
+    input: {
+      id: '1',
+      areaPolygon: JSON.stringify(geojson),
     },
   });
 });

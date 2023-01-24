@@ -1,14 +1,16 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import BaseDropZone from 'common/components/DropZone';
 import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
 import { sendToRollbar } from 'monitoring/logger';
 
-import { isValidGeoJson } from 'landscape/landscapeUtils';
+import { parseFileToGeoJSON } from 'gis/gisSlice';
 
 import {
   GEOJSON_MAX_SIZE,
@@ -18,69 +20,72 @@ import {
 
 import LandscapeMap from '../LandscapeMap';
 
-const openFile = file =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = event => {
-      const contents = event.target.result;
-      resolve(contents);
-    };
-    reader.onerror = () => reject(reader.error);
-    reader.readAsText(file);
-  });
-
-const openGeoJsonFile = file =>
-  openFile(file).then(contents => {
-    if (!contents.length) {
-      throw new Error('boundaries_file_empty');
-    }
-    let json;
-
-    try {
-      json = JSON.parse(contents);
-    } catch (error) {
-      throw new Error('boundaries_file_invalid_json');
-    }
-
-    if (isValidGeoJson(json)) {
-      return json;
-    } else {
-      throw new Error('boundaries_file_invalid_geojson');
-    }
-  });
-
 const DropZone = props => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const { onFileSelected } = props;
   const [currentFile, setCurrentFile] = useState();
-  const [error, setError] = useState();
+  const [dropError, setDropError] = useState();
+  const {
+    processing: processingFile,
+    fileName: processingFileName,
+    error: processingError,
+    geojson,
+  } = useSelector(_.get('gis.parsing'));
+
+  useEffect(() => {
+    if (geojson) {
+      onFileSelected(geojson);
+    }
+  }, [geojson, onFileSelected]);
+
   const onDrop = useCallback(
     acceptedFiles => {
       if (_.isEmpty(acceptedFiles)) {
-        setError(t('landscape.boundaries_file_no_accepted'));
+        setDropError(t('landscape.boundaries_file_no_accepted'));
         return;
       }
-      setError(null);
+      setDropError(null);
+
       const selectedFile = acceptedFiles[0];
-      openGeoJsonFile(selectedFile)
-        .then(json => {
-          onFileSelected(json);
+
+      dispatch(parseFileToGeoJSON(selectedFile)).then(data => {
+        const success = _.get('meta.requestStatus', data) === 'fulfilled';
+        if (success) {
           setCurrentFile(selectedFile);
-        })
-        .catch(error => {
-          setError(t(`landscape.${error.message}`));
-          sendToRollbar('error', error);
-        });
+        } else {
+          sendToRollbar('error', data.payload);
+        }
+      });
     },
-    [onFileSelected, t]
+    [t, dispatch]
   );
+
+  const errors = useMemo(
+    () =>
+      _.compact(
+        _.concat(
+          dropError,
+          processingError?.map(error =>
+            t(error.content, {
+              ...error.params,
+              name: processingFileName,
+            })
+          )
+        )
+      ),
+    [dropError, processingError, processingFileName, t]
+  );
+
   return (
     <BaseDropZone
-      errors={error ? [error] : null}
+      errors={errors}
       currentFile={currentFile}
       onDrop={onDrop}
       maxSize={GEOJSON_MAX_SIZE}
+      fileTypes={MAP_DATA_ACCEPTED_TYPES}
       fileExtensions={MAP_DATA_ACCEPTED_EXTENSIONS}
+      loading={processingFile}
     />
   );
 };
@@ -96,11 +101,7 @@ const LandscapeGeoJsonBoundaries = props => {
         areaPolygon={areaPolygon}
         onGeoJsonChange={onFileSelected}
       />
-      <DropZone
-        onFileSelected={onFileSelected}
-        fileTypes={MAP_DATA_ACCEPTED_TYPES}
-        fileExtensions={MAP_DATA_ACCEPTED_EXTENSIONS}
-      />
+      <DropZone onFileSelected={onFileSelected} />
       <InlineHelp
         items={[
           {

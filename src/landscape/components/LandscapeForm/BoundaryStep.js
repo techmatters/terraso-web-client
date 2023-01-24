@@ -24,7 +24,7 @@ import { countryNameForCode } from 'common/utils';
 import PageHeader from 'layout/PageHeader';
 
 import { getPlaceInfoByName } from 'gis/gisService';
-import LandscapeGeoJsonBoundaries from 'landscape/components/LandscapeForm/BoundaryStepGeoJsonBoundaries';
+import LandscapeBoundariesFile from 'landscape/components/LandscapeForm/BoundaryStepBoundariesFile';
 import LandscapeMap from 'landscape/components/LandscapeMap';
 
 import { useIsMounted } from 'custom-hooks';
@@ -34,6 +34,8 @@ import './BoundaryStep.css';
 import { scrollToNavBar } from 'navigation/scrollTo';
 
 import { LAYER_ESRI } from 'gis/components/Map';
+
+import { MAP_DATA_ACCEPTED_TYPES_NAMES } from 'config';
 
 import Actions from './Actions';
 
@@ -68,7 +70,7 @@ const GeoJson = props => {
     <>
       <PageHeader header={t('landscape.form_boundary_geojson_title')} />
       <Paper variant="outlined" sx={{ p: 2, mt: 2, mb: 2 }}>
-        <LandscapeGeoJsonBoundaries
+        <LandscapeBoundariesFile
           mapCenter={mapCenter}
           areaPolygon={areaPolygon || landscape?.areaPolygon}
           onFileSelected={setAreaPolygon}
@@ -286,22 +288,30 @@ const BoundaryOptions = props => {
   const options = [
     {
       Icon: UploadFileIcon,
-      label: 'landscape.form_boundary_options_geojson',
+      label: (
+        <Trans
+          i18nKey="landscape.form_boundary_options_geojson"
+          values={{ formats: MAP_DATA_ACCEPTED_TYPES_NAMES.join(', ') }}
+        >
+          prefix
+          <Typography sx={{ ml: 1, fontSize: 'inherit' }}>Formats</Typography>
+        </Trans>
+      ),
       onClick: () => setOption(OPTION_GEOJSON),
     },
     {
       Icon: MapIcon,
-      label: 'landscape.form_boundary_options_draw_polygon',
+      label: t('landscape.form_boundary_options_draw_polygon'),
       onClick: () => setOption(OPTION_MAP_DRAW_POLYGON),
     },
     {
       Icon: PinDropIcon,
-      label: 'landscape.form_boundary_options_pin',
+      label: t('landscape.form_boundary_options_pin'),
       onClick: () => setOption(OPTION_MAP_PIN),
     },
     {
       Icon: ArrowRightAltIcon,
-      label: 'landscape.form_boundary_options_skip',
+      label: t('landscape.form_boundary_options_skip'),
       onClick: () =>
         setUpdatedLandscape({
           ...landscape,
@@ -343,12 +353,13 @@ const BoundaryOptions = props => {
               justifyContent: 'start',
               padding: 4,
               borderColor: 'gray.mid',
+              fontWeight: 500,
             }}
           >
             <option.Icon
               sx={{ fontSize: '40px', marginRight: 2, color: 'gray.mid2' }}
             />
-            {t(option.label)}
+            {option.label}
           </Button>
         ))}
       </Stack>

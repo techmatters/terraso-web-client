@@ -14,6 +14,7 @@ const ExternalLink = ({ href, component, children, linkProps }) => {
     window.open(href, '_blank', 'noopener,noreferrer');
     trackEvent('Outbound Link: Click', { props: { url: href } });
     event.preventDefault();
+    event.stopPropagation();
   };
 
   return (
