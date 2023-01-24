@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import mapboxgl from '!mapbox-gl';
@@ -100,8 +100,13 @@ const Title = props => {
 };
 
 const StoryMap = props => {
-  const { config, mapCss = { height: '100vh', width: '100vw', top: 0 } } =
-    props;
+  const {
+    config,
+    onStepChange,
+    ChapterComponent = Chapter,
+    TitleComponent = Title,
+    mapCss = { height: '100vh', width: '100vw', top: 0 },
+  } = props;
   const mapContainer = React.useRef(null);
   const mapInsetContainer = React.useRef(null);
   const [map, setMap] = React.useState(null);
@@ -131,17 +136,19 @@ const StoryMap = props => {
     [map, getLayerPaintType]
   );
 
+  const initialLocation = useMemo(
+    () => config.chapters?.[0]?.location,
+    [config.chapters]
+  );
+
   useEffect(() => {
     const map = new mapboxgl.Map({
       container: mapContainer.current,
       style: config.style,
-      center: _.get('chapters[0].location.center', config),
-      zoom: _.get('chapters[0].location.zoom', config),
-      bearing: _.get('chapters[0].location.bearing', config),
-      pitch: _.get('chapters[0].location.pitch', config),
       interactive: false,
       transformRequest: transformRequest,
       projection: config.projection,
+      ...(initialLocation ? initialLocation : {}),
     });
 
     map.on('load', function () {
@@ -170,7 +177,7 @@ const StoryMap = props => {
       setMap(map);
     });
     return () => map.remove();
-  }, [config]);
+  }, [config.style, initialLocation, config.use3dTerrain, config.projection]);
 
   useEffect(() => {
     if (!map || !config.inset) return;
@@ -247,29 +254,31 @@ const StoryMap = props => {
     chapter => {
       if (!map || (config.inset && !insetMap) || !chapter) return;
 
-      map[chapter.mapAnimation || 'flyTo'](chapter.location);
+      if (chapter.location) {
+        map[chapter.mapAnimation || 'flyTo'](chapter.location);
 
-      // Incase you do not want to have a dynamic inset map,
-      // rather want to keep it a static view but still change the
-      // bbox as main map move: comment out the below if section.
-      if (config.inset) {
-        if (chapter.location.zoom < 5) {
-          insetMap.flyTo({ center: chapter.location.center, zoom: 0 });
-        } else {
-          insetMap.flyTo({ center: chapter.location.center, zoom: 3 });
+        // Incase you do not want to have a dynamic inset map,
+        // rather want to keep it a static view but still change the
+        // bbox as main map move: comment out the below if section.
+        if (config.inset) {
+          if (chapter.location.zoom < 5) {
+            insetMap.flyTo({ center: chapter.location.center, zoom: 0 });
+          } else {
+            insetMap.flyTo({ center: chapter.location.center, zoom: 3 });
+          }
         }
-      }
-      if (config.showMarkers) {
-        if (!marker) {
-          const newMarker = new mapboxgl.Marker({
-            color: config.markerColor,
-          })
-            .setLngLat(chapter.location.center)
-            .addTo(map);
+        if (config.showMarkers) {
+          if (!marker) {
+            const newMarker = new mapboxgl.Marker({
+              color: config.markerColor,
+            })
+              .setLngLat(chapter.location.center)
+              .addTo(map);
 
-          setMarker(newMarker);
-        } else {
-          marker.setLngLat(chapter.location.center);
+            setMarker(newMarker);
+          } else {
+            marker.setLngLat(chapter.location.center);
+          }
         }
       }
       if (chapter.onChapterEnter.length > 0) {
@@ -310,6 +319,7 @@ const StoryMap = props => {
         const chapter = config.chapters[current_chapter];
         response.element.classList.add('active');
         startChapter(chapter);
+        onStepChange?.(response.element.id);
 
         if (config.auto) {
           const next_chapter = (current_chapter + 1) % config.chapters.length;
@@ -327,7 +337,7 @@ const StoryMap = props => {
           chap => chap.id === response.element.id
         );
         response.element.classList.remove('active');
-        if (chapter.onChapterExit.length > 0) {
+        if (chapter?.onChapterExit && chapter.onChapterExit.length > 0) {
           chapter.onChapterExit.forEach(setLayerOpacity);
         }
       });
@@ -345,6 +355,7 @@ const StoryMap = props => {
     config.auto,
     config.inset,
     config.showMarkers,
+    onStepChange,
   ]);
 
   return (
@@ -353,9 +364,13 @@ const StoryMap = props => {
       <Box id="mapInset" ref={mapInsetContainer}></Box>
       <Box id="story">
         <Box id="features" className={alignments[config.alignment]}>
-          <Title config={config} />
+          <TitleComponent config={config} />
           {config.chapters.map(chapter => (
-            <Chapter key={chapter.id} theme={config.theme} record={chapter} />
+            <ChapterComponent
+              key={chapter.id}
+              theme={config.theme}
+              record={chapter}
+            />
           ))}
         </Box>
         {config.footer && (
