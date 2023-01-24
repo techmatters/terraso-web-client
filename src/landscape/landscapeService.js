@@ -82,11 +82,7 @@ const cleanLandscape = landscape =>
         return [key, value ? JSON.stringify(value) : null];
       }
       if (key === 'population') {
-        if (_.isEmpty(value)) {
-          return [key, null];
-        } else {
-          return [key, _.toInteger(value)];
-        }
+        return [key, _.isEmpty(value) ? null : _.toInteger(value)];
       }
       return [key, value];
     }),
