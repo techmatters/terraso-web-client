@@ -9,11 +9,15 @@ import React, {
 import { useTranslation } from 'react-i18next';
 
 import AddIcon from '@mui/icons-material/Add';
+import AlignHorizontalCenterIcon from '@mui/icons-material/AlignHorizontalCenter';
 import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft';
+import AlignHorizontalRightIcon from '@mui/icons-material/AlignHorizontalRight';
 import {
   Box,
   Button,
+  ButtonGroup,
   Grid,
+  IconButton,
   List,
   ListItemButton,
   ListItemIcon,
@@ -23,6 +27,7 @@ import {
 } from '@mui/material';
 
 import { MAPBOX_STYLE_DEFAULT } from 'config';
+import { withProps } from 'react-hoc';
 
 import { ALIGNMENTS } from '../storyMapConstants';
 import StoryMap from './StoryMap';
@@ -65,7 +70,7 @@ const BASE_CONFIG = {
     },
     {
       id: 'fourth-chapter',
-      alignment: 'fully',
+      alignment: 'right',
       title: 'Chapter 2',
       description: 'Copy these sections to add to your story.',
       mapAnimation: 'jumpTo',
@@ -187,6 +192,46 @@ const EditableText = props => {
   return <Component onClick={onClick}>{value}</Component>;
 };
 
+const AlignmentButton = withProps(IconButton, {
+  size: 'small',
+  sx: { bgcolor: 'gray.lite1', '&:hover': { bgcolor: 'gray.mid' } },
+});
+const AligmentOptions = props => {
+  const { onClick } = props;
+
+  const options = [
+    {
+      label: 'TODO',
+      Icon: AlignHorizontalLeftIcon,
+      value: 'left',
+    },
+    {
+      label: 'TODO',
+      Icon: AlignHorizontalCenterIcon,
+      value: 'center',
+    },
+    {
+      label: 'TODO',
+      Icon: AlignHorizontalRightIcon,
+      value: 'right',
+    },
+  ];
+
+  return (
+    <ButtonGroup orientation="vertical" aria-label="TODO">
+      {options.map(option => (
+        <AlignmentButton
+          key={option.value}
+          aria-label={option.label}
+          onClick={() => onClick(option.value)}
+        >
+          <option.Icon />
+        </AlignmentButton>
+      ))}
+    </ButtonGroup>
+  );
+};
+
 const ChapterForm = ({ theme, record }) => {
   const { t } = useTranslation();
   const { setConfig } = React.useContext(ConfigContext);
@@ -209,8 +254,7 @@ const ChapterForm = ({ theme, record }) => {
   );
 
   return (
-    <Box id={record.id} className={classList}>
-      <AlignHorizontalLeftIcon />
+    <Box id={record.id} className={classList} direction="row">
       <Stack className={`${theme} step-content`} spacing={1}>
         <EditableText
           placeholder={t('storyMap.form_chapter_title_placeholder')}
@@ -230,6 +274,7 @@ const ChapterForm = ({ theme, record }) => {
           }}
         />
       </Stack>
+      <AligmentOptions onClick={onFieldChange('alignment')} />
     </Box>
   );
 };
