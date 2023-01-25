@@ -286,7 +286,11 @@ const StoryMap = props => {
   );
 
   useEffect(() => {
-    if (!map || (config.inset && !insetMap) || _.isEmpty(config.chapters)) {
+    if (
+      !map ||
+      (config.inset && !insetMap) ||
+      (_.isEmpty(config.chapters) && !config.title)
+    ) {
       return;
     }
 
@@ -336,6 +340,7 @@ const StoryMap = props => {
     marker,
     setLayerOpacity,
     startChapter,
+    config.title,
     config.chapters,
     config.auto,
     config.inset,
