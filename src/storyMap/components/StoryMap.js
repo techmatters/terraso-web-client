@@ -74,7 +74,7 @@ const Title = props => {
   if (!config.title) return null;
 
   return (
-    <Box id="header" className="step fully">
+    <Box id="header" className="step fully title">
       <Box className={`${config.theme} step-content`}>
         <h1>{config.title}</h1>
         {config.subtitle && <h2>{config.subtitle}</h2>}

@@ -1,5 +1,6 @@
 import React, {
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -53,40 +54,40 @@ const BASE_CONFIG = {
   byline: 'By a Digital Storyteller',
   showMarkers: false,
   chapters: [
-    // {
-    //   id: 'third-identifier',
-    //   alignment: 'left',
-    //   title: 'Chapter 1',
-    //   description: 'Copy these sections to add to your story.',
-    //   location: {
-    //     center: [6.15116, 46.20595],
-    //     zoom: 12.52,
-    //     pitch: 8.01,
-    //     bearing: 0.0,
-    //   },
-    //   mapAnimation: 'jumpTo',
-    //   rotateAnimation: false,
-    //   callback: '',
-    //   onChapterEnter: [],
-    //   onChapterExit: [],
-    // },
-    // {
-    //   id: 'fourth-chapter',
-    //   alignment: 'right',
-    //   title: 'Chapter 2',
-    //   description: 'Copy these sections to add to your story.',
-    //   mapAnimation: 'jumpTo',
-    //   location: {
-    //     center: [-58.54195, -34.716],
-    //     zoom: 4,
-    //     pitch: 0,
-    //     bearing: 0,
-    //   },
-    //   rotateAnimation: false,
-    //   callback: '',
-    //   onChapterEnter: [],
-    //   onChapterExit: [],
-    // },
+    {
+      id: 'third-identifier',
+      alignment: 'left',
+      title: 'Chapter 1',
+      description: 'Copy these sections to add to your story.',
+      location: {
+        center: [6.15116, 46.20595],
+        zoom: 12.52,
+        pitch: 8.01,
+        bearing: 0.0,
+      },
+      mapAnimation: 'flyTo',
+      rotateAnimation: false,
+      callback: '',
+      onChapterEnter: [],
+      onChapterExit: [],
+    },
+    {
+      id: 'fourth-chapter',
+      alignment: 'right',
+      title: 'Chapter 2',
+      description: 'Copy these sections to add to your story.',
+      mapAnimation: 'flyTo',
+      location: {
+        center: [-58.54195, -34.716],
+        zoom: 4,
+        pitch: 0,
+        bearing: 0,
+      },
+      rotateAnimation: false,
+      callback: '',
+      onChapterEnter: [],
+      onChapterExit: [],
+    },
   ],
 };
 
@@ -274,7 +275,7 @@ const ChapterConfig = props => {
 
 const ChapterForm = ({ theme, record }) => {
   const { t } = useTranslation();
-  const { setConfig } = React.useContext(ConfigContext);
+  const { setConfig } = useContext(ConfigContext);
   const classList = [
     'step',
     ALIGNMENTS[record.alignment] || 'centered',
@@ -319,6 +320,47 @@ const ChapterForm = ({ theme, record }) => {
         onAlignmentChange={onFieldChange('alignment')}
         onLocationChange={onFieldChange('location')}
       />
+    </Box>
+  );
+};
+
+const TitleForm = props => {
+  const { t } = useTranslation();
+  const { setConfig } = useContext(ConfigContext);
+  const { config } = props;
+
+  const onFieldChange = useCallback(
+    field => value => {
+      setConfig(config => ({
+        ...config,
+        [field]: value,
+      }));
+    },
+    [setConfig]
+  );
+
+  return (
+    <Box id="header" className="step fully title">
+      <Box className={`${config.theme} step-content`}>
+        <EditableText
+          placeholder={t('storyMap.form_title_placeholder')}
+          Component="h1"
+          value={config.title}
+          onChange={onFieldChange('title')}
+        />
+        <EditableText
+          placeholder={t('storyMap.form_subtitle_placeholder')}
+          Component="h2"
+          value={config.subtitle}
+          onChange={onFieldChange('subtitle')}
+        />
+        <EditableText
+          placeholder={t('storyMap.form_byline_placeholder')}
+          Component="p"
+          value={config.byline}
+          onChange={onFieldChange('byline')}
+        />
+      </Box>
     </Box>
   );
 };
@@ -399,6 +441,7 @@ const StoryMapForm = () => {
               mapCss={mapCss}
               onStepChange={setCurrentStepId}
               ChapterComponent={ChapterForm}
+              TitleComponent={TitleForm}
             />
           )}
         </Grid>
