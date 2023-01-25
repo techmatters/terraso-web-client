@@ -12,6 +12,7 @@ import AddIcon from '@mui/icons-material/Add';
 import AlignHorizontalCenterIcon from '@mui/icons-material/AlignHorizontalCenter';
 import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft';
 import AlignHorizontalRightIcon from '@mui/icons-material/AlignHorizontalRight';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import {
   Box,
   Button,
@@ -30,13 +31,14 @@ import { MAPBOX_STYLE_DEFAULT } from 'config';
 import { withProps } from 'react-hoc';
 
 import { ALIGNMENTS } from '../storyMapConstants';
+import MapLocationDialog from './MapLocationDialog';
 import StoryMap from './StoryMap';
 
 const BASE_CHAPTER = {
   alignment: 'left',
   title: '',
   description: '',
-  mapAnimation: 'jumpTo',
+  mapAnimation: 'flyTo',
   rotateAnimation: false,
   callback: '',
   onChapterEnter: [],
@@ -49,42 +51,42 @@ const BASE_CONFIG = {
   title: 'The Title Text of this Story',
   subtitle: 'A descriptive and interesting subtitle to draw in the reader',
   byline: 'By a Digital Storyteller',
-  showMarkers: true,
+  showMarkers: false,
   chapters: [
-    {
-      id: 'third-identifier',
-      alignment: 'left',
-      title: 'Chapter 1',
-      description: 'Copy these sections to add to your story.',
-      location: {
-        center: [6.15116, 46.20595],
-        zoom: 12.52,
-        pitch: 8.01,
-        bearing: 0.0,
-      },
-      mapAnimation: 'jumpTo',
-      rotateAnimation: false,
-      callback: '',
-      onChapterEnter: [],
-      onChapterExit: [],
-    },
-    {
-      id: 'fourth-chapter',
-      alignment: 'right',
-      title: 'Chapter 2',
-      description: 'Copy these sections to add to your story.',
-      mapAnimation: 'jumpTo',
-      location: {
-        center: [-58.54195, -34.716],
-        zoom: 4,
-        pitch: 0,
-        bearing: 0,
-      },
-      rotateAnimation: false,
-      callback: '',
-      onChapterEnter: [],
-      onChapterExit: [],
-    },
+    // {
+    //   id: 'third-identifier',
+    //   alignment: 'left',
+    //   title: 'Chapter 1',
+    //   description: 'Copy these sections to add to your story.',
+    //   location: {
+    //     center: [6.15116, 46.20595],
+    //     zoom: 12.52,
+    //     pitch: 8.01,
+    //     bearing: 0.0,
+    //   },
+    //   mapAnimation: 'jumpTo',
+    //   rotateAnimation: false,
+    //   callback: '',
+    //   onChapterEnter: [],
+    //   onChapterExit: [],
+    // },
+    // {
+    //   id: 'fourth-chapter',
+    //   alignment: 'right',
+    //   title: 'Chapter 2',
+    //   description: 'Copy these sections to add to your story.',
+    //   mapAnimation: 'jumpTo',
+    //   location: {
+    //     center: [-58.54195, -34.716],
+    //     zoom: 4,
+    //     pitch: 0,
+    //     bearing: 0,
+    //   },
+    //   rotateAnimation: false,
+    //   callback: '',
+    //   onChapterEnter: [],
+    //   onChapterExit: [],
+    // },
   ],
 };
 
@@ -192,12 +194,13 @@ const EditableText = props => {
   return <Component onClick={onClick}>{value}</Component>;
 };
 
-const AlignmentButton = withProps(IconButton, {
+const ConfigButton = withProps(IconButton, {
   size: 'small',
   sx: { bgcolor: 'gray.lite1', '&:hover': { bgcolor: 'gray.mid' } },
 });
-const AligmentOptions = props => {
-  const { onClick } = props;
+const ChapterConfig = props => {
+  const { onAlignmentChange, location, onLocationChange } = props;
+  const [locationOpen, setLocationOpen] = useState(false);
 
   const options = [
     {
@@ -217,18 +220,55 @@ const AligmentOptions = props => {
     },
   ];
 
+  const onLocationClick = useCallback(() => {
+    setLocationOpen(true);
+  }, []);
+
+  const onLocationClose = useCallback(() => {
+    setLocationOpen(false);
+  }, []);
+
+  const onLocationChangeWrapper = useCallback(
+    location => {
+      onLocationChange(location);
+      onLocationClose();
+    },
+    [onLocationChange, onLocationClose]
+  );
+
   return (
-    <ButtonGroup orientation="vertical" aria-label="TODO">
-      {options.map(option => (
-        <AlignmentButton
-          key={option.value}
-          aria-label={option.label}
-          onClick={() => onClick(option.value)}
+    <>
+      <MapLocationDialog
+        open={locationOpen}
+        location={location}
+        onClose={onLocationClose}
+        onConfirm={onLocationChangeWrapper}
+      />
+      <Stack spacing={1}>
+        <ConfigButton
+          aria-label="TODO"
+          onClick={onLocationClick}
+          sx={{
+            bgcolor: 'blue.dark',
+            color: 'white',
+            '&:hover': { bgcolor: 'blue.mid' },
+          }}
         >
-          <option.Icon />
-        </AlignmentButton>
-      ))}
-    </ButtonGroup>
+          <GpsFixedIcon />
+        </ConfigButton>
+        <ButtonGroup orientation="vertical" aria-label="TODO">
+          {options.map(option => (
+            <ConfigButton
+              key={option.value}
+              aria-label={option.label}
+              onClick={() => onAlignmentChange(option.value)}
+            >
+              <option.Icon />
+            </ConfigButton>
+          ))}
+        </ButtonGroup>
+      </Stack>
+    </>
   );
 };
 
@@ -274,7 +314,11 @@ const ChapterForm = ({ theme, record }) => {
           }}
         />
       </Stack>
-      <AligmentOptions onClick={onFieldChange('alignment')} />
+      <ChapterConfig
+        location={record.location}
+        onAlignmentChange={onFieldChange('alignment')}
+        onLocationChange={onFieldChange('location')}
+      />
     </Box>
   );
 };
