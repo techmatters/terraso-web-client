@@ -9,6 +9,7 @@ import React, {
 import { useTranslation } from 'react-i18next';
 
 import AddIcon from '@mui/icons-material/Add';
+import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft';
 import {
   Box,
   Button,
@@ -209,6 +210,7 @@ const ChapterForm = ({ theme, record }) => {
 
   return (
     <Box id={record.id} className={classList}>
+      <AlignHorizontalLeftIcon />
       <Stack className={`${theme} step-content`} spacing={1}>
         <EditableText
           placeholder={t('storyMap.form_chapter_title_placeholder')}
