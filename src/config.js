@@ -37,7 +37,9 @@ export const MAP_DATA_ACCEPTED_TYPES_NAMES = [
 ];
 
 export const MAP_DATA_ACCEPTED_TYPES = {
-  'application/json': ['.json', '.geojson', '.kml', '.kmz', '.zip'],
+  'application/json': ['.json', '.geojson'],
+  'application/xml': ['.kml'],
+  'application/zip': ['.kmz', '.zip'],
 };
 
 export const MAP_DATA_ACCEPTED_EXTENSIONS = Object.values(
