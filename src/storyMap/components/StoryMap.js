@@ -15,24 +15,9 @@ import { Box } from '@mui/material';
 
 import { MAPBOX_ACCESS_TOKEN } from 'config';
 
+import { ALIGNMENTS, LAYER_TYPES } from '../storyMapConstants';
+
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
-
-const layerTypes = {
-  fill: ['fill-opacity'],
-  line: ['line-opacity'],
-  circle: ['circle-opacity', 'circle-stroke-opacity'],
-  symbol: ['icon-opacity', 'text-opacity'],
-  raster: ['raster-opacity'],
-  'fill-extrusion': ['fill-extrusion-opacity'],
-  heatmap: ['heatmap-opacity'],
-};
-
-const alignments = {
-  left: 'lefty',
-  center: 'centered',
-  right: 'righty',
-  full: 'fully',
-};
 
 const transformRequest = url => {
   const hasQuery = url.indexOf('?') !== -1;
@@ -66,22 +51,22 @@ const getBoundsJson = bounds => ({
   ],
 });
 
-function Chapter({ theme, record }) {
+const Chapter = ({ theme, record }) => {
   const classList = [
     'step',
-    alignments[record.alignment] || 'centered',
+    ALIGNMENTS[record.alignment] || 'centered',
     ...(record.hidden ? ['hidden'] : []),
   ].join(' ');
   return (
     <Box id={record.id} className={classList}>
-      <Box className={theme}>
+      <Box className={`${theme} step-content`}>
         {record.title && <h3 className="title">{record.title}</h3>}
         {record.image && <img src={record.image} alt={record.title}></img>}
         {record.description && <p>{record.description}</p>}
       </Box>
     </Box>
   );
-}
+};
 
 const Title = props => {
   const { config } = props;
@@ -116,7 +101,7 @@ const StoryMap = props => {
   const getLayerPaintType = useCallback(
     layer => {
       const layerType = map.getLayer(layer).type;
-      return layerTypes[layerType];
+      return LAYER_TYPES[layerType];
     },
     [map]
   );
@@ -363,7 +348,7 @@ const StoryMap = props => {
       <Box id="map" ref={mapContainer} sx={{ ...mapCss }} />
       <Box id="mapInset" ref={mapInsetContainer}></Box>
       <Box id="story">
-        <Box id="features" className={alignments[config.alignment]}>
+        <Box id="features" className={ALIGNMENTS[config.alignment]}>
           <TitleComponent config={config} />
           {config.chapters.map(chapter => (
             <ChapterComponent
