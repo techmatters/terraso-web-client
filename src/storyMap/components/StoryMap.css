@@ -79,7 +79,8 @@ footer {
   background-color: #444;
 }
 .step {
-  padding-bottom: 50vh;
+  padding-top: 15vh;
+  padding-bottom: 35vh;
   /* margin-bottom: 10vh; */
   opacity: 0.25;
 }
@@ -87,7 +88,7 @@ footer {
   opacity: 0.9;
 }
 
-.step div {
+.step .step-content {
   padding: 25px 50px;
   line-height: 25px;
   font-size: 13px;

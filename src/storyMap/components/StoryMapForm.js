@@ -1,11 +1,29 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { Button, Grid, List, ListItemButton } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import {
+  Box,
+  Button,
+  Grid,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  OutlinedInput,
+  Stack,
+} from '@mui/material';
 
 import { MAPBOX_STYLE_DEFAULT } from 'config';
 
+import { ALIGNMENTS } from '../storyMapConstants';
 import StoryMap from './StoryMap';
 
 const BASE_CHAPTER = {
@@ -64,14 +82,16 @@ const BASE_CONFIG = {
   ],
 };
 
-const Chapters = props => {
+const ConfigContext = React.createContext();
+
+const ChaptersSidebar = props => {
   const { t } = useTranslation();
   const { config, currentStepId, onAdd } = props;
   const { chapters } = config;
 
   const scrollTo = id => {
     const element = document.getElementById(id);
-    element?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    element?.scrollIntoView({ block: 'start', behavior: 'smooth' });
   };
 
   const listItems = useMemo(
@@ -102,6 +122,7 @@ const Chapters = props => {
     >
       {listItems.map(item => (
         <ListItemButton
+          component="li"
           key={item.id}
           sx={{
             bgcolor: item.active ? 'blue.mid' : 'transparent',
@@ -112,8 +133,102 @@ const Chapters = props => {
           {item.label}
         </ListItemButton>
       ))}
-      <ListItemButton onClick={onAdd}>Add</ListItemButton>
+      <ListItemButton component="li" onClick={onAdd}>
+        <ListItemText primary={t('storyMap.form_chapter_add')} />
+        <ListItemIcon>
+          <AddIcon />
+        </ListItemIcon>
+      </ListItemButton>
     </Grid>
+  );
+};
+
+const EditableText = props => {
+  const { Component, value, onChange, placeholder, inputProps = {} } = props;
+  const [isEditing, setIsEditing] = useState(!value);
+  const inputRef = useRef(null);
+
+  const onExit = useCallback(() => {
+    if (!value) {
+      return;
+    }
+    setIsEditing(false);
+  }, [value]);
+  const onClick = useCallback(() => setIsEditing(true), []);
+  const onChangeWrapper = useCallback(
+    event => onChange(event.target.value),
+    [onChange]
+  );
+
+  useEffect(() => {
+    if (isEditing) {
+      inputRef.current.focus();
+    }
+  }, [isEditing]);
+
+  if (isEditing) {
+    return (
+      <OutlinedInput
+        inputRef={inputRef}
+        fullWidth
+        value={value}
+        onBlur={onExit}
+        onChange={onChangeWrapper}
+        placeholder={placeholder}
+        {...inputProps}
+        sx={{
+          '& .MuiInputBase-input': { bgcolor: 'transparent', color: 'white' },
+        }}
+      />
+    );
+  }
+
+  return <Component onClick={onClick}>{value}</Component>;
+};
+
+const ChapterForm = ({ theme, record }) => {
+  const { t } = useTranslation();
+  const { setConfig } = React.useContext(ConfigContext);
+  const classList = [
+    'step',
+    ALIGNMENTS[record.alignment] || 'centered',
+    ...(record.hidden ? ['hidden'] : []),
+  ].join(' ');
+
+  const onFieldChange = useCallback(
+    field => value => {
+      setConfig(config => ({
+        ...config,
+        chapters: config.chapters.map(chapter =>
+          chapter.id === record.id ? { ...chapter, [field]: value } : chapter
+        ),
+      }));
+    },
+    [record.id, setConfig]
+  );
+
+  return (
+    <Box id={record.id} className={classList}>
+      <Stack className={`${theme} step-content`} spacing={1}>
+        <EditableText
+          placeholder={t('storyMap.form_chapter_title_placeholder')}
+          Component="h3"
+          value={record.title}
+          onChange={onFieldChange('title')}
+        />
+        {record.image && <img src={record.image} alt={record.title}></img>}
+        <EditableText
+          placeholder={t('storyMap.form_chapter_description_placeholder')}
+          Component="p"
+          value={record.description}
+          onChange={onFieldChange('description')}
+          inputProps={{
+            multiline: true,
+            rows: 4,
+          }}
+        />
+      </Stack>
+    </Box>
   );
 };
 
@@ -154,43 +269,50 @@ const StoryMapForm = () => {
   }, []);
 
   return (
-    <Grid container sx={{ height }}>
-      <Grid
-        className="form-header"
-        item
-        xs={12}
-        sx={{ backgroundColor: 'red', width: '100%', zIndex: 2 }}
-      >
-        <Button
-          onClick={() =>
-            setConfig(config => ({
-              ...config,
-              chapters: config.chapters.map(chapter => {
-                if (chapter.id === 'fourth-chapter') {
-                  return {
-                    ...chapter,
-                    title: 'Chapter 2 - Updated',
-                  };
-                }
-                return chapter;
-              }),
-            }))
-          }
+    <ConfigContext.Provider value={{ config, setConfig }}>
+      <Grid container sx={{ height }}>
+        <Grid
+          className="form-header"
+          item
+          xs={12}
+          sx={{ backgroundColor: 'red', width: '100%', zIndex: 2 }}
         >
-          Test
-        </Button>
+          <Button
+            onClick={() =>
+              setConfig(config => ({
+                ...config,
+                chapters: config.chapters.map(chapter => {
+                  if (chapter.id === 'fourth-chapter') {
+                    return {
+                      ...chapter,
+                      title: 'Chapter 2 - Updated',
+                    };
+                  }
+                  return chapter;
+                }),
+              }))
+            }
+          >
+            Test
+          </Button>
+        </Grid>
+        <ChaptersSidebar
+          config={config}
+          currentStepId={currentStepId}
+          onAdd={onAdd}
+        />
+        <Grid item xs={10} sx={{ overflow: 'hidden', height: '100%' }}>
+          {mapCss && (
+            <StoryMap
+              config={config}
+              mapCss={mapCss}
+              onStepChange={setCurrentStepId}
+              ChapterComponent={ChapterForm}
+            />
+          )}
+        </Grid>
       </Grid>
-      <Chapters config={config} currentStepId={currentStepId} onAdd={onAdd} />
-      <Grid item xs={10} sx={{ overflow: 'hidden', height: '100%' }}>
-        {mapCss && (
-          <StoryMap
-            config={config}
-            mapCss={mapCss}
-            onStepChange={setCurrentStepId}
-          />
-        )}
-      </Grid>
-    </Grid>
+    </ConfigContext.Provider>
   );
 };
 
