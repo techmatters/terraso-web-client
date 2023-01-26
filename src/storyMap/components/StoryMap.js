@@ -91,6 +91,7 @@ const StoryMap = props => {
     ChapterComponent = Chapter,
     TitleComponent = Title,
     mapCss = { height: '100vh', width: '100vw', top: 0 },
+    animation,
   } = props;
   const mapContainer = React.useRef(null);
   const mapInsetContainer = React.useRef(null);
@@ -240,7 +241,7 @@ const StoryMap = props => {
       if (!map || (config.inset && !insetMap) || !chapter) return;
 
       if (chapter.location) {
-        map[chapter.mapAnimation || 'flyTo'](chapter.location);
+        map[animation || chapter.mapAnimation || 'flyTo'](chapter.location);
 
         // Incase you do not want to have a dynamic inset map,
         // rather want to keep it a static view but still change the
@@ -282,7 +283,7 @@ const StoryMap = props => {
         });
       }
     },
-    [map, config, insetMap, marker, setLayerOpacity]
+    [map, config, insetMap, marker, setLayerOpacity, animation]
   );
 
   useEffect(() => {

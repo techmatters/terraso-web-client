@@ -13,6 +13,7 @@ import AddIcon from '@mui/icons-material/Add';
 import AlignHorizontalCenterIcon from '@mui/icons-material/AlignHorizontalCenter';
 import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft';
 import AlignHorizontalRightIcon from '@mui/icons-material/AlignHorizontalRight';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import {
   Box,
@@ -25,8 +26,12 @@ import {
   ListItemIcon,
   ListItemText,
   OutlinedInput,
+  Paper,
   Stack,
+  Typography,
 } from '@mui/material';
+
+import RouterLink from 'common/components/RouterLink';
 
 import { MAPBOX_STYLE_DEFAULT } from 'config';
 import { withProps } from 'react-hoc';
@@ -34,6 +39,8 @@ import { withProps } from 'react-hoc';
 import { ALIGNMENTS } from '../storyMapConstants';
 import MapLocationDialog from './MapLocationDialog';
 import StoryMap from './StoryMap';
+
+import theme from 'theme';
 
 const BASE_CHAPTER = {
   alignment: 'left',
@@ -93,27 +100,98 @@ const BASE_CONFIG = {
 
 const ConfigContext = React.createContext();
 
+const TopBar = () => {
+  const { t } = useTranslation();
+  const { config, setPreview, preview } = useContext(ConfigContext);
+
+  const baseItemSx = useMemo(
+    () => ({
+      borderBottom: `1px solid ${theme.palette.gray.lite1}`,
+      display: 'flex',
+      alignItems: 'center',
+      pt: 3,
+      pb: 1,
+      zIndex: 2,
+      bgcolor: 'white',
+      minHeight: 70,
+    }),
+    []
+  );
+
+  return (
+    <>
+      <Grid
+        className="form-header"
+        item
+        xs={2}
+        sx={{
+          ...baseItemSx,
+          width: '100%',
+          zIndex: 2,
+          pl: 2,
+        }}
+      >
+        <RouterLink
+          to="/story-map"
+          sx={{ display: 'flex', alignItems: 'center' }}
+        >
+          <ArrowBackIcon />
+          <Typography sx={{ ml: 1 }}>
+            {t('storyMap.form_back_button')}
+          </Typography>
+        </RouterLink>
+      </Grid>
+      <Grid item xs={6} sx={baseItemSx}>
+        <Typography variant="h3" sx={{ pt: 0 }}>
+          {config.title}
+        </Typography>
+      </Grid>
+      <Grid
+        item
+        xs={4}
+        sx={{ ...baseItemSx, justifyContent: 'flex-end', pr: 2 }}
+      >
+        {preview ? (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setPreview(false)}
+          >
+            Back
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setPreview(true)}
+          >
+            Preview
+          </Button>
+        )}
+      </Grid>
+    </>
+  );
+};
+
 const ChaptersSidebar = props => {
   const { t } = useTranslation();
-  const { config, currentStepId, onAdd } = props;
+  const { config, currentStepId, onAdd, height } = props;
   const { chapters } = config;
 
   const scrollTo = id => {
     const element = document.getElementById(id);
-    element?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    element?.scrollIntoView({ block: 'start' });
   };
 
   const listItems = useMemo(
     () => [
       {
-        label: `0. ${t('storyMap.form_title_chapter_label')}`,
+        label: `${t('storyMap.form_title_chapter_label')}`,
         id: 'header',
         active: currentStepId === 'header',
       },
       ...chapters.map((chapter, index) => ({
-        label: `${index + 1}. ${
-          chapter.title || t('storyMap.form_chapter_no_title_label')
-        }`,
+        label: chapter.title || t('storyMap.form_chapter_no_title_label'),
         id: chapter.id,
         active: currentStepId === chapter.id,
       })),
@@ -126,10 +204,10 @@ const ChaptersSidebar = props => {
       className="chapters-sidebar"
       item
       component={List}
+      sx={{ height, overflow: 'auto' }}
       xs={2}
-      sx={{ height: '100%' }}
     >
-      {listItems.map(item => (
+      {listItems.map((item, index) => (
         <ListItemButton
           component="li"
           key={item.id}
@@ -139,7 +217,34 @@ const ChaptersSidebar = props => {
           }}
           onClick={() => scrollTo(item.id)}
         >
-          {item.label}
+          <Grid container>
+            <Grid
+              item
+              xs={3}
+              component={Typography}
+              variant="caption"
+              sx={{ color: 'gray.dark1', fontWeight: 500 }}
+            >
+              {index}
+            </Grid>
+            <Grid item xs={9}>
+              <Paper
+                variant="outlined"
+                sx={{
+                  borderRadius: 0,
+                  bgcolor: 'gray.dark2',
+                  color: 'white',
+                  p: 1,
+                  height: '70px',
+                  textOverflow: 'ellipsis',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                {item.label}
+              </Paper>
+            </Grid>
+          </Grid>
         </ListItemButton>
       ))}
       <ListItemButton component="li" onClick={onAdd}>
@@ -367,9 +472,11 @@ const TitleForm = props => {
 
 const StoryMapForm = () => {
   const [height, setHeight] = useState('100vh');
-  const [mapCss, setMapCss] = useState();
+  const [mapHeight, setMapHeight] = useState();
+  const [mapWidth, setMapWidth] = useState();
   const [config, setConfig] = useState(BASE_CONFIG);
   const [currentStepId, setCurrentStepId] = useState();
+  const [preview, setPreview] = useState(false);
 
   useEffect(() => {
     const headerHeight =
@@ -378,15 +485,22 @@ const StoryMapForm = () => {
       document.getElementsByClassName('footer')[0].clientHeight;
     const formHeaderHeight =
       document.getElementsByClassName('form-header')[0].clientHeight;
+
+    setHeight(`calc(100vh - (${headerHeight}px + ${footerHeight}px))`);
+    setMapHeight(
+      `calc(100vh - (${headerHeight}px + ${footerHeight}px + ${formHeaderHeight}px))`
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!mapHeight) {
+      return;
+    }
     const chaptersWidth =
       document.getElementsByClassName('chapters-sidebar')[0].clientWidth;
 
-    setHeight(`calc(100vh - (${headerHeight}px + ${footerHeight}px))`);
-    setMapCss({
-      width: `calc(100vw - ${chaptersWidth}px)`,
-      height: `calc(100vh - (${headerHeight}px + ${footerHeight}px + ${formHeaderHeight}px))`,
-    });
-  }, []);
+    setMapWidth(`calc(100vw - ${chaptersWidth}px)`);
+  }, [mapHeight]);
 
   const onAdd = useCallback(() => {
     setConfig(config => ({
@@ -401,44 +515,42 @@ const StoryMapForm = () => {
     }));
   }, []);
 
-  return (
-    <ConfigContext.Provider value={{ config, setConfig }}>
-      <Grid container sx={{ height }}>
-        <Grid
-          className="form-header"
-          item
-          xs={12}
-          sx={{ backgroundColor: 'red', width: '100%', zIndex: 2 }}
-        >
-          <Button
-            onClick={() =>
-              setConfig(config => ({
-                ...config,
-                chapters: config.chapters.map(chapter => {
-                  if (chapter.id === 'fourth-chapter') {
-                    return {
-                      ...chapter,
-                      title: 'Chapter 2 - Updated',
-                    };
-                  }
-                  return chapter;
-                }),
-              }))
-            }
-          >
-            Test
-          </Button>
+  if (preview) {
+    return (
+      <ConfigContext.Provider
+        value={{ config, setConfig, preview, setPreview }}
+      >
+        <Grid container>
+          <TopBar />
+          <Grid item xs={12}>
+            <StoryMap config={config} />
+          </Grid>
         </Grid>
+      </ConfigContext.Provider>
+    );
+  }
+
+  return (
+    <ConfigContext.Provider value={{ config, setConfig, preview, setPreview }}>
+      <Grid
+        container
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        sx={{ height }}
+      >
+        <TopBar />
         <ChaptersSidebar
           config={config}
           currentStepId={currentStepId}
           onAdd={onAdd}
+          height={mapHeight}
         />
-        <Grid item xs={10} sx={{ overflow: 'hidden', height: '100%' }}>
-          {mapCss && (
+        <Grid item xs={10} sx={{ height: mapHeight, overflow: 'hidden' }}>
+          {mapHeight && mapWidth && (
             <StoryMap
               config={config}
-              mapCss={mapCss}
+              mapCss={{ height: mapHeight, width: mapWidth }}
+              animation="jumpTo"
               onStepChange={setCurrentStepId}
               ChapterComponent={ChapterForm}
               TitleComponent={TitleForm}

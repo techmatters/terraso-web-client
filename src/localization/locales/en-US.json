@@ -774,6 +774,7 @@
     "storyMap": {
         "form_title_chapter_label": "Title",
         "form_chapter_add": "Add new chapter",
-        "form_chapter_no_title_label": "(No title)"
+        "form_chapter_no_title_label": "(No title)",
+        "form_back_button": "Story Maps"
     }
 }
