@@ -56,8 +56,6 @@ const BASE_CHAPTER = {
 const BASE_CONFIG = {
   style: MAPBOX_STYLE_DEFAULT,
   theme: 'dark',
-  title: 'The Title Text of this Story',
-  subtitle: 'A descriptive and interesting subtitle to draw in the reader',
   byline: 'By a Digital Storyteller',
   showMarkers: false,
   chapters: [
@@ -444,28 +442,42 @@ const TitleForm = props => {
     [setConfig]
   );
 
+  const inputProps = useMemo(
+    () => ({
+      inputProps: {
+        style: {
+          textAlign: 'center',
+        },
+      },
+    }),
+    []
+  );
+
   return (
     <Box id="header" className="step fully title">
-      <Box className={`${config.theme} step-content`}>
+      <Stack className={`${config.theme} step-content`} spacing={1}>
         <EditableText
           placeholder={t('storyMap.form_title_placeholder')}
           Component="h1"
           value={config.title}
           onChange={onFieldChange('title')}
+          inputProps={inputProps}
         />
         <EditableText
           placeholder={t('storyMap.form_subtitle_placeholder')}
           Component="h2"
           value={config.subtitle}
           onChange={onFieldChange('subtitle')}
+          inputProps={inputProps}
         />
         <EditableText
           placeholder={t('storyMap.form_byline_placeholder')}
           Component="p"
           value={config.byline}
           onChange={onFieldChange('byline')}
+          inputProps={inputProps}
         />
-      </Box>
+      </Stack>
     </Box>
   );
 };
