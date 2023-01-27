@@ -17,7 +17,6 @@
 import React, { useMemo } from 'react';
 
 import { Route, Routes, matchPath, useLocation } from 'react-router-dom';
-import StoryMapForm from 'storyMap/components/StoryMapForm';
 
 import NotFound from 'layout/NotFound';
 
@@ -47,6 +46,7 @@ import LandscapeSharedDataVisualization from 'landscape/components/LandscapeShar
 import LandscapeSharedDataVisualizationConfig from 'landscape/components/LandscapeSharedDataVisualizationConfig';
 import LandscapeView from 'landscape/components/LandscapeView';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
+import StoryMapForm from 'storyMap/components/StoryMapForm';
 import ToolsList from 'tool/components/ToolList';
 import UserStoryMap from 'user/components/UserStoryMap';
 
