@@ -772,6 +772,7 @@
         "form_title_chapter_label": "Title",
         "form_chapter_add": "Add new chapter",
         "form_chapter_no_title_label": "(No title)",
-        "form_back_button": "Story Maps"
+        "form_back_button": "Story Maps",
+        "form_byline": "By $t(user.full_name)"
     }
 }
