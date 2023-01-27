@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { LoadingButton } from '@mui/lab';
 import { Tooltip } from '@mui/material';
@@ -40,10 +40,15 @@ const ConfirmButton = props => {
     setOpenConfirmation(false);
   }, []);
 
-  const onClick = event => {
+  const onClick = useCallback(event => {
     setOpenConfirmation(true);
     event.stopPropagation();
-  };
+  }, []);
+
+  const onCancel = useCallback(event => {
+    setOpenConfirmation(false);
+    event.stopPropagation();
+  }, []);
 
   const TooltipWrapper = tooltip
     ? ({ children }) => <Tooltip title={tooltip}>{children}</Tooltip>
@@ -55,7 +60,7 @@ const ConfirmButton = props => {
         title={confirmTitle}
         message={confirmMessage}
         confirmButtonLabel={confirmButton}
-        onCancel={() => setOpenConfirmation(false)}
+        onCancel={onCancel}
         onConfirm={onConfirm}
         loading={loading}
       />

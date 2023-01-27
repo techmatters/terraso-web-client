@@ -7,13 +7,16 @@ import React, {
   useState,
 } from 'react';
 
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 import AddIcon from '@mui/icons-material/Add';
 import AlignHorizontalCenterIcon from '@mui/icons-material/AlignHorizontalCenter';
 import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft';
 import AlignHorizontalRightIcon from '@mui/icons-material/AlignHorizontalRight';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import DeleteIcon from '@mui/icons-material/Delete';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import {
   Box,
@@ -23,14 +26,13 @@ import {
   IconButton,
   List,
   ListItemButton,
-  ListItemIcon,
-  ListItemText,
   OutlinedInput,
   Paper,
   Stack,
   Typography,
 } from '@mui/material';
 
+import ConfirmButton from 'common/components/ConfirmButton';
 import RouterLink from 'common/components/RouterLink';
 
 import { MAPBOX_STYLE_DEFAULT } from 'config';
@@ -56,7 +58,6 @@ const BASE_CHAPTER = {
 const BASE_CONFIG = {
   style: MAPBOX_STYLE_DEFAULT,
   theme: 'dark',
-  byline: 'By a Digital Storyteller',
   showMarkers: false,
   chapters: [
     {
@@ -173,12 +174,12 @@ const TopBar = () => {
 
 const ChaptersSidebar = props => {
   const { t } = useTranslation();
-  const { config, currentStepId, onAdd, height } = props;
+  const { config, currentStepId, onAdd, onDelete, height } = props;
   const { chapters } = config;
 
   const scrollTo = id => {
     const element = document.getElementById(id);
-    element?.scrollIntoView({ block: 'start' });
+    element?.scrollIntoView({ block: 'start', behavior: 'smooth' });
   };
 
   const listItems = useMemo(
@@ -192,6 +193,7 @@ const ChaptersSidebar = props => {
         label: chapter.title || t('storyMap.form_chapter_no_title_label'),
         id: chapter.id,
         active: currentStepId === chapter.id,
+        deletable: true,
       })),
     ],
     [chapters, currentStepId, t]
@@ -215,17 +217,50 @@ const ChaptersSidebar = props => {
           }}
           onClick={() => scrollTo(item.id)}
         >
+          {console.log({ item })}
           <Grid container>
             <Grid
               item
-              xs={3}
-              component={Typography}
-              variant="caption"
-              sx={{ color: 'gray.dark1', fontWeight: 500 }}
+              container
+              xs={4}
+              alignItems="flex-end"
+              justifyContent="space-between"
+              direction="column"
             >
-              {index}
+              <Typography
+                variant="caption"
+                sx={{ color: 'gray.dark1', fontWeight: 700, pr: 2 }}
+              >
+                {index}
+              </Typography>
+              {item.deletable && (
+                <ConfirmButton
+                  onConfirm={onDelete(item.id)}
+                  variant="text"
+                  buttonProps={{
+                    'aria-label': t('storyMap.form_delete_confirm_button', {
+                      name: item.name,
+                    }),
+                    sx: {
+                      color: 'transparent',
+                      width: '100%',
+                      '&:hover': { color: 'gray.dark1' },
+                    },
+                  }}
+                  confirmTitle={t('storyMap.form_delete_confirm_title', {
+                    name: item.name,
+                  })}
+                  confirmMessage={t('storyMap.form_delete_confirm_message', {
+                    name: item.name,
+                  })}
+                  confirmButton={t('storyMap.form_delete_confirm_button')}
+                  tooltip={t('storyMap.form_delete_confirm_button_tooltip')}
+                >
+                  <DeleteIcon />
+                </ConfirmButton>
+              )}
             </Grid>
-            <Grid item xs={9}>
+            <Grid item xs={8}>
               <Paper
                 variant="outlined"
                 sx={{
@@ -234,9 +269,9 @@ const ChaptersSidebar = props => {
                   color: 'white',
                   p: 1,
                   height: '70px',
-                  textOverflow: 'ellipsis',
                   display: 'flex',
                   alignItems: 'center',
+                  overflow: 'hidden',
                 }}
               >
                 {item.label}
@@ -245,11 +280,19 @@ const ChaptersSidebar = props => {
           </Grid>
         </ListItemButton>
       ))}
-      <ListItemButton component="li" onClick={onAdd}>
-        <ListItemText primary={t('storyMap.form_chapter_add')} />
-        <ListItemIcon>
-          <AddIcon />
-        </ListItemIcon>
+      <ListItemButton
+        component="li"
+        onClick={onAdd}
+        sx={{
+          bgcolor: 'gray.lite1',
+          m: 2,
+          display: 'flex',
+          alignItems: 'center',
+          flexDirection: 'column',
+        }}
+      >
+        <Typography>{t('storyMap.form_chapter_add')}</Typography>
+        <AddIcon />
       </ListItemButton>
     </Grid>
   );
@@ -483,10 +526,16 @@ const TitleForm = props => {
 };
 
 const StoryMapForm = () => {
+  const { t } = useTranslation();
+  const { data: user } = useSelector(_.get('account.currentUser'));
   const [height, setHeight] = useState('100vh');
   const [mapHeight, setMapHeight] = useState();
   const [mapWidth, setMapWidth] = useState();
-  const [config, setConfig] = useState(BASE_CONFIG);
+  console.log({ user });
+  const [config, setConfig] = useState({
+    ...BASE_CONFIG,
+    byline: t('storyMap.form_byline', { user }),
+  });
   const [currentStepId, setCurrentStepId] = useState();
   const [preview, setPreview] = useState(false);
 
@@ -527,6 +576,16 @@ const StoryMapForm = () => {
     }));
   }, []);
 
+  const onDelete = useCallback(
+    id => () => {
+      setConfig(config => ({
+        ...config,
+        chapters: config.chapters.filter(chapter => chapter.id !== id),
+      }));
+    },
+    [setConfig]
+  );
+
   if (preview) {
     return (
       <ConfigContext.Provider
@@ -555,14 +614,14 @@ const StoryMapForm = () => {
           config={config}
           currentStepId={currentStepId}
           onAdd={onAdd}
+          onDelete={onDelete}
           height={mapHeight}
         />
-        <Grid item xs={10} sx={{ height: mapHeight, overflow: 'hidden' }}>
+        <Grid item xs={10} sx={{ height: mapHeight, overflow: 'auto' }}>
           {mapHeight && mapWidth && (
             <StoryMap
               config={config}
               mapCss={{ height: mapHeight, width: mapWidth }}
-              animation="jumpTo"
               onStepChange={setCurrentStepId}
               ChapterComponent={ChapterForm}
               TitleComponent={TitleForm}
