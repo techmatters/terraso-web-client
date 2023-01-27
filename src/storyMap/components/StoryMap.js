@@ -9,8 +9,6 @@ import scrollama from 'scrollama';
 
 import './StoryMap.css';
 
-import _ from 'lodash/fp';
-
 import { Box } from '@mui/material';
 
 import { MAPBOX_ACCESS_TOKEN } from 'config';
@@ -287,11 +285,7 @@ const StoryMap = props => {
   );
 
   useEffect(() => {
-    if (
-      !map ||
-      (config.inset && !insetMap) ||
-      (_.isEmpty(config.chapters) && !config.title)
-    ) {
+    if (!map || (config.inset && !insetMap)) {
       return;
     }
 

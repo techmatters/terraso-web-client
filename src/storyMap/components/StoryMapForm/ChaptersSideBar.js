@@ -53,7 +53,6 @@ const ChaptersSidebar = props => {
           }}
           onClick={() => scrollTo(item.id)}
         >
-          {console.log({ item })}
           <Grid container>
             <Grid
               item
@@ -74,23 +73,42 @@ const ChaptersSidebar = props => {
                   onConfirm={onDelete(item.id)}
                   variant="text"
                   buttonProps={{
-                    'aria-label': t('storyMap.form_delete_confirm_button', {
-                      name: item.name,
-                    }),
+                    'aria-label': t(
+                      'storyMap.form_delete_chapter_confirm_button',
+                      {
+                        name: item.name,
+                      }
+                    ),
                     sx: {
                       color: 'transparent',
                       width: '100%',
                       '&:hover': { color: 'gray.dark1' },
                     },
                   }}
-                  confirmTitle={t('storyMap.form_delete_confirm_title', {
-                    name: item.name,
-                  })}
-                  confirmMessage={t('storyMap.form_delete_confirm_message', {
-                    name: item.name,
-                  })}
-                  confirmButton={t('storyMap.form_delete_confirm_button')}
-                  tooltip={t('storyMap.form_delete_confirm_button_tooltip')}
+                  confirmTitle={t(
+                    'storyMap.form_delete_chapter_confirm_title',
+                    {
+                      name: item.name,
+                    }
+                  )}
+                  confirmMessage={t(
+                    'storyMap.form_delete_chapter_confirm_message',
+                    {
+                      name: item.name,
+                    }
+                  )}
+                  confirmButton={t(
+                    'storyMap.form_delete_chapter_confirm_button',
+                    {
+                      name: item.name,
+                    }
+                  )}
+                  tooltip={t(
+                    'storyMap.form_delete_chapter_confirm_button_tooltip',
+                    {
+                      name: item.name,
+                    }
+                  )}
                 >
                   <DeleteIcon />
                 </ConfirmButton>
