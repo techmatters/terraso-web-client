@@ -28,6 +28,13 @@ const MapLocationDialog = props => {
   const [mapZoom, setMapZoom] = useState(location?.zoom);
   const [mapPitch, setMapPitch] = useState(location?.pitch);
   const [mapBearing, setMapBearing] = useState(location?.bearing);
+  const [marginTop, setMarginTop] = useState(0);
+
+  useEffect(() => {
+    const headerHeight =
+      document.getElementsByClassName('header-container')[0].clientHeight;
+    setMarginTop(headerHeight);
+  }, []);
 
   useEffect(() => {
     if (!mapContainer) {
@@ -109,6 +116,7 @@ const MapLocationDialog = props => {
       onClose={handleCancel}
       aria-labelledby="map-location-dialog-title"
       aria-describedby="map-location-dialog-content-text"
+      sx={{ mt: `${marginTop}px` }}
     >
       <DialogTitle component="h1" id="map-location-dialog-title">
         {t('storyMap.location_dialog_title')}

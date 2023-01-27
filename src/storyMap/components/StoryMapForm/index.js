@@ -158,7 +158,14 @@ const StoryMapForm = () => {
           onDelete={onDelete}
           height={mapHeight}
         />
-        <Grid item xs={10} sx={{ height: mapHeight, overflow: 'auto' }}>
+        <Grid
+          item
+          xs={10}
+          sx={{
+            height: mapHeight,
+            overflowY: 'overlay',
+          }}
+        >
           {mapHeight && mapWidth && (
             <StoryMap
               config={config}
