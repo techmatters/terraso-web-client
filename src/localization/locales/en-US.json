@@ -785,6 +785,7 @@
         "form_delete_chapter_confirm_button": "Delete chapter “{{name}}”",
         "form_delete_chapter_confirm_title": "Delete chapter “{{name}}”?",
         "form_delete_chapter_confirm_message": "Are you sure you want to delete this chapter? This action cannot be undone.",
-        "form_delete_chapter_confirm_button_tooltip": "Delete chapter “{{name}}”"
+        "form_delete_chapter_confirm_button_tooltip": "Delete chapter “{{name}}”",
+        "form_chapter_location_button": "Set location map for this chapter"
     }
 }

@@ -6,7 +6,14 @@ import AlignHorizontalCenterIcon from '@mui/icons-material/AlignHorizontalCenter
 import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft';
 import AlignHorizontalRightIcon from '@mui/icons-material/AlignHorizontalRight';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
-import { Box, ButtonGroup, IconButton, Stack } from '@mui/material';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Grid,
+  IconButton,
+  Stack,
+} from '@mui/material';
 
 import { withProps } from 'react-hoc';
 
@@ -20,7 +27,8 @@ const ConfigButton = withProps(IconButton, {
   sx: { bgcolor: 'gray.lite1', '&:hover': { bgcolor: 'gray.mid' } },
 });
 const ChapterConfig = props => {
-  const { onAlignmentChange, location, onLocationChange } = props;
+  const { t } = useTranslation();
+  const { onAlignmentChange, location, onLocationChange, children } = props;
   const [locationOpen, setLocationOpen] = useState(false);
 
   const options = [
@@ -57,6 +65,8 @@ const ChapterConfig = props => {
     [onLocationChange, onLocationClose]
   );
 
+  console.log(GpsFixedIcon, Button, t, onLocationClick);
+
   return (
     <>
       <MapLocationDialog
@@ -65,30 +75,34 @@ const ChapterConfig = props => {
         onClose={onLocationClose}
         onConfirm={onLocationChangeWrapper}
       />
-      <Stack spacing={1}>
-        <ConfigButton
-          aria-label="TODO"
-          onClick={onLocationClick}
-          sx={{
-            bgcolor: 'blue.dark',
-            color: 'white',
-            '&:hover': { bgcolor: 'blue.mid' },
-          }}
-        >
-          <GpsFixedIcon />
-        </ConfigButton>
-        <ButtonGroup orientation="vertical" aria-label="TODO">
-          {options.map(option => (
-            <ConfigButton
-              key={option.value}
-              aria-label={option.label}
-              onClick={() => onAlignmentChange(option.value)}
-            >
-              <option.Icon />
-            </ConfigButton>
-          ))}
-        </ButtonGroup>
-      </Stack>
+      <Grid container sx={{ width: '35vw' }}>
+        <Grid item xs={11}>
+          <Button
+            variant="contained"
+            onClick={onLocationClick}
+            startIcon={<GpsFixedIcon />}
+            sx={{ borderRadius: '0px', mb: 1, width: '100%' }}
+          >
+            {t('storyMap.form_chapter_location_button')}
+          </Button>
+        </Grid>
+        <Grid item xs={11}>
+          {children}
+        </Grid>
+        <Grid item xs={1}>
+          <ButtonGroup orientation="vertical" aria-label="TODO">
+            {options.map(option => (
+              <ConfigButton
+                key={option.value}
+                aria-label={option.label}
+                onClick={() => onAlignmentChange(option.value)}
+              >
+                <option.Icon />
+              </ConfigButton>
+            ))}
+          </ButtonGroup>
+        </Grid>
+      </Grid>
     </>
   );
 };
@@ -116,34 +130,35 @@ const ChapterForm = ({ theme, record }) => {
 
   return (
     <Box id={record.id} className={classList} direction="row">
-      <Stack
-        className={`${theme} step-content`}
-        spacing={1}
-        sx={{ minWidth: '200px' }}
-      >
-        <EditableText
-          placeholder={t('storyMap.form_chapter_title_placeholder')}
-          Component="h3"
-          value={record.title}
-          onChange={onFieldChange('title')}
-        />
-        {record.image && <img src={record.image} alt={record.title}></img>}
-        <EditableText
-          placeholder={t('storyMap.form_chapter_description_placeholder')}
-          Component="p"
-          value={record.description}
-          onChange={onFieldChange('description')}
-          inputProps={{
-            multiline: true,
-            rows: 4,
-          }}
-        />
-      </Stack>
       <ChapterConfig
         location={record.location}
         onAlignmentChange={onFieldChange('alignment')}
         onLocationChange={onFieldChange('location')}
-      />
+      >
+        <Stack
+          className={`${theme} step-content`}
+          spacing={1}
+          style={{ maxWidth: 'none' }}
+        >
+          <EditableText
+            placeholder={t('storyMap.form_chapter_title_placeholder')}
+            Component="h3"
+            value={record.title}
+            onChange={onFieldChange('title')}
+          />
+          {record.image && <img src={record.image} alt={record.title}></img>}
+          <EditableText
+            placeholder={t('storyMap.form_chapter_description_placeholder')}
+            Component="p"
+            value={record.description}
+            onChange={onFieldChange('description')}
+            inputProps={{
+              multiline: true,
+              rows: 4,
+            }}
+          />
+        </Stack>
+      </ChapterConfig>
     </Box>
   );
 };

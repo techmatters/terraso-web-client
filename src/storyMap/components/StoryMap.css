@@ -94,8 +94,7 @@ footer {
   padding: 25px 50px;
   line-height: 25px;
   font-size: 13px;
-  max-width: 50%;
-  min-width: 300px;
+  max-width: 35vw;
 }
 .step.fully .step-content {
   width: 100%;
