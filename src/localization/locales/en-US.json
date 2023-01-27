@@ -784,6 +784,9 @@
         "form_chapter_add": "Add new chapter",
         "form_chapter_no_title_label": "(No title)",
         "form_back_button": "Story Maps",
-        "form_byline": "By $t(user.full_name)"
+        "form_byline": "By $t(user.full_name)",
+        "form_preview_button": "Preview",
+        "form_preview_close": "Close",
+        "form_preview_title": "You are previewing “{{title}}”."
     }
 }

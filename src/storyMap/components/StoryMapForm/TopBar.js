@@ -13,7 +13,7 @@ import theme from 'theme';
 
 const TopBar = () => {
   const { t } = useTranslation();
-  const { config, setPreview, preview } = useConfigContext();
+  const { config, setPreview } = useConfigContext();
 
   const baseItemSx = useMemo(
     () => ({
@@ -62,23 +62,13 @@ const TopBar = () => {
         xs={4}
         sx={{ ...baseItemSx, justifyContent: 'flex-end', pr: 2 }}
       >
-        {preview ? (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setPreview(false)}
-          >
-            Back
-          </Button>
-        ) : (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setPreview(true)}
-          >
-            Preview
-          </Button>
-        )}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setPreview(true)}
+        >
+          {t('storyMap.form_preview_button')}
+        </Button>
       </Grid>
     </>
   );

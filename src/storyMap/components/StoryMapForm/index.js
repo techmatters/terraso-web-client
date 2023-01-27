@@ -13,6 +13,7 @@ import ChapterForm from './ChapterForm';
 import ChaptersSidebar from './ChaptersSideBar';
 import TitleForm from './TitleForm';
 import TopBar from './TopBar';
+import TopBarPreview from './TopBarPreview';
 import { ConfigContextProvider } from './configContext';
 
 const BASE_CHAPTER = {
@@ -130,9 +131,9 @@ const StoryMapForm = () => {
 
   if (preview) {
     return (
-      <ConfigContextProvider value={{ config, setConfig, preview, setPreview }}>
+      <ConfigContextProvider value={{ config, setConfig, setPreview }}>
         <Grid container>
-          <TopBar />
+          <TopBarPreview />
           <Grid item xs={12}>
             <StoryMap config={config} />
           </Grid>
@@ -142,7 +143,7 @@ const StoryMapForm = () => {
   }
 
   return (
-    <ConfigContextProvider value={{ config, setConfig, preview, setPreview }}>
+    <ConfigContextProvider value={{ config, setConfig, setPreview }}>
       <Grid
         container
         justifyContent="flex-start"
