@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-
 import Plausible from 'plausible-tracker';
 import { useTranslation } from 'react-i18next';
 
