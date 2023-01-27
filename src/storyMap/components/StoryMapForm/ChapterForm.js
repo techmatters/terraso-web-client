@@ -11,8 +11,8 @@ import { Box, ButtonGroup, IconButton, Stack } from '@mui/material';
 import { withProps } from 'react-hoc';
 
 import { ALIGNMENTS } from '../../storyMapConstants';
-import MapLocationDialog from '../MapLocationDialog';
 import EditableText from './EditableText';
+import MapLocationDialog from './MapLocationDialog';
 import { useConfigContext } from './configContext';
 
 const ConfigButton = withProps(IconButton, {
