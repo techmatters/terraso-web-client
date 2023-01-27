@@ -779,6 +779,15 @@
         "form_byline": "By $t(user.full_name)",
         "form_preview_button": "Preview",
         "form_preview_close": "Close",
-        "form_preview_title": "You are previewing “{{title}}”."
+        "form_preview_title": "You are previewing “{{title}}”.",
+        "form_chapter_title_placeholder": "Enter your chapter title here",
+        "form_chapter_description_placeholder": "Write your story here...",
+        "form_title_placeholder": "Enter your story map title here",
+        "form_subtitle_placeholder": "Add subtitle (optional)",
+        "form_byline_placeholder": "Add byline (optional)",
+        "form_delete_chapter_confirm_button": "Delete chapter “{{name}}”",
+        "form_delete_chapter_confirm_title": "Delete chapter “{{name}}”?",
+        "form_delete_chapter_confirm_message": "Are you sure you want to delete this chapter? This action cannot be undone.",
+        "form_delete_chapter_confirm_button_tooltip": "Delete chapter “{{name}}”"
     }
 }

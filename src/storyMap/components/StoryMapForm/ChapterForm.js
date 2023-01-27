@@ -116,7 +116,11 @@ const ChapterForm = ({ theme, record }) => {
 
   return (
     <Box id={record.id} className={classList} direction="row">
-      <Stack className={`${theme} step-content`} spacing={1}>
+      <Stack
+        className={`${theme} step-content`}
+        spacing={1}
+        sx={{ minWidth: '200px' }}
+      >
         <EditableText
           placeholder={t('storyMap.form_chapter_title_placeholder')}
           Component="h3"
