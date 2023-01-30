@@ -3,8 +3,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { Grid } from '@mui/material';
+
+import PageLoader from 'layout/PageLoader';
+
+import { addStoryMap } from 'storyMap/storyMapSlice';
 
 import { MAPBOX_STYLE_DEFAULT } from 'config';
 
@@ -74,6 +79,8 @@ const BASE_CONFIG = {
 
 const StoryMapForm = () => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const { saving } = useSelector(_.get('storyMap.form'));
   const { data: user } = useSelector(_.get('account.currentUser'));
   const [height, setHeight] = useState('100vh');
   const [mapHeight, setMapHeight] = useState();
@@ -109,7 +116,7 @@ const StoryMapForm = () => {
     setMapWidth(`calc(100vw - ${chaptersWidth}px)`);
   }, [mapHeight]);
 
-  const onAdd = useCallback(() => {
+  const onAddChapter = useCallback(() => {
     setConfig(config => ({
       ...config,
       chapters: [
@@ -122,7 +129,7 @@ const StoryMapForm = () => {
     }));
   }, []);
 
-  const onDelete = useCallback(
+  const onDeleteChapter = useCallback(
     id => () => {
       setConfig(config => ({
         ...config,
@@ -131,6 +138,24 @@ const StoryMapForm = () => {
     },
     [setConfig]
   );
+
+  const onPublish = useCallback(() => {
+    dispatch(
+      addStoryMap({
+        config,
+        published: true,
+      })
+    );
+  }, [config, dispatch]);
+
+  const onSaveDraft = useCallback(() => {
+    dispatch(
+      addStoryMap({
+        config,
+        published: false,
+      })
+    );
+  }, [config, dispatch]);
 
   if (preview) {
     return (
@@ -147,18 +172,19 @@ const StoryMapForm = () => {
 
   return (
     <ConfigContextProvider value={{ config, setConfig, setPreview }}>
+      {saving && <PageLoader />}
       <Grid
         container
         justifyContent="flex-start"
         alignItems="flex-start"
         sx={{ height }}
       >
-        <TopBar />
+        <TopBar onPublish={onPublish} onSaveDraft={onSaveDraft} />
         <ChaptersSidebar
           config={config}
           currentStepId={currentStepId}
-          onAdd={onAdd}
-          onDelete={onDelete}
+          onAdd={onAddChapter}
+          onDelete={onDeleteChapter}
           height={mapHeight}
         />
         <Grid

@@ -11,9 +11,10 @@ import { useConfigContext } from './configContext';
 
 import theme from 'theme';
 
-const TopBar = () => {
+const TopBar = props => {
   const { t } = useTranslation();
   const { config, setPreview } = useConfigContext();
+  const { onPublish, onSaveDraft } = props;
 
   const baseItemSx = useMemo(
     () => ({
@@ -59,12 +60,24 @@ const TopBar = () => {
         xs={4}
         sx={{ ...baseItemSx, justifyContent: 'flex-end', pr: 2 }}
       >
+        <Button variant="text" color="primary" onClick={() => setPreview(true)}>
+          {t('storyMap.form_preview_button')}
+        </Button>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={onSaveDraft}
+          sx={{ ml: 2 }}
+        >
+          {t('storyMap.form_save_draft_button')}
+        </Button>
         <Button
           variant="contained"
           color="primary"
-          onClick={() => setPreview(true)}
+          onClick={onPublish}
+          sx={{ ml: 2 }}
         >
-          {t('storyMap.form_preview_button')}
+          {t('storyMap.form_publish_button')}
         </Button>
       </Grid>
     </>
