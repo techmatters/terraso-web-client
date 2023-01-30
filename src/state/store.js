@@ -25,6 +25,7 @@ import groupReducer from 'group/groupSlice';
 import userHomeReducer from 'home/homeSlice';
 import landscapeReducer from 'landscape/landscapeSlice';
 import sharedDataReducer from 'sharedData/sharedDataSlice';
+import storyMapReducer from 'storyMap/storyMapSlice';
 import taxonomiesReducer from 'taxonomies/taxonomiesSlice';
 
 const handleAbortMiddleware = store => next => action => {
@@ -51,6 +52,7 @@ const createStore = intialState =>
       sharedData: sharedDataReducer,
       taxonomies: taxonomiesReducer,
       gis: gisReducer,
+      storyMap: storyMapReducer,
     },
     preloadedState: intialState,
   });

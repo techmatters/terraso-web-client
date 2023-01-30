@@ -778,6 +778,8 @@
         "form_back_button": "Story Maps",
         "form_byline": "By $t(user.full_name)",
         "form_preview_button": "Preview",
+        "form_save_draft_button": "Save draft",
+        "form_publish_button": "Publish",
         "form_preview_close": "Close",
         "form_preview_title": "You are previewing “{{title}}”.",
         "form_chapter_title_placeholder": "Enter your chapter title here",
