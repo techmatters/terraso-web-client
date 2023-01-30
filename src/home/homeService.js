@@ -19,6 +19,7 @@ import _ from 'lodash/fp';
 import { groupFields, groupMembersPending } from 'group/groupFragments';
 import { extractAccountMembership, extractMembersInfo } from 'group/groupUtils';
 import { defaultGroup, landscapeFields } from 'landscape/landscapeFragments';
+import { storyMapFields } from 'storyMap/storyMapFragments';
 import * as terrasoApi from 'terrasoBackend/api';
 
 export const fetchHomeData = email => {
@@ -67,11 +68,19 @@ export const fetchHomeData = email => {
           }
         }
       }
+      storyMaps {
+        edges {
+          node {
+            ...storyMapFields
+          }
+        }
+      }
     }
     ${groupFields}
     ${groupMembersPending}
     ${landscapeFields}
     ${defaultGroup}
+    ${storyMapFields}
   `;
   return terrasoApi
     .requestGraphQL(query, { accountEmail: email })
