@@ -789,6 +789,10 @@
         "form_delete_chapter_confirm_title": "Delete chapter “{{name}}”?",
         "form_delete_chapter_confirm_message": "Are you sure you want to delete this chapter? This action cannot be undone.",
         "form_delete_chapter_confirm_button_tooltip": "Delete chapter “{{name}}”",
-        "form_chapter_location_button": "Set location map for this chapter"
+        "form_chapter_location_button": "Set location map for this chapter",
+        "form_location_dialog_title": "Set Background Map to the chapter “{{title}}”",
+        "location_dialog_cancel_button": "Cancel",
+        "location_dialog_confirm_button": "Save Map View",
+        "view_title_outline": "Outline"
     }
 }

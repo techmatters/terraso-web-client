@@ -42,10 +42,7 @@ const TopBar = () => {
           pl: 2,
         }}
       >
-        <RouterLink
-          to="/story-map"
-          sx={{ display: 'flex', alignItems: 'center' }}
-        >
+        <RouterLink sx={{ display: 'flex', alignItems: 'center' }}>
           <ArrowBackIcon />
           <Typography sx={{ ml: 1 }}>
             {t('storyMap.form_back_button')}

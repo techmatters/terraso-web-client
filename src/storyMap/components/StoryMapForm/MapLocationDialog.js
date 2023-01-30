@@ -21,7 +21,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MapLocationDialog = props => {
   const { t } = useTranslation();
-  const { open, onClose, onConfirm, location } = props;
+  const { open, onClose, onConfirm, chapter } = props;
+  const { location, title } = chapter;
 
   const [mapContainer, setMapContainer] = useState();
   const [mapCenter, setMapCenter] = useState(location?.center);
@@ -119,7 +120,7 @@ const MapLocationDialog = props => {
       sx={{ mt: `${marginTop}px` }}
     >
       <DialogTitle component="h1" id="map-location-dialog-title">
-        {t('storyMap.location_dialog_title')}
+        {t('storyMap.form_location_dialog_title', { title })}
       </DialogTitle>
       <DialogContent>
         <Box ref={setMapContainer} sx={{ height: '100%', width: '100%' }} />
