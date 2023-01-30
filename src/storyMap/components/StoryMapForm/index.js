@@ -31,6 +31,9 @@ const BASE_CONFIG = {
   style: MAPBOX_STYLE_DEFAULT,
   theme: 'dark',
   showMarkers: false,
+  title: '',
+  subtitle: '',
+  byline: '',
   chapters: [
     // {
     //   id: 'third-identifier',

@@ -29,6 +29,17 @@ footer {
     display: none;
   }
 }
+
+#header .step-content.dark {
+  background-color: #0d1a2a;
+}
+#header .step-content.light {
+  background-color: #ffffff;
+}
+#header .step-content a {
+  color: #1671bc;
+}
+
 #header h1,
 #header h2,
 #header p {

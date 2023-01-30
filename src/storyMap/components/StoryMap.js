@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import mapboxgl from '!mapbox-gl';
+import _ from 'lodash/fp';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -9,7 +10,9 @@ import scrollama from 'scrollama';
 
 import './StoryMap.css';
 
-import { Box } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+
+import { Box, Link } from '@mui/material';
 
 import { MAPBOX_ACCESS_TOKEN } from 'config';
 
@@ -67,9 +70,25 @@ const Chapter = ({ theme, record }) => {
 };
 
 const Title = props => {
+  const { t } = useTranslation();
   const { config } = props;
 
   if (!config.title) return null;
+
+  const scrollTo = id => {
+    const element = document.getElementById(id);
+    element?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  };
+
+  const onOutlineItemClick = id => event => {
+    event.preventDefault();
+    scrollTo(id);
+  };
+
+  const chapters = config.chapters.map((chapter, index) => ({
+    chapter,
+    index,
+  }));
 
   return (
     <Box id="header" className="step fully title">
@@ -77,6 +96,29 @@ const Title = props => {
         <h1>{config.title}</h1>
         {config.subtitle && <h2>{config.subtitle}</h2>}
         {config.byline && <p>{config.byline}</p>}
+        <p>
+          {t('storyMap.view_title_outline')}:{' '}
+          {_.flow(
+            _.map(({ chapter, index }) => ({
+              index,
+              component: (
+                <Link
+                  key={chapter.id}
+                  href={`#${chapter.id}`}
+                  onClick={onOutlineItemClick(chapter.id)}
+                >
+                  {chapter.title}
+                </Link>
+              ),
+            })),
+            _.flatMap(({ component, index }) => [
+              component,
+              index !== chapters.length - 1 ? (
+                <span key={`divider-${index}`}> | </span>
+              ) : undefined,
+            ])
+          )(chapters)}
+        </p>
       </Box>
     </Box>
   );
