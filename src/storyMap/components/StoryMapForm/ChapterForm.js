@@ -28,7 +28,7 @@ const ConfigButton = withProps(IconButton, {
 });
 const ChapterConfig = props => {
   const { t } = useTranslation();
-  const { onAlignmentChange, location, onLocationChange, children } = props;
+  const { onAlignmentChange, chapter, onLocationChange, children } = props;
   const [locationOpen, setLocationOpen] = useState(false);
 
   const options = [
@@ -65,13 +65,11 @@ const ChapterConfig = props => {
     [onLocationChange, onLocationClose]
   );
 
-  console.log(GpsFixedIcon, Button, t, onLocationClick);
-
   return (
     <>
       <MapLocationDialog
         open={locationOpen}
-        location={location}
+        chapter={chapter}
         onClose={onLocationClose}
         onConfirm={onLocationChangeWrapper}
       />
@@ -131,7 +129,7 @@ const ChapterForm = ({ theme, record }) => {
   return (
     <Box id={record.id} className={classList} direction="row">
       <ChapterConfig
-        location={record.location}
+        chapter={record}
         onAlignmentChange={onFieldChange('alignment')}
         onLocationChange={onFieldChange('location')}
       >

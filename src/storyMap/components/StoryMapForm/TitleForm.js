@@ -1,8 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
 
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Stack } from '@mui/material';
+import { Box, Link, Stack } from '@mui/material';
 
 import EditableText from './EditableText';
 import { useConfigContext } from './configContext';
@@ -33,6 +34,40 @@ const TitleForm = props => {
     []
   );
 
+  const chapters = useMemo(
+    () =>
+      config.chapters.map((chapter, index) => ({
+        chapter,
+        index,
+      })),
+    [config.chapters]
+  );
+
+  const outline = useMemo(
+    () => (
+      <p>
+        {t('storyMap.view_title_outline')}:{' '}
+        {_.flow(
+          _.map(({ chapter, index }) => ({
+            index,
+            component: (
+              <Link key={chapter.id} href={`#${chapter.id}`}>
+                {chapter.title}
+              </Link>
+            ),
+          })),
+          _.flatMap(({ component, index }) => [
+            component,
+            index !== chapters.length - 1 ? (
+              <span key={`divider-${index}`}> | </span>
+            ) : undefined,
+          ])
+        )(chapters)}
+      </p>
+    ),
+    [chapters, t]
+  );
+
   return (
     <Box id="header" className="step fully title">
       <Stack className={`${config.theme} step-content`} spacing={1}>
@@ -57,6 +92,7 @@ const TitleForm = props => {
           onChange={onFieldChange('byline')}
           inputProps={inputProps}
         />
+        {outline}
       </Stack>
     </Box>
   );
