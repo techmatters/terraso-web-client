@@ -42,7 +42,10 @@ const SocialShareContext = createContext({});
 
 export const useSocialShareContext = props => {
   const { setSocialShareProps } = useContext(SocialShareContext);
-  setSocialShareProps(props);
+
+  useEffect(() => {
+    setSocialShareProps(props);
+  }, [props, setSocialShareProps]);
 };
 
 export const SocialShareContextProvider = props => {

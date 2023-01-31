@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, {
+  createContext,
+  forwardRef,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 import { Container as BaseContainer } from '@mui/material';
 
@@ -6,7 +12,10 @@ const ContainerContext = createContext({});
 
 export const useContainerContext = containerProps => {
   const { setContainerProps } = useContext(ContainerContext);
-  setContainerProps(containerProps);
+
+  useEffect(() => {
+    setContainerProps(containerProps);
+  }, [containerProps, setContainerProps]);
 };
 
 export const ContainerContextProvider = props => {
@@ -19,9 +28,9 @@ export const ContainerContextProvider = props => {
   );
 };
 
-const Container = props => {
+const Container = forwardRef((props, ref) => {
   const { containerProps } = useContext(ContainerContext);
-  return <BaseContainer {...props} {...containerProps} />;
-};
+  return <BaseContainer ref={ref} {...props} {...containerProps} />;
+});
 
 export default Container;
