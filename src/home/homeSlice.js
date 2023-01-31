@@ -47,6 +47,7 @@ export const homeSlice = createSlice({
       groups: action.payload.groups,
       landscapes: action.payload.landscapes,
       landscapesDiscovery: action.payload.landscapesDiscovery,
+      storyMaps: action.payload.storyMaps,
     }));
 
     builder.addCase(fetchHomeData.rejected, (state, action) => ({
