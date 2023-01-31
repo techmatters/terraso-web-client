@@ -134,7 +134,10 @@ const paths = [
   path('/account', AccountLogin, { auth: false }),
   path('/account/profile', AccountProfile),
   path('/contact', ContactForm),
-  path('/story-map/:slug', UserStoryMap),
+  path('/story-map/:slug', UserStoryMap, {
+    showBreadcrumbs: true,
+    breadcrumbsLabel: 'storyMap.breadcrumbs_view',
+  }),
   path('/story-map-form/', StoryMapForm),
   path('*', NotFound),
 ];

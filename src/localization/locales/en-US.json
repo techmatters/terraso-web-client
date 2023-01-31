@@ -792,6 +792,7 @@
         "form_location_dialog_title": "Set Background Map to the chapter “{{title}}”",
         "location_dialog_cancel_button": "Cancel",
         "location_dialog_confirm_button": "Save Map View",
-        "view_title_outline": "Outline"
+        "view_title_outline": "Outline",
+        "breadcrumbs_view": "Story Maps / {{title}}"
     }
 }

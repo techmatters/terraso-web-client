@@ -34,7 +34,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import SocialShare from 'common/components/SocialShare.js';
+import { useSocialShareContext } from 'common/components/SocialShare';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
@@ -165,6 +165,15 @@ const GroupView = () => {
     )
   );
 
+  useSocialShareContext(
+    useMemo(
+      () => ({
+        name: group?.name,
+      }),
+      [group?.name]
+    )
+  );
+
   useFetchData(useCallback(() => fetchGroupView(slug), [slug]));
 
   const updateGroup = useCallback(() => {
@@ -205,7 +214,6 @@ const GroupView = () => {
           }}
         >
           <PageHeader header={group.name} />
-          <SocialShare name={group.name} />
         </Stack>
         <Grid container spacing={2}>
           <Grid item xs={12} md={6} style={{ display: 'flex' }}>

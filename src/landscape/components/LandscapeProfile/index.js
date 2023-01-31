@@ -24,7 +24,7 @@ import { useParams } from 'react-router-dom';
 
 import { Grid, Stack } from '@mui/material';
 
-import SocialShare from 'common/components/SocialShare.js';
+import { useSocialShareContext } from 'common/components/SocialShare';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
@@ -92,6 +92,15 @@ const LandscapeProfile = () => {
     )
   );
 
+  useSocialShareContext(
+    useMemo(
+      () => ({
+        name: landscape?.name,
+      }),
+      [landscape?.name]
+    )
+  );
+
   useFetchData(useCallback(() => fetchLandscapeProfile(slug), [slug]));
 
   const updateLandscape = useCallback(() => {
@@ -129,7 +138,6 @@ const LandscapeProfile = () => {
             header={landscape.name}
             typographyProps={{ sx: { marginBottom: 0 } }}
           />
-          <SocialShare name={landscape.name} />
         </Stack>
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
