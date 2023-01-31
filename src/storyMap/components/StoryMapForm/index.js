@@ -36,6 +36,7 @@ const BASE_CONFIG = {
   style: MAPBOX_STYLE_DEFAULT,
   theme: 'dark',
   showMarkers: false,
+  use3dTerrain: true,
   title: '',
   subtitle: '',
   byline: '',

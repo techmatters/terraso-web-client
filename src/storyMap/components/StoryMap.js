@@ -173,7 +173,8 @@ const StoryMap = props => {
       style: config.style,
       interactive: false,
       transformRequest: transformRequest,
-      projection: config.projection,
+      projection: config.projection || 'globe',
+      zoom: 1,
       ...(initialLocation ? initialLocation : {}),
     });
 
@@ -201,6 +202,15 @@ const StoryMap = props => {
       }
 
       setMap(map);
+    });
+    map.on('style.load', () => {
+      map.setFog({
+        color: 'rgb(169, 169, 188)', // Lower atmosphere
+        'high-color': 'rgb(16, 16, 20)', // Upper atmosphere
+        'horizon-blend': 0.02, // Atmosphere thickness (default 0.2 at low zooms)
+        'space-color': 'rgb(20, 20, 26)', // Background color
+        'star-intensity': 0.1, // Background star brightness (default 0.35 at low zoooms )
+      });
     });
     return () => map.remove();
   }, [config.style, initialLocation, config.use3dTerrain, config.projection]);
