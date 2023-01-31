@@ -14,12 +14,10 @@ const BreadcrumbsShareContainer = () => {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        pt: 2,
-        pb: 2,
       }}
     >
       <Breadcrumbs />
-      <SocialShare name="Test" />
+      <SocialShare />
     </Container>
   );
 };
