@@ -19,8 +19,11 @@ import { MAPBOX_ACCESS_TOKEN, MAPBOX_STYLE_DEFAULT } from 'config';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
+import { useConfigContext } from './configContext';
+
 const MapLocationDialog = props => {
   const { t } = useTranslation();
+  const { config } = useConfigContext();
   const { open, onClose, onConfirm, chapter } = props;
   const { location, title } = chapter;
 
@@ -44,7 +47,9 @@ const MapLocationDialog = props => {
 
     const map = new mapboxgl.Map({
       container: mapContainer,
-      style: MAPBOX_STYLE_DEFAULT,
+      style: config.style || MAPBOX_STYLE_DEFAULT,
+      projection: config.projection || 'globe',
+      zoom: 1,
       ...(location || {}),
     });
 
@@ -87,6 +92,16 @@ const MapLocationDialog = props => {
       });
     });
 
+    map.on('style.load', () => {
+      map.setFog({
+        color: 'rgb(169, 169, 188)', // Lower atmosphere
+        'high-color': 'rgb(16, 16, 20)', // Upper atmosphere
+        'horizon-blend': 0.02, // Atmosphere thickness (default 0.2 at low zooms)
+        'space-color': 'rgb(20, 20, 26)', // Background color
+        'star-intensity': 0.1, // Background star brightness (default 0.35 at low zoooms )
+      });
+    });
+
     // Handle map move events
     map.on('move', function () {
       updatePosition();
@@ -95,7 +110,7 @@ const MapLocationDialog = props => {
     return () => {
       map.remove();
     };
-  }, [mapContainer, location]);
+  }, [mapContainer, location, config.style, config.projection]);
 
   const handleConfirm = useCallback(() => {
     onConfirm({
