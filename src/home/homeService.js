@@ -105,5 +105,6 @@ export const fetchHomeData = email => {
             _.get('defaultGroup.edges[0].node.group', landscape)
           ),
         })),
+      storyMaps: _.getOr([], 'storyMaps.edges', response).map(_.get('node')),
     }));
 };

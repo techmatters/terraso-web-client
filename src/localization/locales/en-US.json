@@ -804,6 +804,9 @@
         "location_dialog_cancel_button": "Cancel",
         "location_dialog_confirm_button": "Save Map View",
         "view_title_outline": "Outline",
-        "breadcrumbs_view": "Story Maps / {{title}}"
+        "breadcrumbs_view": "Story Maps / {{title}}",
+        "home_title": "Story Maps",
+        "home_create": "Create new story map",
+        "home_last_edited": "Last edited on {{date}}"
     }
 }

@@ -3,6 +3,7 @@ export const storyMapFields = `
     id
     slug
     title
+    isPublished
     configuration
     createdAt
     updatedAt

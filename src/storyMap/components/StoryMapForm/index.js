@@ -3,15 +3,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
 
 import { Grid } from '@mui/material';
 
 import PageLoader from 'layout/PageLoader';
-
-import { addStoryMap } from 'storyMap/storyMapSlice';
-
-import { MAPBOX_STYLE_DEFAULT } from 'config';
 
 import StoryMap from '../StoryMap';
 import ChapterForm from './ChapterForm';
@@ -32,62 +27,16 @@ const BASE_CHAPTER = {
   onChapterExit: [],
 };
 
-const BASE_CONFIG = {
-  style: MAPBOX_STYLE_DEFAULT,
-  theme: 'dark',
-  showMarkers: false,
-  use3dTerrain: true,
-  title: '',
-  subtitle: '',
-  byline: '',
-  chapters: [
-    // {
-    //   id: 'third-identifier',
-    //   alignment: 'left',
-    //   title: 'Chapter 1',
-    //   description: 'Copy these sections to add to your story.',
-    //   location: {
-    //     center: [6.15116, 46.20595],
-    //     zoom: 12.52,
-    //     pitch: 8.01,
-    //     bearing: 0.0,
-    //   },
-    //   mapAnimation: 'flyTo',
-    //   rotateAnimation: false,
-    //   callback: '',
-    //   onChapterEnter: [],
-    //   onChapterExit: [],
-    // },
-    // {
-    //   id: 'fourth-chapter',
-    //   alignment: 'right',
-    //   title: 'Chapter 2',
-    //   description: 'Copy these sections to add to your story.',
-    //   mapAnimation: 'flyTo',
-    //   location: {
-    //     center: [-58.54195, -34.716],
-    //     zoom: 4,
-    //     pitch: 0,
-    //     bearing: 0,
-    //   },
-    //   rotateAnimation: false,
-    //   callback: '',
-    //   onChapterEnter: [],
-    //   onChapterExit: [],
-    // },
-  ],
-};
-
-const StoryMapForm = () => {
+const StoryMapForm = props => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
+  const { baseConfig, onPublish, onSaveDraft } = props;
   const { saving } = useSelector(_.get('storyMap.form'));
   const { data: user } = useSelector(_.get('account.currentUser'));
   const [height, setHeight] = useState('100vh');
   const [mapHeight, setMapHeight] = useState();
   const [mapWidth, setMapWidth] = useState();
   const [config, setConfig] = useState({
-    ...BASE_CONFIG,
+    ...baseConfig,
     byline: t('storyMap.form_byline', { user }),
   });
   const [currentStepId, setCurrentStepId] = useState();
@@ -140,23 +89,15 @@ const StoryMapForm = () => {
     [setConfig]
   );
 
-  const onPublish = useCallback(() => {
-    dispatch(
-      addStoryMap({
-        config,
-        published: true,
-      })
-    );
-  }, [config, dispatch]);
+  const onPublishWrapper = useCallback(
+    () => onPublish(config),
+    [config, onPublish]
+  );
 
-  const onSaveDraft = useCallback(() => {
-    dispatch(
-      addStoryMap({
-        config,
-        published: false,
-      })
-    );
-  }, [config, dispatch]);
+  const onSaveDraftWrapper = useCallback(
+    () => onSaveDraft(config),
+    [config, onSaveDraft]
+  );
 
   if (preview) {
     return (
@@ -180,7 +121,7 @@ const StoryMapForm = () => {
         alignItems="flex-start"
         sx={{ height }}
       >
-        <TopBar onPublish={onPublish} onSaveDraft={onSaveDraft} />
+        <TopBar onPublish={onPublishWrapper} onSaveDraft={onSaveDraftWrapper} />
         <ChaptersSidebar
           config={config}
           currentStepId={currentStepId}
