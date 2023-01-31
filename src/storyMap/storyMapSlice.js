@@ -22,7 +22,9 @@ import * as storyMapService from 'storyMap/storyMapService';
 
 const initialState = {
   form: {
+    fetching: true,
     saving: false,
+    data: null,
   },
   view: {
     fetching: true,
@@ -35,12 +37,25 @@ export const fetchStoryMap = createAsyncThunk(
   'storyMap/fetchStoryMap',
   storyMapService.fetchStoryMap
 );
+export const fetchStoryMapForm = createAsyncThunk(
+  'storyMap/fetchStoryMapForm',
+  storyMapService.fetchStoryMap
+);
 export const addStoryMap = createAsyncThunk(
   'storyMap/addStoryMap',
   storyMapService.addStoryMap,
   (storyMap, { config }) => ({
     severity: 'success',
     content: 'storyMap.added_story_map',
+    params: { title: config.title },
+  })
+);
+export const updateStoryMap = createAsyncThunk(
+  'storyMap/updateStoryMap',
+  storyMapService.updateStoryMap,
+  (storyMap, { config }) => ({
+    severity: 'success',
+    content: 'storyMap.update_story_map',
     params: { title: config.title },
   })
 );
@@ -82,23 +97,62 @@ const storyMapSlice = createSlice({
         data: action.payload,
       },
     }));
+
+    builder.addCase(fetchStoryMapForm.pending, state => ({
+      ...state,
+      form: initialState.form,
+    }));
+    builder.addCase(fetchStoryMapForm.rejected, state => ({
+      ...state,
+      form: {
+        fetching: false,
+      },
+    }));
+    builder.addCase(fetchStoryMapForm.fulfilled, (state, action) => ({
+      ...state,
+      form: {
+        fetching: false,
+        data: action.payload,
+      },
+    }));
+
     builder.addCase(addStoryMap.pending, state => ({
       ...state,
       form: {
         saving: true,
       },
     }));
-
     builder.addCase(addStoryMap.rejected, state => ({
       ...state,
       form: {
         saving: false,
       },
     }));
-
     builder.addCase(addStoryMap.fulfilled, state => ({
       ...state,
       form: {
+        saving: false,
+      },
+    }));
+
+    builder.addCase(updateStoryMap.pending, state => ({
+      ...state,
+      form: {
+        ...state.form,
+        saving: true,
+      },
+    }));
+    builder.addCase(updateStoryMap.rejected, state => ({
+      ...state,
+      form: {
+        ...state.form,
+        saving: false,
+      },
+    }));
+    builder.addCase(updateStoryMap.fulfilled, state => ({
+      ...state,
+      form: {
+        ...state.form,
         saving: false,
       },
     }));

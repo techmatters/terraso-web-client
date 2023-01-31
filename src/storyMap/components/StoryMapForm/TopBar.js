@@ -43,7 +43,7 @@ const TopBar = props => {
           pl: 2,
         }}
       >
-        <RouterLink sx={{ display: 'flex', alignItems: 'center' }}>
+        <RouterLink to="/" sx={{ display: 'flex', alignItems: 'center' }}>
           <ArrowBackIcon />
           <Typography sx={{ ml: 1 }}>
             {t('storyMap.form_back_button')}

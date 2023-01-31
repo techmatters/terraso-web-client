@@ -33,6 +33,8 @@ import GroupsCard from 'group/components/GroupsHomeCard';
 import { fetchHomeData } from 'home/homeSlice';
 import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultHomeCard';
 import LandscapesCard from 'landscape/components/LandscapesHomeCard';
+import StoryMapsHomeCard from 'storyMap/components/StoryMapsHomeCard';
+import StoryMapsHomeCardDefault from 'storyMap/components/StoryMapsHomeCardDefault';
 import ToolHomeCard from 'tool/components/ToolHomeCard';
 
 const Landscapes = ({ landscapes, fetching }) => {
@@ -59,12 +61,24 @@ const Groups = ({ groups, fetching }) => {
   return <GroupsCard groups={groups} />;
 };
 
+const StoryMaps = ({ storyMaps, fetching }) => {
+  if (fetching) {
+    return <LoaderCard />;
+  }
+
+  if (_.isEmpty(storyMaps)) {
+    return <StoryMapsHomeCardDefault />;
+  }
+
+  return <StoryMapsHomeCard storyMaps={storyMaps} />;
+};
+
 const Home = () => {
   const { t } = useTranslation();
 
   const { data: user } = useSelector(state => state.account.currentUser);
   const home = useSelector(state => state.userHome);
-  const { groups, landscapes, error, fetching } = home;
+  const { groups, landscapes, storyMaps, error, fetching } = home;
 
   useDocumentTitle(t('home.document_title'), false, true);
 
@@ -81,12 +95,13 @@ const Home = () => {
         <Grid item xs={12} md={6}>
           <Stack spacing={1}>
             <Landscapes landscapes={landscapes} fetching={fetching} />
-            <ToolHomeCard />
+            <StoryMaps storyMaps={storyMaps} fetching={fetching} />
           </Stack>
         </Grid>
         <Grid item xs={12} md={6}>
           <Stack spacing={1}>
             <Groups groups={groups} fetching={fetching} />
+            <ToolHomeCard />
           </Stack>
         </Grid>
       </Grid>

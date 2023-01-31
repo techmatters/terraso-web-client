@@ -51,6 +51,31 @@ export const addStoryMap = ({ config, published }) => {
     }));
 };
 
+export const updateStoryMap = ({ id, config, published }) => {
+  const query = `
+    mutation updateStoryMap($input: StoryMapUpdateMutationInput!) {
+      updateStoryMap(input: $input) {
+        storyMap {
+          slug
+        }
+        errors
+      }
+    }
+  `;
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: {
+        id,
+        title: config.title,
+        isPublished: published,
+        configuration: JSON.stringify(config),
+      },
+    })
+    .then(response => ({
+      slug: _.get('updateStoryMap.storyMap.slug', response),
+    }));
+};
+
 export const deleteStoryMap = storyMap => {
   const query = `
     mutation deleteStoryMap($id: ID!) {
