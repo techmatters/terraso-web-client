@@ -32,8 +32,10 @@ import 'forms/yup';
 // Analytics
 import 'monitoring/analytics';
 
+import { SocialShareContextProvider } from 'common/components/SocialShare';
 import { BreadcrumbsContextProvider } from 'navigation/breadcrumbsContext';
 
+import { ContainerContextProvider } from './Container';
 import RefreshProgressProvider from './RefreshProgressProvider';
 
 // Wrappers
@@ -48,7 +50,11 @@ const AppWrappers = ({ children, theme, store, permissionsRules }) => (
               <PermissionsProvider rules={permissionsRules}>
                 <NotificationsWrapper>
                   <BreadcrumbsContextProvider>
-                    {children}
+                    <SocialShareContextProvider>
+                      <ContainerContextProvider>
+                        {children}
+                      </ContainerContextProvider>
+                    </SocialShareContextProvider>
                   </BreadcrumbsContextProvider>
                 </NotificationsWrapper>
               </PermissionsProvider>

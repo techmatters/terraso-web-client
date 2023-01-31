@@ -23,7 +23,7 @@ import { act } from 'react-dom/test-utils';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import AppBar from 'common/components/AppBar';
+import AppBar from 'layout/AppBar';
 
 jest.mock('@mui/material/useMediaQuery');
 jest.mock('js-cookie');
