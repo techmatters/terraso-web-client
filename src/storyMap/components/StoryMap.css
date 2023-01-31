@@ -6,6 +6,12 @@ footer {
   z-index: 2;
 }
 
+#breadcrumbs-share-container {
+  z-index: 2;
+  background-color: #ffffff;
+  position: relative;
+}
+
 #map {
   position: fixed;
 }

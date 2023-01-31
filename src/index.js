@@ -20,7 +20,7 @@ import { createRoot } from 'react-dom/client';
 
 import { Box } from '@mui/material';
 
-import AppBar from 'common/components/AppBar';
+import AppBar from 'layout/AppBar';
 import AppWrappers from 'layout/AppWrappers';
 import Footer from 'layout/Footer';
 import reportWebVitals from 'monitoring/reportWebVitals';
@@ -33,7 +33,7 @@ import theme from 'theme';
 
 import 'index.css';
 
-import Breadcrumbs from 'navigation/Breadcrumbs';
+import BreadcrumbsShareContainer from 'layout/BreadcrumbsShareContainer';
 
 const App = () => {
   const contentRef = useRef();
@@ -63,7 +63,7 @@ const App = () => {
             flex: 1,
           }}
         >
-          <Breadcrumbs />
+          <BreadcrumbsShareContainer />
           <Routes />
         </Box>
         <Footer />

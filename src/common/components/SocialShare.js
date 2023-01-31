@@ -14,9 +14,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 
 import CloseIcon from '@mui/icons-material/Close';
 import EmailIcon from '@mui/icons-material/Email';
@@ -37,8 +38,35 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import theme from 'theme';
 
-const SocialShare = ({ name }) => {
+const SocialShareContext = createContext({});
+
+export const useSocialShareContext = props => {
+  const { setSocialShareProps } = useContext(SocialShareContext);
+  setSocialShareProps(props);
+};
+
+export const SocialShareContextProvider = props => {
+  const { children } = props;
+  const { pathname: currentPathname } = useLocation();
+  const [socialShareProps, setSocialShareProps] = useState({});
+
+  useEffect(() => {
+    setSocialShareProps({});
+  }, [currentPathname]);
+
+  return (
+    <SocialShareContext.Provider
+      value={{ setSocialShareProps, socialShareProps }}
+    >
+      {children}
+    </SocialShareContext.Provider>
+  );
+};
+
+const SocialShare = () => {
   const { t } = useTranslation();
+  const { socialShareProps } = useContext(SocialShareContext);
+  const { name } = socialShareProps;
   const [open, setOpen] = useState(false);
   const [buttonCopied, setButtonCopied] = useState(false);
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
@@ -80,6 +108,10 @@ const SocialShare = ({ name }) => {
       ref.focus();
     }
   };
+
+  if (!name) {
+    return null;
+  }
 
   return (
     <>
