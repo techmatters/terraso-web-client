@@ -40,7 +40,10 @@ const Breadcrumbs = () => {
       <Typography sx={visuallyHidden} variant="h2">
         {t('navigation.breadcrumbs_label')}
       </Typography>
-      <MuiBreadcrumbs aria-label={t('navigation.breadcrumbs_label')}>
+      <MuiBreadcrumbs
+        aria-label={t('navigation.breadcrumbs_label')}
+        sx={{ mb: 2, mt: 2 }}
+      >
         <Link component={RouterLink} to="/">
           {t('home.title')}
         </Link>

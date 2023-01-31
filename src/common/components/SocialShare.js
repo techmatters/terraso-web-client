@@ -118,7 +118,7 @@ const SocialShare = () => {
 
   return (
     <>
-      <Button variant="outlined" onClick={handleOpen}>
+      <Button variant="outlined" onClick={handleOpen} sx={{ mt: 2, mb: 2 }}>
         {t('share.button')}
       </Button>
       <Dialog
