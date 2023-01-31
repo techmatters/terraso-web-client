@@ -20,11 +20,12 @@ import { useTranslation } from 'react-i18next';
 
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import {
+  List as BaseList,
   Divider,
-  List,
-  ListItemButton,
-  ListItemIcon,
+  Grid,
+  ListItem,
   ListItemText,
+  Stack,
   Typography,
 } from '@mui/material';
 
@@ -33,6 +34,15 @@ import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
 
 import HomeCard from 'home/components/HomeCard';
+
+import { withProps } from 'react-hoc';
+
+const List = withProps(BaseList, {
+  component: withProps(Stack, {
+    divider: <Divider aria-hidden="true" component="li" />,
+    component: 'ul',
+  }),
+});
 
 const StoryMapsHomeCard = props => {
   const { t, i18n } = useTranslation();
@@ -47,40 +57,36 @@ const StoryMapsHomeCard = props => {
       <Typography variant="h2" id="story-maps-list-title" sx={{ p: 2 }}>
         {t('storyMap.home_title')}
       </Typography>
-      <List
-        aria-describedby="story-maps-list-title"
-        sx={{
-          pl: 2,
-          pr: 2,
-        }}
-      >
+      <List aria-describedby="story-maps-list-title">
         {storyMaps.map(storyMap => (
-          <ListItemButton
-            key={storyMap.slug}
-            component={RouterLink}
-            to={
-              storyMap.isPublished
-                ? `/story-maps/${storyMap.slug}`
-                : `/story-maps/${storyMap.slug}/edit`
-            }
-          >
-            {!storyMap.isPublished && (
-              <ListItemIcon>
-                <ModeEditIcon fontSize="small" />
-              </ListItemIcon>
-            )}
-            <ListItemText
-              primary={storyMap.title}
-              secondary={t('storyMap.home_last_edited', {
-                date: formatDate(i18n.resolvedLanguage, storyMap.createdAt),
-              })}
-              secondaryTypographyProps={{
-                sx: {
-                  fontStyle: 'italic',
-                },
-              }}
-            />
-          </ListItemButton>
+          <ListItem key={storyMap.slug} component={Grid} container>
+            <Grid item xs={1}>
+              {!storyMap.isPublished && <ModeEditIcon fontSize="small" />}
+            </Grid>
+            <Grid item xs={11}>
+              <ListItemText
+                primary={
+                  <RouterLink
+                    to={
+                      storyMap.isPublished
+                        ? `/story-maps/${storyMap.slug}`
+                        : `/story-maps/${storyMap.slug}/edit`
+                    }
+                  >
+                    {storyMap.title}
+                  </RouterLink>
+                }
+                secondary={t('storyMap.home_last_edited', {
+                  date: formatDate(i18n.resolvedLanguage, storyMap.createdAt),
+                })}
+                secondaryTypographyProps={{
+                  sx: {
+                    fontStyle: 'italic',
+                  },
+                }}
+              />
+            </Grid>
+          </ListItem>
         ))}
       </List>
       <Divider aria-hidden="true" />
