@@ -52,6 +52,21 @@ const getBoundsJson = bounds => ({
   ],
 });
 
+const Audio = ({ record }) => {
+  return (
+    <>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio controls>
+        <source src={record.media.content} type={record.media.type} />
+      </audio>
+    </>
+  );
+};
+
+const Image = ({ record }) => {
+  return <img src={record.media.content} alt={record.title}></img>;
+};
+
 const Chapter = ({ theme, record }) => {
   const classList = [
     'step-container',
@@ -63,7 +78,12 @@ const Chapter = ({ theme, record }) => {
     <Box id={record.id} className={classList}>
       <Box className={`${theme} step-content`}>
         {record.title && <h3 className="title">{record.title}</h3>}
-        {record.image && <img src={record.image} alt={record.title}></img>}
+        {record.media &&
+          (record.media.type.startsWith('image') ? (
+            <Image record={record} />
+          ) : record.media.type.startsWith('audio') ? (
+            <Audio record={record} />
+          ) : null)}
         {record.description && <p>{record.description}</p>}
       </Box>
     </Box>

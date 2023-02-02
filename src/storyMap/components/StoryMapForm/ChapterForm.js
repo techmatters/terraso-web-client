@@ -149,8 +149,8 @@ const ChapterForm = ({ theme, record }) => {
             onChange={onFieldChange('title')}
           />
           <EditableMedia
-            value={record.image}
-            onChange={onFieldChange('image')}
+            value={record.media}
+            onChange={onFieldChange('media')}
           />
           <EditableText
             placeholder={t('storyMap.form_chapter_description_placeholder')}

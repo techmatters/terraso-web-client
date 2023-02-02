@@ -128,6 +128,10 @@ export const STORY_MAP_MEDIA_ACCEPTED_TYPES = {
   'image/jpeg': ['.jpg', '.jpeg'],
   'image/png': ['.png'],
   'image/gif': ['.gif'],
+  'audio/mpeg': ['.mp3'],
+  'audio/ogg': ['.ogg'],
+  'audio/wav': ['.wav'],
+  'audio/aac': ['.aac'],
 };
 export const STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS = Object.values(
   STORY_MAP_MEDIA_ACCEPTED_TYPES
