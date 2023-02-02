@@ -18,6 +18,7 @@ import {
 import { withProps } from 'react-hoc';
 
 import { ALIGNMENTS } from '../../storyMapConstants';
+import EditableMedia from './EditableMedia';
 import EditableText from './EditableText';
 import MapLocationDialog from './MapLocationDialog';
 import { useConfigContext } from './configContext';
@@ -147,7 +148,10 @@ const ChapterForm = ({ theme, record }) => {
             value={record.title}
             onChange={onFieldChange('title')}
           />
-          {record.image && <img src={record.image} alt={record.title}></img>}
+          <EditableMedia
+            value={record.image}
+            onChange={onFieldChange('image')}
+          />
           <EditableText
             placeholder={t('storyMap.form_chapter_description_placeholder')}
             Component="p"
