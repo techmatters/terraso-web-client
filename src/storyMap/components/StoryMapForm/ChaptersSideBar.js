@@ -75,7 +75,7 @@ const ChaptersSidebar = props => {
                     'aria-label': t(
                       'storyMap.form_delete_chapter_confirm_button',
                       {
-                        name: item.name,
+                        name: item.label,
                       }
                     ),
                     sx: {
@@ -87,25 +87,25 @@ const ChaptersSidebar = props => {
                   confirmTitle={t(
                     'storyMap.form_delete_chapter_confirm_title',
                     {
-                      name: item.name,
+                      name: item.label,
                     }
                   )}
                   confirmMessage={t(
                     'storyMap.form_delete_chapter_confirm_message',
                     {
-                      name: item.name,
+                      name: item.label,
                     }
                   )}
                   confirmButton={t(
                     'storyMap.form_delete_chapter_confirm_button',
                     {
-                      name: item.name,
+                      name: item.label,
                     }
                   )}
                   tooltip={t(
                     'storyMap.form_delete_chapter_confirm_button_tooltip',
                     {
-                      name: item.name,
+                      name: item.label,
                     }
                   )}
                 >
