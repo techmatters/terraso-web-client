@@ -44,11 +44,11 @@ const StoryMapForm = props => {
 
   useEffect(() => {
     const headerHeight =
-      document.getElementsByClassName('header-container')[0].clientHeight;
+      document.getElementById('header-container').clientHeight;
     const footerHeight =
       document.getElementsByClassName('footer')[0].clientHeight;
     const formHeaderHeight =
-      document.getElementsByClassName('form-header')[0].clientHeight;
+      document.getElementById('form-header').clientHeight;
 
     setHeight(`calc(100vh - (${headerHeight}px + ${footerHeight}px))`);
     setMapHeight(
@@ -61,7 +61,7 @@ const StoryMapForm = props => {
       return;
     }
     const chaptersWidth =
-      document.getElementsByClassName('chapters-sidebar')[0].clientWidth;
+      document.getElementById('chapters-sidebar').clientWidth;
 
     setMapWidth(`calc(100vw - ${chaptersWidth}px)`);
   }, [mapHeight]);

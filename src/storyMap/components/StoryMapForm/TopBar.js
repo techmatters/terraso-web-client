@@ -33,7 +33,7 @@ const TopBar = props => {
   return (
     <>
       <Grid
-        className="form-header"
+        id="form-header"
         item
         xs={2}
         sx={{
