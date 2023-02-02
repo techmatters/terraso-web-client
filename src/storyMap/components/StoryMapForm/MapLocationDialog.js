@@ -36,7 +36,7 @@ const MapLocationDialog = props => {
 
   useEffect(() => {
     const headerHeight =
-      document.getElementsByClassName('header-container')[0].clientHeight;
+      document.getElementById('header-container').clientHeight;
     setMarginTop(headerHeight);
   }, []);
 
