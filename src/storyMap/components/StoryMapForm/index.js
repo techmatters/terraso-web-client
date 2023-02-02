@@ -131,7 +131,7 @@ const StoryMapForm = props => {
         />
         <Grid
           item
-          xs={10}
+          xs
           sx={{
             height: mapHeight,
             overflowY: 'overlay',

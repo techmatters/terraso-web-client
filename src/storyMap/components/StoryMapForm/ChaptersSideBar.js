@@ -40,8 +40,7 @@ const ChaptersSidebar = props => {
       id="chapters-sidebar"
       item
       component={List}
-      sx={{ height, overflow: 'auto' }}
-      xs={2}
+      sx={{ height, overflow: 'auto', width: '200px' }}
     >
       {listItems.map((item, index) => (
         <ListItemButton
