@@ -109,7 +109,8 @@ const ChapterForm = ({ theme, record }) => {
   const { t } = useTranslation();
   const { setConfig } = useConfigContext();
   const classList = [
-    'step',
+    'step-container',
+    'active',
     ALIGNMENTS[record.alignment] || 'centered',
     ...(record.hidden ? ['hidden'] : []),
   ].join(' ');
@@ -127,7 +128,9 @@ const ChapterForm = ({ theme, record }) => {
   );
 
   return (
-    <Box id={record.id} className={classList} direction="row">
+    <Box className={classList} direction="row">
+      {/* div with ID added because of an Intersection Observer issue with overflow */}
+      <div className="step" id={record.id}></div>
       <ChapterConfig
         chapter={record}
         onAlignmentChange={onFieldChange('alignment')}
