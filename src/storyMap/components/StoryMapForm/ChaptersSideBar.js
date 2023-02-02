@@ -37,7 +37,7 @@ const ChaptersSidebar = props => {
 
   return (
     <Grid
-      className="chapters-sidebar"
+      id="chapters-sidebar"
       item
       component={List}
       sx={{ height, overflow: 'auto' }}
