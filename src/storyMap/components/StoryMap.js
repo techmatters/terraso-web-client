@@ -56,7 +56,7 @@ const Audio = ({ record }) => {
   return (
     <>
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio controls>
+      <audio style={{ width: '100%' }} controls>
         <source src={record.media.content} type={record.media.type} />
       </audio>
     </>

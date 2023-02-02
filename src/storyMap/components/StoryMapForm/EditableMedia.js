@@ -149,7 +149,7 @@ const EditableAudio = props => {
   return (
     <Stack spacing={1}>
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio controls>
+      <audio style={{ width: '100%' }} controls>
         <source src={audio.content} type={audio.type} />
         {t('storyMap.form_media_audio_not_supported')}
       </audio>
