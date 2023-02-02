@@ -35,7 +35,7 @@ import theme from 'theme';
 const CurrentFile = ({ file }) => {
   const size = filesize(file.size, { round: 0 });
   return (
-    <Typography sx={{ fontWeight: 'bold' }}>
+    <Typography sx={{ fontWeight: 'bold', wordBreak: 'break-all' }}>
       {file.name} {size}
     </Typography>
   );
@@ -79,8 +79,10 @@ const DropZone = props => {
       sx={({ palette }) => ({
         backgroundColor: isDragActive ? palette.blue.mid : palette.blue.lite,
         border: `2px dashed ${palette.blue.dark}`,
-        paddingTop: errors ? 0 : 2,
-        paddingBottom: 3,
+        pt: errors ? 0 : 2,
+        pb: 3,
+        pl: 1,
+        pr: 1,
         minHeight: '125px',
         cursor: 'pointer',
       })}

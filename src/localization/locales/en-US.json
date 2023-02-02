@@ -799,6 +799,7 @@
         "breadcrumbs_view": "Story Maps / {{title}}",
         "home_title": "Story Maps",
         "home_create": "Create new story map",
-        "home_last_edited": "Last edited on {{date}}"
+        "home_last_edited": "Last edited on {{date}}",
+        "form_media_update_label": "Update Media"
     }
 }
