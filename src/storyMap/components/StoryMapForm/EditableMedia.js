@@ -77,7 +77,7 @@ const AddDialog = props => {
         <Button onClick={onClose}>
           {t('storyMap.form_media_add_dialog_close')}
         </Button>
-        <Button onClick={onAddWrapper}>
+        <Button variant="contained" onClick={onAddWrapper}>
           {t('storyMap.form_media_add_dialog_add')}
         </Button>
       </DialogActions>
@@ -132,9 +132,9 @@ const EditableImage = props => {
               minWidth: 'auto',
             },
           }}
-          confirmTitle={t('storyMap.form_media_delete_confirm_title')}
-          confirmMessage={t('storyMap.form_media_delete_confirm_message')}
-          confirmButton={t('storyMap.form_media_delete_confirm_button')}
+          confirmTitle={t('storyMap.form_media_image_delete_confirm_title')}
+          confirmMessage={t('storyMap.form_media_image_delete_confirm_message')}
+          confirmButton={t('storyMap.form_media_image_delete_confirm_button')}
         >
           <DeleteIcon sx={{ color: 'white' }} />
         </ConfirmButton>
@@ -188,9 +188,9 @@ const EditableAudio = props => {
               minWidth: 'auto',
             },
           }}
-          confirmTitle={t('storyMap.form_media_delete_confirm_title')}
-          confirmMessage={t('storyMap.form_media_delete_confirm_message')}
-          confirmButton={t('storyMap.form_media_delete_confirm_button')}
+          confirmTitle={t('storyMap.form_media_audio_delete_confirm_title')}
+          confirmMessage={t('storyMap.form_media_audio_delete_confirm_message')}
+          confirmButton={t('storyMap.form_media_audio_delete_confirm_button')}
         >
           <DeleteIcon sx={{ color: 'white' }} />
         </ConfirmButton>
@@ -232,15 +232,17 @@ const EditableMedia = props => {
         <Stack
           alignItems="center"
           justifyContent="center"
-          spacing={1}
+          spacing={2}
           component={Paper}
-          sx={{ bgcolor: 'blue.mid', minHeight: 150 }}
+          sx={{ bgcolor: 'blue.mid', minHeight: 150, p: 2 }}
         >
           <Trans i18nKey="storyMap.form_media_placeholder">
             <Typography variant="h3" sx={{ pt: 0 }}>
               Title
             </Typography>
-            <Typography variant="body1">Description</Typography>
+            <Typography variant="caption" sx={{ textAlign: 'center' }}>
+              Description
+            </Typography>
           </Trans>
           <Button variant="outlined" onClick={onOpen}>
             {t('storyMap.form_media_upload')}
