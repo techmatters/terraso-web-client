@@ -31,7 +31,7 @@ const AddDialog = props => {
   const { open, onClose, onAdd } = props;
   const [currentFile, setCurrentFile] = useState();
   const [dropError, setDropError] = useState();
-  const [image, setImage] = useState();
+  const [media, setMedia] = useState();
 
   const onDrop = useCallback(
     acceptedFiles => {
@@ -42,9 +42,13 @@ const AddDialog = props => {
       setDropError(null);
 
       const selectedFile = acceptedFiles[0];
-      openFile(selectedFile).then(image => {
+      openFile(selectedFile).then(content => {
         setCurrentFile(selectedFile);
-        setImage(image);
+        setMedia({
+          filename: selectedFile.name,
+          type: selectedFile.type,
+          content,
+        });
       });
     },
     [t]
@@ -53,8 +57,8 @@ const AddDialog = props => {
   const errors = useMemo(() => (dropError ? [dropError] : []), [dropError]);
 
   const onAddWrapper = useCallback(() => {
-    onAdd(image);
-  }, [image, onAdd]);
+    onAdd(media);
+  }, [media, onAdd]);
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -90,7 +94,7 @@ const EditableImage = props => {
         position: 'relative',
       }}
     >
-      <img src={image} alt="TODO" style={{ width: '100%' }} />
+      <img src={image.content} alt="TODO" style={{ width: '100%' }} />
       <Stack
         justifyContent="center"
         alignItems="center"
@@ -139,14 +143,70 @@ const EditableImage = props => {
   );
 };
 
+const EditableAudio = props => {
+  const { t } = useTranslation();
+  const { audio, onUpdate, onDelete, processing } = props;
+  return (
+    <Stack spacing={1}>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio controls>
+        <source src={audio.content} type={audio.type} />
+        {t('storyMap.form_media_audio_not_supported')}
+      </audio>
+      <Stack
+        justifyContent="center"
+        alignItems="center"
+        direction="row"
+        sx={{
+          color: 'white',
+          background: 'rgba(0,0,0,0.5)',
+          width: '100%',
+          pt: 2,
+          pb: 2,
+        }}
+        spacing={1}
+      >
+        <Button
+          variant="outlined"
+          onClick={onUpdate}
+          sx={({ palette }) => ({
+            backgroundColor: 'white',
+            '&:hover': {
+              backgroundColor: palette.blue.background,
+            },
+          })}
+        >
+          {t('storyMap.form_media_update_label')}
+        </Button>
+        <ConfirmButton
+          onConfirm={onDelete}
+          loading={processing}
+          variant="text"
+          buttonProps={{
+            title: t('storyMap.form_media_delete_label'),
+            sx: {
+              minWidth: 'auto',
+            },
+          }}
+          confirmTitle={t('storyMap.form_media_delete_confirm_title')}
+          confirmMessage={t('storyMap.form_media_delete_confirm_message')}
+          confirmButton={t('storyMap.form_media_delete_confirm_button')}
+        >
+          <DeleteIcon sx={{ color: 'white' }} />
+        </ConfirmButton>
+      </Stack>
+    </Stack>
+  );
+};
+
 const EditableMedia = props => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const { value, onChange } = props;
 
   const onAdd = useCallback(
-    image => {
-      onChange(image);
+    media => {
+      onChange(media);
       setOpen(false);
     },
     [onChange]
@@ -163,7 +223,11 @@ const EditableMedia = props => {
     <>
       <AddDialog open={open} onClose={onClose} onAdd={onAdd} />
       {value ? (
-        <EditableImage image={value} onUpdate={onOpen} onDelete={onDelete} />
+        value.type.startsWith('image') ? (
+          <EditableImage image={value} onUpdate={onOpen} onDelete={onDelete} />
+        ) : (
+          <EditableAudio audio={value} onUpdate={onOpen} onDelete={onDelete} />
+        )
       ) : (
         <Stack
           alignItems="center"
