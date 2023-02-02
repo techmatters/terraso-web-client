@@ -54,6 +54,7 @@ const getBoundsJson = bounds => ({
 
 const Chapter = ({ theme, record }) => {
   const classList = [
+    'step-container',
     'step',
     ALIGNMENTS[record.alignment] || 'centered',
     ...(record.hidden ? ['hidden'] : []),
@@ -91,7 +92,7 @@ const Title = props => {
   }));
 
   return (
-    <Box id="header" className="step fully title">
+    <Box id="header" className="step step-container fully title">
       <Box className={`${config.theme} step-content`}>
         <h1>{config.title}</h1>
         {config.subtitle && <h2>{config.subtitle}</h2>}
@@ -349,20 +350,20 @@ const StoryMap = props => {
         progress: true,
       })
       .onStepEnter(async response => {
-        const current_chapter = config.chapters.findIndex(
+        const currentChapter = config.chapters.findIndex(
           chap => chap.id === response.element.id
         );
-        const chapter = config.chapters[current_chapter];
+        const chapter = config.chapters[currentChapter];
         response.element.classList.add('active');
         startChapter(chapter);
         onStepChange?.(response.element.id);
 
         if (config.auto) {
-          const next_chapter = (current_chapter + 1) % config.chapters.length;
+          const nextChapter = (currentChapter + 1) % config.chapters.length;
           map.once('moveend', () => {
             document
               .querySelectorAll(
-                '[data-scrollama-index="' + next_chapter.toString() + '"]'
+                '[data-scrollama-index="' + nextChapter.toString() + '"]'
               )[0]
               .scrollIntoView();
           });
@@ -377,6 +378,7 @@ const StoryMap = props => {
           chapter.onChapterExit.forEach(setLayerOpacity);
         }
       });
+
     window.addEventListener('resize', scroller.resize);
     return () => {
       window.removeEventListener('resize', scroller.resize);
