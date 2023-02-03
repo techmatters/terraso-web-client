@@ -1,9 +1,10 @@
 // Component for editing and uploading a pictures or a audio file
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import _ from 'lodash/fp';
 import { openFile } from 'media/fileUtils';
 import { Trans, useTranslation } from 'react-i18next';
+import { v4 as uuidv4 } from 'uuid';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
@@ -145,12 +146,16 @@ const EditableImage = props => {
 
 const EditableAudio = props => {
   const { t } = useTranslation();
+  const [id, setId] = useState(0);
   const { audio, onUpdate, onDelete, processing } = props;
+  useEffect(() => {
+    setId(uuidv4());
+  }, [audio]);
   return (
     <Stack spacing={1}>
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio style={{ width: '100%' }} controls>
-        <source src={audio.content} type={audio.type} />
+      <audio key={id} style={{ width: '100%' }} controls>
+        <source src={audio.url || audio.content} type={audio.type} />
         {t('storyMap.form_media_audio_not_supported')}
       </audio>
       <Stack
