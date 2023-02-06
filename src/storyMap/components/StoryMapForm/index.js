@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import _ from 'lodash/fp';
-import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
 import { Grid } from '@mui/material';
@@ -14,7 +13,7 @@ import ChaptersSidebar from './ChaptersSideBar';
 import TitleForm from './TitleForm';
 import TopBar from './TopBar';
 import TopBarPreview from './TopBarPreview';
-import { ConfigContextProvider } from './configContext';
+import { useConfigContext } from './configContext';
 
 const BASE_CHAPTER = {
   alignment: 'left',
@@ -27,20 +26,47 @@ const BASE_CHAPTER = {
   onChapterExit: [],
 };
 
+const Preview = props => {
+  const { getMediaFile } = useConfigContext();
+  const { config } = props;
+
+  const previewConfig = useMemo(
+    () => ({
+      ...config,
+      chapters: config.chapters.map(chapter => {
+        if (!chapter.media || chapter.media.url) {
+          return chapter;
+        }
+        return {
+          ...chapter,
+          media: {
+            ...chapter.media,
+            url: getMediaFile(chapter.media.contentId),
+          },
+        };
+      }),
+    }),
+    [config, getMediaFile]
+  );
+
+  return (
+    <Grid container>
+      <TopBarPreview />
+      <Grid item xs={12}>
+        <StoryMap config={previewConfig} />
+      </Grid>
+    </Grid>
+  );
+};
+
 const StoryMapForm = props => {
-  const { t } = useTranslation();
-  const { baseConfig, onPublish, onSaveDraft } = props;
+  const { onPublish, onSaveDraft } = props;
   const { saving } = useSelector(_.get('storyMap.form'));
-  const { data: user } = useSelector(_.get('account.currentUser'));
+  const { config, setConfig, preview } = useConfigContext();
   const [height, setHeight] = useState('100vh');
   const [mapHeight, setMapHeight] = useState();
   const [mapWidth, setMapWidth] = useState();
-  const [config, setConfig] = useState({
-    ...baseConfig,
-    byline: t('storyMap.form_byline', { user }),
-  });
   const [currentStepId, setCurrentStepId] = useState();
-  const [preview, setPreview] = useState(false);
 
   useEffect(() => {
     const headerHeight =
@@ -77,7 +103,7 @@ const StoryMapForm = props => {
         },
       ],
     }));
-  }, []);
+  }, [setConfig]);
 
   const onDeleteChapter = useCallback(
     id => () => {
@@ -100,20 +126,11 @@ const StoryMapForm = props => {
   );
 
   if (preview) {
-    return (
-      <ConfigContextProvider value={{ config, setConfig, setPreview }}>
-        <Grid container>
-          <TopBarPreview />
-          <Grid item xs={12}>
-            <StoryMap config={config} />
-          </Grid>
-        </Grid>
-      </ConfigContextProvider>
-    );
+    return <Preview config={config} />;
   }
 
   return (
-    <ConfigContextProvider value={{ config, setConfig, setPreview }}>
+    <>
       {saving && <PageLoader />}
       <Grid
         container
@@ -148,7 +165,7 @@ const StoryMapForm = props => {
           )}
         </Grid>
       </Grid>
-    </ConfigContextProvider>
+    </>
   );
 };
 

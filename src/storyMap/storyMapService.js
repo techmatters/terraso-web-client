@@ -27,55 +27,6 @@ export const fetchStoryMap = ({ slug }) => {
     }));
 };
 
-export const addStoryMap = ({ config, published }) => {
-  const query = `
-    mutation addStoryMap($input: StoryMapAddMutationInput!) {
-      addStoryMap(input: $input) {
-        storyMap {
-          slug
-        }
-        errors
-      }
-    }
-  `;
-  return terrasoApi
-    .requestGraphQL(query, {
-      input: {
-        title: config.title,
-        isPublished: published,
-        configuration: JSON.stringify(config),
-      },
-    })
-    .then(response => ({
-      slug: _.get('addStoryMap.storyMap.slug', response),
-    }));
-};
-
-export const updateStoryMap = ({ id, config, published }) => {
-  const query = `
-    mutation updateStoryMap($input: StoryMapUpdateMutationInput!) {
-      updateStoryMap(input: $input) {
-        storyMap {
-          slug
-        }
-        errors
-      }
-    }
-  `;
-  return terrasoApi
-    .requestGraphQL(query, {
-      input: {
-        id,
-        title: config.title,
-        isPublished: published,
-        configuration: JSON.stringify(config),
-      },
-    })
-    .then(response => ({
-      slug: _.get('updateStoryMap.storyMap.slug', response),
-    }));
-};
-
 export const deleteStoryMap = storyMap => {
   const query = `
     mutation deleteStoryMap($id: ID!) {
@@ -90,4 +41,45 @@ export const deleteStoryMap = storyMap => {
   return terrasoApi.requestGraphQL(query, {
     id: storyMap.id,
   });
+};
+export const addStoryMap = async ({ storyMap, files }) => {
+  const path = '/story-map/add/';
+
+  const body = new FormData();
+  body.append('title', storyMap.config.title);
+  body.append('is_published', storyMap.published);
+  body.append('configuration', JSON.stringify(storyMap.config));
+  Object.keys(files).forEach((fileId, index) => {
+    const file = files[fileId].file;
+    body.append('files', file, fileId);
+  });
+
+  const jsonResponse = await terrasoApi.request({ path, body });
+
+  if (_.has('error', jsonResponse)) {
+    await Promise.reject(Object.values(jsonResponse.error).join('. '));
+  }
+
+  return jsonResponse;
+};
+export const updateStoryMap = async ({ storyMap, files }) => {
+  const path = '/story-map/update/';
+
+  const body = new FormData();
+  body.append('id', storyMap.id);
+  body.append('title', storyMap.config.title);
+  body.append('is_published', storyMap.published);
+  body.append('configuration', JSON.stringify(storyMap.config));
+  Object.keys(files).forEach((fileId, index) => {
+    const file = files[fileId].file;
+    body.append('files', file, fileId);
+  });
+
+  const jsonResponse = await terrasoApi.request({ path, body });
+
+  if (_.has('error', jsonResponse)) {
+    await Promise.reject(Object.values(jsonResponse.error).join('. '));
+  }
+
+  return jsonResponse;
 };

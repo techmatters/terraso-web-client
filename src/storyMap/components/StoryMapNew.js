@@ -1,12 +1,20 @@
 import React, { useCallback } from 'react';
 
+import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import { addStoryMap } from 'storyMap/storyMapSlice';
 
 import { MAPBOX_STYLE_DEFAULT } from 'config';
 
 import StoryMapForm from './StoryMapForm';
+import {
+  ConfigContextProvider,
+  useConfigContext,
+} from './StoryMapForm/configContext';
 
 const BASE_CONFIG = {
   style: MAPBOX_STYLE_DEFAULT,
@@ -56,36 +64,49 @@ const BASE_CONFIG = {
 
 const StoryMapNew = () => {
   const dispatch = useDispatch();
-  const onPublish = useCallback(
-    config => {
+  const navigate = useNavigate();
+  const { mediaFiles } = useConfigContext();
+
+  const save = useCallback(
+    (config, published) => {
       dispatch(
         addStoryMap({
-          config,
-          published: true,
+          storyMap: {
+            config,
+            published,
+          },
+          files: mediaFiles,
         })
-      );
+      ).then(data => {
+        const success = _.get('meta.requestStatus', data) === 'fulfilled';
+        if (success) {
+          const slug = _.get('payload.slug', data);
+          navigate(`/story-maps/${slug}/edit`);
+        }
+      });
     },
-    [dispatch]
+    [dispatch, navigate, mediaFiles]
   );
 
-  const onSaveDraft = useCallback(
-    config => {
-      dispatch(
-        addStoryMap({
-          config,
-          published: false,
-        })
-      );
-    },
-    [dispatch]
-  );
+  const onPublish = useCallback(config => save(config, true), [save]);
+  const onSaveDraft = useCallback(config => save(config, false), [save]);
+
+  return <StoryMapForm onPublish={onPublish} onSaveDraft={onSaveDraft} />;
+};
+
+const ContextWrapper = props => {
+  const { t } = useTranslation();
+  const { data: user } = useSelector(_.get('account.currentUser'));
   return (
-    <StoryMapForm
-      baseConfig={BASE_CONFIG}
-      onPublish={onPublish}
-      onSaveDraft={onSaveDraft}
-    />
+    <ConfigContextProvider
+      baseConfig={{
+        ...BASE_CONFIG,
+        byline: t('storyMap.form_byline', { user }),
+      }}
+    >
+      <StoryMapNew {...props} />
+    </ConfigContextProvider>
   );
 };
 
-export default StoryMapNew;
+export default ContextWrapper;
