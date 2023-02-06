@@ -57,14 +57,14 @@ const Audio = ({ record }) => {
     <>
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio style={{ width: '100%' }} controls>
-        <source src={record.media.content} type={record.media.type} />
+        <source src={record.media.url} type={record.media.type} />
       </audio>
     </>
   );
 };
 
 const Image = ({ record }) => {
-  return <img src={record.media.content} alt={record.title}></img>;
+  return <img src={record.media.url} alt={record.title}></img>;
 };
 
 const Chapter = ({ theme, record }) => {

@@ -44,7 +44,7 @@ export const fetchStoryMapForm = createAsyncThunk(
 export const addStoryMap = createAsyncThunk(
   'storyMap/addStoryMap',
   storyMapService.addStoryMap,
-  (storyMap, { config }) => ({
+  (storyMap, { storyMap: { config } }) => ({
     severity: 'success',
     content: 'storyMap.added_story_map',
     params: { title: config.title },
@@ -53,7 +53,7 @@ export const addStoryMap = createAsyncThunk(
 export const updateStoryMap = createAsyncThunk(
   'storyMap/updateStoryMap',
   storyMapService.updateStoryMap,
-  (storyMap, { config }) => ({
+  (storyMap, { storyMap: { config } }) => ({
     severity: 'success',
     content: 'storyMap.update_story_map',
     params: { title: config.title },
@@ -75,7 +75,12 @@ const storyMapSlice = createSlice({
   name: 'storyMap',
   initialState,
 
-  reducers: {},
+  reducers: {
+    resetForm: state => ({
+      ...state,
+      form: initialState.form,
+    }),
+  },
 
   extraReducers: builder => {
     builder.addCase(fetchStoryMap.pending, state => ({
@@ -158,5 +163,7 @@ const storyMapSlice = createSlice({
     }));
   },
 });
+
+export const { resetForm } = storyMapSlice.actions;
 
 export default storyMapSlice.reducer;

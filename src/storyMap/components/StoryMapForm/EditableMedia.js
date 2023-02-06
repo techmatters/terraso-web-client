@@ -27,12 +27,15 @@ import {
   STORY_MAP_MEDIA_MAX_SIZE,
 } from 'config';
 
+import { useConfigContext } from './configContext';
+
 const AddDialog = props => {
   const { t } = useTranslation();
   const { open, onClose, onAdd } = props;
   const [currentFile, setCurrentFile] = useState();
   const [dropError, setDropError] = useState();
   const [media, setMedia] = useState();
+  const { addMediaFile } = useConfigContext();
 
   const onDrop = useCallback(
     acceptedFiles => {
@@ -45,14 +48,17 @@ const AddDialog = props => {
       const selectedFile = acceptedFiles[0];
       openFile(selectedFile).then(content => {
         setCurrentFile(selectedFile);
+
+        const id = addMediaFile(content, selectedFile);
+
         setMedia({
           filename: selectedFile.name,
           type: selectedFile.type,
-          content,
+          contentId: id,
         });
       });
     },
-    [t]
+    [t, addMediaFile]
   );
 
   const errors = useMemo(() => (dropError ? [dropError] : []), [dropError]);
@@ -88,14 +94,26 @@ const AddDialog = props => {
 
 const EditableImage = props => {
   const { t } = useTranslation();
+  const { getMediaFile } = useConfigContext();
   const { image, onUpdate, onDelete, processing } = props;
+
+  const imageSrc = useMemo(() => {
+    if (image.url) {
+      return image.url;
+    }
+    if (image.contentId) {
+      return getMediaFile(image.contentId);
+    }
+    return null;
+  }, [image, getMediaFile]);
+
   return (
     <Stack
       sx={{
         position: 'relative',
       }}
     >
-      <img src={image.content} alt="TODO" style={{ width: '100%' }} />
+      <img src={imageSrc} alt="TODO" style={{ width: '100%' }} />
       <Stack
         justifyContent="center"
         alignItems="center"
@@ -147,15 +165,27 @@ const EditableImage = props => {
 const EditableAudio = props => {
   const { t } = useTranslation();
   const [id, setId] = useState(0);
+  const { getMediaFile } = useConfigContext();
   const { audio, onUpdate, onDelete, processing } = props;
+
   useEffect(() => {
     setId(uuidv4());
   }, [audio]);
+
+  const audioSrc = useMemo(() => {
+    if (audio.url) {
+      return audio.url;
+    }
+    if (audio.contentId) {
+      return getMediaFile(audio.contentId);
+    }
+    return null;
+  }, [audio, getMediaFile]);
   return (
     <Stack spacing={1}>
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio key={id} style={{ width: '100%' }} controls>
-        <source src={audio.url || audio.content} type={audio.type} />
+        <source src={audioSrc} type={audio.type} />
         {t('storyMap.form_media_audio_not_supported')}
       </audio>
       <Stack
