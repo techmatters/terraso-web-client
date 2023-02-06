@@ -112,6 +112,7 @@ footer {
   line-height: 25px;
   font-size: 13px;
   max-width: 35vw;
+  min-width: 200px;
 }
 .step-container.fully .step-content {
   width: 100%;
