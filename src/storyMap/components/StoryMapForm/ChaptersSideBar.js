@@ -22,8 +22,8 @@ const ChaptersSidebar = props => {
     () => [
       {
         label: `${t('storyMap.form_title_chapter_label')}`,
-        id: 'header',
-        active: currentStepId === 'header',
+        id: 'story-map-title',
+        active: currentStepId === 'story-map-title',
       },
       ...chapters.map((chapter, index) => ({
         label: chapter.title || t('storyMap.form_chapter_no_title_label'),
