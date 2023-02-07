@@ -19,7 +19,6 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
-import LaunchIcon from '@mui/icons-material/Launch';
 import { Button, Card, Stack, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
@@ -32,7 +31,7 @@ const StoryMapToolCard = () => {
   const { t } = useTranslation();
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const toolTitle = t(`tools.storyMap.title`);
+  const toolTitle = t(`storyMap.tool_card_title`);
 
   return (
     <Card component="li" aria-labelledby={`item-title-story-map`} sx={{ p: 2 }}>
@@ -47,17 +46,17 @@ const StoryMapToolCard = () => {
         spacing={2}
       >
         <Stack component="section">
-          <Typography variant="h3">{t('storyMap.tool_is_for')}</Typography>
-          <Typography>{t(`storyMap.tool_description`)}</Typography>
+          <Typography variant="h3">{t('tool.is_for')}</Typography>
+          <Typography>{t(`storyMap.tool_card_description`)}</Typography>
 
           <Typography variant="h3">{t('tool.requirements')}</Typography>
-          <Typography>{t(`storyMap.tool_requirements`)}</Typography>
+          <Typography>{t(`storyMap.tool_card_requirements`)}</Typography>
 
           <ExternalLink
             href={t(`storyMap.tool_help_url`)}
             linkProps={{ sx: { mt: 3, mb: 3 } }}
           >
-            {t('storyMap.tool_help')}
+            {t('storyMap.tool_card_help')}
           </ExternalLink>
 
           <Button
@@ -65,31 +64,9 @@ const StoryMapToolCard = () => {
             to="/tools/story-maps/create"
             variant="outlined"
           >
-            {t('storyMap.tool_create_button')}
+            {t('storyMap.tool_card_create_button')}
           </Button>
         </Stack>
-
-        <section>
-          <ExternalLink href={t(`tools.storyMap.url`)}>
-            <img
-              alt=""
-              height={t(`tools.storyMap.img.height`)}
-              width={t(`tools.storyMap.img.width`)}
-              src={t(`tools.storyMap.img.src`)}
-            />
-            <p>
-              {t('tool.go_to', { tool: toolTitle })}
-              <LaunchIcon
-                sx={{
-                  paddingLeft: '5px',
-                  height: '1.2rem',
-                  width: '1.2rem',
-                  verticalAlign: 'bottom',
-                }}
-              />
-            </p>
-          </ExternalLink>
-        </section>
       </Stack>
     </Card>
   );
