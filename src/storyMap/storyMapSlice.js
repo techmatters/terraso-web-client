@@ -31,8 +31,16 @@ const initialState = {
     data: null,
     deleting: false,
   },
+  samples: {
+    fetching: true,
+    list: null,
+  },
 };
 
+export const fetchSamples = createAsyncThunk(
+  'storyMap/fetchSamples',
+  storyMapService.fetchSamples
+);
 export const fetchStoryMap = createAsyncThunk(
   'storyMap/fetchStoryMap',
   storyMapService.fetchStoryMap
@@ -83,18 +91,35 @@ const storyMapSlice = createSlice({
   },
 
   extraReducers: builder => {
+    builder.addCase(fetchSamples.pending, state => ({
+      ...state,
+      samples: initialState.samples,
+    }));
+    builder.addCase(fetchSamples.rejected, state => ({
+      ...state,
+      samples: {
+        fetching: false,
+        list: null,
+      },
+    }));
+    builder.addCase(fetchSamples.fulfilled, (state, action) => ({
+      ...state,
+      samples: {
+        fetching: false,
+        list: action.payload.storyMaps,
+      },
+    }));
+
     builder.addCase(fetchStoryMap.pending, state => ({
       ...state,
       view: initialState.view,
     }));
-
     builder.addCase(fetchStoryMap.rejected, state => ({
       ...state,
       view: {
         fetching: false,
       },
     }));
-
     builder.addCase(fetchStoryMap.fulfilled, (state, action) => ({
       ...state,
       view: {

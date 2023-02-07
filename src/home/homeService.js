@@ -68,7 +68,7 @@ export const fetchHomeData = email => {
           }
         }
       }
-      storyMaps {
+      storyMaps(createdBy_Email: $accountEmail) {
         edges {
           node {
             ...storyMapFields

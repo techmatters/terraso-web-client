@@ -7,6 +7,7 @@ export const storyMapFields = `
     configuration
     createdAt
     updatedAt
+    publishedAt
     createdBy {
       id
       lastName
