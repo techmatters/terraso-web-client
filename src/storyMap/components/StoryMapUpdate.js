@@ -33,7 +33,7 @@ const StoryMapUpdate = props => {
           storyMap: {
             id: storyMap?.id,
             config,
-            published: false,
+            published: true,
           },
           files: mediaFiles,
         })
