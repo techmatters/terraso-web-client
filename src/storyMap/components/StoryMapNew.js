@@ -81,7 +81,7 @@ const StoryMapNew = () => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
           const slug = _.get('payload.slug', data);
-          navigate(`/story-maps/${slug}/edit`);
+          navigate(`/tools/story-maps/${slug}/edit`);
         }
       });
     },

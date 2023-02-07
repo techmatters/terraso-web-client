@@ -69,8 +69,8 @@ const StoryMapsHomeCard = props => {
                   <RouterLink
                     to={
                       storyMap.isPublished
-                        ? `/story-maps/${storyMap.slug}`
-                        : `/story-maps/${storyMap.slug}/edit`
+                        ? `/tools/story-maps/${storyMap.slug}`
+                        : `/tools/story-maps/${storyMap.slug}/edit`
                     }
                   >
                     {storyMap.title}
@@ -92,7 +92,7 @@ const StoryMapsHomeCard = props => {
       <Divider aria-hidden="true" />
       <CardActionRouterLink
         label={t('storyMap.home_create')}
-        to="/story-maps/create"
+        to="/tools/story-maps/create"
       />
     </HomeCard>
   );

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
@@ -17,7 +17,12 @@ const UserStoryMap = () => {
   const { slug } = useParams();
   const { data: storyMap, fetching } = useSelector(_.get('storyMap.view'));
 
-  useContainerContext(useMemo(() => ({ maxWidth: false }), []));
+  const { setContainerProps } = useContainerContext();
+
+  useEffect(() => {
+    setContainerProps({ maxWidth: false });
+    return () => setContainerProps({});
+  }, [setContainerProps]);
 
   useFetchData(useCallback(() => fetchStoryMap({ slug }), [slug]));
 
