@@ -824,6 +824,12 @@
         "tool_home_help_document_url": "TODO",
         "tool_home_examples_title": "Sample story maps: View what others have been working on",
         "tool_home_examples_published_at": "Published on {{date}}",
-        "tool_home_examples_by": "By $t(user.full_name)"
+        "tool_home_examples_by": "By $t(user.full_name)",
+        "tool_card_title": "Terraso Story Maps",
+        "tool_card_description": "Creating impactful story maps easily.",
+        "tool_card_requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
+        "tool_help_url": "TODO",
+        "tool_card_help": "Learn step-by-step about Story Maps",
+        "tool_card_create_button": "Create Story Map"
     }
 }
