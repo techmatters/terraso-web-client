@@ -112,7 +112,7 @@ const Title = props => {
   }));
 
   return (
-    <Box id="header" className="step step-container fully title">
+    <Box id="story-map-title" className="step step-container fully title">
       <Box className={`${config.theme} step-content`}>
         <h1>{config.title}</h1>
         {config.subtitle && <h2>{config.subtitle}</h2>}
@@ -153,12 +153,21 @@ const StoryMap = props => {
     TitleComponent = Title,
     mapCss = { height: '100vh', width: '100vw', top: 0 },
     animation,
+    onReady,
   } = props;
   const mapContainer = React.useRef(null);
   const mapInsetContainer = React.useRef(null);
   const [map, setMap] = React.useState(null);
   const [insetMap, setInsetMap] = React.useState(null);
   const [marker, setMarker] = React.useState(null);
+  const [isReady, setIsReady] = React.useState(false);
+
+  useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+    onReady?.();
+  }, [isReady, onReady]);
 
   const getLayerPaintType = useCallback(
     layer => {
@@ -398,6 +407,8 @@ const StoryMap = props => {
           chapter.onChapterExit.forEach(setLayerOpacity);
         }
       });
+
+    setIsReady(true);
 
     window.addEventListener('resize', scroller.resize);
     return () => {

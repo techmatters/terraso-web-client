@@ -36,19 +36,19 @@ footer {
   }
 }
 
-#header .step-content.dark {
+#story-map-title .step-content.dark {
   background-color: #0d1a2a;
 }
-#header .step-content.light {
+#story-map-title .step-content.light {
   background-color: #ffffff;
 }
-#header .step-content a {
+#story-map-title .step-content a {
   color: #1671bc;
 }
 
-#header h1,
-#header h2,
-#header p {
+#story-map-title h1,
+#story-map-title h2,
+#story-map-title p {
   margin: 0;
   padding: 2vh 2vw;
   text-align: center;
