@@ -44,6 +44,10 @@ const UserStoryMap = () => {
     return <PageLoader />;
   }
 
+  if (!storyMap) {
+    return null;
+  }
+
   return <StoryMap config={storyMap.config} />;
 };
 

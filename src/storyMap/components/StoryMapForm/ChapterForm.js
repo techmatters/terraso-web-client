@@ -25,7 +25,11 @@ import { useConfigContext } from './configContext';
 
 const ConfigButton = withProps(IconButton, {
   size: 'small',
-  sx: { bgcolor: 'gray.lite1', '&:hover': { bgcolor: 'gray.mid' } },
+  sx: {
+    bgcolor: 'gray.lite1',
+    borderRadius: 0,
+    '&:hover': { bgcolor: 'gray.mid', borderRadius: 0 },
+  },
 });
 const ChapterConfig = props => {
   const { t } = useTranslation();
