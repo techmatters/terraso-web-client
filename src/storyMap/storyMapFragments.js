@@ -7,5 +7,10 @@ export const storyMapFields = `
     configuration
     createdAt
     updatedAt
+    createdBy {
+      id
+      lastName
+      firstName
+    }
   }
 `;

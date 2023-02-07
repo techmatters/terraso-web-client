@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 
 import _ from 'lodash/fp';
+import { usePermission } from 'permissions';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -64,6 +65,10 @@ const ContextWrapper = props => {
   const { slug } = useParams();
   const dispatch = useDispatch();
   const { fetching, data: storyMap } = useSelector(_.get('storyMap.form'));
+  const { loading: loadingPermissions, allowed } = usePermission(
+    'storyMap.change',
+    storyMap
+  );
 
   useEffect(() => {
     dispatch(resetForm());
@@ -71,8 +76,12 @@ const ContextWrapper = props => {
 
   useFetchData(useCallback(() => fetchStoryMapForm({ slug }), [slug]));
 
-  if (fetching || !storyMap) {
+  if (fetching || loadingPermissions) {
     return <PageLoader />;
+  }
+
+  if (!storyMap || !allowed) {
+    return null;
   }
 
   return (
