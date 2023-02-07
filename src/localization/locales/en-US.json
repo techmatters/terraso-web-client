@@ -147,6 +147,7 @@
         "list_document_title": "Tools"
     },
     "tools": {
+        "breadcrumbs_list": "Tools",
         "kobo": {
             "title": "KoBoToolbox",
             "url": "https://www.kobotoolbox.org/",
@@ -797,7 +798,8 @@
         "location_dialog_cancel_button": "Cancel",
         "location_dialog_confirm_button": "Save Map View",
         "view_title_outline": "Outline",
-        "breadcrumbs_view": "Story Maps / {{title}}",
+        "breadcrumbs_view": "{{title}}",
+        "breadcrumbs_tool_home": "Terraso Story Map",
         "home_title": "Story Maps",
         "home_create": "Create new story map",
         "home_last_edited": "Last edited on {{date}}",
@@ -813,6 +815,15 @@
         "form_media_audio_delete_confirm_button": "Delete audio",
         "form_media_add_dialog_title": "Add media",
         "form_media_add_dialog_add": "Add",
-        "form_media_add_dialog_close": "Cancel"
+        "form_media_add_dialog_close": "Cancel",
+        "tool_home_title": "Terraso Story Map",
+        "tool_home_description": "Use maps, photos, videos, audio recordings and narrative to curate an impactful story.",
+        "tool_home_create_button": "Create Story Map",
+        "tool_home_help": "<0>Want to learn how to create a story map?</0><1>Watch <1>YouTube tutorials</1> or read this <3>help document</3></1>",
+        "tool_home_help_video_url": "TODO",
+        "tool_home_help_document_url": "TODO",
+        "tool_home_examples_title": "Sample story maps: View what others have been working on",
+        "tool_home_examples_published_at": "Published on {{date}}",
+        "tool_home_examples_by": "By $t(user.full_name)"
     }
 }

@@ -18,20 +18,28 @@ import React from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { Typography } from '@mui/material';
+import { List, Stack, Typography } from '@mui/material';
 
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 
-import Tool from 'tool/components/Tool';
+import StoryMapToolCard from 'storyMap/components/StoryMapsToolCard';
+import Tool from 'tool/components/ToolDefaultCard';
 
-import theme from 'theme';
-
-const ToolList = ({ tools }) => {
+const ToolList = () => {
   const { t } = useTranslation();
 
-  const toolList = ['kobo'];
+  const toolList = [
+    {
+      id: 'storyMap',
+      Card: StoryMapToolCard,
+    },
+    {
+      id: 'kobo',
+      Card: Tool,
+    },
+  ];
 
   useDocumentTitle(t('tool.list_document_title'));
 
@@ -45,13 +53,15 @@ const ToolList = ({ tools }) => {
         variant="body2"
         display="block"
         sx={{
-          marginBottom: theme.spacing(3),
-          marginTop: theme.spacing(2),
+          mb: 3,
+          mt: 2,
         }}
       ></Typography>
-      {toolList.map((tool, index) => (
-        <Tool key={index} tool={tool} />
-      ))}
+      <Stack spacing={2} component={List} aria-labelledby="main-heading">
+        {toolList.map(tool => (
+          <tool.Card key={tool.id} tool={tool.id} />
+        ))}
+      </Stack>
     </PageContainer>
   );
 };

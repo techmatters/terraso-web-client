@@ -4,6 +4,26 @@ import * as terrasoApi from 'terrasoBackend/api';
 
 import { storyMapFields } from './storyMapFragments';
 
+export const fetchSamples = (params, currentUser) => {
+  const query = `
+    query home($accountEmail: String!) {
+      storyMaps(createdBy_Email_Not: $accountEmail) {
+        edges {
+          node {
+            ...storyMapFields
+          }
+        }
+      }
+    }
+    ${storyMapFields}
+  `;
+  return terrasoApi
+    .requestGraphQL(query, { accountEmail: currentUser.email })
+    .then(response => ({
+      storyMaps: _.getOr([], 'storyMaps.edges', response).map(_.get('node')),
+    }));
+};
+
 export const fetchStoryMap = ({ slug }) => {
   const query = `
     query fetchStoryMap($slug: String!){
