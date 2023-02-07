@@ -92,6 +92,12 @@ const StoryMapForm = props => {
     setMapWidth(`calc(100vw - ${chaptersWidth}px)`);
   }, [mapHeight]);
 
+  // Scroll to title after widht and height ready
+  const onMapReady = useCallback(() => {
+    const title = document.getElementById('story-map-title');
+    title.scrollIntoView();
+  }, []);
+
   const onAddChapter = useCallback(() => {
     setConfig(config => ({
       ...config,
@@ -161,6 +167,7 @@ const StoryMapForm = props => {
               onStepChange={setCurrentStepId}
               ChapterComponent={ChapterForm}
               TitleComponent={TitleForm}
+              onReady={onMapReady}
             />
           )}
         </Grid>

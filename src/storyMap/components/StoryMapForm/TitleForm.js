@@ -69,7 +69,10 @@ const TitleForm = props => {
   );
 
   return (
-    <Box id="header" className="step step-container active fully title">
+    <Box
+      id="story-map-title"
+      className="step step-container active fully title"
+    >
       <Stack className={`${config.theme} step-content`} spacing={1}>
         <EditableText
           placeholder={t('storyMap.form_title_placeholder')}
