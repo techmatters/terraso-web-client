@@ -13,7 +13,10 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormHelperText,
+  OutlinedInput,
   Paper,
+  Radio,
   Stack,
   Typography,
 } from '@mui/material';
@@ -29,12 +32,34 @@ import {
 
 import { useConfigContext } from './configContext';
 
+import theme from 'theme';
+
+const VIMEO_REGEX = /^https:\/\/player\.vimeo\.com\/video\/\d+\?\w+=\w+$/;
+const YOUTUBE_REGEX = /^https:\/\/www\.youtube\.com\/embed\/\w+$/;
+
+// Function to extract src from an embedded iframe
+const getDataFromEmbeded = iframe => {
+  const parser = new DOMParser();
+  const htmlDoc = parser.parseFromString(iframe, 'text/html');
+  const element = htmlDoc.getElementsByTagName('iframe')[0];
+  const url = element.src;
+  const title = element.title;
+  return { url, title };
+};
+
 const AddDialog = props => {
   const { t } = useTranslation();
   const { open, onClose, onAdd } = props;
+
   const [currentFile, setCurrentFile] = useState();
   const [dropError, setDropError] = useState();
-  const [media, setMedia] = useState();
+  const [droppedMedia, setDroppedMedia] = useState();
+
+  const [embededInputValue, setEmbededInputValue] = useState('');
+  const [embededMedia, setEmbededMedia] = useState();
+  const [embededError, setEmbededError] = useState();
+
+  const [selected, setSelected] = useState();
   const { addMediaFile } = useConfigContext();
 
   const onDrop = useCallback(
@@ -44,6 +69,7 @@ const AddDialog = props => {
         return;
       }
       setDropError(null);
+      setSelected(0);
 
       const selectedFile = acceptedFiles[0];
       openFile(selectedFile).then(content => {
@@ -51,7 +77,7 @@ const AddDialog = props => {
 
         const id = addMediaFile(content, selectedFile);
 
-        setMedia({
+        setDroppedMedia({
           filename: selectedFile.name,
           type: selectedFile.type,
           contentId: id,
@@ -61,30 +87,135 @@ const AddDialog = props => {
     [t, addMediaFile]
   );
 
-  const errors = useMemo(() => (dropError ? [dropError] : []), [dropError]);
+  const dropErrors = useMemo(() => (dropError ? [dropError] : []), [dropError]);
+
+  const onEmbededInputChange = useCallback(
+    event => {
+      const value = event.target.value;
+      setEmbededInputValue(value);
+      setSelected(1);
+
+      const embed = getDataFromEmbeded(value);
+      const isVimeo = VIMEO_REGEX.test(embed.url);
+      const isYoutube = YOUTUBE_REGEX.test(embed.url);
+
+      // Validate value corresponds to a vimeo or youtube url
+      if (!isVimeo && !isYoutube) {
+        setEmbededError(t('storyMap.form_media_add_dialog_embeded_error'));
+        setEmbededMedia(null);
+        return;
+      }
+
+      setEmbededError(null);
+      setEmbededMedia({
+        type: 'embedded',
+        source: isVimeo ? 'vimeo' : 'youtube',
+        ...embed,
+      });
+    },
+    [t]
+  );
+
+  const onRadioChange = useCallback(event => {
+    setSelected(_.toNumber(event.target.value));
+  }, []);
 
   const onAddWrapper = useCallback(() => {
+    const media = selected === 0 ? droppedMedia : embededMedia;
     onAdd(media);
-  }, [media, onAdd]);
+  }, [selected, droppedMedia, embededMedia, onAdd]);
+
+  const selectedSx = useMemo(
+    () => ({
+      bgcolor: 'blue.lite',
+      border: `2px solid ${theme.palette.blue.dark}`,
+    }),
+    []
+  );
+  const notSelectedSx = useMemo(
+    () => ({
+      bgcolor: 'white',
+      border: `1px solid ${theme.palette.gray.lite1}`,
+    }),
+    []
+  );
+
+  const addDisabled = useMemo(() => {
+    if (selected === 0) {
+      return _.isEmpty(droppedMedia);
+    }
+    if (selected === 1) {
+      return _.isEmpty(embededMedia);
+    }
+    return true;
+  }, [selected, droppedMedia, embededMedia]);
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog fullWidth open={open} onClose={onClose}>
       <DialogTitle>{t('storyMap.form_media_add_dialog_title')}</DialogTitle>
       <DialogContent>
+        <Radio
+          name="radio-selected"
+          checked={selected === 0}
+          value={0}
+          onChange={onRadioChange}
+          sx={{ float: 'left' }}
+        />
         <DropZone
           maxSize={STORY_MAP_MEDIA_MAX_SIZE}
           fileTypes={STORY_MAP_MEDIA_ACCEPTED_TYPES}
           fileExtensions={STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS}
           onDrop={onDrop}
-          errors={errors}
+          errors={dropErrors}
           currentFile={currentFile}
+          containerProps={{
+            sx: {
+              ...(selected === 0 ? selectedSx : notSelectedSx),
+            },
+          }}
         />
+        <Radio
+          name="radio-selected"
+          checked={selected === 1}
+          value={1}
+          onChange={onRadioChange}
+          sx={{ float: 'left' }}
+        />
+        <Paper
+          variant="outlined"
+          sx={{
+            p: 2,
+            mt: 1,
+            borderRadius: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            ...(selected === 1 ? selectedSx : notSelectedSx),
+          }}
+        >
+          <Typography sx={{ mb: 1 }}>
+            {t('storyMap.form_media_add_dialog_link_media')}
+          </Typography>
+          <OutlinedInput
+            size="small"
+            fullWidth
+            onChange={onEmbededInputChange}
+            value={embededInputValue}
+            error={!!embededError}
+          />
+          {embededError && (
+            <FormHelperText error>{embededError}</FormHelperText>
+          )}
+        </Paper>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>
           {t('storyMap.form_media_add_dialog_close')}
         </Button>
-        <Button variant="contained" onClick={onAddWrapper}>
+        <Button
+          variant="contained"
+          onClick={onAddWrapper}
+          disabled={addDisabled}
+        >
           {t('storyMap.form_media_add_dialog_add')}
         </Button>
       </DialogActions>
@@ -234,6 +365,64 @@ const EditableAudio = props => {
   );
 };
 
+const EditableEmbeded = props => {
+  const { t } = useTranslation();
+  const { onUpdate, onDelete, embedded, processing } = props;
+
+  return (
+    <Stack spacing={1}>
+      <iframe
+        title={embedded.title}
+        src={embedded.url}
+        frameborder="0"
+        style={{ height: '300px', width: '100%' }}
+      />
+      <Stack
+        justifyContent="center"
+        alignItems="center"
+        direction="row"
+        sx={{
+          color: 'white',
+          background: 'rgba(0,0,0,0.5)',
+          width: '100%',
+          pt: 2,
+          pb: 2,
+        }}
+        spacing={1}
+      >
+        <Button
+          variant="outlined"
+          onClick={onUpdate}
+          sx={({ palette }) => ({
+            backgroundColor: 'white',
+            '&:hover': {
+              backgroundColor: palette.blue.background,
+            },
+          })}
+        >
+          {t('storyMap.form_media_update_label')}
+        </Button>
+        <ConfirmButton
+          onConfirm={onDelete}
+          loading={processing}
+          variant="text"
+          buttonProps={{
+            title: t('storyMap.form_media_delete_label'),
+            sx: {
+              minWidth: 'auto',
+            },
+          }}
+          confirmTitle={t('storyMap.form_media_audio_delete_confirm_title')}
+          confirmMessage={t('storyMap.form_media_audio_delete_confirm_message')}
+          confirmButton={t('storyMap.form_media_audio_delete_confirm_button')}
+        >
+          <DeleteIcon sx={{ color: 'white' }} />
+        </ConfirmButton>
+      </Stack>
+    </Stack>
+  );
+};
+
 const EditableMedia = props => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -257,33 +446,38 @@ const EditableMedia = props => {
   return (
     <>
       <AddDialog open={open} onClose={onClose} onAdd={onAdd} />
-      {value ? (
-        value.type.startsWith('image') ? (
+      {!value ||
+        (value.type.startsWith('image') ? (
           <EditableImage image={value} onUpdate={onOpen} onDelete={onDelete} />
-        ) : (
+        ) : value.type.startsWith('audio') ? (
           <EditableAudio audio={value} onUpdate={onOpen} onDelete={onDelete} />
-        )
-      ) : (
-        <Stack
-          alignItems="center"
-          justifyContent="center"
-          spacing={2}
-          component={Paper}
-          sx={{ bgcolor: 'blue.mid', minHeight: 150, p: 2 }}
-        >
-          <Trans i18nKey="storyMap.form_media_placeholder">
-            <Typography variant="h3" sx={{ pt: 0 }}>
-              Title
-            </Typography>
-            <Typography variant="caption" sx={{ textAlign: 'center' }}>
-              Description
-            </Typography>
-          </Trans>
-          <Button variant="outlined" onClick={onOpen}>
-            {t('storyMap.form_media_upload')}
-          </Button>
-        </Stack>
-      )}
+        ) : value.type.startsWith('embedded') ? (
+          <EditableEmbeded
+            embedded={value}
+            onUpdate={onOpen}
+            onDelete={onDelete}
+          />
+        ) : null) || (
+          <Stack
+            alignItems="center"
+            justifyContent="center"
+            spacing={2}
+            component={Paper}
+            sx={{ bgcolor: 'blue.mid', minHeight: 150, p: 2 }}
+          >
+            <Trans i18nKey="storyMap.form_media_placeholder">
+              <Typography variant="h3" sx={{ pt: 0 }}>
+                Title
+              </Typography>
+              <Typography variant="caption" sx={{ textAlign: 'center' }}>
+                Description
+              </Typography>
+            </Trans>
+            <Button variant="outlined" onClick={onOpen}>
+              {t('storyMap.form_media_upload')}
+            </Button>
+          </Stack>
+        )}
     </>
   );
 };

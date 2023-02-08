@@ -15,6 +15,8 @@ import {
   Stack,
 } from '@mui/material';
 
+import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
+
 import { withProps } from 'react-hoc';
 
 import { ALIGNMENTS } from '../../storyMapConstants';
@@ -70,6 +72,8 @@ const ChapterConfig = props => {
     [onLocationChange, onLocationClose]
   );
 
+  const hasVisualMedia = chapterHasVisualMedia(chapter);
+
   return (
     <>
       <MapLocationDialog
@@ -78,7 +82,7 @@ const ChapterConfig = props => {
         onClose={onLocationClose}
         onConfirm={onLocationChangeWrapper}
       />
-      <Grid container sx={{ width: '35vw' }}>
+      <Grid container sx={{ width: hasVisualMedia ? '50vw' : '35vw' }}>
         <Grid item xs={11}>
           <Button
             variant="contained"
