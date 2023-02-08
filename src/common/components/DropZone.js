@@ -55,6 +55,7 @@ const DropZone = props => {
     errors,
     className,
     loading,
+    containerProps,
   } = props;
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -76,15 +77,17 @@ const DropZone = props => {
       justifyContent="center"
       spacing={1}
       variant="outlined"
-      sx={({ palette }) => ({
-        backgroundColor: isDragActive ? palette.blue.mid : palette.blue.lite,
-        border: `2px dashed ${palette.blue.dark}`,
+      {...containerProps}
+      sx={theme => ({
+        bgcolor: isDragActive ? 'blue.mid' : 'blue.lite',
+        border: `2px dashed ${theme.palette.blue.dark}`,
         pt: errors ? 0 : 2,
         pb: 3,
         pl: 1,
         pr: 1,
         minHeight: '125px',
         cursor: 'pointer',
+        ...(containerProps?.sx ? containerProps.sx : {}),
       })}
       {...getRootProps({
         role: 'button',

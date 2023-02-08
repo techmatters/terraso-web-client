@@ -14,6 +14,8 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Link } from '@mui/material';
 
+import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
+
 import { MAPBOX_ACCESS_TOKEN } from 'config';
 
 import { ALIGNMENTS, LAYER_TYPES } from '../storyMapConstants';
@@ -74,15 +76,30 @@ const Chapter = ({ theme, record }) => {
     ALIGNMENTS[record.alignment] || 'centered',
     ...(record.hidden ? ['hidden'] : []),
   ].join(' ');
+
+  const hasVisualMedia = chapterHasVisualMedia(record);
+
   return (
     <Box id={record.id} className={classList}>
-      <Box className={`${theme} step-content`}>
+      <Box
+        className={`${theme} step-content`}
+        sx={{
+          width: hasVisualMedia ? '50vw' : 'auto',
+        }}
+      >
         {record.title && <h3 className="title">{record.title}</h3>}
         {record.media &&
           (record.media.type.startsWith('image') ? (
             <Image record={record} />
           ) : record.media.type.startsWith('audio') ? (
             <Audio record={record} />
+          ) : record.media.type.startsWith('embedded') ? (
+            <iframe
+              title={record.media.title}
+              src={record.media.url}
+              frameborder="0"
+              style={{ height: '300px', width: '100%' }}
+            />
           ) : null)}
         {record.description && <p>{record.description}</p>}
       </Box>
