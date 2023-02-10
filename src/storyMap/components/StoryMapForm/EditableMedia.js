@@ -37,14 +37,28 @@ import theme from 'theme';
 const VIMEO_REGEX = /^https:\/\/player\.vimeo\.com\/video\/\d+\?\w+=\w+$/;
 const YOUTUBE_REGEX = /^https:\/\/www\.youtube\.com\/embed\/\w+$/;
 
-// Function to extract src from an embedded iframe
-const getDataFromEmbeded = iframe => {
+const getDataFromEmbedded = value => {
   const parser = new DOMParser();
-  const htmlDoc = parser.parseFromString(iframe, 'text/html');
+  const htmlDoc = parser.parseFromString(value, 'text/html');
   const element = htmlDoc.getElementsByTagName('iframe')[0];
-  const url = element.src;
-  const title = element.title;
-  return { url, title };
+  const isIframe = element && element.src;
+
+  const url = isIframe ? element.src : value;
+  const title = isIframe ? element.title : '';
+
+  const isVimeo = VIMEO_REGEX.test(url);
+  const isYoutube = YOUTUBE_REGEX.test(url);
+
+  if (!isVimeo && !isYoutube) {
+    return null;
+  }
+
+  return {
+    type: 'embedded',
+    source: isVimeo ? 'vimeo' : 'youtube',
+    url,
+    title,
+  };
 };
 
 const AddDialog = props => {
@@ -55,11 +69,11 @@ const AddDialog = props => {
   const [dropError, setDropError] = useState();
   const [droppedMedia, setDroppedMedia] = useState();
 
-  const [embededInputValue, setEmbededInputValue] = useState('');
-  const [embededMedia, setEmbededMedia] = useState();
-  const [embededError, setEmbededError] = useState();
+  const [embeddedInputValue, setEmbeddedInputValue] = useState('');
+  const [embeddedMedia, setEmbeddedMedia] = useState();
+  const [embeddedError, setEmbeddedError] = useState();
 
-  const [selected, setSelected] = useState();
+  const [selected, setSelected] = useState(0);
   const { addMediaFile } = useConfigContext();
 
   const onDrop = useCallback(
@@ -89,29 +103,22 @@ const AddDialog = props => {
 
   const dropErrors = useMemo(() => (dropError ? [dropError] : []), [dropError]);
 
-  const onEmbededInputChange = useCallback(
+  const onEmbeddedInputChange = useCallback(
     event => {
       const value = event.target.value;
-      setEmbededInputValue(value);
+      setEmbeddedInputValue(value);
       setSelected(1);
 
-      const embed = getDataFromEmbeded(value);
-      const isVimeo = VIMEO_REGEX.test(embed.url);
-      const isYoutube = YOUTUBE_REGEX.test(embed.url);
+      const embed = getDataFromEmbedded(value);
 
-      // Validate value corresponds to a vimeo or youtube url
-      if (!isVimeo && !isYoutube) {
-        setEmbededError(t('storyMap.form_media_add_dialog_embeded_error'));
-        setEmbededMedia(null);
+      if (!embed) {
+        setEmbeddedError(t('storyMap.form_media_add_dialog_embedded_error'));
+        setEmbeddedMedia(null);
         return;
       }
 
-      setEmbededError(null);
-      setEmbededMedia({
-        type: 'embedded',
-        source: isVimeo ? 'vimeo' : 'youtube',
-        ...embed,
-      });
+      setEmbeddedError(null);
+      setEmbeddedMedia(embed);
     },
     [t]
   );
@@ -121,9 +128,9 @@ const AddDialog = props => {
   }, []);
 
   const onAddWrapper = useCallback(() => {
-    const media = selected === 0 ? droppedMedia : embededMedia;
+    const media = selected === 0 ? droppedMedia : embeddedMedia;
     onAdd(media);
-  }, [selected, droppedMedia, embededMedia, onAdd]);
+  }, [selected, droppedMedia, embeddedMedia, onAdd]);
 
   const selectedSx = useMemo(
     () => ({
@@ -145,10 +152,10 @@ const AddDialog = props => {
       return _.isEmpty(droppedMedia);
     }
     if (selected === 1) {
-      return _.isEmpty(embededMedia);
+      return _.isEmpty(embeddedMedia);
     }
     return true;
-  }, [selected, droppedMedia, embededMedia]);
+  }, [selected, droppedMedia, embeddedMedia]);
 
   return (
     <Dialog fullWidth open={open} onClose={onClose}>
@@ -198,12 +205,12 @@ const AddDialog = props => {
           <OutlinedInput
             size="small"
             fullWidth
-            onChange={onEmbededInputChange}
-            value={embededInputValue}
-            error={!!embededError}
+            onChange={onEmbeddedInputChange}
+            value={embeddedInputValue}
+            error={!!embeddedError}
           />
-          {embededError && (
-            <FormHelperText error>{embededError}</FormHelperText>
+          {embeddedError && (
+            <FormHelperText error>{embeddedError}</FormHelperText>
           )}
         </Paper>
       </DialogContent>
@@ -365,7 +372,7 @@ const EditableAudio = props => {
   );
 };
 
-const EditableEmbeded = props => {
+const EditableEmbedded = props => {
   const { t } = useTranslation();
   const { onUpdate, onDelete, embedded, processing } = props;
 
@@ -452,7 +459,7 @@ const EditableMedia = props => {
         ) : value.type.startsWith('audio') ? (
           <EditableAudio audio={value} onUpdate={onOpen} onDelete={onDelete} />
         ) : value.type.startsWith('embedded') ? (
-          <EditableEmbeded
+          <EditableEmbedded
             embedded={value}
             onUpdate={onOpen}
             onDelete={onDelete}
