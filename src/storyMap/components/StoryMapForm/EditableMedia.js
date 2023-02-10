@@ -446,7 +446,7 @@ const EditableMedia = props => {
   return (
     <>
       <AddDialog open={open} onClose={onClose} onAdd={onAdd} />
-      {!value ||
+      {value &&
         (value.type.startsWith('image') ? (
           <EditableImage image={value} onUpdate={onOpen} onDelete={onDelete} />
         ) : value.type.startsWith('audio') ? (
@@ -457,27 +457,28 @@ const EditableMedia = props => {
             onUpdate={onOpen}
             onDelete={onDelete}
           />
-        ) : null) || (
-          <Stack
-            alignItems="center"
-            justifyContent="center"
-            spacing={2}
-            component={Paper}
-            sx={{ bgcolor: 'blue.mid', minHeight: 150, p: 2 }}
-          >
-            <Trans i18nKey="storyMap.form_media_placeholder">
-              <Typography variant="h3" sx={{ pt: 0 }}>
-                Title
-              </Typography>
-              <Typography variant="caption" sx={{ textAlign: 'center' }}>
-                Description
-              </Typography>
-            </Trans>
-            <Button variant="outlined" onClick={onOpen}>
-              {t('storyMap.form_media_upload')}
-            </Button>
-          </Stack>
-        )}
+        ) : null)}
+      {!value && (
+        <Stack
+          alignItems="center"
+          justifyContent="center"
+          spacing={2}
+          component={Paper}
+          sx={{ bgcolor: 'blue.mid', minHeight: 150, p: 2 }}
+        >
+          <Trans i18nKey="storyMap.form_media_placeholder">
+            <Typography variant="h3" sx={{ pt: 0 }}>
+              Title
+            </Typography>
+            <Typography variant="caption" sx={{ textAlign: 'center' }}>
+              Description
+            </Typography>
+          </Trans>
+          <Button variant="outlined" onClick={onOpen}>
+            {t('storyMap.form_media_upload')}
+          </Button>
+        </Stack>
+      )}
     </>
   );
 };
