@@ -4,7 +4,7 @@ import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import PageLoader from 'layout/PageLoader';
 import { useFetchData } from 'state/utils';
@@ -22,6 +22,7 @@ import {
 } from './StoryMapForm/configContext';
 
 const StoryMapUpdate = props => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { storyMap } = props;
   const { mediaFiles } = useConfigContext();
@@ -37,9 +38,15 @@ const StoryMapUpdate = props => {
           },
           files: mediaFiles,
         })
-      );
+      ).then(data => {
+        const success = _.get('meta.requestStatus', data) === 'fulfilled';
+        if (success) {
+          const slug = _.get('payload.slug', data);
+          navigate(`/tools/story-maps/${slug}`);
+        }
+      });
     },
-    [dispatch, storyMap?.id, mediaFiles]
+    [dispatch, navigate, storyMap?.id, mediaFiles]
   );
 
   const onSaveDraft = useCallback(
