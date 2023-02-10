@@ -18,9 +18,18 @@ import React from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { Alert, Box, Divider, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  CardHeader,
+  Divider,
+  Paper,
+  Typography,
+} from '@mui/material';
+import { Stack } from '@mui/system';
 
 import CardActionRouterLink from 'common/components/CardActionRouterLink';
+import RouterLink from 'common/components/RouterLink';
 
 import HomeCard from 'home/components/HomeCard';
 
@@ -31,7 +40,7 @@ const StoryMapsHomeCardDefault = () => {
 
   return (
     <HomeCard
-      aria-labelledby="landscapes-default-title"
+      aria-labelledby="story-maps-default-title"
       sx={{ flexDirection: 'column' }}
     >
       <Box
@@ -41,9 +50,27 @@ const StoryMapsHomeCardDefault = () => {
           padding: theme.spacing(2),
         }}
       >
-        <Typography id="landscapes-default-title" variant="h2">
-          {t('landscape.home_default_title')}
+        <Typography id="story-maps-default-title" variant="h2">
+          {t('storyMap.home_title')}
         </Typography>
+        <Stack direction="row" alignItems="center">
+          <Paper
+            variant="outlined"
+            component="img"
+            src="/tools/story-maps.png"
+            alt={t('tool.home_card_img_alt')}
+            height={64}
+          />
+          <CardHeader
+            title={
+              <RouterLink to="/tools/story-maps">
+                {t('storyMap.home_tools_link')}
+              </RouterLink>
+            }
+            subheader={t('storyMap.home_default_description')}
+          />
+        </Stack>
+
         <Alert
           severity="info"
           sx={{
@@ -52,14 +79,14 @@ const StoryMapsHomeCardDefault = () => {
           }}
         >
           <Typography variant="body1">
-            {t('landscape.default_content')}
+            {t('storyMap.home_default_info')}
           </Typography>
         </Alert>
       </Box>
       <Divider aria-hidden="true" />
       <CardActionRouterLink
-        label={t('landscape.default_connect_button')}
-        to="/landscapes"
+        label={t('storyMap.home_create')}
+        to="/tools/story-maps/create"
       />
     </HomeCard>
   );
