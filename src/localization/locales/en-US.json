@@ -804,6 +804,7 @@
         "view_title_outline": "Outline",
         "breadcrumbs_view": "{{title}}",
         "breadcrumbs_tool_home": "Terraso Story Map",
+        "breadcrumbs_create": "Create",
         "home_title": "Story Maps",
         "home_create": "Create new story map",
         "home_last_edited": "Last edited on {{date}}",
@@ -836,6 +837,8 @@
         "tool_card_requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
         "tool_help_url": "TODO",
         "tool_card_help": "Learn step-by-step about Story Maps",
-        "tool_card_create_button": "Create Story Map"
+        "tool_card_create_button": "Create Story Map",
+        "form_new_mobile_warning_title": "Create Story Map",
+        "form_new_mobile_warning": "Sorry, creating a story map is not supported on small mobile phones. Check out what and how to prepare for a compelling story map."
     }
 }
