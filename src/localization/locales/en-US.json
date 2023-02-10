@@ -616,7 +616,11 @@
         "refreshing_loader_label": "Refreshing",
         "table_search_filter_results_other": "{{rows.length}} matches found for “{{query}}“",
         "table_search_filter_results_one": "{{rows.length}} match found for “{{query}}“",
-        "table_search_filter_clear": "Clear search"
+        "table_search_filter_clear": "Clear search",
+        "rich_text_editor_link_add_dialog_title": "Add Link",
+        "rich_text_editor_link_add_dialog_description": "Enter the URL of the page you want to link to.",
+        "rich_text_editor_link_add_dialog_cancel": "Cancel",
+        "rich_text_editor_link_add_dialog_add": "Add"
     },
     "share": {
         "button": "Share",

@@ -14,6 +14,8 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Link } from '@mui/material';
 
+import RichTextEditor from 'common/components/RichTextEditor';
+
 import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
 
 import { MAPBOX_ACCESS_TOKEN } from 'config';
@@ -101,7 +103,9 @@ const Chapter = ({ theme, record }) => {
               style={{ height: '300px', width: '100%' }}
             />
           ) : null)}
-        {record.description && <p>{record.description}</p>}
+        {record.description && (
+          <RichTextEditor value={record.description} editable={false} />
+        )}
       </Box>
     </Box>
   );
