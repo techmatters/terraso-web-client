@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
 
-import { Grid } from '@mui/material';
+import { Grid, useMediaQuery } from '@mui/material';
 
 import PageLoader from 'layout/PageLoader';
 
@@ -14,6 +14,8 @@ import TitleForm from './TitleForm';
 import TopBar from './TopBar';
 import TopBarPreview from './TopBarPreview';
 import { useConfigContext } from './configContext';
+
+import theme from 'theme';
 
 const BASE_CHAPTER = {
   alignment: 'left',
@@ -28,7 +30,7 @@ const BASE_CHAPTER = {
 
 const Preview = props => {
   const { getMediaFile } = useConfigContext();
-  const { config } = props;
+  const { config, onPublish } = props;
 
   const previewConfig = useMemo(
     () => ({
@@ -51,7 +53,7 @@ const Preview = props => {
 
   return (
     <Grid container>
-      <TopBarPreview />
+      <TopBarPreview onPublish={onPublish} />
       <Grid item xs={12}>
         <StoryMap config={previewConfig} />
       </Grid>
@@ -60,6 +62,7 @@ const Preview = props => {
 };
 
 const StoryMapForm = props => {
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'));
   const { onPublish, onSaveDraft } = props;
   const { saving } = useSelector(_.get('storyMap.form'));
   const { config, setConfig, preview } = useConfigContext();
@@ -69,6 +72,9 @@ const StoryMapForm = props => {
   const [currentStepId, setCurrentStepId] = useState();
 
   useEffect(() => {
+    if (isSmall) {
+      return;
+    }
     const headerHeight =
       document.getElementById('header-container').clientHeight;
     const footerHeight =
@@ -80,7 +86,7 @@ const StoryMapForm = props => {
     setMapHeight(
       `calc(100vh - (${headerHeight}px + ${footerHeight}px + ${formHeaderHeight}px))`
     );
-  }, []);
+  }, [isSmall]);
 
   useEffect(() => {
     if (!mapHeight) {
@@ -125,8 +131,8 @@ const StoryMapForm = props => {
     [config, onSaveDraft]
   );
 
-  if (preview) {
-    return <Preview config={config} />;
+  if (preview || isSmall) {
+    return <Preview config={config} onPublish={onPublishWrapper} />;
   }
 
   return (
