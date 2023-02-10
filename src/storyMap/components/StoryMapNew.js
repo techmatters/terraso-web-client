@@ -1,10 +1,16 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+
+import { Paper, useMediaQuery } from '@mui/material';
+
+import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 
 import { addStoryMap } from 'storyMap/storyMapSlice';
 
@@ -15,6 +21,8 @@ import {
   ConfigContextProvider,
   useConfigContext,
 } from './StoryMapForm/configContext';
+
+import theme from 'theme';
 
 const BASE_CONFIG = {
   style: MAPBOX_STYLE_DEFAULT,
@@ -97,6 +105,21 @@ const StoryMapNew = () => {
 const ContextWrapper = props => {
   const { t } = useTranslation();
   const { data: user } = useSelector(_.get('account.currentUser'));
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'));
+
+  useBreadcrumbsParams(useMemo(() => ({ loading: !isSmall }), [isSmall]));
+
+  if (isSmall) {
+    return (
+      <PageContainer>
+        <PageHeader header={t('storyMap.form_new_mobile_warning_title')} />
+        <Paper variant="outlined" sx={{ p: 2 }}>
+          {t('storyMap.form_new_mobile_warning')}
+        </Paper>
+      </PageContainer>
+    );
+  }
+
   return (
     <ConfigContextProvider
       baseConfig={{

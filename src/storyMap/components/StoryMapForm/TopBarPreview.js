@@ -8,9 +8,10 @@ import { useConfigContext } from './configContext';
 
 import theme from 'theme';
 
-const TopBarPreview = () => {
+const TopBarPreview = props => {
   const { t } = useTranslation();
   const { config, setPreview } = useConfigContext();
+  const { onPublish } = props;
 
   const baseItemSx = useMemo(
     () => ({
@@ -28,18 +29,27 @@ const TopBarPreview = () => {
 
   return (
     <>
-      <Grid item xs={8} sx={baseItemSx}>
+      <Grid item xs={12} sm={8} sx={baseItemSx}>
         <Typography variant="h3" sx={{ pt: 0, pl: 2, fontWeight: 700 }}>
           {t('storyMap.form_preview_title', { title: config.title })}
         </Typography>
       </Grid>
       <Grid
         item
-        xs={4}
+        xs={12}
+        sm={4}
         sx={{ ...baseItemSx, justifyContent: 'flex-end', pr: 2 }}
       >
         <Button variant="text" onClick={() => setPreview(false)}>
           {t('storyMap.form_preview_close')}
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={onPublish}
+          sx={{ ml: 2 }}
+        >
+          {t('storyMap.form_publish_button')}
         </Button>
       </Grid>
     </>
