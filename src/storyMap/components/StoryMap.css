@@ -100,7 +100,7 @@ footer {
   display: flex;
 }
 .step-container.active {
-  opacity: 0.9;
+  opacity: 0.99;
 }
 
 .step-container.title {

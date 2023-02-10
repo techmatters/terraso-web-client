@@ -17,6 +17,7 @@
 import i18n from 'i18next';
 import _ from 'lodash/fp';
 import countries from 'world-countries';
+import * as yup from 'yup';
 
 export const transformURL = url => {
   if (url === '' || url.startsWith('http:') || url.startsWith('https:')) {
@@ -24,6 +25,19 @@ export const transformURL = url => {
   }
 
   return `https://${url}`;
+};
+
+export const URL_SCHEMA = yup.object({
+  url: yup.string().trim().ensure().transform(transformURL).url().required(),
+});
+
+export const isUrl = url => {
+  try {
+    URL_SCHEMA.validateSync({ url });
+    return true;
+  } catch (err) {
+    return false;
+  }
 };
 
 export const countriesList = () => {

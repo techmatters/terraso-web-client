@@ -21,6 +21,7 @@ import { withProps } from 'react-hoc';
 
 import { ALIGNMENTS } from '../../storyMapConstants';
 import EditableMedia from './EditableMedia';
+import EditableRichText from './EditableRichText';
 import EditableText from './EditableText';
 import MapLocationDialog from './MapLocationDialog';
 import { useConfigContext } from './configContext';
@@ -160,15 +161,10 @@ const ChapterForm = ({ theme, record }) => {
             value={record.media}
             onChange={onFieldChange('media')}
           />
-          <EditableText
+          <EditableRichText
             placeholder={t('storyMap.form_chapter_description_placeholder')}
-            Component="p"
             value={record.description}
             onChange={onFieldChange('description')}
-            inputProps={{
-              multiline: true,
-              rows: 4,
-            }}
           />
         </Stack>
       </ChapterConfig>
