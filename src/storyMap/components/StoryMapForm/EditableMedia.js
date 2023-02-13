@@ -35,7 +35,7 @@ import { useConfigContext } from './configContext';
 import theme from 'theme';
 
 const VIMEO_REGEX = /^https:\/\/player\.vimeo\.com\/video\/\d+\?\w+=\w+$/;
-const YOUTUBE_REGEX = /^https:\/\/www\.youtube\.com\/embed\/\w+$/;
+const YOUTUBE_REGEX = /^https:\/\/www\.youtube\.com\/embed\/[a-zA-Z0-9-_]+$/;
 
 const getDataFromEmbedded = value => {
   const parser = new DOMParser();
