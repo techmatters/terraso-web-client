@@ -236,8 +236,8 @@ const EditableImage = props => {
   const { image, onUpdate, onDelete, processing } = props;
 
   const imageSrc = useMemo(() => {
-    if (image.url) {
-      return image.url;
+    if (image.signedUrl) {
+      return image.signedUrl;
     }
     if (image.contentId) {
       return getMediaFile(image.contentId);
@@ -311,8 +311,8 @@ const EditableAudio = props => {
   }, [audio]);
 
   const audioSrc = useMemo(() => {
-    if (audio.url) {
-      return audio.url;
+    if (audio.signedUrl) {
+      return audio.signedUrl;
     }
     if (audio.contentId) {
       return getMediaFile(audio.contentId);
