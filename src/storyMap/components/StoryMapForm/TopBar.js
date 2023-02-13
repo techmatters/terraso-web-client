@@ -55,7 +55,7 @@ const TopBar = props => {
       </Grid>
       <Grid item xs={6} sx={baseItemSx}>
         <Typography variant="h3" sx={{ pt: 0 }}>
-          {config.title}
+          {config.title || t('storyMap.form_no_title_label')}
         </Typography>
       </Grid>
       <Grid
