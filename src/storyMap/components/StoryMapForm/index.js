@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Grid, useMediaQuery } from '@mui/material';
 
@@ -105,7 +106,7 @@ const StoryMapForm = props => {
         ...config.chapters,
         {
           ...BASE_CHAPTER,
-          id: `chapter-${config.chapters.length + 1}`,
+          id: `chapter-${uuidv4()}`,
         },
       ],
     }));
