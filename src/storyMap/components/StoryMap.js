@@ -213,10 +213,12 @@ const StoryMap = props => {
     [map, getLayerPaintType]
   );
 
-  const initialLocation = useMemo(
-    () => config.chapters?.[0]?.location,
-    [config.chapters]
-  );
+  const initialLocation = useMemo(() => {
+    const firstChapterWithLocation = config.chapters.find(
+      chapter => chapter.location
+    );
+    return firstChapterWithLocation?.location;
+  }, [config.chapters]);
 
   useEffect(() => {
     const map = new mapboxgl.Map({
