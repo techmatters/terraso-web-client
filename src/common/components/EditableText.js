@@ -76,6 +76,12 @@ const EditableText = props => {
     reset();
   }, [value, reset]);
 
+  useEffect(() => {
+    if (isEditing) {
+      editableInputRef.current.focus();
+    }
+  }, [isEditing]);
+
   if (isEditing) {
     return (
       <Stack direction="row" spacing={1}>
