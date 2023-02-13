@@ -117,13 +117,20 @@ const ChapterConfig = props => {
 
 const ChapterForm = ({ theme, record }) => {
   const { t } = useTranslation();
-  const { setConfig } = useConfigContext();
   const classList = [
     'step-container',
     'active',
     ALIGNMENTS[record.alignment] || 'centered',
     ...(record.hidden ? ['hidden'] : []),
   ].join(' ');
+  const { setConfig, init } = useConfigContext();
+  const [isNew, setIsNew] = useState(false);
+
+  useEffect(() => {
+    if (init.current) {
+      setIsNew(true);
+    }
+  }, [init, record.id]);
 
   const onFieldChange = useCallback(
     field => value => {
@@ -156,6 +163,7 @@ const ChapterForm = ({ theme, record }) => {
             Component="h3"
             value={record.title}
             onChange={onFieldChange('title')}
+            focus={isNew}
           />
           <EditableMedia
             value={record.media}
