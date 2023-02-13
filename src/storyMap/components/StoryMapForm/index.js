@@ -72,6 +72,11 @@ const StoryMapForm = props => {
   const [mapWidth, setMapWidth] = useState();
   const [currentStepId, setCurrentStepId] = useState();
 
+  const isFirefox = useMemo(
+    () => navigator.userAgent.toLowerCase().indexOf('firefox') > -1,
+    []
+  );
+
   useEffect(() => {
     if (isSmall) {
       return;
@@ -158,7 +163,7 @@ const StoryMapForm = props => {
           xs
           sx={{
             height: mapHeight,
-            overflowY: 'overlay',
+            overflowY: isFirefox ? 'scroll' : 'overlay',
           }}
         >
           {mapHeight && mapWidth && (
