@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
@@ -39,23 +39,26 @@ const ChapterConfig = props => {
   const { onAlignmentChange, chapter, onLocationChange, children } = props;
   const [locationOpen, setLocationOpen] = useState(false);
 
-  const options = [
-    {
-      label: 'TODO',
-      Icon: AlignHorizontalLeftIcon,
-      value: 'left',
-    },
-    {
-      label: 'TODO',
-      Icon: AlignHorizontalCenterIcon,
-      value: 'center',
-    },
-    {
-      label: 'TODO',
-      Icon: AlignHorizontalRightIcon,
-      value: 'right',
-    },
-  ];
+  const options = useMemo(
+    () => [
+      {
+        label: 'TODO',
+        Icon: AlignHorizontalLeftIcon,
+        value: 'left',
+      },
+      {
+        label: 'TODO',
+        Icon: AlignHorizontalCenterIcon,
+        value: 'center',
+      },
+      {
+        label: 'TODO',
+        Icon: AlignHorizontalRightIcon,
+        value: 'right',
+      },
+    ],
+    []
+  );
 
   const onLocationClick = useCallback(() => {
     setLocationOpen(true);
@@ -117,14 +120,19 @@ const ChapterConfig = props => {
 
 const ChapterForm = ({ theme, record }) => {
   const { t } = useTranslation();
-  const classList = [
-    'step-container',
-    'active',
-    ALIGNMENTS[record.alignment] || 'centered',
-    ...(record.hidden ? ['hidden'] : []),
-  ].join(' ');
   const { setConfig, init } = useConfigContext();
   const [isNew, setIsNew] = useState(false);
+
+  const classList = useMemo(
+    () =>
+      [
+        'step-container',
+        'active',
+        ALIGNMENTS[record.alignment] || 'centered',
+        ...(record.hidden ? ['hidden'] : []),
+      ].join(' '),
+    [record.alignment, record.hidden]
+  );
 
   useEffect(() => {
     if (init.current) {
