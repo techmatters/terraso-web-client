@@ -3,8 +3,16 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { OutlinedInput } from '@mui/material';
 
 const EditableText = props => {
-  const { Component, value, onChange, placeholder, inputProps = {} } = props;
+  const {
+    Component,
+    value,
+    onChange,
+    placeholder,
+    inputProps = {},
+    focus,
+  } = props;
   const [isEditing, setIsEditing] = useState(!value);
+  const [shouldFocus, setShouldFocus] = useState(focus);
   const inputRef = useRef(null);
 
   const onExit = useCallback(() => {
@@ -13,17 +21,28 @@ const EditableText = props => {
     }
     setIsEditing(false);
   }, [value]);
-  const onClick = useCallback(() => setIsEditing(true), []);
+
+  const onClick = useCallback(() => {
+    setIsEditing(true);
+    setShouldFocus(true);
+  }, []);
+
   const onChangeWrapper = useCallback(
     event => onChange(event.target.value),
     [onChange]
   );
 
   useEffect(() => {
-    if (isEditing) {
+    if (focus) {
+      setShouldFocus(true);
+    }
+  }, [focus]);
+
+  useEffect(() => {
+    if (shouldFocus && isEditing) {
       inputRef.current.focus();
     }
-  }, [isEditing]);
+  }, [isEditing, shouldFocus]);
 
   if (isEditing) {
     return (
