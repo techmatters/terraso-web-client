@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import mapboxgl from '!mapbox-gl';
@@ -19,6 +19,8 @@ import { MAPBOX_ACCESS_TOKEN, MAPBOX_STYLE_DEFAULT } from 'config';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
+import _ from 'lodash/fp';
+
 import { useConfigContext } from './configContext';
 
 const MapLocationDialog = props => {
@@ -33,6 +35,27 @@ const MapLocationDialog = props => {
   const [mapPitch, setMapPitch] = useState(location?.pitch);
   const [mapBearing, setMapBearing] = useState(location?.bearing);
   const [marginTop, setMarginTop] = useState(0);
+
+  const initialLocation = useMemo(() => {
+    if (location) {
+      return location;
+    }
+    const currentIndex = config.chapters.findIndex(c => c.id === chapter.id);
+    const chapterWithLocation = _.flow(
+      _.take(currentIndex),
+      _.reverse,
+      _.find(c => c.location)
+    )(config.chapters);
+
+    if (chapterWithLocation) {
+      return chapterWithLocation?.location;
+    }
+
+    const firstChapterWithLocation = config.chapters.find(
+      chapter => chapter.location
+    );
+    return firstChapterWithLocation?.location;
+  }, [location, config.chapters, chapter.id]);
 
   useEffect(() => {
     const headerHeight =
@@ -50,7 +73,7 @@ const MapLocationDialog = props => {
       style: config.style || MAPBOX_STYLE_DEFAULT,
       projection: config.projection || 'globe',
       zoom: 1,
-      ...(location || {}),
+      ...(initialLocation || {}),
     });
 
     const updatePosition = () => {
@@ -110,7 +133,7 @@ const MapLocationDialog = props => {
     return () => {
       map.remove();
     };
-  }, [mapContainer, location, config.style, config.projection]);
+  }, [mapContainer, initialLocation, config.style, config.projection]);
 
   const handleConfirm = useCallback(() => {
     onConfirm({
