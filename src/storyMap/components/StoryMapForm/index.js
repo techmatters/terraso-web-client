@@ -66,11 +66,12 @@ const StoryMapForm = props => {
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
   const { onPublish, onSaveDraft } = props;
   const { saving } = useSelector(_.get('storyMap.form'));
-  const { config, setConfig, preview } = useConfigContext();
+  const { config, setConfig, preview, init } = useConfigContext();
   const [height, setHeight] = useState('100vh');
   const [mapHeight, setMapHeight] = useState();
   const [mapWidth, setMapWidth] = useState();
   const [currentStepId, setCurrentStepId] = useState();
+  const [scrollToChapter, setScrollToChapter] = useState();
 
   const isFirefox = useMemo(
     () => navigator.userAgent.toLowerCase().indexOf('firefox') > -1,
@@ -94,6 +95,15 @@ const StoryMapForm = props => {
     );
   }, [isSmall]);
 
+  // Focus on the title when the map is ready
+  const onMapReady = useCallback(() => {
+    const input = document
+      .getElementById('story-map-title')
+      .querySelector('input');
+    input.focus();
+    init.current = true;
+  }, [init]);
+
   useEffect(() => {
     if (!mapHeight) {
       return;
@@ -104,17 +114,28 @@ const StoryMapForm = props => {
     setMapWidth(`calc(100vw - ${chaptersWidth}px)`);
   }, [mapHeight]);
 
+  useEffect(() => {
+    if (!scrollToChapter) {
+      return;
+    }
+    document
+      .getElementById(scrollToChapter)
+      ?.scrollIntoView({ block: 'start' });
+  }, [scrollToChapter]);
+
   const onAddChapter = useCallback(() => {
+    const id = `chapter-${uuidv4()}`;
     setConfig(config => ({
       ...config,
       chapters: [
         ...config.chapters,
         {
           ...BASE_CHAPTER,
-          id: `chapter-${uuidv4()}`,
+          id,
         },
       ],
     }));
+    setScrollToChapter(id);
   }, [setConfig]);
 
   const onDeleteChapter = useCallback(
@@ -173,6 +194,7 @@ const StoryMapForm = props => {
               onStepChange={setCurrentStepId}
               ChapterComponent={ChapterForm}
               TitleComponent={TitleForm}
+              onReady={onMapReady}
             />
           )}
         </Grid>

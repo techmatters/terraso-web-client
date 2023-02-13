@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -15,6 +16,7 @@ export const ConfigContextProvider = props => {
   const [config, setConfig] = useState(baseConfig || {});
   const [preview, setPreview] = useState(false);
   const [mediaFiles, setMediaFiles] = useState({});
+  const init = useRef(false);
 
   const addMediaFile = useCallback((content, file) => {
     const id = uuidv4();
@@ -33,8 +35,9 @@ export const ConfigContextProvider = props => {
       mediaFiles,
       addMediaFile,
       getMediaFile,
+      init,
     }),
-    [config, preview, mediaFiles, addMediaFile, getMediaFile]
+    [config, preview, mediaFiles, addMediaFile, getMediaFile, init]
   );
 
   return (
