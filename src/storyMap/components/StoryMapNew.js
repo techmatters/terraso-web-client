@@ -41,7 +41,7 @@ const BASE_CONFIG = {
     //   title: 'Chapter 1',
     //   description: 'Copy these sections to add to your story.',
     //   location: {
-    //     center: [6.15116, 46.20595],
+    //     center: {lng: -78.55645099999998, lat: -0.16672202757398225},
     //     zoom: 12.52,
     //     pitch: 8.01,
     //     bearing: 0.0,
@@ -59,7 +59,7 @@ const BASE_CONFIG = {
     //   description: 'Copy these sections to add to your story.',
     //   mapAnimation: 'flyTo',
     //   location: {
-    //     center: [-58.54195, -34.716],
+    //     center: {lng: -78.55645099999998, lat: -0.16672202757398225},
     //     zoom: 4,
     //     pitch: 0,
     //     bearing: 0,
