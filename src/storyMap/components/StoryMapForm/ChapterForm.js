@@ -82,7 +82,9 @@ const ChapterConfig = props => {
     <>
       <MapLocationDialog
         open={locationOpen}
-        chapter={chapter}
+        location={chapter.location}
+        title={chapter.title}
+        chapterId={chapter.id}
         onClose={onLocationClose}
         onConfirm={onLocationChangeWrapper}
       />
