@@ -12,6 +12,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Stack,
 } from '@mui/material';
 
 import { MAPBOX_ACCESS_TOKEN, MAPBOX_STYLE_DEFAULT } from 'config';
@@ -159,25 +160,23 @@ const MapLocationDialog = props => {
       aria-describedby="map-location-dialog-content-text"
       sx={{ mt: `${marginTop}px` }}
     >
-      <DialogTitle component="h1" id="map-location-dialog-title">
-        {t('storyMap.form_location_dialog_title', { title })}
-      </DialogTitle>
+      <Stack direction="row" justifyContent="space-between">
+        <DialogTitle component="h1" id="map-location-dialog-title">
+          {t('storyMap.form_location_dialog_title', { title })}
+        </DialogTitle>
+        <DialogActions sx={{ pr: 3 }}>
+          <Button size="small" onClick={handleCancel}>
+            {t('storyMap.location_dialog_cancel_button')}
+          </Button>
+          <Button size="small" onClick={handleConfirm} variant="contained">
+            {t('storyMap.location_dialog_confirm_button')}
+          </Button>
+        </DialogActions>
+      </Stack>
+
       <DialogContent>
         <Box ref={setMapContainer} sx={{ height: '100%', width: '100%' }} />
       </DialogContent>
-      <DialogActions
-        sx={{
-          justifyContent: 'flex-end',
-          padding: '20px',
-        }}
-      >
-        <Button onClick={handleCancel}>
-          {t('storyMap.location_dialog_cancel_button')}
-        </Button>
-        <Button onClick={handleConfirm} variant="contained">
-          {t('storyMap.location_dialog_confirm_button')}
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };
