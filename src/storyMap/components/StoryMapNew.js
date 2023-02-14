@@ -10,6 +10,8 @@ import { Paper, useMediaQuery } from '@mui/material';
 
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
+import { useAnalytics } from 'monitoring/analytics';
+import { ILM_OUTPUT_PROP, LANDSCAPE_NARRATIVES } from 'monitoring/ilm';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 
 import { addStoryMap } from 'storyMap/storyMapSlice';
@@ -73,6 +75,7 @@ const BASE_CONFIG = {
 const StoryMapNew = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { trackEvent } = useAnalytics();
   const { mediaFiles } = useConfigContext();
 
   const save = useCallback(
@@ -89,15 +92,23 @@ const StoryMapNew = () => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
           const slug = _.get('payload.slug', data);
+
           if (published) {
             navigate(`/tools/story-maps/${slug}`);
-          } else {
-            navigate(`/tools/story-maps/${slug}/edit`);
+            trackEvent('Storymap Published', {
+              props: {
+                url: `${window.location.origin}/tools/story-maps/${slug}`,
+                [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
+              },
+            });
+            return;
           }
+
+          navigate(`/tools/story-maps/${slug}/edit`);
         }
       });
     },
-    [dispatch, navigate, mediaFiles]
+    [dispatch, navigate, trackEvent, mediaFiles]
   );
 
   const onPublish = useCallback(config => save(config, true), [save]);

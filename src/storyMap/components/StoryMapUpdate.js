@@ -7,6 +7,8 @@ import { useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import PageLoader from 'layout/PageLoader';
+import { useAnalytics } from 'monitoring/analytics';
+import { ILM_OUTPUT_PROP, LANDSCAPE_NARRATIVES } from 'monitoring/ilm';
 import { useFetchData } from 'state/utils';
 
 import {
@@ -24,6 +26,7 @@ import {
 const StoryMapUpdate = props => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { trackEvent } = useAnalytics();
   const { storyMap } = props;
   const { mediaFiles } = useConfigContext();
 
@@ -43,10 +46,16 @@ const StoryMapUpdate = props => {
         if (success) {
           const slug = _.get('payload.slug', data);
           navigate(`/tools/story-maps/${slug}`);
+          trackEvent('Storymap Published', {
+            props: {
+              url: `${window.location.origin}/tools/story-maps/${slug}`,
+              [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
+            },
+          });
         }
       });
     },
-    [dispatch, navigate, storyMap?.id, mediaFiles]
+    [dispatch, navigate, trackEvent, storyMap?.id, mediaFiles]
   );
 
   const onSaveDraft = useCallback(
