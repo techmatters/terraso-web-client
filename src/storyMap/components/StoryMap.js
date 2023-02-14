@@ -423,8 +423,6 @@ const StoryMap = props => {
         progress: true,
       })
       .onStepEnter(async response => {
-        console.log('id', response.element.id);
-
         const { index, transition } = getTransition(
           {
             titleTransition: config.titleTransition,
