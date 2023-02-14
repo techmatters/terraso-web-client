@@ -72,7 +72,6 @@ const StoryMapsToolsHome = () => {
             <Grid container spacing={1}>
               {list.map(sample => (
                 <Grid item xs={12} sm={6} md={4} key={sample.id}>
-                  {console.log({ sample })}
                   <Card>
                     <CardHeader
                       title={
