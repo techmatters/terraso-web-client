@@ -24,6 +24,8 @@ import { ALIGNMENTS, LAYER_TYPES } from '../storyMapConstants';
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
+const CURRENT_LOCATION_CHECK_PRESSISION = 13; // 13 decimal places
+
 const transformRequest = url => {
   const hasQuery = url.indexOf('?') !== -1;
   const suffix = hasQuery
@@ -363,6 +365,22 @@ const StoryMap = props => {
       if (!map || (config.inset && !insetMap) || !transition) return;
 
       if (transition.location) {
+        const mapCenter = map.getCenter();
+        const transitionCenter = transition.location.center;
+
+        // Check if the map is already at the transition center
+        const decimalPlaces = CURRENT_LOCATION_CHECK_PRESSISION;
+        if (
+          mapCenter.lng.toFixed(decimalPlaces) ===
+            transitionCenter.lng.toFixed(decimalPlaces) &&
+          mapCenter.lat.toFixed(decimalPlaces) ===
+            transitionCenter.lat.toFixed(decimalPlaces)
+        ) {
+          return;
+        }
+
+        console.log({ mapCenter, transitionCenter });
+
         map[animation || transition.mapAnimation || 'flyTo'](
           transition.location
         );
@@ -420,7 +438,6 @@ const StoryMap = props => {
       .setup({
         step: '.step',
         offset: 0.5,
-        progress: true,
       })
       .onStepEnter(async response => {
         const { index, transition } = getTransition(
