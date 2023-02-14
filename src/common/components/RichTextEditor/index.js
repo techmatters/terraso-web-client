@@ -18,7 +18,6 @@ import InsertLinkIcon from '@mui/icons-material/InsertLink';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
 import {
   Button,
-  ButtonGroup,
   Dialog,
   DialogActions,
   DialogContent,
@@ -34,6 +33,7 @@ import { URL_SCHEMA, isUrl, transformURL } from 'common/utils';
 import { withProps } from 'react-hoc';
 
 import ExternalLink from '../ExternalLink';
+import Toolbar from './Toolbar';
 
 import theme from 'theme';
 
@@ -157,12 +157,6 @@ const InlineChromiumBugfix = () => (
     ${String.fromCodePoint(160) /* Non-breaking space */}
   </span>
 );
-
-const Toolbar = props => {
-  const { children } = props;
-
-  return <ButtonGroup variant="text">{children}</ButtonGroup>;
-};
 
 const LinkComponent = ({ attributes, children, element }) => {
   const selected = useSelected();
@@ -367,7 +361,12 @@ const RichTextEditor = props => {
 
   const Container = useMemo(
     () =>
-      addContainer ? withProps(Paper, { variant: 'outlined' }) : React.Fragment,
+      addContainer
+        ? withProps(Paper, {
+            variant: 'outlined',
+            sx: { bgcolor: 'gray.dark2', color: 'white', borderRadius: 0 },
+          })
+        : React.Fragment,
     [addContainer]
   );
 
@@ -375,12 +374,18 @@ const RichTextEditor = props => {
     <Container>
       <SlateReact.Slate editor={editor} value={parsedValue} onChange={onChange}>
         {editable && (
-          <Toolbar>
-            <AddLinkButton />
-            <RemoveLinkButton />
-            <MarkButton format="bold" Icon={FormatBoldIcon} />
-            <MarkButton format="italic" Icon={FormatItalicIcon} />
-          </Toolbar>
+          <Toolbar
+            groups={[
+              <>
+                <MarkButton format="bold" Icon={FormatBoldIcon} />
+                <MarkButton format="italic" Icon={FormatItalicIcon} />
+              </>,
+              <>
+                <AddLinkButton />
+                <RemoveLinkButton />
+              </>,
+            ]}
+          />
         )}
         <Editable
           id={id}
