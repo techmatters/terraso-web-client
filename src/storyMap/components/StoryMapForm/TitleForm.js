@@ -88,7 +88,7 @@ const TitleForm = props => {
     <Box
       id="story-map-title"
       className="step active title"
-      sx={{ opacity: 0.99 }}
+      sx={{ opacity: 0.99, pb: '35vh' }}
     >
       <MapLocationDialog
         open={locationOpen}
