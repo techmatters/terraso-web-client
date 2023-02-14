@@ -391,7 +391,7 @@ const StoryMap = props => {
           }
         }
       }
-      if (transition.onChapterEnter.length > 0) {
+      if (transition.onChapterEnter && transition.onChapterEnter.length > 0) {
         transition.onChapterEnter.forEach(setLayerOpacity);
       }
       if (transition.callback) {
