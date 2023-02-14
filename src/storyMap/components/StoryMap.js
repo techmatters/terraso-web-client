@@ -166,6 +166,22 @@ const Title = props => {
   );
 };
 
+const getTransition = (config, id) => {
+  const isTitle = id === 'story-map-title';
+  if (isTitle) {
+    return {
+      transition: config.titleTransition,
+      index: -1,
+    };
+  }
+  const chapterIndex = config.chapters.findIndex(chapter => chapter.id === id);
+  const chapter = config.chapters[chapterIndex];
+  return {
+    transition: chapter,
+    index: chapterIndex,
+  };
+};
+
 const StoryMap = props => {
   const {
     config,
@@ -214,11 +230,14 @@ const StoryMap = props => {
   );
 
   const initialLocation = useMemo(() => {
+    if (config.titleLocation) {
+      return config.titleLocation;
+    }
     const firstChapterWithLocation = config.chapters.find(
       chapter => chapter.location
     );
     return firstChapterWithLocation?.location;
-  }, [config.chapters]);
+  }, [config.chapters, config.titleLocation]);
 
   useEffect(() => {
     const map = new mapboxgl.Map({
@@ -339,21 +358,23 @@ const StoryMap = props => {
     };
   }, [map, insetMap, config.inset]);
 
-  const startChapter = useCallback(
-    chapter => {
-      if (!map || (config.inset && !insetMap) || !chapter) return;
+  const startTransition = useCallback(
+    transition => {
+      if (!map || (config.inset && !insetMap) || !transition) return;
 
-      if (chapter.location) {
-        map[animation || chapter.mapAnimation || 'flyTo'](chapter.location);
+      if (transition.location) {
+        map[animation || transition.mapAnimation || 'flyTo'](
+          transition.location
+        );
 
         // Incase you do not want to have a dynamic inset map,
         // rather want to keep it a static view but still change the
         // bbox as main map move: comment out the below if section.
         if (config.inset) {
-          if (chapter.location.zoom < 5) {
-            insetMap.flyTo({ center: chapter.location.center, zoom: 0 });
+          if (transition.location.zoom < 5) {
+            insetMap.flyTo({ center: transition.location.center, zoom: 0 });
           } else {
-            insetMap.flyTo({ center: chapter.location.center, zoom: 3 });
+            insetMap.flyTo({ center: transition.location.center, zoom: 3 });
           }
         }
         if (config.showMarkers) {
@@ -361,22 +382,22 @@ const StoryMap = props => {
             const newMarker = new mapboxgl.Marker({
               color: config.markerColor,
             })
-              .setLngLat(chapter.location.center)
+              .setLngLat(transition.location.center)
               .addTo(map);
 
             setMarker(newMarker);
           } else {
-            marker.setLngLat(chapter.location.center);
+            marker.setLngLat(transition.location.center);
           }
         }
       }
-      if (chapter.onChapterEnter.length > 0) {
-        chapter.onChapterEnter.forEach(setLayerOpacity);
+      if (transition.onChapterEnter.length > 0) {
+        transition.onChapterEnter.forEach(setLayerOpacity);
       }
-      if (chapter.callback) {
-        window[chapter.callback]();
+      if (transition.callback) {
+        window[transition.callback]();
       }
-      if (chapter.rotateAnimation) {
+      if (transition.rotateAnimation) {
         map.once('moveend', () => {
           const rotateNumber = map.getBearing();
           map.rotateTo(rotateNumber + 180, {
@@ -402,16 +423,22 @@ const StoryMap = props => {
         progress: true,
       })
       .onStepEnter(async response => {
-        const currentChapter = config.chapters.findIndex(
-          chap => chap.id === response.element.id
+        console.log('id', response.element.id);
+
+        const { index, transition } = getTransition(
+          {
+            titleTransition: config.titleTransition,
+            chapters: config.chapters,
+          },
+          response.element.id
         );
-        const chapter = config.chapters[currentChapter];
+
         response.element.classList.add('active');
-        startChapter(chapter);
+        startTransition(transition);
         onStepChange?.(response.element.id);
 
         if (config.auto) {
-          const nextChapter = (currentChapter + 1) % config.chapters.length;
+          const nextChapter = (index + 1) % config.chapters.length;
           map.once('moveend', () => {
             document
               .querySelectorAll(
@@ -422,12 +449,16 @@ const StoryMap = props => {
         }
       })
       .onStepExit(response => {
-        const chapter = config.chapters.find(
-          chap => chap.id === response.element.id
+        const { transition } = getTransition(
+          {
+            titleTransition: config.titleTransition,
+            chapters: config.chapters,
+          },
+          response.element.id
         );
         response.element.classList.remove('active');
-        if (chapter?.onChapterExit && chapter.onChapterExit.length > 0) {
-          chapter.onChapterExit.forEach(setLayerOpacity);
+        if (transition?.onChapterExit && transition.onChapterExit.length > 0) {
+          transition.onChapterExit.forEach(setLayerOpacity);
         }
       });
 
@@ -435,6 +466,7 @@ const StoryMap = props => {
 
     window.addEventListener('resize', scroller.resize);
     return () => {
+      scroller.destroy();
       window.removeEventListener('resize', scroller.resize);
     };
   }, [
@@ -442,8 +474,9 @@ const StoryMap = props => {
     insetMap,
     marker,
     setLayerOpacity,
-    startChapter,
+    startTransition,
     config.title,
+    config.titleTransition,
     config.chapters,
     config.auto,
     config.inset,
