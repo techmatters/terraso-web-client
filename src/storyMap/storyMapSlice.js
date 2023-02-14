@@ -52,19 +52,25 @@ export const fetchStoryMapForm = createAsyncThunk(
 export const addStoryMap = createAsyncThunk(
   'storyMap/addStoryMap',
   storyMapService.addStoryMap,
-  (storyMap, { storyMap: { config } }) => ({
+  (storyMap, { storyMap: { config, published } }) => ({
     severity: 'success',
     content: 'storyMap.added_story_map',
-    params: { title: config.title },
+    params: {
+      title: config.title,
+      context: published ? 'published' : 'draft',
+    },
   })
 );
 export const updateStoryMap = createAsyncThunk(
   'storyMap/updateStoryMap',
   storyMapService.updateStoryMap,
-  (storyMap, { storyMap: { config } }) => ({
+  (storyMap, { storyMap: { config, published } }) => ({
     severity: 'success',
     content: 'storyMap.update_story_map',
-    params: { title: config.title },
+    params: {
+      title: config.title,
+      context: published ? 'published' : 'draft',
+    },
   })
 );
 export const deleteStoryMap = createAsyncThunk(

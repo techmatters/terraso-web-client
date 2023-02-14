@@ -18,7 +18,7 @@ import React, { useEffect } from 'react';
 
 import _ from 'lodash/fp';
 import { SnackbarProvider, useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Alert } from '@mui/material';
@@ -46,7 +46,6 @@ const NotificationsState = () => {
 };
 
 const Notification = React.forwardRef((props, ref) => {
-  const { t } = useTranslation();
   const { closeSnackbar } = useSnackbar();
   const { id, message, style } = props;
   const { severity, content, params } = message;
@@ -58,7 +57,7 @@ const Notification = React.forwardRef((props, ref) => {
       ref={ref}
       style={style}
     >
-      {t(content, params)}
+      <Trans i18nKey={content} values={params} />
     </Alert>
   );
 });
