@@ -17,7 +17,7 @@
 import React, { createRef, useEffect } from 'react';
 
 import { SnackbarProvider } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Alert } from '@mui/material';
@@ -28,7 +28,6 @@ const MAX_NOTIFICATIONS = 3;
 const AUTO_HIDE_DURATION = 10000;
 
 const NotificationsWrapper = props => {
-  const { t } = useTranslation();
   const { children } = props;
   const notistackRef = createRef();
   const dispatch = useDispatch();
@@ -66,7 +65,7 @@ const NotificationsWrapper = props => {
           severity={notification.severity}
           sx={{ width: '90%' }}
         >
-          {t(notification.content, notification.params)}
+          <Trans i18nKey={notification.content} values={notification.params} />
         </Alert>
       )}
     >
