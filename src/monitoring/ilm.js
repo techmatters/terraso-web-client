@@ -19,3 +19,4 @@ export const ILM_OUTPUT_PROP = 'ILM Output';
 // See: https://terraso.org/guide/
 export const RESULTS_ANALYSIS_IMPACT = 'Results and analysis of impact'; // 5.1
 export const MAP_LANDSCAPE_BOUNDARIES = 'Map of landscape boundaries'; // 2.1
+export const LANDSCAPE_NARRATIVES = 'Landscape Narratives';
