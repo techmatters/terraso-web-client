@@ -26,8 +26,7 @@ import { useConfigContext } from './configContext';
 const MapLocationDialog = props => {
   const { t } = useTranslation();
   const { config } = useConfigContext();
-  const { open, onClose, onConfirm, chapter } = props;
-  const { location, title } = chapter;
+  const { open, onClose, onConfirm, location, title, chapterId } = props;
 
   const [mapContainer, setMapContainer] = useState();
   const [mapCenter, setMapCenter] = useState(location?.center);
@@ -40,22 +39,25 @@ const MapLocationDialog = props => {
     if (location) {
       return location;
     }
-    const currentIndex = config.chapters.findIndex(c => c.id === chapter.id);
-    const chapterWithLocation = _.flow(
-      _.take(currentIndex),
-      _.reverse,
-      _.find(c => c.location)
-    )(config.chapters);
 
-    if (chapterWithLocation) {
-      return chapterWithLocation?.location;
+    if (chapterId) {
+      const currentIndex = config.chapters.findIndex(c => c.id === chapterId);
+      const chapterWithLocation = _.flow(
+        _.take(currentIndex),
+        _.reverse,
+        _.find(c => c.location)
+      )(config.chapters);
+
+      if (chapterWithLocation) {
+        return chapterWithLocation?.location;
+      }
     }
 
     const firstChapterWithLocation = config.chapters.find(
       chapter => chapter.location
     );
     return firstChapterWithLocation?.location;
-  }, [location, config.chapters, chapter.id]);
+  }, [location, config.chapters, chapterId]);
 
   useEffect(() => {
     const headerHeight =

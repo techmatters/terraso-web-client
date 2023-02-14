@@ -1,27 +1,20 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Link, Stack } from '@mui/material';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+import { Box, Button, Link, Stack } from '@mui/material';
 
 import EditableText from './EditableText';
+import MapLocationDialog from './MapLocationDialog';
 import { useConfigContext } from './configContext';
 
 const TitleForm = props => {
   const { t } = useTranslation();
   const { setConfig } = useConfigContext();
+  const [locationOpen, setLocationOpen] = useState(false);
   const { config } = props;
-
-  const onFieldChange = useCallback(
-    field => value => {
-      setConfig(config => ({
-        ...config,
-        [field]: value,
-      }));
-    },
-    [setConfig]
-  );
 
   const inputProps = useMemo(
     () => ({
@@ -68,12 +61,55 @@ const TitleForm = props => {
     [chapters, t]
   );
 
+  const onFieldChange = useCallback(
+    field => value => {
+      setConfig(_.set(field, value));
+    },
+    [setConfig]
+  );
+
+  const onLocationClick = useCallback(() => {
+    setLocationOpen(true);
+  }, []);
+
+  const onLocationClose = useCallback(() => {
+    setLocationOpen(false);
+  }, []);
+
+  const onLocationChangeWrapper = useCallback(
+    location => {
+      onFieldChange('titleTransition.location')(location);
+      onLocationClose();
+    },
+    [onFieldChange, onLocationClose]
+  );
+
   return (
     <Box
       id="story-map-title"
-      className="step step-container active fully title"
+      className="step active title"
+      sx={{ opacity: 0.99 }}
     >
-      <Stack className={`${config.theme} step-content`} spacing={1}>
+      <MapLocationDialog
+        open={locationOpen}
+        location={config.titleLocation}
+        title={t('storyMap.form_title_location_dialog_title')}
+        onClose={onLocationClose}
+        onConfirm={onLocationChangeWrapper}
+      />
+      <Button
+        variant="contained"
+        startIcon={<GpsFixedIcon />}
+        onClick={onLocationClick}
+        sx={{ borderRadius: '0px', mb: 1, width: '100%' }}
+      >
+        {t('storyMap.form_title_location_button')}
+      </Button>
+      <Stack
+        className={`${config.theme} step-content`}
+        spacing={1}
+        sx={{ p: 2, pr: 3 }}
+      >
         <EditableText
           placeholder={t('storyMap.form_title_placeholder')}
           Component="h1"
