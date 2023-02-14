@@ -24,12 +24,14 @@ const ChaptersSidebar = props => {
         label: `${t('storyMap.form_title_chapter_label')}`,
         id: 'story-map-title',
         active: currentStepId === 'story-map-title',
+        index: 'T',
       },
       ...chapters.map((chapter, index) => ({
         label: chapter.title || t('storyMap.form_chapter_no_title_label'),
         id: chapter.id,
         active: currentStepId === chapter.id,
         deletable: true,
+        index: index + 1,
       })),
     ],
     [chapters, currentStepId, t]
@@ -42,11 +44,12 @@ const ChaptersSidebar = props => {
       component={List}
       sx={{ height, overflow: 'auto', width: '200px' }}
     >
-      {listItems.map((item, index) => (
+      {listItems.map(item => (
         <ListItemButton
           component="li"
           key={item.id}
           sx={{
+            pl: 0,
             bgcolor: item.active ? 'blue.mid' : 'transparent',
             '&:hover': { bgcolor: item.active ? 'blue.mid' : 'gray.lite1' },
           }}
@@ -63,9 +66,9 @@ const ChaptersSidebar = props => {
             >
               <Typography
                 variant="caption"
-                sx={{ color: 'gray.dark1', fontWeight: 700, pr: 2 }}
+                sx={{ color: 'gray.dark1', fontWeight: 700, pr: 1 }}
               >
-                {index}
+                {item.index}
               </Typography>
               {item.deletable && (
                 <ConfirmButton
@@ -81,6 +84,8 @@ const ChaptersSidebar = props => {
                     sx: {
                       color: 'transparent',
                       width: '100%',
+                      padding: 0,
+                      minWidth: 'auto',
                       '&:hover': { color: 'gray.dark1' },
                     },
                   }}
