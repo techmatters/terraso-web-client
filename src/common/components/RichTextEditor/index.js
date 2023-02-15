@@ -26,6 +26,7 @@ import {
   FormHelperText,
   OutlinedInput,
   Paper,
+  Tooltip,
 } from '@mui/material';
 
 import { URL_SCHEMA, isUrl, transformURL } from 'common/utils';
@@ -249,6 +250,11 @@ const AddLinkButton = () => {
 
   const onInputChange = useCallback(event => setUrl(event.target.value), []);
 
+  const label = useMemo(
+    () => t('common.rich_text_editor_toolbar_link_add'),
+    [t]
+  );
+
   return (
     <>
       <Dialog fullWidth maxWidth="md" open={open} onClose={handleClose}>
@@ -266,23 +272,36 @@ const AddLinkButton = () => {
           <Button onClick={handleClose} color="primary">
             {t('common.rich_text_editor_link_add_dialog_cancel')}
           </Button>
-          <Button onClick={handleAddLink} color="primary">
+          <Button variant="contained" onClick={handleAddLink} color="primary">
             {t('common.rich_text_editor_link_add_dialog_add')}
           </Button>
         </DialogActions>
       </Dialog>
-      <Button disabled={isLinkActive(editor)} onMouseDown={onButtonClick}>
-        <InsertLinkIcon />
-      </Button>
+      <Tooltip title={label} placement="top">
+        <Button
+          aria-label={label}
+          disabled={isLinkActive(editor)}
+          onMouseDown={onButtonClick}
+        >
+          <InsertLinkIcon />
+        </Button>
+      </Tooltip>
     </>
   );
 };
 
 const RemoveLinkButton = () => {
+  const { t } = useTranslation();
   const editor = useSlate();
+
+  const label = useMemo(
+    () => t('common.rich_text_editor_toolbar_link_remove'),
+    [t]
+  );
 
   return (
     <Button
+      aria-label={label}
       disabled={!isLinkActive(editor)}
       onMouseDown={event => {
         if (isLinkActive(editor)) {
@@ -290,7 +309,9 @@ const RemoveLinkButton = () => {
         }
       }}
     >
-      <LinkOffIcon />
+      <Tooltip title={label} placement="top">
+        <LinkOffIcon />
+      </Tooltip>
     </Button>
   );
 };
@@ -310,21 +331,26 @@ const toggleMark = (editor, format) => {
   }
 };
 
-const MarkButton = ({ format, Icon }) => {
+const MarkButton = props => {
   const editor = useSlate();
+  const { format, Icon, label } = props;
   return (
-    <Button
-      onMouseDown={event => {
-        event.preventDefault();
-        toggleMark(editor, format);
-      }}
-    >
-      <Icon />
-    </Button>
+    <Tooltip title={label} placement="top">
+      <Button
+        aria-label={label}
+        onMouseDown={event => {
+          event.preventDefault();
+          toggleMark(editor, format);
+        }}
+      >
+        <Icon />
+      </Button>
+    </Tooltip>
   );
 };
 
 const RichTextEditor = props => {
+  const { t } = useTranslation();
   const {
     id,
     editable = true,
@@ -377,8 +403,16 @@ const RichTextEditor = props => {
           <Toolbar
             groups={[
               <>
-                <MarkButton format="bold" Icon={FormatBoldIcon} />
-                <MarkButton format="italic" Icon={FormatItalicIcon} />
+                <MarkButton
+                  format="bold"
+                  Icon={FormatBoldIcon}
+                  label={t('common.rich_text_editor_toolbar_bold')}
+                />
+                <MarkButton
+                  format="italic"
+                  Icon={FormatItalicIcon}
+                  label={t('common.rich_text_editor_toolbar_italic')}
+                />
               </>,
               <>
                 <AddLinkButton />

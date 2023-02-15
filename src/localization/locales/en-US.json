@@ -618,7 +618,12 @@
         "rich_text_editor_link_add_dialog_title": "Add Link",
         "rich_text_editor_link_add_dialog_description": "Enter the URL of the page you want to link to.",
         "rich_text_editor_link_add_dialog_cancel": "Cancel",
-        "rich_text_editor_link_add_dialog_add": "Add"
+        "rich_text_editor_link_add_dialog_add": "Add",
+        "rich_text_editor_toolbar_link_add": "Link",
+        "rich_text_editor_toolbar_link_remove": "Unlink",
+        "rich_text_editor_toolbar_bold": "Bold",
+        "rich_text_editor_toolbar_italic": "Italic"
+
     },
     "share": {
         "button": "Share",
