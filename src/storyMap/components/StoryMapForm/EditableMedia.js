@@ -1,6 +1,7 @@
 // Component for editing and uploading a pictures or a audio file
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
+import getVideoId from 'get-video-id';
 import _ from 'lodash/fp';
 import { openFile } from 'media/fileUtils';
 import { Trans, useTranslation } from 'react-i18next';
@@ -34,30 +35,22 @@ import { useConfigContext } from './configContext';
 
 import theme from 'theme';
 
-const VIMEO_REGEX = /^https:\/\/player\.vimeo\.com\/video\/\d+\?\w+=\w+$/;
-const YOUTUBE_REGEX = /^https:\/\/www\.youtube\.com\/embed\/[a-zA-Z0-9-_]+$/;
+const getYoutubeUrl = id => `https://www.youtube.com/embed/${id}`;
+const getVimeoUrl = id => `https://player.vimeo.com/video/${id}`;
 
 const getDataFromEmbedded = value => {
-  const parser = new DOMParser();
-  const htmlDoc = parser.parseFromString(value, 'text/html');
-  const element = htmlDoc.getElementsByTagName('iframe')[0];
-  const isIframe = element && element.src;
+  const { id, service } = getVideoId(value);
 
-  const url = isIframe ? element.src : value;
-  const title = isIframe ? element.title : '';
-
-  const isVimeo = VIMEO_REGEX.test(url);
-  const isYoutube = YOUTUBE_REGEX.test(url);
-
-  if (!isVimeo && !isYoutube) {
+  if (!_.includes(service, ['youtube', 'vimeo'])) {
     return null;
   }
 
+  const url = service === 'youtube' ? getYoutubeUrl(id) : getVimeoUrl(id);
+
   return {
     type: 'embedded',
-    source: isVimeo ? 'vimeo' : 'youtube',
+    source: service,
     url,
-    title,
   };
 };
 
@@ -103,6 +96,21 @@ const AddDialog = props => {
 
   const dropErrors = useMemo(() => (dropError ? [dropError] : []), [dropError]);
 
+  const validateEmbedded = useCallback(
+    value => {
+      const embed = getDataFromEmbedded(value);
+
+      if (!embed) {
+        setEmbeddedError(t('storyMap.form_media_add_dialog_embedded_error'));
+        setEmbeddedMedia(null);
+        return;
+      }
+      setEmbeddedError(null);
+      setEmbeddedMedia(embed);
+    },
+    [t]
+  );
+
   const onEmbeddedInputChange = useCallback(
     event => {
       const value = event.target.value;
@@ -113,29 +121,14 @@ const AddDialog = props => {
         return;
       }
 
-      const embed = getDataFromEmbedded(value);
-
-      if (!embed) {
-        setEmbeddedError(t('storyMap.form_media_add_dialog_embedded_error'));
-        setEmbeddedMedia(null);
-        return;
-      }
-
-      setEmbeddedError(null);
-      setEmbeddedMedia(embed);
+      validateEmbedded(value);
     },
-    [t, embeddedError]
+    [embeddedError, validateEmbedded]
   );
 
   const onEmbeddedInputBlur = useCallback(() => {
-    const embed = getDataFromEmbedded(embeddedInputValue);
-
-    if (!embed) {
-      setEmbeddedError(t('storyMap.form_media_add_dialog_embedded_error'));
-      setEmbeddedMedia(null);
-      return;
-    }
-  }, [t, embeddedInputValue]);
+    validateEmbedded(embeddedInputValue);
+  }, [validateEmbedded, embeddedInputValue]);
 
   const onRadioChange = useCallback(event => {
     setSelected(_.toNumber(event.target.value));
