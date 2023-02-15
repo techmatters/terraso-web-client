@@ -109,6 +109,10 @@ const AddDialog = props => {
       setEmbeddedInputValue(value);
       setSelected(1);
 
+      if (!embeddedError) {
+        return;
+      }
+
       const embed = getDataFromEmbedded(value);
 
       if (!embed) {
@@ -120,8 +124,18 @@ const AddDialog = props => {
       setEmbeddedError(null);
       setEmbeddedMedia(embed);
     },
-    [t]
+    [t, embeddedError]
   );
+
+  const onEmbeddedInputBlur = useCallback(() => {
+    const embed = getDataFromEmbedded(embeddedInputValue);
+
+    if (!embed) {
+      setEmbeddedError(t('storyMap.form_media_add_dialog_embedded_error'));
+      setEmbeddedMedia(null);
+      return;
+    }
+  }, [t, embeddedInputValue]);
 
   const onRadioChange = useCallback(event => {
     setSelected(_.toNumber(event.target.value));
@@ -152,10 +166,10 @@ const AddDialog = props => {
       return _.isEmpty(droppedMedia);
     }
     if (selected === 1) {
-      return _.isEmpty(embeddedMedia);
+      return !_.isEmpty(embeddedError) || !embeddedInputValue;
     }
     return true;
-  }, [selected, droppedMedia, embeddedMedia]);
+  }, [selected, droppedMedia, embeddedError, embeddedInputValue]);
 
   return (
     <Dialog fullWidth open={open} onClose={onClose}>
@@ -206,6 +220,7 @@ const AddDialog = props => {
             size="small"
             fullWidth
             onChange={onEmbeddedInputChange}
+            onBlur={onEmbeddedInputBlur}
             value={embeddedInputValue}
             error={!!embeddedError}
           />
@@ -452,7 +467,7 @@ const EditableMedia = props => {
 
   return (
     <>
-      <AddDialog open={open} onClose={onClose} onAdd={onAdd} />
+      {open && <AddDialog open={open} onClose={onClose} onAdd={onAdd} />}
       {value &&
         (value.type.startsWith('image') ? (
           <EditableImage image={value} onUpdate={onOpen} onDelete={onDelete} />
