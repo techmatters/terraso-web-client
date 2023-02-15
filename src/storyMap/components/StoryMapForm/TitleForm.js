@@ -88,6 +88,7 @@ const TitleForm = props => {
     <Box
       id="story-map-title"
       className="step active title"
+      component="section"
       sx={{ opacity: 0.99, pb: '35vh' }}
     >
       <MapLocationDialog
