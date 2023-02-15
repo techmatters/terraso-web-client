@@ -100,7 +100,7 @@ const StoryMapForm = props => {
     const input = document
       .getElementById('story-map-title')
       .querySelector('input');
-    input.focus();
+    input?.focus();
     init.current = true;
   }, [init]);
 
