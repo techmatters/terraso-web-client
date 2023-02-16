@@ -44,6 +44,7 @@ const CurrentFile = ({ file }) => {
 const DropZone = props => {
   const { t } = useTranslation();
   const {
+    label,
     maxSize,
     maxFiles,
     fileExtensions,
@@ -94,6 +95,7 @@ const DropZone = props => {
       })}
     >
       <input {...getInputProps()} />
+      {label}
       {loading && <CircularProgress aria-label={t('common.loader_label')} />}
       {!loading &&
         (isDragActive ? (
