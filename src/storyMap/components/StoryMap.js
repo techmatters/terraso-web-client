@@ -232,14 +232,14 @@ const StoryMap = props => {
   );
 
   const initialLocation = useMemo(() => {
-    if (config.titleLocation) {
-      return config.titleLocation;
+    if (config.titleTransition?.location) {
+      return config.titleTransition?.location;
     }
     const firstChapterWithLocation = config.chapters.find(
       chapter => chapter.location
     );
     return firstChapterWithLocation?.location;
-  }, [config.chapters, config.titleLocation]);
+  }, [config.chapters, config.titleTransition?.location]);
 
   useEffect(() => {
     const map = new mapboxgl.Map({
