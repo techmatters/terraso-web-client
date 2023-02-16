@@ -14,6 +14,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   FormHelperText,
   OutlinedInput,
   Paper,
@@ -52,6 +53,36 @@ const getDataFromEmbedded = value => {
     source: service,
     url,
   };
+};
+
+const AddSectionTitle = props => {
+  const { checked, value, onChange, label } = props;
+  return (
+    <FormControlLabel
+      sx={{ width: '100%', ml: 0, mr: 0 }}
+      onClick={event => event.stopPropagation()}
+      control={
+        <Radio
+          name="add-media-radio-selected"
+          checked={checked}
+          value={value}
+          onChange={onChange}
+        />
+      }
+      label={
+        <Typography
+          variant="h3"
+          sx={{
+            width: '100%',
+            p: 0,
+            fontWeight: 500,
+          }}
+        >
+          {label}
+        </Typography>
+      }
+    />
+  );
 };
 
 const AddDialog = props => {
@@ -168,14 +199,15 @@ const AddDialog = props => {
     <Dialog fullWidth open={open} onClose={onClose}>
       <DialogTitle>{t('storyMap.form_media_add_dialog_title')}</DialogTitle>
       <DialogContent>
-        <Radio
-          name="radio-selected"
-          checked={selected === 0}
-          value={0}
-          onChange={onRadioChange}
-          sx={{ float: 'left' }}
-        />
         <DropZone
+          label={
+            <AddSectionTitle
+              checked={selected === 0}
+              value={0}
+              onChange={onRadioChange}
+              label={t('storyMap.form_media_add_dialog_dropzone_label')}
+            />
+          }
           maxSize={STORY_MAP_MEDIA_MAX_SIZE}
           fileTypes={STORY_MAP_MEDIA_ACCEPTED_TYPES}
           fileExtensions={STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS}
@@ -188,17 +220,10 @@ const AddDialog = props => {
             },
           }}
         />
-        <Radio
-          name="radio-selected"
-          checked={selected === 1}
-          value={1}
-          onChange={onRadioChange}
-          sx={{ float: 'left' }}
-        />
         <Paper
           variant="outlined"
           sx={{
-            p: 2,
+            p: 1,
             mt: 1,
             borderRadius: 0,
             display: 'flex',
@@ -206,9 +231,12 @@ const AddDialog = props => {
             ...(selected === 1 ? selectedSx : notSelectedSx),
           }}
         >
-          <Typography sx={{ mb: 1 }}>
-            {t('storyMap.form_media_add_dialog_link_media')}
-          </Typography>
+          <AddSectionTitle
+            checked={selected === 1}
+            value={1}
+            onChange={onRadioChange}
+            label={t('storyMap.form_media_add_dialog_link_media')}
+          />
           <OutlinedInput
             size="small"
             fullWidth
@@ -216,6 +244,9 @@ const AddDialog = props => {
             onBlur={onEmbeddedInputBlur}
             value={embeddedInputValue}
             error={!!embeddedError}
+            placeholder={t(
+              'storyMap.form_media_add_dialog_link_media_placeholder'
+            )}
           />
           {embeddedError && (
             <FormHelperText error>{embeddedError}</FormHelperText>
