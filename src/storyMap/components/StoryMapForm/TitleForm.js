@@ -93,7 +93,7 @@ const TitleForm = props => {
     >
       <MapLocationDialog
         open={locationOpen}
-        location={config.titleLocation}
+        location={config.titleTransition?.location}
         title={t('storyMap.form_title_location_dialog_title')}
         onClose={onLocationClose}
         onConfirm={onLocationChangeWrapper}
