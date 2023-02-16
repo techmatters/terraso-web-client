@@ -54,11 +54,15 @@ const MapLocationDialog = props => {
       }
     }
 
+    if (config.titleTransition?.location) {
+      return config.titleTransition?.location;
+    }
+
     const firstChapterWithLocation = config.chapters.find(
       chapter => chapter.location
     );
     return firstChapterWithLocation?.location;
-  }, [location, config.chapters, chapterId]);
+  }, [location, config.chapters, config.titleTransition?.location, chapterId]);
 
   useEffect(() => {
     const headerHeight =
