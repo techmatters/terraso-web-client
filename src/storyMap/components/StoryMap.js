@@ -379,8 +379,6 @@ const StoryMap = props => {
           return;
         }
 
-        console.log({ mapCenter, transitionCenter });
-
         map[animation || transition.mapAnimation || 'flyTo'](
           transition.location
         );
