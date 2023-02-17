@@ -9,6 +9,7 @@ import {
   createEditor,
 } from 'slate';
 import { withHistory } from 'slate-history';
+import { jsx } from 'slate-hyperscript';
 import { Editable, useSelected, useSlate, withReact } from 'slate-react';
 import * as SlateReact from 'slate-react';
 
@@ -79,7 +80,59 @@ import theme from 'theme';
 const FORMAT_WRAPPERS = {
   bold: 'strong',
   italic: 'em',
-  underline: 'u',
+};
+const ELEMENT_TAGS = {
+  A: el => ({ type: 'link', url: el.getAttribute('href') }),
+  H1: () => ({ type: 'heading-one' }),
+  H2: () => ({ type: 'heading-two' }),
+  H3: () => ({ type: 'heading-three' }),
+  H4: () => ({ type: 'heading-four' }),
+  H5: () => ({ type: 'heading-five' }),
+  H6: () => ({ type: 'heading-six' }),
+  LI: () => ({ type: 'list-item' }),
+  OL: () => ({ type: 'numbered-list' }),
+  P: () => ({ type: 'paragraph' }),
+  UL: () => ({ type: 'bulleted-list' }),
+};
+
+const TEXT_TAGS = {
+  I: () => ({ italic: true }),
+  STRONG: () => ({ bold: true }),
+};
+
+export const deserialize = el => {
+  if (el.nodeType === 3) {
+    return el.textContent;
+  } else if (el.nodeType !== 1) {
+    return null;
+  } else if (el.nodeName === 'BR') {
+    return '\n';
+  }
+
+  const { nodeName } = el;
+  let parent = el;
+
+  let children = Array.from(parent.childNodes).map(deserialize).flat();
+
+  if (children.length === 0) {
+    children = [{ text: '' }];
+  }
+
+  if (el.nodeName === 'BODY') {
+    return jsx('fragment', {}, children);
+  }
+
+  if (ELEMENT_TAGS[nodeName]) {
+    const attrs = ELEMENT_TAGS[nodeName](el);
+    return jsx('element', attrs, children);
+  }
+
+  if (TEXT_TAGS[nodeName]) {
+    const attrs = TEXT_TAGS[nodeName](el);
+    return children.map(child => jsx('text', attrs, child));
+  }
+
+  return children;
 };
 
 const withInlines = editor => {
@@ -97,13 +150,16 @@ const withInlines = editor => {
   };
 
   editor.insertData = data => {
-    const text = data.getData('text/plain');
+    const html = data.getData('text/html');
 
-    if (text && isUrl(text)) {
-      wrapLink(editor, transformURL(text), text);
-    } else {
-      insertData(data);
+    if (html) {
+      const parsed = new DOMParser().parseFromString(html, 'text/html');
+      const fragment = deserialize(parsed.body);
+      Transforms.insertFragment(editor, fragment);
+      return;
     }
+
+    insertData(data);
   };
 
   return editor;
@@ -181,6 +237,24 @@ const Element = props => {
   switch (element.type) {
     case 'link':
       return <LinkComponent {...props} />;
+    case 'bulleted-list':
+      return <ul {...attributes}>{children}</ul>;
+    case 'heading-one':
+      return <h1 {...attributes}>{children}</h1>;
+    case 'heading-two':
+      return <h2 {...attributes}>{children}</h2>;
+    case 'heading-three':
+      return <h3 {...attributes}>{children}</h3>;
+    case 'heading-four':
+      return <h4 {...attributes}>{children}</h4>;
+    case 'heading-five':
+      return <h5 {...attributes}>{children}</h5>;
+    case 'heading-six':
+      return <h6 {...attributes}>{children}</h6>;
+    case 'list-item':
+      return <li {...attributes}>{children}</li>;
+    case 'numbered-list':
+      return <ol {...attributes}>{children}</ol>;
     default:
       return <p {...attributes}>{children}</p>;
   }
