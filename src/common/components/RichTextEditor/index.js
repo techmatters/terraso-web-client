@@ -18,6 +18,7 @@ import FormatItalicIcon from '@mui/icons-material/FormatItalic';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
 import {
+  Tooltip as BaseTooltip,
   Button,
   Dialog,
   DialogActions,
@@ -27,7 +28,6 @@ import {
   FormHelperText,
   OutlinedInput,
   Paper,
-  Tooltip,
 } from '@mui/material';
 
 import { URL_SCHEMA, isUrl, transformURL } from 'common/utils';
@@ -295,6 +295,20 @@ const Leaf = ({ attributes, children, leaf }) => {
   );
 };
 
+const Tooltip = withProps(BaseTooltip, {
+  placement: 'top',
+  PopperProps: {
+    modifiers: [
+      {
+        name: 'offset',
+        options: {
+          offset: [0, -10],
+        },
+      },
+    ],
+  },
+});
+
 const AddLinkButton = () => {
   const { t } = useTranslation();
   const editor = useSlate();
@@ -351,7 +365,7 @@ const AddLinkButton = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Tooltip title={label} placement="top">
+      <Tooltip title={label}>
         <Button
           aria-label={label}
           disabled={isLinkActive(editor)}
@@ -383,7 +397,7 @@ const RemoveLinkButton = () => {
         }
       }}
     >
-      <Tooltip title={label} placement="top">
+      <Tooltip title={label}>
         <LinkOffIcon />
       </Tooltip>
     </Button>
@@ -409,7 +423,7 @@ const MarkButton = props => {
   const editor = useSlate();
   const { format, Icon, label } = props;
   return (
-    <Tooltip title={label} placement="top">
+    <Tooltip title={label}>
       <Button
         aria-label={label}
         onMouseDown={event => {
