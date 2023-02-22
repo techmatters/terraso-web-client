@@ -109,7 +109,7 @@ test('Restricted: Display component for unallowed users', async () => {
     {
       resource: {},
       permission: 'resource.action',
-      forUnallowedUsers: true,
+      toDisallowedUsers: true,
       children: <div>Restricted content</div>,
     },
     rules
@@ -124,7 +124,7 @@ test('Restricted: Hide component for allowed users', async () => {
     {
       resource: {},
       permission: 'resource.action',
-      forUnallowedUsers: true,
+      toDisallowedUsers: true,
       children: <div>Restricted content</div>,
     },
     rules

@@ -308,7 +308,7 @@ const LandscapeView = () => {
                   />
                   <LandscapeBoundaryDownload landscape={landscape} />
                 </Paper>
-                <Restricted permission="landscape.change" resource={landscape} forUnallowedUsers={true}>
+                <Restricted permission="landscape.change" resource={landscape} toDisallowedUsers={true}>
                   <InlineHelp
                     items={[
                       {

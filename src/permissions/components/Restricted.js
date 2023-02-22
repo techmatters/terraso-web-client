@@ -26,7 +26,7 @@ const Restricted = props => {
   const {
     permission,
     resource,
-    forUnallowedUsers = false,
+    toDisallowedUsers = false,
     FallbackComponent,
     LoadingComponent,
     children,
@@ -41,7 +41,7 @@ const Restricted = props => {
     );
   }
 
-  if (forUnallowedUsers ? !allowed : allowed) {
+  if (toDisallowedUsers ? !allowed : allowed) {
     return <>{children}</>;
   }
 
