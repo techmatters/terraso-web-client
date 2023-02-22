@@ -67,7 +67,6 @@ const StoryMapForm = props => {
   const { onPublish, onSaveDraft } = props;
   const { saving } = useSelector(_.get('storyMap.form'));
   const { config, setConfig, preview, init } = useConfigContext();
-  const [height, setHeight] = useState('100vh');
   const [mapHeight, setMapHeight] = useState();
   const [mapWidth, setMapWidth] = useState();
   const [currentStepId, setCurrentStepId] = useState();
@@ -83,13 +82,12 @@ const StoryMapForm = props => {
       return;
     }
     const headerHeight =
-      document.getElementById('header-container').clientHeight;
+      document.getElementById('header-container')?.clientHeight;
     const footerHeight =
-      document.getElementsByClassName('footer')[0].clientHeight;
+      document.getElementsByClassName('footer')?.[0]?.clientHeight;
     const formHeaderHeight =
-      document.getElementById('form-header').clientHeight;
+      document.getElementById('form-header')?.clientHeight;
 
-    setHeight(`calc(100vh - (${headerHeight}px + ${footerHeight}px))`);
     setMapHeight(
       `calc(100vh - (${headerHeight}px + ${footerHeight}px + ${formHeaderHeight}px))`
     );
@@ -165,13 +163,13 @@ const StoryMapForm = props => {
   return (
     <>
       {saving && <PageLoader />}
+      <TopBar onPublish={onPublishWrapper} onSaveDraft={onSaveDraftWrapper} />
       <Grid
         container
         justifyContent="flex-start"
         alignItems="flex-start"
-        sx={{ height }}
+        sx={{ height: mapHeight }}
       >
-        <TopBar onPublish={onPublishWrapper} onSaveDraft={onSaveDraftWrapper} />
         <ChaptersSidebar
           config={config}
           currentStepId={currentStepId}

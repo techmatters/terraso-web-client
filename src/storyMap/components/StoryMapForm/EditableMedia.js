@@ -272,7 +272,7 @@ const AddDialog = props => {
 const EditableImage = props => {
   const { t } = useTranslation();
   const { getMediaFile } = useConfigContext();
-  const { image, onUpdate, onDelete, processing } = props;
+  const { label, image, onUpdate, onDelete, processing } = props;
 
   const imageSrc = useMemo(() => {
     if (image.signedUrl) {
@@ -290,7 +290,7 @@ const EditableImage = props => {
         position: 'relative',
       }}
     >
-      <img src={imageSrc} alt="TODO" style={{ width: '100%' }} />
+      <img src={imageSrc} alt={label} style={{ width: '100%' }} />
       <Stack
         justifyContent="center"
         alignItems="center"
@@ -472,7 +472,7 @@ const EditableEmbedded = props => {
 const EditableMedia = props => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const { value, onChange } = props;
+  const { label, value, onChange } = props;
 
   const onAdd = useCallback(
     media => {
@@ -494,11 +494,22 @@ const EditableMedia = props => {
       {open && <AddDialog open={open} onClose={onClose} onAdd={onAdd} />}
       {value &&
         (value.type.startsWith('image') ? (
-          <EditableImage image={value} onUpdate={onOpen} onDelete={onDelete} />
+          <EditableImage
+            label={label}
+            image={value}
+            onUpdate={onOpen}
+            onDelete={onDelete}
+          />
         ) : value.type.startsWith('audio') ? (
-          <EditableAudio audio={value} onUpdate={onOpen} onDelete={onDelete} />
+          <EditableAudio
+            label={label}
+            audio={value}
+            onUpdate={onOpen}
+            onDelete={onDelete}
+          />
         ) : value.type.startsWith('embedded') ? (
           <EditableEmbedded
+            label={label}
             embedded={value}
             onUpdate={onOpen}
             onDelete={onDelete}

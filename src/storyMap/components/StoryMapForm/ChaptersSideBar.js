@@ -42,6 +42,7 @@ const ChaptersSidebar = props => {
       id="chapters-sidebar"
       item
       component={List}
+      aria-label={t('storyMap.form_chapters_sidebar_section_label')}
       sx={{ height, overflow: 'auto', width: '200px' }}
     >
       {listItems.map(item => (

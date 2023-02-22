@@ -31,9 +31,13 @@ const TopBar = props => {
   );
 
   return (
-    <>
+    <Grid
+      id="form-header"
+      container
+      component="section"
+      aria-label={t('storyMap.form_header_section_label')}
+    >
       <Grid
-        id="form-header"
         item
         xs={2}
         sx={{
@@ -83,7 +87,7 @@ const TopBar = props => {
           {t('storyMap.form_publish_button')}
         </Button>
       </Grid>
-    </>
+    </Grid>
   );
 };
 

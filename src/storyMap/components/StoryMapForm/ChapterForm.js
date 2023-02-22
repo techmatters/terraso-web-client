@@ -155,7 +155,14 @@ const ChapterForm = ({ theme, record }) => {
   );
 
   return (
-    <Box className={classList} direction="row" component="section">
+    <Box
+      className={classList}
+      direction="row"
+      component="section"
+      aria-label={t('storyMap.view_chapter_label', {
+        title: record.title || t('storyMap.form_chapter_no_title_label'),
+      })}
+    >
       {/* div with ID added because of an Intersection Observer issue with overflow */}
       <div className="step" id={record.id}></div>
       <ChapterConfig
@@ -176,10 +183,12 @@ const ChapterForm = ({ theme, record }) => {
             focus={isNew}
           />
           <EditableMedia
+            label={t('storyMap.form_chapter_media_label')}
             value={record.media}
             onChange={onFieldChange('media')}
           />
           <EditableRichText
+            label={t('storyMap.form_chapter_description_label')}
             placeholder={t('storyMap.form_chapter_description_placeholder')}
             value={record.description}
             onChange={onFieldChange('description')}
