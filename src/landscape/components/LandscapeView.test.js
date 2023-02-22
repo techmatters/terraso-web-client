@@ -245,7 +245,7 @@ test('LandscapeView: Not found', async () => {
 
 test('LandscapeView: Display data', async () => {
   await baseViewTest();
-  
+
   expect(
     screen.getByRole('button', { name: 'Leave: Landscape Name' })
   ).toBeInTheDocument();
@@ -255,7 +255,9 @@ test('LandscapeView: Display data', async () => {
 test('LandscapeView: Managers do not see warning', async () => {
   await baseViewTest('MANAGER');
 
-  expect(screen.queryByText('Something wrong with the map?')).not.toBeInTheDocument();
+  expect(
+    screen.queryByText('Something wrong with the map?')
+  ).not.toBeInTheDocument();
 });
 
 test('LandscapeView: Update Shared Data', async () => {
