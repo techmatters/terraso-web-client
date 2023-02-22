@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import mapboxgl from '!mapbox-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { useTranslation } from 'react-i18next';
 
@@ -15,10 +13,11 @@ import {
   Stack,
 } from '@mui/material';
 
+import mapboxgl from 'gis/mapbox';
+
 import { MAPBOX_ACCESS_TOKEN, MAPBOX_STYLE_DEFAULT } from 'config';
 
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
-import 'mapbox-gl/dist/mapbox-gl.css';
 
 import _ from 'lodash/fp';
 
@@ -66,7 +65,7 @@ const MapLocationDialog = props => {
 
   useEffect(() => {
     const headerHeight =
-      document.getElementById('header-container').clientHeight;
+      document.getElementById('header-container')?.clientHeight;
     setMarginTop(headerHeight);
   }, []);
 
