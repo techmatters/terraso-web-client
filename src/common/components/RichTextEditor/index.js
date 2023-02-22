@@ -441,6 +441,7 @@ const RichTextEditor = props => {
   const { t } = useTranslation();
   const {
     id,
+    label,
     editable = true,
     value,
     onChange,
@@ -511,6 +512,7 @@ const RichTextEditor = props => {
         )}
         <Editable
           id={id}
+          aria-label={label}
           style={
             addContainer
               ? {

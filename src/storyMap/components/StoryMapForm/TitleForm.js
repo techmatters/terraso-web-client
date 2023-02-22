@@ -89,6 +89,7 @@ const TitleForm = props => {
       id="story-map-title"
       className="step active title"
       component="section"
+      aria-label={t('storyMap.view_title_label', { title: config.title })}
       sx={{ opacity: 0.99, pb: '35vh' }}
     >
       <MapLocationDialog

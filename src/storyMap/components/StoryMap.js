@@ -5,22 +5,21 @@ import mapboxgl from '!mapbox-gl';
 import _ from 'lodash/fp';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
-
-import scrollama from 'scrollama';
-
-import './StoryMap.css';
-
 import { useTranslation } from 'react-i18next';
+import scrollama from 'scrollama';
 
 import { Box, Link } from '@mui/material';
 
 import RichTextEditor from 'common/components/RichTextEditor';
 
+import mapboxgl from 'gis/mapbox';
 import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
 
 import { MAPBOX_ACCESS_TOKEN } from 'config';
 
 import { ALIGNMENTS, LAYER_TYPES } from '../storyMapConstants';
+
+import './StoryMap.css';
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
@@ -74,6 +73,7 @@ const Image = ({ record }) => {
 };
 
 const Chapter = ({ theme, record }) => {
+  const { t } = useTranslation();
   const classList = [
     'step-container',
     'step',
@@ -84,14 +84,23 @@ const Chapter = ({ theme, record }) => {
   const hasVisualMedia = chapterHasVisualMedia(record);
 
   return (
-    <Box id={record.id} className={classList}>
+    <Box
+      id={record.id}
+      component="section"
+      aria-label={t('storyMap.view_chapter_label', { title: record.title })}
+      className={classList}
+    >
       <Box
         className={`${theme} step-content`}
         sx={{
           width: hasVisualMedia ? '50vw' : 'auto',
         }}
       >
-        {record.title && <h3 className="title">{record.title}</h3>}
+        {record.title && (
+          <h3 id={`title-${record.id}`} className="title">
+            {record.title}
+          </h3>
+        )}
         {record.media &&
           (record.media.type.startsWith('image') ? (
             <Image record={record} />
@@ -135,9 +144,14 @@ const Title = props => {
   }));
 
   return (
-    <Box id="story-map-title" className="step step-container fully title">
+    <Box
+      id="story-map-title"
+      component="section"
+      aria-label={t('storyMap.view_title_label', { title: config.title })}
+      className="step step-container fully title"
+    >
       <Box className={`${config.theme} step-content`}>
-        <h1>{config.title}</h1>
+        <h1 id="story-view-title-id">{config.title}</h1>
         {config.subtitle && <h2>{config.subtitle}</h2>}
         {config.byline && <p>{config.byline}</p>}
         <p>
@@ -185,6 +199,7 @@ const getTransition = (config, id) => {
 };
 
 const StoryMap = props => {
+  const { t } = useTranslation();
   const {
     config,
     onStepChange,
@@ -499,10 +514,17 @@ const StoryMap = props => {
 
   return (
     <>
-      <Box id="map" ref={mapContainer} sx={{ ...mapCss }} />
-      <Box id="mapInset" ref={mapInsetContainer}></Box>
+      <section aria-label={t('storyMap.view_map_label')}>
+        <Box id="map" ref={mapContainer} sx={{ ...mapCss }} />
+        <Box id="mapInset" ref={mapInsetContainer}></Box>
+      </section>
       <Box id="story">
-        <Box id="features" className={ALIGNMENTS[config.alignment]}>
+        <Box
+          component="section"
+          aria-label={t('storyMap.view_chapters_label')}
+          id="features"
+          className={ALIGNMENTS[config.alignment]}
+        >
           <TitleComponent config={config} />
           {config.chapters.map(chapter => (
             <ChapterComponent
