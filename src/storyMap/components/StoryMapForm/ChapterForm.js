@@ -42,22 +42,22 @@ const ChapterConfig = props => {
   const options = useMemo(
     () => [
       {
-        label: 'TODO',
+        label: t('storyMap.form_chapter_alignment_left'),
         Icon: AlignHorizontalLeftIcon,
         value: 'left',
       },
       {
-        label: 'TODO',
+        label: t('storyMap.form_chapter_alignment_center'),
         Icon: AlignHorizontalCenterIcon,
         value: 'center',
       },
       {
-        label: 'TODO',
+        label: t('storyMap.form_chapter_alignment_right'),
         Icon: AlignHorizontalRightIcon,
         value: 'right',
       },
     ],
-    []
+    [t]
   );
 
   const onLocationClick = useCallback(() => {
@@ -103,7 +103,10 @@ const ChapterConfig = props => {
           {children}
         </Grid>
         <Grid item xs={1}>
-          <ButtonGroup orientation="vertical" aria-label="TODO">
+          <ButtonGroup
+            orientation="vertical"
+            aria-label={t('storyMap.form_chapter_alignment_buttons')}
+          >
             {options.map(option => (
               <ConfigButton
                 key={option.value}
