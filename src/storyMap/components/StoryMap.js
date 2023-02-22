@@ -1,10 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import mapboxgl from '!mapbox-gl';
 import _ from 'lodash/fp';
-
-import 'mapbox-gl/dist/mapbox-gl.css';
 import { useTranslation } from 'react-i18next';
 import scrollama from 'scrollama';
 
