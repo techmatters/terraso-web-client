@@ -257,11 +257,6 @@ const LandscapeView = () => {
     setRefreshing(refreshing);
   }, [refreshing, setRefreshing]);
 
-  const { loading: loadingIsManager, allowed: isManager } = usePermission(
-    'landscape.change',
-    landscape
-  );
-
   if (fetching) {
     return <PageLoader />;
   }
@@ -314,7 +309,7 @@ const LandscapeView = () => {
                   />
                   <LandscapeBoundaryDownload landscape={landscape} />
                 </Paper>
-                {!loadingIsManager && !isManager && (
+                <Restricted permission="landscape.change" resource={landscape} forUnallowedUsers={true}>
                   <InlineHelp
                     items={[
                       {
@@ -337,7 +332,7 @@ const LandscapeView = () => {
                       },
                     ]}
                   />
-                )}
+                </Restricted>
               </CardContent>
               <Restricted permission="landscape.change" resource={landscape}>
                 <CardActions sx={{ paddingTop: 0 }}>
