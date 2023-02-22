@@ -60,7 +60,7 @@ beforeEach(() => {
   global.URL.createObjectURL = jest.fn();
 });
 
-const baseViewTest = async () => {
+const baseViewTest = async (userRole = 'MEMBER') => {
   global.fetch.mockReturnValue(
     Promise.resolve({
       json: () => [],
@@ -84,7 +84,7 @@ const baseViewTest = async () => {
     'edges[0].node',
     {
       id: 'user-id',
-      userRole: 'MEMBER',
+      userRole: userRole,
       membershipStatus: 'APPROVED',
     },
     {}
@@ -190,9 +190,6 @@ const baseViewTest = async () => {
     screen.getByText(/6 Terraso members joined Landscape Name./i)
   ).toBeInTheDocument();
   expect(screen.getByText(/\+2/i)).toBeInTheDocument();
-  expect(
-    screen.getByRole('button', { name: 'Leave: Landscape Name' })
-  ).toBeInTheDocument();
 
   // Map
   expect(screen.getByRole('button', { name: 'Zoom in' })).toBeInTheDocument();
@@ -246,7 +243,20 @@ test('LandscapeView: Not found', async () => {
   expect(screen.getByText(/Landscape not found/i)).toBeInTheDocument();
 });
 
-test('LandscapeView: Display data', baseViewTest);
+test('LandscapeView: Display data', async () => {
+  await baseViewTest();
+  
+  expect(
+    screen.getByRole('button', { name: 'Leave: Landscape Name' })
+  ).toBeInTheDocument();
+  expect(screen.getByText('Something wrong with the map?')).toBeInTheDocument();
+});
+
+test('LandscapeView: Managers do not see warning', async () => {
+  await baseViewTest('MANAGER');
+
+  expect(screen.queryByText('Something wrong with the map?')).not.toBeInTheDocument();
+});
 
 test('LandscapeView: Update Shared Data', async () => {
   await baseViewTest();
