@@ -632,8 +632,8 @@
         "rich_text_editor_toolbar_link_add": "Link",
         "rich_text_editor_toolbar_link_remove": "Unlink",
         "rich_text_editor_toolbar_bold": "Bold",
-        "rich_text_editor_toolbar_italic": "Italic"
-
+        "rich_text_editor_toolbar_italic": "Italic",
+        "rich_text_editor_toolbar_label": "Textbox toolbar"
     },
     "share": {
         "button": "Share",
@@ -803,6 +803,8 @@
         "form_preview_title": "You are previewing “{{title}}”.",
         "form_chapter_title_placeholder": "Enter your chapter title here",
         "form_chapter_description_placeholder": "Write your story here...",
+        "form_chapter_description_label": "Chapter description",
+        "form_chapter_media_label": "Chapter media",
         "form_title_placeholder": "Enter your story map title here",
         "form_subtitle_placeholder": "Add subtitle (optional)",
         "form_byline_placeholder": "Add byline (optional)",
@@ -864,6 +866,12 @@
         "update_story_map": "<strong>{{title}}</strong> story map has been updated.",
         "update_story_map_published": "<strong>{{title}}</strong> story map has been published. Anyone with the link can view it.",
         "added_story_map": "<strong>{{title}}</strong> story map has been created.",
-        "added_story_map_published": "<strong>{{title}}</strong> story map has been created and published. Anyone with the link can view it."
+        "added_story_map_published": "<strong>{{title}}</strong> story map has been created and published. Anyone with the link can view it.",
+        "form_chapters_sidebar_section_label": "[TODO] Chapters sidebar",
+        "form_header_section_label": "[TODO] Story editor Header",
+        "view_map_label": "Map",
+        "view_chapters_label": "Chapters",
+        "view_chapter_label": "Chapter: {{title}}",
+        "view_title_label": "Title for: {{title}}"
     }
 }

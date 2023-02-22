@@ -1,12 +1,17 @@
 import React from 'react';
 
+import { useTranslation } from 'react-i18next';
+
 import { ButtonGroup, Divider, Stack } from '@mui/material';
 
 const Toolbar = props => {
+  const { t } = useTranslation();
   const { groups } = props;
 
   return (
     <Stack
+      role="toolbar"
+      aria-label={t('common.rich_text_editor_toolbar_label')}
       divider={
         <Divider
           flexItem
