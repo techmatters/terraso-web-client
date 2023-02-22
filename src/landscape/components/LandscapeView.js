@@ -17,6 +17,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
+import { usePermission } from 'permissions';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -256,6 +257,11 @@ const LandscapeView = () => {
     setRefreshing(refreshing);
   }, [refreshing, setRefreshing]);
 
+  const { loading: loadingIsManager, allowed: isManager } = usePermission(
+    'landscape.change',
+    landscape
+  );
+
   if (fetching) {
     return <PageLoader />;
   }
@@ -308,28 +314,30 @@ const LandscapeView = () => {
                   />
                   <LandscapeBoundaryDownload landscape={landscape} />
                 </Paper>
-                <InlineHelp
-                  items={[
-                    {
-                      title: t('landscape.view_map_boundaries_help'),
-                      details: (
-                        <Trans i18nKey="landscape.view_map_boundaries_help_details">
-                          Prefix
-                          <ExternalLink
-                            href={t('landscape.view_map_boundaries_help_url')}
-                          >
-                            link
-                            <LaunchIcon
-                              fontSize="small"
-                              sx={{ verticalAlign: 'bottom' }}
-                            />
-                          </ExternalLink>
-                          .
-                        </Trans>
-                      ),
-                    },
-                  ]}
-                />
+                {!loadingIsManager && !isManager && (
+                  <InlineHelp
+                    items={[
+                      {
+                        title: t('landscape.view_map_boundaries_help'),
+                        details: (
+                          <Trans i18nKey="landscape.view_map_boundaries_help_details">
+                            Prefix
+                            <ExternalLink
+                              href={t('landscape.view_map_boundaries_help_url')}
+                            >
+                              link
+                              <LaunchIcon
+                                fontSize="small"
+                                sx={{ verticalAlign: 'bottom' }}
+                              />
+                            </ExternalLink>
+                            .
+                          </Trans>
+                        ),
+                      },
+                    ]}
+                  />
+                )}
               </CardContent>
               <Restricted permission="landscape.change" resource={landscape}>
                 <CardActions sx={{ paddingTop: 0 }}>
