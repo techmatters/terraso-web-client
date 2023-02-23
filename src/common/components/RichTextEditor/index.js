@@ -10,8 +10,7 @@ import {
 } from 'slate';
 import { withHistory } from 'slate-history';
 import { jsx } from 'slate-hyperscript';
-import { Editable, useSelected, useSlate, withReact } from 'slate-react';
-import * as SlateReact from 'slate-react';
+import { Editable, Slate, useSelected, useSlate, withReact } from 'slate-react';
 
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
@@ -487,7 +486,7 @@ const RichTextEditor = props => {
 
   return (
     <Container>
-      <SlateReact.Slate editor={editor} value={parsedValue} onChange={onChange}>
+      <Slate editor={editor} value={parsedValue} onChange={onChange}>
         {editable && (
           <Toolbar
             groups={[
@@ -526,7 +525,7 @@ const RichTextEditor = props => {
           renderLeaf={props => <Leaf {...props} />}
           placeholder={placeholder}
         />
-      </SlateReact.Slate>
+      </Slate>
     </Container>
   );
 };

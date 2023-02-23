@@ -184,6 +184,11 @@ const ChapterForm = ({ theme, record }) => {
             value={record.title}
             onChange={onFieldChange('title')}
             focus={isNew}
+            inputProps={{
+              inputProps: {
+                'aria-label': t('storyMap.form_chapter_title_label'),
+              },
+            }}
           />
           <EditableMedia
             label={t('storyMap.form_chapter_media_label')}
