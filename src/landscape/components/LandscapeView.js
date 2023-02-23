@@ -17,7 +17,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
-import { usePermission } from 'permissions';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -257,11 +256,6 @@ const LandscapeView = () => {
     setRefreshing(refreshing);
   }, [refreshing, setRefreshing]);
 
-  const { loading: loadingIsManager, allowed: isManager } = usePermission(
-    'landscape.change',
-    landscape
-  );
-
   if (fetching) {
     return <PageLoader />;
   }
@@ -314,7 +308,11 @@ const LandscapeView = () => {
                   />
                   <LandscapeBoundaryDownload landscape={landscape} />
                 </Paper>
-                {!loadingIsManager && !isManager && (
+                <Restricted
+                  permission="landscape.change"
+                  resource={landscape}
+                  toDisallowedUsers={true}
+                >
                   <InlineHelp
                     items={[
                       {
@@ -337,7 +335,7 @@ const LandscapeView = () => {
                       },
                     ]}
                   />
-                )}
+                </Restricted>
               </CardContent>
               <Restricted permission="landscape.change" resource={landscape}>
                 <CardActions sx={{ paddingTop: 0 }}>

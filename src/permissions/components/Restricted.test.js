@@ -101,6 +101,37 @@ test('Restricted: Hide denied component', async () => {
   expect(screen.queryByText('Restricted content')).not.toBeInTheDocument();
   expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
 });
+test('Restricted: Display component for unallowed users', async () => {
+  const rules = {
+    'resource.action': () => Promise.resolve(false),
+  };
+  await setup(
+    {
+      resource: {},
+      permission: 'resource.action',
+      toDisallowedUsers: true,
+      children: <div>Restricted content</div>,
+    },
+    rules
+  );
+  expect(screen.getByText('Restricted content')).toBeInTheDocument();
+});
+test('Restricted: Hide component for allowed users', async () => {
+  const rules = {
+    'resource.action': () => Promise.resolve(true),
+  };
+  await setup(
+    {
+      resource: {},
+      permission: 'resource.action',
+      toDisallowedUsers: true,
+      children: <div>Restricted content</div>,
+    },
+    rules
+  );
+  expect(screen.queryByText('Restricted content')).not.toBeInTheDocument();
+  expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+});
 test('Restricted: Display fallback component', async () => {
   await setup({
     resource: {},
