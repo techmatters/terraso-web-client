@@ -528,7 +528,7 @@ const StoryMap = props => {
     <>
       <section aria-label={t('storyMap.view_map_label')}>
         <Box id="map" ref={mapContainer} sx={{ ...mapCss }} />
-        <Box id="mapInset" ref={mapInsetContainer}></Box>
+        <Box id="map-inset" ref={mapInsetContainer}></Box>
       </section>
       <Box id="story">
         <Box
