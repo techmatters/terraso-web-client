@@ -872,7 +872,7 @@
         "update_story_map": "<strong>{{title}}</strong> story map has been updated.",
         "update_story_map_published": "<strong>{{title}}</strong> story map has been published.",
         "added_story_map": "<strong>{{title}}</strong> story map has been created.",
-        "added_story_map_published": "<strong>{{title}}</strong> story map has been created and published. Anyone with the link can view it.",
+        "added_story_map_published": "<strong>{{title}}</strong> story map has been created and published.",
         "form_chapters_sidebar_section_label": "[TODO] Chapters sidebar",
         "form_header_section_label": "[TODO] Story editor Header",
         "view_map_label": "Map",
