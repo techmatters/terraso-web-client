@@ -29,13 +29,20 @@ import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
 
 import { MAPBOX_ACCESS_TOKEN } from 'config';
 
-import { ALIGNMENTS, LAYER_TYPES } from '../storyMapConstants';
+import {
+  ALIGNMENTS,
+  LAYER_TYPES,
+  MAPBOX_DEM_SOURCE,
+  MAPBOX_FOG,
+  MAPBOX_SKY_LAYER,
+} from '../storyMapConstants';
 
 import './StoryMap.css';
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
 const CURRENT_LOCATION_CHECK_PRESSISION = 13; // 13 decimal places
+const ROTATION_DURATION = 30000; // 30 seconds
 
 const transformRequest = url => {
   const hasQuery = url.indexOf('?') !== -1;
@@ -81,7 +88,13 @@ const Audio = ({ record }) => {
 };
 
 const Image = ({ record }) => {
-  return <img src={record.media.signedUrl} alt={record.title}></img>;
+  return (
+    <img
+      src={record.media.signedUrl || record.media.url}
+      alt={record.title}
+      width="100%"
+    ></img>
+  );
 };
 
 const Chapter = ({ theme, record }) => {
@@ -138,7 +151,9 @@ const Title = props => {
   const { t } = useTranslation();
   const { config } = props;
 
-  if (!config.title) return null;
+  if (!config.title) {
+    return null;
+  }
 
   const scrollTo = id => {
     const element = document.getElementById(id);
@@ -281,43 +296,26 @@ const StoryMap = props => {
 
     map.on('load', function () {
       if (config.use3dTerrain) {
-        map.addSource('mapbox-dem', {
-          type: 'raster-dem',
-          url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
-          tileSize: 512,
-          maxzoom: 14,
-        });
+        map.addSource('mapbox-dem', MAPBOX_DEM_SOURCE);
         // add the DEM source as a terrain layer with exaggerated height
         map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
 
         // add a sky layer that will show when the map is highly pitched
-        map.addLayer({
-          id: 'sky',
-          type: 'sky',
-          paint: {
-            'sky-type': 'atmosphere',
-            'sky-atmosphere-sun': [0.0, 0.0],
-            'sky-atmosphere-sun-intensity': 15,
-          },
-        });
+        map.addLayer(MAPBOX_SKY_LAYER);
       }
 
       setMap(map);
     });
     map.on('style.load', () => {
-      map.setFog({
-        color: 'rgb(169, 169, 188)', // Lower atmosphere
-        'high-color': 'rgb(16, 16, 20)', // Upper atmosphere
-        'horizon-blend': 0.02, // Atmosphere thickness (default 0.2 at low zooms)
-        'space-color': 'rgb(20, 20, 26)', // Background color
-        'star-intensity': 0.1, // Background star brightness (default 0.35 at low zoooms )
-      });
+      map.setFog(MAPBOX_FOG);
     });
     return () => map.remove();
   }, [config.style, initialLocation, config.use3dTerrain, config.projection]);
 
   useEffect(() => {
-    if (!map || !config.inset) return;
+    if (!map || !config.inset) {
+      return;
+    }
 
     const newInsetMap = new mapboxgl.Map({
       container: mapInsetContainer.current,
@@ -369,7 +367,9 @@ const StoryMap = props => {
   }, [map, config]);
 
   useEffect(() => {
-    if (!map || !config.inset || !insetMap) return;
+    if (!map || !config.inset || !insetMap) {
+      return;
+    }
 
     function updateInsetLayer(bounds) {
       insetMap.getSource('boundsSource').setData(bounds);
@@ -389,7 +389,9 @@ const StoryMap = props => {
 
   const startTransition = useCallback(
     transition => {
-      if (!map || (config.inset && !insetMap) || !transition) return;
+      if (!map || (config.inset && !insetMap) || !transition) {
+        return;
+      }
 
       if (transition.location) {
         const mapCenter = map.getCenter();
@@ -444,7 +446,7 @@ const StoryMap = props => {
         map.once('moveend', () => {
           const rotateNumber = map.getBearing();
           map.rotateTo(rotateNumber + 180, {
-            duration: 30000,
+            duration: ROTATION_DURATION,
             easing: t => t,
           });
         });
@@ -478,11 +480,11 @@ const StoryMap = props => {
         onStepChange?.(response.element.id);
 
         if (config.auto) {
-          const nextChapter = (index + 1) % config.chapters.length;
+          const nextChapterIndex = (index + 1) % config.chapters.length;
           map.once('moveend', () => {
             document
               .querySelectorAll(
-                '[data-scrollama-index="' + nextChapter.toString() + '"]'
+                '[data-scrollama-index="' + nextChapterIndex.toString() + '"]'
               )[0]
               .scrollIntoView();
           });

@@ -52,8 +52,23 @@ import { useConfigContext } from './configContext';
 
 import theme from 'theme';
 
-const getYoutubeUrl = id => `https://www.youtube.com/embed/${id}`;
+const getYouTubeUrl = id => `https://www.youtube.com/embed/${id}`;
 const getVimeoUrl = id => `https://player.vimeo.com/video/${id}`;
+
+const getVideoUrl = id => {
+  const { service } = getVideoId(id);
+
+  if (service === 'youtube') {
+    return getYouTubeUrl(id);
+  }
+
+  if (service === 'vimeo') {
+    return getVimeoUrl(id);
+  }
+
+  console.error(`Invalid video service: ${service}`);
+  return null;
+};
 
 const getDataFromEmbedded = value => {
   const { id, service } = getVideoId(value);
@@ -62,12 +77,10 @@ const getDataFromEmbedded = value => {
     return null;
   }
 
-  const url = service === 'youtube' ? getYoutubeUrl(id) : getVimeoUrl(id);
-
   return {
     type: 'embedded',
     source: service,
-    url,
+    url: getVideoUrl(id),
   };
 };
 

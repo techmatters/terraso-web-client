@@ -81,16 +81,16 @@ export const deleteStoryMap = storyMap => {
 export const addStoryMap = async ({ storyMap, files }) => {
   const path = '/story-map/add/';
 
-  const body = new FormData();
-  body.append('title', storyMap.config.title);
-  body.append('is_published', storyMap.published);
-  body.append('configuration', JSON.stringify(storyMap.config));
+  const storyMapForm = new FormData();
+  storyMapForm.append('title', storyMap.config.title);
+  storyMapForm.append('is_published', storyMap.published);
+  storyMapForm.append('configuration', JSON.stringify(storyMap.config));
   Object.keys(files).forEach((fileId, index) => {
     const file = files[fileId].file;
-    body.append('files', file, fileId);
+    storyMapForm.append('files', file, fileId);
   });
 
-  const jsonResponse = await terrasoApi.request({ path, body });
+  const jsonResponse = await terrasoApi.request({ path, body: storyMapForm });
 
   if (_.has('error', jsonResponse)) {
     await Promise.reject(Object.values(jsonResponse.error).join('. '));
@@ -101,17 +101,17 @@ export const addStoryMap = async ({ storyMap, files }) => {
 export const updateStoryMap = async ({ storyMap, files }) => {
   const path = '/story-map/update/';
 
-  const body = new FormData();
-  body.append('id', storyMap.id);
-  body.append('title', storyMap.config.title);
-  body.append('is_published', storyMap.published);
-  body.append('configuration', JSON.stringify(storyMap.config));
+  const storyMapForm = new FormData();
+  storyMapForm.append('id', storyMap.id);
+  storyMapForm.append('title', storyMap.config.title);
+  storyMapForm.append('is_published', storyMap.published);
+  storyMapForm.append('configuration', JSON.stringify(storyMap.config));
   Object.keys(files).forEach((fileId, index) => {
     const file = files[fileId].file;
-    body.append('files', file, fileId);
+    storyMapForm.append('files', file, fileId);
   });
 
-  const jsonResponse = await terrasoApi.request({ path, body });
+  const jsonResponse = await terrasoApi.request({ path, body: storyMapForm });
 
   if (_.has('error', jsonResponse)) {
     await Promise.reject(Object.values(jsonResponse.error).join('. '));
