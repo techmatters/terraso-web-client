@@ -794,7 +794,7 @@
         "form_preview_close": "Close",
         "form_preview_title": "You are previewing “{{title}}”.",
         "form_chapter_title_placeholder": "Enter your chapter title here",
-        "form_chapter_description_placeholder": "Write your story here...",
+        "form_chapter_description_placeholder": "Write your story",
         "form_chapter_description_label": "Chapter description",
         "form_chapter_media_label": "Chapter media",
         "form_title_placeholder": "Enter your story map title here",
