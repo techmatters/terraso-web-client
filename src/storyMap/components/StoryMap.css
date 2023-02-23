@@ -31,6 +31,7 @@ footer {
 #map {
   position: fixed;
 }
+
 #mapInset {
   bottom: 50px;
   right: 30px;
