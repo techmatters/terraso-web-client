@@ -796,7 +796,7 @@
         "form_chapter_description_label": "Chapter description",
         "form_chapter_media_label": "Chapter media",
         "form_title_placeholder": "Story map title",
-        "form_subtitle_placeholder": "Add subtitle (optional)",
+        "form_subtitle_placeholder": "Stop map subtitle",
         "form_byline_placeholder": "Add byline (optional)",
         "form_delete_chapter_confirm_button": "Delete chapter “{{name}}”",
         "form_delete_chapter_confirm_title": "Delete chapter “{{name}}”?",
