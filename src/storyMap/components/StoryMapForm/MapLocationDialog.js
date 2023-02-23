@@ -37,6 +37,12 @@ import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
 import _ from 'lodash/fp';
 
+import {
+  MAPBOX_DEM_SOURCE,
+  MAPBOX_FOG,
+  MAPBOX_SKY_LAYER,
+} from 'storyMap/storyMapConstants';
+
 import { useConfigContext } from './configContext';
 
 const MapLocationDialog = props => {
@@ -116,35 +122,16 @@ const MapLocationDialog = props => {
 
     map.on('load', function () {
       updatePosition();
-      map.addSource('mapbox-dem', {
-        type: 'raster-dem',
-        url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
-        tileSize: 512,
-        maxzoom: 14,
-      });
+      map.addSource('mapbox-dem', MAPBOX_DEM_SOURCE);
       // add the DEM source as a terrain layer with exaggerated height
       map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
 
       // add a sky layer that will show when the map is highly pitched
-      map.addLayer({
-        id: 'sky',
-        type: 'sky',
-        paint: {
-          'sky-type': 'atmosphere',
-          'sky-atmosphere-sun': [0.0, 0.0],
-          'sky-atmosphere-sun-intensity': 15,
-        },
-      });
+      map.addLayer(MAPBOX_SKY_LAYER);
     });
 
     map.on('style.load', () => {
-      map.setFog({
-        color: 'rgb(169, 169, 188)', // Lower atmosphere
-        'high-color': 'rgb(16, 16, 20)', // Upper atmosphere
-        'horizon-blend': 0.02, // Atmosphere thickness (default 0.2 at low zooms)
-        'space-color': 'rgb(20, 20, 26)', // Background color
-        'star-intensity': 0.1, // Background star brightness (default 0.35 at low zoooms )
-      });
+      map.setFog(MAPBOX_FOG);
     });
 
     // Handle map move events
