@@ -32,7 +32,7 @@ footer {
   position: fixed;
 }
 
-#mapInset {
+#map-inset {
   bottom: 50px;
   right: 30px;
   height: 180px;
@@ -44,11 +44,11 @@ footer {
   transition: opacity 0.5s ease-in-out;
   pointer-events: none;
 }
-#mapInset .mapboxgl-ctrl-bottom-left {
+#map-inset .mapboxgl-ctrl-bottom-left {
   display: none;
 }
 @media (max-width: 500px) {
-  #mapInset {
+  #map-inset {
     display: none;
   }
 }

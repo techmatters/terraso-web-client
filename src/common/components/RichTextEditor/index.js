@@ -38,7 +38,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   FormHelperText,
   OutlinedInput,
@@ -298,7 +297,7 @@ const Leaf = ({ attributes, children, leaf }) => {
   return (
     <span
       // The following is a workaround for a Chromium bug where,
-      // if you have an inline at the end of a block,
+      // if you have an inline element at the end of a block,
       // clicking the end of a block puts the cursor inside the inline
       // instead of inside the final {text: ''} node
       // https://github.com/ianstormtaylor/slate/issues/4704#issuecomment-1006696364
@@ -365,9 +364,6 @@ const AddLinkButton = () => {
           {t('common.rich_text_editor_link_add_dialog_title')}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            {t('common.rich_text_editor_link_add_dialog_description')}
-          </DialogContentText>
           <OutlinedInput fullWidth value={url} onChange={onInputChange} />
           {error && <FormHelperText error>{error}</FormHelperText>}
         </DialogContent>
@@ -421,7 +417,7 @@ const RemoveLinkButton = () => {
 
 const isMarkActive = (editor, format) => {
   const marks = Editor.marks(editor);
-  return marks ? marks[format] === true : false;
+  return marks && marks[format];
 };
 
 const toggleMark = (editor, format) => {
