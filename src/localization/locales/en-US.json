@@ -870,7 +870,7 @@
         "form_title_location_button": "Set background map",
         "form_title_location_dialog_title": "Title",
         "update_story_map": "<strong>{{title}}</strong> story map has been updated.",
-        "update_story_map_published": "<strong>{{title}}</strong> story map has been published. Anyone with the link can view it.",
+        "update_story_map_published": "<strong>{{title}}</strong> story map has been published.",
         "added_story_map": "<strong>{{title}}</strong> story map has been created.",
         "added_story_map_published": "<strong>{{title}}</strong> story map has been created and published. Anyone with the link can view it.",
         "form_chapters_sidebar_section_label": "[TODO] Chapters sidebar",
