@@ -808,7 +808,7 @@
         "form_chapter_media_label": "Chapter media",
         "form_title_placeholder": "Story map title",
         "form_subtitle_placeholder": "Stop map subtitle",
-        "form_byline_placeholder": "Add byline (optional)",
+        "form_byline_placeholder": "Jane Doe",
         "form_delete_chapter_confirm_button": "Delete chapter “{{name}}”",
         "form_delete_chapter_confirm_title": "Delete chapter “{{name}}”?",
         "form_delete_chapter_confirm_message": "Are you sure you want to delete this chapter? This action cannot be undone.",
