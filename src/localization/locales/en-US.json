@@ -807,7 +807,7 @@
         "form_chapter_alignment_left": "Left",
         "form_chapter_alignment_center": "Center",
         "form_chapter_alignment_right": "Right",
-        "form_location_dialog_title": "Set Background Map for “{{title}}”",
+        "form_location_dialog_title": "Set background map for “{{title}}”",
         "location_dialog_cancel_button": "Cancel",
         "location_dialog_confirm_button": "Save Map View",
         "view_title_outline": "Outline",
