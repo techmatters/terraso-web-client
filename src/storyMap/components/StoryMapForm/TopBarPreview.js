@@ -20,13 +20,13 @@ import { useTranslation } from 'react-i18next';
 
 import { Button, Grid, Typography } from '@mui/material';
 
-import { useConfigContext } from './configContext';
+import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 import theme from 'theme';
 
 const TopBarPreview = props => {
   const { t } = useTranslation();
-  const { config, setPreview } = useConfigContext();
+  const { config, setPreview } = useStoryMapConfigContext();
   const { onPublish } = props;
 
   const baseItemSx = useMemo(

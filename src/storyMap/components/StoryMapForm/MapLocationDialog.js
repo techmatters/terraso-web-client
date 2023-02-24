@@ -43,11 +43,11 @@ import {
   MAPBOX_SKY_LAYER,
 } from 'storyMap/storyMapConstants';
 
-import { useConfigContext } from './configContext';
+import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 const MapLocationDialog = props => {
   const { t } = useTranslation();
-  const { config } = useConfigContext();
+  const { config } = useStoryMapConfigContext();
   const { open, onClose, onConfirm, location, title, chapterId } = props;
 
   const [mapContainer, setMapContainer] = useState();

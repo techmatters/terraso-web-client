@@ -23,13 +23,13 @@ import { Button, Grid, Typography } from '@mui/material';
 
 import RouterLink from 'common/components/RouterLink';
 
-import { useConfigContext } from './configContext';
+import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 import theme from 'theme';
 
 const TopBar = props => {
   const { t } = useTranslation();
-  const { config, setPreview } = useConfigContext();
+  const { config, setPreview } = useStoryMapConfigContext();
   const { onPublish, onSaveDraft } = props;
 
   const baseItemSx = useMemo(

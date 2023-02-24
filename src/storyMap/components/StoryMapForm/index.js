@@ -30,7 +30,7 @@ import ChaptersSidebar from './ChaptersSideBar';
 import TitleForm from './TitleForm';
 import TopBar from './TopBar';
 import TopBarPreview from './TopBarPreview';
-import { useConfigContext } from './configContext';
+import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 import theme from 'theme';
 
@@ -46,7 +46,7 @@ const BASE_CHAPTER = {
 };
 
 const Preview = props => {
-  const { getMediaFile } = useConfigContext();
+  const { getMediaFile } = useStoryMapConfigContext();
   const { config, onPublish } = props;
 
   const previewConfig = useMemo(
@@ -82,7 +82,7 @@ const StoryMapForm = props => {
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
   const { onPublish, onSaveDraft } = props;
   const { saving } = useSelector(_.get('storyMap.form'));
-  const { config, setConfig, preview, init } = useConfigContext();
+  const { config, setConfig, preview, init } = useStoryMapConfigContext();
   const [mapHeight, setMapHeight] = useState();
   const [mapWidth, setMapWidth] = useState();
   const [currentStepId, setCurrentStepId] = useState();

@@ -48,7 +48,7 @@ import {
   STORY_MAP_MEDIA_MAX_SIZE,
 } from 'config';
 
-import { useConfigContext } from './configContext';
+import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 import theme from 'theme';
 
@@ -127,7 +127,7 @@ const AddDialog = props => {
   const [embeddedError, setEmbeddedError] = useState();
 
   const [selected, setSelected] = useState(0);
-  const { addMediaFile } = useConfigContext();
+  const { addMediaFile } = useStoryMapConfigContext();
 
   const onDrop = useCallback(
     acceptedFiles => {
@@ -300,7 +300,7 @@ const AddDialog = props => {
 
 const EditableImage = props => {
   const { t } = useTranslation();
-  const { getMediaFile } = useConfigContext();
+  const { getMediaFile } = useStoryMapConfigContext();
   const { label, image, onUpdate, onDelete, processing } = props;
 
   const imageSrc = useMemo(() => {
@@ -371,7 +371,7 @@ const EditableImage = props => {
 const EditableAudio = props => {
   const { t } = useTranslation();
   const [id, setId] = useState(0);
-  const { getMediaFile } = useConfigContext();
+  const { getMediaFile } = useStoryMapConfigContext();
   const { audio, onUpdate, onDelete, processing } = props;
 
   useEffect(() => {
