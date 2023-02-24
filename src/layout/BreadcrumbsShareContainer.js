@@ -33,7 +33,7 @@ const BreadcrumbsShareContainer = () => {
       }}
     >
       <Breadcrumbs />
-      <SocialShare />
+      <SocialShare buttonProps={{ sx: { mt: 2, mb: 2 } }} />
     </Container>
   );
 };

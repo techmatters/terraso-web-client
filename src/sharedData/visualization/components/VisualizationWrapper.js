@@ -202,7 +202,7 @@ const VisualizationWrapper = props => {
                     spacing={2}
                     sx={{ mt: 2 }}
                   >
-                    <SocialShare name={mapTitle} />
+                    <SocialShare />
                     <Button variant="outlined" onClick={handleDownloadPng}>
                       {t('sharedData.visualization_download_png')}
                     </Button>
