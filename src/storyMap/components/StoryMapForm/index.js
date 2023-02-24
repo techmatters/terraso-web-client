@@ -40,7 +40,6 @@ const BASE_CHAPTER = {
   description: '',
   mapAnimation: 'flyTo',
   rotateAnimation: false,
-  callback: '',
   onChapterEnter: [],
   onChapterExit: [],
 };
