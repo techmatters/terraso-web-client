@@ -439,9 +439,6 @@ const StoryMap = props => {
       if (transition.onChapterEnter && transition.onChapterEnter.length > 0) {
         transition.onChapterEnter.forEach(setLayerOpacity);
       }
-      if (transition.callback) {
-        window[transition.callback]();
-      }
       if (transition.rotateAnimation) {
         map.once('moveend', () => {
           const rotateNumber = map.getBearing();
