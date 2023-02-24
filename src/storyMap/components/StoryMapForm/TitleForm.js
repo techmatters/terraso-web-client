@@ -24,11 +24,11 @@ import { Box, Button, Link, Stack } from '@mui/material';
 
 import EditableText from './EditableText';
 import MapLocationDialog from './MapLocationDialog';
-import { useConfigContext } from './configContext';
+import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 const TitleForm = props => {
   const { t } = useTranslation();
-  const { setConfig } = useConfigContext();
+  const { setConfig } = useStoryMapConfigContext();
   const [locationOpen, setLocationOpen] = useState(false);
   const { config } = props;
 

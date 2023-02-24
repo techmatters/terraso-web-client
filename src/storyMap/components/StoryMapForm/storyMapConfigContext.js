@@ -25,9 +25,9 @@ import {
 
 import { v4 as uuidv4 } from 'uuid';
 
-const ConfigContext = createContext();
+const StoryMapConfigContext = createContext();
 
-export const ConfigContextProvider = props => {
+export const StoryMapConfigContextProvider = props => {
   const { children, baseConfig } = props;
   const [config, setConfig] = useState(baseConfig || {});
   const [preview, setPreview] = useState(false);
@@ -57,10 +57,10 @@ export const ConfigContextProvider = props => {
   );
 
   return (
-    <ConfigContext.Provider value={contextValue}>
+    <StoryMapConfigContext.Provider value={contextValue}>
       {children}
-    </ConfigContext.Provider>
+    </StoryMapConfigContext.Provider>
   );
 };
 
-export const useConfigContext = () => useContext(ConfigContext);
+export const useStoryMapConfigContext = () => useContext(StoryMapConfigContext);
