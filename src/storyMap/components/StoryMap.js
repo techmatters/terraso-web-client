@@ -320,7 +320,7 @@ const StoryMap = props => {
     const newInsetMap = new mapboxgl.Map({
       container: mapInsetContainer.current,
       style: 'mapbox://styles/mapbox/dark-v10', //hosted style id
-      center: config.chapters[0].location.center,
+      center: initialLocation?.center,
       // Hardcode above center value if you want insetMap to be static.
       zoom: 3, // starting zoom
       hash: false,
@@ -364,7 +364,7 @@ const StoryMap = props => {
       setInsetMap(newInsetMap);
     });
     return () => newInsetMap.remove();
-  }, [map, config]);
+  }, [map, config.inset, initialLocation]);
 
   useEffect(() => {
     if (!map || !config.inset || !insetMap) {
