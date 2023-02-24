@@ -866,6 +866,7 @@
         "view_map_label": "Map",
         "view_chapters_label": "Chapters",
         "view_chapter_label": "Chapter: {{title}}",
-        "view_title_label": "Title for: {{title}}"
+        "view_title_label": "Title for: {{title}}",
+        "view_chapter_media_label": "Chapter media"
     }
 }
