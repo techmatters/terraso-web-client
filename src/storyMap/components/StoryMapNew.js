@@ -36,9 +36,9 @@ import { MAPBOX_STYLE_DEFAULT } from 'config';
 
 import StoryMapForm from './StoryMapForm';
 import {
-  ConfigContextProvider,
-  useConfigContext,
-} from './StoryMapForm/configContext';
+  StoryMapConfigContextProvider,
+  useStoryMapConfigContext,
+} from './StoryMapForm/storyMapConfigContext';
 
 import theme from 'theme';
 
@@ -92,7 +92,7 @@ const StoryMapNew = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { trackEvent } = useAnalytics();
-  const { mediaFiles } = useConfigContext();
+  const { mediaFiles } = useStoryMapConfigContext();
 
   const save = useCallback(
     (config, published) => {
@@ -152,14 +152,14 @@ const ContextWrapper = props => {
   }
 
   return (
-    <ConfigContextProvider
+    <StoryMapConfigContextProvider
       baseConfig={{
         ...BASE_CONFIG,
         byline: t('storyMap.form_byline', { user }),
       }}
     >
       <StoryMapNew {...props} />
-    </ConfigContextProvider>
+    </StoryMapConfigContextProvider>
   );
 };
 

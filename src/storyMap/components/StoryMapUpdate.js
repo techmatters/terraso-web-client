@@ -35,16 +35,16 @@ import {
 
 import StoryMapForm from './StoryMapForm';
 import {
-  ConfigContextProvider,
-  useConfigContext,
-} from './StoryMapForm/configContext';
+  StoryMapConfigContextProvider,
+  useStoryMapConfigContext,
+} from './StoryMapForm/storyMapConfigContext';
 
 const StoryMapUpdate = props => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
   const { storyMap } = props;
-  const { mediaFiles } = useConfigContext();
+  const { mediaFiles } = useStoryMapConfigContext();
 
   const onPublish = useCallback(
     config => {
@@ -117,9 +117,9 @@ const ContextWrapper = props => {
   }
 
   return (
-    <ConfigContextProvider baseConfig={storyMap.config}>
+    <StoryMapConfigContextProvider baseConfig={storyMap.config}>
       <StoryMapUpdate {...props} storyMap={storyMap} />
-    </ConfigContextProvider>
+    </StoryMapConfigContextProvider>
   );
 };
 

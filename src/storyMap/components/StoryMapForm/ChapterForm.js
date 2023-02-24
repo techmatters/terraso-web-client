@@ -40,7 +40,7 @@ import EditableMedia from './EditableMedia';
 import EditableRichText from './EditableRichText';
 import EditableText from './EditableText';
 import MapLocationDialog from './MapLocationDialog';
-import { useConfigContext } from './configContext';
+import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 const ConfigButton = withProps(IconButton, {
   size: 'small',
@@ -141,7 +141,7 @@ const ChapterConfig = props => {
 
 const ChapterForm = ({ theme, record }) => {
   const { t } = useTranslation();
-  const { setConfig, init } = useConfigContext();
+  const { setConfig, init } = useStoryMapConfigContext();
   const [isNew, setIsNew] = useState(false);
 
   const classList = useMemo(
