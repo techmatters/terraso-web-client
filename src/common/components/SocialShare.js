@@ -17,7 +17,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
 
 import CloseIcon from '@mui/icons-material/Close';
 import EmailIcon from '@mui/icons-material/Email';
@@ -45,17 +44,13 @@ export const useSocialShareContext = props => {
 
   useEffect(() => {
     setSocialShareProps(props);
+    return () => setSocialShareProps({});
   }, [props, setSocialShareProps]);
 };
 
 export const SocialShareContextProvider = props => {
   const { children } = props;
-  const { pathname: currentPathname } = useLocation();
   const [socialShareProps, setSocialShareProps] = useState({});
-
-  useEffect(() => {
-    setSocialShareProps({});
-  }, [currentPathname]);
 
   return (
     <SocialShareContext.Provider
