@@ -26,6 +26,7 @@ import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 
+import { GroupContextProvider } from 'group/groupContext';
 import { fetchGroupUpload } from 'group/groupSlice';
 import SharedDataUpload from 'sharedData/components/SharedDataUpload';
 
@@ -73,11 +74,13 @@ const GroupSharedDataUpload = () => {
       <PageHeader
         header={t('group.shared_data_upload_title', { name: group.name })}
       />
-      <SharedDataUpload
-        groupSlug={slug}
-        onCancel={onCancel}
-        onCompleteSuccess={onCompleteSuccess}
-      />
+      <GroupContextProvider group={group} owner={group}>
+        <SharedDataUpload
+          groupSlug={slug}
+          onCancel={onCancel}
+          onCompleteSuccess={onCompleteSuccess}
+        />
+      </GroupContextProvider>
     </PageContainer>
   );
 };

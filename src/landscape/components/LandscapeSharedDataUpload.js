@@ -27,6 +27,7 @@ import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 
+import { GroupContextProvider } from 'group/groupContext';
 import { fetchLandscapeUpload } from 'landscape/landscapeSlice';
 import SharedDataUpload from 'sharedData/components/SharedDataUpload';
 
@@ -79,11 +80,13 @@ const LandscapeSharedDataUpload = () => {
           name: landscape.name,
         })}
       />
-      <SharedDataUpload
-        groupSlug={_.get('defaultGroup.slug', landscape)}
-        onCancel={onCancel}
-        onCompleteSuccess={onCompleteSuccess}
-      />
+      <GroupContextProvider group={landscape.defaultGroup} owner={landscape}>
+        <SharedDataUpload
+          groupSlug={_.get('defaultGroup.slug', landscape)}
+          onCancel={onCancel}
+          onCompleteSuccess={onCompleteSuccess}
+        />
+      </GroupContextProvider>
     </PageContainer>
   );
 };
