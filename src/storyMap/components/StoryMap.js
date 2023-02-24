@@ -88,10 +88,11 @@ const Audio = ({ record }) => {
 };
 
 const Image = ({ record }) => {
+  const { t } = useTranslation();
   return (
     <img
       src={record.media.signedUrl || record.media.url}
-      alt={record.title}
+      alt={t('storyMap.view_chapter_media_label')}
       width="100%"
     ></img>
   );
