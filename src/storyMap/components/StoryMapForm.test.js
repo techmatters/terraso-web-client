@@ -229,8 +229,6 @@ test('StoryMapForm: Adds new chapter', async () => {
   );
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
-  console.log(JSON.stringify(saveCall[0], null, 2));
-  console.log(JSON.stringify(saveCall[1], null, 2));
   expect(saveCall[0]).toEqual(
     expect.objectContaining({
       title: 'Story Map Title',
