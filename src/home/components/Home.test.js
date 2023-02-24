@@ -65,7 +65,7 @@ test('Home: Display loader', async () => {
   const loaders = screen.getAllByRole('progressbar', {
     name: 'Loading',
   });
-  expect(loaders.length).toBe(2);
+  expect(loaders.length).toBe(3);
   loaders.forEach(role => expect(role).toBeInTheDocument());
 });
 test('Home: Display landscapes', async () => {
