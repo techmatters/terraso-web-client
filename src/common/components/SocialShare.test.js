@@ -16,10 +16,31 @@
  */
 import { act, fireEvent, render, screen } from 'tests/utils';
 
-import SocialShare from './SocialShare';
+import { useMemo } from 'react';
+
+import SocialShare, {
+  SocialShareContextProvider,
+  useSocialShareContext,
+} from './SocialShare';
+
+const SocialShareWrapper = () => {
+  useSocialShareContext(
+    useMemo(
+      () => ({
+        name: 'Test Name',
+      }),
+      []
+    )
+  );
+  return <SocialShare />;
+};
 
 const setup = async () => {
-  await render(<SocialShare name="Test Name" />);
+  await render(
+    <SocialShareContextProvider>
+      <SocialShareWrapper />
+    </SocialShareContextProvider>
+  );
 };
 
 beforeEach(() => {
