@@ -35,10 +35,7 @@ import { addStoryMap } from 'storyMap/storyMapSlice';
 import { MAPBOX_STYLE_DEFAULT } from 'config';
 
 import StoryMapForm from './StoryMapForm';
-import {
-  StoryMapConfigContextProvider,
-  useStoryMapConfigContext,
-} from './StoryMapForm/storyMapConfigContext';
+import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigContext';
 
 import theme from 'theme';
 
@@ -93,10 +90,9 @@ const StoryMapNew = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { trackEvent } = useAnalytics();
-  const { mediaFiles } = useStoryMapConfigContext();
 
   const save = useCallback(
-    (config, published) => {
+    (config, mediaFiles, published) => {
       dispatch(
         addStoryMap({
           storyMap: {
@@ -125,11 +121,17 @@ const StoryMapNew = () => {
         }
       });
     },
-    [dispatch, navigate, trackEvent, mediaFiles]
+    [dispatch, navigate, trackEvent]
   );
 
-  const onPublish = useCallback(config => save(config, true), [save]);
-  const onSaveDraft = useCallback(config => save(config, false), [save]);
+  const onPublish = useCallback(
+    (config, mediaFiles) => save(config, mediaFiles, true),
+    [save]
+  );
+  const onSaveDraft = useCallback(
+    (config, mediaFiles) => save(config, mediaFiles, false),
+    [save]
+  );
 
   return <StoryMapForm onPublish={onPublish} onSaveDraft={onSaveDraft} />;
 };

@@ -34,20 +34,16 @@ import {
 } from 'storyMap/storyMapSlice';
 
 import StoryMapForm from './StoryMapForm';
-import {
-  StoryMapConfigContextProvider,
-  useStoryMapConfigContext,
-} from './StoryMapForm/storyMapConfigContext';
+import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigContext';
 
 const StoryMapUpdate = props => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
   const { storyMap } = props;
-  const { mediaFiles } = useStoryMapConfigContext();
 
   const onPublish = useCallback(
-    config => {
+    (config, mediaFiles) => {
       dispatch(
         updateStoryMap({
           storyMap: {
@@ -71,11 +67,11 @@ const StoryMapUpdate = props => {
         }
       });
     },
-    [dispatch, navigate, trackEvent, storyMap?.id, mediaFiles]
+    [dispatch, navigate, trackEvent, storyMap?.id]
   );
 
   const onSaveDraft = useCallback(
-    config => {
+    (config, mediaFiles) => {
       dispatch(
         updateStoryMap({
           storyMap: {
@@ -87,7 +83,7 @@ const StoryMapUpdate = props => {
         })
       );
     },
-    [dispatch, storyMap?.id, mediaFiles]
+    [dispatch, storyMap?.id]
   );
 
   return <StoryMapForm onPublish={onPublish} onSaveDraft={onSaveDraft} />;
