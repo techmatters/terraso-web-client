@@ -66,8 +66,9 @@ export const SocialShareContextProvider = props => {
   );
 };
 
-const SocialShare = () => {
+const SocialShare = props => {
   const { t } = useTranslation();
+  const { buttonProps } = props;
   const { socialShareProps } = useContext(SocialShareContext);
   const { name } = socialShareProps;
   const [open, setOpen] = useState(false);
@@ -118,7 +119,7 @@ const SocialShare = () => {
 
   return (
     <>
-      <Button variant="outlined" onClick={handleOpen} sx={{ mt: 2, mb: 2 }}>
+      <Button variant="outlined" onClick={handleOpen} {...buttonProps}>
         {t('share.button')}
       </Button>
       <Dialog
