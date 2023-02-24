@@ -42,6 +42,42 @@ import {
 
 import theme from 'theme';
 
+// Chapter schema
+// {
+//   id: string,
+//   title: string,
+//   description: RichText,
+//   alignment: string (left|right|center),
+//   rotateAnimation: boolean,
+//   mapAnimation: string (flyTo|jumpTo),
+//   media: {
+//     type: string (image|video|embedded),
+//     url: string,
+//     signedUrl: string,
+//   },
+//   location: {
+//     center: {
+//       lat: number,
+//       lng: number,
+//     },
+//     zoom: number,
+//     pitch: number,
+//     bearing: number,
+//   },
+//   onChapterEnter: [
+//    {
+//      layer: string,
+//      opacity: number,
+//    },
+//],
+//   onChapterExit: [
+//    {
+//      layer: string,
+//      opacity: number,
+//    },
+//],
+// }
+
 const BASE_CONFIG = {
   style: MAPBOX_STYLE_DEFAULT,
   theme: 'dark',
@@ -50,42 +86,7 @@ const BASE_CONFIG = {
   title: '',
   subtitle: '',
   byline: '',
-  chapters: [
-    // {
-    //   id: 'third-identifier',
-    //   alignment: 'left',
-    //   title: 'Chapter 1',
-    //   description: 'Copy these sections to add to your story.',
-    //   location: {
-    //     center: {lng: -78.55645099999998, lat: -0.16672202757398225},
-    //     zoom: 12.52,
-    //     pitch: 8.01,
-    //     bearing: 0.0,
-    //   },
-    //   mapAnimation: 'flyTo',
-    //   rotateAnimation: false,
-    //   callback: '',
-    //   onChapterEnter: [],
-    //   onChapterExit: [],
-    // },
-    // {
-    //   id: 'fourth-chapter',
-    //   alignment: 'right',
-    //   title: 'Chapter 2',
-    //   description: 'Copy these sections to add to your story.',
-    //   mapAnimation: 'flyTo',
-    //   location: {
-    //     center: {lng: -78.55645099999998, lat: -0.16672202757398225},
-    //     zoom: 4,
-    //     pitch: 0,
-    //     bearing: 0,
-    //   },
-    //   rotateAnimation: false,
-    //   callback: '',
-    //   onChapterEnter: [],
-    //   onChapterExit: [],
-    // },
-  ],
+  chapters: [],
 };
 
 const StoryMapNew = () => {
