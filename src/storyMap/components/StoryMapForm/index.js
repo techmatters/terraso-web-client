@@ -82,7 +82,8 @@ const StoryMapForm = props => {
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
   const { onPublish, onSaveDraft } = props;
   const { saving } = useSelector(_.get('storyMap.form'));
-  const { config, setConfig, preview, init } = useStoryMapConfigContext();
+  const { config, setConfig, preview, init, mediaFiles } =
+    useStoryMapConfigContext();
   const [mapHeight, setMapHeight] = useState();
   const [mapWidth, setMapWidth] = useState();
   const [currentStepId, setCurrentStepId] = useState();
@@ -163,13 +164,13 @@ const StoryMapForm = props => {
   );
 
   const onPublishWrapper = useCallback(
-    () => onPublish(config),
-    [config, onPublish]
+    () => onPublish(config, mediaFiles),
+    [config, mediaFiles, onPublish]
   );
 
   const onSaveDraftWrapper = useCallback(
-    () => onSaveDraft(config),
-    [config, onSaveDraft]
+    () => onSaveDraft(config, mediaFiles),
+    [config, mediaFiles, onSaveDraft]
   );
 
   if (preview || isSmall) {
