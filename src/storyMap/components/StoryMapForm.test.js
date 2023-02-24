@@ -223,7 +223,7 @@ test('StoryMapForm: Adds new chapter', async () => {
     within(titleSection).getByRole('link', { name: 'New chapter' })
   ).toBeInTheDocument();
 
-  // Save 
+  // Save
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
   );
@@ -236,44 +236,45 @@ test('StoryMapForm: Adds new chapter', async () => {
       title: 'Story Map Title',
       subtitle: 'Story Map Subtitle',
       byline: 'by User',
-    }),
+    })
   );
   expect(saveCall[0].chapters[0]).toEqual(
     expect.objectContaining({
-        id: 'chapter-1',
-        title: 'Chapter 1',
-        description: 'Chapter 1 description',
-        media: {
-          type: 'image/png',
-          signedUrl: 'https://test.com/image.png',
-        },
-    }),
+      id: 'chapter-1',
+      title: 'Chapter 1',
+      description: 'Chapter 1 description',
+      media: {
+        type: 'image/png',
+        signedUrl: 'https://test.com/image.png',
+      },
+    })
   );
   expect(saveCall[0].chapters[1]).toEqual(
     expect.objectContaining({
-        id: 'chapter-2',
-        title: 'Chapter 2',
-        description: 'Chapter 2 description',
-    }),
+      id: 'chapter-2',
+      title: 'Chapter 2',
+      description: 'Chapter 2 description',
+    })
   );
   expect(saveCall[0].chapters[2]).toEqual(
     expect.objectContaining({
-        alignment: 'left',
-        title: 'New chapter',
-        description: '',
-        mapAnimation: 'flyTo',
-        rotateAnimation: false,
-        onChapterEnter: [],
-        onChapterExit: [],
-    }),
+      alignment: 'left',
+      title: 'New chapter',
+      description: '',
+      mapAnimation: 'flyTo',
+      rotateAnimation: false,
+      onChapterEnter: [],
+      onChapterExit: [],
+    })
   );
   expect(saveCall[0].chapters[2].media).toEqual(
     expect.objectContaining({
-          filename: 'test.jpg',
-          type: 'image/jpeg',
-    }),
+      filename: 'test.jpg',
+      type: 'image/jpeg',
+    })
   );
 
-  expect(saveCall[0].chapters[2].media.contentId).toEqual(Object.keys(saveCall[1])[0]);
-
+  expect(saveCall[0].chapters[2].media.contentId).toEqual(
+    Object.keys(saveCall[1])[0]
+  );
 });
