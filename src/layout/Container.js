@@ -20,7 +20,7 @@ import { Container as BaseContainer } from '@mui/material';
 
 const ContainerContext = createContext({});
 
-export const useContainerContext = containerProps => {
+export const useContainerContext = () => {
   const { setContainerProps } = useContext(ContainerContext);
 
   return {
