@@ -123,7 +123,7 @@ const MapLocationDialog = props => {
     map.on('load', function () {
       updatePosition();
       map.addSource('mapbox-dem', MAPBOX_DEM_SOURCE);
-      // add the DEM source as a terrain layer with exaggerated height
+      // add the DEM (Digital Elevation Model source as a terrain layer with exaggerated height
       map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
 
       // add a sky layer that will show when the map is highly pitched
