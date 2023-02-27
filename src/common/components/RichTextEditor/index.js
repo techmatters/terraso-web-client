@@ -116,7 +116,7 @@ const TEXT_TAGS = {
 };
 
 export const deserialize = el => {
-  if (el.nodeType === 3) {
+  if (el.nodeType === Node.TEXT_NODE) {
     return el.textContent;
   } else if (el.nodeType !== 1) {
     return null;
