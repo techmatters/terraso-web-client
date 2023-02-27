@@ -1,4 +1,3 @@
-
 /*
  * Copyright © 2021-2023 Technology Matters
  *
@@ -16,30 +15,31 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { act, fireEvent, render, screen } from 'tests/utils';
+
 import * as terrasoApi from 'terrasoBackend/api';
 
 import StoryMapNew from './StoryMapNew';
 
 jest.mock('terrasoBackend/api');
 
-jest.mock('./StoryMap', () => props => (
-  <div>Test</div>
-));
+jest.mock('./StoryMap', () => props => <div>Test</div>);
 
 test('StoryMapNew: Renders editor', async () => {
   await render(<StoryMapNew />);
 
-  expect(screen.getByRole('region', { name: '[TODO] Story editor Header' })).toBeInTheDocument()
-  expect(screen.getByRole('navigation', { name: '[TODO] Chapters sidebar' })).toBeInTheDocument()
+  expect(
+    screen.getByRole('region', { name: '[TODO] Story editor Header' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('navigation', { name: '[TODO] Chapters sidebar' })
+  ).toBeInTheDocument();
 });
 
 test('StoryMapNew: Save', async () => {
   await render(<StoryMapNew />);
 
   const saveButton = screen.getByRole('button', { name: 'Save draft' });
-  await act(async () =>
-  fireEvent.click(saveButton)
-  );
+  await act(async () => fireEvent.click(saveButton));
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
 });
