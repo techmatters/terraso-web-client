@@ -797,7 +797,7 @@
         "form_title_placeholder": "Story map title",
         "form_subtitle_placeholder": "Stop map subtitle",
         "form_byline_placeholder": "Jane Doe",
-        "form_delete_chapter_confirm_button": "Delete chapter “{{name}}”",
+        "form_delete_chapter_confirm_button": "Delete Chapter",
         "form_delete_chapter_confirm_title": "Delete chapter “{{name}}”?",
         "form_delete_chapter_confirm_message": "Are you sure you want to delete chapter {{name}}?",
         "form_delete_chapter_confirm_button_tooltip": "Delete chapter “{{name}}”",
