@@ -123,16 +123,24 @@ const testChapter = ({ title, description, image }) => {
   }
 };
 
-const changeChaper = async (title, newTitle, newDescription, newFile) => {
+const changeChaper = async ({
+  title,
+  newTitle,
+  newDescription,
+  newFile,
+  newEmbed,
+}) => {
   const chapterSection = screen.getByRole('region', {
     name: `Chapter: ${title}`,
   });
-  const titleTextbox = within(chapterSection).getByRole('textbox', {
-    name: 'Chapter title',
-  });
-  await act(async () =>
-    fireEvent.change(titleTextbox, { target: { value: newTitle } })
-  );
+  if (newTitle) {
+    const titleTextbox = within(chapterSection).getByRole('textbox', {
+      name: 'Chapter title',
+    });
+    await act(async () =>
+      fireEvent.change(titleTextbox, { target: { value: newTitle } })
+    );
+  }
 
   // TODO test rich text editor
   // const descriptionTextbox = within(chapterSection).getByRole('textbox', {
@@ -165,6 +173,38 @@ const changeChaper = async (title, newTitle, newDescription, newFile) => {
       },
     };
     await act(async () => fireEvent.drop(dropZone, data));
+
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Add' })).not.toHaveAttribute(
+        'disabled'
+      )
+    );
+
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+    );
+  }
+
+  if (newEmbed) {
+    const mediaButton = within(chapterSection).getByRole('button', {
+      name: 'Add media',
+    });
+    await act(async () => fireEvent.click(mediaButton));
+
+    const mediaDialog = screen.getByRole('dialog', {
+      name: 'Add media',
+    });
+    const embedInput = within(mediaDialog).getByRole('textbox', {
+      name: 'Link to YouTube or Vimeo video',
+    });
+
+    await act(async () =>
+      fireEvent.change(embedInput, { target: { value: newEmbed } })
+    );
+
+    await act(async () =>
+      fireEvent.blur(embedInput, { target: { value: newEmbed } })
+    );
 
     await waitFor(() =>
       expect(screen.getByRole('button', { name: 'Add' })).not.toHaveAttribute(
@@ -300,14 +340,14 @@ test('StoryMapForm: Adds new chapter', async () => {
   expect(newChapter).toBeInTheDocument();
 
   // Change title and description
-  await changeChaper(
-    '(No title)',
-    'New chapter',
-    'New chapter description',
-    new File(['content2'], `test.jpg`, {
+  await changeChaper({
+    title: '(No title)',
+    newTitle: 'New chapter',
+    newDescription: 'New chapter description',
+    newFile: new File(['content2'], `test.jpg`, {
       type: `image/jpeg`,
-    })
-  );
+    }),
+  });
 
   // New chapter should be added to the outline
   const titleSection = screen.getByRole('region', {
@@ -369,4 +409,74 @@ test('StoryMapForm: Adds new chapter', async () => {
   expect(saveCall[0].chapters[2].media.contentId).toEqual(
     Object.keys(saveCall[1])[0]
   );
+});
+test('StoryMapForm: Add embedded media', async () => {
+  const { onSaveDraft } = await setup(BASE_CONFIG);
+
+  await changeChaper({
+    title: 'Chapter 2',
+    newEmbed: 'https://youtu.be/n_uFzLPYDd8',
+  });
+
+  // Save
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
+  );
+  expect(onSaveDraft).toHaveBeenCalledTimes(1);
+  const saveCall = onSaveDraft.mock.calls[0];
+  expect(saveCall[0].chapters[1].media).toEqual(
+    expect.objectContaining({
+      source: 'youtube',
+      type: 'embedded',
+      url: 'https://www.youtube.com/embed/n_uFzLPYDd8',
+    })
+  );
+});
+test('StoryMapForm: Add audio media', async () => {
+  const { onSaveDraft } = await setup(BASE_CONFIG);
+
+  await changeChaper({
+    title: 'Chapter 2',
+    newFile: new File(['content2'], `test.jpg`, {
+      type: `audio/mp3`,
+    }),
+  });
+
+  // Save
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
+  );
+  expect(onSaveDraft).toHaveBeenCalledTimes(1);
+  const saveCall = onSaveDraft.mock.calls[0];
+  expect(saveCall[0].chapters[1].media).toEqual(
+    expect.objectContaining({
+      filename: 'test.jpg',
+      type: 'audio/mp3',
+    })
+  );
+
+  expect(saveCall[0].chapters[1].media.contentId).toEqual(
+    Object.keys(saveCall[1])[0]
+  );
+});
+test('StoryMapForm: Show preview', async () => {
+  await setup(BASE_CONFIG);
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Preview' }))
+  );
+
+  const chapters = screen.getByRole('region', {
+    name: 'Chapters',
+  });
+
+  expect(
+    within(chapters).getByRole('region', { name: 'Title for: Story Map Title' })
+  ).toBeInTheDocument();
+  expect(
+    within(chapters).getByRole('region', { name: 'Chapter: Chapter 1' })
+  ).toBeInTheDocument();
+  expect(
+    within(chapters).getByRole('region', { name: 'Chapter: Chapter 2' })
+  ).toBeInTheDocument();
 });
