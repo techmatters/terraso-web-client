@@ -1,4 +1,3 @@
-
 /*
  * Copyright © 2021-2023 Technology Matters
  *
@@ -16,15 +15,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { act, fireEvent, render, screen } from 'tests/utils';
+
 import * as terrasoApi from 'terrasoBackend/api';
 
 import StoryMapUpdate from './StoryMapUpdate';
 
 jest.mock('terrasoBackend/api');
 
-jest.mock('./StoryMap', () => props => (
-  <div>Test</div>
-));
+jest.mock('./StoryMap', () => props => <div>Test</div>);
 
 const CONFIG = {
   title: 'Story Map Title',
@@ -46,46 +44,48 @@ const CONFIG = {
 };
 
 test('StoryMapUpdate: Renders editor', async () => {
-  terrasoApi.requestGraphQL
-    .mockResolvedValue({
-      storyMaps: {
-        edges: [
-          {
-            node: {
-              id: 'story-1',
-              configuration: JSON.stringify(CONFIG),
-            },
+  terrasoApi.requestGraphQL.mockResolvedValue({
+    storyMaps: {
+      edges: [
+        {
+          node: {
+            id: 'story-1',
+            configuration: JSON.stringify(CONFIG),
           },
-        ],
-      },
-    })
+        },
+      ],
+    },
+  });
   await render(<StoryMapUpdate />);
 
-  expect(screen.getByRole('region', { name: '[TODO] Story editor Header' })).toBeInTheDocument()
-  expect(screen.getByRole('navigation', { name: '[TODO] Chapters sidebar' })).toBeInTheDocument()
-  expect(screen.getByRole('heading', { name: 'Story Map Title' })).toBeInTheDocument()
+  expect(
+    screen.getByRole('region', { name: '[TODO] Story editor Header' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('navigation', { name: '[TODO] Chapters sidebar' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('heading', { name: 'Story Map Title' })
+  ).toBeInTheDocument();
 });
 
 test('StoryMapUpdate: Save', async () => {
-  terrasoApi.requestGraphQL
-    .mockResolvedValue({
-      storyMaps: {
-        edges: [
-          {
-            node: {
-              id: 'story-1',
-              configuration: JSON.stringify(CONFIG),
-            },
+  terrasoApi.requestGraphQL.mockResolvedValue({
+    storyMaps: {
+      edges: [
+        {
+          node: {
+            id: 'story-1',
+            configuration: JSON.stringify(CONFIG),
           },
-        ],
-      },
-    })
+        },
+      ],
+    },
+  });
   await render(<StoryMapUpdate />);
 
   const saveButton = screen.getByRole('button', { name: 'Save draft' });
-  await act(async () =>
-  fireEvent.click(saveButton)
-  );
+  await act(async () => fireEvent.click(saveButton));
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
 });
