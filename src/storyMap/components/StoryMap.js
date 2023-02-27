@@ -349,7 +349,7 @@ const StoryMap = props => {
             'fill-opacity': 0.2,
           },
         });
-        // // Add a black outline around the polygon.
+        // Add a black outline around the polygon.
         newInsetMap.addLayer({
           id: 'outlineLayer',
           type: 'line',
