@@ -18,6 +18,8 @@ import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 
 import React from 'react';
 
+import scrollama from 'scrollama';
+
 import mapboxgl from 'gis/mapbox';
 
 import StoryMapForm from './StoryMapForm';
@@ -26,15 +28,39 @@ import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigCont
 // Mock mapboxgl
 jest.mock('gis/mapbox', () => ({}));
 
+// Scrollama mock
+jest.mock('scrollama', () => jest.fn());
+
 beforeEach(() => {
   mapboxgl.Map = jest.fn();
   mapboxgl.Map.prototype = {
-    on: jest.fn(),
+    on: (type, cb) => {
+      if (type === 'load') {
+        cb();
+      }
+    },
     remove: jest.fn(),
     off: jest.fn(),
     getCanvas: jest.fn(),
   };
   window.HTMLElement.prototype.scrollIntoView = jest.fn();
+
+  const scroller = {
+    setup: function () {
+      return this;
+    },
+    onStepEnter: function (cb) {
+      this.stepEnter = cb;
+      return this;
+    },
+    onStepExit: function (cb) {
+      this.stepExit = cb;
+      return this;
+    },
+    resize: jest.fn(),
+    destroy: jest.fn(),
+  };
+  scrollama.mockImplementation(() => scroller);
 });
 
 const BASE_CONFIG = {
@@ -188,6 +214,74 @@ test('StoryMapForm: Renders title and chapters correctly', async () => {
     image: 'https://test.com/image.png',
   });
   testChapter({ title: 'Chapter 2', description: 'Chapter 2 description' });
+});
+
+test('StoryMapForm: Sidebar navigation', async () => {
+  const scroller = {
+    setup: function () {
+      return this;
+    },
+    onStepEnter: function (cb) {
+      this.stepEnter = cb;
+      return this;
+    },
+    onStepExit: function (cb) {
+      this.stepExit = cb;
+      return this;
+    },
+    resize: jest.fn(),
+    destroy: jest.fn(),
+  };
+  scrollama.mockImplementation(() => scroller);
+
+  await setup(BASE_CONFIG);
+
+  // Get sidebar list
+  const sidebarList = screen.getByRole('navigation', {
+    name: '[TODO] Chapters sidebar',
+  });
+
+  const title = within(sidebarList).getByRole('button', {
+    name: 'T Title',
+  });
+  const chapter1 = within(sidebarList).getByRole('button', {
+    name: '1 Chapter 1',
+  });
+  const chapter2 = within(sidebarList).getByRole('button', {
+    name: '2 Chapter 2',
+  });
+
+  await waitFor(() => expect(scrollama).toHaveBeenCalled());
+
+  // Trigger on chapter 1
+  await act(async () => {
+    scroller.stepEnter({
+      element: document.querySelector('#chapter-1'),
+    });
+  });
+  expect(chapter1).toHaveAttribute('aria-current', 'page');
+  expect(chapter2).not.toHaveAttribute('aria-current', 'page');
+  expect(title).not.toHaveAttribute('aria-current', 'page');
+
+  // Trigger on chapter 2
+  await act(async () => {
+    scroller.stepEnter({
+      element: document.querySelector('#chapter-2'),
+    });
+  });
+  expect(chapter1).not.toHaveAttribute('aria-current', 'page');
+  expect(chapter2).toHaveAttribute('aria-current', 'page');
+  expect(title).not.toHaveAttribute('aria-current', 'page');
+
+  // Trigger on title
+  await act(async () => {
+    scroller.stepEnter({
+      element: document.querySelector('#story-map-title'),
+    });
+  });
+  expect(title).toHaveAttribute('aria-current', 'page');
+  expect(chapter1).not.toHaveAttribute('aria-current', 'page');
+  expect(chapter2).not.toHaveAttribute('aria-current', 'page');
 });
 
 test('StoryMapForm: Adds new chapter', async () => {
