@@ -55,9 +55,7 @@ import theme from 'theme';
 const getYouTubeUrl = id => `https://www.youtube.com/embed/${id}`;
 const getVimeoUrl = id => `https://player.vimeo.com/video/${id}`;
 
-const getVideoUrl = id => {
-  const { service } = getVideoId(id);
-
+const getVideoUrl = ({ id, service }) => {
   if (service === 'youtube') {
     return getYouTubeUrl(id);
   }
@@ -80,12 +78,12 @@ const getDataFromEmbedded = value => {
   return {
     type: 'embedded',
     source: service,
-    url: getVideoUrl(id),
+    url: getVideoUrl({ id, service }),
   };
 };
 
 const AddSectionTitle = props => {
-  const { checked, value, onChange, label } = props;
+  const { checked, value, onChange, label, labelId } = props;
   return (
     <FormControlLabel
       sx={{ width: '100%', ml: 0, mr: 0 }}
@@ -100,6 +98,7 @@ const AddSectionTitle = props => {
       }
       label={
         <Typography
+          id={labelId}
           variant="h3"
           sx={{
             width: '100%',
@@ -261,12 +260,16 @@ const AddDialog = props => {
           }}
         >
           <AddSectionTitle
+            labelId="embedded-media-label"
             checked={selected === 1}
             value={1}
             onChange={onRadioChange}
             label={t('storyMap.form_media_add_dialog_link_media')}
           />
           <OutlinedInput
+            inputProps={{
+              'aria-labelledby': 'embedded-media-label',
+            }}
             size="small"
             fullWidth
             onChange={onEmbeddedInputChange}
