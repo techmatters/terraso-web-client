@@ -39,41 +39,43 @@ import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigCont
 
 import theme from 'theme';
 
-// Chapter schema
-// {
-//   id: string,
-//   title: string,
-//   description: RichText,
-//   alignment: string (left|right|center),
-//   rotateAnimation: boolean,
-//   mapAnimation: string (flyTo|jumpTo),
-//   media: {
-//     type: string (image|video|embedded),
-//     url: string,
-//     signedUrl: string,
-//   },
-//   location: {
-//     center: {
-//       lat: number,
-//       lng: number,
-//     },
-//     zoom: number,
-//     pitch: number,
-//     bearing: number,
-//   },
-//   onChapterEnter: [
-//    {
-//      layer: string,
-//      opacity: number,
-//    },
-//],
-//   onChapterExit: [
-//    {
-//      layer: string,
-//      opacity: number,
-//    },
-//],
-// }
+/* 
+ * Chapter schema
+ * {
+ *   id: string,
+ *   title: string,
+ *   description: RichText,
+ *   alignment: string (left|right|center),
+ *   rotateAnimation: boolean,
+ *   mapAnimation: string (flyTo|jumpTo),
+ *   media: {
+ *     type: string (image|video|embedded),
+ *     url: string,
+ *     signedUrl: string,
+ *   },
+ *   location: {
+ *     center: {
+ *       lat: number,
+ *       lng: number,
+ *     },
+ *     zoom: number,
+ *     pitch: number,
+ *     bearing: number,
+ *   },
+ *   onChapterEnter: [
+ *    {
+ *      layer: string,
+ *      opacity: number,
+ *    },
+ *   ],
+ *   onChapterExit: [
+ *    {
+ *      layer: string,
+ *      opacity: number,
+ *    },
+ *  ],
+ * }
+ */
 
 const BASE_CONFIG = {
   style: MAPBOX_STYLE_DEFAULT,
