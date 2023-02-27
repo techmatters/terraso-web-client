@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
+import { render, screen, within } from 'tests/utils';
 
 import React from 'react';
 
@@ -56,9 +56,7 @@ const CONFIG = {
 };
 
 const setup = async () => {
-  await render(
-      <StoryMap config={CONFIG} />
-  );
+  await render(<StoryMap config={CONFIG} />);
 };
 
 const testChapter = ({ title, description, image }) => {
@@ -70,9 +68,7 @@ const testChapter = ({ title, description, image }) => {
   ).toBeInTheDocument();
 
   if (description) {
-    expect(
-      within(chapterSection).getByText(description)
-    ).toBeInTheDocument();
+    expect(within(chapterSection).getByText(description)).toBeInTheDocument();
   }
 
   if (image) {
