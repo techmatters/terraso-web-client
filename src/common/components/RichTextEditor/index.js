@@ -118,7 +118,7 @@ const TEXT_TAGS = {
 export const deserialize = el => {
   if (el.nodeType === Node.TEXT_NODE) {
     return el.textContent;
-  } else if (el.nodeType !== 1) {
+  } else if (el.nodeType !== Node.ELEMENT_NODE) {
     return null;
   } else if (el.nodeName === 'BR') {
     return '\n';
