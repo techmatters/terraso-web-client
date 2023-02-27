@@ -119,10 +119,7 @@ const ChaptersSidebar = props => {
                     }
                   )}
                   confirmButton={t(
-                    'storyMap.form_delete_chapter_confirm_button',
-                    {
-                      name: item.label,
-                    }
+                    'storyMap.form_delete_chapter_confirm_button'
                   )}
                   tooltip={t(
                     'storyMap.form_delete_chapter_confirm_button_tooltip',
