@@ -44,6 +44,8 @@ const List = withProps(BaseList, {
   }),
 });
 
+const GridListItem = withProps(Grid, { component: 'li' });
+
 const StoryMapsHomeCard = props => {
   const { t, i18n } = useTranslation();
   const { storyMaps } = props;
@@ -57,9 +59,14 @@ const StoryMapsHomeCard = props => {
       <Typography variant="h2" id="story-maps-list-title" sx={{ p: 2 }}>
         {t('storyMap.home_title')}
       </Typography>
-      <List aria-describedby="story-maps-list-title">
+      <List aria-labelledby="story-maps-list-title">
         {storyMaps.map(storyMap => (
-          <ListItem key={storyMap.slug} component={Grid} container>
+          <ListItem
+            key={storyMap.slug}
+            component={GridListItem}
+            container
+            aria-labelledby={`story-map-${storyMap.slug}-link`}
+          >
             <Grid item xs={1}>
               {!storyMap.isPublished && <ModeEditIcon fontSize="small" />}
             </Grid>
@@ -67,6 +74,7 @@ const StoryMapsHomeCard = props => {
               <ListItemText
                 primary={
                   <RouterLink
+                    id={`story-map-${storyMap.slug}-link`}
                     to={
                       storyMap.isPublished
                         ? `/tools/story-maps/${storyMap.slug}`
@@ -77,7 +85,7 @@ const StoryMapsHomeCard = props => {
                   </RouterLink>
                 }
                 secondary={t('storyMap.home_last_edited', {
-                  date: formatDate(i18n.resolvedLanguage, storyMap.createdAt),
+                  date: formatDate(i18n.resolvedLanguage, storyMap.updatedAt),
                 })}
                 secondaryTypographyProps={{
                   sx: {
