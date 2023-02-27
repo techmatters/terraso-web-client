@@ -95,6 +95,7 @@ const FORMAT_WRAPPERS = {
   bold: 'strong',
   italic: 'em',
 };
+
 const ELEMENT_TAGS = {
   A: el => ({ type: 'link', url: el.getAttribute('href') }),
   H1: () => ({ type: 'heading-one' }),
