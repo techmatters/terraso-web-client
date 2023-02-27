@@ -39,6 +39,8 @@ import {
 
 import './StoryMap.css';
 
+import theme from 'theme';
+
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
 const CURRENT_LOCATION_CHECK_PRESSISION = 13; // 13 decimal places
@@ -298,7 +300,7 @@ const StoryMap = props => {
     map.on('load', function () {
       if (config.use3dTerrain) {
         map.addSource('mapbox-dem', MAPBOX_DEM_SOURCE);
-        // add the DEM source as a terrain layer with exaggerated height
+        // add the DEM (Digital Elevation Model) source as a terrain layer with exaggerated height
         map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
 
         // add a sky layer that will show when the map is highly pitched
@@ -322,7 +324,6 @@ const StoryMap = props => {
       container: mapInsetContainer.current,
       style: 'mapbox://styles/mapbox/dark-v10', //hosted style id
       center: initialLocation?.center,
-      // Hardcode above center value if you want insetMap to be static.
       zoom: 3, // starting zoom
       hash: false,
       interactive: false,
@@ -345,7 +346,7 @@ const StoryMap = props => {
           source: 'boundsSource', // reference the data source
           layout: {},
           paint: {
-            'fill-color': '#fff', // blue color fill
+            'fill-color': theme.palette.white,
             'fill-opacity': 0.2,
           },
         });
@@ -356,7 +357,7 @@ const StoryMap = props => {
           source: 'boundsSource',
           layout: {},
           paint: {
-            'line-color': '#000',
+            'line-color': theme.palette.black,
             'line-width': 1,
           },
         });
