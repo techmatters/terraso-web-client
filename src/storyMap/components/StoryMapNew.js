@@ -39,7 +39,7 @@ import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigCont
 
 import theme from 'theme';
 
-/* 
+/*
  * Chapter schema
  * {
  *   id: string,
