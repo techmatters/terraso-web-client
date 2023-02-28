@@ -63,21 +63,6 @@ export const fetchStoryMap = ({ slug }) => {
     }));
 };
 
-export const deleteStoryMap = storyMap => {
-  const query = `
-    mutation deleteStoryMap($id: ID!) {
-      deleteStoryMap(input: { id: $id }) {
-        storyMap {
-          slug
-        }
-        errors
-      }
-    }
-  `;
-  return terrasoApi.requestGraphQL(query, {
-    id: storyMap.id,
-  });
-};
 export const addStoryMap = async ({ storyMap, files }) => {
   const path = '/story-map/add/';
 
