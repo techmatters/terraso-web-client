@@ -73,17 +73,6 @@ export const updateStoryMap = createAsyncThunk(
     },
   })
 );
-export const deleteStoryMap = createAsyncThunk(
-  'storyMap/addStoryMap',
-  storyMapService.deleteStoryMap,
-  (storyMap, { config }) => ({
-    severity: 'success',
-    content: 'storyMap.deleted_story_map',
-    params: {
-      title: config.title,
-    },
-  })
-);
 
 const storyMapSlice = createSlice({
   name: 'storyMap',
