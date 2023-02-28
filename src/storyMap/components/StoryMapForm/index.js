@@ -68,12 +68,14 @@ const Preview = props => {
   );
 
   return (
-    <Grid container>
+    <>
       <TopBarPreview onPublish={onPublish} />
-      <Grid item xs={12}>
-        <StoryMap config={previewConfig} />
+      <Grid container>
+        <Grid item xs={12}>
+          <StoryMap config={previewConfig} />
+        </Grid>
       </Grid>
-    </Grid>
+    </>
   );
 };
 
@@ -102,7 +104,7 @@ const StoryMapForm = props => {
     const footerHeight =
       document.getElementsByClassName('footer')?.[0]?.clientHeight;
     const formHeaderHeight =
-      document.getElementById('form-header')?.clientHeight;
+      document.getElementById('form-header')?.clientHeight + 1;
 
     setMapHeight(
       `calc(100vh - (${headerHeight}px + ${footerHeight}px + ${formHeaderHeight}px))`
