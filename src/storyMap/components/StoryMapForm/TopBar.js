@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { useTranslation } from 'react-i18next';
 
@@ -23,43 +23,21 @@ import { Button, Grid, Typography } from '@mui/material';
 
 import RouterLink from 'common/components/RouterLink';
 
+import TopBarContainer from './TopBarContainer';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
-
-import theme from 'theme';
 
 const TopBar = props => {
   const { t } = useTranslation();
   const { config, setPreview } = useStoryMapConfigContext();
   const { onPublish, onSaveDraft } = props;
 
-  const baseItemSx = useMemo(
-    () => ({
-      borderBottom: `1px solid ${theme.palette.gray.lite1}`,
-      display: 'flex',
-      alignItems: 'center',
-      pt: 3,
-      pb: 1,
-      zIndex: 2,
-      bgcolor: 'white',
-      minHeight: 70,
-    }),
-    []
-  );
-
   return (
-    <Grid
-      id="form-header"
-      container
-      component="section"
-      aria-label={t('storyMap.form_header_section_label')}
-    >
+    <TopBarContainer>
       <Grid
         item
         xs={2}
         sx={{
-          ...baseItemSx,
           width: '100%',
-          zIndex: 2,
           pl: 2,
         }}
       >
@@ -73,7 +51,7 @@ const TopBar = props => {
           </Typography>
         </RouterLink>
       </Grid>
-      <Grid item xs={6} sx={baseItemSx}>
+      <Grid item xs={6}>
         <Typography variant="h3" component="h1" sx={{ pt: 0 }}>
           {config.title || t('storyMap.form_no_title_label')}
         </Typography>
@@ -81,7 +59,7 @@ const TopBar = props => {
       <Grid
         item
         xs={4}
-        sx={{ ...baseItemSx, justifyContent: 'flex-end', pr: 2 }}
+        sx={{ display: 'flex', justifyContent: 'flex-end', pr: 2 }}
       >
         <Button variant="text" color="primary" onClick={() => setPreview(true)}>
           {t('storyMap.form_preview_button')}
@@ -103,7 +81,7 @@ const TopBar = props => {
           {t('storyMap.form_publish_button')}
         </Button>
       </Grid>
-    </Grid>
+    </TopBarContainer>
   );
 };
 
