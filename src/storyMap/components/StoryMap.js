@@ -46,16 +46,6 @@ mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 const CURRENT_LOCATION_CHECK_PRESSISION = 13; // 13 decimal places
 const ROTATION_DURATION = 30000; // 30 seconds
 
-const transformRequest = url => {
-  const hasQuery = url.indexOf('?') !== -1;
-  const suffix = hasQuery
-    ? '&pluginName=scrollytellingV2'
-    : '?pluginName=scrollytellingV2';
-  return {
-    url: url + suffix,
-  };
-};
-
 const getBoundsJson = bounds => ({
   type: 'FeatureCollection',
   features: [
@@ -291,7 +281,6 @@ const StoryMap = props => {
       container: mapContainer.current,
       style: config.style,
       interactive: false,
-      transformRequest: transformRequest,
       projection: config.projection || 'globe',
       zoom: 1,
       ...(initialLocation ? initialLocation : {}),
