@@ -199,7 +199,7 @@ const StoryMapForm = props => {
           sx={{
             height: mapHeight,
             // There is no overlay support for Firefox, see: https://developer.mozilla.org/en-US/docs/Web/CSS/overflow
-            overflowY: isFirefox ? 'overlay' : 'overlay',
+            overflowY: isFirefox ? 'scroll' : 'overlay',
           }}
         >
           {mapHeight && mapWidth && (
