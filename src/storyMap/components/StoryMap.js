@@ -27,7 +27,7 @@ import RichTextEditor from 'common/components/RichTextEditor';
 import mapboxgl from 'gis/mapbox';
 import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
 
-import { MAPBOX_ACCESS_TOKEN } from 'config';
+import { MAPBOX_ACCESS_TOKEN, STORY_MAP_INSET_STYLE } from 'config';
 
 import {
   ALIGNMENTS,
@@ -311,15 +311,15 @@ const StoryMap = props => {
 
     const newInsetMap = new mapboxgl.Map({
       container: mapInsetContainer.current,
-      style: 'mapbox://styles/mapbox/dark-v10', //hosted style id
+      style: STORY_MAP_INSET_STYLE, //hosted style id
       center: initialLocation?.center,
       zoom: 3, // starting zoom
       hash: false,
       interactive: false,
       attributionControl: false,
-      //Future: Once official mapbox-gl-js has globe view enabled,
-      //insetmap can be a globe with the following parameter.
-      //projection: 'globe'
+      // Future: Once official mapbox-gl-js has globe view enabled,
+      // insetmap can be a globe with the following parameter.
+      // projection: 'globe'
     });
 
     newInsetMap.on('load', function () {

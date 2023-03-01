@@ -120,6 +120,7 @@ export const MAPBOX_STYLE_DEFAULT =
   process.env.REACT_APP_MAPBOX_STYLE_DEFAULT ||
   'mapbox://styles/mapbox/satellite-v9';
 
+export const STORY_MAP_INSET_STYLE = 'mapbox://styles/mapbox/dark-v10';
 export const STORY_MAP_MEDIA_MAX_SIZE = 10000000; // 10 MB
 export const STORY_MAP_MEDIA_ACCEPTED_TYPES = {
   'image/jpeg': ['.jpg', '.jpeg'],
