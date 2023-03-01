@@ -27,6 +27,7 @@ import {
   CardContent,
   CardHeader,
   Grid,
+  List,
   Paper,
   Typography,
 } from '@mui/material';
@@ -81,17 +82,35 @@ const StoryMapsToolsHome = () => {
           </Trans>
         </Paper>
         {!_.isEmpty(list) && (
-          <>
-            <Typography variant="h2" sx={{ mt: 4, mb: 2 }}>
+          <section aria-labelledby="story-map-examples-heading">
+            <Typography
+              id="story-map-examples-heading"
+              variant="h2"
+              sx={{ mt: 4, mb: 2 }}
+            >
               {t('storyMap.tool_home_examples_title')}
             </Typography>
-            <Grid container spacing={1}>
+            <Grid
+              container
+              spacing={1}
+              component={List}
+              aria-labelledby="story-map-examples-heading"
+            >
               {list.map(sample => (
-                <Grid item xs={12} sm={6} md={4} key={sample.id}>
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  md={4}
+                  key={sample.id}
+                  component="li"
+                  aria-labelledby={`story-map-example-${sample.id}`}
+                >
                   <Card>
                     <CardHeader
                       title={
                         <RouterLink
+                          id={`story-map-example-${sample.id}`}
                           variant="h3"
                           to={`/tools/story-maps/${sample.slug}`}
                         >
@@ -120,7 +139,7 @@ const StoryMapsToolsHome = () => {
                 </Grid>
               ))}
             </Grid>
-          </>
+          </section>
         )}
       </PageContainer>
     </>
