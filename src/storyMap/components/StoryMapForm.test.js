@@ -548,7 +548,11 @@ test('StoryMapForm: Change chapter location', async () => {
     )
   );
 
-  await screen.findByRole('button', { name: 'Save draft' });
+  await waitFor(() => {
+    expect(
+      screen.getByRole('button', { name: 'Save draft' })
+    ).toBeInTheDocument();
+  });
 
   // Save
   await act(async () =>
