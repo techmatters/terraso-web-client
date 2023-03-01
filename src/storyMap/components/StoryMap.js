@@ -403,7 +403,7 @@ const StoryMap = props => {
           transition.location
         );
 
-        // Incase you do not want to have a dynamic inset map,
+        // If you do not want to have a dynamic inset map,
         // rather want to keep it a static view but still change the
         // bbox as main map move: comment out the below if section.
         if (config.inset) {
