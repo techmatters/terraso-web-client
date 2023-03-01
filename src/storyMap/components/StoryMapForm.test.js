@@ -279,6 +279,65 @@ test('StoryMapForm: Renders title and chapters correctly', async () => {
   testChapter({ title: 'Chapter 2', description: 'Chapter 2 description' });
 });
 
+test('StoryMapForm: Change title', async () => {
+  const { onSaveDraft } = await setup(BASE_CONFIG);
+
+  const titleSection = screen.getByRole('region', {
+    name: 'Title for: Story Map Title',
+  });
+
+  // Title
+  await act(async () =>
+    fireEvent.click(
+      within(titleSection).getByRole('heading', { name: 'Story Map Title' })
+    )
+  );
+  await act(async () =>
+    fireEvent.change(
+      within(titleSection).getByRole('textbox', { name: 'Story map title' }),
+      { target: { value: 'New title' } }
+    )
+  );
+
+  // Subtitle
+  await act(async () =>
+    fireEvent.click(
+      within(titleSection).getByRole('heading', { name: 'Story Map Subtitle' })
+    )
+  );
+  await act(async () =>
+    fireEvent.change(
+      within(titleSection).getByRole('textbox', { name: 'Story map subtitle' }),
+      { target: { value: 'New subtitle' } }
+    )
+  );
+
+  // Byline
+  await act(async () =>
+    fireEvent.click(within(titleSection).getByText('by User'))
+  );
+  await act(async () =>
+    fireEvent.change(
+      within(titleSection).getByRole('textbox', { name: 'Byline' }),
+      { target: { value: 'by Other' } }
+    )
+  );
+
+  // Save
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
+  );
+  expect(onSaveDraft).toHaveBeenCalledTimes(1);
+  const saveCall = onSaveDraft.mock.calls[0];
+  expect(saveCall[0]).toEqual(
+    expect.objectContaining({
+      title: 'New title',
+      subtitle: 'New subtitle',
+      byline: 'by Other',
+    })
+  );
+});
+
 test('StoryMapForm: Sidebar navigation', async () => {
   const scroller = {
     setup: function () {
@@ -502,6 +561,10 @@ test('StoryMapForm: Show preview', async () => {
   expect(
     within(chapters).getByRole('region', { name: 'Chapter: Chapter 2' })
   ).toBeInTheDocument();
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }))
+  );
 });
 test('StoryMapForm: Change chapter location', async () => {
   const map = {
