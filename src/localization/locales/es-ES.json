@@ -472,6 +472,7 @@
     "common": {
         "dialog_cancel_label": "Cancelar",
         "terraso_projectName": "Terraso",
+        "terraso_logoText": "Logo: Terraso",
         "unexpected_error": "Ups! Algo salió mal. Vuelve a intentarlo en unos minutos. {{error, errorParam(label: Error)}}",
         "loader_label": "Cargando",
         "not_found_title": "Página no encontrada",
