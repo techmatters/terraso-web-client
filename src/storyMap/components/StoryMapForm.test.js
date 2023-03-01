@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
+import userEvent from '@testing-library/user-event'
 
 import React from 'react';
 
@@ -30,6 +31,14 @@ jest.mock('gis/mapbox', () => ({}));
 
 // Scrollama mock
 jest.mock('scrollama', () => jest.fn());
+
+// TODO test RichTextEditor
+// Right now there is no way to test it, see: https://github.com/ianstormtaylor/slate/issues/4902
+jest.mock('common/components/RichTextEditor', () => props => {
+  return (
+    <input type="text" aria-label={props.label} value={props.value} onChange={e => props.onChange(e.target.value)} />
+  )
+});
 
 beforeEach(() => {
   mapboxgl.Map = jest.fn();
@@ -110,9 +119,7 @@ const testChapter = ({ title, description, image }) => {
     const descriptionTextbox = within(chapterSection).getByRole('textbox', {
       name: 'Chapter description',
     });
-    expect(
-      within(descriptionTextbox).getByText(description)
-    ).toBeInTheDocument();
+    expect(descriptionTextbox).toHaveValue(description);
   }
 
   if (image) {
@@ -142,10 +149,14 @@ const changeChaper = async ({
     );
   }
 
-  // TODO test rich text editor
-  // const descriptionTextbox = within(chapterSection).getByRole('textbox', {
-  //   name: 'Chapter description',
-  // });
+  if (newDescription) {
+    const descriptionTextbox = within(chapterSection).getByRole('textbox', {
+      name: 'Chapter description',
+    });
+    await act(async () =>
+      fireEvent.change(descriptionTextbox, { target: { value: newDescription } })
+    );
+  }
 
   if (newFile) {
     const mediaButton = within(chapterSection).getByRole('button', {
@@ -392,7 +403,7 @@ test('StoryMapForm: Adds new chapter', async () => {
     expect.objectContaining({
       alignment: 'left',
       title: 'New chapter',
-      description: '',
+      description: 'New chapter description',
       mapAnimation: 'flyTo',
       rotateAnimation: false,
       onChapterEnter: [],
