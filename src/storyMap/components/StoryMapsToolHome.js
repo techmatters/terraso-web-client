@@ -110,8 +110,8 @@ const StoryMapsToolsHome = () => {
                     <CardHeader
                       title={
                         <RouterLink
-                          id={`story-map-example-${sample.id}`}
                           variant="h3"
+                          id={`story-map-example-${sample.id}`}
                           to={`/tools/story-maps/${sample.slug}`}
                         >
                           {sample.title}
