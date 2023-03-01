@@ -15,7 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
-import userEvent from '@testing-library/user-event'
 
 import React from 'react';
 
@@ -36,22 +35,33 @@ jest.mock('scrollama', () => jest.fn());
 // Right now there is no way to test it, see: https://github.com/ianstormtaylor/slate/issues/4902
 jest.mock('common/components/RichTextEditor', () => props => {
   return (
-    <input type="text" aria-label={props.label} value={props.value} onChange={e => props.onChange(e.target.value)} />
-  )
+    <input
+      type="text"
+      aria-label={props.label}
+      value={props.value}
+      onChange={e => props.onChange(e.target.value)}
+    />
+  );
 });
 
 beforeEach(() => {
+  mapboxgl.NavigationControl = jest.fn();
   mapboxgl.Map = jest.fn();
-  mapboxgl.Map.prototype = {
-    on: (type, cb) => {
+  mapboxgl.Map.mockReturnValue({
+    onEvents: {},
+    on: function (type, cb) {
       if (type === 'load') {
         cb();
       }
+      this.onEvents[type] = cb;
     },
     remove: jest.fn(),
     off: jest.fn(),
     getCanvas: jest.fn(),
-  };
+    addControl: jest.fn(),
+    getCenter: jest.fn(),
+    getZoom: jest.fn(),
+  });
   window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
   const scroller = {
@@ -154,7 +164,9 @@ const changeChaper = async ({
       name: 'Chapter description',
     });
     await act(async () =>
-      fireEvent.change(descriptionTextbox, { target: { value: newDescription } })
+      fireEvent.change(descriptionTextbox, {
+        target: { value: newDescription },
+      })
     );
   }
 
@@ -490,4 +502,71 @@ test('StoryMapForm: Show preview', async () => {
   expect(
     within(chapters).getByRole('region', { name: 'Chapter: Chapter 2' })
   ).toBeInTheDocument();
+});
+test('StoryMapForm: Change chapter location', async () => {
+  const map = {
+    onEvents: {},
+    on: function (type, cb) {
+      if (type === 'load') {
+        cb();
+      }
+      this.onEvents[type] = cb;
+    },
+    remove: jest.fn(),
+    off: jest.fn(),
+    getCanvas: jest.fn(),
+    addControl: jest.fn(),
+    addSource: jest.fn(),
+    addLayer: jest.fn(),
+    getCenter: () => ({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
+    getZoom: () => 10,
+    getPitch: () => 64,
+    getBearing: () => 45,
+    setTerrain: jest.fn(),
+  };
+  mapboxgl.Map.mockReturnValue(map);
+  const { onSaveDraft } = await setup(BASE_CONFIG);
+
+  const chapter1 = screen.getByRole('region', {
+    name: 'Chapter: Chapter 1',
+  });
+
+  const locationDialogButton = within(chapter1).getByRole('button', {
+    name: 'Set location map for this chapter',
+  });
+  await act(async () => fireEvent.click(locationDialogButton));
+
+  const dialog = screen.getByRole('dialog', {
+    name: 'Set background map for “Chapter 1”',
+  });
+
+  await act(async () => map.onEvents['move']());
+
+  await act(async () =>
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Save Map View' })
+    )
+  );
+
+  await screen.findByRole('button', { name: 'Save draft' });
+
+  // Save
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
+  );
+  expect(onSaveDraft).toHaveBeenCalledTimes(1);
+  const saveCall = onSaveDraft.mock.calls[0];
+  expect(saveCall[0].chapters[0]).toEqual(
+    expect.objectContaining({
+      location: {
+        bearing: 45,
+        center: {
+          lat: -0.2294635049867253,
+          lng: -78.54414857836304,
+        },
+        pitch: 64,
+        zoom: 10,
+      },
+    })
+  );
 });
