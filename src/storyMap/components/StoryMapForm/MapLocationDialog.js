@@ -168,7 +168,9 @@ const MapLocationDialog = props => {
     >
       <Stack direction="row" justifyContent="space-between">
         <DialogTitle component="h1" id="map-location-dialog-title">
-          {t('storyMap.form_location_dialog_title', { title })}
+          {title
+            ? t('storyMap.form_location_dialog_title', { title })
+            : t('storyMap.form_location_dialog_title_blank')}
         </DialogTitle>
         <DialogActions sx={{ pr: 3 }}>
           <Button size="small" onClick={handleCancel}>
