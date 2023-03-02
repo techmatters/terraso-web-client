@@ -821,7 +821,7 @@
         "form_chapter_alignment_left": "Left",
         "form_chapter_alignment_center": "Center",
         "form_chapter_alignment_right": "Right",
-        "form_location_dialog_title": "Set map location for {{title}}",
+        "form_location_dialog_title": "Set map location for <1>{{title}}</1>",
         "form_location_dialog_title_blank": "Set map location",
         "location_dialog_cancel_button": "Cancel",
         "location_dialog_confirm_button": "Set Location",
