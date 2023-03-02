@@ -42,7 +42,7 @@ const StoryMapToolCard = () => {
         spacing={2}
       >
         <Stack component="section">
-          <Typography variant="h3">{t('tool.is_for')}</Typography>
+          <Typography variant="h3">{t('tool.description')}</Typography>
           <Typography>{t(`storyMap.tool_card_description`)}</Typography>
 
           <Typography variant="h3">{t('tool.requirements')}</Typography>
