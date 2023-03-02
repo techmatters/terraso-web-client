@@ -847,7 +847,7 @@
         "form_media_add_dialog_title": "Add media",
         "form_media_add_dialog_add": "Add media",
         "form_media_add_dialog_close": "Cancel",
-        "form_media_add_dialog_link_media": "Link to YouTube or Vimeo video",
+        "form_media_add_dialog_link_media": "Link to a YouTube or Vimeo video",
         "form_media_add_dialog_link_media_placeholder": "https://www.youtube.com/watch?v=54321",
         "form_media_add_dialog_embedded_error": "Enter a valid YouTube or Vimeo URL.",
         "form_media_add_dialog_dropzone_label": "Upload a photo or audio file",
