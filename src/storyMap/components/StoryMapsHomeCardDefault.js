@@ -18,14 +18,7 @@ import React from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import {
-  Alert,
-  Box,
-  CardHeader,
-  Divider,
-  Paper,
-  Typography,
-} from '@mui/material';
+import { Box, CardHeader, Divider, Paper, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 
 import CardActionRouterLink from 'common/components/CardActionRouterLink';
@@ -53,13 +46,14 @@ const StoryMapsHomeCardDefault = () => {
         <Typography id="story-maps-default-title" variant="h2">
           {t('storyMap.home_title')}
         </Typography>
-        <Stack direction="row" alignItems="center">
+        <Stack direction="row" alignItems="start">
           <Paper
             variant="outlined"
             component="img"
             src="/tools/story-maps.png"
             alt={t('tool.home_card_img_alt')}
             height={64}
+            sx={{ mt: 2.5 }}
           />
           <CardHeader
             title={
@@ -70,18 +64,6 @@ const StoryMapsHomeCardDefault = () => {
             subheader={t('storyMap.home_default_description')}
           />
         </Stack>
-
-        <Alert
-          severity="info"
-          sx={{
-            marginTop: theme.spacing(1),
-            marginBottom: theme.spacing(1),
-          }}
-        >
-          <Typography variant="body1">
-            {t('storyMap.home_default_info')}
-          </Typography>
-        </Alert>
       </Box>
       <Divider aria-hidden="true" />
       <CardActionRouterLink
