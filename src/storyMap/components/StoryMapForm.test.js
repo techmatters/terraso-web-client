@@ -222,7 +222,7 @@ const changeChaper = async ({
       name: 'Add media',
     });
     const embedInput = within(mediaDialog).getByRole('textbox', {
-      name: 'Link to YouTube or Vimeo video',
+      name: 'Link to a YouTube or Vimeo video',
     });
 
     await act(async () =>
