@@ -31,6 +31,9 @@ const Tool = ({ tool }) => {
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
   const toolTitle = t(`tools.${tool}.title`);
+  const toolAvailability = t(`tools.${tool}.availability`, {
+    defaultValue: '',
+  });
 
   return (
     <Card component="li" aria-labelledby={`item-title-${tool}`} sx={{ p: 2 }}>
@@ -45,12 +48,14 @@ const Tool = ({ tool }) => {
         <section>
           <Typography variant="h3">{t('tool.is_for')}</Typography>
           <Typography>{t(`tools.${tool}.description`)}</Typography>
-
           <Typography variant="h3">{t('tool.requirements')}</Typography>
           <Typography>{t(`tools.${tool}.requirements`)}</Typography>
-
-          <Typography variant="h3">{t('tool.avilability')}</Typography>
-          <Typography>{t(`tools.${tool}.availability`)}</Typography>
+          {toolAvailability && (
+            <>
+              <Typography variant="h3">{t('tool.avilability')}</Typography>
+              <Typography>{toolAvailability}</Typography>
+            </>
+          )}
         </section>
 
         <section>

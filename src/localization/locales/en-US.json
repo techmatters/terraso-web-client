@@ -154,11 +154,22 @@
             "img": {
                 "height": "222",
                 "width": "377",
-                "src": "kobo.png"
+                "src": "/tools/kobo.png"
             },
             "description": "Design and build forms quickly\nCollect data offline and online\nAnalyze and manage data",
             "requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
-            "availability": "KoBoToolbox will be integrated into Terraso in 2022. Use Kobo independently for now."
+            "availability": "KoBoToolbox will be integrated into Terraso in 2023. Use Kobo independently for now."
+        },
+        "storyMap": {
+            "title": "Terraso Story Maps",
+            "url": "/tools/story-maps",
+            "img": {
+                "height": "124",
+                "width": "377",
+                "src": "/tools/story-maps.png"
+            },
+            "description": "Create beautiful map-based stories",
+            "requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)"
         }
     },
     "account": {
@@ -853,11 +864,6 @@
         "tool_home_examples_title": "Sample story maps: View what others created",
         "tool_home_examples_published_at": "Published on {{date}}",
         "tool_home_examples_by": "By $t(user.full_name)",
-        "tool_card_title": "Terraso Story Maps",
-        "tool_card_description": "Create beautiful map-based stories.",
-        "tool_card_requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
-        "tool_help_url": "TODO",
-        "tool_card_help": "Learn more about Story Maps",
         "form_new_mobile_warning_title": "Create Story Map",
         "form_new_mobile_warning": "Sorry, creating a story map is not supported on small mobile phones. Check out what and how to prepare for a compelling story map.",
         "form_no_title_label": "Untitled",

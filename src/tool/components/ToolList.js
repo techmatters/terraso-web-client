@@ -24,22 +24,12 @@ import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 
-import StoryMapToolCard from 'storyMap/components/StoryMapsToolCard';
 import Tool from 'tool/components/ToolDefaultCard';
 
 const ToolList = () => {
   const { t } = useTranslation();
 
-  const toolList = [
-    {
-      id: 'storyMap',
-      Card: StoryMapToolCard,
-    },
-    {
-      id: 'kobo',
-      Card: Tool,
-    },
-  ];
+  const toolList = ['storyMap', 'kobo'];
 
   useDocumentTitle(t('tool.list_document_title'));
 
@@ -59,7 +49,7 @@ const ToolList = () => {
       ></Typography>
       <Stack spacing={2} component={List} aria-labelledby="main-heading">
         {toolList.map(tool => (
-          <tool.Card key={tool.id} tool={tool.id} />
+          <Tool key={tool.id} tool={tool} />
         ))}
       </Stack>
     </PageContainer>
