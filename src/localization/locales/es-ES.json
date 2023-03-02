@@ -838,7 +838,7 @@
         "breadcrumbs_create": "Crear",
         "home_title": "Story Maps",
         "home_create": "Crear nuevo Story Map",
-        "home_last_edited": "Last edited on {{date}}",
+        "home_last_edited": "Última edición el {{date}}",
         "home_tools_link": "Terraso Story Maps",
         "home_default_description": "Usa mapas, fotos, videos, grabaciones de audio y narraciones para crear una historia impactante.",
         "form_media_update_label": "Actualizar multimedia",
