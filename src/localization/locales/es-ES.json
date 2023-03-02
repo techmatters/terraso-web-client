@@ -808,7 +808,6 @@
         "form_publish_button": "Publicar",
         "form_preview_close": "Salir de vista previa",
         "form_preview_title": "Está viendo una vista previa de <1>{{title}}</1>",
-        "form_preview_title_blank": "Está viendo una vista previa",
         "form_chapter_title_placeholder": "Título del capítulo",
         "form_chapter_description_placeholder": "escribe tu historia",
         "form_chapter_title_label": "Título del capítulo",
