@@ -796,6 +796,7 @@
         "form_chapter_media_label": "Chapter media",
         "form_title_placeholder": "Your Story Map’s title",
         "form_subtitle_placeholder": "Your Story Map’s title",
+        "form_title_label": "Story map title",
         "form_subtitle_label": "Story map subtitle",
         "form_byline_label": "Byline",
         "form_subtitle_placeholder": "Stop map subtitle",
