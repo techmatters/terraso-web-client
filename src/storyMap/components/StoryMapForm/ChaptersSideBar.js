@@ -66,7 +66,7 @@ const ChaptersSidebar = props => {
           <ListItem key={item.id} sx={{ p: 0 }}>
             <Button
               component="a"
-              {...(item.active ? { 'aria-current': 'page' } : {})}
+              {...(item.active ? { 'aria-current': 'step' } : {})}
               sx={{
                 width: '100%',
                 borderRadius: 0,

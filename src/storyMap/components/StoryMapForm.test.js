@@ -381,9 +381,9 @@ test('StoryMapForm: Sidebar navigation', async () => {
       element: document.querySelector('#chapter-1'),
     });
   });
-  expect(chapter1).toHaveAttribute('aria-current', 'page');
-  expect(chapter2).not.toHaveAttribute('aria-current', 'page');
-  expect(title).not.toHaveAttribute('aria-current', 'page');
+  expect(chapter1).toHaveAttribute('aria-current', 'step');
+  expect(chapter2).not.toHaveAttribute('aria-current', 'step');
+  expect(title).not.toHaveAttribute('aria-current', 'step');
 
   // Trigger on chapter 2
   await act(async () => {
@@ -391,9 +391,9 @@ test('StoryMapForm: Sidebar navigation', async () => {
       element: document.querySelector('#chapter-2'),
     });
   });
-  expect(chapter1).not.toHaveAttribute('aria-current', 'page');
-  expect(chapter2).toHaveAttribute('aria-current', 'page');
-  expect(title).not.toHaveAttribute('aria-current', 'page');
+  expect(chapter1).not.toHaveAttribute('aria-current', 'step');
+  expect(chapter2).toHaveAttribute('aria-current', 'step');
+  expect(title).not.toHaveAttribute('aria-current', 'step');
 
   // Trigger on title
   await act(async () => {
@@ -401,9 +401,9 @@ test('StoryMapForm: Sidebar navigation', async () => {
       element: document.querySelector('#story-map-title'),
     });
   });
-  expect(title).toHaveAttribute('aria-current', 'page');
-  expect(chapter1).not.toHaveAttribute('aria-current', 'page');
-  expect(chapter2).not.toHaveAttribute('aria-current', 'page');
+  expect(title).toHaveAttribute('aria-current', 'step');
+  expect(chapter1).not.toHaveAttribute('aria-current', 'step');
+  expect(chapter2).not.toHaveAttribute('aria-current', 'step');
 });
 
 test('StoryMapForm: Adds new chapter', async () => {
