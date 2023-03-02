@@ -17,13 +17,11 @@
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 
-import { Button, Card, Stack, Typography } from '@mui/material';
+import { Card, Stack, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import ExternalLink from 'common/components/ExternalLink';
-import RouterLink from 'common/components/RouterLink';
 
 import theme from 'theme';
 
@@ -35,11 +33,9 @@ const StoryMapToolCard = () => {
 
   return (
     <Card component="li" aria-labelledby={`item-title-story-map`} sx={{ p: 2 }}>
-      <RouterLink to="/tools/story-maps">
-        <Typography id={`item-title-story-map`} variant="h2">
-          {toolTitle}
-        </Typography>
-      </RouterLink>
+      <Typography id={`item-title-story-map`} variant="h2">
+        {toolTitle}
+      </Typography>
       <Stack
         direction={isSmall ? 'column' : 'row'}
         justifyContent="space-between"
@@ -58,14 +54,6 @@ const StoryMapToolCard = () => {
           >
             {t('storyMap.tool_card_help')}
           </ExternalLink>
-
-          <Button
-            component={Link}
-            to="/tools/story-maps/create"
-            variant="outlined"
-          >
-            {t('storyMap.tool_card_create_button')}
-          </Button>
         </Stack>
       </Stack>
     </Card>
