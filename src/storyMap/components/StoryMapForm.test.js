@@ -202,13 +202,13 @@ const changeChaper = async ({
     await act(async () => fireEvent.drop(dropZone, data));
 
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'Add' })).not.toHaveAttribute(
+      expect(screen.getByRole('button', { name: 'Add media' })).not.toHaveAttribute(
         'disabled'
       )
     );
 
     await act(async () =>
-      fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Add media' }))
     );
   }
 
@@ -234,13 +234,13 @@ const changeChaper = async ({
     );
 
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'Add' })).not.toHaveAttribute(
+      expect(screen.getByRole('button', { name: 'Add media' })).not.toHaveAttribute(
         'disabled'
       )
     );
 
     await act(async () =>
-      fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Add media' }))
     );
   }
 };
@@ -442,13 +442,13 @@ test('StoryMapForm: Adds new chapter', async () => {
 
   // New chapter should be added
   const newChapter = screen.getByRole('region', {
-    name: 'Chapter: (No title)',
+    name: 'Chapter: Untitled',
   });
   expect(newChapter).toBeInTheDocument();
 
   // Change title and description
   await changeChaper({
-    title: '(No title)',
+    title: 'Untitled',
     newTitle: 'New chapter',
     newDescription: 'New chapter description',
     newFile: new File(['content2'], `test.jpg`, {
@@ -588,7 +588,7 @@ test('StoryMapForm: Show preview', async () => {
   ).toBeInTheDocument();
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Close' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Exit Preview' }))
   );
 });
 test('StoryMapForm: Change chapter location', async () => {
@@ -620,19 +620,19 @@ test('StoryMapForm: Change chapter location', async () => {
   });
 
   const locationDialogButton = within(chapter1).getByRole('button', {
-    name: 'Set location map for this chapter',
+    name: 'Set map location',
   });
   await act(async () => fireEvent.click(locationDialogButton));
 
   const dialog = screen.getByRole('dialog', {
-    name: 'Set background map for “Chapter 1”',
+    name: 'Set map location for Chapter 1',
   });
 
   await act(async () => map.onEvents['move']());
 
   await act(async () =>
     fireEvent.click(
-      within(dialog).getByRole('button', { name: 'Save Map View' })
+      within(dialog).getByRole('button', { name: 'Set Location' })
     )
   );
 
