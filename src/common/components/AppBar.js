@@ -62,7 +62,7 @@ const AppBarComponent = () => {
             src={isSmall ? logoSquare : logo}
             width={isSmall ? 35 : 125}
             height="35"
-            alt={t('common.terraso_projectName')}
+            alt={t('common.terraso_logoText')}
           />
         </ConditionalLink>
         <Box sx={{ flexGrow: 1 }} />

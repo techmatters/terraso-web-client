@@ -597,6 +597,7 @@
     "common": {
         "dialog_cancel_label": "Cancel",
         "terraso_projectName": "Terraso",
+        "terraso_logoText": "Logo: Terraso",
         "unexpected_error": "Oops, something went wrong. Try again in a few minutes. {{error, errorParam(label: Error)}}",
         "loader_label": "Loading",
         "not_found_title": "Page not found",

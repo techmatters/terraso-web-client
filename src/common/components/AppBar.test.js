@@ -69,7 +69,7 @@ test('AppBar: Display terraso title', async () => {
 test('AppBar: Logo display', async () => {
   useMediaQuery.mockReturnValue(false);
   await setup();
-  expect(screen.getByRole('img', { name: 'Terraso' })).toHaveAttribute(
+  expect(screen.getByRole('img', { name: /Terraso/i })).toHaveAttribute(
     'src',
     'logo.svg'
   );
@@ -77,7 +77,7 @@ test('AppBar: Logo display', async () => {
 test('AppBar: Logo display (small)', async () => {
   useMediaQuery.mockReturnValue(true);
   await setup();
-  expect(screen.getByRole('img', { name: 'Terraso' })).toHaveAttribute(
+  expect(screen.getByRole('img', { name: /Terraso/i })).toHaveAttribute(
     'src',
     'logo-square.svg'
   );
@@ -88,7 +88,7 @@ test('AppBar: Sign out', async () => {
   });
   useMediaQuery.mockReturnValue(false);
   await setup();
-  expect(screen.getByRole('img', { name: 'Terraso' })).toHaveAttribute(
+  expect(screen.getByRole('img', { name: /Terraso/i })).toHaveAttribute(
     'src',
     'logo.svg'
   );
