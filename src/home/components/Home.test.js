@@ -243,7 +243,7 @@ test('Home: Display defaults', async () => {
   expect(screen.getByText(/Groups connect people/i)).toBeInTheDocument();
   expect(
     screen.getByText(
-      /Use maps, photos, videos, audio recordings and narrative to curate an impactful story./i
+      /Use maps, photos, videos, audio recordings and narrative to create an impactful story./i
     )
   ).toBeInTheDocument();
 });
