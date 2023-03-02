@@ -202,9 +202,9 @@ const changeChaper = async ({
     await act(async () => fireEvent.drop(dropZone, data));
 
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'Add media' })).not.toHaveAttribute(
-        'disabled'
-      )
+      expect(
+        screen.getByRole('button', { name: 'Add media' })
+      ).not.toHaveAttribute('disabled')
     );
 
     await act(async () =>
@@ -234,9 +234,9 @@ const changeChaper = async ({
     );
 
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'Add media' })).not.toHaveAttribute(
-        'disabled'
-      )
+      expect(
+        screen.getByRole('button', { name: 'Add media' })
+      ).not.toHaveAttribute('disabled')
     );
 
     await act(async () =>
