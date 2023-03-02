@@ -44,6 +44,29 @@ jest.mock('common/components/RichTextEditor', () => props => {
   );
 });
 
+const BASE_CONFIG = {
+  title: 'Story Map Title',
+  subtitle: 'Story Map Subtitle',
+  byline: 'by User',
+  chapters: [
+    {
+      id: 'chapter-1',
+      title: 'Chapter 1',
+      description: 'Chapter 1 description',
+      media: { type: 'image/png', signedUrl: 'https://test.com/image.png' },
+    },
+    {
+      id: 'chapter-2',
+      title: 'Chapter 2',
+      description: 'Chapter 2 description',
+      location: {
+        center: { lng: -79.89928261750599, lat: -2.423124847733348 },
+        zoom: 5,
+      },
+    },
+  ],
+};
+
 beforeEach(() => {
   mapboxgl.NavigationControl = jest.fn();
   mapboxgl.Map = jest.fn();
@@ -81,25 +104,6 @@ beforeEach(() => {
   };
   scrollama.mockImplementation(() => scroller);
 });
-
-const BASE_CONFIG = {
-  title: 'Story Map Title',
-  subtitle: 'Story Map Subtitle',
-  byline: 'by User',
-  chapters: [
-    {
-      id: 'chapter-1',
-      title: 'Chapter 1',
-      description: 'Chapter 1 description',
-      media: { type: 'image/png', signedUrl: 'https://test.com/image.png' },
-    },
-    {
-      id: 'chapter-2',
-      title: 'Chapter 2',
-      description: 'Chapter 2 description',
-    },
-  ],
-};
 
 const setup = async config => {
   const onPublish = jest.fn();
@@ -339,6 +343,23 @@ test('StoryMapForm: Change title', async () => {
 });
 
 test('StoryMapForm: Sidebar navigation', async () => {
+  const map = {
+    onEvents: {},
+    on: function (type, cb) {
+      if (type === 'load') {
+        cb();
+      }
+      this.onEvents[type] = cb;
+    },
+    remove: jest.fn(),
+    off: jest.fn(),
+    getCanvas: jest.fn(),
+    addControl: jest.fn(),
+    getCenter: () => ({ lng: -99.91122777353772, lat: 21.64458705609789 }),
+    getZoom: jest.fn(),
+    flyTo: jest.fn(),
+  };
+  mapboxgl.Map.mockReturnValue(map);
   const scroller = {
     setup: function () {
       return this;
@@ -385,6 +406,8 @@ test('StoryMapForm: Sidebar navigation', async () => {
   expect(chapter2).not.toHaveAttribute('aria-current', 'step');
   expect(title).not.toHaveAttribute('aria-current', 'step');
 
+  expect(map.flyTo).toHaveBeenCalledTimes(0);
+
   // Trigger on chapter 2
   await act(async () => {
     scroller.stepEnter({
@@ -394,6 +417,8 @@ test('StoryMapForm: Sidebar navigation', async () => {
   expect(chapter1).not.toHaveAttribute('aria-current', 'step');
   expect(chapter2).toHaveAttribute('aria-current', 'step');
   expect(title).not.toHaveAttribute('aria-current', 'step');
+
+  expect(map.flyTo).toHaveBeenCalledTimes(1);
 
   // Trigger on title
   await act(async () => {
