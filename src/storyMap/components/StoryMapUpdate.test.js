@@ -59,10 +59,10 @@ test('StoryMapUpdate: Renders editor', async () => {
   await render(<StoryMapUpdate />);
 
   expect(
-    screen.getByRole('region', { name: '[TODO] Story editor Header' })
+    screen.getByRole('region', { name: 'Story editor Header' })
   ).toBeInTheDocument();
   expect(
-    screen.getByRole('navigation', { name: '[TODO] Chapters sidebar' })
+    screen.getByRole('navigation', { name: 'Chapters sidebar' })
   ).toBeInTheDocument();
   expect(
     screen.getByRole('heading', { name: 'Story Map Title' })

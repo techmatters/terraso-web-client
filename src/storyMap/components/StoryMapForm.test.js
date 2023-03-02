@@ -250,7 +250,7 @@ test('StoryMapForm: Renders title and chapters correctly', async () => {
 
   // Editor header
   const header = screen.getByRole('region', {
-    name: '[TODO] Story editor Header',
+    name: 'Story editor Header',
   });
   expect(
     within(header).getByRole('heading', { name: 'Story Map Title' })
@@ -381,7 +381,7 @@ test('StoryMapForm: Sidebar navigation', async () => {
 
   // Get sidebar list
   const sidebarList = screen.getByRole('navigation', {
-    name: '[TODO] Chapters sidebar',
+    name: 'Chapters sidebar',
   });
 
   const title = within(sidebarList).getByRole('button', {
