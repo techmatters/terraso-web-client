@@ -20,7 +20,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import getVideoId from 'get-video-id';
 import _ from 'lodash/fp';
 import { openFile } from 'media/fileUtils';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -555,14 +555,9 @@ const EditableMedia = props => {
           component={Paper}
           sx={{ bgcolor: 'blue.mid', minHeight: 150, p: 2 }}
         >
-          <Trans i18nKey="storyMap.form_media_placeholder">
-            <Typography variant="h3" sx={{ pt: 0 }}>
-              Title
-            </Typography>
-            <Typography variant="caption" sx={{ textAlign: 'center' }}>
-              Description
-            </Typography>
-          </Trans>
+          <Typography variant="caption" sx={{ textAlign: 'center' }}>
+            {t('storyMap.form_media_placeholder')}
+          </Typography>
           <Button variant="outlined" onClick={onOpen}>
             {t('storyMap.form_media_upload')}
           </Button>
