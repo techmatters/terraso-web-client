@@ -69,7 +69,7 @@ test('StoryMapsToolHome: renders correctly', async () => {
   });
 
   expect(
-    screen.getByRole('heading', { name: 'Terraso Story Map' })
+    screen.getByRole('heading', { name: 'Terraso Story Maps' })
   ).toBeInTheDocument();
   expect(
     screen.getByRole('link', { name: 'Create Story Map' })
@@ -77,11 +77,11 @@ test('StoryMapsToolHome: renders correctly', async () => {
 
   expect(
     screen.getByRole('heading', {
-      name: 'Sample story maps: View what others have been working on',
+      name: 'Sample story maps: View what others created',
     })
   ).toBeInTheDocument();
   const list = screen.getByRole('list', {
-    name: 'Sample story maps: View what others have been working on',
+    name: 'Sample story maps: View what others created',
   });
   const items = within(list).getAllByRole('listitem');
   expect(items.length).toBe(2);
