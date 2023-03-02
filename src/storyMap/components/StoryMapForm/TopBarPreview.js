@@ -16,7 +16,7 @@
  */
 import React from 'react';
 
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { Button, Grid, Typography } from '@mui/material';
 
@@ -32,7 +32,17 @@ const TopBarPreview = props => {
     <TopBarContainer>
       <Grid item xs={12} sm={8}>
         <Typography variant="h3" sx={{ pt: 0, pl: 2, fontWeight: 700 }}>
-          {t('storyMap.form_preview_title', { title: config.title })}
+          {t ? (
+            <Trans
+              i18nKey="storyMap.form_preview_title"
+              values={{ title: config.title }}
+            >
+              prefix
+              <i>italic</i>
+            </Trans>
+          ) : (
+            t('storyMap.form_preview_title_blank')
+          )}
         </Typography>
       </Grid>
       <Grid
