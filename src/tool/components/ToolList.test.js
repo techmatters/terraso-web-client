@@ -27,7 +27,7 @@ test('ToolList: renders correctly', async () => {
     screen.getByRole('heading', { name: 'Terraso Story Maps' })
   ).toBeInTheDocument();
   expect(
-    screen.getByRole('link', { name: 'Create Story Map' })
+    screen.getByRole('link', { name: 'Go to Terraso Story Maps' })
   ).toBeInTheDocument();
 
   expect(
