@@ -43,8 +43,6 @@ const Tool = ({ tool }) => {
     attributes['aria-label'] = pronunciation;
   }
 
-  const toolImage = require(`assets/${t(`tools.${tool}.img.src`)}`);
-
   return (
     <React.Fragment>
       <Card sx={{ padding: theme.spacing(2) }}>
@@ -90,7 +88,7 @@ const Tool = ({ tool }) => {
             <ExternalLink href={t(`tools.${tool}.url`)}>
               <Box
                 component="img"
-                src={toolImage}
+                src={t(`tools.${tool}.img.src`)}
                 alt=""
                 width={t(`tools.${tool}.img.width`)}
                 height={t(`tools.${tool}.img.height`)}

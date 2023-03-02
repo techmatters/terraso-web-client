@@ -27,7 +27,6 @@ import theme from 'theme';
 
 const ToolHomeCard = () => {
   const { t } = useTranslation();
-  const koboImage = require(`assets/${t(`tools.kobo.img.src`)}`);
 
   return (
     <HomeCard
@@ -51,7 +50,7 @@ const ToolHomeCard = () => {
         <Link component={RouterLink} to="/tools">
           <Box
             component="img"
-            src={koboImage}
+            src={t(`tools.kobo.img.src`)}
             alt=""
             width="250"
             height="50"
