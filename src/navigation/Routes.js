@@ -142,7 +142,7 @@ const paths = [
     showBreadcrumbs: true,
     breadcrumbsLabel: 'storyMap.breadcrumbs_tool_home',
   }),
-  path('/tools/story-maps/create/', StoryMapNew, {
+  path('/tools/story-maps/new', StoryMapNew, {
     showBreadcrumbs: true,
     breadcrumbsLabel: 'storyMap.breadcrumbs_create',
   }),

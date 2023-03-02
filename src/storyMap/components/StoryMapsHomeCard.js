@@ -100,7 +100,7 @@ const StoryMapsHomeCard = props => {
       <Divider aria-hidden="true" />
       <CardActionRouterLink
         label={t('storyMap.home_create')}
-        to="/tools/story-maps/create"
+        to="/tools/story-maps/new"
       />
     </HomeCard>
   );
