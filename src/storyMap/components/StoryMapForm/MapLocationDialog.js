@@ -17,7 +17,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import {
   Box,
@@ -168,9 +168,17 @@ const MapLocationDialog = props => {
     >
       <Stack direction="row" justifyContent="space-between">
         <DialogTitle component="h1" id="map-location-dialog-title">
-          {title
-            ? t('storyMap.form_location_dialog_title', { title })
-            : t('storyMap.form_location_dialog_title_blank')}
+          {title ? (
+            <Trans
+              i18nKey="storyMap.form_location_dialog_title"
+              values={{ title: title }}
+            >
+              prefix
+              <i>italic</i>
+            </Trans>
+          ) : (
+            <>{t('storyMap.form_location_dialog_title_blank')}</>
+          )}
         </DialogTitle>
         <DialogActions sx={{ pr: 3 }}>
           <Button size="small" onClick={handleCancel}>
