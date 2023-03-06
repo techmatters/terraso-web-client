@@ -41,10 +41,13 @@ const getURL = provider =>
     .then(response => response.request_url);
 
 export const getAuthURLs = () =>
-  Promise.all([getURL('google'), getURL('apple')]).then(([google, apple]) => ({
-    google,
-    apple,
-  }));
+  Promise.all([getURL('google'), getURL('apple'), getURL('microsoft')]).then(
+    ([google, apple, microsoft]) => ({
+      google,
+      apple,
+      microsoft,
+    })
+  );
 
 export const fetchUser = () => {
   const query = `
