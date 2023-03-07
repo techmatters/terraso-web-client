@@ -106,8 +106,8 @@ beforeEach(() => {
 });
 
 const setup = async config => {
-  const onPublish = jest.fn();
-  const onSaveDraft = jest.fn();
+  const onPublish = jest.fn().mockImplementation(() => Promise.resolve());
+  const onSaveDraft = jest.fn().mockImplementation(() => Promise.resolve());
 
   await render(
     <StoryMapConfigContextProvider baseConfig={config}>
