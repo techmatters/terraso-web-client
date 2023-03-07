@@ -42,7 +42,11 @@ import theme from 'theme';
 
 // ref: https://mui.com/material-ui/icons/#svgicon
 const MicrosoftIcon = props => {
-  return <SvgIcon {...props}><path d="M2 3h9v9H2V3m9 19H2v-9h9v9M21 3v9h-9V3h9m0 19h-9v-9h9v9Z"/></SvgIcon>;
+  return (
+    <SvgIcon {...props}>
+      <path d="M2 3h9v9H2V3m9 19H2v-9h9v9M21 3v9h-9V3h9m0 19h-9v-9h9v9Z" />
+    </SvgIcon>
+  );
 };
 
 const appendReferrer = (url, referrer) =>
