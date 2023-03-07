@@ -17,6 +17,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -80,10 +81,11 @@ const Preview = props => {
 };
 
 const StoryMapForm = props => {
+  const { t } = useTranslation();
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
   const { onPublish, onSaveDraft } = props;
   const { saving } = useSelector(_.get('storyMap.form'));
-  const { config, setConfig, preview, init, mediaFiles } =
+  const { config, setConfig, preview, init, mediaFiles, saved, isDirty } =
     useStoryMapConfigContext();
   const [mapHeight, setMapHeight] = useState();
   const [mapWidth, setMapWidth] = useState();
@@ -94,6 +96,19 @@ const StoryMapForm = props => {
     () => navigator.userAgent.toLowerCase().indexOf('firefox') > -1,
     []
   );
+
+  // Prevent user from leaving the page if there are unsaved changes
+  useEffect(() => {
+    if (!isDirty) {
+      return;
+    }
+    const beforeUnload = e => {
+      e.preventDefault();
+      e.returnValue = t('storyMap.form_unsaved_changes');
+    };
+    window.addEventListener('beforeunload', beforeUnload);
+    return () => window.removeEventListener('beforeunload', beforeUnload);
+  }, [isDirty, t]);
 
   useEffect(() => {
     if (isSmall) {
@@ -164,15 +179,13 @@ const StoryMapForm = props => {
     [setConfig]
   );
 
-  const onPublishWrapper = useCallback(
-    () => onPublish(config, mediaFiles),
-    [config, mediaFiles, onPublish]
-  );
+  const onPublishWrapper = useCallback(() => {
+    onPublish(config, mediaFiles).then(saved);
+  }, [config, mediaFiles, onPublish, saved]);
 
-  const onSaveDraftWrapper = useCallback(
-    () => onSaveDraft(config, mediaFiles),
-    [config, mediaFiles, onSaveDraft]
-  );
+  const onSaveDraftWrapper = useCallback(() => {
+    onSaveDraft(config, mediaFiles).then(saved);
+  }, [config, mediaFiles, onSaveDraft, saved]);
 
   if (preview || isSmall) {
     return <Preview config={config} onPublish={onPublishWrapper} />;
