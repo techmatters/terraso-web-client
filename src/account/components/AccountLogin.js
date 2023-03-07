@@ -36,17 +36,14 @@ import { useFetchData } from 'state/utils';
 
 import { fetchAuthURLs } from 'account/accountSlice';
 
+import { ReactComponent as MicrosoftSvg } from 'assets/MicrosoftLoginIcon.svg';
 import logo from 'assets/logo.svg';
 
 import theme from 'theme';
 
-// ref: https://mui.com/material-ui/icons/#svgicon
+// ref: https://mui.com/material-ui/icons/#component-prop
 const MicrosoftIcon = props => {
-  return (
-    <SvgIcon {...props}>
-      <path d="M2 3h9v9H2V3m9 19H2v-9h9v9M21 3v9h-9V3h9m0 19h-9v-9h9v9Z" />
-    </SvgIcon>
-  );
+  return <SvgIcon component={MicrosoftSvg} {...props} />;
 };
 
 const appendReferrer = (url, referrer) =>
@@ -112,7 +109,11 @@ const AccountForm = () => {
           {urls.microsoft && (
             <Button
               variant="outlined"
-              startIcon={<MicrosoftIcon sx={{ paddingRight: '5px' }} />}
+              startIcon={
+                <MicrosoftIcon
+                  sx={{ paddingLeft: '24px', paddingRight: '5px' }}
+                />
+              }
               href={appendReferrer(urls.microsoft, referrer)}
             >
               {t('account.microsoft_login')}
