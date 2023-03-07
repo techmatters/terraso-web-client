@@ -41,6 +41,7 @@ export const useNavigationBlocker = (when, message) => {
 
   useEffect(() => {
     if (!when) {
+      setIsBlocked(false);
       return;
     }
     const beforeUnload = event => {
