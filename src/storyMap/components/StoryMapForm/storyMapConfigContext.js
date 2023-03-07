@@ -32,6 +32,7 @@ export const StoryMapConfigContextProvider = props => {
   const [config, setConfig] = useState(baseConfig || {});
   const [preview, setPreview] = useState(false);
   const [mediaFiles, setMediaFiles] = useState({});
+  const [isDirty, setIsDirty] = useState(false);
   const init = useRef(false);
 
   const addMediaFile = useCallback((content, file) => {
@@ -42,18 +43,40 @@ export const StoryMapConfigContextProvider = props => {
 
   const getMediaFile = useCallback(id => mediaFiles[id]?.content, [mediaFiles]);
 
+  const saved = useCallback(() => setIsDirty(false), []);
+
+  const setConfigWrapper = useCallback(
+    newConfig => {
+      setConfig(newConfig);
+      setIsDirty(true);
+    },
+    [setConfig]
+  );
+
   const contextValue = useMemo(
     () => ({
       config,
-      setConfig,
+      setConfig: setConfigWrapper,
       preview,
       setPreview,
       mediaFiles,
       addMediaFile,
       getMediaFile,
       init,
+      saved,
+      isDirty,
     }),
-    [config, preview, mediaFiles, addMediaFile, getMediaFile, init]
+    [
+      config,
+      preview,
+      mediaFiles,
+      addMediaFile,
+      getMediaFile,
+      init,
+      setConfigWrapper,
+      isDirty,
+      saved,
+    ]
   );
 
   return (

@@ -94,7 +94,7 @@ const StoryMapNew = () => {
   const { trackEvent } = useAnalytics();
 
   const save = useCallback(
-    (config, mediaFiles, published) => {
+    (config, mediaFiles, published) =>
       dispatch(
         addStoryMap({
           storyMap: {
@@ -120,9 +120,10 @@ const StoryMapNew = () => {
           }
 
           navigate(`/tools/story-maps/${slug}/edit`);
+          return;
         }
-      });
-    },
+        return Promise.reject(data);
+      }),
     [dispatch, navigate, trackEvent]
   );
 
