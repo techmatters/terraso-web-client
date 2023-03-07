@@ -24,8 +24,8 @@ import AppBar from 'layout/AppBar';
 import AppWrappers from 'layout/AppWrappers';
 import Footer from 'layout/Footer';
 import reportWebVitals from 'monitoring/reportWebVitals';
-import Navigation from 'navigation/Navigation';
-import Routes from 'navigation/Routes';
+import Navigation from 'navigation/components/Navigation';
+import Routes from 'navigation/components/Routes';
 import rules from 'permissions/rules';
 import createStore from 'state/store';
 

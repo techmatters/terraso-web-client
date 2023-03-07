@@ -24,7 +24,7 @@ import { useLocation } from 'react-router-dom';
 import PageHeader from 'layout/PageHeader';
 import SkipLinks from 'navigation/SkipLinks';
 
-import Navigation from './Navigation';
+import Navigation from './components/Navigation';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
