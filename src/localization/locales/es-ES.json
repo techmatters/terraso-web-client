@@ -225,7 +225,9 @@
         "nav_label_short": "Principal",
         "skip_to_main_content": "Saltar al contenido principal",
         "skip_to_main_navigation": "Saltar a la navegación principal",
-        "breadcrumbs_label": "Árbol de navegación"
+        "breadcrumbs_label": "Árbol de navegación",
+        "blocked_dialog_cancel": "Cancelar",
+        "blocked_dialog_confirm": "Continuar"
     },
     "landscape": {
         "add": "Agregar un paisaje",
@@ -685,7 +687,8 @@
             "Membership": "Afiliación",
             "Group": "Groupo",
             "Landscape": "Paisaje",
-            "DataEntry": "Archivo compartido"
+            "DataEntry": "Archivo compartido",
+            "StoryMap": "Story Map"
         },
         "error": "No se pudo ejecutar la solicitud. {{code, errorParam(label: Codigo)}} {{field, errorParam(label: Campo)}} {{model, errorParam(label: Modelo)}} {{context, errorParam(label: Contexto)}}",
         "error_unexpected": "Error inesperado",
@@ -882,6 +885,10 @@
         "view_chapters_label": "Capítulos",
         "view_chapter_label": "Capítulo: {{title}}",
         "view_title_label": "Título para: {{title}}",
-        "view_chapter_media_label": "Multimedia del capítulo"
+        "view_chapter_media_label": "Multimedia del capítulo",
+        "unique": "Ya existe un Story Map con el mismo título.",
+        "form_unsaved_changes_title": "¿Abandonar el Story Map?",
+        "form_unsaved_changes_message": "Tienes cambios sin guardar que se perderán si sales de la página. Selecciona Guardar borrador antes de salir.",
+        "form_location_dialog_geocoder_placeholder": "Buscar"
     }
 }
