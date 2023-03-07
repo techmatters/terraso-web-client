@@ -23,8 +23,8 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Link, Breadcrumbs as MuiBreadcrumbs, Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 
+import { useBreadcrumbsContext } from '../breadcrumbsContext';
 import { useBreadcrumbs } from './Routes';
-import { useBreadcrumbsContext } from './breadcrumbsContext';
 
 const Breadcrumbs = () => {
   const { t } = useTranslation();
