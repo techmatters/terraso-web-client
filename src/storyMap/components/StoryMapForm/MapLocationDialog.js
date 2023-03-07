@@ -46,7 +46,7 @@ import {
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 const MapLocationDialog = props => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { config } = useStoryMapConfigContext();
   const { open, onClose, onConfirm, location, title, chapterId } = props;
 
@@ -114,6 +114,7 @@ const MapLocationDialog = props => {
     map.addControl(
       new MapboxGeocoder({
         accessToken: MAPBOX_ACCESS_TOKEN,
+        placeholder: t('storyMap.form_location_dialog_geocoder_placeholder'),
         mapboxgl,
       })
     );
@@ -142,7 +143,14 @@ const MapLocationDialog = props => {
     return () => {
       map.remove();
     };
-  }, [mapContainer, initialLocation, config.style, config.projection]);
+  }, [
+    mapContainer,
+    initialLocation,
+    config.style,
+    config.projection,
+    i18n.language,
+    t,
+  ]);
 
   const handleConfirm = useCallback(() => {
     onConfirm({
