@@ -68,15 +68,10 @@ const StoryMapsToolsHome = () => {
             {t('storyMap.tool_home_create_button')}
           </Button>
           <Trans i18nKey="storyMap.tool_home_help">
-            <Typography>Question</Typography>
             <Typography>
-              Prefix
-              <ExternalLink href={t('storyMap.tool_home_help_video_url')}>
-                Help 1
-              </ExternalLink>
-              link
+              Question
               <ExternalLink href={t('storyMap.tool_home_help_document_url')}>
-                Help 2
+                Help
               </ExternalLink>
             </Typography>
           </Trans>
