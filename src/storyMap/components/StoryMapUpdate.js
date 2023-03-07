@@ -42,14 +42,14 @@ const StoryMapUpdate = props => {
   const { trackEvent } = useAnalytics();
   const { storyMap } = props;
 
-  const onPublish = useCallback(
-    (config, mediaFiles) => {
+  const save = useCallback(
+    (config, mediaFiles, published) =>
       dispatch(
         updateStoryMap({
           storyMap: {
             id: storyMap?.id,
             config,
-            published: true,
+            published,
           },
           files: mediaFiles,
         })
@@ -57,33 +57,32 @@ const StoryMapUpdate = props => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
           const slug = _.get('payload.slug', data);
-          navigate(`/tools/story-maps/${slug}`);
-          trackEvent('Storymap Published', {
-            props: {
-              url: `${window.location.origin}/tools/story-maps/${slug}`,
-              [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
-            },
-          });
-        }
-      });
-    },
-    [dispatch, navigate, trackEvent, storyMap?.id]
-  );
 
+          if (published) {
+            navigate(`/tools/story-maps/${slug}`);
+            trackEvent('Storymap Published', {
+              props: {
+                url: `${window.location.origin}/tools/story-maps/${slug}`,
+                [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
+              },
+            });
+            return;
+          }
+
+          navigate(`/tools/story-maps/${slug}/edit`);
+          return;
+        }
+        return Promise.reject(data);
+      }),
+    [storyMap?.id, dispatch, navigate, trackEvent]
+  );
+  const onPublish = useCallback(
+    (config, mediaFiles) => save(config, mediaFiles, true),
+    [save]
+  );
   const onSaveDraft = useCallback(
-    (config, mediaFiles) => {
-      dispatch(
-        updateStoryMap({
-          storyMap: {
-            id: storyMap?.id,
-            config,
-            published: false,
-          },
-          files: mediaFiles,
-        })
-      );
-    },
-    [dispatch, storyMap?.id]
+    (config, mediaFiles) => save(config, mediaFiles, false),
+    [save]
   );
 
   return <StoryMapForm onPublish={onPublish} onSaveDraft={onSaveDraft} />;

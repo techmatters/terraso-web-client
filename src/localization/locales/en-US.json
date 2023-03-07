@@ -888,6 +888,7 @@
         "view_chapters_label": "Chapters",
         "view_chapter_label": "Chapter: {{title}}",
         "view_title_label": "Title for: {{title}}",
-        "view_chapter_media_label": "Chapter media"
+        "view_chapter_media_label": "Chapter media",
+        "form_unsaved_changes": "You have unsaved changes that will be lost if you leave the page. Select Save Draft before you leave."
     }
 }
