@@ -17,7 +17,7 @@
 import React from 'react';
 
 import SocialShare from 'common/components/SocialShare';
-import Breadcrumbs from 'navigation/Breadcrumbs';
+import Breadcrumbs from 'navigation/components/Breadcrumbs';
 
 import Container from './Container';
 

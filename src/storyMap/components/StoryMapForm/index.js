@@ -24,6 +24,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { Grid, useMediaQuery } from '@mui/material';
 
 import PageLoader from 'layout/PageLoader';
+import NavigationBlockedDialog from 'navigation/components/NavigationBlockedDialog';
+import { useNavigationBlocker } from 'navigation/navigationContext';
 
 import StoryMap from '../StoryMap';
 import ChapterForm from './ChapterForm';
@@ -97,18 +99,10 @@ const StoryMapForm = props => {
     []
   );
 
-  // Prevent user from leaving the page if there are unsaved changes
-  useEffect(() => {
-    if (!isDirty) {
-      return;
-    }
-    const beforeUnload = e => {
-      e.preventDefault();
-      e.returnValue = t('storyMap.form_unsaved_changes');
-    };
-    window.addEventListener('beforeunload', beforeUnload);
-    return () => window.removeEventListener('beforeunload', beforeUnload);
-  }, [isDirty, t]);
+  const { isBlocked, unblock, cancel } = useNavigationBlocker(
+    isDirty,
+    t('storyMap.form_unsaved_changes_message')
+  );
 
   useEffect(() => {
     if (isSmall) {
@@ -193,6 +187,14 @@ const StoryMapForm = props => {
 
   return (
     <>
+      {isBlocked && (
+        <NavigationBlockedDialog
+          title={t('storyMap.form_unsaved_changes_title')}
+          message={t('storyMap.form_unsaved_changes_message')}
+          onConfirm={unblock}
+          onCancel={cancel}
+        />
+      )}
       {saving && <PageLoader />}
       <TopBar onPublish={onPublishWrapper} onSaveDraft={onSaveDraftWrapper} />
       <Grid

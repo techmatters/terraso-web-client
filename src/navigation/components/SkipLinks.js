@@ -22,7 +22,7 @@ import { useLocation } from 'react-router-dom';
 
 import { Link } from '@mui/material';
 
-import 'navigation/SkipLinks.css';
+import './SkipLinks.css';
 
 const HIDE_FOR_PATHS = ['/account'];
 

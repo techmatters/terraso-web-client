@@ -26,7 +26,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import ConditionalLink from 'common/components/ConditionalLink';
 import LocalePicker from 'localization/components/LocalePicker';
-import SkipLinks from 'navigation/SkipLinks';
+import SkipLinks from 'navigation/components/SkipLinks';
 
 import { signOut } from 'account/accountSlice';
 import AccountAvatar from 'account/components/AccountAvatar';
