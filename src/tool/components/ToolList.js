@@ -48,8 +48,8 @@ const ToolList = () => {
         }}
       ></Typography>
       <Stack spacing={2} component={List} aria-labelledby="main-heading">
-        {toolList.map(tool => (
-          <Tool key={tool.id} tool={tool} />
+        {toolList.map((tool, index) => (
+          <Tool key={index} tool={tool} />
         ))}
       </Stack>
     </PageContainer>
