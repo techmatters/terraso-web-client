@@ -112,7 +112,10 @@ const ContextWrapper = props => {
   }
 
   return (
-    <StoryMapConfigContextProvider baseConfig={storyMap.config}>
+    <StoryMapConfigContextProvider
+      baseConfig={storyMap.config}
+      storyMap={storyMap}
+    >
       <StoryMapUpdate {...props} storyMap={storyMap} />
     </StoryMapConfigContextProvider>
   );
