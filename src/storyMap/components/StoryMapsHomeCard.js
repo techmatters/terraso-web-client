@@ -18,18 +18,18 @@ import React from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import {
   List as BaseList,
+  Chip,
   Divider,
   Grid,
   ListItem,
-  ListItemText,
   Stack,
   Typography,
 } from '@mui/material';
 
 import CardActionRouterLink from 'common/components/CardActionRouterLink';
+import RouterButton from 'common/components/RouterButton';
 import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
 
@@ -67,33 +67,65 @@ const StoryMapsHomeCard = props => {
             container
             aria-labelledby={`story-map-${storyMap.slug}-link`}
           >
-            <Grid item xs={1}>
-              {!storyMap.isPublished && <ModeEditIcon fontSize="small" />}
-            </Grid>
-            <Grid item xs={11}>
-              <ListItemText
-                primary={
-                  <RouterLink
-                    id={`story-map-${storyMap.slug}-link`}
-                    to={
-                      storyMap.isPublished
-                        ? `/tools/story-maps/${storyMap.slug}`
-                        : `/tools/story-maps/${storyMap.slug}/edit`
-                    }
-                  >
-                    {storyMap.title}
-                  </RouterLink>
+            <Stack
+              component={Grid}
+              item
+              spacing={1}
+              xs={6}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+              }}
+            >
+              {!storyMap.isPublished && (
+                <Chip
+                  size="small"
+                  label={t('storyMap.home_draft_label')}
+                  sx={{
+                    borderRadius: 0,
+                    bgcolor: 'gray.dark1',
+                    color: 'white',
+                    textTransform: 'uppercase',
+                    fontWeight: 700,
+                    fontSize: '0.6rem',
+                    height: 'auto',
+                    pt: 0.25,
+                    pb: 0.25,
+                  }}
+                />
+              )}
+              <RouterLink
+                id={`story-map-${storyMap.slug}-link`}
+                to={
+                  storyMap.isPublished
+                    ? `/tools/story-maps/${storyMap.slug}`
+                    : `/tools/story-maps/${storyMap.slug}/edit`
                 }
-                secondary={t('storyMap.home_last_edited', {
+              >
+                {storyMap.title}
+              </RouterLink>
+              <Typography
+                variant="caption"
+                sx={{
+                  fontStyle: 'italic',
+                }}
+              >
+                {t('storyMap.home_last_edited', {
                   date: formatDate(i18n.resolvedLanguage, storyMap.updatedAt),
                 })}
-                secondaryTypographyProps={{
-                  sx: {
-                    fontStyle: 'italic',
-                  },
-                }}
-              />
-            </Grid>
+              </Typography>
+            </Stack>
+            <Stack component={Grid} item xs={6} alignItems="flex-end">
+              <RouterButton
+                to={`/tools/story-maps/${storyMap.slug}/edit`}
+                size="small"
+                variant="outlined"
+                sx={{ pr: 3, pl: 3 }}
+              >
+                {t('storyMap.home_edit')}
+              </RouterButton>
+            </Stack>
           </ListItem>
         ))}
       </List>

@@ -25,8 +25,10 @@ import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 const TopBarPreview = props => {
   const { t } = useTranslation();
-  const { config, setPreview } = useStoryMapConfigContext();
+  const { storyMap, config, setPreview } = useStoryMapConfigContext();
   const { onPublish } = props;
+
+  const isPublished = storyMap?.isPublished;
 
   return (
     <TopBarContainer>
@@ -60,7 +62,9 @@ const TopBarPreview = props => {
           onClick={onPublish}
           sx={{ ml: 2 }}
         >
-          {t('storyMap.form_publish_button')}
+          {isPublished
+            ? t('storyMap.form_republish_button')
+            : t('storyMap.form_publish_button')}
         </Button>
       </Grid>
     </TopBarContainer>

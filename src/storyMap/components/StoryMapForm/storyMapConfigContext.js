@@ -28,7 +28,7 @@ import { v4 as uuidv4 } from 'uuid';
 const StoryMapConfigContext = createContext();
 
 export const StoryMapConfigContextProvider = props => {
-  const { children, baseConfig } = props;
+  const { children, baseConfig, storyMap } = props;
   const [config, setConfig] = useState(baseConfig || {});
   const [preview, setPreview] = useState(false);
   const [mediaFiles, setMediaFiles] = useState({});
@@ -55,6 +55,7 @@ export const StoryMapConfigContextProvider = props => {
 
   const contextValue = useMemo(
     () => ({
+      storyMap,
       config,
       setConfig: setConfigWrapper,
       preview,
@@ -67,6 +68,7 @@ export const StoryMapConfigContextProvider = props => {
       isDirty,
     }),
     [
+      storyMap,
       config,
       preview,
       mediaFiles,
