@@ -196,7 +196,7 @@ const ChapterForm = ({ theme, record }) => {
         >
           <EditableText
             placeholder={t('storyMap.form_chapter_title_placeholder')}
-            Component="h2"
+            Component="h3"
             value={record.title}
             onChange={onFieldChange('title')}
             focus={isNew}
