@@ -28,8 +28,10 @@ import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 const TopBar = props => {
   const { t } = useTranslation();
-  const { config, setPreview } = useStoryMapConfigContext();
+  const { storyMap, config, setPreview } = useStoryMapConfigContext();
   const { onPublish, onSaveDraft } = props;
+
+  const isPublished = storyMap?.isPublished;
 
   return (
     <TopBarContainer>
@@ -64,21 +66,26 @@ const TopBar = props => {
         <Button variant="text" color="primary" onClick={() => setPreview(true)}>
           {t('storyMap.form_preview_button')}
         </Button>
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={onSaveDraft}
-          sx={{ ml: 2 }}
-        >
-          {t('storyMap.form_save_draft_button')}
-        </Button>
+        {!isPublished && (
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={onSaveDraft}
+            sx={{ ml: 2 }}
+          >
+            {t('storyMap.form_save_draft_button')}
+          </Button>
+        )}
+
         <Button
           variant="contained"
           color="primary"
           onClick={onPublish}
           sx={{ ml: 2 }}
         >
-          {t('storyMap.form_publish_button')}
+          {isPublished
+            ? t('storyMap.form_republish_button')
+            : t('storyMap.form_publish_button')}
         </Button>
       </Grid>
     </TopBarContainer>
