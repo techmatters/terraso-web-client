@@ -272,6 +272,7 @@ const AddDialog = props => {
             }}
             size="small"
             fullWidth
+            onClick={() => setSelected(1)}
             onChange={onEmbeddedInputChange}
             onBlur={onEmbeddedInputBlur}
             value={embeddedInputValue}
