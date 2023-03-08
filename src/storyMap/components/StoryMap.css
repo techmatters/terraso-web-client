@@ -136,8 +136,8 @@ footer {
   max-width: 100%;
 }
 
-.step-container .step-content h2 {
-  font-size: 1.25em;
+.step-container .step-content h3 {
+  font-size: 1.5em;
   font-weight: bold;
 }
 
