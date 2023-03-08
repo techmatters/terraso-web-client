@@ -29,6 +29,7 @@ import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 import { useAnalytics } from 'monitoring/analytics';
+import { ILM_OUTPUT_PROP, MAP_LANDSCAPE_BOUNDARIES } from 'monitoring/ilm';
 import { useFetchData } from 'state/utils';
 
 import { fetchGroupsAutocompleteList } from 'group/groupSlice';
@@ -124,6 +125,16 @@ const LandscapeNew = () => {
           boundaryOption: updatedLandscape.boundaryOption,
         },
       });
+      if (updatedLandscape.boundaryOption) {
+        trackEvent('Create landscape boundary', {
+          props: {
+            landscapeName: updatedLandscape.name,
+            country: updatedLandscape.location,
+            boundaryOption: updatedLandscape.boundaryOption,
+            [ILM_OUTPUT_PROP]: MAP_LANDSCAPE_BOUNDARIES,
+          },
+        });
+      }
     });
   };
 

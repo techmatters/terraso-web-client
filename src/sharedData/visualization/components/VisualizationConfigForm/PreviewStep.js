@@ -25,6 +25,7 @@ import { Typography } from '@mui/material';
 import StepperStep from 'common/components/StepperStep';
 import PageLoader from 'layout/PageLoader';
 import { useAnalytics } from 'monitoring/analytics';
+import { ILM_OUTPUT_PROP, RESULTS_ANALYSIS_IMPACT } from 'monitoring/ilm';
 
 import { useGroupContext } from 'group/groupContext';
 import { addVisualizationConfig } from 'sharedData/sharedDataSlice';
@@ -97,6 +98,7 @@ const PreviewStep = props => {
             owner: owner.name,
             file: visualizationConfig?.selectedFile.name,
             fileID: visualizationConfig?.selectedFile.id,
+            [ILM_OUTPUT_PROP]: RESULTS_ANALYSIS_IMPACT,
           },
         });
         onSaved(data.payload.slug);

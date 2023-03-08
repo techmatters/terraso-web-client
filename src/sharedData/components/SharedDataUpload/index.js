@@ -25,7 +25,9 @@ import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Button, Paper, Stack, Tab, Typography } from '@mui/material';
 
 import { useAnalytics } from 'monitoring/analytics';
+import { ILM_OUTPUT_PROP, RESULTS_ANALYSIS_IMPACT } from 'monitoring/ilm';
 
+import { useGroupContext } from 'group/groupContext';
 import {
   addSharedDataLink,
   resetUploads,
@@ -50,6 +52,7 @@ const SharedDataUpload = props => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
+  const { owner } = useGroupContext();
 
   const { groupSlug, onCancel, onCompleteSuccess } = props;
 
@@ -118,14 +121,25 @@ const SharedDataUpload = props => {
         .forEach(result => {
           const isLink = _.has('value.meta.arg.link', result);
           if (isLink) {
-            trackEvent('uploadLink', { props: { owner: groupSlug } });
+            trackEvent('uploadLink', {
+              props: {
+                owner: owner.slug,
+                name: _.get('value.meta.arg.link.name', result),
+              },
+            });
           } else {
-            trackEvent('uploadFile', { props: { owner: groupSlug } });
+            trackEvent('uploadFile', {
+              props: {
+                owner: owner.slug,
+                name: _.get('value.meta.arg.file.name', result),
+                [ILM_OUTPUT_PROP]: RESULTS_ANALYSIS_IMPACT,
+              },
+            });
           }
         });
       setShowSummary(true);
     });
-  }, [toUpload, groupSlug, dispatch, trackEvent]);
+  }, [owner.slug, toUpload, groupSlug, dispatch, trackEvent]);
 
   const hasBlockingErrors = useMemo(
     () =>

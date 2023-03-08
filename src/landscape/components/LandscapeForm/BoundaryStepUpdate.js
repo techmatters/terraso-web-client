@@ -24,6 +24,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
+import { useAnalytics } from 'monitoring/analytics';
+import { ILM_OUTPUT_PROP, MAP_LANDSCAPE_BOUNDARIES } from 'monitoring/ilm';
 import { useFetchData } from 'state/utils';
 
 import {
@@ -38,6 +40,7 @@ const LandscapeBoundariesUpdate = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { trackEvent } = useAnalytics();
   const { slug } = useParams();
   const { fetching, saving, landscape, success } = useSelector(
     state => state.landscape.form
@@ -72,7 +75,19 @@ const LandscapeBoundariesUpdate = () => {
           areaPolygon: updatedLandscape.areaPolygon,
         },
       })
-    );
+    ).then(data => {
+      const success = _.get('meta.requestStatus', data) === 'fulfilled';
+      if (success) {
+        trackEvent('Update landscape boundary', {
+          props: {
+            landscapeName: updatedLandscape.name,
+            country: updatedLandscape.location,
+            boundaryOption: updatedLandscape.boundaryOption,
+            [ILM_OUTPUT_PROP]: MAP_LANDSCAPE_BOUNDARIES,
+          },
+        });
+      }
+    });
   };
 
   return (
