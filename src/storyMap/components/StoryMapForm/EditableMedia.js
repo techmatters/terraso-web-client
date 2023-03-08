@@ -186,6 +186,9 @@ const AddDialog = props => {
   );
 
   const onEmbeddedInputBlur = useCallback(() => {
+    if (!embeddedInputValue) {
+      return;
+    }
     validateEmbedded(embeddedInputValue);
   }, [validateEmbedded, embeddedInputValue]);
 
