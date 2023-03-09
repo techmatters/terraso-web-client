@@ -36,7 +36,7 @@ import { useFetchData } from 'state/utils';
 
 import { fetchAuthURLs } from 'account/accountSlice';
 
-import { ReactComponent as MicrosoftSvg } from 'assets/MicrosoftLoginIcon.svg';
+import { ReactComponent as MicrosoftSvg } from 'assets/Microsoft.svg';
 import logo from 'assets/logo.svg';
 
 import theme from 'theme';
