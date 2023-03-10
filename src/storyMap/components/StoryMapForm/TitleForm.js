@@ -20,8 +20,9 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
-import { Box, Button, Link, Stack } from '@mui/material';
+import { Box, Button, Stack } from '@mui/material';
 
+import StoryMapOutline from '../StoryMapOutline';
 import EditableText from './EditableText';
 import MapLocationDialog from './MapLocationDialog';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
@@ -50,31 +51,6 @@ const TitleForm = props => {
         index,
       })),
     [config.chapters]
-  );
-
-  const outline = useMemo(
-    () => (
-      <p>
-        {t('storyMap.view_title_outline')}:{' '}
-        {_.flow(
-          _.map(({ chapter, index }) => ({
-            index,
-            component: (
-              <Link key={chapter.id} href={`#${chapter.id}`}>
-                {chapter.title}
-              </Link>
-            ),
-          })),
-          _.flatMap(({ component, index }) => [
-            component,
-            index !== chapters.length - 1 ? (
-              <span key={`divider-${index}`}> | </span>
-            ) : undefined,
-          ])
-        )(chapters)}
-      </p>
-    ),
-    [chapters, t]
   );
 
   const onFieldChange = useCallback(
@@ -166,7 +142,7 @@ const TitleForm = props => {
             },
           }}
         />
-        {outline}
+        <StoryMapOutline chapters={chapters} />
       </Stack>
     </Box>
   );
