@@ -62,6 +62,9 @@ const colorTheme = createTheme({
     visualization: {
       markerDefaultColor: '#A96F14',
     },
+    richText: {
+      link: '#71B8D2',
+    },
   },
 });
 
