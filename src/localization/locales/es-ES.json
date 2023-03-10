@@ -887,6 +887,7 @@
         "view_chapter_label": "Capítulo: {{title}}",
         "view_title_label": "Título para: {{title}}",
         "view_chapter_media_label": "Multimedia del capítulo",
+        "view_edit": "Editar Story Map",
         "unique": "Ya existe un Story Map con el mismo título.",
         "form_unsaved_changes_title": "¿Abandonar el Story Map?",
         "form_unsaved_changes_message": "Tienes cambios sin guardar que se perderán si sales de la página. Selecciona Guardar borrador antes de salir.",
