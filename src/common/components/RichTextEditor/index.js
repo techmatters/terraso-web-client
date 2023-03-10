@@ -185,6 +185,7 @@ const LinkComponent = ({ attributes, children, element }) => {
       linkProps={{
         ...attributes,
         style: selected ? { boxShadow: '0 0 0 3px #ddd' } : null,
+        sx: { textDecoration: 'underline', color: 'richText.link' },
       }}
     >
       <InlineChromiumBugfix />
