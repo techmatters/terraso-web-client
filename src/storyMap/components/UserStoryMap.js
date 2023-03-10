@@ -17,19 +17,23 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
+import RouterButton from 'common/components/RouterButton';
 import { useSocialShareContext } from 'common/components/SocialShare';
-import { useContainerContext } from 'layout/Container';
+import Container, { useContainerContext } from 'layout/Container';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
+import Restricted from 'permissions/components/Restricted';
 import { useFetchData } from 'state/utils';
 
 import StoryMap from 'storyMap/components/StoryMap';
 import { fetchStoryMap } from 'storyMap/storyMapSlice';
 
 const UserStoryMap = () => {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const { data: storyMap, fetching } = useSelector(_.get('storyMap.view'));
 
@@ -69,7 +73,23 @@ const UserStoryMap = () => {
     return null;
   }
 
-  return <StoryMap config={storyMap.config} />;
+  return (
+    <>
+      <Restricted permission="storyMap.change" resource={storyMap}>
+        <Container
+          sx={{ bgcolor: 'white', zIndex: 2, position: 'relative', pb: 2 }}
+        >
+          <RouterButton
+            variant="outlined"
+            to={`/tools/story-maps/${storyMap.slug}/edit`}
+          >
+            {t('storyMap.view_edit')}
+          </RouterButton>
+        </Container>
+      </Restricted>
+      <StoryMap config={storyMap.config} />
+    </>
+  );
 };
 
 export default UserStoryMap;
