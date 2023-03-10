@@ -111,9 +111,19 @@ const StoryMapsHomeCard = props => {
                   fontStyle: 'italic',
                 }}
               >
-                {t('storyMap.home_last_edited', {
-                  date: formatDate(i18n.resolvedLanguage, storyMap.updatedAt),
-                })}
+                {storyMap.isPublished && storyMap.publishedAt
+                  ? t('storyMap.home_published_on', {
+                      date: formatDate(
+                        i18n.resolvedLanguage,
+                        storyMap.publishedAt
+                      ),
+                    })
+                  : t('storyMap.home_last_edited', {
+                      date: formatDate(
+                        i18n.resolvedLanguage,
+                        storyMap.updatedAt
+                      ),
+                    })}
               </Typography>
             </Stack>
             <Stack component={Grid} item xs={6} alignItems="flex-end">
