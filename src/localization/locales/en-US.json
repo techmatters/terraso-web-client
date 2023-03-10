@@ -895,6 +895,7 @@
         "view_chapter_label": "Chapter: {{title}}",
         "view_title_label": "Title for: {{title}}",
         "view_chapter_media_label": "Chapter media",
+        "view_edit": "Edit Story Map",
         "unique": "A Story Map with the same title already exists.",
         "form_unsaved_changes_title": "Leave Story Map?",
         "form_unsaved_changes_message": "You have unsaved changes that will be lost if you leave the page. Select Save Draft before you leave.",
