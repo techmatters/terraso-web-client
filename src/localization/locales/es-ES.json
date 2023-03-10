@@ -841,6 +841,7 @@
         "home_title": "Story Maps",
         "home_create": "Crear nuevo Story Map",
         "home_last_edited": "Última edición el {{date}}",
+        "home_published_on": "Publicado en {{date}}",
         "home_tools_link": "Terraso Story Maps",
         "home_draft_label": "Borrador",
         "home_edit": "Editar",
