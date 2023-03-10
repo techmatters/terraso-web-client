@@ -264,6 +264,7 @@
         "default_content": "Explore los paisajes de Terraso. Conviértase en miembro de su paisaje para conectarse con otros en Terraso y compartir información.",
         "list_new_description": "¿No puedes encontrar el paisaje al que estas afiliado? Añádelo a Terraso.",
         "form_description_placeholder": "Unas pocas frases que describan tu paisaje (máximo 600 caracteres)",
+        "form_name_placeholder": "Nombre del grupo",
         "form_website_placeholder": "https://www.mipaisaje.org",
         "added": "Paisaje añadido “{{name}}.”",
         "updated": "Paisaje actualizado “{{name}}.”",
