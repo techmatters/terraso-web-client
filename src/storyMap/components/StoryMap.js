@@ -16,11 +16,10 @@
  */
 import React, { useCallback, useEffect, useMemo } from 'react';
 
-import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import scrollama from 'scrollama';
 
-import { Box, Link } from '@mui/material';
+import { Box } from '@mui/material';
 
 import RichTextEditor from 'common/components/RichTextEditor';
 
@@ -38,6 +37,8 @@ import {
 } from '../storyMapConstants';
 
 import './StoryMap.css';
+
+import StoryMapOutline from './StoryMapOutline';
 
 import theme from 'theme';
 
@@ -174,29 +175,10 @@ const Title = props => {
         <h1 id="story-view-title-id">{config.title}</h1>
         {config.subtitle && <h2>{config.subtitle}</h2>}
         {config.byline && <p>{config.byline}</p>}
-        <p>
-          {t('storyMap.view_title_outline')}:{' '}
-          {_.flow(
-            _.map(({ chapter, index }) => ({
-              index,
-              component: (
-                <Link
-                  key={chapter.id}
-                  href={`#${chapter.id}`}
-                  onClick={onOutlineItemClick(chapter.id)}
-                >
-                  {chapter.title}
-                </Link>
-              ),
-            })),
-            _.flatMap(({ component, index }) => [
-              component,
-              index !== chapters.length - 1 ? (
-                <span key={`divider-${index}`}> | </span>
-              ) : undefined,
-            ])
-          )(chapters)}
-        </p>
+        <StoryMapOutline
+          chapters={chapters}
+          onChapterClick={onOutlineItemClick}
+        />
       </Box>
     </Box>
   );
