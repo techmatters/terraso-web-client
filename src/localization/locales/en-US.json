@@ -899,6 +899,7 @@
         "unique": "A Story Map with the same title already exists.",
         "form_unsaved_changes_title": "Leave Story Map?",
         "form_unsaved_changes_message": "You have unsaved changes that will be lost if you leave the page. Select Save Draft before you leave.",
-        "form_location_dialog_geocoder_placeholder": "Search"
+        "form_location_dialog_geocoder_placeholder": "Search",
+        "outline_no_title": "Chapter {{index}}"
     }
 }
