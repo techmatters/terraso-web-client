@@ -41,6 +41,7 @@ import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import { useFetchData } from 'state/utils';
 
 import { fetchSamples } from 'storyMap/storyMapSlice';
+import { generateStoryMapUrl } from 'storyMap/storyMapUtils';
 
 const StoryMapsToolsHome = () => {
   const { t, i18n } = useTranslation();
@@ -107,7 +108,7 @@ const StoryMapsToolsHome = () => {
                         <RouterLink
                           variant="h3"
                           id={`story-map-example-${sample.id}`}
-                          to={`/tools/story-maps/${sample.slug}`}
+                          to={generateStoryMapUrl(sample)}
                         >
                           {sample.title}
                         </RouterLink>

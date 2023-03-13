@@ -20,3 +20,11 @@ export const chapterHasVisualMedia = chapter => {
   const { media } = chapter;
   return media && _.includes(media.type, ['image', 'embedded']);
 };
+
+export const generateStoryMapUrl = storyMap => {
+  const { storyMapId, slug } = storyMap;
+  return `/tools/story-maps/${storyMapId}/${slug}`;
+};
+
+export const generateStoryMapEditUrl = storyMap =>
+  `${generateStoryMapUrl(storyMap)}/edit`;

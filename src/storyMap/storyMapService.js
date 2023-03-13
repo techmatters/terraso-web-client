@@ -18,7 +18,7 @@ import _ from 'lodash/fp';
 
 import * as terrasoApi from 'terrasoBackend/api';
 
-import { storyMapFields } from './storyMapFragments';
+import { storyMapFields, storyMapMetadataFields } from './storyMapFragments';
 
 export const fetchSamples = (params, currentUser) => {
   const query = `
@@ -26,12 +26,12 @@ export const fetchSamples = (params, currentUser) => {
       storyMaps(createdBy_Email_Not: $accountEmail) {
         edges {
           node {
-            ...storyMapFields
+            ...storyMapMetadataFields
           }
         }
       }
     }
-    ${storyMapFields}
+    ${storyMapMetadataFields}
   `;
   return terrasoApi
     .requestGraphQL(query, { accountEmail: currentUser.email })
@@ -40,10 +40,10 @@ export const fetchSamples = (params, currentUser) => {
     }));
 };
 
-export const fetchStoryMap = ({ slug }) => {
+export const fetchStoryMap = ({ slug, storyMapId }) => {
   const query = `
-    query fetchStoryMap($slug: String!){
-      storyMaps(slug: $slug) {
+    query fetchStoryMap($slug: String!, $storyMapId: String!){
+      storyMaps(slug: $slug, storyMapId: $storyMapId) {
         edges {
           node {
             ...storyMapFields
@@ -54,7 +54,7 @@ export const fetchStoryMap = ({ slug }) => {
     ${storyMapFields}
   `;
   return terrasoApi
-    .requestGraphQL(query, { slug })
+    .requestGraphQL(query, { slug, storyMapId })
     .then(_.get('storyMaps.edges[0].node'))
     .then(storyMap => storyMap || Promise.reject('not_found'))
     .then(storyMap => ({
