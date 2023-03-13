@@ -40,10 +40,10 @@ export const fetchSamples = (params, currentUser) => {
     }));
 };
 
-export const fetchStoryMap = ({ slug, urlIdentifier }) => {
+export const fetchStoryMap = ({ slug, storyMapId }) => {
   const query = `
-    query fetchStoryMap($slug: String!, $urlIdentifier: String!){
-      storyMaps(slug: $slug, urlIdentifier: $urlIdentifier) {
+    query fetchStoryMap($slug: String!, $storyMapId: String!){
+      storyMaps(slug: $slug, storyMapId: $storyMapId) {
         edges {
           node {
             ...storyMapFields
@@ -54,7 +54,7 @@ export const fetchStoryMap = ({ slug, urlIdentifier }) => {
     ${storyMapFields}
   `;
   return terrasoApi
-    .requestGraphQL(query, { slug, urlIdentifier })
+    .requestGraphQL(query, { slug, storyMapId })
     .then(_.get('storyMaps.edges[0].node'))
     .then(storyMap => storyMap || Promise.reject('not_found'))
     .then(storyMap => ({

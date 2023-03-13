@@ -18,7 +18,7 @@ export const storyMapFields = `
   fragment storyMapFields on StoryMapNode {
     id
     slug
-    urlIdentifier
+    storyMapId
     title
     isPublished
     configuration
@@ -37,7 +37,7 @@ export const storyMapMetadataFields = `
   fragment storyMapMetadataFields on StoryMapNode {
     id
     slug
-    urlIdentifier
+    storyMapId
     title
     isPublished
     createdAt

@@ -35,7 +35,7 @@ import { generateStoryMapEditUrl } from 'storyMap/storyMapUtils';
 
 const UserStoryMap = () => {
   const { t } = useTranslation();
-  const { slug, urlIdentifier } = useParams();
+  const { slug, storyMapId } = useParams();
   const { data: storyMap, fetching } = useSelector(_.get('storyMap.view'));
 
   const { setContainerProps } = useContainerContext();
@@ -46,10 +46,7 @@ const UserStoryMap = () => {
   }, [setContainerProps]);
 
   useFetchData(
-    useCallback(
-      () => fetchStoryMap({ slug, urlIdentifier }),
-      [slug, urlIdentifier]
-    )
+    useCallback(() => fetchStoryMap({ slug, storyMapId }), [slug, storyMapId])
   );
 
   useBreadcrumbsParams(

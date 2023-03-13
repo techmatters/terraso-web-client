@@ -22,8 +22,8 @@ export const chapterHasVisualMedia = chapter => {
 };
 
 export const generateStoryMapUrl = storyMap => {
-  const { urlIdentifier, slug } = storyMap;
-  return `/tools/story-maps/${urlIdentifier}/${slug}`;
+  const { storyMapId, slug } = storyMap;
+  return `/tools/story-maps/${storyMapId}/${slug}`;
 };
 
 export const generateStoryMapEditUrl = storyMap =>

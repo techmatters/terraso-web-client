@@ -52,10 +52,10 @@ const StoryMapUpdate = props => {
       return;
     }
 
-    const { title, slug, urlIdentifier, published } = saved;
+    const { title, slug, storyMapId, published } = saved;
     setSaved(null);
     if (published) {
-      const url = generateStoryMapUrl({ slug, urlIdentifier });
+      const url = generateStoryMapUrl({ slug, storyMapId });
       trackEvent('Storymap Published', {
         props: {
           url: `${window.location.origin}${url}`,
@@ -67,7 +67,7 @@ const StoryMapUpdate = props => {
     }
 
     if (title !== storyMap?.title) {
-      navigate(generateStoryMapEditUrl({ slug, urlIdentifier }));
+      navigate(generateStoryMapEditUrl({ slug, storyMapId }));
     }
   }, [storyMap, navigate, trackEvent, saved]);
 
@@ -86,13 +86,13 @@ const StoryMapUpdate = props => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
           const slug = _.get('payload.slug', data);
-          const urlIdentifier = _.get('payload.url_identifier', data);
+          const storyMapId = _.get('payload.story_map_id', data);
           const title = _.get('payload.title', data);
 
           setSaved({
             title,
             slug,
-            urlIdentifier,
+            storyMapId,
             published,
           });
           return;
@@ -114,7 +114,7 @@ const StoryMapUpdate = props => {
 };
 
 const ContextWrapper = props => {
-  const { slug, urlIdentifier } = useParams();
+  const { slug, storyMapId } = useParams();
   const dispatch = useDispatch();
   const { fetching, data: storyMap } = useSelector(_.get('storyMap.form'));
   const { loading: loadingPermissions, allowed } = usePermission(
@@ -128,8 +128,8 @@ const ContextWrapper = props => {
 
   useFetchData(
     useCallback(
-      () => fetchStoryMapForm({ slug, urlIdentifier }),
-      [slug, urlIdentifier]
+      () => fetchStoryMapForm({ slug, storyMapId }),
+      [slug, storyMapId]
     )
   );
 

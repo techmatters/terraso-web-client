@@ -201,7 +201,7 @@ test('Home: Display Story Maps', async () => {
             node: {
               id: 'id-1',
               slug: 'id-1',
-              urlIdentifier: '46h36we',
+              storyMapId: '46h36we',
               title: 'Story 1',
               isPublished: false,
               updatedAt: '2023-01-31T22:25:42.916303+00:00',
@@ -211,7 +211,7 @@ test('Home: Display Story Maps', async () => {
             node: {
               id: 'id-2',
               slug: 'id-2',
-              urlIdentifier: 'lftawa9',
+              storyMapId: 'lftawa9',
               title: 'Story 2',
               isPublished: true,
               updatedAt: '2023-01-31T22:25:42.916303+00:00',

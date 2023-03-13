@@ -102,10 +102,10 @@ const StoryMapNew = () => {
     if (!saved) {
       return;
     }
-    const { slug, urlIdentifier, published } = saved;
+    const { slug, storyMapId, published } = saved;
     setSaved(null);
     if (published) {
-      const url = generateStoryMapUrl({ slug, urlIdentifier });
+      const url = generateStoryMapUrl({ slug, storyMapId });
       trackEvent('Storymap Published', {
         props: {
           url: `${window.location.origin}${url}`,
@@ -116,7 +116,7 @@ const StoryMapNew = () => {
       return;
     }
 
-    navigate(generateStoryMapEditUrl({ slug, urlIdentifier }));
+    navigate(generateStoryMapEditUrl({ slug, storyMapId }));
   }, [dispatch, navigate, trackEvent, saved]);
 
   const save = useCallback(
@@ -133,9 +133,9 @@ const StoryMapNew = () => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
           const slug = _.get('payload.slug', data);
-          const urlIdentifier = _.get('payload.url_identifier', data);
+          const storyMapId = _.get('payload.story_map_id', data);
 
-          setSaved({ slug, urlIdentifier, published });
+          setSaved({ slug, storyMapId, published });
           return;
         }
         return Promise.reject(data);
