@@ -81,6 +81,9 @@ export const SHARED_DATA_ACCEPTED_TYPES = {
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': [
     '.docx',
   ],
+  'application/json': ['.json', '.geojson'],
+  'application/xml': ['.kml'],
+  'application/zip': ['.kmz', '.zip'],
 };
 
 export const SHARED_DATA_ACCEPTED_EXTENSIONS = Object.values(
