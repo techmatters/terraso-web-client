@@ -201,6 +201,7 @@ test('Home: Display Story Maps', async () => {
             node: {
               id: 'id-1',
               slug: 'id-1',
+              storyMapId: '46h36we',
               title: 'Story 1',
               isPublished: false,
               updatedAt: '2023-01-31T22:25:42.916303+00:00',
@@ -210,6 +211,7 @@ test('Home: Display Story Maps', async () => {
             node: {
               id: 'id-2',
               slug: 'id-2',
+              storyMapId: 'lftawa9',
               title: 'Story 2',
               isPublished: true,
               updatedAt: '2023-01-31T22:25:42.916303+00:00',
@@ -226,9 +228,9 @@ test('Home: Display Story Maps', async () => {
   expect(items.length).toBe(2);
 
   const link1 = within(items[0]).getByRole('link', { name: 'Story 1' });
-  expect(link1).toHaveAttribute('href', '/tools/story-maps/id-1/edit');
+  expect(link1).toHaveAttribute('href', '/tools/story-maps/46h36we/id-1/edit');
   const link2 = within(items[1]).getByRole('link', { name: 'Story 2' });
-  expect(link2).toHaveAttribute('href', '/tools/story-maps/id-2');
+  expect(link2).toHaveAttribute('href', '/tools/story-maps/lftawa9/id-2');
 });
 test('Home: Display defaults', async () => {
   fetchHomeData.mockReturnValue(
