@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
@@ -32,6 +32,10 @@ import {
   resetForm,
   updateStoryMap,
 } from 'storyMap/storyMapSlice';
+import {
+  generateStoryMapEditUrl,
+  generateStoryMapUrl,
+} from 'storyMap/storyMapUtils';
 
 import StoryMapForm from './StoryMapForm';
 import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigContext';
@@ -41,6 +45,31 @@ const StoryMapUpdate = props => {
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
   const { storyMap } = props;
+  const [saved, setSaved] = useState();
+
+  useEffect(() => {
+    if (!saved) {
+      return;
+    }
+
+    const { title, slug, urlIdentifier, published } = saved;
+    if (published) {
+      const url = generateStoryMapUrl({ slug, urlIdentifier });
+      trackEvent('Storymap Published', {
+        props: {
+          url: `${window.location.origin}${url}`,
+          [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
+        },
+      });
+      navigate(url);
+      return;
+    }
+
+    if (title !== storyMap?.title) {
+      navigate(generateStoryMapEditUrl({ slug, urlIdentifier }));
+    }
+    setSaved(null);
+  }, [storyMap, navigate, trackEvent, saved]);
 
   const save = useCallback(
     (config, mediaFiles, published) =>
@@ -57,24 +86,20 @@ const StoryMapUpdate = props => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
           const slug = _.get('payload.slug', data);
+          const urlIdentifier = _.get('payload.url_identifier', data);
+          const title = _.get('payload.title', data);
 
-          if (published) {
-            navigate(`/tools/story-maps/${slug}`);
-            trackEvent('Storymap Published', {
-              props: {
-                url: `${window.location.origin}/tools/story-maps/${slug}`,
-                [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
-              },
-            });
-            return;
-          }
-
-          navigate(`/tools/story-maps/${slug}/edit`);
+          setSaved({
+            title,
+            slug,
+            urlIdentifier,
+            published,
+          });
           return;
         }
         return Promise.reject(data);
       }),
-    [storyMap?.id, dispatch, navigate, trackEvent]
+    [storyMap?.id, dispatch]
   );
   const onPublish = useCallback(
     (config, mediaFiles) => save(config, mediaFiles, true),
@@ -89,7 +114,7 @@ const StoryMapUpdate = props => {
 };
 
 const ContextWrapper = props => {
-  const { slug } = useParams();
+  const { slug, urlIdentifier } = useParams();
   const dispatch = useDispatch();
   const { fetching, data: storyMap } = useSelector(_.get('storyMap.form'));
   const { loading: loadingPermissions, allowed } = usePermission(
@@ -101,7 +126,12 @@ const ContextWrapper = props => {
     dispatch(resetForm());
   }, [dispatch]);
 
-  useFetchData(useCallback(() => fetchStoryMapForm({ slug }), [slug]));
+  useFetchData(
+    useCallback(
+      () => fetchStoryMapForm({ slug, urlIdentifier }),
+      [slug, urlIdentifier]
+    )
+  );
 
   if (fetching || loadingPermissions) {
     return <PageLoader />;

@@ -18,9 +18,28 @@ export const storyMapFields = `
   fragment storyMapFields on StoryMapNode {
     id
     slug
+    urlIdentifier
     title
     isPublished
     configuration
+    createdAt
+    updatedAt
+    publishedAt
+    createdBy {
+      id
+      lastName
+      firstName
+    }
+  }
+`;
+
+export const storyMapMetadataFields = `
+  fragment storyMapMetadataFields on StoryMapNode {
+    id
+    slug
+    urlIdentifier
+    title
+    isPublished
     createdAt
     updatedAt
     publishedAt

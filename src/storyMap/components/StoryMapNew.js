@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
@@ -31,6 +31,10 @@ import { ILM_OUTPUT_PROP, LANDSCAPE_NARRATIVES } from 'monitoring/ilm';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 
 import { addStoryMap } from 'storyMap/storyMapSlice';
+import {
+  generateStoryMapEditUrl,
+  generateStoryMapUrl,
+} from 'storyMap/storyMapUtils';
 
 import { MAPBOX_STYLE_DEFAULT } from 'config';
 
@@ -92,6 +96,28 @@ const StoryMapNew = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { trackEvent } = useAnalytics();
+  const [saved, setSaved] = useState();
+
+  useEffect(() => {
+    if (!saved) {
+      return;
+    }
+    const { slug, urlIdentifier, published } = saved;
+    if (published) {
+      const url = generateStoryMapUrl({ slug, urlIdentifier });
+      trackEvent('Storymap Published', {
+        props: {
+          url: `${window.location.origin}${url}`,
+          [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
+        },
+      });
+      navigate(url);
+      return;
+    }
+
+    navigate(generateStoryMapEditUrl({ slug, urlIdentifier }));
+    setSaved(null);
+  }, [dispatch, navigate, trackEvent, saved]);
 
   const save = useCallback(
     (config, mediaFiles, published) =>
@@ -107,24 +133,14 @@ const StoryMapNew = () => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
           const slug = _.get('payload.slug', data);
+          const urlIdentifier = _.get('payload.url_identifier', data);
 
-          if (published) {
-            navigate(`/tools/story-maps/${slug}`);
-            trackEvent('Storymap Published', {
-              props: {
-                url: `${window.location.origin}/tools/story-maps/${slug}`,
-                [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
-              },
-            });
-            return;
-          }
-
-          navigate(`/tools/story-maps/${slug}/edit`);
+          setSaved({ slug, urlIdentifier, published });
           return;
         }
         return Promise.reject(data);
       }),
-    [dispatch, navigate, trackEvent]
+    [dispatch]
   );
 
   const onPublish = useCallback(

@@ -34,6 +34,10 @@ import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
 
 import HomeCard from 'home/components/HomeCard';
+import {
+  generateStoryMapEditUrl,
+  generateStoryMapUrl,
+} from 'storyMap/storyMapUtils';
 
 import { withProps } from 'react-hoc';
 
@@ -99,8 +103,8 @@ const StoryMapsHomeCard = props => {
                 id={`story-map-${storyMap.slug}-link`}
                 to={
                   storyMap.isPublished
-                    ? `/tools/story-maps/${storyMap.slug}`
-                    : `/tools/story-maps/${storyMap.slug}/edit`
+                    ? generateStoryMapUrl(storyMap)
+                    : generateStoryMapEditUrl(storyMap)
                 }
               >
                 {storyMap.title}
@@ -128,7 +132,7 @@ const StoryMapsHomeCard = props => {
             </Stack>
             <Stack component={Grid} item xs={6} alignItems="flex-end">
               <RouterButton
-                to={`/tools/story-maps/${storyMap.slug}/edit`}
+                to={generateStoryMapEditUrl(storyMap)}
                 size="small"
                 variant="outlined"
                 sx={{ pr: 3, pl: 3 }}

@@ -146,8 +146,8 @@ const paths = [
     showBreadcrumbs: true,
     breadcrumbsLabel: 'storyMap.breadcrumbs_create',
   }),
-  path('/tools/story-maps/:slug/edit', StoryMapUpdate),
-  path('/tools/story-maps/:slug', UserStoryMap, {
+  path('/tools/story-maps/:urlIdentifier/:slug/edit', StoryMapUpdate),
+  path('/tools/story-maps/:urlIdentifier/:slug', UserStoryMap, {
     showBreadcrumbs: true,
     breadcrumbsLabel: 'storyMap.breadcrumbs_view',
   }),
