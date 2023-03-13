@@ -53,6 +53,7 @@ const StoryMapUpdate = props => {
     }
 
     const { title, slug, urlIdentifier, published } = saved;
+    setSaved(null);
     if (published) {
       const url = generateStoryMapUrl({ slug, urlIdentifier });
       trackEvent('Storymap Published', {
@@ -68,7 +69,6 @@ const StoryMapUpdate = props => {
     if (title !== storyMap?.title) {
       navigate(generateStoryMapEditUrl({ slug, urlIdentifier }));
     }
-    setSaved(null);
   }, [storyMap, navigate, trackEvent, saved]);
 
   const save = useCallback(

@@ -103,6 +103,7 @@ const StoryMapNew = () => {
       return;
     }
     const { slug, urlIdentifier, published } = saved;
+    setSaved(null);
     if (published) {
       const url = generateStoryMapUrl({ slug, urlIdentifier });
       trackEvent('Storymap Published', {
@@ -116,7 +117,6 @@ const StoryMapNew = () => {
     }
 
     navigate(generateStoryMapEditUrl({ slug, urlIdentifier }));
-    setSaved(null);
   }, [dispatch, navigate, trackEvent, saved]);
 
   const save = useCallback(
