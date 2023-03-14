@@ -68,6 +68,7 @@ const FIELDS = [
   {
     name: 'name',
     label: 'group.form_name_label',
+    placeholder: 'group.form_name_placeholder',
   },
   {
     name: 'description',
