@@ -176,6 +176,7 @@
         "profile_picture": "Fotografía de perfil",
         "apple_login": "Continuar con Apple",
         "google_login": "Continuar con Google",
+        "microsoft_login": "Continuar con Microsoft",
         "name_and_profile": "Aquí está el nombre y la fotografía de perfil de su cuenta de Google. Si desea usar un nombre o una fotografía diferente para Terraso, puede cambiarlos.",
         "login_document_title": "Iniciar sesión",
         "profile_document_title": "Cuenta",

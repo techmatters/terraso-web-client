@@ -25,6 +25,7 @@ import AppleIcon from '@mui/icons-material/Apple';
 import GoogleIcon from '@mui/icons-material/Google';
 import { Typography } from '@mui/material';
 import { Box, Button, Stack } from '@mui/material';
+import SvgIcon from '@mui/material/SvgIcon';
 
 import ExternalLink from 'common/components/ExternalLink';
 import { useDocumentTitle } from 'common/document';
@@ -35,9 +36,15 @@ import { useFetchData } from 'state/utils';
 
 import { fetchAuthURLs } from 'account/accountSlice';
 
+import { ReactComponent as MicrosoftSvg } from 'assets/Microsoft.svg';
 import logo from 'assets/logo.svg';
 
 import theme from 'theme';
+
+// ref: https://mui.com/material-ui/icons/#component-prop
+const MicrosoftIcon = props => {
+  return <SvgIcon component={MicrosoftSvg} {...props} />;
+};
 
 const appendReferrer = (url, referrer) =>
   referrer ? `${url}&state=${referrer}` : url;
@@ -96,6 +103,20 @@ const AccountForm = () => {
               href={appendReferrer(urls.apple, referrer)}
             >
               {t('account.apple_login')}
+            </Button>
+          )}
+
+          {urls.microsoft && (
+            <Button
+              variant="outlined"
+              startIcon={
+                <MicrosoftIcon
+                  sx={{ paddingLeft: '24px', paddingRight: '5px' }}
+                />
+              }
+              href={appendReferrer(urls.microsoft, referrer)}
+            >
+              {t('account.microsoft_login')}
             </Button>
           )}
         </Stack>
