@@ -47,7 +47,7 @@
     "web-vitals": "^3.1.1",
     "world-countries": "^4.0.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.18.10/xlsx-0.18.10.tgz",
-    "yup": "^0.32.11"
+    "yup": "^1.0.2"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -90,7 +90,8 @@ const VALIDATION_SCHEMA = yup
       option: yup.string().trim().required(),
       selectedColumns: yup.array().when(['option'], {
         is: option => option === 'custom',
-        then: yup.array().compact().min(1).of(yup.string().trim().required()),
+        then: () =>
+          yup.array().compact().min(1).of(yup.string().trim().required()),
       }),
     }),
   })
@@ -446,7 +447,9 @@ const SetDatasetStep = props => {
   );
 
   const cleaneadData = useMemo(() => {
-    return VALIDATION_SCHEMA.cast(_.omit('context', updatedValues));
+    return VALIDATION_SCHEMA.cast(_.omit('context', updatedValues), {
+      assert: false,
+    });
   }, [updatedValues]);
 
   const onNextWrapper = useCallback(async () => {

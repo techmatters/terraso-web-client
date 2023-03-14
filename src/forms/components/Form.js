@@ -85,9 +85,7 @@ const Form = props => {
     () =>
       _.flow(
         _.toPairs,
-        _.filter(([name, field]) =>
-          _.getOr(false, 'exclusiveTests.required', field)
-        ),
+        _.filter(([name, field]) => _.has('exclusiveTests.required', field)),
         _.map(([name]) => name)
       )(_.getOr({}, 'fields', validationSchema)),
     [validationSchema]
