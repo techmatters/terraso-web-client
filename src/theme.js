@@ -29,7 +29,7 @@ const colorTheme = createTheme({
     link: '#2C7690',
     success: {
       main: '#b0d098',
-      background: 'rgb(248, 251, 246)',
+      background: '#E2F5D9',
     },
     info: {
       main: '#76a7ec',
