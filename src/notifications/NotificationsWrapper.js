@@ -14,9 +14,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { createRef, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
-import { SnackbarProvider } from 'notistack';
+import _ from 'lodash/fp';
+import { SnackbarProvider, useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -27,49 +28,58 @@ import { removeMessage } from './notificationsSlice';
 const MAX_NOTIFICATIONS = 3;
 const AUTO_HIDE_DURATION = 10000;
 
-const NotificationsWrapper = props => {
-  const { t } = useTranslation();
-  const { children } = props;
-  const notistackRef = createRef();
+const NotificationsState = () => {
   const dispatch = useDispatch();
-  const messages = useSelector(state => state.notifications.messages);
+  const { enqueueSnackbar } = useSnackbar();
+  const messages = useSelector(_.get('notifications.messages'));
 
   useEffect(() => {
     const shownMessage = Object.keys(messages).map(messageKey => {
-      notistackRef.current.enqueueSnackbar(messages[messageKey]);
+      enqueueSnackbar({ message: messages[messageKey], variant: 'default' });
       return messageKey;
     });
     shownMessage.forEach(key => {
       dispatch(removeMessage(key));
     });
-  }, [messages, notistackRef, dispatch]);
+  }, [messages, enqueueSnackbar, dispatch]);
+  return null;
+};
 
-  // To add more flexibility to messages and localization
-  // the content of a message can hold multiple sub messages
-  const onClose = key => {
-    notistackRef.current.closeSnackbar(key);
-  };
+const Notification = React.forwardRef((props, ref) => {
+  const { t } = useTranslation();
+  const { closeSnackbar } = useSnackbar();
+  const { id, message, style } = props;
+  const { severity, content, params } = message;
+
+  return (
+    <Alert
+      onClose={() => closeSnackbar(id)}
+      severity={severity}
+      ref={ref}
+      style={style}
+    >
+      {t(content, params)}
+    </Alert>
+  );
+});
+
+const NotificationsWrapper = props => {
+  const { children } = props;
 
   return (
     <SnackbarProvider
       preventDuplicate
-      ref={notistackRef}
       maxSnack={MAX_NOTIFICATIONS}
       autoHideDuration={AUTO_HIDE_DURATION}
       anchorOrigin={{
         vertical: 'top',
         horizontal: 'center',
       }}
-      content={(key, notification) => (
-        <Alert
-          onClose={() => onClose(key)}
-          severity={notification.severity}
-          sx={{ width: '90%' }}
-        >
-          {t(notification.content, notification.params)}
-        </Alert>
-      )}
+      Components={{
+        default: Notification,
+      }}
     >
+      <NotificationsState />
       {children}
     </SnackbarProvider>
   );
