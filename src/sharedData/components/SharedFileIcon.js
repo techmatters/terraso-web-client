@@ -53,10 +53,10 @@ const SharedFileIcon = ({ resourceType }) => {
 
   return (
     <InsertDriveFileOutlinedIcon
-      sx={theme => ({
+      sx={{
         fontSize: ICON_SIZE,
-        color: theme.palette.gray.dark1,
-      })}
+        color: 'gray.dark1',
+      }}
     />
   );
 };
