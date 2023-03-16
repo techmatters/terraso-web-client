@@ -82,7 +82,7 @@ export const SHARED_DATA_ACCEPTED_TYPES = {
     '.docx',
   ],
   'application/json': ['.json', '.geojson'],
-  'application/xml': ['.kml'],
+  'application/xml': ['.kml', '.gpx'],
   'application/zip': ['.kmz', '.zip'],
 };
 
