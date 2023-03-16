@@ -506,6 +506,7 @@
         "delete_label": "Delete “{{name}}”",
         "download_label": "Download “{{name}}”",
         "invalid_extension": "The file extension ({{file.resourceType}}) does not match the file’s contents",
+        "invalid_extension_zip": "[TODO] Invalid shapefile",
         "loader_label": "Loading…",
         "form_step_set_dataset_dataColumns_custom_label": "Column {{index}}",
         "form_step_set_dataset_dataColumns_custom_delete": "Delete column {{index}}",
