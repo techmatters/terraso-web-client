@@ -886,7 +886,7 @@
         "form_new_mobile_warning_title": "Crear un Story Map",
         "form_new_mobile_warning": "Lo sentimos, la creación de un Story Map no es compatible con teléfonos móviles pequeños. Vea qué y cómo prepararse para un Story Map convincente.",
         "form_no_title_label": "Sin título",
-        "form_title_location_button": "Establecer mapa de fondo",
+        "form_title_location_button": "Establecer ubicación en el mapa",
         "form_title_location_dialog_title": "Título",
         "update_story_map": "Se ha actualizado el Story Map <strong>{{title}}</strong>.",
         "update_story_map_published": "Se ha publicado el Story Map <strong>{{title}}</strong>.",
