@@ -27,6 +27,8 @@ import PageLoader from 'layout/PageLoader';
 import NavigationBlockedDialog from 'navigation/components/NavigationBlockedDialog';
 import { useNavigationBlocker } from 'navigation/navigationContext';
 
+import { isChapterEmpty } from 'storyMap/storyMapUtils';
+
 import StoryMap from '../StoryMap';
 import ChapterForm from './ChapterForm';
 import ChaptersSidebar from './ChaptersSideBar';
@@ -70,12 +72,14 @@ const Preview = props => {
     [config, getMediaFile]
   );
 
+  const chaptersFilter = useCallback(chapters => !isChapterEmpty(chapters), []);
+
   return (
     <>
       <TopBarPreview onPublish={onPublish} />
       <Grid container>
         <Grid item xs={12}>
-          <StoryMap config={previewConfig} />
+          <StoryMap config={previewConfig} chaptersFilter={chaptersFilter} />
         </Grid>
       </Grid>
     </>

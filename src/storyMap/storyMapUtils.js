@@ -21,6 +21,11 @@ export const chapterHasVisualMedia = chapter => {
   return media && _.includes(media.type, ['image', 'embedded']);
 };
 
+export const isChapterEmpty = chapter => {
+  const { title, description, media } = chapter;
+  return _.isEmpty(title) && _.isEmpty(description) && _.isEmpty(media);
+};
+
 export const generateStoryMapUrl = storyMap => {
   const { storyMapId, slug } = storyMap;
   return `/tools/story-maps/${storyMapId}/${slug}`;

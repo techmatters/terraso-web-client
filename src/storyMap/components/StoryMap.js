@@ -210,6 +210,7 @@ const StoryMap = props => {
     mapCss = { height: '100vh', width: '100vw', top: 0 },
     animation,
     onReady,
+    chaptersFilter,
   } = props;
   const mapContainer = React.useRef(null);
   const mapInsetContainer = React.useRef(null);
@@ -496,6 +497,13 @@ const StoryMap = props => {
     onStepChange,
   ]);
 
+  const filteredChapters = useMemo(() => {
+    if (!chaptersFilter) {
+      return config.chapters;
+    }
+    return config.chapters.filter(chaptersFilter);
+  }, [config.chapters, chaptersFilter]);
+
   return (
     <>
       <section aria-label={t('storyMap.view_map_label')}>
@@ -510,7 +518,7 @@ const StoryMap = props => {
           className={ALIGNMENTS[config.alignment]}
         >
           <TitleComponent config={config} />
-          {config.chapters.map(chapter => (
+          {filteredChapters.map(chapter => (
             <ChapterComponent
               key={chapter.id}
               theme={config.theme}
