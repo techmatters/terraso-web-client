@@ -57,7 +57,7 @@ beforeEach(() => {
 const dropFiles = async files => {
   await setup();
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.csv, *.doc, *.docx, *.pdf, *.ppt, *.pptx, *.xls, *.xlsx Maximum file size: 10 MB',
+    name: 'Select File Accepted file formats: *.csv, *.doc, *.docx, *.geojson, *.gpx, *.json, *.kml, *.kmz, *.pdf, *.ppt, *.pptx, *.xls, *.xlsx, *.zip Maximum file size: 10 MB',
   });
 
   const data = {
@@ -76,11 +76,11 @@ const dropFiles = async files => {
 
 test('GroupSharedDataUpload: Error - Invalid type', async () => {
   await dropFiles([
-    new File(['content'], 'test.json', { type: 'application/json' }),
+    new File(['content'], 'test.txt', { type: 'text/plain' }),
   ]);
   expect(
     await screen.findByText(
-      'test.json cannot be added because the file type(s) are not supported.'
+      'test.txt cannot be added because the file type(s) are not supported.'
     )
   ).toBeInTheDocument();
 });
