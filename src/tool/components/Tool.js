@@ -20,7 +20,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 
 import LaunchIcon from '@mui/icons-material/Launch';
-import { Card, Stack, Typography } from '@mui/material';
+import { Box, Card, Stack, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import ExternalLink from 'common/components/ExternalLink';
@@ -42,6 +42,8 @@ const Tool = ({ tool }) => {
   if (pronunciation) {
     attributes['aria-label'] = pronunciation;
   }
+
+  const toolImage = require(`assets/${t(`tools.${tool}.img.src`)}`);
 
   return (
     <React.Fragment>
@@ -86,11 +88,16 @@ const Tool = ({ tool }) => {
 
           <section>
             <ExternalLink href={t(`tools.${tool}.url`)}>
-              <img
+              <Box
+                component="img"
+                src={toolImage}
                 alt=""
-                height={t(`tools.${tool}.img.height`)}
                 width={t(`tools.${tool}.img.width`)}
-                src={t(`tools.${tool}.img.src`)}
+                height={t(`tools.${tool}.img.height`)}
+                sx={{
+                  width: `${t(`tools.${tool}.img.width`)}px`,
+                  height: `${t(`tools.${tool}.img.height`)}px`,
+                }}
               />
               <p>
                 {t('tool.go_to', { tool: toolTitle })}
