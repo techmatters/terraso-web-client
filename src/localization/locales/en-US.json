@@ -137,14 +137,14 @@
         "faq_title": "Tools FAQ",
         "list_title": "Tools",
         "home_card_title": "Data Collection",
-        "home_card_kobo_title": "KoBoToolbox",
-        "home_card_description": "KoBoToolbox is an open source data collection tool.",
+        "home_card_kobo_title": "KoboToolbox",
+        "home_card_description": "KoboToolbox is an open source data collection tool.",
         "go_to": "Go to {{tool}}",
         "learn_more": "Learn more about {{tool}}",
         "description": "Description",
         "actions_bookmark": "Bookmark",
         "actions_recommend": "Recommend this to my team",
-        "home_card_img_alt": "KoBoToolbox image",
+        "home_card_img_alt": "KoboToolbox",
         "list_document_title": "Tools"
     },
     "tools": {
