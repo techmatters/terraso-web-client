@@ -31,7 +31,10 @@ import { useFetchData } from 'state/utils';
 
 import StoryMap from 'storyMap/components/StoryMap';
 import { fetchStoryMap } from 'storyMap/storyMapSlice';
-import { generateStoryMapEditUrl } from 'storyMap/storyMapUtils';
+import {
+  generateStoryMapEditUrl,
+  isChapterEmpty,
+} from 'storyMap/storyMapUtils';
 
 const UserStoryMap = () => {
   const { t } = useTranslation();
@@ -68,6 +71,8 @@ const UserStoryMap = () => {
     )
   );
 
+  const chaptersFilter = useCallback(chapters => !isChapterEmpty(chapters), []);
+
   if (fetching) {
     return <PageLoader />;
   }
@@ -90,7 +95,7 @@ const UserStoryMap = () => {
           </RouterButton>
         </Container>
       </Restricted>
-      <StoryMap config={storyMap.config} />
+      <StoryMap config={storyMap.config} chaptersFilter={chaptersFilter} />
     </>
   );
 };
