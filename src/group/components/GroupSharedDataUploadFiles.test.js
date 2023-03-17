@@ -75,9 +75,7 @@ const dropFiles = async files => {
 };
 
 test('GroupSharedDataUpload: Error - Invalid type', async () => {
-  await dropFiles([
-    new File(['content'], 'test.txt', { type: 'text/plain' }),
-  ]);
+  await dropFiles([new File(['content'], 'test.txt', { type: 'text/plain' })]);
   expect(
     await screen.findByText(
       'test.txt cannot be added because the file type(s) are not supported.'
@@ -245,10 +243,46 @@ test('GroupSharedDataUpload: MS Office Success', async () => {
           })
       )
   );
+
   const uploadButton = screen.getByRole('button', {
     name: 'Share Files and Links',
   });
   await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
+
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+
+  await act(async () => fireEvent.click(uploadButton));
+  expect(navigate.mock.calls[0]).toEqual(['/groups/slug-1']);
+});
+test('GroupSharedDataUpload: Gis files', async () => {
+  const fileTypes = [
+    ['json', 'application/json'],
+    ['geojson', 'application/json'],
+    ['kml', 'application/xml'],
+    ['gpx', 'application/xml'],
+    ['kmz', 'application/zip'],
+    ['zip', 'application/zip'],
+  ];
+
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+  terrasoApi.request.mockResolvedValueOnce({});
+  await dropFiles(
+    fileTypes.map(
+      ([extension, type], index) =>
+        new File(['content'], `test-${index}.${extension}`, {
+          type,
+        })
+    )
+  );
+
+  const uploadButton = screen.getByRole('button', {
+    name: 'Share Files and Links',
+  });
+  await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
+
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+
   await act(async () => fireEvent.click(uploadButton));
   expect(navigate.mock.calls[0]).toEqual(['/groups/slug-1']);
 });
