@@ -16,6 +16,7 @@
  */
 import React from 'react';
 
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 
 import LaunchIcon from '@mui/icons-material/Launch';
@@ -31,25 +32,56 @@ const Tool = ({ tool }) => {
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
   const toolTitle = t(`tools.${tool}.title`);
+  const toolDescription = t(`tools.${tool}.description`, {
+    returnObjects: true,
+  });
+  const learnMoreUrl = t(`tools.${tool}.learn_more_url`);
+  const pronunciation = t(`tools.${tool}.pronunciation`, { defaultValue: '' });
+
+  const attributes = { variant: 'h2' };
+  if (pronunciation) {
+    attributes['aria-label'] = pronunciation;
+  }
 
   return (
     <React.Fragment>
       <Card sx={{ padding: theme.spacing(2) }}>
-        <Typography variant="h2">{toolTitle}</Typography>
+        <Typography {...attributes}>{toolTitle}</Typography>
         <Stack
           direction={isSmall ? 'column' : 'row'}
           justifyContent="space-between"
           spacing={2}
         >
           <section>
-            <Typography variant="h3">{t('tool.is_for')}</Typography>
-            <Typography>{t(`tools.${tool}.description`)}</Typography>
+            <Typography variant="h3">{t('tool.description')}</Typography>
+            {_.isArray(toolDescription) ? (
+              <ul style={{ paddingLeft: '1em', marginTop: '0.25em' }}>
+                {toolDescription.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
+              </ul>
+            ) : (
+              <Typography>{toolDescription}</Typography>
+            )}
 
             <Typography variant="h3">{t('tool.requirements')}</Typography>
             <Typography>{t(`tools.${tool}.requirements`)}</Typography>
 
-            <Typography variant="h3">{t('tool.avilability')}</Typography>
-            <Typography>{t(`tools.${tool}.availability`)}</Typography>
+            {learnMoreUrl && (
+              <Typography sx={{ mt: '1em' }}>
+                <ExternalLink href={learnMoreUrl}>
+                  {t('tool.learn_more', { tool: toolTitle })}
+                  <LaunchIcon
+                    sx={{
+                      paddingLeft: '5px',
+                      height: '1.2rem',
+                      width: '1.2rem',
+                      verticalAlign: '-0.2rem',
+                    }}
+                  />
+                </ExternalLink>
+              </Typography>
+            )}
           </section>
 
           <section>

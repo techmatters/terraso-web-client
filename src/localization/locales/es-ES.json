@@ -137,8 +137,8 @@
         "faq_title": "Preguntas frecuentes sobre herramientas",
         "list_title": "Herramientas",
         "home_card_title": "Recopilación de datos",
-        "home_card_kobo_title": "KoBoToolbox",
-        "home_card_description": "KoBoToolbox es una herramienta gratuita de recopilación de datos de código abierto.",
+        "home_card_kobo_title": "KoboToolbox",
+        "home_card_description": "KoboToolbox es una herramienta gratuita de recopilación de datos de código abierto.",
         "go_to": "Ir a {{tool}}",
         "is_for": "Esta herramienta es para",
         "actions_bookmark": "Marcar como favorito",
@@ -148,16 +148,21 @@
     },
     "tools": {
         "kobo": {
-            "title": "KoBoToolbox",
+            "title": "KoboToolbox",
+            "pronunciation": "Kobo Toolbox",
             "url": "https://www.kobotoolbox.org/",
+            "learn_more_url": "https://www.kobotoolbox.org/features/",
             "img": {
                 "height": "222",
                 "width": "377",
                 "src": "kobo.png"
             },
-            "description": "Diseñe y cree formularios rápidamente\nRecopilar datos fuera de línea y en línea\nAnalizar y gestionar datos",
-            "requirements": "Navegador web moderno (Chrome, Edge, Firefox, Safari)",
-            "availability": "KoboToolbox se integrará en Terraso en 2022. Usa Kobo de forma independiente por ahora."
+            "description": [
+                "Diseñe y cree formularios rápidamente",
+                "Recopilar datos fuera de línea y en línea",
+                "Analizar y gestionar datos"
+            ],
+            "requirements": "Navegador web moderno (Chrome, Edge, Firefox, Safari)"
         }
     },
     "account": {
