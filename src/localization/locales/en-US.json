@@ -873,7 +873,7 @@
         "form_new_mobile_warning_title": "Create Story Map",
         "form_new_mobile_warning": "Sorry, creating a story map is not supported on small mobile phones. Check out what and how to prepare for a compelling story map.",
         "form_no_title_label": "Untitled",
-        "form_title_location_button": "Set background map",
+        "form_title_location_button": "Set Map Location",
         "form_title_location_dialog_title": "Title",
         "update_story_map": "<strong>{{title}}</strong> story map has been updated.",
         "update_story_map_published": "<strong>{{title}}</strong> story map has been published.",
