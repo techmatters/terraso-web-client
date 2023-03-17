@@ -35,7 +35,7 @@ const Tool = ({ tool }) => {
   const toolDescription = t(`tools.${tool}.description`, {
     returnObjects: true,
   });
-  const learnMoreUrl = t(`tools.${tool}.learn_more_url`);
+  const learnMoreUrl = t(`tools.${tool}.learn_more_url`, { defaultValue: '' });
   const pronunciation = t(`tools.${tool}.pronunciation`, { defaultValue: '' });
 
   const attributes = { variant: 'h2' };
