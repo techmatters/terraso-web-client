@@ -848,7 +848,7 @@
         "delete_confirm_title": "Delete {{title}} story map?",
         "delete_confirm_message": "You cannot undo deleting your story map. Deleting your published story map may cause a missing page error to your story map viewers.",
         "delete_confirm_button":"Delete Story Map",
-        "deleted_story_map": "<strong>{{title}}</strong> is deleted",
+        "deleted_story_map": "<strong>{{title}}</strong> was deleted",
         "form_media_update_label": "Update Media",
         "form_media_placeholder": "Upload or link images, audio recordings or video files.",
         "form_media_upload": "Add media",
