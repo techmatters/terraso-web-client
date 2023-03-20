@@ -19,7 +19,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Link, Stack, Typography } from '@mui/material';
+import { Box, Link, Stack, Typography } from '@mui/material';
 
 import HomeCard from 'home/components/HomeCard';
 
@@ -27,6 +27,8 @@ import theme from 'theme';
 
 const ToolHomeCard = () => {
   const { t } = useTranslation();
+  const koboImage = require(`assets/${t(`tools.kobo.img.src`)}`);
+
   return (
     <HomeCard
       aria-labelledby="tools-title"
@@ -47,10 +49,16 @@ const ToolHomeCard = () => {
       ></Typography>
       <Stack direction="row" spacing={3}>
         <Link component={RouterLink} to="/tools">
-          <img
-            src="/tools/kobo-small.png"
-            alt={t('tool.home_card_img_alt')}
-            height={64}
+          <Box
+            component="img"
+            src={koboImage}
+            alt=""
+            width="250"
+            height="50"
+            sx={{
+              width: '250px',
+              height: '64px',
+            }}
           />
         </Link>
         <Stack spacing={1}>

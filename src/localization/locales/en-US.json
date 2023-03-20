@@ -137,27 +137,33 @@
         "faq_title": "Tools FAQ",
         "list_title": "Tools",
         "home_card_title": "Data Collection",
-        "home_card_kobo_title": "KoBoToolbox",
-        "home_card_description": "KoBoToolbox is a free open source data collection tool.",
+        "home_card_kobo_title": "KoboToolbox",
+        "home_card_description": "KoboToolbox is an open source data collection tool.",
         "go_to": "Go to {{tool}}",
-        "is_for": "This tool is for",
+        "learn_more": "Learn more about {{tool}}",
+        "description": "Description",
         "actions_bookmark": "Bookmark",
         "actions_recommend": "Recommend this to my team",
-        "home_card_img_alt": "KoBoToolbox image",
+        "home_card_img_alt": "KoboToolbox",
         "list_document_title": "Tools"
     },
     "tools": {
         "kobo": {
-            "title": "KoBoToolbox",
+            "title": "KoboToolbox",
+            "pronunciation": "Kobo Toolbox",
             "url": "https://www.kobotoolbox.org/",
+            "learn_more_url": "https://www.kobotoolbox.org/features/",
             "img": {
-                "height": "222",
+                "height": "164",
                 "width": "377",
-                "src": "kobo.png"
+                "src": "kobotoolbox.svg"
             },
-            "description": "Design and build forms quickly\nCollect data offline and online\nAnalyze and manage data",
-            "requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
-            "availability": "KoBoToolbox will be integrated into Terraso in 2022. Use Kobo independently for now."
+            "description": [
+                "Design and build forms quickly",
+                "Collect data offline and online",
+                "Analyze and manage data"
+            ],
+            "requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)"
         }
     },
     "account": {
