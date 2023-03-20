@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { render, screen } from 'tests/utils';
+import { act, fireEvent, render, screen, within } from 'tests/utils';
 
 import _ from 'lodash/fp';
 
@@ -52,4 +52,47 @@ test('UserStoryMap: renders correctly', async () => {
   await render(<UserStoryMap />);
 
   expect(screen.getByRole('region', { name: 'Story Map' })).toBeInTheDocument();
+});
+test('UserStoryMap: Delete story map', async () => {
+  terrasoApi.requestGraphQL.mockImplementation(query => {
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.startsWith('query fetchStoryMap')) {
+      return Promise.resolve(
+        _.set(
+          'storyMaps.edges[0].node',
+          {
+            id: 'id-1',
+            slug: 'id-1',
+            title: 'Story 1',
+            configuration: JSON.stringify({
+              title: 'Story 1',
+            }),
+          },
+          {}
+        )
+      );
+    }
+    if (trimmedQuery.startsWith('mutation deleteStoryMap')) {
+      return Promise.resolve({});
+    }
+  });
+  await render(<UserStoryMap />);
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+  });
+  const dialog = screen.getByRole('dialog', {
+    name: 'Delete Story 1 story map?',
+  });
+
+  await act(async () => {
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Delete Story Map' })
+    );
+  });
+
+  const saveCall = _.last(terrasoApi.requestGraphQL.mock.calls);
+  expect(saveCall[1]).toStrictEqual({
+    id: 'id-1',
+  });
 });
