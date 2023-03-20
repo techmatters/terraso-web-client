@@ -846,7 +846,7 @@
         "home_default_description": "Use maps, photos, videos, audio recordings and narrative to create an impactful story.",
         "delete_label": "Delete",
         "delete_confirm_title": "Delete story map {{title}}?",
-        "delete_confirm_message": "Are you sure you wish to delete the story map? This cannot be undone.,
+        "delete_confirm_message": "Are you sure you wish to delete the story map? This cannot be undone.",
         "delete_confirm_button":"Delete Story Map",
         "deleted_story_map": "<strong>{{title}}</strong> was deleted",
         "form_media_update_label": "Update Media",
