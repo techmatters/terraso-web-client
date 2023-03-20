@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { createSlice } from '@reduxjs/toolkit';
+import _ from 'lodash/fp';
 
 import { createAsyncThunk } from 'state/utils';
 
@@ -35,6 +36,7 @@ const initialState = {
     fetching: true,
     list: null,
   },
+  delete: {},
 };
 
 export const fetchSamples = createAsyncThunk(
@@ -70,6 +72,17 @@ export const updateStoryMap = createAsyncThunk(
     params: {
       title: config.title,
       context: published ? 'published' : 'draft',
+    },
+  })
+);
+export const deleteStoryMap = createAsyncThunk(
+  'storyMap/deleteStoryMap',
+  storyMapService.deleteStoryMap,
+  (storyMap, { storyMap: { title } }) => ({
+    severity: 'success',
+    content: 'storyMap.deleted_story_map',
+    params: {
+      title,
     },
   })
 );
@@ -181,6 +194,15 @@ const storyMapSlice = createSlice({
         saving: false,
       },
     }));
+    builder.addCase(deleteStoryMap.pending, (state, action) =>
+      _.set(`delete.${action.meta.arg.storyMap.id}.deleting`, true, state)
+    );
+    builder.addCase(deleteStoryMap.rejected, (state, action) =>
+      _.set(`delete.${action.meta.arg.storyMap.id}.deleting`, false, state)
+    );
+    builder.addCase(deleteStoryMap.fulfilled, (state, action) =>
+      _.set(`delete.${action.meta.arg.storyMap.id}.deleting`, false, state)
+    );
   },
 });
 

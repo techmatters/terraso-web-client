@@ -19,7 +19,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import RouterButton from 'common/components/RouterButton';
 import { useSocialShareContext } from 'common/components/SocialShare';
@@ -36,7 +36,10 @@ import {
   isChapterEmpty,
 } from 'storyMap/storyMapUtils';
 
+import DeleteButton from './StoryMapDeleteButton';
+
 const UserStoryMap = () => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { slug, storyMapId } = useParams();
   const { data: storyMap, fetching } = useSelector(_.get('storyMap.view'));
@@ -71,6 +74,8 @@ const UserStoryMap = () => {
     )
   );
 
+  const onDeleteSuccess = useCallback(() => navigate('/'), [navigate]);
+
   const chaptersFilter = useCallback(chapters => !isChapterEmpty(chapters), []);
 
   if (fetching) {
@@ -93,6 +98,13 @@ const UserStoryMap = () => {
           >
             {t('storyMap.view_edit')}
           </RouterButton>
+          <DeleteButton
+            storyMap={storyMap}
+            onSuccess={onDeleteSuccess}
+            buttonProps={{ variant: 'outlined', sx: { ml: 3 } }}
+          >
+            {t('storyMap.delete_label')}
+          </DeleteButton>
         </Container>
       </Restricted>
       <StoryMap config={storyMap.config} chaptersFilter={chaptersFilter} />
