@@ -157,7 +157,7 @@
             "img": {
                 "height": "164",
                 "width": "377",
-                "src": "/tools/kobotoolbox.svg"
+                "src": "tools/kobotoolbox.svg"
             },
             "description": [
                 "Design and build forms quickly",
@@ -172,7 +172,7 @@
             "img": {
                 "height": "124",
                 "width": "377",
-                "src": "/tools/story-maps.png"
+                "src": "tools/story-maps.png"
             },
             "description": [
                 "Create beautiful map-based stories"

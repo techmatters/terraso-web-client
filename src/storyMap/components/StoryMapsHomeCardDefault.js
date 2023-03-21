@@ -30,6 +30,7 @@ import theme from 'theme';
 
 const StoryMapsHomeCardDefault = () => {
   const { t } = useTranslation();
+  const storyMapImage = require(`assets/${t(`tools.storyMap.img.src`)}`);
 
   return (
     <HomeCard
@@ -50,7 +51,7 @@ const StoryMapsHomeCardDefault = () => {
           <Paper
             variant="outlined"
             component="img"
-            src="/tools/story-maps.png"
+            src={storyMapImage}
             alt={t('tool.home_card_img_alt')}
             height={64}
             sx={{ mt: 2.5 }}
