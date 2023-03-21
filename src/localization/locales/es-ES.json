@@ -532,6 +532,8 @@
         "delete_label": "Elminar “{{name}}”",
         "download_label": "Descargar “{{name}}”",
         "invalid_extension": "La extensión del archivo ({{file.resourceType}}) no coincide con el contenido del archivo",
+        "invalid_extension_zip": "El archivo {{file.name}}{{file.resourceType}} no es un zip válido.",
+        "invalid_shapefile": "El archivo {{file.name}}{{file.resourceType}} es un zip válido, pero no es un archivo de ESRI shapefile válido.",
         "loader_label": "Cargando…",
         "form_step_set_dataset_dataColumns_custom_label": "Columna {{index}}",
         "form_step_set_dataset_dataColumns_custom_delete": "Eliminar columna {{index}}",
