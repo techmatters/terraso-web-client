@@ -174,7 +174,9 @@
                 "width": "377",
                 "src": "tools/story-maps.png"
             },
-            "description": "Crea hermosas historias basadas en mapas",
+            "description": [
+                "Crea hermosas historias basadas en mapas"
+            ],
             "requirements": "Navegador web moderno (Chrome, Edge, Firefox, Safari)"
         }
     },
@@ -857,6 +859,11 @@
         "home_draft_label": "Borrador",
         "home_edit": "Editar",
         "home_default_description": "Usa mapas, fotos, videos, grabaciones de audio y narraciones para crear una historia impactante.",
+        "delete_label": "Eliminar",
+        "delete_confirm_title": "Eliminar mapa de la historia el story map {{title}}?",
+        "delete_confirm_message": "¿Estás seguro de que deseas eliminar el story map? Esto no se puede deshacer.",
+        "delete_confirm_button":"Eliminar Story Map",
+        "deleted_story_map": "<strong>{{title}}</strong> fue eliminado",
         "form_media_update_label": "Actualizar multimedia",
         "form_media_placeholder": "Cargue o vincule imágenes, grabaciones de audio o archivos de video.",
         "form_media_upload": "Agregar multimedia",
