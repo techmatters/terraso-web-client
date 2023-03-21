@@ -142,8 +142,6 @@ const AccountProfile = () => {
         header={`${t('account.welcome')}, ${user.firstName} ${user.lastName}`}
       />
 
-      <p>{t('account.name_and_profile')}</p>
-
       <Form
         aria-label={t('account.profile_form_label')}
         prefix="profile"
