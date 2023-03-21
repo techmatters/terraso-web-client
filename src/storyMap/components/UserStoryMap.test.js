@@ -82,7 +82,7 @@ test('UserStoryMap: Delete story map', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
   });
   const dialog = screen.getByRole('dialog', {
-    name: 'Delete Story 1 story map?',
+    name: 'Delete story map Story 1?',
   });
 
   await act(async () => {
