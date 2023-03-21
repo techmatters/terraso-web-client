@@ -200,7 +200,8 @@
         "login_document_title": "Log in",
         "profile_document_title": "Account",
         "profile_form_label": "Manage profile",
-        "form_language_label": "Language"
+        "form_language_label": "Language",
+        "form_notifications_label": "Email notifications"
     },
     "footer": {
         "heading": "Footer",

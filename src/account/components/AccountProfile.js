@@ -75,6 +75,10 @@ const FIELDS = [
     },
   },
   {
+    name: 'preferences.notifications',
+    label: 'account.form_notifications_label',
+  },
+  {
     name: 'email',
     label: 'account.form_email_label',
     props: {
@@ -89,6 +93,8 @@ const FIELDS = [
     },
   },
 ];
+
+const PREFERENCE_KEYS = ['language', 'notifications'];
 
 const ProfilePicture = () => {
   const { data: user } = useSelector(state => state.account.currentUser);
@@ -116,18 +122,22 @@ const AccountProfile = () => {
     dispatch(
       saveUser(
         _.omit(
-          ['profilePicture', 'preferences.language', 'email'],
+          ['profilePicture', 'email'].concat(
+            PREFERENCE_KEYS.map(key => `preferences.${key}`)
+          ),
           updatedProfile
         )
       )
     );
 
     // Save language preference
-    const currentLanguage = _.get(['preferences', 'language'], user);
-    const newLanguage = _.get(['preferences', 'language'], updatedProfile);
-    if (newLanguage && newLanguage !== currentLanguage) {
-      dispatch(savePreference({ key: 'language', value: newLanguage }));
-    }
+    PREFERENCE_KEYS.forEach(preferenceKey => {
+      const currentValue = _.get(['preferences', preferenceKey], user);
+      const newValue = _.get(['preferences', preferenceKey], updatedProfile);
+      if (newValue && newValue !== currentValue) {
+        dispatch(savePreference({ key: preferenceKey, value: newValue }));
+      }
+    });
 
     navigate('/');
   };
