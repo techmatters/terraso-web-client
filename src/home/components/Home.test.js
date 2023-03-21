@@ -237,7 +237,6 @@ test('Home: Display defaults', async () => {
     Promise.resolve({
       groups: [],
       landscapes: [],
-      landscapesDiscovery: [],
     })
   );
   await setup();
