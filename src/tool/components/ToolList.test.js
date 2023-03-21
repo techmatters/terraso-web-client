@@ -31,9 +31,9 @@ test('ToolList: renders correctly', async () => {
   ).toBeInTheDocument();
 
   expect(
-    screen.getByRole('heading', { name: 'KoBoToolbox' })
+    screen.getByRole('heading', { name: 'KoboToolbox' })
   ).toBeInTheDocument();
   expect(
-    screen.getByRole('link', { name: 'Go to KoBoToolbox' })
+    screen.getByRole('link', { name: 'Go to KoboToolbox' })
   ).toBeInTheDocument();
 });
