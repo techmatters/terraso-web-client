@@ -14,10 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   List as BaseList,
   Chip,
@@ -34,12 +36,15 @@ import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
 
 import HomeCard from 'home/components/HomeCard';
+import { removeStoryMap } from 'home/homeSlice';
 import {
   generateStoryMapEditUrl,
   generateStoryMapUrl,
 } from 'storyMap/storyMapUtils';
 
 import { withProps } from 'react-hoc';
+
+import DeleteButton from './StoryMapDeleteButton';
 
 const List = withProps(BaseList, {
   component: withProps(Stack, {
@@ -51,8 +56,15 @@ const List = withProps(BaseList, {
 const GridListItem = withProps(Grid, { component: 'li' });
 
 const StoryMapsHomeCard = props => {
+  const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const { storyMaps } = props;
+
+  const onDeleteSuccess = useCallback(
+    storyMap => dispatch(removeStoryMap(storyMap.id)),
+    [dispatch]
+  );
+
   return (
     <HomeCard
       aria-labelledby="story-maps-list-title"
@@ -66,7 +78,7 @@ const StoryMapsHomeCard = props => {
       <List aria-labelledby="story-maps-list-title">
         {storyMaps.map(storyMap => (
           <ListItem
-            key={storyMap.slug}
+            key={storyMap.id}
             component={GridListItem}
             container
             aria-labelledby={`story-map-${storyMap.slug}-link`}
@@ -130,7 +142,14 @@ const StoryMapsHomeCard = props => {
                     })}
               </Typography>
             </Stack>
-            <Stack component={Grid} item xs={6} alignItems="flex-end">
+            <Stack
+              component={Grid}
+              item
+              xs={6}
+              justifyContent="flex-end"
+              direction="row"
+              spacing={2}
+            >
               <RouterButton
                 to={generateStoryMapEditUrl(storyMap)}
                 size="small"
@@ -139,6 +158,17 @@ const StoryMapsHomeCard = props => {
               >
                 {t('storyMap.home_edit')}
               </RouterButton>
+              <DeleteButton
+                storyMap={storyMap}
+                onSuccess={onDeleteSuccess}
+                tooltip={t('storyMap.delete_label')}
+              >
+                <DeleteIcon
+                  sx={{
+                    color: 'gray.dark1',
+                  }}
+                />
+              </DeleteButton>
             </Stack>
           </ListItem>
         ))}

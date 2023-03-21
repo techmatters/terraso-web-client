@@ -23,6 +23,7 @@ import * as homeService from 'home/homeService';
 const initialState = {
   groups: [],
   landscapes: [],
+  storyMaps: [],
   fetching: true,
   error: null,
 };
@@ -35,7 +36,14 @@ export const fetchHomeData = createAsyncThunk(
 export const homeSlice = createSlice({
   name: 'home',
   initialState,
-  reducers: {},
+  reducers: {
+    removeStoryMap: (state, action) => ({
+      ...state,
+      storyMaps: state.storyMaps.filter(
+        storyMap => storyMap.id !== action.payload
+      ),
+    }),
+  },
 
   extraReducers: builder => {
     builder.addCase(fetchHomeData.pending, () => initialState);
@@ -46,7 +54,6 @@ export const homeSlice = createSlice({
       error: null,
       groups: action.payload.groups,
       landscapes: action.payload.landscapes,
-      landscapesDiscovery: action.payload.landscapesDiscovery,
       storyMaps: action.payload.storyMaps,
     }));
 
@@ -57,5 +64,7 @@ export const homeSlice = createSlice({
     }));
   },
 });
+
+export const { removeStoryMap } = homeSlice.actions;
 
 export default homeSlice.reducer;

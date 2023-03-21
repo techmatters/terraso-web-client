@@ -104,3 +104,19 @@ export const updateStoryMap = async ({ storyMap, files }) => {
 
   return jsonResponse;
 };
+
+export const deleteStoryMap = ({ storyMap }) => {
+  const query = `
+    mutation deleteStoryMap($id: ID!) {
+      deleteStoryMap(input: { id: $id }) {
+        storyMap {
+          id
+        }
+        errors
+      }
+    }
+  `;
+  return terrasoApi.requestGraphQL(query, {
+    id: storyMap.id,
+  });
+};
