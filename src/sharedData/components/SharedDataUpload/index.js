@@ -59,7 +59,7 @@ const SharedDataUpload = props => {
   const [section, setSection] = useState('files');
 
   const filesState = useFilesState();
-  const { filesPending, filesErrors, filesUploading, filesSuccess } =
+  const { filesPending, filesErrors, filesUploading, filesSuccess, apiErrors } =
     filesState;
 
   const linksState = useLinksState();
@@ -166,10 +166,13 @@ const SharedDataUpload = props => {
     [filesSuccess, linksSuccess]
   );
 
-  const errorCount = useMemo(
-    () => filesPending.length + linksPending.length,
-    [filesPending, linksPending]
-  );
+  const errorCount = useMemo(() => {
+    const numFilesErrors = Object.values(filesErrors).length;
+    const numLinksErrors = Object.values(linksErrors).length;
+    const numApiErrors = apiErrors ? Object.values(apiErrors).length : 0;
+
+    return numFilesErrors + numLinksErrors + numApiErrors;
+  }, [filesErrors, linksErrors, apiErrors]);
 
   return (
     <>
