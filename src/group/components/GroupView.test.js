@@ -108,7 +108,7 @@ test('GroupView: Display data', async () => {
             node: {
               name: 'Group name',
               description: 'Group description',
-              website: 'www.group.org',
+              website: 'https://www.group.org',
               email: 'email@email.com',
               memberships,
             },
@@ -128,7 +128,7 @@ test('GroupView: Display data', async () => {
     screen.getByRole('link', { name: 'email@email.com' })
   ).toBeInTheDocument();
   expect(
-    screen.getByRole('link', { name: 'www.group.org' })
+    screen.getByRole('link', { name: 'https://www.group.org' })
   ).toBeInTheDocument();
 
   // Members
