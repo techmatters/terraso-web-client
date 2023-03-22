@@ -352,20 +352,11 @@ export const useFilesState = () => {
   const [filesSuccess, setFilesSuccess] = useState(0);
 
   const [files, setFiles] = useState({});
-  // const [errors, setErrors] = useState({});
-
-  // useEffect(() => {
-  //   setFilesErrors(errors);
-  // }, [errors, setFilesErrors]);
 
   const { apiErrors, apiSuccesses, apiUploading } = useMemo(
     () => groupDataEntryUploadsByStatus(_.pick(Object.keys(files), uploads)),
     [uploads, files]
   );
-
-  // useEffect(() => {
-  //   console.log({ apiErrors });
-  // }, [apiErrors]);
 
   useEffect(() => {
     const pendingFiles = Object.values(files).filter(
