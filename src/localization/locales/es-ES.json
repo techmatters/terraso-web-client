@@ -860,7 +860,7 @@
         "home_edit": "Editar",
         "home_default_description": "Usa mapas, fotos, videos, grabaciones de audio y narraciones para crear una historia impactante.",
         "delete_label": "Eliminar",
-        "delete_confirm_title": "Eliminar mapa de la historia el story map {{title}}?",
+        "delete_confirm_title": "Eliminar el story map {{title}}?",
         "delete_confirm_message": "¿Estás seguro de que deseas eliminar el story map? Esto no se puede deshacer.",
         "delete_confirm_button":"Eliminar Story Map",
         "deleted_story_map": "<strong>{{title}}</strong> fue eliminado",
