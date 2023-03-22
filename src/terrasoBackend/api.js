@@ -28,19 +28,25 @@ const parseMessage = (message, body) => {
     // If JSON return parse
     const jsonMessages =
       typeof message === 'string' ? JSON.parse(message) : message;
-    return jsonMessages.map(message => ({
-      content: [
-        message.code,
-        `terraso_api.${message.code}`,
-        'terraso_api.error',
-      ],
-      params: {
-        code: message.code,
-        ..._.omit('extra', message.context),
-        context: _.get('context.extra', message),
-        body,
-      },
-    }));
+    return jsonMessages.map(message => {
+      const errorField = _.get('context.field', message);
+      return {
+        content: [
+          message.code,
+          `terraso_api.${message.code}`,
+          'terraso_api.error',
+          ...(errorField
+            ? [`terraso_api.${_.get('context.field', message)}.${message.code}`]
+            : []),
+        ],
+        params: {
+          code: message.code,
+          ..._.omit('extra', message.context),
+          context: _.get('context.extra', message),
+          body,
+        },
+      };
+    });
   } catch (error) {
     logger.warn('Failed to parse Terraso API error response', message, error);
     return message;

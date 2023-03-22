@@ -906,6 +906,7 @@
         "form_unsaved_changes_title": "Leave Story Map?",
         "form_unsaved_changes_message": "You have unsaved changes that will be lost if you leave the page. Select Save Draft before you leave.",
         "form_location_dialog_geocoder_placeholder": "Search",
-        "outline_no_title": "Chapter {{index}}"
+        "outline_no_title": "Chapter {{index}}",
+        "terraso_api.title.required": "Could not save/publish. Please provide a title for your Story Map."
     }
 }

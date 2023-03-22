@@ -67,7 +67,7 @@ export const addStoryMap = async ({ storyMap, files }) => {
   const path = '/story-map/add/';
 
   const storyMapForm = new FormData();
-  storyMapForm.append('title', storyMap.config.title);
+  storyMapForm.append('title', _.getOr('', 'config.title', storyMap).trim());
   storyMapForm.append('is_published', storyMap.published);
   storyMapForm.append('configuration', JSON.stringify(storyMap.config));
   Object.keys(files).forEach((fileId, index) => {
@@ -88,7 +88,7 @@ export const updateStoryMap = async ({ storyMap, files }) => {
 
   const storyMapForm = new FormData();
   storyMapForm.append('id', storyMap.id);
-  storyMapForm.append('title', storyMap.config.title);
+  storyMapForm.append('title', _.getOr('', 'config.title', storyMap).trim());
   storyMapForm.append('is_published', storyMap.published);
   storyMapForm.append('configuration', JSON.stringify(storyMap.config));
   Object.keys(files).forEach((fileId, index) => {
