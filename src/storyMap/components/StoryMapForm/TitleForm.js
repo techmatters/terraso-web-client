@@ -76,6 +76,11 @@ const TitleForm = props => {
     [onFieldChange, onLocationClose]
   );
 
+  const onTitleBlur = useCallback(
+    () => onFieldChange('title')(config.title.trim()),
+    [config.title, onFieldChange]
+  );
+
   return (
     <Box
       id="story-map-title"
@@ -112,6 +117,7 @@ const TitleForm = props => {
           Component="h1"
           value={config.title}
           onChange={onFieldChange('title')}
+          onBlur={onTitleBlur}
           inputProps={{
             ...inputProps,
             inputProps: {

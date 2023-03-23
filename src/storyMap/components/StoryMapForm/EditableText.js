@@ -23,6 +23,7 @@ const EditableText = props => {
     Component,
     value,
     onChange,
+    onBlur,
     placeholder,
     inputProps = {},
     focus,
@@ -32,12 +33,19 @@ const EditableText = props => {
   const [shouldFocus, setShouldFocus] = useState(focus);
   const inputRef = useRef(null);
 
+  useEffect(() => {
+    if (!value) {
+      setIsEditing(true);
+    }
+  }, [value]);
+
   const onExit = useCallback(() => {
+    onBlur?.();
     if (!value) {
       return;
     }
     setIsEditing(false);
-  }, [value]);
+  }, [value, onBlur]);
 
   const onClick = useCallback(() => {
     setIsEditing(true);
