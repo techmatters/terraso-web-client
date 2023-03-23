@@ -113,7 +113,7 @@ const TitleForm = props => {
       >
         <EditableText
           placeholder={t('storyMap.form_title_placeholder')}
-          label={t('storyMap.form_title_required_label')}
+          label={t('storyMap.form_title_label')}
           Component="h1"
           value={config.title}
           onChange={onFieldChange('title')}
@@ -121,19 +121,20 @@ const TitleForm = props => {
           inputProps={{
             ...inputProps,
             inputProps: {
-              'aria-label': t('storyMap.form_title_label'),
+              'aria-label': t('storyMap.form_title_aria_label'),
             },
           }}
         />
         <EditableText
           placeholder={t('storyMap.form_subtitle_placeholder')}
+          label={t('storyMap.form_subtitle_label')}
           Component="h2"
           value={config.subtitle}
           onChange={onFieldChange('subtitle')}
           inputProps={{
             ...inputProps,
             inputProps: {
-              'aria-label': t('storyMap.form_subtitle_label'),
+              'aria-label': t('storyMap.form_subtitle_aria_label'),
             },
           }}
         />
