@@ -61,7 +61,14 @@ export const addStoryMap = createAsyncThunk(
       title: config.title,
       context: published ? 'published' : 'draft',
     },
-  })
+  }),
+  true,
+  ({ message, input }) =>
+    _.set(
+      'params.context',
+      _.get('storyMap.published', input) ? 'published' : 'draft',
+      message
+    )
 );
 export const updateStoryMap = createAsyncThunk(
   'storyMap/updateStoryMap',
@@ -73,7 +80,14 @@ export const updateStoryMap = createAsyncThunk(
       title: config.title,
       context: published ? 'published' : 'draft',
     },
-  })
+  }),
+  true,
+  ({ message, input }) =>
+    _.set(
+      'params.context',
+      _.get('storyMap.published', input) ? 'published' : 'draft',
+      message
+    )
 );
 export const deleteStoryMap = createAsyncThunk(
   'storyMap/deleteStoryMap',
@@ -154,46 +168,14 @@ const storyMapSlice = createSlice({
       },
     }));
 
-    builder.addCase(addStoryMap.pending, state => ({
-      ...state,
-      form: {
-        saving: true,
-      },
-    }));
-    builder.addCase(addStoryMap.rejected, state => ({
-      ...state,
-      form: {
-        saving: false,
-      },
-    }));
-    builder.addCase(addStoryMap.fulfilled, state => ({
-      ...state,
-      form: {
-        saving: false,
-      },
-    }));
+    builder.addCase(addStoryMap.pending, _.set('form.saving', true));
+    builder.addCase(addStoryMap.rejected, _.set('form.saving', false));
+    builder.addCase(addStoryMap.fulfilled, _.set('form.saving', false));
 
-    builder.addCase(updateStoryMap.pending, state => ({
-      ...state,
-      form: {
-        ...state.form,
-        saving: true,
-      },
-    }));
-    builder.addCase(updateStoryMap.rejected, state => ({
-      ...state,
-      form: {
-        ...state.form,
-        saving: false,
-      },
-    }));
-    builder.addCase(updateStoryMap.fulfilled, state => ({
-      ...state,
-      form: {
-        ...state.form,
-        saving: false,
-      },
-    }));
+    builder.addCase(updateStoryMap.pending, _.set('form.saving', true));
+    builder.addCase(updateStoryMap.rejected, _.set('form.saving', false));
+    builder.addCase(updateStoryMap.fulfilled, _.set('form.saving', false));
+
     builder.addCase(deleteStoryMap.pending, (state, action) =>
       _.set(`delete.${action.meta.arg.storyMap.id}.deleting`, true, state)
     );

@@ -63,7 +63,8 @@ export const createAsyncThunk = (
   name,
   action,
   onSuccessMessage,
-  dispatchErrorMessage = true
+  dispatchErrorMessage = true,
+  onErrorMessage = ({ message }) => message
 ) => {
   const generateErrorFallbacks = generateErrorFallbacksPartial(name);
   return createAsyncThunkBase(name, async (input, thunkAPI) => {
@@ -94,7 +95,9 @@ export const createAsyncThunk = (
       });
 
       if (dispatchErrorMessage && !isAborted) {
-        parsedErrors.forEach(message => dispatch(addMessage(message)));
+        parsedErrors.forEach(message =>
+          dispatch(addMessage(onErrorMessage({ message, input })))
+        );
       }
 
       return rejectWithValue({ error, parsedErrors });
