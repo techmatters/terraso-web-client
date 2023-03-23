@@ -65,7 +65,7 @@ test('Home: Display loader', async () => {
   const loaders = screen.getAllByRole('progressbar', {
     name: 'Loading',
   });
-  expect(loaders.length).toBe(2);
+  expect(loaders.length).toBe(3);
   loaders.forEach(role => expect(role).toBeInTheDocument());
 });
 test('Home: Display landscapes', async () => {
@@ -192,15 +192,59 @@ test('Home: Display groups', async () => {
   expect(within(items[2]).getByText('(Manager)')).toBeInTheDocument();
   expect(within(items[2]).getByText('1 pending member')).toBeInTheDocument();
 });
+test('Home: Display Story Maps', async () => {
+  terrasoApi.requestGraphQL.mockReturnValue(
+    Promise.resolve({
+      storyMaps: {
+        edges: [
+          {
+            node: {
+              id: 'id-1',
+              slug: 'id-1',
+              storyMapId: '46h36we',
+              title: 'Story 1',
+              isPublished: false,
+              updatedAt: '2023-01-31T22:25:42.916303+00:00',
+            },
+          },
+          {
+            node: {
+              id: 'id-2',
+              slug: 'id-2',
+              storyMapId: 'lftawa9',
+              title: 'Story 2',
+              isPublished: true,
+              updatedAt: '2023-01-31T22:25:42.916303+00:00',
+            },
+          },
+        ],
+      },
+    })
+  );
+  await setup();
+
+  const list = within(screen.getByRole('region', { name: 'Story Maps' }));
+  const items = list.getAllByRole('listitem');
+  expect(items.length).toBe(2);
+
+  const link1 = within(items[0]).getByRole('link', { name: 'Story 1' });
+  expect(link1).toHaveAttribute('href', '/tools/story-maps/46h36we/id-1/edit');
+  const link2 = within(items[1]).getByRole('link', { name: 'Story 2' });
+  expect(link2).toHaveAttribute('href', '/tools/story-maps/lftawa9/id-2');
+});
 test('Home: Display defaults', async () => {
   fetchHomeData.mockReturnValue(
     Promise.resolve({
       groups: [],
       landscapes: [],
-      landscapesDiscovery: [],
     })
   );
   await setup();
   expect(screen.getByText(/EXPLORE LANDSCAPES/i)).toBeInTheDocument();
   expect(screen.getByText(/Groups connect people/i)).toBeInTheDocument();
+  expect(
+    screen.getByText(
+      /Use maps, photos, videos, audio recordings and narrative to create an impactful story./i
+    )
+  ).toBeInTheDocument();
 });

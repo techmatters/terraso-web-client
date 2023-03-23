@@ -100,6 +100,11 @@ const isAllowedToChangeLandscape = ({ resource: landscape }) => {
   return Promise.resolve(isManager);
 };
 
+const isAllowedToChangeStoryMap = ({ resource: storyMap, user }) => {
+  const isOwner = _.get('createdBy.id', storyMap) === _.get('id', user);
+  return Promise.resolve(isOwner);
+};
+
 const rules = {
   'group.change': isAllowedToChangeGroup,
   'group.manageMembers': isAllowedToManagerGroupMembers,
@@ -110,6 +115,7 @@ const rules = {
   'sharedData.edit': isAllowedToEditSharedData,
   'sharedData.delete': isAllowedToDeleteSharedData,
   'visualization.delete': isAllowedToDeleteVisualization,
+  'storyMap.change': isAllowedToChangeStoryMap,
 };
 
 export default rules;

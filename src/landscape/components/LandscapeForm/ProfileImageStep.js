@@ -17,6 +17,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import _ from 'lodash/fp';
+import { dataURItoBlob, openFile } from 'media/fileUtils';
+import { openImageUrl } from 'media/imageUtils';
 import AvatarEditor from 'react-avatar-editor';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -63,25 +65,6 @@ const FORM_FIELDS = [
     placeholder: 'landscape.form_profile_image_description_placeholder',
   },
 ];
-
-const dataURItoBlob = dataURI => fetch(dataURI).then(res => res.blob());
-
-const readAsDataURL = data =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      resolve(reader.result);
-    };
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(data);
-  });
-
-const openFile = file => readAsDataURL(file);
-
-const openImageUrl = url =>
-  fetch(url)
-    .then(res => res.blob())
-    .then(readAsDataURL);
 
 const ProfileImage = props => {
   const { t } = useTranslation();

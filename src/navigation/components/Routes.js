@@ -46,6 +46,10 @@ import LandscapeSharedDataVisualization from 'landscape/components/LandscapeShar
 import LandscapeSharedDataVisualizationConfig from 'landscape/components/LandscapeSharedDataVisualizationConfig';
 import LandscapeView from 'landscape/components/LandscapeView';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
+import StoryMapNew from 'storyMap/components/StoryMapNew';
+import StoryMapUpdate from 'storyMap/components/StoryMapUpdate';
+import StoryMapsToolsHome from 'storyMap/components/StoryMapsToolHome';
+import UserStoryMap from 'storyMap/components/UserStoryMap';
 import ToolsList from 'tool/components/ToolList';
 
 const path = (
@@ -128,10 +132,25 @@ const paths = [
       breadcrumbsLabel: 'landscape.breadcrumbs_visualization',
     }
   ),
-  path('/tools', ToolsList),
+  path('/tools', ToolsList, {
+    breadcrumbsLabel: 'tools.breadcrumbs_list',
+  }),
   path('/account', AccountLogin, { auth: false }),
   path('/account/profile', AccountProfile),
   path('/contact', ContactForm),
+  path('/tools/story-maps', StoryMapsToolsHome, {
+    showBreadcrumbs: true,
+    breadcrumbsLabel: 'storyMap.breadcrumbs_tool_home',
+  }),
+  path('/tools/story-maps/new', StoryMapNew, {
+    showBreadcrumbs: true,
+    breadcrumbsLabel: 'storyMap.breadcrumbs_create',
+  }),
+  path('/tools/story-maps/:storyMapId/:slug/edit', StoryMapUpdate),
+  path('/tools/story-maps/:storyMapId/:slug', UserStoryMap, {
+    showBreadcrumbs: true,
+    breadcrumbsLabel: 'storyMap.breadcrumbs_view',
+  }),
   path('*', NotFound),
 ];
 

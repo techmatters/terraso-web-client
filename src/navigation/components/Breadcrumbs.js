@@ -20,16 +20,11 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
-import {
-  Container,
-  Link,
-  Breadcrumbs as MuiBreadcrumbs,
-  Typography,
-} from '@mui/material';
+import { Link, Breadcrumbs as MuiBreadcrumbs, Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 
+import { useBreadcrumbsContext } from '../breadcrumbsContext';
 import { useBreadcrumbs } from './Routes';
-import { useBreadcrumbsContext } from './breadcrumbsContext';
 
 const Breadcrumbs = () => {
   const { t } = useTranslation();
@@ -45,12 +40,9 @@ const Breadcrumbs = () => {
       <Typography sx={visuallyHidden} variant="h2">
         {t('navigation.breadcrumbs_label')}
       </Typography>
-      <Container
-        component={MuiBreadcrumbs}
+      <MuiBreadcrumbs
         aria-label={t('navigation.breadcrumbs_label')}
-        sx={{
-          mt: 3,
-        }}
+        sx={{ mb: 2, mt: 2 }}
       >
         <Link component={RouterLink} to="/">
           {t('home.title')}
@@ -70,7 +62,7 @@ const Breadcrumbs = () => {
             {t(label, breadcrumbsParams)}
           </Link>
         ))}
-      </Container>
+      </MuiBreadcrumbs>
     </>
   );
 };

@@ -20,8 +20,8 @@ import React, { useMemo } from 'react';
 
 import { useLocation } from 'react-router-dom';
 
+import { useBreadcrumbsParams } from '../breadcrumbsContext';
 import Breadcrumbs from './Breadcrumbs';
-import { useBreadcrumbsParams } from './breadcrumbsContext';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

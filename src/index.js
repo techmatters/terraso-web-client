@@ -20,12 +20,12 @@ import { createRoot } from 'react-dom/client';
 
 import { Box } from '@mui/material';
 
-import AppBar from 'common/components/AppBar';
+import AppBar from 'layout/AppBar';
 import AppWrappers from 'layout/AppWrappers';
 import Footer from 'layout/Footer';
 import reportWebVitals from 'monitoring/reportWebVitals';
-import Navigation from 'navigation/Navigation';
-import Routes from 'navigation/Routes';
+import Navigation from 'navigation/components/Navigation';
+import Routes from 'navigation/components/Routes';
 import rules from 'permissions/rules';
 import createStore from 'state/store';
 
@@ -33,7 +33,7 @@ import theme from 'theme';
 
 import 'index.css';
 
-import Breadcrumbs from 'navigation/Breadcrumbs';
+import BreadcrumbsShareContainer from 'layout/BreadcrumbsShareContainer';
 
 const App = () => {
   const contentRef = useRef();
@@ -49,8 +49,10 @@ const App = () => {
           minHeight: '100vh',
         }}
       >
-        <AppBar />
-        <Navigation ref={navigationRef} />
+        <Box id="header-container">
+          <AppBar />
+          <Navigation ref={navigationRef} />
+        </Box>
         <Box
           component="main"
           id="content"
@@ -61,7 +63,7 @@ const App = () => {
             flex: 1,
           }}
         >
-          <Breadcrumbs />
+          <BreadcrumbsShareContainer />
           <Routes />
         </Box>
         <Footer />

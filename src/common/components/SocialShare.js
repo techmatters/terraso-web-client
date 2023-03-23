@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
@@ -37,8 +37,35 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import theme from 'theme';
 
-const SocialShare = ({ name }) => {
+const SocialShareContext = createContext({});
+
+export const useSocialShareContext = props => {
+  const { setSocialShareProps } = useContext(SocialShareContext);
+
+  useEffect(() => {
+    setSocialShareProps(props);
+    return () => setSocialShareProps({});
+  }, [props, setSocialShareProps]);
+};
+
+export const SocialShareContextProvider = props => {
+  const { children } = props;
+  const [socialShareProps, setSocialShareProps] = useState({});
+
+  return (
+    <SocialShareContext.Provider
+      value={{ setSocialShareProps, socialShareProps }}
+    >
+      {children}
+    </SocialShareContext.Provider>
+  );
+};
+
+const SocialShare = props => {
   const { t } = useTranslation();
+  const { buttonProps } = props;
+  const { socialShareProps } = useContext(SocialShareContext);
+  const { name } = socialShareProps;
   const [open, setOpen] = useState(false);
   const [buttonCopied, setButtonCopied] = useState(false);
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
@@ -81,9 +108,13 @@ const SocialShare = ({ name }) => {
     }
   };
 
+  if (!name) {
+    return null;
+  }
+
   return (
     <>
-      <Button variant="outlined" onClick={handleOpen}>
+      <Button variant="outlined" onClick={handleOpen} {...buttonProps}>
         {t('share.button')}
       </Button>
       <Dialog

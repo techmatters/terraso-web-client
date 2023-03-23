@@ -31,7 +31,9 @@ import {
 } from '@mui/material';
 
 import ConfirmButton from 'common/components/ConfirmButton';
-import SocialShare from 'common/components/SocialShare';
+import SocialShare, {
+  useSocialShareContext,
+} from 'common/components/SocialShare';
 import NotFound from 'layout/NotFound';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
@@ -82,6 +84,15 @@ const VisualizationWrapper = props => {
   const mapTitle = useMemo(() => _.get('title', data), [data]);
 
   useBreadcrumbsParams(useMemo(() => ({ mapTitle }), [mapTitle]));
+
+  useSocialShareContext(
+    useMemo(
+      () => ({
+        name: mapTitle,
+      }),
+      [mapTitle]
+    )
+  );
 
   const handleDownload = file => e => {
     e.preventDefault();
@@ -191,7 +202,7 @@ const VisualizationWrapper = props => {
                     spacing={2}
                     sx={{ mt: 2 }}
                   >
-                    <SocialShare name={mapTitle} />
+                    <SocialShare />
                     <Button variant="outlined" onClick={handleDownloadPng}>
                       {t('sharedData.visualization_download_png')}
                     </Button>

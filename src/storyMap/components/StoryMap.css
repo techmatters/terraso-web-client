@@ -1,0 +1,169 @@
+/*
+ * Copyright © 2021-2023 Technology Matters
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+#header-container {
+  z-index: 2;
+  background-color: #f9f9f9;
+}
+footer {
+  z-index: 2;
+}
+
+#breadcrumbs-share-container {
+  z-index: 2;
+  background-color: #ffffff;
+  position: relative;
+}
+
+#map {
+  position: fixed;
+}
+
+#map-inset {
+  bottom: 50px;
+  right: 30px;
+  height: 180px;
+  width: 250px;
+  max-width: 100%;
+  position: fixed;
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+  pointer-events: none;
+}
+#map-inset .mapboxgl-ctrl-bottom-left {
+  display: none;
+}
+@media (max-width: 500px) {
+  #map-inset {
+    display: none;
+  }
+}
+
+#story-map-title .step-content.dark {
+  background-color: #0d1a2a;
+}
+#story-map-title .step-content.light {
+  background-color: #ffffff;
+}
+#story-map-title .step-content a {
+  color: #1671bc;
+}
+
+#story-map-title h1,
+#story-map-title h2,
+#story-map-title p {
+  margin: 0;
+  padding: 2vh 2vw;
+  text-align: center;
+}
+#footer {
+  width: 100%;
+  min-height: 5vh;
+  padding-top: 2vh;
+  padding-bottom: 2vh;
+  text-align: center;
+  line-height: 25px;
+  font-size: 13px;
+  position: relative;
+  z-index: 5;
+}
+#features {
+  padding-top: 10vh;
+  padding-bottom: 10vh;
+}
+.hidden {
+  visibility: hidden;
+}
+.centered {
+  justify-content: center;
+}
+.lefty {
+  justify-content: flex-start;
+  padding-left: 20px;
+}
+.righty {
+  justify-content: flex-end;
+  padding-right: 20px;
+}
+.fully {
+  justify-content: stretch;
+}
+.light {
+  color: #444;
+  background-color: #fafafa;
+}
+.dark {
+  color: #fafafa;
+  background-color: #444;
+}
+.step-container {
+  padding-top: 15vh;
+  padding-bottom: 35vh;
+  opacity: 0.25;
+  display: flex;
+}
+.step-container.active {
+  opacity: 0.99;
+}
+
+.step-container.title {
+  padding-top: 5vh;
+}
+
+.step-container .step-content {
+  padding: 20px 50px;
+  line-height: 25px;
+  font-size: 13px;
+  max-width: 35vw;
+  min-width: 200px;
+}
+.step-container.fully .step-content {
+  width: 100%;
+  max-width: 100%;
+}
+
+.step-container .step-content h3 {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.step-container img {
+  width: 100%;
+}
+
+@media (max-width: 750px) {
+  .centered,
+  .lefty,
+  .righty,
+  .fully {
+    width: 90vw;
+    margin: 0 auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .step-container .step-content {
+    max-width: 100%;
+  }
+}
+
+/* Fix issue on mobile browser where scroll breaks  */
+.mapboxgl-canvas-container.mapboxgl-touch-zoom-rotate.mapboxgl-touch-drag-pan,
+.mapboxgl-canvas-container.mapboxgl-touch-zoom-rotate.mapboxgl-touch-drag-pan
+  .mapboxgl-canvas {
+  touch-action: unset;
+}

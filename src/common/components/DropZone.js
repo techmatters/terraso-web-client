@@ -35,7 +35,7 @@ import theme from 'theme';
 const CurrentFile = ({ file }) => {
   const size = filesize(file.size, { round: 0 });
   return (
-    <Typography sx={{ fontWeight: 'bold' }}>
+    <Typography sx={{ fontWeight: 'bold', wordBreak: 'break-all' }}>
       {file.name} {size}
     </Typography>
   );
@@ -44,6 +44,7 @@ const CurrentFile = ({ file }) => {
 const DropZone = props => {
   const { t } = useTranslation();
   const {
+    label,
     maxSize,
     maxFiles,
     fileExtensions,
@@ -55,6 +56,7 @@ const DropZone = props => {
     errors,
     className,
     loading,
+    containerProps,
   } = props;
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -76,19 +78,24 @@ const DropZone = props => {
       justifyContent="center"
       spacing={1}
       variant="outlined"
-      sx={({ palette }) => ({
-        backgroundColor: isDragActive ? palette.blue.mid : palette.blue.lite,
-        border: `2px dashed ${palette.blue.dark}`,
-        paddingTop: errors ? 0 : 2,
-        paddingBottom: 3,
+      {...containerProps}
+      sx={theme => ({
+        bgcolor: isDragActive ? 'blue.mid' : 'blue.lite',
+        border: `2px dashed ${theme.palette.blue.dark}`,
+        pt: errors ? 0 : 2,
+        pb: 3,
+        pl: 1,
+        pr: 1,
         minHeight: '125px',
         cursor: 'pointer',
+        ...(containerProps?.sx ? containerProps.sx : {}),
       })}
       {...getRootProps({
         role: 'button',
       })}
     >
       <input {...getInputProps()} />
+      {label}
       {loading && <CircularProgress aria-label={t('common.loader_label')} />}
       {!loading &&
         (isDragActive ? (
