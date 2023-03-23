@@ -620,7 +620,7 @@ test('StoryMapForm: Change chapter location', async () => {
   });
 
   const locationDialogButton = within(chapter1).getByRole('button', {
-    name: 'Set map location',
+    name: 'Set Map Location',
   });
   await act(async () => fireEvent.click(locationDialogButton));
 
