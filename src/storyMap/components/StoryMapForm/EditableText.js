@@ -16,7 +16,7 @@
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { OutlinedInput } from '@mui/material';
+import { TextField } from '@mui/material';
 
 const EditableText = props => {
   const {
@@ -26,6 +26,7 @@ const EditableText = props => {
     placeholder,
     inputProps = {},
     focus,
+    label,
   } = props;
   const [isEditing, setIsEditing] = useState(!value);
   const [shouldFocus, setShouldFocus] = useState(focus);
@@ -62,16 +63,20 @@ const EditableText = props => {
 
   if (isEditing) {
     return (
-      <OutlinedInput
+      <TextField
+        label={label}
         inputRef={inputRef}
         fullWidth
         value={value}
         onBlur={onExit}
         onChange={onChangeWrapper}
         placeholder={placeholder}
-        {...inputProps}
-        sx={{
-          '& .MuiInputBase-input': { bgcolor: 'transparent', color: 'white' },
+        InputLabelProps={{ shrink: true, sx: { color: 'white' } }}
+        InputProps={{
+          ...inputProps,
+          sx: {
+            '& .MuiInputBase-input': { bgcolor: 'transparent', color: 'white' },
+          },
         }}
       />
     );

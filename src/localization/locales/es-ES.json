@@ -830,6 +830,7 @@
         "form_chapter_media_label": "Multimedia del capítulo",
         "form_title_placeholder": "El título de tu Story Map",
         "form_title_label": "Título del Story Map",
+        "form_title_required_label": "* Requerido",
         "form_subtitle_label": "Subtítulo del Story Map",
         "form_byline_label": "Línea de autor",
         "form_subtitle_placeholder": "Subtítulo del Story Map",

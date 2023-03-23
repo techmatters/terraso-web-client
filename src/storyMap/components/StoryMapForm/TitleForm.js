@@ -108,6 +108,7 @@ const TitleForm = props => {
       >
         <EditableText
           placeholder={t('storyMap.form_title_placeholder')}
+          label={t('storyMap.form_title_required_label')}
           Component="h1"
           value={config.title}
           onChange={onFieldChange('title')}
