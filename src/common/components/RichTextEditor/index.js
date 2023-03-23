@@ -272,8 +272,9 @@ const Tooltip = withProps(BaseTooltip, {
   },
 });
 
-const AddLinkButton = () => {
+const AddLinkButton = props => {
   const { t } = useTranslation();
+  const { disabled } = props;
   const editor = useSlate();
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState('');
@@ -328,7 +329,7 @@ const AddLinkButton = () => {
       <Tooltip title={label}>
         <Button
           aria-label={label}
-          disabled={isLinkActive(editor)}
+          disabled={isLinkActive(editor) || disabled}
           onMouseDown={onButtonClick}
         >
           <InsertLinkIcon />
@@ -338,8 +339,9 @@ const AddLinkButton = () => {
   );
 };
 
-const RemoveLinkButton = () => {
+const RemoveLinkButton = props => {
   const { t } = useTranslation();
+  const { disabled } = props;
   const editor = useSlate();
 
   const label = useMemo(
@@ -350,7 +352,7 @@ const RemoveLinkButton = () => {
   return (
     <Button
       aria-label={label}
-      disabled={!isLinkActive(editor)}
+      disabled={!isLinkActive(editor) || disabled}
       onMouseDown={event => {
         if (isLinkActive(editor)) {
           unwrapLink(editor);
@@ -381,10 +383,11 @@ const toggleMark = (editor, format) => {
 
 const MarkButton = props => {
   const editor = useSlate();
-  const { format, Icon, label } = props;
+  const { format, Icon, label, disabled } = props;
   return (
     <Tooltip title={label}>
       <Button
+        disabled={disabled}
         aria-label={label}
         onMouseDown={event => {
           event.preventDefault();
@@ -408,6 +411,8 @@ const RichTextEditor = props => {
     placeholder,
     addContainer,
   } = props;
+
+  const [focused, setFocused] = useState(false);
 
   const editor = useMemo(
     () => withInlines(withHistory(withReact(createEditor()))),
@@ -453,19 +458,21 @@ const RichTextEditor = props => {
             groups={[
               <>
                 <MarkButton
+                  disabled={!focused}
                   format="bold"
                   Icon={FormatBoldIcon}
                   label={t('common.rich_text_editor_toolbar_bold')}
                 />
                 <MarkButton
+                  disabled={!focused}
                   format="italic"
                   Icon={FormatItalicIcon}
                   label={t('common.rich_text_editor_toolbar_italic')}
                 />
               </>,
               <>
-                <AddLinkButton />
-                <RemoveLinkButton />
+                <AddLinkButton disabled={!focused} />
+                <RemoveLinkButton disabled={!focused} />
               </>,
             ]}
           />
@@ -485,6 +492,8 @@ const RichTextEditor = props => {
           renderElement={props => <Element {...props} />}
           renderLeaf={props => <Leaf {...props} />}
           placeholder={placeholder}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
         />
       </Slate>
     </Container>
