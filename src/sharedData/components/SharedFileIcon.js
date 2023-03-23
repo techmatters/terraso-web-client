@@ -16,39 +16,49 @@
  */
 import React from 'react';
 
+import _ from 'lodash/fp';
+
 import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
 
 const ICON_SIZE = 24;
+const ICON_FILES = {
+  csv: 'csv.png',
+  doc: 'doc.png',
+  docx: 'doc.png',
+  pdf: 'pdf.png',
+  ppt: 'ppt.png',
+  pptx: 'ppt.png',
+  xls: 'xls.png',
+  xlsx: 'xls.png',
+  kmz: 'kmz.png',
+  kml: 'kml.png',
+  gpx: 'gpx.png',
+  geojson: 'json.png',
+  json: 'json.png',
+  zip: 'esri.png',
+};
 
 const SharedFileIcon = ({ resourceType }) => {
-  switch (resourceType) {
-    case 'csv':
-    case 'doc':
-    case 'docx':
-    case 'pdf':
-    case 'ppt':
-    case 'pptx':
-    case 'xls':
-    case 'xlsx':
-      return (
-        <img
-          style={{ filter: 'opacity(50%)' }}
-          width="24"
-          height="24"
-          src={`/files/${resourceType.substring(0, 3)}.png`}
-          alt={resourceType.toUpperCase()}
-        />
-      );
-    default:
-      return (
-        <InsertDriveFileOutlinedIcon
-          sx={theme => ({
-            fontSize: ICON_SIZE,
-            color: theme.palette.gray.dark1,
-          })}
-        />
-      );
+  if (_.includes(resourceType, Object.keys(ICON_FILES))) {
+    return (
+      <img
+        style={{ filter: 'opacity(50%)' }}
+        width="24"
+        height="24"
+        src={`/files/${ICON_FILES[resourceType]}`}
+        alt={resourceType.toUpperCase()}
+      />
+    );
   }
+
+  return (
+    <InsertDriveFileOutlinedIcon
+      sx={{
+        fontSize: ICON_SIZE,
+        color: 'gray.dark1',
+      }}
+    />
+  );
 };
 
 export default SharedFileIcon;
