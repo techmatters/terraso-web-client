@@ -373,40 +373,39 @@ const StoryMap = props => {
 
         // Check if the map is already at the transition center
         const decimalPlaces = CURRENT_LOCATION_CHECK_PRESSISION;
-        if (
+        const isInLocation =
           mapCenter.lng.toFixed(decimalPlaces) ===
             transitionCenter.lng.toFixed(decimalPlaces) &&
           mapCenter.lat.toFixed(decimalPlaces) ===
-            transitionCenter.lat.toFixed(decimalPlaces)
-        ) {
-          return;
-        }
+            transitionCenter.lat.toFixed(decimalPlaces);
 
-        map[animation || transition.mapAnimation || 'flyTo'](
-          transition.location
-        );
+        if (!isInLocation) {
+          map[animation || transition.mapAnimation || 'flyTo'](
+            transition.location
+          );
 
-        // If you do not want to have a dynamic inset map,
-        // rather want to keep it a static view but still change the
-        // bbox as main map move: comment out the below if section.
-        if (config.inset) {
-          if (transition.location.zoom < 5) {
-            insetMap.flyTo({ center: transition.location.center, zoom: 0 });
-          } else {
-            insetMap.flyTo({ center: transition.location.center, zoom: 3 });
+          // If you do not want to have a dynamic inset map,
+          // rather want to keep it a static view but still change the
+          // bbox as main map move: comment out the below if section.
+          if (config.inset) {
+            if (transition.location.zoom < 5) {
+              insetMap.flyTo({ center: transition.location.center, zoom: 0 });
+            } else {
+              insetMap.flyTo({ center: transition.location.center, zoom: 3 });
+            }
           }
-        }
-        if (config.showMarkers) {
-          if (!marker) {
-            const newMarker = new mapboxgl.Marker({
-              color: config.markerColor,
-            })
-              .setLngLat(transition.location.center)
-              .addTo(map);
+          if (config.showMarkers) {
+            if (!marker) {
+              const newMarker = new mapboxgl.Marker({
+                color: config.markerColor,
+              })
+                .setLngLat(transition.location.center)
+                .addTo(map);
 
-            setMarker(newMarker);
-          } else {
-            marker.setLngLat(transition.location.center);
+              setMarker(newMarker);
+            } else {
+              marker.setLngLat(transition.location.center);
+            }
           }
         }
       }
