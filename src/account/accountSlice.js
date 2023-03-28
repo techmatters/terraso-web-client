@@ -33,6 +33,11 @@ const initialState = {
     fetching: true,
   },
   hasToken: !!getToken(),
+  preferences: {
+    saving: false,
+    success: false,
+    error: null,
+  },
 };
 
 export const fetchUser = createAsyncThunk(
@@ -98,6 +103,11 @@ export const userSlice = createSlice({
 
     builder.addCase(savePreference.fulfilled, (state, action) => ({
       ...state,
+      preferences: {
+        saving: false,
+        success: true,
+        error: null,
+      },
       currentUser: {
         fetching: false,
         data: _.set(
@@ -107,6 +117,27 @@ export const userSlice = createSlice({
         ),
       },
     }));
+
+    builder.addCase(
+      savePreference.pending,
+      _.set('preferences', {
+        saving: true,
+        success: false,
+        error: null,
+      })
+    );
+
+    builder.addCase(savePreference.rejected, (state, action) =>
+      _.set(
+        'preferences',
+        {
+          saving: false,
+          success: false,
+          error: action.payload,
+        },
+        state
+      )
+    );
 
     builder.addCase(fetchUser.pending, state => ({
       ...state,
