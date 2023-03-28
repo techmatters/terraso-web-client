@@ -202,7 +202,10 @@
         "profile_form_label": "Manage profile",
         "form_language_label": "Language",
         "form_notifications_section_label": "Email notifications",
-        "form_notifications_label": "Group membership requests"
+        "form_notifications_label": "Group membership requests",
+        "unsubscribe_title": "Unsubscribe",
+        "unsubscribe_success": "You have been unsubscribed from Terraso emails.",
+        "unsubscribe_error": "Error unsubscribing from Terraso emails"
     },
     "footer": {
         "heading": "Footer",
