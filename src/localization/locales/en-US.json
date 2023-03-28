@@ -181,14 +181,14 @@
         }
     },
     "account": {
-        "welcome": "Welcome",
+        "profile": "Account Profile",
         "disclaimer": "If you don’t already have a Terraso account, signing in will create one in accordance with our <1>privacy policy</1>.",
         "disclaimer_url": "https://techmatters.org/privacy-policy/",
         "unauthenticated_message": "Your Terraso session has expired. Please log in again.",
         "form_first_name_label": "Given names",
         "form_last_name_label": "Family names",
         "form_email_label": "Email address",
-        "form_save_label": "Confirm",
+        "form_save_label": "Save Profile",
         "save_success": "Your profile has been saved.",
         "not_found": "Account not found",
         "form_first_name_info": "This name will be used to greet you in Terraso.",
@@ -201,7 +201,8 @@
         "profile_document_title": "Account",
         "profile_form_label": "Manage profile",
         "form_language_label": "Language",
-        "form_notifications_label": "Email notifications"
+        "form_notifications_section_label": "Email notifications",
+        "form_notifications_label": "Group membership requests"
     },
     "footer": {
         "heading": "Footer",
