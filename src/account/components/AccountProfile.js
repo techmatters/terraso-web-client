@@ -19,8 +19,9 @@ import React from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
+
+import { Checkbox, FormControlLabel } from '@mui/material';
 
 import { useDocumentTitle } from 'common/document';
 import Form from 'forms/components/Form';
@@ -76,7 +77,10 @@ const FIELDS = [
   },
   {
     name: 'preferences.notifications',
-    label: 'account.form_notifications_label',
+    label: 'account.form_notifications_section_label',
+    props: {
+      renderInput: ({ id, field }) => <NotificationsCheckboxes field={field} />,
+    },
   },
   {
     name: 'email',
@@ -110,7 +114,6 @@ const ProfilePicture = () => {
 const AccountProfile = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { data: user, fetching } = useSelector(
     state => state.account.currentUser
   );
@@ -130,16 +133,16 @@ const AccountProfile = () => {
       )
     );
 
-    // Save language preference
+    // Save language and notifications preferences
     PREFERENCE_KEYS.forEach(preferenceKey => {
       const currentValue = _.get(['preferences', preferenceKey], user);
       const newValue = _.get(['preferences', preferenceKey], updatedProfile);
-      if (newValue && newValue !== currentValue) {
-        dispatch(savePreference({ key: preferenceKey, value: newValue }));
+      if (newValue !== currentValue) {
+        dispatch(
+          savePreference({ key: preferenceKey, value: newValue.toString() })
+        );
       }
     });
-
-    navigate('/');
   };
 
   if (fetching) {
@@ -148,9 +151,7 @@ const AccountProfile = () => {
 
   return (
     <PageContainer>
-      <PageHeader
-        header={`${t('account.welcome')}, ${user.firstName} ${user.lastName}`}
-      />
+      <PageHeader header={t('account.profile')} />
 
       <Form
         aria-label={t('account.profile_form_label')}
@@ -162,6 +163,25 @@ const AccountProfile = () => {
         saveLabel="account.form_save_label"
       />
     </PageContainer>
+  );
+};
+
+const NotificationsCheckboxes = props => {
+  const { t } = useTranslation();
+  const { field } = props;
+
+  const handleChange = event => {
+    field.onChange(event.target.checked ? 'true' : 'false');
+  };
+
+  return (
+    <FormControlLabel
+      key="notifications"
+      control={
+        <Checkbox checked={field.value === 'true'} onChange={handleChange} />
+      }
+      label={t('account.form_notifications_label')}
+    />
   );
 };
 
