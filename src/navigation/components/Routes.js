@@ -23,6 +23,7 @@ import NotFound from 'layout/NotFound';
 import AccountLogin from 'account/components/AccountLogin';
 import AccountProfile from 'account/components/AccountProfile';
 import RequireAuth from 'account/components/RequireAuth';
+import Unsubscribe from 'account/components/Unsubscribe';
 import ContactForm from 'contact/ContactForm';
 import GroupForm from 'group/components/GroupForm';
 import GroupList from 'group/components/GroupList';
@@ -132,6 +133,8 @@ const paths = [
       breadcrumbsLabel: 'landscape.breadcrumbs_visualization',
     }
   ),
+  path('/notifications/unsubscribe', Unsubscribe),
+  path('/notifications/unsubscribe/:id', Unsubscribe),
   path('/tools', ToolsList, {
     breadcrumbsLabel: 'tools.breadcrumbs_list',
   }),
