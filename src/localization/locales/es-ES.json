@@ -181,14 +181,14 @@
         }
     },
     "account": {
-        "welcome": "Bienvenidos",
+        "profile": "Perfil de cuenta",
         "disclaimer": "Si aún no tiene una cuenta de Terraso, al iniciar sesión se creará una de acuerdo con nuestros <1>política de privacidad</1>.",
         "disclaimer_url": "https://techmatters.org/privacy-policy/",
         "unauthenticated_message": "Su sesión de Terraso ha caducado. Vuelva a iniciar sesión.",
         "form_first_name_label": "Nombres",
         "form_last_name_label": "Apellidos",
         "form_email_label": "Dirección de correo electrónico",
-        "form_save_label": "Confirmar",
+        "form_save_label": "Guardar perfil",
         "save_success": "Su perfil se ha guardado.",
         "not_found": "Cuenta no encontrada",
         "welcome_to": "Bienvenido a",
@@ -200,7 +200,12 @@
         "login_document_title": "Iniciar sesión",
         "profile_document_title": "Cuenta",
         "profile_form_label": "Administrar perfil",
-        "form_language_label": "Idioma"
+        "form_language_label": "Idioma",
+        "form_notifications_section_label": "Notificaciónes de Correo Electrónico",
+        "form_notifications_label": "Solicitudes de membresía a grupos",
+        "unsubscribe_title": "Darse de baja",
+        "unsubscribe_success": "Has sido dado de baja de los correos electrónicos de Terraso.",
+        "unsubscribe_error": "Error al darse de baja de los correos electrónicos de Terraso"
     },
     "footer": {
         "heading": "Pie de página",
