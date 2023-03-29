@@ -182,7 +182,7 @@ const NotificationsCheckboxes = props => {
     event => {
       field.onChange(event.target.checked ? 'true' : 'false');
     },
-    [field.onChange]
+    [field]
   );
 
   return (
