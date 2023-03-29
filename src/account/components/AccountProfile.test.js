@@ -114,7 +114,7 @@ test('AccountProfile: Save', async () => {
   fireEvent.change(inputs.lastName, { target: { value: 'Perez' } });
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
   );
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(terrasoApi.requestGraphQL.mock.calls[0][1]).toStrictEqual({
@@ -125,6 +125,7 @@ test('AccountProfile: Save', async () => {
     },
   });
 });
+
 test('AccountProfile: Save language', async () => {
   terrasoApi.requestGraphQL.mockResolvedValueOnce(
     _.set(
@@ -180,7 +181,7 @@ test('AccountProfile: Save language', async () => {
   expect(screen.getByRole('button', { name: /Español/i })).toBeInTheDocument();
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
   );
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
   expect(terrasoApi.requestGraphQL.mock.calls[0][1]).toStrictEqual({
@@ -221,7 +222,7 @@ test('AccountProfile: Save error', async () => {
   fireEvent.change(inputs.lastName, { target: { value: 'Perez' } });
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
   );
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
