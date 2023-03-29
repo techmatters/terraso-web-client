@@ -137,6 +137,14 @@ const AccountProfile = () => {
     PREFERENCE_KEYS.forEach(preferenceKey => {
       const currentValue = _.get(['preferences', preferenceKey], user);
       const newValue = _.get(['preferences', preferenceKey], updatedProfile);
+
+      // If both items are blank, we don't neeed to persist changes to the
+      // database. newValue coments from user data and will be a string,
+      // so the strict equality check below is not enough
+      if (newValue === '' && typeof currentValue === 'undefined') {
+        return;
+      }
+
       if (newValue !== currentValue) {
         dispatch(
           savePreference({ key: preferenceKey, value: newValue.toString() })
