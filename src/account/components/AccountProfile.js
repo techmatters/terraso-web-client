@@ -178,9 +178,9 @@ const NotificationsCheckboxes = props => {
   const { t } = useTranslation();
   const { field } = props;
 
-  const handleChange = event => {
+  const handleChange = useCallback(event => {
     field.onChange(event.target.checked ? 'true' : 'false');
-  };
+  }, [field.onChange]);
 
   return (
     <FormControlLabel
