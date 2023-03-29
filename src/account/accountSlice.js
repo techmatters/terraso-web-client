@@ -58,7 +58,9 @@ export const fetchAuthURLs = createAsyncThunk(
 );
 export const savePreference = createAsyncThunk(
   'account/savePreference',
-  accountService.savePreference
+  accountService.savePreference,
+  null,
+  false
 );
 
 export const userSlice = createSlice({
