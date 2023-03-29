@@ -199,6 +199,68 @@ test('AccountProfile: Save language', async () => {
     },
   });
 });
+
+test('AccountProfile: Save notifications', async () => {
+  terrasoApi.requestGraphQL.mockResolvedValueOnce(
+    _.set(
+      'updateUser.user',
+      {
+        id: '1',
+        firstName: 'Pablo',
+        lastName: 'Perez',
+        email: 'group@group.org',
+        profileImage: 'https://www.group.org/image.jpg',
+        preferences: {
+          language: 'es-ES',
+          notifications: 'false',
+        },
+      },
+      {}
+    )
+  );
+  terrasoApi.requestGraphQL.mockResolvedValueOnce(
+    _.set(
+      'updateUserPreference.preference',
+      { key: 'notifications', value: 'true' },
+      {}
+    )
+  );
+
+  await setup({
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          id: 'user-id',
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'group@group.org',
+          profileImage: '',
+        },
+      },
+    },
+  });
+
+  const checkbox = screen.getByRole('checkbox');
+
+  expect(checkbox.checked).toEqual(false);
+  await act(async () => fireEvent.click(checkbox));
+  expect(checkbox.checked).toEqual(true);
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
+  );
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL.mock.calls[1][1]).toStrictEqual({
+    input: {
+      key: 'notifications',
+      userEmail: 'group@group.org',
+      value: 'true',
+    },
+  });
+});
+
 test('AccountProfile: Save error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValueOnce('Save Error');
 
