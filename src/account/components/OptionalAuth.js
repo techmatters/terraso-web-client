@@ -17,16 +17,14 @@
 import React, { useCallback } from 'react';
 
 import { useSelector } from 'react-redux';
-import { Navigate, useLocation } from 'react-router-dom';
 
 import PageLoader from 'layout/PageLoader';
-import { getReferrer } from 'navigation/navigationUtils';
 import { useFetchData } from 'state/utils';
 
 import { fetchUser } from 'account/accountSlice';
 
-const RequireAuth = ({ children }) => {
-  const location = useLocation();
+const OptionalAuth = ({ children }) => {
+  console.log('OptionalAuth');
   const { data: user, fetching } = useSelector(
     state => state.account.currentUser
   );
@@ -43,15 +41,7 @@ const RequireAuth = ({ children }) => {
     return <PageLoader />;
   }
 
-  const validUser = user && hasToken;
-  if (validUser) {
-    return children;
-  }
-
-  const referrer = getReferrer(location);
-
-  const to = referrer ? `/account?referrer=${referrer}` : '/account';
-  return <Navigate to={to} replace />;
+  return children;
 };
 
-export default RequireAuth;
+export default OptionalAuth;

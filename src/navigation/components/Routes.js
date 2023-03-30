@@ -22,6 +22,7 @@ import NotFound from 'layout/NotFound';
 
 import AccountLogin from 'account/components/AccountLogin';
 import AccountProfile from 'account/components/AccountProfile';
+import OptionalAuth from 'account/components/OptionalAuth';
 import RequireAuth from 'account/components/RequireAuth';
 import ContactForm from 'contact/ContactForm';
 import GroupForm from 'group/components/GroupForm';
@@ -55,11 +56,17 @@ import ToolsList from 'tool/components/ToolList';
 const path = (
   path,
   Component,
-  { auth = true, showBreadcrumbs = false, breadcrumbsLabel } = {}
+  {
+    auth = true,
+    optionalAuth = false,
+    showBreadcrumbs = false,
+    breadcrumbsLabel,
+  } = {}
 ) => ({
   path,
   Component,
   auth,
+  optionalAuth,
   showBreadcrumbs,
   breadcrumbsLabel,
 });
@@ -150,6 +157,7 @@ const paths = [
   path('/tools/story-maps/:storyMapId/:slug', UserStoryMap, {
     showBreadcrumbs: true,
     breadcrumbsLabel: 'storyMap.breadcrumbs_view',
+    optionalAuth: true,
   }),
   path('*', NotFound),
 ];
@@ -198,12 +206,18 @@ export const useBreadcrumbs = () => {
 
 const RoutesComponent = () => (
   <Routes>
-    {paths.map(({ path, Component, auth }) => (
+    {paths.map(({ path, Component, auth, optionalAuth }) => (
       <Route
         key={path}
         path={path}
         element={
-          auth ? <RequireAuth children={<Component />} /> : <Component />
+          optionalAuth ? (
+            <OptionalAuth children={<Component />} />
+          ) : auth ? (
+            <RequireAuth children={<Component />} />
+          ) : (
+            <Component />
+          )
         }
       />
     ))}
