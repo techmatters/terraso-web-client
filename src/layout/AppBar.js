@@ -26,6 +26,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import ConditionalLink from 'common/components/ConditionalLink';
 import LocalePicker from 'localization/components/LocalePicker';
+import { useOptionalAuth } from 'navigation/components/Routes';
 import SkipLinks from 'navigation/components/SkipLinks';
 import { getReferrer } from 'navigation/navigationUtils';
 
@@ -41,6 +42,7 @@ const AppBarComponent = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { enabled: optionalAuthEnabled } = useOptionalAuth();
   const { data: user } = useSelector(state => state.account.currentUser);
   const hasToken = useSelector(state => state.account.hasToken);
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
@@ -58,6 +60,10 @@ const AppBarComponent = () => {
   }, [location, navigate]);
 
   const hasUser = useMemo(() => user && hasToken, [user, hasToken]);
+
+  if (!hasUser && !optionalAuthEnabled) {
+    return null;
+  }
 
   return (
     <AppBar position="static">
