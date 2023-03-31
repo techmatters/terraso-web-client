@@ -16,6 +16,7 @@
  */
 import React, { useCallback } from 'react';
 
+import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
 
 import PageLoader from 'layout/PageLoader';
@@ -24,11 +25,8 @@ import { useFetchData } from 'state/utils';
 import { fetchUser } from 'account/accountSlice';
 
 const OptionalAuth = ({ children }) => {
-  console.log('OptionalAuth');
-  const { data: user, fetching } = useSelector(
-    state => state.account.currentUser
-  );
-  const hasToken = useSelector(state => state.account.hasToken);
+  const { data: user, fetching } = useSelector(_.get('account.currentUser'));
+  const hasToken = useSelector(_.get('account.hasToken'));
 
   useFetchData(
     useCallback(

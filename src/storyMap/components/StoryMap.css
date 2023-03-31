@@ -28,6 +28,11 @@ footer {
   position: relative;
 }
 
+#optional-auth-message-container {
+  z-index: 2;
+  position: relative;
+}
+
 #map {
   position: fixed;
 }

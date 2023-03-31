@@ -915,6 +915,7 @@
         "new_document_title": "Create Story Map",
         "home_document_title": "Story Maps",
         "edit_document_title": "Edit: {{name}}",
-        "view_document_title": "{{name}}"
+        "view_document_title": "{{name}}",
+        "optional_auth_message": "<1>Join Terraso</1> and create your own story map for free"
     }
 }

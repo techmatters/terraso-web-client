@@ -58,7 +58,10 @@ const path = (
   Component,
   {
     auth = true,
-    optionalAuth = false,
+    optionalAuth = {
+      enabled: false,
+      message: null,
+    },
     showBreadcrumbs = false,
     breadcrumbsLabel,
   } = {}
@@ -157,7 +160,10 @@ const paths = [
   path('/tools/story-maps/:storyMapId/:slug', UserStoryMap, {
     showBreadcrumbs: true,
     breadcrumbsLabel: 'storyMap.breadcrumbs_view',
-    optionalAuth: true,
+    optionalAuth: {
+      enabled: true,
+      message: 'storyMap.optional_auth_message',
+    },
   }),
   path('*', NotFound),
 ];
@@ -204,6 +210,16 @@ export const useBreadcrumbs = () => {
   return items;
 };
 
+export const useOptionalAuth = () => {
+  const { pathname: currentPathname } = useLocation();
+  const currentPath = useMemo(
+    () => getPath(currentPathname),
+    [currentPathname]
+  );
+
+  return currentPath.optionalAuth;
+};
+
 const RoutesComponent = () => (
   <Routes>
     {paths.map(({ path, Component, auth, optionalAuth }) => (
@@ -211,7 +227,7 @@ const RoutesComponent = () => (
         key={path}
         path={path}
         element={
-          optionalAuth ? (
+          optionalAuth?.enabled ? (
             <OptionalAuth children={<Component />} />
           ) : auth ? (
             <RequireAuth children={<Component />} />
