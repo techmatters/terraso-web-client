@@ -14,55 +14,50 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import _ from 'lodash/fp';
 import { Trans } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
 
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import RouterLink from 'common/components/RouterLink';
 import { useOptionalAuth } from 'navigation/components/Routes';
-import { getReferrer } from 'navigation/navigationUtils';
 
-const OptionalAuthMessage = () => {
-  const location = useLocation();
-  const { message } = useOptionalAuth();
+const OptionalAuthBottomMessage = () => {
+  const { bottomMessage } = useOptionalAuth();
   const hasToken = useSelector(_.get('account.hasToken'));
 
-  const to = useMemo(() => {
-    const referrer = getReferrer(location);
-    return `/account?referrer=${referrer}`;
-  }, [location]);
-
-  if (!message || hasToken) {
+  if (!bottomMessage || hasToken) {
     return null;
   }
 
   return (
-    <Typography
-      id="optional-auth-message-container"
-      sx={{
-        bgcolor: 'blue.dark1',
-        color: 'white',
-        textAlign: 'center',
-        p: 1,
-      }}
+    <Box
+      id="optional-auth-bottom-message-container"
+      sx={{ bgcolor: 'white', p: 2, display: 'flex', justifyContent: 'center' }}
     >
-      <Trans i18nKey={message}>
-        prefix
-        <RouterLink
-          to={to}
-          sx={{ color: 'white', textDecoration: 'underline' }}
-        >
-          link
-        </RouterLink>
-        suffix
-      </Trans>
-    </Typography>
+      <Typography
+        sx={{
+          bgcolor: 'blue.lite',
+          color: 'black',
+          textAlign: 'center',
+          p: 1,
+          pl: 5,
+          pr: 5,
+        }}
+      >
+        <Trans i18nKey={bottomMessage}>
+          prefix
+          <RouterLink to="/account" sx={{ textDecoration: 'underline' }}>
+            link
+          </RouterLink>
+          suffix
+        </Trans>
+      </Typography>
+    </Box>
   );
 };
 
-export default OptionalAuthMessage;
+export default OptionalAuthBottomMessage;

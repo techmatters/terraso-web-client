@@ -28,7 +28,11 @@ footer {
   position: relative;
 }
 
-#optional-auth-message-container {
+#optional-auth-top-message-container {
+  z-index: 2;
+  position: relative;
+}
+#optional-auth-bottom-message-container {
   z-index: 2;
   position: relative;
 }

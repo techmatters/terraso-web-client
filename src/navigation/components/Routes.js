@@ -162,7 +162,8 @@ const paths = [
     breadcrumbsLabel: 'storyMap.breadcrumbs_view',
     optionalAuth: {
       enabled: true,
-      message: 'storyMap.optional_auth_message',
+      topMessage: 'storyMap.optional_auth_top_message',
+      bottomMessage: 'storyMap.optional_auth_bottom_message',
     },
   }),
   path('*', NotFound),
