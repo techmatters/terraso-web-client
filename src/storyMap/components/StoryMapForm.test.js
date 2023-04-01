@@ -298,7 +298,9 @@ test('StoryMapForm: Change title', async () => {
   );
   await act(async () =>
     fireEvent.change(
-      within(titleSection).getByRole('textbox', { name: 'Story map title (Required)' }),
+      within(titleSection).getByRole('textbox', {
+        name: 'Story map title (Required)',
+      }),
       { target: { value: 'New title' } }
     )
   );
