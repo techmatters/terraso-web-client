@@ -18,10 +18,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
 import { useAnalytics } from 'monitoring/analytics';
 import { ILM_OUTPUT_PROP, LANDSCAPE_NARRATIVES } from 'monitoring/ilm';
@@ -43,9 +45,17 @@ import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigCont
 const StoryMapUpdate = props => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
   const { storyMap } = props;
   const [saved, setSaved] = useState();
+
+  useDocumentTitle(
+    t('storyMap.edit_document_title', {
+      name: _.get('title', storyMap),
+    }),
+    saved
+  );
 
   useEffect(() => {
     if (!saved) {
