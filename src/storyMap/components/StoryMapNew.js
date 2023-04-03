@@ -24,6 +24,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Paper, useMediaQuery } from '@mui/material';
 
+import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import { useAnalytics } from 'monitoring/analytics';
@@ -94,9 +95,12 @@ const BASE_CONFIG = {
 
 const StoryMapNew = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { trackEvent } = useAnalytics();
   const [saved, setSaved] = useState();
+
+  useDocumentTitle(t('storyMap.new_document_title'));
 
   useEffect(() => {
     if (!saved) {
