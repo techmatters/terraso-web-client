@@ -217,6 +217,12 @@ const SocialShare = props => {
               variant="outlined"
               value={pageUrl}
               fullWidth
+              sx={{
+                '& .MuiInputBase-input': {
+                  flexGrow: 1,
+                  width: 'auto',
+                },
+              }}
               InputProps={{
                 id: 'share-link',
                 sx: {
