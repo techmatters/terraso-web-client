@@ -23,6 +23,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import RouterButton from 'common/components/RouterButton';
 import { useSocialShareContext } from 'common/components/SocialShare';
+import { useDocumentTitle } from 'common/document';
 import Container, { useContainerContext } from 'layout/Container';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
@@ -45,6 +46,13 @@ const UserStoryMap = () => {
   const { data: storyMap, fetching } = useSelector(_.get('storyMap.view'));
 
   const { setContainerProps } = useContainerContext();
+
+  useDocumentTitle(
+    t('storyMap.view_document_title', {
+      name: _.get('title', storyMap),
+    }),
+    fetching
+  );
 
   useEffect(() => {
     setContainerProps({ maxWidth: false });
