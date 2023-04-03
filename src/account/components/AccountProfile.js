@@ -29,6 +29,7 @@ import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePickerSelect from 'localization/components/LocalePickerSelect';
+import { useAnalytics } from 'monitoring/analytics';
 
 import { saveUser } from 'account/accountSlice';
 import { savePreference } from 'account/accountSlice';
@@ -113,6 +114,7 @@ const ProfilePicture = () => {
 
 const AccountProfile = () => {
   const dispatch = useDispatch();
+  const { trackEvent } = useAnalytics();
   const { t } = useTranslation();
   const { data: user, fetching } = useSelector(
     state => state.account.currentUser
@@ -149,6 +151,10 @@ const AccountProfile = () => {
         dispatch(
           savePreference({ key: preferenceKey, value: newValue.toString() })
         );
+
+        if (preferenceKey === 'notifications') {
+          trackEvent('Preference', { props: { emailNotifications: newValue } });
+        }
       }
     });
   };
