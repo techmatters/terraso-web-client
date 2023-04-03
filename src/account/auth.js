@@ -25,6 +25,16 @@ const COOKIES_PARAMS = { path: '/', domain: COOKIES_DOMAIN };
 
 export const getToken = () => Cookies.get('atoken');
 
+export const getAuthHeaders = () => {
+  const token = getToken();
+  if (!token) {
+    return {};
+  }
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+};
+
 export const removeToken = () => {
   Cookies.remove('rtoken', COOKIES_PARAMS);
   Cookies.remove('atoken', COOKIES_PARAMS);
