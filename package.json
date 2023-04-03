@@ -9,7 +9,7 @@
     "@hookform/resolvers": "^2.9.11",
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
     "@mui/icons-material": "^5.11.11",
-    "@mui/lab": "^5.0.0-alpha.123",
+    "@mui/lab": "^5.0.0-alpha.124",
     "@mui/material": "^5.11.12",
     "@mui/x-data-grid": "^5.17.22",
     "@reduxjs/toolkit": "^1.9.3",
