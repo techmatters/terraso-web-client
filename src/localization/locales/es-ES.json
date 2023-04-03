@@ -915,6 +915,9 @@
         "form_location_dialog_geocoder_placeholder": "Buscar",
         "outline_no_title": "Capítulo {{index}}",
         "terraso_api.title.required_draft": "No se pudo guardar el borrador sin un título. Introduce un título y vuelve a intentarlo.",
-        "terraso_api.title.required_published": "No se pudo publicar tu story map sin un título. Introduce un título y vuelva a intentarlo."
+        "terraso_api.title.required_published": "No se pudo publicar tu story map sin un título. Introduce un título y vuelva a intentarlo.",
+        "new_document_title": "Crear Story Map",
+        "home_document_title": "Story Maps",
+        "edit_document_title": "Editar: {{name}}"
     }
 }
