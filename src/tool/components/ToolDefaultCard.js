@@ -77,7 +77,7 @@ const Tool = ({ tool }) => {
     attributes['aria-label'] = pronunciation;
   }
 
-  const isToolExternal = t('tool.external') === 'true';
+  const isToolExternal = t(`tools.${tool}.external`) === 'true';
 
   return (
     <React.Fragment>
