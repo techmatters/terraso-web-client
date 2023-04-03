@@ -162,6 +162,12 @@ const SocialShare = props => {
                 variant="outlined"
                 startIcon={<EmailIcon sx={{ paddingRight: 1 }} />}
                 onClick={shareViaEmail}
+                sx={{
+                  width: {
+                    xs: '100%',
+                    sm: 'auto',
+                  },
+                }}
               >
                 {t('share.email')}
               </Button>
@@ -178,6 +184,10 @@ const SocialShare = props => {
                 }
                 onClick={shareViaWhatsApp}
                 sx={{
+                  width: {
+                    xs: '100%',
+                    sm: 'auto',
+                  },
                   marginTop: {
                     xs: 2,
                     sm: 'auto',
@@ -196,6 +206,12 @@ const SocialShare = props => {
                 variant="outlined"
                 startIcon={<FacebookIcon sx={{ paddingRight: 1 }} />}
                 onClick={shareViaFacebook}
+                sx={{
+                  width: {
+                    xs: '100%',
+                    sm: 'auto',
+                  },
+                }}
               >
                 {t('share.facebook')}
               </Button>
@@ -211,32 +227,41 @@ const SocialShare = props => {
           >
             {t('share.copy')}
           </InputLabel>
-          <Stack direction={isSmall ? 'column' : 'row'} sx={{ width: '100%' }}>
-            <TextField
-              size="small"
-              variant="outlined"
-              value={pageUrl}
-              fullWidth
-              InputProps={{
-                id: 'share-link',
-                sx: {
-                  paddingRight: 0,
-                },
-                readOnly: true,
-                endAdornment: (
-                  <Button
-                    variant="outlined"
-                    onClick={copyToClipboard}
-                    sx={{ marginLeft: 2, minWidth: '100px' }}
-                  >
-                    {buttonCopied
-                      ? t('share.copy_button_done')
-                      : t('share.copy_button')}
-                  </Button>
-                ),
-              }}
-            />
-          </Stack>
+          <TextField
+            size="small"
+            variant="outlined"
+            value={pageUrl}
+            fullWidth
+            sx={{
+              '& .MuiInputBase-input': {
+                flexGrow: 1,
+                width: 'auto',
+              },
+            }}
+            InputProps={{
+              id: 'share-link',
+              sx: {
+                flexDirection: { xs: 'column', sm: 'row' },
+                paddingRight: 0,
+              },
+              readOnly: true,
+              endAdornment: (
+                <Button
+                  variant="outlined"
+                  onClick={copyToClipboard}
+                  sx={{
+                    marginLeft: { xs: 0, sm: 2 },
+                    minWidth: '100px',
+                    width: { xs: '100%', sm: 'auto' },
+                  }}
+                >
+                  {buttonCopied
+                    ? t('share.copy_button_done')
+                    : t('share.copy_button')}
+                </Button>
+              ),
+            }}
+          />
         </DialogContent>
       </Dialog>
     </>
