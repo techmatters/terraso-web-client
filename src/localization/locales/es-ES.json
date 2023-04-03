@@ -42,7 +42,7 @@
         "role_manager": "Administrador",
         "role_pending": "Pendiente",
         "members_title_manager": "Administrar miembros",
-        "members_description_manager": "Agrega o elimina miembros del grupo “{{name}}”.",
+        "members_description_manager": "Cambia los roles de los miembros o elimínalos del grupo “{{name}}”.",
         "home_connect_label": "Unirse a otro grupo",
         "form_name_label": "Nombre",
         "form_description_label": "Descripción",
