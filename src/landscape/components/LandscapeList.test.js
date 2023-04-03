@@ -386,6 +386,6 @@ test('LandscapeList: Display list (small screen)', async () => {
     within(rows[1]).getByText('https://www.landscape.org')
   ).toBeInTheDocument();
   expect(within(rows[1]).getByText('23')).toBeInTheDocument();
-  expect(within(rows[1]).getByText('Connect')).toBeInTheDocument();
+  expect(within(rows[1]).getByText('Join')).toBeInTheDocument();
   expect(within(rows[8]).getByText('Leave')).toBeInTheDocument();
 });
