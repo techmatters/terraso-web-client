@@ -34,6 +34,7 @@ import {
 
 import ExternalLink from 'common/components/ExternalLink';
 import RouterLink from 'common/components/RouterLink';
+import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import { formatDate } from 'localization/utils';
@@ -46,6 +47,8 @@ import { generateStoryMapUrl } from 'storyMap/storyMapUtils';
 const StoryMapsToolsHome = () => {
   const { t, i18n } = useTranslation();
   const { list } = useSelector(_.get('storyMap.samples'));
+
+  useDocumentTitle(t('storyMap.home_document_title'));
 
   useBreadcrumbsParams(useMemo(() => ({ loading: false }), []));
 

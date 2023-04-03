@@ -910,6 +910,10 @@
         "form_location_dialog_geocoder_placeholder": "Search",
         "outline_no_title": "Chapter {{index}}",
         "terraso_api.title.required_draft": "Could not save your draft without a title. Enter a title and try again.",
-        "terraso_api.title.required_published": "Could not publish your story map without a title. Enter a title and try again."
+        "terraso_api.title.required_published": "Could not publish your story map without a title. Enter a title and try again.",
+        "new_document_title": "Create Story Map",
+        "home_document_title": "Story Maps",
+        "edit_document_title": "Edit: {{name}}",
+        "view_document_title": "{{name}}"
     }
 }
