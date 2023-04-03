@@ -76,7 +76,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "@babel/eslint-parser": "^7.19.1",
+    "@babel/eslint-parser": "^7.21.3",
     "@ianvs/prettier-plugin-sort-imports": "^3.7.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
