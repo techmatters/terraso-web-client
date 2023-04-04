@@ -7,6 +7,7 @@
     },
     "user": {
         "sign_out": "Cerrar sesión",
+        "sign_in": "Iniciar sesión",
         "account_created_message": "Su cuenta de Terraso se creó con éxito con la siguiente información. Puede editarla en cualquier momento.",
         "edit_profile_button": "Editar información de perfil",
         "full_name": "{{user.firstName}} {{user.lastName}}"
