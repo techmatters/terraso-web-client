@@ -6,7 +6,6 @@
         "document_title": "Terraso Home"
     },
     "user": {
-        "login": "Log in",
         "sign_out": "Sign Out",
         "sign_in": "Log In",
         "account_created_message": "Your Terraso account has been created successfully with the following information. You can edit them any time.",

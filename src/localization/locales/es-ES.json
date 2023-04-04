@@ -6,7 +6,6 @@
         "document_title": "Terraso Inicio"
     },
     "user": {
-        "login": "Iniciar sesión",
         "sign_out": "Cerrar sesión",
         "account_created_message": "Su cuenta de Terraso se creó con éxito con la siguiente información. Puede editarla en cualquier momento.",
         "edit_profile_button": "Editar información de perfil",
