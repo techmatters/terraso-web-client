@@ -20,7 +20,7 @@ import { useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 
 import PageLoader from 'layout/PageLoader';
-import { getReferrer } from 'navigation/navigationUtils';
+import { generateReferrerPath } from 'navigation/navigationUtils';
 import { useFetchData } from 'state/utils';
 
 import { fetchUser } from 'account/accountSlice';
@@ -48,7 +48,7 @@ const RequireAuth = ({ children }) => {
     return children;
   }
 
-  const referrer = getReferrer(location);
+  const referrer = generateReferrerPath(location);
 
   const to = referrer ? `/account?referrer=${referrer}` : '/account';
   return <Navigate to={to} replace />;

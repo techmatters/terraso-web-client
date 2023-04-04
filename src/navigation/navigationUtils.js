@@ -16,7 +16,7 @@
  */
 import _ from 'lodash/fp';
 
-export const getReferrer = location => {
+export const generateReferrerPath = location => {
   const path = _.getOr('', 'pathname', location);
   const queryParams = _.get('search', location);
   const referrer = [path.substring(1), queryParams]
