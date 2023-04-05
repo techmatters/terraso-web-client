@@ -110,7 +110,7 @@ const Tool = ({ tool }) => {
                     {t('tool.learn_more', { tool: toolTitle })}
                     <LaunchIcon
                       sx={{
-                        paddingLeft: '5px',
+                        paddingLeft: 1,
                         height: '1.2rem',
                         width: '1.2rem',
                         verticalAlign: '-0.2rem',
