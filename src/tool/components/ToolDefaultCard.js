@@ -49,7 +49,7 @@ const ToolIconAndLink = ({ tool, title, external }) => {
         {external && (
           <LaunchIcon
             sx={{
-              paddingLeft: '5px',
+              paddingLeft: 1,
               height: '1.2rem',
               width: '1.2rem',
               verticalAlign: 'bottom',
