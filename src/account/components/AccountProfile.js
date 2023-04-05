@@ -14,13 +14,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
+
+import { Checkbox, FormControlLabel } from '@mui/material';
 
 import { useDocumentTitle } from 'common/document';
 import Form from 'forms/components/Form';
@@ -28,6 +29,7 @@ import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePickerSelect from 'localization/components/LocalePickerSelect';
+import { useAnalytics } from 'monitoring/analytics';
 
 import { saveUser } from 'account/accountSlice';
 import { savePreference } from 'account/accountSlice';
@@ -75,6 +77,13 @@ const FIELDS = [
     },
   },
   {
+    name: 'preferences.notifications',
+    label: 'account.form_notifications_section_label',
+    props: {
+      renderInput: ({ id, field }) => <NotificationsCheckboxes field={field} />,
+    },
+  },
+  {
     name: 'email',
     label: 'account.form_email_label',
     props: {
@@ -90,6 +99,8 @@ const FIELDS = [
   },
 ];
 
+const PREFERENCE_KEYS = ['language', 'notifications'];
+
 const ProfilePicture = () => {
   const { data: user } = useSelector(state => state.account.currentUser);
   return (
@@ -103,8 +114,8 @@ const ProfilePicture = () => {
 
 const AccountProfile = () => {
   const dispatch = useDispatch();
+  const { trackEvent } = useAnalytics();
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { data: user, fetching } = useSelector(
     state => state.account.currentUser
   );
@@ -116,20 +127,36 @@ const AccountProfile = () => {
     dispatch(
       saveUser(
         _.omit(
-          ['profilePicture', 'preferences.language', 'email'],
+          ['profilePicture', 'email'].concat(
+            PREFERENCE_KEYS.map(key => `preferences.${key}`)
+          ),
           updatedProfile
         )
       )
     );
 
-    // Save language preference
-    const currentLanguage = _.get(['preferences', 'language'], user);
-    const newLanguage = _.get(['preferences', 'language'], updatedProfile);
-    if (newLanguage && newLanguage !== currentLanguage) {
-      dispatch(savePreference({ key: 'language', value: newLanguage }));
-    }
+    // Save language and notifications preferences
+    PREFERENCE_KEYS.forEach(preferenceKey => {
+      const currentValue = _.get(['preferences', preferenceKey], user);
+      const newValue = _.get(['preferences', preferenceKey], updatedProfile);
 
-    navigate('/');
+      // If both items are blank, we don't neeed to persist changes to the
+      // database. newValue coments from user data and will be a string,
+      // so the strict equality check below is not enough
+      if (newValue === '' && typeof currentValue === 'undefined') {
+        return;
+      }
+
+      if (newValue !== currentValue) {
+        dispatch(
+          savePreference({ key: preferenceKey, value: newValue.toString() })
+        );
+
+        if (preferenceKey === 'notifications') {
+          trackEvent('Preference', { props: { emailNotifications: newValue } });
+        }
+      }
+    });
   };
 
   if (fetching) {
@@ -138,11 +165,7 @@ const AccountProfile = () => {
 
   return (
     <PageContainer>
-      <PageHeader
-        header={`${t('account.welcome')}, ${user.firstName} ${user.lastName}`}
-      />
-
-      <p>{t('account.name_and_profile')}</p>
+      <PageHeader header={t('account.profile')} />
 
       <Form
         aria-label={t('account.profile_form_label')}
@@ -154,6 +177,28 @@ const AccountProfile = () => {
         saveLabel="account.form_save_label"
       />
     </PageContainer>
+  );
+};
+
+const NotificationsCheckboxes = props => {
+  const { t } = useTranslation();
+  const { field } = props;
+
+  const handleChange = useCallback(
+    event => {
+      field.onChange(event.target.checked ? 'true' : 'false');
+    },
+    [field]
+  );
+
+  return (
+    <FormControlLabel
+      key="notifications"
+      control={
+        <Checkbox checked={field.value === 'true'} onChange={handleChange} />
+      }
+      label={t('account.form_notifications_label')}
+    />
   );
 };
 
