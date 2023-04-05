@@ -164,7 +164,8 @@
                 "Recopilar datos fuera de línea y en línea",
                 "Analizar y gestionar datos"
             ],
-            "requirements": "Navegador web moderno (Chrome, Edge, Firefox, Safari)"
+            "requirements": "Navegador web moderno (Chrome, Edge, Firefox, Safari)",
+            "external": "true"
         },
         "storyMap": {
             "title": "Terraso Story Maps",
@@ -177,7 +178,8 @@
             "description": [
                 "Crea hermosas historias basadas en mapas"
             ],
-            "requirements": "Navegador web moderno (Chrome, Edge, Firefox, Safari)"
+            "requirements": "Navegador web moderno (Chrome, Edge, Firefox, Safari)",
+            "external": "false"
         }
     },
     "account": {

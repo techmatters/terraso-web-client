@@ -20,12 +20,46 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 
 import LaunchIcon from '@mui/icons-material/Launch';
-import { Box, Card, Stack, Typography } from '@mui/material';
+import { Box, Card, Link, Stack, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import ExternalLink from 'common/components/ExternalLink';
 
 import theme from 'theme';
+
+const ToolIconAndLink = ({ tool, title, external }) => {
+  const { t } = useTranslation();
+  const toolImage = require(`assets/${t(`tools.${tool}.img.src`)}`);
+
+  return (
+    <React.Fragment>
+      <Box
+        component="img"
+        src={toolImage}
+        alt=""
+        width={t(`tools.${tool}.img.width`)}
+        height={t(`tools.${tool}.img.height`)}
+        sx={{
+          width: `${t(`tools.${tool}.img.width`)}px`,
+          height: `${t(`tools.${tool}.img.height`)}px`,
+        }}
+      />
+      <p>
+        {t('tool.go_to', { tool: title })}
+        {external && (
+          <LaunchIcon
+            sx={{
+              paddingLeft: 1,
+              height: '1.2rem',
+              width: '1.2rem',
+              verticalAlign: 'bottom',
+            }}
+          />
+        )}
+      </p>
+    </React.Fragment>
+  );
+};
 
 const Tool = ({ tool }) => {
   const { t } = useTranslation();
@@ -43,7 +77,7 @@ const Tool = ({ tool }) => {
     attributes['aria-label'] = pronunciation;
   }
 
-  const toolImage = require(`assets/${t(`tools.${tool}.img.src`)}`);
+  const isToolExternal = t(`tools.${tool}.external`) === 'true';
 
   return (
     <React.Fragment>
@@ -71,46 +105,45 @@ const Tool = ({ tool }) => {
 
             {learnMoreUrl && (
               <Typography sx={{ mt: '1em' }}>
-                <ExternalLink href={learnMoreUrl}>
-                  {t('tool.learn_more', { tool: toolTitle })}
-                  <LaunchIcon
-                    sx={{
-                      paddingLeft: '5px',
-                      height: '1.2rem',
-                      width: '1.2rem',
-                      verticalAlign: '-0.2rem',
-                    }}
-                  />
-                </ExternalLink>
+                {isToolExternal ? (
+                  <ExternalLink href={learnMoreUrl}>
+                    {t('tool.learn_more', { tool: toolTitle })}
+                    <LaunchIcon
+                      sx={{
+                        paddingLeft: 1,
+                        height: '1.2rem',
+                        width: '1.2rem',
+                        verticalAlign: '-0.2rem',
+                      }}
+                    />
+                  </ExternalLink>
+                ) : (
+                  <Link href={t('tool.learn_more')}>
+                    {t('tool.learn_more', { tool: toolTitle })}
+                  </Link>
+                )}
               </Typography>
             )}
           </section>
 
           <section>
-            <ExternalLink href={t(`tools.${tool}.url`)}>
-              <Box
-                component="img"
-                src={toolImage}
-                alt=""
-                width={t(`tools.${tool}.img.width`)}
-                height={t(`tools.${tool}.img.height`)}
-                sx={{
-                  width: `${t(`tools.${tool}.img.width`)}px`,
-                  height: `${t(`tools.${tool}.img.height`)}px`,
-                }}
-              />
-              <p>
-                {t('tool.go_to', { tool: toolTitle })}
-                <LaunchIcon
-                  sx={{
-                    paddingLeft: '5px',
-                    height: '1.2rem',
-                    width: '1.2rem',
-                    verticalAlign: 'bottom',
-                  }}
+            {isToolExternal ? (
+              <ExternalLink href={t(`tools.${tool}.url`)}>
+                <ToolIconAndLink
+                  tool={tool}
+                  title={toolTitle}
+                  external={isToolExternal}
                 />
-              </p>
-            </ExternalLink>
+              </ExternalLink>
+            ) : (
+              <Link href={t(`tools.${tool}.url`)}>
+                <ToolIconAndLink
+                  tool={tool}
+                  title={toolTitle}
+                  external={isToolExternal}
+                />
+              </Link>
+            )}
           </section>
         </Stack>
       </Card>
