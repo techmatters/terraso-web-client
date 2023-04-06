@@ -49,7 +49,7 @@ export const getAuthURLs = () =>
     })
   );
 
-export const fetchUser = () => {
+export const fetchUser = (params, currentUser ) => {
   const query = `
     query user($email: String!){
       users(email: $email) {
@@ -65,7 +65,7 @@ export const fetchUser = () => {
     ${userPreferences}
   `;
   return terrasoApi
-    .requestGraphQL(query, { email: getUserEmail() })
+    .requestGraphQL(query, { email: currentUser.email })
     .then(_.get('users.edges[0].node'))
     .then(user => user || Promise.reject('not_found'))
     .then(user => ({
