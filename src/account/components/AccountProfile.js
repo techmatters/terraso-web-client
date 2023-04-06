@@ -104,7 +104,7 @@ const FIELDS = [
 const PREFERENCE_KEYS = ['language', 'notifications'];
 
 const ProfilePicture = () => {
-  const { data: user } = useSelector(state => state.account.currentUser);
+  const { data: user } = useSelector(_.get('account.profile'));
   return (
     <AccountAvatar
       showAlt
