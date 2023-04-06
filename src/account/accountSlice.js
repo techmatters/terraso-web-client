@@ -77,7 +77,9 @@ export const savePreference = createAsyncThunk(
 );
 export const unsubscribeFromNotifications = createAsyncThunk(
   'account/unsubscribeFromNotifications',
-  accountService.unsubscribeFromNotifications
+  accountService.unsubscribeFromNotifications,
+  null,
+  false
 );
 
 export const userSlice = createSlice({
