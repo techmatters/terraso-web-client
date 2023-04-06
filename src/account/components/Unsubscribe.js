@@ -20,26 +20,29 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+
+import { Typography } from '@mui/material';
 
 import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
 import { addMessage } from 'notifications/notificationsSlice';
 import { useFetchData } from 'state/utils';
 
-import { savePreference } from 'account/accountSlice';
+import { unsubscribeFromNotifications } from 'account/accountSlice';
 
 const Unsubscribe = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { saving, success, error } = useSelector(_.get('account.preferences'));
-
-  useFetchData(
-    useCallback(
-      () => savePreference({ key: 'notifications', value: 'false' }),
-      []
-    )
+  const hasToken = useSelector(_.get('account.hasToken'));
+  const { processing, success, error } = useSelector(
+    _.get('account.unsubscribe')
   );
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token');
+
+  useFetchData(useCallback(() => unsubscribeFromNotifications(token), [token]));
 
   useEffect(() => {
     if (!success && !error) {
@@ -63,16 +66,24 @@ const Unsubscribe = () => {
         })
       );
     }
-    navigate('/');
-  }, [success, error, dispatch, navigate]);
+    if (hasToken) {
+      navigate('/');
+    }
+  }, [success, error, dispatch, navigate, hasToken]);
 
   useDocumentTitle(t('account.unsubscribe_title'));
 
-  if (saving) {
+  if (processing) {
     return <PageLoader />;
   }
 
-  return null;
+  return (
+    <Typography>
+      {success
+        ? t('account.unsubscribe_success')
+        : t('account.unsubscribe_error')}
+    </Typography>
+  );
 };
 
 export default Unsubscribe;
