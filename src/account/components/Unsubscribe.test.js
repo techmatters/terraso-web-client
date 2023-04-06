@@ -19,7 +19,6 @@ import { render, screen, within } from 'tests/utils';
 import React from 'react';
 
 import { useNavigate } from 'react-router-dom';
-
 import { useSearchParams } from 'react-router-dom';
 
 import Unsubscribe from 'account/components/Unsubscribe';
@@ -39,7 +38,6 @@ beforeEach(() => {
   useSearchParams.mockReturnValue([searchParams]);
 });
 
-
 const setup = async initialState => {
   await render(<Unsubscribe />, initialState);
 };
@@ -50,7 +48,7 @@ test('Unsubscribe: success', async () => {
 
   terrasoApi.requestGraphQL.mockResolvedValue({
     unsubscribeUser: {
-      errors: null
+      errors: null,
     },
   });
 
