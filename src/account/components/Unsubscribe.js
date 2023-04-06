@@ -72,7 +72,7 @@ const Unsubscribe = () => {
     if (hasToken) {
       navigate('/');
     }
-  }, [success, error, dispatch, navigate, hasToken]);
+  }, [success, error, dispatch, navigate, trackEvent, hasToken]);
 
   useDocumentTitle(t('account.unsubscribe_title'));
 
