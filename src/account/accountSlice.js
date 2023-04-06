@@ -38,6 +38,11 @@ const initialState = {
     success: false,
     error: null,
   },
+  unsubscribe: {
+    processing: false,
+    success: false,
+    error: null,
+  },
 };
 
 export const fetchUser = createAsyncThunk(
@@ -61,6 +66,10 @@ export const savePreference = createAsyncThunk(
   accountService.savePreference,
   null,
   false
+);
+export const unsubscribeFromNotifications = createAsyncThunk(
+  'account/unsubscribeFromNotifications',
+  accountService.unsubscribeFromNotifications
 );
 
 export const userSlice = createSlice({
@@ -182,6 +191,22 @@ export const userSlice = createSlice({
         urls: {},
       },
     }));
+
+    builder.addCase(
+      unsubscribeFromNotifications.pending,
+      _.set('unsubscribe', { processing: true, success: false, error: null })
+    );
+    builder.addCase(unsubscribeFromNotifications.rejected, (state, action) =>
+      _.set(
+        'unsubscribe',
+        { processing: false, success: false, error: action.payload },
+        state
+      )
+    );
+    builder.addCase(
+      unsubscribeFromNotifications.fulfilled,
+      _.set('unsubscribe', { processing: false, success: true, error: null })
+    );
   },
 });
 
