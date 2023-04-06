@@ -32,7 +32,7 @@ export const extractMembers = group =>
   }));
 
 export const extractAccountMembership = group =>
-  _.get('accountMembership.edges[0].node', group);
+  _.get('accountMembership', group);
 
 export const getMemberships = groups =>
   _.flow(
