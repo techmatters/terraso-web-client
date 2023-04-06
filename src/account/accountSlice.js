@@ -28,6 +28,10 @@ const initialState = {
     fetching: true,
     data: null,
   },
+  profile: {
+    fetching: true,
+    data: null,
+  },
   login: {
     urls: {},
     fetching: true,
@@ -47,6 +51,10 @@ const initialState = {
 
 export const fetchUser = createAsyncThunk(
   'account/fetchUser',
+  accountService.fetchUser
+);
+export const fetchProfile = createAsyncThunk(
+  'account/fetchProfile',
   accountService.fetchUser
 );
 export const saveUser = createAsyncThunk(
@@ -166,6 +174,27 @@ export const userSlice = createSlice({
     builder.addCase(fetchUser.rejected, state => ({
       ...state,
       currentUser: {
+        fetching: false,
+        data: null,
+      },
+    }));
+
+    builder.addCase(fetchProfile.pending, state => ({
+      ...state,
+      profile: initialState.profile,
+    }));
+
+    builder.addCase(fetchProfile.fulfilled, (state, action) => ({
+      ...state,
+      profile: {
+        fetching: false,
+        data: action.payload,
+      },
+    }));
+
+    builder.addCase(fetchProfile.rejected, state => ({
+      ...state,
+      profile: {
         fetching: false,
         data: null,
       },
