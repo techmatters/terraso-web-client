@@ -144,7 +144,6 @@ const paths = [
     }
   ),
   path('/notifications/unsubscribe', Unsubscribe),
-  path('/notifications/unsubscribe/:id', Unsubscribe),
   path('/tools', ToolsList, {
     breadcrumbsLabel: 'tools.breadcrumbs_list',
   }),
