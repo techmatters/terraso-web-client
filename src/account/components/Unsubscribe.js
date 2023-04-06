@@ -26,6 +26,7 @@ import { Typography } from '@mui/material';
 
 import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
+import { useAnalytics } from 'monitoring/analytics';
 import { addMessage } from 'notifications/notificationsSlice';
 import { useFetchData } from 'state/utils';
 
@@ -41,6 +42,7 @@ const Unsubscribe = () => {
   );
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
+  const { trackEvent } = useAnalytics();
 
   useFetchData(useCallback(() => unsubscribeFromNotifications(token), [token]));
 
@@ -56,6 +58,7 @@ const Unsubscribe = () => {
           content: 'account.unsubscribe_success',
         })
       );
+      trackEvent('Preference', { props: { emailNotifications: 'false' } });
     }
 
     if (error) {
