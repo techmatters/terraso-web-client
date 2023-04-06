@@ -54,10 +54,10 @@ test('OptionalAuth: Display messages', async () => {
     screen.getByText(/and create your own story map for free/i)
   ).toBeInTheDocument();
   expect(
-    screen.getByText(/Liked the story map\? Create your own story map by/i)
+    screen.getByText(/Liked the story map\? Create one by/i)
   ).toBeInTheDocument();
   expect(
-    screen.getByRole('link', { name: 'signing up for Terraso for free' })
+    screen.getByRole('link', { name: 'signing up for Terraso' })
   ).toHaveAttribute('href', '/account');
 });
 
