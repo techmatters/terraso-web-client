@@ -115,6 +115,21 @@ export const savePreference = ({ key, value }, currentUser) => {
     .then(_.get('updateUserPreference.preference'));
 };
 
+export const unsubscribeFromNotifications = token => {
+  const query = `
+    mutation unsubscribeUser($input: UserUnsubscribeUpdateInput!) {
+      unsubscribeUser(input: $input) {
+        errors
+      }
+    }
+  `;
+  return terrasoApi.requestGraphQL(query, {
+    input: {
+      token,
+    },
+  });
+};
+
 export const signOut = async () => {
   const response = await fetch(new URL(`/auth/logout`, TERRASO_API_URL).href, {
     method: 'POST',
