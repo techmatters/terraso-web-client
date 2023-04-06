@@ -139,7 +139,7 @@ export const fetchLandscapeToUpdate = slug => {
 const getDefaultGroup = landscape => {
   const group = _.get('defaultGroup', landscape);
   return {
-    ..._.pick(['id', 'slug'], group),
+    ..._.pick(['id', 'slug', 'membershipsCount'], group),
     membersInfo: extractMembersInfo(group),
   };
 };

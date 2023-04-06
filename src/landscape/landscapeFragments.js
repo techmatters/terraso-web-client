@@ -108,9 +108,7 @@ export const defaultGroup = `
     defaultGroup {
       id
       slug
-      memberships(membershipStatus: APPROVED) {
-        totalCount
-      }
+      membershipsCount
       ...accountMembership
     }
   }
