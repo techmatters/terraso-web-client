@@ -30,9 +30,11 @@ import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePickerSelect from 'localization/components/LocalePickerSelect';
 import { useAnalytics } from 'monitoring/analytics';
+import { useFetchData } from 'state/utils';
 
 import { saveUser } from 'account/accountSlice';
 import { savePreference } from 'account/accountSlice';
+import { fetchProfile } from 'account/accountSlice';
 
 import AccountAvatar from './AccountAvatar';
 
@@ -116,9 +118,9 @@ const AccountProfile = () => {
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
   const { t } = useTranslation();
-  const { data: user, fetching } = useSelector(
-    state => state.account.currentUser
-  );
+  const { data: user, fetching } = useSelector(_.get('account.profile'));
+
+  useFetchData(fetchProfile);
 
   useDocumentTitle(t('account.profile_document_title'));
 
