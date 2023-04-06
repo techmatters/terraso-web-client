@@ -919,6 +919,8 @@
         "new_document_title": "Crear Story Map",
         "home_document_title": "Story Maps",
         "edit_document_title": "Editar: {{name}}",
-        "view_document_title": "{{name}}"
+        "view_document_title": "{{name}}",
+        "optional_auth_top_message": "<1>Únete a Terraso</1> y crea tu propio story map gratis.",
+        "optional_auth_bottom_message": "¿Te gustó el story map? Crea uno <1>registrándote en Terraso</1>."
     }
 }
