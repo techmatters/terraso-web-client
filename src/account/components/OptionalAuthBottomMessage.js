@@ -18,6 +18,7 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
 import { Box, Typography } from '@mui/material';
@@ -60,4 +61,4 @@ const OptionalAuthBottomMessage = () => {
   );
 };
 
-export default OptionalAuthBottomMessage;
+export default withTranslation()(OptionalAuthBottomMessage);
