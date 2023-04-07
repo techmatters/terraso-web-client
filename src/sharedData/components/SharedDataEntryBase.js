@@ -193,7 +193,7 @@ const SharedDataEntryBase = props => {
             </ConfirmButton>
           </Restricted>
           <Restricted permission="sharedData.download" resource={group}>
-            <DownloadComponent dataEntry={dataEntry} />
+            <DownloadComponent group={group} dataEntry={dataEntry} />
           </Restricted>
         </Grid>
         <Grid item xs={1} order={{ xs: 9 }} display={{ md: 'none' }} />

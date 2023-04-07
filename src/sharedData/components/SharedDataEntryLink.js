@@ -28,12 +28,15 @@ import SharedDataEntryBase, { ICON_SIZE } from './SharedDataEntryBase';
 
 const DownloadComponent = props => {
   const { t } = useTranslation();
-  const { dataEntry } = props;
+  const { dataEntry, group } = props;
 
   return (
     <ExternalLink
       component={IconButton}
       href={dataEntry.url}
+      linkProps={{
+        trackingProps: { group: group.slug },
+      }}
       aria-label={t('sharedData.download_label', {
         name: dataEntry.name,
       })}
