@@ -26,6 +26,7 @@ import Footer from 'layout/Footer';
 import reportWebVitals from 'monitoring/reportWebVitals';
 import Navigation from 'navigation/components/Navigation';
 import Routes from 'navigation/components/Routes';
+import { useOptionalAuth } from 'navigation/components/Routes';
 import rules from 'permissions/rules';
 import createStore from 'state/store';
 
@@ -41,6 +42,11 @@ import OptionalAuthTopMessage from 'account/components/OptionalAuthTopMessage';
 const App = () => {
   const contentRef = useRef();
   const navigationRef = useRef();
+  const { isEmbedded } = useOptionalAuth();
+
+  if (isEmbedded) {
+    return <Routes />;
+  }
 
   return (
     <>
