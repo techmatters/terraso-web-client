@@ -197,8 +197,15 @@ const NotificationsCheckboxes = props => {
     <FormControlLabel
       key="notifications"
       control={
-        <Checkbox checked={field.value === 'true'} onChange={handleChange} />
+        <Checkbox
+          sx={{ pt: 0 }}
+          checked={field.value === 'true'}
+          onChange={handleChange}
+        />
       }
+      sx={{
+        alignItems: 'flex-start',
+      }}
       label={t('account.form_notifications_label')}
     />
   );
