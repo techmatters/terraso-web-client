@@ -114,7 +114,7 @@ const baseViewTest = async (userRole = 'MEMBER') => {
             node: {
               name: 'Landscape Name',
               description: 'Landscape Description',
-              website: 'www.landscape.org',
+              website: 'https://www.landscape.org',
               location: 'EC',
               defaultGroup: {
                 edges: [
@@ -141,7 +141,7 @@ const baseViewTest = async (userRole = 'MEMBER') => {
             node: {
               name: 'Landscape Name',
               description: 'Landscape Description',
-              website: 'www.landscape.org',
+              website: 'https://www.landscape.org',
               location: 'EC',
               areaPolygon: GEOJSON,
               defaultGroup: {
@@ -182,7 +182,7 @@ const baseViewTest = async (userRole = 'MEMBER') => {
   expect(screen.getByText(/Ecuador/i)).toBeInTheDocument();
   expect(screen.getByText(/Landscape Description/i)).toBeInTheDocument();
   expect(
-    screen.getByRole('link', { name: 'www.landscape.org' })
+    screen.getByRole('link', { name: 'https://www.landscape.org' })
   ).toBeInTheDocument();
 
   // Members

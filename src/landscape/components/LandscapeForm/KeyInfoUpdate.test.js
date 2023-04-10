@@ -109,7 +109,7 @@ test('KeyInfoUpdate: Fill form', async () => {
             node: {
               name: 'Landscape Name',
               description: 'Landscape Description',
-              website: 'www.landscape.org',
+              website: 'https://www.landscape.org',
               location: 'EC',
             },
           },
@@ -122,7 +122,7 @@ test('KeyInfoUpdate: Fill form', async () => {
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
   expect(inputs.name).toHaveValue('Landscape Name');
   expect(inputs.description).toHaveValue('Landscape Description');
-  expect(inputs.website).toHaveValue('www.landscape.org');
+  expect(inputs.website).toHaveValue('https://www.landscape.org');
   expect(inputs.location).toHaveTextContent('Ecuador');
 });
 test('KeyInfoUpdate: Helper Text', async () => {
@@ -162,7 +162,7 @@ test('KeyInfoUpdate: Input change', async () => {
             node: {
               name: 'Landscape Name',
               description: 'Landscape Description',
-              website: 'www.landscape.org',
+              website: 'https://www.landscape.org',
               location: 'AR',
             },
           },
@@ -182,7 +182,7 @@ test('KeyInfoUpdate: Input change', async () => {
   });
   expect(inputs.description).toHaveValue('New description');
 
-  expect(inputs.website).toHaveValue('www.landscape.org');
+  expect(inputs.website).toHaveValue('https://www.landscape.org');
   fireEvent.change(inputs.website, { target: { value: 'www.other.org' } });
   expect(inputs.website).toHaveValue('www.other.org');
 
@@ -199,7 +199,7 @@ test('KeyInfoUpdate: Input validation', async () => {
             node: {
               name: 'Landscape Name',
               description: 'Landscape Description',
-              website: 'www.landscape.org',
+              website: 'https://www.landscape.org',
               email: 'info@landscape.org',
             },
           },
@@ -221,7 +221,7 @@ test('KeyInfoUpdate: Input validation', async () => {
   fireEvent.change(inputs.email, { target: { value: 'wwwotherorg' } });
   expect(inputs.email).toHaveValue('wwwotherorg');
 
-  expect(inputs.website).toHaveValue('www.landscape.org');
+  expect(inputs.website).toHaveValue('https://www.landscape.org');
   fireEvent.change(inputs.website, { target: { value: 'wwwotherorg' } });
   expect(inputs.website).toHaveValue('wwwotherorg');
 
@@ -273,7 +273,7 @@ test('KeyInfoUpdate: Save form', async () => {
           id: '1',
           name: 'Landscape Name',
           description: 'Landscape Description',
-          website: 'www.landscape.org',
+          website: 'https://www.landscape.org',
           location: 'EC',
         },
       },
@@ -319,7 +319,7 @@ test('KeyInfoUpdate: Save form error', async () => {
               node: {
                 name: 'Landscape Name',
                 description: 'Landscape Description',
-                website: 'www.landscape.org',
+                website: 'https://www.landscape.org',
                 location: 'EC',
               },
             },
@@ -335,7 +335,7 @@ test('KeyInfoUpdate: Save form error', async () => {
               node: {
                 name: 'Landscape Name',
                 description: 'Landscape Description',
-                website: 'www.landscape.org',
+                website: 'https://www.landscape.org',
                 location: 'EC',
               },
             },

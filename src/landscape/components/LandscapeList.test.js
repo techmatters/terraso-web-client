@@ -92,7 +92,7 @@ const baseListTest = async () => {
         id: `landscape-${landscapeIndex}`,
         name: `Landscape Name ${landscapeIndex}`,
         description: 'Landscape Description',
-        website: 'www.landscape.org',
+        website: 'https://www.landscape.org',
         location: 'Ecuador, Quito',
         areaPolygon: GEOJSON,
         defaultGroup: {
@@ -260,7 +260,7 @@ test('LandscapeList: List sort', async () => {
         id: `landscape-${landscapeIndex}`,
         name: `Landscape Name ${landscapeIndex}`,
         description: 'Landscape Description',
-        website: 'www.landscape.org',
+        website: 'https://www.landscape.org',
         location: 'Ecuador, Quito',
         defaultGroup: {
           edges: [

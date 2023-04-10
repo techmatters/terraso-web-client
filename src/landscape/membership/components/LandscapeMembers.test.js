@@ -110,7 +110,7 @@ test('LandscapeMembers: Display list', async () => {
     id: 'landscape',
     name: 'Landscape Name',
     description: 'Landscape Description',
-    website: 'www.landscape.org',
+    website: 'https://www.landscape.org',
     location: 'Ecuador, Quito',
     associatedGroups: {
       edges: [
@@ -194,7 +194,7 @@ test('LandscapeMembers: Display list (small)', async () => {
     id: 'landscape',
     name: 'Landscape Name',
     description: 'Landscape Description',
-    website: 'www.landscape.org',
+    website: 'https://www.landscape.org',
     location: 'Ecuador, Quito',
     associatedGroups: {
       edges: [
@@ -267,7 +267,7 @@ test('LandscapeMembers: Display list manager', async () => {
     id: 'landscape',
     name: 'Landscape Name',
     description: 'Landscape Description',
-    website: 'www.landscape.org',
+    website: 'https://www.landscape.org',
     location: 'Ecuador, Quito',
     associatedGroups: {
       edges: [
@@ -353,7 +353,7 @@ test('LandscapeMembers: Manager actions', async () => {
     id: 'landscape',
     name: 'Landscape Name',
     description: 'Landscape Description',
-    website: 'www.landscape.org',
+    website: 'https://www.landscape.org',
     location: 'Ecuador, Quito',
     associatedGroups: {
       edges: [

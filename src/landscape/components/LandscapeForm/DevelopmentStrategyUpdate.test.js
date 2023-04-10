@@ -106,7 +106,7 @@ test('DevelopmentStrategyUpdate: Save form', async () => {
             id: '1',
             name: 'Landscape Name',
             description: 'Landscape Description',
-            website: 'www.landscape.org',
+            website: 'https://www.landscape.org',
             location: 'EC',
           },
         },
