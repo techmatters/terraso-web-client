@@ -55,7 +55,7 @@ export const fetchUser = createAsyncThunk(
 );
 export const fetchProfile = createAsyncThunk(
   'account/fetchProfile',
-  accountService.fetchUser
+  accountService.fetchProfile
 );
 export const saveUser = createAsyncThunk(
   'account/saveUser',

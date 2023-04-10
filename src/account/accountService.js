@@ -49,7 +49,7 @@ export const getAuthURLs = () =>
     })
   );
 
-export const fetchUser = (params, currentUser ) => {
+export const fetchProfile = (params, currentUser) => {
   const query = `
     query user($email: String!){
       users(email: $email) {
