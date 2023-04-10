@@ -94,7 +94,7 @@ const AccountForm = () => {
               startIcon={<GoogleIcon sx={{ paddingRight: '5px' }} />}
               href={appendReferrer(urls.google, referrer)}
               onClick={() =>
-                trackEvent('User login', { props: { source: 'google' } })
+                trackEvent('user.login', { props: { source: 'google' } })
               }
             >
               {t('account.google_login')}
@@ -107,7 +107,7 @@ const AccountForm = () => {
               startIcon={<AppleIcon sx={{ paddingRight: '5px' }} />}
               href={appendReferrer(urls.apple, referrer)}
               onClick={() =>
-                trackEvent('User login', { props: { source: 'apple' } })
+                trackEvent('user.login', { props: { source: 'apple' } })
               }
             >
               {t('account.apple_login')}
@@ -124,7 +124,7 @@ const AccountForm = () => {
               }
               href={appendReferrer(urls.microsoft, referrer)}
               onClick={() =>
-                trackEvent('User login', { props: { source: 'microsoft' } })
+                trackEvent('user.login', { props: { source: 'microsoft' } })
               }
             >
               {t('account.microsoft_login')}

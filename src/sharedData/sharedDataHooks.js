@@ -23,7 +23,7 @@ export const useSharedData = () => {
   const { owner } = useGroupContext();
 
   const downloadFile = file => {
-    trackEvent('downloadFile', { props: { owner: owner.slug } });
+    trackEvent('dataEntry.file.download', { props: { owner: owner.slug } });
     window.open(file.url, '_blank');
   };
 

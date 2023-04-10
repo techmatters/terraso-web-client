@@ -36,7 +36,7 @@ const ExternalLink = ({ href, component, children, linkProps }) => {
 
   const onClick = event => {
     window.open(href, '_blank', 'noopener,noreferrer');
-    trackEvent('Outbound Link: Click', {
+    trackEvent('link.click', {
       props: props,
     });
     event.preventDefault();

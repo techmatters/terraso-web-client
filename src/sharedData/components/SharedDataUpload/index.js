@@ -128,7 +128,7 @@ const SharedDataUpload = props => {
               },
             });
           } else {
-            trackEvent('uploadFile', {
+            trackEvent('dataEntry.file.upload', {
               props: {
                 owner: owner.slug,
                 name: _.get('value.meta.arg.file.name', result),

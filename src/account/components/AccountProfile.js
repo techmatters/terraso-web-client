@@ -153,7 +153,9 @@ const AccountProfile = () => {
         );
 
         if (preferenceKey === 'notifications') {
-          trackEvent('Preference', { props: { emailNotifications: newValue } });
+          trackEvent('preference.update', {
+            props: { emailNotifications: newValue },
+          });
         }
       }
     });
