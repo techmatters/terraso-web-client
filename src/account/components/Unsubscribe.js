@@ -85,6 +85,10 @@ const Unsubscribe = () => {
     return <PageLoader />;
   }
 
+  if (hasToken) {
+    return null;
+  }
+
   return (
     <PageContainer>
       <Alert>
