@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2023 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -16,21 +16,17 @@
  */
 import React, { useCallback } from 'react';
 
+import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
-import { Navigate, useLocation } from 'react-router-dom';
 
 import PageLoader from 'layout/PageLoader';
-import { generateReferrerPath } from 'navigation/navigationUtils';
 import { useFetchData } from 'state/utils';
 
 import { fetchUser } from 'account/accountSlice';
 
-const RequireAuth = ({ children }) => {
-  const location = useLocation();
-  const { data: user, fetching } = useSelector(
-    state => state.account.currentUser
-  );
-  const hasToken = useSelector(state => state.account.hasToken);
+const OptionalAuth = ({ children }) => {
+  const { data: user, fetching } = useSelector(_.get('account.currentUser'));
+  const hasToken = useSelector(_.get('account.hasToken'));
 
   useFetchData(
     useCallback(
@@ -43,15 +39,7 @@ const RequireAuth = ({ children }) => {
     return <PageLoader />;
   }
 
-  const validUser = user && hasToken;
-  if (validUser) {
-    return children;
-  }
-
-  const referrer = generateReferrerPath(location);
-
-  const to = referrer ? `/account?referrer=${referrer}` : '/account';
-  return <Navigate to={to} replace />;
+  return children;
 };
 
-export default RequireAuth;
+export default OptionalAuth;

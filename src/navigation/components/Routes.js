@@ -22,6 +22,7 @@ import NotFound from 'layout/NotFound';
 
 import AccountLogin from 'account/components/AccountLogin';
 import AccountProfile from 'account/components/AccountProfile';
+import OptionalAuth from 'account/components/OptionalAuth';
 import RequireAuth from 'account/components/RequireAuth';
 import Unsubscribe from 'account/components/Unsubscribe';
 import ContactForm from 'contact/ContactForm';
@@ -56,11 +57,20 @@ import ToolsList from 'tool/components/ToolList';
 const path = (
   path,
   Component,
-  { auth = true, showBreadcrumbs = false, breadcrumbsLabel } = {}
+  {
+    auth = true,
+    optionalAuth = {
+      enabled: false,
+      message: null,
+    },
+    showBreadcrumbs = false,
+    breadcrumbsLabel,
+  } = {}
 ) => ({
   path,
   Component,
   auth,
+  optionalAuth,
   showBreadcrumbs,
   breadcrumbsLabel,
 });
@@ -153,6 +163,11 @@ const paths = [
   path('/tools/story-maps/:storyMapId/:slug', UserStoryMap, {
     showBreadcrumbs: true,
     breadcrumbsLabel: 'storyMap.breadcrumbs_view',
+    optionalAuth: {
+      enabled: true,
+      topMessage: 'storyMap.optional_auth_top_message',
+      bottomMessage: 'storyMap.optional_auth_bottom_message',
+    },
   }),
   path('*', NotFound),
 ];
@@ -199,14 +214,30 @@ export const useBreadcrumbs = () => {
   return items;
 };
 
+export const useOptionalAuth = () => {
+  const { pathname: currentPathname } = useLocation();
+  const currentPath = useMemo(
+    () => getPath(currentPathname),
+    [currentPathname]
+  );
+
+  return currentPath.optionalAuth;
+};
+
 const RoutesComponent = () => (
   <Routes>
-    {paths.map(({ path, Component, auth }) => (
+    {paths.map(({ path, Component, auth, optionalAuth }) => (
       <Route
         key={path}
         path={path}
         element={
-          auth ? <RequireAuth children={<Component />} /> : <Component />
+          optionalAuth?.enabled ? (
+            <OptionalAuth children={<Component />} />
+          ) : auth ? (
+            <RequireAuth children={<Component />} />
+          ) : (
+            <Component />
+          )
         }
       />
     ))}

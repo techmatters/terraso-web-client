@@ -52,6 +52,7 @@ const colorTheme = createTheme({
       lite: '#F3FAFD',
       mid: '#D2EDF7',
       dark: '#2C7690',
+      dark1: '#125A7E',
       background: '#F7FAFB', // rgba(44, 118, 144, 0.04) converted to hex for use on nonwhite background where alpha can't be used
     },
     black: '#000000',

@@ -6,8 +6,8 @@
         "document_title": "Terraso Home"
     },
     "user": {
-        "login": "Log in",
         "sign_out": "Sign Out",
+        "sign_in": "Log In",
         "account_created_message": "Your Terraso account has been created successfully with the following information. You can edit them any time.",
         "edit_profile_button": "Edit Profile Info",
         "full_name": "{{user.firstName}} {{user.lastName}}"
@@ -920,6 +920,8 @@
         "new_document_title": "Create Story Map",
         "home_document_title": "Story Maps",
         "edit_document_title": "Edit: {{name}}",
-        "view_document_title": "{{name}}"
+        "view_document_title": "{{name}}",
+        "optional_auth_top_message": "<1>Join Terraso</1> and create your own story map for free.",
+        "optional_auth_bottom_message": "Liked the story map? Create one by <1>signing up for Terraso</1>."
     }
 }

@@ -35,6 +35,9 @@ import 'index.css';
 
 import BreadcrumbsShareContainer from 'layout/BreadcrumbsShareContainer';
 
+import OptionalAuthBottomMessage from 'account/components/OptionalAuthBottomMessage';
+import OptionalAuthTopMessage from 'account/components/OptionalAuthTopMessage';
+
 const App = () => {
   const contentRef = useRef();
   const navigationRef = useRef();
@@ -63,8 +66,10 @@ const App = () => {
             flex: 1,
           }}
         >
+          <OptionalAuthTopMessage />
           <BreadcrumbsShareContainer />
           <Routes />
+          <OptionalAuthBottomMessage />
         </Box>
         <Footer />
       </Box>

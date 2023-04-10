@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 
 import { AppBar, Box, Button, Toolbar } from '@mui/material';
@@ -26,7 +26,9 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import ConditionalLink from 'common/components/ConditionalLink';
 import LocalePicker from 'localization/components/LocalePicker';
+import { useOptionalAuth } from 'navigation/components/Routes';
 import SkipLinks from 'navigation/components/SkipLinks';
+import { generateReferrerPath } from 'navigation/navigationUtils';
 
 import { signOut } from 'account/accountSlice';
 import AccountAvatar from 'account/components/AccountAvatar';
@@ -39,19 +41,29 @@ import theme from 'theme';
 const AppBarComponent = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { enabled: optionalAuthEnabled } = useOptionalAuth();
   const { data: user } = useSelector(state => state.account.currentUser);
   const hasToken = useSelector(state => state.account.hasToken);
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
   const location = useLocation();
   const isHomePage = location.pathname === '/';
 
-  if (!hasToken || !user) {
+  const onSignOut = useCallback(() => {
+    dispatch(signOut());
+  }, [dispatch]);
+
+  const onSignIn = useCallback(() => {
+    const referrer = generateReferrerPath(location);
+    const to = referrer ? `/account?referrer=${referrer}` : '/account';
+    navigate(to);
+  }, [location, navigate]);
+
+  const hasUser = useMemo(() => user && hasToken, [user, hasToken]);
+
+  if (!hasUser && !optionalAuthEnabled) {
     return null;
   }
-
-  const onSignOut = () => {
-    dispatch(signOut());
-  };
 
   return (
     <AppBar position="static">
@@ -66,25 +78,37 @@ const AppBarComponent = () => {
           />
         </ConditionalLink>
         <Box sx={{ flexGrow: 1 }} />
-        <Button
-          component={Link}
-          to="/account/profile"
-          color="inherit"
-          startIcon={
-            <AccountAvatar user={user} sx={{ width: 24, height: 24 }} />
-          }
-          sx={{ fontWeight: 500 }}
-        >
-          {user.firstName} {user.lastName}
-        </Button>
-        <span aria-hidden="true">|</span>
-        <Button
-          color="inherit"
-          sx={theme => ({ marginRight: theme.spacing(2) })}
-          onClick={onSignOut}
-        >
-          {t('user.sign_out')}
-        </Button>
+        {hasUser ? (
+          <>
+            <Button
+              component={Link}
+              to="/account/profile"
+              color="inherit"
+              startIcon={
+                <AccountAvatar user={user} sx={{ width: 24, height: 24 }} />
+              }
+              sx={{ fontWeight: 500 }}
+            >
+              {user.firstName} {user.lastName}
+            </Button>
+            <span aria-hidden="true">|</span>
+            <Button
+              color="inherit"
+              sx={theme => ({ marginRight: theme.spacing(2) })}
+              onClick={onSignOut}
+            >
+              {t('user.sign_out')}
+            </Button>
+          </>
+        ) : (
+          <Button
+            color="primary"
+            sx={theme => ({ marginRight: theme.spacing(2) })}
+            onClick={onSignIn}
+          >
+            {t('user.sign_in')}
+          </Button>
+        )}
         <LocalePicker />
       </Toolbar>
     </AppBar>

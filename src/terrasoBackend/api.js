@@ -18,7 +18,7 @@ import _ from 'lodash/fp';
 
 import logger from 'monitoring/logger';
 
-import { getToken } from 'account/auth';
+import { getAuthHeaders } from 'account/auth';
 import { UNAUTHENTICATED } from 'account/authConstants';
 
 import { GRAPH_QL_ENDPOINT, TERRASO_API_URL } from 'config';
@@ -115,7 +115,7 @@ export const request = async ({ path, body, headers = {} }) => {
   const response = await fetch(new URL(path, TERRASO_API_URL).href, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${getToken()}`,
+      ...getAuthHeaders(),
       ...headers,
     },
     body: body instanceof FormData ? body : JSON.stringify(body),
