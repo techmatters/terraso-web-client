@@ -42,6 +42,7 @@ import LandscapeNew from 'landscape/components/LandscapeForm/New';
 import LandscapeProfileImageUpdate from 'landscape/components/LandscapeForm/ProfileImageUpdate';
 import LandscapeProfileUpdate from 'landscape/components/LandscapeForm/ProfileUpdate';
 import LandscapeList from 'landscape/components/LandscapeList';
+import LandscapeMapEmbed from 'landscape/components/LandscapeMap';
 import LandscapeProfile from 'landscape/components/LandscapeProfile';
 import LandscapeSharedDataUpload from 'landscape/components/LandscapeSharedDataUpload';
 import LandscapeSharedDataVisualization from 'landscape/components/LandscapeSharedDataVisualization';
@@ -62,6 +63,7 @@ const path = (
     optionalAuth = {
       enabled: false,
       message: null,
+      isEmbedded: false,
     },
     showBreadcrumbs = false,
     breadcrumbsLabel,
@@ -101,6 +103,12 @@ const paths = [
   path('/groups/:groupSlug/map/:configSlug', GroupSharedDataVisualization, {
     showBreadcrumbs: true,
     breadcrumbsLabel: 'group.breadcrumbs_visualization',
+  }),
+  path('/landscapes/map', LandscapeMapEmbed, {
+    optionalAuth: {
+      enabled: true,
+      isEmbedded: true,
+    },
   }),
   path('/landscapes', LandscapeList, {
     breadcrumbsLabel: 'landscape.home_title',
