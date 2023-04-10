@@ -78,7 +78,7 @@ const LandscapeBoundariesUpdate = () => {
     ).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
       if (success) {
-        trackEvent('Update landscape boundary', {
+        trackEvent('landscape.boundary.edit', {
           props: {
             landscapeName: updatedLandscape.name,
             country: updatedLandscape.location,

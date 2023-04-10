@@ -53,7 +53,7 @@ const GroupMembershipJoinLeaveButton = () => {
   const userMembership = _.get('membersInfo.accountMembership', group);
 
   const onJoin = successMessage => () => {
-    trackEvent('joinGroup', { props: { group: groupSlug } });
+    trackEvent('group.join', { props: { group: groupSlug } });
     dispatch(
       joinGroup({
         groupSlug,
@@ -65,7 +65,7 @@ const GroupMembershipJoinLeaveButton = () => {
   };
 
   const onRemove = successMessage => () => {
-    trackEvent('leaveGroup', { props: { group: groupSlug } });
+    trackEvent('group.leave', { props: { group: groupSlug } });
     dispatch(
       leaveGroup({
         groupSlug,

@@ -66,7 +66,7 @@ const StoryMapUpdate = props => {
     setSaved(null);
     if (published) {
       const url = generateStoryMapUrl({ slug, storyMapId });
-      trackEvent('Storymap Published', {
+      trackEvent('storymap.publish', {
         props: {
           url: `${window.location.origin}${url}`,
           [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,

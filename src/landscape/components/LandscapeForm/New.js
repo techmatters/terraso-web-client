@@ -117,7 +117,7 @@ const LandscapeNew = () => {
         return Promise.reject();
       }
       navigate(`/landscapes/${landscape.slug}`);
-      trackEvent('Landscape creation - exit', {
+      trackEvent('landscape.create.exit', {
         props: {
           landscapeName: updatedLandscape.name,
           country: updatedLandscape.location,
@@ -126,7 +126,7 @@ const LandscapeNew = () => {
         },
       });
       if (updatedLandscape.boundaryOption) {
-        trackEvent('Create landscape boundary', {
+        trackEvent('landscape.boundary.create', {
           props: {
             landscapeName: updatedLandscape.name,
             country: updatedLandscape.location,
@@ -153,7 +153,7 @@ const LandscapeNew = () => {
         return;
       }
       if (!updatedLandscape.id) {
-        trackEvent('Landscape created', {
+        trackEvent('landscape.create', {
           props: {
             landscapeName: updatedLandscape.name,
             country: updatedLandscape.location,

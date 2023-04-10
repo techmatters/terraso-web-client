@@ -69,7 +69,7 @@ const SharedDataEntryBase = props => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
           updateOwner();
-          trackEvent('deletedataEntry', { props: { owner: owner.slug } });
+          trackEvent('dataEntry.delete', { props: { owner: owner.slug } });
         }
         dispatch(resetProcessing(dataEntry.id));
       }
@@ -88,7 +88,7 @@ const SharedDataEntryBase = props => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
       if (success) {
         updateOwner();
-        trackEvent('editdataEntry', { props: { owner: owner.slug } });
+        trackEvent('dataEntry.edit', { props: { owner: owner.slug } });
       }
       dispatch(resetProcessing(dataEntry.id));
     });
@@ -193,7 +193,7 @@ const SharedDataEntryBase = props => {
             </ConfirmButton>
           </Restricted>
           <Restricted permission="sharedData.download" resource={group}>
-            <DownloadComponent dataEntry={dataEntry} />
+            <DownloadComponent group={group} dataEntry={dataEntry} />
           </Restricted>
         </Grid>
         <Grid item xs={1} order={{ xs: 9 }} display={{ md: 'none' }} />

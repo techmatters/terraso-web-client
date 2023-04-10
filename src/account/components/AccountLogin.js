@@ -32,6 +32,7 @@ import { useDocumentTitle } from 'common/document';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePicker from 'localization/components/LocalePicker';
+import { useAnalytics } from 'monitoring/analytics';
 import { useFetchData } from 'state/utils';
 
 import { fetchAuthURLs } from 'account/accountSlice';
@@ -51,6 +52,7 @@ const appendReferrer = (url, referrer) =>
 
 const AccountForm = () => {
   const { t } = useTranslation();
+  const { trackEvent } = useAnalytics();
   const [searchParams] = useSearchParams();
   const { fetching, urls } = useSelector(state => state.account.login);
   const referrer = searchParams.get('referrer');
@@ -91,6 +93,9 @@ const AccountForm = () => {
               variant="outlined"
               startIcon={<GoogleIcon sx={{ paddingRight: '5px' }} />}
               href={appendReferrer(urls.google, referrer)}
+              onClick={() =>
+                trackEvent('user.login', { props: { source: 'google' } })
+              }
             >
               {t('account.google_login')}
             </Button>
@@ -101,6 +106,9 @@ const AccountForm = () => {
               variant="outlined"
               startIcon={<AppleIcon sx={{ paddingRight: '5px' }} />}
               href={appendReferrer(urls.apple, referrer)}
+              onClick={() =>
+                trackEvent('user.login', { props: { source: 'apple' } })
+              }
             >
               {t('account.apple_login')}
             </Button>
@@ -115,6 +123,9 @@ const AccountForm = () => {
                 />
               }
               href={appendReferrer(urls.microsoft, referrer)}
+              onClick={() =>
+                trackEvent('user.login', { props: { source: 'microsoft' } })
+              }
             >
               {t('account.microsoft_login')}
             </Button>

@@ -213,7 +213,7 @@ const GroupForm = () => {
       })
     ).then(() => {
       if (isNew) {
-        trackEvent('Create Group', {});
+        trackEvent('group.create', {});
       }
     });
   };

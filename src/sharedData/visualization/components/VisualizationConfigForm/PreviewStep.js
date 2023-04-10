@@ -93,7 +93,7 @@ const PreviewStep = props => {
     ).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
       if (success) {
-        trackEvent('Map: Created', {
+        trackEvent('map.create', {
           props: {
             owner: owner.name,
             file: visualizationConfig?.selectedFile.name,

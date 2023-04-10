@@ -16,6 +16,8 @@
  */
 import React from 'react';
 
+import _ from 'lodash/fp';
+
 import { Link } from '@mui/material';
 
 import { useAnalytics } from 'monitoring/analytics';
@@ -26,15 +28,28 @@ import { useAnalytics } from 'monitoring/analytics';
 // https://github.com/plausible/plausible-tracker/issues/12
 const ExternalLink = ({ href, component, children, linkProps }) => {
   const { trackEvent } = useAnalytics();
+  let props = { url: href };
+
+  if (linkProps?.trackingProps) {
+    props = { ...linkProps.trackingProps, ...props };
+  }
+
   const onClick = event => {
     window.open(href, '_blank', 'noopener,noreferrer');
-    trackEvent('Outbound Link: Click', { props: { url: href } });
+    trackEvent('link.click', {
+      props: props,
+    });
     event.preventDefault();
     event.stopPropagation();
   };
 
   return (
-    <Link href={href} component={component} onClick={onClick} {...linkProps}>
+    <Link
+      href={href}
+      component={component}
+      onClick={onClick}
+      {..._.omit('trackingProps', linkProps)}
+    >
       {children}
     </Link>
   );
