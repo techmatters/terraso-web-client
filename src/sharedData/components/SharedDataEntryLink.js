@@ -40,7 +40,7 @@ const DownloadComponent = props => {
         trackingProps: { group: group.slug },
       }}
       onClick={() =>
-        trackEvent('dataEntry.link.clicked', { props: { group: group.slug } })
+        trackEvent('dataEntry.link.click', { props: { group: group.slug } })
       }
       aria-label={t('sharedData.download_label', {
         name: dataEntry.name,
