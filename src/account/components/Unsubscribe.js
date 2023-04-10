@@ -22,9 +22,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 
-import { Typography } from '@mui/material';
+import { Alert } from '@mui/material';
 
 import { useDocumentTitle } from 'common/document';
+import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 import { useAnalytics } from 'monitoring/analytics';
 import { addMessage } from 'notifications/notificationsSlice';
@@ -52,24 +53,28 @@ const Unsubscribe = () => {
     }
 
     if (success) {
-      dispatch(
-        addMessage({
-          severity: 'success',
-          content: 'account.unsubscribe_success',
-        })
-      );
+      if (hasToken) {
+        dispatch(
+          addMessage({
+            severity: 'success',
+            content: 'account.unsubscribe_success',
+          })
+        );
+      }
+
+      // Track the unsubscribe for users with and without tokens
       trackEvent('Preference', { props: { emailNotifications: 'false' } });
     }
 
-    if (error) {
-      dispatch(
-        addMessage({
-          severity: 'error',
-          content: 'account.unsubscribe_error',
-        })
-      );
-    }
     if (hasToken) {
+      if (error) {
+        dispatch(
+          addMessage({
+            severity: 'error',
+            content: 'account.unsubscribe_error',
+          })
+        );
+      }
       navigate('/');
     }
   }, [success, error, dispatch, navigate, trackEvent, hasToken]);
@@ -81,11 +86,13 @@ const Unsubscribe = () => {
   }
 
   return (
-    <Typography>
-      {success
-        ? t('account.unsubscribe_success')
-        : t('account.unsubscribe_error')}
-    </Typography>
+    <PageContainer>
+      <Alert>
+        {success
+          ? t('account.unsubscribe_success')
+          : t('account.unsubscribe_error')}
+      </Alert>
+    </PageContainer>
   );
 };
 
