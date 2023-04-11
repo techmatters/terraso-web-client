@@ -91,7 +91,7 @@ const Unsubscribe = () => {
 
   return (
     <PageContainer>
-      <Alert>
+      <Alert severity={success ? 'success' : 'error'}>
         {success
           ? t('account.unsubscribe_success')
           : t('account.unsubscribe_error')}
