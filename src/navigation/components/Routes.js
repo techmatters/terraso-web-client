@@ -143,8 +143,11 @@ const paths = [
       breadcrumbsLabel: 'landscape.breadcrumbs_visualization',
     }
   ),
-  path('/notifications/unsubscribe', Unsubscribe),
-  path('/notifications/unsubscribe/:id', Unsubscribe),
+  path('/notifications/unsubscribe', Unsubscribe, {
+    optionalAuth: {
+      enabled: true,
+    },
+  }),
   path('/tools', ToolsList, {
     breadcrumbsLabel: 'tools.breadcrumbs_list',
   }),

@@ -28,6 +28,10 @@ const initialState = {
     fetching: true,
     data: null,
   },
+  profile: {
+    fetching: true,
+    data: null,
+  },
   login: {
     urls: {},
     fetching: true,
@@ -38,11 +42,20 @@ const initialState = {
     success: false,
     error: null,
   },
+  unsubscribe: {
+    processing: false,
+    success: false,
+    error: null,
+  },
 };
 
 export const fetchUser = createAsyncThunk(
   'account/fetchUser',
   accountService.fetchUser
+);
+export const fetchProfile = createAsyncThunk(
+  'account/fetchProfile',
+  accountService.fetchProfile
 );
 export const saveUser = createAsyncThunk(
   'account/saveUser',
@@ -59,6 +72,12 @@ export const fetchAuthURLs = createAsyncThunk(
 export const savePreference = createAsyncThunk(
   'account/savePreference',
   accountService.savePreference,
+  null,
+  false
+);
+export const unsubscribeFromNotifications = createAsyncThunk(
+  'account/unsubscribeFromNotifications',
+  accountService.unsubscribeFromNotifications,
   null,
   false
 );
@@ -162,6 +181,27 @@ export const userSlice = createSlice({
       },
     }));
 
+    builder.addCase(fetchProfile.pending, state => ({
+      ...state,
+      profile: initialState.profile,
+    }));
+
+    builder.addCase(fetchProfile.fulfilled, (state, action) => ({
+      ...state,
+      profile: {
+        fetching: false,
+        data: action.payload,
+      },
+    }));
+
+    builder.addCase(fetchProfile.rejected, state => ({
+      ...state,
+      profile: {
+        fetching: false,
+        data: null,
+      },
+    }));
+
     builder.addCase(fetchAuthURLs.pending, state => ({
       ...state,
       login: initialState.login,
@@ -182,6 +222,22 @@ export const userSlice = createSlice({
         urls: {},
       },
     }));
+
+    builder.addCase(
+      unsubscribeFromNotifications.pending,
+      _.set('unsubscribe', { processing: true, success: false, error: null })
+    );
+    builder.addCase(unsubscribeFromNotifications.rejected, (state, action) =>
+      _.set(
+        'unsubscribe',
+        { processing: false, success: false, error: action.payload },
+        state
+      )
+    );
+    builder.addCase(
+      unsubscribeFromNotifications.fulfilled,
+      _.set('unsubscribe', { processing: false, success: true, error: null })
+    );
   },
 });
 

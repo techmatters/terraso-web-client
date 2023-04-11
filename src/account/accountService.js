@@ -16,7 +16,6 @@
  */
 import _ from 'lodash/fp';
 
-import { getUserEmail } from 'account/auth';
 import * as terrasoApi from 'terrasoBackend/api';
 import {
   userFields,
@@ -25,6 +24,8 @@ import {
 } from 'user/userFragments';
 
 import { TERRASO_API_URL } from 'config';
+
+import { getUserEmail } from './auth';
 
 const parsePreferences = user =>
   _.flow(
@@ -49,6 +50,33 @@ export const getAuthURLs = () =>
     })
   );
 
+export const fetchProfile = (params, currentUser) => {
+  const query = `
+    query user($email: String!){
+      users(email: $email) {
+        edges {
+          node {
+            ...userFields
+            ...userPreferences
+          }
+        }
+      }
+    }
+    ${userFields}
+    ${userPreferences}
+  `;
+  return terrasoApi
+    .requestGraphQL(query, { email: currentUser.email })
+    .then(_.get('users.edges[0].node'))
+    .then(user => user || Promise.reject('not_found'))
+    .then(user => ({
+      ..._.omit('preferences', user),
+      preferences: parsePreferences(user),
+    }));
+};
+
+// TODO: this is a temporary solution to get the user's email address,
+// the API should have a account query to get the logged in user data
 export const fetchUser = () => {
   const query = `
     query user($email: String!){
@@ -113,6 +141,21 @@ export const savePreference = ({ key, value }, currentUser) => {
       },
     })
     .then(_.get('updateUserPreference.preference'));
+};
+
+export const unsubscribeFromNotifications = token => {
+  const query = `
+    mutation unsubscribeUser($input: UserUnsubscribeUpdateInput!) {
+      unsubscribeUser(input: $input) {
+        errors
+      }
+    }
+  `;
+  return terrasoApi.requestGraphQL(query, {
+    input: {
+      token,
+    },
+  });
 };
 
 export const signOut = async () => {

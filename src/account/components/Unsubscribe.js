@@ -20,26 +20,32 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+
+import { Alert } from '@mui/material';
 
 import { useDocumentTitle } from 'common/document';
+import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
+import { useAnalytics } from 'monitoring/analytics';
 import { addMessage } from 'notifications/notificationsSlice';
 import { useFetchData } from 'state/utils';
 
-import { savePreference } from 'account/accountSlice';
+import { unsubscribeFromNotifications } from 'account/accountSlice';
 
 const Unsubscribe = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { saving, success, error } = useSelector(_.get('account.preferences'));
-
-  useFetchData(
-    useCallback(
-      () => savePreference({ key: 'notifications', value: 'false' }),
-      []
-    )
+  const hasToken = useSelector(_.get('account.hasToken'));
+  const { processing, success, error } = useSelector(
+    _.get('account.unsubscribe')
   );
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token');
+  const { trackEvent } = useAnalytics();
+
+  useFetchData(useCallback(() => unsubscribeFromNotifications(token), [token]));
 
   useEffect(() => {
     if (!success && !error) {
@@ -47,32 +53,51 @@ const Unsubscribe = () => {
     }
 
     if (success) {
-      dispatch(
-        addMessage({
-          severity: 'success',
-          content: 'account.unsubscribe_success',
-        })
-      );
+      if (hasToken) {
+        dispatch(
+          addMessage({
+            severity: 'success',
+            content: 'account.unsubscribe_success',
+          })
+        );
+      }
+
+      // Track the unsubscribe for users with and without tokens
+      trackEvent('Preference', { props: { emailNotifications: 'false' } });
     }
 
-    if (error) {
-      dispatch(
-        addMessage({
-          severity: 'error',
-          content: 'account.unsubscribe_error',
-        })
-      );
+    if (hasToken) {
+      if (error) {
+        dispatch(
+          addMessage({
+            severity: 'error',
+            content: 'account.unsubscribe_error',
+          })
+        );
+      }
+      navigate('/');
     }
-    navigate('/');
-  }, [success, error, dispatch, navigate]);
+  }, [success, error, dispatch, navigate, trackEvent, hasToken]);
 
   useDocumentTitle(t('account.unsubscribe_title'));
 
-  if (saving) {
+  if (processing) {
     return <PageLoader />;
   }
 
-  return null;
+  if (hasToken) {
+    return null;
+  }
+
+  return (
+    <PageContainer>
+      <Alert severity={success ? 'success' : 'error'}>
+        {success
+          ? t('account.unsubscribe_success')
+          : t('account.unsubscribe_error')}
+      </Alert>
+    </PageContainer>
+  );
 };
 
 export default Unsubscribe;

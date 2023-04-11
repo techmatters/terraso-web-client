@@ -19,6 +19,7 @@ import { render, screen, within } from 'tests/utils';
 import React from 'react';
 
 import { useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 import Unsubscribe from 'account/components/Unsubscribe';
 import * as terrasoApi from 'terrasoBackend/api';
@@ -28,7 +29,14 @@ jest.mock('terrasoBackend/api');
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn(),
+  useSearchParams: jest.fn(),
 }));
+
+beforeEach(() => {
+  const searchParams = new URLSearchParams();
+  searchParams.set('token', '123456');
+  useSearchParams.mockReturnValue([searchParams]);
+});
 
 const setup = async initialState => {
   await render(<Unsubscribe />, initialState);
@@ -39,8 +47,7 @@ test('Unsubscribe: success', async () => {
   useNavigate.mockReturnValue(navigate);
 
   terrasoApi.requestGraphQL.mockResolvedValue({
-    updateUserPreference: {
-      preference: { key: 'notifications', value: 'false' },
+    unsubscribeUser: {
       errors: null,
     },
   });
@@ -49,6 +56,7 @@ test('Unsubscribe: success', async () => {
     account: {
       hasToken: true,
       preferences: {},
+      unsubscribe: {},
       currentUser: {
         fetching: false,
         data: {
@@ -65,9 +73,7 @@ test('Unsubscribe: success', async () => {
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
   expect(terrasoApi.requestGraphQL.mock.calls[1][1]).toStrictEqual({
     input: {
-      key: 'notifications',
-      userEmail: 'group@group.org',
-      value: 'false',
+      token: '123456',
     },
   });
 
@@ -90,6 +96,7 @@ test('Unsubscribe: error', async () => {
     account: {
       hasToken: true,
       preferences: {},
+      unsubscribe: {},
       currentUser: {
         fetching: false,
         data: {
@@ -106,9 +113,7 @@ test('Unsubscribe: error', async () => {
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
   expect(terrasoApi.requestGraphQL.mock.calls[1][1]).toStrictEqual({
     input: {
-      key: 'notifications',
-      userEmail: 'group@group.org',
-      value: 'false',
+      token: '123456',
     },
   });
 

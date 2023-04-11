@@ -30,9 +30,11 @@ import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePickerSelect from 'localization/components/LocalePickerSelect';
 import { useAnalytics } from 'monitoring/analytics';
+import { useFetchData } from 'state/utils';
 
 import { saveUser } from 'account/accountSlice';
 import { savePreference } from 'account/accountSlice';
+import { fetchProfile } from 'account/accountSlice';
 
 import AccountAvatar from './AccountAvatar';
 
@@ -102,7 +104,7 @@ const FIELDS = [
 const PREFERENCE_KEYS = ['language', 'notifications'];
 
 const ProfilePicture = () => {
-  const { data: user } = useSelector(state => state.account.currentUser);
+  const { data: user } = useSelector(_.get('account.profile'));
   return (
     <AccountAvatar
       showAlt
@@ -116,9 +118,9 @@ const AccountProfile = () => {
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
   const { t } = useTranslation();
-  const { data: user, fetching } = useSelector(
-    state => state.account.currentUser
-  );
+  const { data: user, fetching } = useSelector(_.get('account.profile'));
+
+  useFetchData(fetchProfile);
 
   useDocumentTitle(t('account.profile_document_title'));
 
@@ -197,8 +199,15 @@ const NotificationsCheckboxes = props => {
     <FormControlLabel
       key="notifications"
       control={
-        <Checkbox checked={field.value === 'true'} onChange={handleChange} />
+        <Checkbox
+          sx={{ pt: 0 }}
+          checked={field.value === 'true'}
+          onChange={handleChange}
+        />
       }
+      sx={{
+        alignItems: 'flex-start',
+      }}
       label={t('account.form_notifications_label')}
     />
   );
