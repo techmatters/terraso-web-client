@@ -85,7 +85,12 @@ const isAllowedToChangeGroup = ({ resource: group }) => {
   return Promise.resolve(isManager);
 };
 
-const isAllowedToManagerGroupMembers = ({ resource: group }) => {
+const isAllowedToViewGroupMembers = ({ resource: group }) => {
+  const isMember = isApprovedMember(group);
+  return Promise.resolve(isMember);
+};
+
+const isAllowedToManageGroupMembers = ({ resource: group }) => {
   const isManager = hasRole({ group, role: 'MANAGER' });
   return Promise.resolve(isManager);
 };
@@ -107,7 +112,8 @@ const isAllowedToChangeStoryMap = ({ resource: storyMap, user }) => {
 
 const rules = {
   'group.change': isAllowedToChangeGroup,
-  'group.manageMembers': isAllowedToManagerGroupMembers,
+  'group.manageMembers': isAllowedToManageGroupMembers,
+  'group.viewMembers': isAllowedToViewGroupMembers,
   'group.viewFiles': isAllowedToViewGroupSharedData,
   'landscape.change': isAllowedToChangeLandscape,
   'sharedData.add': isAllowedToAddSharedData,
