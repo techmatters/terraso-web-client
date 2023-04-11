@@ -29,12 +29,6 @@ export const landscapeFields = `
   }
 `;
 
-export const landscapeAreaPolygon = `
-  fragment landscapeAreaPolygon on LandscapeNode {
-    areaPolygon
-  }
-`;
-
 export const landscapeProfileFields = `
   fragment landscapeProfileFields on LandscapeNode {
     id

@@ -22,7 +22,6 @@ import { extractAccountMembership, extractMembersInfo } from 'group/groupUtils';
 import {
   defaultGroup,
   defaultGroupWithMembersSample,
-  landscapeAreaPolygon,
   landscapeFields,
   landscapePartnershipField,
   landscapeProfileFields,
@@ -151,15 +150,14 @@ export const fetchLandscapeToView = slug => {
         edges {
           node {
             ...landscapeFields
-            ...landscapeAreaPolygon
             ...landscapePartnershipField
             ...defaultGroupWithMembersSample
+            areaPolygon
           }
         }
       }
     }
     ${landscapeFields}
-    ${landscapeAreaPolygon}
     ${landscapePartnershipField}
     ${defaultGroupWithMembersSample}
   `;
@@ -258,14 +256,13 @@ export const fetchLandscapes = () => {
         edges {
           node {
             ...landscapeFields
-            ...landscapeAreaPolygon
             ...defaultGroup
+            centerCoordinates
           }
         }
       }
     }
     ${landscapeFields}
-    ${landscapeAreaPolygon}
     ${defaultGroup}
   `;
   return terrasoApi

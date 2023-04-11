@@ -65,6 +65,10 @@ export const getLandscapePin = landscape => {
     return null;
   }
 
+  if (landscape.centerCoordinates) {
+    return [landscape.centerCoordinates.lat, landscape.centerCoordinates.lng];
+  }
+
   const point = (() => {
     const isPin = isBoundaryPin(landscape);
 
