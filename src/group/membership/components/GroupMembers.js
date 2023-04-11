@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { Typography } from '@mui/material';
 
@@ -48,6 +48,7 @@ const MemberLeaveButton = withProps(GroupMemberLeave, {
 const Header = props => {
   const { t } = useTranslation();
   const { group, fetching } = props;
+  const navigate = useNavigate();
 
   useDocumentTitle(
     t('group.members_document_title', {
@@ -63,12 +64,25 @@ const Header = props => {
     )
   );
 
+  const { loading: loadingViewPermissions, allowed: viewAllowed } =
+    usePermission('group.viewMembers', group);
+
   const { loading: loadingPermissions, allowed } = usePermission(
     'group.manageMembers',
     group
   );
 
-  if (fetching || loadingPermissions) {
+  useEffect(() => {
+    if (loadingViewPermissions) {
+      return;
+    }
+
+    if (!viewAllowed && group.slug) {
+      navigate(`/groups/${group?.slug}`);
+    }
+  }, [viewAllowed, loadingViewPermissions, navigate, group?.slug]);
+
+  if (fetching || loadingPermissions || loadingViewPermissions) {
     return null;
   }
 
