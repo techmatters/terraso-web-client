@@ -20,11 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
 import { useDocumentTitle } from 'common/document';
-import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
-import { useFetchData } from 'state/utils';
-
-import { fetchLandscapes } from 'landscape/landscapeSlice';
 
 import LandscapeListMap from './LandscapeListMap';
 
@@ -34,17 +30,11 @@ const LandscapeMapEmbed = () => {
 
   useDocumentTitle(t('landscape.list_document_title'));
 
-  useFetchData(fetchLandscapes);
-
   if (fetching) {
     return <PageLoader />;
   }
 
-  return (
-    <PageContainer>
-      <LandscapeListMap />
-    </PageContainer>
-  );
+  return <LandscapeListMap />;
 };
 
 export default LandscapeMapEmbed;
