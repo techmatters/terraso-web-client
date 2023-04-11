@@ -251,15 +251,11 @@ test('LandscapeMembers: Display list manager', async () => {
       ),
   });
 
-  const group = {
+  const defaultGroup = {
     slug: 'test-group-slug',
     name: 'Group Name',
     memberships: generateMemberhips(3, 57),
-    accountMembership: _.set(
-      'edges[0].node',
-      { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
-      {}
-    ),
+    accountMembership: { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
   };
 
   const landscape = {
@@ -269,13 +265,7 @@ test('LandscapeMembers: Display list manager', async () => {
     description: 'Landscape Description',
     website: 'https://www.landscape.org',
     location: 'Ecuador, Quito',
-    associatedGroups: {
-      edges: [
-        {
-          node: { group },
-        },
-      ],
-    },
+    defaultGroup,
   };
 
   terrasoApi.requestGraphQL
@@ -286,10 +276,10 @@ test('LandscapeMembers: Display list manager', async () => {
       Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
     )
     .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', group, {}))
+      Promise.resolve(_.set('groups.edges[0].node', defaultGroup, {}))
     )
     .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', group, {}))
+      Promise.resolve(_.set('groups.edges[0].node', defaultGroup, {}))
     );
   await setup();
 
@@ -337,15 +327,11 @@ test('LandscapeMembers: Manager actions', async () => {
       ),
   });
 
-  const baseGroup = {
+  const defaultGroup = {
     slug: 'test-group-slug',
     name: 'Group Name',
     memberships: generateMemberhips(3, 3),
-    accountMembership: _.set(
-      'edges[0].node',
-      { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
-      {}
-    ),
+    accountMembership: { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
   };
 
   const landscape = {
@@ -355,15 +341,7 @@ test('LandscapeMembers: Manager actions', async () => {
     description: 'Landscape Description',
     website: 'https://www.landscape.org',
     location: 'Ecuador, Quito',
-    associatedGroups: {
-      edges: [
-        {
-          node: {
-            group: baseGroup,
-          },
-        },
-      ],
-    },
+    defaultGroup,
   };
 
   terrasoApi.requestGraphQL.mockImplementation(query => {
@@ -372,12 +350,12 @@ test('LandscapeMembers: Manager actions', async () => {
       return Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}));
     }
     if (trimmedQuery.startsWith('query group')) {
-      return Promise.resolve(_.set('groups.edges[0].node', baseGroup, {}));
+      return Promise.resolve(_.set('groups.edges[0].node', defaultGroup, {}));
     }
     if (trimmedQuery.startsWith('mutation updateMembership')) {
       return Promise.resolve(
         _.flow(
-          _.set('updateMembership.membership.group', baseGroup),
+          _.set('updateMembership.membership.group', defaultGroup),
           _.set(
             'updateMembership.membership.group.memberships.edges[2].node.userRole',
             'MANAGER'
@@ -392,10 +370,10 @@ test('LandscapeMembers: Manager actions', async () => {
     if (trimmedQuery.startsWith('mutation deleteMembership')) {
       return Promise.resolve(
         _.flow(
-          _.set('deleteMembership.membership.group', baseGroup),
+          _.set('deleteMembership.membership.group', defaultGroup),
           _.set(
             'deleteMembership.membership.group.memberships.edges',
-            baseGroup.memberships.edges.slice(0, -1)
+            defaultGroup.memberships.edges.slice(0, -1)
           )
         )({})
       );
