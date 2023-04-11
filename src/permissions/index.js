@@ -53,7 +53,11 @@ export const usePermission = (permission, resource) => {
   const { isAllowedTo } = useContext(PermissionsContext);
 
   useEffect(() => {
+    if (!resource) {
+      return;
+    }
     isMounted.current = true;
+    setLoading(true);
     isAllowedTo(permission, user, resource).then(allowed => {
       if (isMounted.current) {
         setLoading(false);
