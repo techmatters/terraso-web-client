@@ -17,6 +17,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
+import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -38,6 +39,11 @@ const LandscapeSharedDataUpload = () => {
   const { slug } = useParams();
   const { fetching, landscape } = useSelector(
     state => state.landscape.sharedDataUpload
+  );
+
+  const { loading: loadingPermissions, allowed } = usePermission(
+    'sharedData.add',
+    landscape?.defaultGroup
   );
 
   useDocumentTitle(
@@ -65,7 +71,17 @@ const LandscapeSharedDataUpload = () => {
     });
   }, [navigate, slug]);
 
-  if (fetching) {
+  useEffect(() => {
+    if (loadingPermissions) {
+      return;
+    }
+
+    if (!allowed && landscape.slug) {
+      navigate(`/landscapes/${landscape?.slug}`);
+    }
+  }, [allowed, loadingPermissions, navigate, landscape?.slug]);
+
+  if (fetching || loadingPermissions) {
     return <PageLoader />;
   }
 

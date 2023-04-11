@@ -16,6 +16,7 @@
  */
 import React, { useCallback, useEffect, useMemo } from 'react';
 
+import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -37,6 +38,10 @@ const GroupSharedDataUpload = () => {
   const { slug } = useParams();
   const { fetching, group } = useSelector(
     state => state.group.sharedDataUpload
+  );
+  const { loading: loadingPermissions, allowed } = usePermission(
+    'sharedData.add',
+    group
   );
 
   useDocumentTitle(
@@ -61,7 +66,17 @@ const GroupSharedDataUpload = () => {
     navigate(`/groups/${slug}`);
   }, [navigate, slug]);
 
-  if (fetching) {
+  useEffect(() => {
+    if (loadingPermissions) {
+      return;
+    }
+
+    if (!allowed && group.slug) {
+      navigate(`/groups/${group?.slug}`);
+    }
+  }, [allowed, loadingPermissions, navigate, group?.slug]);
+
+  if (fetching || loadingPermissions) {
     return <PageLoader />;
   }
 
