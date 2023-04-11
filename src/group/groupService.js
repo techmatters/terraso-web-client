@@ -85,24 +85,30 @@ export const fetchGroupToView = slug => {
     }));
 };
 
-export const fetchGroupToUploadSharedData = slug => {
+export const fetchGroupToUploadSharedData = (slug, currentUser) => {
   const query = `
-    query group($slug: String!){
+    query group($slug: String!, $accountEmail: String!){
       groups(slug: $slug) {
         edges {
           node {
             id
             slug
             name
+            ...accountMembership
           }
         }
       }
     }
+    ${accountMembership}
   `;
   return terrasoApi
-    .requestGraphQL(query, { slug })
+    .requestGraphQL(query, { slug, accountEmail: currentUser.email })
     .then(_.get('groups.edges[0].node'))
-    .then(group => group || Promise.reject('not_found'));
+    .then(group => group || Promise.reject('not_found'))
+    .then(group => ({
+      ..._.omit(['memberships', 'accountMembership'], group),
+      membersInfo: extractMembersInfo(group),
+    }));
 };
 
 export const fetchGroups = () => {
