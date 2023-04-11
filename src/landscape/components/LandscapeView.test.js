@@ -67,7 +67,6 @@ const baseViewTest = async (userRole = 'MEMBER') => {
     })
   );
   const memberships = {
-    totalCount: 6,
     edges: Array(5)
       .fill(0)
       .map(() => ({
@@ -80,15 +79,11 @@ const baseViewTest = async (userRole = 'MEMBER') => {
       })),
   };
 
-  const accountMembership = _.set(
-    'edges[0].node',
-    {
-      id: 'user-id',
-      userRole: userRole,
-      membershipStatus: 'APPROVED',
-    },
-    {}
-  );
+  const accountMembership = {
+    id: 'user-id',
+    userRole: userRole,
+    membershipStatus: 'APPROVED',
+  };
 
   const dataEntries = {
     edges: Array(6)
@@ -117,17 +112,10 @@ const baseViewTest = async (userRole = 'MEMBER') => {
               website: 'https://www.landscape.org',
               location: 'EC',
               defaultGroup: {
-                edges: [
-                  {
-                    node: {
-                      group: {
-                        slug: 'test-group-slug',
-                        memberships,
-                        accountMembership,
-                      },
-                    },
-                  },
-                ],
+                slug: 'test-group-slug',
+                memberships,
+                accountMembership,
+                membershipsCount: 6,
               },
             },
           },
@@ -145,17 +133,9 @@ const baseViewTest = async (userRole = 'MEMBER') => {
               location: 'EC',
               areaPolygon: GEOJSON,
               defaultGroup: {
-                edges: [
-                  {
-                    node: {
-                      group: {
-                        slug: 'test-group-slug',
-                        memberships,
-                        accountMembership,
-                      },
-                    },
-                  },
-                ],
+                slug: 'test-group-slug',
+                memberships,
+                accountMembership,
               },
             },
           },
