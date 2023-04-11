@@ -42,7 +42,7 @@ import LandscapeNew from 'landscape/components/LandscapeForm/New';
 import LandscapeProfileImageUpdate from 'landscape/components/LandscapeForm/ProfileImageUpdate';
 import LandscapeProfileUpdate from 'landscape/components/LandscapeForm/ProfileUpdate';
 import LandscapeList from 'landscape/components/LandscapeList';
-import LandscapeMapEmbed from 'landscape/components/LandscapeMap';
+import LandscapeMapEmbed from 'landscape/components/LandscapeMapEmbed';
 import LandscapeProfile from 'landscape/components/LandscapeProfile';
 import LandscapeSharedDataUpload from 'landscape/components/LandscapeSharedDataUpload';
 import LandscapeSharedDataVisualization from 'landscape/components/LandscapeSharedDataVisualization';
