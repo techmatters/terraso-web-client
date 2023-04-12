@@ -53,10 +53,10 @@ const Table = props => {
     setPage(parseInt(pageValue) || 0);
   }, [searchParams]);
 
-  const onPageChange = page => {
+  const onPageChange = model => {
     onSearchParamsChange({
       ...searchParams,
-      page,
+      page: model.page,
     });
   };
 
@@ -75,8 +75,10 @@ const Table = props => {
       components={{
         Panel: () => <div></div>,
       }}
-      pageSize={PAGE_SIZE}
-      page={page}
+      paginationModel={{
+        pageSize: PAGE_SIZE,
+        page: page || 0,
+      }}
       rowsPerPageOptions={[PAGE_SIZE]}
       sortModel={sortModel}
       onSortModelChange={model => {
@@ -87,7 +89,7 @@ const Table = props => {
       disableVirtualization
       disableColumnSelector
       hideFooterSelectedRowCount
-      onPageChange={onPageChange}
+      onPaginationModelChange={onPageChange}
       aria-labelledby={ariaLabel}
       sx={{
         '& .MuiDataGrid-columnHeaders': {
