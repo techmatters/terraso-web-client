@@ -248,7 +248,6 @@ export const fetchLandscapeToUploadSharedData = slug => {
     }));
 };
 
-// TODO: Remove landscapeAreaPolygon fragment when the backend is updated
 export const fetchLandscapes = () => {
   const query = `
     query landscapes {
