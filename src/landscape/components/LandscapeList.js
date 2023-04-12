@@ -118,7 +118,7 @@ const LandscapeList = () => {
       align: 'center',
       cardSize: 6,
       valueGetter: ({ row: landscape }) =>
-        _.getOr(0, 'defaultGroup.membershipsCount', landscape),
+        _.getOr(0, 'defaultGroup.membersInfo.totalCount', landscape),
       renderCell: ({ row: landscape }) => (
         <GroupMembershipCount groupSlug={landscape.defaultGroup.slug} />
       ),
