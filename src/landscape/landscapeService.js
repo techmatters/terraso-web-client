@@ -256,7 +256,10 @@ export const fetchLandscapes = () => {
           node {
             ...landscapeFields
             ...defaultGroup
-            centerCoordinates
+            centerCoordinates {
+              lat
+              lng
+            }
           }
         }
       }
