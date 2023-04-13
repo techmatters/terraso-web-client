@@ -41,11 +41,39 @@ import { countryNameForCode } from 'common/utils';
 
 import { isValidLatitude, isValidLongitude } from 'gis/gisUtils';
 
+const LandscapePopup = ({ landscape }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Popup className="landscape-marker-popup" closeButton={false}>
+      <Link
+        variant="h6"
+        component={RouterLink}
+        to={`/landscapes/${landscape.data.slug}`}
+      >
+        {landscape.data.name}
+      </Link>
+      <Typography variant="caption" display="block" sx={{ mb: 1 }}>
+        {countryNameForCode(landscape.data.location)?.name ||
+          landscape.data.location}
+      </Typography>
+      <Link
+        variant="body2"
+        component={RouterLink}
+        to={`/landscapes/${landscape.data.slug}`}
+      >
+        {t('landscape.list_map_popup_link', {
+          name: landscape.data.name,
+        })}
+      </Link>
+    </Popup>
+  );
+};
+
 const LandscapesClusters = props => {
   const map = useMap();
-  const { t } = useTranslation();
   const { landscapes } = useSelector(state => state.landscape.list);
-  const { LinkComponent = Link } = props;
+  const { PopupComponent = LandscapePopup } = props;
 
   const clusterRef = useRef();
 
@@ -95,28 +123,7 @@ const LandscapesClusters = props => {
           key={index}
           position={landscape.position}
         >
-          <Popup className="landscape-marker-popup" closeButton={false}>
-            <LinkComponent
-              variant="h6"
-              component={RouterLink}
-              to={`/landscapes/${landscape.data.slug}`}
-            >
-              {landscape.data.name}
-            </LinkComponent>
-            <Typography variant="caption" display="block" sx={{ mb: 1 }}>
-              {countryNameForCode(landscape.data.location)?.name ||
-                landscape.data.location}
-            </Typography>
-            <LinkComponent
-              variant="body2"
-              component={RouterLink}
-              to={`/landscapes/${landscape.data.slug}`}
-            >
-              {t('landscape.list_map_popup_link', {
-                name: landscape.data.name,
-              })}
-            </LinkComponent>
-          </Popup>
+          <PopupComponent landscape={landscape} />
         </Marker>
       ))}
     </MarkerClusterGroup>

@@ -17,9 +17,10 @@
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
+import { Popup } from 'react-leaflet';
 import { useSelector } from 'react-redux';
 
-import { Link } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
@@ -27,11 +28,14 @@ import { useFetchData } from 'state/utils';
 
 import { fetchLandscapes } from 'landscape/landscapeSlice';
 
-import { withProps } from 'react-hoc';
-
 import LandscapeListMap from './LandscapeListMap';
 
-const NewTabLink = withProps(Link, { target: '_blank' });
+const LandscapeDescriptionPopup = ({ landscape }) => (
+  <Popup className="landscape-marker-popup">
+    <Typography variant="h2">{landscape.data.name}</Typography>
+    <Typography variant="body2">{landscape.data.description}</Typography>
+  </Popup>
+);
 
 const LandscapeMapEmbed = () => {
   const { t } = useTranslation();
@@ -45,7 +49,7 @@ const LandscapeMapEmbed = () => {
     return <PageLoader />;
   }
 
-  return <LandscapeListMap LinkComponent={NewTabLink} />;
+  return <LandscapeListMap PopupComponent={LandscapeDescriptionPopup} />;
 };
 
 export default LandscapeMapEmbed;
