@@ -41,10 +41,11 @@ import { countryNameForCode } from 'common/utils';
 
 import { isValidLatitude, isValidLongitude } from 'gis/gisUtils';
 
-const LandscapesClusters = () => {
+const LandscapesClusters = props => {
   const map = useMap();
   const { t } = useTranslation();
   const { landscapes } = useSelector(state => state.landscape.list);
+  const { LinkComponent = Link } = props;
 
   const clusterRef = useRef();
 
@@ -95,18 +96,18 @@ const LandscapesClusters = () => {
           position={landscape.position}
         >
           <Popup className="landscape-marker-popup" closeButton={false}>
-            <Link
+            <LinkComponent
               variant="h6"
               component={RouterLink}
               to={`/landscapes/${landscape.data.slug}`}
             >
               {landscape.data.name}
-            </Link>
+            </LinkComponent>
             <Typography variant="caption" display="block" sx={{ mb: 1 }}>
               {countryNameForCode(landscape.data.location)?.name ||
                 landscape.data.location}
             </Typography>
-            <Link
+            <LinkComponent
               variant="body2"
               component={RouterLink}
               to={`/landscapes/${landscape.data.slug}`}
@@ -114,7 +115,7 @@ const LandscapesClusters = () => {
               {t('landscape.list_map_popup_link', {
                 name: landscape.data.name,
               })}
-            </Link>
+            </LinkComponent>
           </Popup>
         </Marker>
       ))}
@@ -122,7 +123,7 @@ const LandscapesClusters = () => {
   );
 };
 
-const LandscapeListMap = () => {
+const LandscapeListMap = props => {
   return (
     <Map
       style={{
@@ -130,7 +131,7 @@ const LandscapeListMap = () => {
         height: '400px',
       }}
     >
-      <LandscapesClusters />
+      <LandscapesClusters {...props} />
     </Map>
   );
 };

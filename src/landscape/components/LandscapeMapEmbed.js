@@ -19,13 +19,19 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
+import { Link } from '@mui/material';
+
 import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
 import { useFetchData } from 'state/utils';
 
 import { fetchLandscapes } from 'landscape/landscapeSlice';
 
+import { withProps } from 'react-hoc';
+
 import LandscapeListMap from './LandscapeListMap';
+
+const NewTabLink = withProps(Link, { target: '_blank' });
 
 const LandscapeMapEmbed = () => {
   const { t } = useTranslation();
@@ -39,7 +45,7 @@ const LandscapeMapEmbed = () => {
     return <PageLoader />;
   }
 
-  return <LandscapeListMap />;
+  return <LandscapeListMap LinkComponent={NewTabLink} />;
 };
 
 export default LandscapeMapEmbed;
