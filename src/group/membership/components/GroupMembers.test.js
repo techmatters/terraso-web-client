@@ -111,6 +111,7 @@ test('GroupMembers: Empty', async () => {
         'groups.edges[0].node',
         {
           name: 'Group Name',
+          membershipType: 'OPEN',
         },
         {}
       )
@@ -142,6 +143,7 @@ test('GroupMembers: Display list', async () => {
   const group = {
     slug: 'test-group-slug',
     name: 'Group Name',
+    membershipType: 'OPEN',
     memberships: generateMemberhips(3, 20),
   };
 
@@ -198,6 +200,7 @@ test('GroupMembers: Display list (small)', async () => {
   const group = {
     slug: 'test-group-slug',
     name: 'Group Name',
+    membershipType: 'OPEN',
     memberships: generateMemberhips(3, 20),
   };
 
