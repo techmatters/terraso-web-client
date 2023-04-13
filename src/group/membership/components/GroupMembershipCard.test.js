@@ -68,6 +68,16 @@ const setup = async initialState => {
           },
         },
       },
+      group: {
+        memberships: {
+          'group-slug': {
+            fetching: false,
+            group: {
+              slug: 'group-slug',
+            },
+          },
+        },
+      },
       ...initialState,
     }
   );
