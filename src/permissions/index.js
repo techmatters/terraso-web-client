@@ -59,6 +59,8 @@ export const usePermissionRedirect = (permission, resource, path) => {
       navigate(path);
     }
   }, [allowed, loading, navigate, path]);
+
+  return { loading };
 };
 
 export const usePermission = (permission, resource) => {
