@@ -68,7 +68,7 @@ const LandscapeSharedDataUpload = () => {
 
   const { loading } = usePermissionRedirect(
     'sharedData.add',
-    landscape,
+    landscape?.defaultGroup,
     useMemo(() => `/landscapes/${landscape?.slug}`, [landscape?.slug])
   );
 
