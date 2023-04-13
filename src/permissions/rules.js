@@ -89,7 +89,13 @@ const isAllowedToChangeGroup = ({ resource: group }) => {
   return Promise.resolve(isManager);
 };
 
+// is open group or closed + you are a member
 const isAllowedToViewGroupMembers = ({ resource: group }) => {
+  const isOpenGroup = group.membershipType === MEMBERSHIP_OPEN;
+  if (isOpenGroup) {
+    return Promise.resolve(true);
+  }
+
   const isMember = isApprovedMember(group);
   return Promise.resolve(isMember);
 };
