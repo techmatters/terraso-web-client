@@ -108,6 +108,11 @@ const SharedDataEntryBase = props => {
     [dataEntry]
   );
 
+  const permissionsResource = useMemo(
+    () => ({ group, dataEntry }),
+    [dataEntry, group]
+  );
+
   return (
     <ListItem sx={{ p: 0, flexDirection: 'column' }}>
       <Grid
@@ -126,10 +131,9 @@ const SharedDataEntryBase = props => {
           <EntryTypeIcon resourceType={dataEntry.resourceType} />
           <Restricted
             permission="sharedData.edit"
-            resource={{ group, dataEntry }}
+            resource={permissionsResource}
             FallbackComponent={() => <Typography>{dataEntry.name}</Typography>}
           >
-            {console.log({ isEditingName, processing })}
             <EditableText
               id={`name-${dataEntry.id}`}
               label={t('sharedData.name_update')}
@@ -168,7 +172,7 @@ const SharedDataEntryBase = props => {
         >
           <Restricted
             permission="sharedData.delete"
-            resource={{ group, dataEntry }}
+            resource={permissionsResource}
           >
             <ConfirmButton
               onConfirm={onConfirm}
@@ -218,7 +222,7 @@ const SharedDataEntryBase = props => {
         >
           <Restricted
             permission="sharedData.edit"
-            resource={{ group, dataEntry }}
+            resource={permissionsResource}
             FallbackComponent={() => (
               <Typography variant="body1">{dataEntry.description}</Typography>
             )}
