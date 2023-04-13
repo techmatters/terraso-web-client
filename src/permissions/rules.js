@@ -16,7 +16,11 @@
  */
 import _ from 'lodash/fp';
 
-import { MEMBERSHIP_STATUS_APPROVED } from 'group/membership/components/groupMembershipConstants';
+import {
+  MEMBERSHIP_OPEN,
+  MEMBERSHIP_STATUS_APPROVED,
+  ROLE_MANAGER,
+} from 'group/membership/components/groupMembershipConstants';
 
 const getAccountMembership = group =>
   _.getOr(
@@ -51,7 +55,7 @@ const isAllowedToEditSharedData = ({
   resource: { group, dataEntry },
   user,
 }) => {
-  const isManager = hasRole({ group, role: 'MANAGER' });
+  const isManager = hasRole({ group, role: ROLE_MANAGER });
   const isOwner = _.get('createdBy.id', dataEntry) === _.get('id', user);
   return Promise.resolve(isManager || isOwner);
 };
@@ -64,7 +68,7 @@ const isAllowedToDeleteVisualization = ({
   resource: { group, visualizationConfig },
   user,
 }) => {
-  const isManager = hasRole({ group, role: 'MANAGER' });
+  const isManager = hasRole({ group, role: ROLE_MANAGER });
   const isOwner =
     _.get('createdBy.id', visualizationConfig) === _.get('id', user);
   return Promise.resolve(isManager || isOwner);
@@ -81,7 +85,7 @@ const isAllowedToAddSharedData = ({ resource: group }) => {
 };
 
 const isAllowedToChangeGroup = ({ resource: group }) => {
-  const isManager = hasRole({ group, role: 'MANAGER' });
+  const isManager = hasRole({ group, role: ROLE_MANAGER });
   return Promise.resolve(isManager);
 };
 
@@ -91,7 +95,7 @@ const isAllowedToViewGroupMembers = ({ resource: group }) => {
 };
 
 const isAllowedToManageGroupMembers = ({ resource: group }) => {
-  const isManager = hasRole({ group, role: 'MANAGER' });
+  const isManager = hasRole({ group, role: ROLE_MANAGER });
   return Promise.resolve(isManager);
 };
 
@@ -101,7 +105,10 @@ const isAllowedToViewGroupSharedData = ({ resource: group }) => {
 };
 
 const isAllowedToChangeLandscape = ({ resource: landscape }) => {
-  const isManager = hasRole({ group: landscape.defaultGroup, role: 'MANAGER' });
+  const isManager = hasRole({
+    group: landscape.defaultGroup,
+    role: ROLE_MANAGER,
+  });
   return Promise.resolve(isManager);
 };
 
