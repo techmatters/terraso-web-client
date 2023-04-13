@@ -51,24 +51,48 @@ const EditableText = props => {
     setIsHovering(false);
   }, [value, setIsEditing]);
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     if (editedValue === value) {
       reset();
       return;
     }
     onSave(editedValue);
-  };
+  }, [value, editedValue, onSave, reset]);
 
-  const onSaveClick = () => {
-    handleSave();
-  };
+  const handleInputChange = useCallback(
+    event => setEditedValue(event.target.value),
+    []
+  );
 
-  const onKeyDown = event => {
-    if (event.keyCode === 13) {
-      // Enter key
-      handleSave();
-    }
-  };
+  const onInputKeyDown = useCallback(
+    event => {
+      if (event.keyCode === 13) {
+        // Enter key
+        handleSave();
+      }
+    },
+    [handleSave]
+  );
+
+  const onButtonKeyDown = useCallback(
+    event => {
+      if (event.keyCode === 13 || event.keyCode === 32) {
+        setIsEditing(true);
+      }
+    },
+    [setIsEditing]
+  );
+
+  const onButtonClick = useCallback(
+    event => {
+      setIsEditing(true);
+      event.preventDefault();
+    },
+    [setIsEditing]
+  );
+
+  const onButtonMouseOver = useCallback(() => setIsHovering(true), []);
+  const onButtononMouseOut = useCallback(() => setIsHovering(false), []);
 
   const editableInputRef = useRef(null);
 
@@ -93,14 +117,14 @@ const EditableText = props => {
           size="small"
           value={editedValue}
           inputRef={editableInputRef}
-          onChange={event => setEditedValue(event.target.value)}
-          onKeyDown={onKeyDown}
+          onChange={handleInputChange}
+          onKeyDown={onInputKeyDown}
           sx={{ flexGrow: 1 }}
         />
         <LoadingButton
           variant="contained"
           loading={processing}
-          onClick={onSaveClick}
+          onClick={handleSave}
         >
           {t('common.editable_text_save')}
         </LoadingButton>
@@ -118,17 +142,10 @@ const EditableText = props => {
       direction="row"
       justifyContent="space-between"
       tabIndex="0"
-      onKeyDown={event => {
-        if (event.keyCode === 13 || event.keyCode === 32) {
-          setIsEditing(true);
-        }
-      }}
-      onClick={event => {
-        setIsEditing(true);
-        event.preventDefault();
-      }}
-      onMouseOver={() => setIsHovering(true)}
-      onMouseOut={() => setIsHovering(false)}
+      onKeyDown={onButtonKeyDown}
+      onClick={onButtonClick}
+      onMouseOver={onButtonMouseOver}
+      onMouseOut={onButtononMouseOut}
       {...viewProps}
       sx={{
         pt: 1,

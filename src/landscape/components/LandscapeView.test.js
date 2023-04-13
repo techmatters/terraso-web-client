@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { act, fireEvent, render, screen, within } from 'tests/utils';
+import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 
 import React from 'react';
 
@@ -270,6 +270,15 @@ test('LandscapeView: Update Shared Data', async () => {
   });
   expect(nameField).toBeInTheDocument();
   await act(async () => fireEvent.click(nameField));
+
+  await waitFor(() =>
+    expect(
+      within(items[3]).getByRole('textbox', {
+        name: 'Update name',
+      })
+    ).toBeInTheDocument()
+  );
+
   const name = within(items[3]).getByRole('textbox', {
     name: 'Update name',
   });
