@@ -66,13 +66,13 @@ const LandscapeSharedDataUpload = () => {
     });
   }, [navigate, slug]);
 
-  usePermissionRedirect(
+  const { loading } = usePermissionRedirect(
     'sharedData.add',
     landscape,
     useMemo(() => `/landscapes/${landscape?.slug}`, [landscape?.slug])
   );
 
-  if (fetching) {
+  if (fetching || loading) {
     return <PageLoader />;
   }
 

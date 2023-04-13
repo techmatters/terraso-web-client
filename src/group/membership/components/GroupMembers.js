@@ -68,13 +68,13 @@ const Header = props => {
     group
   );
 
-  usePermissionRedirect(
+  const { loading } = usePermissionRedirect(
     'group.viewMembers',
     group,
     useMemo(() => `/groups/${group?.slug}`, [group?.slug])
   );
 
-  if (fetching || loadingPermissions) {
+  if (fetching || loading || loadingPermissions) {
     return null;
   }
 
