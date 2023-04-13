@@ -18,6 +18,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const defaultBehaviour = {
   isAllowedTo: () => Promise.resolve(false),
@@ -42,6 +43,22 @@ export const PermissionsProvider = ({ rules, children }) => {
       {children}
     </PermissionsContext.Provider>
   );
+};
+
+export const usePermissionRedirect = (permission, resource, path) => {
+  const navigate = useNavigate();
+
+  const { loading, allowed } = usePermission(permission, resource);
+
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
+
+    if (!allowed && path) {
+      navigate(path);
+    }
+  }, [allowed, loading, navigate, path]);
 };
 
 export const usePermission = (permission, resource) => {
