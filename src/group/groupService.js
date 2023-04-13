@@ -85,9 +85,9 @@ export const fetchGroupToView = slug => {
     }));
 };
 
-export const fetchGroupToUploadSharedData = (slug, currentUser) => {
+export const fetchGroupToUploadSharedData = slug => {
   const query = `
-    query group($slug: String!, $accountEmail: String!){
+    query group($slug: String!){
       groups(slug: $slug) {
         edges {
           node {
@@ -102,7 +102,7 @@ export const fetchGroupToUploadSharedData = (slug, currentUser) => {
     ${accountMembership}
   `;
   return terrasoApi
-    .requestGraphQL(query, { slug, accountEmail: currentUser.email })
+    .requestGraphQL(query, { slug })
     .then(_.get('groups.edges[0].node'))
     .then(group => group || Promise.reject('not_found'))
     .then(group => ({
