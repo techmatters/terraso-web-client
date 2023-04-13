@@ -21,6 +21,9 @@ import { useSelector } from 'react-redux';
 
 import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
+import { useFetchData } from 'state/utils';
+
+import { fetchLandscapes } from 'landscape/landscapeSlice';
 
 import LandscapeListMap from './LandscapeListMap';
 
@@ -29,6 +32,8 @@ const LandscapeMapEmbed = () => {
   const { fetching } = useSelector(state => state.landscape.list);
 
   useDocumentTitle(t('landscape.list_document_title'));
+
+  useFetchData(fetchLandscapes);
 
   if (fetching) {
     return <PageLoader />;
