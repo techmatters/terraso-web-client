@@ -67,21 +67,6 @@ const baseListTest = async () => {
     3: true,
   };
 
-  const generateMemberhips = (index, count) => ({
-    totalCount: count,
-    edges: Array(5)
-      .fill(0)
-      .map(() => ({
-        node: {
-          user: {
-            firstName: 'Member name',
-            lastName: 'Member Last Name',
-            email: 'other@email.com',
-          },
-        },
-      })),
-  });
-
   const membersCounts = [0, 23, 59, 2, 1, 28, 6, 23, 9, 11, 1, 2, 3, 4, 5];
 
   const landscapes = Array(15)
@@ -96,22 +81,11 @@ const baseListTest = async () => {
         location: 'Ecuador, Quito',
         areaPolygon: GEOJSON,
         defaultGroup: {
-          edges: [
-            {
-              node: {
-                group: {
-                  slug: `test-group-slug-${landscapeIndex}`,
-                  memberships: generateMemberhips(
-                    landscapeIndex,
-                    membersCounts[landscapeIndex]
-                  ),
-                  accountMembership: isMember[landscapeIndex]
-                    ? _.set('edges[0].node.userRole', 'MEMBER', {})
-                    : null,
-                },
-              },
-            },
-          ],
+          slug: `test-group-slug-${landscapeIndex}`,
+          membershipsCount: membersCounts[landscapeIndex],
+          accountMembership: isMember[landscapeIndex]
+            ? _.set('userRole', 'MEMBER', {})
+            : null,
         },
       },
     }));
@@ -317,21 +291,6 @@ test('LandscapeList: Display list (small screen)', async () => {
     3: true,
   };
 
-  const generateMemberhips = (index, count) => ({
-    totalCount: count,
-    edges: Array(5)
-      .fill(0)
-      .map(() => ({
-        node: {
-          user: {
-            firstName: 'Member name',
-            lastName: 'Member Last Name',
-            email: 'other@email.com',
-          },
-        },
-      })),
-  });
-
   const membersCounts = [0, 23, 59, 2, 1, 28, 6, 23, 9, 11, 1, 2, 3, 4, 5];
 
   const landscapes = Array(15)
@@ -345,22 +304,11 @@ test('LandscapeList: Display list (small screen)', async () => {
         website: 'https://www.landscape.org',
         location: 'Ecuador, Quito',
         defaultGroup: {
-          edges: [
-            {
-              node: {
-                group: {
-                  slug: `test-group-slug-${landscapeIndex}`,
-                  memberships: generateMemberhips(
-                    landscapeIndex,
-                    membersCounts[landscapeIndex]
-                  ),
-                  accountMembership: isMember[landscapeIndex]
-                    ? _.set('edges[0].node.userRole', 'MEMBER', {})
-                    : null,
-                },
-              },
-            },
-          ],
+          slug: `test-group-slug-${landscapeIndex}`,
+          membershipsCount: membersCounts[landscapeIndex],
+          accountMembership: isMember[landscapeIndex]
+            ? _.set('userRole', 'MEMBER', {})
+            : null,
         },
       },
     }));

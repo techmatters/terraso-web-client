@@ -116,14 +116,10 @@ export const groupMembers = `
 
 export const accountMembership = `
   fragment accountMembership on GroupNode {
-    accountMembership: memberships(user_Email_In: [$accountEmail]) {
-      edges {
-        node {
-          id
-          userRole
-          membershipStatus
-        }
-      }
+    accountMembership {
+      id
+      userRole
+      membershipStatus
     }
   }
 `;

@@ -102,7 +102,7 @@ export const fetchHomeData = email => {
         .map(landscape => ({
           ..._.omit(['associatedGroups'], landscape),
           accountMembership: extractAccountMembership(
-            _.get('defaultGroup.edges[0].node.group', landscape)
+            _.get('defaultGroup', landscape)
           ),
         })),
       storyMaps: _.getOr([], 'storyMaps.edges', response).map(_.get('node')),

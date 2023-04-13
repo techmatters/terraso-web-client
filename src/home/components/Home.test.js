@@ -87,7 +87,7 @@ test('Home: Display landscapes', async () => {
                         slug: 'id-1',
                         name: 'Landscape 1',
                         defaultGroup: _.set(
-                          'edges[0].node.group.accountMembership.edges[0].node.userRole',
+                          'accountMembership.userRole',
                           'MEMBER',
                           {}
                         ),
@@ -101,7 +101,7 @@ test('Home: Display landscapes', async () => {
                         slug: 'id-2',
                         name: 'Landscape 2',
                         defaultGroup: _.set(
-                          'edges[0].node.group.accountMembership.edges[0].node.userRole',
+                          'accountMembership.userRole',
                           'MANAGER',
                           {}
                         ),
@@ -132,11 +132,10 @@ test('Home: Display groups', async () => {
               id: 'id-1',
               slug: 'id-1',
               name: 'Group 1',
-              accountMembership: _.set(
-                'edges[0].node',
-                { userRole: 'MEMBER', membershipStatus: 'APPROVED' },
-                {}
-              ),
+              accountMembership: {
+                userRole: 'MEMBER',
+                membershipStatus: 'APPROVED',
+              },
             },
           },
         ],
@@ -148,11 +147,11 @@ test('Home: Display groups', async () => {
               id: 'id-2',
               slug: 'id-2',
               name: 'Group 2',
-              accountMembership: _.set(
-                'edges[0].node',
-                { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
-                {}
-              ),
+              accountMembership: {
+                userRole: 'MANAGER',
+                membershipStatus: 'APPROVED',
+              },
+
               pending: { totalCount: 1 },
             },
           },
@@ -161,11 +160,11 @@ test('Home: Display groups', async () => {
               id: 'id-3',
               slug: 'id-3',
               name: 'Group 3',
-              accountMembership: _.set(
-                'edges[0].node',
-                { userRole: 'MEMBER', membershipStatus: 'PENDING' },
-                {}
-              ),
+              accountMembership: {
+                userRole: 'MEMBER',
+                membershipStatus: 'PENDING',
+              },
+
               pending: { totalCount: 1 },
             },
           },

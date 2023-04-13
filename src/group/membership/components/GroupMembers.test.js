@@ -201,11 +201,7 @@ test('GroupMembers: Display list manager', async () => {
     slug: 'test-group-slug',
     name: 'Group Name',
     memberships: generateMemberhips(3, 57),
-    accountMembership: _.set(
-      'edges[0].node',
-      { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
-      {}
-    ),
+    accountMembership: { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
   };
 
   terrasoApi.requestGraphQL.mockReturnValue(
@@ -263,11 +259,7 @@ test('GroupMembers: Manager actions', async () => {
     slug: 'test-group-slug',
     name: 'Group Name',
     memberships: generateMemberhips(3, 3),
-    accountMembership: _.set(
-      'edges[0].node',
-      { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
-      {}
-    ),
+    accountMembership: { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
   };
 
   terrasoApi.requestGraphQL.mockImplementation(query => {
@@ -390,11 +382,7 @@ test('GroupMembers: Closed group manager actions', async () => {
     slug: 'test-group-slug',
     name: 'Group Name',
     memberships: generateMemberhips(3, 3),
-    accountMembership: _.set(
-      'edges[0].node',
-      { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
-      {}
-    ),
+    accountMembership: { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
   };
 
   terrasoApi.requestGraphQL.mockImplementation(query => {

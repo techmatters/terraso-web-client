@@ -55,9 +55,9 @@ export const fetchGroupToUpdate = slug => {
     .then(group => group || Promise.reject('not_found'));
 };
 
-export const fetchGroupToView = (slug, currentUser) => {
+export const fetchGroupToView = slug => {
   const query = `
-    query group($slug: String!, $accountEmail: String!){
+    query group($slug: String!){
       groups(slug: $slug) {
         edges {
           node {
@@ -75,7 +75,7 @@ export const fetchGroupToView = (slug, currentUser) => {
     ${accountMembership}
   `;
   return terrasoApi
-    .requestGraphQL(query, { slug, accountEmail: currentUser.email })
+    .requestGraphQL(query, { slug })
     .then(_.get('groups.edges[0].node'))
     .then(group => group || Promise.reject('not_found'))
     .then(group => ({
@@ -105,16 +105,15 @@ export const fetchGroupToUploadSharedData = slug => {
     .then(group => group || Promise.reject('not_found'));
 };
 
-export const fetchGroups = (params, currentUser) => {
+export const fetchGroups = () => {
   const query = `
-    query groups($accountEmail: String!){
+    query groups {
       independentGroups: groups(
         associatedLandscapes_Isnull: true
       ) {
         edges {
           node {
             ...groupFields
-            ...groupMembersInfo
             ...accountMembership
           }
         }
@@ -125,18 +124,16 @@ export const fetchGroups = (params, currentUser) => {
         edges {
           node {
             ...groupFields
-            ...groupMembersInfo
             ...accountMembership
           }
         }
       }
     }
     ${groupFields}
-    ${groupMembersInfo}
     ${accountMembership}
   `;
   return terrasoApi
-    .requestGraphQL(query, { accountEmail: currentUser.email })
+    .requestGraphQL(query)
     .then(response => [
       ..._.getOr([], 'independentGroups.edges', response),
       ..._.getOr([], 'landscapeGroups.edges', response),
@@ -184,9 +181,9 @@ export const fetchGroupsAutocompleteList = () => {
     .then(_.orderBy([group => cleanSensitiveCharacters(group.name)], null));
 };
 
-export const fetchGroupForMembers = (slug, currentUser) => {
+export const fetchGroupForMembers = slug => {
   const query = `
-    query group($slug: String!, $accountEmail: String!){
+    query group($slug: String!){
       groups(slug: $slug) {
         edges {
           node {
@@ -200,7 +197,7 @@ export const fetchGroupForMembers = (slug, currentUser) => {
     ${accountMembership}
   `;
   return terrasoApi
-    .requestGraphQL(query, { slug, accountEmail: currentUser.email })
+    .requestGraphQL(query, { slug })
     .then(_.get('groups.edges[0].node'))
     .then(group => group || Promise.reject('not_found'))
     .then(group => ({
@@ -315,12 +312,9 @@ const addGroup = ({ group, user }) => {
 export const saveGroup = ({ group, user }) =>
   group.id ? updateGroup(group) : addGroup({ group, user });
 
-export const joinGroup = (
-  { groupSlug, userEmail, userRole = 'member' },
-  currentUser
-) => {
+export const joinGroup = ({ groupSlug, userEmail, userRole = 'member' }) => {
   const query = `
-    mutation addMembership($input: MembershipAddMutationInput!, $accountEmail: String!){
+    mutation addMembership($input: MembershipAddMutationInput!){
       addMembership(input: $input) {
         membership {
           group {
@@ -343,7 +337,6 @@ export const joinGroup = (
         groupSlug,
         userRole,
       },
-      accountEmail: currentUser.email,
     })
     .then(_.get('addMembership.membership.group'))
     .then(group => group || Promise.reject('not_found'))
@@ -353,9 +346,9 @@ export const joinGroup = (
     }));
 };
 
-export const leaveGroup = ({ groupSlug, membershipId }, currentUser) => {
+export const leaveGroup = ({ groupSlug, membershipId }) => {
   const query = `
-    mutation deleteMembership($input: MembershipDeleteMutationInput!, $accountEmail: String!){
+    mutation deleteMembership($input: MembershipDeleteMutationInput!){
       deleteMembership(input: $input) {
         membership {
           group {
@@ -374,7 +367,6 @@ export const leaveGroup = ({ groupSlug, membershipId }, currentUser) => {
   return terrasoApi
     .requestGraphQL(query, {
       input: { id: membershipId },
-      accountEmail: currentUser.email,
     })
     .then(_.get('deleteMembership.membership.group'))
     .then(group => ({

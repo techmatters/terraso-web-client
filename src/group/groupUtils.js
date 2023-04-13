@@ -17,7 +17,11 @@
 import _ from 'lodash/fp';
 
 export const extractMembersInfo = group => ({
-  totalCount: _.get('memberships.totalCount', group),
+  totalCount: _.getOr(
+    _.get('memberships.totalCount', group),
+    'membershipsCount',
+    group
+  ),
   pendingCount: _.get('pending.totalCount', group),
   accountMembership: extractAccountMembership(group),
   membersSample: extractMembers(group),
@@ -32,7 +36,7 @@ export const extractMembers = group =>
   }));
 
 export const extractAccountMembership = group =>
-  _.get('accountMembership.edges[0].node', group);
+  _.get('accountMembership', group);
 
 export const getMemberships = groups =>
   _.flow(

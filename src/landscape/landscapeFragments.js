@@ -29,12 +29,6 @@ export const landscapeFields = `
   }
 `;
 
-export const landscapeAreaPolygon = `
-  fragment landscapeAreaPolygon on LandscapeNode {
-    areaPolygon
-  }
-`;
-
 export const landscapeProfileFields = `
   fragment landscapeProfileFields on LandscapeNode {
     id
@@ -105,19 +99,25 @@ export const landscapePartnershipField = `
 
 export const defaultGroup = `
   fragment defaultGroup on LandscapeNode {
-    defaultGroup: associatedGroups(isDefaultLandscapeGroup: true) {
-      edges {
-        node {
-          group {
-            id
-            slug
-            ...groupMembersInfo
-            ...accountMembership
-          }
-        }
-      }
+    defaultGroup {
+      id
+      slug
+      membershipsCount
+      ...accountMembership
     }
   }
-  ${groupMembersInfo}
   ${accountMembership}
+`;
+
+export const defaultGroupWithMembersSample = `
+  fragment defaultGroupWithMembersSample on LandscapeNode {
+    defaultGroup {
+      id
+      slug
+      ...groupMembersInfo
+      ...accountMembership
+    }
+  }
+  ${accountMembership}
+  ${groupMembersInfo}
 `;

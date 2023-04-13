@@ -21,7 +21,7 @@ import { accountMembership } from 'group/groupFragments';
 import { extractAccountMembership, extractMembersInfo } from 'group/groupUtils';
 import {
   defaultGroup,
-  landscapeAreaPolygon,
+  defaultGroupWithMembersSample,
   landscapeFields,
   landscapePartnershipField,
   landscapeProfileFields,
@@ -136,34 +136,33 @@ export const fetchLandscapeToUpdate = slug => {
 };
 
 const getDefaultGroup = landscape => {
-  const group = _.get('defaultGroup.edges[0].node.group', landscape);
+  const group = _.get('defaultGroup', landscape);
   return {
     ..._.pick(['id', 'slug'], group),
     membersInfo: extractMembersInfo(group),
   };
 };
 
-export const fetchLandscapeToView = (slug, currentUser) => {
+export const fetchLandscapeToView = slug => {
   const query = `
-    query landscapes($slug: String!, $accountEmail: String!){
+    query landscapes($slug: String!){
       landscapes(slug: $slug) {
         edges {
           node {
             ...landscapeFields
-            ...landscapeAreaPolygon
             ...landscapePartnershipField
-            ...defaultGroup
+            ...defaultGroupWithMembersSample
+            areaPolygon
           }
         }
       }
     }
     ${landscapeFields}
-    ${landscapeAreaPolygon}
     ${landscapePartnershipField}
-    ${defaultGroup}
+    ${defaultGroupWithMembersSample}
   `;
   return terrasoApi
-    .requestGraphQL(query, { slug, accountEmail: currentUser.email })
+    .requestGraphQL(query, { slug })
     .then(_.get('landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('not_found'))
     .then(landscape => ({
@@ -194,9 +193,9 @@ export const fetchLandscapeToView = (slug, currentUser) => {
     });
 };
 
-export const fetchLandscapeProfile = (slug, currentUser) => {
+export const fetchLandscapeProfile = slug => {
   const query = `
-    query landscapes($slug: String!, $accountEmail: String!){
+    query landscapes($slug: String!){
       landscapes(slug: $slug) {
         edges {
           node {
@@ -210,7 +209,7 @@ export const fetchLandscapeProfile = (slug, currentUser) => {
     ${defaultGroup}
   `;
   return terrasoApi
-    .requestGraphQL(query, { slug, accountEmail: currentUser.email })
+    .requestGraphQL(query, { slug })
     .then(_.get('landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('not_found'))
     .then(landscape => ({
@@ -224,9 +223,9 @@ export const fetchLandscapeProfile = (slug, currentUser) => {
     }));
 };
 
-export const fetchLandscapeToUploadSharedData = (slug, currentUser) => {
+export const fetchLandscapeToUploadSharedData = slug => {
   const query = `
-    query landscapes($slug: String!, $accountEmail: String!){
+    query landscapes($slug: String!){
       landscapes(slug: $slug) {
         edges {
           node {
@@ -240,7 +239,7 @@ export const fetchLandscapeToUploadSharedData = (slug, currentUser) => {
     ${defaultGroup}
   `;
   return terrasoApi
-    .requestGraphQL(query, { slug, accountEmail: currentUser.email })
+    .requestGraphQL(query, { slug })
     .then(_.get('landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('not_found'))
     .then(landscape => ({
@@ -249,26 +248,27 @@ export const fetchLandscapeToUploadSharedData = (slug, currentUser) => {
     }));
 };
 
-// TODO: Remove landscapeAreaPolygon fragment when the backend is updated
-export const fetchLandscapes = (params, currentUser) => {
+export const fetchLandscapes = () => {
   const query = `
-    query landscapes($accountEmail: String!){
+    query landscapes {
       landscapes {
         edges {
           node {
             ...landscapeFields
-            ...landscapeAreaPolygon
             ...defaultGroup
+            centerCoordinates {
+              lat
+              lng
+            }
           }
         }
       }
     }
     ${landscapeFields}
-    ${landscapeAreaPolygon}
     ${defaultGroup}
   `;
   return terrasoApi
-    .requestGraphQL(query, { accountEmail: currentUser.email })
+    .requestGraphQL(query)
     .then(response => response.landscapes)
     .then(landscapes =>
       landscapes.edges
@@ -284,22 +284,16 @@ export const fetchLandscapes = (params, currentUser) => {
     .then(_.orderBy([landscape => landscape.name.toLowerCase()], null));
 };
 
-export const fetchLandscapeForMembers = (slug, currentUser) => {
+export const fetchLandscapeForMembers = slug => {
   const query = `
-    query landscapes($slug: String!, $accountEmail: String!){
+    query landscapes($slug: String!){
       landscapes(slug: $slug) {
         edges {
           node {
             ...landscapeFields
-            associatedGroups(isDefaultLandscapeGroup: true) {
-              edges {
-                node {
-                  group {
-                    slug
-                    ...accountMembership
-                  }
-                }
-              }
+            defaultGroup {
+              slug
+              ...accountMembership
             }
           }
         }
@@ -309,11 +303,11 @@ export const fetchLandscapeForMembers = (slug, currentUser) => {
     ${accountMembership}
   `;
   return terrasoApi
-    .requestGraphQL(query, { slug, accountEmail: currentUser.email })
+    .requestGraphQL(query, { slug })
     .then(_.get('landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('not_found'))
     .then(landscape => {
-      const group = _.get('associatedGroups.edges[0].node.group', landscape);
+      const group = _.get('defaultGroup', landscape);
       return {
         ...landscape,
         accountMembership: extractAccountMembership(group),

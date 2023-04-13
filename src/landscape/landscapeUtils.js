@@ -59,10 +59,13 @@ export const isBoundaryPin = landscape => {
   return _.get('[0].geometry.type', features) === 'Point';
 };
 
-// TODO Move logic to API?, with the new formats the processing time for this might take too long
 export const getLandscapePin = landscape => {
   if (!landscape) {
     return null;
+  }
+
+  if (landscape.centerCoordinates) {
+    return [landscape.centerCoordinates.lat, landscape.centerCoordinates.lng];
   }
 
   const point = (() => {

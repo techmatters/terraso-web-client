@@ -235,10 +235,10 @@ test('GroupMembershipCard: Request Join', async () => {
           group: {
             slug: 'group-slug',
             membershipType: 'CLOSED',
-            accountMembership: _.flow(
-              _.set('edges[0].node.userRole', 'MEMBER'),
-              _.set('edges[0].node.membershipStatus', 'PENDING')
-            )({}),
+            accountMembership: {
+              userRole: 'MEMBER',
+              membershipStatus: 'PENDING',
+            },
             memberships: {
               totalCount: 1,
               edges: [
