@@ -39,6 +39,7 @@ const setup = async () => {
       'groups.edges[0].node',
       {
         id: 'group-id',
+        slug: 'slug-1',
         name: 'Group Name',
       },
       {}
