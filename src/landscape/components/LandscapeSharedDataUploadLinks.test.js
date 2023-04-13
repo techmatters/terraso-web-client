@@ -20,6 +20,7 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { useNavigate, useParams } from 'react-router-dom';
+import { LANDSCAPE_TYPES_WITH_REDIRECTS } from 'tests/constants';
 
 import * as terrasoApi from 'terrasoBackend/api';
 
@@ -33,7 +34,7 @@ jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
 }));
 
-const setup = async () => {
+const setup = async (userRole = 'MEMBER') => {
   const landscape = _.set(
     'landscapes.edges[0].node',
     {
@@ -44,7 +45,7 @@ const setup = async () => {
         id: 'group-id',
         slug: 'group-slug',
         accountMembership: {
-          userRole: 'MEMBER',
+          userRole,
           membershipStatus: 'APPROVED',
         },
       },
@@ -75,6 +76,19 @@ beforeEach(() => {
   });
   useNavigate.mockReturnValue(() => {});
 });
+
+Object.keys(LANDSCAPE_TYPES_WITH_REDIRECTS).forEach(currentLandscape =>
+  test(`LandscapeSharedDataUpload: Redirection: ${currentLandscape}`, async () => {
+    const navigate = jest.fn();
+    useNavigate.mockReturnValue(navigate);
+
+    await setup(LANDSCAPE_TYPES_WITH_REDIRECTS[currentLandscape].userRole);
+
+    expect(navigate).toHaveBeenCalledTimes(
+      LANDSCAPE_TYPES_WITH_REDIRECTS[currentLandscape].uploadRedirectCount
+    );
+  })
+);
 
 test('LandscapeSharedDataUpload: Error - Empty name', async () => {
   await setup();
