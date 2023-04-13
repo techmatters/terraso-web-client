@@ -15,7 +15,7 @@ run-build:
 		"--name terraso_web_client_build -p 3000:3000" \
 		"npm run build && npm run build-serve"
 
-create-build:
+build:
 	./scripts/docker/run.sh \
 		"--name terraso_web_client_build" \
 		"npm run build"
