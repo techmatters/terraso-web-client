@@ -39,14 +39,15 @@ const setup = async () => {
     {
       id: 'landscape-id',
       name: 'Landscape Name',
-      defaultGroup: _.set(
-        'edges[0].node',
-        {
-          id: 'group-id',
-          slug: 'group-slug',
+      slug: 'slug-1',
+      defaultGroup: {
+        id: 'group-id',
+        slug: 'group-slug',
+        accountMembership: {
+          userRole: 'MEMBER',
+          membershipStatus: 'APPROVED',
         },
-        {}
-      ),
+      },
     },
     {}
   );
@@ -192,6 +193,7 @@ test('LandscapeSharedDataUpload: Complete Success', async () => {
   const navigate = jest.fn();
   useNavigate.mockReturnValue(navigate);
   await setup();
+  expect(navigate).toHaveBeenCalledTimes(0);
   terrasoApi.requestGraphQL.mockResolvedValueOnce(
     _.set(
       'addDataEntry.dataEntry',

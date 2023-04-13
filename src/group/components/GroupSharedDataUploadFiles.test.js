@@ -41,6 +41,10 @@ const setup = async () => {
         id: 'group-id',
         slug: 'slug-1',
         name: 'Group Name',
+        accountMembership: {
+          userRole: 'MEMBER',
+          membershipStatus: 'APPROVED',
+        },
       },
       {}
     )
@@ -189,6 +193,7 @@ test('GroupSharedDataUpload: Complete Success', async () => {
           new File(['content'], `test${index}.csv`, { type: 'text/csv' })
       )
   );
+  expect(navigate).toHaveBeenCalledTimes(0);
   const uploadButton = screen.getByRole('button', {
     name: 'Share Files and Links',
   });
@@ -204,6 +209,7 @@ test('GroupSharedDataUpload: PDF Success', async () => {
   await dropFiles([
     new File(['content'], 'test.pdf', { type: 'application/pdf' }),
   ]);
+  expect(navigate).toHaveBeenCalledTimes(0);
   const uploadButton = screen.getByRole('button', {
     name: 'Share Files and Links',
   });
@@ -244,6 +250,7 @@ test('GroupSharedDataUpload: MS Office Success', async () => {
           })
       )
   );
+  expect(navigate).toHaveBeenCalledTimes(0);
 
   const uploadButton = screen.getByRole('button', {
     name: 'Share Files and Links',
@@ -276,6 +283,7 @@ test('GroupSharedDataUpload: Gis files', async () => {
         })
     )
   );
+  expect(navigate).toHaveBeenCalledTimes(0);
 
   const uploadButton = screen.getByRole('button', {
     name: 'Share Files and Links',
