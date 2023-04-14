@@ -203,8 +203,8 @@
         "profile_document_title": "Cuenta",
         "profile_form_label": "Administrar perfil",
         "form_language_label": "Idioma",
-        "form_notifications_section_label": "Notifícame cuando",
-        "form_notifications_label": "Un grupo que administro tiene solicitudes pendientes o se aprobó mi solicitud para unirme a un grupo cerrado",
+        "form_notifications_section_label": "Notificaciónes de Correo Electrónico",
+        "form_notifications_label": "Notificarme cuando un grupo que administro tenga solicitudes pendientes o se apruebe mi solicitud para unirme a un grupo cerrado",
         "unsubscribe_title": "Darse de baja",
         "unsubscribe_success": "Has sido dado de baja de los correos electrónicos de Terraso.",
         "unsubscribe_error": "Error al darse de baja de los correos electrónicos de Terraso"
