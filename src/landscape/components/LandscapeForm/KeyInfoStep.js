@@ -140,9 +140,10 @@ const InfoStep = props => {
     [isNew, landscape, user.email]
   );
 
-  const formattedValues = useMemo(() =>
-    updatedValues ? VALIDATION_SCHEMA.cast(updatedValues) : null
-  , [updatedValues]);
+  const formattedValues = useMemo(
+    () => (updatedValues ? VALIDATION_SCHEMA.cast(updatedValues) : null),
+    [updatedValues]
+  );
 
   return (
     <>
