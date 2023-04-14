@@ -140,6 +140,11 @@ const InfoStep = props => {
     [isNew, landscape, user.email]
   );
 
+  const formattedValues = useMemo(
+    () => (updatedValues ? VALIDATION_SCHEMA.cast(updatedValues) : null),
+    [updatedValues]
+  );
+
   return (
     <>
       <PageHeader
@@ -154,7 +159,6 @@ const InfoStep = props => {
         {t('landscape.form_new_description')}
       </Typography>
       <Form
-        mode="onChange"
         aria-labelledby="landscape-form-page-title"
         prefix="landscape"
         localizationPrefix="landscape.form_key_info"
@@ -168,7 +172,7 @@ const InfoStep = props => {
         isForm
         isNew={isNew}
         onCancel={() => navigate(-1)}
-        updatedValues={updatedValues}
+        updatedValues={formattedValues}
         onNext={setUpdatedLandscape}
         nextLabel={t('landscape.form_add_landscape_label')}
         updateLabel={t('landscape.form_save_label')}

@@ -289,7 +289,7 @@ test('KeyInfoUpdate: Save form', async () => {
     target: { value: 'new@other.org' },
   });
   fireEvent.change(inputs.website, {
-    target: { value: 'https://www.other.org' },
+    target: { value: 'www.other.org' },
   });
   await inputs.changeLocation('Argentina');
 
