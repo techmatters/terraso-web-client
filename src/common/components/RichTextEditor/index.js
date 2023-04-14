@@ -283,6 +283,7 @@ const AddLinkButton = props => {
   const onButtonClick = useCallback(event => {
     event.preventDefault();
     setOpen(true);
+    setUrl('');
   }, []);
 
   const handleClose = useCallback(() => {
