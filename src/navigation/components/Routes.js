@@ -85,6 +85,9 @@ const paths = [
   path('/groups/:slug', GroupView, {
     showBreadcrumbs: true,
     breadcrumbsLabel: 'group.breadcrumbs_view',
+    optionalAuth: {
+      enabled: true,
+    },
   }),
   path('/groups/new', GroupForm),
   path('/groups/:slug/edit', GroupForm),
