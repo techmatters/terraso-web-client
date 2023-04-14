@@ -20,3 +20,6 @@ export const MEMBERSHIP_OPEN = 'OPEN';
 
 export const MEMBERSHIP_STATUS_PENDING = 'PENDING';
 export const MEMBERSHIP_STATUS_APPROVED = 'APPROVED';
+
+export const ROLE_MEMBER = 'MEMBER';
+export const ROLE_MANAGER = 'MANAGER';

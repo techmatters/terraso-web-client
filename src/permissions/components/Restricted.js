@@ -33,6 +33,10 @@ const Restricted = props => {
   } = props;
   const { loading, allowed } = usePermission(permission, resource);
 
+  if (!resource) {
+    return null;
+  }
+
   if (loading) {
     return LoadingComponent ? (
       <LoadingComponent />

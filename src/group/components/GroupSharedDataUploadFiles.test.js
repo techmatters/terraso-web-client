@@ -20,6 +20,7 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { useNavigate, useParams } from 'react-router-dom';
+import { GROUP_TYPES_WITH_REDIRECTS } from 'tests/constants';
 
 import * as terrasoApi from 'terrasoBackend/api';
 
@@ -33,13 +34,19 @@ jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
 }));
 
-const setup = async () => {
+const setup = async (membershipType = 'OPEN', userRole = 'MEMBER') => {
   terrasoApi.requestGraphQL.mockResolvedValue(
     _.set(
       'groups.edges[0].node',
       {
         id: 'group-id',
+        slug: 'slug-1',
         name: 'Group Name',
+        membershipType,
+        accountMembership: {
+          userRole,
+          membershipStatus: 'APPROVED',
+        },
       },
       {}
     )
@@ -73,6 +80,22 @@ const dropFiles = async files => {
   };
   await act(async () => fireEvent.drop(dropzone, data));
 };
+
+Object.keys(GROUP_TYPES_WITH_REDIRECTS).forEach(currentGroup =>
+  test(`GroupSharedDataUpload: Redirection: ${currentGroup}`, async () => {
+    const navigate = jest.fn();
+    useNavigate.mockReturnValue(navigate);
+
+    await setup(
+      GROUP_TYPES_WITH_REDIRECTS[currentGroup].membershipType,
+      GROUP_TYPES_WITH_REDIRECTS[currentGroup].userRole
+    );
+
+    expect(navigate).toHaveBeenCalledTimes(
+      GROUP_TYPES_WITH_REDIRECTS[currentGroup].uploadRedirectCount
+    );
+  })
+);
 
 test('GroupSharedDataUpload: Error - Invalid type', async () => {
   await dropFiles([new File(['content'], 'test.txt', { type: 'text/plain' })]);
@@ -188,6 +211,7 @@ test('GroupSharedDataUpload: Complete Success', async () => {
           new File(['content'], `test${index}.csv`, { type: 'text/csv' })
       )
   );
+  expect(navigate).toHaveBeenCalledTimes(0);
   const uploadButton = screen.getByRole('button', {
     name: 'Share Files and Links',
   });
@@ -203,6 +227,7 @@ test('GroupSharedDataUpload: PDF Success', async () => {
   await dropFiles([
     new File(['content'], 'test.pdf', { type: 'application/pdf' }),
   ]);
+  expect(navigate).toHaveBeenCalledTimes(0);
   const uploadButton = screen.getByRole('button', {
     name: 'Share Files and Links',
   });
@@ -243,6 +268,7 @@ test('GroupSharedDataUpload: MS Office Success', async () => {
           })
       )
   );
+  expect(navigate).toHaveBeenCalledTimes(0);
 
   const uploadButton = screen.getByRole('button', {
     name: 'Share Files and Links',
@@ -275,6 +301,7 @@ test('GroupSharedDataUpload: Gis files', async () => {
         })
     )
   );
+  expect(navigate).toHaveBeenCalledTimes(0);
 
   const uploadButton = screen.getByRole('button', {
     name: 'Share Files and Links',

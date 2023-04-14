@@ -17,6 +17,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
+import { usePermissionRedirect } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -65,7 +66,13 @@ const LandscapeSharedDataUpload = () => {
     });
   }, [navigate, slug]);
 
-  if (fetching) {
+  const { loading } = usePermissionRedirect(
+    'sharedData.add',
+    landscape?.defaultGroup,
+    useMemo(() => `/landscapes/${landscape?.slug}`, [landscape?.slug])
+  );
+
+  if (fetching || loading) {
     return <PageLoader />;
   }
 

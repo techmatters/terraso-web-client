@@ -20,6 +20,8 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
+import { useNavigate } from 'react-router-dom';
+import { GROUP_TYPES_WITH_REDIRECTS } from 'tests/constants';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 
@@ -32,6 +34,11 @@ global.console.error = jest.fn();
 jest.mock('terrasoBackend/api');
 
 jest.mock('@mui/material/useMediaQuery');
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: jest.fn(),
+}));
 
 const setup = async initialState => {
   await render(<GroupMembers />, {
@@ -49,6 +56,39 @@ const setup = async initialState => {
     ...initialState,
   });
 };
+
+Object.keys(GROUP_TYPES_WITH_REDIRECTS).forEach(currentGroup =>
+  test(`GroupMembers: Redirection: ${currentGroup}`, async () => {
+    const navigate = jest.fn();
+    useNavigate.mockReturnValue(navigate);
+
+    terrasoApi.requestGraphQL.mockReturnValue(
+      Promise.resolve(
+        _.set(
+          'groups.edges[0].node',
+          {
+            id: 'group-id',
+            slug: 'slug-1',
+            name: 'Group Name',
+            membershipType:
+              GROUP_TYPES_WITH_REDIRECTS[currentGroup].membershipType,
+            accountMembership: {
+              userRole: GROUP_TYPES_WITH_REDIRECTS[currentGroup].userRole,
+              membershipStatus: 'APPROVED',
+            },
+          },
+          {}
+        )
+      )
+    );
+
+    await setup();
+
+    expect(navigate).toHaveBeenCalledTimes(
+      GROUP_TYPES_WITH_REDIRECTS[currentGroup].memberListRedirectCount
+    );
+  })
+);
 
 test('GroupMembers: Display error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValue('Load error');
@@ -71,6 +111,7 @@ test('GroupMembers: Empty', async () => {
         'groups.edges[0].node',
         {
           name: 'Group Name',
+          membershipType: 'OPEN',
         },
         {}
       )
@@ -102,6 +143,7 @@ test('GroupMembers: Display list', async () => {
   const group = {
     slug: 'test-group-slug',
     name: 'Group Name',
+    membershipType: 'OPEN',
     memberships: generateMemberhips(3, 20),
   };
 
@@ -158,6 +200,7 @@ test('GroupMembers: Display list (small)', async () => {
   const group = {
     slug: 'test-group-slug',
     name: 'Group Name',
+    membershipType: 'OPEN',
     memberships: generateMemberhips(3, 20),
   };
 

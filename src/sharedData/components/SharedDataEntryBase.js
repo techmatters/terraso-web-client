@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
@@ -63,7 +63,7 @@ const SharedDataEntryBase = props => {
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
 
-  const onConfirm = () => {
+  const onConfirm = useCallback(() => {
     dispatch(deleteSharedData({ groupSlug: group.slug, dataEntry })).then(
       data => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
@@ -74,27 +74,44 @@ const SharedDataEntryBase = props => {
         dispatch(resetProcessing(dataEntry.id));
       }
     );
-  };
+  }, [dataEntry, dispatch, group.slug, owner.slug, trackEvent, updateOwner]);
 
-  const onUpdate = field => value => {
-    dispatch(
-      updateSharedData({
-        dataEntry: {
-          ..._.pick(['id', 'name', 'description'], dataEntry),
-          [field]: value,
-        },
-      })
-    ).then(data => {
-      const success = _.get('meta.requestStatus', data) === 'fulfilled';
-      if (success) {
-        updateOwner();
-        trackEvent('dataEntry.edit', { props: { owner: owner.slug } });
-      }
-      dispatch(resetProcessing(dataEntry.id));
-    });
-  };
+  const onUpdate = useCallback(
+    field => value => {
+      dispatch(
+        updateSharedData({
+          dataEntry: {
+            ..._.pick(['id', 'name', 'description'], dataEntry),
+            [field]: value,
+          },
+        })
+      ).then(data => {
+        const success = _.get('meta.requestStatus', data) === 'fulfilled';
+        if (success) {
+          updateOwner();
+          trackEvent('dataEntry.edit', { props: { owner: owner.slug } });
+        }
+        dispatch(resetProcessing(dataEntry.id));
+      });
+    },
+    [dataEntry, dispatch, owner.slug, trackEvent, updateOwner]
+  );
 
-  const description = _.get('description', dataEntry);
+  const onUpdateName = useMemo(() => onUpdate('name'), [onUpdate]);
+  const onUpdateDescription = useMemo(
+    () => onUpdate('description'),
+    [onUpdate]
+  );
+
+  const description = useMemo(
+    () => _.get('description', dataEntry),
+    [dataEntry]
+  );
+
+  const permissionsResource = useMemo(
+    () => ({ group, dataEntry }),
+    [dataEntry, group]
+  );
 
   return (
     <ListItem sx={{ p: 0, flexDirection: 'column' }}>
@@ -114,14 +131,14 @@ const SharedDataEntryBase = props => {
           <EntryTypeIcon resourceType={dataEntry.resourceType} />
           <Restricted
             permission="sharedData.edit"
-            resource={{ group, dataEntry }}
+            resource={permissionsResource}
             FallbackComponent={() => <Typography>{dataEntry.name}</Typography>}
           >
             <EditableText
               id={`name-${dataEntry.id}`}
               label={t('sharedData.name_update')}
               value={dataEntry.name}
-              onSave={onUpdate('name')}
+              onSave={onUpdateName}
               processing={processing}
               isEditing={isEditingName}
               setIsEditing={setIsEditingName}
@@ -155,7 +172,7 @@ const SharedDataEntryBase = props => {
         >
           <Restricted
             permission="sharedData.delete"
-            resource={{ group, dataEntry }}
+            resource={permissionsResource}
           >
             <ConfirmButton
               onConfirm={onConfirm}
@@ -205,7 +222,7 @@ const SharedDataEntryBase = props => {
         >
           <Restricted
             permission="sharedData.edit"
-            resource={{ group, dataEntry }}
+            resource={permissionsResource}
             FallbackComponent={() => (
               <Typography variant="body1">{dataEntry.description}</Typography>
             )}
@@ -222,7 +239,7 @@ const SharedDataEntryBase = props => {
                   ? 'sharedData.add_link_description_message'
                   : 'sharedData.add_file_description_message'
               )}
-              onSave={onUpdate('description')}
+              onSave={onUpdateDescription}
               viewProps={{ variant: 'body1' }}
             />
           </Restricted>

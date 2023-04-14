@@ -17,7 +17,7 @@
 import React, { useCallback, useMemo } from 'react';
 
 import _ from 'lodash/fp';
-import { usePermission } from 'permissions';
+import { usePermission, usePermissionRedirect } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -68,7 +68,13 @@ const Header = props => {
     group
   );
 
-  if (fetching || loadingPermissions) {
+  const { loading } = usePermissionRedirect(
+    'group.viewMembers',
+    group,
+    useMemo(() => `/groups/${group?.slug}`, [group?.slug])
+  );
+
+  if (fetching || loading || loadingPermissions) {
     return null;
   }
 
