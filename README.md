@@ -8,6 +8,19 @@ Terraso web client is a React application that powers the frontend of the Terras
 - Node: Version 16.13.0
 - Npm: Version 8.1.0
 
+## Running locally with Docker
+
+Set up your environment file
+
+```sh
+$ cp local.env.sample local.env
+```
+
+In the `local.env` file
+
+-   set value for `REACT_APP_MAPBOX_ACCESS_TOKEN` based on what you have set up in https://account.mapbox.com/ > Access tokens.
+
+
 ## Available Scripts
 
 In the project directory, you can run:
