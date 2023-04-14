@@ -32,6 +32,9 @@ export const useDocumentTitle = (title, fetching, omitSuffix = false) => {
   useEffect(() => {
     if (!fetching && fullTitle) {
       document.title = fullTitle;
+      document
+        .querySelector('meta[property="og:title"]')
+        ?.setAttribute('content', fullTitle);
     }
   }, [fetching, fullTitle]);
 };
