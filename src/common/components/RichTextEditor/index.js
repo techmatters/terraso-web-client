@@ -315,7 +315,16 @@ const AddLinkButton = props => {
           {t('common.rich_text_editor_link_add_dialog_title')}
         </DialogTitle>
         <DialogContent>
-          <OutlinedInput fullWidth value={url} onChange={onInputChange} />
+          <OutlinedInput
+            fullWidth
+            value={url}
+            onChange={onInputChange}
+            inputProps={{
+              'aria-label': t(
+                'common.rich_text_editor_link_add_dialog_input_label'
+              ),
+            }}
+          />
           {error && <FormHelperText error>{error}</FormHelperText>}
         </DialogContent>
         <DialogActions>
