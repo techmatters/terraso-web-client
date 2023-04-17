@@ -28,7 +28,7 @@ const setup = async () => {
               text: 'asdasd asd asd ',
             },
             {
-              url: 'https://test.com',
+              url: 'https://example.com',
               type: 'link',
               children: [
                 {
