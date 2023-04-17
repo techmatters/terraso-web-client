@@ -24,28 +24,8 @@ jest.mock('react-router-dom', () => ({
   useLocation: jest.fn(),
 }));
 
-const setup = async initialState => {
-  await render(<App />, initialState);
-};
-
-test('App: Embedded', async () => {
-  useLocation.mockReturnValue({
-    pathname: '/landscapes/map',
-  });
-  await setup();
-
-  expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
-
-  expect(
-    screen.queryByRole('button', { name: 'Sign Out' })
-  ).not.toBeInTheDocument();
-});
-
-test.skip('App: Not Embedded', async () => {
-  useLocation.mockReturnValue({
-    pathname: '/landscapes',
-  });
-  await setup({
+const setup = async () => {
+  await render(<App />, {
     account: {
       hasToken: true,
       currentUser: {
@@ -58,12 +38,40 @@ test.skip('App: Not Embedded', async () => {
       },
     },
   });
+};
+
+test('App: Embedded', async () => {
+  useLocation.mockReturnValue({
+    pathname: '/landscapes/map',
+  });
+  await setup();
 
   // header
+  expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
+
   expect(
-    screen.getByRole('navigation', { name: 'Breadcrumbs' })
-  ).toBeInTheDocument();
+    screen.queryByRole('button', { name: 'Sign Out' })
+  ).not.toBeInTheDocument();
+
+  // footer
+  expect(
+    screen.queryByRole('link', { name: 'About Terraso' })
+  ).not.toBeInTheDocument();
+});
+
+test('App: Not Embedded', async () => {
+  useLocation.mockReturnValue({
+    pathname: '/landscapes',
+  });
+  await setup();
 
   // header
-  expect(screen.getByRole('button', { name: 'Sign In' })).toBeInTheDocument();
+  expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument();
+
+  expect(screen.getByRole('button', { name: 'Sign Out' })).toBeInTheDocument();
+
+  // footer
+  expect(
+    screen.getByRole('link', { name: 'About Terraso' })
+  ).toBeInTheDocument();
 });
