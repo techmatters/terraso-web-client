@@ -125,6 +125,9 @@ const paths = [
   path('/landscapes/:slug/profile', LandscapeProfile, {
     showBreadcrumbs: true,
     breadcrumbsLabel: 'landscape.breadcrumbs_profile',
+    optionalAuth: {
+      enabled: true,
+    },
   }),
   path('/landscapes/:slug/profile/edit', LandscapeProfileUpdate),
   path('/landscapes/:slug/affiliation/edit', LandscapeAffiliationUpdate),
