@@ -6,7 +6,7 @@
     "@changey/react-leaflet-markercluster": "^4.0.0-rc1",
     "@hookform/resolvers": "^3.0.1",
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
-    "@mui/icons-material": "^5.11.11",
+    "@mui/icons-material": "^5.11.16",
     "@mui/lab": "^5.0.0-alpha.124",
     "@mui/material": "^5.12.1",
     "@mui/x-data-grid": "^6.2.0",
