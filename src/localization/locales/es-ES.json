@@ -522,6 +522,7 @@
         "rich_text_editor_link_add_dialog_title": "Añadir enlace",
         "rich_text_editor_link_add_dialog_cancel": "Cancelar",
         "rich_text_editor_link_add_dialog_add": "Añadir enlace",
+        "rich_text_editor_link_add_dialog_input_label": "Enlace",
         "rich_text_editor_toolbar_link_add": "Enlace",
         "rich_text_editor_toolbar_link_remove": "Desvincular enlace",
         "rich_text_editor_toolbar_bold": "Negrita",

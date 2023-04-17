@@ -283,6 +283,7 @@ const AddLinkButton = props => {
   const onButtonClick = useCallback(event => {
     event.preventDefault();
     setOpen(true);
+    setUrl('');
   }, []);
 
   const handleClose = useCallback(() => {
@@ -314,7 +315,16 @@ const AddLinkButton = props => {
           {t('common.rich_text_editor_link_add_dialog_title')}
         </DialogTitle>
         <DialogContent>
-          <OutlinedInput fullWidth value={url} onChange={onInputChange} />
+          <OutlinedInput
+            fullWidth
+            value={url}
+            onChange={onInputChange}
+            inputProps={{
+              'aria-label': t(
+                'common.rich_text_editor_link_add_dialog_input_label'
+              ),
+            }}
+          />
           {error && <FormHelperText error>{error}</FormHelperText>}
         </DialogContent>
         <DialogActions>
@@ -410,9 +420,10 @@ const RichTextEditor = props => {
     onChange,
     placeholder,
     addContainer,
+    initialFocused = false,
   } = props;
 
-  const [focused, setFocused] = useState(false);
+  const [focused, setFocused] = useState(initialFocused);
 
   const editor = useMemo(
     () => withInlines(withHistory(withReact(createEditor()))),
