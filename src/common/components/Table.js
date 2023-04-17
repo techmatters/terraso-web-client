@@ -79,7 +79,7 @@ const Table = props => {
         pageSize: PAGE_SIZE,
         page: page || 0,
       }}
-      rowsPerPageOptions={[PAGE_SIZE]}
+      pageSizeOptions={[PAGE_SIZE]}
       sortModel={sortModel}
       onSortModelChange={model => {
         setSortModel(model);
