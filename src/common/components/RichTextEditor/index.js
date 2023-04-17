@@ -420,9 +420,10 @@ const RichTextEditor = props => {
     onChange,
     placeholder,
     addContainer,
+    initialFocused = false,
   } = props;
 
-  const [focused, setFocused] = useState(false);
+  const [focused, setFocused] = useState(initialFocused);
 
   const editor = useMemo(
     () => withInlines(withHistory(withReact(createEditor()))),
