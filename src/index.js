@@ -14,19 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useRef } from 'react';
+import React from 'react';
 
 import { createRoot } from 'react-dom/client';
 
-import { Box } from '@mui/material';
-
-import AppBar from 'layout/AppBar';
 import AppWrappers from 'layout/AppWrappers';
-import Footer from 'layout/Footer';
 import reportWebVitals from 'monitoring/reportWebVitals';
-import Navigation from 'navigation/components/Navigation';
-import Routes from 'navigation/components/Routes';
-import { useOptionalAuth } from 'navigation/components/Routes';
 import rules from 'permissions/rules';
 import createStore from 'state/store';
 
@@ -34,54 +27,7 @@ import theme from 'theme';
 
 import 'index.css';
 
-import BreadcrumbsShareContainer from 'layout/BreadcrumbsShareContainer';
-
-import OptionalAuthBottomMessage from 'account/components/OptionalAuthBottomMessage';
-import OptionalAuthTopMessage from 'account/components/OptionalAuthTopMessage';
-
-const App = () => {
-  const contentRef = useRef();
-  const navigationRef = useRef();
-  const { isEmbedded } = useOptionalAuth();
-
-  if (isEmbedded) {
-    return <Routes />;
-  }
-
-  return (
-    <>
-      <Box
-        sx={{
-          bgcolor: 'gray.lite2',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '100vh',
-        }}
-      >
-        <Box id="header-container">
-          <AppBar />
-          <Navigation ref={navigationRef} />
-        </Box>
-        <Box
-          component="main"
-          id="content"
-          tabIndex="-1"
-          ref={contentRef}
-          sx={{
-            bgcolor: 'white',
-            flex: 1,
-          }}
-        >
-          <OptionalAuthTopMessage />
-          <BreadcrumbsShareContainer />
-          <Routes />
-          <OptionalAuthBottomMessage />
-        </Box>
-        <Footer />
-      </Box>
-    </>
-  );
-};
+import App from 'app';
 
 createRoot(document.getElementById('root')).render(
   <AppWrappers store={createStore()} theme={theme} permissionsRules={rules}>
