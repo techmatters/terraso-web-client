@@ -16,7 +16,7 @@
  */
 import { render, screen } from 'tests/utils';
 
-import App from 'app';
+import App from 'App';
 import { useLocation } from 'react-router-dom';
 
 jest.mock('react-router-dom', () => ({
