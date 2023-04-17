@@ -27,7 +27,7 @@ import theme from 'theme';
 
 import 'index.css';
 
-import App from 'app';
+import App from 'App';
 
 createRoot(document.getElementById('root')).render(
   <AppWrappers store={createStore()} theme={theme} permissionsRules={rules}>
