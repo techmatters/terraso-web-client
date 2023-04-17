@@ -62,7 +62,7 @@ test('RichTextEditor: Link dialog input should be empty', async () => {
 
     const urlInput = within(dialog).getByRole('textbox', { name: 'Link' });
     await act(async () => {
-      fireEvent.change(urlInput, { target: { value: 'test.com' } });
+      fireEvent.change(urlInput, { target: { value: 'example.com' } });
     });
 
     const addButton = within(dialog).getByRole('button', { name: 'Add Link' });
