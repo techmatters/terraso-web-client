@@ -47,7 +47,6 @@ const CustomIconButton = React.forwardRef((props, ref) => {
 const Table = props => {
   const [sortModel, setSortModel] = useState();
   const [page, setPage] = useState();
-  const { searchParams, onSearchParamsChange, ariaLabel } = props;
 
   const parseSortQuery = value =>
     _.flow(
@@ -57,6 +56,13 @@ const Table = props => {
         sort: SORT_DIRECTION_BY_SYMBOL[column.substring(0, 1)],
       }))
     )(value);
+  const {
+    searchParams,
+    onSearchParamsChange,
+    ariaLabel,
+    columns,
+    ...gridProps
+  } = props;
 
   useEffect(() => {
     const sort = searchParams.sort;
@@ -85,6 +91,15 @@ const Table = props => {
     });
   };
 
+  const columnsWithDefaults = useMemo(
+    () =>
+      columns.map(column => ({
+        ...column,
+        disableColumnMenu: column.sortable === false,
+      })),
+    [columns]
+  );
+
   return (
     <DataGrid
       slots={{
@@ -93,6 +108,7 @@ const Table = props => {
         columnMenu: CustomColumnMenu,
         baseIconButton: CustomIconButton,
       }}
+      columns={columnsWithDefaults}
       paginationModel={{
         pageSize: PAGE_SIZE,
         page: page || 0,
@@ -131,7 +147,7 @@ const Table = props => {
           backgroundColor: theme.palette.gray.lite2,
         },
       }}
-      {...props}
+      {...gridProps}
     />
   );
 };
