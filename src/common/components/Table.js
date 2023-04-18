@@ -19,7 +19,7 @@ import React, { useEffect, useState } from 'react';
 import _ from 'lodash/fp';
 
 import ImportExportIcon from '@mui/icons-material/ImportExport';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridColumnMenu } from '@mui/x-data-grid';
 
 import theme from 'theme';
 
@@ -30,6 +30,14 @@ const SORT_DIRECTION_BY_WORD = {
 };
 const SORT_DIRECTION_BY_SYMBOL = _.invert(SORT_DIRECTION_BY_WORD);
 
+const CustomColumnMenu = props => (
+  <GridColumnMenu
+    {...props}
+    slots={{
+      columnMenuFilterItem: null,
+    }}
+  />
+);
 const Table = props => {
   const [sortModel, setSortModel] = useState();
   const [page, setPage] = useState();
@@ -76,6 +84,7 @@ const Table = props => {
       slots={{
         panel: () => <div></div>,
         columnUnsortedIcon: () => <ImportExportIcon />,
+        columnMenu: CustomColumnMenu,
       }}
       paginationModel={{
         pageSize: PAGE_SIZE,
