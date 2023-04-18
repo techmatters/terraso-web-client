@@ -14,7 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import _ from 'lodash/fp';
 
@@ -74,22 +79,29 @@ const Table = props => {
     setPage(parseInt(pageValue) || 0);
   }, [searchParams]);
 
-  const onPageChange = model => {
-    onSearchParamsChange({
-      ...searchParams,
-      page: model.page,
-    });
-  };
+  const onPageChange = useCallback(
+    model => {
+      onSearchParamsChange({
+        ...searchParams,
+        page: model.page,
+      });
+    },
+    [onSearchParamsChange, searchParams]
+  );
 
-  const onSortModelChange = model => {
-    const sort = model
-      .map(column => `${SORT_DIRECTION_BY_WORD[column.sort]}${column.field}`)
-      .join(',');
-    onSearchParamsChange({
-      ...searchParams,
-      sort,
-    });
-  };
+  const onSortModelChange = useCallback(
+    model => {
+      setSortModel(model);
+      const sort = model
+        .map(column => `${SORT_DIRECTION_BY_WORD[column.sort]}${column.field}`)
+        .join(',');
+      onSearchParamsChange({
+        ...searchParams,
+        sort,
+      });
+    },
+    [onSearchParamsChange, searchParams]
+  );
 
   const columnsWithDefaults = useMemo(
     () =>
@@ -115,10 +127,7 @@ const Table = props => {
       }}
       pageSizeOptions={[PAGE_SIZE]}
       sortModel={sortModel}
-      onSortModelChange={model => {
-        setSortModel(model);
-        onSortModelChange(model);
-      }}
+      onSortModelChange={onSortModelChange}
       autoHeight
       disableVirtualization
       disableColumnSelector
