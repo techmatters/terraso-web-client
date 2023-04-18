@@ -125,6 +125,11 @@ const Table = props => {
       hideFooterSelectedRowCount
       onPaginationModelChange={onPageChange}
       aria-labelledby={ariaLabel}
+      localeText={{
+        columnMenuSortAsc: t('common.table_sort_asc'),
+        columnMenuSortDesc: t('common.table_sort_desc'),
+        columnMenuUnsort: t('common.table_sort_unsort'),
+      }}
       // Show the sort button in the column at all times, not just on hover.
       // Improve accessibility.
       // Based on https://github.com/mui/mui-x/issues/1076#issuecomment-926943642
