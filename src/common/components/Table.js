@@ -22,6 +22,7 @@ import React, {
 } from 'react';
 
 import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
 
 import ImportExportIcon from '@mui/icons-material/ImportExport';
 import { DataGrid, GridColumnMenu } from '@mui/x-data-grid';
@@ -58,6 +59,7 @@ const CustomIconButton = React.forwardRef((props, ref) => {
 });
 
 const Table = props => {
+  const { t } = useTranslation();
   const [sortModel, setSortModel] = useState();
   const [page, setPage] = useState();
   const {
