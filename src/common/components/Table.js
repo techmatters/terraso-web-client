@@ -213,6 +213,7 @@ const Table = props => {
       disableColumnSelector
       hideFooterSelectedRowCount
       onPaginationModelChange={onPageChange}
+      getRowHeight={() => 'auto'}
       aria-labelledby={ariaLabel}
       localeText={{
         columnMenuSortAsc: t('common.table_sort_asc'),
@@ -239,6 +240,10 @@ const Table = props => {
         },
         '.MuiDataGrid-row:nth-of-type(even)': {
           backgroundColor: theme.palette.gray.lite2,
+        },
+        '& .MuiDataGrid-cell': {
+          pt: 1,
+          pb: 1,
         },
       }}
       {...gridProps}
