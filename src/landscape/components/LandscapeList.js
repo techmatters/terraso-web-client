@@ -200,9 +200,6 @@ const LandscapeList = () => {
               sort: 'asc',
             },
           ],
-          localeText: {
-            footerPaginationRowsPerPage: t('common.data_grid_pagination_of'),
-          },
         }}
       />
       <Typography
