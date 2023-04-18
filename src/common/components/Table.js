@@ -20,6 +20,7 @@ import _ from 'lodash/fp';
 
 import ImportExportIcon from '@mui/icons-material/ImportExport';
 import { DataGrid, GridColumnMenu } from '@mui/x-data-grid';
+import { IconButton } from '@mui/material';
 
 import theme from 'theme';
 
@@ -38,6 +39,11 @@ const CustomColumnMenu = props => (
     }}
   />
 );
+
+const CustomIconButton = React.forwardRef((props, ref) => {
+  return <IconButton ref={ref} {..._.omit('title', props)} />;
+});
+
 const Table = props => {
   const [sortModel, setSortModel] = useState();
   const [page, setPage] = useState();
@@ -85,6 +91,7 @@ const Table = props => {
         panel: () => <div></div>,
         columnUnsortedIcon: () => <ImportExportIcon />,
         columnMenu: CustomColumnMenu,
+        baseIconButton: CustomIconButton,
       }}
       paginationModel={{
         pageSize: PAGE_SIZE,
