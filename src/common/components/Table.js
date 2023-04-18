@@ -36,6 +36,14 @@ const SORT_DIRECTION_BY_WORD = {
 };
 const SORT_DIRECTION_BY_SYMBOL = _.invert(SORT_DIRECTION_BY_WORD);
 
+const parseSortQuery = value =>
+  _.flow(
+    _.split(','),
+    _.map(column => ({
+      field: column.substring(1),
+      sort: SORT_DIRECTION_BY_SYMBOL[column.substring(0, 1)],
+    }))
+  )(value);
 const CustomColumnMenu = props => (
   <GridColumnMenu
     {...props}
@@ -52,15 +60,6 @@ const CustomIconButton = React.forwardRef((props, ref) => {
 const Table = props => {
   const [sortModel, setSortModel] = useState();
   const [page, setPage] = useState();
-
-  const parseSortQuery = value =>
-    _.flow(
-      _.split(','),
-      _.map(column => ({
-        field: column.substring(1),
-        sort: SORT_DIRECTION_BY_SYMBOL[column.substring(0, 1)],
-      }))
-    )(value);
   const {
     searchParams,
     onSearchParamsChange,
