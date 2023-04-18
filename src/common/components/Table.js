@@ -73,9 +73,9 @@ const Table = props => {
 
   return (
     <DataGrid
-      components={{
-        Panel: () => <div></div>,
-        ColumnUnsortedIcon: ImportExportIcon,
+      slots={{
+        panel: () => <div></div>,
+        columnUnsortedIcon: () => <ImportExportIcon />,
       }}
       paginationModel={{
         pageSize: PAGE_SIZE,
