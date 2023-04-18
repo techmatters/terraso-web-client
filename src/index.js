@@ -16,12 +16,17 @@
  */
 import React from 'react';
 
+import ReactDOM from 'react-dom';
 import { createRoot } from 'react-dom/client';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 
 import AppWrappers from 'layout/AppWrappers';
 import reportWebVitals from 'monitoring/reportWebVitals';
 import rules from 'permissions/rules';
 import createStore from 'state/store';
+
+import { REACT_APP_BASE_URL } from 'config';
 
 import theme from 'theme';
 
