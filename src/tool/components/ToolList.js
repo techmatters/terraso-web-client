@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 import { List, Stack, Typography } from '@mui/material';
 
-import { useDocumentTitle } from 'common/document';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 
@@ -32,6 +32,7 @@ const ToolList = () => {
   const toolList = ['storyMap', 'kobo'];
 
   useDocumentTitle(t('tool.list_document_title'));
+  useDocumentDescription(t('tool.list_document_description'));
 
   return (
     <PageContainer>

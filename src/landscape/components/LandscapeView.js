@@ -42,7 +42,7 @@ import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
 import RouterLink from 'common/components/RouterLink';
 import { useSocialShareContext } from 'common/components/SocialShare';
-import { useDocumentTitle } from 'common/document';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import { countryNameForCode } from 'common/utils';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
@@ -235,6 +235,13 @@ const LandscapeView = () => {
   useDocumentTitle(
     t('landscape.view_document_title', {
       name: _.get('name', landscape),
+    }),
+    fetching
+  );
+
+  useDocumentDescription(
+    t('landscape.view_document_description', {
+      description: _.get('description', landscape),
     }),
     fetching
   );

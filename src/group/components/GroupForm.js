@@ -30,7 +30,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import { useDocumentTitle } from 'common/document';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import { transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
 import PageContainer from 'layout/PageContainer';
@@ -175,6 +175,15 @@ const GroupForm = () => {
           name: _.getOr('', 'name', group),
         })
       : t('group.form_new_document_title'),
+    fetching
+  );
+
+  useDocumentDescription(
+    !isNew
+      ? t('group.form_edit_document_description', {
+          name: _.getOr('', 'name', group),
+        })
+      : t('group.form_new_document_description'),
     fetching
   );
 

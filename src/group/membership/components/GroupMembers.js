@@ -24,7 +24,7 @@ import { useParams } from 'react-router-dom';
 
 import { Typography } from '@mui/material';
 
-import { useDocumentTitle } from 'common/document';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
@@ -51,6 +51,13 @@ const Header = props => {
 
   useDocumentTitle(
     t('group.members_document_title', {
+      name: _.get('name', group),
+    }),
+    fetching
+  );
+
+  useDocumentDescription(
+    t('group.members_document_description', {
       name: _.get('name', group),
     }),
     fetching
