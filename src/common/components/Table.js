@@ -18,15 +18,17 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 
+import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import ImportExportIcon from '@mui/icons-material/ImportExport';
-import { DataGrid, GridColumnMenu } from '@mui/x-data-grid';
-import { IconButton } from '@mui/material';
+import { IconButton, List, ListItem, Stack } from '@mui/material';
+import { DataGrid, GridColumnMenu, GridPagination } from '@mui/x-data-grid';
 
 import theme from 'theme';
 
@@ -45,6 +47,82 @@ const parseSortQuery = value =>
       sort: SORT_DIRECTION_BY_SYMBOL[column.substring(0, 1)],
     }))
   )(value);
+
+const disableBack = page => page === 0;
+
+const disableNext = (page, count, rowsPerPage) =>
+  page >= Math.ceil(count / rowsPerPage) - 1;
+
+const TablePaginationActions = React.forwardRef((props, ref) => {
+  const { t } = useTranslation();
+  const { count, onPageChange, page, rowsPerPage } = props;
+  const backRef = useRef();
+  const nextRef = useRef();
+
+  const handleBackButtonClick = event => {
+    const nextPage = page - 1;
+    if (disableBack(nextPage)) {
+      nextRef.current.focus();
+    }
+    onPageChange(event, nextPage);
+  };
+
+  const handleNextButtonClick = event => {
+    const nextPage = page + 1;
+    if (disableNext(nextPage, count, rowsPerPage)) {
+      backRef.current.focus();
+    }
+    onPageChange(event, nextPage);
+  };
+
+  return (
+    <Stack
+      ref={ref}
+      component={List}
+      direction="row"
+      sx={{ ml: 2, p: 0 }}
+      role="list"
+      aria-label={t('common.table_pagination_label')}
+    >
+      <ListItem sx={{ p: 0 }}>
+        <IconButton
+          ref={backRef}
+          aria-label={t('common.table_pagination_previous_page')}
+          onClick={handleBackButtonClick}
+          disabled={disableBack(page)}
+          color="inherit"
+        >
+          <KeyboardArrowLeft />
+        </IconButton>
+      </ListItem>
+      <ListItem sx={{ p: 0 }}>
+        <IconButton
+          ref={nextRef}
+          aria-label={t('common.table_pagination_next_page')}
+          onClick={handleNextButtonClick}
+          disabled={disableNext(page, count, rowsPerPage)}
+          color="inherit"
+        >
+          <KeyboardArrowRight />
+        </IconButton>
+      </ListItem>
+    </Stack>
+  );
+});
+
+const CustomPagination = props => {
+  const { t } = useTranslation();
+  return (
+    <GridPagination
+      labelDisplayedRows={({ from, to, count }) =>
+        t('common.table_pagination_displayed', { from, to, count })
+      }
+      ActionsComponent={TablePaginationActions}
+      {...props}
+    />
+  );
+};
+
 const CustomColumnMenu = props => (
   <GridColumnMenu
     {...props}
@@ -117,6 +195,7 @@ const Table = props => {
     <DataGrid
       slots={{
         panel: () => <div></div>,
+        pagination: CustomPagination,
         columnUnsortedIcon: () => <ImportExportIcon />,
         columnMenu: CustomColumnMenu,
         baseIconButton: CustomIconButton,
