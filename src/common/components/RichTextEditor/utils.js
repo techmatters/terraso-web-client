@@ -1,4 +1,4 @@
-import { Node } from 'slate';
+import { Node as SlateNode } from 'slate';
 import { jsx } from 'slate-hyperscript';
 
 const ELEMENT_TAGS = {
@@ -25,7 +25,7 @@ export const serialize = nodes => {
     return;
   }
 
-  return nodes.map(n => Node.string(n)).join(' ');
+  return nodes.map(n => SlateNode.string(n)).join(' ');
 };
 
 export const deserialize = el => {
