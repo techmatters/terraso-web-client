@@ -114,7 +114,6 @@ const withInlines = editor => {
     const html = data.getData('text/html');
 
     if (html) {
-      console.log({ html });
       const parsed = new DOMParser().parseFromString(html, 'text/html');
       const fragment = deserialize(parsed.body);
       Transforms.insertFragment(editor, fragment);
