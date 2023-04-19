@@ -121,7 +121,7 @@ const SharedDataUpload = props => {
         .forEach(result => {
           const isLink = _.has('value.meta.arg.link', result);
           if (isLink) {
-            trackEvent('uploadLink', {
+            trackEvent('dataEntry.link.create', {
               props: {
                 owner: owner.slug,
                 name: _.get('value.meta.arg.link.name', result),
