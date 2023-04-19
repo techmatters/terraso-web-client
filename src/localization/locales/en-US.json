@@ -666,7 +666,7 @@
         "table_pagination_previous_page": "Go to previous page",
         "table_pagination_next_page": "Go to next page",
         "table_pagination_displayed": "{{from}} - {{to}} of {{count}}",
-        "table_sort_desc": "Sort descinding",
+        "table_sort_desc": "Sort descending",
         "table_sort_asc": "Sort ascending",
         "table_sort_unsort": "Unsort",
         "rich_text_editor_link_add_dialog_title": "Add Link",
