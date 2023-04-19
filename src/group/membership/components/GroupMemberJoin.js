@@ -25,18 +25,19 @@ import { useGroupContext } from 'group/groupContext';
 
 const GroupMemberJoin = props => {
   const { t } = useTranslation();
-
   const { owner } = useGroupContext();
+  const { ariaLabel, onJoin, buttonProps, loading } = props;
 
   return (
     <LoadingButton
       variant="outlined"
-      aria-label={t(props.ariaLabel, {
+      aria-label={t(ariaLabel, {
         name: _.get('name', owner),
       })}
-      onClick={props.onJoin}
-      loading={props.loading}
+      onClick={onJoin}
+      loading={loading}
       sx={{ flexGrow: 1 }}
+      {...buttonProps}
     >
       {t(props.label)}
     </LoadingButton>

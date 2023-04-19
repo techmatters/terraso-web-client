@@ -54,14 +54,14 @@ const MemberJoinButton = withProps(GroupMemberJoin, {
   ariaLabel: 'landscape.list_join_label',
 });
 
-const MembershipButton = ({ landscape }) => (
+const MembershipButton = ({ landscape, tabIndex }) => (
   <GroupContextProvider
     owner={landscape}
     groupSlug={_.get('defaultGroup.slug', landscape)}
     MemberJoinButton={MemberJoinButton}
     MemberLeaveButton={MemberLeaveButton}
   >
-    <GroupMembershipJoinLeaveButton sx={{ width: '100%' }} />
+    <GroupMembershipJoinLeaveButton tabIndex={tabIndex} />
   </GroupContextProvider>
 );
 
@@ -86,9 +86,13 @@ const LandscapeList = () => {
       flex: 1.5,
       minWidth: 200,
       renderCell: params => {
-        const { row: landscape, formattedValue } = params;
+        const { row: landscape, formattedValue, tabIndex } = params;
         return (
-          <Link component={RouterLink} to={`/landscapes/${landscape.slug}`}>
+          <Link
+            component={RouterLink}
+            to={`/landscapes/${landscape.slug}`}
+            tabIndex={tabIndex}
+          >
             {formattedValue}
           </Link>
         );
@@ -108,9 +112,11 @@ const LandscapeList = () => {
       sortable: false,
       flex: 1.5,
       minWidth: 200,
-      renderCell: ({ row: landscape }) =>
+      renderCell: ({ row: landscape, tabIndex }) =>
         landscape.website && (
-          <Link href={landscape.website}>{landscape.website}</Link>
+          <Link href={landscape.website} tabIndex={tabIndex}>
+            {landscape.website}
+          </Link>
         ),
     },
     {
@@ -132,8 +138,8 @@ const LandscapeList = () => {
       align: 'center',
       flex: 1,
       cardSize: 6,
-      getActions: ({ row: landscape }) => [
-        <MembershipButton landscape={landscape} />,
+      getActions: ({ row: landscape, tabIndex }) => [
+        <MembershipButton landscape={landscape} tabIndex={tabIndex} />,
       ],
     },
   ];
@@ -200,9 +206,6 @@ const LandscapeList = () => {
               sort: 'asc',
             },
           ],
-          localeText: {
-            footerPaginationRowsPerPage: t('common.data_grid_pagination_of'),
-          },
         }}
       />
       <Typography

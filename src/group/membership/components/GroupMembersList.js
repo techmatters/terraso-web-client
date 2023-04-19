@@ -46,7 +46,7 @@ const ROLES = ['MEMBER', 'MANAGER'];
 
 const GroupMembersListContext = React.createContext();
 
-const RoleSelect = ({ member }) => {
+const RoleSelect = ({ member, tabIndex }) => {
   const { t } = useTranslation();
   const { owner } = useGroupContext();
   const { onMemberRoleChange } = useContext(GroupMembersListContext);
@@ -69,6 +69,9 @@ const RoleSelect = ({ member }) => {
         value={member.role}
         onChange={onChange}
         disabled={member.fetching}
+        inputProps={{
+          tabIndex,
+        }}
         disableUnderline
       >
         {ROLES.map(role => (
@@ -81,7 +84,7 @@ const RoleSelect = ({ member }) => {
   );
 };
 
-const RemoveButton = ({ member }) => {
+const RemoveButton = ({ member, tabIndex }) => {
   const { owner, MemberLeaveButton, MemberRemoveButton } = useGroupContext();
   const { onMemberRemove } = useContext(GroupMembersListContext);
   const { data: currentUser } = useSelector(state => state.account.currentUser);
@@ -96,6 +99,7 @@ const RemoveButton = ({ member }) => {
         onConfirm={onConfirm}
         owner={owner}
         loading={member.fetching}
+        buttonProps={{ tabIndex }}
       />
     );
   }
@@ -107,6 +111,7 @@ const RemoveButton = ({ member }) => {
         owner={owner}
         member={member}
         loading={member.fetching}
+        buttonProps={{ tabIndex }}
       />
     </Restricted>
   );
@@ -256,14 +261,15 @@ const GroupMembersList = () => {
     },
     {
       field: 'role',
-      type: 'actions',
       headerName: t('group.members_list_column_role'),
       flex: 1.5,
       minWidth: 200,
       cardSize: 6,
       valueGetter: ({ row: member }) =>
         t(`group.role_${member.role.toLowerCase()}`),
-      getActions: ({ row: member }) => [<RoleSelect member={member} />],
+      renderCell: ({ row: member, tabIndex }) => (
+        <RoleSelect member={member} tabIndex={tabIndex} />
+      ),
     },
     {
       field: 'actions',
@@ -274,7 +280,9 @@ const GroupMembersList = () => {
       minWidth: 200,
       align: 'center',
       cardSize: 6,
-      getActions: ({ row: member }) => [<RemoveButton member={member} />],
+      getActions: ({ row: member, tabIndex }) => [
+        <RemoveButton member={member} tabIndex={tabIndex} />,
+      ],
     },
   ];
 

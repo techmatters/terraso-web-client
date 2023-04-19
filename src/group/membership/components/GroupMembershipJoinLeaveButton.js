@@ -29,7 +29,7 @@ import {
   MEMBERSHIP_STATUS_PENDING,
 } from './groupMembershipConstants';
 
-const GroupMembershipJoinLeaveButton = () => {
+const GroupMembershipJoinLeaveButton = props => {
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
   const {
@@ -47,6 +47,7 @@ const GroupMembershipJoinLeaveButton = () => {
   const { fetching, group, joining } = useSelector(
     _.getOr({}, `group.memberships.${groupSlug}`)
   );
+  const { tabIndex } = props;
 
   const loading = useMemo(() => fetching || joining, [fetching, joining]);
 
@@ -84,6 +85,7 @@ const GroupMembershipJoinLeaveButton = () => {
       <MemberRequestCancelButton
         onConfirm={onRemove('group.request_cancel_success')}
         owner={owner}
+        buttonProps={{ tabIndex }}
       />
     );
   }
@@ -92,6 +94,7 @@ const GroupMembershipJoinLeaveButton = () => {
       <MemberLeaveButton
         onConfirm={onRemove('group.leave_success')}
         owner={owner}
+        buttonProps={{ tabIndex }}
       />
     );
   }
@@ -100,11 +103,16 @@ const GroupMembershipJoinLeaveButton = () => {
       <MemberRequestJoinButton
         onJoin={onJoin('group.request_success')}
         loading={loading}
+        buttonProps={{ tabIndex }}
       />
     );
   }
   return (
-    <MemberJoinButton onJoin={onJoin('group.join_success')} loading={loading} />
+    <MemberJoinButton
+      onJoin={onJoin('group.join_success')}
+      loading={loading}
+      buttonProps={{ tabIndex }}
+    />
   );
 };
 
