@@ -89,6 +89,7 @@
         "list_document_title": "Grupos",
         "list_document_description": "Listar los grupos en Terraso",
         "view_document_title": "{{name}}",
+        "view_document_description": "{{description}}",
         "members_document_title": "Miembros: {{name}}",
         "members_document_description": "Miembros del grupo “{{name}}”",
         "list_column_actions_description": "Acciones",
