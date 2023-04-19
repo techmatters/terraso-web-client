@@ -21,9 +21,10 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { serialize } from 'common/components/RichTextEditor/utils';
 import RouterButton from 'common/components/RouterButton';
 import { useSocialShareContext } from 'common/components/SocialShare';
-import { useDocumentTitle } from 'common/document';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import Container, { useContainerContext } from 'layout/Container';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
@@ -51,6 +52,19 @@ const UserStoryMap = () => {
     t('storyMap.view_document_title', {
       name: _.get('title', storyMap),
     }),
+    fetching
+  );
+
+  useDocumentDescription(
+    useMemo(() => {
+      const description = serialize(
+        storyMap?.config?.chapters?.[0]?.description
+      );
+      if (description) {
+        return description;
+      }
+      return storyMap?.title;
+    }, [storyMap?.config?.chapters, storyMap?.title]),
     fetching
   );
 
