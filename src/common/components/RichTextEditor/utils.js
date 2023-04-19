@@ -1,3 +1,4 @@
+import { Node as SlateNode } from 'slate';
 import { jsx } from 'slate-hyperscript';
 
 const ELEMENT_TAGS = {
@@ -17,6 +18,14 @@ const ELEMENT_TAGS = {
 const TEXT_TAGS = {
   I: () => ({ italic: true }),
   STRONG: () => ({ bold: true }),
+};
+
+export const serialize = nodes => {
+  if (!nodes) {
+    return;
+  }
+
+  return nodes.map(n => SlateNode.string(n)).join(' ');
 };
 
 export const deserialize = el => {

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
@@ -42,7 +42,12 @@ export const useDocumentTitle = (title, fetching, omitSuffix = false) => {
 export const useDocumentDescription = (description, fetching) => {
   const { t } = useTranslation();
 
-  const fullDescription = description.trim() || t('site.description');
+  const fullDescription = useMemo(() => {
+    if (!description) {
+      return t('site.description');
+    }
+    return description.trim();
+  }, [description, t]);
 
   useEffect(() => {
     if (!fetching && fullDescription) {
