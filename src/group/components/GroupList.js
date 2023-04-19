@@ -25,7 +25,7 @@ import { Button, Link, Stack, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import TableResponsive from 'common/components/TableResponsive';
-import { useDocumentTitle } from 'common/document';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
@@ -94,6 +94,7 @@ const GroupList = () => {
   );
 
   useDocumentTitle(t('group.list_document_title'));
+  useDocumentDescription(t('group.list_document_description'));
 
   useFetchData(fetchGroups);
 

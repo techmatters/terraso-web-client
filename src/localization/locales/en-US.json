@@ -3,7 +3,8 @@
         "title": "Home",
         "error": "Error loading data. {{error}}",
         "page_title": "{{name}}’s Terraso",
-        "document_title": "Terraso Home"
+        "document_title": "Terraso Home",
+        "document_description": "Terraso is a set of free and powerful software tools to manage your landscape, protect your environment, and promote human livelihoods."
     },
     "user": {
         "sign_out": "Sign Out",
@@ -83,9 +84,14 @@
         "members_list_column_role": "Role",
         "form_edit_document_title": "Edit: {{name}}",
         "form_new_document_title": "Create Group",
+        "form_edit_document_description": "Edit the properties of the group “{{name}}”",
+        "form_new_document_description": "Create a new Terraso group",
         "list_document_title": "Groups",
+        "list_document_description": "View groups on Terraso",
         "view_document_title": "{{name}}",
+        "view_document_description": "{{description}}",
         "members_document_title": "Members: {{name}}",
+        "members_document_description": "Members of the “{{name}}” group",
         "list_column_actions_description": "Actions",
         "members_list_column_actions_description": "Actions",
         "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). There should at least be one manager.",
@@ -145,7 +151,8 @@
         "actions_bookmark": "Bookmark",
         "actions_recommend": "Recommend this to my team",
         "home_card_img_alt": "KoboToolbox",
-        "list_document_title": "Tools"
+        "list_document_title": "Tools",
+        "list_document_description": "A list of tools useful to Terraso users"
     },
     "tools": {
         "breadcrumbs_list": "Tools",
@@ -200,7 +207,9 @@
         "google_login": "Continue with Google",
         "microsoft_login": "Continue with Microsoft",
         "login_document_title": "Log in",
+        "login_document_description": "Log in to Terraso",
         "profile_document_title": "Account",
+        "profile_document_description": "View and edit your Terraso profile and preferences",
         "profile_form_label": "Manage profile",
         "form_language_label": "Language",
         "form_notifications_section_label": "Email notifications",
@@ -251,6 +260,7 @@
         "view_card_title": "About {{name}}",
         "view_card_title_profile_link": "View landscape details",
         "list_title": "Landscapes",
+        "list_description": "These landscapes are using Terraso.",
         "members_remove_confirmation_title": "Remove Member",
         "membership_leave_confirm_message": "Are you sure you want to leave the landscape “{{name}}”?",
         "members_remove_confirmation_message": "You are about to remove “{{userName}}” from the “{{name}}” landscape.",
@@ -304,12 +314,18 @@
         "form_email_info": "This email address will be used by interested people to connect with you and your landscape.",
         "list_column_location": "Location",
         "form_edit_document_title": "Edit: {{name}}",
+        "form_edit_document_description": "Edit the properties of the landscape “{{name}}”",
         "form_new_document_title": "Add Landscape",
+        "form_new_document_description": "Add a landscape to Terraso",
         "list_document_title": "Landscapes",
         "view_document_title": "{{name}}",
+        "view_document_description": "{{description}}",
         "profile_document_title": "{{name}} Profile",
+        "profile_document_description": "{{description}}",
         "members_document_title": "Members: {{name}}",
+        "members_document_description": "Members of the “{{name}}” landscape",
         "boundaries_document_title": "Edit boundary: {{name}}",
+        "boundaries_document_description": "Updated the boundary of the “{{name}}” landscape",
         "list_column_actions_description": "Actions",
         "view_map_title": "Landscape map",
         "boundaries_title": "Update {{name}}’s boundaries",
@@ -923,6 +939,11 @@
         "edit_document_title": "Edit: {{name}}",
         "view_document_title": "{{name}}",
         "optional_auth_top_message": "<1>Join Terraso</1> and create your own story map for free.",
-        "optional_auth_bottom_message": "Liked the story map? Create one by <1>signing up for Terraso</1>."
+        "optional_auth_bottom_message": "Liked the story map? Create one by <1>signing up for Terraso</1>.",
+        "iframe_title": "Contact Terraso"
+    },
+    "site": {
+        "description": "Free and powerful software tools to manage your landscape, protect your environment, and promote human livelihoods.",
+        "default_image": "/favicon.png"
     }
 }

@@ -85,6 +85,9 @@ const paths = [
   path('/groups/:slug', GroupView, {
     showBreadcrumbs: true,
     breadcrumbsLabel: 'group.breadcrumbs_view',
+    optionalAuth: {
+      enabled: true,
+    },
   }),
   path('/groups/new', GroupForm),
   path('/groups/:slug/edit', GroupForm),
@@ -122,6 +125,9 @@ const paths = [
   path('/landscapes/:slug/profile', LandscapeProfile, {
     showBreadcrumbs: true,
     breadcrumbsLabel: 'landscape.breadcrumbs_profile',
+    optionalAuth: {
+      enabled: true,
+    },
   }),
   path('/landscapes/:slug/profile/edit', LandscapeProfileUpdate),
   path('/landscapes/:slug/affiliation/edit', LandscapeAffiliationUpdate),

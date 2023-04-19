@@ -25,7 +25,7 @@ import { useParams } from 'react-router-dom';
 import { Grid, Stack } from '@mui/material';
 
 import { useSocialShareContext } from 'common/components/SocialShare';
-import { useDocumentTitle } from 'common/document';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
@@ -81,6 +81,13 @@ const LandscapeProfile = () => {
   useDocumentTitle(
     t('landscape.profile_document_title', {
       name: _.get('name', landscape),
+    }),
+    fetching
+  );
+
+  useDocumentDescription(
+    t('landscape.profile_document_description', {
+      description: _.get('description', landscape),
     }),
     fetching
   );

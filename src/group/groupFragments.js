@@ -61,6 +61,7 @@ export const groupFields = `
     website
     email
     membershipType
+    membershipsCount
   }
 `;
 

@@ -23,7 +23,7 @@ import { useSelector } from 'react-redux';
 import { Alert, Grid, Stack } from '@mui/material';
 
 import LoaderCard from 'common/components/LoaderCard';
-import { useDocumentTitle } from 'common/document';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import { useFetchData } from 'state/utils';
@@ -81,6 +81,7 @@ const Home = () => {
   const { groups, landscapes, storyMaps, error, fetching } = home;
 
   useDocumentTitle(t('home.document_title'), false, true);
+  useDocumentDescription(t('home.document_description'));
 
   useFetchData(useCallback(() => fetchHomeData(user.email), [user.email]));
 

@@ -23,7 +23,7 @@ import * as yup from 'yup';
 
 import { Checkbox, FormControlLabel } from '@mui/material';
 
-import { useDocumentTitle } from 'common/document';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import Form from 'forms/components/Form';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
@@ -123,6 +123,7 @@ const AccountProfile = () => {
   useFetchData(fetchProfile);
 
   useDocumentTitle(t('account.profile_document_title'));
+  useDocumentDescription(t('account.profile_document_description'));
 
   const onSave = updatedProfile => {
     // Save user data

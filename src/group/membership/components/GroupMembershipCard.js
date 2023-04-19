@@ -62,7 +62,7 @@ const Loader = () => {
 const Content = props => {
   const { t } = useTranslation();
   const { owner } = useGroupContext();
-  const { membersInfo, fetching, group, onViewMembers } = props;
+  const { user, membersInfo, fetching, group, onViewMembers } = props;
 
   const membersSample = _.getOr([], 'membersSample', membersInfo);
   const totalCount = _.getOr(0, 'totalCount', membersInfo);
@@ -134,9 +134,11 @@ const Content = props => {
           <AccountAvatar key={index} user={member} component="li" />
         ))}
       </AvatarGroup>
-      <Link sx={{ cursor: 'pointer' }} onClick={onViewMembers}>
-        {t('group.membership_view_all')}
-      </Link>
+      {user && (
+        <Link sx={{ cursor: 'pointer' }} onClick={onViewMembers}>
+          {t('group.membership_view_all')}
+        </Link>
+      )}
     </CardContent>
   );
 };
@@ -148,6 +150,7 @@ const GroupMembershipCard = props => {
   const { fetching, group } = useSelector(
     _.getOr({}, `group.memberships.${groupSlug}`)
   );
+  const { data: user } = useSelector(_.get('account.currentUser'));
 
   const membersInfo = _.getOr([], 'membersInfo', group);
 
@@ -171,12 +174,13 @@ const GroupMembershipCard = props => {
         }
       />
       <Content
+        user={user}
         group={group}
         fetching={fetching}
         membersInfo={membersInfo}
         onViewMembers={onViewMembers}
       />
-      {fetching ? null : (
+      {fetching || !user ? null : (
         <CardActions sx={{ display: 'block', paddingBottom: '24px' }}>
           <Restricted
             permission="group.change"
