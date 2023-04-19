@@ -25,7 +25,11 @@ import { useParams } from 'react-router-dom';
 import { Grid, Stack } from '@mui/material';
 
 import { useSocialShareContext } from 'common/components/SocialShare';
-import { useDocumentDescription, useDocumentTitle } from 'common/document';
+import {
+  useDocumentDescription,
+  useDocumentImage,
+  useDocumentTitle,
+} from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
@@ -77,6 +81,8 @@ const LandscapeProfile = () => {
       [section]: hasData,
     }));
   }, []);
+
+  useDocumentImage(_.get('profileImage', landscape), fetching);
 
   useDocumentTitle(
     t('landscape.profile_document_title', {
