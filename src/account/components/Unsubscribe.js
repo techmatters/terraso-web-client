@@ -63,7 +63,7 @@ const Unsubscribe = () => {
       }
 
       // Track the unsubscribe for users with and without tokens
-      trackEvent('Preference', { props: { emailNotifications: 'false' } });
+      trackEvent('preference.edit', { props: { emailNotifications: 'false' } });
     }
 
     if (hasToken) {
