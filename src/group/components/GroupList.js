@@ -61,7 +61,7 @@ const MemberRequestJoinButton = withProps(GroupMemberJoin, {
   ariaLabel: 'group.list_request_join_label',
 });
 
-const MembershipButton = ({ group }) => (
+const MembershipButton = ({ group, tabIndex }) => (
   <GroupContextProvider
     owner={group}
     groupSlug={group.slug}
@@ -70,7 +70,7 @@ const MembershipButton = ({ group }) => (
     MemberRequestCancelButton={MemberRequestCancelButton}
     MemberLeaveButton={MemberLeaveButton}
   >
-    <GroupMembershipJoinLeaveButton sx={{ width: '100%' }} />
+    <GroupMembershipJoinLeaveButton tabIndex={tabIndex} />
   </GroupContextProvider>
 );
 
@@ -112,8 +112,12 @@ const GroupList = () => {
       headerName: t('group.list_column_name'),
       flex: 2,
       minWidth: 200,
-      renderCell: ({ row: group, formattedValue }) => (
-        <Link component={RouterLink} to={`/groups/${group.slug}`}>
+      renderCell: ({ row: group, formattedValue, tabIndex }) => (
+        <Link
+          component={RouterLink}
+          to={`/groups/${group.slug}`}
+          tabIndex={tabIndex}
+        >
           {formattedValue}
         </Link>
       ),
@@ -124,9 +128,13 @@ const GroupList = () => {
       sortable: false,
       flex: 1.15,
       minWidth: 200,
-      renderCell: ({ row: group }) =>
+      renderCell: ({ row: group, tabIndex }) =>
         group.email && (
-          <Link href={`mailto:${group.email}`} sx={linkStyle}>
+          <Link
+            href={`mailto:${group.email}`}
+            sx={linkStyle}
+            tabIndex={tabIndex}
+          >
             {group.email}
           </Link>
         ),
@@ -137,9 +145,9 @@ const GroupList = () => {
       sortable: false,
       flex: 1.15,
       minWidth: 200,
-      renderCell: ({ row: group }) =>
+      renderCell: ({ row: group, tabIndex }) =>
         group.website && (
-          <Link href={group.website} sx={linkStyle}>
+          <Link href={group.website} sx={linkStyle} tabIndex={tabIndex}>
             {group.website.replace(/^https?:\/\//, '')}
           </Link>
         ),
@@ -152,7 +160,9 @@ const GroupList = () => {
       align: 'center',
       flex: 0.7,
       cardSize: 6,
-      getActions: ({ row: group }) => [<MembershipButton group={group} />],
+      getActions: ({ row: group, tabIndex }) => [
+        <MembershipButton group={group} tabIndex={tabIndex} />,
+      ],
     },
   ];
 

@@ -23,7 +23,7 @@ import ConfirmButton from 'common/components/ConfirmButton';
 
 const GroupMemberRemove = props => {
   const { t } = useTranslation();
-  const { owner, member, onConfirm, loading } = props;
+  const { owner, member, onConfirm, loading, buttonProps } = props;
   return (
     <ConfirmButton
       onConfirm={onConfirm}
@@ -34,6 +34,7 @@ const GroupMemberRemove = props => {
       })}
       confirmButton={t('group.members_remove_confirmation_button')}
       buttonLabel={t('group.members_list_remove')}
+      buttonProps={buttonProps}
       loading={loading}
     />
   );
