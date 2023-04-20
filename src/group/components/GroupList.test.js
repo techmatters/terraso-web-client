@@ -24,13 +24,14 @@ import { useSearchParams } from 'react-router-dom';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 
+import * as terrasoApi from 'state/terrasoBackend/api';
+
 import GroupList from 'group/components/GroupList';
-import * as terrasoApi from 'terrasoBackend/api';
 
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850
 global.console.error = jest.fn();
 
-jest.mock('terrasoBackend/api');
+jest.mock('state/terrasoBackend/api');
 
 jest.mock('@mui/material/useMediaQuery');
 

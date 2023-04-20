@@ -22,11 +22,11 @@ import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
 
 import { iso639en, iso639es } from 'localization/iso639';
+import * as terrasoApi from 'state/terrasoBackend/api';
 
 import ProfileUpdate from 'landscape/components/LandscapeForm/ProfileUpdate';
-import * as terrasoApi from 'terrasoBackend/api';
 
-jest.mock('terrasoBackend/api');
+jest.mock('state/terrasoBackend/api');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

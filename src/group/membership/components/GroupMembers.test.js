@@ -25,13 +25,14 @@ import { GROUP_TYPES_WITH_REDIRECTS } from 'tests/constants';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 
+import * as terrasoApi from 'state/terrasoBackend/api';
+
 import GroupMembers from 'group/membership/components/GroupMembers';
-import * as terrasoApi from 'terrasoBackend/api';
 
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850
 global.console.error = jest.fn();
 
-jest.mock('terrasoBackend/api');
+jest.mock('state/terrasoBackend/api');
 
 jest.mock('@mui/material/useMediaQuery');
 

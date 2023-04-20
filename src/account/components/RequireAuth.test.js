@@ -21,12 +21,13 @@ import React from 'react';
 import _ from 'lodash/fp';
 import { useLocation, useParams } from 'react-router-dom';
 
+import * as terrasoApi from 'state/terrasoBackend/api';
+
 import { getUserEmail } from 'account/auth';
 import RequireAuth from 'account/components/RequireAuth';
 import GroupView from 'group/components/GroupView';
-import * as terrasoApi from 'terrasoBackend/api';
 
-jest.mock('terrasoBackend/api');
+jest.mock('state/terrasoBackend/api');
 
 jest.mock('account/auth', () => ({
   ...jest.requireActual('account/auth'),

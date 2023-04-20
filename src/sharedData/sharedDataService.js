@@ -16,9 +16,10 @@
  */
 import _ from 'lodash/fp';
 
+import * as terrasoApi from 'state/terrasoBackend/api';
+
 import { dataEntries } from 'group/groupFragments';
 import { extractDataEntry, extractGroupDataEntries } from 'group/groupUtils';
-import * as terrasoApi from 'terrasoBackend/api';
 
 import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 

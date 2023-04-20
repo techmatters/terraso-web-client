@@ -20,10 +20,11 @@ import React from 'react';
 
 import { useNavigate, useParams } from 'react-router-dom';
 
-import LandscapeBoundaries from 'landscape/components/LandscapeForm/BoundaryStepUpdate';
-import * as terrasoApi from 'terrasoBackend/api';
+import * as terrasoApi from 'state/terrasoBackend/api';
 
-jest.mock('terrasoBackend/api');
+import LandscapeBoundaries from 'landscape/components/LandscapeForm/BoundaryStepUpdate';
+
+jest.mock('state/terrasoBackend/api');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

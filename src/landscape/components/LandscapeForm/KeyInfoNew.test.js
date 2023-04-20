@@ -21,10 +21,11 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
 
-import LandscapeNew from 'landscape/components/LandscapeForm/New';
-import * as terrasoApi from 'terrasoBackend/api';
+import * as terrasoApi from 'state/terrasoBackend/api';
 
-jest.mock('terrasoBackend/api');
+import LandscapeNew from 'landscape/components/LandscapeForm/New';
+
+jest.mock('state/terrasoBackend/api');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

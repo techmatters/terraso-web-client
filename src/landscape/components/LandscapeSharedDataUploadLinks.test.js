@@ -22,11 +22,11 @@ import _ from 'lodash/fp';
 import { useNavigate, useParams } from 'react-router-dom';
 import { LANDSCAPE_TYPES_WITH_REDIRECTS } from 'tests/constants';
 
-import * as terrasoApi from 'terrasoBackend/api';
+import * as terrasoApi from 'state/terrasoBackend/api';
 
 import LandscapeSharedDataUpload from './LandscapeSharedDataUpload';
 
-jest.mock('terrasoBackend/api');
+jest.mock('state/terrasoBackend/api');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

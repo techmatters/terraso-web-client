@@ -18,12 +18,13 @@ import { act, fireEvent, render, screen } from 'tests/utils';
 
 import { useParams } from 'react-router-dom';
 
+import * as terrasoApi from 'state/terrasoBackend/api';
+
 import * as visualizationMarkers from 'sharedData/visualization/visualizationMarkers';
-import * as terrasoApi from 'terrasoBackend/api';
 
 import LandscapeSharedDataVisualization from './LandscapeSharedDataVisualization';
 
-jest.mock('terrasoBackend/api');
+jest.mock('state/terrasoBackend/api');
 
 jest.mock('sharedData/visualization/visualizationMarkers');
 

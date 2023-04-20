@@ -16,11 +16,11 @@
  */
 import { render, screen, within } from 'tests/utils';
 
-import * as terrasoApi from 'terrasoBackend/api';
+import * as terrasoApi from 'state/terrasoBackend/api';
 
 import StoryMapsToolsHome from './StoryMapsToolHome';
 
-jest.mock('terrasoBackend/api');
+jest.mock('state/terrasoBackend/api');
 
 test('StoryMapsToolHome: renders correctly', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(

@@ -16,7 +16,7 @@
  */
 import _ from 'lodash/fp';
 
-import * as terrasoApi from 'terrasoBackend/api';
+import * as terrasoApi from 'state/terrasoBackend/api';
 
 import { taxonomyTermLanguages } from './taxonomiesFragments';
 import { extractTerms } from './taxonomiesUtils';

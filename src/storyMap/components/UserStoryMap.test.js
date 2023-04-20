@@ -18,11 +18,11 @@ import { act, fireEvent, render, screen, within } from 'tests/utils';
 
 import _ from 'lodash/fp';
 
-import * as terrasoApi from 'terrasoBackend/api';
+import * as terrasoApi from 'state/terrasoBackend/api';
 
 import UserStoryMap from './UserStoryMap';
 
-jest.mock('terrasoBackend/api');
+jest.mock('state/terrasoBackend/api');
 
 jest.mock('./StoryMap', () => () => <section aria-label="Story Map"></section>);
 

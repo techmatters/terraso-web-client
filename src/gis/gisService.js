@@ -17,9 +17,9 @@
 import _ from 'lodash/fp';
 
 import logger from 'monitoring/logger';
+import * as terrasoApi from 'state/terrasoBackend/api';
 
 import { isKmlFile, isShapefile, openGeoJsonFile } from 'gis/gisUtils';
-import * as terrasoApi from 'terrasoBackend/api';
 
 const generateUrl = name =>
   `https://nominatim.openstreetmap.org/search.php?q=${name}&format=jsonv2`;

@@ -16,6 +16,8 @@
  */
 import _ from 'lodash/fp';
 
+import * as terrasoApi from 'state/terrasoBackend/api';
+
 import * as gisService from 'gis/gisService';
 import { accountMembership } from 'group/groupFragments';
 import { extractAccountMembership, extractMembersInfo } from 'group/groupUtils';
@@ -27,7 +29,6 @@ import {
   landscapeProfileFields,
 } from 'landscape/landscapeFragments';
 import { extractTerms } from 'taxonomies/taxonomiesUtils';
-import * as terrasoApi from 'terrasoBackend/api';
 
 import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
 import {

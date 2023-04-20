@@ -22,11 +22,11 @@ import _ from 'lodash/fp';
 import { useNavigate, useParams } from 'react-router-dom';
 import { GROUP_TYPES_WITH_REDIRECTS } from 'tests/constants';
 
-import * as terrasoApi from 'terrasoBackend/api';
+import * as terrasoApi from 'state/terrasoBackend/api';
 
 import GroupSharedDataUpload from './GroupSharedDataUpload';
 
-jest.mock('terrasoBackend/api');
+jest.mock('state/terrasoBackend/api');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

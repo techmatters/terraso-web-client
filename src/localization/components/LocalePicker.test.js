@@ -25,11 +25,10 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import LocalePicker from 'localization/components/LocalePicker';
 import i18n from 'localization/i18n';
-
-import * as terrasoApi from 'terrasoBackend/api';
+import * as terrasoApi from 'state/terrasoBackend/api';
 
 jest.mock('@mui/material/useMediaQuery');
-jest.mock('terrasoBackend/api');
+jest.mock('state/terrasoBackend/api');
 
 const setup = async () => {
   await render(

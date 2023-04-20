@@ -21,10 +21,11 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 
-import Unsubscribe from 'account/components/Unsubscribe';
-import * as terrasoApi from 'terrasoBackend/api';
+import * as terrasoApi from 'state/terrasoBackend/api';
 
-jest.mock('terrasoBackend/api');
+import Unsubscribe from 'account/components/Unsubscribe';
+
+jest.mock('state/terrasoBackend/api');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
