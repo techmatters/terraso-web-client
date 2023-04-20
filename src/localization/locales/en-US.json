@@ -357,6 +357,7 @@
         "form_name_placeholder": "Your landscape’s official name",
         "form_map_section_lanel": "Landscape map",
         "boundaries_file_no_accepted": "The file(s) cannot be added.",
+        "boundaries_file_selected": "The landscape boundary map has been updated with {{name}}",
         "shared_data_upload_title": "Share with {{name}}",
         "list_search_placeholder": "Search landscapes",
         "list_map_help": "<0>Can’t find your landscape on this map? <1>Add it to Terraso</1> or <3>learn more about landscapes</3>.</0>",

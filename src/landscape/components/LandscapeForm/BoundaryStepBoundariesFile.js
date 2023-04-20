@@ -21,6 +21,8 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 
+import { Alert } from '@mui/material';
+
 import BaseDropZone from 'common/components/DropZone';
 import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
@@ -51,9 +53,9 @@ const DropZone = props => {
 
   useEffect(() => {
     if (geojson) {
-      onFileSelected(geojson);
+      onFileSelected({ geojson, selectedFile: currentFile });
     }
-  }, [geojson, onFileSelected]);
+  }, [geojson, onFileSelected, currentFile]);
 
   const onDrop = useCallback(
     acceptedFiles => {
@@ -109,6 +111,15 @@ const DropZone = props => {
 const LandscapeGeoJsonBoundaries = props => {
   const { t } = useTranslation();
   const { areaPolygon, mapCenter, onFileSelected } = props;
+  const [selectedFile, setSelectedFile] = useState();
+
+  const onFileSelectedWrapper = useCallback(
+    ({ geojson, selectedFile }) => {
+      setSelectedFile(selectedFile);
+      onFileSelected(geojson);
+    },
+    [onFileSelected]
+  );
 
   return (
     <>
@@ -117,7 +128,19 @@ const LandscapeGeoJsonBoundaries = props => {
         areaPolygon={areaPolygon}
         onGeoJsonChange={onFileSelected}
       />
-      <DropZone onFileSelected={onFileSelected} />
+      {selectedFile && (
+        <Alert
+          severity="info"
+          aria-live="assertive"
+          aria-atomic="true"
+          className="sr-only"
+        >
+          {t('landscape.boundaries_file_selected', {
+            name: selectedFile.name,
+          })}
+        </Alert>
+      )}
+      <DropZone onFileSelected={onFileSelectedWrapper} />
       <InlineHelp
         items={[
           {
