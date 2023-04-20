@@ -14,7 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { configureStore } from '@reduxjs/toolkit';
+import {
+  Middleware,
+  Reducer,
+  combineReducers,
+  configureStore,
+} from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
 
 import notificationsReducer from 'notifications/notificationsSlice';
@@ -28,7 +33,7 @@ import sharedDataReducer from 'sharedData/sharedDataSlice';
 import storyMapReducer from 'storyMap/storyMapSlice';
 import taxonomiesReducer from 'taxonomies/taxonomiesSlice';
 
-const handleAbortMiddleware = store => next => action => {
+const handleAbortMiddleware: Middleware = () => next => action => {
   if (_.getOr(false, 'meta.aborted', action)) {
     next({
       ...action,
@@ -39,21 +44,27 @@ const handleAbortMiddleware = store => next => action => {
   next(action);
 };
 
-const createStore = intialState =>
+const reducer = combineReducers({
+  account: accountReducer,
+  userHome: userHomeReducer,
+  group: groupReducer,
+  landscape: landscapeReducer,
+  notifications: notificationsReducer,
+  sharedData: sharedDataReducer,
+  taxonomies: taxonomiesReducer,
+  gis: gisReducer,
+  storyMap: storyMapReducer,
+});
+
+type GetReducerType<T extends Reducer> = T extends Reducer<infer S> ? S : never;
+export type AppState = GetReducerType<typeof reducer>;
+export type AppDispatch = ReturnType<typeof createStore>['dispatch'];
+
+const createStore = (intialState: AppState) =>
   configureStore({
     middleware: getDefaultMiddleware =>
       getDefaultMiddleware().concat(handleAbortMiddleware),
-    reducer: {
-      account: accountReducer,
-      userHome: userHomeReducer,
-      group: groupReducer,
-      landscape: landscapeReducer,
-      notifications: notificationsReducer,
-      sharedData: sharedDataReducer,
-      taxonomies: taxonomiesReducer,
-      gis: gisReducer,
-      storyMap: storyMapReducer,
-    },
+    reducer: reducer,
     preloadedState: intialState,
   });
 

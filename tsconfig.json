@@ -20,7 +20,7 @@
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": false
+    "strict": true
   },
 
   "include": ["src"]

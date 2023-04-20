@@ -22,12 +22,12 @@ import { UNAUTHENTICATED } from 'state/account/authConstants';
 
 import { GRAPH_QL_ENDPOINT, TERRASO_API_URL } from 'config';
 
-const parseMessage = (message, body) => {
+const parseMessage = (message: any, body: any) => {
   try {
     // If JSON return parse
     const jsonMessages =
       typeof message === 'string' ? JSON.parse(message) : message;
-    return jsonMessages.map(message => {
+    return jsonMessages.map((message: any) => {
       const errorField = _.get('context.field', message);
       return {
         content: [
@@ -52,14 +52,14 @@ const parseMessage = (message, body) => {
   }
 };
 
-const handleApiErrors = (data, body) => {
+const handleApiErrors = (data: any, body: any) => {
   const errors = _.getOr(
     _.flow(_.get('data'), _.values, _.first, _.get('errors'))(data),
     'errors',
     data
   );
 
-  const unauthenticatedError = errors.find(error =>
+  const unauthenticatedError = errors.find((error: any) =>
     _.includes('AnonymousUser', error.message)
   );
   if (unauthenticatedError) {
@@ -77,7 +77,10 @@ const handleApiErrors = (data, body) => {
   return Promise.reject(messages);
 };
 
-export const requestGraphQL = async (query, variables) => {
+export const requestGraphQL = async <T = any>(
+  query: string,
+  variables: any
+): Promise<T> => {
   const body = { query, variables };
   const jsonResponse = await request({
     path: GRAPH_QL_ENDPOINT,
@@ -110,7 +113,15 @@ export const requestGraphQL = async (query, variables) => {
   return jsonResponse.data;
 };
 
-export const request = async ({ path, body, headers = {} }) => {
+export const request = async ({
+  path,
+  body,
+  headers = {},
+}: {
+  path: string;
+  body: any;
+  headers: Record<string, string>;
+}) => {
   const response = await fetch(new URL(path, TERRASO_API_URL).href, {
     method: 'POST',
     headers: {

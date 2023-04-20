@@ -20,16 +20,17 @@ import _ from 'lodash/fp';
 import logger from 'monitoring/logger';
 import * as accountService from 'state/account/accountService';
 import { getToken, removeToken } from 'state/account/auth';
+import type { AppDispatch } from 'state/store';
 import { createAsyncThunk } from 'state/utils';
 
 const initialState = {
   currentUser: {
     fetching: true,
-    data: null,
+    data: null as User | null,
   },
   profile: {
     fetching: true,
-    data: null,
+    data: null as User | null,
   },
   login: {
     urls: {},
@@ -46,6 +47,15 @@ const initialState = {
     success: false,
     error: null,
   },
+};
+
+export type User = {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  profileImage: string;
+  preferences: Record<string, string>;
 };
 
 export const fetchUser = createAsyncThunk(
@@ -131,9 +141,9 @@ export const userSlice = createSlice({
       currentUser: {
         fetching: false,
         data: _.set(
-          `preferences.${action.payload.key}`,
+          ['preferences', action.payload.key],
           action.payload.value,
-          state.currentUser.data
+          state.currentUser.data as User
         ),
       },
     }));
@@ -244,7 +254,7 @@ export const { setUser, setHasToken } = userSlice.actions;
 
 export default userSlice.reducer;
 
-export const signOut = () => dispatch => {
+export const signOut = () => (dispatch: AppDispatch) => {
   accountService.signOut().catch(error => {
     logger.error('Failed to execute API signout request', error);
   });
