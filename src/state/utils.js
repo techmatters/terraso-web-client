@@ -21,10 +21,9 @@ import _ from 'lodash/fp';
 import { useDispatch } from 'react-redux';
 
 import { addMessage } from 'notifications/notificationsSlice';
-
-import { signOut } from 'account/accountSlice';
-import { refreshToken } from 'account/auth';
-import { UNAUTHENTICATED } from 'account/authConstants';
+import { signOut } from 'state/account/accountSlice';
+import { refreshToken } from 'state/account/auth';
+import { UNAUTHENTICATED } from 'state/account/authConstants';
 
 const executeAuthRequest = (dispatch, action) =>
   action().catch(async error => {

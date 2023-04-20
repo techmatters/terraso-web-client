@@ -18,10 +18,9 @@ import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
 
 import logger from 'monitoring/logger';
+import * as accountService from 'state/account/accountService';
+import { getToken, removeToken } from 'state/account/auth';
 import { createAsyncThunk } from 'state/utils';
-
-import * as accountService from 'account/accountService';
-import { getToken, removeToken } from 'account/auth';
 
 const initialState = {
   currentUser: {
@@ -50,15 +49,15 @@ const initialState = {
 };
 
 export const fetchUser = createAsyncThunk(
-  'account/fetchUser',
+  'state/account/fetchUser',
   accountService.fetchUser
 );
 export const fetchProfile = createAsyncThunk(
-  'account/fetchProfile',
+  'state/account/fetchProfile',
   accountService.fetchProfile
 );
 export const saveUser = createAsyncThunk(
-  'account/saveUser',
+  'state/account/saveUser',
   accountService.saveUser,
   () => ({
     severity: 'success',
@@ -66,17 +65,17 @@ export const saveUser = createAsyncThunk(
   })
 );
 export const fetchAuthURLs = createAsyncThunk(
-  'account/fetchAuthURLs',
+  'state/account/fetchAuthURLs',
   accountService.getAuthURLs
 );
 export const savePreference = createAsyncThunk(
-  'account/savePreference',
+  'state/account/savePreference',
   accountService.savePreference,
   null,
   false
 );
 export const unsubscribeFromNotifications = createAsyncThunk(
-  'account/unsubscribeFromNotifications',
+  'state/account/unsubscribeFromNotifications',
   accountService.unsubscribeFromNotifications,
   null,
   false

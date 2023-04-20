@@ -30,11 +30,10 @@ import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePickerSelect from 'localization/components/LocalePickerSelect';
 import { useAnalytics } from 'monitoring/analytics';
+import { saveUser } from 'state/account/accountSlice';
+import { savePreference } from 'state/account/accountSlice';
+import { fetchProfile } from 'state/account/accountSlice';
 import { useFetchData } from 'state/utils';
-
-import { saveUser } from 'account/accountSlice';
-import { savePreference } from 'account/accountSlice';
-import { fetchProfile } from 'account/accountSlice';
 
 import AccountAvatar from './AccountAvatar';
 

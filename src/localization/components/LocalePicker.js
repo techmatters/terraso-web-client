@@ -22,8 +22,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import LocalePickerSelect from 'localization/components/LocalePickerSelect';
 import { LOCALES } from 'localization/i18n';
-
-import { savePreference } from 'account/accountSlice';
+import { savePreference } from 'state/account/accountSlice';
 
 const LocalePicker = () => {
   const { i18n } = useTranslation();

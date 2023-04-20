@@ -18,8 +18,8 @@ import { configureStore } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
 
 import notificationsReducer from 'notifications/notificationsSlice';
+import accountReducer from 'state/account/accountSlice';
 
-import accountReducer from 'account/accountSlice';
 import gisReducer from 'gis/gisSlice';
 import groupReducer from 'group/groupSlice';
 import userHomeReducer from 'home/homeSlice';

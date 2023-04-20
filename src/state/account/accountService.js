@@ -17,12 +17,11 @@
 import _ from 'lodash/fp';
 
 import * as terrasoApi from 'state/terrasoBackend/api';
-
 import {
   userFields,
   userPreferences,
   userPreferencesFields,
-} from 'user/userFragments';
+} from 'state/user/userFragments';
 
 import { TERRASO_API_URL } from 'config';
 

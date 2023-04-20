@@ -20,9 +20,8 @@ import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
 
 import PageLoader from 'layout/PageLoader';
+import { fetchUser } from 'state/account/accountSlice';
 import { useFetchData } from 'state/utils';
-
-import { fetchUser } from 'account/accountSlice';
 
 const OptionalAuth = ({ children }) => {
   const { data: user, fetching } = useSelector(_.get('account.currentUser'));

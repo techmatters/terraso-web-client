@@ -20,10 +20,11 @@ import React from 'react';
 
 import { useSearchParams } from 'react-router-dom';
 
-import * as accountService from 'account/accountService';
+import * as accountService from 'state/account/accountService';
+
 import AccountLogin from 'account/components/AccountLogin';
 
-jest.mock('account/accountService');
+jest.mock('state/account/accountService');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

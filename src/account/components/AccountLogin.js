@@ -33,9 +33,8 @@ import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePicker from 'localization/components/LocalePicker';
 import { useAnalytics } from 'monitoring/analytics';
+import { fetchAuthURLs } from 'state/account/accountSlice';
 import { useFetchData } from 'state/utils';
-
-import { fetchAuthURLs } from 'account/accountSlice';
 
 import logo from 'assets/logo.svg';
 import { ReactComponent as MicrosoftSvg } from 'assets/microsoft.svg';

@@ -18,7 +18,7 @@ import { render, screen } from 'tests/utils';
 
 import React from 'react';
 
-import { fetchAuthURLs } from 'account/accountSlice';
+import { fetchAuthURLs } from 'state/account/accountSlice';
 
 import { useFetchData } from './utils';
 

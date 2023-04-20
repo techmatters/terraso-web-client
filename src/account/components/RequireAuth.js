@@ -21,9 +21,8 @@ import { Navigate, useLocation } from 'react-router-dom';
 
 import PageLoader from 'layout/PageLoader';
 import { generateReferrerPath } from 'navigation/navigationUtils';
+import { fetchUser } from 'state/account/accountSlice';
 import { useFetchData } from 'state/utils';
-
-import { fetchUser } from 'account/accountSlice';
 
 const RequireAuth = ({ children }) => {
   const location = useLocation();

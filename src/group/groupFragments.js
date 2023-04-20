@@ -14,8 +14,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import { userFields } from 'state/user/userFragments';
+
 import { visualizationConfig } from 'sharedData/sharedDataFragments';
-import { userFields } from 'user/userFragments';
 
 const MEMBERS_INFO_SAMPLE_SIZE = 5;
 

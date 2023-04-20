@@ -29,8 +29,8 @@ import LocalePicker from 'localization/components/LocalePicker';
 import { useOptionalAuth } from 'navigation/components/Routes';
 import SkipLinks from 'navigation/components/SkipLinks';
 import { generateReferrerPath } from 'navigation/navigationUtils';
+import { signOut } from 'state/account/accountSlice';
 
-import { signOut } from 'account/accountSlice';
 import AccountAvatar from 'account/components/AccountAvatar';
 
 import logoSquare from 'assets/logo-square.svg';

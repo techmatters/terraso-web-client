@@ -17,9 +17,8 @@
 import _ from 'lodash/fp';
 
 import logger from 'monitoring/logger';
-
-import { getAuthHeaders } from 'account/auth';
-import { UNAUTHENTICATED } from 'account/authConstants';
+import { getAuthHeaders } from 'state/account/auth';
+import { UNAUTHENTICATED } from 'state/account/authConstants';
 
 import { GRAPH_QL_ENDPOINT, TERRASO_API_URL } from 'config';
 

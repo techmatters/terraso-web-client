@@ -29,9 +29,8 @@ import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 import { useAnalytics } from 'monitoring/analytics';
 import { addMessage } from 'notifications/notificationsSlice';
+import { unsubscribeFromNotifications } from 'state/account/accountSlice';
 import { useFetchData } from 'state/utils';
-
-import { unsubscribeFromNotifications } from 'account/accountSlice';
 
 const Unsubscribe = () => {
   const { t } = useTranslation();
