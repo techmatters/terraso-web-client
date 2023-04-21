@@ -102,10 +102,9 @@ const FORM_FIELDS = [
     name: 'latitude',
     label: 'sharedData.form_step_set_dataset_latitude_label',
     props: {
-      renderInput: ({ id, field }) => (
+      renderInput: fieldParams => (
         <ColumnSelect
-          id={id}
-          field={field}
+          {...fieldParams}
           placeholder="sharedData.form_step_set_dataset_latitude_placeholder"
         />
       ),
@@ -115,10 +114,9 @@ const FORM_FIELDS = [
     name: 'longitude',
     label: 'sharedData.form_step_set_dataset_longitude_label',
     props: {
-      renderInput: ({ id, field }) => (
+      renderInput: fieldParams => (
         <ColumnSelect
-          id={id}
-          field={field}
+          {...fieldParams}
           placeholder="sharedData.form_step_set_dataset_longitude_placeholder"
         />
       ),
@@ -128,7 +126,7 @@ const FORM_FIELDS = [
     name: 'dataColumns',
     label: 'sharedData.form_step_set_dataset_dataColumns_label',
     props: {
-      renderInput: ({ field }) => <DataColumns field={field} />,
+      renderInput: fieldParams => <DataColumns {...fieldParams} />,
     },
   },
   {
@@ -249,7 +247,8 @@ const identifyLatLngColumns = headers => {
 
 const DataColumns = props => {
   const { t } = useTranslation();
-  const { value, onChange } = props.field;
+  const { field, fieldState } = props;
+  const { value, onChange } = field;
 
   const option = useMemo(() => _.get('option', value), [value]);
   const selectedColumns = useMemo(
@@ -300,6 +299,7 @@ const DataColumns = props => {
         aria-labelledby="dataset-config-dataColumns-label"
         value={option}
         onChange={event => onChange({ ...value, option: event.target.value })}
+        error={!!fieldState?.error || undefined}
       >
         <FormControlLabel
           value="all"

@@ -24,7 +24,7 @@ import { useVisualizationContext } from 'sharedData/visualization/visualizationC
 
 const ColumnSelect = props => {
   const { t } = useTranslation();
-  const { id, field, placeholder, showSelected = false } = props;
+  const { id, field, fieldState, placeholder, showSelected = false } = props;
   const { sheetContext, getDataColumns } = useVisualizationContext();
   const { headers } = sheetContext;
 
@@ -39,6 +39,7 @@ const ColumnSelect = props => {
       value={field.value}
       onChange={field.onChange}
       labelId={`${id}-label`}
+      error={!!fieldState?.error}
       sx={{
         width: '100%',
       }}

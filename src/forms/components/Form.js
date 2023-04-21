@@ -100,6 +100,20 @@ const Form = props => {
     }
   }, [values, fields, reset]);
 
+  useEffect(() => {
+    const noErrors = _.isEmpty(errors);
+    if (mode !== 'onSubmit' || noErrors) {
+      return;
+    }
+    // Focus on first invalid field
+    const firstInput =
+      document.querySelector('.Mui-error .MuiSelect-select') ||
+      document.querySelector('.Mui-error input');
+    if (firstInput) {
+      firstInput.focus();
+    }
+  }, [errors, mode]);
+
   const onSubmit = useCallback(data => onSave(data), [onSave]);
 
   const ariaProps = _.pickBy(
