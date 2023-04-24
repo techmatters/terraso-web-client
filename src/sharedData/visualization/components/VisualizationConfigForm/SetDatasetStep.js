@@ -299,7 +299,7 @@ const DataColumns = props => {
         aria-labelledby="dataset-config-dataColumns-label"
         value={option}
         onChange={event => onChange({ ...value, option: event.target.value })}
-        error={!!fieldState?.error || undefined}
+        className={fieldState?.error ? 'Mui-error' : ''}
       >
         <FormControlLabel
           value="all"
