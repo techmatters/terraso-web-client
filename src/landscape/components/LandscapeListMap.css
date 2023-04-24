@@ -38,7 +38,9 @@
   text-align: center;
   border-radius: 15px;
   padding-top: 5px;
-  color: #fff;
+  color: #000;
+  font-size: 14px;
+  font-weight: bold;
 }
 
 .landscape-list-map-cluster-icon.leaflet-marker-icon.leaflet-interactive {
