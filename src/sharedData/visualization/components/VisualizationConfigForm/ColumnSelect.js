@@ -39,7 +39,7 @@ const ColumnSelect = props => {
       value={field.value}
       onChange={field.onChange}
       labelId={`${id}-label`}
-      error={!!fieldState?.error}
+      error={Boolean(fieldState?.error)}
       sx={{
         width: '100%',
       }}
