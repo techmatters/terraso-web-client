@@ -109,7 +109,7 @@ const CountrySelector = props => {
       onChange={field.onChange}
       labelId="landscape-location-label"
       id={id}
-      error={!!fieldState?.error}
+      error={Boolean(fieldState?.error)}
       renderValue={selected =>
         countryHash[selected] || (
           <Typography sx={{ color: 'gray.mid2' }}>
