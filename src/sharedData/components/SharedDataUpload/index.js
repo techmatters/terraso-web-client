@@ -208,7 +208,14 @@ const SharedDataUpload = props => {
         </TabContext>
       </Paper>
       {showSummary && errorCount > 0 && (
-        <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{ mt: 2 }}
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+        >
           <ErrorIcon color="error" />
           <Typography sx={{ color: 'error.main' }}>
             {t('sharedData.upload_summary_error', {

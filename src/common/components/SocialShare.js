@@ -23,6 +23,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import {
+  Alert,
   Button,
   Dialog,
   DialogContent,
@@ -255,13 +256,16 @@ const SocialShare = props => {
                     width: { xs: '100%', sm: 'auto' },
                   }}
                 >
-                  {buttonCopied
-                    ? t('share.copy_button_done')
-                    : t('share.copy_button')}
+                  {t('share.copy_button')}
                 </Button>
               ),
             }}
           />
+          {buttonCopied && (
+            <Alert severity="success" sx={{ mt: 1 }}>
+              {t('share.copy_button_done')}
+            </Alert>
+          )}
         </DialogContent>
       </Dialog>
     </>

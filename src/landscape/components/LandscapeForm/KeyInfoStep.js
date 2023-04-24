@@ -73,7 +73,9 @@ const FORM_FIELDS = [
     name: 'location',
     label: 'landscape.form_location_label',
     props: {
-      renderInput: ({ field }) => <CountrySelector field={field} />,
+      renderInput: ({ field, fieldState, id }) => (
+        <CountrySelector id={id} field={field} fieldState={fieldState} />
+      ),
     },
   },
   {
@@ -95,7 +97,7 @@ const FORM_FIELDS = [
 
 const CountrySelector = props => {
   const { t } = useTranslation();
-  const { field } = props;
+  const { id, field, fieldState } = props;
 
   const countries = countriesList();
   const countryHash = countryMap(countries);
@@ -106,7 +108,8 @@ const CountrySelector = props => {
       value={field.value}
       onChange={field.onChange}
       labelId="landscape-location-label"
-      id="landscape-country"
+      id={id}
+      error={Boolean(fieldState?.error)}
       renderValue={selected =>
         countryHash[selected] || (
           <Typography sx={{ color: 'gray.mid2' }}>
