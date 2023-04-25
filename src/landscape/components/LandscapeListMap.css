@@ -15,9 +15,22 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+.landscape-list-map-cluster-icon div,
+.landscape-list-map-cluster-icon.leaflet-marker-icon.leaflet-interactive,
+.landscape-list-map-marker-icon.leaflet-marker-icon.leaflet-interactive {
+  background-color: #ff580d;
+}
+
+.landscape-marker-popup .leaflet-popup-content-wrapper {
+  border-color: #ff580d;
+}
+
+.landscape-marker-popup .leaflet-popup-tip {
+  border-right-color: #ff580d;
+}
+
 .landscape-list-map-cluster-icon div {
   background-clip: padding-box;
-  background-color: #985329;
   width: 30px;
   height: 25px;
   margin-left: 5px;
@@ -25,18 +38,18 @@
   text-align: center;
   border-radius: 15px;
   padding-top: 5px;
-  color: #fff;
+  color: #000;
+  font-size: 14px;
+  font-weight: bold;
 }
 
 .landscape-list-map-cluster-icon.leaflet-marker-icon.leaflet-interactive {
   background-clip: padding-box;
-  background: #98532999;
   border-radius: 20px;
 }
 
 .landscape-list-map-marker-icon.leaflet-marker-icon.leaflet-interactive {
   background-clip: padding-box;
-  background: #985329;
   border-radius: 30px;
 }
 
@@ -45,12 +58,15 @@
   font-size: 16px;
   line-height: 24px;
   border-radius: 3px;
-  border: 1px solid #985329;
+  border-width: 1px;
+  border-style: solid;
   box-shadow: none;
 }
+
 .landscape-marker-popup .leaflet-popup-tip {
   border: 1px solid transparent;
-  border-right: 1px solid #985329;
+  border-right-width: 1px;
+  border-right-style: solid;
   background-color: transparent;
   box-shadow: none;
 }
