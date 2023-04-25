@@ -123,6 +123,15 @@ const components = {
           color: colorTheme.palette.black,
         },
       },
+      {
+        props: {
+          variant: 'contained',
+        },
+        style: {
+          color: 'white',
+          bavkgroundColor: colorTheme.palette.white,
+        },
+      },
     ],
   },
   MuiCard: {
