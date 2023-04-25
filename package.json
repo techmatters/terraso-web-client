@@ -45,7 +45,7 @@
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.10.0",
     "scrollama": "^3.2.0",
-    "slate-history": "^0.86.0",
+    "slate-history": "^0.93.0",
     "slate-hyperscript": "^0.77.0",
     "slate-react": "^0.90.0",
     "use-debounce": "^9.0.4",
