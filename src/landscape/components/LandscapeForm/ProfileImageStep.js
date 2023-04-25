@@ -60,7 +60,7 @@ const FORM_FIELDS = [
     name: 'profileImageDescription',
     label: 'landscape.form_profile_image_description_label',
     helperText: {
-      i18nKey: 'landscape.orm_profile_image_description_helper_text',
+      i18nKey: 'landscape.form_profile_image_description_helper_text',
     },
     placeholder: 'landscape.form_profile_image_description_placeholder',
   },
