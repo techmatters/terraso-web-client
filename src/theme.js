@@ -21,12 +21,14 @@ const colorTheme = createTheme({
   palette: {
     tonalOffset: 0.2,
     primary: {
-      main: '#2C7690',
+      main: '#009147',
+      hover: '#006130',
+      background: '#F9FCF8',
     },
     secondary: {
-      main: '#5E5547',
+      main: '#00344D',
     },
-    link: '#2C7690',
+    link: '#307F9C',
     success: {
       main: '#b0d098',
       background: '#E2F5D9',
@@ -79,7 +81,7 @@ const components = {
   MuiAppBar: {
     defaultProps: {
       sx: {
-        bgcolor: colorTheme.palette.gray.lite2,
+        bgcolor: colorTheme.palette.white,
         color: 'gray.dark1',
       },
       elevation: 0,
