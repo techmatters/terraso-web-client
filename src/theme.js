@@ -105,6 +105,11 @@ const components = {
     },
   },
   MuiButton: {
+    styleOverrides: {
+      root: {
+        color: colorTheme.palette.link,
+      },
+    },
     defaultProps: {
       disableElevation: true,
     },
@@ -148,6 +153,7 @@ const components = {
   MuiLink: {
     styleOverrides: {
       root: {
+        color: colorTheme.palette.link,
         ':focus': {
           textDecoration: 'underline ! important',
         },
