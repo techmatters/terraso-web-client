@@ -56,7 +56,7 @@ const NavButton = styled(Button)(({ theme }) => ({
     backgroundColor: theme.palette.gray.lite1,
   },
   '&.Mui-selected': {
-    color: theme.palette.black,
+    color: theme.palette.primary.main,
     fontWeight: theme.typography.fontWeightMedium,
     backgroundColor: 'inherit',
     borderBottom: '2px solid',
@@ -112,6 +112,7 @@ const Navigation = React.forwardRef((props, ref) => {
         margin: '0 auto',
         padding: '0 24px',
         boxSizing: 'border-box',
+        background: 'white',
       }}
     >
       <Typography sx={visuallyHidden} variant="h2">
