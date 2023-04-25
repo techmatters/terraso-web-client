@@ -90,7 +90,9 @@ const Home = () => {
   }
 
   return (
-    <PageContainer>
+    <PageContainer
+      sx={{ backgroundColor: theme => theme.palette.primary.background }}
+    >
       <PageHeader header={t('home.page_title', { name: user.firstName })} />
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>

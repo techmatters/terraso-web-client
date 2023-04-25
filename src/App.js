@@ -44,7 +44,7 @@ const App = () => {
     <>
       <Box
         sx={{
-          bgcolor: 'gray.lite2',
+          bgcolor: 'white',
           display: 'flex',
           flexDirection: 'column',
           minHeight: '100vh',
