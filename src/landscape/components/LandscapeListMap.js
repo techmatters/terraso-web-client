@@ -39,6 +39,7 @@ import { Link, Typography } from '@mui/material';
 
 import { countryNameForCode } from 'common/utils';
 
+import { LAYER_ESRI } from 'gis/components/Map';
 import { isValidLatitude, isValidLongitude } from 'gis/gisUtils';
 
 const LandscapePopup = ({ landscape }) => {
@@ -137,6 +138,7 @@ const LandscapeListMap = props => {
         width: '100%',
         height: '400px',
       }}
+      defaultLayer={LAYER_ESRI}
     >
       <LandscapesClusters {...props} />
     </Map>
