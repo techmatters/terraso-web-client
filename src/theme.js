@@ -23,7 +23,7 @@ const colorTheme = createTheme({
     primary: {
       main: '#009147',
       hover: '#006130',
-      background: '#F9FCF8',
+      background: '#ffffff',
     },
     secondary: {
       main: '#00344D',
