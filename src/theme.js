@@ -221,23 +221,23 @@ const components = {
 
 const theme = createTheme(colorTheme, {
   typography: {
+    fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
     h1: {
+      fontFamily: 'Lato, Helvetica, Arial, sans-serif',
       fontSize: '2rem',
-      fontWeight: 400,
+      fontWeight: 700,
     },
     h2: {
+      fontFamily: 'Lato, Helvetica, Arial, sans-serif',
       fontSize: '1.2rem',
-      fontWeight: 500,
+      fontWeight: 400,
       textTransform: 'uppercase',
       paddingTop: '1rem',
     },
     h3: {
       fontSize: '1rem',
-      fontWeight: 300,
+      fontWeight: 600,
       paddingTop: '1rem',
-    },
-    h5: {
-      fontSize: '22px',
     },
     button: {
       textTransform: 'none',
