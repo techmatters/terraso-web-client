@@ -66,7 +66,7 @@ const path = (
       isEmbedded: false,
     },
     showBreadcrumbs = false,
-    breadcrumbsLabel,
+    ...otherParams
   } = {}
 ) => ({
   path,
@@ -74,7 +74,7 @@ const path = (
   auth,
   optionalAuth,
   showBreadcrumbs,
-  breadcrumbsLabel,
+  ...otherParams,
 });
 
 const paths = [
@@ -180,6 +180,9 @@ const paths = [
   path('/tools/story-maps/:storyMapId/:slug', UserStoryMap, {
     showBreadcrumbs: true,
     breadcrumbsLabel: 'storyMap.breadcrumbs_view',
+    breadcrumbsShareProps: {
+      bgColor: 'white',
+    },
     optionalAuth: {
       enabled: true,
       topMessage: 'storyMap.optional_auth_top_message',
@@ -190,6 +193,16 @@ const paths = [
 ];
 
 const getPath = to => paths.find(path => matchPath({ path: path.path }, to));
+
+export const usePathParams = () => {
+  const { pathname: currentPathname } = useLocation();
+  const currentPath = useMemo(
+    () => getPath(currentPathname),
+    [currentPathname]
+  );
+
+  return currentPath;
+};
 
 export const useBreadcrumbs = () => {
   const { pathname: currentPathname } = useLocation();

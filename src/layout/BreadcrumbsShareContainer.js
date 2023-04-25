@@ -18,10 +18,13 @@ import React from 'react';
 
 import SocialShare from 'common/components/SocialShare';
 import Breadcrumbs from 'navigation/components/Breadcrumbs';
+import { usePathParams } from 'navigation/components/Routes';
 
 import Container from './Container';
 
 const BreadcrumbsShareContainer = () => {
+  const { breadcrumbsShareProps } = usePathParams();
+
   return (
     <Container
       id="breadcrumbs-share-container"
@@ -30,6 +33,8 @@ const BreadcrumbsShareContainer = () => {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        backgroundColor: theme =>
+          breadcrumbsShareProps?.bgColor || theme.palette.primary.background,
       }}
     >
       <Breadcrumbs />
