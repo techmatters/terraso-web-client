@@ -121,6 +121,11 @@ const components = {
         style: {
           borderColor: colorTheme.palette.black,
           color: colorTheme.palette.black,
+          '&:hover': {
+            backgroundColor: colorTheme.palette.secondary.main,
+            borderColor: colorTheme.palette.secondary.main,
+            color: colorTheme.palette.white,
+          },
         },
       },
       {
