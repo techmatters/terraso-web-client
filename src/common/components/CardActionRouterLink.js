@@ -22,12 +22,18 @@ import { Button, CardActions } from '@mui/material';
 
 const CardActionRouterLink = ({ label, to }) => {
   return (
-    <CardActions>
+    <CardActions
+      sx={{
+        paddingTop: 1.5,
+        paddingBottom: 1.5,
+      }}
+    >
       <Button
         component={Link}
         to={to}
         sx={{
           width: '100%',
+          padding: 0,
           textTransform: 'uppercase',
           '&:hover': {
             backgroundColor: 'transparent',
