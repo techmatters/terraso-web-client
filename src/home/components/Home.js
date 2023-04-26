@@ -90,17 +90,17 @@ const Home = () => {
   }
 
   return (
-    <PageContainer>
+    <PageContainer sx={{ pt: { md: 12 } }}>
       <PageHeader header={t('home.page_title', { name: user.firstName })} />
-      <Grid container spacing={2}>
+      <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
-          <Stack spacing={1}>
+          <Stack spacing={3}>
             <Landscapes landscapes={landscapes} fetching={fetching} />
             <StoryMaps storyMaps={storyMaps} fetching={fetching} />
           </Stack>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Stack spacing={1}>
+          <Stack spacing={3}>
             <Groups groups={groups} fetching={fetching} />
             <ToolHomeCard />
           </Stack>
