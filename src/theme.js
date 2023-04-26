@@ -135,6 +135,11 @@ const components = {
     ],
   },
   MuiCard: {
+    styleOverrides: {
+      root: {
+        borderRadius: '8px',
+      },
+    },
     defaultProps: {
       variant: 'outlined',
     },
