@@ -24,7 +24,7 @@ const PageContainer = props => {
   return (
     <Container
       sx={theme => ({
-        paddingTop: theme.spacing(3),
+        paddingTop: theme.spacing(12),
         paddingBottom: theme.spacing(2),
         ...props.sx,
       })}
