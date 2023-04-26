@@ -60,7 +60,7 @@ const App = () => {
           tabIndex="-1"
           ref={contentRef}
           sx={{
-            bgcolor: theme => theme.palette.primary.background,
+            bgcolor: 'primary.background',
             flex: 1,
           }}
         >
