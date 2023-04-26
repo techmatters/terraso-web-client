@@ -86,7 +86,7 @@ const AppBarComponent = () => {
               startIcon={
                 <AccountAvatar user={user} sx={{ width: 24, height: 24 }} />
               }
-              sx={{ fontWeight: 500, color: theme.palette.gray.dark2 }}
+              sx={{ fontWeight: 500, color: 'gray.dark2' }}
             >
               {user.firstName} {user.lastName}
             </Button>
