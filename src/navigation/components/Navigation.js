@@ -51,22 +51,33 @@ const NavButton = styled(Button)(({ theme }) => ({
   borderRadius: 0,
   padding: theme.spacing(2),
   textTransform: 'uppercase',
+  fontFamily: 'Lato, Helvetica, Arial, sans-serif',
+  fontSize: '1.375rem',
+  lineHeight: '22px',
+  marginTop: '-4px', // adjust for bottom border
   color: theme.palette.gray.dark2,
   '&.MuiButton-root:hover': {
     backgroundColor: theme.palette.gray.lite1,
   },
   '&.Mui-selected': {
     color: theme.palette.primary.main,
-    fontWeight: theme.typography.fontWeightMedium,
+    fontWeight: theme.typography.fontWeightBold,
     backgroundColor: 'inherit',
-    borderBottom: '2px solid',
+    borderBottom: '4px solid',
+    marginTop: 0,
   },
 }));
 
 const NavigationLink = ({ path, selected, index }) => {
   const { t } = useTranslation();
   return (
-    <ListItem disablePadding dense sx={{ width: 'auto' }}>
+    <ListItem
+      disablePadding
+      dense
+      sx={{
+        width: 'auto',
+      }}
+    >
       <NavButton
         className={selected && 'Mui-selected'}
         component={RouterLink}
@@ -105,6 +116,7 @@ const Navigation = React.forwardRef((props, ref) => {
       value={value}
       aria-label={t('navigation.nav_label_short')}
       sx={{
+        boxShadow: '0px 3px 4px 0px #0000001A',
         '& .MuiTabs-indicator': {
           backgroundColor: 'black',
         },
@@ -118,7 +130,13 @@ const Navigation = React.forwardRef((props, ref) => {
       <Typography sx={visuallyHidden} variant="h2">
         {t('navigation.nav_label')}
       </Typography>
-      <List sx={{ display: 'flex', flexDirection: 'row', padding: 0 }}>
+      <List
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          padding: 0,
+        }}
+      >
         {Object.keys(PAGES).map((path, index) => (
           <NavigationLink
             key={path}
