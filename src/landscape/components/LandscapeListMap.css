@@ -16,9 +16,12 @@
  */
 
 .landscape-list-map-cluster-icon div,
-.landscape-list-map-cluster-icon.leaflet-marker-icon.leaflet-interactive,
 .landscape-list-map-marker-icon.leaflet-marker-icon.leaflet-interactive {
   background-color: #ff580d;
+}
+
+.landscape-list-map-cluster-icon.leaflet-marker-icon.leaflet-interactive {
+  background-color: #985329;
 }
 
 .landscape-marker-popup .leaflet-popup-content-wrapper {
@@ -62,7 +65,6 @@
   border-style: solid;
   box-shadow: none;
 }
-
 .landscape-marker-popup .leaflet-popup-tip {
   border: 1px solid transparent;
   border-right-width: 1px;
