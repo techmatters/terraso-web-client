@@ -230,7 +230,7 @@ const theme = createTheme(colorTheme, {
     h2: {
       fontFamily: 'Lato, Helvetica, Arial, sans-serif',
       fontSize: '1.2rem',
-      fontWeight: 400,
+      fontWeight: 700,
       textTransform: 'uppercase',
       paddingTop: '1rem',
     },
