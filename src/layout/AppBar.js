@@ -67,13 +67,13 @@ const AppBarComponent = () => {
 
   return (
     <AppBar position="static">
-      <Toolbar>
+      <Toolbar sx={{ pt: { md: 3 }, pb: { md: 3 } }}>
         <SkipLinks />
         <ConditionalLink to="/" condition={!isHomePage}>
           <img
             src={isSmall ? logoSquare : logo}
-            width={isSmall ? 35 : 125}
-            height="35"
+            width={isSmall ? 35 : 188}
+            height={isSmall ? 35 : 53}
             alt={t('common.terraso_logoText')}
           />
         </ConditionalLink>
