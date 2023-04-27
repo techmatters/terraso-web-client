@@ -20,22 +20,15 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
-import {
-  Avatar,
-  Box,
-  Divider,
-  Link,
-  List,
-  ListItem,
-  Typography,
-} from '@mui/material';
+import { Box, Divider, Link, List, ListItem, Typography } from '@mui/material';
 
 import CardActionRouterLink from 'common/components/CardActionRouterLink';
 
 import HomeCard from 'home/components/HomeCard';
 
-import theme from 'theme';
+import landscapePlaceholder from 'assets/landscape.svg';
 
+import theme from 'theme';
 
 const LandscapeItem = ({ landscape, index }) => {
   const { t } = useTranslation();
@@ -48,9 +41,12 @@ const LandscapeItem = ({ landscape, index }) => {
         borderTop: index && `1px solid ${theme.palette.gray.lite1}`, // skip first item
       }}
     >
-      <Avatar sx={{ width: 80, height: 80 }} variant="square">
-        {getAcronym(landscape.name).toUpperCase()}
-      </Avatar>
+      <img
+        alt=""
+        width="164"
+        height="93"
+        src={landscape?.profileImage || landscapePlaceholder}
+      />
       <Box
         sx={{
           display: 'flex',
