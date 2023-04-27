@@ -107,9 +107,6 @@ const Footer = () => {
       sx={{
         background: palette.secondary.main,
         color: palette.white,
-        marginTop: {
-          md: 4,
-        },
       }}
       justifyContent="space-between"
     >

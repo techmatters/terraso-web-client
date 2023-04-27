@@ -29,7 +29,7 @@ const PageContainer = props => {
     <Container
       sx={{
         paddingTop: showBreadcrumbs ? 3.5 : 12,
-        paddingBottom: 2,
+        paddingBottom: 6,
         ...props.sx,
       }}
       {..._.omit('sx', props)}
