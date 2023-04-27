@@ -163,6 +163,7 @@ const Form = props => {
         sx={{
           width: '100%',
           padding: 3,
+          paddingLeft: 1,
           marginLeft: 0,
           background: 'white',
           borderRadius: '4px',
