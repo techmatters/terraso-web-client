@@ -165,6 +165,7 @@ const Form = props => {
           padding: 3,
           paddingLeft: 1,
           marginLeft: 0,
+          marginTop: '-8px',
           background: 'white',
           borderRadius: '4px',
           borderWidth: 1,
