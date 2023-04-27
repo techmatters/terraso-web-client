@@ -49,11 +49,11 @@ const PAGES = {
 const NavButton = styled(Button)(({ theme }) => ({
   border: 0,
   borderRadius: 0,
-  padding: theme.spacing(2),
+  padding: 0,
   paddingBottom: theme.spacing(1),
   textTransform: 'uppercase',
   fontFamily: 'Lato, Helvetica, Arial, sans-serif',
-  fontSize: '1.25rem',
+  fontSize: '1.125rem',
   lineHeight: '22px',
   marginTop: '-4px', // adjust for bottom border
   color: theme.palette.gray.dark2,
