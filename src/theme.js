@@ -245,6 +245,9 @@ const components = {
 };
 
 const theme = createTheme(colorTheme, {
+  // This color cannot be part of the regular palette above, as MUI fails to reconize it.
+  // See https://github.com/mui/material-ui/issues/19711
+  backgroundNavColor: '#00914712',
   typography: {
     fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
     h1: {

@@ -58,7 +58,7 @@ const NavButton = styled(Button)(({ theme }) => ({
   marginTop: '-4px', // adjust for bottom border
   color: theme.palette.gray.dark2,
   '&.MuiButton-root:hover': {
-    backgroundColor: theme.palette.gray.lite1,
+    backgroundColor: theme.backgroundNavColor,
   },
   '&.Mui-selected': {
     color: theme.palette.primary.main,
