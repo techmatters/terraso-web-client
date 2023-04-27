@@ -17,6 +17,7 @@
 import React from 'react';
 
 import _ from 'lodash/fp';
+import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -32,6 +33,9 @@ import theme from 'theme';
 
 const LandscapeItem = ({ landscape, index }) => {
   const { t } = useTranslation();
+  const { allowed } = usePermission('landscape.change', landscape);
+  const landscapeUrl = `/landscapes/${landscape.slug}`;
+
   return (
     <ListItem
       sx={{
@@ -41,12 +45,17 @@ const LandscapeItem = ({ landscape, index }) => {
         borderTop: index && `1px solid ${theme.palette.gray.lite1}`, // skip first item
       }}
     >
-      <img
-        alt=""
-        width="164"
-        height="93"
-        src={landscape?.profileImage || landscapePlaceholder}
-      />
+      <Link
+        component={RouterLink}
+        to={allowed ? `${landscapeUrl}/profile-image/edit` : landscapeUrl}
+      >
+        <img
+          alt=""
+          width="164"
+          height="93"
+          src={landscape?.profileImage || landscapePlaceholder}
+        />
+      </Link>
       <Box
         sx={{
           display: 'flex',
@@ -54,7 +63,7 @@ const LandscapeItem = ({ landscape, index }) => {
           marginLeft: theme.spacing(2),
         }}
       >
-        <Link component={RouterLink} to={`/landscapes/${landscape.slug}`}>
+        <Link component={RouterLink} to={landscapeUrl}>
           {landscape.name}
         </Link>
         <Typography>
