@@ -57,15 +57,15 @@ const NavButton = styled(Button)(({ theme }) => ({
   lineHeight: '22px',
   marginTop: '-4px', // adjust for bottom border
   color: theme.palette.gray.dark2,
-  '&.MuiButton-root:hover': {
-    backgroundColor: theme.backgroundNavColor,
-  },
   '&.Mui-selected': {
     color: theme.palette.primary.main,
     fontWeight: theme.typography.fontWeightBold,
-    backgroundColor: 'inherit',
     borderBottom: '4px solid',
     marginTop: 0,
+    backgroundColor: 'transparent',
+  },
+  '&:hover': {
+    background: 'transparent',
   },
 }));
 
@@ -77,6 +77,11 @@ const NavigationLink = ({ path, selected, index }) => {
       dense
       sx={{
         width: 'auto',
+        padding: 1.5,
+        paddingBottom: 0,
+        ':hover': {
+          backgroundColor: theme => theme.backgroundNavColor,
+        },
       }}
     >
       <NavButton
