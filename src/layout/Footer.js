@@ -33,7 +33,7 @@ const FooterLink = ({ link, showBorder }) => {
   const { t } = useTranslation();
 
   const borderStyle = {
-    borderRight: `1px solid ${palette.white}`,
+    borderRight: `1px solid ${palette.gray.mid2}`,
     paddingRight: spacing(2),
     marginRight: spacing(2),
   };
