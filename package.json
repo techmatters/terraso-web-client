@@ -58,6 +58,7 @@
   "scripts": {
     "start": "react-scripts start",
     "lint-js": "eslint ./ --fix --ext .js --ext .ts --ext .tsx --max-warnings 0 --ignore-pattern node_modules/ --ignore-pattern build/",
+    "check-ts": "tsc --noEmit",
     "lint-css": "stylelint --fix --config=.stylelintrc '**/*.css'",
     "build": "react-scripts build",
     "build-serve": "serve -s build",
