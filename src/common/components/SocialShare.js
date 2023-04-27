@@ -161,7 +161,11 @@ const SocialShare = props => {
             <li>
               <Button
                 variant="outlined"
-                startIcon={<EmailIcon sx={{ paddingRight: 1 }} />}
+                startIcon={
+                  <EmailIcon
+                    sx={{ paddingRight: 1, color: 'secondary.main' }}
+                  />
+                }
                 onClick={shareViaEmail}
                 sx={{
                   width: {
@@ -180,6 +184,7 @@ const SocialShare = props => {
                   <WhatsAppIcon
                     sx={{
                       paddingRight: 1,
+                      color: 'secondary.main',
                     }}
                   />
                 }
@@ -205,7 +210,11 @@ const SocialShare = props => {
             <li>
               <Button
                 variant="outlined"
-                startIcon={<FacebookIcon sx={{ paddingRight: 1 }} />}
+                startIcon={
+                  <FacebookIcon
+                    sx={{ paddingRight: 1, color: 'secondary.main' }}
+                  />
+                }
                 onClick={shareViaFacebook}
                 sx={{
                   width: {
