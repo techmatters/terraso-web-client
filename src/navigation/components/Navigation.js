@@ -121,9 +121,9 @@ const Navigation = React.forwardRef((props, ref) => {
         '& .MuiTabs-indicator': {
           backgroundColor: 'black',
         },
-        maxWidth: 'lg',
+        maxWidth: '100%!important',
         margin: '0 auto',
-        padding: '0 24px',
+        padding: '0 48px!important',
         boxSizing: 'border-box',
         background: 'white',
       }}
