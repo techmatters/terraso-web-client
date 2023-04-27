@@ -17,7 +17,6 @@
 import React from 'react';
 
 import _ from 'lodash/fp';
-import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -33,7 +32,6 @@ import theme from 'theme';
 
 const LandscapeItem = ({ landscape, index }) => {
   const { t } = useTranslation();
-  const { allowed } = usePermission('landscape.change', landscape);
   const landscapeUrl = `/landscapes/${landscape.slug}`;
 
   return (
@@ -45,10 +43,7 @@ const LandscapeItem = ({ landscape, index }) => {
         borderTop: index && `1px solid ${theme.palette.gray.lite1}`, // skip first item
       }}
     >
-      <Link
-        component={RouterLink}
-        to={allowed ? `${landscapeUrl}/profile-image/edit` : landscapeUrl}
-      >
+      <Link component={RouterLink} to={landscapeUrl}>
         <img
           alt=""
           width="164"
