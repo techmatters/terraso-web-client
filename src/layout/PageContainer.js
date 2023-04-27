@@ -18,16 +18,20 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 
+import { usePathParams } from 'navigation/components/Routes';
+
 import Container from './Container';
 
 const PageContainer = props => {
+  const { showBreadcrumbs } = usePathParams();
+
   return (
     <Container
-      sx={theme => ({
-        paddingTop: theme.spacing(12),
-        paddingBottom: theme.spacing(2),
+      sx={{
+        paddingTop: showBreadcrumbs ? 3.5 : 12,
+        paddingBottom: 2,
         ...props.sx,
-      })}
+      }}
       {..._.omit('sx', props)}
     />
   );
