@@ -40,7 +40,7 @@ const colorTheme = createTheme({
       main: '#d32f2f',
       background: 'rgb(253, 237, 237)',
     },
-    cardBorder: '#DADADA',
+    cardBorder: '#E5E5E5',
     white: '#FFFFFF',
     gray: {
       lite2: '#f9f9f9',
