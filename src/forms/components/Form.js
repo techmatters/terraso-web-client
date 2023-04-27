@@ -160,7 +160,16 @@ const Form = props => {
         container
         spacing={2}
         onSubmit={handleSubmit(onSubmit)}
-        sx={{ width: '100%' }}
+        sx={{
+          width: '100%',
+          padding: 3,
+          marginLeft: 0,
+          background: 'white',
+          borderRadius: '4px',
+          borderWidth: 1,
+          borderStyle: 'solid',
+          borderColor: 'cardBorder',
+        }}
       >
         {fields
           .filter(field =>
