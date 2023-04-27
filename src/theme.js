@@ -201,6 +201,16 @@ const components = {
       },
     },
   },
+  MuiTab: {
+    styleOverrides: {
+      root: {
+        fontSize: '1.125rem',
+        '&.Mui-selected': {
+          fontWeight: 700,
+        },
+      },
+    },
+  },
   MuiAlert: {
     styleOverrides: {
       standardSuccess: {
