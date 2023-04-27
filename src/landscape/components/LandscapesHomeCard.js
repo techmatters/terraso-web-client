@@ -36,7 +36,6 @@ import HomeCard from 'home/components/HomeCard';
 
 import theme from 'theme';
 
-const getAcronym = name => name.match(/\b(\w)/g).join('');
 
 const LandscapeItem = ({ landscape, index }) => {
   const { t } = useTranslation();
