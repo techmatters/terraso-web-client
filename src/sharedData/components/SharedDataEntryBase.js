@@ -204,7 +204,7 @@ const SharedDataEntryBase = props => {
               <DeleteIcon
                 sx={{
                   fontSize: ICON_SIZE,
-                  color: theme.palette.gray.dark1,
+                  color: theme.palette.secondary.main,
                 }}
               />
             </ConfirmButton>

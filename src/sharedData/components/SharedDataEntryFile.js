@@ -106,7 +106,7 @@ const DownloadComponent = props => {
           marginTop: '2px',
           width: ICON_SIZE,
           height: ICON_SIZE,
-          color: theme.palette.gray.dark1,
+          color: theme.palette.secondary.main,
         })}
       />
     </IconButton>
