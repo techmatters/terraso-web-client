@@ -33,7 +33,7 @@ const BreadcrumbsShareContainer = () => {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: showBreadcrumbs ? 16 : 1,
+        marginTop: showBreadcrumbs ? '20px' : 1,
         backgroundColor: theme =>
           breadcrumbsShareProps?.bgColor || theme.palette.primary.background,
       }}

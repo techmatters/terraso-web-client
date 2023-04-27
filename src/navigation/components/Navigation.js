@@ -122,8 +122,6 @@ const Navigation = React.forwardRef((props, ref) => {
           backgroundColor: 'black',
         },
         maxWidth: '100%!important',
-        margin: '0 auto',
-        padding: '0 48px!important',
         boxSizing: 'border-box',
         background: 'white',
       }}
