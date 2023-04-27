@@ -124,7 +124,7 @@ const Form = props => {
   const actions = useMemo(() => {
     const buttonPadding = isMultiStep ? 0 : 5;
 
-    return [
+    return _.compact([
       saveLabel && (
         <Button
           key="submit"
@@ -148,7 +148,7 @@ const Form = props => {
           {t(cancelLabel)}
         </Button>
       ),
-    ];
+    ]);
   }, [saveLabel, t, onCancel, cancelLabel, isMultiStep]);
 
   return (
@@ -221,16 +221,18 @@ const Form = props => {
             )
           )}
         {children}
-        <Grid
-          item
-          container
-          xs={12}
-          direction="row"
-          justifyContent={isMultiStep ? 'space-between' : 'start'}
-          sx={{ marginTop: 2 }}
-        >
-          {isMultiStep ? actions.reverse() : actions}
-        </Grid>
+        {!_.isEmpty(actions) && (
+          <Grid
+            item
+            container
+            xs={12}
+            direction="row"
+            justifyContent={isMultiStep ? 'space-between' : 'start'}
+            sx={{ marginTop: 2 }}
+          >
+            {isMultiStep ? actions.reverse() : actions}
+          </Grid>
+        )}
       </Grid>
     </FormProvider>
   );
