@@ -216,6 +216,18 @@ const components = {
       },
     },
   },
+  MuiDataGrid: {
+    styleOverrides: {
+      root: {
+        '& .MuiDataGrid-row:nth-of-type(odd)': {
+          backgroundColor: 'white',
+          '&:hover': {
+            background: 'white',
+          },
+        },
+      },
+    },
+  },
   MuiCheckbox: {
     styleOverrides: {
       root: {
