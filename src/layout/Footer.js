@@ -160,7 +160,7 @@ const Footer = () => {
               },
             }}
           >
-            © {year} Tech Matters
+            <Typography variant="body2">© {year} Tech Matters</Typography>
           </Grid>
         </Grid>
       </Grid>
