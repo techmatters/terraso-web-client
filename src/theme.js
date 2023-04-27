@@ -166,6 +166,9 @@ const components = {
         '& .Mui-disabled': {
           bgcolor: colorTheme.palette.gray.lite1,
         },
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+          borderColor: colorTheme.palette.blue.dark,
+        },
       },
     },
   },
