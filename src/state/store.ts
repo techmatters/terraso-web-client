@@ -14,12 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {
-  Middleware,
-  Reducer,
-  combineReducers,
-  configureStore,
-} from '@reduxjs/toolkit';
+import { Middleware, combineReducers, configureStore } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
 
 import notificationsReducer from 'notifications/notificationsSlice';
@@ -56,11 +51,17 @@ const reducer = combineReducers({
   storyMap: storyMapReducer,
 });
 
-type GetReducerType<T extends Reducer> = T extends Reducer<infer S> ? S : never;
-export type AppState = GetReducerType<typeof reducer>;
+// Using some advanced TypeScript features here: ReturnType gets the
+// return type of a function type, and since reducers are just functions
+// from (state, action) to state this gives us our state type. since we have
+// a store factory instead of a store we need to get our dispatch
+// type from the return type of the store factory instead of from the store
+// directly as normal. background reading:
+// https://redux-toolkit.js.org/usage/usage-with-typescript#getting-the-state-type
+export type AppState = ReturnType<typeof reducer>;
 export type AppDispatch = ReturnType<typeof createStore>['dispatch'];
 
-const createStore = (intialState: AppState) =>
+const createStore = (intialState?: AppState) =>
   configureStore({
     middleware: getDefaultMiddleware =>
       getDefaultMiddleware().concat(handleAbortMiddleware),

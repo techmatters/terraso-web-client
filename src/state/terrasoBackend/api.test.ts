@@ -35,7 +35,6 @@ test('Terraso API: request error', async () => {
   expect(console.error).toHaveBeenCalledTimes(1);
   expect(rollbar.error).toHaveBeenCalledTimes(1);
 });
-// TODO: is this test testing what it's supposed to test?
 test('Terraso API: request format error', async () => {
   mockFetch.mockResolvedValue(new Response(''));
   await expect(terrasoApi.requestGraphQL('', {})).rejects.toEqual([

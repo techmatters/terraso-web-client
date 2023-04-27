@@ -25,7 +25,7 @@ import _ from 'lodash/fp';
 import { useDispatch } from 'react-redux';
 
 import { addMessage } from 'notifications/notificationsSlice';
-import { signOut } from 'state/account/accountSlice';
+import { User, signOut } from 'state/account/accountSlice';
 import { refreshToken } from 'state/account/auth';
 import { UNAUTHENTICATED } from 'state/account/authConstants';
 
@@ -67,6 +67,10 @@ const generateErrorFallbacksPartial = (name: string) => {
     ].map(parts => parts.join('.'));
 };
 
+// Background reading on typing createAsyncThunk:
+// https://redux-toolkit.js.org/usage/usage-with-typescript#typing-the-thunkapi-object
+// There is code dup here between ThunkAPIConfig and ThunkAPI pending this PR getting
+// merged upstream: https://github.com/reduxjs/redux-toolkit/pull/3393
 type RejectPayload = { error: any; parsedErrors: any };
 type ThunkAPIConfig = {
   state: AppState;
@@ -75,17 +79,24 @@ type ThunkAPIConfig = {
 };
 type ThunkAPI = BaseThunkAPI<AppState, unknown, AppDispatch, RejectPayload>;
 
+export type Message = {
+  severity: 'success' | 'error';
+  content: any;
+  params?: any;
+};
+
 export const createAsyncThunk = <Returned, ThunkArg>(
   typePrefix: string,
   action: (
     arg: ThunkArg,
-    currentUser: AppState['account']['currentUser']['data'],
+    currentUser: User | null,
     thunkAPI: ThunkAPI
   ) => Returned | Promise<Returned>,
-  onSuccessMessage: // TODO: what is the return type here?
-  ((result: Returned, input: ThunkArg) => any) | null = null,
+  onSuccessMessage:
+    | ((result: Returned, input: ThunkArg) => Message)
+    | null = null,
   dispatchErrorMessage = true,
-  onErrorMessage: (_: { message: any; input: ThunkArg }) => any = ({
+  onErrorMessage: (_: { message: Message; input: ThunkArg }) => Message = ({
     message,
   }) => message
 ) => {
@@ -99,7 +110,7 @@ export const createAsyncThunk = <Returned, ThunkArg>(
         const state = thunkAPI.getState();
         const currentUser = state.account.currentUser.data;
         const result = await action(input, currentUser, thunkAPI);
-        if (onSuccessMessage) {
+        if (onSuccessMessage !== null) {
           dispatch(addMessage(onSuccessMessage(result, input)));
         }
         return result;
@@ -108,18 +119,17 @@ export const createAsyncThunk = <Returned, ThunkArg>(
       try {
         return await executeAuthRequest(dispatch, executeAction);
       } catch (error: any) {
-        const isAborted = _.getOr(false, 'signal.aborted', thunkAPI);
         const parsedErrors = _.flatten([error]).map(error => {
           const baseMessage = _.has('content', error)
             ? { severity: 'error', ...error }
             : { severity: 'error', content: [error], params: { error } };
           return {
-            ..._.omit('content', baseMessage),
+            ...baseMessage,
             content: generateErrorFallbacks(baseMessage.content),
           };
         });
 
-        if (dispatchErrorMessage && !isAborted) {
+        if (dispatchErrorMessage && !thunkAPI.signal.aborted) {
           parsedErrors.forEach(message =>
             dispatch(addMessage(onErrorMessage({ message, input })))
           );

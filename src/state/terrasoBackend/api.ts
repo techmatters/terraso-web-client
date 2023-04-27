@@ -34,9 +34,7 @@ const parseMessage = (message: any, body: any) => {
           message.code,
           `terraso_api.${message.code}`,
           'terraso_api.error',
-          ...(errorField
-            ? [`terraso_api.${_.get('context.field', message)}.${message.code}`]
-            : []),
+          ...(errorField ? [`terraso_api.${errorField}.${message.code}`] : []),
         ],
         params: {
           code: message.code,
@@ -79,10 +77,10 @@ const handleApiErrors = (data: any, body: any) => {
 
 export const requestGraphQL = async <T = any>(
   query: string,
-  variables: any
+  variables?: any
 ): Promise<T> => {
   const body = { query, variables };
-  const jsonResponse = await request({
+  const jsonResponse = await request<{ data?: T }>({
     path: GRAPH_QL_ENDPOINT,
     body,
     headers: {
@@ -90,13 +88,13 @@ export const requestGraphQL = async <T = any>(
     },
   });
 
-  if (!_.has('data', jsonResponse)) {
+  if (jsonResponse.data === undefined) {
     logger.error(
       'Terraso API: Unexpected error',
       'received data:',
       jsonResponse
     );
-    await Promise.reject(['terraso_api.error_unexpected']);
+    return Promise.reject(['terraso_api.error_unexpected']);
   }
 
   const hasErrors = !_.flow(
@@ -113,15 +111,15 @@ export const requestGraphQL = async <T = any>(
   return jsonResponse.data;
 };
 
-export const request = async ({
+export const request = async <T = any>({
   path,
   body,
   headers = {},
 }: {
   path: string;
   body: any;
-  headers: Record<string, string>;
-}) => {
+  headers?: Record<string, string>;
+}): Promise<T> => {
   const response = await fetch(new URL(path, TERRASO_API_URL).href, {
     method: 'POST',
     headers: {
