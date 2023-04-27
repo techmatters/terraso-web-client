@@ -23,7 +23,7 @@ import { usePathParams } from 'navigation/components/Routes';
 import Container from './Container';
 
 const BreadcrumbsShareContainer = () => {
-  const { breadcrumbsShareProps } = usePathParams();
+  const { breadcrumbsShareProps, showBreadcrumbs } = usePathParams();
 
   return (
     <Container
@@ -33,7 +33,7 @@ const BreadcrumbsShareContainer = () => {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: 6,
+        marginTop: showBreadcrumbs ? 16 : 1,
         backgroundColor: theme =>
           breadcrumbsShareProps?.bgColor || theme.palette.primary.background,
       }}
