@@ -34,7 +34,7 @@ import {
 } from './groupUtils';
 
 // Omitted email because it is not supported by the backend
-const cleanGroup = group => _.omit('slug', group);
+const cleanGroup = group => _.omit(['slug', 'membershipsCount'], group);
 
 export const fetchGroupToUpdate = slug => {
   const query = `
