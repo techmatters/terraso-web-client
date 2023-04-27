@@ -28,7 +28,7 @@ const colorTheme = createTheme({
     secondary: {
       main: '#00344D',
     },
-    link: '#307F9C',
+    link: '#076B8E',
     success: {
       main: '#b0d098',
       background: '#E2F5D9',
