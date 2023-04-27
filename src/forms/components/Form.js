@@ -162,8 +162,10 @@ const Form = props => {
         onSubmit={handleSubmit(onSubmit)}
         sx={{
           width: '100%',
-          padding: 3,
+          paddingRight: 3,
+          paddingBottom: 3,
           paddingLeft: 1,
+          paddingTop: 2,
           marginLeft: 0,
           marginTop: '-8px',
           background: 'white',
