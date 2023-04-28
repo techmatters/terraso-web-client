@@ -41,7 +41,11 @@ const LandscapeDefaultHomeCard = () => {
           padding: theme.spacing(2),
         }}
       >
-        <Typography id="landscapes-default-title" variant="h2">
+        <Typography
+          id="landscapes-default-title"
+          variant="h2"
+          sx={{ pt: 0, pb: 2 }}
+        >
           {t('landscape.home_default_title')}
         </Typography>
         <Alert
