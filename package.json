@@ -50,7 +50,7 @@
     "slate-react": "^0.90.0",
     "use-debounce": "^9.0.4",
     "uuid": "^9.0.0",
-    "web-vitals": "^3.3.0",
+    "web-vitals": "^3.3.1",
     "world-countries": "^4.0.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.18.10/xlsx-0.18.10.tgz",
     "yup": "^1.1.1"
