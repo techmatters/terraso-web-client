@@ -38,7 +38,7 @@ const colorTheme = createTheme({
     },
     error: {
       main: '#d32f2f',
-      background: 'rgb(253, 237, 237)',
+      background: '#fdeded',
     },
     cardBorder: '#E5E5E5',
     white: '#FFFFFF',
