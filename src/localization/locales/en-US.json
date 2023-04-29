@@ -162,9 +162,9 @@
             "url": "https://www.kobotoolbox.org/",
             "learn_more_url": "https://www.kobotoolbox.org/features/",
             "img": {
-                "height": "164",
-                "width": "377",
-                "src": "tools/kobotoolbox.svg"
+                "height": "140",
+                "width": "250",
+                "src": "tools/kobotoolbox-screenshot.png"
             },
             "description": [
                 "Design and build forms quickly",
