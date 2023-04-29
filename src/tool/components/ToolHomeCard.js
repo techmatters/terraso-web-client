@@ -27,7 +27,7 @@ import theme from 'theme';
 
 const ToolHomeCard = () => {
   const { t } = useTranslation();
-  const koboImage = require(`assets/${t(`tools.kobo.img.src`)}`);
+  const koboImage = require(`assets/${t('tools.kobo.img.src')}`);
 
   return (
     <HomeCard
@@ -53,11 +53,11 @@ const ToolHomeCard = () => {
             component="img"
             src={koboImage}
             alt=""
-            width="250"
-            height="50"
+            width={t('tools.kobo.img.width')}
+            height={t('tools.kobo.img.height')}
             sx={{
-              width: '250px',
-              height: '64px',
+              width: `${t('tools.kobo.img.width')}px`,
+              height: `${t('tools.kobo.img.height')}px`,
             }}
           />
         </Link>
