@@ -168,6 +168,9 @@ const SocialShare = props => {
                 }
                 onClick={shareViaEmail}
                 sx={{
+                  '&:hover svg': {
+                    color: 'white',
+                  },
                   width: {
                     xs: '100%',
                     sm: 'auto',
@@ -190,6 +193,9 @@ const SocialShare = props => {
                 }
                 onClick={shareViaWhatsApp}
                 sx={{
+                  '&:hover svg': {
+                    color: 'white',
+                  },
                   width: {
                     xs: '100%',
                     sm: 'auto',
@@ -217,6 +223,9 @@ const SocialShare = props => {
                 }
                 onClick={shareViaFacebook}
                 sx={{
+                  '&:hover svg': {
+                    color: 'white',
+                  },
                   width: {
                     xs: '100%',
                     sm: 'auto',
