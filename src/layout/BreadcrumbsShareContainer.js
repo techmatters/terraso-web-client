@@ -24,6 +24,15 @@ import Container from './Container';
 
 const BreadcrumbsShareContainer = () => {
   const { breadcrumbsShareProps, showBreadcrumbs } = usePathParams();
+  let topMargin;
+
+  if (breadcrumbsShareProps?.bgColor) {
+    topMargin = breadcrumbsShareProps?.bgColor;
+  } else if (showBreadcrumbs) {
+    topMargin = '20px';
+  } else {
+    topMargin = 1;
+  }
 
   return (
     <Container
@@ -33,7 +42,7 @@ const BreadcrumbsShareContainer = () => {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: showBreadcrumbs ? '20px' : 1,
+        marginTop: topMargin,
         backgroundColor: theme =>
           breadcrumbsShareProps?.bgColor || theme.palette.primary.background,
       }}

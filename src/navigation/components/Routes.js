@@ -179,6 +179,7 @@ const paths = [
     breadcrumbsLabel: 'storyMap.breadcrumbs_view',
     breadcrumbsShareProps: {
       bgColor: 'white',
+      marginTop: 0,
     },
     optionalAuth: {
       enabled: true,
