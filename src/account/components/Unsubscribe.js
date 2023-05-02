@@ -21,6 +21,8 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
+import { unsubscribeFromNotifications } from 'terrasoApi/account/accountSlice';
+import { useFetchData } from 'terrasoApi/utils';
 
 import { Alert } from '@mui/material';
 
@@ -29,9 +31,6 @@ import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 import { useAnalytics } from 'monitoring/analytics';
 import { addMessage } from 'notifications/notificationsSlice';
-import { useFetchData } from 'state/utils';
-
-import { unsubscribeFromNotifications } from 'account/accountSlice';
 
 const Unsubscribe = () => {
   const { t } = useTranslation();

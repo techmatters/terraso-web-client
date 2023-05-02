@@ -15,8 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-
-import * as terrasoApi from 'terrasoBackend/api';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import { storyMapFields, storyMapMetadataFields } from './storyMapFragments';
 

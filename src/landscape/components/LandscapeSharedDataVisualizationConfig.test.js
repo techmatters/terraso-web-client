@@ -18,13 +18,13 @@ import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 
 import * as reactLeaflet from 'react-leaflet';
 import { useParams } from 'react-router-dom';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import * as visualizationMarkers from 'sharedData/visualization/visualizationMarkers';
-import * as terrasoApi from 'terrasoBackend/api';
 
 import LandscapeSharedDataVisualizationConfig from './LandscapeSharedDataVisualizationConfig';
 
-jest.mock('terrasoBackend/api');
+jest.mock('terrasoApi/terrasoBackend/api');
 jest.mock('sharedData/visualization/visualizationMarkers');
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

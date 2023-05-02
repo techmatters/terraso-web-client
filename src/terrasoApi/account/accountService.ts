@@ -15,26 +15,31 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-
-import * as terrasoApi from 'terrasoBackend/api';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 import {
+  UserFragment,
+  UserPreferenceNode,
+  UserPreferencesFragment,
   userFields,
   userPreferences,
   userPreferencesFields,
-} from 'user/userFragments';
+} from 'terrasoApi/user/userFragments';
 
 import { TERRASO_API_URL } from 'config';
 
+import { User } from './accountSlice';
 import { getUserEmail } from './auth';
 
-const parsePreferences = user =>
-  _.flow(
-    _.getOr([], 'preferences.edges'),
-    _.map(({ node }) => [node.key, node.value]),
-    _.fromPairs
-  )(user);
+const parsePreferences = (
+  user: UserFragment & Partial<UserPreferencesFragment>
+): User => ({
+  ...user,
+  preferences: _.fromPairs(
+    user.preferences?.edges.map(({ node: { key, value } }) => [key, value])
+  ),
+});
 
-const getURL = provider =>
+const getURL = (provider: string) =>
   fetch(new URL(`/auth/${provider}/authorize`, TERRASO_API_URL).href, {
     headers: { 'Content-Type': 'application/json' },
   })
@@ -50,7 +55,18 @@ export const getAuthURLs = () =>
     })
   );
 
-export const fetchProfile = (params, currentUser) => {
+type UserQuery = {
+  users: {
+    edges: {
+      node: UserFragment & UserPreferencesFragment;
+    }[];
+  };
+};
+
+export const fetchProfile = async (
+  params: any,
+  currentUser: { email: string } | null
+) => {
   const query = `
     query user($email: String!){
       users(email: $email) {
@@ -65,44 +81,30 @@ export const fetchProfile = (params, currentUser) => {
     ${userFields}
     ${userPreferences}
   `;
-  return terrasoApi
-    .requestGraphQL(query, { email: currentUser.email })
-    .then(_.get('users.edges[0].node'))
-    .then(user => user || Promise.reject('not_found'))
-    .then(user => ({
-      ..._.omit('preferences', user),
-      preferences: parsePreferences(user),
-    }));
+  const result = await terrasoApi.requestGraphQL<UserQuery>(query, {
+    email: currentUser?.email,
+  });
+
+  const user = result.users.edges.at(0);
+  if (user === undefined) {
+    return Promise.reject('not_found');
+  }
+  return parsePreferences(user.node);
 };
 
 // TODO: this is a temporary solution to get the user's email address,
 // the API should have a account query to get the logged in user data
-export const fetchUser = () => {
-  const query = `
-    query user($email: String!){
-      users(email: $email) {
-        edges {
-          node {
-            ...userFields
-            ...userPreferences
-          }
-        }
-      }
-    }
-    ${userFields}
-    ${userPreferences}
-  `;
-  return terrasoApi
-    .requestGraphQL(query, { email: getUserEmail() })
-    .then(_.get('users.edges[0].node'))
-    .then(user => user || Promise.reject('not_found'))
-    .then(user => ({
-      ..._.omit('preferences', user),
-      preferences: parsePreferences(user),
-    }));
+export const fetchUser = async () => {
+  const email = getUserEmail();
+  return fetchProfile(null, email === undefined ? null : { email });
 };
 
-export const saveUser = user => {
+type UpdateUserMutation = {
+  updateUser: {
+    user: UserFragment;
+  };
+};
+export const saveUser = (user: User) => {
   const query = `
     mutation updateUser($input: UserUpdateMutationInput!) {
       updateUser(input: $input) {
@@ -113,16 +115,21 @@ export const saveUser = user => {
     ${userFields}
   `;
   return terrasoApi
-    .requestGraphQL(query, {
+    .requestGraphQL<UpdateUserMutation>(query, {
       input: _.omit(['profileImage', 'email', 'preferences'], user),
     })
-    .then(response => ({
-      ..._.omit('preferences', response.updateUser.user),
-      preferences: parsePreferences(response.updateUser.user),
-    }));
+    .then(resp => parsePreferences(resp.updateUser.user));
 };
 
-export const savePreference = ({ key, value }, currentUser) => {
+type UpdateUserPreferenceMutation = {
+  updateUserPreference: {
+    preference: UserPreferenceNode['node'];
+  };
+};
+export const savePreference = async (
+  { key, value }: { key: string; value: string },
+  currentUser: UserFragment | null
+) => {
   const query = `
     mutation updateUserPreference($input: UserPreferenceUpdateInput!) {
       updateUserPreference(input: $input) {
@@ -132,18 +139,25 @@ export const savePreference = ({ key, value }, currentUser) => {
     }
     ${userPreferencesFields}
   `;
-  return terrasoApi
-    .requestGraphQL(query, {
+  const result = await terrasoApi.requestGraphQL<UpdateUserPreferenceMutation>(
+    query,
+    {
       input: {
-        userEmail: currentUser.email,
+        userEmail: currentUser?.email,
         key,
         value,
       },
-    })
-    .then(_.get('updateUserPreference.preference'));
+    }
+  );
+  return result.updateUserPreference.preference;
 };
 
-export const unsubscribeFromNotifications = token => {
+type UnsubscribeUserMutation = {
+  unsubscribeUser: {
+    errors: any;
+  };
+};
+export const unsubscribeFromNotifications = (token: string) => {
   const query = `
     mutation unsubscribeUser($input: UserUnsubscribeUpdateInput!) {
       unsubscribeUser(input: $input) {
@@ -151,7 +165,7 @@ export const unsubscribeFromNotifications = token => {
       }
     }
   `;
-  return terrasoApi.requestGraphQL(query, {
+  return terrasoApi.requestGraphQL<UnsubscribeUserMutation>(query, {
     input: {
       token,
     },

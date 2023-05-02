@@ -25,6 +25,14 @@ export const userFields = `
   }
 `;
 
+export type UserFragment = {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  profileImage: string;
+};
+
 export const userPreferencesFields = `
   fragment userPreferencesFields on UserPreferenceNode {
     key
@@ -32,6 +40,13 @@ export const userPreferencesFields = `
   }
 
 `;
+
+export type UserPreferenceNode = {
+  node: {
+    key: string;
+    value: string;
+  };
+};
 
 export const userPreferences = `
   fragment userPreferences on UserNode {
@@ -45,3 +60,9 @@ export const userPreferences = `
   }
   ${userPreferencesFields}
 `;
+
+export type UserPreferencesFragment = {
+  preferences: {
+    edges: UserPreferenceNode[];
+  };
+};

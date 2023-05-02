@@ -15,29 +15,26 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
+import { getAuthHeaders } from 'terrasoApi/account/auth';
+import { UNAUTHENTICATED } from 'terrasoApi/account/authConstants';
 
 import logger from 'monitoring/logger';
 
-import { getAuthHeaders } from 'account/auth';
-import { UNAUTHENTICATED } from 'account/authConstants';
-
 import { GRAPH_QL_ENDPOINT, TERRASO_API_URL } from 'config';
 
-const parseMessage = (message, body) => {
+const parseMessage = (message: any, body: any) => {
   try {
     // If JSON return parse
     const jsonMessages =
       typeof message === 'string' ? JSON.parse(message) : message;
-    return jsonMessages.map(message => {
+    return jsonMessages.map((message: any) => {
       const errorField = _.get('context.field', message);
       return {
         content: [
           message.code,
           `terraso_api.${message.code}`,
           'terraso_api.error',
-          ...(errorField
-            ? [`terraso_api.${_.get('context.field', message)}.${message.code}`]
-            : []),
+          ...(errorField ? [`terraso_api.${errorField}.${message.code}`] : []),
         ],
         params: {
           code: message.code,
@@ -53,14 +50,14 @@ const parseMessage = (message, body) => {
   }
 };
 
-const handleApiErrors = (data, body) => {
+const handleApiErrors = (data: any, body: any) => {
   const errors = _.getOr(
     _.flow(_.get('data'), _.values, _.first, _.get('errors'))(data),
     'errors',
     data
   );
 
-  const unauthenticatedError = errors.find(error =>
+  const unauthenticatedError = errors.find((error: any) =>
     _.includes('AnonymousUser', error.message)
   );
   if (unauthenticatedError) {
@@ -78,9 +75,12 @@ const handleApiErrors = (data, body) => {
   return Promise.reject(messages);
 };
 
-export const requestGraphQL = async (query, variables) => {
+export const requestGraphQL = async <T = any>(
+  query: string,
+  variables?: any
+): Promise<T> => {
   const body = { query, variables };
-  const jsonResponse = await request({
+  const jsonResponse = await request<{ data?: T }>({
     path: GRAPH_QL_ENDPOINT,
     body,
     headers: {
@@ -88,13 +88,13 @@ export const requestGraphQL = async (query, variables) => {
     },
   });
 
-  if (!_.has('data', jsonResponse)) {
+  if (jsonResponse.data === undefined) {
     logger.error(
       'Terraso API: Unexpected error',
       'received data:',
       jsonResponse
     );
-    await Promise.reject(['terraso_api.error_unexpected']);
+    return Promise.reject(['terraso_api.error_unexpected']);
   }
 
   const hasErrors = !_.flow(
@@ -111,7 +111,15 @@ export const requestGraphQL = async (query, variables) => {
   return jsonResponse.data;
 };
 
-export const request = async ({ path, body, headers = {} }) => {
+export const request = async <T = any>({
+  path,
+  body,
+  headers = {},
+}: {
+  path: string;
+  body: any;
+  headers?: Record<string, string>;
+}): Promise<T> => {
   const response = await fetch(new URL(path, TERRASO_API_URL).href, {
     method: 'POST',
     headers: {

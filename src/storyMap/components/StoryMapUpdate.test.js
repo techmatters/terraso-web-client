@@ -16,11 +16,11 @@
  */
 import { act, fireEvent, render, screen } from 'tests/utils';
 
-import * as terrasoApi from 'terrasoBackend/api';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import StoryMapUpdate from './StoryMapUpdate';
 
-jest.mock('terrasoBackend/api');
+jest.mock('terrasoApi/terrasoBackend/api');
 
 jest.mock('./StoryMap', () => props => <div>Test</div>);
 

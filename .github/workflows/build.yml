@@ -33,6 +33,9 @@ jobs:
       - name: Run lint css checks
         run: npm run lint-css
 
+      - name: Typecheck ts code
+        run: npm run check-ts
+
   tests:
     runs-on: ubuntu-latest
 

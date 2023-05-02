@@ -21,16 +21,16 @@ import React from 'react';
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 import { useSearchParams } from 'react-router-dom';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import GroupList from 'group/components/GroupList';
-import * as terrasoApi from 'terrasoBackend/api';
 
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850
 global.console.error = jest.fn();
 
-jest.mock('terrasoBackend/api');
+jest.mock('terrasoApi/terrasoBackend/api');
 
 jest.mock('@mui/material/useMediaQuery');
 

@@ -19,6 +19,10 @@ import React, { useCallback } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { saveUser } from 'terrasoApi/account/accountSlice';
+import { savePreference } from 'terrasoApi/account/accountSlice';
+import { fetchProfile } from 'terrasoApi/account/accountSlice';
+import { useFetchData } from 'terrasoApi/utils';
 import * as yup from 'yup';
 
 import { Checkbox, FormControlLabel } from '@mui/material';
@@ -30,11 +34,6 @@ import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePickerSelect from 'localization/components/LocalePickerSelect';
 import { useAnalytics } from 'monitoring/analytics';
-import { useFetchData } from 'state/utils';
-
-import { saveUser } from 'account/accountSlice';
-import { savePreference } from 'account/accountSlice';
-import { fetchProfile } from 'account/accountSlice';
 
 import AccountAvatar from './AccountAvatar';
 

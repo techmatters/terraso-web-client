@@ -14,10 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import * as groupService from 'group/groupService';
-import * as terrasoApi from 'terrasoBackend/api';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
-jest.mock('terrasoBackend/api');
+import * as groupService from 'group/groupService';
+
+jest.mock('terrasoApi/terrasoBackend/api');
 
 test('GroupService: Fetch group', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(

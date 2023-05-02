@@ -15,8 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { createSlice } from '@reduxjs/toolkit';
-
-import { createAsyncThunk } from 'state/utils';
+import { createAsyncThunk } from 'terrasoApi/utils';
 
 import * as gisService from 'gis/gisService';
 

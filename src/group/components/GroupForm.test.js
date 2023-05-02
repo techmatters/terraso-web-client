@@ -20,11 +20,11 @@ import React from 'react';
 
 import { act } from 'react-dom/test-utils';
 import { useNavigate, useParams } from 'react-router-dom';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import GroupForm from 'group/components/GroupForm';
-import * as terrasoApi from 'terrasoBackend/api';
 
-jest.mock('terrasoBackend/api');
+jest.mock('terrasoApi/terrasoBackend/api');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

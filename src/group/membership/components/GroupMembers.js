@@ -21,6 +21,7 @@ import { usePermission, usePermissionRedirect } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import { useFetchData } from 'terrasoApi/utils';
 
 import { Typography } from '@mui/material';
 
@@ -29,7 +30,6 @@ import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-import { useFetchData } from 'state/utils';
 
 import { GroupContextProvider } from 'group/groupContext';
 import { fetchGroupForMembers } from 'group/groupSlice';

@@ -20,6 +20,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
+import { useFetchData } from 'terrasoApi/utils';
 
 import EmailIcon from '@mui/icons-material/Email';
 import PublicIcon from '@mui/icons-material/Public';
@@ -42,7 +43,6 @@ import PageLoader from 'layout/PageLoader';
 import { useRefreshProgressContext } from 'layout/RefreshProgressProvider';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import Restricted from 'permissions/components/Restricted';
-import { useFetchData } from 'state/utils';
 
 import { GroupContextProvider } from 'group/groupContext';
 import { fetchGroupView, refreshGroupView } from 'group/groupSlice';

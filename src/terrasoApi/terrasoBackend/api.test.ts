@@ -14,95 +14,103 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { rollbar } from 'monitoring/rollbar';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
-import * as terrasoApi from 'terrasoBackend/api';
+import { rollbar } from 'monitoring/rollbar';
 
 jest.mock('monitoring/rollbar');
 
-global.fetch = jest.fn();
+const mockFetch = jest.fn<
+  ReturnType<typeof global.fetch>,
+  Parameters<typeof global.fetch>
+>();
+global.fetch = mockFetch;
 global.console.error = jest.fn();
 
 test('Terraso API: request error', async () => {
   global.console.warn = jest.fn();
-  global.fetch.mockRejectedValue('Test Error');
-  await expect(terrasoApi.requestGraphQL()).rejects.toEqual([
+  mockFetch.mockRejectedValue('Test Error');
+  await expect(terrasoApi.requestGraphQL('', {})).rejects.toEqual([
     'terraso_api.error_request_response',
   ]);
   expect(console.error).toHaveBeenCalledTimes(1);
   expect(rollbar.error).toHaveBeenCalledTimes(1);
 });
 test('Terraso API: request format error', async () => {
-  global.fetch.mockResolvedValue({
-    json: () => Promise.reject('Format error'),
-  });
-  await expect(terrasoApi.requestGraphQL()).rejects.toEqual([
+  mockFetch.mockResolvedValue(new Response(''));
+  await expect(terrasoApi.requestGraphQL('', {})).rejects.toEqual([
     'terraso_api.error_request_response',
   ]);
   expect(console.error).toHaveBeenCalledTimes(1);
   expect(rollbar.error).toHaveBeenCalledTimes(1);
 });
 test('Terraso API: request GraphQL errors', async () => {
-  global.fetch.mockResolvedValue({
-    json: () =>
-      Promise.resolve({
+  mockFetch.mockResolvedValue(
+    new Response(
+      JSON.stringify({
         errors: [
           {
             message: 'Test error',
           },
         ],
-      }),
-  });
-  await expect(terrasoApi.requestGraphQL()).rejects.toEqual(['Test error']);
+      })
+    )
+  );
+  await expect(terrasoApi.requestGraphQL('', {})).rejects.toEqual([
+    'Test error',
+  ]);
   expect(console.error).toHaveBeenCalledTimes(0);
   expect(rollbar.error).toHaveBeenCalledTimes(0);
 });
 test('Terraso API: no data error', async () => {
-  global.fetch.mockResolvedValue({
-    json: () => Promise.resolve({}),
-  });
-  await expect(terrasoApi.requestGraphQL()).rejects.toEqual([
+  mockFetch.mockResolvedValue(new Response('{}'));
+  await expect(terrasoApi.requestGraphQL('', {})).rejects.toEqual([
     'terraso_api.error_unexpected',
   ]);
   expect(console.error).toHaveBeenCalledTimes(1);
 });
 test('Terraso API: mutation errors', async () => {
-  global.fetch.mockResolvedValue({
-    json: () =>
-      Promise.resolve({
+  mockFetch.mockResolvedValue(
+    new Response(
+      JSON.stringify({
         data: {
           testMutation: {
             errors: [{ message: 'Test error' }],
           },
         },
-      }),
-  });
-  await expect(terrasoApi.requestGraphQL()).rejects.toEqual(['Test error']);
+      })
+    )
+  );
+  await expect(terrasoApi.requestGraphQL('', {})).rejects.toEqual([
+    'Test error',
+  ]);
 });
 test('Terraso API: No mutation errors', async () => {
-  global.fetch.mockResolvedValue({
-    json: () =>
-      Promise.resolve({
+  mockFetch.mockResolvedValue(
+    new Response(
+      JSON.stringify({
         data: {
           testMutation: {
             errors: null,
           },
         },
-      }),
-  });
-  const result = await terrasoApi.requestGraphQL();
+      })
+    )
+  );
+  const result = await terrasoApi.requestGraphQL('', {});
   expect(result).toEqual({ testMutation: { errors: null } });
 });
 test('Terraso API: success', async () => {
-  global.fetch.mockResolvedValue({
-    json: () =>
-      Promise.resolve({
+  mockFetch.mockResolvedValue(
+    new Response(
+      JSON.stringify({
         data: {
           test: 'value',
         },
-      }),
-  });
-  const result = await terrasoApi.requestGraphQL();
+      })
+    )
+  );
+  const result = await terrasoApi.requestGraphQL('', {});
   expect(result).toEqual({ test: 'value' });
   expect(console.error).toHaveBeenCalledTimes(0);
   expect(rollbar.error).toHaveBeenCalledTimes(0);

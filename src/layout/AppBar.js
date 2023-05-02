@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
+import { signOut } from 'terrasoApi/account/accountSlice';
 
 import { AppBar, Box, Button, Toolbar } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -30,7 +31,6 @@ import { useOptionalAuth } from 'navigation/components/Routes';
 import SkipLinks from 'navigation/components/SkipLinks';
 import { generateReferrerPath } from 'navigation/navigationUtils';
 
-import { signOut } from 'account/accountSlice';
 import AccountAvatar from 'account/components/AccountAvatar';
 
 import logoSquare from 'assets/logo-square.svg';

@@ -22,11 +22,11 @@ import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 import { useSearchParams } from 'react-router-dom';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import LandscapeList from 'landscape/components/LandscapeList';
-import * as terrasoApi from 'terrasoBackend/api';
 
 const GEOJSON =
   '{"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": {"type": "Polygon", "coordinates": [[[-80.02098083496094, 0.8184536092473124], [-80.04364013671875, 0.8177670337355836], [-80.04844665527342, 0.8184536092473124], [-80.04981994628906, 0.8260059320976082], [-80.07247924804686, 0.802662342941431], [-80.09170532226562, 0.779318620539376], [-80.10063171386719, 0.7532284249372649], [-80.09857177734375, 0.7223319390984623], [-80.09307861328125, 0.7140928403610857], [-80.10337829589842, 0.6955548144696846], [-80.09788513183594, 0.6742703246919985], [-80.08827209472656, 0.6488661346824502], [-80.07797241210938, 0.6495527361122139], [-80.06561279296875, 0.6522991408974699], [-80.06235122680664, 0.6468063298344634], [-80.02098083496094, 0.8184536092473124]]]}, "properties": {}}]}';
@@ -34,7 +34,7 @@ const GEOJSON =
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850
 global.console.error = jest.fn();
 
-jest.mock('terrasoBackend/api');
+jest.mock('terrasoApi/terrasoBackend/api');
 jest.mock('@changey/react-leaflet-markercluster', () => jest.fn());
 
 jest.mock('@mui/material/useMediaQuery');

@@ -18,11 +18,10 @@ import React, { useCallback } from 'react';
 
 import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
+import { fetchUser } from 'terrasoApi/account/accountSlice';
+import { useFetchData } from 'terrasoApi/utils';
 
 import PageLoader from 'layout/PageLoader';
-import { useFetchData } from 'state/utils';
-
-import { fetchUser } from 'account/accountSlice';
 
 const OptionalAuth = ({ children }) => {
   const { data: user, fetching } = useSelector(_.get('account.currentUser'));

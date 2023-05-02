@@ -19,6 +19,7 @@ import React, { useCallback } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { useFetchData } from 'terrasoApi/utils';
 
 import { Alert, Grid, Stack } from '@mui/material';
 
@@ -26,7 +27,6 @@ import LoaderCard from 'common/components/LoaderCard';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
-import { useFetchData } from 'state/utils';
 
 import GroupDefaultCard from 'group/components/GroupDefaultHomeCard';
 import GroupsCard from 'group/components/GroupsHomeCard';

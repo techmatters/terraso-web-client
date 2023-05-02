@@ -21,6 +21,7 @@ import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
+import { useFetchData } from 'terrasoApi/utils';
 
 import { LoadingButton } from '@mui/lab';
 import { ListItem, MenuItem, Select, Stack, Typography } from '@mui/material';
@@ -30,7 +31,6 @@ import List from 'common/components/List';
 import TableResponsive from 'common/components/TableResponsive';
 import PageLoader from 'layout/PageLoader';
 import Restricted from 'permissions/components/Restricted';
-import { useFetchData } from 'state/utils';
 
 import AccountAvatar from 'account/components/AccountAvatar';
 import { useGroupContext } from 'group/groupContext';

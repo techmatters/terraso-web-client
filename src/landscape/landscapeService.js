@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import * as gisService from 'gis/gisService';
 import { accountMembership } from 'group/groupFragments';
@@ -27,7 +28,6 @@ import {
   landscapeProfileFields,
 } from 'landscape/landscapeFragments';
 import { extractTerms } from 'taxonomies/taxonomiesUtils';
-import * as terrasoApi from 'terrasoBackend/api';
 
 import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
 import {

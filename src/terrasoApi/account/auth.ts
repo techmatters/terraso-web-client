@@ -16,16 +16,19 @@
  */
 import Cookies from 'js-cookie';
 import jwt from 'jwt-decode';
-
-import { UNAUTHENTICATED } from 'account/authConstants';
+import { UNAUTHENTICATED } from 'terrasoApi/account/authConstants';
 
 import { COOKIES_DOMAIN, TERRASO_API_URL } from 'config';
 
 const COOKIES_PARAMS = { path: '/', domain: COOKIES_DOMAIN };
 
+type AccessToken = {
+  email: string;
+};
+
 export const getToken = () => Cookies.get('atoken');
 
-export const getAuthHeaders = () => {
+export const getAuthHeaders = (): Record<string, string> => {
   const token = getToken();
   if (!token) {
     return {};
@@ -59,4 +62,7 @@ export const refreshToken = async () => {
   Cookies.set('atoken', atoken, COOKIES_PARAMS);
 };
 
-export const getUserEmail = () => jwt(Cookies.get('atoken')).email;
+export const getUserEmail = () => {
+  const token = getToken();
+  return token === undefined ? undefined : jwt<AccessToken>(token).email;
+};

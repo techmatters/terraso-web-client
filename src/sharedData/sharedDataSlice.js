@@ -16,8 +16,7 @@
  */
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
-
-import { createAsyncThunk } from 'state/utils';
+import { createAsyncThunk } from 'terrasoApi/utils';
 
 import * as sharedDataService from 'sharedData/sharedDataService';
 

@@ -19,11 +19,11 @@ import { render, screen } from 'tests/utils';
 import React from 'react';
 
 import { useSearchParams } from 'react-router-dom';
+import * as accountService from 'terrasoApi/account/accountService';
 
-import * as accountService from 'account/accountService';
 import AccountLogin from 'account/components/AccountLogin';
 
-jest.mock('account/accountService');
+jest.mock('terrasoApi/account/accountService');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

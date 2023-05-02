@@ -20,6 +20,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useFetchData } from 'terrasoApi/utils';
 
 import { serialize } from 'common/components/RichTextEditor/utils';
 import RouterButton from 'common/components/RouterButton';
@@ -29,7 +30,6 @@ import Container, { useContainerContext } from 'layout/Container';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import Restricted from 'permissions/components/Restricted';
-import { useFetchData } from 'state/utils';
 
 import StoryMap from 'storyMap/components/StoryMap';
 import { fetchStoryMap } from 'storyMap/storyMapSlice';

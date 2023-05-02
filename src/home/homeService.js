@@ -15,12 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import { groupFields, groupMembersPending } from 'group/groupFragments';
 import { extractAccountMembership, extractMembersInfo } from 'group/groupUtils';
 import { defaultGroup, landscapeFields } from 'landscape/landscapeFragments';
 import { storyMapMetadataFields } from 'storyMap/storyMapFragments';
-import * as terrasoApi from 'terrasoBackend/api';
 
 export const fetchHomeData = email => {
   const query = `

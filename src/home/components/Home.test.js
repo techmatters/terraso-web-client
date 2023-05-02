@@ -19,12 +19,12 @@ import { render, screen, within } from 'tests/utils';
 import React from 'react';
 
 import _ from 'lodash/fp';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import Home from 'home/components/Home';
 import { fetchHomeData } from 'home/homeService';
-import * as terrasoApi from 'terrasoBackend/api';
 
-jest.mock('terrasoBackend/api');
+jest.mock('terrasoApi/terrasoBackend/api');
 
 jest.mock('home/homeService', () => ({
   ...jest.requireActual('home/homeService'),

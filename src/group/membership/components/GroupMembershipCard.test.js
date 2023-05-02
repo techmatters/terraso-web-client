@@ -20,16 +20,16 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
-import * as terrasoApi from 'terrasoBackend/api';
 
 import GroupMemberRequestCancel from './GroupMemberRequestCancel';
 
-jest.mock('terrasoBackend/api');
+jest.mock('terrasoApi/terrasoBackend/api');
 
 const setup = async initialState => {
   await render(

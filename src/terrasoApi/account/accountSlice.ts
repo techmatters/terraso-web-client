@@ -16,21 +16,21 @@
  */
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
+import * as accountService from 'terrasoApi/account/accountService';
+import { getToken, removeToken } from 'terrasoApi/account/auth';
+import type { AppDispatch } from 'terrasoApi/store';
+import { createAsyncThunk } from 'terrasoApi/utils';
 
 import logger from 'monitoring/logger';
-import { createAsyncThunk } from 'state/utils';
-
-import * as accountService from 'account/accountService';
-import { getToken, removeToken } from 'account/auth';
 
 const initialState = {
   currentUser: {
     fetching: true,
-    data: null,
+    data: null as User | null,
   },
   profile: {
     fetching: true,
-    data: null,
+    data: null as User | null,
   },
   login: {
     urls: {},
@@ -49,16 +49,25 @@ const initialState = {
   },
 };
 
+export type User = {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  profileImage: string;
+  preferences: Record<string, string>;
+};
+
 export const fetchUser = createAsyncThunk(
-  'account/fetchUser',
+  'terrasoApi/account/fetchUser',
   accountService.fetchUser
 );
 export const fetchProfile = createAsyncThunk(
-  'account/fetchProfile',
+  'terrasoApi/account/fetchProfile',
   accountService.fetchProfile
 );
 export const saveUser = createAsyncThunk(
-  'account/saveUser',
+  'terrasoApi/account/saveUser',
   accountService.saveUser,
   () => ({
     severity: 'success',
@@ -66,17 +75,17 @@ export const saveUser = createAsyncThunk(
   })
 );
 export const fetchAuthURLs = createAsyncThunk(
-  'account/fetchAuthURLs',
+  'terrasoApi/account/fetchAuthURLs',
   accountService.getAuthURLs
 );
 export const savePreference = createAsyncThunk(
-  'account/savePreference',
+  'terrasoApi/account/savePreference',
   accountService.savePreference,
   null,
   false
 );
 export const unsubscribeFromNotifications = createAsyncThunk(
-  'account/unsubscribeFromNotifications',
+  'terrasoApi/account/unsubscribeFromNotifications',
   accountService.unsubscribeFromNotifications,
   null,
   false
@@ -132,9 +141,9 @@ export const userSlice = createSlice({
       currentUser: {
         fetching: false,
         data: _.set(
-          `preferences.${action.payload.key}`,
+          ['preferences', action.payload.key],
           action.payload.value,
-          state.currentUser.data
+          state.currentUser.data as User
         ),
       },
     }));
@@ -245,7 +254,7 @@ export const { setUser, setHasToken } = userSlice.actions;
 
 export default userSlice.reducer;
 
-export const signOut = () => dispatch => {
+export const signOut = () => (dispatch: AppDispatch) => {
   accountService.signOut().catch(error => {
     logger.error('Failed to execute API signout request', error);
   });

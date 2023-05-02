@@ -20,6 +20,8 @@ import { Trans } from 'react-i18next';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
+import { fetchAuthURLs } from 'terrasoApi/account/accountSlice';
+import { useFetchData } from 'terrasoApi/utils';
 
 import AppleIcon from '@mui/icons-material/Apple';
 import GoogleIcon from '@mui/icons-material/Google';
@@ -33,9 +35,6 @@ import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePicker from 'localization/components/LocalePicker';
 import { useAnalytics } from 'monitoring/analytics';
-import { useFetchData } from 'state/utils';
-
-import { fetchAuthURLs } from 'account/accountSlice';
 
 import logo from 'assets/logo.svg';
 import { ReactComponent as MicrosoftSvg } from 'assets/microsoft.svg';

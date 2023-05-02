@@ -20,16 +20,16 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { useLocation, useParams } from 'react-router-dom';
+import { getUserEmail } from 'terrasoApi/account/auth';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
-import { getUserEmail } from 'account/auth';
 import RequireAuth from 'account/components/RequireAuth';
 import GroupView from 'group/components/GroupView';
-import * as terrasoApi from 'terrasoBackend/api';
 
-jest.mock('terrasoBackend/api');
+jest.mock('terrasoApi/terrasoBackend/api');
 
-jest.mock('account/auth', () => ({
-  ...jest.requireActual('account/auth'),
+jest.mock('terrasoApi/account/auth', () => ({
+  ...jest.requireActual('terrasoApi/account/auth'),
   getUserEmail: jest.fn(),
 }));
 
