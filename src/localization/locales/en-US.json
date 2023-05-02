@@ -179,9 +179,9 @@
             "title": "Terraso Story Maps",
             "url": "/tools/story-maps",
             "img": {
-                "height": "124",
-                "width": "377",
-                "src": "tools/story-maps.png"
+                "height": "95",
+                "width": "250",
+                "src": "tools/story-maps.svg"
             },
             "description": [
                 "Create beautiful map-based stories"
