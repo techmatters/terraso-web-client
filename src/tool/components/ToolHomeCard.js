@@ -72,10 +72,7 @@ const ToolHomeCard = () => {
         </Stack>
       </Stack>
       <Divider aria-hidden="true" />
-      <CardActionRouterLink
-        label={t('tool.home_explore_label')}
-        to="/landscapes"
-      />
+      <CardActionRouterLink label={t('tool.home_explore_label')} to="/tools" />
     </HomeCard>
   );
 };
