@@ -19,7 +19,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Box, Link, Stack, Typography } from '@mui/material';
+import { Box, Divider, Link, Stack, Typography } from '@mui/material';
+
+import CardActionRouterLink from 'common/components/CardActionRouterLink';
 
 import HomeCard from 'home/components/HomeCard';
 
@@ -35,6 +37,7 @@ const ToolHomeCard = () => {
       sx={{
         flexDirection: 'column',
         padding: theme.spacing(2),
+        paddingBottom: 0,
       }}
     >
       <Typography id="tools-title" variant="h2" sx={{ pt: 0 }}>
@@ -68,6 +71,11 @@ const ToolHomeCard = () => {
           {t('tool.home_card_description')}
         </Stack>
       </Stack>
+      <Divider aria-hidden="true" />
+      <CardActionRouterLink
+        label={t('tool.home_explore_label')}
+        to="/landscapes"
+      />
     </HomeCard>
   );
 };
