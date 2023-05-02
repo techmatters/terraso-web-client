@@ -48,7 +48,17 @@ const BreadcrumbsShareContainer = () => {
       }}
     >
       <Breadcrumbs />
-      <SocialShare buttonProps={{ sx: { mt: 2, mb: 2 } }} />
+      <SocialShare
+        buttonProps={{
+          sx: {
+            mt: 2,
+            mb: 2,
+            backgroundColor: 'white',
+            borderColor: theme => theme.palette.secondary.main,
+            color: theme => theme.palette.secondary.main,
+          },
+        }}
+      />
     </Container>
   );
 };
