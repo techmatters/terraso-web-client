@@ -130,9 +130,11 @@ const StoryMapsToolsHome = () => {
                       }
                     />
                     <CardContent sx={{ pt: 0 }}>
-                      {t('storyMap.tool_home_examples_by', {
-                        user: sample.createdBy,
-                      })}
+                      <Typography>
+                        {t('storyMap.tool_home_examples_by', {
+                          user: sample.createdBy,
+                        })}
+                      </Typography>
                     </CardContent>
                   </Card>
                 </Grid>
