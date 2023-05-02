@@ -61,7 +61,7 @@ const ToolIconAndLink = ({ tool, title, external }) => {
   );
 };
 
-const Tool = ({ tool }) => {
+const ToolCard = ({ tool }) => {
   const { t } = useTranslation();
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -81,7 +81,7 @@ const Tool = ({ tool }) => {
 
   return (
     <React.Fragment>
-      <Card sx={{ padding: theme.spacing(2) }}>
+      <Card sx={{ padding: theme.spacing(2), paddingTop: 0 }}>
         <Typography {...attributes}>{toolTitle}</Typography>
         <Stack
           direction={isSmall ? 'column' : 'row'}
@@ -151,4 +151,4 @@ const Tool = ({ tool }) => {
   );
 };
 
-export default Tool;
+export default ToolCard;

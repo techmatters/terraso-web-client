@@ -24,7 +24,7 @@ import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 
-import Tool from 'tool/components/ToolDefaultCard';
+import ToolCard from 'tool/components/ToolCard';
 
 const ToolList = () => {
   const { t } = useTranslation();
@@ -50,7 +50,7 @@ const ToolList = () => {
       ></Typography>
       <Stack spacing={2} component={List} aria-labelledby="main-heading">
         {toolList.map((tool, index) => (
-          <Tool key={index} tool={tool} />
+          <ToolCard key={index} tool={tool} />
         ))}
       </Stack>
     </PageContainer>
