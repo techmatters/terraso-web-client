@@ -59,7 +59,7 @@ const StoryMapsToolsHome = () => {
       <PageContainer maxWidth="md">
         <PageHeader header={t('storyMap.tool_home_title')} />
 
-        <Paper variant="outlined" sx={{ bgcolor: 'gray.lite2', p: 2 }}>
+        <Paper variant="outlined" sx={{ bgcolor: 'white', p: 2 }}>
           <Typography variant="body1">
             {t('storyMap.tool_home_description')}
           </Typography>
