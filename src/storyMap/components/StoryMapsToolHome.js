@@ -112,6 +112,7 @@ const StoryMapsToolsHome = () => {
                           variant="h3"
                           id={`story-map-example-${sample.id}`}
                           to={generateStoryMapUrl(sample)}
+                          sx={{ fontSize: '1.25rem' }}
                         >
                           {sample.title}
                         </RouterLink>
