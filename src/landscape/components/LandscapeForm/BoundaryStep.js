@@ -370,6 +370,7 @@ const BoundaryOptions = props => {
               padding: 4,
               borderColor: 'gray.mid',
               fontWeight: 500,
+              backgroundColor: 'white',
             }}
           >
             <option.Icon
