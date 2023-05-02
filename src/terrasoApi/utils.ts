@@ -23,11 +23,11 @@ import {
 import { BaseThunkAPI } from '@reduxjs/toolkit/dist/createAsyncThunk';
 import _ from 'lodash/fp';
 import { useDispatch } from 'react-redux';
+import { User, signOut } from 'terrasoApi/account/accountSlice';
+import { refreshToken } from 'terrasoApi/account/auth';
+import { UNAUTHENTICATED } from 'terrasoApi/account/authConstants';
 
 import { addMessage } from 'notifications/notificationsSlice';
-import { User, signOut } from 'state/account/accountSlice';
-import { refreshToken } from 'state/account/auth';
-import { UNAUTHENTICATED } from 'state/account/authConstants';
 
 import { AppDispatch, AppState } from './store';
 

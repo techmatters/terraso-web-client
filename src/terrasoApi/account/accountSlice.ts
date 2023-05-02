@@ -16,12 +16,12 @@
  */
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
+import * as accountService from 'terrasoApi/account/accountService';
+import { getToken, removeToken } from 'terrasoApi/account/auth';
+import type { AppDispatch } from 'terrasoApi/store';
+import { createAsyncThunk } from 'terrasoApi/utils';
 
 import logger from 'monitoring/logger';
-import * as accountService from 'state/account/accountService';
-import { getToken, removeToken } from 'state/account/auth';
-import type { AppDispatch } from 'state/store';
-import { createAsyncThunk } from 'state/utils';
 
 const initialState = {
   currentUser: {
@@ -59,15 +59,15 @@ export type User = {
 };
 
 export const fetchUser = createAsyncThunk(
-  'state/account/fetchUser',
+  'terrasoApi/account/fetchUser',
   accountService.fetchUser
 );
 export const fetchProfile = createAsyncThunk(
-  'state/account/fetchProfile',
+  'terrasoApi/account/fetchProfile',
   accountService.fetchProfile
 );
 export const saveUser = createAsyncThunk(
-  'state/account/saveUser',
+  'terrasoApi/account/saveUser',
   accountService.saveUser,
   () => ({
     severity: 'success',
@@ -75,17 +75,17 @@ export const saveUser = createAsyncThunk(
   })
 );
 export const fetchAuthURLs = createAsyncThunk(
-  'state/account/fetchAuthURLs',
+  'terrasoApi/account/fetchAuthURLs',
   accountService.getAuthURLs
 );
 export const savePreference = createAsyncThunk(
-  'state/account/savePreference',
+  'terrasoApi/account/savePreference',
   accountService.savePreference,
   null,
   false
 );
 export const unsubscribeFromNotifications = createAsyncThunk(
-  'state/account/unsubscribeFromNotifications',
+  'terrasoApi/account/unsubscribeFromNotifications',
   accountService.unsubscribeFromNotifications,
   null,
   false

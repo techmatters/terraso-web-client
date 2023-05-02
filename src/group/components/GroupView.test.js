@@ -19,12 +19,11 @@ import { render, screen } from 'tests/utils';
 import React from 'react';
 
 import { useParams } from 'react-router-dom';
-
-import * as terrasoApi from 'state/terrasoBackend/api';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import GroupView from 'group/components/GroupView';
 
-jest.mock('state/terrasoBackend/api');
+jest.mock('terrasoApi/terrasoBackend/api');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

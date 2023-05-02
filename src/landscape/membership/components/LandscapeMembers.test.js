@@ -20,17 +20,16 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
-
-import * as terrasoApi from 'state/terrasoBackend/api';
 
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
 
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850
 global.console.error = jest.fn();
 
-jest.mock('state/terrasoBackend/api');
+jest.mock('terrasoApi/terrasoBackend/api');
 
 jest.mock('@mui/material/useMediaQuery');
 

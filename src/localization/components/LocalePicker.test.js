@@ -20,15 +20,15 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import LocalePicker from 'localization/components/LocalePicker';
 import i18n from 'localization/i18n';
-import * as terrasoApi from 'state/terrasoBackend/api';
 
 jest.mock('@mui/material/useMediaQuery');
-jest.mock('state/terrasoBackend/api');
+jest.mock('terrasoApi/terrasoBackend/api');
 
 const setup = async () => {
   await render(

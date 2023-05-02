@@ -15,10 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
+import { getAuthHeaders } from 'terrasoApi/account/auth';
+import { UNAUTHENTICATED } from 'terrasoApi/account/authConstants';
 
 import logger from 'monitoring/logger';
-import { getAuthHeaders } from 'state/account/auth';
-import { UNAUTHENTICATED } from 'state/account/authConstants';
 
 import { GRAPH_QL_ENDPOINT, TERRASO_API_URL } from 'config';
 

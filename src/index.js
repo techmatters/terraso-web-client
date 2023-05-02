@@ -17,11 +17,11 @@
 import React from 'react';
 
 import { createRoot } from 'react-dom/client';
+import createStore from 'terrasoApi/store';
 
 import AppWrappers from 'layout/AppWrappers';
 import reportWebVitals from 'monitoring/reportWebVitals';
 import rules from 'permissions/rules';
-import createStore from 'state/store';
 
 import theme from 'theme';
 

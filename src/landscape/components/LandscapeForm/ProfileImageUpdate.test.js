@@ -21,12 +21,11 @@ import React from 'react';
 import AvatarEditor from 'react-avatar-editor';
 import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
-
-import * as terrasoApi from 'state/terrasoBackend/api';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import ProfileImageUpdate from 'landscape/components/LandscapeForm/ProfileImageUpdate';
 
-jest.mock('state/terrasoBackend/api');
+jest.mock('terrasoApi/terrasoBackend/api');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

@@ -16,8 +16,7 @@
  */
 import Cookies from 'js-cookie';
 import jwt from 'jwt-decode';
-
-import { UNAUTHENTICATED } from 'state/account/authConstants';
+import { UNAUTHENTICATED } from 'terrasoApi/account/authConstants';
 
 import { COOKIES_DOMAIN, TERRASO_API_URL } from 'config';
 

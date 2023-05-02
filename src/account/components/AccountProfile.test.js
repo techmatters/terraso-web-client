@@ -20,12 +20,11 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
-
-import * as terrasoApi from 'state/terrasoBackend/api';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import AccountProfile from 'account/components/AccountProfile';
 
-jest.mock('state/terrasoBackend/api');
+jest.mock('terrasoApi/terrasoBackend/api');
 
 const setup = async (
   initialState = {

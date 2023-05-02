@@ -18,11 +18,11 @@ import React, { useCallback } from 'react';
 
 import { useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
+import { fetchUser } from 'terrasoApi/account/accountSlice';
+import { useFetchData } from 'terrasoApi/utils';
 
 import PageLoader from 'layout/PageLoader';
 import { generateReferrerPath } from 'navigation/navigationUtils';
-import { fetchUser } from 'state/account/accountSlice';
-import { useFetchData } from 'state/utils';
 
 const RequireAuth = ({ children }) => {
   const location = useLocation();

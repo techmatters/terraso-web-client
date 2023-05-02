@@ -15,8 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-
-import * as terrasoApi from 'state/terrasoBackend/api';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 import {
   UserFragment,
   UserPreferenceNode,
@@ -24,7 +23,7 @@ import {
   userFields,
   userPreferences,
   userPreferencesFields,
-} from 'state/user/userFragments';
+} from 'terrasoApi/user/userFragments';
 
 import { TERRASO_API_URL } from 'config';
 

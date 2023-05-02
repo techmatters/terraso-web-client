@@ -20,6 +20,7 @@ import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { useFetchData } from 'terrasoApi/utils';
 
 import {
   Button,
@@ -33,7 +34,6 @@ import {
 
 import List from 'common/components/List';
 import { ScrollTo } from 'navigation/scrollTo';
-import { useFetchData } from 'state/utils';
 
 import { useGroupContext } from 'group/groupContext';
 import { fetchGroupSharedData } from 'sharedData/sharedDataSlice';

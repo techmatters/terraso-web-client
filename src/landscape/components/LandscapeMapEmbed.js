@@ -19,12 +19,12 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Popup } from 'react-leaflet';
 import { useSelector } from 'react-redux';
+import { useFetchData } from 'terrasoApi/utils';
 
 import { Typography } from '@mui/material';
 
 import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
-import { useFetchData } from 'state/utils';
 
 import { fetchLandscapes } from 'landscape/landscapeSlice';
 
