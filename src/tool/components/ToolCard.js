@@ -20,7 +20,15 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 
 import LaunchIcon from '@mui/icons-material/Launch';
-import { Box, Card, Link, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Card,
+  Link,
+  List,
+  ListItem,
+  Stack,
+  Typography,
+} from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import ExternalLink from 'common/components/ExternalLink';
@@ -91,11 +99,20 @@ const ToolCard = ({ tool }) => {
           <section>
             <Typography variant="h3">{t('tool.description')}</Typography>
             {_.isArray(toolDescription) ? (
-              <ul style={{ paddingLeft: '1em', marginTop: '0.25em' }}>
+              <List
+                sx={{
+                  listStyle: 'disc',
+                  pl: '1em',
+                  pt: 0,
+                  mt: 0,
+                }}
+              >
                 {toolDescription.map((item, index) => (
-                  <li key={index}>{item}</li>
+                  <ListItem sx={{ display: 'list-item', pl: 0 }} key={index}>
+                    {item}
+                  </ListItem>
                 ))}
-              </ul>
+              </List>
             ) : (
               <Typography>{toolDescription}</Typography>
             )}
