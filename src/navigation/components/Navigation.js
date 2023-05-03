@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 
-import { Button, List, ListItem, Typography } from '@mui/material';
+import { Box, Button, List, ListItem, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
 
@@ -82,6 +82,9 @@ const NavigationLink = ({ path, selected, index }) => {
         ':hover': {
           backgroundColor: theme => theme.backgroundNavColor,
         },
+        ':first-of-type': {
+          paddingLeft: 0,
+        },
       }}
     >
       <NavButton
@@ -114,43 +117,41 @@ const Navigation = React.forwardRef((props, ref) => {
   }
 
   return (
-    <Container
-      component="nav"
+    <Box
       id="main-navigation"
-      tabIndex="-1"
-      ref={ref}
-      value={value}
-      aria-label={t('navigation.nav_label_short')}
       sx={{
         boxShadow: '0px 3px 4px 0px #0000001A',
-        '& .MuiTabs-indicator': {
-          backgroundColor: 'black',
-        },
-        maxWidth: '100%!important',
-        boxSizing: 'border-box',
-        background: 'white',
+        marginBottom: '4px',
       }}
     >
-      <Typography sx={visuallyHidden} variant="h2">
-        {t('navigation.nav_label')}
-      </Typography>
-      <List
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          padding: 0,
-        }}
+      <Container
+        component="nav"
+        tabIndex="-1"
+        ref={ref}
+        value={value}
+        aria-label={t('navigation.nav_label_short')}
       >
-        {Object.keys(PAGES).map((path, index) => (
-          <NavigationLink
-            key={path}
-            path={path}
-            index={index}
-            selected={index === value}
-          />
-        ))}
-      </List>
-    </Container>
+        <Typography sx={visuallyHidden} variant="h2">
+          {t('navigation.nav_label')}
+        </Typography>
+        <List
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            padding: 0,
+          }}
+        >
+          {Object.keys(PAGES).map((path, index) => (
+            <NavigationLink
+              key={path}
+              path={path}
+              index={index}
+              selected={index === value}
+            />
+          ))}
+        </List>
+      </Container>
+    </Box>
   );
 });
 
