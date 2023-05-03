@@ -220,7 +220,9 @@ const GroupList = () => {
         {t('group.create')}
       </Typography>
 
-      <p>{t('group.list_new_description')}</p>
+      <Typography sx={{ mt: 2, mb: 2 }}>
+        {t('group.list_new_description')}
+      </Typography>
 
       <Button variant="contained" component={RouterLink} to="/groups/new">
         {t('group.list_new_button')}

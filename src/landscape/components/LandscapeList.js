@@ -217,7 +217,9 @@ const LandscapeList = () => {
         {t('landscape.add')}
       </Typography>
 
-      <p>{t('landscape.list_new_description')}</p>
+      <Typography sx={{ mt: 2, mb: 2 }}>
+        {t('landscape.list_new_description')}
+      </Typography>
 
       <Button variant="contained" component={RouterLink} to="/landscapes/new">
         {t('landscape.list_new_button')}
