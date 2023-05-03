@@ -102,13 +102,16 @@ const ToolCard = ({ tool }) => {
               <List
                 sx={{
                   listStyle: 'disc',
-                  pl: '1em',
+                  pl: 2,
                   pt: 0,
                   mt: 0,
                 }}
               >
                 {toolDescription.map((item, index) => (
-                  <ListItem sx={{ display: 'list-item', pl: 0 }} key={index}>
+                  <ListItem
+                    sx={{ display: 'list-item', pl: 0, pb: 0 }}
+                    key={index}
+                  >
                     {item}
                   </ListItem>
                 ))}

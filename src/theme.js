@@ -17,6 +17,9 @@
 import ErrorIcon from '@mui/icons-material/Report';
 import { createTheme } from '@mui/material/styles';
 
+const defaultFontStack = 'Roboto, Helvetica, Arial, sans-serif';
+const headerFontStack = 'Lato, Helvetica, Arial, sans-serif';
+
 const colorTheme = createTheme({
   palette: {
     tonalOffset: 0.2,
@@ -252,6 +255,13 @@ const components = {
       },
     },
   },
+  MuiListItem: {
+    styleOverrides: {
+      root: {
+        fontFamily: defaultFontStack,
+      },
+    },
+  },
 };
 
 const theme = createTheme(colorTheme, {
@@ -259,14 +269,14 @@ const theme = createTheme(colorTheme, {
   // See https://github.com/mui/material-ui/issues/19711
   backgroundNavColor: '#00914712',
   typography: {
-    fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
+    fontFamily: defaultFontStack,
     h1: {
-      fontFamily: 'Lato, Helvetica, Arial, sans-serif',
+      fontFamily: headerFontStack,
       fontSize: '2rem',
       fontWeight: 700,
     },
     h2: {
-      fontFamily: 'Lato, Helvetica, Arial, sans-serif',
+      fontFamily: headerFontStack,
       fontSize: '1.2rem',
       fontWeight: 700,
       textTransform: 'uppercase',
