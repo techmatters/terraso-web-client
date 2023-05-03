@@ -24,7 +24,7 @@ const colorTheme = createTheme({
   palette: {
     tonalOffset: 0.2,
     primary: {
-      main: '#009147',
+      main: '#028843',
       hover: '#006130',
       background: '#F9FCF8',
     },
