@@ -92,7 +92,7 @@ const GroupCard = ({ group }) => {
       <CardHeader
         disableTypography
         title={
-          <Typography variant="h2" id="group-view-card-title">
+          <Typography variant="h2" id="group-view-card-title" sx={{ pt: 0 }}>
             {t('group.view_card_title', { name: group.name })}
           </Typography>
         }

@@ -184,6 +184,7 @@ const AffiliationCard = ({ landscape, setIsEmpty }) => {
           <Typography
             variant="h2"
             id="landscape-profile-affiliation-card-title"
+            sx={{ pt: 0 }}
           >
             {t('landscape.profile_affiliation_card_title')}
           </Typography>

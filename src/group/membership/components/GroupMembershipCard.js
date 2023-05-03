@@ -168,7 +168,7 @@ const GroupMembershipCard = props => {
       <CardHeader
         disableTypography
         title={
-          <Typography variant="h2" id="membership-card-title">
+          <Typography variant="h2" id="membership-card-title" sx={{ pt: 0 }}>
             {t('group.membership_card_title')}
           </Typography>
         }

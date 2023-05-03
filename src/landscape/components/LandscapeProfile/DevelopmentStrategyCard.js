@@ -91,7 +91,11 @@ const DevelopmentStrategyCard = ({ landscape, setIsEmpty }) => {
       <CardHeader
         disableTypography
         title={
-          <Typography variant="h2" id="landscape-development-card-title">
+          <Typography
+            variant="h2"
+            id="landscape-development-card-title"
+            sx={{ pt: 0 }}
+          >
             {t('landscape.profile_development_card_title', {
               name: landscape.name,
             })}

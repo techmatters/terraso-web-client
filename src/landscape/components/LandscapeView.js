@@ -95,7 +95,7 @@ const Affiliation = props => {
       <CardHeader
         disableTypography
         title={
-          <Typography variant="h2">
+          <Typography variant="h2" sx={{ pt: 0 }}>
             {t('landscape.profile_affiliation_card_title')}
           </Typography>
         }
@@ -121,7 +121,11 @@ const LandscapeAboutCard = ({ landscape }) => {
       <CardHeader
         disableTypography
         title={
-          <Typography variant="h2" id="landscape-view-card-title">
+          <Typography
+            variant="h2"
+            id="landscape-view-card-title"
+            sx={{ pt: 0 }}
+          >
             {t('landscape.view_card_title', { name: landscape.name })}
           </Typography>
         }
