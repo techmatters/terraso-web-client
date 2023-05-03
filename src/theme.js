@@ -97,6 +97,7 @@ const components = {
     styleOverrides: {
       root: {
         '&:focus': focusOutline,
+        fontWeight: 'bold',
       },
     },
   },
