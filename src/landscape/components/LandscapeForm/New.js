@@ -229,7 +229,7 @@ const LandscapeNew = () => {
   }
 
   return (
-    <PageContainer>
+    <PageContainer sx={{ paddingTop: 4 }}>
       {saving && <PageLoader />}
       <Typography variant="h1" sx={visuallyHidden} id="landscape-page-title">
         {t('landscape.form_new_document_title')}
