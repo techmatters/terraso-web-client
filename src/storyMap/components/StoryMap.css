@@ -79,6 +79,13 @@ footer {
   padding: 2vh 2vw;
   text-align: center;
 }
+#story-map-title h1 {
+  font-size: 2rem;
+}
+#story-map-title h2 {
+  font-weight: 400;
+}
+
 #footer {
   width: 100%;
   min-height: 5vh;
