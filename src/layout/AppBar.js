@@ -86,14 +86,26 @@ const AppBarComponent = () => {
               startIcon={
                 <AccountAvatar user={user} sx={{ width: 24, height: 24 }} />
               }
-              sx={{ fontWeight: 500, color: 'gray.dark2' }}
+              sx={{
+                fontWeight: 500,
+                color: 'gray.dark2',
+                '&:hover': {
+                  backgroundColor: 'transparent',
+                },
+              }}
             >
               {user.firstName} {user.lastName}
             </Button>
             <span aria-hidden="true">|</span>
             <Button
               color="inherit"
-              sx={theme => ({ marginRight: theme.spacing(2) })}
+              sx={theme => ({
+                marginRight: theme.spacing(2),
+                '&:hover': {
+                  backgroundColor: 'transparent',
+                  textDecoration: 'underline',
+                },
+              })}
               onClick={onSignOut}
             >
               {t('user.sign_out')}
