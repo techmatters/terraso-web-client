@@ -122,8 +122,9 @@ const components = {
           variant: 'outlined',
         },
         style: {
-          borderColor: colorTheme.palette.black,
-          color: colorTheme.palette.black,
+          backgroundColor: colorTheme.palette.white,
+          borderColor: colorTheme.palette.secondary.main,
+          color: colorTheme.palette.secondary.main,
           '&:hover': {
             backgroundColor: colorTheme.palette.secondary.main,
             borderColor: colorTheme.palette.secondary.main,
