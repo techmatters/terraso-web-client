@@ -24,15 +24,12 @@ import Container from './Container';
 
 const BreadcrumbsShareContainer = () => {
   const { breadcrumbsShareProps, showBreadcrumbs } = usePathParams();
-  let topMargin;
 
-  if (breadcrumbsShareProps?.bgColor) {
-    topMargin = breadcrumbsShareProps?.bgColor;
-  } else if (showBreadcrumbs) {
-    topMargin = '20px';
-  } else {
-    topMargin = 1;
+  if (!showBreadcrumbs) {
+    return null;
   }
+
+  const topMargin = breadcrumbsShareProps?.marginTop ?? '20px';
 
   return (
     <Container
