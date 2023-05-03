@@ -29,7 +29,7 @@ const Stepper = props => {
       <BaseStepper
         activeStep={activeStepIndex}
         connector={null}
-        sx={{ marginBottom: 2, paddingLeft: 0, listStylePosition: 'inside' }}
+        sx={{ marginBottom: 6, paddingLeft: 0, listStylePosition: 'inside' }}
         component="ol"
         aria-labelledby={props.ariaLabel}
       >
