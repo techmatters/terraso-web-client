@@ -83,7 +83,7 @@ const NavigationLink = ({ path, selected, index }) => {
           backgroundColor: theme => theme.backgroundNavColor,
         },
         ':first-of-type': {
-          paddingLeft: 0,
+          marginLeft: -2,
         },
       }}
     >
