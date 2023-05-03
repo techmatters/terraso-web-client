@@ -152,9 +152,9 @@ const LandscapeProfile = () => {
             typographyProps={{ sx: { marginBottom: 0 } }}
           />
         </Stack>
-        <Grid container spacing={2}>
+        <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
-            <Stack spacing={2} direction="column">
+            <Stack spacing={4} direction="column">
               <KeyInfoCard landscape={landscape} />
               {(!isEmptySections.affiliation || allowed) && (
                 <AffiliationCard
