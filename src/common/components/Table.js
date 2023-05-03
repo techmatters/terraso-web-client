@@ -245,6 +245,9 @@ const Table = props => {
           pt: 1,
           pb: 1,
         },
+        '.MuiDataGrid-columnHeaderTitle': {
+          fontWeight: 'bold',
+        },
       }}
       {...gridProps}
     />
