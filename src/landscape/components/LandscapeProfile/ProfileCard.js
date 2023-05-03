@@ -135,7 +135,7 @@ const ProfileField = props => {
       >
         {label}
       </Grid>
-      <Grid item xs={7}>
+      <Grid item xs={7} component={Typography}>
         {value}
       </Grid>
     </>

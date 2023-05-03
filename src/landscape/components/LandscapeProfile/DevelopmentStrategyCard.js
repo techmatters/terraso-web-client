@@ -104,13 +104,15 @@ const DevelopmentStrategyCard = ({ landscape, setIsEmpty }) => {
       />
       {_.isEmpty(values) && (
         <CardContent>
-          <Trans i18nKey="landscape.profile_development_card_empty">
-            prefix
-            <ExternalLink
-              href={t('landscape.profile_development_card_empty_url')}
-            ></ExternalLink>
-            .
-          </Trans>
+          <Typography>
+            <Trans i18nKey="landscape.profile_development_card_empty">
+              prefix
+              <ExternalLink
+                href={t('landscape.profile_development_card_empty_url')}
+              ></ExternalLink>
+              .
+            </Trans>
+          </Typography>
         </CardContent>
       )}
       {Object.keys(values).map(field => (
