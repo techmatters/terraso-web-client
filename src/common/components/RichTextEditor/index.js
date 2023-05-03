@@ -307,6 +307,11 @@ const AddLinkButton = props => {
     [t]
   );
 
+  const buttonDisabled = useMemo(
+    () => isLinkActive(editor) || disabled,
+    [disabled, editor]
+  );
+
   return (
     <>
       <Dialog fullWidth maxWidth="md" open={open} onClose={handleClose}>
@@ -335,15 +340,15 @@ const AddLinkButton = props => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Tooltip title={label}>
+      <ToolbarButtonContainer tooltip={label} disabled={buttonDisabled}>
         <Button
           aria-label={label}
-          disabled={isLinkActive(editor) || disabled}
+          disabled={buttonDisabled}
           onMouseDown={onButtonClick}
         >
           <InsertLinkIcon />
         </Button>
-      </Tooltip>
+      </ToolbarButtonContainer>
     </>
   );
 };
@@ -358,20 +363,25 @@ const RemoveLinkButton = props => {
     [t]
   );
 
+  const buttonDisabled = useMemo(
+    () => !isLinkActive(editor) || disabled,
+    [disabled, editor]
+  );
+
   return (
-    <Button
-      aria-label={label}
-      disabled={!isLinkActive(editor) || disabled}
-      onMouseDown={event => {
-        if (isLinkActive(editor)) {
-          unwrapLink(editor);
-        }
-      }}
-    >
-      <Tooltip title={label}>
+    <ToolbarButtonContainer tooltip={label} disabled={buttonDisabled}>
+      <Button
+        aria-label={label}
+        disabled={buttonDisabled}
+        onMouseDown={event => {
+          if (isLinkActive(editor)) {
+            unwrapLink(editor);
+          }
+        }}
+      >
         <LinkOffIcon />
-      </Tooltip>
-    </Button>
+      </Button>
+    </ToolbarButtonContainer>
   );
 };
 
@@ -390,11 +400,23 @@ const toggleMark = (editor, format) => {
   }
 };
 
+const ToolbarButtonContainer = props => {
+  const { tooltip, disabled, children } = props;
+
+  const Container = useMemo(
+    () => (disabled ? React.Fragment : withProps(Tooltip, { title: tooltip })),
+    [disabled, tooltip]
+  );
+
+  return <Container>{children}</Container>;
+};
+
 const MarkButton = props => {
   const editor = useSlate();
   const { format, Icon, label, disabled } = props;
+
   return (
-    <Tooltip title={label}>
+    <ToolbarButtonContainer tooltip={label} disabled={disabled}>
       <Button
         disabled={disabled}
         aria-label={label}
@@ -405,7 +427,7 @@ const MarkButton = props => {
       >
         <Icon />
       </Button>
-    </Tooltip>
+    </ToolbarButtonContainer>
   );
 };
 
