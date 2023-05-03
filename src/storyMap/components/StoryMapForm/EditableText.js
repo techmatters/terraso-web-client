@@ -79,7 +79,15 @@ const EditableText = props => {
         onBlur={onExit}
         onChange={onChangeWrapper}
         placeholder={placeholder}
-        InputLabelProps={{ shrink: true, sx: { color: 'white' } }}
+        sx={{
+          '& label.Mui-focused': {
+            color: 'gray.lite1',
+          },
+        }}
+        InputLabelProps={{
+          shrink: true,
+          sx: { color: 'white' },
+        }}
         InputProps={{
           ...inputProps,
           sx: {
