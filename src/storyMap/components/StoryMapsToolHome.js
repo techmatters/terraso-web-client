@@ -91,7 +91,7 @@ const StoryMapsToolsHome = () => {
             </Typography>
             <Grid
               container
-              spacing={1}
+              spacing={2}
               component={List}
               aria-labelledby="story-map-examples-heading"
             >
