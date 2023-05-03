@@ -21,7 +21,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 
-import { Button, Link, Stack, Typography } from '@mui/material';
+import { Button, Card, Link, Stack, Typography } from '@mui/material';
 
 import ExternalLink from 'common/components/ExternalLink';
 import TableResponsive from 'common/components/TableResponsive';
@@ -208,22 +208,20 @@ const LandscapeList = () => {
           ],
         }}
       />
-      <Typography
-        variant="h2"
-        sx={{
-          marginTop: theme.spacing(4),
-        }}
-      >
-        {t('landscape.add')}
-      </Typography>
 
-      <Typography sx={{ mt: 2, mb: 2 }}>
-        {t('landscape.list_new_description')}
-      </Typography>
+      <Card sx={{ p: 2, mt: 4 }}>
+        <Typography sx={{ pt: 0 }} variant="h2">
+          {t('landscape.add')}
+        </Typography>
 
-      <Button variant="contained" component={RouterLink} to="/landscapes/new">
-        {t('landscape.list_new_button')}
-      </Button>
+        <Typography sx={{ mt: 2, mb: 2 }}>
+          {t('landscape.list_new_description')}
+        </Typography>
+
+        <Button variant="contained" component={RouterLink} to="/landscapes/new">
+          {t('landscape.list_new_button')}
+        </Button>
+      </Card>
     </PageContainer>
   );
 };
