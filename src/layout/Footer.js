@@ -117,7 +117,9 @@ const Footer = () => {
         sx={{
           width: '100%',
           margin: '0 auto',
-          padding: spacing(2),
+          padding: 2,
+          paddingLeft: 3,
+          paddingRight: 3,
           maxWidth: 1200,
         }}
         aria-label={t('footer.heading')}

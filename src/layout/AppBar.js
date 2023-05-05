@@ -66,7 +66,10 @@ const AppBarComponent = () => {
   }
 
   return (
-    <AppBar position="static">
+    <AppBar
+      position="static"
+      sx={{ maxWidth: 1200, margin: '0 auto', backgroundColor: 'white' }}
+    >
       <Toolbar sx={{ pt: { md: 3 }, pb: { md: 3 } }}>
         <SkipLinks />
         <ConditionalLink to="/" condition={!isHomePage}>
