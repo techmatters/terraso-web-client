@@ -21,6 +21,16 @@ const defaultFontStack = 'Roboto, Helvetica, Arial, sans-serif';
 const headerFontStack = 'Lato, Helvetica, Arial, sans-serif';
 
 const colorTheme = createTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 900,
+      xm: 1300,
+      lg: 1200,
+      xl: 1536,
+    },
+  },
   palette: {
     tonalOffset: 0.2,
     primary: {
