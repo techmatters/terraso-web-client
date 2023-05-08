@@ -145,6 +145,7 @@
         "home_card_title": "Recomendaciones de herramientas",
         "home_card_kobo_title": "KoboToolbox",
         "home_card_description": "Una herramienta gratuita de recopilación de datos que funciona en dispositivos móviles y no requiere conexión a Internet.",
+        "home_explore_label": "Explora más herramientas",
         "go_to": "Ir a {{tool}}",
         "learn_more": "Más información sobre {{tool}}",
         "description": "Utiliza esta herramienta para",
@@ -162,9 +163,9 @@
             "url": "https://www.kobotoolbox.org/",
             "learn_more_url": "https://www.kobotoolbox.org/features/",
             "img": {
-                "height": "164",
-                "width": "377",
-                "src": "tools/kobotoolbox.svg"
+                "height": "140",
+                "width": "250",
+                "src": "tools/kobotoolbox-screenshot.png"
             },
             "description": [
                 "Diseñe y cree formularios rápidamente",
@@ -178,9 +179,9 @@
             "title": "Terraso Story Maps",
             "url": "/tools/story-maps",
             "img": {
-                "height": "124",
-                "width": "377",
-                "src": "tools/story-maps.png"
+                "height": "95",
+                "width": "250",
+                "src": "tools/story-maps.svg"
             },
             "description": [
                 "Crea hermosas historias basadas en mapas"
@@ -883,7 +884,6 @@
         "view_title_outline": "Esquema",
         "breadcrumbs_view": "{{title}}",
         "breadcrumbs_tool_home": "Terraso Story Map",
-        "breadcrumbs_create": "Crear",
         "home_title": "Story Maps",
         "home_create": "Crear nuevo Story Map",
         "home_last_edited": "Última edición el {{date}}",

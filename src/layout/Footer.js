@@ -33,7 +33,7 @@ const FooterLink = ({ link, showBorder }) => {
   const { t } = useTranslation();
 
   const borderStyle = {
-    borderRight: `1px solid ${palette.white}`,
+    borderRight: `1px solid ${palette.gray.mid2}`,
     paddingRight: spacing(2),
     marginRight: spacing(2),
   };
@@ -117,7 +117,9 @@ const Footer = () => {
         sx={{
           width: '100%',
           margin: '0 auto',
-          padding: spacing(2),
+          padding: 2,
+          paddingLeft: 3,
+          paddingRight: 3,
           maxWidth: 1200,
         }}
         aria-label={t('footer.heading')}
@@ -160,7 +162,7 @@ const Footer = () => {
               },
             }}
           >
-            © {year} Tech Matters
+            <Typography variant="body2">© {year} Tech Matters</Typography>
           </Grid>
         </Grid>
       </Grid>

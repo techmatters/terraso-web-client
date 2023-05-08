@@ -288,6 +288,7 @@ const SearchBar = props => {
         InputProps={{
           sx: theme => ({
             borderColor: theme.palette.gray.dark2,
+            backgroundColor: 'white',
             marginBottom: 2,
             padding: 0,
             '& ::placeholder': {

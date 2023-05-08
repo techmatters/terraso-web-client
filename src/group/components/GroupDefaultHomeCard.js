@@ -41,7 +41,11 @@ const GroupDefaultHomeCard = () => {
           padding: theme.spacing(2),
         }}
       >
-        <Typography id="groups-default-title" variant="h2">
+        <Typography
+          id="groups-default-title"
+          variant="h2"
+          sx={{ pt: 0, pb: 2 }}
+        >
           {t('group.home_default_title')}
         </Typography>
         <Alert

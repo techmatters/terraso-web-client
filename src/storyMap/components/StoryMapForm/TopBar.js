@@ -63,7 +63,17 @@ const TopBar = props => {
         xs={4}
         sx={{ display: 'flex', justifyContent: 'flex-end', pr: 2 }}
       >
-        <Button variant="text" color="primary" onClick={() => setPreview(true)}>
+        <Button
+          variant="text"
+          color="primary"
+          onClick={() => setPreview(true)}
+          sx={{
+            '&:hover': {
+              backgroundColor: 'transparent',
+              textDecoration: 'underline',
+            },
+          }}
+        >
           {t('storyMap.form_preview_button')}
         </Button>
         {!isPublished && (

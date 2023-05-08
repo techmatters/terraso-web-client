@@ -91,7 +91,11 @@ const DevelopmentStrategyCard = ({ landscape, setIsEmpty }) => {
       <CardHeader
         disableTypography
         title={
-          <Typography variant="h2" id="landscape-development-card-title">
+          <Typography
+            variant="h2"
+            id="landscape-development-card-title"
+            sx={{ pt: 0 }}
+          >
             {t('landscape.profile_development_card_title', {
               name: landscape.name,
             })}
@@ -100,13 +104,15 @@ const DevelopmentStrategyCard = ({ landscape, setIsEmpty }) => {
       />
       {_.isEmpty(values) && (
         <CardContent>
-          <Trans i18nKey="landscape.profile_development_card_empty">
-            prefix
-            <ExternalLink
-              href={t('landscape.profile_development_card_empty_url')}
-            ></ExternalLink>
-            .
-          </Trans>
+          <Typography>
+            <Trans i18nKey="landscape.profile_development_card_empty">
+              prefix
+              <ExternalLink
+                href={t('landscape.profile_development_card_empty_url')}
+              ></ExternalLink>
+              .
+            </Trans>
+          </Typography>
         </CardContent>
       )}
       {Object.keys(values).map(field => (

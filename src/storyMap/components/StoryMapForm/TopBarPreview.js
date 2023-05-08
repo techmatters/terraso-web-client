@@ -53,7 +53,16 @@ const TopBarPreview = props => {
         sm={4}
         sx={{ display: 'flex', justifyContent: 'flex-end', pr: 2 }}
       >
-        <Button variant="text" onClick={() => setPreview(false)}>
+        <Button
+          variant="text"
+          onClick={() => setPreview(false)}
+          sx={{
+            '&:hover': {
+              backgroundColor: 'transparent',
+              textDecoration: 'underline',
+            },
+          }}
+        >
           {t('storyMap.form_preview_close')}
         </Button>
         <Button

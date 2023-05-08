@@ -66,7 +66,7 @@ const path = (
       isEmbedded: false,
     },
     showBreadcrumbs = false,
-    breadcrumbsLabel,
+    ...otherParams
   } = {}
 ) => ({
   path,
@@ -74,7 +74,7 @@ const path = (
   auth,
   optionalAuth,
   showBreadcrumbs,
-  breadcrumbsLabel,
+  ...otherParams,
 });
 
 const paths = [
@@ -172,14 +172,15 @@ const paths = [
     showBreadcrumbs: true,
     breadcrumbsLabel: 'storyMap.breadcrumbs_tool_home',
   }),
-  path('/tools/story-maps/new', StoryMapNew, {
-    showBreadcrumbs: true,
-    breadcrumbsLabel: 'storyMap.breadcrumbs_create',
-  }),
+  path('/tools/story-maps/new', StoryMapNew),
   path('/tools/story-maps/:storyMapId/:slug/edit', StoryMapUpdate),
   path('/tools/story-maps/:storyMapId/:slug', UserStoryMap, {
     showBreadcrumbs: true,
     breadcrumbsLabel: 'storyMap.breadcrumbs_view',
+    breadcrumbsShareProps: {
+      bgColor: 'white',
+      marginTop: 0,
+    },
     optionalAuth: {
       enabled: true,
       topMessage: 'storyMap.optional_auth_top_message',
@@ -190,6 +191,16 @@ const paths = [
 ];
 
 const getPath = to => paths.find(path => matchPath({ path: path.path }, to));
+
+export const usePathParams = () => {
+  const { pathname: currentPathname } = useLocation();
+  const currentPath = useMemo(
+    () => getPath(currentPathname),
+    [currentPathname]
+  );
+
+  return currentPath;
+};
 
 export const useBreadcrumbs = () => {
   const { pathname: currentPathname } = useLocation();

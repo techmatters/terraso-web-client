@@ -20,7 +20,15 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 
 import LaunchIcon from '@mui/icons-material/Launch';
-import { Box, Card, Link, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Card,
+  Link,
+  List,
+  ListItem,
+  Stack,
+  Typography,
+} from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import ExternalLink from 'common/components/ExternalLink';
@@ -61,7 +69,7 @@ const ToolIconAndLink = ({ tool, title, external }) => {
   );
 };
 
-const Tool = ({ tool }) => {
+const ToolCard = ({ tool }) => {
   const { t } = useTranslation();
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -81,7 +89,7 @@ const Tool = ({ tool }) => {
 
   return (
     <React.Fragment>
-      <Card sx={{ padding: theme.spacing(2) }}>
+      <Card sx={{ padding: theme.spacing(2), paddingTop: 0 }}>
         <Typography {...attributes}>{toolTitle}</Typography>
         <Stack
           direction={isSmall ? 'column' : 'row'}
@@ -91,11 +99,23 @@ const Tool = ({ tool }) => {
           <section>
             <Typography variant="h3">{t('tool.description')}</Typography>
             {_.isArray(toolDescription) ? (
-              <ul style={{ paddingLeft: '1em', marginTop: '0.25em' }}>
+              <List
+                sx={{
+                  listStyle: 'disc',
+                  pl: 2,
+                  pt: 0,
+                  mt: 0,
+                }}
+              >
                 {toolDescription.map((item, index) => (
-                  <li key={index}>{item}</li>
+                  <ListItem
+                    sx={{ display: 'list-item', pl: 0, pb: 0 }}
+                    key={index}
+                  >
+                    {item}
+                  </ListItem>
                 ))}
-              </ul>
+              </List>
             ) : (
               <Typography>{toolDescription}</Typography>
             )}
@@ -151,4 +171,4 @@ const Tool = ({ tool }) => {
   );
 };
 
-export default Tool;
+export default ToolCard;

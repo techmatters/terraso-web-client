@@ -132,7 +132,7 @@ const ChaptersSidebar = props => {
                         }
                       )}
                     >
-                      <DeleteIcon />
+                      <DeleteIcon sx={{ color: 'secondary.main' }} />
                     </ConfirmButton>
                   )}
                 </Grid>

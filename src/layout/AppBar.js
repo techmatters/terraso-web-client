@@ -66,16 +66,27 @@ const AppBarComponent = () => {
   }
 
   return (
-    <AppBar position="static">
-      <Toolbar>
+    <AppBar
+      position="static"
+      sx={{ maxWidth: 1200, margin: '0 auto', backgroundColor: 'white' }}
+    >
+      <Toolbar sx={{ pt: { md: 3 }, pb: { md: 3 } }}>
         <SkipLinks />
         <ConditionalLink to="/" condition={!isHomePage}>
-          <img
-            src={isSmall ? logoSquare : logo}
-            width={isSmall ? 35 : 125}
-            height="35"
-            alt={t('common.terraso_logoText')}
-          />
+          <Box
+            sx={{
+              ml: {
+                xm: '-64px',
+              },
+            }}
+          >
+            <img
+              src={isSmall ? logoSquare : logo}
+              width={isSmall ? 35 : 188}
+              height={isSmall ? 35 : 53}
+              alt={t('common.terraso_logoText')}
+            />
+          </Box>
         </ConditionalLink>
         <Box sx={{ flexGrow: 1 }} />
         {hasUser ? (
@@ -83,18 +94,29 @@ const AppBarComponent = () => {
             <Button
               component={Link}
               to="/account/profile"
-              color="inherit"
               startIcon={
                 <AccountAvatar user={user} sx={{ width: 24, height: 24 }} />
               }
-              sx={{ fontWeight: 500 }}
+              sx={{
+                fontWeight: 500,
+                color: 'gray.dark2',
+                '&:hover': {
+                  backgroundColor: 'transparent',
+                },
+              }}
             >
               {user.firstName} {user.lastName}
             </Button>
             <span aria-hidden="true">|</span>
             <Button
               color="inherit"
-              sx={theme => ({ marginRight: theme.spacing(2) })}
+              sx={theme => ({
+                marginRight: theme.spacing(2),
+                '&:hover': {
+                  backgroundColor: 'transparent',
+                  textDecoration: 'underline',
+                },
+              })}
               onClick={onSignOut}
             >
               {t('user.sign_out')}

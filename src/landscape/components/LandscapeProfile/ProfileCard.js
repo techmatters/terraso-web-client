@@ -135,7 +135,7 @@ const ProfileField = props => {
       >
         {label}
       </Grid>
-      <Grid item xs={7}>
+      <Grid item xs={7} component={Typography}>
         {value}
       </Grid>
     </>
@@ -197,7 +197,7 @@ const ProfileImage = props => {
               width: '100%',
               pt: hasProfileImage ? 2 : 1,
               pb: hasProfileImage ? 2 : 4,
-              paddingLeft: hasProfileImage ? '10%' : '0',
+              paddingLeft: hasProfileImage ? '32px' : '0',
             }}
             spacing={2}
           >
@@ -221,9 +221,6 @@ const ProfileImage = props => {
               to={`/landscapes/${landscape.slug}/profile-image/edit`}
               sx={({ palette }) => ({
                 backgroundColor: 'white',
-                '&:hover': {
-                  backgroundColor: palette.blue.background,
-                },
               })}
             >
               {t('landscape.profile_profile_card_profile_image_update')}

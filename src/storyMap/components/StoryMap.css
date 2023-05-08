@@ -14,17 +14,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-#header-container {
-  z-index: 2;
-  background-color: #f9f9f9;
-}
+
 footer {
+  z-index: 2;
+}
+
+#header-container {
+  background-color: #fff;
+}
+
+#header-container {
   z-index: 2;
 }
 
 #breadcrumbs-share-container {
   z-index: 2;
-  background-color: #ffffff;
   position: relative;
 }
 

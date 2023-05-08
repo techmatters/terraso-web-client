@@ -165,7 +165,7 @@ const StoryMapsHomeCard = props => {
               >
                 <DeleteIcon
                   sx={{
-                    color: 'gray.dark1',
+                    color: 'secondary.main',
                   }}
                 />
               </DeleteButton>

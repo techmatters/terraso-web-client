@@ -18,10 +18,19 @@ import React from 'react';
 
 import SocialShare from 'common/components/SocialShare';
 import Breadcrumbs from 'navigation/components/Breadcrumbs';
+import { usePathParams } from 'navigation/components/Routes';
 
 import Container from './Container';
 
 const BreadcrumbsShareContainer = () => {
+  const { breadcrumbsShareProps, showBreadcrumbs } = usePathParams();
+
+  if (!showBreadcrumbs) {
+    return null;
+  }
+
+  const topMargin = breadcrumbsShareProps?.marginTop ?? '20px';
+
   return (
     <Container
       id="breadcrumbs-share-container"
@@ -30,10 +39,20 @@ const BreadcrumbsShareContainer = () => {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        marginTop: topMargin,
+        backgroundColor: theme =>
+          breadcrumbsShareProps?.bgColor || theme.palette.primary.background,
       }}
     >
       <Breadcrumbs />
-      <SocialShare buttonProps={{ sx: { mt: 2, mb: 2 } }} />
+      <SocialShare
+        buttonProps={{
+          sx: {
+            mt: 2,
+            mb: 2,
+          },
+        }}
+      />
     </Container>
   );
 };

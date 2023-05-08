@@ -19,6 +19,8 @@ import _ from 'lodash/fp';
 import countries from 'world-countries';
 import * as yup from 'yup';
 
+export const getAcronym = name => name.match(/\b(\w)/g).join('');
+
 export const transformURL = url => {
   if (url === '' || url.startsWith('http:') || url.startsWith('https:')) {
     return url;

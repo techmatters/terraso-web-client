@@ -44,7 +44,7 @@ const StoryMapsHomeCardDefault = () => {
           padding: theme.spacing(2),
         }}
       >
-        <Typography id="story-maps-default-title" variant="h2">
+        <Typography id="story-maps-default-title" variant="h2" sx={{ pt: 0 }}>
           {t('storyMap.home_title')}
         </Typography>
         <Stack direction="row" alignItems="start">

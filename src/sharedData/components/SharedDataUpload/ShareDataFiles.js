@@ -176,8 +176,12 @@ const File = props => {
               ),
             }}
           />
-          <IconButton aria-label="delete" onClick={() => onFileDelete(file.id)}>
-            <DeleteIcon />
+          <IconButton
+            aria-label="delete"
+            onClick={() => onFileDelete(file.id)}
+            sx={{ alignItems: 'end' }}
+          >
+            <DeleteIcon sx={{ color: 'secondary.main' }} />
           </IconButton>
         </Stack>
         <FileField

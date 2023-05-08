@@ -59,7 +59,7 @@ const StoryMapsToolsHome = () => {
       <PageContainer maxWidth="md">
         <PageHeader header={t('storyMap.tool_home_title')} />
 
-        <Paper variant="outlined" sx={{ bgcolor: 'gray.lite2', p: 2 }}>
+        <Paper variant="outlined" sx={{ bgcolor: 'white', p: 2 }}>
           <Typography variant="body1">
             {t('storyMap.tool_home_description')}
           </Typography>
@@ -91,9 +91,17 @@ const StoryMapsToolsHome = () => {
             </Typography>
             <Grid
               container
-              spacing={1}
+              spacing={2}
               component={List}
               aria-labelledby="story-map-examples-heading"
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: {
+                  md: 'repeat(3, 1fr)',
+                  sm: 'repeat(2, 1fr)',
+                  xs: '1fr',
+                },
+              }}
             >
               {list.map(sample => (
                 <Grid
@@ -104,14 +112,18 @@ const StoryMapsToolsHome = () => {
                   key={sample.id}
                   component="li"
                   aria-labelledby={`story-map-example-${sample.id}`}
+                  style={{
+                    maxWidth: '100%',
+                  }}
                 >
-                  <Card>
+                  <Card sx={{ height: '100%' }}>
                     <CardHeader
                       title={
                         <RouterLink
                           variant="h3"
                           id={`story-map-example-${sample.id}`}
                           to={generateStoryMapUrl(sample)}
+                          sx={{ fontSize: '1.25rem' }}
                         >
                           {sample.title}
                         </RouterLink>
@@ -130,9 +142,11 @@ const StoryMapsToolsHome = () => {
                       }
                     />
                     <CardContent sx={{ pt: 0 }}>
-                      {t('storyMap.tool_home_examples_by', {
-                        user: sample.createdBy,
-                      })}
+                      <Typography>
+                        {t('storyMap.tool_home_examples_by', {
+                          user: sample.createdBy,
+                        })}
+                      </Typography>
                     </CardContent>
                   </Card>
                 </Grid>

@@ -19,7 +19,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Box, Link, Stack, Typography } from '@mui/material';
+import { Box, Divider, Link, Stack, Typography } from '@mui/material';
+
+import CardActionRouterLink from 'common/components/CardActionRouterLink';
 
 import HomeCard from 'home/components/HomeCard';
 
@@ -27,7 +29,7 @@ import theme from 'theme';
 
 const ToolHomeCard = () => {
   const { t } = useTranslation();
-  const koboImage = require(`assets/${t(`tools.kobo.img.src`)}`);
+  const koboImage = require(`assets/${t('tools.kobo.img.src')}`);
 
   return (
     <HomeCard
@@ -35,9 +37,10 @@ const ToolHomeCard = () => {
       sx={{
         flexDirection: 'column',
         padding: theme.spacing(2),
+        paddingBottom: 0,
       }}
     >
-      <Typography id="tools-title" variant="h2">
+      <Typography id="tools-title" variant="h2" sx={{ pt: 0 }}>
         {t('tool.home_card_title')}
       </Typography>
       <Typography
@@ -53,11 +56,11 @@ const ToolHomeCard = () => {
             component="img"
             src={koboImage}
             alt=""
-            width="250"
-            height="50"
+            width={t('tools.kobo.img.width')}
+            height={t('tools.kobo.img.height')}
             sx={{
-              width: '250px',
-              height: '64px',
+              width: `${t('tools.kobo.img.width')}px`,
+              height: `${t('tools.kobo.img.height')}px`,
             }}
           />
         </Link>
@@ -68,6 +71,8 @@ const ToolHomeCard = () => {
           {t('tool.home_card_description')}
         </Stack>
       </Stack>
+      <Divider aria-hidden="true" />
+      <CardActionRouterLink label={t('tool.home_explore_label')} to="/tools" />
     </HomeCard>
   );
 };

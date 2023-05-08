@@ -22,7 +22,7 @@ import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import { useFetchData } from 'terrasoApi/utils';
 
-import { Button, Link, Stack, Typography } from '@mui/material';
+import { Button, Card, Link, Stack, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import TableResponsive from 'common/components/TableResponsive';
@@ -211,20 +211,20 @@ const GroupList = () => {
           ],
         }}
       />
-      <Typography
-        variant="h2"
-        sx={{
-          marginTop: theme.spacing(4),
-        }}
-      >
-        {t('group.create')}
-      </Typography>
 
-      <p>{t('group.list_new_description')}</p>
+      <Card sx={{ p: 2, mt: 4 }}>
+        <Typography sx={{ pt: 0 }} variant="h2">
+          {t('group.create')}
+        </Typography>
 
-      <Button variant="contained" component={RouterLink} to="/groups/new">
-        {t('group.list_new_button')}
-      </Button>
+        <Typography sx={{ mt: 2, mb: 2 }}>
+          {t('group.list_new_description')}
+        </Typography>
+
+        <Button variant="contained" component={RouterLink} to="/groups/new">
+          {t('group.list_new_button')}
+        </Button>
+      </Card>
     </PageContainer>
   );
 };

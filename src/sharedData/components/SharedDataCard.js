@@ -72,7 +72,7 @@ const SharedFilesCard = props => {
       <CardHeader
         disableTypography
         title={
-          <Typography variant="h2" id="shared-data-card-title">
+          <Typography variant="h2" id="shared-data-card-title" sx={{ pt: 0 }}>
             {t('sharedData.title')}
           </Typography>
         }

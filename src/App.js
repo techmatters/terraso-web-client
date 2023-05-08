@@ -44,7 +44,7 @@ const App = () => {
     <>
       <Box
         sx={{
-          bgcolor: 'gray.lite2',
+          bgcolor: 'white',
           display: 'flex',
           flexDirection: 'column',
           minHeight: '100vh',
@@ -60,7 +60,7 @@ const App = () => {
           tabIndex="-1"
           ref={contentRef}
           sx={{
-            bgcolor: 'white',
+            bgcolor: 'primary.background',
             flex: 1,
           }}
         >

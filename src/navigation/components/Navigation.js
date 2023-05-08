@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 
-import { Button, List, ListItem, Typography } from '@mui/material';
+import { Box, Button, List, ListItem, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
 
@@ -49,24 +49,44 @@ const PAGES = {
 const NavButton = styled(Button)(({ theme }) => ({
   border: 0,
   borderRadius: 0,
-  padding: theme.spacing(2),
+  padding: 0,
+  paddingBottom: theme.spacing(1),
   textTransform: 'uppercase',
+  fontFamily: 'Lato, Helvetica, Arial, sans-serif',
+  fontSize: '1.125rem',
+  lineHeight: '22px',
+  marginTop: '-4px', // adjust for bottom border
   color: theme.palette.gray.dark2,
-  '&.MuiButton-root:hover': {
-    backgroundColor: theme.palette.gray.lite1,
-  },
   '&.Mui-selected': {
-    color: theme.palette.black,
-    fontWeight: theme.typography.fontWeightMedium,
-    backgroundColor: 'inherit',
-    borderBottom: '2px solid',
+    color: theme.palette.primary.main,
+    fontWeight: theme.typography.fontWeightBold,
+    borderBottom: '4px solid',
+    marginTop: 0,
+    backgroundColor: 'transparent',
+  },
+  '&:hover': {
+    background: 'transparent',
   },
 }));
 
 const NavigationLink = ({ path, selected, index }) => {
   const { t } = useTranslation();
   return (
-    <ListItem disablePadding dense sx={{ width: 'auto' }}>
+    <ListItem
+      disablePadding
+      dense
+      sx={{
+        width: 'auto',
+        padding: 1.5,
+        paddingBottom: 0,
+        ':hover': {
+          backgroundColor: theme => theme.backgroundNavColor,
+        },
+        ':first-of-type': {
+          marginLeft: -2,
+        },
+      }}
+    >
       <NavButton
         className={selected && 'Mui-selected'}
         component={RouterLink}
@@ -97,37 +117,41 @@ const Navigation = React.forwardRef((props, ref) => {
   }
 
   return (
-    <Container
-      component="nav"
+    <Box
       id="main-navigation"
-      tabIndex="-1"
-      ref={ref}
-      value={value}
-      aria-label={t('navigation.nav_label_short')}
       sx={{
-        '& .MuiTabs-indicator': {
-          backgroundColor: 'black',
-        },
-        maxWidth: 'lg',
-        margin: '0 auto',
-        padding: '0 24px',
-        boxSizing: 'border-box',
+        boxShadow: '0px 3px 4px 0px #0000001A',
+        marginBottom: '4px',
       }}
     >
-      <Typography sx={visuallyHidden} variant="h2">
-        {t('navigation.nav_label')}
-      </Typography>
-      <List sx={{ display: 'flex', flexDirection: 'row', padding: 0 }}>
-        {Object.keys(PAGES).map((path, index) => (
-          <NavigationLink
-            key={path}
-            path={path}
-            index={index}
-            selected={index === value}
-          />
-        ))}
-      </List>
-    </Container>
+      <Container
+        component="nav"
+        tabIndex="-1"
+        ref={ref}
+        value={value}
+        aria-label={t('navigation.nav_label_short')}
+      >
+        <Typography sx={visuallyHidden} variant="h2">
+          {t('navigation.nav_label')}
+        </Typography>
+        <List
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            padding: 0,
+          }}
+        >
+          {Object.keys(PAGES).map((path, index) => (
+            <NavigationLink
+              key={path}
+              path={path}
+              index={index}
+              selected={index === value}
+            />
+          ))}
+        </List>
+      </Container>
+    </Box>
   );
 });
 

@@ -86,7 +86,7 @@ const UrlWrapper = props => {
       {children}
       {!isLastLink && (
         <IconButton aria-label="delete" onClick={() => onLinkDelete(linkId)}>
-          <DeleteIcon />
+          <DeleteIcon sx={{ color: 'secondary.main' }} />
         </IconButton>
       )}
     </Stack>

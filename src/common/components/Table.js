@@ -224,6 +224,7 @@ const Table = props => {
       // Improve accessibility.
       // Based on https://github.com/mui/mui-x/issues/1076#issuecomment-926943642
       sx={{
+        backgroundColor: 'white',
         '& .MuiDataGrid-columnHeader .MuiDataGrid-iconButtonContainer': {
           width: 'auto',
           visibility: 'visible',
@@ -244,6 +245,9 @@ const Table = props => {
         '& .MuiDataGrid-cell': {
           pt: 1,
           pb: 1,
+        },
+        '.MuiDataGrid-columnHeaderTitle': {
+          fontWeight: 'bold',
         },
       }}
       {...gridProps}

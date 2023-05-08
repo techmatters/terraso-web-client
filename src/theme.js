@@ -17,16 +17,31 @@
 import ErrorIcon from '@mui/icons-material/Report';
 import { createTheme } from '@mui/material/styles';
 
+const defaultFontStack = 'Roboto, Helvetica, Arial, sans-serif';
+const headerFontStack = 'Lato, Helvetica, Arial, sans-serif';
+
 const colorTheme = createTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 900,
+      xm: 1300,
+      lg: 1200,
+      xl: 1536,
+    },
+  },
   palette: {
     tonalOffset: 0.2,
     primary: {
-      main: '#2C7690',
+      main: '#028843',
+      hover: '#006130',
+      background: '#F9FCF8',
     },
     secondary: {
-      main: '#5E5547',
+      main: '#00344D',
     },
-    link: '#2C7690',
+    link: '#076B8E',
     success: {
       main: '#b0d098',
       background: '#E2F5D9',
@@ -36,9 +51,9 @@ const colorTheme = createTheme({
     },
     error: {
       main: '#d32f2f',
-      background: 'rgb(253, 237, 237)',
+      background: '#fdeded',
     },
-    cardBorder: '#DADADA',
+    cardBorder: '#E5E5E5',
     white: '#FFFFFF',
     gray: {
       lite2: '#f9f9f9',
@@ -79,7 +94,7 @@ const components = {
   MuiAppBar: {
     defaultProps: {
       sx: {
-        bgcolor: colorTheme.palette.gray.lite2,
+        bgcolor: colorTheme.palette.white,
         color: 'gray.dark1',
       },
       elevation: 0,
@@ -92,6 +107,7 @@ const components = {
     styleOverrides: {
       root: {
         '&:focus': focusOutline,
+        fontWeight: 'bold',
       },
     },
   },
@@ -103,6 +119,11 @@ const components = {
     },
   },
   MuiButton: {
+    styleOverrides: {
+      root: {
+        color: colorTheme.palette.link,
+      },
+    },
     defaultProps: {
       disableElevation: true,
     },
@@ -112,13 +133,33 @@ const components = {
           variant: 'outlined',
         },
         style: {
-          borderColor: colorTheme.palette.black,
-          color: colorTheme.palette.black,
+          backgroundColor: colorTheme.palette.white,
+          borderColor: colorTheme.palette.secondary.main,
+          color: colorTheme.palette.secondary.main,
+          '&:hover': {
+            backgroundColor: colorTheme.palette.secondary.main,
+            borderColor: colorTheme.palette.secondary.main,
+            color: colorTheme.palette.white,
+          },
+        },
+      },
+      {
+        props: {
+          variant: 'contained',
+        },
+        style: {
+          color: 'white',
+          bavkgroundColor: colorTheme.palette.white,
         },
       },
     ],
   },
   MuiCard: {
+    styleOverrides: {
+      root: {
+        borderRadius: '8px',
+      },
+    },
     defaultProps: {
       variant: 'outlined',
     },
@@ -140,12 +181,16 @@ const components = {
         '& .Mui-disabled': {
           bgcolor: colorTheme.palette.gray.lite1,
         },
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+          borderColor: colorTheme.palette.blue.dark,
+        },
       },
     },
   },
   MuiLink: {
     styleOverrides: {
       root: {
+        color: colorTheme.palette.link,
         ':focus': {
           textDecoration: 'underline ! important',
         },
@@ -171,6 +216,16 @@ const components = {
       },
     },
   },
+  MuiTab: {
+    styleOverrides: {
+      root: {
+        fontSize: '1.125rem',
+        '&.Mui-selected': {
+          fontWeight: 700,
+        },
+      },
+    },
+  },
   MuiAlert: {
     styleOverrides: {
       standardSuccess: {
@@ -183,6 +238,18 @@ const components = {
     defaultProps: {
       iconMapping: {
         error: <ErrorIcon fontSize="inherit" />,
+      },
+    },
+  },
+  MuiDataGrid: {
+    styleOverrides: {
+      root: {
+        '& .MuiDataGrid-row:nth-of-type(odd)': {
+          backgroundColor: 'white',
+          '&:hover': {
+            background: 'white',
+          },
+        },
       },
     },
   },
@@ -200,27 +267,37 @@ const components = {
       },
     },
   },
+  MuiListItem: {
+    styleOverrides: {
+      root: {
+        fontFamily: defaultFontStack,
+      },
+    },
+  },
 };
 
 const theme = createTheme(colorTheme, {
+  // This color cannot be part of the regular palette above, as MUI fails to reconize it.
+  // See https://github.com/mui/material-ui/issues/19711
+  backgroundNavColor: '#00914712',
   typography: {
+    fontFamily: defaultFontStack,
     h1: {
+      fontFamily: headerFontStack,
       fontSize: '2rem',
-      fontWeight: 400,
+      fontWeight: 700,
     },
     h2: {
+      fontFamily: headerFontStack,
       fontSize: '1.2rem',
-      fontWeight: 500,
+      fontWeight: 700,
       textTransform: 'uppercase',
       paddingTop: '1rem',
     },
     h3: {
       fontSize: '1rem',
-      fontWeight: 300,
+      fontWeight: 600,
       paddingTop: '1rem',
-    },
-    h5: {
-      fontSize: '22px',
     },
     button: {
       textTransform: 'none',

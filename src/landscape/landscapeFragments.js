@@ -26,6 +26,7 @@ export const landscapeFields = `
     description
     email
     website
+    profileImage
   }
 `;
 
@@ -93,7 +94,7 @@ export const landscapePartnershipField = `
           }
         }
       }
-    } 
+    }
   }
 `;
 

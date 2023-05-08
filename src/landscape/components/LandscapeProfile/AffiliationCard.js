@@ -184,6 +184,7 @@ const AffiliationCard = ({ landscape, setIsEmpty }) => {
           <Typography
             variant="h2"
             id="landscape-profile-affiliation-card-title"
+            sx={{ pt: 0 }}
           >
             {t('landscape.profile_affiliation_card_title')}
           </Typography>
@@ -191,7 +192,9 @@ const AffiliationCard = ({ landscape, setIsEmpty }) => {
       />
       {isEmpty && (
         <CardContent>
-          {t('landscape.profile_affiliation_card_empty')}
+          <Typography>
+            {t('landscape.profile_affiliation_card_empty')}
+          </Typography>
         </CardContent>
       )}
       <Partnership landscape={landscape} />
