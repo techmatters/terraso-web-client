@@ -191,7 +191,6 @@
         }
     },
     "account": {
-        "test": "test",
         "profile": "Account Profile",
         "disclaimer": "If you don’t already have a Terraso account, signing in will create one in accordance with our <1>privacy policy</1>.",
         "disclaimer_url": "https://techmatters.org/privacy-policy/",
