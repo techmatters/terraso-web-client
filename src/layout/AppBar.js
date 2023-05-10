@@ -22,7 +22,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { signOut } from 'terrasoApi/account/accountSlice';
 
-import { AppBar, Box, Button, Toolbar } from '@mui/material';
+import { AppBar, Box, Button, Divider, Toolbar } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import ConditionalLink from 'common/components/ConditionalLink';
@@ -107,11 +107,17 @@ const AppBarComponent = () => {
             >
               {user.firstName} {user.lastName}
             </Button>
-            <span aria-hidden="true">|</span>
+            <Divider
+              flexItem
+              variant="middle"
+              aria-hidden="true"
+              orientation="vertical"
+              sx={{ backgroundColor: 'gray.mid2', mt: 2, mb: 2 }}
+            />
             <Button
               color="inherit"
               sx={theme => ({
-                marginRight: theme.spacing(2),
+                marginRight: 2,
                 '&:hover': {
                   backgroundColor: 'transparent',
                   textDecoration: 'underline',
@@ -125,7 +131,7 @@ const AppBarComponent = () => {
         ) : (
           <Button
             color="primary"
-            sx={theme => ({ marginRight: theme.spacing(2) })}
+            sx={theme => ({ marginRight: 2 })}
             onClick={onSignIn}
           >
             {t('user.sign_in')}

@@ -17,60 +17,54 @@
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
 
-import { Box, Divider, Link, Stack, Typography } from '@mui/material';
+import { Box, Divider, Link, Paper, Stack, Typography } from '@mui/material';
 
 import CardActionRouterLink from 'common/components/CardActionRouterLink';
+import RouterLink from 'common/components/RouterLink';
 
 import HomeCard from 'home/components/HomeCard';
-
-import theme from 'theme';
 
 const ToolHomeCard = () => {
   const { t } = useTranslation();
   const koboImage = require(`assets/${t('tools.kobo.img.src')}`);
 
   return (
-    <HomeCard
-      aria-labelledby="tools-title"
-      sx={{
-        flexDirection: 'column',
-        padding: theme.spacing(2),
-        paddingBottom: 0,
-      }}
-    >
-      <Typography id="tools-title" variant="h2" sx={{ pt: 0 }}>
-        {t('tool.home_card_title')}
-      </Typography>
-      <Typography
-        variant="body1"
-        sx={{
-          marginTop: theme.spacing(2),
-          marginBottom: theme.spacing(2),
-        }}
-      ></Typography>
-      <Stack direction="row" spacing={3}>
-        <Link component={RouterLink} to="/tools">
-          <Box
-            component="img"
-            src={koboImage}
-            alt=""
-            width={t('tools.kobo.img.width')}
-            height={t('tools.kobo.img.height')}
-            sx={{
-              width: `${t('tools.kobo.img.width')}px`,
-              height: `${t('tools.kobo.img.height')}px`,
-            }}
-          />
-        </Link>
-        <Stack spacing={1}>
+    <HomeCard aria-labelledby="tools-title" sx={{ flexDirection: 'column' }}>
+      <Box sx={{ p: 2 }}>
+        <Typography id="tools-title" variant="h2" sx={{ pt: 0, mb: 4 }}>
+          {t('tool.home_card_title')}
+        </Typography>
+
+        <Stack direction="row" spacing={3}>
           <Link component={RouterLink} to="/tools">
-            <Typography>{t('tool.home_card_kobo_title')}</Typography>
+            <Paper
+              variant="outlined"
+              component="img"
+              src={koboImage}
+              alt=""
+              width={t('tools.kobo.img.width')}
+              height={t('tools.kobo.img.height')}
+              sx={{
+                width: `${t('tools.kobo.img.width')}px`,
+                height: `${t('tools.kobo.img.height')}px`,
+              }}
+            />
           </Link>
-          {t('tool.home_card_description')}
+
+          <Stack direction="column">
+            <Typography variant="h3" sx={{ pt: 0, mb: 2, fontSize: '1.3rem' }}>
+              <RouterLink to="/tools">
+                {t('tool.home_card_kobo_title')}
+              </RouterLink>
+            </Typography>
+
+            <Typography variant="body2">
+              {t('tool.home_card_description')}
+            </Typography>
+          </Stack>
         </Stack>
-      </Stack>
+      </Box>
       <Divider aria-hidden="true" />
       <CardActionRouterLink label={t('tool.home_explore_label')} to="/tools" />
     </HomeCard>
