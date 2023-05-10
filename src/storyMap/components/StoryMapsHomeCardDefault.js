@@ -18,15 +18,13 @@ import React from 'react';
 
 import { useTranslation } from 'react-i18next';
 
-import { Box, CardHeader, Divider, Paper, Typography } from '@mui/material';
+import { Box, Divider, Link, Paper, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 
 import CardActionRouterLink from 'common/components/CardActionRouterLink';
 import RouterLink from 'common/components/RouterLink';
 
 import HomeCard from 'home/components/HomeCard';
-
-import theme from 'theme';
 
 const StoryMapsHomeCardDefault = () => {
   const { t } = useTranslation();
@@ -37,33 +35,37 @@ const StoryMapsHomeCardDefault = () => {
       aria-labelledby="story-maps-default-title"
       sx={{ flexDirection: 'column' }}
     >
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          padding: theme.spacing(2),
-        }}
-      >
-        <Typography id="story-maps-default-title" variant="h2" sx={{ pt: 0 }}>
+      <Box sx={{ p: 2 }}>
+        <Typography
+          id="story-maps-default-title"
+          variant="h2"
+          sx={{ pt: 0, mb: 4 }}
+        >
           {t('storyMap.home_title')}
         </Typography>
-        <Stack direction="row" alignItems="start">
-          <Paper
-            variant="outlined"
-            component="img"
-            src={storyMapImage}
-            alt={t('tool.home_card_img_alt')}
-            height={64}
-            sx={{ mt: 2.5 }}
-          />
-          <CardHeader
-            title={
-              <RouterLink to="/tools/story-maps">
+
+        <Stack direction="row" spacing={3}>
+          <Link component={RouterLink} to="/tools">
+            <Paper
+              variant="outlined"
+              component="img"
+              src={storyMapImage}
+              alt={t('tool.home_card_img_alt')}
+              height={64}
+            />
+          </Link>
+
+          <Stack direction="column">
+            <Typography variant="h3" sx={{ pt: 0, mb: 2, fontSize: '1.3rem' }}>
+              <RouterLink to="/story-maps">
                 {t('storyMap.home_tools_link')}
               </RouterLink>
-            }
-            subheader={t('storyMap.home_default_description')}
-          />
+            </Typography>
+
+            <Typography variant="body2">
+              {t('storyMap.home_default_description')}
+            </Typography>
+          </Stack>
         </Stack>
       </Box>
       <Divider aria-hidden="true" />
