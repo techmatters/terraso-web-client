@@ -700,7 +700,7 @@
         "validation_field_invalid": "$t({{path}}) must be valid",
         "validation_field_invalid_unexpected": "Field must be valid",
         "validation_email_invalid": "Enter a valid email address.",
-        "validation_field_required": "Enter a given name.",
+        "validation_field_required": "Enter a {{path, lowercase}}.",
         "validation_url_required": "Enter a web address.",
         "validation_url_invalid": "Enter a valid web address.",
         "validation_field_required_array": "$t({{path}}) {{arrayIndex}} is required",
