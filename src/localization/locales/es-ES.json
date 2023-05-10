@@ -705,7 +705,7 @@
         "validation_field_invalid": "$t({{path}}) debe ser válido",
         "validation_field_invalid_unexpected": "El campo debe ser válido",
         "validation_email_invalid": "Introduce una dirección de correo electrónico válida.",
-        "validation_field_required": "Introduce un(a) {{path, lowercase}}.",
+        "validation_field_required": "Introduce un(a) nombre de pila.",
         "validation_url_required": "Introduce una dirección web.",
         "validation_url_invalid": "Introduce una dirección web válida.",
         "validation_field_required_array": "$t({{path}}) {{arrayIndex}} es obligatorio",
