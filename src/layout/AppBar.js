@@ -107,7 +107,9 @@ const AppBarComponent = () => {
             >
               {user.firstName} {user.lastName}
             </Button>
-            <span aria-hidden="true">|</span>
+            <span style={{ color: theme.palette.gray.mid2 }} aria-hidden="true">
+              |
+            </span>
             <Button
               color="inherit"
               sx={theme => ({
