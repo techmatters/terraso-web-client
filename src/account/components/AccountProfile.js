@@ -39,7 +39,11 @@ import AccountAvatar from './AccountAvatar';
 
 const VALIDATION_SCHEMA = yup
   .object({
-    firstName: yup.string().trim().required(),
+    firstName: yup
+      .string()
+      .trim()
+      .required()
+      .label('account.form_first_name_label_singular'),
   })
   .required();
 

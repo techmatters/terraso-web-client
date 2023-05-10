@@ -195,6 +195,7 @@
         "disclaimer": "If you don’t already have a Terraso account, signing in will create one in accordance with our <1>privacy policy</1>.",
         "disclaimer_url": "https://techmatters.org/privacy-policy/",
         "unauthenticated_message": "Your Terraso session has expired. Please log in again.",
+        "form_first_name_label_singular": "Given name",
         "form_first_name_label": "Given names",
         "form_last_name_label": "Family names",
         "form_email_label": "Email address",
