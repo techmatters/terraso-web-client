@@ -17,11 +17,11 @@
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
 
 import { Box, Divider, Link, Paper, Stack, Typography } from '@mui/material';
 
 import CardActionRouterLink from 'common/components/CardActionRouterLink';
+import RouterLink from 'common/components/RouterLink';
 
 import HomeCard from 'home/components/HomeCard';
 
