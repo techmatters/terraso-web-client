@@ -113,7 +113,7 @@ const AppBarComponent = () => {
             <Button
               color="inherit"
               sx={theme => ({
-                marginRight: theme.spacing(2),
+                marginRight: 2,
                 '&:hover': {
                   backgroundColor: 'transparent',
                   textDecoration: 'underline',
@@ -127,7 +127,7 @@ const AppBarComponent = () => {
         ) : (
           <Button
             color="primary"
-            sx={theme => ({ marginRight: theme.spacing(2) })}
+            sx={theme => ({ marginRight: 2 })}
             onClick={onSignIn}
           >
             {t('user.sign_in')}
