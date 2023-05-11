@@ -57,6 +57,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "generate": "npx graphql-code-generator",
     "lint-js": "eslint ./ --fix --ext .js --ext .ts --ext .tsx --max-warnings 0 --ignore-pattern node_modules/ --ignore-pattern build/",
     "check-ts": "tsc --noEmit",
     "lint-css": "stylelint --fix --config=.stylelintrc '**/*.css'",
@@ -76,6 +77,8 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@graphql-codegen/cli": "^3.3.1",
+    "@graphql-codegen/client-preset": "^3.0.1",
     "@ianvs/prettier-plugin-sort-imports": "^3.7.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
