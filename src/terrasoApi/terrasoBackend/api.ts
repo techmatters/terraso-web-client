@@ -62,7 +62,7 @@ const handleApiErrors = async <T extends Errors>(
   body: any
 ): Promise<WithoutErrors<T>> => {
   if (!response.errors || response.errors.length === 0) {
-    return _.omit('errors', response);
+    return typeof response === 'object' ? _.omit('errors', response) : response;
   }
   const unauthenticatedError = response.errors.find((error: any) =>
     _.includes('AnonymousUser', error.message)
