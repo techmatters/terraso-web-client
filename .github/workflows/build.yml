@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Generated code
+        run: npm run generate
+
       - name: Run lint js checks
         run: npm run lint-js
 
@@ -52,6 +55,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Generated code
+        run: npm run generate
+
       - name: Run test
         run: npm run test
 
@@ -73,6 +79,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Generated code
+        run: npm run generate
+
       - name: Run test
         run: npm run test-coverage
 
@@ -91,6 +100,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Generated code
+        run: npm run generate
 
       - name: Run build
         run: npm run build
