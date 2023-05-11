@@ -17,10 +17,14 @@
 import _ from 'lodash/fp';
 import { getAuthHeaders } from 'terrasoApi/account/auth';
 import { UNAUTHENTICATED } from 'terrasoApi/account/authConstants';
+import { TypedDocumentString } from 'terrasoApi/gql/graphql';
 
 import logger from 'monitoring/logger';
 
 import { GRAPH_QL_ENDPOINT, TERRASO_API_URL } from 'config';
+
+type Error = { message: any };
+type Errors = { errors: Error[] };
 
 const parseMessage = (message: any, body: any) => {
   try {
@@ -50,14 +54,16 @@ const parseMessage = (message: any, body: any) => {
   }
 };
 
-const handleApiErrors = (data: any, body: any) => {
-  const errors = _.getOr(
-    _.flow(_.get('data'), _.values, _.first, _.get('errors'))(data),
-    'errors',
-    data
-  );
+type WithoutErrors<T> = Omit<T, 'errors'>;
 
-  const unauthenticatedError = errors.find((error: any) =>
+const handleApiErrors = async <T extends Partial<Errors>>(
+  response: T,
+  body: any
+): Promise<WithoutErrors<T>> => {
+  if (response.errors === undefined || response.errors.length === 0) {
+    return _.omit('errors', response);
+  }
+  const unauthenticatedError = response.errors.find((error: any) =>
     _.includes('AnonymousUser', error.message)
   );
   if (unauthenticatedError) {
@@ -70,17 +76,20 @@ const handleApiErrors = (data: any, body: any) => {
 
   const messages = _.flatMap(
     error => parseMessage(error.message, parsedBody),
-    errors
+    response.errors
   );
   return Promise.reject(messages);
 };
 
-export const requestGraphQL = async <T = any>(
-  query: string,
-  variables?: any
-): Promise<T> => {
+export const requestGraphQL = async <
+  Q extends Record<string, any & Partial<Errors>>,
+  V = any
+>(
+  query: TypedDocumentString<Q, V> | string,
+  variables?: V
+): Promise<Q> => {
   const body = { query, variables };
-  const jsonResponse = await request<{ data?: T }>({
+  const jsonResponse = await request<{ data?: Q }>({
     path: GRAPH_QL_ENDPOINT,
     body,
     headers: {
@@ -97,17 +106,9 @@ export const requestGraphQL = async <T = any>(
     return Promise.reject(['terraso_api.error_unexpected']);
   }
 
-  const hasErrors = !_.flow(
-    _.values,
-    _.first,
-    _.get('errors'),
-    _.isEmpty
-  )(jsonResponse.data);
-
-  if (hasErrors) {
-    await handleApiErrors(jsonResponse, body);
+  for (const key of Object.keys(jsonResponse.data)) {
+    await handleApiErrors(jsonResponse.data[key], body);
   }
-
   return jsonResponse.data;
 };
 
@@ -119,7 +120,7 @@ export const request = async <T = any>({
   path: string;
   body: any;
   headers?: Record<string, string>;
-}): Promise<T> => {
+}): Promise<WithoutErrors<T>> => {
   const response = await fetch(new URL(path, TERRASO_API_URL).href, {
     method: 'POST',
     headers: {
@@ -136,14 +137,11 @@ export const request = async <T = any>({
     await Promise.reject(UNAUTHENTICATED);
   }
 
-  const jsonResponse = await response.json().catch(error => {
-    logger.error('Terraso API: Failed to parse response', error);
-    return Promise.reject(['terraso_api.error_request_response']);
-  });
-
-  if (!_.isEmpty(_.get('errors', jsonResponse))) {
-    await handleApiErrors(jsonResponse, body);
-  }
-
-  return jsonResponse;
+  return response
+    .json()
+    .catch(error => {
+      logger.error('Terraso API: Failed to parse response', error);
+      return Promise.reject(['terraso_api.error_request_response']);
+    })
+    .then<T & Partial<Errors>>(resp => handleApiErrors(resp, body));
 };

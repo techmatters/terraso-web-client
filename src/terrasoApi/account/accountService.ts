@@ -15,15 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
-import {
-  UserFragment,
-  UserPreferenceNode,
+import { graphql } from 'terrasoApi/gql';
+import type {
+  UserFieldsFragment,
   UserPreferencesFragment,
-  userFields,
-  userPreferences,
-  userPreferencesFields,
-} from 'terrasoApi/user/userFragments';
+} from 'terrasoApi/gql/graphql';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import { TERRASO_API_URL } from 'config';
 
@@ -31,7 +28,7 @@ import { User } from './accountSlice';
 import { getUserEmail } from './auth';
 
 const parsePreferences = (
-  user: UserFragment & Partial<UserPreferencesFragment>
+  user: UserFieldsFragment & Partial<UserPreferencesFragment>
 ): User => ({
   ...user,
   preferences: _.fromPairs(
@@ -55,20 +52,12 @@ export const getAuthURLs = () =>
     })
   );
 
-type UserQuery = {
-  users: {
-    edges: {
-      node: UserFragment & UserPreferencesFragment;
-    }[];
-  };
-};
-
 export const fetchProfile = async (
-  params: any,
+  params: null,
   currentUser: { email: string } | null
 ) => {
-  const query = `
-    query user($email: String!){
+  const query = graphql(`
+    query userProfile($email: String) {
       users(email: $email) {
         edges {
           node {
@@ -78,14 +67,12 @@ export const fetchProfile = async (
         }
       }
     }
-    ${userFields}
-    ${userPreferences}
-  `;
-  const result = await terrasoApi.requestGraphQL<UserQuery>(query, {
+  `);
+  const result = await terrasoApi.requestGraphQL(query, {
     email: currentUser?.email,
   });
 
-  const user = result.users.edges.at(0);
+  const user = result.users?.edges.at(0);
   if (user === undefined) {
     return Promise.reject('not_found');
   }
@@ -99,77 +86,57 @@ export const fetchUser = async () => {
   return fetchProfile(null, email === undefined ? null : { email });
 };
 
-type UpdateUserMutation = {
-  updateUser: {
-    user: UserFragment;
-  };
-};
 export const saveUser = (user: User) => {
-  const query = `
+  const query = graphql(`
     mutation updateUser($input: UserUpdateMutationInput!) {
       updateUser(input: $input) {
-        user { ...userFields }
+        user {
+          ...userFields
+        }
         errors
       }
     }
-    ${userFields}
-  `;
+  `);
   return terrasoApi
-    .requestGraphQL<UpdateUserMutation>(query, {
+    .requestGraphQL(query, {
       input: _.omit(['profileImage', 'email', 'preferences'], user),
     })
-    .then(resp => parsePreferences(resp.updateUser.user));
+    .then(resp => parsePreferences(resp.updateUser.user!));
 };
 
-type UpdateUserPreferenceMutation = {
-  updateUserPreference: {
-    preference: UserPreferenceNode['node'];
-  };
-};
 export const savePreference = async (
   { key, value }: { key: string; value: string },
-  currentUser: UserFragment | null
+  currentUser: User | null
 ) => {
-  const query = `
+  const query = graphql(`
     mutation updateUserPreference($input: UserPreferenceUpdateInput!) {
       updateUserPreference(input: $input) {
-        preference { ...userPreferencesFields }
+        preference {
+          ...userPreferencesFields
+        }
         errors
       }
     }
-    ${userPreferencesFields}
-  `;
-  const result = await terrasoApi.requestGraphQL<UpdateUserPreferenceMutation>(
-    query,
-    {
-      input: {
-        userEmail: currentUser?.email,
-        key,
-        value,
-      },
-    }
-  );
-  return result.updateUserPreference.preference;
+  `);
+  const result = await terrasoApi.requestGraphQL(query, {
+    input: {
+      userEmail: currentUser!.email,
+      key,
+      value,
+    },
+  });
+  return result.updateUserPreference.preference!;
 };
 
-type UnsubscribeUserMutation = {
-  unsubscribeUser: {
-    errors: any;
-  };
-};
 export const unsubscribeFromNotifications = (token: string) => {
-  const query = `
+  const query = graphql(`
     mutation unsubscribeUser($input: UserUnsubscribeUpdateInput!) {
       unsubscribeUser(input: $input) {
         errors
       }
     }
-  `;
-  return terrasoApi.requestGraphQL<UnsubscribeUserMutation>(query, {
-    input: {
-      token,
-    },
-  });
+  `);
+  return terrasoApi.requestGraphQL(query, { input: { token } });
 };
 
 export const signOut = async () => {
