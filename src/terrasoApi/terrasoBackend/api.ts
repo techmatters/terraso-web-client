@@ -24,7 +24,7 @@ import logger from 'monitoring/logger';
 import { GRAPH_QL_ENDPOINT, TERRASO_API_URL } from 'config';
 
 type Error = { message: any };
-type Errors = { errors: Error[] };
+type Errors = { errors?: Error[] | null };
 
 const parseMessage = (message: any, body: any) => {
   try {
@@ -54,13 +54,14 @@ const parseMessage = (message: any, body: any) => {
   }
 };
 
-type WithoutErrors<T> = Omit<T, 'errors'>;
+type WithoutErrors<T> = Omit<NonNullable<T>, 'errors'>;
+type WithoutEntryErrors<T> = { [K in keyof T]: WithoutErrors<T[K]> };
 
-const handleApiErrors = async <T extends Partial<Errors>>(
+const handleApiErrors = async <T extends Errors>(
   response: T,
   body: any
 ): Promise<WithoutErrors<T>> => {
-  if (response.errors === undefined || response.errors.length === 0) {
+  if (!response.errors || response.errors.length === 0) {
     return _.omit('errors', response);
   }
   const unauthenticatedError = response.errors.find((error: any) =>
@@ -82,12 +83,12 @@ const handleApiErrors = async <T extends Partial<Errors>>(
 };
 
 export const requestGraphQL = async <
-  Q extends Record<string, any & Partial<Errors>>,
+  Q extends Record<string, object | null>,
   V = any
 >(
   query: TypedDocumentString<Q, V> | string,
   variables?: V
-): Promise<Q> => {
+): Promise<WithoutEntryErrors<Q>> => {
   const body = { query, variables };
   const jsonResponse = await request<{ data?: Q }>({
     path: GRAPH_QL_ENDPOINT,
@@ -106,13 +107,23 @@ export const requestGraphQL = async <
     return Promise.reject(['terraso_api.error_unexpected']);
   }
 
-  for (const key of Object.keys(jsonResponse.data)) {
-    await handleApiErrors(jsonResponse.data[key], body);
+  const result = {} as WithoutEntryErrors<Q>;
+  for (const key of Object.keys(jsonResponse.data) as (keyof Q)[]) {
+    const value = jsonResponse.data[key];
+    if (value === null) {
+      logger.error(
+        'Terraso API: Unexpected error',
+        'received data:',
+        jsonResponse
+      );
+      return Promise.reject(['terraso_api.error_unexpected']);
+    }
+    result[key] = await handleApiErrors(value, body);
   }
-  return jsonResponse.data;
+  return result;
 };
 
-export const request = async <T = any>({
+export const request = async <T>({
   path,
   body,
   headers = {},
@@ -143,5 +154,5 @@ export const request = async <T = any>({
       logger.error('Terraso API: Failed to parse response', error);
       return Promise.reject(['terraso_api.error_request_response']);
     })
-    .then<T & Partial<Errors>>(resp => handleApiErrors(resp, body));
+    .then((resp: T & Errors) => handleApiErrors(resp, body));
 };

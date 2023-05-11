@@ -36,7 +36,7 @@ test('GroupService: Fetch group', async () => {
       },
     })
   );
-  const group = await groupService.fetchGroupToUpdate();
+  const group = await groupService.fetchGroupToUpdate('');
   expect(group).toStrictEqual({
     name: 'Group name',
     description: 'Group description',
@@ -46,12 +46,16 @@ test('GroupService: Fetch group', async () => {
 test('GroupService: Fetch group not found', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
-      group: null,
+      groups: { edges: [] },
     })
   );
-  await expect(groupService.fetchGroupToUpdate()).rejects.toEqual('not_found');
+  await expect(groupService.fetchGroupToUpdate('')).rejects.toEqual(
+    'not_found'
+  );
 });
 test('GroupService: Fetch group backend error', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(Promise.reject('Test error'));
-  await expect(groupService.fetchGroupToUpdate()).rejects.toEqual('Test error');
+  await expect(groupService.fetchGroupToUpdate('')).rejects.toEqual(
+    'Test error'
+  );
 });
