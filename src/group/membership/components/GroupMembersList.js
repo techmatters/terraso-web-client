@@ -21,6 +21,11 @@ import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
+import {
+  fetchMembers,
+  removeMember,
+  updateMember,
+} from 'terrasoApi/group/groupSlice';
 import { useFetchData } from 'terrasoApi/utils';
 
 import { LoadingButton } from '@mui/lab';
@@ -34,7 +39,6 @@ import Restricted from 'permissions/components/Restricted';
 
 import AccountAvatar from 'account/components/AccountAvatar';
 import { useGroupContext } from 'group/groupContext';
-import { fetchMembers, removeMember, updateMember } from 'group/groupSlice';
 
 import GroupMembershipPendingWarning from './GroupMembershipPendingWarning';
 import {

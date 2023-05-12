@@ -18,11 +18,11 @@ import React, { useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { useDispatch, useSelector } from 'react-redux';
+import { joinGroup, leaveGroup } from 'terrasoApi/group/groupSlice';
 
 import { useAnalytics } from 'monitoring/analytics';
 
 import { useGroupContext } from 'group/groupContext';
-import { joinGroup, leaveGroup } from 'group/groupSlice';
 
 import {
   MEMBERSHIP_CLOSED,

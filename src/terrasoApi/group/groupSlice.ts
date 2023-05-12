@@ -16,10 +16,9 @@
  */
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
+import * as groupService from 'terrasoApi/group/groupService';
+import * as groupUtils from 'terrasoApi/group/groupUtils';
 import { createAsyncThunk } from 'terrasoApi/utils';
-
-import * as groupService from 'group/groupService';
-import * as groupUtils from 'group/groupUtils';
 
 const initialState = {
   memberships: {},

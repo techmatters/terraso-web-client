@@ -16,8 +16,6 @@
  */
 import _ from 'lodash/fp';
 import { cleanSensitiveCharacters } from 'stringUtils';
-import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
-
 import {
   accountMembership,
   groupFields,
@@ -25,7 +23,8 @@ import {
   groupMembersInfo,
   groupMembersPending,
   groupsListFields,
-} from 'group/groupFragments';
+} from 'terrasoApi/group/groupFragments';
+import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import {
   extractAccountMembership,

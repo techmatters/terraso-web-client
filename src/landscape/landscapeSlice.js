@@ -16,10 +16,10 @@
  */
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
+import { setMemberships } from 'terrasoApi/group/groupSlice';
+import * as groupUtils from 'terrasoApi/group/groupUtils';
 import { createAsyncThunk } from 'terrasoApi/utils';
 
-import { setMemberships } from 'group/groupSlice';
-import * as groupUtils from 'group/groupUtils';
 import * as landscapeService from 'landscape/landscapeService';
 
 const initialState = {
