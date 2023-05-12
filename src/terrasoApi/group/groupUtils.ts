@@ -15,45 +15,66 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
+import type {
+  AccountMembershipFragment,
+  DataEntriesFragment,
+  DataEntryFragment,
+  GroupFieldsFragment,
+  GroupMembersFragment,
+  GroupMembersInfoFragment,
+  GroupMembersPendingFragment,
+} from 'terrasoApi/gql/graphql';
 
-export const extractMembersInfo = group => ({
-  totalCount: _.getOr(
-    _.get('memberships.totalCount', group),
-    'membershipsCount',
-    group
-  ),
-  pendingCount: _.get('pending.totalCount', group),
+import { Group, Membership } from './groupSlice';
+
+type GroupQuery = Partial<
+  (GroupMembersFragment | GroupMembersInfoFragment) &
+    AccountMembershipFragment &
+    GroupMembersPendingFragment &
+    GroupFieldsFragment
+>;
+
+export const extractMembersInfo = (group: GroupQuery) => ({
+  totalCount: group.membershipsCount ?? group.memberships?.totalCount,
+  pendingCount: group.pending?.totalCount,
   accountMembership: extractAccountMembership(group),
   membersSample: extractMembers(group),
 });
 
-export const extractMembers = group =>
-  _.getOr([], 'memberships.edges', group).map(edge => ({
-    membershipId: _.get('node.id', edge),
-    role: _.get('node.userRole', edge),
-    membershipStatus: _.get('node.membershipStatus', edge),
-    ..._.get('node.user', edge),
+export const extractMembers = (group: GroupQuery) =>
+  (
+    (group as Partial<GroupMembersFragment> & Partial<GroupMembersInfoFragment>)
+      .memberships?.edges || []
+  ).map(edge => ({
+    membershipId: edge.node.id,
+    userRole: edge.node.userRole!,
+    membershipStatus: edge.node.membershipStatus,
+    ...edge.node.user,
   }));
 
-export const extractAccountMembership = group =>
-  _.get('accountMembership', group);
+export const extractAccountMembership = ({
+  accountMembership,
+}: AccountMembershipFragment) =>
+  accountMembership
+    ? {
+        ...accountMembership,
+        userRole: accountMembership.userRole!,
+        membershipId: accountMembership.id,
+      }
+    : undefined;
 
-export const getMemberships = groups =>
-  _.flow(
-    _.map(group => [group.slug, { group, fetching: false }]),
-    _.fromPairs
-  )(groups);
+export const getMemberships = (groups: Group[]) =>
+  Object.fromEntries(
+    groups.map(group => [group.slug, { group, fetching: false }])
+  );
 
-export const generateIndexedMembers = _.keyBy(member => member.membershipId);
+export const generateIndexedMembers = (memberships: Membership[]) =>
+  _.keyBy((member: Membership) => member.membershipId, memberships);
 
-export const extractDataEntry = dataEntry => ({
+export const extractDataEntry = (dataEntry: DataEntryFragment) => ({
   ...dataEntry,
-  visualizations: _.getOr([], 'visualizations.edges', dataEntry).map(
-    _.get('node')
-  ),
+  visualizations: dataEntry.visualizations.edges.map(edge => edge.node),
 });
 
-export const extractGroupDataEntries = group =>
-  _.getOr([], 'dataEntries.edges', group)
-    .map(_.get('node'))
-    .map(extractDataEntry);
+export const extractGroupDataEntries = (group: DataEntriesFragment) =>
+  group.dataEntries.edges.map(edge => extractDataEntry(edge.node));

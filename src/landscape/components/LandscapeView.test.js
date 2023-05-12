@@ -97,6 +97,7 @@ const baseViewTest = async (userRole = 'MEMBER') => {
           description: `Description ${index}`,
           size: 3456,
           entryType: 'FILE',
+          visualizations: { edges: [] },
         },
       })),
   };
