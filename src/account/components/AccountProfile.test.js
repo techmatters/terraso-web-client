@@ -43,7 +43,7 @@ const setup = async (
 ) => {
   await render(<AccountProfile />, initialState);
   const firstName = screen.getByRole('textbox', {
-    name: 'Given names (required)',
+    name: 'Given names',
   });
   const lastName = screen.getByRole('textbox', { name: 'Family names' });
   return {
