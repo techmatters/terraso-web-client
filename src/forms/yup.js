@@ -19,6 +19,36 @@ import * as yup from 'yup';
 
 const ARRAY_INDEX_REGEX = /\[([^)]+)\]/;
 
+const HOSTNAME_REGEX = /^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/;
+const PATHNAME_REGEX =
+  /^(\/([a-zA-Z0-9_.!~*'()%-]+|(\{[a-zA-Z0-9_.!~*'()%-]+\}))+)*\/?$/;
+
+const isValidUrl = urlString => {
+  try {
+    const url = new URL(urlString);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return false;
+    }
+    if (
+      !HOSTNAME_REGEX.test(url.hostname) ||
+      !PATHNAME_REGEX.test(url.pathname)
+    ) {
+      return false;
+    }
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+yup.addMethod(yup.string, 'urlCustom', function () {
+  return this.test(
+    'urlCustom',
+    params => ({ key: 'form.validation_url_invalid', params }),
+    value => (!value ? true : isValidUrl(value))
+  );
+});
+
 // Localization codes form Yup schema validation
 // Check: https://github.com/jquense/yup#api to know the format to add more codes here
 yup.setLocale({
