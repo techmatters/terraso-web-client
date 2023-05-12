@@ -28,7 +28,7 @@ import { User } from './accountSlice';
 import { getUserEmail } from './auth';
 
 const parsePreferences = (
-  user: UserFieldsFragment & Partial<UserPreferencesFragment>
+  user: UserFieldsFragment & UserPreferencesFragment
 ): User => ({
   ...user,
   preferences: _.fromPairs(
@@ -92,6 +92,7 @@ export const saveUser = (user: User) => {
       updateUser(input: $input) {
         user {
           ...userFields
+          ...userPreferences
         }
         errors
       }

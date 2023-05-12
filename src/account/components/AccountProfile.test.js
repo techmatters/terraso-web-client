@@ -43,7 +43,7 @@ const setup = async (
 ) => {
   await render(<AccountProfile />, initialState);
   const firstName = screen.getByRole('textbox', {
-    name: 'Given names',
+    name: 'Given names (required)',
   });
   const lastName = screen.getByRole('textbox', { name: 'Family names' });
   return {
@@ -163,7 +163,7 @@ test('AccountProfile: Save language', async () => {
   terrasoApi.requestGraphQL.mockImplementation(query => {
     const trimmedQuery = query.trim();
 
-    if (trimmedQuery.startsWith('query user(')) {
+    if (trimmedQuery.startsWith('query userProfile(')) {
       return Promise.resolve(
         _.set(
           'users.edges[0].node',
@@ -246,7 +246,7 @@ test('AccountProfile: Save notifications', async () => {
   terrasoApi.requestGraphQL.mockImplementation(query => {
     const trimmedQuery = query.trim();
 
-    if (trimmedQuery.startsWith('query user(')) {
+    if (trimmedQuery.startsWith('query userProfile(')) {
       return Promise.resolve(
         _.set(
           'users.edges[0].node',
@@ -316,7 +316,7 @@ test('AccountProfile: Save error', async () => {
   terrasoApi.requestGraphQL.mockImplementation(query => {
     const trimmedQuery = query.trim();
 
-    if (trimmedQuery.startsWith('query user(')) {
+    if (trimmedQuery.startsWith('query userProfile(')) {
       return Promise.resolve(
         _.set(
           'users.edges[0].node',
