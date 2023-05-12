@@ -32,7 +32,7 @@ const parsePreferences = (
 ): User => ({
   ...user,
   preferences: _.fromPairs(
-    user.preferences?.edges.map(({ node: { key, value } }) => [key, value])
+    user.preferences.edges.map(({ node: { key, value } }) => [key, value])
   ),
 });
 
