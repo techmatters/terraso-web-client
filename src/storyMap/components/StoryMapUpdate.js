@@ -64,14 +64,22 @@ const StoryMapUpdate = props => {
 
     const { title, slug, storyMapId, published } = saved;
     setSaved(null);
+    const url = generateStoryMapUrl({ slug, storyMapId });
+
+    console.log({ published, storyMap });
+    const event = published
+      ? storyMap.isPublished
+        ? 'storymap.save'
+        : 'storymap.publish'
+      : 'storymap.saveDraft';
+
+    trackEvent(event, {
+      props: {
+        url: `${window.location.origin}${url}`,
+        [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
+      },
+    });
     if (published) {
-      const url = generateStoryMapUrl({ slug, storyMapId });
-      trackEvent('storymap.publish', {
-        props: {
-          url: `${window.location.origin}${url}`,
-          [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
-        },
-      });
       navigate(url);
       return;
     }
