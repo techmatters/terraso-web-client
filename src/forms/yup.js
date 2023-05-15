@@ -19,26 +19,25 @@ import * as yup from 'yup';
 
 const ARRAY_INDEX_REGEX = /\[([^)]+)\]/;
 
-const URL_REGEX =
-  /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/;
-
-const isValidUrl = urlString => {
+const hasValidTLD = urlString => {
   try {
+    const TLD_REGEX = /\.([^.]+)$/;
     const url = new URL(urlString);
-    if (!URL_REGEX.test(url.href) || url.length > 2048) {
-      return false;
+    const match = url.hostname.match(TLD_REGEX);
+    if (match && match[1].length > 1) {
+      return true;
     }
-    return true;
+    return false;
   } catch (e) {
     return false;
   }
 };
 
-yup.addMethod(yup.string, 'urlCustom', function () {
+yup.addMethod(yup.string, 'validTld', function () {
   return this.test(
-    'urlCustom',
+    'validTld',
     params => ({ key: 'form.validation_url_invalid', params }),
-    value => (!value ? true : isValidUrl(value))
+    value => (!value ? true : hasValidTLD(value))
   );
 });
 
