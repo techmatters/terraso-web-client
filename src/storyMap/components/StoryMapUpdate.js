@@ -69,7 +69,7 @@ const StoryMapUpdate = props => {
     console.log({ published, storyMap });
     const event = published
       ? storyMap.isPublished
-        ? 'storymap.save'
+        ? 'storymap.update'
         : 'storymap.publish'
       : 'storymap.saveDraft';
 
