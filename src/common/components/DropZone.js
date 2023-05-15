@@ -30,8 +30,6 @@ import {
   Typography,
 } from '@mui/material';
 
-import theme from 'theme';
-
 const CurrentFile = ({ file }) => {
   const size = filesize(file.size, { round: 0 });
   return (
@@ -106,11 +104,11 @@ const DropZone = props => {
               errors.map((error, index) => (
                 <Alert
                   key={index}
-                  style={{
+                  sx={({ spacing }) => ({
                     width: '100%',
                     boxSizing: 'border-box',
-                    margin: `0 0 ${theme.spacing(1)}`,
-                  }}
+                    margin: spacing(0, 0, 1),
+                  })}
                   severity="error"
                 >
                   {error}
@@ -119,13 +117,13 @@ const DropZone = props => {
             <Paper
               variant="outlined"
               sx={({ spacing, palette }) => ({
-                padding: `${spacing(1)} ${spacing(3)}`,
+                padding: spacing(1, 3),
                 borderColor: palette.black,
               })}
             >
               {t('common.drop_zone_select_file')}
             </Paper>
-            <Box sx={{ padding: theme.spacing(2), textAlign: 'center' }}>
+            <Box sx={{ padding: 2, textAlign: 'center' }}>
               <Typography
                 variant="caption"
                 sx={{ fontWeight: 'bold', paddingTop: 1 }}

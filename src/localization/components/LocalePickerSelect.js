@@ -35,7 +35,7 @@ const Select = styled(SelectBase)(({ theme }) => ({
   '& .MuiInputBase-input': {
     backgroundColor: theme.palette.white,
     fontSize: theme.typography.body2.fontSize,
-    padding: theme.spacing(1),
+    padding: 1,
   },
 }));
 

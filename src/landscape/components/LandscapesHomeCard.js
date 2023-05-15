@@ -38,7 +38,7 @@ const LandscapeItem = ({ landscape, index }) => {
     <ListItem
       sx={{
         display: 'flex',
-        padding: theme.spacing(1),
+        padding: 1,
         paddingLeft: 0,
         borderTop: index && `1px solid ${theme.palette.gray.lite1}`, // skip first item
       }}
@@ -55,7 +55,7 @@ const LandscapeItem = ({ landscape, index }) => {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          marginLeft: theme.spacing(2),
+          marginLeft: 2,
         }}
       >
         <Link component={RouterLink} to={landscapeUrl}>
@@ -82,18 +82,14 @@ const LandscapesHomeCard = ({ landscapes }) => {
       aria-labelledby="landscapes-list-title"
       sx={{ flexDirection: 'column' }}
     >
-      <Typography
-        variant="h2"
-        id="landscapes-list-title"
-        sx={{ padding: theme.spacing(2) }}
-      >
+      <Typography variant="h2" id="landscapes-list-title" sx={{ padding: 2 }}>
         {t('landscape.home_title')}
       </Typography>
       <List
         aria-describedby="landscapes-list-title"
         sx={{
-          paddingLeft: theme.spacing(2),
-          paddingRight: theme.spacing(2),
+          paddingLeft: 2,
+          paddingRight: 2,
         }}
       >
         {landscapes.map((landscape, index) => (

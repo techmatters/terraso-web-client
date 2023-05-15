@@ -39,8 +39,6 @@ import { useAnalytics } from 'monitoring/analytics';
 import logo from 'assets/logo.svg';
 import { ReactComponent as MicrosoftSvg } from 'assets/microsoft.svg';
 
-import theme from 'theme';
-
 // ref: https://mui.com/material-ui/icons/#component-prop
 const MicrosoftIcon = props => {
   return <SvgIcon component={MicrosoftSvg} {...props} />;
@@ -70,7 +68,7 @@ const AccountForm = () => {
       direction="column"
       alignItems="center"
       justifyContent="center"
-      style={{ height: '80vh', margin: `auto ${theme.spacing(2)}` }}
+      sx={{ height: '80vh' }}
     >
       <Stack sx={{ maxWidth: 'sm' }} alignItems="center">
         <PageHeader header={t('account.welcome_to')}>
