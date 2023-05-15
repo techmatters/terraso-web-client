@@ -19,20 +19,13 @@ import * as yup from 'yup';
 
 const ARRAY_INDEX_REGEX = /\[([^)]+)\]/;
 
-const HOSTNAME_REGEX = /^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/;
-const PATHNAME_REGEX =
-  /^(\/([a-zA-Z0-9_.!~*'()%-]+|(\{[a-zA-Z0-9_.!~*'()%-]+\}))+)*\/?$/;
+const URL_REGEX =
+  /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/;
 
 const isValidUrl = urlString => {
   try {
     const url = new URL(urlString);
-    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-      return false;
-    }
-    if (
-      !HOSTNAME_REGEX.test(url.hostname) ||
-      !PATHNAME_REGEX.test(url.pathname)
-    ) {
+    if (!URL_REGEX.test(url.href) || url.length > 2048) {
       return false;
     }
     return true;

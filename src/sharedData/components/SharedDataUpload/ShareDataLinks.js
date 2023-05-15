@@ -59,9 +59,8 @@ export const VALIDATION_SCHEMA = yup
       .trim()
       .ensure()
       .transform(transformURL)
-      .url()
-      .urlCustom()
-      .required(),
+      .required()
+      .urlCustom(),
     name: yup.string().trim().required(),
     description: yup.string().max(MAX_DESCRIPTION_CHARACTERS).trim(),
   })
