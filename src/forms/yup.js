@@ -21,10 +21,10 @@ const ARRAY_INDEX_REGEX = /\[([^)]+)\]/;
 
 const hasValidTLD = urlString => {
   try {
-    const TLD_REGEX = /\.([^.]+)$/;
+    const TLD_REGEX = /\.[a-z]{2,}$/i;
     const url = new URL(urlString);
     const match = url.hostname.match(TLD_REGEX);
-    if (match && match[1].length > 1) {
+    if (match) {
       return true;
     }
     return false;

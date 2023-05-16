@@ -138,6 +138,25 @@ test('LandscapeSharedDataUpload: Error - API', async () => {
   ).toBeInTheDocument();
 });
 
+test('LandscapeSharedDataUpload: Error - Invalid TLD', async () => {
+  await setup();
+  const linkSection = screen.getByRole('region', { name: 'Link 1' });
+  const name = within(linkSection).getByRole('textbox', {
+    name: 'Web Address (required)',
+  });
+  fireEvent.change(name, { target: { value: 'test.c' } });
+  fireEvent.blur(name);
+
+  expect(
+    await within(linkSection).findByText('Enter a valid web address.')
+  ).toBeInTheDocument();
+  await waitFor(() =>
+    expect(
+      screen.getByRole('button', { name: 'Share Files and Links' })
+    ).toHaveAttribute('disabled')
+  );
+});
+
 test('LandscapeSharedDataUpload: Partial Success', async () => {
   await setup();
   terrasoApi.requestGraphQL.mockRejectedValueOnce('Test Error');
