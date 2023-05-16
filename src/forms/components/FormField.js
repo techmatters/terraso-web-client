@@ -19,9 +19,9 @@ import React, { useMemo } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 
-import { FormControlUnstyled } from '@mui/base';
 import ErrorIcon from '@mui/icons-material/Report';
 import {
+  Box,
   FormHelperText,
   InputLabel,
   OutlinedInput,
@@ -108,7 +108,7 @@ const FormField = props => {
   }, [fieldState, t, localizationPrefix]);
 
   return (
-    <FormControlUnstyled style={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1 }}>
       <Stack
         direction="row"
         alignItems="center"
@@ -158,7 +158,7 @@ const FormField = props => {
           {error}
         </FormHelperText>
       )}
-    </FormControlUnstyled>
+    </Box>
   );
 };
 
