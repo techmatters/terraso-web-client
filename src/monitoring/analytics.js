@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import { useCallback } from 'react';
+
 import Plausible from 'plausible-tracker';
 import { useTranslation } from 'react-i18next';
 
@@ -29,16 +31,19 @@ plausible.enableAutoPageviews();
 export const useAnalytics = () => {
   const { i18n } = useTranslation();
 
-  const trackEvent = (name, options = {}) => {
-    const extendedOptions = {
-      ...options,
-      props: {
-        ...(options.props || {}),
-        language: i18n.resolvedLanguage,
-      },
-    };
-    plausible.trackEvent(name, extendedOptions);
-  };
+  const trackEvent = useCallback(
+    (name, options = {}) => {
+      const extendedOptions = {
+        ...options,
+        props: {
+          ...(options.props || {}),
+          language: i18n.resolvedLanguage,
+        },
+      };
+      plausible.trackEvent(name, extendedOptions);
+    },
+    [i18n.resolvedLanguage]
+  );
 
   return { trackEvent };
 };
