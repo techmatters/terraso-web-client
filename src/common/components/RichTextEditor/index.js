@@ -104,7 +104,7 @@ const withInlines = editor => {
 
   editor.insertText = text => {
     if (text && isUrl(text)) {
-      wrapLink(editor, transformURL(text), text);
+      wrapLink(editor, transformURL(text).validTld(), text);
     } else {
       insertText(text);
     }
@@ -292,7 +292,7 @@ const AddLinkButton = props => {
   const handleAddLink = useCallback(() => {
     try {
       URL_SCHEMA.validateSync({ url });
-      insertLink(editor, transformURL(url));
+      insertLink(editor, transformURL(url).validTld());
       setOpen(false);
     } catch (error) {
       setError(t(error.message.key, error.message.params));
