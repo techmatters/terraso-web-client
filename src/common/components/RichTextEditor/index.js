@@ -297,7 +297,7 @@ const AddLinkButton = props => {
   const handleAddLink = useCallback(() => {
     try {
       URL_SCHEMA.validateSync({ url });
-      insertLink(transformURL(url).validTld());
+      insertLink(transformURL(url));
       setOpen(false);
     } catch (error) {
       setError(t(error.message.key, error.message.params));
