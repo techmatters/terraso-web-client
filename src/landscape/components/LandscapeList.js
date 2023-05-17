@@ -43,8 +43,6 @@ import { withProps } from 'react-hoc';
 
 import LandscapeListMap from './LandscapeListMap';
 
-import theme from 'theme';
-
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.list_leave_button',
 });
@@ -151,8 +149,8 @@ const LandscapeList = () => {
         variant="body2"
         display="block"
         sx={{
-          marginBottom: theme.spacing(3),
-          marginTop: theme.spacing(2),
+          marginBottom: 3,
+          marginTop: 2,
         }}
       ></Typography>
       <Stack

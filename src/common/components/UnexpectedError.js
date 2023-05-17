@@ -35,7 +35,7 @@ const UnexpectedError = () => {
       <Stack
         component={Paper}
         elevation={0}
-        sx={theme => ({ maxWidth: 'md', padding: theme.spacing(3) })}
+        sx={{ maxWidth: 'md', padding: 3 }}
         alignItems="center"
       >
         <img

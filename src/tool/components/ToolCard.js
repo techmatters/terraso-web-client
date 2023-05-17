@@ -89,7 +89,7 @@ const ToolCard = ({ tool }) => {
 
   return (
     <React.Fragment>
-      <Card sx={{ padding: theme.spacing(2), paddingTop: 0 }}>
+      <Card sx={{ padding: 2, paddingTop: 0 }}>
         <Typography {...attributes}>{toolTitle}</Typography>
         <Stack
           direction={isSmall ? 'column' : 'row'}

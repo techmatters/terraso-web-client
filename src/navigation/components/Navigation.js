@@ -50,7 +50,7 @@ const NavButton = styled(Button)(({ theme }) => ({
   border: 0,
   borderRadius: 0,
   padding: 0,
-  paddingBottom: theme.spacing(1),
+  paddingBottom: 1,
   textTransform: 'uppercase',
   fontFamily: 'Lato, Helvetica, Arial, sans-serif',
   fontSize: '1.125rem',

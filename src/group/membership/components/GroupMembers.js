@@ -39,8 +39,6 @@ import GroupMembersList from 'group/membership/components/GroupMembersList';
 
 import { withProps } from 'react-hoc';
 
-import theme from 'theme';
-
 const MemberLeaveButton = withProps(GroupMemberLeave, {
   label: 'group.members_list_leave',
 });
@@ -99,8 +97,8 @@ const Header = props => {
         variant="body2"
         display="block"
         sx={{
-          marginBottom: theme.spacing(3),
-          marginTop: theme.spacing(2),
+          marginBottom: 3,
+          marginTop: 2,
         }}
       >
         {t(
