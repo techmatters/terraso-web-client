@@ -104,7 +104,7 @@ const withInlines = editor => {
 
   editor.insertText = text => {
     if (text && isUrl(text)) {
-      wrapLink(editor, transformURL(text).validTld(), text);
+      wrapLinkPartial(editor)(transformURL(text).validTld(), text);
     } else {
       insertText(text);
     }
@@ -126,11 +126,8 @@ const withInlines = editor => {
   return editor;
 };
 
-const insertLink = (editor, url) => {
-  if (editor.selection) {
-    wrapLink(editor, url);
-  }
-};
+const insertLinkPartial = editor =>
+  editor.selection ? wrapLinkPartial(editor) : () => {};
 
 const isLinkActive = editor => {
   const [link] = Editor.nodes(editor, {
@@ -147,25 +144,28 @@ const unwrapLink = editor => {
   });
 };
 
-const wrapLink = (editor, url, text) => {
+const wrapLinkPartial = editor => {
   if (isLinkActive(editor)) {
     unwrapLink(editor);
   }
 
   const { selection } = editor;
-  const isCollapsed = selection && Range.isCollapsed(selection);
-  const link = {
-    type: 'link',
-    url,
-    children: isCollapsed ? [{ text: text || url }] : [],
-  };
+  return (url, text) => {
+    Transforms.select(editor, selection);
+    const isCollapsed = selection && Range.isCollapsed(selection);
+    const link = {
+      type: 'link',
+      url,
+      children: isCollapsed ? [{ text: text || url }] : [],
+    };
 
-  if (isCollapsed) {
-    Transforms.insertNodes(editor, link);
-  } else {
-    Transforms.wrapNodes(editor, link, { split: true });
-    Transforms.collapse(editor, { edge: 'end' });
-  }
+    if (isCollapsed) {
+      Transforms.insertNodes(editor, link);
+    } else {
+      Transforms.wrapNodes(editor, link, { split: true });
+      Transforms.collapse(editor, { edge: 'end' });
+    }
+  };
 };
 
 // Put this at the start and end of an inline component to work around this Chromium bug:
@@ -278,12 +278,17 @@ const AddLinkButton = props => {
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState('');
   const [error, setError] = useState();
+  const [insertLink, setInsertLink] = useState();
 
-  const onButtonClick = useCallback(event => {
-    event.preventDefault();
-    setOpen(true);
-    setUrl('');
-  }, []);
+  const onButtonClick = useCallback(
+    event => {
+      event.preventDefault();
+      setInsertLink(() => insertLinkPartial(editor));
+      setOpen(true);
+      setUrl('');
+    },
+    [editor]
+  );
 
   const handleClose = useCallback(() => {
     setOpen(false);
@@ -292,13 +297,13 @@ const AddLinkButton = props => {
   const handleAddLink = useCallback(() => {
     try {
       URL_SCHEMA.validateSync({ url });
-      insertLink(editor, transformURL(url).validTld());
+      insertLink(transformURL(url).validTld());
       setOpen(false);
     } catch (error) {
       setError(t(error.message.key, error.message.params));
       return;
     }
-  }, [editor, url, t]);
+  }, [insertLink, url, t]);
 
   const onInputChange = useCallback(event => setUrl(event.target.value), []);
 

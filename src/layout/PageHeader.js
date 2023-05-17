@@ -23,7 +23,7 @@ const PageHeader = ({ header, children, typographyProps = {} }) => (
     variant="h1"
     tabIndex="-1"
     id="main-heading"
-    sx={theme => ({ marginBottom: theme.spacing(3) })}
+    sx={{ marginBottom: 3 }}
     {...typographyProps}
   >
     {header}

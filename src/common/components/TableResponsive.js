@@ -126,16 +126,13 @@ const Cards = props => {
   return (
     <List>
       {rows.map(row => (
-        <ListItem
-          key={row.id}
-          sx={theme => ({ padding: 0, marginBottom: theme.spacing(2) })}
-        >
+        <ListItem key={row.id} sx={theme => ({ padding: 0, marginBottom: 2 })}>
           <Card
             component={Stack}
             direction="row"
             alignItems="center"
             spacing={1}
-            sx={theme => ({ width: '100%', padding: theme.spacing(2) })}
+            sx={{ width: '100%', padding: 2 }}
           >
             {cardsProps.avatarRender && cardsProps.avatarRender({ row })}
             <Grid container spacing={2}>

@@ -103,19 +103,28 @@ const StoryMapNew = () => {
   useDocumentTitle(t('storyMap.new_document_title'));
 
   useEffect(() => {
+    trackEvent('storymap.start', {
+      props: {
+        [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
+      },
+    });
+  }, [trackEvent]);
+
+  useEffect(() => {
     if (!saved) {
       return;
     }
-    const { slug, storyMapId, published } = saved;
     setSaved(null);
+    const { slug, storyMapId, published } = saved;
+    const url = generateStoryMapUrl({ slug, storyMapId });
+    const event = published ? 'storymap.publish' : 'storymap.saveDraft';
+    trackEvent(event, {
+      props: {
+        url: `${window.location.origin}${url}`,
+        [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
+      },
+    });
     if (published) {
-      const url = generateStoryMapUrl({ slug, storyMapId });
-      trackEvent('storymap.publish', {
-        props: {
-          url: `${window.location.origin}${url}`,
-          [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
-        },
-      });
       navigate(url);
       return;
     }

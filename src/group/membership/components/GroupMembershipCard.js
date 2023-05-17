@@ -46,8 +46,6 @@ import {
   MEMBERSHIP_STATUS_PENDING,
 } from './groupMembershipConstants';
 
-import theme from 'theme';
-
 const Loader = () => {
   const { t } = useTranslation();
   return (
@@ -125,8 +123,8 @@ const Content = props => {
         total={totalCount}
         sx={{
           flexDirection: 'row',
-          marginTop: theme.spacing(2),
-          marginBottom: theme.spacing(2),
+          marginTop: 2,
+          marginBottom: 2,
           paddingLeft: 0,
         }}
       >

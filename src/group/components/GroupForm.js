@@ -52,8 +52,6 @@ import {
 
 import { MAX_DESCRIPTION_LENGTH } from 'config';
 
-import theme from 'theme';
-
 const VALIDATION_SCHEMA = yup
   .object({
     name: yup.string().trim().required(),
@@ -252,8 +250,8 @@ const GroupForm = () => {
         variant="body2"
         display="block"
         sx={{
-          marginBottom: theme.spacing(3),
-          marginTop: theme.spacing(2),
+          marginBottom: 3,
+          marginTop: 2,
         }}
       >
         {t('group.form_new_description')}

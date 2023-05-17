@@ -55,8 +55,6 @@ import SharedDataCard from 'sharedData/components/SharedDataCard';
 
 import { withProps } from 'react-hoc';
 
-import theme from 'theme';
-
 const MemberLeaveButton = withProps(GroupMemberLeave, {
   label: 'group.view_leave_label',
   buttonProps: {
@@ -110,7 +108,7 @@ const GroupCard = ({ group }) => {
             direction="row"
             alignItems="center"
             spacing={1}
-            sx={{ marginBottom: theme.spacing(2) }}
+            sx={{ marginBottom: 2 }}
           >
             <EmailIcon sx={{ color: 'gray.lite1' }} />
             <Link href={`mailto:${group.email}`}>{group.email}</Link>
@@ -132,7 +130,7 @@ const GroupCard = ({ group }) => {
             component={RouterLink}
             to={`/groups/${group.slug}/edit`}
             sx={{
-              marginTop: theme.spacing(2),
+              marginTop: 2,
             }}
           >
             {t('group.view_update_button')}

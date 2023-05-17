@@ -111,11 +111,7 @@ const GroupsHomeCard = ({ groups }) => {
       aria-labelledby="groups-list-title"
       sx={{ flexDirection: 'column' }}
     >
-      <Typography
-        variant="h2"
-        id="groups-list-title"
-        sx={{ padding: theme.spacing(2) }}
-      >
+      <Typography variant="h2" id="groups-list-title" sx={{ padding: 2 }}>
         {t('group.home_title')}
       </Typography>
       <List aria-describedby="groups-list-title" sx={{ pl: 2, pr: 2 }}>

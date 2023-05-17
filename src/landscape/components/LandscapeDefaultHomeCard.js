@@ -24,8 +24,6 @@ import CardActionRouterLink from 'common/components/CardActionRouterLink';
 
 import HomeCard from 'home/components/HomeCard';
 
-import theme from 'theme';
-
 const LandscapeDefaultHomeCard = () => {
   const { t } = useTranslation();
 
@@ -38,7 +36,7 @@ const LandscapeDefaultHomeCard = () => {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          padding: theme.spacing(2),
+          padding: 2,
         }}
       >
         <Typography
@@ -51,8 +49,8 @@ const LandscapeDefaultHomeCard = () => {
         <Alert
           severity="info"
           sx={{
-            marginTop: theme.spacing(1),
-            marginBottom: theme.spacing(1),
+            marginTop: 1,
+            marginBottom: 1,
           }}
         >
           <Typography variant="body1">

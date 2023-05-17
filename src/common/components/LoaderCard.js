@@ -20,8 +20,6 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Card, Skeleton } from '@mui/material';
 
-import theme from 'theme';
-
 const LoaderCard = () => {
   const { t } = useTranslation();
   return (
@@ -31,10 +29,10 @@ const LoaderCard = () => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        padding: theme.spacing(2),
+        padding: 2,
       }}
     >
-      <Box sx={{ display: 'flex', marginBottom: theme.spacing(2) }}>
+      <Box sx={{ display: 'flex', marginBottom: 2 }}>
         <Skeleton
           sx={{ height: 80, width: 80 }}
           animation="wave"
@@ -44,7 +42,7 @@ const LoaderCard = () => {
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            marginLeft: theme.spacing(2),
+            marginLeft: 2,
           }}
         >
           <Skeleton animation="wave" height={30} width="150px" />
