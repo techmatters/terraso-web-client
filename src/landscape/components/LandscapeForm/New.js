@@ -19,7 +19,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchGroupsAutocompleteList } from 'terrasoApi/group/groupSlice';
+import { fetchGroupsAutocompleteList } from 'terrasoApi/shared/group/groupSlice';
 import { useFetchData } from 'terrasoApi/utils';
 import { Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';

@@ -15,11 +15,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useMemo } from 'react';
+
 import _ from 'lodash/fp';
 import { useDispatch, useSelector } from 'react-redux';
-import { joinGroup, leaveGroup } from 'terrasoApi/group/groupSlice';
+import { joinGroup, leaveGroup } from 'terrasoApi/shared/group/groupSlice';
+
 import { useAnalytics } from 'monitoring/analytics';
+
 import { useGroupContext } from 'group/groupContext';
+
 import {
   MEMBERSHIP_CLOSED,
   MEMBERSHIP_STATUS_PENDING,

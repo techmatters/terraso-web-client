@@ -19,7 +19,10 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
-import { fetchGroupView, refreshGroupView } from 'terrasoApi/group/groupSlice';
+import {
+  fetchGroupView,
+  refreshGroupView,
+} from 'terrasoApi/shared/group/groupSlice';
 import { useFetchData } from 'terrasoApi/utils';
 import EmailIcon from '@mui/icons-material/Email';
 import PublicIcon from '@mui/icons-material/Public';

@@ -24,7 +24,7 @@ import {
   fetchMembers,
   removeMember,
   updateMember,
-} from 'terrasoApi/group/groupSlice';
+} from 'terrasoApi/shared/group/groupSlice';
 import { useFetchData } from 'terrasoApi/utils';
 import { LoadingButton } from '@mui/lab';
 import { ListItem, MenuItem, Select, Stack, Typography } from '@mui/material';

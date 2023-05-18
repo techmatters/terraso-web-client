@@ -20,7 +20,7 @@ import { usePermission, usePermissionRedirect } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { fetchGroupForMembers } from 'terrasoApi/group/groupSlice';
+import { fetchGroupForMembers } from 'terrasoApi/shared/group/groupSlice';
 import { useFetchData } from 'terrasoApi/utils';
 import { Typography } from '@mui/material';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';

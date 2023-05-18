@@ -14,11 +14,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { combineReducers, configureStore, Middleware } from '@reduxjs/toolkit';
+import { Middleware, combineReducers, configureStore } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
 import accountReducer from 'terrasoApi/account/accountSlice';
-import groupReducer from 'terrasoApi/group/groupSlice';
+import groupReducer from 'terrasoApi/shared/group/groupSlice';
+
 import notificationsReducer from 'notifications/notificationsSlice';
+
 import gisReducer from 'gis/gisSlice';
 import userHomeReducer from 'home/homeSlice';
 import landscapeReducer from 'landscape/landscapeSlice';

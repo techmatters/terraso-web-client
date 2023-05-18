@@ -24,7 +24,7 @@ import {
   resetFormSuccess,
   saveGroup,
   setFormNewValues,
-} from 'terrasoApi/group/groupSlice';
+} from 'terrasoApi/shared/group/groupSlice';
 import { useFetchData } from 'terrasoApi/utils';
 import * as yup from 'yup';
 import {

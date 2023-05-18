@@ -17,11 +17,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
 import { User } from 'terrasoApi/account/accountSlice';
-import * as groupService from 'terrasoApi/group/groupService';
-import * as groupUtils from 'terrasoApi/group/groupUtils';
+import * as groupService from 'terrasoApi/shared/group/groupService';
+import * as groupUtils from 'terrasoApi/shared/group/groupUtils';
 import {
-  createAsyncThunk,
   Message,
+  createAsyncThunk,
   withExtra as withExtraInput,
 } from 'terrasoApi/utils';
 
