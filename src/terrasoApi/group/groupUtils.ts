@@ -47,7 +47,7 @@ export const extractMembers = (group: GroupQuery) =>
       .memberships?.edges || []
   ).map(edge => ({
     membershipId: edge.node.id,
-    userRole: edge.node.userRole!,
+    userRole: edge.node.userRole,
     membershipStatus: edge.node.membershipStatus,
     ...edge.node.user,
   }));
@@ -58,7 +58,6 @@ export const extractAccountMembership = ({
   accountMembership
     ? {
         ...accountMembership,
-        userRole: accountMembership.userRole!,
         membershipId: accountMembership.id,
       }
     : undefined;
