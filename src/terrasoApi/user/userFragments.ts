@@ -42,5 +42,4 @@ export const userPreferences = /* GraphQL */ `
       }
     }
   }
-  ${userPreferencesFields}
 `;
