@@ -64,6 +64,10 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 Builds and runs the app
 
+## Code Generation
+
+We generate TypeScript types automatically from the backend schema that are required to build & run the client. Normally this will be done automatically by other scripts which depend on the types, but it can be done manually with `npm run generate`, or `npm run generate -- --watch` to automatically stay up to date. This can be useful for keeping IDE features working without needing to run `start` or `test`, or to help debug GraphQL problems.
+
 ## Environment
 
 To define environment variables we are using: https://create-react-app.dev/docs/adding-custom-environment-variables/. The available variables are:
