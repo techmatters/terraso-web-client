@@ -101,6 +101,7 @@
     "serve": "^14.2.0",
     "stylelint": "^15.6.0",
     "stylelint-prettier": "^3.0.0",
+    "terraso-backend": "techmatters/terraso-backend#d1a9923",
     "typescript": "^4.9.5"
   },
   "jest": {
@@ -119,7 +120,7 @@
     }
   },
   "graphql": {
-    "schema": "src/terrasoApi/schema.graphql",
+    "schema": "node_modules/terraso-backend/terraso_backend/apps/graphql/schema/schema.graphql",
     "documents": "src/**/*.{js,ts,tsx}",
     "extensions": {
       "codegen": {
