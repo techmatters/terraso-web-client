@@ -56,16 +56,16 @@
     "yup": "^1.1.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "npm run generate -- -w -s & react-scripts start",
     "generate": "npx graphql-code-generator",
     "lint-js": "eslint ./ --fix --ext .js --ext .ts --ext .tsx --max-warnings 0 --ignore-path .gitignore",
-    "check-ts": "tsc --noEmit",
+    "check-ts": "npm run generate && tsc --noEmit",
     "lint-css": "stylelint --fix --config=.stylelintrc '**/*.css'",
-    "build": "react-scripts build",
+    "build": "npm run generate && react-scripts build",
     "build-serve": "serve -s build",
-    "test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
-    "test-debug": "react-scripts --inspect-brk test --runInBand --no-cache --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
-    "test-coverage": "react-scripts test --coverage --changedSince=origin/main --watchAll=false --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
+    "test": "npm run generate -- -w -s & react-scripts test --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
+    "test-debug": "npm run generate && react-scripts --inspect-brk test --runInBand --no-cache --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
+    "test-coverage": "npm run generate && react-scripts test --coverage --changedSince=origin/main --watchAll=false --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
     "localization-to-po": "node scripts/localization/transform-to.js po",
     "localization-to-json": "node scripts/localization/transform-to.js json",
     "localization-check-missing": "node scripts/localization/missing-check.js",
@@ -115,6 +115,27 @@
         "functions": 80,
         "lines": 80,
         "statements": 80
+      }
+    }
+  },
+  "graphql": {
+    "schema": "src/terrasoApi/schema.graphql",
+    "documents": "src/**/*.{js,ts,tsx}",
+    "extensions": {
+      "codegen": {
+        "generates": {
+          "src/terrasoApi/gql/": {
+            "preset": "client",
+            "config": {
+              "documentMode": "string",
+              "skipTypename": true,
+              "enumsAsTypes": true
+            },
+            "presetConfig": {
+              "fragmentMasking": false
+            }
+          }
+        }
       }
     }
   }
