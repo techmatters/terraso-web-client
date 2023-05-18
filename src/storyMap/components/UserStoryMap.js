@@ -35,6 +35,7 @@ import StoryMap from 'storyMap/components/StoryMap';
 import { fetchStoryMap } from 'storyMap/storyMapSlice';
 import {
   generateStoryMapEditUrl,
+  generateStoryMapEmbedUrl,
   isChapterEmpty,
 } from 'storyMap/storyMapUtils';
 
@@ -91,8 +92,9 @@ const UserStoryMap = () => {
     useMemo(
       () => ({
         name: storyMap?.title,
+        embedUrl: storyMap ? generateStoryMapEmbedUrl(storyMap) : null,
       }),
-      [storyMap?.title]
+      [storyMap]
     )
   );
 
