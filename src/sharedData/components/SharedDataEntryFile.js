@@ -19,7 +19,6 @@ import React from 'react';
 import { filesize } from 'filesize';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
 
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import MapIcon from '@mui/icons-material/Map';
@@ -32,6 +31,7 @@ import {
   Stack,
 } from '@mui/material';
 
+import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
 
 import { useGroupContext } from 'group/groupContext';

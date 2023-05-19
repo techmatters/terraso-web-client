@@ -18,11 +18,11 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
 
 import { Box, Divider, Link, List, ListItem, Typography } from '@mui/material';
 
 import CardActionRouterLink from 'common/components/CardActionRouterLink';
+import RouterLink from 'common/components/RouterLink';
 
 import HomeCard from 'home/components/HomeCard';
 

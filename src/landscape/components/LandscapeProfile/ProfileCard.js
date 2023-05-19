@@ -20,7 +20,6 @@ import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link as RouterLink } from 'react-router-dom';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
@@ -34,6 +33,7 @@ import {
 } from '@mui/material';
 
 import ConfirmButton from 'common/components/ConfirmButton';
+import RouterLink from 'common/components/RouterLink';
 import { countryNameForCode } from 'common/utils';
 import Restricted from 'permissions/components/Restricted';
 
