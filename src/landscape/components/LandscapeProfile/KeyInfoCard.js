@@ -17,7 +17,6 @@
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
 
 import EmailIcon from '@mui/icons-material/Email';
 import PublicIcon from '@mui/icons-material/Public';
@@ -31,6 +30,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import RouterLink from 'common/components/RouterLink';
 import Restricted from 'permissions/components/Restricted';
 
 const KeyInfoCard = ({ landscape }) => {

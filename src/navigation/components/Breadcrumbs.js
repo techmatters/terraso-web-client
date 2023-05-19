@@ -18,10 +18,11 @@ import React from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
 
 import { Link, Breadcrumbs as MuiBreadcrumbs, Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
+
+import RouterLink from 'common/components/RouterLink';
 
 import { useBreadcrumbsContext } from '../breadcrumbsContext';
 import { useBreadcrumbs } from './Routes';

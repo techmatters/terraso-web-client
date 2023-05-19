@@ -17,11 +17,12 @@
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
 
 import { Grid, Link, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { visuallyHidden } from '@mui/utils';
+
+import RouterLink from 'common/components/RouterLink';
 
 import theme from 'theme';
 
