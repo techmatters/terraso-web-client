@@ -24,7 +24,11 @@ const ARRAY_INDEX_REGEX = /\[([^)]+)\]/;
 yup.setLocale({
   mixed: {
     default: params => ({ key: 'form.validation_field_invalid', params }),
-    required: params => ({ key: 'form.validation_field_required', params }),
+    required: params => {
+      return params.path === 'location'
+        ? { key: 'form.validation_select_field_required', params }
+        : { key: 'form.validation_field_required', params };
+    },
     notType: params => ({ key: 'form.validation_field_noType', params }),
   },
   string: {
