@@ -16,9 +16,9 @@
  */
 import React from 'react';
 
-import { Link } from '@mui/material';
+import { Link as ReactRouterLink } from 'react-router-dom';
 
-import ReactRouterLink from 'common/components/RouterLink';
+import { Link } from '@mui/material';
 
 const RouterLink = React.forwardRef((props, ref) => {
   return <Link ref={ref} component={ReactRouterLink} {...props} />;

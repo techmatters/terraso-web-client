@@ -18,7 +18,6 @@ import React, { useEffect, useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
 
 import {
   Button,
@@ -31,6 +30,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import RouterLink from 'common/components/RouterLink';
 import Restricted from 'permissions/components/Restricted';
 
 import { PARTNERSHIP_STATUS_NO } from 'landscape/landscapeConstants';

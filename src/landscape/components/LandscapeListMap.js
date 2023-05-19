@@ -33,10 +33,10 @@ import { getLandscapePin } from 'landscape/landscapeUtils';
 import './LandscapeListMap.css';
 
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
 
 import { Link, Typography } from '@mui/material';
 
+import RouterLink from 'common/components/RouterLink';
 import { countryNameForCode } from 'common/utils';
 
 import { LAYER_ESRI } from 'gis/components/Map';
