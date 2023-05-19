@@ -23,22 +23,23 @@ import SocialShare, {
   useSocialShareContext,
 } from './SocialShare';
 
-const SocialShareWrapper = () => {
+const SocialShareWrapper = ({ name, embedUrl }) => {
   useSocialShareContext(
     useMemo(
       () => ({
-        name: 'Test Name',
+        name,
+        embedUrl,
       }),
-      []
+      [name, embedUrl]
     )
   );
   return <SocialShare />;
 };
 
-const setup = async () => {
+const setup = async ({ name = 'Test Name', embedUrl } = {}) => {
   await render(
     <SocialShareContextProvider>
-      <SocialShareWrapper />
+      <SocialShareWrapper name={name} embedUrl={embedUrl} />
     </SocialShareContextProvider>
   );
 };
@@ -106,11 +107,36 @@ test('SocialShare: Test links', async () => {
       'http://localhost/'
     )}`
   );
+});
 
-  // Copy
+test('SocialShare: Copy link', async () => {
+  await setup();
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+  );
+
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Copy Link' }))
   );
   const copyCall = navigator.clipboard.writeText.mock.calls[0];
   expect(copyCall[0].toString()).toStrictEqual('http://localhost/');
+});
+
+test('SocialShare: Copy embed', async () => {
+  await setup({
+    embedUrl: 'https://test.com/embed',
+  });
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+  );
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Copy Code' }))
+  );
+  const copyCall = navigator.clipboard.writeText.mock.calls[0];
+  expect(copyCall[0].toString()).toStrictEqual(
+    '<iframe src="https://test.com/embed" title="Terraso Story Map" width="100%" height="100%" frameborder="0"></iframe>'
+  );
 });
