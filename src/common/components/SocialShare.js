@@ -86,8 +86,8 @@ const CopyEmbededCode = () => {
     const iframe = document.createElement('iframe');
     iframe.setAttribute('src', embedUrl);
     iframe.setAttribute('title', t('share.embed_title'));
-    iframe.setAttribute('width', '100%');
-    iframe.setAttribute('height', '100%');
+    iframe.setAttribute('width', '750');
+    iframe.setAttribute('height', '500');
     iframe.setAttribute('frameborder', '0');
 
     return iframe.outerHTML;
