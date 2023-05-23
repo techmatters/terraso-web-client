@@ -14,11 +14,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { Middleware, combineReducers, configureStore } from '@reduxjs/toolkit';
-import _ from 'lodash/fp';
-import accountReducer from 'terrasoApi/shared/account/accountSlice';
-import groupReducer from 'terrasoApi/shared/group/groupSlice';
-import notificationsReducer from 'terrasoApi/shared/notifications/notificationsSlice';
+import createStoreFactory, {
+  DispatchFromStoreFactory,
+  StateFromStoreFactory,
+} from 'terrasoApi/shared/store/store';
 
 import gisReducer from 'gis/gisSlice';
 import userHomeReducer from 'home/homeSlice';
@@ -27,45 +26,16 @@ import sharedDataReducer from 'sharedData/sharedDataSlice';
 import storyMapReducer from 'storyMap/storyMapSlice';
 import taxonomiesReducer from 'taxonomies/taxonomiesSlice';
 
-const handleAbortMiddleware: Middleware = () => next => action => {
-  if (_.getOr(false, 'meta.aborted', action)) {
-    next({
-      ...action,
-      type: action.type.replace('rejected', 'aborted'),
-    });
-    return;
-  }
-  next(action);
-};
+export type AppState = StateFromStoreFactory<typeof createStore>;
+export type AppDispatch = DispatchFromStoreFactory<typeof createStore>;
 
-const reducer = combineReducers({
-  account: accountReducer,
+const createStore = createStoreFactory({
   userHome: userHomeReducer,
-  group: groupReducer,
   landscape: landscapeReducer,
-  notifications: notificationsReducer,
   sharedData: sharedDataReducer,
   taxonomies: taxonomiesReducer,
   gis: gisReducer,
   storyMap: storyMapReducer,
 });
-
-// Using some advanced TypeScript features here: ReturnType gets the
-// return type of a function type, and since reducers are just functions
-// from (state, action) to state this gives us our state type. since we have
-// a store factory instead of a store we need to get our dispatch
-// type from the return type of the store factory instead of from the store
-// directly as normal. background reading:
-// https://redux-toolkit.js.org/usage/usage-with-typescript#getting-the-state-type
-export type AppState = ReturnType<typeof reducer>;
-export type AppDispatch = ReturnType<typeof createStore>['dispatch'];
-
-const createStore = (intialState?: AppState) =>
-  configureStore({
-    middleware: getDefaultMiddleware =>
-      getDefaultMiddleware().concat(handleAbortMiddleware),
-    reducer: reducer,
-    preloadedState: intialState,
-  });
 
 export default createStore;
