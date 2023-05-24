@@ -686,10 +686,10 @@
         "button": "Share",
         "title": "Share {{name}}",
         "services": "Post the link in",
-        "copy": "Copy the link to share",
+        "copy": "Link to share:",
         "copy_button": "Copy Link",
         "copy_button_done": "Link Copied",
-        "copy_embed_code": "Copy the embed code",
+        "copy_embed_code": "Code to embed the {{item}}:",
         "copy_embed_button": "Copy Code",
         "copy_embed_button_done": "Code copied",
         "embed_title": "Terraso Story Map",
@@ -842,6 +842,7 @@
         "no_options": "No options"
     },
     "storyMap": {
+        "item_type": "Story Map",
         "not_found": "Story Map not found",
         "form_title_chapter_label": "Title",
         "form_chapter_add": "Add new chapter",
