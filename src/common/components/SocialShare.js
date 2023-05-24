@@ -116,10 +116,11 @@ const CopyEmbededCode = () => {
         value={embedCode}
         fullWidth
         multiline
-        rows={2}
+        rows={3}
         InputProps={{
           id: 'share-embed-code',
           sx: {
+            fontFamily: 'monospace',
             flexDirection: { xs: 'column', sm: 'row' },
             paddingRight: 0,
           },
@@ -137,7 +138,7 @@ const CopyEmbededCode = () => {
         {t('share.copy_embed_button')}
       </Button>
       {copied && (
-        <Alert severity="success" sx={{ mt: 1 }}>
+        <Alert severity="success" sx={{ mt: 2 }}>
           {t('share.copy_embed_button_done')}
         </Alert>
       )}
