@@ -88,7 +88,6 @@ const CopyEmbededCode = () => {
     iframe.setAttribute('title', t('share.embed_title'));
     iframe.setAttribute('width', '750');
     iframe.setAttribute('height', '500');
-    iframe.setAttribute('frameborder', '0');
 
     return iframe.outerHTML;
   }, [embedUrl, t]);
