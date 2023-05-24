@@ -360,8 +360,9 @@ const LandscapeView = () => {
                 <CardActions sx={{ paddingTop: 0 }}>
                   <Button
                     variant="outlined"
-                    component={RouterLink}
-                    to={`/landscapes/${landscape.slug}/boundaries`}
+                    onClick={() =>
+                      navigate(`/landscapes/${landscape.slug}/boundaries`)
+                    }
                   >
                     {t('landscape.view_map_boundaries_update')}
                   </Button>
