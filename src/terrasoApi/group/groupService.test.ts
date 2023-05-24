@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
-
-import * as groupService from 'group/groupService';
+import * as groupService from 'terrasoApi/group/groupService';
+import * as terrasoApiToMock from 'terrasoApi/terrasoBackend/api';
 
 jest.mock('terrasoApi/terrasoBackend/api');
+const terrasoApi = jest.mocked(terrasoApiToMock);
 
 test('GroupService: Fetch group', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
@@ -36,7 +36,7 @@ test('GroupService: Fetch group', async () => {
       },
     })
   );
-  const group = await groupService.fetchGroupToUpdate();
+  const group = await groupService.fetchGroupToUpdate('');
   expect(group).toStrictEqual({
     name: 'Group name',
     description: 'Group description',
@@ -46,12 +46,16 @@ test('GroupService: Fetch group', async () => {
 test('GroupService: Fetch group not found', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
-      group: null,
+      groups: { edges: [] },
     })
   );
-  await expect(groupService.fetchGroupToUpdate()).rejects.toEqual('not_found');
+  await expect(groupService.fetchGroupToUpdate('')).rejects.toEqual(
+    'not_found'
+  );
 });
 test('GroupService: Fetch group backend error', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(Promise.reject('Test error'));
-  await expect(groupService.fetchGroupToUpdate()).rejects.toEqual('Test error');
+  await expect(groupService.fetchGroupToUpdate('')).rejects.toEqual(
+    'Test error'
+  );
 });

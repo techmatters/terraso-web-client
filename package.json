@@ -7,8 +7,8 @@
     "@hookform/resolvers": "^3.0.1",
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
     "@mui/icons-material": "^5.11.16",
-    "@mui/lab": "^5.0.0-alpha.129",
-    "@mui/material": "^5.13.0",
+    "@mui/lab": "^5.0.0-alpha.131",
+    "@mui/material": "^5.13.2",
     "@mui/x-data-grid": "^6.4.0",
     "@reduxjs/toolkit": "^1.9.5",
     "@rollbar/react": "^0.11.1",
@@ -43,7 +43,7 @@
     "react-i18next": "^12.2.2",
     "react-leaflet": "^4.2.1",
     "react-redux": "^8.0.5",
-    "react-router-dom": "^6.11.1",
+    "react-router-dom": "^6.11.2",
     "scrollama": "^3.2.0",
     "slate-history": "^0.93.0",
     "slate-hyperscript": "^0.77.0",
@@ -56,15 +56,16 @@
     "yup": "^1.1.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "lint-js": "eslint ./ --fix --ext .js --ext .ts --ext .tsx --max-warnings 0 --ignore-pattern node_modules/ --ignore-pattern build/",
-    "check-ts": "tsc --noEmit",
+    "start": "npm run generate-types -- -w -s & react-scripts start",
+    "generate-types": "npx graphql-code-generator",
+    "lint-js": "eslint ./ --fix --ext .js --ext .ts --ext .tsx --max-warnings 0 --ignore-path .gitignore",
+    "check-ts": "npm run generate-types && tsc --noEmit",
     "lint-css": "stylelint --fix --config=.stylelintrc '**/*.css'",
-    "build": "react-scripts build",
+    "build": "npm run generate-types && react-scripts build",
     "build-serve": "serve -s build",
-    "test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
-    "test-debug": "react-scripts --inspect-brk test --runInBand --no-cache --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
-    "test-coverage": "react-scripts test --coverage --changedSince=origin/main --watchAll=false --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
+    "test": "npm run generate-types -- -w -s & react-scripts test --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
+    "test-debug": "npm run generate-types && react-scripts --inspect-brk test --runInBand --no-cache --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
+    "test-coverage": "npm run generate-types && react-scripts test --coverage --changedSince=origin/main --watchAll=false --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
     "localization-to-po": "node scripts/localization/transform-to.js po",
     "localization-to-json": "node scripts/localization/transform-to.js json",
     "localization-check-missing": "node scripts/localization/missing-check.js",
@@ -76,6 +77,8 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@graphql-codegen/cli": "^3.3.1",
+    "@graphql-codegen/client-preset": "^3.0.1",
     "@ianvs/prettier-plugin-sort-imports": "^3.7.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
@@ -85,7 +88,7 @@
     "@types/node": "^20.1.0",
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
-    "@typescript-eslint/parser": "^5.59.6",
+    "@typescript-eslint/parser": "^5.59.7",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-lodash-fp": "^2.2.0-a1",
     "eslint-plugin-prettier": "^4.2.1",
@@ -96,8 +99,9 @@
     "prettier": "^2.8.8",
     "react-scripts": "^5.0.1",
     "serve": "^14.2.0",
-    "stylelint": "^15.6.0",
+    "stylelint": "^15.6.2",
     "stylelint-prettier": "^3.0.0",
+    "terraso-backend": "techmatters/terraso-backend#d1a9923",
     "typescript": "^4.9.5"
   },
   "jest": {
@@ -112,6 +116,27 @@
         "functions": 80,
         "lines": 80,
         "statements": 80
+      }
+    }
+  },
+  "graphql": {
+    "schema": "node_modules/terraso-backend/terraso_backend/apps/graphql/schema/schema.graphql",
+    "documents": "src/**/*.{js,ts,tsx}",
+    "extensions": {
+      "codegen": {
+        "generates": {
+          "src/terrasoApi/gql/": {
+            "preset": "client",
+            "config": {
+              "documentMode": "string",
+              "skipTypename": true,
+              "enumsAsTypes": true
+            },
+            "presetConfig": {
+              "fragmentMasking": false
+            }
+          }
+        }
       }
     }
   }

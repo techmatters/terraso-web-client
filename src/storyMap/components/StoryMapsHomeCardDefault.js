@@ -57,7 +57,7 @@ const StoryMapsHomeCardDefault = () => {
 
           <Stack direction="column">
             <Typography variant="h3" sx={{ pt: 0, mb: 2, fontSize: '1.3rem' }}>
-              <RouterLink to="/story-maps">
+              <RouterLink to="/tools/story-maps">
                 {t('storyMap.home_tools_link')}
               </RouterLink>
             </Typography>

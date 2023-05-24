@@ -19,7 +19,6 @@ import React, { useEffect, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { Trans } from 'react-i18next';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
 
 import {
   Button,
@@ -30,6 +29,7 @@ import {
 } from '@mui/material';
 
 import ExternalLink from 'common/components/ExternalLink';
+import RouterLink from 'common/components/RouterLink';
 import Restricted from 'permissions/components/Restricted';
 
 const FIELDS = [

@@ -27,14 +27,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Typecheck ts code
+        run: npm run check-ts
+
       - name: Run lint js checks
         run: npm run lint-js
 
       - name: Run lint css checks
         run: npm run lint-css
-
-      - name: Typecheck ts code
-        run: npm run check-ts
 
   tests:
     runs-on: ubuntu-latest

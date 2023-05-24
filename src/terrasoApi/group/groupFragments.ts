@@ -14,45 +14,45 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { userFields } from 'terrasoApi/user/userFragments';
 
-import { visualizationConfig } from 'sharedData/sharedDataFragments';
-
-const MEMBERS_INFO_SAMPLE_SIZE = 5;
-
-export const dataEntries = `
-  fragment dataEntries on GroupNode {
-    dataEntries(resourceType_In: $resourceTypes) {
+export const dataEntry = /* GraphQL */ `
+  fragment dataEntry on DataEntryNode {
+    id
+    name
+    description
+    entryType
+    resourceType
+    url
+    size
+    createdAt
+    createdBy {
+      id
+      lastName
+      firstName
+    }
+    visualizations {
       edges {
         node {
-          id
-          name
-          description
-          entryType
-          resourceType
-          url
-          size
-          createdAt
-          createdBy {
-            id
-            lastName
-            firstName
-          }
-          visualizations {
-            edges {
-              node {
-                ...visualizationConfig
-              }
-            }
-          }
+          ...visualizationConfig
         }
       }
     }
   }
-  ${visualizationConfig}
 `;
 
-export const groupFields = `
+export const dataEntries = /* GraphQL */ `
+  fragment dataEntries on GroupNode {
+    dataEntries(resourceType_In: $resourceTypes) {
+      edges {
+        node {
+          ...dataEntry
+        }
+      }
+    }
+  }
+`;
+
+export const groupFields = /* GraphQL */ `
   fragment groupFields on GroupNode {
     id
     slug
@@ -66,14 +66,14 @@ export const groupFields = `
   }
 `;
 
-export const groupsListFields = `
+export const groupsListFields = /* GraphQL */ `
   fragment groupsListFields on GroupNode {
     slug
     name
   }
 `;
 
-export const groupMembersPending = `
+export const groupMembersPending = /* GraphQL */ `
   fragment groupMembersPending on GroupNode {
     pending: memberships(membershipStatus: PENDING) {
       totalCount
@@ -81,9 +81,9 @@ export const groupMembersPending = `
   }
 `;
 
-export const groupMembersInfo = `
+export const groupMembersInfo = /* GraphQL */ `
   fragment groupMembersInfo on GroupNode {
-    memberships(first: ${MEMBERS_INFO_SAMPLE_SIZE}, membershipStatus: APPROVED) {
+    memberships(first: 5, membershipStatus: APPROVED) {
       totalCount
       edges {
         node {
@@ -94,10 +94,9 @@ export const groupMembersInfo = `
       }
     }
   }
-  ${userFields}
 `;
 
-export const groupMembers = `
+export const groupMembers = /* GraphQL */ `
   fragment groupMembers on GroupNode {
     memberships {
       totalCount
@@ -113,10 +112,9 @@ export const groupMembers = `
       }
     }
   }
-  ${userFields}
 `;
 
-export const accountMembership = `
+export const accountMembership = /* GraphQL */ `
   fragment accountMembership on GroupNode {
     accountMembership {
       id

@@ -33,7 +33,7 @@ export const dataEntry = `
   }
 `;
 
-export const visualizationConfig = `
+export const visualizationConfig = /* GraphQL */ `
   fragment visualizationConfig on VisualizationConfigNode {
     id
     title

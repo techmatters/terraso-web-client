@@ -39,6 +39,12 @@ yup.addMethod(yup.string, 'validTld', function () {
     params => ({ key: 'form.validation_url_invalid', params }),
     value => (!value ? true : hasValidTLD(value))
   );
+
+yup.addMethod(yup.string, 'selected', function () {
+  return this.required(params => ({
+    key: 'form.validation_select_field_required',
+    params,
+  }));
 });
 
 // Localization codes form Yup schema validation

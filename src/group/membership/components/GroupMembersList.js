@@ -21,6 +21,11 @@ import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
+import {
+  fetchMembers,
+  removeMember,
+  updateMember,
+} from 'terrasoApi/group/groupSlice';
 import { useFetchData } from 'terrasoApi/utils';
 
 import { LoadingButton } from '@mui/lab';
@@ -34,7 +39,6 @@ import Restricted from 'permissions/components/Restricted';
 
 import AccountAvatar from 'account/components/AccountAvatar';
 import { useGroupContext } from 'group/groupContext';
-import { fetchMembers, removeMember, updateMember } from 'group/groupSlice';
 
 import GroupMembershipPendingWarning from './GroupMembershipPendingWarning';
 import {
@@ -61,12 +65,14 @@ const RoleSelect = ({ member, tabIndex }) => {
       permission="group.manageMembers"
       resource={owner}
       FallbackComponent={() => (
-        <Typography>{t(`group.role_${member.role.toLowerCase()}`)}</Typography>
+        <Typography>
+          {t(`group.role_${member.userRole.toLowerCase()}`)}
+        </Typography>
       )}
     >
       <Select
         variant="standard"
-        value={member.role}
+        value={member.userRole}
         onChange={onChange}
         disabled={member.fetching}
         inputProps={{
@@ -161,7 +167,7 @@ const PendingApprovals = () => {
       <List>
         {pending.map(member => (
           <ListItem
-            key={member.id}
+            key={member.membershipId}
             secondaryAction={
               <Stack spacing={2} direction="row">
                 <LoadingButton
@@ -266,7 +272,7 @@ const GroupMembersList = () => {
       minWidth: 200,
       cardSize: 6,
       valueGetter: ({ row: member }) =>
-        t(`group.role_${member.role.toLowerCase()}`),
+        t(`group.role_${member.userRole.toLowerCase()}`),
       renderCell: ({ row: member, tabIndex }) => (
         <RoleSelect member={member} tabIndex={tabIndex} />
       ),

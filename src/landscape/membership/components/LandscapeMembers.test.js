@@ -71,6 +71,7 @@ test('LandscapeMembers: Empty', async () => {
         'landscapes.edges[0].node',
         {
           name: 'Landscape Name',
+          defaultGroup: { membershipsCount: 0 },
         },
         {}
       )
@@ -119,6 +120,7 @@ test('LandscapeMembers: Display list', async () => {
         },
       ],
     },
+    defaultGroup: {},
   };
 
   terrasoApi.requestGraphQL
@@ -203,6 +205,7 @@ test('LandscapeMembers: Display list (small)', async () => {
         },
       ],
     },
+    defaultGroup: {},
   };
 
   terrasoApi.requestGraphQL

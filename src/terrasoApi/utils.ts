@@ -20,7 +20,7 @@ import {
   AsyncThunkAction,
   createAsyncThunk as createAsyncThunkBase,
 } from '@reduxjs/toolkit';
-import { BaseThunkAPI } from '@reduxjs/toolkit/dist/createAsyncThunk';
+import type { BaseThunkAPI } from '@reduxjs/toolkit/dist/createAsyncThunk';
 import _ from 'lodash/fp';
 import { useDispatch } from 'react-redux';
 import { User, signOut } from 'terrasoApi/account/accountSlice';
@@ -29,7 +29,7 @@ import { UNAUTHENTICATED } from 'terrasoApi/account/authConstants';
 
 import { addMessage } from 'notifications/notificationsSlice';
 
-import { AppDispatch, AppState } from './store';
+import type { AppDispatch, AppState } from './store';
 
 const executeAuthRequest = <T>(
   dispatch: AppDispatch,
@@ -140,6 +140,13 @@ export const createAsyncThunk = <Returned, ThunkArg>(
     }
   );
 };
+
+export const withExtra =
+  <Extra>() =>
+  <OriginalArg, Return>(
+    fn: (_: OriginalArg) => Return
+  ): ((_: OriginalArg & Extra) => Return) =>
+    fn;
 
 export const useFetchData = (
   dataFetchCallback: () => AsyncThunkAction<any, any, ThunkAPIConfig> | null

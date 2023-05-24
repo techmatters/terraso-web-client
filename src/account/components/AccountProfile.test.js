@@ -63,6 +63,7 @@ test('AccountProfile: Display Avatar', async () => {
           firstName: 'John',
           lastName: 'Doe',
           profileImage: 'test.com',
+          preferences: { edges: [] },
         },
         {}
       )
@@ -81,6 +82,7 @@ test('AccountProfile: Avatar with missing image', async () => {
           firstName: 'John',
           lastName: 'Doe',
           profileImage: '',
+          preferences: { edges: [] },
         },
         {}
       )
@@ -104,6 +106,7 @@ test('AccountProfile: Save', async () => {
           lastName: 'Doe',
           email: 'group@group.org',
           profileImage: '',
+          preferences: { edges: [] },
         },
         {}
       )
@@ -119,6 +122,7 @@ test('AccountProfile: Save', async () => {
           lastName: 'Doe',
           email: 'group@group.org',
           profileImage: '',
+          preferences: { edges: [] },
         },
         {}
       )
@@ -134,7 +138,7 @@ test('AccountProfile: Save', async () => {
         email: 'group@group.org',
         profileImage: 'https://www.group.org/image.jpg',
         preferences: {
-          language: 'es-ES',
+          edges: [{ node: { key: 'language', value: 'es-ES' } }],
         },
       },
       {}
@@ -163,7 +167,7 @@ test('AccountProfile: Save language', async () => {
   terrasoApi.requestGraphQL.mockImplementation(query => {
     const trimmedQuery = query.trim();
 
-    if (trimmedQuery.startsWith('query user(')) {
+    if (trimmedQuery.startsWith('query userProfile(')) {
       return Promise.resolve(
         _.set(
           'users.edges[0].node',
@@ -173,6 +177,7 @@ test('AccountProfile: Save language', async () => {
             lastName: 'Doe',
             email: 'group@group.org',
             profileImage: '',
+            preferences: { edges: [] },
           },
           {}
         )
@@ -189,7 +194,7 @@ test('AccountProfile: Save language', async () => {
             email: 'group@group.org',
             profileImage: 'https://www.group.org/image.jpg',
             preferences: {
-              language: 'es-ES',
+              edges: [{ node: { key: 'language', value: 'es-ES' } }],
             },
           },
           {}
@@ -246,7 +251,7 @@ test('AccountProfile: Save notifications', async () => {
   terrasoApi.requestGraphQL.mockImplementation(query => {
     const trimmedQuery = query.trim();
 
-    if (trimmedQuery.startsWith('query user(')) {
+    if (trimmedQuery.startsWith('query userProfile(')) {
       return Promise.resolve(
         _.set(
           'users.edges[0].node',
@@ -256,6 +261,7 @@ test('AccountProfile: Save notifications', async () => {
             lastName: 'Doe',
             email: 'group@group.org',
             profileImage: '',
+            preferences: { edges: [] },
           },
           {}
         )
@@ -272,8 +278,10 @@ test('AccountProfile: Save notifications', async () => {
             email: 'group@group.org',
             profileImage: 'https://www.group.org/image.jpg',
             preferences: {
-              language: 'es-ES',
-              notifications: 'false',
+              edges: [
+                { node: { key: 'language', value: 'es-ES' } },
+                { node: { key: 'notifications', value: 'false' } },
+              ],
             },
           },
           {}
@@ -316,7 +324,7 @@ test('AccountProfile: Save error', async () => {
   terrasoApi.requestGraphQL.mockImplementation(query => {
     const trimmedQuery = query.trim();
 
-    if (trimmedQuery.startsWith('query user(')) {
+    if (trimmedQuery.startsWith('query userProfile(')) {
       return Promise.resolve(
         _.set(
           'users.edges[0].node',
@@ -326,6 +334,7 @@ test('AccountProfile: Save error', async () => {
             lastName: 'Doe',
             email: 'group@group.org',
             profileImage: '',
+            preferences: { edges: [] },
           },
           {}
         )

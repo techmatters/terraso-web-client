@@ -213,7 +213,10 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
           edges: [
             {
               node: {
-                defaultGroup: { id: '6a625efb-4ec8-45e8-ad6a-eb052cc3fe65' },
+                defaultGroup: {
+                  id: '6a625efb-4ec8-45e8-ad6a-eb052cc3fe65',
+                  accountMembership: {},
+                },
                 description: 'dsadsad',
                 id: 'e9a65bef-4ef1-4058-bba3-fc73b53eb779',
                 location: 'CM',
@@ -248,6 +251,7 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
                         resourceType: 'text/csv',
                         size: 3565,
                         url: 'https://file-url',
+                        visualizations: { edges: [] },
                       },
                     },
                   ],

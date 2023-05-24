@@ -24,3 +24,6 @@ yarn-error.log*
 
 # Environment
 local.env
+
+# generated
+src/terrasoApi/gql

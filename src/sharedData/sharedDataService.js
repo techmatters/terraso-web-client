@@ -15,10 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
+import { dataEntries } from 'terrasoApi/group/groupFragments';
+import {
+  extractDataEntry,
+  extractGroupDataEntries,
+} from 'terrasoApi/group/groupUtils';
 import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
-
-import { dataEntries } from 'group/groupFragments';
-import { extractDataEntry, extractGroupDataEntries } from 'group/groupUtils';
 
 import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
