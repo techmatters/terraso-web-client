@@ -15,11 +15,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
+import { accountMembership } from 'terrasoApi/group/groupFragments';
+import {
+  extractAccountMembership,
+  extractMembersInfo,
+} from 'terrasoApi/group/groupUtils';
 import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import * as gisService from 'gis/gisService';
-import { accountMembership } from 'group/groupFragments';
-import { extractAccountMembership, extractMembersInfo } from 'group/groupUtils';
 import {
   defaultGroup,
   defaultGroupWithMembersSample,

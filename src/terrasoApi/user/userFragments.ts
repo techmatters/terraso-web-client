@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export const userFields = `
+export const userFields = /* GraphQL */ `
   fragment userFields on UserNode {
     id
     email
@@ -25,30 +25,14 @@ export const userFields = `
   }
 `;
 
-export type UserFragment = {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  profileImage: string;
-};
-
-export const userPreferencesFields = `
+export const userPreferencesFields = /* GraphQL */ `
   fragment userPreferencesFields on UserPreferenceNode {
     key
     value
   }
-
 `;
 
-export type UserPreferenceNode = {
-  node: {
-    key: string;
-    value: string;
-  };
-};
-
-export const userPreferences = `
+export const userPreferences = /* GraphQL */ `
   fragment userPreferences on UserNode {
     preferences {
       edges {
@@ -58,11 +42,4 @@ export const userPreferences = `
       }
     }
   }
-  ${userPreferencesFields}
 `;
-
-export type UserPreferencesFragment = {
-  preferences: {
-    edges: UserPreferenceNode[];
-  };
-};

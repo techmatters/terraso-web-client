@@ -16,44 +16,82 @@
  */
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
-import { createAsyncThunk } from 'terrasoApi/utils';
+import * as groupService from 'terrasoApi/group/groupService';
+import * as groupUtils from 'terrasoApi/group/groupUtils';
+import {
+  Message,
+  createAsyncThunk,
+  withExtra as withExtraInput,
+} from 'terrasoApi/utils';
 
-import * as groupService from 'group/groupService';
-import * as groupUtils from 'group/groupUtils';
+export type Group = {
+  // TODO: massage groupUtils/Service so more of these can be required
+  membersInfo?: {
+    totalCount?: number;
+    pendingCount?: number;
+    accountMembership?: Membership;
+    membersSample?: Membership[];
+  };
+  slug: string;
+  id: string;
+  email: string;
+  name: string;
+  description: string;
+  website: string;
+  membershipType: 'CLOSED' | 'OPEN';
+};
+
+export type Membership = {
+  membershipId: string;
+  userRole: 'MANAGER' | 'MEMBER';
+  membershipStatus: 'APPROVED' | 'PENDING';
+};
+
+type MembershipGroup = {
+  fetching?: boolean;
+  joining?: boolean;
+  message?: Message;
+  group?: Group;
+};
+
+type GroupSliceState = typeof initialState;
 
 const initialState = {
-  memberships: {},
+  memberships: {} as Record<string, MembershipGroup>,
   list: {
     fetching: true,
-    groups: [],
-    message: null,
+    groups: [] as Group[],
+    message: null as Message | null,
   },
   autocomplete: {
     fetching: true,
-    groups: [],
+    groups: [] as { slug: string; name: string }[],
   },
   view: {
-    group: null,
+    group: null as Group | null,
     fetching: true,
     refreshing: false,
-    message: null,
+    message: null as Message | null,
   },
   form: {
-    group: null,
+    group: null as Omit<Group, 'membersInfo'> | null,
     fetching: true,
-    message: null,
+    message: null as Message | null,
     success: false,
   },
   membersGroup: {
-    data: null,
+    data: null as Omit<Group, 'membersInfo'> | null,
     fetching: true,
   },
   members: {
-    list: null,
+    list: null as Record<string, Membership> | null,
     fetching: true,
   },
   sharedDataUpload: {
-    group: null,
+    group: null as Omit<
+      Group,
+      'email' | 'description' | 'website' | 'membershipType'
+    > | null,
     fetching: true,
   },
 };
@@ -109,7 +147,9 @@ export const saveGroup = createAsyncThunk(
 );
 export const joinGroup = createAsyncThunk(
   'group/joinGroup',
-  groupService.joinGroup,
+  withExtraInput<{ ownerName: string; successMessage: string }>()(
+    groupService.joinGroup
+  ),
   (group, { ownerName, successMessage }) => ({
     severity: 'success',
     content: successMessage,
@@ -118,7 +158,11 @@ export const joinGroup = createAsyncThunk(
 );
 export const leaveGroup = createAsyncThunk(
   'group/leaveGroup',
-  groupService.leaveGroup,
+  withExtraInput<{
+    ownerName: string;
+    successMessage: string;
+    groupSlug: string;
+  }>()(groupService.leaveGroup),
   (group, { ownerName, successMessage }) => ({
     severity: 'success',
     content: successMessage,
@@ -126,7 +170,10 @@ export const leaveGroup = createAsyncThunk(
   })
 );
 
-const updateView = (state, action) => ({
+const updateView = (
+  state: GroupSliceState,
+  action: ReturnType<typeof fetchGroupView.fulfilled>
+): GroupSliceState => ({
   ...groupSlice.caseReducers.setMemberships(state, {
     payload: groupUtils.getMemberships([action.payload]),
   }),
@@ -151,41 +198,24 @@ const groupSlice = createSlice({
         fetching: false,
       },
     }),
-    setMemberships: (state, action) => ({
+    setMemberships: (
+      state,
+      action: { payload: Record<string, MembershipGroup> }
+    ) => ({
       ...state,
       memberships: {
         ...state.memberships,
-        ..._.flow(
-          //  Final output
-          //  {
-          //    'group-slug-1': {
-          //      fetching: false,
-          //      joining: false,
-          //      message: {
-          //        severity: 'error',
-          //        content: 'Saved'
-          //      },
-          //      group: {
-          //        slug: 'group-slug-1',
-          //        members: [{
-          //          email: 'email@email.com',
-          //          firsName: 'John',
-          //          lastName: 'Doe'
-          //        },...]
-          //      }
-          //    },
-          //    ...
-          //  }
-          _.toPairs,
-          _.map(([groupSlug, newMembershipState]) => [
-            groupSlug,
-            {
-              ..._.getOr({}, `memberships.${groupSlug}`, state),
-              ...newMembershipState,
-            },
-          ]),
-          _.fromPairs
-        )(action.payload),
+        ...Object.fromEntries(
+          Object.entries(action.payload).map(
+            ([groupSlug, newMembershipState]) => [
+              groupSlug,
+              {
+                ...state.memberships[groupSlug],
+                ...newMembershipState,
+              },
+            ]
+          )
+        ),
       },
     }),
     resetFormSuccess: state => ({
@@ -208,8 +238,10 @@ const groupSlice = createSlice({
     builder.addCase(fetchGroupView.rejected, (state, action) => ({
       ...state,
       view: {
+        ...state.view,
         ...state.form,
         fetching: false,
+        refreshing: false,
         message: {
           severity: 'error',
           content: action.payload,
@@ -265,6 +297,7 @@ const groupSlice = createSlice({
     }));
 
     builder.addCase(fetchGroupsAutocompleteList.fulfilled, (state, action) => ({
+      ...state,
       autocomplete: {
         fetching: false,
         groups: action.payload,
@@ -279,6 +312,7 @@ const groupSlice = createSlice({
     builder.addCase(fetchGroupForm.fulfilled, (state, action) => ({
       ...state,
       form: {
+        success: false,
         fetching: false,
         message: null,
         group: action.payload,
@@ -302,16 +336,13 @@ const groupSlice = createSlice({
       _.set('membersGroup', initialState.membersGroup)
     );
 
-    builder.addCase(fetchGroupForMembers.fulfilled, (state, action) =>
-      _.set(
-        'membersGroup',
-        {
-          fetching: false,
-          data: action.payload,
-        },
-        state
-      )
-    );
+    builder.addCase(fetchGroupForMembers.fulfilled, (state, action) => ({
+      ...state,
+      membersGroup: {
+        fetching: false,
+        data: action.payload,
+      },
+    }));
 
     builder.addCase(
       fetchGroupForMembers.rejected,
@@ -323,55 +354,62 @@ const groupSlice = createSlice({
       _.set('members', initialState.members)
     );
 
-    builder.addCase(fetchMembers.fulfilled, (state, action) =>
-      _.set(
-        'members',
-        {
-          fetching: false,
-          list: groupUtils.generateIndexedMembers(action.payload.members),
-        },
-        state
-      )
-    );
+    builder.addCase(fetchMembers.fulfilled, (state, action) => ({
+      ...state,
+      members: {
+        fetching: false,
+        list: groupUtils.generateIndexedMembers(action.payload.members),
+      },
+    }));
 
     builder.addCase(fetchMembers.rejected, _.set('members.fetching', false));
 
     builder.addCase(removeMember.pending, (state, action) =>
-      _.set(`members.list.${action.meta.arg.id}.fetching`, true, state)
-    );
-
-    builder.addCase(removeMember.fulfilled, (state, action) =>
       _.set(
-        'members',
-        {
-          fetching: false,
-          list: groupUtils.generateIndexedMembers(action.payload.members),
-        },
+        `members.list.${action.meta.arg.membershipId}.fetching`,
+        true,
         state
       )
     );
 
+    builder.addCase(removeMember.fulfilled, (state, action) => ({
+      ...state,
+      members: {
+        fetching: false,
+        list: groupUtils.generateIndexedMembers(action.payload.members),
+      },
+    }));
+
     builder.addCase(removeMember.rejected, (state, action) =>
-      _.set(`members.list.${action.meta.arg.id}.fetching`, false, state)
+      _.set(
+        `members.list.${action.meta.arg.membershipId}.fetching`,
+        false,
+        state
+      )
     );
 
     builder.addCase(updateMember.pending, (state, action) =>
-      _.set(`members.list.${action.meta.arg.member.id}.fetching`, true, state)
-    );
-
-    builder.addCase(updateMember.fulfilled, (state, action) =>
       _.set(
-        'members',
-        {
-          fetching: false,
-          list: groupUtils.generateIndexedMembers(action.payload.members),
-        },
+        `members.list.${action.meta.arg.member.membershipId}.fetching`,
+        true,
         state
       )
     );
 
+    builder.addCase(updateMember.fulfilled, (state, action) => ({
+      ...state,
+      members: {
+        fetching: false,
+        list: groupUtils.generateIndexedMembers(action.payload.members),
+      },
+    }));
+
     builder.addCase(updateMember.rejected, (state, action) =>
-      _.set(`members.list.${action.meta.arg.member.id}.fetching`, false, state)
+      _.set(
+        `members.list.${action.meta.arg.member.membershipId}.fetching`,
+        false,
+        state
+      )
     );
 
     builder.addCase(saveGroup.pending, state => ({
@@ -436,7 +474,6 @@ const groupSlice = createSlice({
         payload: {
           [action.meta.arg.groupSlug]: {
             joining: true,
-            message: null,
           },
         },
       })

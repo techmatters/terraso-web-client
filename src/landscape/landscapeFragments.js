@@ -14,7 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { accountMembership, groupMembersInfo } from 'group/groupFragments';
+import {
+  accountMembership,
+  groupMembersInfo,
+} from 'terrasoApi/group/groupFragments';
+
 import { taxonomyTermLanguages } from 'taxonomies/taxonomiesFragments';
 
 export const landscapeFields = `

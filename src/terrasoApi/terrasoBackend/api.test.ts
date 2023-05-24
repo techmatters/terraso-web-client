@@ -98,7 +98,7 @@ test('Terraso API: No mutation errors', async () => {
     )
   );
   const result = await terrasoApi.requestGraphQL('', {});
-  expect(result).toEqual({ testMutation: { errors: null } });
+  expect(result).toEqual({ testMutation: {} });
 });
 test('Terraso API: success', async () => {
   mockFetch.mockResolvedValue(

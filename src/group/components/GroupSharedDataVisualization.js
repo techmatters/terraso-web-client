@@ -19,13 +19,13 @@ import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+import { fetchGroupUpload } from 'terrasoApi/group/groupSlice';
 
 import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 
 import { GroupContextProvider } from 'group/groupContext';
-import { fetchGroupUpload } from 'group/groupSlice';
 import VisualizationWrapper from 'sharedData/visualization/components/VisualizationWrapper';
 
 const GroupSharedDataVisualization = () => {
