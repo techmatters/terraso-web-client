@@ -25,7 +25,7 @@ import {
   saveGroup,
   setFormNewValues,
 } from 'terrasoApi/shared/group/groupSlice';
-import { useFetchData } from 'terrasoApi/utils';
+import { useFetchData } from 'terrasoApi/shared/store/utils';
 import * as yup from 'yup';
 import {
   FormControlLabel,

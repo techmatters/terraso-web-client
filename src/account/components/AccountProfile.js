@@ -24,7 +24,7 @@ import {
   savePreference,
   saveUser,
 } from 'terrasoApi/shared/account/accountSlice';
-import { useFetchData } from 'terrasoApi/utils';
+import { useFetchData } from 'terrasoApi/shared/store/utils';
 import * as yup from 'yup';
 
 import { Checkbox, FormControlLabel } from '@mui/material';

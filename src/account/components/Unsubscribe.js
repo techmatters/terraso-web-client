@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { unsubscribeFromNotifications } from 'terrasoApi/shared/account/accountSlice';
 import { addMessage } from 'terrasoApi/shared/notifications/notificationsSlice';
-import { useFetchData } from 'terrasoApi/utils';
+import { useFetchData } from 'terrasoApi/shared/store/utils';
 
 import { Alert } from '@mui/material';
 

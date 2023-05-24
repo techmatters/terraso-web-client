@@ -15,23 +15,28 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useMemo } from 'react';
+
 import _ from 'lodash/fp';
 import { usePermission, usePermissionRedirect } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { fetchGroupForMembers } from 'terrasoApi/shared/group/groupSlice';
-import { useFetchData } from 'terrasoApi/utils';
+import { useFetchData } from 'terrasoApi/shared/store/utils';
+
 import { Typography } from '@mui/material';
+
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
+
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberRemove from 'group/membership/components/GroupMemberRemove';
 import GroupMembersList from 'group/membership/components/GroupMembersList';
+
 import { withProps } from 'react-hoc';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {

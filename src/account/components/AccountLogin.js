@@ -15,21 +15,25 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
+
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { fetchAuthURLs } from 'terrasoApi/shared/account/accountSlice';
-import { useFetchData } from 'terrasoApi/utils';
+import { useFetchData } from 'terrasoApi/shared/store/utils';
+
 import AppleIcon from '@mui/icons-material/Apple';
 import GoogleIcon from '@mui/icons-material/Google';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import SvgIcon from '@mui/material/SvgIcon';
+
 import ExternalLink from 'common/components/ExternalLink';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePicker from 'localization/components/LocalePicker';
 import { useAnalytics } from 'monitoring/analytics';
+
 import logo from 'assets/logo.svg';
 import { ReactComponent as MicrosoftSvg } from 'assets/microsoft.svg';
 

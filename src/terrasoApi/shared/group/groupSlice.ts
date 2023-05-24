@@ -16,14 +16,14 @@
  */
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
-import { User } from 'terrasoApi/account/accountSlice';
+import { User } from 'terrasoApi/shared/account/accountSlice';
 import * as groupService from 'terrasoApi/shared/group/groupService';
 import * as groupUtils from 'terrasoApi/shared/group/groupUtils';
 import {
   Message,
   createAsyncThunk,
   withExtra as withExtraInput,
-} from 'terrasoApi/utils';
+} from 'terrasoApi/shared/store/utils';
 
 export type Group = {
   // TODO: massage groupUtils/Service so more of these can be required

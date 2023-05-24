@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useContext } from 'react';
+
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
@@ -25,21 +26,25 @@ import {
   removeMember,
   updateMember,
 } from 'terrasoApi/shared/group/groupSlice';
-import { useFetchData } from 'terrasoApi/utils';
+import { useFetchData } from 'terrasoApi/shared/store/utils';
+
 import { LoadingButton } from '@mui/lab';
 import { ListItem, MenuItem, Select, Stack, Typography } from '@mui/material';
+
 import ConfirmButton from 'common/components/ConfirmButton';
 import List from 'common/components/List';
 import TableResponsive from 'common/components/TableResponsive';
 import PageLoader from 'layout/PageLoader';
 import Restricted from 'permissions/components/Restricted';
+
 import AccountAvatar from 'account/components/AccountAvatar';
 import { useGroupContext } from 'group/groupContext';
+
+import GroupMembershipPendingWarning from './GroupMembershipPendingWarning';
 import {
   MEMBERSHIP_STATUS_APPROVED,
   MEMBERSHIP_STATUS_PENDING,
 } from './groupMembershipConstants';
-import GroupMembershipPendingWarning from './GroupMembershipPendingWarning';
 
 const ROLES = ['MEMBER', 'MANAGER'];
 
