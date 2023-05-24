@@ -79,7 +79,7 @@ const CopyEmbededCode = () => {
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
   const { t } = useTranslation();
   const {
-    socialShareProps: { embedUrl },
+    socialShareProps: { embedUrl, itemType },
   } = useContext(SocialShareContext);
 
   const embedCode = useMemo(() => {
@@ -108,7 +108,7 @@ const CopyEmbededCode = () => {
           fontSize: '1.3rem',
         }}
       >
-        {t('share.copy_embed_code')}
+        {t('share.copy_embed_code', { item: t(itemType) })}
       </InputLabel>
       <TextField
         size="small"

@@ -93,6 +93,7 @@ const UserStoryMap = () => {
       () => ({
         name: storyMap?.title,
         embedUrl: storyMap ? generateStoryMapEmbedUrl(storyMap) : null,
+        itemType: 'storyMap.item_type',
       }),
       [storyMap]
     )
