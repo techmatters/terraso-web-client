@@ -20,8 +20,10 @@ import type {
   UserFieldsFragment,
   UserPreferencesFragment,
 } from 'terrasoApi/gql/graphql';
-import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
+import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
+
 import { TERRASO_API_URL } from 'config';
+
 import { User } from './accountSlice';
 import { getUserEmail } from './auth';
 

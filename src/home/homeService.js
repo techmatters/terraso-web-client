@@ -20,7 +20,7 @@ import {
   extractAccountMembership,
   extractMembersInfo,
 } from 'terrasoApi/shared/group/groupUtils';
-import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
+import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
 
 export const fetchHomeData = email => {
   const query = graphql(`

@@ -15,16 +15,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { fireEvent, render, screen, within } from 'tests/utils';
+
 import React from 'react';
+
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
-import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
+import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
+
 import useMediaQuery from '@mui/material/useMediaQuery';
+
 import LocalePicker from 'localization/components/LocalePicker';
 import i18n from 'localization/i18n';
 
 jest.mock('@mui/material/useMediaQuery');
-jest.mock('terrasoApi/terrasoBackend/api');
+jest.mock('terrasoApi/shared/terrasoApi/api');
 
 const setup = async () => {
   await render(

@@ -16,7 +16,7 @@
  */
 import _ from 'lodash/fp';
 import { graphql } from 'terrasoApi/gql';
-import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
+import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
 
 export const fetchSamples = (params, currentUser) => {
   const query = graphql(`

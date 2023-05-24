@@ -15,18 +15,22 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { fireEvent, render, screen, within } from 'tests/utils';
+
 import React from 'react';
+
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 import { useSearchParams } from 'react-router-dom';
-import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
+import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
+
 import useMediaQuery from '@mui/material/useMediaQuery';
+
 import GroupList from 'group/components/GroupList';
 
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850
 global.console.error = jest.fn();
 
-jest.mock('terrasoApi/terrasoBackend/api');
+jest.mock('terrasoApi/shared/terrasoApi/api');
 
 jest.mock('@mui/material/useMediaQuery');
 

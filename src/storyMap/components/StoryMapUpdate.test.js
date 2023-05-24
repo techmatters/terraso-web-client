@@ -15,10 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { act, fireEvent, render, screen } from 'tests/utils';
-import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
+
+import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
+
 import StoryMapUpdate from './StoryMapUpdate';
 
-jest.mock('terrasoApi/terrasoBackend/api');
+jest.mock('terrasoApi/shared/terrasoApi/api');
 
 jest.mock('./StoryMap', () => props => <div>Test</div>);
 

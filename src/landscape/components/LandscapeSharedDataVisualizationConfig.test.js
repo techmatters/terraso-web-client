@@ -15,13 +15,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
+
 import * as reactLeaflet from 'react-leaflet';
 import { useParams } from 'react-router-dom';
-import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
+import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
+
 import * as visualizationMarkers from 'sharedData/visualization/visualizationMarkers';
+
 import LandscapeSharedDataVisualizationConfig from './LandscapeSharedDataVisualizationConfig';
 
-jest.mock('terrasoApi/terrasoBackend/api');
+jest.mock('terrasoApi/shared/terrasoApi/api');
 jest.mock('sharedData/visualization/visualizationMarkers');
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

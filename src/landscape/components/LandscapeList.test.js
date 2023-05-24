@@ -15,13 +15,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
+
 import React from 'react';
+
 import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 import { useSearchParams } from 'react-router-dom';
-import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
+import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
+
 import useMediaQuery from '@mui/material/useMediaQuery';
+
 import LandscapeList from 'landscape/components/LandscapeList';
 
 const GEOJSON =
@@ -30,7 +34,7 @@ const GEOJSON =
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850
 global.console.error = jest.fn();
 
-jest.mock('terrasoApi/terrasoBackend/api');
+jest.mock('terrasoApi/shared/terrasoApi/api');
 jest.mock('@changey/react-leaflet-markercluster', () => jest.fn());
 
 jest.mock('@mui/material/useMediaQuery');

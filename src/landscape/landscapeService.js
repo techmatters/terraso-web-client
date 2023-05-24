@@ -15,18 +15,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-<<<<<<< HEAD
 import { graphql } from 'terrasoApi/gql';
-=======
-import { accountMembership } from 'terrasoApi/shared/group/groupFragments';
->>>>>>> e3ea8c7 (refactor: move group code into shared folder)
 import {
   extractAccountMembership,
   extractMembersInfo,
 } from 'terrasoApi/shared/group/groupUtils';
-import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
+import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
+
 import * as gisService from 'gis/gisService';
 import { extractTerms } from 'taxonomies/taxonomiesUtils';
+
 import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
 import {
   extractAffiliatedGroups,
