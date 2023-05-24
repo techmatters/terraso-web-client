@@ -129,7 +129,6 @@ const Chapter = ({ theme, record }) => {
             <iframe
               title={record.media.title}
               src={record.media.url}
-              frameborder="0"
               style={{ height: '300px', width: '100%' }}
             />
           ) : null)}

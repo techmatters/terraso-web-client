@@ -456,7 +456,6 @@ const EditableEmbedded = props => {
       <iframe
         title={embedded.title}
         src={embedded.url}
-        frameBorder="0"
         style={{ height: '300px', width: '100%' }}
       />
       <Stack
