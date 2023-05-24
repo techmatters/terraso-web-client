@@ -19,6 +19,13 @@ import * as yup from 'yup';
 
 const ARRAY_INDEX_REGEX = /\[([^)]+)\]/;
 
+yup.addMethod(yup.string, 'selected', function () {
+  return this.required(params => ({
+    key: 'form.validation_select_field_required',
+    params,
+  }));
+});
+
 // Localization codes form Yup schema validation
 // Check: https://github.com/jquense/yup#api to know the format to add more codes here
 yup.setLocale({
