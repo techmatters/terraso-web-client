@@ -694,6 +694,10 @@
         "copy": "Copia el enlace para compartir",
         "copy_button": "Copia el enlace",
         "copy_button_done": "Copiada",
+        "copy_embed_code": "Código para incrustar el {{item}}:",
+        "copy_embed_button": "Copiar código",
+        "copy_embed_button_done": "Código copiado",
+        "embed_title": "Terraso Story Map",
         "invite_subject": "Únete a {{name}} en Terraso",
         "invite_text": "Echa un vistazo a {{name}} en Terraso y únete: {{url}}",
         "whatsapp": "WhatsApp",
@@ -843,6 +847,7 @@
         "no_options": "No existen opciones"
     },
     "storyMap": {
+        "item_type": "Story Map",
         "not_found": "Story Map no encontrado",
         "form_title_chapter_label": "Título",
         "form_chapter_add": "Añadir nuevo capítulo",
@@ -954,7 +959,8 @@
         "view_document_title": "{{name}}",
         "optional_auth_top_message": "<1>Únete a Terraso</1> y crea tu propio story map gratis.",
         "optional_auth_bottom_message": "¿Te gustó el story map? Crea uno <1>registrándote en Terraso</1>.",
-        "iframe_title": "Mapa Grafico: {{title}}"
+        "iframe_title": "Mapa Grafico: {{title}}",
+        "embed_header": "Ver Story Map en"
     },
     "site": {
         "description": "Terraso es un conjunto de herramientas para gestionar paisajes, proteger el medio ambiente y fomentar el desarrollo humano.",
