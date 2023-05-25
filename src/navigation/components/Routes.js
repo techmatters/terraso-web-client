@@ -53,6 +53,7 @@ import StoryMapNew from 'storyMap/components/StoryMapNew';
 import StoryMapUpdate from 'storyMap/components/StoryMapUpdate';
 import StoryMapsToolsHome from 'storyMap/components/StoryMapsToolHome';
 import UserStoryMap from 'storyMap/components/UserStoryMap';
+import UserStoryMapEmbed from 'storyMap/components/UserStoryMapEmbed';
 import ToolsList from 'tool/components/ToolList';
 
 const path = (
@@ -185,6 +186,12 @@ const paths = [
       enabled: true,
       topMessage: 'storyMap.optional_auth_top_message',
       bottomMessage: 'storyMap.optional_auth_bottom_message',
+    },
+  }),
+  path('/tools/story-maps/:storyMapId/:slug/embed', UserStoryMapEmbed, {
+    optionalAuth: {
+      enabled: true,
+      isEmbedded: true,
     },
   }),
   path('*', NotFound),

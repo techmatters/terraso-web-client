@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2023 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -14,40 +14,66 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useFetchData } from 'terrasoApi/utils';
 
+import { Box, Link, Stack } from '@mui/material';
+
 import { serialize } from 'common/components/RichTextEditor/utils';
-import RouterButton from 'common/components/RouterButton';
 import { useSocialShareContext } from 'common/components/SocialShare';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
-import Container, { useContainerContext } from 'layout/Container';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-import Restricted from 'permissions/components/Restricted';
 
 import StoryMap from 'storyMap/components/StoryMap';
 import { fetchStoryMap } from 'storyMap/storyMapSlice';
-import {
-  generateStoryMapEditUrl,
-  generateStoryMapEmbedUrl,
-  isChapterEmpty,
-} from 'storyMap/storyMapUtils';
+import { generateStoryMapUrl, isChapterEmpty } from 'storyMap/storyMapUtils';
 
-import DeleteButton from './StoryMapDeleteButton';
+import logoWhite from 'assets/logo-white.svg';
 
-const UserStoryMap = () => {
-  const navigate = useNavigate();
+const EmbedHeader = props => {
+  const { t } = useTranslation();
+  const { storyMap } = props;
+
+  return (
+    <Stack
+      component={Link}
+      direction="row"
+      alignItems="center"
+      justifyContent="flex-end"
+      sx={{
+        color: 'white',
+        bgcolor: 'blue.dark2',
+        zIndex: 2,
+        position: 'fixed',
+        width: '100%',
+        fontSize: '12px',
+      }}
+      href={generateStoryMapUrl(storyMap)}
+      target="_blank"
+    >
+      {t('storyMap.embed_header')}
+      <Box
+        component="img"
+        src={logoWhite}
+        height={16}
+        width={62}
+        alt={t('common.terraso_logoText')}
+        sx={{ m: 1 }}
+      />
+    </Stack>
+  );
+};
+
+const UserStoryMapEmbed = () => {
   const { t } = useTranslation();
   const { slug, storyMapId } = useParams();
   const { data: storyMap, fetching } = useSelector(_.get('storyMap.view'));
-
-  const { setContainerProps } = useContainerContext();
 
   useDocumentTitle(
     t('storyMap.view_document_title', {
@@ -69,11 +95,6 @@ const UserStoryMap = () => {
     fetching
   );
 
-  useEffect(() => {
-    setContainerProps({ maxWidth: false });
-    return () => setContainerProps({});
-  }, [setContainerProps]);
-
   useFetchData(
     useCallback(() => fetchStoryMap({ slug, storyMapId }), [slug, storyMapId])
   );
@@ -92,14 +113,10 @@ const UserStoryMap = () => {
     useMemo(
       () => ({
         name: storyMap?.title,
-        embedUrl: storyMap ? generateStoryMapEmbedUrl(storyMap) : null,
-        itemType: 'storyMap.item_type',
       }),
-      [storyMap]
+      [storyMap?.title]
     )
   );
-
-  const onDeleteSuccess = useCallback(() => navigate('/'), [navigate]);
 
   const chaptersFilter = useCallback(chapters => !isChapterEmpty(chapters), []);
 
@@ -113,28 +130,10 @@ const UserStoryMap = () => {
 
   return (
     <>
-      <Restricted permission="storyMap.change" resource={storyMap}>
-        <Container
-          sx={{ bgcolor: 'white', zIndex: 2, position: 'relative', pb: 2 }}
-        >
-          <RouterButton
-            variant="outlined"
-            to={generateStoryMapEditUrl(storyMap)}
-          >
-            {t('storyMap.view_edit')}
-          </RouterButton>
-          <DeleteButton
-            storyMap={storyMap}
-            onSuccess={onDeleteSuccess}
-            buttonProps={{ variant: 'outlined', sx: { ml: 3 } }}
-          >
-            {t('storyMap.delete_label')}
-          </DeleteButton>
-        </Container>
-      </Restricted>
+      <EmbedHeader storyMap={storyMap} />
       <StoryMap config={storyMap.config} chaptersFilter={chaptersFilter} />
     </>
   );
 };
 
-export default UserStoryMap;
+export default UserStoryMapEmbed;

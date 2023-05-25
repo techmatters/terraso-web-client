@@ -16,6 +16,8 @@
  */
 import _ from 'lodash/fp';
 
+import { REACT_APP_BASE_URL } from 'config';
+
 export const chapterHasVisualMedia = chapter => {
   const { media } = chapter;
   return media && _.includes(media.type, ['image', 'embedded']);
@@ -29,6 +31,11 @@ export const isChapterEmpty = chapter => {
 export const generateStoryMapUrl = storyMap => {
   const { storyMapId, slug } = storyMap;
   return `/tools/story-maps/${storyMapId}/${slug}`;
+};
+
+export const generateStoryMapEmbedUrl = storyMap => {
+  const { storyMapId, slug } = storyMap;
+  return `${REACT_APP_BASE_URL}/tools/story-maps/${storyMapId}/${slug}/embed`;
 };
 
 export const generateStoryMapEditUrl = storyMap =>

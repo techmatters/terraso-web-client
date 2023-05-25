@@ -62,21 +62,164 @@ export const SocialShareContextProvider = props => {
   );
 };
 
+const useCopy = content => {
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => () => setCopied(false), []);
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(content);
+    setCopied(true);
+  };
+
+  return { copied, copyToClipboard };
+};
+
+const CopyEmbededCode = () => {
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+  const { t } = useTranslation();
+  const {
+    socialShareProps: { embedUrl, itemType },
+  } = useContext(SocialShareContext);
+
+  const embedCode = useMemo(() => {
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute('src', embedUrl);
+    iframe.setAttribute('title', t('share.embed_title'));
+    iframe.setAttribute('width', '750');
+    iframe.setAttribute('height', '500');
+
+    return iframe.outerHTML;
+  }, [embedUrl, t]);
+
+  const { copied, copyToClipboard } = useCopy(embedCode);
+
+  if (!embedUrl) {
+    return null;
+  }
+
+  return (
+    <>
+      <InputLabel
+        htmlFor="share-embed-code"
+        sx={{
+          marginTop: 4,
+          color: 'black',
+          fontSize: '1.3rem',
+        }}
+      >
+        {t('share.copy_embed_code', { item: t(itemType) })}
+      </InputLabel>
+      <TextField
+        size="small"
+        variant="outlined"
+        value={embedCode}
+        fullWidth
+        multiline
+        rows={3}
+        InputProps={{
+          id: 'share-embed-code',
+          sx: {
+            fontFamily: 'monospace',
+            flexDirection: { xs: 'column', sm: 'row' },
+            paddingRight: 0,
+          },
+          readOnly: true,
+        }}
+      />
+      <Button
+        variant="outlined"
+        onClick={copyToClipboard}
+        sx={{
+          width: isSmall ? '100%' : 'auto',
+          mt: isSmall ? 0 : 1,
+        }}
+      >
+        {t('share.copy_embed_button')}
+      </Button>
+      {copied && (
+        <Alert severity="success" sx={{ mt: 2 }}>
+          {t('share.copy_embed_button_done')}
+        </Alert>
+      )}
+    </>
+  );
+};
+
+const CopyLink = () => {
+  const { t } = useTranslation();
+
+  const pageUrl = window.location;
+
+  const { copied, copyToClipboard } = useCopy(pageUrl);
+
+  return (
+    <>
+      <InputLabel
+        htmlFor="share-link"
+        sx={{
+          marginTop: 4,
+          color: 'black',
+          fontSize: '1.3rem',
+        }}
+      >
+        {t('share.copy')}
+      </InputLabel>
+      <TextField
+        size="small"
+        variant="outlined"
+        value={pageUrl}
+        fullWidth
+        sx={{
+          '& .MuiInputBase-input': {
+            flexGrow: 1,
+            width: 'auto',
+          },
+        }}
+        InputProps={{
+          id: 'share-link',
+          sx: {
+            flexDirection: { xs: 'column', sm: 'row' },
+            paddingRight: 0,
+          },
+          readOnly: true,
+          endAdornment: (
+            <Button
+              variant="outlined"
+              onClick={copyToClipboard}
+              sx={{
+                marginLeft: { xs: 0, sm: 2 },
+                minWidth: '100px',
+                width: { xs: '100%', sm: 'auto' },
+              }}
+            >
+              {t('share.copy_button')}
+            </Button>
+          ),
+        }}
+      />
+      {copied && (
+        <Alert severity="success" sx={{ mt: 1 }}>
+          {t('share.copy_button_done')}
+        </Alert>
+      )}
+    </>
+  );
+};
+
 const SocialShare = props => {
   const { t } = useTranslation();
   const { buttonProps } = props;
   const { socialShareProps } = useContext(SocialShareContext);
   const { name } = socialShareProps;
   const [open, setOpen] = useState(false);
-  const [buttonCopied, setButtonCopied] = useState(false);
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    setButtonCopied(false);
   };
 
-  const pageUrl = window.location;
+  const pageUrl = useMemo(() => window.location, []);
 
   const shareText = useMemo(
     () => encodeURIComponent(t('share.invite_text', { name, url: pageUrl })),
@@ -95,11 +238,6 @@ const SocialShare = props => {
   const shareViaFacebook = () => {
     const url = encodeURIComponent(pageUrl);
     window.open(`http://www.facebook.com/share.php?u=${url}`);
-  };
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(pageUrl);
-    setButtonCopied(true);
   };
 
   // focus on the close button on open
@@ -236,54 +374,8 @@ const SocialShare = props => {
               </Button>
             </li>
           </Stack>
-          <InputLabel
-            htmlFor="share-link"
-            sx={{
-              marginTop: 4,
-              color: theme.palette.black,
-              fontSize: '1.3rem',
-            }}
-          >
-            {t('share.copy')}
-          </InputLabel>
-          <TextField
-            size="small"
-            variant="outlined"
-            value={pageUrl}
-            fullWidth
-            sx={{
-              '& .MuiInputBase-input': {
-                flexGrow: 1,
-                width: 'auto',
-              },
-            }}
-            InputProps={{
-              id: 'share-link',
-              sx: {
-                flexDirection: { xs: 'column', sm: 'row' },
-                paddingRight: 0,
-              },
-              readOnly: true,
-              endAdornment: (
-                <Button
-                  variant="outlined"
-                  onClick={copyToClipboard}
-                  sx={{
-                    marginLeft: { xs: 0, sm: 2 },
-                    minWidth: '100px',
-                    width: { xs: '100%', sm: 'auto' },
-                  }}
-                >
-                  {t('share.copy_button')}
-                </Button>
-              ),
-            }}
-          />
-          {buttonCopied && (
-            <Alert severity="success" sx={{ mt: 1 }}>
-              {t('share.copy_button_done')}
-            </Alert>
-          )}
+          <CopyLink />
+          <CopyEmbededCode />
         </DialogContent>
       </Dialog>
     </>

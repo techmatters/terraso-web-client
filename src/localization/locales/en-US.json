@@ -686,9 +686,13 @@
         "button": "Share",
         "title": "Share {{name}}",
         "services": "Post the link in",
-        "copy": "Copy the link to share",
+        "copy": "Link to share:",
         "copy_button": "Copy Link",
         "copy_button_done": "Link Copied",
+        "copy_embed_code": "Code to embed the {{item}}:",
+        "copy_embed_button": "Copy Code",
+        "copy_embed_button_done": "Code copied",
+        "embed_title": "Terraso Story Map",
         "invite_subject": "Join {{name}} on Terraso",
         "invite_text": "Check out {{name}} on Terraso and join me: {{url}}",
         "whatsapp": "WhatsApp",
@@ -839,6 +843,7 @@
         "no_options": "No options"
     },
     "storyMap": {
+        "item_type": "Story Map",
         "not_found": "Story Map not found",
         "form_title_chapter_label": "Title",
         "form_chapter_add": "Add new chapter",
@@ -950,7 +955,8 @@
         "view_document_title": "{{name}}",
         "optional_auth_top_message": "<1>Join Terraso</1> and create your own story map for free.",
         "optional_auth_bottom_message": "Liked the story map? Create one by <1>signing up for Terraso</1>.",
-        "iframe_title": "Contact Terraso"
+        "iframe_title": "Contact Terraso",
+        "embed_header": "View Story Map on"
     },
     "site": {
         "description": "Free and powerful software tools to manage your landscape, protect your environment, and promote human livelihoods.",
