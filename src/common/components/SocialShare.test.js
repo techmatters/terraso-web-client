@@ -137,6 +137,6 @@ test('SocialShare: Copy embed', async () => {
   );
   const copyCall = navigator.clipboard.writeText.mock.calls[0];
   expect(copyCall[0].toString()).toStrictEqual(
-    '<iframe src="https://test.com/embed" title="Terraso Story Map" width="100%" height="100%"></iframe>'
+    '<iframe src="https://test.com/embed" title="Terraso Story Map" width="750" height="500"></iframe>'
   );
 });
