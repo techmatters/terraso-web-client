@@ -130,7 +130,8 @@
             "config": {
               "documentMode": "string",
               "skipTypename": true,
-              "enumsAsTypes": true
+              "enumsAsTypes": true,
+              "dedupeFragments": true
             },
             "presetConfig": {
               "fragmentMasking": false
