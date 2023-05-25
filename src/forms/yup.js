@@ -24,10 +24,7 @@ const hasValidTLD = urlString => {
     const TLD_REGEX = /\.[a-z]{2,}$/i;
     const url = new URL(urlString);
     const match = url.hostname.match(TLD_REGEX);
-    if (match) {
-      return true;
-    }
-    return false;
+    return Boolean(match);
   } catch (e) {
     return false;
   }
@@ -37,7 +34,7 @@ yup.addMethod(yup.string, 'validTld', function () {
   return this.test(
     'validTld',
     params => ({ key: 'form.validation_url_invalid', params }),
-    value => (!value ? true : hasValidTLD(value))
+    value => hasValidTLD(value)
   );
 });
 
