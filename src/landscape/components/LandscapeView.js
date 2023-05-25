@@ -41,6 +41,7 @@ import {
 
 import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
+import RouterButton from 'common/components/RouterButton';
 import RouterLink from 'common/components/RouterLink';
 import { useSocialShareContext } from 'common/components/SocialShare';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
@@ -358,14 +359,12 @@ const LandscapeView = () => {
               </CardContent>
               <Restricted permission="landscape.change" resource={landscape}>
                 <CardActions sx={{ paddingTop: 0 }}>
-                  <Button
+                  <RouterButton
                     variant="outlined"
-                    onClick={() =>
-                      navigate(`/landscapes/${landscape.slug}/boundaries`)
-                    }
+                    to={`/landscapes/${landscape.slug}/boundaries`}
                   >
                     {t('landscape.view_map_boundaries_update')}
-                  </Button>
+                  </RouterButton>
                 </CardActions>
               </Restricted>
             </Card>
