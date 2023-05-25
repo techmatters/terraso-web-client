@@ -42,7 +42,6 @@ const sharedReducers = {
   group: groupReducer,
   notifications: notificationsReducer,
 };
-type SharedState = StateFromReducersMapObject<typeof sharedReducers>;
 
 // Using some advanced TypeScript features here: since we have
 // a store factory instead of a store we need to get our dispatch and state
@@ -63,5 +62,10 @@ const createStoreFactory = <S>(reducers: ReducersMapObject<S>) => {
       preloadedState: intialState,
     });
 };
+
+export type SharedState = StateFromReducersMapObject<typeof sharedReducers>;
+export type SharedDispatch = DispatchFromStoreFactory<
+  ReturnType<typeof createStoreFactory>
+>;
 
 export default createStoreFactory;

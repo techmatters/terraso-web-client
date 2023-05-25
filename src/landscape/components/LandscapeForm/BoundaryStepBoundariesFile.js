@@ -19,13 +19,13 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { sendToRollbar } from 'terrasoApi/shared/monitoring/logger';
 
 import { Alert } from '@mui/material';
 
 import BaseDropZone from 'common/components/DropZone';
 import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
+import { rollbar } from 'monitoring/rollbar';
 
 import { parseFileToGeoJSON } from 'gis/gisSlice';
 
@@ -71,7 +71,7 @@ const DropZone = props => {
         if (success) {
           setCurrentFile(selectedFile);
         } else {
-          sendToRollbar('error', data.payload);
+          rollbar.error(data.payload);
         }
       });
     },

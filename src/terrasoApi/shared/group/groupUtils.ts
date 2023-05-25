@@ -23,7 +23,8 @@ import type {
   GroupMembersFragment,
   GroupMembersInfoFragment,
   GroupMembersPendingFragment,
-} from 'terrasoApi/gql/graphql';
+} from 'terrasoApi/shared/graphqlSchema/graphql';
+
 import { Group, Membership } from './groupSlice';
 
 type GroupQuery = Partial<

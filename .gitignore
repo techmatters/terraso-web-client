@@ -26,4 +26,4 @@ yarn-error.log*
 local.env
 
 # generated
-src/terrasoApi/gql
+src/terrasoApi/shared/graphqlSchema

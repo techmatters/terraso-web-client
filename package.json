@@ -130,7 +130,7 @@
     "extensions": {
       "codegen": {
         "generates": {
-          "src/terrasoApi/gql/": {
+          "src/terrasoApi/shared/graphqlSchema/": {
             "preset": "client",
             "config": {
               "documentMode": "string",

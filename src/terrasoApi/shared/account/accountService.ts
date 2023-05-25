@@ -15,17 +15,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-import { graphql } from 'terrasoApi/gql';
+import { User } from 'terrasoApi/shared/account/accountSlice';
+import { getUserEmail } from 'terrasoApi/shared/account/auth';
+import { getAPIConfig } from 'terrasoApi/shared/config';
+import { graphql } from 'terrasoApi/shared/graphqlSchema';
 import type {
   UserFieldsFragment,
   UserPreferencesFragment,
-} from 'terrasoApi/gql/graphql';
+} from 'terrasoApi/shared/graphqlSchema/graphql';
 import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
-
-import { TERRASO_API_URL } from 'config';
-
-import { User } from './accountSlice';
-import { getUserEmail } from './auth';
 
 const parsePreferences = (
   user: UserFieldsFragment & UserPreferencesFragment
@@ -37,9 +35,12 @@ const parsePreferences = (
 });
 
 const getURL = (provider: string) =>
-  fetch(new URL(`/auth/${provider}/authorize`, TERRASO_API_URL).href, {
-    headers: { 'Content-Type': 'application/json' },
-  })
+  fetch(
+    new URL(`/auth/${provider}/authorize`, getAPIConfig().terrasoAPIURL).href,
+    {
+      headers: { 'Content-Type': 'application/json' },
+    }
+  )
     .then(response => response.json())
     .then(response => response.request_url as string);
 
@@ -141,12 +142,15 @@ export const unsubscribeFromNotifications = (token: string) => {
 };
 
 export const signOut = async () => {
-  const response = await fetch(new URL(`/auth/logout`, TERRASO_API_URL).href, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  const response = await fetch(
+    new URL(`/auth/logout`, getAPIConfig().terrasoAPIURL).href,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
 
   if (response.status !== 200) {
     await Promise.reject(response);

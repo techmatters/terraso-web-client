@@ -14,19 +14,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import Cookies from 'js-cookie';
 import jwt from 'jwt-decode';
 import { UNAUTHENTICATED } from 'terrasoApi/shared/account/authConstants';
-
-import { COOKIES_DOMAIN, TERRASO_API_URL } from 'config';
-
-const COOKIES_PARAMS = { path: '/', domain: COOKIES_DOMAIN };
+import { getAPIConfig } from 'terrasoApi/shared/config';
 
 type AccessToken = {
   email: string;
 };
 
-export const getToken = () => Cookies.get('atoken');
+export const getToken = () => getAPIConfig().tokenStorage.getToken('atoken');
 
 export const getAuthHeaders = (): Record<string, string> => {
   const token = getToken();
@@ -39,16 +35,21 @@ export const getAuthHeaders = (): Record<string, string> => {
 };
 
 export const removeToken = () => {
-  Cookies.remove('rtoken', COOKIES_PARAMS);
-  Cookies.remove('atoken', COOKIES_PARAMS);
+  getAPIConfig().tokenStorage.removeToken('rtoken');
+  getAPIConfig().tokenStorage.removeToken('atoken');
 };
 
 export const refreshToken = async () => {
-  const response = await fetch(new URL('/auth/tokens', TERRASO_API_URL).href, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refresh_token: Cookies.get('rtoken') }),
-  });
+  const response = await fetch(
+    new URL('/auth/tokens', getAPIConfig().terrasoAPIURL).href,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        refresh_token: getAPIConfig().tokenStorage.getToken('rtoken'),
+      }),
+    }
+  );
 
   if (response.status !== 200) {
     await Promise.reject(UNAUTHENTICATED);
@@ -58,8 +59,8 @@ export const refreshToken = async () => {
 
   const { access_token: atoken, refresh_token: rtoken } = tokens;
 
-  Cookies.set('rtoken', rtoken, COOKIES_PARAMS);
-  Cookies.set('atoken', atoken, COOKIES_PARAMS);
+  getAPIConfig().tokenStorage.setToken('rtoken', rtoken);
+  getAPIConfig().tokenStorage.setToken('atoken', atoken);
 };
 
 export const getUserEmail = () => {

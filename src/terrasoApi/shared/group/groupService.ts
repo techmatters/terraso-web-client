@@ -16,11 +16,11 @@
  */
 import _ from 'lodash/fp';
 import { cleanSensitiveCharacters } from 'stringUtils';
-import { graphql } from 'terrasoApi/gql';
+import { graphql } from 'terrasoApi/shared/graphqlSchema';
 import type {
   CoreMembershipUserRoleChoices,
   MembershipAddMutationInput,
-} from 'terrasoApi/gql/graphql';
+} from 'terrasoApi/shared/graphqlSchema/graphql';
 import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
 
 import { Group, Membership } from './groupSlice';

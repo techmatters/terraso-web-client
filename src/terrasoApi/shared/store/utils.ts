@@ -27,11 +27,13 @@ import { User, signOut } from 'terrasoApi/shared/account/accountSlice';
 import { refreshToken } from 'terrasoApi/shared/account/auth';
 import { UNAUTHENTICATED } from 'terrasoApi/shared/account/authConstants';
 import { addMessage } from 'terrasoApi/shared/notifications/notificationsSlice';
-
-import type { AppDispatch, AppState } from './store';
+import type {
+  SharedDispatch,
+  SharedState,
+} from 'terrasoApi/shared/store/store';
 
 const executeAuthRequest = <T>(
-  dispatch: AppDispatch,
+  dispatch: SharedDispatch,
   action: () => Promise<T>
 ) =>
   action().catch(async error => {
@@ -72,11 +74,16 @@ const generateErrorFallbacksPartial = (name: string) => {
 // merged upstream: https://github.com/reduxjs/redux-toolkit/pull/3393
 type RejectPayload = { error: any; parsedErrors: any };
 type ThunkAPIConfig = {
-  state: AppState;
-  dispatch: AppDispatch;
+  state: SharedState;
+  dispatch: SharedDispatch;
   rejectValue: RejectPayload;
 };
-type ThunkAPI = BaseThunkAPI<AppState, unknown, AppDispatch, RejectPayload>;
+type ThunkAPI = BaseThunkAPI<
+  SharedState,
+  unknown,
+  SharedDispatch,
+  RejectPayload
+>;
 
 export type Message = {
   severity: 'success' | 'error';
@@ -150,7 +157,7 @@ export const withExtra =
 export const useFetchData = (
   dataFetchCallback: () => AsyncThunkAction<any, any, ThunkAPIConfig> | null
 ) => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch<SharedDispatch>();
   useEffect(() => {
     const dataFetchRequest = dataFetchCallback();
     if (!dataFetchRequest) {

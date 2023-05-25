@@ -19,8 +19,8 @@ import _ from 'lodash/fp';
 import * as accountService from 'terrasoApi/shared/account/accountService';
 import { getToken, removeToken } from 'terrasoApi/shared/account/auth';
 import logger from 'terrasoApi/shared/monitoring/logger';
+import type { SharedDispatch } from 'terrasoApi/shared/store/store';
 import { createAsyncThunk } from 'terrasoApi/shared/store/utils';
-import type { AppDispatch } from 'terrasoApi/store';
 
 const initialState = {
   currentUser: {
@@ -253,7 +253,7 @@ export const { setUser, setHasToken } = userSlice.actions;
 
 export default userSlice.reducer;
 
-export const signOut = () => (dispatch: AppDispatch) => {
+export const signOut = () => (dispatch: SharedDispatch) => {
   accountService.signOut().catch(error => {
     logger.error('Failed to execute API signout request', error);
   });

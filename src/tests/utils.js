@@ -15,6 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
+<<<<<<< HEAD
+=======
+
+// import for side effects to ensure config happens before running tests
+import 'config';
+
+>>>>>>> a1ce0d1 (refactor: isolate non-group shared code)
 import {
   waitFor as baseWaitFor,
   cleanup,

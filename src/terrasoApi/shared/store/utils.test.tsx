@@ -19,8 +19,7 @@ import { render, screen } from 'tests/utils';
 import React from 'react';
 
 import { fetchAuthURLs } from 'terrasoApi/shared/account/accountSlice';
-
-import { useFetchData } from './utils';
+import { useFetchData } from 'terrasoApi/shared/store/utils';
 
 const TestComponent = () => {
   useFetchData(fetchAuthURLs);
