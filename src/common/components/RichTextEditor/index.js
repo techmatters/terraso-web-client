@@ -104,7 +104,7 @@ const withInlines = editor => {
 
   editor.insertText = text => {
     if (text && isUrl(text)) {
-      wrapLinkPartial(editor)(transformURL(text).validTld(), text);
+      wrapLinkPartial(editor)(transformURL(text), text);
     } else {
       insertText(text);
     }

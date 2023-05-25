@@ -30,7 +30,14 @@ export const transformURL = url => {
 };
 
 export const URL_SCHEMA = yup.object({
-  url: yup.string().trim().ensure().transform(transformURL).url().required(),
+  url: yup
+    .string()
+    .trim()
+    .ensure()
+    .transform(transformURL)
+    .validTld()
+    .url()
+    .required(),
 });
 
 export const isUrl = url => {
