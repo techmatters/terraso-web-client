@@ -18,8 +18,7 @@ import _ from 'lodash/fp';
 import { TypedDocumentString } from 'terrasoApi/gql/graphql';
 import { getAuthHeaders } from 'terrasoApi/shared/account/auth';
 import { UNAUTHENTICATED } from 'terrasoApi/shared/account/authConstants';
-
-import logger from 'monitoring/logger';
+import logger from 'terrasoApi/shared/monitoring/logger';
 
 import { GRAPH_QL_ENDPOINT, TERRASO_API_URL } from 'config';
 

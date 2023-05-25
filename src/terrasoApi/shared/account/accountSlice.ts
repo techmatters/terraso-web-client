@@ -18,10 +18,9 @@ import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
 import * as accountService from 'terrasoApi/shared/account/accountService';
 import { getToken, removeToken } from 'terrasoApi/shared/account/auth';
+import logger from 'terrasoApi/shared/monitoring/logger';
 import { createAsyncThunk } from 'terrasoApi/shared/store/utils';
 import type { AppDispatch } from 'terrasoApi/store';
-
-import logger from 'monitoring/logger';
 
 const initialState = {
   currentUser: {

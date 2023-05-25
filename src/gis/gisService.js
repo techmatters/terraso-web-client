@@ -15,9 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
+import logger from 'terrasoApi/shared/monitoring/logger';
 import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
-
-import logger from 'monitoring/logger';
 
 import { isKmlFile, isShapefile, openGeoJsonFile } from 'gis/gisUtils';
 
