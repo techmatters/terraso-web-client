@@ -17,8 +17,11 @@
 import React, { useMemo } from 'react';
 
 import _ from 'lodash/fp';
-import { useDispatch, useSelector } from 'react-redux';
-import { joinGroup, leaveGroup } from 'terrasoApi/shared/group/groupSlice';
+import {
+  joinMembershipList,
+  leaveMembershipList,
+} from 'terrasoApi/shared/memberships/membershipsSlice';
+import { useDispatch, useSelector } from 'terrasoApi/store';
 
 import { useAnalytics } from 'monitoring/analytics';
 
@@ -45,7 +48,7 @@ const GroupMembershipJoinLeaveButton = props => {
     data: { email: userEmail },
   } = useSelector(state => state.account.currentUser);
   const { fetching, group, joining } = useSelector(
-    _.getOr({}, `group.memberships.${groupSlug}`)
+    state => state.memberships.memberships[groupSlug] ?? {}
   );
   const { tabIndex } = props;
 
@@ -56,7 +59,7 @@ const GroupMembershipJoinLeaveButton = props => {
   const onJoin = successMessage => () => {
     trackEvent('group.join', { props: { group: groupSlug } });
     dispatch(
-      joinGroup({
+      joinMembershipList({
         groupSlug,
         userEmail,
         ownerName: owner.name,
@@ -68,7 +71,7 @@ const GroupMembershipJoinLeaveButton = props => {
   const onRemove = successMessage => () => {
     trackEvent('group.leave', { props: { group: groupSlug } });
     dispatch(
-      leaveGroup({
+      leaveMembershipList({
         groupSlug,
         membershipId: userMembership.membershipId,
         ownerName: owner.name,

@@ -68,7 +68,7 @@ const setup = async initialState => {
           },
         },
       },
-      group: {
+      memberships: {
         memberships: {
           'group-slug': {
             fetching: false,
@@ -86,7 +86,7 @@ const setup = async initialState => {
 test('GroupMembershipCard: Display loader', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
   await setup({
-    group: {
+    memberships: {
       memberships: {
         'group-slug': {
           fetching: true,
@@ -106,7 +106,7 @@ test('GroupMembershipCard: Display join button', async () => {
 });
 test('GroupMembershipCard: Display description', async () => {
   await setup({
-    group: {
+    memberships: {
       memberships: {
         'group-slug': {
           group: {
@@ -132,7 +132,7 @@ test('GroupMembershipCard: Display description', async () => {
 test('GroupMembershipCard: Join error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValueOnce('Join error');
   await setup({
-    group: {
+    memberships: {
       memberships: {
         'group-slug': {
           group: {
@@ -154,14 +154,12 @@ test('GroupMembershipCard: Join (not found)', async () => {
   terrasoApi.requestGraphQL.mockReturnValueOnce(
     Promise.resolve({
       addMembership: {
-        membership: {
-          group: null,
-        },
+        membership: null,
       },
     })
   );
   await setup({
-    group: {
+    memberships: {
       memberships: {
         'group-slug': {
           group: {
@@ -211,7 +209,7 @@ test('GroupMembershipCard: Join', async () => {
     })
   );
   await setup({
-    group: {
+    memberships: {
       memberships: {
         'group-slug': {
           group: {
@@ -269,7 +267,7 @@ test('GroupMembershipCard: Request Join', async () => {
     })
   );
   await setup({
-    group: {
+    memberships: {
       memberships: {
         'group-slug': {
           group: {
@@ -304,7 +302,7 @@ test('GroupMembershipCard: Request Join', async () => {
 test('GroupMembershipCard: Leave error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValueOnce('Leave error');
   await setup({
-    group: {
+    memberships: {
       memberships: {
         'group-slug': {
           group: {
@@ -363,7 +361,7 @@ test('GroupMembershipCard: Leave', async () => {
     })
   );
   await setup({
-    group: {
+    memberships: {
       memberships: {
         'group-slug': {
           group: {
@@ -424,7 +422,7 @@ test('GroupMembershipCard: Manager', async () => {
     })
   );
   await setup({
-    group: {
+    memberships: {
       memberships: {
         'group-slug': {
           group: {

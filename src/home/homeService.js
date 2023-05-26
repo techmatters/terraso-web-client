@@ -15,11 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-import { graphql } from 'terrasoApi/gql';
+import { graphql } from 'terrasoApi/shared/graphqlSchema';
 import {
   extractAccountMembership,
   extractMembersInfo,
-} from 'terrasoApi/shared/group/groupUtils';
+} from 'terrasoApi/shared/memberships/membershipsUtils';
 import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
 
 export const fetchHomeData = email => {

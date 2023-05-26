@@ -78,7 +78,7 @@ type ThunkAPIConfig = {
   dispatch: SharedDispatch;
   rejectValue: RejectPayload;
 };
-type ThunkAPI = BaseThunkAPI<
+export type ThunkAPI = BaseThunkAPI<
   SharedState,
   unknown,
   SharedDispatch,

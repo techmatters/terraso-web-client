@@ -14,8 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import * as groupService from 'terrasoApi/shared/group/groupService';
+import 'tests/utils';
+
 import * as terrasoApiToMock from 'terrasoApi/shared/terrasoApi/api';
+
+import * as groupService from 'group/groupService';
 
 jest.mock('terrasoApi/shared/terrasoApi/api');
 const terrasoApi = jest.mocked(terrasoApiToMock);

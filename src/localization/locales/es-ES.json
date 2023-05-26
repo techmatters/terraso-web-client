@@ -183,9 +183,7 @@
                 "width": "250",
                 "src": "tools/story-maps.svg"
             },
-            "description": [
-                "Crea hermosas historias basadas en mapas"
-            ],
+            "description": ["Crea hermosas historias basadas en mapas"],
             "requirements": "Navegador web moderno (Chrome, Edge, Firefox, Safari)",
             "external": "false"
         }
@@ -902,7 +900,7 @@
         "delete_label": "Eliminar",
         "delete_confirm_title": "Eliminar el story map {{title}}?",
         "delete_confirm_message": "¿Estás seguro de que deseas eliminar el story map? Esto no se puede deshacer.",
-        "delete_confirm_button":"Eliminar Story Map",
+        "delete_confirm_button": "Eliminar Story Map",
         "deleted_story_map": "<strong>{{title}}</strong> fue eliminado",
         "form_media_update_label": "Actualizar multimedia",
         "form_media_placeholder": "Cargue o vincule imágenes, grabaciones de audio o archivos de video.",
@@ -966,5 +964,8 @@
     "site": {
         "description": "Terraso es un conjunto de herramientas para gestionar paisajes, proteger el medio ambiente y fomentar el desarrollo humano.",
         "default_image": "/favicon.png"
+    },
+    "memberships": {
+        "not_found": "Grupo no encontrado"
     }
 }

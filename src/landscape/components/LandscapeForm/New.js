@@ -20,7 +20,6 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchGroupsAutocompleteList } from 'terrasoApi/shared/group/groupSlice';
 import { useFetchData } from 'terrasoApi/shared/store/utils';
 
 import { Typography } from '@mui/material';
@@ -33,6 +32,7 @@ import PageLoader from 'layout/PageLoader';
 import { useAnalytics } from 'monitoring/analytics';
 import { ILM_OUTPUT_PROP, MAP_LANDSCAPE_BOUNDARIES } from 'monitoring/ilm';
 
+import { fetchGroupsAutocompleteList } from 'group/groupSlice';
 import { saveLandscape, setFormNewValues } from 'landscape/landscapeSlice';
 import {
   TYPE_AGRICULTURAL_PRODUCTION_METHOD,

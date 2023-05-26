@@ -14,12 +14,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import {
+  TypedUseSelectorHook,
+  useDispatch as reduxUseDispatch,
+  useSelector as reduxUseSelector,
+} from 'react-redux';
 import createStoreFactory, {
   DispatchFromStoreFactory,
   StateFromStoreFactory,
 } from 'terrasoApi/shared/store/store';
 
 import gisReducer from 'gis/gisSlice';
+import groupReducer from 'group/groupSlice';
 import userHomeReducer from 'home/homeSlice';
 import landscapeReducer from 'landscape/landscapeSlice';
 import sharedDataReducer from 'sharedData/sharedDataSlice';
@@ -30,6 +36,7 @@ export type AppState = StateFromStoreFactory<typeof createStore>;
 export type AppDispatch = DispatchFromStoreFactory<typeof createStore>;
 
 const createStore = createStoreFactory({
+  group: groupReducer,
   userHome: userHomeReducer,
   landscape: landscapeReducer,
   sharedData: sharedDataReducer,
@@ -37,5 +44,8 @@ const createStore = createStoreFactory({
   gis: gisReducer,
   storyMap: storyMapReducer,
 });
+
+export const useSelector: TypedUseSelectorHook<AppState> = reduxUseSelector;
+export const useDispatch: () => AppDispatch = reduxUseDispatch;
 
 export default createStore;

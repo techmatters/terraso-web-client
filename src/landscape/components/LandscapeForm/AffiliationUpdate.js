@@ -20,13 +20,13 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchGroupsAutocompleteList } from 'terrasoApi/shared/group/groupSlice';
 import { useFetchData } from 'terrasoApi/shared/store/utils';
 
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 
+import { fetchGroupsAutocompleteList } from 'group/groupSlice';
 import AffiliationStep from 'landscape/components/LandscapeForm/AffiliationStep';
 import {
   fetchLandscapeForm,

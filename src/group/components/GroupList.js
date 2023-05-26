@@ -20,7 +20,6 @@ import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
-import { fetchGroups } from 'terrasoApi/shared/group/groupSlice';
 import { useFetchData } from 'terrasoApi/shared/store/utils';
 
 import { Button, Card, Link, Stack, Typography } from '@mui/material';
@@ -33,6 +32,7 @@ import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 
 import { GroupContextProvider } from 'group/groupContext';
+import { fetchGroups } from 'group/groupSlice';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberRequestCancel from 'group/membership/components/GroupMemberRequestCancel';

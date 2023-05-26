@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2023 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -14,19 +14,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React from 'react';
+import {
+  DataEntriesFragment,
+  DataEntryFragment,
+  DataEntryVisualizationsFragment,
+} from 'terrasoApi/shared/graphqlSchema/graphql';
 
-import _ from 'lodash/fp';
-import { useSelector } from 'terrasoApi/store';
+export const extractDataEntry = (
+  dataEntry: DataEntryFragment & DataEntryVisualizationsFragment
+) => ({
+  ...dataEntry,
+  visualizations: dataEntry.visualizations.edges.map(edge => edge.node),
+});
 
-import { Typography } from '@mui/material';
-
-const GroupMembershipCount = ({ groupSlug }) => {
-  const { group } = useSelector(
-    state => state.memberships.memberships[groupSlug] ?? {}
-  );
-  const count = _.getOr(0, 'membersInfo.totalCount', group);
-  return <Typography variant="body1">{count}</Typography>;
-};
-
-export default GroupMembershipCount;
+export const extractGroupDataEntries = (group: DataEntriesFragment) =>
+  group.dataEntries.edges.map(edge => extractDataEntry(edge.node));

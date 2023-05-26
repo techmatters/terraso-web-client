@@ -19,14 +19,14 @@ import React, { useCallback, useContext } from 'react';
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import {
   fetchMembers,
   removeMember,
   updateMember,
-} from 'terrasoApi/shared/group/groupSlice';
+} from 'terrasoApi/shared/memberships/membershipsSlice';
 import { useFetchData } from 'terrasoApi/shared/store/utils';
+import { useDispatch, useSelector } from 'terrasoApi/store';
 
 import { LoadingButton } from '@mui/lab';
 import { ListItem, MenuItem, Select, Stack, Typography } from '@mui/material';
@@ -210,7 +210,9 @@ const GroupMembersList = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { list: members, fetching } = useSelector(state => state.group.members);
+  const { list: members, fetching } = useSelector(
+    state => state.memberships.members
+  );
 
   const { owner, groupSlug } = useGroupContext();
 

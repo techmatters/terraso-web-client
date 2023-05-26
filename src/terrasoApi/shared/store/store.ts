@@ -23,7 +23,7 @@ import {
 import { ToolkitStore } from '@reduxjs/toolkit/dist/configureStore';
 import _ from 'lodash/fp';
 import accountReducer from 'terrasoApi/shared/account/accountSlice';
-import groupReducer from 'terrasoApi/shared/group/groupSlice';
+import membershipsReducer from 'terrasoApi/shared/memberships/membershipsSlice';
 import notificationsReducer from 'terrasoApi/shared/notifications/notificationsSlice';
 
 const handleAbortMiddleware: Middleware = () => next => action => {
@@ -39,7 +39,7 @@ const handleAbortMiddleware: Middleware = () => next => action => {
 
 const sharedReducers = {
   account: accountReducer,
-  group: groupReducer,
+  memberships: membershipsReducer,
   notifications: notificationsReducer,
 };
 
