@@ -54,7 +54,14 @@ import { groupDataEntryUploadsByStatus } from './utils';
 
 export const VALIDATION_SCHEMA = yup
   .object({
-    url: yup.string().trim().ensure().transform(transformURL).url().required(),
+    url: yup
+      .string()
+      .trim()
+      .ensure()
+      .transform(transformURL)
+      .validTld()
+      .url()
+      .required(),
     name: yup.string().trim().required(),
     description: yup.string().max(MAX_DESCRIPTION_CHARACTERS).trim(),
   })

@@ -19,6 +19,25 @@ import * as yup from 'yup';
 
 const ARRAY_INDEX_REGEX = /\[([^)]+)\]/;
 
+const hasValidTLD = urlString => {
+  try {
+    const TLD_REGEX = /\.[a-z]{2,}$/i;
+    const url = new URL(urlString);
+    const match = url.hostname.match(TLD_REGEX);
+    return Boolean(match);
+  } catch (e) {
+    return false;
+  }
+};
+
+yup.addMethod(yup.string, 'validTld', function () {
+  return this.test(
+    'validTld',
+    params => ({ key: 'form.validation_url_invalid', params }),
+    value => hasValidTLD(value)
+  );
+});
+
 yup.addMethod(yup.string, 'selected', function () {
   return this.required(params => ({
     key: 'form.validation_select_field_required',

@@ -40,7 +40,13 @@ const VALIDATION_SCHEMA = yup
     description: yup.string().max(MAX_DESCRIPTION_LENGTH).trim().required(),
     location: yup.string().trim().selected(),
     email: yup.string().trim().email(),
-    website: yup.string().trim().ensure().transform(transformURL).url(),
+    website: yup
+      .string()
+      .trim()
+      .ensure()
+      .transform(transformURL)
+      .validTld()
+      .url(),
   })
   .required();
 
