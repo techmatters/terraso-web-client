@@ -84,7 +84,7 @@ export type Message = {
   params?: any;
 };
 
-export const createAsyncThunk = <Returned, ThunkArg>(
+export const createAsyncThunk = <Returned, ThunkArg = void>(
   typePrefix: string,
   action: (
     arg: ThunkArg,

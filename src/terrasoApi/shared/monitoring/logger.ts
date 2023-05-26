@@ -28,8 +28,8 @@ const ORDER = _.flow(
 export const sendToRollbar = (severity, ...args) => rollbar[severity](...args);
 
 const handleLog =
-  severity =>
-  (...args) => {
+  (severity: Severity) =>
+  (...args: any[]) => {
     console[severity](...args);
     if (ORDER[severity] >= ORDER[logLevel]) {
       rollbar[severity](...args);
@@ -37,9 +37,8 @@ const handleLog =
     }
   };
 
-const logger = _.flow(
-  _.map(severity => [severity, handleLog(severity)]),
-  _.fromPairs
-)(LOG_LEVELS);
+const logger = Object.fromEntries(
+  LOG_LEVELS.map(severity => [severity, handleLog(severity)])
+) as Record<Severity, (...args: any[]) => void>;
 
 export default logger;

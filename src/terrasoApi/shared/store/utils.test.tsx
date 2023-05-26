@@ -27,23 +27,25 @@ const TestComponent = () => {
   return <div></div>;
 };
 
-beforeEach(() => {
-  global.fetch = jest.fn();
-});
+const mockFetch = jest.fn<
+  ReturnType<typeof global.fetch>,
+  Parameters<typeof global.fetch>
+>();
+global.fetch = mockFetch;
 
 test('AsyncThunk: Handle error', async () => {
-  global.fetch.mockRejectedValue('Test error');
+  mockFetch.mockRejectedValue('Test error');
   await render(<TestComponent />);
   expect(screen.getByText(/Test error/i)).toBeInTheDocument();
 });
 test('AsyncThunk: Handle multiple errors', async () => {
-  global.fetch.mockRejectedValue(['Test error 1', 'Test error 2']);
+  mockFetch.mockRejectedValue(['Test error 1', 'Test error 2']);
   await render(<TestComponent />);
   expect(screen.getByText(/Test error 1/i)).toBeInTheDocument();
   expect(screen.getByText(/Test error 2/i)).toBeInTheDocument();
 });
 test('AsyncThunk: Complex error message', async () => {
-  global.fetch.mockRejectedValue({
+  mockFetch.mockRejectedValue({
     content: ['common.unexpected_error'],
     params: { error: 'Unexpected' },
   });

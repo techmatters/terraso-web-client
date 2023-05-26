@@ -41,7 +41,7 @@ const getURL = (provider: string) =>
     headers: { 'Content-Type': 'application/json' },
   })
     .then(response => response.json())
-    .then(response => response.request_url);
+    .then(response => response.request_url as string);
 
 export const getAuthURLs = () =>
   Promise.all([getURL('google'), getURL('apple'), getURL('microsoft')]).then(
