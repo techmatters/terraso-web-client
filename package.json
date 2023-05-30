@@ -55,6 +55,10 @@
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.18.10/xlsx-0.18.10.tgz",
     "yup": "^1.1.1"
   },
+  "overrides": {
+    "fork-ts-checker-webpack-plugin": "^6.5.3",
+    "typescript": "^5.0.4"
+  },
   "scripts": {
     "start": "npm run generate-types -- -w -s & react-scripts start",
     "generate-types": "npx graphql-code-generator",
