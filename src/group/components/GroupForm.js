@@ -63,8 +63,7 @@ const VALIDATION_SCHEMA = yup
       .ensure()
       .transform(transformURL)
       .validTld()
-      .url()
-      .notRequired(),
+      .url(),
     membershipType: yup.string(),
   })
   .required();
