@@ -18,7 +18,7 @@ import _ from 'lodash/fp';
 import type {
   AccountMembershipFragment,
   DataEntriesFragment,
-  DataEntryFragment,
+  GroupDataEntryFragment,
   GroupFieldsFragment,
   GroupMembersFragment,
   GroupMembersInfoFragment,
@@ -70,7 +70,7 @@ export const getMemberships = (groups: Group[]) =>
 export const generateIndexedMembers = (memberships: Membership[]) =>
   _.keyBy((member: Membership) => member.membershipId, memberships);
 
-export const extractDataEntry = (dataEntry: DataEntryFragment) => ({
+export const extractDataEntry = (dataEntry: GroupDataEntryFragment) => ({
   ...dataEntry,
   visualizations: dataEntry.visualizations.edges.map(edge => edge.node),
 });
