@@ -70,7 +70,7 @@ const GroupMembershipJoinLeaveButton = props => {
     dispatch(
       leaveGroup({
         groupSlug,
-        membershipId: userMembership.id,
+        membershipId: userMembership.membershipId,
         ownerName: owner.name,
         successMessage,
       })

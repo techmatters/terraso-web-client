@@ -57,7 +57,7 @@ export const extractAccountMembership = ({
 }: AccountMembershipFragment) =>
   accountMembership
     ? {
-        ...accountMembership,
+        ..._.omit('id', accountMembership),
         membershipId: accountMembership.id,
       }
     : undefined;
