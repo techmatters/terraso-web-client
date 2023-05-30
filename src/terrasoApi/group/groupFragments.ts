@@ -16,7 +16,7 @@
  */
 
 export const dataEntry = /* GraphQL */ `
-  fragment dataEntry on DataEntryNode {
+  fragment groupDataEntry on DataEntryNode {
     id
     name
     description
@@ -45,7 +45,7 @@ export const dataEntries = /* GraphQL */ `
     dataEntries(resourceType_In: $resourceTypes) {
       edges {
         node {
-          ...dataEntry
+          ...groupDataEntry
         }
       }
     }

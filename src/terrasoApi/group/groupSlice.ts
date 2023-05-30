@@ -16,6 +16,7 @@
  */
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
+import { User } from 'terrasoApi/account/accountSlice';
 import * as groupService from 'terrasoApi/group/groupService';
 import * as groupUtils from 'terrasoApi/group/groupUtils';
 import {
@@ -30,7 +31,7 @@ export type Group = {
     totalCount?: number;
     pendingCount?: number;
     accountMembership?: Membership;
-    membersSample?: Membership[];
+    membersSample?: (Membership & Omit<User, 'preferences'>)[];
   };
   slug: string;
   id: string;

@@ -15,14 +15,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
+import { graphql } from 'terrasoApi/gql';
 import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
-import { taxonomyTermLanguages } from './taxonomiesFragments';
 import { extractTerms } from './taxonomiesUtils';
 
 export const fetchTermsForTypes = ({ types }) => {
-  const query = `
-    query taxonomyTerms($types: [CoreTaxonomyTermTypeChoices]!){
+  const query = graphql(`
+    query taxonomyTerms($types: [CoreTaxonomyTermTypeChoices]!) {
       taxonomyTerms(type_In: $types) {
         edges {
           node {
@@ -34,8 +34,7 @@ export const fetchTermsForTypes = ({ types }) => {
         }
       }
     }
-    ${taxonomyTermLanguages}
-  `;
+  `);
   return terrasoApi
     .requestGraphQL(query, { types })
     .then(_.get('taxonomyTerms.edges'))

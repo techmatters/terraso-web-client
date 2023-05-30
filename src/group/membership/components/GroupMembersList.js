@@ -228,14 +228,14 @@ const GroupMembersList = () => {
 
   const onMemberRoleChange = (member, newRole) => {
     onUpdateMember({
-      id: member.membershipId,
+      membershipId: member.membershipId,
       userRole: newRole,
     });
   };
 
   const onMemberApprove = member => {
     onUpdateMember({
-      id: member.membershipId,
+      membershipId: member.membershipId,
       membershipStatus: MEMBERSHIP_STATUS_APPROVED,
     });
   };

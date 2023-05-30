@@ -15,24 +15,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-import {
-  groupFields,
-  groupMembersPending,
-} from 'terrasoApi/group/groupFragments';
+import { graphql } from 'terrasoApi/gql';
 import {
   extractAccountMembership,
   extractMembersInfo,
 } from 'terrasoApi/group/groupUtils';
 import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
-import { defaultGroup, landscapeFields } from 'landscape/landscapeFragments';
-import { storyMapMetadataFields } from 'storyMap/storyMapFragments';
-
 export const fetchHomeData = email => {
-  const query = `
+  const query = graphql(`
     query home($accountEmail: String!) {
       landscapeGroups: groups(
-        memberships_Email: $accountEmail,
+        memberships_Email: $accountEmail
         associatedLandscapes_IsDefaultLandscapeGroup: true
       ) {
         edges {
@@ -51,7 +45,7 @@ export const fetchHomeData = email => {
         }
       }
       userIndependentGroups: groups(
-        memberships_Email: $accountEmail,
+        memberships_Email: $accountEmail
         associatedLandscapes_Isnull: true
       ) {
         edges {
@@ -63,7 +57,7 @@ export const fetchHomeData = email => {
         }
       }
       userLandscapeGroups: groups(
-        memberships_Email: $accountEmail,
+        memberships_Email: $accountEmail
         associatedLandscapes_IsDefaultLandscapeGroup: false
       ) {
         edges {
@@ -82,12 +76,7 @@ export const fetchHomeData = email => {
         }
       }
     }
-    ${groupFields}
-    ${groupMembersPending}
-    ${landscapeFields}
-    ${defaultGroup}
-    ${storyMapMetadataFields}
-  `;
+  `);
   return terrasoApi
     .requestGraphQL(query, { accountEmail: email })
     .then(response => ({

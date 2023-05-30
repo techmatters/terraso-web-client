@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-import { dataEntries } from 'terrasoApi/group/groupFragments';
+import { graphql } from 'terrasoApi/gql';
 import {
   extractDataEntry,
   extractGroupDataEntries,
@@ -23,12 +23,6 @@ import {
 import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
-
-import {
-  dataEntry as dataEntryFragment,
-  visualizationConfig,
-  visualizationConfigWithConfiguration,
-} from './sharedDataFragments';
 
 const ALL_RESOURCE_TYPES = [...SHARED_DATA_ACCEPTED_EXTENSIONS, 'link'];
 
@@ -54,7 +48,7 @@ export const uploadSharedDataFile = async ({ groupSlug, file }) => {
 };
 
 export const deleteSharedData = ({ dataEntry }) => {
-  const query = `
+  const query = graphql(`
     mutation deleteSharedData($id: ID!) {
       deleteDataEntry(input: { id: $id }) {
         dataEntry {
@@ -63,14 +57,14 @@ export const deleteSharedData = ({ dataEntry }) => {
         errors
       }
     }
-  `;
+  `);
   return terrasoApi.requestGraphQL(query, {
     id: dataEntry.id,
   });
 };
 
 export const addSharedDataLink = ({ groupSlug, link }) => {
-  const query = `
+  const query = graphql(`
     mutation addDataEntry($input: DataEntryAddMutationInput!) {
       addDataEntry(input: $input) {
         dataEntry {
@@ -81,7 +75,7 @@ export const addSharedDataLink = ({ groupSlug, link }) => {
         errors
       }
     }
-  `;
+  `);
   return terrasoApi
     .requestGraphQL(query, {
       input: {
@@ -95,7 +89,7 @@ export const addSharedDataLink = ({ groupSlug, link }) => {
 };
 
 export const updateSharedData = ({ dataEntry }) => {
-  const query = `
+  const query = graphql(`
     mutation updateSharedData($input: DataEntryUpdateMutationInput!) {
       updateDataEntry(input: $input) {
         dataEntry {
@@ -111,9 +105,7 @@ export const updateSharedData = ({ dataEntry }) => {
         errors
       }
     }
-    ${dataEntryFragment}
-    ${visualizationConfigWithConfiguration}
-  `;
+  `);
   return terrasoApi
     .requestGraphQL(query, {
       input: dataEntry,
@@ -126,8 +118,8 @@ export const fetchGroupSharedData = ({
   slug,
   resourceTypes = ALL_RESOURCE_TYPES,
 }) => {
-  const query = `
-    query group($slug: String!, $resourceTypes: [String]!){
+  const query = graphql(`
+    query group($slug: String!, $resourceTypes: [String]!) {
       groups(slug: $slug) {
         edges {
           node {
@@ -136,8 +128,7 @@ export const fetchGroupSharedData = ({
         }
       }
     }
-    ${dataEntries}
-  `;
+  `);
   return terrasoApi
     .requestGraphQL(query, { slug, resourceTypes })
     .then(_.get('groups.edges[0].node'))
@@ -151,8 +142,10 @@ export const addVisualizationConfig = ({
   selectedFile,
   visualizationConfig,
 }) => {
-  const query = `
-    mutation addVisualizationConfig($input: VisualizationConfigAddMutationInput!) {
+  const query = graphql(`
+    mutation addVisualizationConfig(
+      $input: VisualizationConfigAddMutationInput!
+    ) {
       addVisualizationConfig(input: $input) {
         visualizationConfig {
           slug
@@ -160,7 +153,7 @@ export const addVisualizationConfig = ({
         errors
       }
     }
-  `;
+  `);
   const configuration = JSON.stringify(
     _.omit('selectedFile', visualizationConfig)
   );
@@ -179,7 +172,7 @@ export const addVisualizationConfig = ({
 };
 
 export const deleteVisualizationConfig = config => {
-  const query = `
+  const query = graphql(`
     mutation deleteVisualizationConfig($id: ID!) {
       deleteVisualizationConfig(input: { id: $id }) {
         visualizationConfig {
@@ -188,17 +181,19 @@ export const deleteVisualizationConfig = config => {
         errors
       }
     }
-    ${visualizationConfig}
-  `;
+  `);
   return terrasoApi.requestGraphQL(query, {
     id: config.id,
   });
 };
 
 export const fetchVisualizationConfig = ({ groupSlug, configSlug }) => {
-  const query = `
-    query fetchVisualizationConfig($groupSlug: String!, $configSlug: String!){
-      visualizationConfigs(dataEntry_Groups_Slug: $groupSlug, slug: $configSlug) {
+  const query = graphql(`
+    query fetchVisualizationConfig($groupSlug: String!, $configSlug: String!) {
+      visualizationConfigs(
+        dataEntry_Groups_Slug: $groupSlug
+        slug: $configSlug
+      ) {
         edges {
           node {
             ...visualizationConfigWithConfiguration
@@ -209,9 +204,7 @@ export const fetchVisualizationConfig = ({ groupSlug, configSlug }) => {
         }
       }
     }
-    ${dataEntryFragment}
-    ${visualizationConfigWithConfiguration}
-  `;
+  `);
   return terrasoApi
     .requestGraphQL(query, { groupSlug, configSlug })
     .then(_.get('visualizationConfigs.edges[0].node'))

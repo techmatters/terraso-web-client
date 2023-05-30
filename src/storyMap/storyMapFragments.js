@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-export const storyMapFields = `
+export const storyMapFields = /* GraphQL */ `
   fragment storyMapFields on StoryMapNode {
     id
     slug
@@ -33,7 +33,7 @@ export const storyMapFields = `
   }
 `;
 
-export const storyMapMetadataFields = `
+export const storyMapMetadataFields = /* GraphQL */ `
   fragment storyMapMetadataFields on StoryMapNode {
     id
     slug
