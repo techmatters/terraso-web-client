@@ -14,14 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {
-  accountMembership,
-  groupMembersInfo,
-} from 'terrasoApi/group/groupFragments';
 
-import { taxonomyTermLanguages } from 'taxonomies/taxonomiesFragments';
-
-export const landscapeFields = `
+export const landscapeFields = /* GraphQL */ `
   fragment landscapeFields on LandscapeNode {
     id
     slug
@@ -34,7 +28,7 @@ export const landscapeFields = `
   }
 `;
 
-export const landscapeProfileFields = `
+export const landscapeProfileFields = /* GraphQL */ `
   fragment landscapeProfileFields on LandscapeNode {
     id
     slug
@@ -81,13 +75,12 @@ export const landscapeProfileFields = `
       }
     }
   }
-  ${taxonomyTermLanguages}
 `;
 
-export const landscapePartnershipField = `
+export const landscapePartnershipField = /* GraphQL */ `
   fragment landscapePartnershipField on LandscapeNode {
     partnershipStatus
-    associatedGroups(isPartnership:true) {
+    associatedGroups(isPartnership: true) {
       edges {
         node {
           isPartnership
@@ -102,7 +95,7 @@ export const landscapePartnershipField = `
   }
 `;
 
-export const defaultGroup = `
+export const defaultGroup = /* GraphQL */ `
   fragment defaultGroup on LandscapeNode {
     defaultGroup {
       id
@@ -111,10 +104,9 @@ export const defaultGroup = `
       ...accountMembership
     }
   }
-  ${accountMembership}
 `;
 
-export const defaultGroupWithMembersSample = `
+export const defaultGroupWithMembersSample = /* GraphQL */ `
   fragment defaultGroupWithMembersSample on LandscapeNode {
     defaultGroup {
       id
@@ -123,6 +115,4 @@ export const defaultGroupWithMembersSample = `
       ...accountMembership
     }
   }
-  ${accountMembership}
-  ${groupMembersInfo}
 `;

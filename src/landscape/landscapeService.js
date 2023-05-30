@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-import { accountMembership } from 'terrasoApi/group/groupFragments';
+import { graphql } from 'terrasoApi/gql';
 import {
   extractAccountMembership,
   extractMembersInfo,
@@ -23,13 +23,6 @@ import {
 import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
 import * as gisService from 'gis/gisService';
-import {
-  defaultGroup,
-  defaultGroupWithMembersSample,
-  landscapeFields,
-  landscapePartnershipField,
-  landscapeProfileFields,
-} from 'landscape/landscapeFragments';
 import { extractTerms } from 'taxonomies/taxonomiesUtils';
 
 import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
@@ -109,8 +102,8 @@ const cleanLandscape = landscape =>
   )(landscape);
 
 export const fetchLandscapeToUpdate = slug => {
-  const query = `
-    query landscapes($slug: String!){
+  const query = graphql(`
+    query landscapesToUpdate($slug: String!) {
       landscapes(slug: $slug) {
         edges {
           node {
@@ -119,8 +112,7 @@ export const fetchLandscapeToUpdate = slug => {
         }
       }
     }
-    ${landscapeProfileFields}
-  `;
+  `);
   return terrasoApi
     .requestGraphQL(query, { slug })
     .then(_.get('landscapes.edges[0].node'))
@@ -147,8 +139,8 @@ const getDefaultGroup = landscape => {
 };
 
 export const fetchLandscapeToView = slug => {
-  const query = `
-    query landscapes($slug: String!){
+  const query = graphql(`
+    query landscapesToView($slug: String!) {
       landscapes(slug: $slug) {
         edges {
           node {
@@ -160,10 +152,7 @@ export const fetchLandscapeToView = slug => {
         }
       }
     }
-    ${landscapeFields}
-    ${landscapePartnershipField}
-    ${defaultGroupWithMembersSample}
-  `;
+  `);
   return terrasoApi
     .requestGraphQL(query, { slug })
     .then(_.get('landscapes.edges[0].node'))
@@ -197,8 +186,8 @@ export const fetchLandscapeToView = slug => {
 };
 
 export const fetchLandscapeProfile = slug => {
-  const query = `
-    query landscapes($slug: String!){
+  const query = graphql(`
+    query landscapesProfiles($slug: String!) {
       landscapes(slug: $slug) {
         edges {
           node {
@@ -208,9 +197,7 @@ export const fetchLandscapeProfile = slug => {
         }
       }
     }
-    ${landscapeProfileFields}
-    ${defaultGroup}
-  `;
+  `);
   return terrasoApi
     .requestGraphQL(query, { slug })
     .then(_.get('landscapes.edges[0].node'))
@@ -227,8 +214,8 @@ export const fetchLandscapeProfile = slug => {
 };
 
 export const fetchLandscapeToUploadSharedData = slug => {
-  const query = `
-    query landscapes($slug: String!){
+  const query = graphql(`
+    query landscapesToUploadSharedData($slug: String!) {
       landscapes(slug: $slug) {
         edges {
           node {
@@ -238,9 +225,7 @@ export const fetchLandscapeToUploadSharedData = slug => {
         }
       }
     }
-    ${landscapeFields}
-    ${defaultGroup}
-  `;
+  `);
   return terrasoApi
     .requestGraphQL(query, { slug })
     .then(_.get('landscapes.edges[0].node'))
@@ -252,7 +237,7 @@ export const fetchLandscapeToUploadSharedData = slug => {
 };
 
 export const fetchLandscapes = () => {
-  const query = `
+  const query = graphql(`
     query landscapes {
       landscapes {
         edges {
@@ -267,9 +252,7 @@ export const fetchLandscapes = () => {
         }
       }
     }
-    ${landscapeFields}
-    ${defaultGroup}
-  `;
+  `);
   return terrasoApi
     .requestGraphQL(query)
     .then(response => response.landscapes)
@@ -288,8 +271,8 @@ export const fetchLandscapes = () => {
 };
 
 export const fetchLandscapeForMembers = slug => {
-  const query = `
-    query landscapes($slug: String!){
+  const query = graphql(`
+    query landscapesForMembers($slug: String!) {
       landscapes(slug: $slug) {
         edges {
           node {
@@ -302,9 +285,7 @@ export const fetchLandscapeForMembers = slug => {
         }
       }
     }
-    ${landscapeFields}
-    ${accountMembership}
-  `;
+  `);
   return terrasoApi
     .requestGraphQL(query, { slug })
     .then(_.get('landscapes.edges[0].node'))
@@ -320,7 +301,7 @@ export const fetchLandscapeForMembers = slug => {
 };
 
 const updateLandscape = landscape => {
-  const query = `
+  const query = graphql(`
     mutation updateLandscape($input: LandscapeUpdateMutationInput!) {
       updateLandscape(input: $input) {
         landscape {
@@ -329,8 +310,7 @@ const updateLandscape = landscape => {
         errors
       }
     }
-    ${landscapeProfileFields}
-  `;
+  `);
   return terrasoApi
     .requestGraphQL(query, { input: cleanLandscape(landscape) })
     .then(response => ({ new: false, ...response.updateLandscape.landscape }))
@@ -341,8 +321,8 @@ const updateLandscape = landscape => {
 };
 
 const addLandscape = landscape => {
-  const query = `
-    mutation addLandscape($input: LandscapeAddMutationInput!){
+  const query = graphql(`
+    mutation addLandscape($input: LandscapeAddMutationInput!) {
       addLandscape(input: $input) {
         landscape {
           ...landscapeProfileFields
@@ -350,8 +330,7 @@ const addLandscape = landscape => {
         errors
       }
     }
-    ${landscapeProfileFields}
-  `;
+  `);
   return terrasoApi
     .requestGraphQL(query, { input: cleanLandscape(landscape) })
     .then(response => ({ new: true, ...response.addLandscape.landscape }))

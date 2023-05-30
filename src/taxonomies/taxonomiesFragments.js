@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export const taxonomyTermLanguages = `
+export const taxonomyTermLanguages = /* GraphQL */ `
   fragment taxonomyTermLanguages on TaxonomyTermNode {
     valueEn
     valueEs

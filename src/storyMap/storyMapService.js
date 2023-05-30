@@ -15,13 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
+import { graphql } from 'terrasoApi/gql';
 import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 
-import { storyMapFields, storyMapMetadataFields } from './storyMapFragments';
-
 export const fetchSamples = (params, currentUser) => {
-  const query = `
-    query home($accountEmail: String!) {
+  const query = graphql(`
+    query storyMapsHome($accountEmail: String!) {
       storyMaps(createdBy_Email_Not: $accountEmail) {
         edges {
           node {
@@ -30,8 +29,7 @@ export const fetchSamples = (params, currentUser) => {
         }
       }
     }
-    ${storyMapMetadataFields}
-  `;
+  `);
   return terrasoApi
     .requestGraphQL(query, { accountEmail: currentUser.email })
     .then(response => ({
@@ -40,8 +38,8 @@ export const fetchSamples = (params, currentUser) => {
 };
 
 export const fetchStoryMap = ({ slug, storyMapId }) => {
-  const query = `
-    query fetchStoryMap($slug: String!, $storyMapId: String!){
+  const query = graphql(`
+    query fetchStoryMap($slug: String!, $storyMapId: String!) {
       storyMaps(slug: $slug, storyMapId: $storyMapId) {
         edges {
           node {
@@ -50,8 +48,7 @@ export const fetchStoryMap = ({ slug, storyMapId }) => {
         }
       }
     }
-    ${storyMapFields}
-  `;
+  `);
   return terrasoApi
     .requestGraphQL(query, { slug, storyMapId })
     .then(_.get('storyMaps.edges[0].node'))
@@ -105,7 +102,7 @@ export const updateStoryMap = async ({ storyMap, files }) => {
 };
 
 export const deleteStoryMap = ({ storyMap }) => {
-  const query = `
+  const query = graphql(`
     mutation deleteStoryMap($id: ID!) {
       deleteStoryMap(input: { id: $id }) {
         storyMap {
@@ -114,7 +111,7 @@ export const deleteStoryMap = ({ storyMap }) => {
         errors
       }
     }
-  `;
+  `);
   return terrasoApi.requestGraphQL(query, {
     id: storyMap.id,
   });

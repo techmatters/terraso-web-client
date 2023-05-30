@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export const dataEntry = `
+export const dataEntry = /* GraphQL */ `
   fragment dataEntry on DataEntryNode {
     id
     name
@@ -47,10 +47,9 @@ export const visualizationConfig = /* GraphQL */ `
   }
 `;
 
-export const visualizationConfigWithConfiguration = `
+export const visualizationConfigWithConfiguration = /* GraphQL */ `
   fragment visualizationConfigWithConfiguration on VisualizationConfigNode {
     ...visualizationConfig
     configuration
   }
-  ${visualizationConfig}
 `;
