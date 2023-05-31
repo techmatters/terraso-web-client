@@ -34,17 +34,21 @@ type GroupQuery = Partial<
     GroupFieldsFragment
 >;
 
-export const extractMembersInfo = (group: GroupQuery) => ({
-  totalCount: group.membershipsCount ?? group.memberships?.totalCount,
-  pendingCount: group.pending?.totalCount,
+export const extractMembersInfo = (group?: GroupQuery | null) => ({
+  totalCount: group?.membershipsCount ?? group?.memberships?.totalCount,
+  pendingCount: group?.pending?.totalCount,
   accountMembership: extractAccountMembership(group),
   membersSample: extractMembers(group),
 });
 
-export const extractMembers = (group: GroupQuery) =>
+export const extractMembers = (group?: GroupQuery | null) =>
   (
-    (group as Partial<GroupMembersFragment> & Partial<GroupMembersInfoFragment>)
-      .memberships?.edges || []
+    (
+      group as
+        | (Partial<GroupMembersFragment> & Partial<GroupMembersInfoFragment>)
+        | null
+        | undefined
+    )?.memberships?.edges || []
   ).map(edge => ({
     membershipId: edge.node.id,
     userRole: edge.node.userRole,
@@ -52,13 +56,13 @@ export const extractMembers = (group: GroupQuery) =>
     ...edge.node.user,
   }));
 
-export const extractAccountMembership = ({
-  accountMembership,
-}: AccountMembershipFragment) =>
-  accountMembership
+export const extractAccountMembership = (
+  group?: AccountMembershipFragment | null
+) =>
+  group?.accountMembership
     ? {
-        ..._.omit('id', accountMembership),
-        membershipId: accountMembership.id,
+        ..._.omit('id', group.accountMembership),
+        membershipId: group.accountMembership.id,
       }
     : undefined;
 
@@ -68,12 +72,14 @@ export const getMemberships = (groups: Group[]) =>
   );
 
 export const generateIndexedMembers = (memberships: Membership[]) =>
-  _.keyBy((member: Membership) => member.membershipId, memberships);
+  _.keyBy(member => member.membershipId, memberships);
 
-export const extractDataEntry = (dataEntry: GroupDataEntryFragment) => ({
+export const extractDataEntry = (
+  dataEntry?: GroupDataEntryFragment | null
+) => ({
   ...dataEntry,
-  visualizations: dataEntry.visualizations.edges.map(edge => edge.node),
+  visualizations: dataEntry?.visualizations.edges.map(edge => edge.node),
 });
 
-export const extractGroupDataEntries = (group: DataEntriesFragment) =>
-  group.dataEntries.edges.map(edge => extractDataEntry(edge.node));
+export const extractGroupDataEntries = (group?: DataEntriesFragment | null) =>
+  group?.dataEntries.edges.map(edge => extractDataEntry(edge.node));
