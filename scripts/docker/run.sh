@@ -5,7 +5,7 @@ COMMAND="$2"
 
 # Define specific folders and files to mount from local dev
 # to improve start performance
-toMount="locales public scripts src .eslintrc .prettierrc .stylelintrc tsconfig.json package.json package-lock.json"
+toMount="locales public scripts src .gitignore .eslintrc .prettierrc .prettierignore .stylelintrc tsconfig.json package.json package-lock.json"
 volumes=""
 for entry in $toMount
 do
