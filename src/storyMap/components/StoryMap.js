@@ -95,7 +95,6 @@ const Chapter = ({ theme, record }) => {
   const { t } = useTranslation();
   const classList = [
     'step-container',
-    'step',
     ALIGNMENTS[record.alignment] || 'centered',
     ...(record.hidden ? ['hidden'] : []),
   ].join(' ');
@@ -104,11 +103,16 @@ const Chapter = ({ theme, record }) => {
 
   return (
     <Box
-      id={record.id}
       component="section"
       aria-label={t('storyMap.view_chapter_label', { title: record.title })}
       className={classList}
     >
+      {/* div with ID added because of an Intersection Observer issue with overflow */}
+      <Box
+        sx={{ position: 'absolute', height: 300, width: '100%' }}
+        className="step"
+        id={record.id}
+      ></Box>
       <Box
         className={`${theme} step-content`}
         sx={{
@@ -197,6 +201,19 @@ const getTransition = (config, id) => {
     transition: chapter,
     index: chapterIndex,
   };
+};
+
+const getStepContainer = response => {
+  const element = response.element;
+  // Check it element has class step-container
+  if (element.classList.contains('step-container')) {
+    return element;
+  }
+  // Check if parent element has class step-container
+  if (element.parentElement.classList.contains('step-container')) {
+    return element.parentElement;
+  }
+  return null;
 };
 
 const StoryMap = props => {
@@ -436,6 +453,7 @@ const StoryMap = props => {
         offset: 0.5,
       })
       .onStepEnter(async response => {
+        console.log({ response });
         const { index, transition } = getTransition(
           {
             titleTransition: config.titleTransition,
@@ -444,7 +462,7 @@ const StoryMap = props => {
           response.element.id
         );
 
-        response.element.classList.add('active');
+        getStepContainer(response)?.classList.add('active');
         startTransition(transition);
         onStepChange?.(response.element.id);
 
@@ -467,7 +485,7 @@ const StoryMap = props => {
           },
           response.element.id
         );
-        response.element.classList.remove('active');
+        getStepContainer(response)?.classList.remove('active');
         if (transition?.onChapterExit && transition.onChapterExit.length > 0) {
           transition.onChapterExit.forEach(setLayerOpacity);
         }

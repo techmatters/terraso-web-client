@@ -176,14 +176,17 @@ const ChapterForm = ({ theme, record }) => {
   return (
     <Box
       className={classList}
-      direction="row"
       component="section"
       aria-label={t('storyMap.view_chapter_label', {
         title: record.title || t('storyMap.form_chapter_no_title_label'),
       })}
     >
       {/* div with ID added because of an Intersection Observer issue with overflow */}
-      <div className="step" id={record.id}></div>
+      <Box
+        sx={{ position: 'absolute', height: 300, width: '100%' }}
+        className="step"
+        id={record.id}
+      ></Box>
       <ChapterConfig
         chapter={record}
         onAlignmentChange={onFieldChange('alignment')}
