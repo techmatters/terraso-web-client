@@ -182,11 +182,7 @@ const ChapterForm = ({ theme, record }) => {
       })}
     >
       {/* div with ID added because of an Intersection Observer issue with overflow */}
-      <Box
-        sx={{ position: 'absolute', height: 300, width: '100%' }}
-        className="step"
-        id={record.id}
-      ></Box>
+      <div className="step" id={record.id}></div>
       <ChapterConfig
         chapter={record}
         onAlignmentChange={onFieldChange('alignment')}

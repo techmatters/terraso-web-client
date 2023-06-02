@@ -109,7 +109,11 @@ const Chapter = ({ theme, record }) => {
     >
       {/* div with ID added because of an Intersection Observer issue with overflow */}
       <Box
-        sx={{ position: 'absolute', height: 300, width: '100%' }}
+        sx={{
+          position: 'absolute',
+          height: 300,
+          width: '100%',
+        }}
         className="step"
         id={record.id}
       ></Box>
@@ -153,8 +157,11 @@ const Title = props => {
   }
 
   const scrollTo = id => {
-    const element = document.getElementById(id);
-    element?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    document.getElementById(id)?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+      inline: 'center',
+    });
   };
 
   const onOutlineItemClick = id => event => {
