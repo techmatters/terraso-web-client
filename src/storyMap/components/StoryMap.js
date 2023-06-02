@@ -95,6 +95,7 @@ const Chapter = ({ theme, record }) => {
   const { t } = useTranslation();
   const classList = [
     'step-container',
+    'step',
     ALIGNMENTS[record.alignment] || 'centered',
     ...(record.hidden ? ['hidden'] : []),
   ].join(' ');
@@ -103,20 +104,11 @@ const Chapter = ({ theme, record }) => {
 
   return (
     <Box
+      id={record.id}
       component="section"
       aria-label={t('storyMap.view_chapter_label', { title: record.title })}
       className={classList}
     >
-      {/* div with ID added because of an Intersection Observer issue with overflow */}
-      <Box
-        sx={{
-          position: 'absolute',
-          height: 300,
-          width: '100%',
-        }}
-        className="step"
-        id={record.id}
-      ></Box>
       <Box
         className={`${theme} step-content`}
         sx={{
@@ -456,6 +448,7 @@ const StoryMap = props => {
     const scroller = scrollama();
     scroller
       .setup({
+        root: document,
         step: '.step',
         offset: 0.5,
       })
