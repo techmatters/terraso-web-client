@@ -199,19 +199,6 @@ const getTransition = (config, id) => {
   };
 };
 
-const getStepContainer = response => {
-  const element = response.element;
-  // Check it element has class step-container
-  if (element.classList.contains('step-container')) {
-    return element;
-  }
-  // Check if parent element has class step-container
-  if (element.parentElement.classList.contains('step-container')) {
-    return element.parentElement;
-  }
-  return null;
-};
-
 const StoryMap = props => {
   const { t } = useTranslation();
   const {
@@ -459,7 +446,7 @@ const StoryMap = props => {
           response.element.id
         );
 
-        getStepContainer(response)?.classList.add('active');
+        response.element.classList.add('active');
         startTransition(transition);
         onStepChange?.(response.element.id);
 
@@ -482,7 +469,7 @@ const StoryMap = props => {
           },
           response.element.id
         );
-        getStepContainer(response)?.classList.remove('active');
+        response.element.classList.remove('active');
         if (transition?.onChapterExit && transition.onChapterExit.length > 0) {
           transition.onChapterExit.forEach(setLayerOpacity);
         }
