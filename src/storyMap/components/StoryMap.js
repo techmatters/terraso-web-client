@@ -437,7 +437,6 @@ const StoryMap = props => {
         offset: 0.5,
       })
       .onStepEnter(async response => {
-        console.log({ response });
         const { index, transition } = getTransition(
           {
             titleTransition: config.titleTransition,
