@@ -149,11 +149,8 @@ const Title = props => {
   }
 
   const scrollTo = id => {
-    document.getElementById(id)?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-      inline: 'center',
-    });
+    const element = document.getElementById(id);
+    element?.scrollIntoView({ block: 'start', behavior: 'smooth' });
   };
 
   const onOutlineItemClick = id => event => {
