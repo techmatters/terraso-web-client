@@ -176,6 +176,7 @@ const ChapterForm = ({ theme, record }) => {
   return (
     <Box
       className={classList}
+      direction="row"
       component="section"
       aria-label={t('storyMap.view_chapter_label', {
         title: record.title || t('storyMap.form_chapter_no_title_label'),
