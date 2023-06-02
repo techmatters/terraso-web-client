@@ -25,6 +25,14 @@ export const serialize = nodes => {
     return;
   }
 
+  if (typeof nodes === 'string') {
+    return nodes;
+  }
+
+  if (!Array.isArray(nodes)) {
+    return;
+  }
+
   return nodes.map(n => SlateNode.string(n)).join(' ');
 };
 

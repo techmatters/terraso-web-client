@@ -432,6 +432,7 @@ const StoryMap = props => {
     const scroller = scrollama();
     scroller
       .setup({
+        root: document,
         step: '.step',
         offset: 0.5,
       })
