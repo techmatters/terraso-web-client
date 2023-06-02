@@ -141,6 +141,8 @@ export const MAPBOX_ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 export const MAPBOX_STYLE_DEFAULT =
   process.env.REACT_APP_MAPBOX_STYLE_DEFAULT ||
   'mapbox://styles/mapbox/satellite-v9';
+export const MAPBOX_PROJECTION_DEFAULT =
+  process.env.REACT_APP_MAPBOX_PROJECTION_DEFAULT || 'globe';
 
 export const STORY_MAP_INSET_STYLE = 'mapbox://styles/mapbox/dark-v10';
 export const STORY_MAP_MEDIA_MAX_SIZE = 10000000; // 10 MB

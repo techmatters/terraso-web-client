@@ -25,3 +25,12 @@ export const withProps = (Component, customProps) =>
     };
     return <Component ref={ref} {...componentProps} />;
   });
+
+export const withWrapper = (Component, Wrapper) =>
+  React.forwardRef((props, ref) => {
+    return (
+      <Wrapper>
+        <Component ref={ref} {...props} />
+      </Wrapper>
+    );
+  });

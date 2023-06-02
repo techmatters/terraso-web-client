@@ -23,6 +23,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import { Marker, Popup, useMap } from 'react-leaflet';
 import { useSelector } from 'react-redux';
+import mapboxgl from 'gis/mapbox';
 import { getLandscapePin } from 'landscape/landscapeUtils';
 import './LandscapeListMap.css';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +31,9 @@ import { Link, Typography } from '@mui/material';
 import RouterLink from 'common/components/RouterLink';
 import { countryNameForCode } from 'common/utils';
 import { LAYER_ESRI } from 'gis/components/Map';
+import MapboxMap, {
+  useMap as useMapboxContext,
+} from 'gis/components/MapboxMap';
 import { isValidLatitude, isValidLongitude } from 'gis/gisUtils';
 
 const LandscapePopup = ({ landscape }) => {
@@ -121,17 +125,126 @@ const LandscapesClusters = props => {
   );
 };
 
+const LandscapesMapboxMapClusters = props => {
+  const { map } = useMapboxContext();
+  const { landscapes } = useSelector(state => state.landscape.list);
+
+  const landscapesWithPosition = useMemo(() => {
+    return landscapes
+      .map(landscape => ({
+        position: getLandscapePin(landscape),
+        data: landscape,
+      }))
+      .filter(landscape => !!landscape.position)
+      .filter(landscape => {
+        const validLat = isValidLatitude(landscape.position[0]);
+        const validLng = isValidLongitude(landscape.position[1]);
+        return validLat && validLng;
+      });
+  }, [landscapes]);
+
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+
+    map.addSource('landscapes', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: landscapesWithPosition.map(landscape => ({
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: landscape.position.reverse(),
+          },
+          properties: {
+            name: landscape.data.name,
+            slug: landscape.data.slug,
+            location: landscape.data.location,
+          },
+        })),
+      },
+      cluster: true,
+      clusterMaxZoom: 14,
+      clusterRadius: 50,
+    });
+
+    map.addLayer({
+      id: 'clusters',
+      type: 'circle',
+      source: 'landscapes',
+      filter: ['has', 'point_count'],
+      paint: {
+        'circle-color': '#ff580d',
+        'circle-radius': 15,
+        'circle-stroke-width': 5,
+        'circle-stroke-color': '#ff580d',
+        'circle-stroke-opacity': 0.5,
+      },
+    });
+
+    map.addLayer({
+      id: 'cluster-count',
+      type: 'symbol',
+      source: 'landscapes',
+      filter: ['has', 'point_count'],
+      layout: {
+        'text-field': ['get', 'point_count_abbreviated'],
+        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+        'text-size': 12,
+      },
+    });
+
+    map.addLayer({
+      id: 'unclustered-point',
+      type: 'circle',
+      source: 'landscapes',
+      filter: ['!', ['has', 'point_count']],
+      paint: {
+        'circle-color': '#ff580d',
+        'circle-radius': 7.5,
+        'circle-stroke-width': 0,
+      },
+    });
+
+    // Fit bounds of landscapes source
+    const bounds = landscapesWithPosition.reduce(
+      (bounds, landscape) => bounds.extend(landscape.position),
+      new mapboxgl.LngLatBounds()
+    );
+
+    map.fitBounds(bounds, {
+      padding: 50,
+    });
+
+    return () => {
+      map.removeSource('landscapes');
+      map.removeLayer('clusters');
+      map.removeLayer('cluster-count');
+      map.removeLayer('unclustered-point');
+    };
+  }, [map, landscapesWithPosition]);
+
+  return null;
+};
+
 const LandscapeListMap = props => {
   return (
-    <Map
-      style={{
-        width: '100%',
-        height: '400px',
-      }}
-      defaultLayer={LAYER_ESRI}
-    >
-      <LandscapesClusters {...props} />
-    </Map>
+    <>
+      <MapboxMap projection="mercator">
+        <LandscapesMapboxMapClusters {...props} />
+      </MapboxMap>
+      <Map
+        style={{
+          width: '100%',
+          height: '400px',
+        }}
+        defaultLayer={LAYER_ESRI}
+      >
+        <LandscapesClusters {...props} />
+      </Map>
+    </>
   );
 };
 

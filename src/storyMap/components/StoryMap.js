@@ -22,14 +22,13 @@ import RichTextEditor from 'common/components/RichTextEditor';
 import mapboxgl from 'gis/mapbox';
 import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
 import { MAPBOX_ACCESS_TOKEN, STORY_MAP_INSET_STYLE } from 'config';
+import { ALIGNMENTS, LAYER_TYPES } from '../storyMapConstants';
+import './StoryMap.css';
 import {
-  ALIGNMENTS,
-  LAYER_TYPES,
   MAPBOX_DEM_SOURCE,
   MAPBOX_FOG,
   MAPBOX_SKY_LAYER,
-} from '../storyMapConstants';
-import './StoryMap.css';
+} from 'gis/components/MapboxMap';
 import StoryMapOutline from './StoryMapOutline';
 import theme from 'theme';
 

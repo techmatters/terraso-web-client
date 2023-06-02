@@ -34,7 +34,7 @@ import {
   MAPBOX_DEM_SOURCE,
   MAPBOX_FOG,
   MAPBOX_SKY_LAYER,
-} from 'storyMap/storyMapConstants';
+} from 'gis/components/MapboxMap';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 const MapLocationDialog = props => {
