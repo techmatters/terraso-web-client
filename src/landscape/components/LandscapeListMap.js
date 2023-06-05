@@ -14,120 +14,48 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useEffect, useMemo, useRef } from 'react';
-import L from 'leaflet';
-import _ from 'lodash/fp';
-import Map from 'gis/components/Map';
-import 'leaflet.markercluster';
-import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
-import { Marker, Popup, useMap } from 'react-leaflet';
+import React, { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useSelector } from 'react-redux';
 import mapboxgl from 'gis/mapbox';
 import { getLandscapePin } from 'landscape/landscapeUtils';
 import './LandscapeListMap.css';
 import { useTranslation } from 'react-i18next';
-import { Link, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import RouterLink from 'common/components/RouterLink';
 import { countryNameForCode } from 'common/utils';
-import { LAYER_ESRI } from 'gis/components/Map';
 import MapboxMap, {
   useMap as useMapboxContext,
 } from 'gis/components/MapboxMap';
+import MapboxMapControls from 'gis/components/MapboxMapControls';
 import { isValidLatitude, isValidLongitude } from 'gis/gisUtils';
 
 const LandscapePopup = ({ landscape }) => {
   const { t } = useTranslation();
 
   return (
-    <Popup className="landscape-marker-popup" closeButton={false}>
-      <Link
-        variant="h6"
-        component={RouterLink}
-        to={`/landscapes/${landscape.data.slug}`}
-      >
+    <>
+      <RouterLink variant="h6" to={`/landscapes/${landscape.data.slug}`}>
         {landscape.data.name}
-      </Link>
+      </RouterLink>
       <Typography variant="caption" display="block" sx={{ mb: 1 }}>
         {countryNameForCode(landscape.data.location)?.name ||
           landscape.data.location}
       </Typography>
-      <Link
-        variant="body2"
-        component={RouterLink}
-        to={`/landscapes/${landscape.data.slug}`}
-      >
+      <RouterLink variant="body2" to={`/landscapes/${landscape.data.slug}`}>
         {t('landscape.list_map_popup_link', {
           name: landscape.data.name,
         })}
-      </Link>
-    </Popup>
-  );
-};
-
-const LandscapesClusters = props => {
-  const map = useMap();
-  const { landscapes } = useSelector(state => state.landscape.list);
-  const { PopupComponent = LandscapePopup } = props;
-
-  const clusterRef = useRef();
-
-  const landscapesWithPosition = useMemo(() => {
-    return landscapes
-      .map(landscape => ({
-        position: getLandscapePin(landscape),
-        data: landscape,
-      }))
-      .filter(landscape => !!landscape.position)
-      .filter(landscape => {
-        const validLat = isValidLatitude(landscape.position[0]);
-        const validLng = isValidLongitude(landscape.position[1]);
-        return validLat && validLng;
-      });
-  }, [landscapes]);
-
-  useEffect(() => {
-    if (!_.isEmpty(landscapesWithPosition)) {
-      const bounds = clusterRef.current?.getBounds?.();
-      if (bounds && bounds.isValid()) {
-        map.fitBounds(bounds);
-      }
-    }
-  }, [map, landscapesWithPosition]);
-
-  return (
-    <MarkerClusterGroup
-      ref={clusterRef}
-      maxClusterRadius={40}
-      showCoverageOnHover={false}
-      iconCreateFunction={cluster => {
-        return L.divIcon({
-          className: 'landscape-list-map-cluster-icon',
-          iconSize: new L.Point(40, 40),
-          html: `<div>${cluster.getChildCount()}</div>`,
-        });
-      }}
-    >
-      {landscapesWithPosition.map((landscape, index) => (
-        <Marker
-          icon={L.divIcon({
-            className: 'landscape-list-map-marker-icon',
-            iconSize: new L.Point(15, 15),
-            html: `<span class="visually-hidden">${landscape.data.name}</span>`,
-          })}
-          key={index}
-          position={landscape.position}
-        >
-          <PopupComponent landscape={landscape} />
-        </Marker>
-      ))}
-    </MarkerClusterGroup>
+      </RouterLink>
+    </>
   );
 };
 
 const LandscapesMapboxMapClusters = props => {
+  const { PopupComponent = LandscapePopup } = props;
   const { map } = useMapboxContext();
   const { landscapes } = useSelector(state => state.landscape.list);
+  const [popup, setPopup] = useState(null);
 
   const landscapesWithPosition = useMemo(() => {
     return landscapes
@@ -159,9 +87,7 @@ const LandscapesMapboxMapClusters = props => {
             coordinates: landscape.position.reverse(),
           },
           properties: {
-            name: landscape.data.name,
-            slug: landscape.data.slug,
-            location: landscape.data.location,
+            ...landscape.data,
           },
         })),
       },
@@ -208,6 +134,62 @@ const LandscapesMapboxMapClusters = props => {
       },
     });
 
+    // inspect a cluster on click
+    map.on('click', 'clusters', e => {
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ['clusters'],
+      });
+      const clusterId = features[0].properties.cluster_id;
+      map
+        .getSource('landscapes')
+        .getClusterExpansionZoom(clusterId, (err, zoom) => {
+          if (err) {
+            return;
+          }
+
+          map.easeTo({
+            center: features[0].geometry.coordinates,
+            zoom: zoom,
+          });
+        });
+    });
+
+    // When a click event occurs on a feature in
+    // the unclustered-point layer, open a popup at
+    // the location of the feature, with
+    // description HTML from its properties.
+    map.on('click', 'unclustered-point', e => {
+      const coordinates = e.features[0].geometry.coordinates.slice();
+      const data = e.features[0].properties;
+
+      // Ensure that if the map is zoomed out such that
+      // multiple copies of the feature are visible, the
+      // popup appears over the copy being pointed to.
+      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      }
+
+      const container = document.createElement('div');
+      setPopup({
+        container,
+        coordinates,
+        data,
+      });
+    });
+
+    map.on('mouseenter', 'clusters', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', 'clusters', () => {
+      map.getCanvas().style.cursor = '';
+    });
+    map.on('mouseenter', 'unclustered-point', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', 'unclustered-point', () => {
+      map.getCanvas().style.cursor = '';
+    });
+
     // Fit bounds of landscapes source
     const bounds = landscapesWithPosition.reduce(
       (bounds, landscape) => bounds.extend(landscape.position),
@@ -217,34 +199,42 @@ const LandscapesMapboxMapClusters = props => {
     map.fitBounds(bounds, {
       padding: 50,
     });
+  }, [map, landscapesWithPosition, PopupComponent]);
+
+  useEffect(() => {
+    if (!map || !popup?.container) {
+      return;
+    }
+
+    const popupElement = new mapboxgl.Popup({
+      className: 'landscape-marker-popup',
+    })
+      .setLngLat(popup.coordinates)
+      .setMaxWidth('none')
+      .setDOMContent(popup.container);
+    popupElement.addTo(map);
 
     return () => {
-      map.removeSource('landscapes');
-      map.removeLayer('clusters');
-      map.removeLayer('cluster-count');
-      map.removeLayer('unclustered-point');
+      popupElement.remove();
     };
-  }, [map, landscapesWithPosition]);
+  }, [popup, map]);
 
-  return null;
+  if (!popup?.container) {
+    return null;
+  }
+
+  return createPortal(
+    <PopupComponent landscape={{ data: popup.data }} />,
+    popup.container
+  );
 };
 
 const LandscapeListMap = props => {
   return (
-    <>
-      <MapboxMap projection="mercator">
-        <LandscapesMapboxMapClusters {...props} />
-      </MapboxMap>
-      <Map
-        style={{
-          width: '100%',
-          height: '400px',
-        }}
-        defaultLayer={LAYER_ESRI}
-      >
-        <LandscapesClusters {...props} />
-      </Map>
-    </>
+    <MapboxMap projection="mercator">
+      <MapboxMapControls />
+      <LandscapesMapboxMapClusters {...props} />
+    </MapboxMap>
   );
 };
 

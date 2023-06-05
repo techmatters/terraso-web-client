@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2023 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -14,22 +14,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import { useEffect } from 'react';
+import mapboxgl from 'gis/mapbox';
+import { useMap } from './MapboxMap';
 
-.landscape-marker-popup .mapboxgl-popup-tip {
-  border: none;
-  width: 10px;
-  height: 10px;
-}
+const MapboxMapControls = () => {
+  const { map } = useMap();
 
-.landscape-marker-popup .mapboxgl-popup-content {
-  border-color: #ff580d;
-  border-radius: 3px;
-  border-width: 1px;
-  border-style: solid;
-  box-shadow: none;
-  max-width: 300px;
-}
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+    map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+  }, [map]);
 
-.landscape-marker-popup .mapboxgl-popup-content p {
-  margin: 1.3em 0;
-}
+  return null;
+};
+
+export default MapboxMapControls;
