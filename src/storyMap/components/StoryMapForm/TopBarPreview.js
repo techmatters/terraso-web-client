@@ -15,13 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { Trans, useTranslation } from 'react-i18next';
-
 import { Button, Grid, Typography } from '@mui/material';
-
-import TopBarContainer from './TopBarContainer';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
+import TopBarContainer from './TopBarContainer';
 
 const TopBarPreview = props => {
   const { t } = useTranslation();

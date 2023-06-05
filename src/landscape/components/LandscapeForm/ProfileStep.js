@@ -15,11 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useMemo, useState } from 'react';
-
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-
 import {
   Box,
   Checkbox,
@@ -27,13 +25,11 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-
 import HelperText from 'common/components/HelperText';
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
 import { iso639en, iso639es } from 'localization/iso639';
-
 import TaxonomyAutocomplete from 'taxonomies/components/TaxonomyAutocomplete';
 import {
   TYPE_AGRICULTURAL_PRODUCTION_METHOD,
@@ -42,10 +38,8 @@ import {
   TYPE_LANGUAGE,
   TYPE_LIVELIHOOD,
 } from 'taxonomies/taxonomiesConstants';
-
 import { AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS } from 'config';
 import { withProps } from 'react-hoc';
-
 import Actions from './Actions';
 
 const VALIDATION_SCHEMA = yup

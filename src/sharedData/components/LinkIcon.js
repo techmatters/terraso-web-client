@@ -15,7 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { SvgIcon } from '@mui/material';
 
 const LinkIcon = props => (

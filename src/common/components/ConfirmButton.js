@@ -15,10 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useState } from 'react';
-
 import { LoadingButton } from '@mui/lab';
 import { Tooltip } from '@mui/material';
-
 import ConfirmationDialog from 'common/components/ConfirmationDialog';
 
 const ConfirmButton = props => {

@@ -21,7 +21,6 @@ import {
   extractGroupDataEntries,
 } from 'terrasoApi/group/groupUtils';
 import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
-
 import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
 const ALL_RESOURCE_TYPES = [...SHARED_DATA_ACCEPTED_EXTENSIONS, 'link'];

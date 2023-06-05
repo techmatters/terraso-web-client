@@ -15,24 +15,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useState } from 'react';
-
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchGroupsAutocompleteList } from 'terrasoApi/group/groupSlice';
 import { useFetchData } from 'terrasoApi/utils';
-
 import { Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
-
 import Stepper from 'common/components/Stepper';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 import { useAnalytics } from 'monitoring/analytics';
 import { ILM_OUTPUT_PROP, MAP_LANDSCAPE_BOUNDARIES } from 'monitoring/ilm';
-
 import { saveLandscape, setFormNewValues } from 'landscape/landscapeSlice';
 import {
   TYPE_AGRICULTURAL_PRODUCTION_METHOD,
@@ -42,7 +38,6 @@ import {
   TYPE_ORGANIZATION,
 } from 'taxonomies/taxonomiesConstants';
 import { fetchTermsForTypes } from 'taxonomies/taxonomiesSlice';
-
 import AffiliationStep from './AffiliationStep';
 import BoundaryStep from './BoundaryStep';
 import InfoStep from './KeyInfoStep';

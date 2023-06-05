@@ -15,9 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useState } from 'react';
-
 import { Trans, useTranslation } from 'react-i18next';
-
 import CloseIcon from '@mui/icons-material/CancelPresentation';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import {

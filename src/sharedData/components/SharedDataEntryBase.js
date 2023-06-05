@@ -15,27 +15,22 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useMemo, useState } from 'react';
-
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Grid, ListItem, Stack, Typography } from '@mui/material';
-
 import ConfirmButton from 'common/components/ConfirmButton';
 import EditableText from 'common/components/EditableText';
 import { formatDate } from 'localization/utils';
 import { useAnalytics } from 'monitoring/analytics';
 import Restricted from 'permissions/components/Restricted';
-
 import { useGroupContext } from 'group/groupContext';
 import {
   deleteSharedData,
   resetProcessing,
   updateSharedData,
 } from 'sharedData/sharedDataSlice';
-
 import theme from 'theme';
 
 export const ICON_SIZE = 24;

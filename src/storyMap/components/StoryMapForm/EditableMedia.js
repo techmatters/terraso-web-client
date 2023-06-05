@@ -16,13 +16,11 @@
  */
 // Component for editing and uploading a pictures or a audio file
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-
 import getVideoId from 'get-video-id';
 import _ from 'lodash/fp';
 import { openFile } from 'media/fileUtils';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
-
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Button,
@@ -38,18 +36,14 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-
 import ConfirmButton from 'common/components/ConfirmButton';
 import DropZone from 'common/components/DropZone';
-
 import {
   STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS,
   STORY_MAP_MEDIA_ACCEPTED_TYPES,
   STORY_MAP_MEDIA_MAX_SIZE,
 } from 'config';
-
 import { useStoryMapConfigContext } from './storyMapConfigContext';
-
 import theme from 'theme';
 
 const getYouTubeUrl = id => `https://www.youtube.com/embed/${id}`;

@@ -15,7 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-
 import _ from 'lodash/fp';
 import { dataURItoBlob, openFile } from 'media/fileUtils';
 import { openImageUrl } from 'media/imageUtils';
@@ -23,23 +22,19 @@ import AvatarEditor from 'react-avatar-editor';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
-
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { Paper, Slider, Stack, Typography } from '@mui/material';
-
 import DropZone from 'common/components/DropZone';
 import HelperText from 'common/components/HelperText';
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
-
 import {
   IMAGE_ACCEPTED_EXTENSIONS,
   LANDSCAPE_PROFILE_IMAGE_MAX_SIZE,
 } from 'config';
-
 import Actions from './Actions';
 
 const ASPECT_RATIO = 0.5625; // 9 / 16

@@ -15,10 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useMemo } from 'react';
-
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-
 import ErrorIcon from '@mui/icons-material/Report';
 import {
   Box,
@@ -28,7 +26,6 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-
 import HelperText from 'common/components/HelperText';
 import { parseError } from 'forms/yup';
 

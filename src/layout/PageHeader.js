@@ -15,7 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { Typography } from '@mui/material';
 
 const PageHeader = ({ header, children, typographyProps = {} }) => (

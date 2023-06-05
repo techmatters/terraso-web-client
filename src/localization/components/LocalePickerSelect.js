@@ -15,16 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-
 import { MenuItem, Select as SelectBase } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-
 import { LOCALES } from 'localization/i18n';
-
 import theme from 'theme';
 
 const Select = styled(SelectBase)(({ theme }) => ({

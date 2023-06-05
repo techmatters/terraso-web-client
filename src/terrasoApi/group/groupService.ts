@@ -22,7 +22,6 @@ import type {
   MembershipAddMutationInput,
 } from 'terrasoApi/gql/graphql';
 import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
-
 import { Group, Membership } from './groupSlice';
 import {
   extractAccountMembership,

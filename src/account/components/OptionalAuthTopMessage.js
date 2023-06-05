@@ -15,14 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import _ from 'lodash/fp';
-import { Trans } from 'react-i18next';
-import { withTranslation } from 'react-i18next';
+import { Trans, withTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-
 import { Typography } from '@mui/material';
-
 import RouterLink from 'common/components/RouterLink';
 import { useOptionalAuth } from 'navigation/components/Routes';
 

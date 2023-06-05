@@ -15,7 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-
 import {
   MEMBERSHIP_OPEN,
   MEMBERSHIP_STATUS_APPROVED,

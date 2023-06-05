@@ -15,13 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-
 import _ from 'lodash/fp';
 import Highlighter from 'react-highlight-words';
 import { useTranslation } from 'react-i18next';
 import { cleanSensitiveCharacters } from 'stringUtils';
 import { useDebounce } from 'use-debounce';
-
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import {
@@ -37,7 +35,6 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-
 import BaseTable from 'common/components/Table';
 import ResponsiveSwitch from 'layout/ResponsiveSwitch';
 

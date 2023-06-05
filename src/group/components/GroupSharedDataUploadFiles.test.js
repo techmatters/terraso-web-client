@@ -15,14 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
-
 import React from 'react';
-
 import _ from 'lodash/fp';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
 import { GROUP_TYPES_WITH_REDIRECTS } from 'tests/constants';
-
 import GroupSharedDataUpload from './GroupSharedDataUpload';
 
 jest.mock('terrasoApi/terrasoBackend/api');

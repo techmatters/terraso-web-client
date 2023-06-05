@@ -15,13 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { useTranslation } from 'react-i18next';
-
 import { Alert, Box, Divider, Typography } from '@mui/material';
-
 import CardActionRouterLink from 'common/components/CardActionRouterLink';
-
 import HomeCard from 'home/components/HomeCard';
 
 const LandscapeDefaultHomeCard = () => {

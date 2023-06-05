@@ -19,7 +19,6 @@ import _ from 'lodash/fp';
 import { setMemberships } from 'terrasoApi/group/groupSlice';
 import * as groupUtils from 'terrasoApi/group/groupUtils';
 import { createAsyncThunk } from 'terrasoApi/utils';
-
 import * as landscapeService from 'landscape/landscapeService';
 
 const initialState = {

@@ -15,11 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-
 import {
   ListItem as BaseListItem,
   Divider,
@@ -28,19 +26,15 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-
 import CardActionRouterLink from 'common/components/CardActionRouterLink';
 import Restricted from 'permissions/components/Restricted';
-
-import GroupMembershipPendingWarning from 'group/membership/components/GroupMembershipPendingWarning';
 import {
   MEMBERSHIP_STATUS_APPROVED,
   MEMBERSHIP_STATUS_PENDING,
 } from 'group/membership/components/groupMembershipConstants';
+import GroupMembershipPendingWarning from 'group/membership/components/GroupMembershipPendingWarning';
 import HomeCard from 'home/components/HomeCard';
-
 import { withProps } from 'react-hoc';
-
 import theme from 'theme';
 
 const ListItem = withProps(BaseListItem, {

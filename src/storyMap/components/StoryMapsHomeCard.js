@@ -15,10 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback } from 'react';
-
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
   List as BaseList,
@@ -29,21 +27,17 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-
 import CardActionRouterLink from 'common/components/CardActionRouterLink';
 import RouterButton from 'common/components/RouterButton';
 import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
-
 import HomeCard from 'home/components/HomeCard';
 import { removeStoryMap } from 'home/homeSlice';
 import {
   generateStoryMapEditUrl,
   generateStoryMapUrl,
 } from 'storyMap/storyMapUtils';
-
 import { withProps } from 'react-hoc';
-
 import DeleteButton from './StoryMapDeleteButton';
 
 const List = withProps(BaseList, {

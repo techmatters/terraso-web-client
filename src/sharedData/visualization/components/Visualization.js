@@ -15,15 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-
 import L from 'leaflet';
 import _ from 'lodash/fp';
 import * as SheetsJs from 'xlsx';
-
 import Map, { LAYERS_BY_URL } from 'gis/components/Map';
-
 import './Visualization.css';
-
 import { useTranslation } from 'react-i18next';
 import {
   Marker as BaseMarker,
@@ -31,9 +27,7 @@ import {
   Popup,
   useMap,
 } from 'react-leaflet';
-
 import { Box, Stack, Typography } from '@mui/material';
-
 import { normalizeLongitude } from 'gis/gisUtils';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 import { getImageData } from 'sharedData/visualization/visualizationMarkers';

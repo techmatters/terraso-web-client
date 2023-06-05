@@ -21,21 +21,17 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-
 import L from 'leaflet';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { MapContainer, ZoomControl, useMap } from 'react-leaflet';
-
+import { MapContainer, useMap, ZoomControl } from 'react-leaflet';
 import useMediaQuery from '@mui/material/useMediaQuery';
-
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-geosearch/dist/geosearch.css';
 import 'gis/components/Map.css';
-
 import theme from 'theme';
 
 delete L.Icon.Default.prototype._getIconUrl;

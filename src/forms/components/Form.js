@@ -15,7 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo } from 'react';
-
 import { yupResolver } from '@hookform/resolvers/yup';
 import _ from 'lodash/fp';
 import {
@@ -25,9 +24,7 @@ import {
   useFormState,
 } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-
 import { Button, Grid } from '@mui/material';
-
 import FormField from 'forms/components/FormField';
 import { useFormSetContext } from 'forms/formContext';
 

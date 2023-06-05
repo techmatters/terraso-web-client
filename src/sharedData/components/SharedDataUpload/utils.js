@@ -15,13 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-
 import {
   UPLOAD_STATUS_ERROR,
   UPLOAD_STATUS_SUCCESS,
   UPLOAD_STATUS_UPLOADING,
 } from 'sharedData/sharedDataSlice';
-
 import { VALIDATION_SCHEMA as LINK_VALIDATION_SCHEMA } from './ShareDataLinks';
 
 export const groupDataEntryUploadsByStatus = uploads => {

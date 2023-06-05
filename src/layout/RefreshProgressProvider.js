@@ -15,9 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useContext, useState } from 'react';
-
 import { useTranslation } from 'react-i18next';
-
 import { LinearProgress } from '@mui/material';
 
 const RefreshProgressContext = React.createContext();

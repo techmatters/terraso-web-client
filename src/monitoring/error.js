@@ -15,9 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { ErrorBoundary } from 'react-error-boundary';
-
 import UnexpectedError from 'common/components/UnexpectedError';
 import logger from 'monitoring/logger';
 

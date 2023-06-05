@@ -15,7 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
-
 import { rollbar } from 'monitoring/rollbar';
 
 jest.mock('monitoring/rollbar');

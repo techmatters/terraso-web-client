@@ -15,7 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { render, screen } from 'tests/utils';
-
 import App from 'App';
 import { useLocation } from 'react-router-dom';
 

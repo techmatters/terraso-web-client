@@ -15,10 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-
 import LaunchIcon from '@mui/icons-material/Launch';
 import {
   Box,
@@ -30,9 +28,7 @@ import {
   Typography,
 } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
-
 import ExternalLink from 'common/components/ExternalLink';
-
 import theme from 'theme';
 
 const ToolIconAndLink = ({ tool, title, external }) => {

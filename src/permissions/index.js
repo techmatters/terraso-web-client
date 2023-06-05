@@ -15,7 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useContext, useEffect, useRef, useState } from 'react';
-
 import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';

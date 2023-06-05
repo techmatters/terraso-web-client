@@ -15,7 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { useAnalytics } from 'monitoring/analytics';
-
 import { useGroupContext } from 'group/groupContext';
 
 export const useSharedData = () => {

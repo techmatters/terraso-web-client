@@ -15,13 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo } from 'react';
-
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useFetchData } from 'terrasoApi/utils';
-
 import EmailIcon from '@mui/icons-material/Email';
 import LaunchIcon from '@mui/icons-material/Launch';
 import PublicIcon from '@mui/icons-material/Public';
@@ -38,7 +36,6 @@ import {
   SvgIcon,
   Typography,
 } from '@mui/material';
-
 import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
 import RouterButton from 'common/components/RouterButton';
@@ -52,7 +49,6 @@ import PageLoader from 'layout/PageLoader';
 import { useRefreshProgressContext } from 'layout/RefreshProgressProvider';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import Restricted from 'permissions/components/Restricted';
-
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
@@ -64,11 +60,8 @@ import {
 import { isBoundaryPin } from 'landscape/landscapeUtils';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 import SharedDataCard from 'sharedData/components/SharedDataCard';
-
 import { withProps } from 'react-hoc';
-
 import { Partnership } from './LandscapeProfile/AffiliationCard';
-
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {

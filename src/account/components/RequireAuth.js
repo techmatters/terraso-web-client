@@ -15,12 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback } from 'react';
-
 import { useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 import { fetchUser } from 'terrasoApi/account/accountSlice';
 import { useFetchData } from 'terrasoApi/utils';
-
 import PageLoader from 'layout/PageLoader';
 import { generateReferrerPath } from 'navigation/navigationUtils';
 

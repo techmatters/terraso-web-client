@@ -15,12 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { Trans } from 'react-i18next';
-
 import NotificationImportantIcon from '@mui/icons-material/NotificationImportant';
 import { Link, Stack, Typography } from '@mui/material';
-
 import { withProps } from 'react-hoc';
 
 const GroupMembershipPendingWarning = props => {

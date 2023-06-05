@@ -15,11 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-
 import {
   Alert,
   Button,
@@ -29,7 +27,6 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-
 import ConfirmButton from 'common/components/ConfirmButton';
 import SocialShare, {
   useSocialShareContext,
@@ -40,7 +37,6 @@ import PageHeader from 'layout/PageHeader';
 import { formatDate } from 'localization/utils';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import Restricted from 'permissions/components/Restricted';
-
 import MapExport from 'gis/components/MapExport';
 import { useGroupContext } from 'group/groupContext';
 import { useSharedData } from 'sharedData/sharedDataHooks';
@@ -52,7 +48,6 @@ import {
   VisualizationContext,
   VisualizationContextProvider,
 } from 'sharedData/visualization/visualizationContext';
-
 import Visualization from './Visualization';
 
 const VisualizationWrapper = props => {

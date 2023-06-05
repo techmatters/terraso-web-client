@@ -15,9 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useMemo } from 'react';
-
 import { Box } from '@mui/material';
-
 import Map from 'gis/components/Map';
 import { isValidGeoJson } from 'gis/gisUtils';
 import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';

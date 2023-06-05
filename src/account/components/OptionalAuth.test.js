@@ -15,9 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { render, screen } from 'tests/utils';
-
 import { useLocation } from 'react-router-dom';
-
 import OptionalAuth from './OptionalAuth';
 import OptionalAuthBottomMessage from './OptionalAuthBottomMessage';
 import OptionalAuthTopMessage from './OptionalAuthTopMessage';

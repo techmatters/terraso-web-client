@@ -15,12 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useEffect, useMemo } from 'react';
-
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Box,
@@ -31,12 +29,10 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-
 import ConfirmButton from 'common/components/ConfirmButton';
 import RouterLink from 'common/components/RouterLink';
 import { countryNameForCode } from 'common/utils';
 import Restricted from 'permissions/components/Restricted';
-
 import { deleteProfileImage } from 'landscape/landscapeSlice';
 import {
   TYPE_AGRICULTURAL_PRODUCTION_METHOD,

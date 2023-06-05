@@ -15,13 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { fireEvent, render, screen, within } from 'tests/utils';
-
 import React from 'react';
-
 import { act } from 'react-dom/test-utils';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
-
 import GroupForm from 'group/components/GroupForm';
 
 jest.mock('terrasoApi/terrasoBackend/api');

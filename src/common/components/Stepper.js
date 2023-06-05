@@ -15,7 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { useState } from 'react';
-
 import { Stepper as BaseStepper, Step } from '@mui/material';
 
 const Stepper = props => {

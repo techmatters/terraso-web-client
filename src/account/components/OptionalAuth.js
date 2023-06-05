@@ -15,12 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback } from 'react';
-
 import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
 import { fetchUser } from 'terrasoApi/account/accountSlice';
 import { useFetchData } from 'terrasoApi/utils';
-
 import PageLoader from 'layout/PageLoader';
 
 const OptionalAuth = ({ children }) => {

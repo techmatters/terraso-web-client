@@ -15,7 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect } from 'react';
-
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -28,7 +27,6 @@ import {
 } from 'terrasoApi/group/groupSlice';
 import { useFetchData } from 'terrasoApi/utils';
 import * as yup from 'yup';
-
 import {
   FormControlLabel,
   Radio,
@@ -36,7 +34,6 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import { transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
@@ -44,12 +41,10 @@ import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { useAnalytics } from 'monitoring/analytics';
-
 import {
   MEMBERSHIP_CLOSED,
   MEMBERSHIP_OPEN,
 } from 'group/membership/components/groupMembershipConstants';
-
 import { MAX_DESCRIPTION_LENGTH } from 'config';
 
 const VALIDATION_SCHEMA = yup

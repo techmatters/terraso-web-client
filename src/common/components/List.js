@@ -15,9 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { List as BaseList, Divider, Paper, Stack } from '@mui/material';
-
 import { withProps } from 'react-hoc';
 
 const List = withProps(BaseList, {

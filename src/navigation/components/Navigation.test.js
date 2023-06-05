@@ -15,12 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { fireEvent, render, screen } from 'tests/utils';
-
 import React from 'react';
-
 import { act } from 'react-dom/test-utils';
 import { useLocation } from 'react-router-dom';
-
 import Navigation from 'navigation/components/Navigation';
 
 jest.mock('react-router-dom', () => ({

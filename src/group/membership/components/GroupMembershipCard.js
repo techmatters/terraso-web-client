@@ -15,11 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-
 import {
   AvatarGroup,
   Box,
@@ -32,19 +30,16 @@ import {
   Link,
   Typography,
 } from '@mui/material';
-
 import ExternalLink from 'common/components/ExternalLink';
 import Restricted from 'permissions/components/Restricted';
-
 import AccountAvatar from 'account/components/AccountAvatar';
 import { useGroupContext } from 'group/groupContext';
-
-import GroupMembershipJoinLeaveButton from './GroupMembershipJoinLeaveButton';
-import GroupMembershipPendingWarning from './GroupMembershipPendingWarning';
 import {
   MEMBERSHIP_CLOSED,
   MEMBERSHIP_STATUS_PENDING,
 } from './groupMembershipConstants';
+import GroupMembershipJoinLeaveButton from './GroupMembershipJoinLeaveButton';
+import GroupMembershipPendingWarning from './GroupMembershipPendingWarning';
 
 const Loader = () => {
   const { t } = useTranslation();

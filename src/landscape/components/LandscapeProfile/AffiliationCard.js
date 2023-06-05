@@ -15,10 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useEffect, useMemo } from 'react';
-
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-
 import {
   Button,
   Card,
@@ -29,14 +27,11 @@ import {
   ListItem,
   Typography,
 } from '@mui/material';
-
 import RouterLink from 'common/components/RouterLink';
 import Restricted from 'permissions/components/Restricted';
-
 import { PARTNERSHIP_STATUS_NO } from 'landscape/landscapeConstants';
 import { TYPE_ORGANIZATION } from 'taxonomies/taxonomiesConstants';
 import { getTermLabel } from 'taxonomies/taxonomiesUtils';
-
 import theme from 'theme';
 
 export const Partnership = props => {

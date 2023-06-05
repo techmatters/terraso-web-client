@@ -20,7 +20,6 @@ import * as accountService from 'terrasoApi/account/accountService';
 import { getToken, removeToken } from 'terrasoApi/account/auth';
 import type { AppDispatch } from 'terrasoApi/store';
 import { createAsyncThunk } from 'terrasoApi/utils';
-
 import logger from 'monitoring/logger';
 
 const initialState = {

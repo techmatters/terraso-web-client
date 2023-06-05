@@ -15,10 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { Trans, useTranslation } from 'react-i18next';
-
 import {
   Box,
   Button,
@@ -28,21 +26,15 @@ import {
   DialogTitle,
   Stack,
 } from '@mui/material';
-
 import mapboxgl from 'gis/mapbox';
-
 import { MAPBOX_ACCESS_TOKEN, MAPBOX_STYLE_DEFAULT } from 'config';
-
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
-
 import _ from 'lodash/fp';
-
 import {
   MAPBOX_DEM_SOURCE,
   MAPBOX_FOG,
   MAPBOX_SKY_LAYER,
 } from 'storyMap/storyMapConstants';
-
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 const MapLocationDialog = props => {

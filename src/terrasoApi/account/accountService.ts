@@ -21,9 +21,7 @@ import type {
   UserPreferencesFragment,
 } from 'terrasoApi/gql/graphql';
 import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
-
 import { TERRASO_API_URL } from 'config';
-
 import { User } from './accountSlice';
 import { getUserEmail } from './auth';
 
