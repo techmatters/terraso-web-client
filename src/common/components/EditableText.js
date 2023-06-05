@@ -15,9 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-
 import { useTranslation } from 'react-i18next';
-
 import EditIcon from '@mui/icons-material/Edit';
 import { LoadingButton } from '@mui/lab';
 import {

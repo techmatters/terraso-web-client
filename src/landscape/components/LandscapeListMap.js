@@ -15,30 +15,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useEffect, useMemo, useRef } from 'react';
-
 import L from 'leaflet';
 import _ from 'lodash/fp';
-
 import Map from 'gis/components/Map';
-
 import 'leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-
 import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import { Marker, Popup, useMap } from 'react-leaflet';
 import { useSelector } from 'react-redux';
-
 import { getLandscapePin } from 'landscape/landscapeUtils';
-
 import './LandscapeListMap.css';
-
 import { useTranslation } from 'react-i18next';
-
 import { Link, Typography } from '@mui/material';
-
 import RouterLink from 'common/components/RouterLink';
 import { countryNameForCode } from 'common/utils';
-
 import { LAYER_ESRI } from 'gis/components/Map';
 import { isValidLatitude, isValidLongitude } from 'gis/gisUtils';
 

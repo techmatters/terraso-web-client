@@ -15,15 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { useTranslation } from 'react-i18next';
-
 import { List, Stack, Typography } from '@mui/material';
-
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
-
 import ToolCard from 'tool/components/ToolCard';
 
 const ToolList = () => {

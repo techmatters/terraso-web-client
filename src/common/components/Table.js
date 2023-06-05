@@ -21,15 +21,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import ImportExportIcon from '@mui/icons-material/ImportExport';
 import { IconButton, List, ListItem, Stack } from '@mui/material';
 import { DataGrid, GridColumnMenu, GridPagination } from '@mui/x-data-grid';
-
 import theme from 'theme';
 
 const PAGE_SIZE = 15;

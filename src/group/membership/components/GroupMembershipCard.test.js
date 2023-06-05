@@ -15,18 +15,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { fireEvent, render, screen } from 'tests/utils';
-
 import React from 'react';
-
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
-
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
-
 import GroupMemberRequestCancel from './GroupMemberRequestCancel';
 
 jest.mock('terrasoApi/terrasoBackend/api');

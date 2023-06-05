@@ -24,7 +24,6 @@ import type {
   GroupMembersInfoFragment,
   GroupMembersPendingFragment,
 } from 'terrasoApi/gql/graphql';
-
 import { Group, Membership } from './groupSlice';
 
 type GroupQuery = Partial<

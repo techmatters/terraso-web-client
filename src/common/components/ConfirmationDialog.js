@@ -15,9 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { useTranslation } from 'react-i18next';
-
 import { LoadingButton } from '@mui/lab';
 import {
   Button,
@@ -28,7 +26,6 @@ import {
   DialogTitle,
 } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
-
 import theme from 'theme';
 
 const ConfirmationDialog = props => {

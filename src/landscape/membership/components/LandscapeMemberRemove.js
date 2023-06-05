@@ -15,10 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-
 import ConfirmButton from 'common/components/ConfirmButton';
 
 const LandscapeMemberRemove = props => {

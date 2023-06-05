@@ -15,9 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { Button, Stack } from '@mui/material';
-
 import PageHeader from 'layout/PageHeader';
 
 const StepperStep = props => {

@@ -15,10 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
-
 import { CircularProgress } from '@mui/material';
 
 const Restricted = props => {

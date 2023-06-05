@@ -15,14 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { useTranslation } from 'react-i18next';
-
 import { Box, Divider, Link, Paper, Stack, Typography } from '@mui/material';
-
 import CardActionRouterLink from 'common/components/CardActionRouterLink';
 import RouterLink from 'common/components/RouterLink';
-
 import HomeCard from 'home/components/HomeCard';
 
 const ToolHomeCard = () => {

@@ -15,9 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { Link as ReactRouterLink } from 'react-router-dom';
-
 import { Link } from '@mui/material';
 
 const RouterLink = React.forwardRef((props, ref) => {

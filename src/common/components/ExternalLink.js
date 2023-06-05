@@ -15,11 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import _ from 'lodash/fp';
-
 import { Link } from '@mui/material';
-
 import { useAnalytics } from 'monitoring/analytics';
 
 // Link for external resources. It handles opening it on a new

@@ -15,30 +15,23 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { PermissionsProvider } from 'permissions';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-
 import { ThemeProvider } from '@mui/material';
-
 import ErrorMonitoringProvider from 'monitoring/error';
 import NotificationsWrapper from 'notifications/NotificationsWrapper';
-
 import { REACT_APP_BASE_URL } from 'config';
-
 // Localization
 import 'localization/i18n';
 // Form validations
 import 'forms/yup';
 // Analytics
 import 'monitoring/analytics';
-
 import { SocialShareContextProvider } from 'common/components/SocialShare';
 import { BreadcrumbsContextProvider } from 'navigation/breadcrumbsContext';
-
 import { ContainerContextProvider } from './Container';
 import RefreshProgressProvider from './RefreshProgressProvider';
 

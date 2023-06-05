@@ -15,11 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { useEffect } from 'react';
-
 import L from 'leaflet';
-
 import 'leaflet-easyprint';
-
 import { useMap } from 'react-leaflet';
 
 const MapExport = props => {

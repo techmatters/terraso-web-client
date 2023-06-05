@@ -15,9 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-
 import { useTranslation } from 'react-i18next';
-
 import AlignHorizontalCenterIcon from '@mui/icons-material/AlignHorizontalCenter';
 import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft';
 import AlignHorizontalRightIcon from '@mui/icons-material/AlignHorizontalRight';
@@ -30,11 +28,8 @@ import {
   IconButton,
   Stack,
 } from '@mui/material';
-
 import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
-
 import { withProps } from 'react-hoc';
-
 import { ALIGNMENTS } from '../../storyMapConstants';
 import EditableMedia from './EditableMedia';
 import EditableRichText from './EditableRichText';

@@ -15,13 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useMemo } from 'react';
-
 import { useTranslation } from 'react-i18next';
-
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Button, Grid, List, ListItem, Paper, Typography } from '@mui/material';
-
 import ConfirmButton from 'common/components/ConfirmButton';
 
 const ChaptersSidebar = props => {

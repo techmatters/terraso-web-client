@@ -15,9 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { useTranslation } from 'react-i18next';
-
 import EmailIcon from '@mui/icons-material/Email';
 import PublicIcon from '@mui/icons-material/Public';
 import {
@@ -29,7 +27,6 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-
 import RouterLink from 'common/components/RouterLink';
 import Restricted from 'permissions/components/Restricted';
 

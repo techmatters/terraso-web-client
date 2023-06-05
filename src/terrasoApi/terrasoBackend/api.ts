@@ -18,9 +18,7 @@ import _ from 'lodash/fp';
 import { getAuthHeaders } from 'terrasoApi/account/auth';
 import { UNAUTHENTICATED } from 'terrasoApi/account/authConstants';
 import { TypedDocumentString } from 'terrasoApi/gql/graphql';
-
 import logger from 'monitoring/logger';
-
 import { GRAPH_QL_ENDPOINT, TERRASO_API_URL } from 'config';
 
 type Error = { message: any };

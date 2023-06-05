@@ -21,13 +21,11 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
-
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
@@ -39,14 +37,11 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-
 import ExternalLink from 'common/components/ExternalLink';
 import { transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
 import { FormContextProvider, useFormGetContext } from 'forms/formContext';
-
 import { MAX_DESCRIPTION_CHARACTERS } from 'sharedData/sharedDataConstants';
-
 import LinkIcon from '../LinkIcon';
 import { useShareDataUploadContext } from './ShareDataUploadContext';
 import SuccessContainer from './SuccessContainer';

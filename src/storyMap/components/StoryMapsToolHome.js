@@ -15,13 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useMemo } from 'react';
-
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useFetchData } from 'terrasoApi/utils';
-
 import {
   Button,
   Card,
@@ -32,7 +30,6 @@ import {
   Paper,
   Typography,
 } from '@mui/material';
-
 import ExternalLink from 'common/components/ExternalLink';
 import RouterLink from 'common/components/RouterLink';
 import { useDocumentTitle } from 'common/document';
@@ -40,7 +37,6 @@ import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import { formatDate } from 'localization/utils';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-
 import { fetchSamples } from 'storyMap/storyMapSlice';
 import { generateStoryMapUrl } from 'storyMap/storyMapUtils';
 

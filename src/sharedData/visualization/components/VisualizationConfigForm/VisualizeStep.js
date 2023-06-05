@@ -15,11 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useEffect, useState } from 'react';
-
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
-
 import TriangleIcon from '@mui/icons-material/ChangeHistoryTwoTone';
 import CircleIcon from '@mui/icons-material/CircleTwoTone';
 import HexagonIcon from '@mui/icons-material/HexagonTwoTone';
@@ -32,11 +30,8 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
-
 import StepperStep from 'common/components/StepperStep';
-
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
-
 import VisualizationPreview from './VisualizationPreview';
 
 const visualizeIcons = {

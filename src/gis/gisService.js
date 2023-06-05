@@ -16,9 +16,7 @@
  */
 import _ from 'lodash/fp';
 import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
-
 import logger from 'monitoring/logger';
-
 import { isKmlFile, isShapefile, openGeoJsonFile } from 'gis/gisUtils';
 
 const generateUrl = name =>

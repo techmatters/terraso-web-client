@@ -15,7 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { useCallback, useContext, useEffect, useState } from 'react';
-
 import {
   UNSAFE_NavigationContext as NavigationContext,
   useNavigate,

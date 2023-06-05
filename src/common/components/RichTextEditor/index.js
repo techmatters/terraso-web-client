@@ -15,18 +15,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useMemo, useState } from 'react';
-
 import { useTranslation } from 'react-i18next';
 import {
+  createEditor,
   Editor,
   Range,
   Element as SlateElement,
   Transforms,
-  createEditor,
 } from 'slate';
 import { withHistory } from 'slate-history';
 import { Editable, Slate, useSelected, useSlate, withReact } from 'slate-react';
-
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
@@ -42,15 +40,11 @@ import {
   OutlinedInput,
   Paper,
 } from '@mui/material';
-
-import { URL_SCHEMA, isUrl, transformURL } from 'common/utils';
-
+import { isUrl, transformURL, URL_SCHEMA } from 'common/utils';
 import { withProps } from 'react-hoc';
-
 import ExternalLink from '../ExternalLink';
 import Toolbar from './Toolbar';
 import { deserialize } from './utils';
-
 import theme from 'theme';
 
 // Sample value:

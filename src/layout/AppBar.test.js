@@ -15,14 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { fireEvent, render, screen } from 'tests/utils';
-
 import React from 'react';
-
 import Cookies from 'js-cookie';
 import { act } from 'react-dom/test-utils';
-
 import useMediaQuery from '@mui/material/useMediaQuery';
-
 import AppBar from 'layout/AppBar';
 
 jest.mock('@mui/material/useMediaQuery');

@@ -21,14 +21,12 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-
 import _ from 'lodash/fp';
 import path from 'path-browserify';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
-
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Alert,
@@ -41,22 +39,17 @@ import {
 } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { styled } from '@mui/system';
-
 import BaseDropZone from 'common/components/DropZone';
 import FormField from 'forms/components/FormField';
-
 import { MAX_DESCRIPTION_CHARACTERS } from 'sharedData/sharedDataConstants';
-
 import {
   SHARED_DATA_ACCEPTED_EXTENSIONS,
   SHARED_DATA_ACCEPTED_TYPES,
   SHARED_DATA_MAX_FILES,
   SHARED_DATA_MAX_SIZE,
 } from 'config';
-
 import SuccessContainer from './SuccessContainer';
 import { groupDataEntryUploadsByStatus } from './utils';
-
 import theme from 'theme';
 
 const VALIDATION_SCHEMA = yup

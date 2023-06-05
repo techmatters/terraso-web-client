@@ -15,14 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback } from 'react';
-
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
-
+import { useDispatch, useSelector } from 'react-redux';
 import ConfirmButton from 'common/components/ConfirmButton';
-
 import { deleteStoryMap } from 'storyMap/storyMapSlice';
 
 const DeleteButton = props => {

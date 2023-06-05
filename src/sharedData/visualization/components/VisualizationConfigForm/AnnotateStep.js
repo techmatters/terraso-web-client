@@ -21,13 +21,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
-
 import _ from 'lodash/fp';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import {
   Grid,
@@ -37,14 +35,11 @@ import {
   OutlinedInput,
   Typography,
 } from '@mui/material';
-
 import List from 'common/components/List';
 import StepperStep from 'common/components/StepperStep';
 import Form from 'forms/components/Form';
 import { FormContextProvider, useFormGetContext } from 'forms/formContext';
-
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
-
 import ColumnSelect from './ColumnSelect';
 import VisualizationPreview from './VisualizationPreview';
 

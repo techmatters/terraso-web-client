@@ -15,11 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useMemo } from 'react';
-
-import { Route, Routes, matchPath, useLocation } from 'react-router-dom';
-
+import { matchPath, Route, Routes, useLocation } from 'react-router-dom';
 import NotFound from 'layout/NotFound';
-
 import AccountLogin from 'account/components/AccountLogin';
 import AccountProfile from 'account/components/AccountProfile';
 import OptionalAuth from 'account/components/OptionalAuth';
@@ -50,8 +47,8 @@ import LandscapeSharedDataVisualizationConfig from 'landscape/components/Landsca
 import LandscapeView from 'landscape/components/LandscapeView';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
 import StoryMapNew from 'storyMap/components/StoryMapNew';
-import StoryMapUpdate from 'storyMap/components/StoryMapUpdate';
 import StoryMapsToolsHome from 'storyMap/components/StoryMapsToolHome';
+import StoryMapUpdate from 'storyMap/components/StoryMapUpdate';
 import UserStoryMap from 'storyMap/components/UserStoryMap';
 import UserStoryMapEmbed from 'storyMap/components/UserStoryMapEmbed';
 import ToolsList from 'tool/components/ToolList';

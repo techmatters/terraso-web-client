@@ -15,19 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useRef } from 'react';
-
 import { Box } from '@mui/material';
-
 import AppBar from 'layout/AppBar';
 import Footer from 'layout/Footer';
 import Navigation from 'navigation/components/Navigation';
-import Routes from 'navigation/components/Routes';
-import { useOptionalAuth } from 'navigation/components/Routes';
-
+import Routes, { useOptionalAuth } from 'navigation/components/Routes';
 import 'index.css';
-
 import BreadcrumbsShareContainer from 'layout/BreadcrumbsShareContainer';
-
 import OptionalAuthBottomMessage from 'account/components/OptionalAuthBottomMessage';
 import OptionalAuthTopMessage from 'account/components/OptionalAuthTopMessage';
 

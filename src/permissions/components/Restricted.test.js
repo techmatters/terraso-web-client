@@ -15,9 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { render, screen } from 'tests/utils';
-
 import React from 'react';
-
 import Restricted from 'permissions/components/Restricted';
 
 const setup = async (props, rules) => {

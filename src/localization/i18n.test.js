@@ -15,10 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { render, screen } from 'tests/utils';
-
 import { act } from 'react-dom/test-utils';
 import { useTranslation } from 'react-i18next';
-
 import i18n from 'localization/i18n';
 
 i18n.init({

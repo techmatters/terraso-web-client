@@ -15,12 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useEffect, useState } from 'react';
-
 import { filesize } from 'filesize';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-
 import {
   Grid,
   ListItem,
@@ -30,13 +28,11 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-
 import ExternalLink from 'common/components/ExternalLink';
 import List from 'common/components/List';
 import StepperStep from 'common/components/StepperStep';
 import PageLoader from 'layout/PageLoader';
 import { formatDate } from 'localization/utils';
-
 import { useGroupContext } from 'group/groupContext';
 import SharedFileIcon from 'sharedData/components/SharedFileIcon';
 import { fetchGroupSharedData } from 'sharedData/sharedDataSlice';

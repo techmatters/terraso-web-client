@@ -15,7 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { createContext, forwardRef, useContext, useState } from 'react';
-
 import { Container as BaseContainer } from '@mui/material';
 
 const ContainerContext = createContext({});

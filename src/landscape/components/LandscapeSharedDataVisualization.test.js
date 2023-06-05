@@ -15,12 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { act, fireEvent, render, screen } from 'tests/utils';
-
 import { useParams } from 'react-router-dom';
 import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
-
 import * as visualizationMarkers from 'sharedData/visualization/visualizationMarkers';
-
 import LandscapeSharedDataVisualization from './LandscapeSharedDataVisualization';
 
 jest.mock('terrasoApi/terrasoBackend/api');

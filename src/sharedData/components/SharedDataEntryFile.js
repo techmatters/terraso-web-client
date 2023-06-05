@@ -15,11 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { filesize } from 'filesize';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import MapIcon from '@mui/icons-material/Map';
 import {
@@ -30,13 +28,10 @@ import {
   ListItem,
   Stack,
 } from '@mui/material';
-
 import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
-
 import { useGroupContext } from 'group/groupContext';
 import { useSharedData } from 'sharedData/sharedDataHooks';
-
 import SharedDataEntryBase, { ICON_SIZE } from './SharedDataEntryBase';
 import SharedFileIcon from './SharedFileIcon';
 

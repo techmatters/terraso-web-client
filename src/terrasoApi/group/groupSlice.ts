@@ -20,8 +20,8 @@ import { User } from 'terrasoApi/account/accountSlice';
 import * as groupService from 'terrasoApi/group/groupService';
 import * as groupUtils from 'terrasoApi/group/groupUtils';
 import {
-  Message,
   createAsyncThunk,
+  Message,
   withExtra as withExtraInput,
 } from 'terrasoApi/utils';
 

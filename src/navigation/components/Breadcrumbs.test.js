@@ -15,11 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { render, screen } from 'tests/utils';
-
 import React, { useMemo } from 'react';
-
 import { useLocation } from 'react-router-dom';
-
 import { useBreadcrumbsParams } from '../breadcrumbsContext';
 import Breadcrumbs from './Breadcrumbs';
 

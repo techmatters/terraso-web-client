@@ -15,11 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useEffect, useMemo } from 'react';
-
 import _ from 'lodash/fp';
-import { Trans } from 'react-i18next';
-import { useTranslation } from 'react-i18next';
-
+import { Trans, useTranslation } from 'react-i18next';
 import {
   Button,
   Card,
@@ -27,7 +24,6 @@ import {
   CardHeader,
   Typography,
 } from '@mui/material';
-
 import ExternalLink from 'common/components/ExternalLink';
 import RouterLink from 'common/components/RouterLink';
 import Restricted from 'permissions/components/Restricted';

@@ -15,15 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useMemo } from 'react';
-
 import { useTranslation } from 'react-i18next';
-
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { IconButton } from '@mui/material';
-
 import ExternalLink from 'common/components/ExternalLink';
 import { useAnalytics } from 'monitoring/analytics';
-
 import LinkIcon from './LinkIcon';
 import SharedDataEntryBase, { ICON_SIZE } from './SharedDataEntryBase';
 

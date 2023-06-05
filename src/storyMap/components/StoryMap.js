@@ -15,19 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo } from 'react';
-
 import { useTranslation } from 'react-i18next';
 import scrollama from 'scrollama';
-
 import { Box } from '@mui/material';
-
 import RichTextEditor from 'common/components/RichTextEditor';
-
 import mapboxgl from 'gis/mapbox';
 import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
-
 import { MAPBOX_ACCESS_TOKEN, STORY_MAP_INSET_STYLE } from 'config';
-
 import {
   ALIGNMENTS,
   LAYER_TYPES,
@@ -35,11 +29,8 @@ import {
   MAPBOX_FOG,
   MAPBOX_SKY_LAYER,
 } from '../storyMapConstants';
-
 import './StoryMap.css';
-
 import StoryMapOutline from './StoryMapOutline';
-
 import theme from 'theme';
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;

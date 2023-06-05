@@ -15,10 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
-
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import CloseIcon from '@mui/icons-material/Close';
 import MapIcon from '@mui/icons-material/Map';
@@ -34,25 +32,17 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-
 import ExternalLink from 'common/components/ExternalLink';
 import { countryNameForCode } from 'common/utils';
 import PageHeader from 'layout/PageHeader';
-
 import { getPlaceInfoByName } from 'gis/gisService';
 import LandscapeBoundariesFile from 'landscape/components/LandscapeForm/BoundaryStepBoundariesFile';
 import LandscapeMap from 'landscape/components/LandscapeMap';
-
 import { useIsMounted } from 'custom-hooks';
-
 import './BoundaryStep.css';
-
 import { scrollToNavBar } from 'navigation/scrollTo';
-
 import { LAYER_ESRI } from 'gis/components/Map';
-
 import { MAP_DATA_ACCEPTED_TYPES_NAMES } from 'config';
-
 import Actions from './Actions';
 
 const OPTION_GEOJSON = 'geo-json';

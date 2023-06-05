@@ -15,9 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-
 import { useTranslation } from 'react-i18next';
-
 import CloseIcon from '@mui/icons-material/Close';
 import EmailIcon from '@mui/icons-material/Email';
 import FacebookIcon from '@mui/icons-material/Facebook';
@@ -35,7 +33,6 @@ import {
   Typography,
 } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
-
 import theme from 'theme';
 
 const SocialShareContext = createContext({});
