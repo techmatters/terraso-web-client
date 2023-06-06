@@ -30,6 +30,8 @@ import MapboxMap, {
 import MapboxMapControls from 'gis/components/MapboxMapControls';
 import { isValidLatitude, isValidLongitude } from 'gis/gisUtils';
 
+import { MAPBOX_LANDSCAPE_DIRECTORY_STYLE } from 'config';
+
 const LandscapePopup = ({ landscape }) => {
   const { t } = useTranslation();
 
@@ -231,7 +233,7 @@ const LandscapesMapboxMapClusters = props => {
 
 const LandscapeListMap = props => {
   return (
-    <MapboxMap projection="mercator">
+    <MapboxMap projection="mercator" style={MAPBOX_LANDSCAPE_DIRECTORY_STYLE}>
       <MapboxMapControls />
       <LandscapesMapboxMapClusters {...props} />
     </MapboxMap>
