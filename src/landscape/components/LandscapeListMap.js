@@ -29,7 +29,6 @@ import MapboxMap, {
 } from 'gis/components/MapboxMap';
 import MapboxMapControls from 'gis/components/MapboxMapControls';
 import { isValidLatitude, isValidLongitude } from 'gis/gisUtils';
-
 import { MAPBOX_LANDSCAPE_DIRECTORY_STYLE } from 'config';
 
 const LandscapePopup = ({ landscape }) => {

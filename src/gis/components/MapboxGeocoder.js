@@ -15,28 +15,27 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { useEffect } from 'react';
+import MapboxGlGeocoder from '@mapbox/mapbox-gl-geocoder';
+import { useTranslation } from 'react-i18next';
 import mapboxgl from 'gis/mapbox';
+import { MAPBOX_ACCESS_TOKEN } from 'config';
 import { useMap } from './MapboxMap';
 
-const MapboxMapControls = props => {
-  const { showCompass, showZoom = true, visualizePitch } = props;
+const MapboxGeocoder = () => {
+  const { t } = useTranslation();
   const { map } = useMap();
-
   useEffect(() => {
     if (!map) {
       return;
     }
-    map.addControl(
-      new mapboxgl.NavigationControl({
-        showCompass,
-        showZoom,
-        visualizePitch,
-      }),
-      'top-left'
-    );
-  }, [map, showCompass, showZoom, visualizePitch]);
-
+    const geocoder = new MapboxGlGeocoder({
+      accessToken: MAPBOX_ACCESS_TOKEN,
+      placeholder: t('storyMap.form_location_dialog_geocoder_placeholder'),
+      mapboxgl,
+    });
+    map.addControl(geocoder);
+  }, [map, t]);
   return null;
 };
 
-export default MapboxMapControls;
+export default MapboxGeocoder;

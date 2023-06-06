@@ -17,8 +17,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Box } from '@mui/material';
 import mapboxgl from 'gis/mapbox';
-import { MAPBOX_PROJECTION_DEFAULT, MAPBOX_STYLE_DEFAULT } from 'config';
+import {
+  MAPBOX_ACCESS_TOKEN,
+  MAPBOX_PROJECTION_DEFAULT,
+  MAPBOX_STYLE_DEFAULT,
+} from 'config';
 import { withWrapper } from 'react-hoc';
+
+mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
 export const MAPBOX_DEM_SOURCE = {
   type: 'raster-dem',
@@ -62,11 +68,12 @@ export const MapProvider = props => {
 
 const MapboxMap = props => {
   const {
-    use3dTerrain,
     style,
     projection,
     initialLocation,
     interactive = true,
+    height = '400px',
+    width = '100%',
     children,
   } = props;
   const { setMap } = useMap();
@@ -83,17 +90,21 @@ const MapboxMap = props => {
     });
 
     map.on('load', function () {
-      if (use3dTerrain) {
-        map.addSource('mapbox-dem', MAPBOX_DEM_SOURCE);
-        // add the DEM (Digital Elevation Model) source as a terrain layer with exaggerated height
-        map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
+      map.addSource('mapbox-dem', MAPBOX_DEM_SOURCE);
 
-        // add a sky layer that will show when the map is highly pitched
-        map.addLayer(MAPBOX_SKY_LAYER);
-      }
+      // add the DEM (Digital Elevation Model) source as a terrain layer with exaggerated height
+      map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
+
+      // add a sky layer that will show when the map is highly pitched
+      map.addLayer(MAPBOX_SKY_LAYER);
 
       setMap(map);
     });
+
+    map.on('style.load', () => {
+      map.setFog(MAPBOX_FOG);
+    });
+
     return () => map.remove();
   }, [style, initialLocation, use3dTerrain, projection, interactive, setMap]);
 
@@ -101,8 +112,8 @@ const MapboxMap = props => {
     <Box
       ref={mapContainer}
       sx={{
-        width: '100%',
-        height: '400px',
+        width,
+        height,
       }}
     >
       {children}
