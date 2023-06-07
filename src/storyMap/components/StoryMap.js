@@ -284,7 +284,7 @@ const Scroller = props => {
 
   const getLayerPaintType = useCallback(
     layer => {
-      const layerType = map.getLayer(layer).type;
+      const layerType = map.getLayer(layer)?.type;
       return LAYER_TYPES[layerType];
     },
     [map]
@@ -477,7 +477,15 @@ const StoryMap = props => {
   return (
     <>
       <section aria-label={t('storyMap.view_map_label')}>
-        <MapboxMap id="map" sx={{ ...mapCss }}>
+        <MapboxMap
+          id="map"
+          interactive={false}
+          style={config.style}
+          projection={config.projection}
+          zoom={1}
+          initialLocation={initialLocation}
+          sx={{ ...mapCss }}
+        >
           {map => (
             <InsetMap
               config={config}
