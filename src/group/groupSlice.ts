@@ -16,7 +16,11 @@
  */
 import { createSlice } from '@reduxjs/toolkit';
 import * as _ from 'lodash/fp';
-import { MembershipList } from 'terrasoApi/shared/memberships/membershipsSlice';
+import {
+  MembershipList,
+  setMemberships,
+} from 'terrasoApi/shared/memberships/membershipsSlice';
+import { getMemberships } from 'terrasoApi/shared/memberships/membershipsUtils';
 import { Message, createAsyncThunk } from 'terrasoApi/shared/store/utils';
 
 import * as groupService from 'group/groupService';
@@ -37,7 +41,11 @@ export const fetchGroupForm = createAsyncThunk(
 
 export const fetchGroupView = createAsyncThunk(
   'group/fetchGroupView',
-  groupService.fetchGroupToView
+  async (slug: string, user, { dispatch }) => {
+    const group = await groupService.fetchGroupToView(slug);
+    dispatch(setMemberships(getMemberships([group])));
+    return group;
+  }
 );
 
 export const refreshGroupView = createAsyncThunk(
@@ -52,7 +60,11 @@ export const fetchGroupUpload = createAsyncThunk(
 
 export const fetchGroups = createAsyncThunk(
   'group/fetchGroups',
-  groupService.fetchGroups
+  async (arg, user, { dispatch }) => {
+    const groups = await groupService.fetchGroups();
+    dispatch(setMemberships(getMemberships(groups)));
+    return groups;
+  }
 );
 
 export const fetchGroupsAutocompleteList = createAsyncThunk(

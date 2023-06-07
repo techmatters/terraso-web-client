@@ -27,7 +27,7 @@ export const TERRASO_API_URL =
 export const REACT_APP_BASE_URL =
   process.env.REACT_APP_BASE_URL || 'http://127.0.0.1:3000';
 
-export const GRAPH_QL_ENDPOINT = 'graphql/';
+export const GRAPHQL_ENDPOINT = 'graphql/';
 
 export const COOKIES_DOMAIN =
   process.env.REACT_APP_COOKIES_DOMAIN || '127.0.0.1';
@@ -38,7 +38,7 @@ export const ROLLBAR_TOKEN = process.env.REACT_APP_ROLLBAR_TOKEN;
 
 setAPIConfig({
   terrasoAPIURL: TERRASO_API_URL,
-  graphQLEndpoint: GRAPH_QL_ENDPOINT,
+  graphQLEndpoint: GRAPHQL_ENDPOINT,
   tokenStorage: {
     getToken: Cookies.get,
     removeToken: name => Cookies.remove(name, COOKIES_PARAMS),

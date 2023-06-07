@@ -16,15 +16,11 @@
  */
 import _ from 'lodash/fp';
 import { cleanSensitiveCharacters } from 'stringUtils';
-import { User } from 'terrasoApi/shared/account/accountSlice';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
-import { setMemberships } from 'terrasoApi/shared/memberships/membershipsSlice';
 import {
   extractAccountMembership,
   extractMembersInfo,
-  getMemberships,
 } from 'terrasoApi/shared/memberships/membershipsUtils';
-import { ThunkAPI } from 'terrasoApi/shared/store/utils';
 import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
 
 import type { Group } from './groupSlice';
@@ -48,11 +44,7 @@ export const fetchGroupToUpdate = (slug: string) => {
     );
 };
 
-export const fetchGroupToView = async (
-  slug: string,
-  user: User | null,
-  { dispatch }: ThunkAPI
-) => {
+export const fetchGroupToView = async (slug: string) => {
   const query = graphql(`
     query groupToView($slug: String!) {
       groups(slug: $slug) {
@@ -74,18 +66,10 @@ export const fetchGroupToView = async (
       ..._.omit(['memberships', 'membershipsCount'], group),
       membersInfo: extractMembersInfo(group),
       accountMembership: extractAccountMembership(group),
-    }))
-    .then(group => {
-      dispatch(setMemberships(getMemberships([group])));
-      return group;
-    });
+    }));
 };
 
-export const fetchGroups = (
-  arg: void,
-  user: User | null,
-  { dispatch }: ThunkAPI
-) => {
+export const fetchGroups = () => {
   const query = graphql(`
     query groups {
       independentGroups: groups(associatedLandscapes_Isnull: true) {
@@ -128,7 +112,6 @@ export const fetchGroups = (
       )
       // eslint-disable-next-line lodash-fp/no-extraneous-function-wrapping
       .then(groups => {
-        dispatch(setMemberships(getMemberships(groups)));
         return _.orderBy([group => group.name.toLowerCase()], [], groups);
       })
   );
