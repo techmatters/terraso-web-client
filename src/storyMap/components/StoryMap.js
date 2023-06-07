@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import scrollama from 'scrollama';
 import { Box } from '@mui/material';
@@ -24,11 +24,7 @@ import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
 import { MAPBOX_ACCESS_TOKEN, STORY_MAP_INSET_STYLE } from 'config';
 import { ALIGNMENTS, LAYER_TYPES } from '../storyMapConstants';
 import './StoryMap.css';
-import {
-  MAPBOX_DEM_SOURCE,
-  MAPBOX_FOG,
-  MAPBOX_SKY_LAYER,
-} from 'gis/components/MapboxMap';
+import MapboxMap from 'gis/components/MapboxMap';
 import StoryMapOutline from './StoryMapOutline';
 import theme from 'theme';
 
@@ -189,24 +185,95 @@ const getTransition = (config, id) => {
   };
 };
 
-const StoryMap = props => {
-  const { t } = useTranslation();
-  const {
-    config,
-    onStepChange,
-    ChapterComponent = Chapter,
-    TitleComponent = Title,
-    mapCss = { height: '100vh', width: '100vw', top: 0 },
-    animation,
-    onReady,
-    chaptersFilter,
-  } = props;
-  const mapContainer = React.useRef(null);
-  const mapInsetContainer = React.useRef(null);
-  const [map, setMap] = React.useState(null);
-  const [insetMap, setInsetMap] = React.useState(null);
-  const [marker, setMarker] = React.useState(null);
-  const [isReady, setIsReady] = React.useState(false);
+const InsetConfig = props => {
+  const { map, insetMap } = props;
+
+  useEffect(() => {
+    if (!map || !insetMap) {
+      return;
+    }
+
+    function addInsetLayer(bounds) {
+      insetMap.addSource('boundsSource', {
+        type: 'geojson',
+        data: bounds,
+      });
+
+      insetMap.addLayer({
+        id: 'boundsLayer',
+        type: 'fill',
+        source: 'boundsSource', // reference the data source
+        layout: {},
+        paint: {
+          'fill-color': theme.palette.white,
+          'fill-opacity': 0.2,
+        },
+      });
+      // Add a black outline around the polygon.
+      insetMap.addLayer({
+        id: 'outlineLayer',
+        type: 'line',
+        source: 'boundsSource',
+        layout: {},
+        paint: {
+          'line-color': theme.palette.black,
+          'line-width': 1,
+        },
+      });
+    }
+    addInsetLayer(map.getBounds());
+
+    function updateInsetLayer(bounds) {
+      insetMap.getSource('boundsSource').setData(bounds);
+    }
+
+    function getInsetBounds() {
+      let bounds = map.getBounds();
+      updateInsetLayer(getBoundsJson(bounds));
+    }
+
+    // As the map moves, grab and update bounds in inset map.
+    map.on('move', getInsetBounds);
+    return () => {
+      map.off('move', getInsetBounds);
+    };
+  }, [map, insetMap]);
+
+  return null;
+};
+
+const InsetMap = props => {
+  const { config, initialLocation, map, children } = props;
+
+  if (!config.inset) {
+    return props.children(null);
+  }
+
+  return (
+    <MapboxMap
+      id="map-inset"
+      projection="mercator"
+      style={STORY_MAP_INSET_STYLE}
+      center={initialLocation?.center}
+      zoom={3}
+      hash={false}
+      interactive={false}
+      attributionControl={false}
+    >
+      {insetMap => (
+        <>
+          <InsetConfig insetMap={insetMap} map={map} />
+          {children(insetMap)}
+        </>
+      )}
+    </MapboxMap>
+  );
+};
+
+const Scroller = props => {
+  const { config, map, insetMap, animation, onStepChange, onReady } = props;
+  const [marker, setMarker] = useState(null);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     if (!isReady) {
@@ -237,118 +304,6 @@ const StoryMap = props => {
     },
     [map, getLayerPaintType]
   );
-
-  const initialLocation = useMemo(() => {
-    if (config.titleTransition?.location) {
-      return config.titleTransition?.location;
-    }
-    const firstChapterWithLocation = config.chapters.find(
-      chapter => chapter.location
-    );
-    return firstChapterWithLocation?.location;
-  }, [config.chapters, config.titleTransition?.location]);
-
-  useEffect(() => {
-    const map = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: config.style,
-      interactive: false,
-      projection: config.projection || 'globe',
-      zoom: 1,
-      ...(initialLocation ? initialLocation : {}),
-    });
-
-    map.on('load', function () {
-      if (config.use3dTerrain) {
-        map.addSource('mapbox-dem', MAPBOX_DEM_SOURCE);
-        // add the DEM (Digital Elevation Model) source as a terrain layer with exaggerated height
-        map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
-
-        // add a sky layer that will show when the map is highly pitched
-        map.addLayer(MAPBOX_SKY_LAYER);
-      }
-
-      setMap(map);
-    });
-    map.on('style.load', () => {
-      map.setFog(MAPBOX_FOG);
-    });
-    return () => map.remove();
-  }, [config.style, initialLocation, config.use3dTerrain, config.projection]);
-
-  useEffect(() => {
-    if (!map || !config.inset) {
-      return;
-    }
-
-    const newInsetMap = new mapboxgl.Map({
-      container: mapInsetContainer.current,
-      style: STORY_MAP_INSET_STYLE, //hosted style id
-      center: initialLocation?.center,
-      zoom: 3, // starting zoom
-      hash: false,
-      interactive: false,
-      attributionControl: false,
-      // Future: Once official mapbox-gl-js has globe view enabled,
-      // insetmap can be a globe with the following parameter.
-      // projection: 'globe'
-    });
-
-    newInsetMap.on('load', function () {
-      function addInsetLayer(bounds) {
-        newInsetMap.addSource('boundsSource', {
-          type: 'geojson',
-          data: bounds,
-        });
-
-        newInsetMap.addLayer({
-          id: 'boundsLayer',
-          type: 'fill',
-          source: 'boundsSource', // reference the data source
-          layout: {},
-          paint: {
-            'fill-color': theme.palette.white,
-            'fill-opacity': 0.2,
-          },
-        });
-        // Add a black outline around the polygon.
-        newInsetMap.addLayer({
-          id: 'outlineLayer',
-          type: 'line',
-          source: 'boundsSource',
-          layout: {},
-          paint: {
-            'line-color': theme.palette.black,
-            'line-width': 1,
-          },
-        });
-      }
-      addInsetLayer(map.getBounds());
-      setInsetMap(newInsetMap);
-    });
-    return () => newInsetMap.remove();
-  }, [map, config.inset, initialLocation]);
-
-  useEffect(() => {
-    if (!map || !config.inset || !insetMap) {
-      return;
-    }
-
-    function updateInsetLayer(bounds) {
-      insetMap.getSource('boundsSource').setData(bounds);
-    }
-
-    function getInsetBounds() {
-      let bounds = map.getBounds();
-      updateInsetLayer(getBoundsJson(bounds));
-    }
-
-    // As the map moves, grab and update bounds in inset map.
-    map.on('move', getInsetBounds);
-    return () => {
-      map.off('move', getInsetBounds);
-    };
-  }, [map, insetMap, config.inset]);
 
   const startTransition = useCallback(
     transition => {
@@ -486,6 +441,32 @@ const StoryMap = props => {
     onStepChange,
   ]);
 
+  return null;
+};
+
+const StoryMap = props => {
+  const { t } = useTranslation();
+  const {
+    config,
+    onStepChange,
+    ChapterComponent = Chapter,
+    TitleComponent = Title,
+    mapCss = { height: '100vh', width: '100vw', top: 0 },
+    animation,
+    onReady,
+    chaptersFilter,
+  } = props;
+
+  const initialLocation = useMemo(() => {
+    if (config.titleTransition?.location) {
+      return config.titleTransition?.location;
+    }
+    const firstChapterWithLocation = config.chapters.find(
+      chapter => chapter.location
+    );
+    return firstChapterWithLocation?.location;
+  }, [config.chapters, config.titleTransition?.location]);
+
   const filteredChapters = useMemo(() => {
     if (!chaptersFilter) {
       return config.chapters;
@@ -496,8 +477,26 @@ const StoryMap = props => {
   return (
     <>
       <section aria-label={t('storyMap.view_map_label')}>
-        <Box id="map" ref={mapContainer} sx={{ ...mapCss }} />
-        <Box id="map-inset" ref={mapInsetContainer}></Box>
+        <MapboxMap id="map" sx={{ ...mapCss }}>
+          {map => (
+            <InsetMap
+              config={config}
+              map={map}
+              initialLocation={initialLocation}
+            >
+              {insetMap => (
+                <Scroller
+                  map={map}
+                  insetMap={insetMap}
+                  config={config}
+                  animation={animation}
+                  onStepChange={onStepChange}
+                  onReady={onReady}
+                />
+              )}
+            </InsetMap>
+          )}
+        </MapboxMap>
       </section>
       <Box id="story">
         <Box

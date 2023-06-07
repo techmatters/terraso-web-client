@@ -68,15 +68,20 @@ export const MapProvider = props => {
 
 const MapboxMap = props => {
   const {
+    id,
     style,
     projection,
     initialLocation,
     interactive = true,
+    hash,
+    attributionControl,
+    center,
     height = '400px',
     width = '100%',
+    sx,
     children,
   } = props;
-  const { setMap } = useMap();
+  const { map, setMap } = useMap();
   const mapContainer = useRef(null);
 
   useEffect(() => {
@@ -86,6 +91,9 @@ const MapboxMap = props => {
       interactive,
       projection: projection || MAPBOX_PROJECTION_DEFAULT,
       zoom: 1,
+      center,
+      hash,
+      attributionControl,
       ...(initialLocation ? initialLocation : {}),
     });
 
@@ -106,17 +114,28 @@ const MapboxMap = props => {
     });
 
     return () => map.remove();
-  }, [style, initialLocation, use3dTerrain, projection, interactive, setMap]);
+  }, [
+    style,
+    initialLocation,
+    projection,
+    interactive,
+    hash,
+    center,
+    attributionControl,
+    setMap,
+  ]);
 
   return (
     <Box
+      id={id}
       ref={mapContainer}
       sx={{
         width,
         height,
+        ...sx,
       }}
     >
-      {children}
+      {typeof children === 'function' ? children(map) : children}
     </Box>
   );
 };
