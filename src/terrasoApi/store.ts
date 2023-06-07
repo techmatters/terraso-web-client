@@ -18,8 +18,7 @@ import { Middleware, combineReducers, configureStore } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
 import accountReducer from 'terrasoApi/shared/account/accountSlice';
 import groupReducer from 'terrasoApi/shared/group/groupSlice';
-
-import notificationsReducer from 'notifications/notificationsSlice';
+import notificationsReducer from 'terrasoApi/shared/notifications/notificationsSlice';
 
 import gisReducer from 'gis/gisSlice';
 import userHomeReducer from 'home/homeSlice';

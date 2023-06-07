@@ -26,8 +26,7 @@ import { useDispatch } from 'react-redux';
 import { User, signOut } from 'terrasoApi/shared/account/accountSlice';
 import { refreshToken } from 'terrasoApi/shared/account/auth';
 import { UNAUTHENTICATED } from 'terrasoApi/shared/account/authConstants';
-
-import { addMessage } from 'notifications/notificationsSlice';
+import { addMessage } from 'terrasoApi/shared/notifications/notificationsSlice';
 
 import type { AppDispatch, AppState } from './store';
 

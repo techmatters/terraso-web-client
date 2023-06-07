@@ -15,10 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+
 import _ from 'lodash/fp';
 import { useDispatch } from 'react-redux';
+import { addMessage } from 'terrasoApi/shared/notifications/notificationsSlice';
 import * as SheetsJs from 'xlsx';
-import { addMessage } from 'notifications/notificationsSlice';
+
 import { readFile } from 'sharedData/visualization/visualizationUtils';
 
 export const VisualizationContext = React.createContext();
