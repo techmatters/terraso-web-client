@@ -285,6 +285,10 @@ const Scroller = props => {
   const getLayerPaintType = useCallback(
     layer => {
       const layerType = map.getLayer(layer)?.type;
+      if (!layerType) {
+        console.warn(`Layer ${layer} not found`);
+        return null;
+      }
       return LAYER_TYPES[layerType];
     },
     [map]
@@ -292,8 +296,11 @@ const Scroller = props => {
 
   const setLayerOpacity = useCallback(
     layer => {
+      if (!layer.layer) {
+        return;
+      }
       const paintProps = getLayerPaintType(layer.layer);
-      paintProps.forEach(function (prop) {
+      paintProps?.forEach(function (prop) {
         const options = layer.duration ? { duration: layer.duration } : {};
         if (layer.duration) {
           const transitionProp = prop + '-transition';
