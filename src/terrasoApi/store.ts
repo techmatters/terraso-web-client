@@ -16,7 +16,7 @@
  */
 import { Middleware, combineReducers, configureStore } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
-import accountReducer from 'terrasoApi/account/accountSlice';
+import accountReducer from 'terrasoApi/shared/account/accountSlice';
 import groupReducer from 'terrasoApi/shared/group/groupSlice';
 
 import notificationsReducer from 'notifications/notificationsSlice';

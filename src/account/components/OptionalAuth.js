@@ -17,7 +17,7 @@
 import React, { useCallback } from 'react';
 import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
-import { fetchUser } from 'terrasoApi/account/accountSlice';
+import { fetchUser } from 'terrasoApi/shared/account/accountSlice';
 import { useFetchData } from 'terrasoApi/utils';
 import PageLoader from 'layout/PageLoader';
 

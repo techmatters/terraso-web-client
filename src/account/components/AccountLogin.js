@@ -18,7 +18,7 @@ import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
-import { fetchAuthURLs } from 'terrasoApi/account/accountSlice';
+import { fetchAuthURLs } from 'terrasoApi/shared/account/accountSlice';
 import { useFetchData } from 'terrasoApi/utils';
 import AppleIcon from '@mui/icons-material/Apple';
 import GoogleIcon from '@mui/icons-material/Google';

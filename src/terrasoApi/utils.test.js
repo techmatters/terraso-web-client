@@ -15,8 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { render, screen } from 'tests/utils';
+
 import React from 'react';
-import { fetchAuthURLs } from 'terrasoApi/account/accountSlice';
+
+import { fetchAuthURLs } from 'terrasoApi/shared/account/accountSlice';
+
 import { useFetchData } from './utils';
 
 const TestComponent = () => {

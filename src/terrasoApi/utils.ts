@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { useEffect } from 'react';
+
 import {
   AsyncThunkAction,
   createAsyncThunk as createAsyncThunkBase,
@@ -22,10 +23,12 @@ import {
 import type { BaseThunkAPI } from '@reduxjs/toolkit/dist/createAsyncThunk';
 import _ from 'lodash/fp';
 import { useDispatch } from 'react-redux';
-import { signOut, User } from 'terrasoApi/account/accountSlice';
-import { refreshToken } from 'terrasoApi/account/auth';
-import { UNAUTHENTICATED } from 'terrasoApi/account/authConstants';
+import { User, signOut } from 'terrasoApi/shared/account/accountSlice';
+import { refreshToken } from 'terrasoApi/shared/account/auth';
+import { UNAUTHENTICATED } from 'terrasoApi/shared/account/authConstants';
+
 import { addMessage } from 'notifications/notificationsSlice';
+
 import type { AppDispatch, AppState } from './store';
 
 const executeAuthRequest = <T>(

@@ -15,12 +15,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { render, screen } from 'tests/utils';
+
 import React from 'react';
+
 import { useSearchParams } from 'react-router-dom';
-import * as accountService from 'terrasoApi/account/accountService';
+import * as accountService from 'terrasoApi/shared/account/accountService';
+
 import AccountLogin from 'account/components/AccountLogin';
 
-jest.mock('terrasoApi/account/accountService');
+jest.mock('terrasoApi/shared/account/accountService');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
