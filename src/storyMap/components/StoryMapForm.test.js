@@ -80,6 +80,10 @@ beforeEach(() => {
     addControl: jest.fn(),
     getCenter: jest.fn(),
     getZoom: jest.fn(),
+    addSource: jest.fn(),
+    setTerrain: jest.fn(),
+    addLayer: jest.fn(),
+    addSource: jest.fn(),
   });
   window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
@@ -356,6 +360,9 @@ test('StoryMapForm: Sidebar navigation', async () => {
     getCenter: () => ({ lng: -99.91122777353772, lat: 21.64458705609789 }),
     getZoom: jest.fn(),
     flyTo: jest.fn(),
+    addSource: jest.fn(),
+    setTerrain: jest.fn(),
+    addLayer: jest.fn(),
   };
   mapboxgl.Map.mockReturnValue(map);
   const scroller = {
