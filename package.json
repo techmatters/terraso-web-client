@@ -4,7 +4,6 @@
   "private": true,
   "sideEffects": ["src/config.ts"],
   "dependencies": {
-    "@changey/react-leaflet-markercluster": "^4.0.0-rc1",
     "@hookform/resolvers": "^3.1.0",
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
     "@mui/icons-material": "^5.11.16",
@@ -68,7 +67,7 @@
     "lint-css": "stylelint --fix --config=.stylelintrc '**/*.css'",
     "build": "npm run generate-types && react-scripts build",
     "build-serve": "serve -s build",
-    "test": "npm run generate-types -- -w -s & react-scripts test --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
+    "test": "npm run generate-types & react-scripts test --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
     "test-debug": "npm run generate-types && react-scripts --inspect-brk test --runInBand --no-cache --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
     "test-coverage": "npm run generate-types && react-scripts test --coverage --changedSince=origin/main --watchAll=false --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
     "localization-to-po": "node scripts/localization/transform-to.js po",
