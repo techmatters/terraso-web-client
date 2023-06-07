@@ -21,10 +21,8 @@ import {
   extractMembersInfo,
 } from 'terrasoApi/shared/memberships/membershipsUtils';
 import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
-
 import * as gisService from 'gis/gisService';
 import { extractTerms } from 'taxonomies/taxonomiesUtils';
-
 import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
 import {
   extractAffiliatedGroups,

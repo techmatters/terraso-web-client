@@ -17,7 +17,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
 import { createAsyncThunk } from 'terrasoApi/shared/store/utils';
-
 import * as storyMapService from 'storyMap/storyMapService';
 
 const initialState = {

@@ -22,7 +22,6 @@ import {
   extractMembersInfo,
 } from 'terrasoApi/shared/memberships/membershipsUtils';
 import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
-
 import type { Group } from './groupSlice';
 
 export const fetchGroupToUpdate = (slug: string) => {

@@ -15,19 +15,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { useTranslation } from 'react-i18next';
 import { Popup } from 'react-leaflet';
 import { useSelector } from 'react-redux';
 import { useFetchData } from 'terrasoApi/shared/store/utils';
-
 import { Typography } from '@mui/material';
-
 import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
-
 import { fetchLandscapes } from 'landscape/landscapeSlice';
-
 import LandscapeListMap from './LandscapeListMap';
 
 const LandscapeDescriptionPopup = ({ landscape }) => (

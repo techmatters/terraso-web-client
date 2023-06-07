@@ -19,8 +19,8 @@ import _ from 'lodash/fp';
 import * as membershipsService from 'terrasoApi/shared/memberships/membershipsService';
 import * as membershipsUtils from 'terrasoApi/shared/memberships/membershipsUtils';
 import {
-  Message,
   createAsyncThunk,
+  Message,
   withExtra as withExtraInput,
 } from 'terrasoApi/shared/store/utils';
 

@@ -15,15 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import { useFetchData } from 'terrasoApi/shared/store/utils';
-
 import { Button, Card, Link, Stack, Typography } from '@mui/material';
-
 import ExternalLink from 'common/components/ExternalLink';
 import TableResponsive from 'common/components/TableResponsive';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
@@ -31,16 +28,13 @@ import { countryNameForCode } from 'common/utils';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
-
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
 import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton';
 import { fetchLandscapes } from 'landscape/landscapeSlice';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
-
 import { withProps } from 'react-hoc';
-
 import LandscapeListMap from './LandscapeListMap';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {

@@ -15,16 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useMemo, useState } from 'react';
-
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useFetchData } from 'terrasoApi/shared/store/utils';
-
 import { Grid, Stack } from '@mui/material';
-
 import { useSocialShareContext } from 'common/components/SocialShare';
 import {
   useDocumentDescription,
@@ -35,7 +32,6 @@ import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import {
@@ -43,9 +39,7 @@ import {
   refreshLandscapeView,
 } from 'landscape/landscapeSlice';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
-
 import { withProps } from 'react-hoc';
-
 import AffiliationCard from './AffiliationCard';
 import DevelopmentStrategyCard from './DevelopmentStrategyCard';
 import KeyInfoCard from './KeyInfoCard';

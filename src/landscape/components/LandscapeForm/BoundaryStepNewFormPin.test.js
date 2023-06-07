@@ -15,15 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
-
 import React from 'react';
-
 import L from 'leaflet';
 import { act } from 'react-dom/test-utils';
 import * as reactLeaflet from 'react-leaflet';
 import { useParams } from 'react-router-dom';
 import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
-
 import LandscapeNew from 'landscape/components/LandscapeForm/New';
 
 jest.mock('terrasoApi/shared/terrasoApi/api');

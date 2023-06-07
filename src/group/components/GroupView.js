@@ -15,13 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo } from 'react';
-
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 import { useFetchData } from 'terrasoApi/shared/store/utils';
 import { useDispatch, useSelector } from 'terrasoApi/store';
-
 import EmailIcon from '@mui/icons-material/Email';
 import PublicIcon from '@mui/icons-material/Public';
 import {
@@ -34,7 +32,6 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-
 import { useSocialShareContext } from 'common/components/SocialShare';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
@@ -43,7 +40,6 @@ import PageLoader from 'layout/PageLoader';
 import { useRefreshProgressContext } from 'layout/RefreshProgressProvider';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import Restricted from 'permissions/components/Restricted';
-
 import { GroupContextProvider } from 'group/groupContext';
 import { fetchGroupView, refreshGroupView } from 'group/groupSlice';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
@@ -52,7 +48,6 @@ import GroupMemberRequestCancel from 'group/membership/components/GroupMemberReq
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
 import GroupMembershipInfo from 'group/membership/components/GroupMembershipInfo';
 import SharedDataCard from 'sharedData/components/SharedDataCard';
-
 import { withProps } from 'react-hoc';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {

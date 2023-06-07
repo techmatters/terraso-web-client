@@ -15,10 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
 import { ErrorBoundary } from 'react-error-boundary';
 import logger from 'terrasoApi/shared/monitoring/logger';
-
 import UnexpectedError from 'common/components/UnexpectedError';
 
 const errorHandler = error => {

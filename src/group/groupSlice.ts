@@ -21,8 +21,7 @@ import {
   setMemberships,
 } from 'terrasoApi/shared/memberships/membershipsSlice';
 import { getMemberships } from 'terrasoApi/shared/memberships/membershipsUtils';
-import { Message, createAsyncThunk } from 'terrasoApi/shared/store/utils';
-
+import { createAsyncThunk, Message } from 'terrasoApi/shared/store/utils';
 import * as groupService from 'group/groupService';
 
 export type Group = {

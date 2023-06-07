@@ -15,14 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { render, screen } from 'tests/utils';
-
 import React from 'react';
-
 import _ from 'lodash/fp';
 import { useLocation, useParams } from 'react-router-dom';
 import { getUserEmail } from 'terrasoApi/shared/account/auth';
 import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
-
 import RequireAuth from 'account/components/RequireAuth';
 import GroupView from 'group/components/GroupView';
 

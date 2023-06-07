@@ -15,13 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback } from 'react';
-
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useFetchData } from 'terrasoApi/shared/store/utils';
-
 import {
   Button,
   Card,
@@ -31,15 +29,11 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-
 import List from 'common/components/List';
 import { ScrollTo } from 'navigation/scrollTo';
-
 import { useGroupContext } from 'group/groupContext';
 import { fetchGroupSharedData } from 'sharedData/sharedDataSlice';
-
 import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
-
 import SharedDataEntryFile from './SharedDataEntryFile';
 import SharedDataEntryLink from './SharedDataEntryLink';
 

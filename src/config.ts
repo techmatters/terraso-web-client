@@ -16,7 +16,6 @@
  */
 import Cookies from 'js-cookie';
 import { setAPIConfig } from 'terrasoApi/shared/config';
-
 import { rollbar } from 'monitoring/rollbar';
 
 export const TERRASO_ENV = process.env.REACT_APP_TERRASO_ENV || 'local';

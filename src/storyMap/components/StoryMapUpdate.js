@@ -15,19 +15,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useState } from 'react';
-
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useFetchData } from 'terrasoApi/shared/store/utils';
-
 import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
 import { useAnalytics } from 'monitoring/analytics';
 import { ILM_OUTPUT_PROP, LANDSCAPE_NARRATIVES } from 'monitoring/ilm';
-
 import {
   fetchStoryMapForm,
   resetForm,
@@ -37,7 +34,6 @@ import {
   generateStoryMapEditUrl,
   generateStoryMapUrl,
 } from 'storyMap/storyMapUtils';
-
 import StoryMapForm from './StoryMapForm';
 import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigContext';
 

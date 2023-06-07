@@ -15,10 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {
+  configureStore,
   Middleware,
   ReducersMapObject,
   StateFromReducersMapObject,
-  configureStore,
 } from '@reduxjs/toolkit';
 import { ToolkitStore } from '@reduxjs/toolkit/dist/configureStore';
 import _ from 'lodash/fp';

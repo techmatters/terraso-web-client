@@ -15,18 +15,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useMemo } from 'react';
-
 import _ from 'lodash/fp';
 import {
   joinMembershipList,
   leaveMembershipList,
 } from 'terrasoApi/shared/memberships/membershipsSlice';
 import { useDispatch, useSelector } from 'terrasoApi/store';
-
 import { useAnalytics } from 'monitoring/analytics';
-
 import { useGroupContext } from 'group/groupContext';
-
 import {
   MEMBERSHIP_CLOSED,
   MEMBERSHIP_STATUS_PENDING,

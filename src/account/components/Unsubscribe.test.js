@@ -15,13 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { render, screen, within } from 'tests/utils';
-
 import React from 'react';
-
-import { useNavigate } from 'react-router-dom';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
-
 import Unsubscribe from 'account/components/Unsubscribe';
 
 jest.mock('terrasoApi/shared/terrasoApi/api');

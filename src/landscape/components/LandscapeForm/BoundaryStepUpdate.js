@@ -15,25 +15,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect } from 'react';
-
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useFetchData } from 'terrasoApi/shared/store/utils';
-
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 import { useAnalytics } from 'monitoring/analytics';
 import { ILM_OUTPUT_PROP, MAP_LANDSCAPE_BOUNDARIES } from 'monitoring/ilm';
-
 import {
   fetchLandscapeForm,
   saveLandscape,
   setFormNewValues,
 } from 'landscape/landscapeSlice';
-
 import BoundaryStep from './BoundaryStep';
 
 const LandscapeBoundariesUpdate = () => {

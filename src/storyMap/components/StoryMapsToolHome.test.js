@@ -15,9 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { render, screen, within } from 'tests/utils';
-
 import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
-
 import StoryMapsToolsHome from './StoryMapsToolHome';
 
 jest.mock('terrasoApi/shared/terrasoApi/api');

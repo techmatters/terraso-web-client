@@ -15,25 +15,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useMemo } from 'react';
-
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useFetchData } from 'terrasoApi/shared/store/utils';
-
 import { Box, Link, Stack } from '@mui/material';
-
 import { serialize } from 'common/components/RichTextEditor/utils';
 import { useSocialShareContext } from 'common/components/SocialShare';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-
 import StoryMap from 'storyMap/components/StoryMap';
 import { fetchStoryMap } from 'storyMap/storyMapSlice';
 import { generateStoryMapUrl, isChapterEmpty } from 'storyMap/storyMapUtils';
-
 import logoWhite from 'assets/logo-white.svg';
 
 const EmbedHeader = props => {

@@ -15,15 +15,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {
-  TypedUseSelectorHook,
   useDispatch as reduxUseDispatch,
   useSelector as reduxUseSelector,
+  TypedUseSelectorHook,
 } from 'react-redux';
 import createStoreFactory, {
   DispatchFromStoreFactory,
   StateFromStoreFactory,
 } from 'terrasoApi/shared/store/store';
-
 import gisReducer from 'gis/gisSlice';
 import groupReducer from 'group/groupSlice';
 import userHomeReducer from 'home/homeSlice';

@@ -15,12 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
-
 import React from 'react';
-
 import { useNavigate, useParams } from 'react-router-dom';
 import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
-
 import LandscapeBoundaries from 'landscape/components/LandscapeForm/BoundaryStepUpdate';
 
 jest.mock('terrasoApi/shared/terrasoApi/api');
