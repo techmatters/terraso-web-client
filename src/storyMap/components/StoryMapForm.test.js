@@ -83,7 +83,6 @@ beforeEach(() => {
     addSource: jest.fn(),
     setTerrain: jest.fn(),
     addLayer: jest.fn(),
-    addSource: jest.fn(),
   });
   window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
