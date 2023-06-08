@@ -2,6 +2,7 @@
   "name": "terraso-web-client",
   "version": "0.1.0",
   "private": true,
+  "sideEffects": ["src/config.ts"],
   "dependencies": {
     "@changey/react-leaflet-markercluster": "^4.0.0-rc1",
     "@hookform/resolvers": "^3.1.0",
