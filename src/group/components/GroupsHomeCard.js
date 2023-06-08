@@ -100,15 +100,19 @@ const GroupsHomeCard = ({ groups }) => {
 
   return (
     <HomeCard
-      id="groups"
       title={t('group.home_default_title')}
       action={{
         label: t('group.home_connect_label'),
         to: '/groups',
       }}
       contentBackgroundColor="white"
+      ariaLabel="groups-list-title"
     >
-      <List aria-describedby="groups-list-title" sx={{ width: '100%' }}>
+      <List
+        aria-labelledby="groups-list-title"
+        aria-describedby="groups-list-title"
+        sx={{ width: '100%' }}
+      >
         {sortedGroups.map((group, index) => (
           <React.Fragment key={group.slug}>
             <GroupItem group={group} index={index} />

@@ -34,11 +34,16 @@ const HomeCard = ({
   image,
   children,
   showActionAsButton = false,
+  ariaLabel,
   contentBackgroundColor = 'blue.lite2',
 }) => (
-  <Card sx={{ display: 'flex', flexDirection: 'column' }}>
+  <Card
+    aria-labelledby={ariaLabel}
+    sx={{ display: 'flex', flexDirection: 'column' }}
+  >
     <Stack direction="column" sx={{ p: 2 }}>
       <Typography
+        id={ariaLabel}
         variant="h2"
         sx={{ pt: 0, pb: 2, textTransform: 'uppercase' }}
       >
@@ -81,7 +86,7 @@ const HomeCard = ({
       </CardActions>
     ) : (
       <>
-        <Divider aria-hidden="true" />
+        <Divider aria-hidden="false" />
         <CardActionRouterLink label={action.label} to={action.to} />
       </>
     )}

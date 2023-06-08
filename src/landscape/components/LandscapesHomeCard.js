@@ -74,6 +74,7 @@ const LandscapesHomeCard = ({ landscapes }) => {
     <HomeCard
       id="landscapes"
       title={t('landscape.home_title')}
+      ariaLabel="landscapes-list-title"
       action={{
         label: t('landscape.home_connect_label'),
         to: '/landscapes',
@@ -81,6 +82,7 @@ const LandscapesHomeCard = ({ landscapes }) => {
       contentBackgroundColor="white"
     >
       <List
+        aria-labelledby="landscapes-list-title"
         aria-describedby="landscapes-list-title"
         sx={{
           width: '100%',

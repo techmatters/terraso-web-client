@@ -60,8 +60,8 @@ const StoryMapsHomeCard = props => {
 
   return (
     <HomeCard
-      id="story-maps"
       title={t('storyMap.home_title')}
+      ariaLabel="story-maps-list-title"
       action={{
         label: t('storyMap.home_create'),
         to: 'tools/story-maps/new',

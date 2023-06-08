@@ -27,6 +27,7 @@ const ToolHomeCard = () => {
   return (
     <HomeCard
       title={t('tool.home_card_title')}
+      ariaLabel="tools-title"
       action={{
         label: t('tool.home_explore_label'),
         to: '/tools',

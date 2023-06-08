@@ -27,6 +27,7 @@ const StoryMapsHomeCardDefault = () => {
   return (
     <HomeCard
       title={t('storyMap.home_title')}
+      ariaLabel="story-maps-default-title"
       action={{
         label: t('storyMap.home_create'),
         to: 'tools/story-maps/new',
