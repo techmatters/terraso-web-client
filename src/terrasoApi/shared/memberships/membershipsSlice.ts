@@ -105,7 +105,7 @@ export const membershipsSlice = createSlice({
       action: { payload: Record<string, MembershipGroup> }
     ) => ({
       ...state,
-      memberships: {
+      lists: {
         ...state.lists,
         ...Object.fromEntries(
           Object.entries(action.payload).map(
