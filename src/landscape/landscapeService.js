@@ -15,12 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-import { graphql } from 'terrasoApi/gql';
+import { graphql } from 'terrasoApi/shared/graphqlSchema';
 import {
   extractAccountMembership,
   extractMembersInfo,
-} from 'terrasoApi/group/groupUtils';
-import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
+} from 'terrasoApi/shared/memberships/membershipsUtils';
+import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
 import * as gisService from 'gis/gisService';
 import { extractTerms } from 'taxonomies/taxonomiesUtils';
 import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';

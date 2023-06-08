@@ -18,7 +18,7 @@ import React, { useCallback } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useFetchData } from 'terrasoApi/utils';
+import { useFetchData } from 'terrasoApi/shared/store/utils';
 import { Alert, Grid, Stack } from '@mui/material';
 import LoaderCard from 'common/components/LoaderCard';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';

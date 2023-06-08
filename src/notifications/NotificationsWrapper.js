@@ -19,8 +19,8 @@ import _ from 'lodash/fp';
 import { SnackbarProvider, useSnackbar } from 'notistack';
 import { Trans } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { removeMessage } from 'terrasoApi/shared/notifications/notificationsSlice';
 import { Alert } from '@mui/material';
-import { removeMessage } from './notificationsSlice';
 
 const MAX_NOTIFICATIONS = 3;
 const AUTO_HIDE_DURATION = 10000;

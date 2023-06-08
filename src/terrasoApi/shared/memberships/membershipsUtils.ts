@@ -17,30 +17,31 @@
 import _ from 'lodash/fp';
 import type {
   AccountMembershipFragment,
-  DataEntriesFragment,
-  GroupDataEntryFragment,
   GroupFieldsFragment,
   GroupMembersFragment,
   GroupMembersInfoFragment,
   GroupMembersPendingFragment,
-} from 'terrasoApi/gql/graphql';
-import { Group, Membership } from './groupSlice';
+} from 'terrasoApi/shared/graphqlSchema/graphql';
+import type {
+  Membership,
+  MembershipList,
+} from 'terrasoApi/shared/memberships/membershipsSlice';
 
-type GroupQuery = Partial<
-  (GroupMembersFragment | GroupMembersInfoFragment) &
+type MembershipQuery = Partial<
+  GroupFieldsFragment &
+    GroupMembersInfoFragment &
     AccountMembershipFragment &
-    GroupMembersPendingFragment &
-    GroupFieldsFragment
+    GroupMembersPendingFragment
 >;
 
-export const extractMembersInfo = (group?: GroupQuery | null) => ({
+export const extractMembersInfo = (group?: MembershipQuery | null) => ({
   totalCount: group?.membershipsCount ?? group?.memberships?.totalCount,
   pendingCount: group?.pending?.totalCount,
   accountMembership: extractAccountMembership(group),
   membersSample: extractMembers(group),
 });
 
-export const extractMembers = (group?: GroupQuery | null) =>
+export const extractMembers = (group?: MembershipQuery | null) =>
   (
     (
       group as
@@ -65,20 +66,10 @@ export const extractAccountMembership = (
       }
     : undefined;
 
-export const getMemberships = (groups: Group[]) =>
+export const getMemberships = (groups: MembershipList[]) =>
   Object.fromEntries(
     groups.map(group => [group.slug, { group, fetching: false }])
   );
 
 export const generateIndexedMembers = (memberships: Membership[]) =>
   _.keyBy(member => member.membershipId, memberships);
-
-export const extractDataEntry = (
-  dataEntry?: GroupDataEntryFragment | null
-) => ({
-  ...dataEntry,
-  visualizations: dataEntry?.visualizations.edges.map(edge => edge.node),
-});
-
-export const extractGroupDataEntries = (group?: DataEntriesFragment | null) =>
-  group?.dataEntries.edges.map(edge => extractDataEntry(edge.node));

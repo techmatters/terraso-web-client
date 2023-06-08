@@ -22,14 +22,17 @@ import {
 import type { BaseThunkAPI } from '@reduxjs/toolkit/dist/createAsyncThunk';
 import _ from 'lodash/fp';
 import { useDispatch } from 'react-redux';
-import { signOut, User } from 'terrasoApi/account/accountSlice';
-import { refreshToken } from 'terrasoApi/account/auth';
-import { UNAUTHENTICATED } from 'terrasoApi/account/authConstants';
-import { addMessage } from 'notifications/notificationsSlice';
-import type { AppDispatch, AppState } from './store';
+import { signOut, User } from 'terrasoApi/shared/account/accountSlice';
+import { refreshToken } from 'terrasoApi/shared/account/auth';
+import { UNAUTHENTICATED } from 'terrasoApi/shared/account/authConstants';
+import { addMessage } from 'terrasoApi/shared/notifications/notificationsSlice';
+import type {
+  SharedDispatch,
+  SharedState,
+} from 'terrasoApi/shared/store/store';
 
 const executeAuthRequest = <T>(
-  dispatch: AppDispatch,
+  dispatch: SharedDispatch,
   action: () => Promise<T>
 ) =>
   action().catch(async error => {
@@ -70,11 +73,16 @@ const generateErrorFallbacksPartial = (name: string) => {
 // merged upstream: https://github.com/reduxjs/redux-toolkit/pull/3393
 type RejectPayload = { error: any; parsedErrors: any };
 type ThunkAPIConfig = {
-  state: AppState;
-  dispatch: AppDispatch;
+  state: SharedState;
+  dispatch: SharedDispatch;
   rejectValue: RejectPayload;
 };
-type ThunkAPI = BaseThunkAPI<AppState, unknown, AppDispatch, RejectPayload>;
+export type ThunkAPI = BaseThunkAPI<
+  SharedState,
+  unknown,
+  SharedDispatch,
+  RejectPayload
+>;
 
 export type Message = {
   severity: 'success' | 'error';
@@ -82,7 +90,7 @@ export type Message = {
   params?: any;
 };
 
-export const createAsyncThunk = <Returned, ThunkArg>(
+export const createAsyncThunk = <Returned, ThunkArg = void>(
   typePrefix: string,
   action: (
     arg: ThunkArg,
@@ -148,7 +156,7 @@ export const withExtra =
 export const useFetchData = (
   dataFetchCallback: () => AsyncThunkAction<any, any, ThunkAPIConfig> | null
 ) => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch<SharedDispatch>();
   useEffect(() => {
     const dataFetchRequest = dataFetchCallback();
     if (!dataFetchRequest) {

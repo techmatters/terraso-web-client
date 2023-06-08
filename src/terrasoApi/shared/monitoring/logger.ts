@@ -15,9 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-import { logLevel, rollbar } from 'monitoring/rollbar';
+import { getAPIConfig } from 'terrasoApi/shared/config';
 
-const LOG_LEVELS = ['log', 'info', 'warn', 'error'];
+const logLevel = 'warn';
+
+export type Severity = (typeof LOG_LEVELS)[number];
+const LOG_LEVELS = ['log', 'info', 'warn', 'error'] as const;
 
 const ORDER = _.flow(
   _.entries,
@@ -25,21 +28,18 @@ const ORDER = _.flow(
   _.fromPairs
 )(LOG_LEVELS);
 
-export const sendToRollbar = (severity, ...args) => rollbar[severity](...args);
-
 const handleLog =
-  severity =>
-  (...args) => {
+  (severity: Severity) =>
+  (...args: any[]) => {
     console[severity](...args);
     if (ORDER[severity] >= ORDER[logLevel]) {
-      rollbar[severity](...args);
+      getAPIConfig().logger(severity, ...args);
       return;
     }
   };
 
-const logger = _.flow(
-  _.map(severity => [severity, handleLog(severity)]),
-  _.fromPairs
-)(LOG_LEVELS);
+const logger = Object.fromEntries(
+  LOG_LEVELS.map(severity => [severity, handleLog(severity)])
+) as Record<Severity, (...args: any[]) => void>;
 
 export default logger;

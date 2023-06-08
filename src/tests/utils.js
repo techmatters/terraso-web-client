@@ -15,6 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
+// import for side effects to ensure config happens before running tests
+import 'config';
 import {
   waitFor as baseWaitFor,
   cleanup,

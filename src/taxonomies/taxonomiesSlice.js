@@ -16,7 +16,7 @@
  */
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
-import { createAsyncThunk } from 'terrasoApi/utils';
+import { createAsyncThunk } from 'terrasoApi/shared/store/utils';
 import * as taxonomiesService from 'taxonomies/taxonomiesService';
 
 const initialState = {

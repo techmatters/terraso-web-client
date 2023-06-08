@@ -22,7 +22,7 @@ import { Alert } from '@mui/material';
 import BaseDropZone from 'common/components/DropZone';
 import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
-import { sendToRollbar } from 'monitoring/logger';
+import { rollbar } from 'monitoring/rollbar';
 import { parseFileToGeoJSON } from 'gis/gisSlice';
 import {
   GEOJSON_MAX_SIZE,
@@ -65,7 +65,7 @@ const DropZone = props => {
         if (success) {
           setCurrentFile(selectedFile);
         } else {
-          sendToRollbar('error', data.payload);
+          rollbar.error(data.payload);
         }
       });
     },

@@ -18,14 +18,14 @@ import { fireEvent, render, screen } from 'tests/utils';
 import React from 'react';
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
-import * as terrasoApi from 'terrasoApi/terrasoBackend/api';
+import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
 import GroupMemberRequestCancel from './GroupMemberRequestCancel';
 
-jest.mock('terrasoApi/terrasoBackend/api');
+jest.mock('terrasoApi/shared/terrasoApi/api');
 
 const setup = async initialState => {
   await render(
@@ -64,8 +64,8 @@ const setup = async initialState => {
           },
         },
       },
-      group: {
-        memberships: {
+      memberships: {
+        lists: {
           'group-slug': {
             fetching: false,
             group: {
@@ -82,8 +82,8 @@ const setup = async initialState => {
 test('GroupMembershipCard: Display loader', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
   await setup({
-    group: {
-      memberships: {
+    memberships: {
+      lists: {
         'group-slug': {
           fetching: true,
         },
@@ -102,8 +102,8 @@ test('GroupMembershipCard: Display join button', async () => {
 });
 test('GroupMembershipCard: Display description', async () => {
   await setup({
-    group: {
-      memberships: {
+    memberships: {
+      lists: {
         'group-slug': {
           group: {
             slug: 'group-slug',
@@ -128,8 +128,8 @@ test('GroupMembershipCard: Display description', async () => {
 test('GroupMembershipCard: Join error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValueOnce('Join error');
   await setup({
-    group: {
-      memberships: {
+    memberships: {
+      lists: {
         'group-slug': {
           group: {
             slug: 'group-slug',
@@ -150,15 +150,13 @@ test('GroupMembershipCard: Join (not found)', async () => {
   terrasoApi.requestGraphQL.mockReturnValueOnce(
     Promise.resolve({
       addMembership: {
-        membership: {
-          group: null,
-        },
+        membership: null,
       },
     })
   );
   await setup({
-    group: {
-      memberships: {
+    memberships: {
+      lists: {
         'group-slug': {
           group: {
             slug: 'group-slug',
@@ -207,8 +205,8 @@ test('GroupMembershipCard: Join', async () => {
     })
   );
   await setup({
-    group: {
-      memberships: {
+    memberships: {
+      lists: {
         'group-slug': {
           group: {
             slug: 'group-slug',
@@ -265,8 +263,8 @@ test('GroupMembershipCard: Request Join', async () => {
     })
   );
   await setup({
-    group: {
-      memberships: {
+    memberships: {
+      lists: {
         'group-slug': {
           group: {
             slug: 'group-slug',
@@ -300,8 +298,8 @@ test('GroupMembershipCard: Request Join', async () => {
 test('GroupMembershipCard: Leave error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValueOnce('Leave error');
   await setup({
-    group: {
-      memberships: {
+    memberships: {
+      lists: {
         'group-slug': {
           group: {
             slug: 'group-slug',
@@ -359,8 +357,8 @@ test('GroupMembershipCard: Leave', async () => {
     })
   );
   await setup({
-    group: {
-      memberships: {
+    memberships: {
+      lists: {
         'group-slug': {
           group: {
             slug: 'group-slug',
@@ -420,8 +418,8 @@ test('GroupMembershipCard: Manager', async () => {
     })
   );
   await setup({
-    group: {
-      memberships: {
+    memberships: {
+      lists: {
         'group-slug': {
           group: {
             slug: 'group-slug',

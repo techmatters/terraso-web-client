@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2023 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -15,41 +15,35 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export const dataEntry = /* GraphQL */ `
-  fragment dataEntry on DataEntryNode {
+export const groupFields = /* GraphQL */ `
+  fragment groupFields on GroupNode {
     id
+    slug
     name
     description
-    entryType
-    resourceType
-    url
-    size
-    createdAt
-    createdBy {
-      id
-      lastName
-      firstName
-    }
+    email
+    website
+    email
+    membershipType
   }
 `;
 
-export const visualizationConfig = /* GraphQL */ `
-  fragment visualizationConfig on VisualizationConfigNode {
-    id
-    title
+export const groupsListFields = /* GraphQL */ `
+  fragment groupsListFields on GroupNode {
     slug
-    createdAt
-    createdBy {
-      id
-      lastName
-      firstName
-    }
+    name
   }
 `;
 
-export const visualizationConfigWithConfiguration = /* GraphQL */ `
-  fragment visualizationConfigWithConfiguration on VisualizationConfigNode {
-    ...visualizationConfig
-    configuration
+export const dataEntries = /* GraphQL */ `
+  fragment dataEntries on GroupNode {
+    dataEntries(resourceType_In: $resourceTypes) {
+      edges {
+        node {
+          ...dataEntry
+          ...dataEntryVisualizations
+        }
+      }
+    }
   }
 `;

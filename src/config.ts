@@ -14,6 +14,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import Cookies from 'js-cookie';
+import { setAPIConfig } from 'terrasoApi/shared/config';
+import { rollbar } from 'monitoring/rollbar';
 
 export const TERRASO_ENV = process.env.REACT_APP_TERRASO_ENV || 'local';
 
@@ -23,12 +26,25 @@ export const TERRASO_API_URL =
 export const REACT_APP_BASE_URL =
   process.env.REACT_APP_BASE_URL || 'http://127.0.0.1:3000';
 
-export const GRAPH_QL_ENDPOINT = 'graphql/';
+export const GRAPHQL_ENDPOINT = 'graphql/';
 
 export const COOKIES_DOMAIN =
   process.env.REACT_APP_COOKIES_DOMAIN || '127.0.0.1';
 
+const COOKIES_PARAMS = { path: '/', domain: COOKIES_DOMAIN };
+
 export const ROLLBAR_TOKEN = process.env.REACT_APP_ROLLBAR_TOKEN;
+
+setAPIConfig({
+  terrasoAPIURL: TERRASO_API_URL,
+  graphQLEndpoint: GRAPHQL_ENDPOINT,
+  tokenStorage: {
+    getToken: Cookies.get,
+    removeToken: name => Cookies.remove(name, COOKIES_PARAMS),
+    setToken: (name, token) => Cookies.set(name, token, COOKIES_PARAMS),
+  },
+  logger: (severity, ...args) => rollbar[severity](...args),
+});
 
 export const WAIT_FOR_TIMEOUT = process.env.REACT_APP_WAIT_FOR_TIMEOUT || 3000;
 

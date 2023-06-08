@@ -15,64 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export const dataEntry = /* GraphQL */ `
-  fragment groupDataEntry on DataEntryNode {
-    id
-    name
-    description
-    entryType
-    resourceType
-    url
-    size
-    createdAt
-    createdBy {
-      id
-      lastName
-      firstName
-    }
-    visualizations {
-      edges {
-        node {
-          ...visualizationConfig
-        }
-      }
-    }
-  }
-`;
-
-export const dataEntries = /* GraphQL */ `
-  fragment dataEntries on GroupNode {
-    dataEntries(resourceType_In: $resourceTypes) {
-      edges {
-        node {
-          ...groupDataEntry
-        }
-      }
-    }
-  }
-`;
-
-export const groupFields = /* GraphQL */ `
-  fragment groupFields on GroupNode {
-    id
-    slug
-    name
-    description
-    email
-    website
-    email
-    membershipType
-    membershipsCount
-  }
-`;
-
-export const groupsListFields = /* GraphQL */ `
-  fragment groupsListFields on GroupNode {
-    slug
-    name
-  }
-`;
-
 export const groupMembersPending = /* GraphQL */ `
   fragment groupMembersPending on GroupNode {
     pending: memberships(membershipStatus: PENDING) {
@@ -83,6 +25,10 @@ export const groupMembersPending = /* GraphQL */ `
 
 export const groupMembersInfo = /* GraphQL */ `
   fragment groupMembersInfo on GroupNode {
+    id
+    slug
+    membershipType
+    membershipsCount
     memberships(first: 5, membershipStatus: APPROVED) {
       totalCount
       edges {

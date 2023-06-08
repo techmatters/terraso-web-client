@@ -19,13 +19,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  fetchGroupForm,
-  resetFormSuccess,
-  saveGroup,
-  setFormNewValues,
-} from 'terrasoApi/group/groupSlice';
-import { useFetchData } from 'terrasoApi/utils';
+import { useFetchData } from 'terrasoApi/shared/store/utils';
 import * as yup from 'yup';
 import {
   FormControlLabel,
@@ -41,6 +35,12 @@ import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { useAnalytics } from 'monitoring/analytics';
+import {
+  fetchGroupForm,
+  resetFormSuccess,
+  saveGroup,
+  setFormNewValues,
+} from 'group/groupSlice';
 import {
   MEMBERSHIP_CLOSED,
   MEMBERSHIP_OPEN,

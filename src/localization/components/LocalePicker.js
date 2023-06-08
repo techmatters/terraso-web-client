@@ -18,7 +18,7 @@ import React, { useEffect } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { savePreference } from 'terrasoApi/account/accountSlice';
+import { savePreference } from 'terrasoApi/shared/account/accountSlice';
 import LocalePickerSelect from 'localization/components/LocalePickerSelect';
 import { LOCALES } from 'localization/i18n';
 

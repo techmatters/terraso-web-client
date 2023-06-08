@@ -16,11 +16,11 @@
  */
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
-import * as accountService from 'terrasoApi/account/accountService';
-import { getToken, removeToken } from 'terrasoApi/account/auth';
-import type { AppDispatch } from 'terrasoApi/store';
-import { createAsyncThunk } from 'terrasoApi/utils';
-import logger from 'monitoring/logger';
+import * as accountService from 'terrasoApi/shared/account/accountService';
+import { getToken, removeToken } from 'terrasoApi/shared/account/auth';
+import logger from 'terrasoApi/shared/monitoring/logger';
+import type { SharedDispatch } from 'terrasoApi/shared/store/store';
+import { createAsyncThunk } from 'terrasoApi/shared/store/utils';
 
 const initialState = {
   currentUser: {
@@ -58,15 +58,15 @@ export type User = {
 };
 
 export const fetchUser = createAsyncThunk(
-  'terrasoApi/account/fetchUser',
+  'terrasoApi/shared/account/fetchUser',
   accountService.fetchUser
 );
 export const fetchProfile = createAsyncThunk(
-  'terrasoApi/account/fetchProfile',
+  'terrasoApi/shared/account/fetchProfile',
   accountService.fetchProfile
 );
 export const saveUser = createAsyncThunk(
-  'terrasoApi/account/saveUser',
+  'terrasoApi/shared/account/saveUser',
   accountService.saveUser,
   () => ({
     severity: 'success',
@@ -74,17 +74,17 @@ export const saveUser = createAsyncThunk(
   })
 );
 export const fetchAuthURLs = createAsyncThunk(
-  'terrasoApi/account/fetchAuthURLs',
+  'terrasoApi/shared/account/fetchAuthURLs',
   accountService.getAuthURLs
 );
 export const savePreference = createAsyncThunk(
-  'terrasoApi/account/savePreference',
+  'terrasoApi/shared/account/savePreference',
   accountService.savePreference,
   null,
   false
 );
 export const unsubscribeFromNotifications = createAsyncThunk(
-  'terrasoApi/account/unsubscribeFromNotifications',
+  'terrasoApi/shared/account/unsubscribeFromNotifications',
   accountService.unsubscribeFromNotifications,
   null,
   false
@@ -253,7 +253,7 @@ export const { setUser, setHasToken } = userSlice.actions;
 
 export default userSlice.reducer;
 
-export const signOut = () => (dispatch: AppDispatch) => {
+export const signOut = () => (dispatch: SharedDispatch) => {
   accountService.signOut().catch(error => {
     logger.error('Failed to execute API signout request', error);
   });

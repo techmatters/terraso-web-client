@@ -16,8 +16,8 @@
  */
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import logger from 'terrasoApi/shared/monitoring/logger';
 import UnexpectedError from 'common/components/UnexpectedError';
-import logger from 'monitoring/logger';
 
 const errorHandler = error => {
   logger.error(error.message, error.stack);

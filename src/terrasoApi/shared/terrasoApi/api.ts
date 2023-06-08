@@ -15,11 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-import { getAuthHeaders } from 'terrasoApi/account/auth';
-import { UNAUTHENTICATED } from 'terrasoApi/account/authConstants';
-import { TypedDocumentString } from 'terrasoApi/gql/graphql';
-import logger from 'monitoring/logger';
-import { GRAPH_QL_ENDPOINT, TERRASO_API_URL } from 'config';
+import { getAuthHeaders } from 'terrasoApi/shared/account/auth';
+import { UNAUTHENTICATED } from 'terrasoApi/shared/account/authConstants';
+import { getAPIConfig } from 'terrasoApi/shared/config';
+import { TypedDocumentString } from 'terrasoApi/shared/graphqlSchema/graphql';
+import logger from 'terrasoApi/shared/monitoring/logger';
 
 type Error = { message: any };
 type Errors = { errors?: Error[] | null };
@@ -89,7 +89,7 @@ export const requestGraphQL = async <
 ): Promise<WithoutEntryErrors<Q>> => {
   const body = { query, variables };
   const jsonResponse = await request<{ data?: Q }>({
-    path: GRAPH_QL_ENDPOINT,
+    path: getAPIConfig().graphQLEndpoint,
     body,
     headers: {
       'Content-Type': 'application/json',
@@ -130,14 +130,17 @@ export const request = async <T>({
   body: any;
   headers?: Record<string, string>;
 }): Promise<WithoutErrors<T>> => {
-  const response = await fetch(new URL(path, TERRASO_API_URL).href, {
-    method: 'POST',
-    headers: {
-      ...getAuthHeaders(),
-      ...headers,
-    },
-    body: body instanceof FormData ? body : JSON.stringify(body),
-  }).catch(error => {
+  const response = await fetch(
+    new URL(path, getAPIConfig().terrasoAPIURL).href,
+    {
+      method: 'POST',
+      headers: {
+        ...getAuthHeaders(),
+        ...headers,
+      },
+      body: body instanceof FormData ? body : JSON.stringify(body),
+    }
+  ).catch(error => {
     logger.error('Terraso API: Failed to execute request', error);
     return Promise.reject(['terraso_api.error_request_response']);
   });

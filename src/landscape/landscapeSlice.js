@@ -16,9 +16,9 @@
  */
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
-import { setMemberships } from 'terrasoApi/group/groupSlice';
-import * as groupUtils from 'terrasoApi/group/groupUtils';
-import { createAsyncThunk } from 'terrasoApi/utils';
+import { setMemberships } from 'terrasoApi/shared/memberships/membershipsSlice';
+import * as membershipsUtils from 'terrasoApi/shared/memberships/membershipsUtils';
+import { createAsyncThunk } from 'terrasoApi/shared/store/utils';
 import * as landscapeService from 'landscape/landscapeService';
 
 const initialState = {
@@ -394,5 +394,5 @@ const getMemberships = landscapes => {
   const groups = landscapes
     .map(landscape => landscape.defaultGroup)
     .filter(group => group.slug);
-  return groupUtils.getMemberships(groups);
+  return membershipsUtils.getMemberships(groups);
 };

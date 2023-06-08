@@ -20,7 +20,7 @@ import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useFetchData } from 'terrasoApi/utils';
+import { useFetchData } from 'terrasoApi/shared/store/utils';
 import { Grid, Stack } from '@mui/material';
 import { useSocialShareContext } from 'common/components/SocialShare';
 import {

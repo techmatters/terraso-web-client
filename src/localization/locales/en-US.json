@@ -183,9 +183,7 @@
                 "width": "250",
                 "src": "tools/story-maps.svg"
             },
-            "description": [
-                "Create beautiful map-based stories"
-            ],
+            "description": ["Create beautiful map-based stories"],
             "requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
             "external": "false"
         }
@@ -897,7 +895,7 @@
         "delete_label": "Delete",
         "delete_confirm_title": "Delete story map {{title}}?",
         "delete_confirm_message": "Are you sure you wish to delete the story map? This cannot be undone.",
-        "delete_confirm_button":"Delete Story Map",
+        "delete_confirm_button": "Delete Story Map",
         "deleted_story_map": "<strong>{{title}}</strong> was deleted",
         "form_media_update_label": "Update Media",
         "form_media_placeholder": "Upload or link images, audio recordings or video files.",
@@ -961,5 +959,8 @@
     "site": {
         "description": "Free and powerful software tools to manage your landscape, protect your environment, and promote human livelihoods.",
         "default_image": "/favicon.png"
+    },
+    "memberships": {
+        "not_found": "Group not found"
     }
 }
