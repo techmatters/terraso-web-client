@@ -51,7 +51,7 @@ type MembershipGroup = {
 };
 
 const initialState = {
-  memberships: {} as Record<string, MembershipGroup | undefined>,
+  lists: {} as Record<string, MembershipGroup | undefined>,
   members: {
     list: null as Record<string, Membership | undefined> | null,
     fetching: true,
@@ -106,13 +106,13 @@ export const membershipsSlice = createSlice({
     ) => ({
       ...state,
       memberships: {
-        ...state.memberships,
+        ...state.lists,
         ...Object.fromEntries(
           Object.entries(action.payload).map(
             ([groupSlug, newMembershipState]) => [
               groupSlug,
               {
-                ...state.memberships[groupSlug],
+                ...state.lists[groupSlug],
                 ...newMembershipState,
               },
             ]

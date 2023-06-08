@@ -141,7 +141,7 @@ const GroupMembershipCard = props => {
   const { groupSlug } = useGroupContext();
   const { onViewMembers, InfoComponent } = props;
   const { fetching, group } = useSelector(
-    state => state.memberships.memberships[groupSlug] ?? {}
+    state => state.memberships.lists[groupSlug] ?? {}
   );
   const { data: user } = useSelector(_.get('account.currentUser'));
 

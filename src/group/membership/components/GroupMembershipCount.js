@@ -21,7 +21,7 @@ import { Typography } from '@mui/material';
 
 const GroupMembershipCount = ({ groupSlug }) => {
   const { group } = useSelector(
-    state => state.memberships.memberships[groupSlug] ?? {}
+    state => state.memberships.lists[groupSlug] ?? {}
   );
   const count = _.getOr(0, 'membersInfo.totalCount', group);
   return <Typography variant="body1">{count}</Typography>;
