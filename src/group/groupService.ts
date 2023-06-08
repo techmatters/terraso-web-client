@@ -209,10 +209,12 @@ const updateGroup = (group: Group) => {
       }
     }
   `);
-  return terrasoApi.requestGraphQL(query, { input: group }).then(response => ({
-    new: false,
-    ...response.updateGroup.group!,
-  }));
+  return terrasoApi
+    .requestGraphQL(query, { input: _.omit('slug', group) })
+    .then(response => ({
+      new: false,
+      ...response.updateGroup.group!,
+    }));
 };
 
 const addGroup = (group: Group) => {
