@@ -171,7 +171,7 @@ test('Home: Display groups', async () => {
   );
   await setup();
 
-  const list = within(screen.getByRole('region', { name: 'Groups' }));
+  const list = within(screen.getByRole('heading', { name: 'Groups' }));
   const items = list.getAllByRole('listitem');
   expect(items.length).toBe(3);
 
@@ -219,7 +219,7 @@ test('Home: Display Story Maps', async () => {
   );
   await setup();
 
-  const list = within(screen.getByRole('region', { name: 'Story Maps' }));
+  const list = within(screen.getByRole('heading', { name: 'Story Maps' }));
   const items = list.getAllByRole('listitem');
   expect(items.length).toBe(2);
 
@@ -236,11 +236,11 @@ test('Home: Display defaults', async () => {
     })
   );
   await setup();
-  expect(screen.getByText(/EXPLORE LANDSCAPES/i)).toBeInTheDocument();
+  expect(screen.getByText(/FIND YOUR LANDSCAPE/i)).toBeInTheDocument();
   expect(screen.getByText(/Groups connect people/i)).toBeInTheDocument();
   expect(
     screen.getByText(
-      /Use maps, photos, videos, audio recordings and narrative to create an impactful story./i
+      /Create an impactful story using maps, photos, videos, audio recordings and narrative/i
     )
   ).toBeInTheDocument();
 });
