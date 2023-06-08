@@ -178,18 +178,13 @@ const LandscapesMapboxMapClusters = props => {
       });
     });
 
-    map.on('mouseenter', 'clusters', () => {
-      map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', 'clusters', () => {
-      map.getCanvas().style.cursor = '';
-    });
-    map.on('mouseenter', 'unclustered-point', () => {
-      map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', 'unclustered-point', () => {
-      map.getCanvas().style.cursor = '';
-    });
+    const pointer = () => (map.getCanvas().style.cursor = 'pointer');
+    const noPointer = () => (map.getCanvas().style.cursor = '');
+
+    map.on('mouseenter', 'clusters', pointer);
+    map.on('mouseleave', 'clusters', noPointer);
+    map.on('mouseenter', 'unclustered-point', pointer);
+    map.on('mouseleave', 'unclustered-point', noPointer);
 
     // Fit bounds of landscapes source
     const bounds = landscapesWithPosition.reduce(
