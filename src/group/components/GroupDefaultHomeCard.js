@@ -15,48 +15,42 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Alert, Box, Divider, Typography } from '@mui/material';
-import CardActionRouterLink from 'common/components/CardActionRouterLink';
+import { Trans, useTranslation } from 'react-i18next';
+import { Box, Typography } from '@mui/material';
+import RouterLink from 'common/components/RouterLink';
 import HomeCard from 'home/components/HomeCard';
 
 const GroupDefaultHomeCard = () => {
   const { t } = useTranslation();
+  const groupsImage = require(`assets/${t(`group.img.src`)}`);
 
   return (
     <HomeCard
-      aria-labelledby="groups-default-title"
-      sx={{ flexDirection: 'column' }}
+      title={t('group.home_default_title')}
+      action={{
+        label: t('group.default_connect_button'),
+        to: '/groups',
+      }}
+      image={{
+        src: groupsImage,
+        to: '/groups',
+      }}
     >
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          padding: 2,
-        }}
-      >
-        <Typography
-          id="groups-default-title"
-          variant="h2"
-          sx={{ pt: 0, pb: 2 }}
-        >
-          {t('group.home_default_title')}
-        </Typography>
-        <Alert
-          severity="info"
-          sx={{
-            marginTop: 1,
-            marginBottom: 1,
-          }}
-        >
-          <Typography variant="body1">{t('group.default_content')}</Typography>
-        </Alert>
+      <Box display="flex" alignItems="center">
+        <Trans i18nKey="group.default_content">
+          <Typography variant="body1">
+            Prefix
+            <RouterLink to="/groups" sx={{ textDecoration: 'underline' }}>
+              Find
+            </RouterLink>
+            or
+            <RouterLink to="/groups/new" sx={{ textDecoration: 'underline' }}>
+              Start
+            </RouterLink>
+            .
+          </Typography>
+        </Trans>
       </Box>
-      <Divider aria-hidden="true" />
-      <CardActionRouterLink
-        label={t('group.default_connect_button')}
-        to="/groups"
-      />
     </HomeCard>
   );
 };

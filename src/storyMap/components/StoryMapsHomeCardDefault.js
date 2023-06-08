@@ -15,10 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Box, Divider, Link, Paper, Typography } from '@mui/material';
-import { Stack } from '@mui/system';
-import CardActionRouterLink from 'common/components/CardActionRouterLink';
+import { Trans, useTranslation } from 'react-i18next';
+import { Box, Typography } from '@mui/material';
 import RouterLink from 'common/components/RouterLink';
 import HomeCard from 'home/components/HomeCard';
 
@@ -28,47 +26,31 @@ const StoryMapsHomeCardDefault = () => {
 
   return (
     <HomeCard
-      aria-labelledby="story-maps-default-title"
-      sx={{ flexDirection: 'column' }}
+      title={t('storyMap.home_title')}
+      action={{
+        label: t('storyMap.home_create'),
+        to: 'tools/story-maps/new',
+      }}
+      image={{
+        src: storyMapImage,
+        to: '/tools',
+        alt: t('tool.home_card_img_alt'),
+      }}
     >
-      <Box sx={{ p: 2 }}>
-        <Typography
-          id="story-maps-default-title"
-          variant="h2"
-          sx={{ pt: 0, mb: 4 }}
-        >
-          {t('storyMap.home_title')}
-        </Typography>
-
-        <Stack direction="row" spacing={3}>
-          <Link component={RouterLink} to="/tools">
-            <Paper
-              variant="outlined"
-              component="img"
-              src={storyMapImage}
-              alt={t('tool.home_card_img_alt')}
-              height={64}
-            />
-          </Link>
-
-          <Stack direction="column">
-            <Typography variant="h3" sx={{ pt: 0, mb: 2, fontSize: '1.3rem' }}>
-              <RouterLink to="/tools/story-maps">
-                {t('storyMap.home_tools_link')}
-              </RouterLink>
-            </Typography>
-
-            <Typography variant="body2">
-              {t('storyMap.home_default_description')}
-            </Typography>
-          </Stack>
-        </Stack>
+      <Box sx={{ display: 'flex', alignItems: 'center', pr: 1 }}>
+        <Trans i18nKey="storyMap.home_default_description">
+          <Typography variant="body1">
+            Prefix
+            <RouterLink
+              to="/tools/story-maps"
+              sx={{ textDecoration: 'underline' }}
+            >
+              Inspired
+            </RouterLink>
+            .
+          </Typography>
+        </Trans>
       </Box>
-      <Divider aria-hidden="true" />
-      <CardActionRouterLink
-        label={t('storyMap.home_create')}
-        to="/tools/story-maps/new"
-      />
     </HomeCard>
   );
 };

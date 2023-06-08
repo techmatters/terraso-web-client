@@ -17,8 +17,7 @@
 import React from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { Box, Divider, Link, List, ListItem, Typography } from '@mui/material';
-import CardActionRouterLink from 'common/components/CardActionRouterLink';
+import { Box, Link, List, ListItem, Typography } from '@mui/material';
 import RouterLink from 'common/components/RouterLink';
 import HomeCard from 'home/components/HomeCard';
 import landscapePlaceholder from 'assets/landscape.svg';
@@ -73,17 +72,18 @@ const LandscapesHomeCard = ({ landscapes }) => {
   const { t } = useTranslation();
   return (
     <HomeCard
-      aria-labelledby="landscapes-list-title"
-      sx={{ flexDirection: 'column' }}
+      id="landscapes"
+      title={t('landscape.home_title')}
+      action={{
+        label: t('landscape.home_connect_label'),
+        to: '/landscapes',
+      }}
+      contentBackgroundColor="white"
     >
-      <Typography variant="h2" id="landscapes-list-title" sx={{ padding: 2 }}>
-        {t('landscape.home_title')}
-      </Typography>
       <List
         aria-describedby="landscapes-list-title"
         sx={{
-          paddingLeft: 2,
-          paddingRight: 2,
+          width: '100%',
         }}
       >
         {landscapes.map((landscape, index) => (
@@ -92,11 +92,6 @@ const LandscapesHomeCard = ({ landscapes }) => {
           </React.Fragment>
         ))}
       </List>
-      <Divider aria-hidden="true" />
-      <CardActionRouterLink
-        label={t('landscape.home_connect_label')}
-        to="/landscapes"
-      />
     </HomeCard>
   );
 };
