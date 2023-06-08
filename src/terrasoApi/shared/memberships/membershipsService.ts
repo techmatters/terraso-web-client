@@ -82,7 +82,7 @@ export const updateMember = ({ member }: { member: Membership }) => {
   `);
   return terrasoApi
     .requestGraphQL(query, {
-      input: { ...member, id: member.membershipId },
+      input: { ..._.omit('membershipId', member), id: member.membershipId },
     })
     .then(resp => resp.updateMembership.membership!.group)
     .then(group => ({
