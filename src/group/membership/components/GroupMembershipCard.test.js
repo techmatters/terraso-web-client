@@ -65,7 +65,7 @@ const setup = async initialState => {
         },
       },
       memberships: {
-        memberships: {
+        lists: {
           'group-slug': {
             fetching: false,
             group: {
@@ -83,7 +83,7 @@ test('GroupMembershipCard: Display loader', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
   await setup({
     memberships: {
-      memberships: {
+      lists: {
         'group-slug': {
           fetching: true,
         },
@@ -103,7 +103,7 @@ test('GroupMembershipCard: Display join button', async () => {
 test('GroupMembershipCard: Display description', async () => {
   await setup({
     memberships: {
-      memberships: {
+      lists: {
         'group-slug': {
           group: {
             slug: 'group-slug',
@@ -129,7 +129,7 @@ test('GroupMembershipCard: Join error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValueOnce('Join error');
   await setup({
     memberships: {
-      memberships: {
+      lists: {
         'group-slug': {
           group: {
             slug: 'group-slug',
@@ -156,7 +156,7 @@ test('GroupMembershipCard: Join (not found)', async () => {
   );
   await setup({
     memberships: {
-      memberships: {
+      lists: {
         'group-slug': {
           group: {
             slug: 'group-slug',
@@ -206,7 +206,7 @@ test('GroupMembershipCard: Join', async () => {
   );
   await setup({
     memberships: {
-      memberships: {
+      lists: {
         'group-slug': {
           group: {
             slug: 'group-slug',
@@ -264,7 +264,7 @@ test('GroupMembershipCard: Request Join', async () => {
   );
   await setup({
     memberships: {
-      memberships: {
+      lists: {
         'group-slug': {
           group: {
             slug: 'group-slug',
@@ -299,7 +299,7 @@ test('GroupMembershipCard: Leave error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValueOnce('Leave error');
   await setup({
     memberships: {
-      memberships: {
+      lists: {
         'group-slug': {
           group: {
             slug: 'group-slug',
@@ -358,7 +358,7 @@ test('GroupMembershipCard: Leave', async () => {
   );
   await setup({
     memberships: {
-      memberships: {
+      lists: {
         'group-slug': {
           group: {
             slug: 'group-slug',
@@ -419,7 +419,7 @@ test('GroupMembershipCard: Manager', async () => {
   );
   await setup({
     memberships: {
-      memberships: {
+      lists: {
         'group-slug': {
           group: {
             slug: 'group-slug',
