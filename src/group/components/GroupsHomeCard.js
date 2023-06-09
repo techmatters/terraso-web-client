@@ -107,7 +107,7 @@ const GroupsHomeCard = ({ groups }) => {
         to: '/groups',
       }}
       contentBackgroundColor="white"
-      ariaLabel="groups-list-title"
+      ariaLabelledBy="groups-list-title"
     >
       <List
         aria-labelledby="groups-list-title"
