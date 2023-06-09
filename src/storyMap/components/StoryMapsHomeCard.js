@@ -68,7 +68,7 @@ const StoryMapsHomeCard = props => {
       }}
       contentBackgroundColor="white"
     >
-      <List aria-labelledby="story-maps-list-title">
+      <List aria-labelledby="story-maps-list-title" sx={{ width: '100%' }}>
         {storyMaps.map(storyMap => (
           <ListItem
             key={storyMap.id}
