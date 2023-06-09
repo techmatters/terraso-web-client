@@ -44,6 +44,7 @@ const HomeCard = ({
   >
     <Stack direction="column" sx={{ p: 2 }}>
       <Typography
+        id={ariaLabelledBy}
         variant="h2"
         sx={{ pt: 0, pb: 2, textTransform: 'uppercase' }}
       >
