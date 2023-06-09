@@ -15,60 +15,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-.landscape-list-map-cluster-icon div,
-.landscape-list-map-marker-icon.leaflet-marker-icon.leaflet-interactive {
-  background-color: #ff580d;
+.landscape-marker-popup .mapboxgl-popup-tip {
+  border: none;
+  width: 10px;
+  height: 10px;
 }
 
-.landscape-list-map-cluster-icon.leaflet-marker-icon.leaflet-interactive {
-  background-color: #ff580d99;
-}
-
-.landscape-marker-popup .leaflet-popup-content-wrapper {
+.landscape-marker-popup .mapboxgl-popup-content {
   border-color: #ff580d;
-}
-
-.landscape-marker-popup .leaflet-popup-tip {
-  border-right-color: #ff580d;
-}
-
-.landscape-list-map-cluster-icon div {
-  background-clip: padding-box;
-  width: 30px;
-  height: 25px;
-  margin-left: 5px;
-  margin-top: 5px;
-  text-align: center;
-  border-radius: 15px;
-  padding-top: 5px;
-  color: #000;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.landscape-list-map-cluster-icon.leaflet-marker-icon.leaflet-interactive {
-  background-clip: padding-box;
-  border-radius: 20px;
-}
-
-.landscape-list-map-marker-icon.leaflet-marker-icon.leaflet-interactive {
-  background-clip: padding-box;
-  border-radius: 30px;
-}
-
-.landscape-marker-popup .leaflet-popup-content-wrapper {
-  background: #fff;
-  font-size: 16px;
-  line-height: 24px;
   border-radius: 3px;
   border-width: 1px;
   border-style: solid;
   box-shadow: none;
+  max-width: 300px;
 }
-.landscape-marker-popup .leaflet-popup-tip {
-  border: 1px solid transparent;
-  border-right-width: 1px;
-  border-right-style: solid;
-  background-color: transparent;
-  box-shadow: none;
+
+.landscape-marker-popup .mapboxgl-popup-content p {
+  margin: 1.3em 0;
 }

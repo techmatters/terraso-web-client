@@ -15,10 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { Trans, useTranslation } from 'react-i18next';
 import {
-  Box,
   Button,
   Dialog,
   DialogActions,
@@ -26,23 +24,46 @@ import {
   DialogTitle,
   Stack,
 } from '@mui/material';
-import mapboxgl from 'gis/mapbox';
-import { MAPBOX_ACCESS_TOKEN, MAPBOX_STYLE_DEFAULT } from 'config';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import _ from 'lodash/fp';
-import {
-  MAPBOX_DEM_SOURCE,
-  MAPBOX_FOG,
-  MAPBOX_SKY_LAYER,
-} from 'storyMap/storyMapConstants';
+import MapboxGeocoder from 'gis/components/MapboxGeocoder';
+import MapboxMap, { useMap } from 'gis/components/MapboxMap';
+import MapboxMapControls from 'gis/components/MapboxMapControls';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 
+const MapLocationChange = props => {
+  const { onPositionChange } = props;
+  const { map } = useMap();
+
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+    const updatePosition = () => {
+      onPositionChange({
+        center: map.getCenter(),
+        zoom: map.getZoom(),
+        pitch: map.getPitch(),
+        bearing: map.getBearing(),
+      });
+    };
+    map.on('load', updatePosition);
+    map.on('move', updatePosition);
+
+    return () => {
+      map.off('load', updatePosition);
+      map.off('move', updatePosition);
+    };
+  }, [map, onPositionChange]);
+
+  return null;
+};
+
 const MapLocationDialog = props => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { config } = useStoryMapConfigContext();
   const { open, onClose, onConfirm, location, title, chapterId } = props;
 
-  const [mapContainer, setMapContainer] = useState();
   const [mapCenter, setMapCenter] = useState(location?.center);
   const [mapZoom, setMapZoom] = useState(location?.zoom);
   const [mapPitch, setMapPitch] = useState(location?.pitch);
@@ -83,67 +104,6 @@ const MapLocationDialog = props => {
     setMarginTop(headerHeight);
   }, []);
 
-  useEffect(() => {
-    if (!mapContainer) {
-      return;
-    }
-
-    const map = new mapboxgl.Map({
-      container: mapContainer,
-      style: config.style || MAPBOX_STYLE_DEFAULT,
-      projection: config.projection || 'globe',
-      zoom: 1,
-      ...(initialLocation || {}),
-    });
-
-    const updatePosition = () => {
-      setMapCenter(map.getCenter());
-      setMapZoom(map.getZoom());
-      setMapPitch(map.getPitch());
-      setMapBearing(map.getBearing());
-    };
-
-    map.addControl(
-      new MapboxGeocoder({
-        accessToken: MAPBOX_ACCESS_TOKEN,
-        placeholder: t('storyMap.form_location_dialog_geocoder_placeholder'),
-        mapboxgl,
-      })
-    );
-
-    map.addControl(new mapboxgl.NavigationControl());
-
-    map.on('load', function () {
-      updatePosition();
-      map.addSource('mapbox-dem', MAPBOX_DEM_SOURCE);
-      // add the DEM (Digital Elevation Model source as a terrain layer with exaggerated height
-      map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
-
-      // add a sky layer that will show when the map is highly pitched
-      map.addLayer(MAPBOX_SKY_LAYER);
-    });
-
-    map.on('style.load', () => {
-      map.setFog(MAPBOX_FOG);
-    });
-
-    // Handle map move events
-    map.on('move', function () {
-      updatePosition();
-    });
-
-    return () => {
-      map.remove();
-    };
-  }, [
-    mapContainer,
-    initialLocation,
-    config.style,
-    config.projection,
-    i18n.language,
-    t,
-  ]);
-
   const handleConfirm = useCallback(() => {
     onConfirm({
       center: mapCenter,
@@ -156,6 +116,13 @@ const MapLocationDialog = props => {
   const handleCancel = useCallback(() => {
     onClose();
   }, [onClose]);
+
+  const handlePositionChange = useCallback(position => {
+    setMapCenter(position.center);
+    setMapZoom(position.zoom);
+    setMapPitch(position.pitch);
+    setMapBearing(position.bearing);
+  }, []);
 
   return (
     <Dialog
@@ -191,7 +158,17 @@ const MapLocationDialog = props => {
       </Stack>
 
       <DialogContent>
-        <Box ref={setMapContainer} sx={{ height: '100%', width: '100%' }} />
+        <MapboxMap
+          use3dTerrain
+          height="100%"
+          initialLocation={initialLocation}
+          projection={config.projection}
+          style={config.style}
+        >
+          <MapboxMapControls showCompass visualizePitch />
+          <MapboxGeocoder />
+          <MapLocationChange onPositionChange={handlePositionChange} />
+        </MapboxMap>
       </DialogContent>
     </Dialog>
   );

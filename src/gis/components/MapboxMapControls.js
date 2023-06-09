@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2023 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -14,19 +14,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-export const LAYER_TYPES = {
-  fill: ['fill-opacity'],
-  line: ['line-opacity'],
-  circle: ['circle-opacity', 'circle-stroke-opacity'],
-  symbol: ['icon-opacity', 'text-opacity'],
-  raster: ['raster-opacity'],
-  'fill-extrusion': ['fill-extrusion-opacity'],
-  heatmap: ['heatmap-opacity'],
+import { useEffect } from 'react';
+import mapboxgl from 'gis/mapbox';
+import { useMap } from './MapboxMap';
+
+const MapboxMapControls = props => {
+  const { showCompass, showZoom = true, visualizePitch } = props;
+  const { map } = useMap();
+
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+    map.addControl(
+      new mapboxgl.NavigationControl({
+        showCompass,
+        showZoom,
+        visualizePitch,
+      }),
+      'top-left'
+    );
+  }, [map, showCompass, showZoom, visualizePitch]);
+
+  return null;
 };
 
-export const ALIGNMENTS = {
-  left: 'lefty',
-  center: 'centered',
-  right: 'righty',
-  full: 'fully',
-};
+export default MapboxMapControls;

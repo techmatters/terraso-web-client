@@ -16,12 +16,12 @@
  */
 import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
-import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 import { useSearchParams } from 'react-router-dom';
 import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import mapboxgl from 'gis/mapbox';
 import LandscapeList from 'landscape/components/LandscapeList';
 
 const GEOJSON =
@@ -31,7 +31,8 @@ const GEOJSON =
 global.console.error = jest.fn();
 
 jest.mock('terrasoApi/shared/terrasoApi/api');
-jest.mock('@changey/react-leaflet-markercluster', () => jest.fn());
+
+jest.mock('gis/mapbox', () => ({}));
 
 jest.mock('@mui/material/useMediaQuery');
 
@@ -40,10 +41,27 @@ jest.mock('react-router-dom', () => ({
   useSearchParams: jest.fn(),
 }));
 
-const setup = async initialState => {
-  // TODO Improve testing to test clusters functionality
-  MarkerClusterGroup.mockImplementation(({ children }) => <>{children}</>);
+beforeEach(() => {
+  mapboxgl.Popup = jest.fn();
+  mapboxgl.NavigationControl = jest.fn();
+  mapboxgl.LngLatBounds = jest.fn();
+  mapboxgl.LngLatBounds.prototype = {
+    extend: jest.fn().mockReturnThis(),
+  };
+  mapboxgl.Map = jest.fn();
+  mapboxgl.Map.mockReturnValue({
+    on: jest.fn(),
+    remove: jest.fn(),
+    off: jest.fn(),
+    getCanvas: jest.fn(),
+    addControl: jest.fn(),
+    addSource: jest.fn(),
+    addLayer: jest.fn(),
+  });
+  window.HTMLElement.prototype.scrollIntoView = jest.fn();
+});
 
+const setup = async initialState => {
   await render(<LandscapeList />, {
     account: {
       hasToken: true,
@@ -59,6 +77,36 @@ const setup = async initialState => {
 };
 
 const baseListTest = async () => {
+  const events = {};
+  const map = {
+    on: jest.fn().mockImplementation((...args) => {
+      const event = args[0];
+      const callback = args.length === 2 ? args[1] : args[2];
+      const layer = args.length === 2 ? null : args[1];
+      events[[event, layer].filter(p => p).join(':')] = callback;
+
+      if (event === 'load') {
+        callback();
+      }
+    }),
+    remove: jest.fn(),
+    off: jest.fn(),
+    getCanvas: jest.fn(),
+    addControl: jest.fn(),
+    addSource: jest.fn(),
+    addLayer: jest.fn(),
+    setTerrain: jest.fn(),
+    fitBounds: jest.fn(),
+  };
+  mapboxgl.Map.mockReturnValue(map);
+  const Popup = {
+    setLngLat: jest.fn().mockReturnThis(),
+    setMaxWidth: jest.fn().mockReturnThis(),
+    setDOMContent: jest.fn().mockReturnThis(),
+    addTo: jest.fn().mockReturnThis(),
+    remove: jest.fn(),
+  };
+  mapboxgl.Popup.mockReturnValue(Popup);
   const isMember = {
     3: true,
   };
@@ -101,19 +149,32 @@ const baseListTest = async () => {
   ).toBeInTheDocument();
 
   // Map
-  const mapRegion = screen.getByRole('region', {
-    name: 'Landscapes map',
+  expect(map.addSource).toHaveBeenCalledTimes(3);
+  expect(map.addSource.mock.calls[2][0]).toEqual('landscapes');
+  const geojson = map.addSource.mock.calls[2][1].data;
+  expect(geojson.features.length).toBe(15);
+
+  expect(map.addLayer).toHaveBeenCalledTimes(5);
+  expect(map.addLayer.mock.calls[2][0]).toMatchObject({ id: 'clusters' });
+  expect(map.addLayer.mock.calls[3][0]).toMatchObject({ id: 'cluster-count' });
+  expect(map.addLayer.mock.calls[4][0]).toMatchObject({
+    id: 'unclustered-point',
   });
-  expect(mapRegion).toBeInTheDocument();
 
-  const markers = within(mapRegion).getAllByRole('button');
-  expect(markers.length).toBe(18); // 15 + zoom buttons
-
-  await act(async () => fireEvent.click(markers[0]));
-
-  within(mapRegion).getByRole('link', {
-    name: 'View details about Landscape Name 0',
-  });
+  await act(async () =>
+    events['click:unclustered-point']({
+      features: [geojson.features[0]],
+      lngLat: {
+        lng: 0,
+        lat: 0,
+      },
+    })
+  );
+  const domElement = Popup.setDOMContent.mock.calls[0][0];
+  expect(domElement.querySelector('a').href).toEqual(
+    'http://localhost/landscapes/landscape-0'
+  );
+  expect(domElement.querySelector('a').textContent).toEqual('Landscape Name 0');
 };
 
 beforeEach(() => {

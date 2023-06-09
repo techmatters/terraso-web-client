@@ -16,7 +16,6 @@
  */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Popup } from 'react-leaflet';
 import { useSelector } from 'react-redux';
 import { useFetchData } from 'terrasoApi/shared/store/utils';
 import { Typography } from '@mui/material';
@@ -26,10 +25,10 @@ import { fetchLandscapes } from 'landscape/landscapeSlice';
 import LandscapeListMap from './LandscapeListMap';
 
 const LandscapeDescriptionPopup = ({ landscape }) => (
-  <Popup className="landscape-marker-popup">
+  <>
     <Typography variant="h2">{landscape.data.name}</Typography>
     <Typography variant="body2">{landscape.data.description}</Typography>
-  </Popup>
+  </>
 );
 
 const LandscapeMapEmbed = () => {
