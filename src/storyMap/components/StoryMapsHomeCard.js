@@ -75,6 +75,7 @@ const StoryMapsHomeCard = props => {
             component={GridListItem}
             container
             aria-labelledby={`story-map-${storyMap.slug}-link`}
+            sx={{ pr: 0, pl: 0 }}
           >
             <Stack
               component={Grid}
