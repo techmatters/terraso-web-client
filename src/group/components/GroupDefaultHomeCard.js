@@ -27,7 +27,7 @@ const GroupDefaultHomeCard = () => {
   return (
     <HomeCard
       title={t('group.home_default_title')}
-      ariaLabelledBy="groups-default-title"
+      titleId="groups-default-title"
       action={{
         label: t('group.default_connect_button'),
         to: '/groups',

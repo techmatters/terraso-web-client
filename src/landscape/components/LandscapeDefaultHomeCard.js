@@ -26,7 +26,7 @@ const LandscapeDefaultHomeCard = () => {
   return (
     <HomeCard
       title={t('landscape.home_title')}
-      ariaLabelledBy="landscapes-default-title"
+      titleId="landscapes-default-title"
       action={{
         label: t('landscape.default_connect_button'),
         to: '/landscapes',

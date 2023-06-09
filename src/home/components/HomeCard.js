@@ -34,17 +34,17 @@ const HomeCard = ({
   image,
   children,
   showActionAsButton = false,
-  ariaLabelledBy,
+  titleId,
   contentBackgroundColor = 'blue.lite2',
 }) => (
   <Card
     component="section"
-    aria-labelledby={ariaLabelledBy}
+    aria-labelledby={titleId}
     sx={{ display: 'flex', flexDirection: 'column' }}
   >
     <Stack direction="column" sx={{ p: 2 }}>
       <Typography
-        id={ariaLabelledBy}
+        id={titleId}
         variant="h2"
         sx={{ pt: 0, pb: 2, textTransform: 'uppercase' }}
       >
