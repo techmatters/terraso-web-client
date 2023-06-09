@@ -24,6 +24,7 @@ import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
 import { MAPBOX_ACCESS_TOKEN, STORY_MAP_INSET_STYLE } from 'config';
 import { ALIGNMENTS, LAYER_TYPES } from '../storyMapConstants';
 import './StoryMap.css';
+import logger from 'monitoring/logger';
 import MapboxMap from 'gis/components/MapboxMap';
 import StoryMapOutline from './StoryMapOutline';
 import theme from 'theme';
@@ -286,7 +287,7 @@ const Scroller = props => {
     layer => {
       const layerType = map.getLayer(layer)?.type;
       if (!layerType) {
-        console.warn(`Layer ${layer} not found`);
+        logger.warn(`Layer ${layer} not found`);
         return null;
       }
       return LAYER_TYPES[layerType];
