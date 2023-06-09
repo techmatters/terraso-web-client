@@ -73,7 +73,7 @@ const MapboxMap = props => {
     projection,
     initialLocation,
     interactive = true,
-    hash = true,
+    hash = false,
     attributionControl = true,
     center,
     zoom = 1,

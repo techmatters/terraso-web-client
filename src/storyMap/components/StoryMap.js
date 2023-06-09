@@ -257,7 +257,6 @@ const InsetMap = props => {
       style={STORY_MAP_INSET_STYLE}
       center={initialLocation?.center}
       zoom={3}
-      hash={false}
       interactive={false}
       attributionControl={false}
     >
