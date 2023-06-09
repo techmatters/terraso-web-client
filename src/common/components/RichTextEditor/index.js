@@ -31,6 +31,7 @@ import InsertLinkIcon from '@mui/icons-material/InsertLink';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
 import {
   Tooltip as BaseTooltip,
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -39,13 +40,14 @@ import {
   FormHelperText,
   OutlinedInput,
   Paper,
+  Typography,
 } from '@mui/material';
 import { isUrl, transformURL, URL_SCHEMA } from 'common/utils';
 import { withProps } from 'react-hoc';
 import ExternalLink from '../ExternalLink';
 import Toolbar from './Toolbar';
 import { deserialize } from './utils';
-import theme from 'theme';
+import { focusOutline } from 'theme';
 
 // Sample value:
 // const initialValue = [
@@ -483,7 +485,7 @@ const RichTextEditor = props => {
 
   return (
     <Container>
-      <Slate editor={editor} value={parsedValue} onChange={onChange}>
+      <Slate editor={editor} initialValue={parsedValue} onChange={onChange}>
         {editable && (
           <Toolbar
             groups={[
@@ -508,21 +510,33 @@ const RichTextEditor = props => {
             ]}
           />
         )}
-        <Editable
+        <Box
+          component={Editable}
           id={id}
           aria-label={label}
-          style={
+          className="jose"
+          sx={
             addContainer
               ? {
-                  paddingLeft: theme.spacing(2),
-                  paddingRight: theme.spacing(2),
+                  pl: 2,
+                  pr: 2,
+                  overflow: 'hidden',
+                  outline: 'none',
+                  '&:focus': focusOutline,
                 }
               : null
           }
           readOnly={!editable}
-          renderElement={props => <Element {...props} />}
-          renderLeaf={props => <Leaf {...props} />}
+          renderElement={Element}
+          renderLeaf={Leaf}
           placeholder={placeholder}
+          renderPlaceholder={({ children, attributes }) => (
+            <Box {...attributes}>
+              <Typography variant="subtitle1" sx={{ pt: 1.5 }}>
+                {children}
+              </Typography>
+            </Box>
+          )}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
         />
