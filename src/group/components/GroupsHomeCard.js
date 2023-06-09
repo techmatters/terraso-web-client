@@ -56,6 +56,7 @@ const GroupItem = ({ group, index }) => {
     <ListItem
       direction="column"
       alignItems="flex-start"
+      aria-label={group.slug}
       spacing={2}
       sx={{
         paddingLeft: 0,

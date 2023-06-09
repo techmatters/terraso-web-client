@@ -38,6 +38,7 @@ const HomeCard = ({
   contentBackgroundColor = 'blue.lite2',
 }) => (
   <Card
+    component="section"
     aria-labelledby={ariaLabel}
     sx={{ display: 'flex', flexDirection: 'column' }}
   >

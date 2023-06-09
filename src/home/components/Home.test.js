@@ -171,7 +171,7 @@ test('Home: Display groups', async () => {
   );
   await setup();
 
-  const list = within(screen.getByRole('list', { name: 'GROUPS' }));
+  const list = within(screen.getByRole('region', { name: 'Groups' }));
   const items = list.getAllByRole('listitem');
   expect(items.length).toBe(3);
 
@@ -219,7 +219,7 @@ test('Home: Display Story Maps', async () => {
   );
   await setup();
 
-  const list = within(screen.getByRole('list', { name: 'STORY MAPS' }));
+  const list = within(screen.getByRole('region', { name: 'Story Maps' }));
   const items = list.getAllByRole('listitem');
   expect(items.length).toBe(2);
 
