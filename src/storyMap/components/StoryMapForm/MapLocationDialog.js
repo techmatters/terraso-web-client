@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import {
   Button,
@@ -24,8 +25,6 @@ import {
   DialogTitle,
   Stack,
 } from '@mui/material';
-import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
-import _ from 'lodash/fp';
 import MapboxGeocoder from 'gis/components/MapboxGeocoder';
 import MapboxMap, { useMap } from 'gis/components/MapboxMap';
 import MapboxMapControls from 'gis/components/MapboxMapControls';
