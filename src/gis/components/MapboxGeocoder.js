@@ -31,6 +31,7 @@ const MapboxGeocoder = () => {
     }
     const geocoder = new MapboxGlGeocoder({
       accessToken: MAPBOX_ACCESS_TOKEN,
+      marker: false,
       placeholder: t('storyMap.form_location_dialog_geocoder_placeholder'),
       mapboxgl,
     });
