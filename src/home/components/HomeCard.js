@@ -57,9 +57,10 @@ const HomeCard = ({
         <Stack
           direction="row"
           spacing={2}
-          height={128}
+          height={image ? 128 : null}
           sx={{
             backgroundColor: contentBackgroundColor,
+            borderRadius: '4px',
           }}
         >
           {image && (
