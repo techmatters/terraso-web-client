@@ -104,7 +104,7 @@
     "prettier": "^2.8.8",
     "react-scripts": "^5.0.1",
     "serve": "^14.2.0",
-    "stylelint": "^15.6.2",
+    "stylelint": "^15.7.0",
     "stylelint-prettier": "^3.0.0",
     "terraso-backend": "techmatters/terraso-backend#d1a9923",
     "typescript": "^5.0.4"
