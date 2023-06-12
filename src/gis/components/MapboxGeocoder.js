@@ -16,6 +16,7 @@
  */
 import { useEffect } from 'react';
 import MapboxGlGeocoder from '@mapbox/mapbox-gl-geocoder';
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import { useTranslation } from 'react-i18next';
 import mapboxgl from 'gis/mapbox';
 import { MAPBOX_ACCESS_TOKEN } from 'config';
