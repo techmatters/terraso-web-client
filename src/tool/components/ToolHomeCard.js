@@ -43,7 +43,7 @@ const ToolHomeCard = () => {
           <RouterLink to="/tools">{t('tool.home_card_kobo_title')}</RouterLink>
         </Typography>
 
-        <Typography variant="body2">
+        <Typography variant="body1">
           {t('tool.home_card_description')}
         </Typography>
       </Stack>

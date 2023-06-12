@@ -40,7 +40,10 @@ const HomeCard = ({
   <Card
     component="section"
     aria-labelledby={titleId}
-    sx={{ display: 'flex', flexDirection: 'column' }}
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+    }}
   >
     <Stack direction="column" sx={{ p: 2 }}>
       <Typography
@@ -54,6 +57,7 @@ const HomeCard = ({
         <Stack
           direction="row"
           spacing={2}
+          height={128}
           sx={{
             backgroundColor: contentBackgroundColor,
           }}
@@ -67,6 +71,7 @@ const HomeCard = ({
                 alt={image.alt}
                 to={image.to}
                 height={128}
+                sx={{ borderRadius: '4px 0px 0px 4px', borderWidth: 0 }}
               ></Paper>
             </RouterLink>
           )}
