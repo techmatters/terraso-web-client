@@ -15,50 +15,39 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Alert, Box, Divider, Typography } from '@mui/material';
-import CardActionRouterLink from 'common/components/CardActionRouterLink';
+import { Trans, useTranslation } from 'react-i18next';
+import { Box, Typography } from '@mui/material';
+import RouterLink from 'common/components/RouterLink';
 import HomeCard from 'home/components/HomeCard';
 
 const LandscapeDefaultHomeCard = () => {
   const { t } = useTranslation();
-
+  const landscapeImage = require(`assets/${t(`landscape.img.src`)}`);
   return (
     <HomeCard
-      aria-labelledby="landscapes-default-title"
-      sx={{ flexDirection: 'column' }}
+      title={t('landscape.home_title')}
+      titleId="landscapes-default-title"
+      action={{
+        label: t('landscape.default_connect_button'),
+        to: '/landscapes',
+      }}
+      image={{
+        src: landscapeImage,
+        to: '/landscapes',
+      }}
+      showActionsAsButtons
     >
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          padding: 2,
-        }}
-      >
-        <Typography
-          id="landscapes-default-title"
-          variant="h2"
-          sx={{ pt: 0, pb: 2 }}
-        >
-          {t('landscape.home_default_title')}
-        </Typography>
-        <Alert
-          severity="info"
-          sx={{
-            marginTop: 1,
-            marginBottom: 1,
-          }}
-        >
+      <Box display="flex" alignItems="center">
+        <Trans i18nKey="landscape.default_content">
           <Typography variant="body1">
-            {t('landscape.default_content')}
+            Prefix
+            <RouterLink to="/landscapes" sx={{ textDecoration: 'underline' }}>
+              Connect
+            </RouterLink>
+            suffix
           </Typography>
-        </Alert>
+        </Trans>
       </Box>
-      <Divider aria-hidden="true" />
-      <CardActionRouterLink
-        label={t('landscape.default_connect_button')}
-        to="/landscapes"
-      />
     </HomeCard>
   );
 };

@@ -27,7 +27,6 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import CardActionRouterLink from 'common/components/CardActionRouterLink';
 import RouterButton from 'common/components/RouterButton';
 import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
@@ -61,21 +60,22 @@ const StoryMapsHomeCard = props => {
 
   return (
     <HomeCard
-      aria-labelledby="story-maps-list-title"
-      sx={{
-        flexDirection: 'column',
+      title={t('storyMap.home_title')}
+      titleId="story-maps-list-title"
+      action={{
+        label: t('storyMap.home_create'),
+        to: 'tools/story-maps/new',
       }}
+      contentBackgroundColor="white"
     >
-      <Typography variant="h2" id="story-maps-list-title" sx={{ p: 2 }}>
-        {t('storyMap.home_title')}
-      </Typography>
-      <List aria-labelledby="story-maps-list-title">
+      <List aria-labelledby="story-maps-list-title" sx={{ width: '100%' }}>
         {storyMaps.map(storyMap => (
           <ListItem
             key={storyMap.id}
             component={GridListItem}
             container
             aria-labelledby={`story-map-${storyMap.slug}-link`}
+            sx={{ pr: 0, pl: 0 }}
           >
             <Stack
               component={Grid}
@@ -167,11 +167,6 @@ const StoryMapsHomeCard = props => {
           </ListItem>
         ))}
       </List>
-      <Divider aria-hidden="true" />
-      <CardActionRouterLink
-        label={t('storyMap.home_create')}
-        to="/tools/story-maps/new"
-      />
     </HomeCard>
   );
 };

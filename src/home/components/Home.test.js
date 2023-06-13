@@ -236,11 +236,11 @@ test('Home: Display defaults', async () => {
     })
   );
   await setup();
-  expect(screen.getByText(/EXPLORE LANDSCAPES/i)).toBeInTheDocument();
+  expect(screen.getByText(/FIND YOUR LANDSCAPE/i)).toBeInTheDocument();
   expect(screen.getByText(/Groups connect people/i)).toBeInTheDocument();
   expect(
     screen.getByText(
-      /Use maps, photos, videos, audio recordings and narrative to create an impactful story./i
+      /Create an impactful story using maps, photos, videos, audio recordings and narrative/i
     )
   ).toBeInTheDocument();
 });

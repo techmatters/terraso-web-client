@@ -30,6 +30,7 @@ const CardActionRouterLink = ({ label, to }) => {
         component={Link}
         to={to}
         sx={{
+          fontWeight: 200,
           width: '100%',
           padding: 0,
           textTransform: 'uppercase',

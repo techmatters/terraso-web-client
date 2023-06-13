@@ -20,13 +20,11 @@ import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
   ListItem as BaseListItem,
-  Divider,
   Link,
   List,
   Stack,
   Typography,
 } from '@mui/material';
-import CardActionRouterLink from 'common/components/CardActionRouterLink';
 import Restricted from 'permissions/components/Restricted';
 import {
   MEMBERSHIP_STATUS_APPROVED,
@@ -58,6 +56,7 @@ const GroupItem = ({ group, index }) => {
     <ListItem
       direction="column"
       alignItems="flex-start"
+      aria-label={group.slug}
       spacing={2}
       sx={{
         paddingLeft: 0,
@@ -102,24 +101,25 @@ const GroupsHomeCard = ({ groups }) => {
 
   return (
     <HomeCard
-      aria-labelledby="groups-list-title"
-      sx={{ flexDirection: 'column' }}
+      title={t('group.home_default_title')}
+      action={{
+        label: t('group.home_connect_label'),
+        to: '/groups',
+      }}
+      contentBackgroundColor="white"
+      titleId="groups-list-title"
     >
-      <Typography variant="h2" id="groups-list-title" sx={{ padding: 2 }}>
-        {t('group.home_title')}
-      </Typography>
-      <List aria-describedby="groups-list-title" sx={{ pl: 2, pr: 2 }}>
+      <List
+        aria-labelledby="groups-list-title"
+        aria-describedby="groups-list-title"
+        sx={{ width: '100%' }}
+      >
         {sortedGroups.map((group, index) => (
           <React.Fragment key={group.slug}>
             <GroupItem group={group} index={index} />
           </React.Fragment>
         ))}
       </List>
-      <Divider aria-hidden="true" />
-      <CardActionRouterLink
-        label={t('group.home_connect_label')}
-        to="/groups"
-      />
     </HomeCard>
   );
 };

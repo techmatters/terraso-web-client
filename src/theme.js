@@ -65,6 +65,7 @@ const colorTheme = createTheme({
     },
     blue: {
       lite: '#F3FAFD',
+      lite2: '#F5F7FC',
       mid: '#D2EDF7',
       dark: '#2C7690',
       dark1: '#125A7E',

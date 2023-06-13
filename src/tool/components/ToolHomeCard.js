@@ -16,8 +16,7 @@
  */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Divider, Link, Paper, Stack, Typography } from '@mui/material';
-import CardActionRouterLink from 'common/components/CardActionRouterLink';
+import { Stack, Typography } from '@mui/material';
 import RouterLink from 'common/components/RouterLink';
 import HomeCard from 'home/components/HomeCard';
 
@@ -26,43 +25,28 @@ const ToolHomeCard = () => {
   const koboImage = require(`assets/${t('tools.kobo.img.src')}`);
 
   return (
-    <HomeCard aria-labelledby="tools-title" sx={{ flexDirection: 'column' }}>
-      <Box sx={{ p: 2 }}>
-        <Typography id="tools-title" variant="h2" sx={{ pt: 0, mb: 4 }}>
-          {t('tool.home_card_title')}
+    <HomeCard
+      title={t('tool.home_card_title')}
+      titleId="tools-title"
+      action={{
+        label: t('tool.home_explore_label'),
+        to: '/tools',
+      }}
+      image={{
+        src: koboImage,
+        to: '/tools',
+      }}
+      contentBackgroundColor="white"
+    >
+      <Stack direction="column">
+        <Typography variant="h3" sx={{ pt: 0, mb: 2, fontSize: '1.3rem' }}>
+          <RouterLink to="/tools">{t('tool.home_card_kobo_title')}</RouterLink>
         </Typography>
 
-        <Stack direction="row" spacing={3}>
-          <Link component={RouterLink} to="/tools">
-            <Paper
-              variant="outlined"
-              component="img"
-              src={koboImage}
-              alt=""
-              width={t('tools.kobo.img.width')}
-              height={t('tools.kobo.img.height')}
-              sx={{
-                width: `${t('tools.kobo.img.width')}px`,
-                height: `${t('tools.kobo.img.height')}px`,
-              }}
-            />
-          </Link>
-
-          <Stack direction="column">
-            <Typography variant="h3" sx={{ pt: 0, mb: 2, fontSize: '1.3rem' }}>
-              <RouterLink to="/tools">
-                {t('tool.home_card_kobo_title')}
-              </RouterLink>
-            </Typography>
-
-            <Typography variant="body2">
-              {t('tool.home_card_description')}
-            </Typography>
-          </Stack>
-        </Stack>
-      </Box>
-      <Divider aria-hidden="true" />
-      <CardActionRouterLink label={t('tool.home_explore_label')} to="/tools" />
+        <Typography variant="body1">
+          {t('tool.home_card_description')}
+        </Typography>
+      </Stack>
     </HomeCard>
   );
 };

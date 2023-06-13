@@ -16,7 +16,10 @@
     "group": {
         "create": "Create a Group",
         "home_title": "Groups",
-        "home_default_title": "Group",
+        "home_default_title": "Groups",
+        "img": {
+            "src": "groups.png"
+        },
         "form_edit_title": "Update the “{{name}}” Group",
         "form_new_title": "Create New Group",
         "membership_card_title": "Members",
@@ -28,7 +31,7 @@
         "membership_leave_confirm_message": "Are you sure you want to leave the group “{{name}}”?",
         "members_remove_confirmation_message": "You are about to remove “{{userName}}” from the “{{name}}” group.",
         "edit_profile_button": "Edit Group Profile",
-        "default_connect_button": "Explore Groups",
+        "default_connect_button": "Join Groups",
         "membership_leave_confirm_button": "Leave Group",
         "view_update_button": "Update Group",
         "list_join_button": "Join",
@@ -56,7 +59,7 @@
         "form_cancel_label": "Cancel",
         "view_join_label": "Join Group",
         "view_leave_label": "Leave Group",
-        "default_content": "Groups connect people with common interests and needs within and across landscapes.",
+        "default_content": "<0>Groups connect people with common interests and needs within and across landscapes. <1>Find your group</1> or <3>start one</3>.</0>",
         "form_new_description": "Create a group to connect people with common interests and needs. Groups exist for people within and across landscapes.",
         "list_description": "A group can be an existing organization (like a landscape partnership or NGO) or any collection of people with a common interest.",
         "list_new_description": "Can’t find the organizations or groups you are affiliated with? Add it to Terraso.",
@@ -142,7 +145,7 @@
         "avilability": "Availability",
         "faq_title": "Tools FAQ",
         "list_title": "Tools",
-        "home_card_title": "Tool Recommendations",
+        "home_card_title": "Data Collection",
         "home_card_kobo_title": "KoboToolbox",
         "home_card_description": "A free data collection tool that works on mobile devices and doesn’t require an internet connection.",
         "home_explore_label": "Explore more tools",
@@ -181,7 +184,7 @@
             "img": {
                 "height": "95",
                 "width": "250",
-                "src": "tools/story-maps.svg"
+                "src": "tools/story-maps.png"
             },
             "description": ["Create beautiful map-based stories"],
             "requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
@@ -259,13 +262,16 @@
         "membership_leave_confirm_title": "Leave “{{name}}”",
         "view_card_title": "About {{name}}",
         "view_card_title_profile_link": "View landscape details",
+        "img": {
+            "src": "landscape.png"
+        },
         "list_title": "Landscapes",
         "list_description": "These landscapes are using Terraso.",
         "members_remove_confirmation_title": "Remove Member",
         "membership_leave_confirm_message": "Are you sure you want to leave the landscape “{{name}}”?",
         "members_remove_confirmation_message": "You are about to remove “{{userName}}” from the “{{name}}” landscape.",
         "edit_profile_button": "Edit Landscape Profile",
-        "default_connect_button": "Explore Landscapes",
+        "default_connect_button": "Find Your Landscape",
         "membership_leave_confirm_button": "Leave Landscape",
         "view_update_button": "Update Description",
         "list_join_button": "Join",
@@ -300,7 +306,7 @@
         "view_join_label": "Join Landscape",
         "view_leave_label": "Leave Landscape",
         "list_new_description": "Can’t find the landscape you are affiliated with? Add it to Terraso.",
-        "default_content": "Explore the landscapes in Terraso. Become a member of your landscape to connect with others on Terraso and lets you share information.",
+        "default_content": "<0><1>Connect</1> with your landscape and share documents, data, and maps with your community.</0>",
         "form_description_placeholder": "A few sentences describing your landscape (600 characters maximum)",
         "form_website_placeholder": "https://www.mylandscape.org",
         "added": "Added landscape “{{name}}.”",
@@ -891,7 +897,7 @@
         "home_tools_link": "Terraso Story Maps",
         "home_draft_label": "Draft",
         "home_edit": "Edit",
-        "home_default_description": "Use maps, photos, videos, audio recordings and narrative to create an impactful story.",
+        "home_default_description": "<0>Create an impactful story using maps, photos, videos, audio recordings and narrative. <1>Get inspired by other people’s story maps</1>.</0>",
         "delete_label": "Delete",
         "delete_confirm_title": "Delete story map {{title}}?",
         "delete_confirm_message": "Are you sure you wish to delete the story map? This cannot be undone.",
