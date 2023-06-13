@@ -80,6 +80,7 @@ const MapboxMap = props => {
     height = '400px',
     width = '100%',
     sx,
+    onBoundsChange,
     children,
   } = props;
   const { map, setMap } = useMap();
@@ -126,6 +127,17 @@ const MapboxMap = props => {
     attributionControl,
     setMap,
   ]);
+
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+    const onMoveListener = () => onBoundsChange?.(map.getBounds());
+    map.on('moveend', onMoveListener);
+    return () => {
+      map.on('moveend', onMoveListener);
+    };
+  }, [map, onBoundsChange]);
 
   return (
     <Box
