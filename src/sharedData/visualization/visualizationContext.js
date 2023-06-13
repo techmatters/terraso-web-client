@@ -82,7 +82,6 @@ export const VisualizationContextProvider = props => {
         setLoadingFile(false);
       })
       .catch(error => {
-        console.log({ error });
         setLoadingFileError(error);
         setLoadingFile(false);
         dispatch(
