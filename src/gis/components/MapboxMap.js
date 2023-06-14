@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Box } from '@mui/material';
 import mapboxgl from 'gis/mapbox';
 import {
@@ -58,9 +58,40 @@ export const useMap = () => React.useContext(MapContext);
 export const MapProvider = props => {
   const { children } = props;
   const [map, setMap] = useState(null);
+  const [images, setImages] = useState({});
+  const [sources, setSources] = useState({});
+  const [layers, setLayers] = useState({});
+
+  const mapWrapper = useMemo(() => {
+    if (!map) {
+      return map;
+    }
+
+    const originalAddImage = map.addImage.bind(map);
+    map.addImage = function (name, image) {
+      setImages(prev => ({ ...prev, [name]: image }));
+      originalAddImage(name, image);
+    };
+
+    const originalAddSource = map.addSource.bind(map);
+    map.addSource = function (name, source) {
+      setSources(prev => ({ ...prev, [name]: source }));
+      originalAddSource(name, source);
+    };
+
+    const originalAddLayer = map.addLayer.bind(map);
+    map.addLayer = function (layer, before) {
+      setLayers(prev => ({ ...prev, [layer.id]: layer }));
+      originalAddLayer(layer, before);
+    };
+
+    return map;
+  }, [map]);
 
   return (
-    <MapContext.Provider value={{ map, setMap }}>
+    <MapContext.Provider
+      value={{ map: mapWrapper, setMap, images, sources, layers }}
+    >
       {children}
     </MapContext.Provider>
   );
