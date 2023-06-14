@@ -39,7 +39,7 @@ const GroupDefaultHomeCard = () => {
     >
       <Box display="flex" alignItems="center">
         <Trans i18nKey="group.default_content">
-          <Typography variant="body1">
+          <Typography variant="body1" marginLeft="8px">
             Prefix
             <RouterLink to="/groups" sx={{ textDecoration: 'underline' }}>
               Find
