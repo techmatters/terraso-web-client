@@ -28,6 +28,7 @@ import MapboxMap, {
   useMap as useMapboxContext,
 } from 'gis/components/MapboxMap';
 import MapboxMapControls from 'gis/components/MapboxMapControls';
+import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';
 import { isValidLatitude, isValidLongitude } from 'gis/gisUtils';
 import { MAPBOX_LANDSCAPE_DIRECTORY_STYLE } from 'config';
 
@@ -228,6 +229,7 @@ const LandscapeListMap = props => {
   return (
     <MapboxMap projection="mercator" style={MAPBOX_LANDSCAPE_DIRECTORY_STYLE}>
       <MapboxMapControls />
+      <MapboxMapStyleSwitcher />
       <LandscapesMapboxMapClusters {...props} />
     </MapboxMap>
   );
