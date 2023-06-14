@@ -30,6 +30,8 @@ import {
 } from 'react-leaflet';
 import { Box, Stack, Typography } from '@mui/material';
 import MapboxMap, { useMap as useMapboxMap } from 'gis/components/MapboxMap';
+import MapboxMapControls from 'gis/components/MapboxMapControls';
+import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';
 import { normalizeLongitude } from 'gis/gisUtils';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 import {
@@ -402,6 +404,8 @@ const Visualization = props => {
           height: '400px',
         }}
       >
+        <MapboxMapControls />
+        <MapboxMapStyleSwitcher />
         <MapboxSource
           visualizationConfig={visualizationConfig}
           rows={rows}
