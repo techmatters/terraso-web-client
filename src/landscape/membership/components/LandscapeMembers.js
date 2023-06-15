@@ -20,7 +20,7 @@ import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useFetchData } from 'terrasoApi/shared/store/utils';
+import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Typography } from '@mui/material';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';

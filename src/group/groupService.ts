@@ -16,12 +16,12 @@
  */
 import _ from 'lodash/fp';
 import { cleanSensitiveCharacters } from 'stringUtils';
-import { graphql } from 'terrasoApi/shared/graphqlSchema';
 import {
   extractAccountMembership,
   extractMembersInfo,
-} from 'terrasoApi/shared/memberships/membershipsUtils';
-import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
+} from 'terraso-client-shared/memberships/membershipsUtils';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import { graphql } from 'terrasoApi/shared/graphqlSchema';
 import type { Group } from './groupSlice';
 
 export const fetchGroupToUpdate = (slug: string) => {

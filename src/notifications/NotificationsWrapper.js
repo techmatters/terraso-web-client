@@ -19,7 +19,7 @@ import _ from 'lodash/fp';
 import { SnackbarProvider, useSnackbar } from 'notistack';
 import { Trans } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeMessage } from 'terrasoApi/shared/notifications/notificationsSlice';
+import { removeMessage } from 'terraso-client-shared/notifications/notificationsSlice';
 import { Alert } from '@mui/material';
 
 const MAX_NOTIFICATIONS = 3;

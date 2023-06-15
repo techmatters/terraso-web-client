@@ -19,7 +19,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useFetchData } from 'terrasoApi/shared/store/utils';
+import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import Stepper from 'common/components/Stepper';

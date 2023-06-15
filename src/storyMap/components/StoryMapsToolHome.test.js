@@ -15,10 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { render, screen, within } from 'tests/utils';
-import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import StoryMapsToolsHome from './StoryMapsToolHome';
 
-jest.mock('terrasoApi/shared/terrasoApi/api');
+jest.mock('terraso-client-shared/terrasoApi/api');
 
 test('StoryMapsToolHome: renders correctly', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(

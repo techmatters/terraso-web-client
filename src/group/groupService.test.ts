@@ -15,10 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import 'tests/utils';
-import * as terrasoApiToMock from 'terrasoApi/shared/terrasoApi/api';
+import * as terrasoApiToMock from 'terraso-client-shared/terrasoApi/api';
 import * as groupService from 'group/groupService';
 
-jest.mock('terrasoApi/shared/terrasoApi/api');
+jest.mock('terraso-client-shared/terrasoApi/api');
 const terrasoApi = jest.mocked(terrasoApiToMock);
 
 test('GroupService: Fetch group', async () => {

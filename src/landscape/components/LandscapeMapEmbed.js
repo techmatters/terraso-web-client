@@ -17,7 +17,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useFetchData } from 'terrasoApi/shared/store/utils';
+import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Typography } from '@mui/material';
 import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';

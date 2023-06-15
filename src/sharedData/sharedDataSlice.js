@@ -16,7 +16,7 @@
  */
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
-import { createAsyncThunk } from 'terrasoApi/shared/store/utils';
+import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 import * as sharedDataService from 'sharedData/sharedDataService';
 
 export const UPLOAD_STATUS_UPLOADING = 'uploading';

@@ -17,10 +17,10 @@
 import { render, screen } from 'tests/utils';
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
-import * as accountService from 'terrasoApi/shared/account/accountService';
+import * as accountService from 'terraso-client-shared/account/accountService';
 import AccountLogin from 'account/components/AccountLogin';
 
-jest.mock('terrasoApi/shared/account/accountService');
+jest.mock('terraso-client-shared/account/accountService');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

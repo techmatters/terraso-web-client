@@ -18,7 +18,7 @@ import React, { useEffect, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { addMessage } from 'terrasoApi/shared/notifications/notificationsSlice';
+import { addMessage } from 'terraso-client-shared/notifications/notificationsSlice';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';

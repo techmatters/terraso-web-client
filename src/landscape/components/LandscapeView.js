@@ -19,7 +19,7 @@ import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useFetchData } from 'terrasoApi/shared/store/utils';
+import { useFetchData } from 'terraso-client-shared/store/utils';
 import EmailIcon from '@mui/icons-material/Email';
 import LaunchIcon from '@mui/icons-material/Launch';
 import PublicIcon from '@mui/icons-material/Public';
