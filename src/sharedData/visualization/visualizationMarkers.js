@@ -53,9 +53,8 @@ export const getImageData = ({ shape, size, color }) => {
 };
 
 export const getImageBlob = ({ shape, size, color }) => {
-  const canvas = getImageCanvas({ shape, size, color });
-
   return new Promise((resolve, reject) => {
+    const canvas = getImageCanvas({ shape, size, color });
     canvas.toBlob(blob => {
       resolve(blob);
       document.body.removeChild(canvas);
