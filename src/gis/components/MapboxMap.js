@@ -14,7 +14,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import _ from 'lodash/fp';
 import { Box } from '@mui/material';
 import mapboxgl from 'gis/mapbox';
 import {
@@ -55,8 +62,73 @@ const MapContext = React.createContext();
 
 export const useMap = () => React.useContext(MapContext);
 
+// Extract style from Style options
+// Options:
+// 1. "mapbox://styles/mapbox/satellite-v9"
+// 2. "mapbox/satellite-v9"
+// 3. "https://api.mapbox.com/styles/v1/mapbox/satellite-v9""
+// 4. Object
+// Return style object
+const extractStyle = async style => {
+  if (typeof style === 'object') {
+    return style;
+  }
+
+  const getStyleId = () => {
+    if (style.startsWith('mapbox/')) {
+      return style;
+    }
+    if (style.startsWith('mapbox://styles/')) {
+      return style.replace('mapbox://styles/', '');
+    }
+    if (style.startsWith('https://api.mapbox.com/styles/v1/')) {
+      return style.replace('https://api.mapbox.com/styles/v1/', '');
+    }
+    return null;
+  };
+
+  const url = `https://api.mapbox.com/styles/v1/${getStyleId()}?access_token=${MAPBOX_ACCESS_TOKEN}`;
+  const response = await fetch(url);
+  return await response.json();
+};
+
+// Set Style doesn't keep the current layers, so we need to copy them across
+// Issue: https://github.com/mapbox/mapbox-gl-js/issues/4006
+async function switchStyle(map, style, images, sources, layers) {
+  const newStyle = await extractStyle(style);
+
+  const mergedSources = {
+    ...newStyle.sources,
+    ...sources,
+  };
+
+  const mergedLayers = Object.values({
+    ..._.keyBy('id', newStyle.layers),
+    ...layers,
+  });
+
+  map.setStyle(
+    {
+      ...newStyle,
+      sources: mergedSources,
+      layers: mergedLayers,
+    },
+    {
+      diff: false,
+    }
+  );
+  map.once('styledata', () => {
+    Object.entries(images).forEach(([name, image]) => {
+      if (map.hasImage(name)) {
+        return;
+      }
+      map.addImage(name, image);
+    });
+  });
+}
+
 export const MapProvider = props => {
-  const { children } = props;
+  const { children, onStyleChange } = props;
   const [map, setMap] = useState(null);
   const [images, setImages] = useState({});
   const [sources, setSources] = useState({});
@@ -66,7 +138,6 @@ export const MapProvider = props => {
     if (!map) {
       return map;
     }
-
     const originalAddImage = map.addImage.bind(map);
     map.addImage = function (name, image) {
       setImages(prev => ({ ...prev, [name]: image }));
@@ -88,10 +159,16 @@ export const MapProvider = props => {
     return map;
   }, [map]);
 
+  const changeStyle = useCallback(
+    newStyle => {
+      switchStyle(map, newStyle, images, sources, layers);
+      onStyleChange?.(newStyle);
+    },
+    [map, images, sources, layers, onStyleChange]
+  );
+
   return (
-    <MapContext.Provider
-      value={{ map: mapWrapper, setMap, images, sources, layers }}
-    >
+    <MapContext.Provider value={{ setMap, map: mapWrapper, changeStyle }}>
       {children}
     </MapContext.Provider>
   );
@@ -146,7 +223,9 @@ const MapboxMap = props => {
       map.setFog(MAPBOX_FOG);
     });
 
-    return () => map.remove();
+    return () => {
+      map.remove();
+    };
   }, [
     style,
     initialLocation,
@@ -165,6 +244,7 @@ const MapboxMap = props => {
     }
     const onMoveListener = () => onBoundsChange?.(map.getBounds());
     map.on('moveend', onMoveListener);
+
     return () => {
       map.on('moveend', onMoveListener);
     };
