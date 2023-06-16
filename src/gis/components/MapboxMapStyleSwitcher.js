@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import LayersIcon from '@mui/icons-material/Layers';
 import { Button, Menu, MenuItem, Portal, Stack } from '@mui/material';
 import { MAPBOX_STYLES } from './MapboxConstants';
@@ -40,34 +40,31 @@ class HelloWorldControl {
 }
 
 const MapboxMapStyleSwitcher = () => {
-  const { map, images, sources, layers } = useMap();
+  const { map, changeStyle } = useMap();
   const [container, setContainer] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [styleName, setStyleName] = useState('');
   const open = Boolean(anchorEl);
-  const handleClick = event => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
-  const changeStyle = (title, newStyle) => () => {
-    setStyleName(title);
-    map.setStyle(newStyle);
-    handleClose();
-    map.once('style.load', () => {
-      Object.keys(images).forEach(image => {
-        map.addImage(image, images[image]);
-      });
-      Object.keys(sources).forEach(source => {
-        map.addSource(source, sources[source]);
-      });
-      Object.keys(layers).forEach(layer => {
-        map.addLayer(layers[layer]);
-      });
-    });
-  };
+  const handleClick = useCallback(event => {
+    setAnchorEl(event.currentTarget);
+  }, []);
+  const handleClose = useCallback(() => {
+    setAnchorEl(null);
+  }, []);
+
+  const handleChangeStyle = useCallback(
+    (title, newStyle) => () => {
+      if (title === styleName) {
+        handleClose();
+        return;
+      }
+      setStyleName(title);
+      changeStyle(newStyle);
+      handleClose();
+    },
+    [handleClose, styleName, changeStyle]
+  );
 
   useEffect(() => {
     if (!map) {
@@ -115,7 +112,7 @@ const MapboxMapStyleSwitcher = () => {
           {MAPBOX_STYLES.map(({ style, title }) => (
             <MenuItem
               key={title}
-              onClick={changeStyle(title, style)}
+              onClick={handleChangeStyle(title, style)}
               selected={styleName === title}
             >
               {title}
