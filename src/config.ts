@@ -156,6 +156,7 @@ export const STORY_MAP_MEDIA_ACCEPTED_TYPES = {
   'audio/mpeg': ['.mp3'],
   'audio/wav': ['.wav'],
   'audio/aac': ['.aac'],
+  'video/mpeg': ['.mp4'],
 };
 export const STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS = Object.values(
   STORY_MAP_MEDIA_ACCEPTED_TYPES

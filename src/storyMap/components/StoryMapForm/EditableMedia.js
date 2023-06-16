@@ -441,6 +441,79 @@ const EditableAudio = props => {
   );
 };
 
+const EditableVideo = props => {
+  const { t } = useTranslation();
+  const [id, setId] = useState(0);
+  const { getMediaFile } = useStoryMapConfigContext();
+  const { video, onUpdate, onDelete, processing } = props;
+
+  useEffect(() => {
+    setId(uuidv4());
+  }, [video]);
+
+  const videoSrc = useMemo(() => {
+    if (video.signedUrl) {
+      return video.signedUrl;
+    }
+    if (video.contentId) {
+      return getMediaFile(video.contentId)
+    }
+    return null;
+  }, [video, getMediaFile]);
+
+  return (
+    <Stack>
+      <video key={id} style={{ width: '100%' }} controls>
+        <source src={videoSrc} type={video.type}/>
+        {t('storyMap.form_media_audio_not_supported')}
+      </video>
+        <Stack
+          justifyContent="center"
+          alignItems="center"
+          direction="row"
+          sx={{
+            color: 'white',
+            background: 'rgba(0,0,0,0.5)',
+            bottom: 0,
+            width: '100%',
+            pt: 2,
+            pb: 2,
+          }}
+          spacing={1}
+        >
+        <Button
+            variant="outlined"
+            onClick={onUpdate}
+            sx={({ palette }) => ({
+              backgroundColor: 'white',
+              '&:hover': {
+                backgroundColor: palette.blue.background,
+              },
+            })}
+          >
+            {t('storyMap.form_media_update_label')}
+          </Button>
+          <ConfirmButton
+            onConfirm={onDelete}
+            loading={processing}
+            variant="text"
+            buttonProps={{
+              title: t('storyMap.form_media_delete_label'),
+              sx: {
+                minWidth: 'auto',
+              },
+            }}
+            confirmTitle={t('storyMap.form_media_video_delete_confirm_title')}
+            confirmMessage={t('storyMap.form_media_video_delete_confirm_message')}
+            confirmButton={t('storyMap.form_media_video_delete_confirm_button')}
+          >
+            <DeleteIcon sx={{ color: 'white' }} />
+          </ConfirmButton>
+        </Stack>
+    </Stack>
+  )
+}
+
 const EditableEmbedded = props => {
   const { t } = useTranslation();
   const { onUpdate, onDelete, embedded, processing } = props;
@@ -536,6 +609,11 @@ const EditableMedia = props => {
             onUpdate={onOpen}
             onDelete={onDelete}
           />
+        ) : value.type.startsWith('video') ? (
+          <EditableVideo 
+            video={value}
+            onUpdate={onOpen}
+            onDelete={onDelete}/>
         ) : value.type.startsWith('embedded') ? (
           <EditableEmbedded
             label={label}
