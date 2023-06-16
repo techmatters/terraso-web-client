@@ -29,7 +29,7 @@ export const withProps = (Component, customProps) =>
 export const withWrapper = (Component, Wrapper) =>
   React.forwardRef((props, ref) => {
     return (
-      <Wrapper>
+      <Wrapper {...props}>
         <Component ref={ref} {...props} />
       </Wrapper>
     );
