@@ -39,6 +39,18 @@ const VisualizationPreview = props => {
     },
     [setVisualizationConfig]
   );
+  const onStyleChange = useCallback(
+    style => {
+      setVisualizationConfig(current => ({
+        ...current,
+        viewportConfig: {
+          ...(current.viewportConfig || {}),
+          baseMapStyle: style,
+        },
+      }));
+    },
+    [setVisualizationConfig]
+  );
 
   return (
     <Paper
@@ -63,7 +75,11 @@ const VisualizationPreview = props => {
           )}
         </Typography>
       )}
-      <Visualization onBaseMapChange={onBaseMapChange} {...props} />
+      <Visualization
+        onBaseMapChange={onBaseMapChange}
+        onStyleChange={onStyleChange}
+        {...props}
+      />
     </Paper>
   );
 };
