@@ -99,7 +99,6 @@ const Chapter = ({ theme, record }) => {
   ].join(' ');
 
   const hasVisualMedia = chapterHasVisualMedia(record);
-  console.log(record.media.type)
   return (
     <Box
       id={record.id}
