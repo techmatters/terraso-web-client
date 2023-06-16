@@ -53,7 +53,7 @@ const LandscapePopup = ({ landscape }) => {
   );
 };
 
-const LandscapesMapboxMapClusters = props => {
+const Clusters = props => {
   const { PopupComponent = LandscapePopup } = props;
   const { map } = useMapboxContext();
   const { landscapes } = useSelector(state => state.landscape.list);
@@ -78,7 +78,7 @@ const LandscapesMapboxMapClusters = props => {
       return;
     }
 
-    map.addSource('landscapes', {
+    const source = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
@@ -96,9 +96,9 @@ const LandscapesMapboxMapClusters = props => {
       cluster: true,
       clusterMaxZoom: 14,
       clusterRadius: 50,
-    });
+    };
 
-    map.addLayer({
+    const layerClusters = {
       id: 'clusters',
       type: 'circle',
       source: 'landscapes',
@@ -110,9 +110,9 @@ const LandscapesMapboxMapClusters = props => {
         'circle-stroke-color': '#ff580d',
         'circle-stroke-opacity': 0.5,
       },
-    });
+    };
 
-    map.addLayer({
+    const layerClustersCounts = {
       id: 'cluster-count',
       type: 'symbol',
       source: 'landscapes',
@@ -121,9 +121,9 @@ const LandscapesMapboxMapClusters = props => {
         'text-field': ['get', 'point_count_abbreviated'],
         'text-size': 12,
       },
-    });
+    };
 
-    map.addLayer({
+    const layerUnclusteredPoint = {
       id: 'unclustered-point',
       type: 'circle',
       source: 'landscapes',
@@ -133,10 +133,9 @@ const LandscapesMapboxMapClusters = props => {
         'circle-radius': 7.5,
         'circle-stroke-width': 0,
       },
-    });
+    };
 
-    // inspect a cluster on click
-    map.on('click', 'clusters', e => {
+    const onClusterClick = e => {
       const features = map.queryRenderedFeatures(e.point, {
         layers: ['clusters'],
       });
@@ -153,13 +152,9 @@ const LandscapesMapboxMapClusters = props => {
             zoom: zoom,
           });
         });
-    });
+    };
 
-    // When a click event occurs on a feature in
-    // the unclustered-point layer, open a popup at
-    // the location of the feature, with
-    // description HTML from its properties.
-    map.on('click', 'unclustered-point', e => {
+    const onUnclusteredPointClick = e => {
       const coordinates = e.features[0].geometry.coordinates.slice();
       const data = e.features[0].properties;
 
@@ -176,10 +171,23 @@ const LandscapesMapboxMapClusters = props => {
         coordinates,
         data,
       });
-    });
-
+    };
     const pointer = () => (map.getCanvas().style.cursor = 'pointer');
     const noPointer = () => (map.getCanvas().style.cursor = '');
+
+    map.addSource('landscapes', source);
+    map.addLayer(layerClusters);
+    map.addLayer(layerClustersCounts);
+    map.addLayer(layerUnclusteredPoint);
+
+    // inspect a cluster on click
+    map.on('click', 'clusters', onClusterClick);
+
+    // When a click event occurs on a feature in
+    // the unclustered-point layer, open a popup at
+    // the location of the feature, with
+    // description HTML from its properties.
+    map.on('click', 'unclustered-point', onUnclusteredPointClick);
 
     map.on('mouseenter', 'clusters', pointer);
     map.on('mouseleave', 'clusters', noPointer);
@@ -195,6 +203,14 @@ const LandscapesMapboxMapClusters = props => {
     map.fitBounds(bounds, {
       padding: 50,
     });
+    return () => {
+      map.off('click', 'clusters', onClusterClick);
+      map.off('click', 'unclustered-point', onUnclusteredPointClick);
+      map.off('mouseenter', 'clusters', pointer);
+      map.off('mouseleave', 'clusters', noPointer);
+      map.off('mouseenter', 'unclustered-point', pointer);
+      map.off('mouseleave', 'unclustered-point', noPointer);
+    };
   }, [map, landscapesWithPosition, PopupComponent]);
 
   useEffect(() => {
@@ -230,7 +246,7 @@ const LandscapeListMap = props => {
     <MapboxMap projection="mercator" style={MAPBOX_LANDSCAPE_DIRECTORY_STYLE}>
       <MapboxMapControls />
       <MapboxMapStyleSwitcher />
-      <LandscapesMapboxMapClusters {...props} />
+      <Clusters {...props} />
     </MapboxMap>
   );
 };
