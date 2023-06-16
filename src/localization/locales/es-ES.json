@@ -914,6 +914,7 @@
         "form_media_audio_delete_confirm_button": "Eliminar audio",
         "form_media_video_delete_confirm_title": "Quitar vídeo?",
         "form_media_video_delete_confirm_button": "Quitar vídeo",
+        "form_media_video_delete_confirm_message": "¿Seguro que quieres eliminar este vídeo? Esta acción no se puede deshacer.",
         "form_media_add_dialog_title": "Agregar multimedia",
         "form_media_add_dialog_add": "Agregar multimedia",
         "form_media_add_dialog_close": "Cancelar",

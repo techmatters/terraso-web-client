@@ -909,6 +909,7 @@
         "form_media_audio_delete_confirm_button": "Delete audio",
         "form_media_video_delete_confirm_title": "Remove video?",
         "form_media_video_delete_confirm_button": "Remove video",
+        "form_media_video_delete_confirm_message": "Are you sure you want to delete this video? This action cannot be undone.",
         "form_media_add_dialog_title": "Add media",
         "form_media_add_dialog_add": "Add media",
         "form_media_add_dialog_close": "Cancel",
