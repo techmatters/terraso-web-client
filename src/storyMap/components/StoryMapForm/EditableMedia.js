@@ -487,9 +487,9 @@ const EditableEmbedded = props => {
               minWidth: 'auto',
             },
           }}
-          confirmTitle={t('storyMap.form_media_audio_delete_confirm_title')}
-          confirmMessage={t('storyMap.form_media_audio_delete_confirm_message')}
-          confirmButton={t('storyMap.form_media_audio_delete_confirm_button')}
+          confirmTitle={t('storyMap.form_media_video_delete_confirm_title')}
+          confirmMessage={t('storyMap.form_media_video_delete_confirm_message')}
+          confirmButton={t('storyMap.form_media_video_delete_confirm_button')}
         >
           <DeleteIcon sx={{ color: 'white' }} />
         </ConfirmButton>
