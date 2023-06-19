@@ -28,9 +28,9 @@ import { useVisualizationContext } from 'sharedData/visualization/visualizationC
 import { getImageBitmap } from 'sharedData/visualization/visualizationMarkers';
 
 const PopupContent = props => {
-  const {
-    data: { fields, title },
-  } = props;
+  const { data } = props;
+  const fields = JSON.parse(data.fields);
+  const title = data.title;
 
   return (
     <Box sx={{ p: 1 }}>
@@ -99,7 +99,7 @@ const MapboxSource = props => {
           index,
           position: [lng, lat],
           title: titleColumn && row[titleColumn],
-          fields,
+          fields: JSON.stringify(fields),
         };
       })
       .filter(point => {
@@ -119,32 +119,26 @@ const MapboxSource = props => {
     sampleSize,
   ]);
 
-  const pointsData = useMemo(() => _.keyBy('index', points), [points]);
+  const openPopup = useCallback((feature, event) => {
+    if (!feature) {
+      return;
+    }
+    const coordinates = feature.geometry.coordinates;
 
-  const openPopup = useCallback(
-    (index, event) => {
-      const point = pointsData[index];
-      if (!point) {
-        return;
+    if (event) {
+      // Ensure that if the map is zoomed out such that
+      // multiple copies of the feature are visible, the
+      // popup appears over the copy being pointed to.
+      while (Math.abs(event.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
       }
-      const coordinates = point.position;
+    }
 
-      if (event) {
-        // Ensure that if the map is zoomed out such that
-        // multiple copies of the feature are visible, the
-        // popup appears over the copy being pointed to.
-        while (Math.abs(event.lngLat.lng - coordinates[0]) > 180) {
-          coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
-        }
-      }
-
-      setPopupData({
-        coordinates,
-        index,
-      });
-    },
-    [pointsData]
-  );
+    setPopupData({
+      coordinates,
+      data: feature.properties,
+    });
+  }, []);
 
   const geoJson = useMemo(
     () => ({
@@ -155,9 +149,7 @@ const MapboxSource = props => {
           type: 'Point',
           coordinates: point.position,
         },
-        properties: {
-          index: point.index,
-        },
+        properties: point,
       })),
     }),
     [points]
@@ -243,9 +235,7 @@ const MapboxSource = props => {
     const pointer = () => (map.getCanvas().style.cursor = 'pointer');
     const noPointer = () => (map.getCanvas().style.cursor = '');
     const onUnclusteredPointClick = event => {
-      const { index } = event.features[0].properties;
-
-      openPopup(index, event);
+      openPopup(event.features[0], event);
     };
     map.on('click', 'visualization', onUnclusteredPointClick);
     map.on('mouseenter', 'visualization', pointer);
@@ -263,12 +253,12 @@ const MapboxSource = props => {
     if (!showPopup) {
       return;
     }
-    openPopup(geoJson.features[0].properties.index);
+    openPopup(geoJson.features[0]);
   }, [showPopup, geoJson.features, openPopup]);
 
   return (
     <Portal container={popupContainer}>
-      {popupData?.index && <PopupContent data={pointsData[popupData.index]} />}
+      {popupData?.data && <PopupContent data={popupData.data} />}
     </Portal>
   );
 };
