@@ -14,24 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useEffect, useMemo, useState } from 'react';
-// import L from 'leaflet';
-// import _ from 'lodash/fp';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import _ from 'lodash/fp';
 import * as SheetsJs from 'xlsx';
-// import Map from 'gis/components/Map';
 import mapboxgl from 'gis/mapbox';
 import './Visualization.css';
-// import { useTranslation } from 'react-i18next';
-// import {
-//   Marker as BaseMarker,
-//   FeatureGroup,
-//   Popup,
-//   useMap,
-// } from 'react-leaflet';
-// import logger from 'terrasoApi/shared/monitoring/logger';
-// import { useDebounce } from 'use-debounce';
-// import { useDebounce } from 'use-debounce';
-// import { Box, Stack, Typography } from '@mui/material';
+import { Box, Portal, Stack, Typography } from '@mui/material';
 import MapboxMap, { useMap as useMapboxMap } from 'gis/components/MapboxMap';
 import MapboxMapControls from 'gis/components/MapboxMapControls';
 import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';
@@ -39,183 +27,50 @@ import { normalizeLongitude } from 'gis/gisUtils';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 import { getImageBitmap } from 'sharedData/visualization/visualizationMarkers';
 
-// const Marker = props => {
-//   const { t } = useTranslation();
-//   const { point, index, icon } = props;
+const PopupContent = props => {
+  const {
+    data: { fields, title },
+  } = props;
 
-//   const showPopup = point.title || !_.isEmpty(point.fields);
-//   return (
-//     <BaseMarker
-//       key={index}
-//       position={point.position}
-//       icon={icon}
-//       alt={point.title || `${t('gis.default_marker_label')} ${index + 1}`}
-//     >
-//       {showPopup && (
-//         <Popup
-//           className="visualization-marker-popup"
-//           closeButton={false}
-//           maxHeight={150}
-//         >
-//           <Box sx={{ p: 1 }}>
-//             {point.title && (
-//               <Typography
-//                 variant="h6"
-//                 component="h2"
-//                 gutterBottom
-//                 sx={{ fontSize: '1rem' }}
-//               >
-//                 {point.title}
-//               </Typography>
-//             )}
-//             <Stack spacing={1}>
-//               {point.fields.map((field, index) => (
-//                 <Stack key={index} direction="row" spacing={1}>
-//                   <Typography sx={{ fontSize: '0.8rem' }}>
-//                     {field.label}: {_.toString(field.value)}
-//                   </Typography>
-//                 </Stack>
-//               ))}
-//             </Stack>
-//           </Box>
-//         </Popup>
-//       )}
-//     </BaseMarker>
-//   );
-// };
-
-// const Markers = props => {
-//   const featureGroupRef = useRef();
-//   const map = useMap();
-//   const { visualizationConfig, rows, sampleSize, icon, setSampleMarker } =
-//     props;
-//   const { datasetConfig, annotateConfig } = visualizationConfig || {};
-
-//   useEffect(() => {
-//     const viewportBounds = visualizationConfig?.viewportConfig?.bounds;
-//     const featureGroupBounds = featureGroupRef.current?.getBounds();
-
-//     if (!viewportBounds && !featureGroupBounds) {
-//       return;
-//     }
-
-//     const bounds = (() => {
-//       if (!viewportBounds) {
-//         return featureGroupBounds;
-//       }
-
-//       const southWest = viewportBounds.southWest;
-//       const northEast = viewportBounds.northEast;
-//       if (!southWest || !northEast) {
-//         return featureGroupBounds;
-//       }
-
-//       return [
-//         [southWest.lat, southWest.lng],
-//         [northEast.lat, northEast.lng],
-//       ];
-//     })();
-//     map.fitBounds(bounds, { padding: [30, 30] });
-//   }, [visualizationConfig?.viewportConfig?.bounds, map]);
-
-//   useEffect(() => {
-//     if (!map || !featureGroupRef.current) {
-//       return;
-//     }
-//     if (setSampleMarker) {
-//       const markers = featureGroupRef.current.getLayers();
-//       if (!_.isEmpty(markers)) {
-//         setSampleMarker(markers[0]);
-//       }
-//     }
-//   }, [map, setSampleMarker]);
-
-//   if (!datasetConfig) {
-//     return null;
-//   }
-
-//   const dataPoints = _.getOr([], 'dataPoints', annotateConfig);
-//   const points = rows
-//     .map(row => {
-//       const lat = parseFloat(row[datasetConfig.latitude]);
-//       const lng = normalizeLongitude(parseFloat(row[datasetConfig.longitude]));
-
-//       const titleColumn = annotateConfig?.annotationTitle;
-
-//       const fields = dataPoints.map(dataPoint => ({
-//         label: dataPoint.label || dataPoint.column,
-//         value: row[dataPoint.column],
-//       }));
-
-//       return {
-//         position: [lat, lng],
-//         title: titleColumn && row[titleColumn],
-//         fields,
-//       };
-//     })
-//     .filter(point => point)
-//     .slice(0, sampleSize);
-
-//   return (
-//     <FeatureGroup ref={featureGroupRef}>
-//       {points.map((point, index) => (
-//         <Marker key={index} point={point} icon={icon} index={index} />
-//       ))}
-//     </FeatureGroup>
-//   );
-// };
-
-// const getMarkerIcon = visualizeConfig => {
-//   if (!visualizeConfig) {
-//     return null;
-//   }
-//   const { shape, size, color } = visualizeConfig;
-//   const imageData = getImageData({ shape, size, color });
-//   return new L.icon({
-//     className: 'visualization-preview-marker-image',
-//     iconUrl: imageData,
-//     iconSize: [size, size],
-//   });
-// };
-
-// const OpenSamplePopup = ({ marker }) => {
-//   const map = useMap();
-//   useEffect(() => {
-//     if (!marker) {
-//       return;
-//     }
-//     marker.openPopup();
-//   }, [map, marker]);
-//   return null;
-// };
-
-// const SetBaseLayer = props => {
-//   const { map, changeStyle } = useMapboxMap();
-//   const { visualizationConfig } = props;
-
-//   useEffect(() => {
-//     if (!map) {
-//       return;
-//     }
-//     const baseMapStyle = visualizationConfig?.viewportConfig?.baseMapStyle;
-//     if (!baseMapStyle) {
-//       return;
-//     }
-
-//     changeStyle(baseMapStyle);
-//   }, [map, changeStyle, visualizationConfig?.viewportConfig?.baseMapStyle]);
-//   return null;
-// };
-
-// const debouncedGetImageBitmap = _.debounce(100, function (...args) {
-//   return getImageBitmap(...args);
-// });
-
+  return (
+    <Box sx={{ p: 1 }}>
+      {title && (
+        <Typography
+          variant="h6"
+          component="h2"
+          gutterBottom
+          sx={{ fontSize: '1rem' }}
+        >
+          {title}
+        </Typography>
+      )}
+      <Stack spacing={1}>
+        {fields.map((field, index) => (
+          <Stack key={index} direction="row" spacing={1}>
+            <Typography sx={{ fontSize: '0.8rem' }}>
+              {field.label}: {_.toString(field.value)}
+            </Typography>
+          </Stack>
+        ))}
+      </Stack>
+    </Box>
+  );
+};
 const MapboxSource = props => {
-  const { rows, visualizationConfig, sampleSize } = props;
+  const { rows, visualizationConfig, sampleSize, showPopup } = props;
   const { map } = useMapboxMap();
   const { datasetConfig, annotateConfig } = visualizationConfig || {};
   const [imageBitmap, setImageBitmap] = useState();
+  const [popupData, setPopupData] = useState(null);
+  const popupContainer = useMemo(() => document.createElement('div'), []);
+
+  const popup = useMemo(
+    () =>
+      new mapboxgl.Popup({
+        className: 'visualization-marker-popup',
+      }).setDOMContent(popupContainer),
+    [popupContainer]
+  );
 
   useEffect(() => {
     if (!visualizationConfig?.visualizeConfig) {
@@ -227,7 +82,7 @@ const MapboxSource = props => {
   const points = useMemo(() => {
     const dataPoints = annotateConfig?.dataPoints || [];
     return rows
-      .map(row => {
+      .map((row, index) => {
         const lat = parseFloat(row[datasetConfig.latitude]);
         const lng = normalizeLongitude(
           parseFloat(row[datasetConfig.longitude])
@@ -241,12 +96,12 @@ const MapboxSource = props => {
         }));
 
         return {
+          index,
           position: [lng, lat],
           title: titleColumn && row[titleColumn],
           fields,
         };
       })
-      .filter(point => point)
       .filter(point => {
         try {
           new mapboxgl.LngLat(...point.position);
@@ -264,6 +119,35 @@ const MapboxSource = props => {
     sampleSize,
   ]);
 
+  const pointsData = useMemo(() => _.keyBy('index', points), [points]);
+
+  const openPopup = useCallback(
+    (index, event) => {
+      const point = pointsData[index];
+      console.log({ pointsData, index });
+      if (!point) {
+        return;
+      }
+      const coordinates = point.position;
+
+      if (event) {
+        // Ensure that if the map is zoomed out such that
+        // multiple copies of the feature are visible, the
+        // popup appears over the copy being pointed to.
+        while (Math.abs(event.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+      }
+
+      console.log({ coordinates, index });
+      setPopupData({
+        coordinates,
+        index,
+      });
+    },
+    [pointsData]
+  );
+
   const geoJson = useMemo(
     () => ({
       type: 'FeatureCollection',
@@ -273,7 +157,9 @@ const MapboxSource = props => {
           type: 'Point',
           coordinates: point.position,
         },
-        properties: point,
+        properties: {
+          index: point.index,
+        },
       })),
     }),
     [points]
@@ -356,13 +242,46 @@ const MapboxSource = props => {
 
     map.addImage('custom-marker', imageBitmap);
     map.addLayer(layer);
-  }, [map, geoJson, imageBitmap]);
+    const pointer = () => (map.getCanvas().style.cursor = 'pointer');
+    const noPointer = () => (map.getCanvas().style.cursor = '');
+    const onUnclusteredPointClick = event => {
+      const { index } = event.features[0].properties;
+
+      openPopup(index, event);
+    };
+    map.on('click', 'visualization', onUnclusteredPointClick);
+    map.on('mouseenter', 'visualization', pointer);
+    map.on('mouseleave', 'visualization', noPointer);
+  }, [map, geoJson, imageBitmap, openPopup]);
+
+  useEffect(() => {
+    if (!map || !popupData?.coordinates) {
+      return;
+    }
+    popup.setLngLat(popupData?.coordinates).addTo(map);
+  }, [popup, popupData?.coordinates, map]);
+
+  useEffect(() => {
+    if (!showPopup) {
+      return;
+    }
+    // setTimeout(() => {
+    console.log('showPopup', showPopup);
+    openPopup(geoJson.features[0].properties.index);
+    // }, 3000);
+  }, [showPopup, geoJson.features, openPopup]);
+
+  return (
+    <Portal container={popupContainer}>
+      {popupData?.index && <PopupContent data={pointsData[popupData.index]} />}
+    </Portal>
+  );
 };
 
 const Visualization = props => {
   const {
     customConfig,
-    // showPopup = false,
+    showPopup = false,
     sampleSize,
     onBoundsChange,
     onStyleChange,
@@ -371,7 +290,6 @@ const Visualization = props => {
   const visualizationContext = useVisualizationContext();
   const { sheetContext } = useVisualizationContext();
   const { sheet, colCount, rowCount } = sheetContext;
-  // const [sampleMarker, setSampleMarker] = useState();
 
   const visualizationConfig = useMemo(
     () => ({
@@ -419,28 +337,10 @@ const Visualization = props => {
           visualizationConfig={visualizationConfig}
           rows={rows}
           sampleSize={sampleSize}
-          // setSampleMarker={setSampleMarker}
+          showPopup={showPopup}
         />
         {/* {children} */}
       </MapboxMap>
-      {/* <Map
-        onBoundsChange={onBoundsChange}
-        onBaseMapChange={onBaseMapChange}
-        style={{
-          width: '100%',
-          height: '400px',
-        }}
-      >
-        <Markers
-          visualizationConfig={visualizationConfig}
-          rows={rows}
-          sampleSize={sampleSize}
-          icon={icon}
-          setSampleMarker={setSampleMarker}
-        />
-        {showPopup && <OpenSamplePopup marker={sampleMarker} />}
-        {children}
-      </Map> */}
     </>
   );
 };
