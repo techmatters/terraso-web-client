@@ -50,7 +50,7 @@
     "slate-history": "^0.93.0",
     "slate-hyperscript": "^0.77.0",
     "slate-react": "^0.95.0",
-    "terraso-client-shared": "github:techmatters/terraso-client-shared#bea5c43",
+    "terraso-client-shared": "github:techmatters/terraso-client-shared#7446334",
     "use-debounce": "^9.0.4",
     "uuid": "^9.0.0",
     "web-vitals": "^3.3.1",
@@ -109,7 +109,6 @@
     "serve": "^14.2.0",
     "stylelint": "^15.7.0",
     "stylelint-prettier": "^3.0.0",
-    "terraso-backend": "techmatters/terraso-backend#d1a9923",
     "typescript": "^5.0.4"
   },
   "jest": {
