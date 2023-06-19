@@ -276,7 +276,7 @@
         "view_update_button": "Update Description",
         "list_join_button": "Join",
         "list_leave_button": "Leave",
-        "list_join_label": "Connect: {{name}}",
+        "list_join_label": "Join: {{name}}",
         "list_leave_label": "Leave: {{name}}",
         "list_new_button": "Add Landscape",
         "members_remove_confirmation_button": "Remove Member",
