@@ -285,7 +285,7 @@ const Visualization = props => {
     sampleSize,
     onBoundsChange,
     onStyleChange,
-    // children,
+    children,
   } = props;
   const visualizationContext = useVisualizationContext();
   const { sheetContext } = useVisualizationContext();
@@ -339,7 +339,7 @@ const Visualization = props => {
           sampleSize={sampleSize}
           showPopup={showPopup}
         />
-        {/* {children} */}
+        {children}
       </MapboxMap>
     </>
   );

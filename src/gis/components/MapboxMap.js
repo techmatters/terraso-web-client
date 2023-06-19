@@ -204,6 +204,7 @@ const MapboxMap = props => {
       center,
       hash,
       attributionControl,
+      preserveDrawingBuffer: true,
       ...(initialLocation ? initialLocation : {}),
     });
 

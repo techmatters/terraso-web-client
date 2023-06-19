@@ -95,7 +95,7 @@ const VisualizationWrapper = props => {
   };
 
   const handleDownloadPng = useCallback(() => {
-    imagePrinter.printMap('CurrentSize', mapTitle);
+    imagePrinter(mapTitle);
   }, [imagePrinter, mapTitle]);
 
   const onDelete = () => {

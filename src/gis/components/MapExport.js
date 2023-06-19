@@ -14,33 +14,34 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { useEffect } from 'react';
-import L from 'leaflet';
-import 'leaflet-easyprint';
-import { useMap } from 'react-leaflet';
+import { useCallback, useEffect } from 'react';
+import { useMap } from './MapboxMap';
 
 const MapExport = props => {
   const { onImagePrinterChange } = props;
-  const map = useMap();
+  const { map } = useMap();
+
+  const download = useCallback(
+    title => {
+      if (!map) {
+        return;
+      }
+
+      const canvas = map.getCanvas();
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL();
+      link.download = `${title}.png`;
+      link.click();
+    },
+    [map]
+  );
 
   useEffect(() => {
-    const control = new L.Control.EasyPrint({
-      position: 'bottomright',
-      sizeModes: ['Current'],
-      exportOnly: true,
-      hideControlContainer: true,
-    });
-    map.addControl(control);
-    onImagePrinterChange(control);
-
-    const container = control.getContainer();
-
-    // Hide donwload button in map
-    container.getElementsByTagName('a')[0].classList.add('visually-hidden');
-    return () => {
-      map.removeControl(control);
-    };
-  }, [map, onImagePrinterChange]);
+    if (!map) {
+      return;
+    }
+    onImagePrinterChange(() => download);
+  }, [map, onImagePrinterChange, download]);
 
   return null;
 };
