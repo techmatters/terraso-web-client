@@ -124,7 +124,6 @@ const MapboxSource = props => {
   const openPopup = useCallback(
     (index, event) => {
       const point = pointsData[index];
-      console.log({ pointsData, index });
       if (!point) {
         return;
       }
@@ -139,7 +138,6 @@ const MapboxSource = props => {
         }
       }
 
-      console.log({ coordinates, index });
       setPopupData({
         coordinates,
         index,
@@ -265,10 +263,6 @@ const MapboxSource = props => {
     if (!showPopup) {
       return;
     }
-    // setTimeout(() => {
-    console.log('showPopup', showPopup);
-    openPopup(geoJson.features[0].properties.index);
-    // }, 3000);
   }, [showPopup, geoJson.features, openPopup]);
 
   return (
