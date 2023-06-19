@@ -263,6 +263,7 @@ const MapboxSource = props => {
     if (!showPopup) {
       return;
     }
+    openPopup(geoJson.features[0].properties.index);
   }, [showPopup, geoJson.features, openPopup]);
 
   return (
