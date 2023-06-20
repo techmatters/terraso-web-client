@@ -22,6 +22,7 @@ import React, {
   useState,
 } from 'react';
 import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
 import { Box } from '@mui/material';
 import mapboxgl from 'gis/mapbox';
 import {
@@ -191,6 +192,7 @@ const MapboxMap = props => {
     onBoundsChange,
     children,
   } = props;
+  const { i18n } = useTranslation();
   const { map, setMap } = useMap();
   const mapContainer = useRef(null);
 
@@ -250,6 +252,21 @@ const MapboxMap = props => {
       map.on('moveend', onMoveListener);
     };
   }, [map, onBoundsChange]);
+
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+    const language = i18n.language.split('-')[0];
+    map.setLayoutProperty('country-label', 'text-field', [
+      'get',
+      `name_${language}`,
+    ]);
+    map.setLayoutProperty('continent-label', 'text-field', [
+      'get',
+      `name_${language}`,
+    ]);
+  }, [map, i18n.language]);
 
   return (
     <Box
