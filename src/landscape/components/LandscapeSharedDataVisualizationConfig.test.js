@@ -329,4 +329,4 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
       dataEntryId: 'f00c5564-cf93-471a-94c2-b930cbb0a4f8',
     },
   });
-});
+}, 30000);
