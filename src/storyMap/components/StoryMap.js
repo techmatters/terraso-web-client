@@ -124,7 +124,7 @@ const Chapter = ({ theme, record }) => {
             <Video record={record} />
           ) : record.media.type.startsWith('audio') ? (
             <Audio record={record} />
-          ): record.media.type.startsWith('embedded') ? (
+          ) : record.media.type.startsWith('embedded') ? (
             <iframe
               title={record.media.title}
               src={record.media.url}
