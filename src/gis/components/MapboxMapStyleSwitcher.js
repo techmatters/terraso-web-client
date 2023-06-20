@@ -94,10 +94,16 @@ const MapboxMapStyleSwitcher = () => {
     <Portal container={container}>
       <Stack alignItems="flex-end">
         <Button
+          size="small"
           className="mapboxgl-ctrl-group mapboxgl-ctrl"
           variant="outlined"
           aria-label={t('gis.mapbox_style_switcher_label')}
           onClick={handleClick}
+          sx={{
+            minWidth: 'auto',
+            border: 'none',
+            '&:hover': { border: 'none' },
+          }}
         >
           <LayersIcon />
         </Button>
