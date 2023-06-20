@@ -221,7 +221,7 @@ test('LandscapeList: Display list', async () => {
   );
   expect(
     within(rows[2])
-      .getByRole('button', { name: 'Connect: Landscape Name 1' })
+      .getByRole('button', { name: 'Join: Landscape Name 1' })
       .closest('[role="cell"]')
   ).toHaveAttribute('data-field', 'actions');
   expect(
