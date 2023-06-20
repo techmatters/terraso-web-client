@@ -96,7 +96,7 @@ const MapboxMapStyleSwitcher = () => {
         <Button
           className="mapboxgl-ctrl-group mapboxgl-ctrl"
           variant="outlined"
-          aria-label="TODO"
+          aria-label={t('gis.mapbox_style_switcher_label')}
           onClick={handleClick}
         >
           <LayersIcon />
@@ -108,7 +108,7 @@ const MapboxMapStyleSwitcher = () => {
           onClose={handleClose}
           MenuListProps={{
             dense: true,
-            'aria-labelledby': 'TODO',
+            'aria-label': t('gis.mapbox_style_switcher_label'),
           }}
         >
           {MAPBOX_STYLES.map(({ style, titleKey }) => (

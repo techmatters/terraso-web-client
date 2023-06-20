@@ -762,6 +762,7 @@
         "invalid_shapefile": "The file {{name}} is not a valid shapefile",
         "invalid_kml_file": "The file {{name}} is not a valid KML file",
         "invalid_kmz_file": "The file {{name}} is not a valid KMZ file",
+        "mapbox_style_switcher_label": "Base map",
         "mapbox_style_streets": "Streets",
         "mapbox_style_satellite": "Satellite",
         "mapbox_style_outdoors": "Outdoors",
