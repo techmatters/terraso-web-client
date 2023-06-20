@@ -23,5 +23,5 @@
   background: #666666;
   color: #ffffff;
   max-height: 150px;
-  overflow: scroll;
+  overflow: auto;
 }
