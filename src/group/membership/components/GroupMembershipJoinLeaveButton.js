@@ -19,7 +19,7 @@ import _ from 'lodash/fp';
 import {
   joinMembershipList,
   leaveMembershipList,
-} from 'terrasoApi/shared/memberships/membershipsSlice';
+} from 'terraso-client-shared/memberships/membershipsSlice';
 import { useDispatch, useSelector } from 'terrasoApi/store';
 import { useAnalytics } from 'monitoring/analytics';
 import { useGroupContext } from 'group/groupContext';

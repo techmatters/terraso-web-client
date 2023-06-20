@@ -19,7 +19,7 @@ import React from 'react';
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 import { useSearchParams } from 'react-router-dom';
-import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import mapboxgl from 'gis/mapbox';
 import LandscapeList from 'landscape/components/LandscapeList';
@@ -30,7 +30,7 @@ const GEOJSON =
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850
 global.console.error = jest.fn();
 
-jest.mock('terrasoApi/shared/terrasoApi/api');
+jest.mock('terraso-client-shared/terrasoApi/api');
 
 jest.mock('gis/mapbox', () => ({}));
 

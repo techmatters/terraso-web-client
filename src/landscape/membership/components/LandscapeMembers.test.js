@@ -18,14 +18,14 @@ import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
-import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
 
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850
 global.console.error = jest.fn();
 
-jest.mock('terrasoApi/shared/terrasoApi/api');
+jest.mock('terraso-client-shared/terrasoApi/api');
 
 jest.mock('@mui/material/useMediaQuery');
 

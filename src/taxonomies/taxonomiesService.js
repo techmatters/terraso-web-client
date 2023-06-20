@@ -15,8 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
-import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
 import { extractTerms } from './taxonomiesUtils';
 
 export const fetchTermsForTypes = ({ types }) => {

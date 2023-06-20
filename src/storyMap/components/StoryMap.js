@@ -24,7 +24,7 @@ import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
 import { MAPBOX_ACCESS_TOKEN, STORY_MAP_INSET_STYLE } from 'config';
 import { ALIGNMENTS, LAYER_TYPES } from '../storyMapConstants';
 import './StoryMap.css';
-import logger from 'terrasoApi/shared/monitoring/logger';
+import logger from 'terraso-client-shared/monitoring/logger';
 import MapboxMap from 'gis/components/MapboxMap';
 import StoryMapOutline from './StoryMapOutline';
 import theme from 'theme';

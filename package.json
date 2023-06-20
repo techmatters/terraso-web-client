@@ -2,7 +2,9 @@
   "name": "terraso-web-client",
   "version": "0.1.0",
   "private": true,
-  "sideEffects": ["src/config.ts"],
+  "sideEffects": [
+    "src/config.ts"
+  ],
   "dependencies": {
     "@hookform/resolvers": "^3.1.0",
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
@@ -48,6 +50,7 @@
     "slate-history": "^0.93.0",
     "slate-hyperscript": "^0.77.0",
     "slate-react": "^0.95.0",
+    "terraso-client-shared": "github:techmatters/terraso-client-shared#c759711",
     "use-debounce": "^9.0.4",
     "uuid": "^9.0.0",
     "web-vitals": "^3.3.1",
@@ -67,7 +70,7 @@
     "lint-css": "stylelint --fix --config=.stylelintrc '**/*.css'",
     "build": "npm run generate-types && react-scripts build",
     "build-serve": "serve -s build",
-    "test": "npm run generate-types & react-scripts test --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
+    "test": "npm run generate-types && react-scripts test --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
     "test-debug": "npm run generate-types && react-scripts --inspect-brk test --runInBand --no-cache --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
     "test-coverage": "npm run generate-types && react-scripts test --coverage --changedSince=origin/main --watchAll=false --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
     "localization-to-po": "node scripts/localization/transform-to.js po",
@@ -106,7 +109,6 @@
     "serve": "^14.2.0",
     "stylelint": "^15.7.0",
     "stylelint-prettier": "^3.0.0",
-    "terraso-backend": "techmatters/terraso-backend#d1a9923",
     "typescript": "^5.0.4"
   },
   "jest": {
@@ -126,7 +128,10 @@
   },
   "graphql": {
     "schema": "node_modules/terraso-backend/terraso_backend/apps/graphql/schema/schema.graphql",
-    "documents": "src/**/*.{js,ts,tsx}",
+    "documents": [
+      "src/**/*.{js,ts,tsx}",
+      "node_modules/terraso-client-shared/src/**/*Fragments.ts"
+    ],
     "extensions": {
       "codegen": {
         "generates": {

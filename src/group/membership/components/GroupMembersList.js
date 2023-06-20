@@ -23,8 +23,8 @@ import {
   fetchMembers,
   removeMember,
   updateMember,
-} from 'terrasoApi/shared/memberships/membershipsSlice';
-import { useFetchData } from 'terrasoApi/shared/store/utils';
+} from 'terraso-client-shared/memberships/membershipsSlice';
+import { useFetchData } from 'terraso-client-shared/store/utils';
 import { useDispatch, useSelector } from 'terrasoApi/store';
 import { LoadingButton } from '@mui/lab';
 import { ListItem, MenuItem, Select, Stack, Typography } from '@mui/material';

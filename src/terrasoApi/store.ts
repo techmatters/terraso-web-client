@@ -22,7 +22,7 @@ import {
 import createStoreFactory, {
   DispatchFromStoreFactory,
   StateFromStoreFactory,
-} from 'terrasoApi/shared/store/store';
+} from 'terraso-client-shared/store/store';
 import gisReducer from 'gis/gisSlice';
 import groupReducer from 'group/groupSlice';
 import userHomeReducer from 'home/homeSlice';

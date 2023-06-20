@@ -15,7 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import Cookies from 'js-cookie';
-import { setAPIConfig } from 'terrasoApi/shared/config';
+import { setAPIConfig } from 'terraso-client-shared/config';
+import type { Severity } from 'terraso-client-shared/monitoring/logger';
 import { rollbar } from 'monitoring/rollbar';
 
 export const TERRASO_ENV = process.env.REACT_APP_TERRASO_ENV || 'local';
@@ -43,7 +44,7 @@ setAPIConfig({
     removeToken: name => Cookies.remove(name, COOKIES_PARAMS),
     setToken: (name, token) => Cookies.set(name, token, COOKIES_PARAMS),
   },
-  logger: (severity, ...args) => rollbar[severity](...args),
+  logger: (severity: Severity, ...args) => rollbar[severity](...args),
 });
 
 export const WAIT_FOR_TIMEOUT = process.env.REACT_APP_WAIT_FOR_TIMEOUT || 3000;

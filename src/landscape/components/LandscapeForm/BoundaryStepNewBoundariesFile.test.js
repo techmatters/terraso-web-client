@@ -18,10 +18,10 @@ import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
-import * as terrasoApi from 'terrasoApi/shared/terrasoApi/api';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import LandscapeNew from 'landscape/components/LandscapeForm/New';
 
-jest.mock('terrasoApi/shared/terrasoApi/api');
+jest.mock('terraso-client-shared/terrasoApi/api');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
