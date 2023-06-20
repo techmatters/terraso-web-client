@@ -67,3 +67,12 @@ export const getImageBitmap = ({ shape, size, color }) => {
     createImageBitmap(blob)
   );
 };
+
+export const getImage = ({ shape, size, color }) =>
+  new Promise((resolve, reject) => {
+    let img = new Image(size, size);
+    img.onload = () => resolve(img);
+    const svg = iconsSvg({ shape, size, color });
+    const base64 = btoa(svg);
+    img.src = `data:image/svg+xml;base64,${base64}`;
+  });

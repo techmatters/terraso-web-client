@@ -25,7 +25,7 @@ import MapboxMapControls from 'gis/components/MapboxMapControls';
 import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';
 import { normalizeLongitude } from 'gis/gisUtils';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
-import { getImageBitmap } from 'sharedData/visualization/visualizationMarkers';
+import { getImage } from 'sharedData/visualization/visualizationMarkers';
 
 const PopupContent = props => {
   const { data } = props;
@@ -60,7 +60,7 @@ const MapboxSource = props => {
   const { rows, visualizationConfig, sampleSize, showPopup } = props;
   const { map } = useMapboxMap();
   const { datasetConfig, annotateConfig } = visualizationConfig || {};
-  const [imageBitmap, setImageBitmap] = useState();
+  const [imageSvg, setimageSvg] = useState();
   const [popupData, setPopupData] = useState(null);
   const popupContainer = useMemo(() => document.createElement('div'), []);
 
@@ -76,7 +76,7 @@ const MapboxSource = props => {
     if (!visualizationConfig?.visualizeConfig) {
       return;
     }
-    getImageBitmap(visualizationConfig?.visualizeConfig).then(setImageBitmap);
+    getImage(visualizationConfig?.visualizeConfig).then(setimageSvg);
   }, [visualizationConfig?.visualizeConfig]);
 
   const points = useMemo(() => {
@@ -199,7 +199,7 @@ const MapboxSource = props => {
   }, [map, geoJsonBounds, visualizationConfig?.viewportConfig?.bounds]);
 
   useEffect(() => {
-    if (!map || !geoJson || !imageBitmap) {
+    if (!map || !geoJson || !imageSvg) {
       return;
     }
 
@@ -230,7 +230,8 @@ const MapboxSource = props => {
       geojsonSource.setData(geoJson);
     }
 
-    map.addImage('custom-marker', imageBitmap);
+    console.log('imageSvg', imageSvg);
+    map.addImage('custom-marker', imageSvg);
     map.addLayer(layer);
     const pointer = () => (map.getCanvas().style.cursor = 'pointer');
     const noPointer = () => (map.getCanvas().style.cursor = '');
@@ -240,7 +241,7 @@ const MapboxSource = props => {
     map.on('click', 'visualization', onUnclusteredPointClick);
     map.on('mouseenter', 'visualization', pointer);
     map.on('mouseleave', 'visualization', noPointer);
-  }, [map, geoJson, imageBitmap, openPopup]);
+  }, [map, geoJson, imageSvg, openPopup]);
 
   useEffect(() => {
     if (!map || !popupData?.coordinates) {
