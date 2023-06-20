@@ -753,8 +753,6 @@
         "openstreetmap_api_error": "Failed to request data from nominatim.openstreetmap.org API",
         "map_search_placeholder": "Enter a city, town or region",
         "map_search_clear": "Clear search",
-        "map_layer_streets": "Streets",
-        "map_layer_satellite": "Satellite",
         "default_marker_label": "Marker",
         "latitude": "latitude",
         "longitude": "longitude",
@@ -764,6 +762,12 @@
         "invalid_shapefile": "The file {{name}} is not a valid shapefile",
         "invalid_kml_file": "The file {{name}} is not a valid KML file",
         "invalid_kmz_file": "The file {{name}} is not a valid KMZ file",
+        "mapbox_style_streets": "Streets",
+        "mapbox_style_satellite": "Satellite",
+        "mapbox_style_outdoors": "Outdoors",
+        "mapbox_style_light": "Light",
+        "mapbox_style_dark": "Dark",
+        "mapbox_style_osm": "OpenStreetMap",
         "map_draw": {
             "draw": {
                 "toolbar": {

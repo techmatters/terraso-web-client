@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import LayersIcon from '@mui/icons-material/Layers';
 import { Button, Menu, MenuItem, Portal, Stack } from '@mui/material';
 import { MAPBOX_STYLES } from './MapboxConstants';
@@ -40,6 +41,7 @@ class HelloWorldControl {
 }
 
 const MapboxMapStyleSwitcher = () => {
+  const { t } = useTranslation();
   const { map, changeStyle } = useMap();
   const [container, setContainer] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -109,13 +111,13 @@ const MapboxMapStyleSwitcher = () => {
             'aria-labelledby': 'TODO',
           }}
         >
-          {MAPBOX_STYLES.map(({ style, title }) => (
+          {MAPBOX_STYLES.map(({ style, titleKey }) => (
             <MenuItem
-              key={title}
-              onClick={handleChangeStyle(title, style)}
-              selected={styleName === title}
+              key={titleKey}
+              onClick={handleChangeStyle(titleKey, style)}
+              selected={styleName === titleKey}
             >
-              {title}
+              {t(titleKey)}
             </MenuItem>
           ))}
         </Menu>
