@@ -259,6 +259,7 @@
         "add": "Agregar un paisaje",
         "home_title": "Paisajes",
         "home_default_title": "Paisaje",
+        "home_popover": "Un paisaje es un territorio definido por límites naturales o administrativos, en el que las personas y la naturaleza conviven. Está influenciado por procesos y actividades ecológicas, históricas, económicas y socioculturales que tienen lugar dentro y adyacentes a la región.",
         "form_edit_title": "Actualizar el paisaje “{{name}}”",
         "form_new_title": "Nombre y descripción del paisaje",
         "form_new_description": "Ingresa el nombre, la descripción y la información de contacto de tu paisaje.",

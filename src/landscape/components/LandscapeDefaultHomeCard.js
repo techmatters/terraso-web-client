@@ -36,6 +36,7 @@ const LandscapeDefaultHomeCard = () => {
         to: '/landscapes',
       }}
       showActionsAsButtons
+      helperText={t('landscape.home_popover')}
     >
       <Box display="flex" alignItems="center">
         <Trans i18nKey="landscape.default_content">

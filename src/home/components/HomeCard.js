@@ -25,6 +25,7 @@ import {
   Typography,
 } from '@mui/material';
 import CardActionRouterLink from 'common/components/CardActionRouterLink';
+import HelperText from 'common/components/HelperText';
 import RouterButton from 'common/components/RouterButton';
 import RouterLink from 'common/components/RouterLink';
 
@@ -33,6 +34,7 @@ const HomeCard = ({
   action,
   image,
   children,
+  helperText,
   showActionAsButton = false,
   titleId,
   contentBackgroundColor = 'blue.lite2',
@@ -46,13 +48,20 @@ const HomeCard = ({
     }}
   >
     <Stack direction="column" sx={{ p: 2 }}>
-      <Typography
-        id={titleId}
-        variant="h2"
-        sx={{ pt: 0, pb: 2, textTransform: 'uppercase' }}
-      >
-        {title}
-      </Typography>
+      <Stack direction="row">
+        <Typography
+          id={titleId}
+          variant="h2"
+          sx={{ pt: 0, pb: 2, textTransform: 'uppercase' }}
+        >
+          {title}
+        </Typography>
+        {helperText && (
+          <Box sx={{ alignItems: 'center' }}>
+            <HelperText i18nKey={helperText} />
+          </Box>
+        )}
+      </Stack>
       <Box sx={{ alignItems: 'center' }}>
         <Stack
           direction="row"

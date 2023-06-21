@@ -81,6 +81,7 @@ const LandscapesHomeCard = ({ landscapes }) => {
         to: '/landscapes',
       }}
       contentBackgroundColor="white"
+      helperText={t('landscape.home_popover')}
     >
       <List
         aria-labelledby="landscapes-list-title"
