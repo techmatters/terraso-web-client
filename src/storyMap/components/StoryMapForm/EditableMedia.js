@@ -466,7 +466,7 @@ const EditableVideo = props => {
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <video key={id} style={{ width: '100%' }} controls>
         <source src={videoSrc} type={video.type} />
-        {t('storyMap.form_media_audio_not_supported')}
+        {t('storyMap.form_media_video_not_supported')}
       </video>
       <Stack
         justifyContent="center"
