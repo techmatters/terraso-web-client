@@ -256,6 +256,7 @@
         "add": "Add a Landscape",
         "home_title": "Landscapes",
         "home_default_title": "Landscape",
+        "home_popover": "A landscape is a territory defined by natural or administrative boundaries, in which people and nature live together. It is influenced by ecological, historical, economic, and socio-cultural processes and activities that take place within and adjacent to the region.",
         "form_edit_title": "Update the “{{name}}” Landscape",
         "form_new_title": "Landscape Name and Description",
         "form_new_description": "Enter your landscape’s name, description and contact information.",
