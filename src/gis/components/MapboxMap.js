@@ -59,6 +59,8 @@ export const MAPBOX_FOG = {
   'star-intensity': 0.1, // Background star brightness (default 0.35 at low zoooms )
 };
 
+const TRANSLATABLE_LAYERS = ['country-label', 'continent-label'];
+
 const MapContext = React.createContext();
 
 export const useMap = () => React.useContext(MapContext);
@@ -258,14 +260,12 @@ const MapboxMap = props => {
       return;
     }
     const language = i18n.language.split('-')[0];
-    map.setLayoutProperty('country-label', 'text-field', [
-      'get',
-      `name_${language}`,
-    ]);
-    map.setLayoutProperty('continent-label', 'text-field', [
-      'get',
-      `name_${language}`,
-    ]);
+
+    TRANSLATABLE_LAYERS.forEach(layer => {
+      if (map.getLayer(layer)) {
+        map.setLayoutProperty(layer, 'text-field', ['get', `name_${language}`]);
+      }
+    });
   }, [map, i18n.language]);
 
   return (
