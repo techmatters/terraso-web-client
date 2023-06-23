@@ -21,7 +21,7 @@ import { Button, Menu, MenuItem, Portal, Stack } from '@mui/material';
 import { MAPBOX_STYLES } from './MapboxConstants';
 import { useMap } from './MapboxMap';
 
-class HelloWorldControl {
+class SwitcherControl {
   constructor(options) {
     this.node = document.createElement('div');
     this.onAddContainer = options?.onAddContainer;
@@ -73,7 +73,7 @@ const MapboxMapStyleSwitcher = () => {
       return;
     }
 
-    const stylesControl = new HelloWorldControl({
+    const stylesControl = new SwitcherControl({
       onAddContainer: container => {
         setContainer(container);
       },
