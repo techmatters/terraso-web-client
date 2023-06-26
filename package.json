@@ -25,7 +25,7 @@
     "i18next-browser-languagedetector": "^7.0.2",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^3.1.2",
-    "leaflet": "^1.9.3",
+    "leaflet": "^1.9.4",
     "leaflet-draw": "^1.0.4",
     "leaflet-easyprint": "^2.1.9",
     "leaflet-geosearch": "^3.8.0",
