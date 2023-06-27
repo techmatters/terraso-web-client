@@ -29,7 +29,7 @@ export const VisualizationContextProvider = props => {
   const [sheetContext, setSheetContext] = useState();
   const [loadingFile, setLoadingFile] = useState(true);
   const [loadingFileError, setLoadingFileError] = useState();
-  const [useTileset, setUseTileset] = useState(false);
+  const [useTileset, setUseTileset] = useState(null);
 
   useEffect(() => {
     if (!visualizationConfig.tilesetId) {
@@ -37,10 +37,11 @@ export const VisualizationContextProvider = props => {
     }
 
     setUseTileset(true);
+    setLoadingFile(false);
   }, [visualizationConfig.tilesetId]);
 
   useEffect(() => {
-    if (!visualizationConfig.selectedFile) {
+    if (!visualizationConfig.selectedFile || visualizationConfig.tilesetId) {
       return;
     }
     const newSheetContext =
@@ -104,7 +105,12 @@ export const VisualizationContextProvider = props => {
     return () => {
       readFileRequest.valid = false;
     };
-  }, [visualizationConfig.selectedFile, sheetContext, dispatch]);
+  }, [
+    visualizationConfig.selectedFile,
+    visualizationConfig.tilesetId,
+    sheetContext,
+    dispatch,
+  ]);
 
   const getDataColumns = useCallback(() => {
     const dataColumns = visualizationConfig?.datasetConfig?.dataColumns;
