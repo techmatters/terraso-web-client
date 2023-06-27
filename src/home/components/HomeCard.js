@@ -92,8 +92,8 @@ const HomeCard = ({
                     color: 'white',
                     background: 'transparent',
                     position: 'absolute',
-                    bottom: 0,
-                    pl: 5,
+                    bottom: 1,
+                    pl: 4.5,
                   }}
                   spacing={2}
                 >
