@@ -97,7 +97,9 @@ const HomeCard = ({
                   }}
                   spacing={2}
                 >
-                  <Typography variant="caption">{image.caption}</Typography>
+                  <Typography variant="caption" aria-hidden="true">
+                    {image.caption}
+                  </Typography>
                 </Box>
               )}
             </Stack>
