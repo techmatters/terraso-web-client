@@ -72,6 +72,7 @@ const VisualizationWrapper = props => {
         : {
             ...data.configuration,
             selectedFile: data.dataEntry,
+            tilesetId: data.mapboxTilesetId,
           },
     [data, fetching]
   );

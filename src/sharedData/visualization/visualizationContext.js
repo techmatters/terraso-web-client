@@ -29,6 +29,15 @@ export const VisualizationContextProvider = props => {
   const [sheetContext, setSheetContext] = useState();
   const [loadingFile, setLoadingFile] = useState(true);
   const [loadingFileError, setLoadingFileError] = useState();
+  const [useTileset, setUseTileset] = useState(false);
+
+  useEffect(() => {
+    if (!visualizationConfig.tilesetId) {
+      return;
+    }
+
+    setUseTileset(true);
+  }, [visualizationConfig.tilesetId]);
 
   useEffect(() => {
     if (!visualizationConfig.selectedFile) {
@@ -115,6 +124,7 @@ export const VisualizationContextProvider = props => {
         loadingFile,
         loadingFileError,
         getDataColumns,
+        useTileset,
       }}
     >
       {children}

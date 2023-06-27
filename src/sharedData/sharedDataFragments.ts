@@ -50,6 +50,7 @@ export const visualizationConfig = /* GraphQL */ `
     id
     title
     slug
+    mapboxTilesetId
     createdAt
     createdBy {
       id

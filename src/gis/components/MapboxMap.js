@@ -72,7 +72,7 @@ export const useMap = () => React.useContext(MapContext);
 // 3. "https://api.mapbox.com/styles/v1/mapbox/satellite-v9""
 // 4. Object
 // Return style object
-const extractStyle = async style => {
+export const fetchStyle = async style => {
   if (typeof style === 'object') {
     return style;
   }
@@ -92,13 +92,14 @@ const extractStyle = async style => {
 
   const url = `https://api.mapbox.com/styles/v1/${getStyleId()}?access_token=${MAPBOX_ACCESS_TOKEN}`;
   const response = await fetch(url);
-  return await response.json();
+  const json = await response.json();
+  return json;
 };
 
 // Set Style doesn't keep the current layers, so we need to copy them across
 // Issue: https://github.com/mapbox/mapbox-gl-js/issues/4006
 async function switchStyle(map, style, images, sources, layers) {
-  const newStyle = await extractStyle(style);
+  const newStyle = await fetchStyle(style);
 
   const mergedSources = {
     ...newStyle.sources,

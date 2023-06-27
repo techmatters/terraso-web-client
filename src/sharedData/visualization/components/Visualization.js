@@ -56,28 +56,48 @@ const PopupContent = props => {
     </Box>
   );
 };
-const MapboxSource = props => {
-  const { rows, visualizationConfig, sampleSize, showPopup } = props;
+const MapboxRemoteSource = props => {
+  const { visualizationConfig } = props;
   const { map } = useMapboxMap();
-  const { datasetConfig, annotateConfig } = visualizationConfig || {};
-  const [imageSvg, setimageSvg] = useState();
-  const [popupData, setPopupData] = useState(null);
-  const popupContainer = useMemo(() => document.createElement('div'), []);
-
-  const popup = useMemo(
-    () =>
-      new mapboxgl.Popup({
-        className: 'visualization-marker-popup',
-      }).setDOMContent(popupContainer),
-    [popupContainer]
-  );
-
+  const { tilesetId } = visualizationConfig || {};
   useEffect(() => {
-    if (!visualizationConfig?.visualizeConfig) {
+    if (!map || !tilesetId) {
       return;
     }
-    getImage(visualizationConfig?.visualizeConfig).then(setimageSvg);
-  }, [visualizationConfig?.visualizeConfig]);
+
+    console.log('MapboxRemoteSource', tilesetId);
+    map.addSource('visualization', {
+      type: 'vector',
+      url: `mapbox://terraso.${tilesetId}`,
+    });
+  }, [map, tilesetId]);
+};
+
+const MapboxGeoJsonSource = props => {
+  const { visualizationConfig, sampleSize } = props;
+  const { map } = useMapboxMap();
+  const { datasetConfig, annotateConfig } = visualizationConfig || {};
+  const { sheetContext } = useVisualizationContext();
+  const { sheet, colCount, rowCount } = sheetContext;
+  const fullRange = useMemo(
+    () =>
+      // {Object} s Start position
+      // {Object} e End position
+      // {number} e.c Column
+      // {number} e.r Row
+      SheetsJs.utils.encode_range({
+        s: { c: 0, r: 0 },
+        e: { c: colCount, r: rowCount },
+      }),
+    [colCount, rowCount]
+  );
+  const rows = useMemo(
+    () =>
+      SheetsJs.utils.sheet_to_json(sheet, {
+        range: fullRange,
+      }),
+    [sheet, fullRange]
+  );
 
   const points = useMemo(() => {
     const dataPoints = annotateConfig?.dataPoints || [];
@@ -119,27 +139,6 @@ const MapboxSource = props => {
     sampleSize,
   ]);
 
-  const openPopup = useCallback((feature, event) => {
-    if (!feature) {
-      return;
-    }
-    const coordinates = feature.geometry.coordinates;
-
-    if (event) {
-      // Ensure that if the map is zoomed out such that
-      // multiple copies of the feature are visible, the
-      // popup appears over the copy being pointed to.
-      while (Math.abs(event.lngLat.lng - coordinates[0]) > 180) {
-        coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
-      }
-    }
-
-    setPopupData({
-      coordinates,
-      data: feature.properties,
-    });
-  }, []);
-
   const geoJson = useMemo(
     () => ({
       type: 'FeatureCollection',
@@ -168,29 +167,12 @@ const MapboxSource = props => {
   );
 
   useEffect(() => {
-    if (!map || !geoJsonBounds) {
+    if (!map || !geoJsonBounds || visualizationConfig?.viewportConfig?.bounds) {
       return;
     }
-    // Fit bounds
-    const bounds = (() => {
-      const viewportBounds = visualizationConfig?.viewportConfig?.bounds;
 
-      if (!viewportBounds) {
-        return geoJsonBounds;
-      }
-
-      const southWest = viewportBounds.southWest;
-      const northEast = viewportBounds.northEast;
-      if (!southWest || !northEast) {
-        return geoJsonBounds;
-      }
-      const sw = new mapboxgl.LngLat(southWest.lng, southWest.lat);
-      const ne = new mapboxgl.LngLat(northEast.lng, northEast.lat);
-      return new mapboxgl.LngLatBounds(sw, ne);
-    })();
-
-    if (!bounds.isEmpty()) {
-      map.fitBounds(bounds, {
+    if (!geoJsonBounds.isEmpty()) {
+      map.fitBounds(geoJsonBounds, {
         padding: 50,
         animate: false,
         maxZoom: 10,
@@ -199,27 +181,11 @@ const MapboxSource = props => {
   }, [map, geoJsonBounds, visualizationConfig?.viewportConfig?.bounds]);
 
   useEffect(() => {
-    if (!map || !geoJson || !imageSvg) {
+    if (!map || !geoJson) {
       return;
     }
 
-    const layer = {
-      id: 'visualization',
-      type: 'symbol',
-      source: 'visualization',
-      layout: {
-        'icon-image': 'custom-marker',
-        'icon-allow-overlap': true,
-      },
-    };
-
-    if (map.getLayer('visualization')) {
-      map.removeLayer('visualization');
-    }
-    if (map.hasImage('custom-marker')) {
-      map.removeImage('custom-marker');
-    }
-
+    console.log('MapboxGeoJsonSource', geoJson);
     const geojsonSource = map.getSource('visualization');
     if (!geojsonSource) {
       map.addSource('visualization', {
@@ -229,8 +195,119 @@ const MapboxSource = props => {
     } else {
       geojsonSource.setData(geoJson);
     }
+  }, [map, geoJson]);
+};
 
-    console.log('imageSvg', imageSvg);
+const MapboxLayer = props => {
+  const { visualizationConfig, showPopup } = props;
+  const { map } = useMapboxMap();
+  const [imageSvg, setimageSvg] = useState();
+  const [popupData, setPopupData] = useState(null);
+  const popupContainer = useMemo(() => document.createElement('div'), []);
+  const { useTileset } = useVisualizationContext();
+
+  const useSvg = useMemo(
+    () => visualizationConfig?.visualizeConfig?.shape !== 'circle',
+    [visualizationConfig?.visualizeConfig]
+  );
+
+  const popup = useMemo(
+    () =>
+      new mapboxgl.Popup({
+        className: 'visualization-marker-popup',
+      }).setDOMContent(popupContainer),
+    [popupContainer]
+  );
+
+  useEffect(() => {
+    if (!visualizationConfig?.visualizeConfig) {
+      return;
+    }
+    getImage(visualizationConfig?.visualizeConfig).then(setimageSvg);
+  }, [visualizationConfig?.visualizeConfig]);
+
+  useEffect(() => {
+    if (!map || !visualizationConfig?.viewportConfig?.bounds) {
+      return;
+    }
+    const viewportBounds = visualizationConfig?.viewportConfig?.bounds;
+
+    const southWest = viewportBounds.southWest;
+    const northEast = viewportBounds.northEast;
+    if (!southWest || !northEast) {
+      return;
+    }
+    const sw = new mapboxgl.LngLat(southWest.lng, southWest.lat);
+    const ne = new mapboxgl.LngLat(northEast.lng, northEast.lat);
+    const bounds = new mapboxgl.LngLatBounds(sw, ne);
+
+    if (!bounds.isEmpty()) {
+      map.fitBounds(bounds, {
+        padding: 50,
+        animate: false,
+        maxZoom: 10,
+      });
+    }
+  }, [map, visualizationConfig?.viewportConfig?.bounds]);
+
+  const openPopup = useCallback((feature, event) => {
+    if (!feature) {
+      return;
+    }
+    const coordinates = feature.geometry.coordinates;
+
+    if (event) {
+      // Ensure that if the map is zoomed out such that
+      // multiple copies of the feature are visible, the
+      // popup appears over the copy being pointed to.
+      while (Math.abs(event.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
+      }
+    }
+
+    setPopupData({
+      coordinates,
+      data: feature.properties,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!map || (useSvg && !imageSvg)) {
+      return;
+    }
+    const { size, color } = visualizationConfig?.visualizeConfig || {};
+
+    const layer = {
+      id: 'visualization',
+      source: 'visualization',
+      ...(useSvg
+        ? {
+            type: 'symbol',
+            layout: {
+              'icon-image': 'custom-marker',
+              'icon-allow-overlap': true,
+            },
+          }
+        : {
+            type: 'circle',
+            paint: {
+              'circle-color': color,
+              'circle-radius': size / 2.5,
+              'circle-opacity': 0.5,
+              'circle-stroke-width': 2,
+              'circle-stroke-color': color,
+            },
+          }),
+      ...(useTileset ? { 'source-layer': visualizationConfig?.tilesetId } : {}),
+    };
+
+    if (map.getLayer('visualization')) {
+      map.removeLayer('visualization');
+    }
+    if (map.hasImage('custom-marker')) {
+      map.removeImage('custom-marker');
+    }
+
     map.addImage('custom-marker', imageSvg);
     map.addLayer(layer);
     const pointer = () => (map.getCanvas().style.cursor = 'pointer');
@@ -241,7 +318,15 @@ const MapboxSource = props => {
     map.on('click', 'visualization', onUnclusteredPointClick);
     map.on('mouseenter', 'visualization', pointer);
     map.on('mouseleave', 'visualization', noPointer);
-  }, [map, geoJson, imageSvg, openPopup]);
+  }, [
+    map,
+    imageSvg,
+    openPopup,
+    useTileset,
+    visualizationConfig?.tilesetId,
+    visualizationConfig?.visualizeConfig,
+    useSvg,
+  ]);
 
   useEffect(() => {
     if (!map || !popupData?.coordinates) {
@@ -251,11 +336,21 @@ const MapboxSource = props => {
   }, [popup, popupData?.coordinates, map]);
 
   useEffect(() => {
-    if (!showPopup) {
+    if (!showPopup || !map) {
       return;
     }
-    openPopup(geoJson.features[0]);
-  }, [showPopup, geoJson.features, openPopup]);
+    const source = map.getSource('visualization');
+    if (!source) {
+      return;
+    }
+    const features = source._data.features;
+    openPopup(features[0]);
+  }, [
+    showPopup,
+    openPopup,
+    map,
+    visualizationConfig?.annotateConfig?.annotationTitle,
+  ]);
 
   return (
     <Portal container={popupContainer}>
@@ -274,8 +369,7 @@ const Visualization = props => {
     children,
   } = props;
   const visualizationContext = useVisualizationContext();
-  const { sheetContext } = useVisualizationContext();
-  const { sheet, colCount, rowCount } = sheetContext;
+  const { useTileset } = visualizationContext;
 
   const visualizationConfig = useMemo(
     () => ({
@@ -283,26 +377,6 @@ const Visualization = props => {
       ...customConfig,
     }),
     [customConfig, visualizationContext.visualizationConfig]
-  );
-
-  const fullRange = useMemo(
-    () =>
-      // {Object} s Start position
-      // {Object} e End position
-      // {number} e.c Column
-      // {number} e.r Row
-      SheetsJs.utils.encode_range({
-        s: { c: 0, r: 0 },
-        e: { c: colCount, r: rowCount },
-      }),
-    [colCount, rowCount]
-  );
-  const rows = useMemo(
-    () =>
-      SheetsJs.utils.sheet_to_json(sheet, {
-        range: fullRange,
-      }),
-    [sheet, fullRange]
   );
 
   return (
@@ -319,10 +393,16 @@ const Visualization = props => {
       >
         <MapboxMapControls />
         <MapboxMapStyleSwitcher />
-        <MapboxSource
+        {useTileset ? (
+          <MapboxRemoteSource visualizationConfig={visualizationConfig} />
+        ) : (
+          <MapboxGeoJsonSource
+            visualizationConfig={visualizationConfig}
+            sampleSize={sampleSize}
+          />
+        )}
+        <MapboxLayer
           visualizationConfig={visualizationConfig}
-          rows={rows}
-          sampleSize={sampleSize}
           showPopup={showPopup}
         />
         {children}
