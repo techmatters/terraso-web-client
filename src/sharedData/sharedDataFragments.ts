@@ -50,7 +50,6 @@ export const visualizationConfig = /* GraphQL */ `
     id
     title
     slug
-    mapboxTilesetId
     createdAt
     createdBy {
       id
@@ -63,6 +62,7 @@ export const visualizationConfig = /* GraphQL */ `
 export const visualizationConfigWithConfiguration = /* GraphQL */ `
   fragment visualizationConfigWithConfiguration on VisualizationConfigNode {
     ...visualizationConfig
+    mapboxTilesetId
     configuration
   }
 `;
