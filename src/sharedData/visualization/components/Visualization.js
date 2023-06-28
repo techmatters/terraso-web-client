@@ -382,6 +382,7 @@ const Visualization = props => {
   return (
     <>
       <MapboxMap
+        disableRotation
         projection="mercator"
         style={visualizationConfig?.viewportConfig?.baseMapStyle}
         onBoundsChange={onBoundsChange}

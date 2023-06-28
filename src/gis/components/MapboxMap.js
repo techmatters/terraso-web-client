@@ -189,6 +189,7 @@ const MapboxMap = props => {
     attributionControl = true,
     center,
     zoom = 1,
+    disableRotation = false,
     height = '400px',
     width = '100%',
     sx,
@@ -229,6 +230,14 @@ const MapboxMap = props => {
       map.setFog(MAPBOX_FOG);
     });
 
+    if (disableRotation) {
+      // disable map rotation using right click + drag
+      map.dragRotate.disable();
+
+      // disable map rotation using touch rotation gesture
+      map.touchZoomRotate.disableRotation();
+    }
+
     return () => {
       map.remove();
     };
@@ -242,6 +251,7 @@ const MapboxMap = props => {
     zoom,
     attributionControl,
     setMap,
+    disableRotation,
   ]);
 
   useEffect(() => {
