@@ -62,18 +62,18 @@ const HomeCard = ({
           </Box>
         )}
       </Stack>
-      <Box sx={{ alignItems: 'center' }}>
-        <Stack
-          direction="row"
-          spacing={2}
-          height={image ? 128 : null}
-          sx={{
-            backgroundColor: contentBackgroundColor,
-            borderRadius: '4px',
-          }}
-        >
-          {image && (
-            <RouterLink to={image.to}>
+      <Stack
+        direction="row"
+        spacing={2}
+        height={image ? 128 : null}
+        sx={{
+          backgroundColor: contentBackgroundColor,
+          borderRadius: '4px',
+        }}
+      >
+        {image && (
+          <RouterLink to={image.to}>
+            <Stack sx={{ position: 'relative' }}>
               <Paper
                 variant="outlined"
                 component="img"
@@ -81,13 +81,32 @@ const HomeCard = ({
                 alt={image.alt}
                 to={image.to}
                 height={128}
-                sx={{ borderRadius: '4px 0px 0px 4px', borderWidth: 0 }}
-              ></Paper>
-            </RouterLink>
-          )}
-          {children}
-        </Stack>
-      </Box>
+                sx={{
+                  borderRadius: '4px 0px 0px 4px',
+                  borderWidth: 0,
+                }}
+              />
+              {image.caption && (
+                <Box
+                  sx={{
+                    color: 'white',
+                    background: 'transparent',
+                    position: 'absolute',
+                    bottom: 1,
+                    pl: 4.5,
+                  }}
+                  spacing={2}
+                >
+                  <Typography variant="caption" aria-hidden="true">
+                    {image.caption}
+                  </Typography>
+                </Box>
+              )}
+            </Stack>
+          </RouterLink>
+        )}
+        {children}
+      </Stack>
     </Stack>
     {showActionAsButton ? (
       <CardActions sx={{ justifyContent: 'center' }}>

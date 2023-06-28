@@ -36,6 +36,7 @@ const StoryMapsHomeCardDefault = () => {
         src: storyMapImage,
         to: '/tools',
         alt: t('tool.home_card_img_alt'),
+        caption: t('tools.storyMap.img.caption'),
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', pr: 1 }}>
