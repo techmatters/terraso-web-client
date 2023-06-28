@@ -78,7 +78,7 @@ const colorTheme = createTheme({
       polygonFill: '#D6E7FF',
     },
     visualization: {
-      markerDefaultColor: '#A96F14',
+      markerDefaultColor: '#FF580D',
     },
     richText: {
       link: '#71B8D2',
