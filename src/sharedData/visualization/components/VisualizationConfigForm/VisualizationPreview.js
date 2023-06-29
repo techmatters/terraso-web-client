@@ -27,18 +27,6 @@ const VisualizationPreview = props => {
   const visualizationContext = useVisualizationContext();
   const { setVisualizationConfig } = visualizationContext;
 
-  const onBaseMapChange = useCallback(
-    layer => {
-      setVisualizationConfig(current => ({
-        ...current,
-        viewportConfig: {
-          ...(current.viewportConfig || {}),
-          baseMapUrl: layer._url,
-        },
-      }));
-    },
-    [setVisualizationConfig]
-  );
   const onStyleChange = useCallback(
     style => {
       setVisualizationConfig(current => ({
@@ -75,11 +63,7 @@ const VisualizationPreview = props => {
           )}
         </Typography>
       )}
-      <Visualization
-        onBaseMapChange={onBaseMapChange}
-        onStyleChange={onStyleChange}
-        {...props}
-      />
+      <Visualization onStyleChange={onStyleChange} {...props} />
     </Paper>
   );
 };

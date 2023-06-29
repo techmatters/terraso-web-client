@@ -58,13 +58,6 @@ const PreviewStep = props => {
     }));
   }, []);
 
-  const onBaseMapChange = useCallback(layer => {
-    setViewportConfig(current => ({
-      ...current,
-      baseMapUrl: layer._url,
-    }));
-  }, []);
-
   const onStyleChange = useCallback(
     style => {
       setViewportConfig(current => ({
@@ -126,7 +119,6 @@ const PreviewStep = props => {
         </Typography>
         <VisualizationPreview
           onBoundsChange={onBoundsChange}
-          onBaseMapChange={onBaseMapChange}
           onStyleChange={onStyleChange}
         />
         <Typography sx={{ mt: 2 }}>
