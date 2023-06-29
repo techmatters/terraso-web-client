@@ -185,7 +185,7 @@
                 "height": "95",
                 "width": "250",
                 "src": "tools/story-maps.svg",
-                "caption": "Rocky Hill's Story Map"
+                "caption": "Story Map de Rocky Hill"
             },
             "description": ["Crea hermosas historias basadas en mapas"],
             "requirements": "Navegador web moderno (Chrome, Edge, Firefox, Safari)",
