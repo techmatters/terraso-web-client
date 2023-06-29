@@ -123,7 +123,6 @@ const FormField = props => {
           error={!!fieldState?.error}
           sx={{
             textTransform: 'uppercase',
-            '-webkit-transform': 'none',
             transform: 'none',
           }}
         >
