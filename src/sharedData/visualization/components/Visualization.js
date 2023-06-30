@@ -58,24 +58,23 @@ const PopupContent = props => {
 };
 const MapboxRemoteSource = props => {
   const { visualizationConfig } = props;
-  const { map } = useMapboxMap();
+  const { map, addSource } = useMapboxMap();
   const { tilesetId } = visualizationConfig || {};
   useEffect(() => {
     if (!map || !tilesetId) {
       return;
     }
 
-    console.log('MapboxRemoteSource', tilesetId);
-    map.addSource('visualization', {
+    addSource('visualization', {
       type: 'vector',
       url: `mapbox://terraso.${tilesetId}`,
     });
-  }, [map, tilesetId]);
+  }, [map, addSource, tilesetId]);
 };
 
 const MapboxGeoJsonSource = props => {
   const { visualizationConfig, sampleSize } = props;
-  const { map } = useMapboxMap();
+  const { map, addSource } = useMapboxMap();
   const { datasetConfig, annotateConfig } = visualizationConfig || {};
   const { sheetContext } = useVisualizationContext();
   const { sheet, colCount, rowCount } = sheetContext;
@@ -185,22 +184,21 @@ const MapboxGeoJsonSource = props => {
       return;
     }
 
-    console.log('MapboxGeoJsonSource', geoJson);
     const geojsonSource = map.getSource('visualization');
     if (!geojsonSource) {
-      map.addSource('visualization', {
+      addSource('visualization', {
         type: 'geojson',
         data: geoJson,
       });
     } else {
       geojsonSource.setData(geoJson);
     }
-  }, [map, geoJson]);
+  }, [map, addSource, geoJson]);
 };
 
 const MapboxLayer = props => {
   const { visualizationConfig, showPopup } = props;
-  const { map } = useMapboxMap();
+  const { map, addImage, addLayer } = useMapboxMap();
   const [imageSvg, setimageSvg] = useState();
   const [popupData, setPopupData] = useState(null);
   const popupContainer = useMemo(() => document.createElement('div'), []);
@@ -308,8 +306,8 @@ const MapboxLayer = props => {
       map.removeImage('custom-marker');
     }
 
-    map.addImage('custom-marker', imageSvg);
-    map.addLayer(layer);
+    addImage('custom-marker', imageSvg);
+    addLayer(layer);
     const pointer = () => (map.getCanvas().style.cursor = 'pointer');
     const noPointer = () => (map.getCanvas().style.cursor = '');
     const onUnclusteredPointClick = event => {
@@ -320,6 +318,8 @@ const MapboxLayer = props => {
     map.on('mouseleave', 'visualization', noPointer);
   }, [
     map,
+    addImage,
+    addLayer,
     imageSvg,
     openPopup,
     useTileset,

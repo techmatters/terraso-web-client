@@ -55,7 +55,7 @@ const LandscapePopup = ({ landscape }) => {
 
 const Clusters = props => {
   const { PopupComponent = LandscapePopup } = props;
-  const { map } = useMapboxContext();
+  const { map, addSource, addLayer } = useMapboxContext();
   const { landscapes } = useSelector(state => state.landscape.list);
   const [popup, setPopup] = useState(null);
 
@@ -175,10 +175,10 @@ const Clusters = props => {
     const pointer = () => (map.getCanvas().style.cursor = 'pointer');
     const noPointer = () => (map.getCanvas().style.cursor = '');
 
-    map.addSource('landscapes', source);
-    map.addLayer(layerClusters);
-    map.addLayer(layerClustersCounts);
-    map.addLayer(layerUnclusteredPoint);
+    addSource('landscapes', source);
+    addLayer(layerClusters);
+    addLayer(layerClustersCounts);
+    addLayer(layerUnclusteredPoint);
 
     // inspect a cluster on click
     map.on('click', 'clusters', onClusterClick);
@@ -211,7 +211,7 @@ const Clusters = props => {
       map.off('mouseenter', 'unclustered-point', pointer);
       map.off('mouseleave', 'unclustered-point', noPointer);
     };
-  }, [map, landscapesWithPosition, PopupComponent]);
+  }, [map, addSource, addLayer, landscapesWithPosition, PopupComponent]);
 
   useEffect(() => {
     if (!map || !popup?.container) {

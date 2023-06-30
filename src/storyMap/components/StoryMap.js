@@ -25,7 +25,7 @@ import { MAPBOX_ACCESS_TOKEN, STORY_MAP_INSET_STYLE } from 'config';
 import { ALIGNMENTS, LAYER_TYPES } from '../storyMapConstants';
 import './StoryMap.css';
 import logger from 'terraso-client-shared/monitoring/logger';
-import MapboxMap from 'gis/components/MapboxMap';
+import MapboxMap, { MapContextConsumer } from 'gis/components/MapboxMap';
 import StoryMapOutline from './StoryMapOutline';
 import theme from 'theme';
 
@@ -199,7 +199,8 @@ const getTransition = (config, id) => {
 };
 
 const InsetConfig = props => {
-  const { map, insetMap } = props;
+  const { map, insetContext } = props;
+  const { map: insetMap, addSource, addLayer } = insetContext;
 
   useEffect(() => {
     if (!map || !insetMap) {
@@ -207,12 +208,12 @@ const InsetConfig = props => {
     }
 
     function addInsetLayer(bounds) {
-      insetMap.addSource('boundsSource', {
+      addSource('boundsSource', {
         type: 'geojson',
         data: bounds,
       });
 
-      insetMap.addLayer({
+      addLayer({
         id: 'boundsLayer',
         type: 'fill',
         source: 'boundsSource', // reference the data source
@@ -223,7 +224,7 @@ const InsetConfig = props => {
         },
       });
       // Add a black outline around the polygon.
-      insetMap.addLayer({
+      addLayer({
         id: 'outlineLayer',
         type: 'line',
         source: 'boundsSource',
@@ -250,7 +251,7 @@ const InsetConfig = props => {
     return () => {
       map.off('move', getInsetBounds);
     };
-  }, [map, insetMap]);
+  }, [map, insetMap, addSource, addLayer]);
 
   return null;
 };
@@ -272,12 +273,14 @@ const InsetMap = props => {
       interactive={false}
       attributionControl={false}
     >
-      {insetMap => (
-        <>
-          <InsetConfig insetMap={insetMap} map={map} />
-          {children(insetMap)}
-        </>
-      )}
+      <MapContextConsumer>
+        {insetContext => (
+          <>
+            <InsetConfig insetContext={insetContext} map={map} />
+            {children(insetContext)}
+          </>
+        )}
+      </MapContextConsumer>
     </MapboxMap>
   );
 };
@@ -505,24 +508,26 @@ const StoryMap = props => {
           initialLocation={initialLocation}
           sx={{ ...mapCss }}
         >
-          {map => (
-            <InsetMap
-              config={config}
-              map={map}
-              initialLocation={initialLocation}
-            >
-              {insetMap => (
-                <Scroller
-                  map={map}
-                  insetMap={insetMap}
-                  config={config}
-                  animation={animation}
-                  onStepChange={onStepChange}
-                  onReady={onReady}
-                />
-              )}
-            </InsetMap>
-          )}
+          <MapContextConsumer>
+            {({ map }) => (
+              <InsetMap
+                config={config}
+                map={map}
+                initialLocation={initialLocation}
+              >
+                {insetMap => (
+                  <Scroller
+                    map={map}
+                    insetMap={insetMap}
+                    config={config}
+                    animation={animation}
+                    onStepChange={onStepChange}
+                    onReady={onReady}
+                  />
+                )}
+              </InsetMap>
+            )}
+          </MapContextConsumer>
         </MapboxMap>
       </section>
       <Box id="story">

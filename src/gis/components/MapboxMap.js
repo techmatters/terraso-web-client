@@ -14,13 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Box } from '@mui/material';
@@ -131,6 +125,8 @@ async function switchStyle(map, style, images, sources, layers) {
   });
 }
 
+export const MapContextConsumer = props => <MapContext.Consumer {...props} />;
+
 export const MapProvider = props => {
   const { children, onStyleChange } = props;
   const [map, setMap] = useState(null);
@@ -138,30 +134,38 @@ export const MapProvider = props => {
   const [sources, setSources] = useState({});
   const [layers, setLayers] = useState({});
 
-  const mapWrapper = useMemo(() => {
-    if (!map) {
-      return map;
-    }
-    const originalAddImage = map.addImage.bind(map);
-    map.addImage = function (name, image) {
+  const addImage = useCallback(
+    (name, image) => {
+      if (!map) {
+        return;
+      }
       setImages(prev => ({ ...prev, [name]: image }));
-      originalAddImage(name, image);
-    };
+      map.addImage(name, image);
+    },
+    [map]
+  );
 
-    const originalAddSource = map.addSource.bind(map);
-    map.addSource = function (name, source) {
+  const addSource = useCallback(
+    (name, source) => {
+      if (!map) {
+        return;
+      }
       setSources(prev => ({ ...prev, [name]: source }));
-      originalAddSource(name, source);
-    };
+      map.addSource(name, source);
+    },
+    [map]
+  );
 
-    const originalAddLayer = map.addLayer.bind(map);
-    map.addLayer = function (layer, before) {
+  const addLayer = useCallback(
+    (layer, before) => {
+      if (!map) {
+        return;
+      }
       setLayers(prev => ({ ...prev, [layer.id]: layer }));
-      originalAddLayer(layer, before);
-    };
-
-    return map;
-  }, [map]);
+      map.addLayer(layer, before);
+    },
+    [map]
+  );
 
   const changeStyle = useCallback(
     newStyle => {
@@ -172,7 +176,16 @@ export const MapProvider = props => {
   );
 
   return (
-    <MapContext.Provider value={{ setMap, map: mapWrapper, changeStyle }}>
+    <MapContext.Provider
+      value={{
+        setMap,
+        map,
+        changeStyle,
+        addImage,
+        addSource,
+        addLayer,
+      }}
+    >
       {children}
     </MapContext.Provider>
   );
@@ -289,7 +302,7 @@ const MapboxMap = props => {
         ...sx,
       }}
     >
-      {typeof children === 'function' ? children(map) : children}
+      {children}
     </Box>
   );
 };
