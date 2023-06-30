@@ -20,10 +20,25 @@ build:
 		"--name terraso_web_client_build" \
 		"npm run build"
 
+format:
+	./scripts/docker/run.sh \
+		"--name terraso_web_client_format" \
+		"npm run format-js && npm run format-css"
+
 lint:
 	./scripts/docker/run.sh \
 		"--name terraso_web_client_lint" \
 		"npm run lint-js && npm run lint-css"
+
+format-css:
+	./scripts/docker/run.sh \
+		"--name terraso_web_client_format" \
+		"npm run format-css"
+
+format-js:
+	./scripts/docker/run.sh \
+		"--name terraso_web_client_format" \
+		"npm run format-js"
 
 lint-js:
 	./scripts/docker/run.sh \
