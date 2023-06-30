@@ -93,8 +93,10 @@ const baseListTest = async () => {
     off: jest.fn(),
     getCanvas: jest.fn(),
     addControl: jest.fn(),
+    removeControl: jest.fn(),
     addSource: jest.fn(),
     addLayer: jest.fn(),
+    getLayer: jest.fn(),
     setTerrain: jest.fn(),
     fitBounds: jest.fn(),
   };
