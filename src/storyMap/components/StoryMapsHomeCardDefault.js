@@ -34,7 +34,7 @@ const StoryMapsHomeCardDefault = () => {
       }}
       image={{
         src: storyMapImage,
-        to: '/tools',
+        to: '/tools/story-maps',
         alt: t('tools.storyMap.img.caption'),
         caption: t('tools.storyMap.img.caption'),
       }}
