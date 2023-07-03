@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { act, render, screen } from 'tests/utils';
+import { act, render, screen, waitFor } from 'tests/utils';
 import { useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import mapboxgl from 'gis/mapbox';
@@ -218,6 +218,7 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
   visualizationMarkers.getImage.mockResolvedValue('image/svg;base64,abc123');
 
   await setup();
+
   await screen.findByRole('button', { name: 'Download PNG' });
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(4);
   expect(global.fetch).toHaveBeenCalledTimes(1);
@@ -227,7 +228,7 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
   ).toBeInTheDocument();
 
   // Map
-  expect(map.addSource).toHaveBeenCalledTimes(3);
+  await waitFor(() => expect(map.addSource).toHaveBeenCalledTimes(3));
   expect(map.addSource.mock.calls[2][0]).toEqual('visualization');
   const geojson = map.addSource.mock.calls[2][1].data;
   expect(geojson.features.length).toBe(3);
