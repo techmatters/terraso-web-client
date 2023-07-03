@@ -15,9 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
-import * as reactLeaflet from 'react-leaflet';
 import { useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import mapboxgl from 'gis/mapbox';
 import * as visualizationMarkers from 'sharedData/visualization/visualizationMarkers';
 import LandscapeSharedDataVisualizationConfig from './LandscapeSharedDataVisualizationConfig';
 
@@ -27,10 +27,7 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(),
 }));
-jest.mock('react-leaflet', () => ({
-  ...jest.requireActual('react-leaflet'),
-  useMap: jest.fn(),
-}));
+jest.mock('gis/mapbox', () => ({}));
 
 const TEST_CSV = `
 col1,col2,col_longitude,col3,col4
@@ -53,9 +50,21 @@ const setup = async () => {
 
 beforeEach(() => {
   global.fetch = jest.fn();
-  reactLeaflet.useMap.mockImplementation(
-    jest.requireActual('react-leaflet').useMap
-  );
+  mapboxgl.Popup = jest.fn();
+  const Popup = {
+    setLngLat: jest.fn().mockReturnThis(),
+    setMaxWidth: jest.fn().mockReturnThis(),
+    setDOMContent: jest.fn().mockReturnThis(),
+    addTo: jest.fn().mockReturnThis(),
+    remove: jest.fn(),
+  };
+  mapboxgl.Popup.mockReturnValue(Popup);
+  mapboxgl.NavigationControl = jest.fn();
+  mapboxgl.LngLatBounds = jest.fn();
+  mapboxgl.LngLatBounds.prototype = {
+    isEmpty: jest.fn().mockReturnValue(false),
+  };
+  mapboxgl.Map = jest.fn();
 });
 
 const testSelectDataFileStep = async () => {
@@ -137,7 +146,7 @@ const testVisualizeStep = async () => {
   // TODO Known testing library issue: https://github.com/testing-library/user-event/issues/423#issuecomment-669368863
   // Input type color not supported
   const colorInput = screen.getByLabelText('Color:');
-  expect(colorInput).toHaveValue('#a96f14');
+  expect(colorInput).toHaveValue('#ff580d');
   await act(async () =>
     fireEvent.input(colorInput, { target: { value: '#e28979' } })
   );
@@ -178,27 +187,45 @@ const testAnnotateStep = async () => {
   );
 };
 
-const testPreviewStep = async useMapSpy => {
-  expect(screen.getByRole('heading', { name: 'Preview' })).toBeInTheDocument();
-
-  // Move viewport
-  await waitFor(() => expect(useMapSpy).toHaveBeenCalled());
-  const map = useMapSpy.mock.results[useMapSpy.mock.results.length - 1].value;
-
-  jest.spyOn(map, 'getBounds').mockReturnValue({
-    getNorthEast: () => ({
-      lat: 11.325606896067784,
-      lng: -67.62077603784013,
-    }),
-    getSouthWest: () => ({
-      lat: 8.263885173441716,
-      lng: -76.29042998100137,
-    }),
-  });
-  await act(async () => map.fireEvent('moveend', {}));
+const testPreviewStep = async (map, events) => {
+  const LngLatBounds = jest.requireActual('mapbox-gl').LngLatBounds;
+  const LngLat = jest.requireActual('mapbox-gl').LngLat;
+  const sw = new LngLat(-76.29042998100137, 8.263885173441716);
+  const ne = new LngLat(-67.62077603784013, 11.325606896067784);
+  map.getBounds.mockReturnValue(new LngLatBounds(sw, ne));
+  await act(async () => events['moveend']());
 };
 
 test('LandscapeSharedDataVisualizationConfig: Create visualization', async () => {
+  const events = {};
+  const map = {
+    on: jest.fn().mockImplementation((...args) => {
+      const event = args[0];
+      const callback = args.length === 2 ? args[1] : args[2];
+      const layer = args.length === 2 ? null : args[1];
+      events[[event, layer].filter(p => p).join(':')] = callback;
+
+      if (event === 'load') {
+        callback();
+      }
+    }),
+    remove: jest.fn(),
+    off: jest.fn(),
+    addControl: jest.fn(),
+    removeControl: jest.fn(),
+    addSource: jest.fn(),
+    getSource: jest.fn(),
+    addLayer: jest.fn(),
+    getLayer: jest.fn(),
+    setTerrain: jest.fn(),
+    hasImage: jest.fn(),
+    addImage: jest.fn(),
+    fitBounds: jest.fn(),
+    getBounds: jest.fn(),
+    dragRotate: { disable: jest.fn() },
+    touchZoomRotate: { disableRotation: jest.fn() },
+  };
+  mapboxgl.Map.mockReturnValue(map);
   useParams.mockReturnValue({
     slug: 'landscape-slug',
   });
@@ -286,9 +313,7 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
       });
     },
   });
-  visualizationMarkers.getImageData.mockReturnValue('markerImageData');
-
-  const useMapSpy = jest.spyOn(reactLeaflet, 'useMap');
+  visualizationMarkers.getImage.mockResolvedValue('image/svg;base64,abc123');
 
   await setup();
 
@@ -296,7 +321,7 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
   await testSetDatasetStep();
   await testVisualizeStep();
   await testAnnotateStep();
-  await testPreviewStep(useMapSpy);
+  await testPreviewStep(map, events);
 
   // Save
   await act(async () =>
@@ -314,15 +339,15 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
           longitude: 'col_longitude',
           latitude: 'col3',
         },
-        visualizeConfig: { shape: 'triangle', size: '30', color: '#A96F14' },
+        visualizeConfig: { shape: 'triangle', size: '30', color: '#FF580D' },
         annotateConfig: {
           annotationTitle: 'col4',
           dataPoints: [{ column: 'col1', label: 'Custom Label' }],
         },
         viewportConfig: {
           bounds: {
-            northEast: { lat: 11.325606896067784, lng: -67.62077603784013 },
-            southWest: { lat: 8.263885173441716, lng: -76.29042998100137 },
+            northEast: { lng: -67.62077603784013, lat: 11.325606896067784 },
+            southWest: { lng: -76.29042998100137, lat: 8.263885173441716 },
           },
         },
       }),
