@@ -25,6 +25,7 @@ import './Visualization.css';
 import bbox from '@turf/bbox';
 import { Box, Portal, Stack, Typography } from '@mui/material';
 
+import GeoJsonSource from 'gis/components/GeoJsonSource';
 import MapboxMap, { useMap as useMapboxMap } from 'gis/components/MapboxMap';
 import MapboxMapControls from 'gis/components/MapboxMapControls';
 import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';
@@ -77,9 +78,8 @@ const MapboxRemoteSource = props => {
   }, [map, addSource, tilesetId]);
 };
 
-const MapboxGeoJsonSource = props => {
+const SheetSource = props => {
   const { visualizationConfig, sampleSize } = props;
-  const { map, addSource } = useMapboxMap();
   const { datasetConfig, annotateConfig } = visualizationConfig || {};
   const { sheetContext } = useVisualizationContext();
   const { sheet, colCount, rowCount } = sheetContext;
@@ -157,21 +157,13 @@ const MapboxGeoJsonSource = props => {
     [points]
   );
 
-  useEffect(() => {
-    if (!map || !geoJson) {
-      return;
-    }
-
-    const geojsonSource = map.getSource('visualization');
-    if (!geojsonSource) {
-      addSource('visualization', {
-        type: 'geojson',
-        data: geoJson,
-      });
-    } else {
-      geojsonSource.setData(geoJson);
-    }
-  }, [map, addSource, geoJson]);
+  return (
+    <GeoJsonSource
+      id="visualization"
+      geoJson={geoJson}
+      fitGeoJsonBounds={!visualizationConfig?.viewportConfig?.bounds}
+    />
+  );
 };
 
 const MapboxLayer = props => {
@@ -382,7 +374,7 @@ const Visualization = props => {
       <MapboxMap
         disableRotation
         projection="mercator"
-        style={visualizationConfig?.viewportConfig?.baseMapStyle}
+        mapStyle={visualizationConfig?.viewportConfig?.baseMapStyle}
         onBoundsChange={onBoundsChange}
         onStyleChange={onStyleChange}
         sx={{
@@ -395,7 +387,7 @@ const Visualization = props => {
         {useTileset ? (
           <MapboxRemoteSource visualizationConfig={visualizationConfig} />
         ) : (
-          <MapboxGeoJsonSource
+          <SheetSource
             visualizationConfig={visualizationConfig}
             sampleSize={sampleSize}
           />

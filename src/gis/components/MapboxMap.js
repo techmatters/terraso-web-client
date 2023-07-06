@@ -154,7 +154,20 @@ export const MapProvider = props => {
       if (!map) {
         return;
       }
+
+      const currentSource = map.getSource(name);
+
       try {
+        const isGeoJson = source.type === 'geojson';
+        if (isGeoJson && currentSource) {
+          currentSource.setData(source.data);
+          return;
+        }
+
+        if (currentSource) {
+          map.removeSource(name);
+        }
+
         map.addSource(name, source);
         setSources(prev => ({ ...prev, [name]: source }));
       } catch (error) {
@@ -206,7 +219,7 @@ export const MapProvider = props => {
 const MapboxMap = props => {
   const {
     id,
-    style,
+    mapStyle,
     projection,
     initialLocation,
     interactive = true,
@@ -228,7 +241,7 @@ const MapboxMap = props => {
   useEffect(() => {
     const map = new mapboxgl.Map({
       container: mapContainer.current,
-      style: style || MAPBOX_STYLE_DEFAULT,
+      style: mapStyle || MAPBOX_STYLE_DEFAULT,
       interactive,
       projection: projection || MAPBOX_PROJECTION_DEFAULT,
       zoom,
@@ -271,7 +284,7 @@ const MapboxMap = props => {
       map.remove();
     };
   }, [
-    style,
+    mapStyle,
     initialLocation,
     projection,
     interactive,

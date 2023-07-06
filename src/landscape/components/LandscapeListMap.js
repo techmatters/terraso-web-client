@@ -248,7 +248,10 @@ const Clusters = props => {
 
 const LandscapeListMap = props => {
   return (
-    <MapboxMap projection="mercator" style={MAPBOX_LANDSCAPE_DIRECTORY_STYLE}>
+    <MapboxMap
+      projection="mercator"
+      mapStyle={MAPBOX_LANDSCAPE_DIRECTORY_STYLE}
+    >
       <MapboxMapControls />
       <MapboxMapStyleSwitcher />
       <Clusters {...props} />
