@@ -27,7 +27,8 @@ import { useMap } from './MapboxMap';
 
 import { MAPBOX_ACCESS_TOKEN } from 'config';
 
-const MapboxGeocoder = () => {
+const MapboxGeocoder = props => {
+  const { position } = props;
   const { t } = useTranslation();
   const { map } = useMap();
   useEffect(() => {
@@ -40,8 +41,8 @@ const MapboxGeocoder = () => {
       placeholder: t('storyMap.form_location_dialog_geocoder_placeholder'),
       mapboxgl,
     });
-    map.addControl(geocoder);
-  }, [map, t]);
+    map.addControl(geocoder, position);
+  }, [map, t, position]);
   return null;
 };
 
