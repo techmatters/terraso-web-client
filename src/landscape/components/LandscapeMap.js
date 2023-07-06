@@ -14,34 +14,84 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box } from '@mui/material';
-
-import Map from 'gis/components/Map';
+import DrawControls from 'gis/components/DrawControls';
+import GeoJsonSource from 'gis/components/GeoJsonSource';
+import Layer from 'gis/components/Layer';
+// import Map from 'gis/components/Map';
+import MapboxGeocoder from 'gis/components/MapboxGeocoder';
+import MapboxMap from 'gis/components/MapboxMap';
+import MapboxMapControls from 'gis/components/MapboxMapControls';
+import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';
 import { isValidGeoJson } from 'gis/gisUtils';
-import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';
+// import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';
+import theme from 'theme';
 
 const LandscapeMap = ({
   areaPolygon,
   boundingBox,
   label,
-  onPinLocationChange,
-  enableSearch,
+  // onPinLocationChange,
+  // enableSearch,
   enableDraw,
-  mapCenter,
+  // mapCenter,
   onGeoJsonChange,
-  geoJsonFilter,
+  // geoJsonFilter,
   drawOptions,
-  defaultLayer,
+  // defaultLayer,
 }) => {
-  const bounds = useMemo(
-    () => getLandscapeBoundingBox({ areaPolygon, boundingBox }),
-    [areaPolygon, boundingBox]
-  );
+  // const bounds = useMemo(
+  //   () => getLandscapeBoundingBox({ areaPolygon, boundingBox }),
+  //   [areaPolygon, boundingBox]
+  // );
   const geojson = isValidGeoJson(areaPolygon) ? areaPolygon : null;
   return (
     <Box component="section" aria-label={label}>
-      <Map
+      <MapboxMap
+        projection="mercator"
+        mapStyle="mapbox://styles/mapbox/streets-v12"
+        sx={{
+          width: '100%',
+          height: '400px',
+        }}
+      >
+        {enableDraw && <MapboxGeocoder position="top-left" />}
+        <MapboxMapControls />
+        <MapboxMapStyleSwitcher />
+        <GeoJsonSource fitGeoJsonBounds id="area-polygon" geoJson={geojson} />
+        {geojson && (
+          <>
+            <Layer
+              id="area-polygon-fill"
+              layer={{
+                type: 'fill',
+                source: 'area-polygon',
+                paint: {
+                  'fill-color': theme.palette.map.polygonFill,
+                  'fill-opacity': 0.5,
+                },
+              }}
+            />
+            <Layer
+              id="area-polygon-outline"
+              layer={{
+                type: 'line',
+                source: 'area-polygon',
+                layout: {},
+                paint: {
+                  'line-color': theme.palette.map.polygon,
+                  'line-width': 3,
+                },
+              }}
+            />
+          </>
+        )}
+        {enableDraw && (
+          <DrawControls onChange={onGeoJsonChange} drawOptions={drawOptions} />
+        )}
+      </MapboxMap>
+      {/* <Map
         center={areaPolygon ? null : mapCenter}
         bounds={bounds}
         geojson={geojson}
@@ -56,7 +106,7 @@ const LandscapeMap = ({
           width: '100%',
           height: '400px',
         }}
-      />
+      /> */}
     </Box>
   );
 };

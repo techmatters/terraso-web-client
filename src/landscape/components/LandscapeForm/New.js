@@ -41,7 +41,7 @@ import {
 import { fetchTermsForTypes } from 'taxonomies/taxonomiesSlice';
 
 import AffiliationStep from './AffiliationStep';
-import BoundaryStep from './BoundaryStep';
+import BoundaryStep from './BondaryStep';
 import InfoStep from './KeyInfoStep';
 import ProfileStep from './ProfileStep';
 

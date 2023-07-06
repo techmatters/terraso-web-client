@@ -382,6 +382,7 @@
         "form_boundary_draw_polygon_saved_create": "Your landscape boundary is complete. Select <1/> to add more detail to your boundary or select Add Landscape to add your landscape to Terraso.",
         "form_boundary_draw_polygon_saved_update": "Your landscape boundary is complete. Select <1/> to add more detail to your boundary or select Update Map to submit your changes.",
         "form_boundary_draw_polygon_edit_help": "<strong>How to edit:</strong> Drag points to adjust the shape. Select points to remove. When you are finished, save and select {{saveLabel}}.",
+        "form_boundary_draw_polygon_edit_help_draw_polygon": "<strong>How to add:</strong> TODO {{saveLabel}}.",
         "form_boundary_map_basemap_label": "Background map",
         "breadcrumbs_visualization": "{{mapTitle}}",
         "breadcrumbs_visualization_new": "New Map",

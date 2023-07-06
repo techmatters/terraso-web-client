@@ -18,11 +18,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { Alert } from '@mui/material';
-
+import { Alert, Paper } from '@mui/material';
 import BaseDropZone from 'common/components/DropZone';
 import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
+import PageHeader from 'layout/PageHeader';
 import { rollbar } from 'monitoring/rollbar';
 import { parseFileToGeoJSON } from 'gis/gisSlice';
 
@@ -33,6 +33,9 @@ import {
   MAP_DATA_ACCEPTED_EXTENSIONS,
   MAP_DATA_ACCEPTED_TYPES,
 } from 'config';
+import { OPTION_BOUNDARY_CHOICES } from '.';
+import Actions from '../Actions';
+import BaseMap from './BaseMap';
 
 const DropZone = props => {
   const { t } = useTranslation();
@@ -104,57 +107,82 @@ const DropZone = props => {
   );
 };
 
-const LandscapeGeoJsonBoundaries = props => {
+const OptionBoundariesFile = props => {
   const { t } = useTranslation();
-  const { areaPolygon, mapCenter, onFileSelected } = props;
+  const {
+    mapCenter,
+    landscape,
+    setOption,
+    onSave,
+    areaPolygon,
+    setAreaPolygon,
+    setUpdatedLandscape,
+    isNew,
+  } = props;
   const [selectedFile, setSelectedFile] = useState();
 
   const onFileSelectedWrapper = useCallback(
     ({ geojson, selectedFile }) => {
       setSelectedFile(selectedFile);
-      onFileSelected(geojson);
+      setAreaPolygon(geojson);
     },
-    [onFileSelected]
+    [setAreaPolygon]
+  );
+
+  const updatedValues = useMemo(
+    () => ({ ...landscape, areaPolygon }),
+    [landscape, areaPolygon]
   );
 
   return (
     <>
-      <LandscapeMap
-        mapCenter={mapCenter}
-        areaPolygon={areaPolygon}
-        onGeoJsonChange={onFileSelected}
-      />
-      {selectedFile && (
-        <Alert
-          severity="info"
-          aria-live="assertive"
-          aria-atomic="true"
-          className="sr-only"
-        >
-          {t('landscape.boundaries_file_selected', {
-            name: selectedFile.name,
-          })}
-        </Alert>
-      )}
-      <DropZone onFileSelected={onFileSelectedWrapper} />
-      <InlineHelp
-        items={[
-          {
-            title: t('landscape.boundaries_help_geojson'),
-            details: (
-              <Trans i18nKey="landscape.boundaries_help_geojson_detail">
-                Prefix
-                <ExternalLink href={t('landscape.boundaries_help_geojson_url')}>
-                  link
-                </ExternalLink>
-                .
-              </Trans>
-            ),
-          },
-        ]}
+      <PageHeader header={t('landscape.form_boundary_geojson_title')} />
+      <Paper variant="outlined" sx={{ p: 2, mt: 2, mb: 2 }}>
+        <BaseMap
+          center={mapCenter}
+          areaPolygon={areaPolygon || landscape?.areaPolygon}
+        />
+        {selectedFile && (
+          <Alert
+            severity="info"
+            aria-live="assertive"
+            aria-atomic="true"
+            className="sr-only"
+          >
+            {t('landscape.boundaries_file_selected', {
+              name: selectedFile.name,
+            })}
+          </Alert>
+        )}
+        <DropZone onFileSelected={onFileSelectedWrapper} />
+        <InlineHelp
+          items={[
+            {
+              title: t('landscape.boundaries_help_geojson'),
+              details: (
+                <Trans i18nKey="landscape.boundaries_help_geojson_detail">
+                  Prefix
+                  <ExternalLink
+                    href={t('landscape.boundaries_help_geojson_url')}
+                  >
+                    link
+                  </ExternalLink>
+                  .
+                </Trans>
+              ),
+            },
+          ]}
+        />
+      </Paper>
+      <Actions
+        isNew={isNew}
+        onCancel={() => setOption(OPTION_BOUNDARY_CHOICES)}
+        onSave={onSave}
+        updatedValues={updatedValues}
+        onNext={setUpdatedLandscape}
       />
     </>
   );
 };
 
-export default LandscapeGeoJsonBoundaries;
+export default OptionBoundariesFile;
