@@ -56,10 +56,7 @@ const OptionAddPin = props => {
           onBoundsChange={onBoundsChange}
           areaPolygon={areaPolygon}
         >
-          <DrawControls
-            onCreate={onCreateWrapper}
-            drawOptions={drawOptions}
-          />
+          <DrawControls onCreate={onCreateWrapper} drawOptions={drawOptions} />
         </BaseMap>
       </Paper>
       <Actions
