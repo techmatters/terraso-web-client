@@ -108,6 +108,7 @@ export const fetchLandscapeToUpdate = slug => {
         edges {
           node {
             ...landscapeProfileFields
+            areaPolygon
           }
         }
       }

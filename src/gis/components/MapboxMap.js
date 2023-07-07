@@ -300,7 +300,10 @@ const MapboxMap = props => {
     if (!map) {
       return;
     }
-    const onMoveListener = () => onBoundsChange?.(map.getBounds());
+    const onMoveListener = () => {
+      const bounds = map.getBounds();
+      onBoundsChange?.(bounds);
+    };
     map.on('moveend', onMoveListener);
 
     return () => {

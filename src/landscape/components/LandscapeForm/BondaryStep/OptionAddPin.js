@@ -1,19 +1,18 @@
-import React, { useMemo } from 'react';
-import _ from 'lodash/fp';
+import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Paper, Typography } from '@mui/material';
 import PageHeader from 'layout/PageHeader';
-import LandscapeMap from 'landscape/components/LandscapeMap';
+import DrawControls from 'gis/components/DrawControls';
 import { OPTION_BOUNDARY_CHOICES } from '.';
 import Actions from '../Actions';
-
-const POINT_FILTER = feature => _.get('geometry.type', feature) === 'Point';
+import BaseMap from './BaseMap';
 
 const OptionAddPin = props => {
   const { t } = useTranslation();
   const {
     landscape,
     boundingBox,
+    onBoundsChange,
     setOption,
     onSave,
     setUpdatedLandscape,
@@ -27,20 +26,41 @@ const OptionAddPin = props => {
     [landscape, areaPolygon]
   );
 
+  const drawOptions = useMemo(
+    () => ({
+      point: true,
+    }),
+    []
+  );
+
+  const onCreateWrapper = useCallback(
+    (event, draw) => {
+      setAreaPolygon({
+        type: 'FeatureCollection',
+        features: [event.features[0]],
+      });
+      draw.deleteAll();
+    },
+    [setAreaPolygon]
+  );
+
   return (
     <>
       <PageHeader header={t('landscape.form_boundary_pin_title')} />
       <Typography>{t('landscape.form_boundary_pin_description')}</Typography>
       <Paper variant="outlined" sx={{ p: 2, mt: 2, mb: 2 }}>
-        <LandscapeMap
-          enableSearch
-          enableDraw
+        <BaseMap
+          showGeocoder
+          showMarkers
           boundingBox={boundingBox}
-          areaPolygon={areaPolygon || landscape.areaPolygon}
-          onGeoJsonChange={setAreaPolygon}
-          geoJsonFilter={POINT_FILTER}
-          drawOptions={{ point: true }}
-        />
+          onBoundsChange={onBoundsChange}
+          areaPolygon={areaPolygon}
+        >
+          <DrawControls
+            onCreate={onCreateWrapper}
+            drawOptions={drawOptions}
+          />
+        </BaseMap>
       </Paper>
       <Actions
         isNew={isNew}

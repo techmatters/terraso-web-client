@@ -183,9 +183,16 @@ const BoundaryStep = props => {
 
   const onSaveWrapper = useCallback(
     updatedValues => {
-      onSave({ boundaryOption: option, ...updatedValues });
+      onSave({
+        boundaryOption: option,
+        ...updatedValues,
+        areaPolygon: {
+          ...updatedValues.areaPolygon,
+          bbox: boundingBox,
+        },
+      });
     },
-    [onSave, option]
+    [onSave, option, boundingBox]
   );
 
   const setUpdatedLandscapeWrapper = useCallback(
@@ -195,12 +202,26 @@ const BoundaryStep = props => {
     [setUpdatedLandscape, option]
   );
 
+  const onBoundsChange = useCallback(
+    bounds => {
+      const newBounds = [
+        bounds.getSouthWest().lng,
+        bounds.getSouthWest().lat,
+        bounds.getNorthEast().lng,
+        bounds.getNorthEast().lat,
+      ];
+      setBoundingBox(newBounds);
+    },
+    [setBoundingBox]
+  );
+
   return (
     <OptionComponent
       boundingBox={boundingBox}
       setOption={setOption}
       areaPolygon={areaPolygon}
       setAreaPolygon={setAreaPolygon}
+      onBoundsChange={onBoundsChange}
       {...props}
       onSave={onSaveWrapper}
       setUpdatedLandscape={setUpdatedLandscapeWrapper}

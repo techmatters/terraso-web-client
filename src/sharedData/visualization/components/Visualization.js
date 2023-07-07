@@ -31,7 +31,7 @@ import MapboxMapControls from 'gis/components/MapboxMapControls';
 import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';
 import { normalizeLongitude } from 'gis/gisUtils';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
-import { getImage } from 'sharedData/visualization/visualizationMarkers';
+import { getLayerImage } from 'sharedData/visualization/visualizationMarkers';
 
 const PopupContent = props => {
   const { data } = props;
@@ -191,7 +191,7 @@ const MapboxLayer = props => {
     if (!visualizationConfig?.visualizeConfig) {
       return;
     }
-    getImage(visualizationConfig?.visualizeConfig).then(setimageSvg);
+    getLayerImage(visualizationConfig?.visualizeConfig).then(setimageSvg);
   }, [visualizationConfig?.visualizeConfig]);
 
   const openPopup = useCallback((feature, event) => {

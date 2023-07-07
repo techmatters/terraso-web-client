@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import bbox from '@turf/bbox';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import CloseIcon from '@mui/icons-material/Close';
@@ -14,42 +15,32 @@ import {
 import ExternalLink from 'common/components/ExternalLink';
 import PageHeader from 'layout/PageHeader';
 import DrawControls from 'gis/components/DrawControls';
+import { useMap } from 'gis/components/MapboxMap';
+import mapboxgl from 'gis/mapbox';
 import { OPTION_BOUNDARY_CHOICES } from '.';
 import Actions from '../Actions';
-import BaseMap from './BaseMap';
+import BaseMap, { POLYGON_FILTER } from './BaseMap';
 
-// TODO? const POLYGON_FILTER = feature => _.get('geometry.type', feature) === 'Polygon';
-
-const OptionDrawPolygon = props => {
-  const { t } = useTranslation();
-  const {
-    landscape,
-    isNew,
-    boundingBox,
-    setOption,
-    saveLabel,
-    onSave,
-    areaPolygon,
-    setAreaPolygon,
-    setUpdatedLandscape,
-  } = props;
-  const [editHelp, setEditHelp] = useState(null);
-  const [open, setOpen] = useState(false);
-
-  const onPolygonChange = useCallback(
-    geoJson => {
-      setAreaPolygon(geoJson);
-    },
-    [setAreaPolygon]
-  );
+const Draw = props => {
+  const { areaPolygon, setAreaPolygon, setEditHelp, setOpen } = props;
+  const { map } = useMap();
 
   const onPolygonAdded = useCallback(
-    geoJson => {
+    (event, draw) => {
+      const geoJson = draw.getAll();
       if (geoJson && !_.isEmpty(geoJson.features)) {
         setOpen(true);
       }
+      const calculatedBbox = bbox(geoJson);
+      const bounds = new mapboxgl.LngLatBounds(
+        [calculatedBbox[0], calculatedBbox[1]],
+        [calculatedBbox[2], calculatedBbox[3]]
+      );
+      setTimeout(() => {
+        map.fitBounds(bounds);
+      });
     },
-    [setOpen]
+    [setOpen, map]
   );
 
   const onDrawModeChange = useCallback(
@@ -69,17 +60,54 @@ const OptionDrawPolygon = props => {
     [setEditHelp]
   );
 
-  const updatedValues = useMemo(
-    () => ({ ...landscape, areaPolygon }),
-    [landscape, areaPolygon]
-  );
-
   const drawOptions = useMemo(
     () => ({
       polygon: true,
       trash: true,
     }),
     []
+  );
+
+  const onlyPolygons = useMemo(
+    () => ({
+      ...areaPolygon,
+      features: areaPolygon.features.filter(POLYGON_FILTER),
+    }),
+    [areaPolygon]
+  );
+
+  return (
+    <DrawControls
+      onChange={setAreaPolygon}
+      onCreate={onPolygonAdded}
+      onModeChange={onDrawModeChange}
+      onSelectionChange={onDrawModeChange}
+      drawOptions={drawOptions}
+      geoJson={onlyPolygons}
+    />
+  );
+};
+
+const OptionDrawPolygon = props => {
+  const { t } = useTranslation();
+  const {
+    landscape,
+    isNew,
+    boundingBox,
+    onBoundsChange,
+    setOption,
+    saveLabel,
+    onSave,
+    areaPolygon,
+    setAreaPolygon,
+    setUpdatedLandscape,
+  } = props;
+  const [editHelp, setEditHelp] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  const updatedValues = useMemo(
+    () => ({ ...landscape, areaPolygon }),
+    [landscape, areaPolygon]
   );
 
   return (
@@ -154,15 +182,17 @@ const OptionDrawPolygon = props => {
         </Trans>
         <BaseMap
           showGeocoder
+          showPolygons
           boundingBox={boundingBox}
+          onBoundsChange={onBoundsChange}
           areaPolygon={areaPolygon}
         >
-          <DrawControls
-            onChange={onPolygonChange}
-            onCreate={onPolygonAdded}
-            onModeChange={onDrawModeChange}
-            onSelectionChange={onDrawModeChange}
-            drawOptions={drawOptions}
+          <Draw
+            areaPolygon={areaPolygon}
+            setAreaPolygon={setAreaPolygon}
+            setEditHelp={setEditHelp}
+            setOpen={setOpen}
+            onBoundsChange={onBoundsChange}
           />
         </BaseMap>
         {editHelp && (

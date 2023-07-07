@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import _ from 'lodash/fp';
 import { Box } from '@mui/material';
 import GeoJsonSource from 'gis/components/GeoJsonSource';
 import Layer from 'gis/components/Layer';
@@ -8,23 +9,23 @@ import MapboxMapControls from 'gis/components/MapboxMapControls';
 import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';
 import { isValidGeoJson } from 'gis/gisUtils';
 import mapboxgl from 'gis/mapbox';
+import { getMarkerImage } from 'gis/mapMarkers';
 import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';
 import theme from 'theme';
 
-const BoundingBox = props => {
-  const { boundingBox, areaPolygon } = props;
-  const { map } = useMap();
+export const POLYGON_FILTER = feature =>
+  _.get('geometry.type', feature) === 'Polygon';
+export const POINT_FILTER = feature =>
+  _.get('geometry.type', feature) === 'Point';
 
-  const bounds = useMemo(
-    () => getLandscapeBoundingBox({ areaPolygon, boundingBox }),
-    [areaPolygon, boundingBox]
-  );
+const BoundingBox = props => {
+  const { map } = useMap();
+  const [bounds] = useState(props.bounds);
 
   useEffect(() => {
     if (!map || !bounds) {
       return;
     }
-
     map.fitBounds(new mapboxgl.LngLatBounds(bounds), {
       padding: 20,
       animate: false,
@@ -32,12 +33,109 @@ const BoundingBox = props => {
   }, [map, bounds]);
 };
 
+const Polygons = props => {
+  const { geoJson } = props;
+
+  const onlyPolygons = useMemo(
+    () => ({
+      ...geoJson,
+      features: geoJson.features.filter(POLYGON_FILTER),
+    }),
+    [geoJson]
+  );
+
+  return (
+    <>
+      <GeoJsonSource id="landscape-polygons" geoJson={onlyPolygons} />
+      {!_.isEmpty(onlyPolygons?.features) && (
+        <>
+          <Layer
+            id="area-polygon-fill"
+            layer={{
+              type: 'fill',
+              source: 'landscape-polygons',
+              paint: {
+                'fill-color': theme.palette.map.polygonFill,
+                'fill-opacity': 0.5,
+              },
+            }}
+          />
+          <Layer
+            id="area-polygon-outline"
+            layer={{
+              type: 'line',
+              source: 'landscape-polygons',
+              layout: {},
+              paint: {
+                'line-color': theme.palette.map.polygon,
+                'line-width': 3,
+              },
+            }}
+          />
+        </>
+      )}
+    </>
+  );
+};
+
+const Markers = props => {
+  const { geoJson } = props;
+  const [image, setImage] = useState(null);
+
+  const onlyPoints = useMemo(
+    () => ({
+      ...geoJson,
+      features: geoJson.features.filter(POINT_FILTER),
+    }),
+    [geoJson]
+  );
+
+  useEffect(() => {
+    getMarkerImage({ color: '#0055CC', size: 80 }).then(setImage);
+  }, []);
+
+  return (
+    <>
+      <GeoJsonSource id="landscape-markers" geoJson={onlyPoints} />
+      {!_.isEmpty(onlyPoints?.features) && image && (
+        <Layer
+          id="area-polygon-markers"
+          images={[{ name: 'marker-image', content: image }]}
+          layer={{
+            type: 'symbol',
+            source: 'landscape-markers',
+            layout: {
+              'icon-image': 'marker-image',
+              'icon-size': 0.5,
+              'icon-offset': [0, -40],
+            },
+          }}
+        />
+      )}
+    </>
+  );
+};
+
 const BaseMap = props => {
-  const { label, areaPolygon, children, showGeocoder, boundingBox, ...rest } =
-    props;
-  const geojson = useMemo(
+  const {
+    label,
+    areaPolygon,
+    children,
+    showGeocoder,
+    boundingBox,
+    showPolygons,
+    showMarkers,
+    ...rest
+  } = props;
+
+  const geoJson = useMemo(
     () => (isValidGeoJson(areaPolygon) ? areaPolygon : null),
     [areaPolygon]
+  );
+
+  const bounds = useMemo(
+    () => getLandscapeBoundingBox({ boundingBox, areaPolygon }),
+    [boundingBox, areaPolygon]
   );
 
   return (
@@ -51,38 +149,12 @@ const BaseMap = props => {
         }}
         {...rest}
       >
-        <BoundingBox boundingBox={boundingBox} areaPolygon={areaPolygon} />
+        <BoundingBox bounds={bounds} />
         {showGeocoder && <MapboxGeocoder position="top-left" />}
         <MapboxMapControls />
         <MapboxMapStyleSwitcher />
-        <GeoJsonSource fitGeoJsonBounds id="area-polygon" geoJson={geojson} />
-        {geojson && (
-          <>
-            <Layer
-              id="area-polygon-fill"
-              layer={{
-                type: 'fill',
-                source: 'area-polygon',
-                paint: {
-                  'fill-color': theme.palette.map.polygonFill,
-                  'fill-opacity': 0.5,
-                },
-              }}
-            />
-            <Layer
-              id="area-polygon-outline"
-              layer={{
-                type: 'line',
-                source: 'area-polygon',
-                layout: {},
-                paint: {
-                  'line-color': theme.palette.map.polygon,
-                  'line-width': 3,
-                },
-              }}
-            />
-          </>
-        )}
+        {showPolygons && geoJson && <Polygons geoJson={geoJson} />}
+        {showMarkers && geoJson && <Markers geoJson={geoJson} />}
         {children}
       </MapboxMap>
     </Box>

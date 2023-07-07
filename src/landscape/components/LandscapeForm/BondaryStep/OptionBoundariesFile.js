@@ -139,6 +139,7 @@ const OptionBoundariesFile = props => {
       <PageHeader header={t('landscape.form_boundary_geojson_title')} />
       <Paper variant="outlined" sx={{ p: 2, mt: 2, mb: 2 }}>
         <BaseMap
+          fitBounds
           center={mapCenter}
           areaPolygon={areaPolygon || landscape?.areaPolygon}
         />

@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { useMap } from './MapboxMap';
 
 const Layer = props => {
-  const { id, layer } = props;
-  const { map, addLayer } = useMap();
+  const { id, layer, images } = props;
+  const { map, addLayer, addImage } = useMap();
 
   useEffect(() => {
     if (!map) {
@@ -12,12 +12,15 @@ const Layer = props => {
 
     const mapLayer = map.getLayer(id);
     if (!mapLayer) {
+      images?.forEach(image => {
+        addImage(image.name, image.content);
+      });
       addLayer({
         id,
         ...layer,
       });
     }
-  }, [id, map, addLayer, layer]);
+  }, [id, map, addLayer, images, addImage, layer]);
 };
 
 export default Layer;
