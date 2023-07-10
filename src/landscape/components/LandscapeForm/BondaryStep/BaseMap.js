@@ -14,7 +14,7 @@ import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';
 import theme from 'theme';
 
 export const POLYGON_FILTER = feature =>
-  _.get('geometry.type', feature) === 'Polygon';
+  _.includes(_.get('geometry.type', feature), ['Polygon', 'MultiPolygon']);
 export const POINT_FILTER = feature =>
   _.get('geometry.type', feature) === 'Point';
 

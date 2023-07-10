@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import bbox from '@turf/bbox';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,10 +25,9 @@ import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
 import PageHeader from 'layout/PageHeader';
 import { rollbar } from 'monitoring/rollbar';
+import { useMap } from 'gis/components/MapboxMap';
 import { parseFileToGeoJSON } from 'gis/gisSlice';
-
-import LandscapeMap from '../LandscapeMap';
-
+import mapboxgl from 'gis/mapbox';
 import {
   GEOJSON_MAX_SIZE,
   MAP_DATA_ACCEPTED_EXTENSIONS,
@@ -107,6 +107,22 @@ const DropZone = props => {
   );
 };
 
+const FitBounds = props => {
+  const { areaPolygon } = props;
+  const { map } = useMap();
+
+  useEffect(() => {
+    if (areaPolygon) {
+      const calculatedBbox = bbox(areaPolygon);
+      const bounds = new mapboxgl.LngLatBounds(
+        [calculatedBbox[0], calculatedBbox[1]],
+        [calculatedBbox[2], calculatedBbox[3]]
+      );
+      map.fitBounds(bounds, { padding: 50 });
+    }
+  }, [areaPolygon, map]);
+};
+
 const OptionBoundariesFile = props => {
   const { t } = useTranslation();
   const {
@@ -118,6 +134,7 @@ const OptionBoundariesFile = props => {
     setAreaPolygon,
     setUpdatedLandscape,
     isNew,
+    onBoundsChange,
   } = props;
   const [selectedFile, setSelectedFile] = useState();
 
@@ -139,10 +156,14 @@ const OptionBoundariesFile = props => {
       <PageHeader header={t('landscape.form_boundary_geojson_title')} />
       <Paper variant="outlined" sx={{ p: 2, mt: 2, mb: 2 }}>
         <BaseMap
-          fitBounds
+          showPolygons
+          showMarkers
           center={mapCenter}
           areaPolygon={areaPolygon || landscape?.areaPolygon}
-        />
+          onBoundsChange={onBoundsChange}
+        >
+          {selectedFile && <FitBounds areaPolygon={areaPolygon} />}
+        </BaseMap>
         {selectedFile && (
           <Alert
             severity="info"
