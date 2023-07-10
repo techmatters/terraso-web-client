@@ -18,8 +18,8 @@ import DrawControls from 'gis/components/DrawControls';
 import { useMap } from 'gis/components/MapboxMap';
 import mapboxgl from 'gis/mapbox';
 import { OPTION_BOUNDARY_CHOICES } from '.';
+import BaseMap, { POLYGON_FILTER } from '../../LandscapeMap';
 import Actions from '../Actions';
-import BaseMap, { POLYGON_FILTER } from './BaseMap';
 
 const Draw = props => {
   const { areaPolygon, setAreaPolygon, setEditHelp, setOpen } = props;

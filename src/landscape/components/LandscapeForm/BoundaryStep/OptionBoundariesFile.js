@@ -34,8 +34,8 @@ import {
   MAP_DATA_ACCEPTED_TYPES,
 } from 'config';
 import { OPTION_BOUNDARY_CHOICES } from '.';
+import BaseMap from '../../LandscapeMap';
 import Actions from '../Actions';
-import BaseMap from './BaseMap';
 
 const DropZone = props => {
   const { t } = useTranslation();
