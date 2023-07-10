@@ -28,7 +28,7 @@ import { getPlaceInfoByName } from 'gis/gisService';
 import { useIsMounted } from 'custom-hooks';
 import './BoundaryStep.css';
 import { scrollToNavBar } from 'navigation/scrollTo';
-import OptionBoundariesFile from 'landscape/components/LandscapeForm/BondaryStep/OptionBoundariesFile';
+import OptionBoundariesFile from 'landscape/components/LandscapeForm/BoundaryStep/OptionBoundariesFile';
 import { MAP_DATA_ACCEPTED_TYPES_NAMES } from 'config';
 import OptionAddPin from './OptionAddPin';
 import OptionDrawPolygon from './OptionDrawPolygon';

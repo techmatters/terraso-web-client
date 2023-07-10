@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import BaseMap from './LandscapeForm/BondaryStep/BaseMap';
+import BaseMap from './LandscapeForm/BoundaryStep/BaseMap';
 
 const LandscapeMap = ({ label, areaPolygon, boundingBox }) => {
   return (
