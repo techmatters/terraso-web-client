@@ -112,7 +112,7 @@ const AddDialog = props => {
   const { open, onClose, onAdd } = props;
 
   const [currentFile, setCurrentFile] = useState();
-  const [dropError, setDropError] = useState();
+  const [dropErrors, setDropErrors] = useState();
   const [droppedMedia, setDroppedMedia] = useState();
 
   const [embeddedInputValue, setEmbeddedInputValue] = useState('');
@@ -122,13 +122,36 @@ const AddDialog = props => {
   const [selected, setSelected] = useState(0);
   const { addMediaFile } = useStoryMapConfigContext();
 
+  const onDropRejected = useCallback(
+    rejections => {
+      const messages = _.flow(
+        // Group by error code
+        _.groupBy(_.get('errors[0].code')),
+        // Get only rejected files filename and join them
+        _.mapValues(_.flow(_.map(_.get('file.name')), _.join(', '))),
+        _.toPairs,
+        // Generate localized messages
+        _.map(([errorCode, rejectedFiles]) =>
+          t(
+            [
+              `storyMap.upload_rejected_${errorCode}`,
+              `storyMap.upload_rejected`,
+            ],
+            { rejectedFiles }
+          )
+        )
+      )(rejections);
+      setDropErrors(() => messages);
+    },
+    [t, setDropErrors]
+  );
+
   const onDrop = useCallback(
     acceptedFiles => {
       if (_.isEmpty(acceptedFiles)) {
-        setDropError(t('landscape.boundaries_file_no_accepted'));
         return;
       }
-      setDropError(null);
+      setDropErrors(null);
       setSelected(0);
 
       const selectedFile = acceptedFiles[0];
@@ -146,8 +169,6 @@ const AddDialog = props => {
     },
     [t, addMediaFile]
   );
-
-  const dropErrors = useMemo(() => (dropError ? [dropError] : []), [dropError]);
 
   const validateEmbedded = useCallback(
     value => {
@@ -237,6 +258,7 @@ const AddDialog = props => {
           fileTypes={STORY_MAP_MEDIA_ACCEPTED_TYPES}
           fileExtensions={STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS}
           onDrop={onDrop}
+          onDropRejected={onDropRejected}
           errors={dropErrors}
           currentFile={currentFile}
           containerProps={{
@@ -342,7 +364,7 @@ const EditableImage = props => {
           sx={({ palette }) => ({
             backgroundColor: 'white',
             '&:hover': {
-              backgroundColor: palette.blue.background,
+              backgroundColor: palette.blue.dark2,
             },
           })}
         >
@@ -414,7 +436,7 @@ const EditableAudio = props => {
           sx={({ palette }) => ({
             backgroundColor: 'white',
             '&:hover': {
-              backgroundColor: palette.blue.background,
+              backgroundColor: palette.blue.dark2,
             },
           })}
         >
@@ -488,7 +510,7 @@ const EditableVideo = props => {
           sx={({ palette }) => ({
             backgroundColor: 'white',
             '&:hover': {
-              backgroundColor: palette.blue.background,
+              backgroundColor: palette.blue.dark2,
             },
           })}
         >
@@ -545,7 +567,7 @@ const EditableEmbedded = props => {
           sx={({ palette }) => ({
             backgroundColor: 'white',
             '&:hover': {
-              backgroundColor: palette.blue.background,
+              backgroundColor: palette.blue.dark2,
             },
           })}
         >
