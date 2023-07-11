@@ -118,7 +118,7 @@ const FitBounds = props => {
         [calculatedBbox[0], calculatedBbox[1]],
         [calculatedBbox[2], calculatedBbox[3]]
       );
-      map.fitBounds(bounds, { padding: 50 });
+      map.fitBounds(bounds, { padding: 50, animate: false });
     }
   }, [areaPolygon, map]);
 };

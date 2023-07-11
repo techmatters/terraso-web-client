@@ -53,10 +53,13 @@ const Polygons = props => {
   const { geoJson } = props;
 
   const onlyPolygons = useMemo(
-    () => ({
-      ...geoJson,
-      features: geoJson.features.filter(POLYGON_FILTER),
-    }),
+    () =>
+      geoJson
+        ? {
+            ...geoJson,
+            features: geoJson.features.filter(POLYGON_FILTER),
+          }
+        : null,
     [geoJson]
   );
 
@@ -99,10 +102,13 @@ const Markers = props => {
   const [image, setImage] = useState(null);
 
   const onlyPoints = useMemo(
-    () => ({
-      ...geoJson,
-      features: geoJson.features.filter(POINT_FILTER),
-    }),
+    () =>
+      geoJson
+        ? {
+            ...geoJson,
+            features: geoJson.features.filter(POINT_FILTER),
+          }
+        : null,
     [geoJson]
   );
 

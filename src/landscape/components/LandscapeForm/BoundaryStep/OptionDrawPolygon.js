@@ -69,10 +69,13 @@ const Draw = props => {
   );
 
   const onlyPolygons = useMemo(
-    () => ({
-      ...areaPolygon,
-      features: areaPolygon.features.filter(POLYGON_FILTER),
-    }),
+    () =>
+      areaPolygon
+        ? {
+            ...areaPolygon,
+            features: areaPolygon.features.filter(POLYGON_FILTER),
+          }
+        : null,
     [areaPolygon]
   );
 
