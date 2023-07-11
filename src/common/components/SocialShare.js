@@ -351,7 +351,6 @@ const SocialShare = props => {
   };
 
   const onShare = method => {
-    console.log({ method, pageUrl });
     trackEvent('share', { props: { url: pageUrl.toString(), method } });
   };
 
