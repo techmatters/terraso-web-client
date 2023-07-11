@@ -42,7 +42,9 @@ setAPIConfig({
   tokenStorage: {
     getToken: Cookies.get,
     removeToken: name => Cookies.remove(name, COOKIES_PARAMS),
-    setToken: (name, token) => Cookies.set(name, token, COOKIES_PARAMS),
+    setToken: (name, token) => {
+      Cookies.set(name, token, COOKIES_PARAMS);
+    },
   },
   logger: (severity: Severity, ...args) => rollbar[severity](...args),
 });
