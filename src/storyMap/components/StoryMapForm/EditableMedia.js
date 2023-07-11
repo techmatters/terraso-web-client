@@ -448,6 +448,7 @@ const EditableEmbedded = props => {
   return (
     <Stack spacing={1}>
       <iframe
+        allowFullScreen
         title={embedded.title}
         src={embedded.url}
         style={{ height: '300px', width: '100%' }}
