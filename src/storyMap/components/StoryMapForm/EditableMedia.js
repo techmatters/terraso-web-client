@@ -167,7 +167,7 @@ const AddDialog = props => {
         });
       });
     },
-    [t, addMediaFile]
+    [addMediaFile]
   );
 
   const validateEmbedded = useCallback(
