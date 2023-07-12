@@ -60,7 +60,8 @@
   },
   "overrides": {
     "fork-ts-checker-webpack-plugin": "^6.5.3",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "prettier": "^3.0.0"
   },
   "scripts": {
     "start": "npm run generate-types -- -w -s & react-scripts start",
@@ -101,16 +102,16 @@
     "@typescript-eslint/parser": "^5.61.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-lodash-fp": "^2.2.0-a1",
-    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-prettier": "^5.0.0",
     "flat": "^5.0.2",
     "i18next-conv": "^14.0.0",
     "jest-axe": "^8.0.0",
     "plausible-tracker": "^0.3.8",
-    "prettier": "^2.8.8",
+    "prettier": "^3.0.0",
     "react-scripts": "^5.0.1",
     "serve": "^14.2.0",
     "stylelint": "^15.10.1",
-    "stylelint-prettier": "^3.0.0",
+    "stylelint-prettier": "^4.0.0",
     "typescript": "^5.0.4"
   },
   "jest": {

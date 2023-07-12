@@ -15,5 +15,6 @@
 		"^theme$"
 	],
 	"importOrderSeparation": true,
-	"importOrderSortSpecifiers": true
+	"importOrderSortSpecifiers": true,
+	"trailingComma": "es5"
 }
