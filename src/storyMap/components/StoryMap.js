@@ -67,6 +67,17 @@ const Audio = ({ record }) => {
   );
 };
 
+const Video = ({ record }) => {
+  return (
+    <>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <video style={{ width: '100%' }} controls>
+        <source src={record.media.signedUrl} type={record.media.type} />
+      </video>
+    </>
+  );
+};
+
 const Image = ({ record }) => {
   const { t } = useTranslation();
   return (
@@ -88,7 +99,6 @@ const Chapter = ({ theme, record }) => {
   ].join(' ');
 
   const hasVisualMedia = chapterHasVisualMedia(record);
-
   return (
     <Box
       id={record.id}
@@ -110,6 +120,8 @@ const Chapter = ({ theme, record }) => {
         {record.media &&
           (record.media.type.startsWith('image') ? (
             <Image record={record} />
+          ) : record.media.type.startsWith('video') ? (
+            <Video record={record} />
           ) : record.media.type.startsWith('audio') ? (
             <Audio record={record} />
           ) : record.media.type.startsWith('embedded') ? (

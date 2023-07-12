@@ -112,7 +112,7 @@ const AddDialog = props => {
   const { open, onClose, onAdd } = props;
 
   const [currentFile, setCurrentFile] = useState();
-  const [dropError, setDropError] = useState();
+  const [dropErrors, setDropErrors] = useState();
   const [droppedMedia, setDroppedMedia] = useState();
 
   const [embeddedInputValue, setEmbeddedInputValue] = useState('');
@@ -122,13 +122,36 @@ const AddDialog = props => {
   const [selected, setSelected] = useState(0);
   const { addMediaFile } = useStoryMapConfigContext();
 
+  const onDropRejected = useCallback(
+    rejections => {
+      const messages = _.flow(
+        // Group by error code
+        _.groupBy(_.get('errors[0].code')),
+        // Get only rejected files filename and join them
+        _.mapValues(_.flow(_.map(_.get('file.name')), _.join(', '))),
+        _.toPairs,
+        // Generate localized messages
+        _.map(([errorCode, rejectedFiles]) =>
+          t(
+            [
+              `storyMap.upload_rejected_${errorCode}`,
+              `storyMap.upload_rejected`,
+            ],
+            { rejectedFiles }
+          )
+        )
+      )(rejections);
+      setDropErrors(() => messages);
+    },
+    [t, setDropErrors]
+  );
+
   const onDrop = useCallback(
     acceptedFiles => {
       if (_.isEmpty(acceptedFiles)) {
-        setDropError(t('landscape.boundaries_file_no_accepted'));
         return;
       }
-      setDropError(null);
+      setDropErrors(null);
       setSelected(0);
 
       const selectedFile = acceptedFiles[0];
@@ -144,10 +167,8 @@ const AddDialog = props => {
         });
       });
     },
-    [t, addMediaFile]
+    [addMediaFile]
   );
-
-  const dropErrors = useMemo(() => (dropError ? [dropError] : []), [dropError]);
 
   const validateEmbedded = useCallback(
     value => {
@@ -237,6 +258,7 @@ const AddDialog = props => {
           fileTypes={STORY_MAP_MEDIA_ACCEPTED_TYPES}
           fileExtensions={STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS}
           onDrop={onDrop}
+          onDropRejected={onDropRejected}
           errors={dropErrors}
           currentFile={currentFile}
           containerProps={{
@@ -342,7 +364,7 @@ const EditableImage = props => {
           sx={({ palette }) => ({
             backgroundColor: 'white',
             '&:hover': {
-              backgroundColor: palette.blue.background,
+              backgroundColor: palette.blue.dark2,
             },
           })}
         >
@@ -414,7 +436,7 @@ const EditableAudio = props => {
           sx={({ palette }) => ({
             backgroundColor: 'white',
             '&:hover': {
-              backgroundColor: palette.blue.background,
+              backgroundColor: palette.blue.dark2,
             },
           })}
         >
@@ -433,6 +455,80 @@ const EditableAudio = props => {
           confirmTitle={t('storyMap.form_media_audio_delete_confirm_title')}
           confirmMessage={t('storyMap.form_media_audio_delete_confirm_message')}
           confirmButton={t('storyMap.form_media_audio_delete_confirm_button')}
+        >
+          <DeleteIcon sx={{ color: 'white' }} />
+        </ConfirmButton>
+      </Stack>
+    </Stack>
+  );
+};
+
+const EditableVideo = props => {
+  const { t } = useTranslation();
+  const [id, setId] = useState(0);
+  const { getMediaFile } = useStoryMapConfigContext();
+  const { video, onUpdate, onDelete, processing } = props;
+
+  useEffect(() => {
+    setId(uuidv4());
+  }, [video]);
+
+  const videoSrc = useMemo(() => {
+    if (video.signedUrl) {
+      return video.signedUrl;
+    }
+    if (video.contentId) {
+      return getMediaFile(video.contentId);
+    }
+    return null;
+  }, [video, getMediaFile]);
+
+  return (
+    <Stack>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <video key={id} style={{ width: '100%' }} controls>
+        <source src={videoSrc} type={video.type} />
+        {t('storyMap.form_media_video_not_supported')}
+      </video>
+      <Stack
+        justifyContent="center"
+        alignItems="center"
+        direction="row"
+        sx={{
+          color: 'white',
+          background: 'rgba(0,0,0,0.5)',
+          bottom: 0,
+          width: '100%',
+          pt: 2,
+          pb: 2,
+        }}
+        spacing={1}
+      >
+        <Button
+          variant="outlined"
+          onClick={onUpdate}
+          sx={({ palette }) => ({
+            backgroundColor: 'white',
+            '&:hover': {
+              backgroundColor: palette.blue.dark2,
+            },
+          })}
+        >
+          {t('storyMap.form_media_update_label')}
+        </Button>
+        <ConfirmButton
+          onConfirm={onDelete}
+          loading={processing}
+          variant="text"
+          buttonProps={{
+            title: t('storyMap.form_media_delete_label'),
+            sx: {
+              minWidth: 'auto',
+            },
+          }}
+          confirmTitle={t('storyMap.form_media_video_delete_confirm_title')}
+          confirmMessage={t('storyMap.form_media_video_delete_confirm_message')}
+          confirmButton={t('storyMap.form_media_video_delete_confirm_button')}
         >
           <DeleteIcon sx={{ color: 'white' }} />
         </ConfirmButton>
@@ -471,7 +567,7 @@ const EditableEmbedded = props => {
           sx={({ palette }) => ({
             backgroundColor: 'white',
             '&:hover': {
-              backgroundColor: palette.blue.background,
+              backgroundColor: palette.blue.dark2,
             },
           })}
         >
@@ -536,6 +632,8 @@ const EditableMedia = props => {
             onUpdate={onOpen}
             onDelete={onDelete}
           />
+        ) : value.type.startsWith('video') ? (
+          <EditableVideo video={value} onUpdate={onOpen} onDelete={onDelete} />
         ) : value.type.startsWith('embedded') ? (
           <EditableEmbedded
             label={label}
