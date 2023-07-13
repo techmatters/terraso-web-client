@@ -26,7 +26,7 @@ export const iconsSvg = ({ shape, size, color, opacity = DEFAULT_OPACITY }) =>
     square: `<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="${size}px" viewBox="0 0 24 24" width="${size}px" fill="${color}"><g><rect fill="none" height="24" width="24"/></g><g><g opacity="${opacity}"><rect height="14" width="14" x="5" y="5"/></g><g><path d="M3,3v18h18V3H3z M19,19H5V5h14V19z"/></g></g></svg>`,
     hexagon: `<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="${size}px" viewBox="0 0 24 24" width="${size}px" fill="${color}"><g><rect fill="none" height="24" width="24"/></g><g><polygon opacity="${opacity}" points="16.05,19 7.95,19 3.91,12 7.95,5 16.05,5 20.09,12"/><path d="M17.2,3H6.8l-5.2,9l5.2,9h10.4l5.2-9L17.2,3z M16.05,19H7.95l-4.04-7l4.04-7h8.09l4.04,7L16.05,19z"/></g></svg>`,
     triangle: `<svg xmlns="http://www.w3.org/2000/svg" height="${size}px" viewBox="0 0 24 24" width="${size}px" fill="${color}"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 7.77L5.61 18h12.78z" opacity="${opacity}"/><path d="M12 4L2 20h20L12 4zm0 3.77L18.39 18H5.61L12 7.77z"/></svg>`,
-  }[shape]);
+  })[shape];
 
 // This function generates a PNG image data from a shape SVG with the
 // defined size and color using a canvas component
