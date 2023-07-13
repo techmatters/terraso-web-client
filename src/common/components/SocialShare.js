@@ -33,6 +33,7 @@ import {
   Typography,
 } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useAnalytics } from 'monitoring/analytics';
 import theme from 'theme';
 
 const SocialShareContext = createContext({});
@@ -59,7 +60,7 @@ export const SocialShareContextProvider = props => {
   );
 };
 
-const useCopy = content => {
+const useCopy = (content, onCopy) => {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => () => setCopied(false), []);
@@ -67,12 +68,14 @@ const useCopy = content => {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(content);
     setCopied(true);
+    onCopy?.();
   };
 
   return { copied, copyToClipboard };
 };
 
-const CopyEmbededCode = () => {
+const CopyEmbededCode = props => {
+  const { onShare } = props;
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
   const { t } = useTranslation();
   const {
@@ -89,7 +92,9 @@ const CopyEmbededCode = () => {
     return iframe.outerHTML;
   }, [embedUrl, t]);
 
-  const { copied, copyToClipboard } = useCopy(embedCode);
+  const { copied, copyToClipboard } = useCopy(embedCode, () => {
+    onShare('embed');
+  });
 
   if (!embedUrl) {
     return null;
@@ -143,12 +148,13 @@ const CopyEmbededCode = () => {
   );
 };
 
-const CopyLink = () => {
+const CopyLink = props => {
+  const { pageUrl, onShare } = props;
   const { t } = useTranslation();
 
-  const pageUrl = window.location;
-
-  const { copied, copyToClipboard } = useCopy(pageUrl);
+  const { copied, copyToClipboard } = useCopy(pageUrl, () => {
+    onShare('link');
+  });
 
   return (
     <>
@@ -204,19 +210,10 @@ const CopyLink = () => {
   );
 };
 
-const SocialShare = props => {
+const PostToService = props => {
+  const { name, pageUrl, onShare } = props;
   const { t } = useTranslation();
-  const { buttonProps } = props;
-  const { socialShareProps } = useContext(SocialShareContext);
-  const { name } = socialShareProps;
-  const [open, setOpen] = useState(false);
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const pageUrl = useMemo(() => window.location, []);
 
   const shareText = useMemo(
     () => encodeURIComponent(t('share.invite_text', { name, url: pageUrl })),
@@ -226,15 +223,124 @@ const SocialShare = props => {
   const shareViaEmail = () => {
     const subject = encodeURIComponent(t('share.invite_subject', { name }));
     window.open(`mailto:?subject=${subject}&body=${shareText}`);
+    onShare('email');
   };
 
   const shareViaWhatsApp = () => {
     window.open(`https://wa.me/?text=${shareText}`);
+    onShare('whatsapp');
   };
 
   const shareViaFacebook = () => {
     const url = encodeURIComponent(pageUrl);
     window.open(`http://www.facebook.com/share.php?u=${url}`);
+    onShare('facebook');
+  };
+
+  return (
+    <>
+      <Typography sx={{ marginBottom: 1 }}>{t('share.services')}</Typography>
+      <Stack
+        component="ul"
+        role="list"
+        direction={isSmall ? 'column' : 'row'}
+        justifyContent="space-between"
+        sx={{
+          listStyle: 'none',
+          padding: 0,
+        }}
+      >
+        <li>
+          <Button
+            variant="outlined"
+            startIcon={
+              <EmailIcon sx={{ paddingRight: 1, color: 'secondary.main' }} />
+            }
+            onClick={shareViaEmail}
+            sx={{
+              '&:hover svg': {
+                color: 'white',
+              },
+              width: {
+                xs: '100%',
+                sm: 'auto',
+              },
+            }}
+          >
+            {t('share.email')}
+          </Button>
+        </li>
+        <li>
+          <Button
+            variant="outlined"
+            startIcon={
+              <WhatsAppIcon
+                sx={{
+                  paddingRight: 1,
+                  color: 'secondary.main',
+                }}
+              />
+            }
+            onClick={shareViaWhatsApp}
+            sx={{
+              '&:hover svg': {
+                color: 'white',
+              },
+              width: {
+                xs: '100%',
+                sm: 'auto',
+              },
+              marginTop: {
+                xs: 2,
+                sm: 'auto',
+              },
+              marginBottom: {
+                xs: 2,
+                sm: 'auto',
+              },
+            }}
+          >
+            {t('share.whatsapp')}
+          </Button>
+        </li>
+        <li>
+          <Button
+            variant="outlined"
+            startIcon={
+              <FacebookIcon sx={{ paddingRight: 1, color: 'secondary.main' }} />
+            }
+            onClick={shareViaFacebook}
+            sx={{
+              '&:hover svg': {
+                color: 'white',
+              },
+              width: {
+                xs: '100%',
+                sm: 'auto',
+              },
+            }}
+          >
+            {t('share.facebook')}
+          </Button>
+        </li>
+      </Stack>
+    </>
+  );
+};
+
+const SocialShare = props => {
+  const { buttonProps } = props;
+  const { t } = useTranslation();
+  const { trackEvent } = useAnalytics();
+  const { socialShareProps } = useContext(SocialShareContext);
+  const { name } = socialShareProps;
+  const [open, setOpen] = useState(false);
+
+  const pageUrl = useMemo(() => window.location, []);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    setOpen(false);
   };
 
   // focus on the close button on open
@@ -242,6 +348,10 @@ const SocialShare = props => {
     if (ref) {
       ref.focus();
     }
+  };
+
+  const onShare = method => {
+    trackEvent('share', { props: { url: pageUrl.toString(), method } });
   };
 
   if (!name) {
@@ -280,99 +390,9 @@ const SocialShare = props => {
           </IconButton>
         </DialogTitle>
         <DialogContent sx={{ paddingBottom: 5 }}>
-          <Typography sx={{ marginBottom: 1 }}>
-            {t('share.services')}
-          </Typography>
-          <Stack
-            component="ul"
-            role="list"
-            direction={isSmall ? 'column' : 'row'}
-            justifyContent="space-between"
-            sx={{
-              listStyle: 'none',
-              padding: 0,
-            }}
-          >
-            <li>
-              <Button
-                variant="outlined"
-                startIcon={
-                  <EmailIcon
-                    sx={{ paddingRight: 1, color: 'secondary.main' }}
-                  />
-                }
-                onClick={shareViaEmail}
-                sx={{
-                  '&:hover svg': {
-                    color: 'white',
-                  },
-                  width: {
-                    xs: '100%',
-                    sm: 'auto',
-                  },
-                }}
-              >
-                {t('share.email')}
-              </Button>
-            </li>
-            <li>
-              <Button
-                variant="outlined"
-                startIcon={
-                  <WhatsAppIcon
-                    sx={{
-                      paddingRight: 1,
-                      color: 'secondary.main',
-                    }}
-                  />
-                }
-                onClick={shareViaWhatsApp}
-                sx={{
-                  '&:hover svg': {
-                    color: 'white',
-                  },
-                  width: {
-                    xs: '100%',
-                    sm: 'auto',
-                  },
-                  marginTop: {
-                    xs: 2,
-                    sm: 'auto',
-                  },
-                  marginBottom: {
-                    xs: 2,
-                    sm: 'auto',
-                  },
-                }}
-              >
-                {t('share.whatsapp')}
-              </Button>
-            </li>
-            <li>
-              <Button
-                variant="outlined"
-                startIcon={
-                  <FacebookIcon
-                    sx={{ paddingRight: 1, color: 'secondary.main' }}
-                  />
-                }
-                onClick={shareViaFacebook}
-                sx={{
-                  '&:hover svg': {
-                    color: 'white',
-                  },
-                  width: {
-                    xs: '100%',
-                    sm: 'auto',
-                  },
-                }}
-              >
-                {t('share.facebook')}
-              </Button>
-            </li>
-          </Stack>
-          <CopyLink />
-          <CopyEmbededCode />
+          <PostToService name={name} pageUrl={pageUrl} onShare={onShare} />
+          <CopyLink pageUrl={pageUrl} onShare={onShare} />
+          <CopyEmbededCode onShare={onShare} />
         </DialogContent>
       </Dialog>
     </>
