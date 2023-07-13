@@ -66,7 +66,9 @@ const SharedDataEntryBase = props => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
           updateOwner();
-          trackEvent('dataEntry.delete', { props: { owner: owner.slug } });
+          trackEvent('dataEntry.delete', {
+            props: { owner: owner.slug, name: dataEntry.name },
+          });
         }
         dispatch(resetProcessing(dataEntry.id));
       }
@@ -86,7 +88,9 @@ const SharedDataEntryBase = props => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
           updateOwner();
-          trackEvent('dataEntry.edit', { props: { owner: owner.slug } });
+          trackEvent('dataEntry.edit', {
+            props: { owner: owner.slug, name: dataEntry.name },
+          });
         }
         dispatch(resetProcessing(dataEntry.id));
       });

@@ -21,8 +21,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import ConfirmButton from 'common/components/ConfirmButton';
 import { deleteStoryMap } from 'storyMap/storyMapSlice';
+import { useAnalytics } from 'monitoring/analytics';
 
 const DeleteButton = props => {
+  const { trackEvent } = useAnalytics();
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { children, tooltip, buttonProps, storyMap, onSuccess } = props;
@@ -36,9 +38,12 @@ const DeleteButton = props => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
           onSuccess?.(storyMap);
+          trackEvent('storymap.delete', {
+            props: { title: storyMap.title },
+          });
         }
       }),
-    [dispatch, storyMap, onSuccess]
+    [dispatch, trackEvent, storyMap, onSuccess]
   );
 
   return (

@@ -36,6 +36,7 @@ import NotFound from 'layout/NotFound';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import { formatDate } from 'localization/utils';
+import { useAnalytics } from 'monitoring/analytics';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import Restricted from 'permissions/components/Restricted';
 import MapExport from 'gis/components/MapExport';
@@ -53,6 +54,7 @@ import {
 import Visualization from './Visualization';
 
 const VisualizationWrapper = props => {
+  const { trackEvent } = useAnalytics();
   const dispatch = useDispatch();
   const { i18n, t } = useTranslation();
   const { downloadFile } = useSharedData();
@@ -101,14 +103,17 @@ const VisualizationWrapper = props => {
     imagePrinter(mapTitle);
   }, [imagePrinter, mapTitle]);
 
-  const onDelete = () => {
+  const onDelete = useCallback(() => {
     dispatch(deleteVisualizationConfig(data)).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
       if (success) {
         onDeleted();
+        trackEvent('dataMap.delete', {
+          props: { owner: owner.slug, title: mapTitle },
+        });
       }
     });
-  };
+  }, [dispatch, data, onDeleted, owner, trackEvent, mapTitle]);
 
   if (!data && !fetching) {
     return <NotFound />;
