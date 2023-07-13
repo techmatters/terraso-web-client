@@ -20,8 +20,8 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
 import ConfirmButton from 'common/components/ConfirmButton';
-import { deleteStoryMap } from 'storyMap/storyMapSlice';
 import { useAnalytics } from 'monitoring/analytics';
+import { deleteStoryMap } from 'storyMap/storyMapSlice';
 
 const DeleteButton = props => {
   const { trackEvent } = useAnalytics();
