@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - main
-      - feature/landscape-profile
   pull_request:
     branches:
       - main
-      - feature/landscape-profile
 
 jobs:
   missing-keys:
@@ -21,11 +19,11 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version-file: '.tool-versions'
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run missing keys check
         run: npm run localization-check-missing
