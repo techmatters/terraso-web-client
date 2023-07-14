@@ -15,40 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-.leaflet-draw-marker-icon {
-  background: none;
-  border: none;
+.visualization-marker-popup .mapboxgl-popup-tip {
+  border-bottom-color: #666666;
+  border-top-color: #666666;
 }
-
-.visualization-marker-popup .leaflet-popup-content-wrapper {
+.visualization-marker-popup .mapboxgl-popup-content {
   background: #666666;
-  font-size: 16px;
-  line-height: 24px;
-  border-radius: 3px;
-  border: 1px solid #666666;
-  box-shadow: none;
-  color: white;
-}
-.visualization-marker-popup .leaflet-popup-tip {
-  border: 1px solid #666666;
-  background-color: #666666;
-  box-shadow: none;
-}
-
-.visualization-marker-popup p {
-  margin: 0;
-}
-
-.visualization-marker-popup .leaflet-popup-scrolled {
-  border: none;
-  margin: 0;
-  overflow: scroll;
-}
-
-.visualization-marker-popup .leaflet-popup-content-wrapper {
-  padding: 0;
-}
-
-.visualization-marker-popup .leaflet-popup-content {
-  margin: 5px;
+  color: #ffffff;
+  max-height: 150px;
+  overflow: auto;
 }

@@ -62,6 +62,7 @@ export const visualizationConfig = /* GraphQL */ `
 export const visualizationConfigWithConfiguration = /* GraphQL */ `
   fragment visualizationConfigWithConfiguration on VisualizationConfigNode {
     ...visualizationConfig
+    mapboxTilesetId
     configuration
   }
 `;

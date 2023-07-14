@@ -28,7 +28,7 @@ export const iconsSvg = ({ shape, size, color, opacity = DEFAULT_OPACITY }) =>
 
 // This function generates a PNG image data from a shape SVG with the
 // defined size and color using a canvas component
-export const getImageData = ({ shape, size, color }) => {
+export const getImageCanvas = ({ shape, size, color }) => {
   const canvas = document.createElement('canvas');
 
   document.body.appendChild(canvas);
@@ -40,9 +40,39 @@ export const getImageData = ({ shape, size, color }) => {
 
   transform.start();
 
+  return canvas;
+};
+export const getImageData = ({ shape, size, color }) => {
+  const canvas = getImageCanvas({ shape, size, color });
+
   const img = canvas.toDataURL('img/png');
 
   document.body.removeChild(canvas);
 
   return img;
 };
+
+export const getImageBlob = ({ shape, size, color }) => {
+  return new Promise((resolve, reject) => {
+    const canvas = getImageCanvas({ shape, size, color });
+    canvas.toBlob(blob => {
+      resolve(blob);
+      document.body.removeChild(canvas);
+    });
+  });
+};
+
+export const getImageBitmap = ({ shape, size, color }) => {
+  return getImageBlob({ shape, size, color }).then(blob =>
+    createImageBitmap(blob)
+  );
+};
+
+export const getImage = ({ shape, size, color }) =>
+  new Promise((resolve, reject) => {
+    let img = new Image(size, size);
+    img.onload = () => resolve(img);
+    const svg = iconsSvg({ shape, size, color });
+    const base64 = btoa(svg);
+    img.src = `data:image/svg+xml;base64,${base64}`;
+  });

@@ -72,6 +72,7 @@ const VisualizationWrapper = props => {
         : {
             ...data.configuration,
             selectedFile: data.dataEntry,
+            tilesetId: data.mapboxTilesetId,
           },
     [data, fetching]
   );
@@ -95,7 +96,7 @@ const VisualizationWrapper = props => {
   };
 
   const handleDownloadPng = useCallback(() => {
-    imagePrinter.printMap('CurrentSize', mapTitle);
+    imagePrinter(mapTitle);
   }, [imagePrinter, mapTitle]);
 
   const onDelete = () => {

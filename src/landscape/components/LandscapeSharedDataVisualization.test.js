@@ -14,11 +14,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { act, fireEvent, render, screen } from 'tests/utils';
+import { act, render, screen, waitFor } from 'tests/utils';
 import { useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import mapboxgl from 'gis/mapbox';
 import * as visualizationMarkers from 'sharedData/visualization/visualizationMarkers';
 import LandscapeSharedDataVisualization from './LandscapeSharedDataVisualization';
+
+jest.mock('gis/mapbox', () => ({}));
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
@@ -27,11 +30,6 @@ jest.mock('sharedData/visualization/visualizationMarkers');
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(),
-}));
-
-jest.mock('leaflet', () => ({
-  ...jest.requireActual('leaflet'),
-  easyPrint: jest.requireActual('leaflet').easyPrint,
 }));
 
 const TEST_CSV = `
@@ -57,9 +55,55 @@ const setup = async () => {
 
 beforeEach(() => {
   global.fetch = jest.fn();
+  mapboxgl.Popup = jest.fn();
+  mapboxgl.LngLat = jest.fn();
+  mapboxgl.LngLatBounds = jest.fn();
+  mapboxgl.LngLatBounds.prototype = {
+    extend: jest.fn().mockReturnThis(),
+    isEmpty: jest.fn().mockReturnValue(false),
+  };
+  mapboxgl.NavigationControl = jest.fn();
+  mapboxgl.Map = jest.fn();
 });
 
 test('LandscapeSharedDataVisualization: Display visualization', async () => {
+  const Popup = {
+    setLngLat: jest.fn().mockReturnThis(),
+    setMaxWidth: jest.fn().mockReturnThis(),
+    setDOMContent: jest.fn().mockReturnThis(),
+    addTo: jest.fn().mockReturnThis(),
+    remove: jest.fn(),
+  };
+  mapboxgl.Popup.mockReturnValue(Popup);
+  const events = {};
+  const map = {
+    on: jest.fn().mockImplementation((...args) => {
+      const event = args[0];
+      const callback = args.length === 2 ? args[1] : args[2];
+      const layer = args.length === 2 ? null : args[1];
+      events[[event, layer].filter(p => p).join(':')] = callback;
+
+      if (event === 'load') {
+        callback();
+      }
+    }),
+    remove: jest.fn(),
+    off: jest.fn(),
+    getCanvas: jest.fn(),
+    addControl: jest.fn(),
+    removeControl: jest.fn(),
+    addSource: jest.fn(),
+    getSource: jest.fn(),
+    addLayer: jest.fn(),
+    getLayer: jest.fn(),
+    addImage: jest.fn(),
+    setTerrain: jest.fn(),
+    fitBounds: jest.fn(),
+    hasImage: jest.fn(),
+    dragRotate: { disable: jest.fn() },
+    touchZoomRotate: { disableRotation: jest.fn() },
+  };
+  mapboxgl.Map.mockReturnValue(map);
   useParams.mockReturnValue({
     groupSlug: 'slug-1',
     configSlug: 'config-slug',
@@ -170,9 +214,11 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
       });
     },
   });
-  visualizationMarkers.getImageData.mockReturnValue('markerImageData');
+
+  visualizationMarkers.getImage.mockResolvedValue('image/svg;base64,abc123');
 
   await setup();
+
   await screen.findByRole('button', { name: 'Download PNG' });
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(4);
   expect(global.fetch).toHaveBeenCalledTimes(1);
@@ -181,16 +227,28 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
     screen.getByRole('heading', { name: 'Test Title' })
   ).toBeInTheDocument();
 
-  // Markers
-  expect(screen.getByRole('button', { name: 'val4' })).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'val41' })).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'val42' })).toBeInTheDocument();
+  // Map
+  await waitFor(() => expect(map.addSource).toHaveBeenCalledTimes(3));
+  expect(map.addSource.mock.calls[2][0]).toEqual('visualization');
+  const geojson = map.addSource.mock.calls[2][1].data;
+  expect(geojson.features.length).toBe(3);
 
-  // Popup
+  expect(map.addLayer).toHaveBeenCalledTimes(3);
+  expect(map.addLayer.mock.calls[2][0]).toMatchObject({ id: 'visualization' });
+
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'val41' }))
+    events['click:visualization']({
+      features: [geojson.features[1]],
+      lngLat: {
+        lng: 0,
+        lat: 0,
+      },
+    })
   );
-  expect(screen.getByRole('heading', { name: 'val41' })).toBeInTheDocument();
-  expect(screen.getByText(/Custom Label/i)).toBeInTheDocument();
-  expect(screen.getByText(/val11/i)).toBeInTheDocument();
+  expect(Popup.setDOMContent).toHaveBeenCalledTimes(2);
+  const domElement = Popup.setDOMContent.mock.calls[1][0];
+  expect(domElement.querySelector('h2').textContent).toEqual('val41');
+  expect(domElement.querySelector('p').textContent).toEqual(
+    'Custom Label: val11'
+  );
 });

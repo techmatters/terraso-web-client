@@ -56,7 +56,7 @@ const Shape = props => {
         component={ToggleButtonGroup}
         value={shape}
         exclusive
-        onChange={(event, newShape) => setShape(newShape)}
+        onChange={(event, newShape) => newShape && setShape(newShape)}
         aria-labelledby="shape-label"
       >
         {_.toPairs(visualizeIcons).map(([key, IconComponent]) => (

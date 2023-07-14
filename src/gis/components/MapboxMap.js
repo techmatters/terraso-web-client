@@ -14,7 +14,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
 import { Box } from '@mui/material';
 import mapboxgl from 'gis/mapbox';
 import {
@@ -51,16 +53,139 @@ export const MAPBOX_FOG = {
   'star-intensity': 0.1, // Background star brightness (default 0.35 at low zoooms )
 };
 
+const TRANSLATABLE_LAYERS = ['country-label', 'continent-label'];
+
 const MapContext = React.createContext();
 
 export const useMap = () => React.useContext(MapContext);
 
+// Extract style from Style options
+// Options:
+// 1. "mapbox://styles/mapbox/satellite-v9"
+// 2. "mapbox/satellite-v9"
+// 3. "https://api.mapbox.com/styles/v1/mapbox/satellite-v9""
+// 4. Object
+// Return style object
+export const fetchStyle = async style => {
+  if (typeof style === 'object') {
+    return style;
+  }
+
+  const getStyleId = () => {
+    if (style.startsWith('mapbox/')) {
+      return style;
+    }
+    if (style.startsWith('mapbox://styles/')) {
+      return style.replace('mapbox://styles/', '');
+    }
+    if (style.startsWith('https://api.mapbox.com/styles/v1/')) {
+      return style.replace('https://api.mapbox.com/styles/v1/', '');
+    }
+    return null;
+  };
+
+  const url = `https://api.mapbox.com/styles/v1/${getStyleId()}?access_token=${MAPBOX_ACCESS_TOKEN}`;
+  const response = await fetch(url);
+  const json = await response.json();
+  return json;
+};
+
+// Set Style doesn't keep the current layers, so we need to copy them across
+// Issue: https://github.com/mapbox/mapbox-gl-js/issues/4006
+async function switchStyle(map, style, images, sources, layers) {
+  const newStyle = await fetchStyle(style);
+
+  const mergedSources = {
+    ...newStyle.sources,
+    ...sources,
+  };
+
+  const mergedLayers = Object.values({
+    ..._.keyBy('id', newStyle.layers),
+    ...layers,
+  });
+
+  map.setStyle(
+    {
+      ...newStyle,
+      sources: mergedSources,
+      layers: mergedLayers,
+    },
+    {
+      diff: false,
+    }
+  );
+  map.once('styledata', () => {
+    Object.entries(images).forEach(([name, image]) => {
+      if (map.hasImage(name)) {
+        return;
+      }
+      map.addImage(name, image);
+    });
+  });
+}
+
+export const MapContextConsumer = props => <MapContext.Consumer {...props} />;
+
 export const MapProvider = props => {
-  const { children } = props;
+  const { children, onStyleChange } = props;
   const [map, setMap] = useState(null);
+  const [images, setImages] = useState({});
+  const [sources, setSources] = useState({});
+  const [layers, setLayers] = useState({});
+
+  const addImage = useCallback(
+    (name, image) => {
+      if (!map) {
+        return;
+      }
+      setImages(prev => ({ ...prev, [name]: image }));
+      map.addImage(name, image);
+    },
+    [map]
+  );
+
+  const addSource = useCallback(
+    (name, source) => {
+      if (!map) {
+        return;
+      }
+      setSources(prev => ({ ...prev, [name]: source }));
+      map.addSource(name, source);
+    },
+    [map]
+  );
+
+  const addLayer = useCallback(
+    (layer, before) => {
+      if (!map) {
+        return;
+      }
+      setLayers(prev => ({ ...prev, [layer.id]: layer }));
+      map.addLayer(layer, before);
+    },
+    [map]
+  );
+
+  const changeStyle = useCallback(
+    newStyle => {
+      switchStyle(map, newStyle, images, sources, layers);
+      onStyleChange?.(newStyle);
+    },
+    [map, images, sources, layers, onStyleChange]
+  );
 
   return (
-    <MapContext.Provider value={{ map, setMap }}>
+    <MapContext.Provider
+      value={{
+        setMap,
+        map,
+        changeStyle,
+        addImage,
+        addSource,
+        addLayer,
+      }}
+    >
       {children}
     </MapContext.Provider>
   );
@@ -77,11 +202,14 @@ const MapboxMap = props => {
     attributionControl = true,
     center,
     zoom = 1,
+    disableRotation = false,
     height = '400px',
     width = '100%',
     sx,
+    onBoundsChange,
     children,
   } = props;
+  const { i18n } = useTranslation();
   const { map, setMap } = useMap();
   const mapContainer = useRef(null);
 
@@ -95,6 +223,7 @@ const MapboxMap = props => {
       center,
       hash,
       attributionControl,
+      preserveDrawingBuffer: true,
       ...(initialLocation ? initialLocation : {}),
     });
 
@@ -114,7 +243,17 @@ const MapboxMap = props => {
       map.setFog(MAPBOX_FOG);
     });
 
-    return () => map.remove();
+    if (disableRotation) {
+      // disable map rotation using right click + drag
+      map.dragRotate.disable();
+
+      // disable map rotation using touch rotation gesture
+      map.touchZoomRotate.disableRotation();
+    }
+
+    return () => {
+      map.remove();
+    };
   }, [
     style,
     initialLocation,
@@ -125,7 +264,33 @@ const MapboxMap = props => {
     zoom,
     attributionControl,
     setMap,
+    disableRotation,
   ]);
+
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+    const onMoveListener = () => onBoundsChange?.(map.getBounds());
+    map.on('moveend', onMoveListener);
+
+    return () => {
+      map.on('moveend', onMoveListener);
+    };
+  }, [map, onBoundsChange]);
+
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+    const language = i18n.language.split('-')[0];
+
+    TRANSLATABLE_LAYERS.forEach(layer => {
+      if (map.getLayer(layer)) {
+        map.setLayoutProperty(layer, 'text-field', ['get', `name_${language}`]);
+      }
+    });
+  }, [map, i18n.language]);
 
   return (
     <Box
@@ -137,7 +302,7 @@ const MapboxMap = props => {
         ...sx,
       }}
     >
-      {typeof children === 'function' ? children(map) : children}
+      {children}
     </Box>
   );
 };

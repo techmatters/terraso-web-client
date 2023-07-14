@@ -58,12 +58,15 @@ const PreviewStep = props => {
     }));
   }, []);
 
-  const onBaseMapChange = useCallback(layer => {
-    setViewportConfig(current => ({
-      ...current,
-      baseMapUrl: layer._url,
-    }));
-  }, []);
+  const onStyleChange = useCallback(
+    style => {
+      setViewportConfig(current => ({
+        ...current,
+        baseMapStyle: style,
+      }));
+    },
+    [setViewportConfig]
+  );
 
   const onPublish = () => {
     const completeConfig = {
@@ -116,7 +119,7 @@ const PreviewStep = props => {
         </Typography>
         <VisualizationPreview
           onBoundsChange={onBoundsChange}
-          onBaseMapChange={onBaseMapChange}
+          onStyleChange={onStyleChange}
         />
         <Typography sx={{ mt: 2 }}>
           {t('sharedData.form_step_preview_step_map_description', {
