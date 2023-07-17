@@ -28,6 +28,7 @@ import mapboxgl from 'gis/mapbox';
 import { getMarkerImage } from 'gis/mapMarkers';
 import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';
 import theme from 'theme';
+import logger from 'terraso-client-shared/monitoring/logger';
 
 export const POLYGON_FILTER = feature =>
   _.includes(_.get('geometry.type', feature), ['Polygon', 'MultiPolygon']);
@@ -42,10 +43,14 @@ const BoundingBox = props => {
     if (!map || !bounds) {
       return;
     }
-    map.fitBounds(new mapboxgl.LngLatBounds(bounds), {
-      padding: 20,
-      animate: false,
-    });
+    try {
+      map.fitBounds(new mapboxgl.LngLatBounds(bounds), {
+        padding: 20,
+        animate: false,
+      });
+    } catch (error) {
+      logger.warn('Failed to fit map bounds', error);
+    }
   }, [map, bounds]);
 };
 

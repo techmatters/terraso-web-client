@@ -197,9 +197,16 @@ const BoundaryStep = props => {
 
   const setUpdatedLandscapeWrapper = useCallback(
     updatedValues => {
-      setUpdatedLandscape({ boundaryOption: option, ...updatedValues });
+      setUpdatedLandscape({
+        boundaryOption: option,
+        ...updatedValues,
+        areaPolygon: {
+          ...updatedValues.areaPolygon,
+          bbox: boundingBox,
+        },
+      });
     },
-    [setUpdatedLandscape, option]
+    [setUpdatedLandscape, option, boundingBox]
   );
 
   const onBoundsChange = useCallback(
