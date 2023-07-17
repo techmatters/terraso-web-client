@@ -101,14 +101,13 @@ const MapboxGeoJsonSource = props => {
 
   const points = useMemo(() => {
     const dataPoints = annotateConfig?.dataPoints || [];
+    const titleColumn = annotateConfig?.annotationTitle;
     return rows
       .map((row, index) => {
         const lat = parseFloat(row[datasetConfig.latitude]);
         const lng = normalizeLongitude(
           parseFloat(row[datasetConfig.longitude])
         );
-
-        const titleColumn = annotateConfig?.annotationTitle;
 
         const fields = dataPoints.map(dataPoint => ({
           label: dataPoint.label || dataPoint.column,
@@ -301,6 +300,7 @@ const MapboxLayer = props => {
     openPopup,
     map,
     visualizationConfig?.annotateConfig?.annotationTitle,
+    visualizationConfig?.annotateConfig?.dataPoints,
   ]);
 
   useEffect(() => {
