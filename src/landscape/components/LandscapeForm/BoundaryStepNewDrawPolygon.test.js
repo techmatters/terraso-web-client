@@ -16,13 +16,13 @@
  */
 import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
-import L from 'leaflet';
 import { act } from 'react-dom/test-utils';
-import * as reactLeaflet from 'react-leaflet';
 import { useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import LandscapeNew from 'landscape/components/LandscapeForm/New';
+import mapboxgl from 'gis/mapbox';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
@@ -31,10 +31,8 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(),
 }));
 
-jest.mock('react-leaflet', () => ({
-  ...jest.requireActual('react-leaflet'),
-  useMap: jest.fn(),
-}));
+jest.mock('gis/mapbox', () => ({}));
+jest.mock('@mapbox/mapbox-gl-draw');
 
 const setup = async () => {
   await render(<LandscapeNew />, {
@@ -78,12 +76,71 @@ const setup = async () => {
 
 beforeEach(() => {
   useParams.mockReturnValue({});
-  reactLeaflet.useMap.mockImplementation(
-    jest.requireActual('react-leaflet').useMap
-  );
+  mapboxgl.Map = jest.fn();
+  mapboxgl.NavigationControl = jest.fn();
+  mapboxgl.LngLatBounds = jest.fn();
 });
 
 test('LandscapeNew: Save form draw polygon boundary', async () => {
+  const events = {};
+  mapboxgl.Map.prototype = {
+    on: jest.fn().mockImplementation((...args) => {
+      const event = args[0];
+      const callback = args.length === 2 ? args[1] : args[2];
+      const layer = args.length === 2 ? null : args[1];
+      events[[event, layer].filter(p => p).join(':')] = callback;
+
+      if (event === 'load') {
+        callback();
+      }
+    }),
+    addSource: jest.fn(),
+    getSource: jest.fn(),
+    setTerrain: jest.fn(),
+    addLayer: jest.fn(),
+    getLayer: jest.fn(),
+    remove: jest.fn(),
+    addControl: jest.fn(),
+    removeControl: jest.fn(),
+    fitBounds: jest.fn(),
+    off: jest.fn(),
+    getBounds: jest.fn().mockReturnValue({
+      getSouthWest: jest.fn().mockReturnValue({
+        lng: -76.29042998100137,
+        lat: 8.263885173441716,
+      }),
+      getNorthEast: jest.fn().mockReturnValue({
+        lng: -67.62077603784013,
+        lat: 11.325606896067784,
+      }),
+    }),
+  };
+  const geoJson = {
+    type: 'FeatureCollection',
+    features: [
+      {
+        id: 'ec06341d66d12c805160c35e5aae5b9e',
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          coordinates: [
+            [
+              [37, -109.05],
+              [41, -109.03],
+              [41, -102.05],
+              [37, -102.04],
+            ],
+          ],
+          type: 'Polygon',
+        },
+      },
+    ],
+  };
+  MapboxDraw.prototype = {
+    getAll: jest.fn().mockReturnValue(geoJson),
+    deleteAll: jest.fn(),
+    set: jest.fn(),
+  };
   terrasoApi.requestGraphQL.mockImplementation(query => {
     const trimmedQuery = query.trim();
 
@@ -133,8 +190,6 @@ test('LandscapeNew: Save form draw polygon boundary', async () => {
     }
   });
 
-  const spy = jest.spyOn(reactLeaflet, 'useMap');
-
   const { inputs } = await setup();
 
   fireEvent.change(inputs.name, { target: { value: 'New name' } });
@@ -162,20 +217,13 @@ test('LandscapeNew: Save form draw polygon boundary', async () => {
     )
   );
 
-  await waitFor(() => expect(spy).toHaveBeenCalled());
-  const map = spy.mock.results[spy.mock.results.length - 1].value;
-
   await act(async () =>
-    map.fireEvent('draw:created', {
-      layerType: 'polygon',
-      layer: new L.polygon([
-        [37, -109.05],
-        [41, -109.03],
-        [41, -102.05],
-        [37, -102.04],
-      ]),
+    events['draw.create']({
+      features: geoJson.features,
     })
   );
+  await act(async () => events['moveend']());
+
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'close' }))
   );
@@ -199,8 +247,31 @@ test('LandscapeNew: Save form draw polygon boundary', async () => {
       email: 'info@other.org',
       website: 'https://www.other.org',
       location: 'AR',
-      areaPolygon:
-        '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[-109.05,37],[-109.03,41],[-102.05,41],[-102.04,37],[-109.05,37]]]}}],"bbox":[-105.46875000000001,38.82259097617713,-105.46875000000001,38.82259097617713]}',
+      areaPolygon: JSON.stringify({
+        type: 'FeatureCollection',
+        features: [
+          {
+            id: 'ec06341d66d12c805160c35e5aae5b9e',
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              coordinates: [
+                [
+                  [37, -109.05],
+                  [41, -109.03],
+                  [41, -102.05],
+                  [37, -102.04],
+                ],
+              ],
+              type: 'Polygon',
+            },
+          },
+        ],
+        bbox: [
+          -76.29042998100137, 8.263885173441716, -67.62077603784013,
+          11.325606896067784,
+        ],
+      }),
       areaTypes: null,
       population: null,
       partnershipStatus: 'no',

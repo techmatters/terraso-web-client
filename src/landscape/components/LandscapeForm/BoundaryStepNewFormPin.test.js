@@ -25,7 +25,6 @@ import mapboxgl from 'gis/mapbox';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
-jest.mock('@mapbox/mapbox-gl-draw');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -33,6 +32,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 jest.mock('gis/mapbox', () => ({}));
+jest.mock('@mapbox/mapbox-gl-draw');
 
 const setup = async () => {
   await render(<LandscapeNew />, {
