@@ -30,8 +30,8 @@ test('Landscape Utils: get bounding box by area geojson', () => {
   const boundingBox = getLandscapeBoundingBox(landscape);
 
   expect(boundingBox).toStrictEqual([
-    [39, -100],
-    [39, -100],
+    [-100, 39],
+    [-100, 39],
   ]);
 });
 
@@ -43,8 +43,8 @@ test('Landscape Utils: get bounding box by position', () => {
   const boundingBox = getLandscapeBoundingBox(landscape);
 
   expect(boundingBox).toStrictEqual([
-    [2, 3],
-    [1, 4],
+    [3, 2],
+    [4, 1],
   ]);
 });
 
