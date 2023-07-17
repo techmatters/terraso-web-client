@@ -32,7 +32,6 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(),
 }));
 
-// Mock mapboxgl
 jest.mock('gis/mapbox', () => ({}));
 
 const setup = async () => {
