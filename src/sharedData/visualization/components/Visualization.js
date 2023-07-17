@@ -307,7 +307,7 @@ const MapboxLayer = props => {
     if (!map) {
       return;
     }
-    const configBounds = (function () {
+    const visualizationConfigBounds = (function () {
       const viewportBounds = visualizationConfig?.viewportConfig?.bounds;
       if (!viewportBounds) {
         return;
@@ -334,7 +334,7 @@ const MapboxLayer = props => {
       );
     })();
 
-    const bounds = useConfigBounds ? configBounds : geoJsonBounds;
+    const bounds = useConfigBounds ? visualizationConfigBounds : geoJsonBounds;
 
     if (bounds && !bounds.isEmpty()) {
       map.fitBounds(bounds, {
