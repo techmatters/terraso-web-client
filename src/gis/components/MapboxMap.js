@@ -307,7 +307,7 @@ const MapboxMap = props => {
     map.on('moveend', onMoveListener);
 
     return () => {
-      map.on('moveend', onMoveListener);
+      map.off('moveend', onMoveListener);
     };
   }, [map, onBoundsChange]);
 
