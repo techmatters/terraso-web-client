@@ -169,11 +169,15 @@ const BoundaryStep = props => {
 
       // Whenever the location (country) changes, fetch the lat/lng for the
       // country and center the map on that country.
-      getPlaceInfoByName(currentCountry.name).then(data => {
-        if (isMounted.current) {
-          setBoundingBox(data.boundingbox);
-        }
-      });
+      getPlaceInfoByName(currentCountry.name)
+        .then(data => {
+          if (isMounted.current) {
+            setBoundingBox(data.boundingbox);
+          }
+        })
+        .catch(() => {
+          // If we can't get the bounding box, just ignore it.
+        });
     }
   }, [landscape.location, isMounted]);
 

@@ -182,7 +182,8 @@ export const fetchLandscapeToView = slug => {
         .then(placeInfo => ({
           ...landscape,
           boundingBox: placeInfo?.boundingbox,
-        }));
+        }))
+        .catch(() => landscape);
     });
 };
 
