@@ -83,7 +83,7 @@ beforeEach(() => {
 });
 
 test('LandscapeNew: Save from GeoJSON', async () => {
-  mapboxgl.Map.prototype = {
+  mapboxgl.Map.mockImplementation(() => ({
     on: jest.fn().mockImplementation((...args) => {
       const event = args[0];
       const callback = args.length === 2 ? args[1] : args[2];
@@ -101,7 +101,7 @@ test('LandscapeNew: Save from GeoJSON', async () => {
     removeControl: jest.fn(),
     fitBounds: jest.fn(),
     off: jest.fn(),
-  };
+  }));
   terrasoApi.requestGraphQL.mockImplementation(query => {
     const trimmedQuery = query.trim();
 

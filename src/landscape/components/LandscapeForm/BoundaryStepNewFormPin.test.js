@@ -78,11 +78,12 @@ beforeEach(() => {
   useParams.mockReturnValue({});
   mapboxgl.Map = jest.fn();
   mapboxgl.NavigationControl = jest.fn();
+  MapboxDraw.mockClear();
 });
 
 test('LandscapeNew: Save form Pin boundary', async () => {
   const events = {};
-  mapboxgl.Map.prototype = {
+  mapboxgl.Map.mockImplementation(() => ({
     on: jest.fn().mockImplementation((...args) => {
       const event = args[0];
       const callback = args.length === 2 ? args[1] : args[2];
@@ -113,7 +114,7 @@ test('LandscapeNew: Save form Pin boundary', async () => {
         lat: 11.325606896067784,
       }),
     }),
-  };
+  }));
   const geoJson = {
     features: [
       {
@@ -124,10 +125,10 @@ test('LandscapeNew: Save form Pin boundary', async () => {
       },
     ],
   };
-  MapboxDraw.prototype = {
+  MapboxDraw.mockImplementation(() => ({
     getAll: jest.fn().mockReturnValue(geoJson),
     deleteAll: jest.fn(),
-  };
+  }));
   terrasoApi.requestGraphQL.mockImplementation(query => {
     const trimmedQuery = query.trim();
 
