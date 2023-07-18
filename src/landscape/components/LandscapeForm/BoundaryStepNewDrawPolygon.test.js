@@ -217,12 +217,12 @@ test('LandscapeNew: Save form draw polygon boundary', async () => {
     )
   );
 
+  await act(async () => events['moveend']());
   await act(async () =>
     events['draw.create']({
       features: geoJson.features,
     })
   );
-  await act(async () => events['moveend']());
 
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'close' }))
