@@ -89,6 +89,17 @@ const Image = ({ record }) => {
   );
 };
 
+const Embedded = ({ record }) => {
+  return (
+    <iframe
+      allowFullScreen
+      title={record.media.title}
+      src={record.media.url}
+      style={{ height: '300px', width: '100%' }}
+    />
+  );
+};
+
 const Chapter = ({ theme, record }) => {
   const { t } = useTranslation();
   const classList = [
@@ -125,11 +136,7 @@ const Chapter = ({ theme, record }) => {
           ) : record.media.type.startsWith('audio') ? (
             <Audio record={record} />
           ) : record.media.type.startsWith('embedded') ? (
-            <iframe
-              title={record.media.title}
-              src={record.media.url}
-              style={{ height: '300px', width: '100%' }}
-            />
+            <Embedded record={record} />
           ) : null)}
         {record.description && (
           <RichTextEditor value={record.description} editable={false} />

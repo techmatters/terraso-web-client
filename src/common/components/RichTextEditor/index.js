@@ -514,7 +514,6 @@ const RichTextEditor = props => {
           component={Editable}
           id={id}
           aria-label={label}
-          className="jose"
           sx={
             addContainer
               ? {
@@ -531,8 +530,12 @@ const RichTextEditor = props => {
           renderLeaf={Leaf}
           placeholder={placeholder}
           renderPlaceholder={({ children, attributes }) => (
-            <Box {...attributes}>
-              <Typography variant="subtitle1" sx={{ pt: 1.5 }}>
+            <Box component="span" {...attributes}>
+              <Typography
+                component="span"
+                variant="subtitle1"
+                sx={{ lineHeight: 3 }}
+              >
                 {children}
               </Typography>
             </Box>
