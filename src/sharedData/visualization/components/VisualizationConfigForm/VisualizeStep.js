@@ -204,6 +204,7 @@ const VisualizeStep = props => {
         </Grid>
         <Grid item xs={12} md={6}>
           <VisualizationPreview
+            useConfigBounds
             title={t('sharedData.form_visualization_preview_title')}
             customConfig={{ visualizeConfig }}
           />

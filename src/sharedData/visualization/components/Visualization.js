@@ -19,6 +19,7 @@ import _ from 'lodash/fp';
 import * as SheetsJs from 'xlsx';
 import mapboxgl from 'gis/mapbox';
 import './Visualization.css';
+import bbox from '@turf/bbox';
 import { Box, Portal, Stack, Typography } from '@mui/material';
 import MapboxMap, { useMap as useMapboxMap } from 'gis/components/MapboxMap';
 import MapboxMapControls from 'gis/components/MapboxMapControls';
@@ -100,14 +101,13 @@ const MapboxGeoJsonSource = props => {
 
   const points = useMemo(() => {
     const dataPoints = annotateConfig?.dataPoints || [];
+    const titleColumn = annotateConfig?.annotationTitle;
     return rows
       .map((row, index) => {
         const lat = parseFloat(row[datasetConfig.latitude]);
         const lng = normalizeLongitude(
           parseFloat(row[datasetConfig.longitude])
         );
-
-        const titleColumn = annotateConfig?.annotationTitle;
 
         const fields = dataPoints.map(dataPoint => ({
           label: dataPoint.label || dataPoint.column,
@@ -153,32 +153,6 @@ const MapboxGeoJsonSource = props => {
     [points]
   );
 
-  const geoJsonBounds = useMemo(
-    () =>
-      points.reduce((bounds, point) => {
-        try {
-          return bounds.extend(point.position);
-        } catch (error) {
-          return bounds;
-        }
-      }, new mapboxgl.LngLatBounds()),
-    [points]
-  );
-
-  useEffect(() => {
-    if (!map || !geoJsonBounds || visualizationConfig?.viewportConfig?.bounds) {
-      return;
-    }
-
-    if (!geoJsonBounds.isEmpty()) {
-      map.fitBounds(geoJsonBounds, {
-        padding: 50,
-        animate: false,
-        maxZoom: 10,
-      });
-    }
-  }, [map, geoJsonBounds, visualizationConfig?.viewportConfig?.bounds]);
-
   useEffect(() => {
     if (!map || !geoJson) {
       return;
@@ -197,7 +171,7 @@ const MapboxGeoJsonSource = props => {
 };
 
 const MapboxLayer = props => {
-  const { visualizationConfig, showPopup } = props;
+  const { visualizationConfig, showPopup, useConfigBounds } = props;
   const { map, addImage, addLayer } = useMapboxMap();
   const [imageSvg, setimageSvg] = useState();
   const [popupData, setPopupData] = useState(null);
@@ -223,30 +197,6 @@ const MapboxLayer = props => {
     }
     getImage(visualizationConfig?.visualizeConfig).then(setimageSvg);
   }, [visualizationConfig?.visualizeConfig]);
-
-  useEffect(() => {
-    if (!map || !visualizationConfig?.viewportConfig?.bounds) {
-      return;
-    }
-    const viewportBounds = visualizationConfig?.viewportConfig?.bounds;
-
-    const southWest = viewportBounds.southWest;
-    const northEast = viewportBounds.northEast;
-    if (!southWest || !northEast) {
-      return;
-    }
-    const sw = new mapboxgl.LngLat(southWest.lng, southWest.lat);
-    const ne = new mapboxgl.LngLat(northEast.lng, northEast.lat);
-    const bounds = new mapboxgl.LngLatBounds(sw, ne);
-
-    if (!bounds.isEmpty()) {
-      map.fitBounds(bounds, {
-        padding: 50,
-        animate: false,
-        maxZoom: 10,
-      });
-    }
-  }, [map, visualizationConfig?.viewportConfig?.bounds]);
 
   const openPopup = useCallback((feature, event) => {
     if (!feature) {
@@ -350,7 +300,50 @@ const MapboxLayer = props => {
     openPopup,
     map,
     visualizationConfig?.annotateConfig?.annotationTitle,
+    visualizationConfig?.annotateConfig?.dataPoints,
   ]);
+
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+    const visualizationConfigBounds = (function () {
+      const viewportBounds = visualizationConfig?.viewportConfig?.bounds;
+      if (!viewportBounds) {
+        return;
+      }
+      const southWest = viewportBounds.southWest;
+      const northEast = viewportBounds.northEast;
+      if (!southWest || !northEast) {
+        return;
+      }
+      const sw = new mapboxgl.LngLat(southWest.lng, southWest.lat);
+      const ne = new mapboxgl.LngLat(northEast.lng, northEast.lat);
+      return new mapboxgl.LngLatBounds(sw, ne);
+    })();
+
+    const geoJsonBounds = (function () {
+      const source = map.getSource('visualization');
+      if (!source || !source._data) {
+        return;
+      }
+      const calculatedBbox = bbox(map.getSource('visualization')._data);
+      return new mapboxgl.LngLatBounds(
+        [calculatedBbox[0], calculatedBbox[1]],
+        [calculatedBbox[2], calculatedBbox[3]]
+      );
+    })();
+
+    const bounds = useConfigBounds ? visualizationConfigBounds : geoJsonBounds;
+
+    if (bounds && !bounds.isEmpty()) {
+      map.fitBounds(bounds, {
+        padding: 50,
+        animate: false,
+        maxZoom: 10,
+      });
+    }
+  }, [map, visualizationConfig?.viewportConfig?.bounds, useConfigBounds]);
 
   return (
     <Portal container={popupContainer}>
@@ -366,6 +359,7 @@ const Visualization = props => {
     sampleSize,
     onBoundsChange,
     onStyleChange,
+    useConfigBounds,
     children,
   } = props;
   const visualizationContext = useVisualizationContext();
@@ -405,6 +399,7 @@ const Visualization = props => {
         <MapboxLayer
           visualizationConfig={visualizationConfig}
           showPopup={showPopup}
+          useConfigBounds={useConfigBounds}
         />
         {children}
       </MapboxMap>

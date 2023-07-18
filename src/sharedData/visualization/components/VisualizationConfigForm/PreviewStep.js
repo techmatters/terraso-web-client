@@ -118,6 +118,7 @@ const PreviewStep = props => {
           {t('sharedData.form_step_preview_step_description', { entityType })}
         </Typography>
         <VisualizationPreview
+          useConfigBounds
           onBoundsChange={onBoundsChange}
           onStyleChange={onStyleChange}
         />

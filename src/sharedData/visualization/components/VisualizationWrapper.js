@@ -160,7 +160,7 @@ const VisualizationWrapper = props => {
                   </Alert>
                 )}
                 {!(loadingFile || loadingFileError || fetching) && (
-                  <Visualization>
+                  <Visualization useConfigBounds>
                     <MapExport onImagePrinterChange={setImagePrinter} />
                   </Visualization>
                 )}
