@@ -218,7 +218,6 @@ test('LandscapeNew: Save form draw polygon boundary', async () => {
     )
   );
 
-  await act(async () => events['moveend']());
   await act(async () =>
     events['draw.create']({
       features: geoJson.features,
@@ -232,6 +231,7 @@ test('LandscapeNew: Save form draw polygon boundary', async () => {
   await waitFor(() => {
     expect(screen.getByRole('button', { name: 'Next' })).toBeInTheDocument();
   });
+  await act(async () => events['moveend']());
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Next' }))
   );
