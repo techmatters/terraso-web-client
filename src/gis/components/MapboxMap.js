@@ -25,6 +25,7 @@ import {
   MAPBOX_STYLE_DEFAULT,
 } from 'config';
 import { withWrapper } from 'react-hoc';
+import logger from 'terraso-client-shared/monitoring/logger';
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
@@ -150,8 +151,12 @@ export const MapProvider = props => {
       if (!map) {
         return;
       }
-      setSources(prev => ({ ...prev, [name]: source }));
-      map.addSource(name, source);
+      try {
+        map.addSource(name, source);
+        setSources(prev => ({ ...prev, [name]: source }));
+      } catch (error) {
+        logger.warn('Error adding source', error);
+      }
     },
     [map]
   );
@@ -161,8 +166,12 @@ export const MapProvider = props => {
       if (!map) {
         return;
       }
-      setLayers(prev => ({ ...prev, [layer.id]: layer }));
-      map.addLayer(layer, before);
+      try {
+        map.addLayer(layer, before);
+        setLayers(prev => ({ ...prev, [layer.id]: layer }));
+      } catch (error) {
+        logger.warn('Error adding layer', error);
+      }
     },
     [map]
   );
