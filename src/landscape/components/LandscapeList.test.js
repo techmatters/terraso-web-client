@@ -95,6 +95,7 @@ const baseListTest = async () => {
     addControl: jest.fn(),
     removeControl: jest.fn(),
     addSource: jest.fn(),
+    getSource: jest.fn(),
     addLayer: jest.fn(),
     getLayer: jest.fn(),
     setTerrain: jest.fn(),
