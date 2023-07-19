@@ -25,6 +25,7 @@ import {
   MAPBOX_STYLE_DEFAULT,
 } from 'config';
 import { withWrapper } from 'react-hoc';
+import logger from 'terraso-client-shared/monitoring/logger';
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
@@ -150,8 +151,12 @@ export const MapProvider = props => {
       if (!map) {
         return;
       }
-      setSources(prev => ({ ...prev, [name]: source }));
-      map.addSource(name, source);
+      try {
+        map.addSource(name, source);
+        setSources(prev => ({ ...prev, [name]: source }));
+      } catch (error) {
+        logger.warn('Error adding source', error);
+      }
     },
     [map]
   );
@@ -161,8 +166,12 @@ export const MapProvider = props => {
       if (!map) {
         return;
       }
-      setLayers(prev => ({ ...prev, [layer.id]: layer }));
-      map.addLayer(layer, before);
+      try {
+        map.addLayer(layer, before);
+        setLayers(prev => ({ ...prev, [layer.id]: layer }));
+      } catch (error) {
+        logger.warn('Error adding layer', error);
+      }
     },
     [map]
   );
@@ -228,13 +237,17 @@ const MapboxMap = props => {
     });
 
     map.on('load', function () {
-      map.addSource('mapbox-dem', MAPBOX_DEM_SOURCE);
+      if (!map.getSource('mapbox-dem')) {
+        map.addSource('mapbox-dem', MAPBOX_DEM_SOURCE);
 
-      // add the DEM (Digital Elevation Model) source as a terrain layer with exaggerated height
-      map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
+        // add the DEM (Digital Elevation Model) source as a terrain layer with exaggerated height
+        map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
+      }
 
-      // add a sky layer that will show when the map is highly pitched
-      map.addLayer(MAPBOX_SKY_LAYER);
+      if (!map.getLayer('sky')) {
+        // add a sky layer that will show when the map is highly pitched
+        map.addLayer(MAPBOX_SKY_LAYER);
+      }
 
       setMap(map);
     });
