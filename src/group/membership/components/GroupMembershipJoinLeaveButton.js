@@ -43,9 +43,8 @@ const GroupMembershipJoinLeaveButton = props => {
   const {
     data: { email: userEmail },
   } = useSelector(state => state.account.currentUser);
-  const { fetching, group, joining } = useSelector(
-    state => state.memberships.lists[groupSlug] ?? {}
-  );
+  const { fetching, group, joining } =
+    useSelector(state => state.memberships.lists[groupSlug]) || {};
   const { tabIndex } = props;
 
   const loading = useMemo(() => fetching || joining, [fetching, joining]);
