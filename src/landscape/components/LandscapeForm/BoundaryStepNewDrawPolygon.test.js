@@ -224,10 +224,6 @@ test('LandscapeNew: Save form draw polygon boundary', async () => {
     })
   );
 
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'close' }))
-  );
-
   await waitFor(() => {
     expect(screen.getByRole('button', { name: 'Next' })).toBeInTheDocument();
   });
