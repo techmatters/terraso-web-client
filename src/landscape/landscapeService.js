@@ -31,6 +31,7 @@ import {
   extractDevelopmentStrategy,
   extractPartnership,
 } from './landscapeUtils';
+import { countryNameForCode } from 'common/countries';
 
 const cleanLandscape = landscape =>
   _.flow(
@@ -177,8 +178,14 @@ export const fetchLandscapeToView = slug => {
 
       // Get bounding box from nominatim.openstreetmap.org if no areaPolygon data
       // AreaPolygon is not present when the user decided to skip it.
+      const currentCountry = countryNameForCode(landscape.location);
+
+      if (!currentCountry) {
+        return landscape;
+      }
+
       return gisService
-        .getPlaceInfoByName(landscape.location)
+        .getPlaceInfoByName(currentCountry.name)
         .then(placeInfo => ({
           ...landscape,
           boundingBox: placeInfo?.boundingbox,
