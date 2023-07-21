@@ -187,13 +187,16 @@ const BoundaryStep = props => {
 
   const onSaveWrapper = useCallback(
     updatedValues => {
+      const hasFeatures = !_.isEmpty(updatedValues.areaPolygon?.features);
       onSave({
         boundaryOption: option,
         ...updatedValues,
-        areaPolygon: {
-          ...updatedValues.areaPolygon,
-          bbox: boundingBox,
-        },
+        areaPolygon: hasFeatures
+          ? {
+              ...updatedValues.areaPolygon,
+              bbox: boundingBox,
+            }
+          : null,
       });
     },
     [onSave, option, boundingBox]

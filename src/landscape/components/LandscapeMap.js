@@ -23,7 +23,6 @@ import MapboxGeocoder from 'gis/components/MapboxGeocoder';
 import MapboxMap, { useMap } from 'gis/components/MapboxMap';
 import MapboxMapControls from 'gis/components/MapboxMapControls';
 import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';
-import { isValidGeoJson } from 'gis/gisUtils';
 import mapboxgl from 'gis/mapbox';
 import { getMarkerImage } from 'gis/mapMarkers';
 import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';
@@ -155,11 +154,6 @@ const LandscapeMap = props => {
     ...rest
   } = props;
 
-  const geoJson = useMemo(
-    () => (isValidGeoJson(areaPolygon) ? areaPolygon : null),
-    [areaPolygon]
-  );
-
   const bounds = useMemo(
     () => getLandscapeBoundingBox({ boundingBox, areaPolygon }),
     [boundingBox, areaPolygon]
@@ -180,8 +174,8 @@ const LandscapeMap = props => {
         {showGeocoder && <MapboxGeocoder position="top-left" />}
         <MapboxMapControls />
         <MapboxMapStyleSwitcher />
-        {showPolygons && geoJson && <Polygons geoJson={geoJson} />}
-        {showMarkers && geoJson && <Markers geoJson={geoJson} />}
+        {showPolygons && areaPolygon && <Polygons geoJson={areaPolygon} />}
+        {showMarkers && areaPolygon && <Markers geoJson={areaPolygon} />}
         {children}
       </MapboxMap>
     </Box>
