@@ -1,0 +1,7 @@
+{
+  "depcheck": {
+    "ignoreMatches": [
+        "@graphql-codegen/client-preset"
+    ]
+  }
+}
