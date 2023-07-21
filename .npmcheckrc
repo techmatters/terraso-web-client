@@ -1,7 +1,41 @@
 {
   "depcheck": {
     "ignoreMatches": [
-        "@graphql-codegen/client-preset"
+        "@graphql-codegen/client-preset",
+        "@mui/system",
+        "@mui/utils",
+        "account",
+        "App",
+        "assets",
+        "common",
+        "config",
+        "contact",
+        "custom-hooks",
+        "eslint-config-react-app",
+        "forms",
+        "gis",
+        "group",
+        "home",
+        "index.css",
+        "landscape",
+        "layout",
+        "localization",
+        "media",
+        "monitoring",
+        "navigation",
+        "notifications",
+        "permissions",
+        "react-hoc",
+        "rollbar",
+        "sharedData",
+        "slate",
+        "storyMap",
+        "stringUtils",
+        "taxonomies",
+        "terrasoApi",
+        "tests",
+        "theme",
+        "tool"
     ]
   }
 }
