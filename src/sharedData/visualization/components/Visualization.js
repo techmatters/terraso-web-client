@@ -17,10 +17,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import * as SheetsJs from 'xlsx';
+
 import mapboxgl from 'gis/mapbox';
+
 import './Visualization.css';
+
 import bbox from '@turf/bbox';
 import { Box, Portal, Stack, Typography } from '@mui/material';
+
 import MapboxMap, { useMap as useMapboxMap } from 'gis/components/MapboxMap';
 import MapboxMapControls from 'gis/components/MapboxMapControls';
 import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';

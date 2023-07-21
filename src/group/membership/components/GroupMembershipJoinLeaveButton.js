@@ -21,8 +21,10 @@ import {
   leaveMembershipList,
 } from 'terraso-client-shared/memberships/membershipsSlice';
 import { useDispatch, useSelector } from 'terrasoApi/store';
+
 import { useAnalytics } from 'monitoring/analytics';
 import { useGroupContext } from 'group/groupContext';
+
 import {
   MEMBERSHIP_CLOSED,
   MEMBERSHIP_STATUS_PENDING,

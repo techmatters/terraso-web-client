@@ -24,8 +24,10 @@ import {
   Paper,
   TextField,
 } from '@mui/material';
-import { getTermLabel } from 'taxonomies/taxonomiesUtils';
+
 import { withProps } from 'react-hoc';
+
+import { getTermLabel } from 'taxonomies/taxonomiesUtils';
 
 const FILTER = createFilterOptions();
 

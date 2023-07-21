@@ -20,10 +20,12 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { Grid, useMediaQuery } from '@mui/material';
+
 import PageLoader from 'layout/PageLoader';
 import NavigationBlockedDialog from 'navigation/components/NavigationBlockedDialog';
 import { useNavigationBlocker } from 'navigation/navigationContext';
 import { isChapterEmpty } from 'storyMap/storyMapUtils';
+
 import StoryMap from '../StoryMap';
 import ChapterForm from './ChapterForm';
 import ChaptersSidebar from './ChaptersSideBar';
@@ -31,6 +33,7 @@ import { useStoryMapConfigContext } from './storyMapConfigContext';
 import TitleForm from './TitleForm';
 import TopBar from './TopBar';
 import TopBarPreview from './TopBarPreview';
+
 import theme from 'theme';
 
 const BASE_CHAPTER = {

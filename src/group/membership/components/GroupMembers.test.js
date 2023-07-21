@@ -22,6 +22,7 @@ import { useNavigate } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { GROUP_TYPES_WITH_REDIRECTS } from 'tests/constants';
 import useMediaQuery from '@mui/material/useMediaQuery';
+
 import GroupMembers from 'group/membership/components/GroupMembers';
 
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850

@@ -27,11 +27,13 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { MapContainer, useMap, ZoomControl } from 'react-leaflet';
 import useMediaQuery from '@mui/material/useMediaQuery';
+
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-geosearch/dist/geosearch.css';
 import 'gis/components/Map.css';
+
 import theme from 'theme';
 
 delete L.Icon.Default.prototype._getIconUrl;

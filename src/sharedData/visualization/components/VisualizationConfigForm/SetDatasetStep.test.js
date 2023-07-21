@@ -18,7 +18,9 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import _ from 'lodash/fp';
 import * as SheetsJs from 'xlsx';
+
 import { VisualizationContext } from 'sharedData/visualization/visualizationContext';
+
 import { DatasetPreview } from './SetDatasetStep';
 
 // these libraries will print warning if they are not mocked!

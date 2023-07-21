@@ -20,6 +20,7 @@ import _ from 'lodash/fp';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { LANDSCAPE_TYPES_WITH_REDIRECTS } from 'tests/constants';
+
 import LandscapeSharedDataUpload from './LandscapeSharedDataUpload';
 
 jest.mock('terraso-client-shared/terrasoApi/api');

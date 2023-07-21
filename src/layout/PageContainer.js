@@ -16,7 +16,9 @@
  */
 import React from 'react';
 import _ from 'lodash/fp';
+
 import { usePathParams } from 'navigation/components/Routes';
+
 import Container from './Container';
 
 const PageContainer = props => {

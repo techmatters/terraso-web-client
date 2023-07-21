@@ -19,6 +19,7 @@ import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
 import { fetchUser } from 'terraso-client-shared/account/accountSlice';
 import { useFetchData } from 'terraso-client-shared/store/utils';
+
 import PageLoader from 'layout/PageLoader';
 
 const OptionalAuth = ({ children }) => {

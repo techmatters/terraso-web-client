@@ -27,6 +27,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+
 import HelperText from 'common/components/HelperText';
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
@@ -35,6 +36,7 @@ import GroupAutocomplete from 'group/components/GroupAutocomplete';
 import { Subheader } from 'landscape/landscapeUtils';
 import TaxonomyAutocomplete from 'taxonomies/components/TaxonomyAutocomplete';
 import { TYPE_ORGANIZATION } from 'taxonomies/taxonomiesConstants';
+
 import Actions from './Actions';
 
 const PARTNERSHIP_START_YEAR = 1900;

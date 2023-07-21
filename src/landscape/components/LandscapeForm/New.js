@@ -22,6 +22,7 @@ import { useNavigate } from 'react-router-dom';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
+
 import Stepper from 'common/components/Stepper';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
@@ -38,6 +39,7 @@ import {
   TYPE_ORGANIZATION,
 } from 'taxonomies/taxonomiesConstants';
 import { fetchTermsForTypes } from 'taxonomies/taxonomiesSlice';
+
 import AffiliationStep from './AffiliationStep';
 import BoundaryStep from './BoundaryStep';
 import InfoStep from './KeyInfoStep';

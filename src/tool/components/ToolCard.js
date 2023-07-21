@@ -28,7 +28,9 @@ import {
   Typography,
 } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
+
 import ExternalLink from 'common/components/ExternalLink';
+
 import theme from 'theme';
 
 const ToolIconAndLink = ({ tool, title, external }) => {

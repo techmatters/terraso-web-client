@@ -21,8 +21,10 @@ import {
 } from 'terraso-client-shared/memberships/membershipsUtils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
+
 import * as gisService from 'gis/gisService';
 import { extractTerms } from 'taxonomies/taxonomiesUtils';
+
 import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
 import {
   extractAffiliatedGroups,

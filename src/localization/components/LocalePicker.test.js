@@ -20,6 +20,7 @@ import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import useMediaQuery from '@mui/material/useMediaQuery';
+
 import LocalePicker from 'localization/components/LocalePicker';
 import i18n from 'localization/i18n';
 

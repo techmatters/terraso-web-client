@@ -21,6 +21,7 @@ import { act } from 'react-dom/test-utils';
 import { useSearchParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import useMediaQuery from '@mui/material/useMediaQuery';
+
 import GroupList from 'group/components/GroupList';
 
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850

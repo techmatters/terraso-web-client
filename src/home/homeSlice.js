@@ -16,6 +16,7 @@
  */
 import { createSlice } from '@reduxjs/toolkit';
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
+
 import * as homeService from 'home/homeService';
 
 const initialState = {

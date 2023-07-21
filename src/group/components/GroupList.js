@@ -22,6 +22,9 @@ import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Button, Card, Link, Stack, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
+
+import { withProps } from 'react-hoc';
+
 import TableResponsive from 'common/components/TableResponsive';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
@@ -33,7 +36,7 @@ import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberRequestCancel from 'group/membership/components/GroupMemberRequestCancel';
 import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton';
-import { withProps } from 'react-hoc';
+
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {

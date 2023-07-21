@@ -22,6 +22,9 @@ import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Typography } from '@mui/material';
+
+import { withProps } from 'react-hoc';
+
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
@@ -30,7 +33,7 @@ import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMembersList from 'group/membership/components/GroupMembersList';
 import { fetchLandscapeForMembers } from 'landscape/landscapeSlice';
-import { withProps } from 'react-hoc';
+
 import LandscapeMemberLeave from './LandscapeMemberLeave';
 import LandscapeMemberRemove from './LandscapeMemberRemove';
 

@@ -27,6 +27,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+
 import ConfirmButton from 'common/components/ConfirmButton';
 import SocialShare, {
   useSocialShareContext,
@@ -48,6 +49,7 @@ import {
   VisualizationContext,
   VisualizationContextProvider,
 } from 'sharedData/visualization/visualizationContext';
+
 import Visualization from './Visualization';
 
 const VisualizationWrapper = props => {

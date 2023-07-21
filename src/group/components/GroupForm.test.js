@@ -19,6 +19,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+
 import GroupForm from 'group/components/GroupForm';
 
 jest.mock('terraso-client-shared/terrasoApi/api');

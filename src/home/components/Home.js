@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Alert, Grid, Stack } from '@mui/material';
+
 import LoaderCard from 'common/components/LoaderCard';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';

@@ -23,6 +23,7 @@ import {
 import { getMemberships } from 'terraso-client-shared/memberships/membershipsUtils';
 import type { Message } from 'terraso-client-shared/notifications/notificationsSlice';
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
+
 import * as groupService from 'group/groupService';
 
 export type Group = {

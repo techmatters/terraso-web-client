@@ -16,6 +16,7 @@
  */
 import { act, fireEvent, render, screen } from 'tests/utils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+
 import StoryMapUpdate from './StoryMapUpdate';
 
 jest.mock('terraso-client-shared/terrasoApi/api');

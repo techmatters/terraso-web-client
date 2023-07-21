@@ -17,6 +17,7 @@
 import Cookies from 'js-cookie';
 import { setAPIConfig } from 'terraso-client-shared/config';
 import type { Severity } from 'terraso-client-shared/monitoring/logger';
+
 import { rollbar } from 'monitoring/rollbar';
 
 export const TERRASO_ENV = process.env.REACT_APP_TERRASO_ENV || 'local';

@@ -15,8 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
+
 // import for side effects to ensure config happens before running tests
 import 'config';
+
 import {
   waitFor as baseWaitFor,
   cleanup,
@@ -25,9 +27,12 @@ import {
 import { axe, toHaveNoViolations } from 'jest-axe';
 import { act } from 'react-dom/test-utils';
 import createStore from 'terrasoApi/store';
+
 import AppWrappers from 'layout/AppWrappers';
 import rules from 'permissions/rules';
+
 import { AXE_TEST_TIMEOUT, JEST_TEST_TIMEOUT, WAIT_FOR_TIMEOUT } from 'config';
+
 import theme from 'theme';
 
 const executeAxe = process.env['TEST_A11Y'] === 'true';

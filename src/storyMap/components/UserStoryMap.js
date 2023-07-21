@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useFetchData } from 'terraso-client-shared/store/utils';
+
 import { serialize } from 'common/components/RichTextEditor/utils';
 import RouterButton from 'common/components/RouterButton';
 import { useSocialShareContext } from 'common/components/SocialShare';
@@ -35,6 +36,7 @@ import {
   generateStoryMapEmbedUrl,
   isChapterEmpty,
 } from 'storyMap/storyMapUtils';
+
 import DeleteButton from './StoryMapDeleteButton';
 
 const UserStoryMap = () => {

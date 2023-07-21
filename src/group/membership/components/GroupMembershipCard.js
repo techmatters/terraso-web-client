@@ -30,10 +30,12 @@ import {
   Link,
   Typography,
 } from '@mui/material';
+
 import ExternalLink from 'common/components/ExternalLink';
 import Restricted from 'permissions/components/Restricted';
 import AccountAvatar from 'account/components/AccountAvatar';
 import { useGroupContext } from 'group/groupContext';
+
 import {
   MEMBERSHIP_CLOSED,
   MEMBERSHIP_STATUS_PENDING,

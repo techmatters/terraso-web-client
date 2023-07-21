@@ -35,6 +35,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+
 import BaseTable from 'common/components/Table';
 import ResponsiveSwitch from 'layout/ResponsiveSwitch';
 

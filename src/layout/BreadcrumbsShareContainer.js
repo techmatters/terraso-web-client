@@ -15,9 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
+
 import SocialShare from 'common/components/SocialShare';
 import Breadcrumbs from 'navigation/components/Breadcrumbs';
 import { usePathParams } from 'navigation/components/Routes';
+
 import Container from './Container';
 
 const BreadcrumbsShareContainer = () => {

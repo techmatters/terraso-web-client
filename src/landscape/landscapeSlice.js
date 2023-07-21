@@ -19,6 +19,7 @@ import _ from 'lodash/fp';
 import { setMemberships } from 'terraso-client-shared/memberships/membershipsSlice';
 import * as membershipsUtils from 'terraso-client-shared/memberships/membershipsUtils';
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
+
 import * as landscapeService from 'landscape/landscapeService';
 
 const initialState = {

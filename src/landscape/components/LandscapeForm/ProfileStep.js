@@ -25,6 +25,9 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+
+import { withProps } from 'react-hoc';
+
 import HelperText from 'common/components/HelperText';
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
@@ -38,9 +41,10 @@ import {
   TYPE_LANGUAGE,
   TYPE_LIVELIHOOD,
 } from 'taxonomies/taxonomiesConstants';
-import { AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS } from 'config';
-import { withProps } from 'react-hoc';
+
 import Actions from './Actions';
+
+import { AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS } from 'config';
 
 const VALIDATION_SCHEMA = yup
   .object()

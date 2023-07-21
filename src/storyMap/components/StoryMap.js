@@ -18,15 +18,23 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import scrollama from 'scrollama';
 import { Box } from '@mui/material';
+
 import RichTextEditor from 'common/components/RichTextEditor';
 import mapboxgl from 'gis/mapbox';
 import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
-import { MAPBOX_ACCESS_TOKEN, STORY_MAP_INSET_STYLE } from 'config';
+
 import { ALIGNMENTS, LAYER_TYPES } from '../storyMapConstants';
+
+import { MAPBOX_ACCESS_TOKEN, STORY_MAP_INSET_STYLE } from 'config';
+
 import './StoryMap.css';
+
 import logger from 'terraso-client-shared/monitoring/logger';
+
 import MapboxMap, { MapContextConsumer } from 'gis/components/MapboxMap';
+
 import StoryMapOutline from './StoryMapOutline';
+
 import theme from 'theme';
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;

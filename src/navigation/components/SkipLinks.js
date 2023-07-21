@@ -19,6 +19,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { Link } from '@mui/material';
+
 import './SkipLinks.css';
 
 const HIDE_FOR_PATHS = ['/account'];

@@ -22,6 +22,7 @@ import {
 } from 'terraso-client-shared/memberships/membershipsUtils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
+
 import type { Group } from './groupSlice';
 
 export const fetchGroupToUpdate = (slug: string) => {

@@ -17,11 +17,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useSelector } from 'react-redux';
+
 import mapboxgl from 'gis/mapbox';
 import { getLandscapePin } from 'landscape/landscapeUtils';
+
 import './LandscapeListMap.css';
+
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
+
 import RouterLink from 'common/components/RouterLink';
 import { countryNameForCode } from 'common/utils';
 import MapboxMap, {
@@ -30,6 +34,7 @@ import MapboxMap, {
 import MapboxMapControls from 'gis/components/MapboxMapControls';
 import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';
 import { isValidLatitude, isValidLongitude } from 'gis/gisUtils';
+
 import { MAPBOX_LANDSCAPE_DIRECTORY_STYLE } from 'config';
 
 const LandscapePopup = ({ landscape }) => {

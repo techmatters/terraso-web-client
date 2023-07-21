@@ -21,13 +21,16 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { MenuItem, Select, TextareaAutosize, Typography } from '@mui/material';
+
 import CharacterCounter from 'common/components/CharacterCounter';
 import { countriesList, countryMap, transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
-import { MAX_DESCRIPTION_LENGTH } from 'config';
+
 import Actions from './Actions';
+
+import { MAX_DESCRIPTION_LENGTH } from 'config';
 
 const VALIDATION_SCHEMA = yup
   .object({

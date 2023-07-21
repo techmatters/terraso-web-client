@@ -17,6 +17,7 @@
 import { act, fireEvent, render, screen, within } from 'tests/utils';
 import _ from 'lodash/fp';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+
 import UserStoryMap from './UserStoryMap';
 
 jest.mock('terraso-client-shared/terrasoApi/api');

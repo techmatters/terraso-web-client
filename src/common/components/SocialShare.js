@@ -33,7 +33,9 @@ import {
   Typography,
 } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
+
 import { useAnalytics } from 'monitoring/analytics';
+
 import theme from 'theme';
 
 const SocialShareContext = createContext({});

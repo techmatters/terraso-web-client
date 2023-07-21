@@ -28,8 +28,11 @@ import {
   IconButton,
   Stack,
 } from '@mui/material';
-import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
+
 import { withProps } from 'react-hoc';
+
+import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
+
 import { ALIGNMENTS } from '../../storyMapConstants';
 import EditableMedia from './EditableMedia';
 import EditableRichText from './EditableRichText';

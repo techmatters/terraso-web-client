@@ -19,6 +19,7 @@ import React from 'react';
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+
 import AccountProfile from 'account/components/AccountProfile';
 
 jest.mock('terraso-client-shared/terrasoApi/api');

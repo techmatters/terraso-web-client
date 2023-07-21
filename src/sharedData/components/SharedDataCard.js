@@ -29,13 +29,16 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+
 import List from 'common/components/List';
 import { ScrollTo } from 'navigation/scrollTo';
 import { useGroupContext } from 'group/groupContext';
 import { fetchGroupSharedData } from 'sharedData/sharedDataSlice';
-import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
+
 import SharedDataEntryFile from './SharedDataEntryFile';
 import SharedDataEntryLink from './SharedDataEntryLink';
+
+import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
 const SharedFilesCard = props => {
   const { t } = useTranslation();

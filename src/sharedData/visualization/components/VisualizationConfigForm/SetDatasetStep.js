@@ -36,12 +36,14 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+
 import StepperStep from 'common/components/StepperStep';
 import Form from 'forms/components/Form';
 import { FormContextProvider, useFormGetContext } from 'forms/formContext';
 import PageLoader from 'layout/PageLoader';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 import { validateCoordinateColumn } from 'sharedData/visualization/visualizationUtils';
+
 import ColumnSelect from './ColumnSelect';
 
 const TABLE_SAMPLE_SIZE = 3;

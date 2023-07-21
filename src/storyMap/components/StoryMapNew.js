@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Paper, useMediaQuery } from '@mui/material';
+
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
@@ -31,9 +32,12 @@ import {
   generateStoryMapEditUrl,
   generateStoryMapUrl,
 } from 'storyMap/storyMapUtils';
-import { MAPBOX_STYLE_DEFAULT } from 'config';
+
 import StoryMapForm from './StoryMapForm';
 import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigContext';
+
+import { MAPBOX_STYLE_DEFAULT } from 'config';
+
 import theme from 'theme';
 
 /*

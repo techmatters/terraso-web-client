@@ -37,11 +37,13 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+
 import ExternalLink from 'common/components/ExternalLink';
 import { transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
 import { FormContextProvider, useFormGetContext } from 'forms/formContext';
 import { MAX_DESCRIPTION_CHARACTERS } from 'sharedData/sharedDataConstants';
+
 import LinkIcon from '../LinkIcon';
 import { useShareDataUploadContext } from './ShareDataUploadContext';
 import SuccessContainer from './SuccessContainer';

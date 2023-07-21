@@ -27,6 +27,9 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+
+import { withProps } from 'react-hoc';
+
 import RouterButton from 'common/components/RouterButton';
 import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
@@ -36,7 +39,7 @@ import {
   generateStoryMapEditUrl,
   generateStoryMapUrl,
 } from 'storyMap/storyMapUtils';
-import { withProps } from 'react-hoc';
+
 import DeleteButton from './StoryMapDeleteButton';
 
 const List = withProps(BaseList, {

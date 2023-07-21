@@ -15,7 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import 'tests/utils';
+
 import * as terrasoApiToMock from 'terraso-client-shared/terrasoApi/api';
+
 import * as groupService from 'group/groupService';
 
 jest.mock('terraso-client-shared/terrasoApi/api');

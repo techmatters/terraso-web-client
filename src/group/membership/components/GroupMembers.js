@@ -22,6 +22,9 @@ import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Typography } from '@mui/material';
+
+import { withProps } from 'react-hoc';
+
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
@@ -32,7 +35,6 @@ import { fetchGroupForMembers } from 'group/groupSlice';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberRemove from 'group/membership/components/GroupMemberRemove';
 import GroupMembersList from 'group/membership/components/GroupMembersList';
-import { withProps } from 'react-hoc';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
   label: 'group.members_list_leave',

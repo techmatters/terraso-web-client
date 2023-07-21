@@ -16,13 +16,16 @@
  */
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import Stepper from 'common/components/Stepper';
 import { VisualizationContextProvider } from 'sharedData/visualization/visualizationContext';
+
 import AnnotateStep from './AnnotateStep';
 import PreviewStep from './PreviewStep';
 import SelectDataFileStep from './SelectDataFileStep';
 import SetDatasetStep from './SetDatasetStep';
 import VisualizeStep from './VisualizeStep';
+
 import theme from 'theme';
 
 const initialConfig = {

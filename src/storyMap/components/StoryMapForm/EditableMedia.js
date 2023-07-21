@@ -36,14 +36,18 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+
 import ConfirmButton from 'common/components/ConfirmButton';
 import DropZone from 'common/components/DropZone';
+
+import { useStoryMapConfigContext } from './storyMapConfigContext';
+
 import {
   STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS,
   STORY_MAP_MEDIA_ACCEPTED_TYPES,
   STORY_MAP_MEDIA_MAX_SIZE,
 } from 'config';
-import { useStoryMapConfigContext } from './storyMapConfigContext';
+
 import theme from 'theme';
 
 const getYouTubeUrl = id => `https://www.youtube.com/embed/${id}`;

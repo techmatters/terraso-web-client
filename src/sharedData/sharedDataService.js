@@ -17,7 +17,9 @@
 import _ from 'lodash/fp';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
+
 import { extractDataEntry, extractGroupDataEntries } from 'group/groupUtils';
+
 import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
 const ALL_RESOURCE_TYPES = [...SHARED_DATA_ACCEPTED_EXTENSIONS, 'link'];

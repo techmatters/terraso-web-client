@@ -16,6 +16,7 @@
  */
 import { act, fireEvent, render, screen } from 'tests/utils';
 import { useMemo } from 'react';
+
 import SocialShare, {
   SocialShareContextProvider,
   useSocialShareContext,

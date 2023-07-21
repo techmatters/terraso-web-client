@@ -19,6 +19,7 @@ import _ from 'lodash/fp';
 import { Trans, withTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Typography } from '@mui/material';
+
 import RouterLink from 'common/components/RouterLink';
 import { useOptionalAuth } from 'navigation/components/Routes';
 

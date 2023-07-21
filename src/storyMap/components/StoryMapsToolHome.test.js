@@ -16,6 +16,7 @@
  */
 import { render, screen, within } from 'tests/utils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+
 import StoryMapsToolsHome from './StoryMapsToolHome';
 
 jest.mock('terraso-client-shared/terrasoApi/api');

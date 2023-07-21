@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import { Editor } from 'slate';
+
 import RichTextEditor from '.';
 
 jest.mock('slate', () => ({

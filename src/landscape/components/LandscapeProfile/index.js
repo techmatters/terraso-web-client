@@ -22,6 +22,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Grid, Stack } from '@mui/material';
+
+import { withProps } from 'react-hoc';
+
 import { useSocialShareContext } from 'common/components/SocialShare';
 import {
   useDocumentDescription,
@@ -39,7 +42,7 @@ import {
   refreshLandscapeView,
 } from 'landscape/landscapeSlice';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
-import { withProps } from 'react-hoc';
+
 import AffiliationCard from './AffiliationCard';
 import DevelopmentStrategyCard from './DevelopmentStrategyCard';
 import KeyInfoCard from './KeyInfoCard';

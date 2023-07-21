@@ -25,9 +25,11 @@ import {
   DialogTitle,
   Stack,
 } from '@mui/material';
+
 import MapboxGeocoder from 'gis/components/MapboxGeocoder';
 import MapboxMap, { useMap } from 'gis/components/MapboxMap';
 import MapboxMapControls from 'gis/components/MapboxMapControls';
+
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 const MapLocationChange = props => {

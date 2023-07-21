@@ -17,6 +17,7 @@
 import _ from 'lodash/fp';
 import logger from 'terraso-client-shared/monitoring/logger';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+
 import { isKmlFile, isShapefile, openGeoJsonFile } from 'gis/gisUtils';
 
 const generateUrl = name =>

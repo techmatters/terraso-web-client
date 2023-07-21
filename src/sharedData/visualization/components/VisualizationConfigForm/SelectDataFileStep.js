@@ -28,6 +28,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+
 import ExternalLink from 'common/components/ExternalLink';
 import List from 'common/components/List';
 import StepperStep from 'common/components/StepperStep';

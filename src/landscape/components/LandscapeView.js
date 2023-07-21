@@ -36,6 +36,9 @@ import {
   SvgIcon,
   Typography,
 } from '@mui/material';
+
+import { withProps } from 'react-hoc';
+
 import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
 import RouterButton from 'common/components/RouterButton';
@@ -60,8 +63,9 @@ import {
 import { isBoundaryPin } from 'landscape/landscapeUtils';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 import SharedDataCard from 'sharedData/components/SharedDataCard';
-import { withProps } from 'react-hoc';
+
 import { Partnership } from './LandscapeProfile/AffiliationCard';
+
 import theme from 'theme';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
