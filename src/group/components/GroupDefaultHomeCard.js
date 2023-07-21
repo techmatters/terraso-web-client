@@ -17,6 +17,7 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
+
 import RouterLink from 'common/components/RouterLink';
 import HomeCard from 'home/components/HomeCard';
 

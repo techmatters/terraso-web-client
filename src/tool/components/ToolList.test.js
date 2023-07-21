@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { render, screen } from 'tests/utils';
+
 import ToolList from './ToolList';
 
 test('ToolList: renders correctly', async () => {

@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { useCallback, useEffect } from 'react';
+
 import { useMap } from './MapboxMap';
 
 const MapExport = props => {

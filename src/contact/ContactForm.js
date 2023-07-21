@@ -19,11 +19,14 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { addMessage } from 'terraso-client-shared/notifications/notificationsSlice';
+
+import { useScript } from 'custom-hooks';
+
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
+
 import { HUBSPOT_FORMS } from 'config';
-import { useScript } from 'custom-hooks';
 
 const ContactForm = () => {
   const dispatch = useDispatch();

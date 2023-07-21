@@ -28,6 +28,7 @@ import { useFetchData } from 'terraso-client-shared/store/utils';
 import { useDispatch, useSelector } from 'terrasoApi/store';
 import { LoadingButton } from '@mui/lab';
 import { ListItem, MenuItem, Select, Stack, Typography } from '@mui/material';
+
 import ConfirmButton from 'common/components/ConfirmButton';
 import List from 'common/components/List';
 import TableResponsive from 'common/components/TableResponsive';
@@ -35,6 +36,7 @@ import PageLoader from 'layout/PageLoader';
 import Restricted from 'permissions/components/Restricted';
 import AccountAvatar from 'account/components/AccountAvatar';
 import { useGroupContext } from 'group/groupContext';
+
 import {
   MEMBERSHIP_STATUS_APPROVED,
   MEMBERSHIP_STATUS_PENDING,

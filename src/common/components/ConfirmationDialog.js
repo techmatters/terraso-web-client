@@ -26,6 +26,7 @@ import {
   DialogTitle,
 } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
+
 import theme from 'theme';
 
 const ConfirmationDialog = props => {

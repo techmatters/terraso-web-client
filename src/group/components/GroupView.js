@@ -32,6 +32,9 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+
+import { withProps } from 'react-hoc';
+
 import { useSocialShareContext } from 'common/components/SocialShare';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
@@ -48,7 +51,6 @@ import GroupMemberRequestCancel from 'group/membership/components/GroupMemberReq
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
 import GroupMembershipInfo from 'group/membership/components/GroupMembershipInfo';
 import SharedDataCard from 'sharedData/components/SharedDataCard';
-import { withProps } from 'react-hoc';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
   label: 'group.view_leave_label',

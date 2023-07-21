@@ -15,14 +15,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
+
 import 'config';
+
 import { createRoot } from 'react-dom/client';
 import createStore from 'terrasoApi/store';
+
 import AppWrappers from 'layout/AppWrappers';
 import reportWebVitals from 'monitoring/reportWebVitals';
 import rules from 'permissions/rules';
+
 import theme from 'theme';
+
 import 'index.css';
+
 import App from 'App';
 
 createRoot(document.getElementById('root')).render(

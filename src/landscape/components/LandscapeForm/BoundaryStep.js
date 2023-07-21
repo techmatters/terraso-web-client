@@ -32,18 +32,24 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+
+import { useIsMounted } from 'custom-hooks';
+
 import ExternalLink from 'common/components/ExternalLink';
 import { countryNameForCode } from 'common/utils';
 import PageHeader from 'layout/PageHeader';
 import { getPlaceInfoByName } from 'gis/gisService';
 import LandscapeBoundariesFile from 'landscape/components/LandscapeForm/BoundaryStepBoundariesFile';
 import LandscapeMap from 'landscape/components/LandscapeMap';
-import { useIsMounted } from 'custom-hooks';
+
 import './BoundaryStep.css';
+
 import { scrollToNavBar } from 'navigation/scrollTo';
 import { LAYER_ESRI } from 'gis/components/Map';
-import { MAP_DATA_ACCEPTED_TYPES_NAMES } from 'config';
+
 import Actions from './Actions';
+
+import { MAP_DATA_ACCEPTED_TYPES_NAMES } from 'config';
 
 const OPTION_GEOJSON = 'geo-json';
 const OPTION_MAP_DRAW_POLYGON = 'map-draw-polygon';

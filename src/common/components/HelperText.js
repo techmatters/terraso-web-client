@@ -26,6 +26,7 @@ import {
   Popover,
   Typography,
 } from '@mui/material';
+
 import { withProps } from 'react-hoc';
 
 const CloseIconButton = props => {

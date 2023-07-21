@@ -17,6 +17,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Paper, Stack } from '@mui/material';
+
 import logo from 'assets/logo.svg';
 
 const UnexpectedError = () => {

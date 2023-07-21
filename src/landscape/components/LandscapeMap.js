@@ -16,6 +16,7 @@
  */
 import React, { useMemo } from 'react';
 import { Box } from '@mui/material';
+
 import Map from 'gis/components/Map';
 import { isValidGeoJson } from 'gis/gisUtils';
 import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';

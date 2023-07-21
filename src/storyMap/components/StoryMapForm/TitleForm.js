@@ -19,6 +19,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import { Box, Button, Stack } from '@mui/material';
+
 import StoryMapOutline from '../StoryMapOutline';
 import EditableText from './EditableText';
 import MapLocationDialog from './MapLocationDialog';

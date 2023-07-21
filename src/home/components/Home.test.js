@@ -18,6 +18,7 @@ import { render, screen, within } from 'tests/utils';
 import React from 'react';
 import _ from 'lodash/fp';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+
 import Home from 'home/components/Home';
 import { fetchHomeData } from 'home/homeService';
 

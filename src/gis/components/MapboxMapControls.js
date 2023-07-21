@@ -15,7 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { useEffect } from 'react';
+
 import mapboxgl from 'gis/mapbox';
+
 import { useMap } from './MapboxMap';
 
 const MapboxMapControls = props => {

@@ -17,7 +17,9 @@
 import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
 import scrollama from 'scrollama';
+
 import mapboxgl from 'gis/mapbox';
+
 import StoryMapForm from './StoryMapForm';
 import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigContext';
 

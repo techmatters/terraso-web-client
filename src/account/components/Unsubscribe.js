@@ -23,6 +23,7 @@ import { unsubscribeFromNotifications } from 'terraso-client-shared/account/acco
 import { addMessage } from 'terraso-client-shared/notifications/notificationsSlice';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Alert } from '@mui/material';
+
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';

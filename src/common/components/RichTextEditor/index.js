@@ -42,11 +42,15 @@ import {
   Paper,
   Typography,
 } from '@mui/material';
-import { isUrl, transformURL, URL_SCHEMA } from 'common/utils';
+
 import { withProps } from 'react-hoc';
+
+import { isUrl, transformURL, URL_SCHEMA } from 'common/utils';
+
 import ExternalLink from '../ExternalLink';
 import Toolbar from './Toolbar';
 import { deserialize } from './utils';
+
 import { focusOutline } from 'theme';
 
 // Sample value:

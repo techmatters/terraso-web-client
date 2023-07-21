@@ -16,7 +16,9 @@
  */
 import { render, screen, within } from 'tests/utils';
 import React from 'react';
+
 import mapboxgl from 'gis/mapbox';
+
 import StoryMap from './StoryMap';
 
 // Mock mapboxgl

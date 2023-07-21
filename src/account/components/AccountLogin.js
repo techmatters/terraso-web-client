@@ -24,12 +24,14 @@ import AppleIcon from '@mui/icons-material/Apple';
 import GoogleIcon from '@mui/icons-material/Google';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import SvgIcon from '@mui/material/SvgIcon';
+
 import ExternalLink from 'common/components/ExternalLink';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePicker from 'localization/components/LocalePicker';
 import { useAnalytics } from 'monitoring/analytics';
+
 import logo from 'assets/logo.svg';
 import { ReactComponent as MicrosoftSvg } from 'assets/microsoft.svg';
 

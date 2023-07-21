@@ -39,17 +39,21 @@ import {
 } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { styled } from '@mui/system';
+
 import BaseDropZone from 'common/components/DropZone';
 import FormField from 'forms/components/FormField';
 import { MAX_DESCRIPTION_CHARACTERS } from 'sharedData/sharedDataConstants';
+
+import SuccessContainer from './SuccessContainer';
+import { groupDataEntryUploadsByStatus } from './utils';
+
 import {
   SHARED_DATA_ACCEPTED_EXTENSIONS,
   SHARED_DATA_ACCEPTED_TYPES,
   SHARED_DATA_MAX_FILES,
   SHARED_DATA_MAX_SIZE,
 } from 'config';
-import SuccessContainer from './SuccessContainer';
-import { groupDataEntryUploadsByStatus } from './utils';
+
 import theme from 'theme';
 
 const VALIDATION_SCHEMA = yup

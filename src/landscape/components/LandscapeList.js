@@ -21,6 +21,9 @@ import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Button, Card, Link, Stack, Typography } from '@mui/material';
+
+import { withProps } from 'react-hoc';
+
 import ExternalLink from 'common/components/ExternalLink';
 import TableResponsive from 'common/components/TableResponsive';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
@@ -34,7 +37,7 @@ import GroupMembershipCount from 'group/membership/components/GroupMembershipCou
 import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton';
 import { fetchLandscapes } from 'landscape/landscapeSlice';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
-import { withProps } from 'react-hoc';
+
 import LandscapeListMap from './LandscapeListMap';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {

@@ -28,6 +28,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import { transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
@@ -45,6 +46,7 @@ import {
   MEMBERSHIP_CLOSED,
   MEMBERSHIP_OPEN,
 } from 'group/membership/components/groupMembershipConstants';
+
 import { MAX_DESCRIPTION_LENGTH } from 'config';
 
 const VALIDATION_SCHEMA = yup

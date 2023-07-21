@@ -19,6 +19,7 @@ import _ from 'lodash/fp';
 import { useDispatch } from 'react-redux';
 import { addMessage } from 'terraso-client-shared/notifications/notificationsSlice';
 import * as SheetsJs from 'xlsx';
+
 import { readFile } from 'sharedData/visualization/visualizationUtils';
 
 export const VisualizationContext = React.createContext();

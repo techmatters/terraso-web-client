@@ -24,6 +24,7 @@ import {
   CardHeader,
   Typography,
 } from '@mui/material';
+
 import ExternalLink from 'common/components/ExternalLink';
 import RouterLink from 'common/components/RouterLink';
 import Restricted from 'permissions/components/Restricted';

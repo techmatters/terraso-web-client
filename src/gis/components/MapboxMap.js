@@ -17,15 +17,18 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
+import logger from 'terraso-client-shared/monitoring/logger';
 import { Box } from '@mui/material';
+
+import { withWrapper } from 'react-hoc';
+
 import mapboxgl from 'gis/mapbox';
+
 import {
   MAPBOX_ACCESS_TOKEN,
   MAPBOX_PROJECTION_DEFAULT,
   MAPBOX_STYLE_DEFAULT,
 } from 'config';
-import { withWrapper } from 'react-hoc';
-import logger from 'terraso-client-shared/monitoring/logger';
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 

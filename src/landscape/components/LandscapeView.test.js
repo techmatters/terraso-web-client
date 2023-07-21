@@ -19,6 +19,7 @@ import React from 'react';
 import _ from 'lodash/fp';
 import { useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+
 import LandscapeView from 'landscape/components/LandscapeView';
 
 const GEOJSON =

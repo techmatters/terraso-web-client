@@ -30,8 +30,10 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
+
 import StepperStep from 'common/components/StepperStep';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
+
 import VisualizationPreview from './VisualizationPreview';
 
 const visualizeIcons = {

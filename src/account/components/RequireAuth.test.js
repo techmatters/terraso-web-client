@@ -20,6 +20,7 @@ import _ from 'lodash/fp';
 import { useLocation, useParams } from 'react-router-dom';
 import { getUserEmail } from 'terraso-client-shared/account/auth';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+
 import RequireAuth from 'account/components/RequireAuth';
 import GroupView from 'group/components/GroupView';
 

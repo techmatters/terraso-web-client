@@ -21,12 +21,14 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { signOut } from 'terraso-client-shared/account/accountSlice';
 import { AppBar, Box, Button, Divider, Toolbar } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
+
 import ConditionalLink from 'common/components/ConditionalLink';
 import LocalePicker from 'localization/components/LocalePicker';
 import { useOptionalAuth } from 'navigation/components/Routes';
 import SkipLinks from 'navigation/components/SkipLinks';
 import { generateReferrerPath } from 'navigation/navigationUtils';
 import AccountAvatar from 'account/components/AccountAvatar';
+
 import logoSquare from 'assets/logo-square.svg';
 import logo from 'assets/logo.svg';
 import theme from 'theme';

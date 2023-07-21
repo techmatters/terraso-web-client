@@ -25,6 +25,9 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+
+import { withProps } from 'react-hoc';
+
 import Restricted from 'permissions/components/Restricted';
 import {
   MEMBERSHIP_STATUS_APPROVED,
@@ -32,7 +35,7 @@ import {
 } from 'group/membership/components/groupMembershipConstants';
 import GroupMembershipPendingWarning from 'group/membership/components/GroupMembershipPendingWarning';
 import HomeCard from 'home/components/HomeCard';
-import { withProps } from 'react-hoc';
+
 import theme from 'theme';
 
 const ListItem = withProps(BaseListItem, {

@@ -26,6 +26,7 @@ import {
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import * as yup from 'yup';
 import { Checkbox, FormControlLabel } from '@mui/material';
+
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import Form from 'forms/components/Form';
 import PageContainer from 'layout/PageContainer';
@@ -33,6 +34,7 @@ import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePickerSelect from 'localization/components/LocalePickerSelect';
 import { useAnalytics } from 'monitoring/analytics';
+
 import AccountAvatar from './AccountAvatar';
 
 const VALIDATION_SCHEMA = yup

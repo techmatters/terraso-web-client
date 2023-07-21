@@ -21,6 +21,7 @@ import { act } from 'react-dom/test-utils';
 import { useSearchParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import useMediaQuery from '@mui/material/useMediaQuery';
+
 import mapboxgl from 'gis/mapbox';
 import LandscapeList from 'landscape/components/LandscapeList';
 

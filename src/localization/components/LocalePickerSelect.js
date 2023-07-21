@@ -20,7 +20,9 @@ import { useTranslation } from 'react-i18next';
 import { MenuItem, Select as SelectBase } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+
 import { LOCALES } from 'localization/i18n';
+
 import theme from 'theme';
 
 const Select = styled(SelectBase)(({ theme }) => ({

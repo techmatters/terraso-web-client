@@ -21,6 +21,7 @@ import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Box, Link, Stack } from '@mui/material';
+
 import { serialize } from 'common/components/RichTextEditor/utils';
 import { useSocialShareContext } from 'common/components/SocialShare';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
@@ -29,6 +30,7 @@ import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import StoryMap from 'storyMap/components/StoryMap';
 import { fetchStoryMap } from 'storyMap/storyMapSlice';
 import { generateStoryMapUrl, isChapterEmpty } from 'storyMap/storyMapUtils';
+
 import logoWhite from 'assets/logo-white.svg';
 
 const EmbedHeader = props => {

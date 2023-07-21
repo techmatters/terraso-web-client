@@ -19,17 +19,20 @@ import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from '@mui/material';
+
 import BaseDropZone from 'common/components/DropZone';
 import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
 import { rollbar } from 'monitoring/rollbar';
 import { parseFileToGeoJSON } from 'gis/gisSlice';
+
+import LandscapeMap from '../LandscapeMap';
+
 import {
   GEOJSON_MAX_SIZE,
   MAP_DATA_ACCEPTED_EXTENSIONS,
   MAP_DATA_ACCEPTED_TYPES,
 } from 'config';
-import LandscapeMap from '../LandscapeMap';
 
 const DropZone = props => {
   const { t } = useTranslation();

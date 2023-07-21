@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import * as terrasoApiToMock from 'terraso-client-shared/terrasoApi/api';
+
 import * as landscapeService from 'landscape/landscapeService';
 
 jest.mock('terraso-client-shared/terrasoApi/api');

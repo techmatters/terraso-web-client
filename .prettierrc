@@ -7,14 +7,19 @@
 		"^react$",
 		"<THIRD_PARTY_MODULES>",
 		"^@mui/(.*)$",
+		"",
+		"^(custom-hooks|react-hoc)$",
+		"",
 		"^(common|forms|layout|localization|monitoring|navigation|notifications|permissions|state)/(.*)$",
 		"^(account|contact|gis|group|home|landscape|sharedData|storyMap|taxonomies|terrasoBackend|tool|user)/(.*)$",
-		"^(config|custom-hooks|react-hoc)$",
+		"",
 		"^[./]",
+		"",
+		"^config$",
+		"",
 		"^assets/(.*)$",
 		"^theme$"
 	],
-	"importOrderSeparation": true,
-	"importOrderSortSpecifiers": true,
-	"trailingComma": "es5"
+	"trailingComma": "es5",
+	"plugins": ["@ianvs/prettier-plugin-sort-imports"]
 }

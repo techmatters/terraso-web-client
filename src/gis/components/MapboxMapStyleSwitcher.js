@@ -18,6 +18,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import LayersIcon from '@mui/icons-material/Layers';
 import { Button, Menu, MenuItem, Portal, Stack } from '@mui/material';
+
 import { MAPBOX_STYLES } from './MapboxConstants';
 import { useMap } from './MapboxMap';
 

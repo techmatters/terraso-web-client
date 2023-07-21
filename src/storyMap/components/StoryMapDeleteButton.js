@@ -18,6 +18,7 @@ import React, { useCallback } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+
 import ConfirmButton from 'common/components/ConfirmButton';
 import { deleteStoryMap } from 'storyMap/storyMapSlice';
 
