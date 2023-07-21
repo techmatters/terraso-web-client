@@ -2,16 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import bbox from '@turf/bbox';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
-import CloseIcon from '@mui/icons-material/Close';
-import {
-  Alert,
-  Dialog,
-  DialogContent,
-  IconButton,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, Paper, Stack, Typography } from '@mui/material';
 import ExternalLink from 'common/components/ExternalLink';
 import PageHeader from 'layout/PageHeader';
 import DrawControls from 'gis/components/DrawControls';
@@ -21,16 +12,16 @@ import { OPTION_BOUNDARY_CHOICES } from '.';
 import BaseMap, { POLYGON_FILTER } from '../../LandscapeMap';
 import Actions from '../Actions';
 
+import drawPolygonIcon from 'assets/gis/draw-polygon.svg';
+import LayersIcon from '@mui/icons-material/Layers';
+
 const Draw = props => {
-  const { areaPolygon, setAreaPolygon, setEditHelp, setOpen } = props;
+  const { areaPolygon, setAreaPolygon, setEditHelp } = props;
   const { map } = useMap();
 
   const onPolygonAdded = useCallback(
     (event, draw) => {
       const geoJson = draw.getAll();
-      if (geoJson && !_.isEmpty(geoJson.features)) {
-        setOpen(true);
-      }
       const calculatedBbox = bbox(geoJson);
       const bounds = new mapboxgl.LngLatBounds(
         [calculatedBbox[0], calculatedBbox[1]],
@@ -40,7 +31,7 @@ const Draw = props => {
         map.fitBounds(bounds);
       });
     },
-    [setOpen, map]
+    [map]
   );
 
   const onDrawModeChange = useCallback(
@@ -106,7 +97,6 @@ const OptionDrawPolygon = props => {
     setUpdatedLandscape,
   } = props;
   const [editHelp, setEditHelp] = useState(null);
-  const [open, setOpen] = useState(false);
 
   const updatedValues = useMemo(
     () => ({ ...landscape, areaPolygon }),
@@ -115,47 +105,6 @@ const OptionDrawPolygon = props => {
 
   return (
     <>
-      <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        sx={{
-          '& .MuiBackdrop-root': {
-            backgroundColor: 'transparent',
-          },
-          '& .MuiPaper-root': {
-            backgroundColor: '#055989',
-          },
-          '& .MuiDialogContent-root': {
-            color: '#ffffff',
-          },
-        }}
-      >
-        <IconButton
-          aria-label="close"
-          onClick={() => setOpen(false)}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: 'white',
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-        <DialogContent sx={{ pr: 7 }}>
-          <Trans
-            i18nKey="landscape.form_boundary_draw_polygon_saved"
-            context={isNew ? 'create' : 'update'}
-          >
-            prefix
-            <span
-              role="img"
-              aria-label={t('gis.map_draw.edit.toolbar.buttons.edit')}
-              className="landascape-boundary-step-map-icon landascape-boundary-step-draw-icon landascape-boundary-step-draw-edit-icon"
-            />
-          </Trans>
-        </DialogContent>
-      </Dialog>
       <PageHeader
         header={t('landscape.form_boundary_draw_polygon_title', {
           name: landscape.name,
@@ -170,16 +119,16 @@ const OptionDrawPolygon = props => {
         <Trans i18nKey="landscape.form_boundary_draw_polygon_description">
           <Typography>
             first
-            <span
-              role="img"
+            <Box
+              component="img"
+              src={drawPolygonIcon}
               aria-label={t('landscape.form_boundary_map_basemap_label')}
-              className="landascape-boundary-step-map-icon landascape-boundary-step-draw-basemap-icon"
+              sx={{ verticalAlign: 'middle' }}
             />
             third
-            <span
-              role="img"
+            <LayersIcon
               aria-label={t('gis.map_draw.draw.toolbar.buttons.polygon')}
-              className="landascape-boundary-step-map-icon landascape-boundary-step-draw-icon landascape-boundary-step-draw-polygon-icon"
+              sx={{ fontSize: 20, verticalAlign: 'middle' }}
             />
           </Typography>
         </Trans>
@@ -194,7 +143,6 @@ const OptionDrawPolygon = props => {
             areaPolygon={areaPolygon}
             setAreaPolygon={setAreaPolygon}
             setEditHelp={setEditHelp}
-            setOpen={setOpen}
             onBoundsChange={onBoundsChange}
           />
         </BaseMap>
