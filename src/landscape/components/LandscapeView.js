@@ -45,7 +45,6 @@ import RouterButton from 'common/components/RouterButton';
 import RouterLink from 'common/components/RouterLink';
 import { useSocialShareContext } from 'common/components/SocialShare';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
-import { countryNameForCode } from 'common/utils';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
@@ -66,6 +65,7 @@ import BaseMap from './LandscapeMap';
 import { Partnership } from './LandscapeProfile/AffiliationCard';
 
 import theme from 'theme';
+import { countryNameForCode } from 'common/countries';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.view_leave_label',

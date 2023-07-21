@@ -27,7 +27,6 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
 import RouterLink from 'common/components/RouterLink';
-import { countryNameForCode } from 'common/utils';
 import MapboxMap, {
   useMap as useMapboxContext,
 } from 'gis/components/MapboxMap';
@@ -36,6 +35,7 @@ import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';
 import { isValidLatitude, isValidLongitude } from 'gis/gisUtils';
 
 import { MAPBOX_LANDSCAPE_DIRECTORY_STYLE } from 'config';
+import { countryNameForCode } from 'common/countries';
 
 const LandscapePopup = ({ landscape }) => {
   const { t } = useTranslation();

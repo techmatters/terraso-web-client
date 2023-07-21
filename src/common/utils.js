@@ -14,9 +14,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import i18n from 'i18next';
-import _ from 'lodash/fp';
-import countries from 'world-countries';
 import * as yup from 'yup';
 
 export const getAcronym = name => name.match(/\b(\w)/g).join('');
@@ -48,25 +45,3 @@ export const isUrl = url => {
     return false;
   }
 };
-
-export const countriesList = () => {
-  const countriesLang = i18n.resolvedLanguage.startsWith('es')
-    ? 'translations.spa.common'
-    : 'name.common';
-
-  const countriesList = _.flow(
-    _.map(item => ({ code: item.cca2, name: _.get(countriesLang, item) })),
-    _.sortBy('name')
-  )(countries);
-
-  return countriesList;
-};
-
-export const countryNameForCode = code => {
-  const list = countriesList();
-  return list.find(country => country.code === code);
-};
-
-// from https://stackoverflow.com/a/44325124; allow comma operator for speed
-export const countryMap = countries =>
-  countries.reduce((obj, item) => ((obj[item.code] = item.name), obj), {}); // eslint-disable-line no-sequences

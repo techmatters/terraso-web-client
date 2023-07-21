@@ -32,7 +32,6 @@ import {
 
 import ConfirmButton from 'common/components/ConfirmButton';
 import RouterLink from 'common/components/RouterLink';
-import { countryNameForCode } from 'common/utils';
 import Restricted from 'permissions/components/Restricted';
 import { deleteProfileImage } from 'landscape/landscapeSlice';
 import {
@@ -43,6 +42,7 @@ import {
   TYPE_LIVELIHOOD,
 } from 'taxonomies/taxonomiesConstants';
 import { getTermLabel } from 'taxonomies/taxonomiesUtils';
+import { countryNameForCode } from 'common/countries';
 
 const PROFILE_IMAGE_DEFAULT = '/landscape/profile-image-default.jpg';
 

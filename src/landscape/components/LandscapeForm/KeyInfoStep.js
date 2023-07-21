@@ -23,12 +23,13 @@ import * as yup from 'yup';
 import { MenuItem, Select, TextareaAutosize, Typography } from '@mui/material';
 
 import CharacterCounter from 'common/components/CharacterCounter';
-import { countriesList, countryMap, transformURL } from 'common/utils';
+import { transformURL } from 'common/utils';
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';
 
 import Actions from './Actions';
+import { countriesList, countryMap } from 'common/countries';
 
 import { MAX_DESCRIPTION_LENGTH } from 'config';
 

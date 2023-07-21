@@ -22,7 +22,6 @@ import PinDropIcon from '@mui/icons-material/PinDrop';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { Button, Stack, Typography } from '@mui/material';
 import ExternalLink from 'common/components/ExternalLink';
-import { countryNameForCode } from 'common/utils';
 import PageHeader from 'layout/PageHeader';
 import { getPlaceInfoByName } from 'gis/gisService';
 import { useIsMounted } from 'custom-hooks';
@@ -32,6 +31,7 @@ import OptionBoundariesFile from 'landscape/components/LandscapeForm/BoundarySte
 import { MAP_DATA_ACCEPTED_TYPES_NAMES } from 'config';
 import OptionAddPin from './OptionAddPin';
 import OptionDrawPolygon from './OptionDrawPolygon';
+import { countryNameForCode } from 'common/countries';
 
 const OPTION_GEOJSON = 'geo-json';
 const OPTION_MAP_DRAW_POLYGON = 'map-draw-polygon';
