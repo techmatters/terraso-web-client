@@ -34,6 +34,9 @@ jobs:
       - name: Run lint css checks
         run: npm run lint-css
 
+      - name: Check NPM module usage
+        run: npm run check-modules
+
   tests:
     runs-on: ubuntu-latest
 

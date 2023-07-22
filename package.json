@@ -67,6 +67,7 @@
     "check-ts": "npm run generate-types && tsc --noEmit",
     "lint-css": "stylelint --config=.stylelintrc '**/*.css'",
     "format-css": "npm run lint-css -- --fix",
+    "check-modules": "npm-check",
     "build": "npm run generate-types && react-scripts build",
     "build-serve": "serve -s build",
     "test": "npm run generate-types && react-scripts test --transformIgnorePatterns \"node_modules/(?!react-leaflet)/\"",
