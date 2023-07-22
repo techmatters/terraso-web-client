@@ -1,9 +1,8 @@
 {
   "depcheck": {
     "ignoreMatches": [
-        "@ianvs/prettier-plugin-sort-imports",
-        "stylelint-prettier",
         "@graphql-codegen/client-preset",
+        "@ianvs/prettier-plugin-sort-imports",
         "@mui/system",
         "@mui/utils",
         "account",
@@ -33,6 +32,7 @@
         "slate",
         "storyMap",
         "stringUtils",
+        "stylelint-prettier",
         "taxonomies",
         "terrasoApi",
         "tests",
