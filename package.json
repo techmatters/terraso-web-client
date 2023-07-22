@@ -98,6 +98,7 @@
     "flat": "^5.0.2",
     "i18next-conv": "^14.0.0",
     "jest-axe": "^8.0.0",
+    "npm-check": "^6.0.1",
     "plausible-tracker": "^0.3.8",
     "prettier": "^3.0.0",
     "react-scripts": "^5.0.1",
