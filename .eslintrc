@@ -15,7 +15,6 @@
     "react-app",
     "react-app/jest",
     "eslint:recommended",
-    "plugin:jsx-a11y/recommended",
     "prettier",
     "plugin:lodash-fp/recommended"
   ],
