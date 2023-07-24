@@ -1,6 +1,9 @@
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
+
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+
 import { useEffect, useMemo } from 'react';
+
 import { useMap } from './MapboxMap';
 
 const DrawControls = props => {

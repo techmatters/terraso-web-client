@@ -44,6 +44,7 @@ import InlineHelp from 'common/components/InlineHelp';
 import RouterButton from 'common/components/RouterButton';
 import RouterLink from 'common/components/RouterLink';
 import { useSocialShareContext } from 'common/components/SocialShare';
+import { countryNameForCode } from 'common/countries';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
@@ -61,11 +62,11 @@ import {
 import { isBoundaryPin } from 'landscape/landscapeUtils';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 import SharedDataCard from 'sharedData/components/SharedDataCard';
+
 import BaseMap from './LandscapeMap';
 import { Partnership } from './LandscapeProfile/AffiliationCard';
 
 import theme from 'theme';
-import { countryNameForCode } from 'common/countries';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.view_leave_label',

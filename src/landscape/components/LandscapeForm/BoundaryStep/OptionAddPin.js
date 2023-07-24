@@ -1,8 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Paper, Typography } from '@mui/material';
+
 import PageHeader from 'layout/PageHeader';
 import DrawControls from 'gis/components/DrawControls';
+
 import { OPTION_BOUNDARY_CHOICES } from '.';
 import BaseMap from '../../LandscapeMap';
 import Actions from '../Actions';

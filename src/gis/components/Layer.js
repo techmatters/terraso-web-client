@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+
 import { useMap } from './MapboxMap';
 
 const Layer = props => {

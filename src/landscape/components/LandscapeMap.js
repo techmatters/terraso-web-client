@@ -16,7 +16,9 @@
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
+import logger from 'terraso-client-shared/monitoring/logger';
 import { Box } from '@mui/material';
+
 import GeoJsonSource from 'gis/components/GeoJsonSource';
 import Layer from 'gis/components/Layer';
 import MapboxGeocoder from 'gis/components/MapboxGeocoder';
@@ -26,8 +28,8 @@ import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';
 import mapboxgl from 'gis/mapbox';
 import { getMarkerImage } from 'gis/mapMarkers';
 import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';
+
 import theme from 'theme';
-import logger from 'terraso-client-shared/monitoring/logger';
 
 export const POLYGON_FILTER = feature =>
   _.includes(_.get('geometry.type', feature), ['Polygon', 'MultiPolygon']);

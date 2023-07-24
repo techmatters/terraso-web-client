@@ -2,18 +2,20 @@ import React, { useCallback, useMemo, useState } from 'react';
 import bbox from '@turf/bbox';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
+import LayersIcon from '@mui/icons-material/Layers';
 import { Alert, Box, Paper, Stack, Typography } from '@mui/material';
+
 import ExternalLink from 'common/components/ExternalLink';
 import PageHeader from 'layout/PageHeader';
 import DrawControls from 'gis/components/DrawControls';
 import { useMap } from 'gis/components/MapboxMap';
 import mapboxgl from 'gis/mapbox';
+
 import { OPTION_BOUNDARY_CHOICES } from '.';
 import BaseMap, { POLYGON_FILTER } from '../../LandscapeMap';
 import Actions from '../Actions';
 
 import drawPolygonIcon from 'assets/gis/draw-polygon.svg';
-import LayersIcon from '@mui/icons-material/Layers';
 
 const Draw = props => {
   const { areaPolygon, setAreaPolygon, setEditHelp } = props;

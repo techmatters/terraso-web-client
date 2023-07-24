@@ -20,6 +20,7 @@ import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert, Paper } from '@mui/material';
+
 import BaseDropZone from 'common/components/DropZone';
 import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
@@ -28,14 +29,16 @@ import { rollbar } from 'monitoring/rollbar';
 import { useMap } from 'gis/components/MapboxMap';
 import { parseFileToGeoJSON } from 'gis/gisSlice';
 import mapboxgl from 'gis/mapbox';
+
+import { OPTION_BOUNDARY_CHOICES } from '.';
+import BaseMap from '../../LandscapeMap';
+import Actions from '../Actions';
+
 import {
   GEOJSON_MAX_SIZE,
   MAP_DATA_ACCEPTED_EXTENSIONS,
   MAP_DATA_ACCEPTED_TYPES,
 } from 'config';
-import { OPTION_BOUNDARY_CHOICES } from '.';
-import BaseMap from '../../LandscapeMap';
-import Actions from '../Actions';
 
 const DropZone = props => {
   const { t } = useTranslation();

@@ -22,6 +22,7 @@ import {
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
+import { countryNameForCode } from 'common/countries';
 import * as gisService from 'gis/gisService';
 import { extractTerms } from 'taxonomies/taxonomiesUtils';
 
@@ -31,7 +32,6 @@ import {
   extractDevelopmentStrategy,
   extractPartnership,
 } from './landscapeUtils';
-import { countryNameForCode } from 'common/countries';
 
 const cleanLandscape = landscape =>
   _.flow(

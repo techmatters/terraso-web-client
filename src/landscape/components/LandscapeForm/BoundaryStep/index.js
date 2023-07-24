@@ -15,23 +15,27 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useState } from 'react';
+import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import MapIcon from '@mui/icons-material/Map';
 import PinDropIcon from '@mui/icons-material/PinDrop';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { Button, Stack, Typography } from '@mui/material';
-import ExternalLink from 'common/components/ExternalLink';
-import PageHeader from 'layout/PageHeader';
-import { getPlaceInfoByName } from 'gis/gisService';
+
 import { useIsMounted } from 'custom-hooks';
+
+import ExternalLink from 'common/components/ExternalLink';
+import { countryNameForCode } from 'common/countries';
+import PageHeader from 'layout/PageHeader';
 import { scrollToNavBar } from 'navigation/scrollTo';
+import { getPlaceInfoByName } from 'gis/gisService';
 import OptionBoundariesFile from 'landscape/components/LandscapeForm/BoundaryStep/OptionBoundariesFile';
-import { MAP_DATA_ACCEPTED_TYPES_NAMES } from 'config';
+
 import OptionAddPin from './OptionAddPin';
 import OptionDrawPolygon from './OptionDrawPolygon';
-import _ from 'lodash/fp';
-import { countryNameForCode } from 'common/countries';
+
+import { MAP_DATA_ACCEPTED_TYPES_NAMES } from 'config';
 
 const OPTION_GEOJSON = 'geo-json';
 const OPTION_MAP_DRAW_POLYGON = 'map-draw-polygon';

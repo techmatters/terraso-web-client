@@ -26,6 +26,7 @@ import { withProps } from 'react-hoc';
 
 import ExternalLink from 'common/components/ExternalLink';
 import TableResponsive from 'common/components/TableResponsive';
+import { countryNameForCode } from 'common/countries';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
@@ -38,7 +39,6 @@ import { fetchLandscapes } from 'landscape/landscapeSlice';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 
 import LandscapeListMap from './LandscapeListMap';
-import { countryNameForCode } from 'common/countries';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.list_leave_button',

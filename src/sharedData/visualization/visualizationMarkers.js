@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { Canvg } from 'canvg';
+
 import { getImage } from 'gis/mapMarkers';
 
 const DEFAULT_OPACITY = 0.5;

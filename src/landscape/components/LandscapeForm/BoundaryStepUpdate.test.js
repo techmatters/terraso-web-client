@@ -19,8 +19,8 @@ import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
-import LandscapeBoundaries from 'landscape/components/LandscapeForm/BoundaryStepUpdate';
 import mapboxgl from 'gis/mapbox';
+import LandscapeBoundaries from 'landscape/components/LandscapeForm/BoundaryStepUpdate';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 

@@ -20,8 +20,8 @@ import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
-import LandscapeNew from 'landscape/components/LandscapeForm/New';
 import { getPlaceInfoByName } from 'gis/gisService';
+import LandscapeNew from 'landscape/components/LandscapeForm/New';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
