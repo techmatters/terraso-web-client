@@ -46,7 +46,6 @@ const BoundingBox = props => {
     }
     try {
       map.fitBounds(new mapboxgl.LngLatBounds(bounds), {
-        padding: 20,
         animate: false,
       });
     } catch (error) {
@@ -170,6 +169,7 @@ const LandscapeMap = props => {
           width: '100%',
           height: '400px',
         }}
+        initialBounds={bounds}
         {...rest}
       >
         <BoundingBox bounds={bounds} />

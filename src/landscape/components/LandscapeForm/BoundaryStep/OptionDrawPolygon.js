@@ -30,7 +30,7 @@ const Draw = props => {
         [calculatedBbox[2], calculatedBbox[3]]
       );
       setTimeout(() => {
-        map.fitBounds(bounds);
+        map.fitBounds(bounds, { padding: 50, animate: false });
       });
     },
     [map]

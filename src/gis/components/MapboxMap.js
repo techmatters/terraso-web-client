@@ -227,6 +227,7 @@ const MapboxMap = props => {
     hash = false,
     attributionControl = true,
     center,
+    initialBounds,
     zoom = 1,
     disableRotation = false,
     height = '400px',
@@ -238,6 +239,7 @@ const MapboxMap = props => {
   const { i18n } = useTranslation();
   const { map, setMap } = useMap();
   const mapContainer = useRef(null);
+  const [bounds] = useState(initialBounds);
 
   useEffect(() => {
     const map = new mapboxgl.Map({
@@ -250,6 +252,7 @@ const MapboxMap = props => {
       hash,
       attributionControl,
       preserveDrawingBuffer: true,
+      bounds,
       ...(initialLocation ? initialLocation : {}),
     });
 
@@ -295,6 +298,7 @@ const MapboxMap = props => {
     attributionControl,
     setMap,
     disableRotation,
+    bounds,
   ]);
 
   useEffect(() => {
