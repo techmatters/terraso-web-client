@@ -161,6 +161,7 @@ export const MapProvider = props => {
         const isGeoJson = source.type === 'geojson';
         if (isGeoJson && currentSource) {
           currentSource.setData(source.data);
+          setSources(prev => ({ ...prev, [name]: source }));
           return;
         }
 
