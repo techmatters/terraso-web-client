@@ -22,17 +22,20 @@ jobs:
           node-version-file: '.tool-versions'
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: Install Node dependencies
         run: npm ci
 
-      - name: Typecheck ts code
+      - name: Typecheck TypeScript
         run: npm run check-ts
 
-      - name: Run lint js checks
+      - name: Lint JavaScript
         run: npm run lint-js
 
-      - name: Run lint css checks
+      - name: Lint CSS
         run: npm run lint-css
+
+      - name: Check NPM module usage
+        run: npm run check-modules
 
   tests:
     runs-on: ubuntu-latest
