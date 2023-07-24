@@ -76,6 +76,7 @@ const colorTheme = createTheme({
     map: {
       polygon: '#0055CC',
       polygonFill: '#D6E7FF',
+      marker: '#00344D',
     },
     visualization: {
       markerDefaultColor: '#FF580D',

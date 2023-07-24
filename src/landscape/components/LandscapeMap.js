@@ -118,7 +118,9 @@ const Markers = props => {
   );
 
   useEffect(() => {
-    getMarkerImage({ color: '#0055CC', size: 80 }).then(setImage);
+    getMarkerImage({ color: theme.palette.map.marker, size: 80 }).then(
+      setImage
+    );
   }, []);
 
   return (
