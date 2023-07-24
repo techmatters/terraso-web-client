@@ -24,16 +24,19 @@ export const GroupContextProvider = props => {
   const { t } = useTranslation();
 
   const entityType = useMemo(
-    () =>
-      props?.owner?.defaultGroup
-        ? t('sharedData.entity_type_landscape')
-        : t('sharedData.entity_type_group'),
-    [props?.owner?.defaultGroup, t]
+    () => (props?.owner?.defaultGroup ? 'landscape' : 'group'),
+    [props?.owner?.defaultGroup]
+  );
+
+  const entityTypeLocalized = useMemo(
+    () => t('sharedData.entity_type', { context: entityType }),
+    [entityType, t]
   );
 
   const providerValue = useMemo(
     () => ({
       entityType,
+      entityTypeLocalized,
       ..._.pick(
         [
           'owner',
@@ -53,7 +56,7 @@ export const GroupContextProvider = props => {
         props
       ),
     }),
-    [entityType, props]
+    [entityType, entityTypeLocalized, props]
   );
 
   return (

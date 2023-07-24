@@ -14,8 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React from 'react';
-import _ from 'lodash/fp';
+import React, { useCallback } from 'react';
 import { Link } from '@mui/material';
 
 import { useAnalytics } from 'monitoring/analytics';
@@ -29,30 +28,33 @@ const ExternalLink = ({
   component,
   children,
   linkProps,
+  customTrackEvent,
   underlined = false,
 }) => {
   const { trackEvent } = useAnalytics();
-  let props = { url: href };
 
-  if (linkProps?.trackingProps) {
-    props = { ...linkProps.trackingProps, ...props };
-  }
-
-  const onClick = event => {
-    window.open(href, '_blank', 'noopener,noreferrer');
-    trackEvent('link.click', {
-      props: props,
-    });
-    event.preventDefault();
-    event.stopPropagation();
-  };
+  const onClick = useCallback(
+    event => {
+      const analyticsProps = {
+        url: href,
+        ...(customTrackEvent?.props || {}),
+      };
+      window.open(href, '_blank', 'noopener,noreferrer');
+      trackEvent(customTrackEvent?.name || 'link.click', {
+        props: analyticsProps,
+      });
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    [href, trackEvent, customTrackEvent]
+  );
 
   return (
     <Link
       href={href}
       component={component}
       onClick={onClick}
-      {..._.omit('trackingProps', linkProps)}
+      {...(linkProps || {})}
       sx={{
         ...(underlined && { textDecoration: 'underline' }),
       }}

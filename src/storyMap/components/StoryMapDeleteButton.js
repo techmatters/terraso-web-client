@@ -38,9 +38,7 @@ const DeleteButton = props => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
           onSuccess?.(storyMap);
-          trackEvent('storymap.delete', {
-            props: { title: storyMap.title },
-          });
+          trackEvent('storymap.delete');
         }
       }),
     [dispatch, trackEvent, storyMap, onSuccess]

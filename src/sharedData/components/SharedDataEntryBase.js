@@ -43,7 +43,7 @@ const StackRow = props => (
 
 const SharedDataEntryBase = props => {
   const { i18n, t } = useTranslation();
-  const { group, owner, updateOwner } = useGroupContext();
+  const { group, owner, updateOwner, entityType } = useGroupContext();
   const {
     dataEntry,
     children,
@@ -67,13 +67,21 @@ const SharedDataEntryBase = props => {
         if (success) {
           updateOwner();
           trackEvent('dataEntry.delete', {
-            props: { owner: owner.slug, name: dataEntry.name },
+            props: { [entityType]: owner.slug, name: dataEntry.name },
           });
         }
         dispatch(resetProcessing(dataEntry.id));
       }
     );
-  }, [dataEntry, dispatch, group.slug, owner.slug, trackEvent, updateOwner]);
+  }, [
+    dataEntry,
+    dispatch,
+    group.slug,
+    owner.slug,
+    trackEvent,
+    updateOwner,
+    entityType,
+  ]);
 
   const onUpdate = useCallback(
     field => value => {
@@ -89,13 +97,13 @@ const SharedDataEntryBase = props => {
         if (success) {
           updateOwner();
           trackEvent('dataEntry.edit', {
-            props: { owner: owner.slug, name: dataEntry.name },
+            props: { [entityType]: owner.slug, name: dataEntry.name },
           });
         }
         dispatch(resetProcessing(dataEntry.id));
       });
     },
-    [dataEntry, dispatch, owner.slug, trackEvent, updateOwner]
+    [dataEntry, dispatch, owner.slug, trackEvent, updateOwner, entityType]
   );
 
   const onUpdateName = useMemo(() => onUpdate('name'), [onUpdate]);

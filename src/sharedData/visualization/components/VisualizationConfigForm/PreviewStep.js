@@ -44,7 +44,7 @@ const PreviewStep = props => {
   const [viewportConfig, setViewportConfig] = useState(
     visualizationConfig.viewportConfig
   );
-  const { owner, entityType, group } = useGroupContext();
+  const { owner, entityTypeLocalized, group } = useGroupContext();
 
   useEffect(() => {
     setViewportConfig(visualizationConfig.viewportConfig);
@@ -117,7 +117,9 @@ const PreviewStep = props => {
         onNext={onPublish}
       >
         <Typography sx={{ mb: 2 }}>
-          {t('sharedData.form_step_preview_step_description', { entityType })}
+          {t('sharedData.form_step_preview_step_description', {
+            entityType: entityTypeLocalized,
+          })}
         </Typography>
         <VisualizationPreview
           useConfigBounds
@@ -126,7 +128,7 @@ const PreviewStep = props => {
         />
         <Typography sx={{ mt: 2 }}>
           {t('sharedData.form_step_preview_step_map_description', {
-            entityType,
+            entityType: entityTypeLocalized,
           })}
         </Typography>
       </StepperStep>

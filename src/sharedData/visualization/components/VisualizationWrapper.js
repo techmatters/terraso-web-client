@@ -62,7 +62,7 @@ const VisualizationWrapper = props => {
   const { data, fetching, deleting } = useSelector(
     state => state.sharedData.visualizationConfig
   );
-  const { group, owner } = useGroupContext();
+  const { group, owner, entityType } = useGroupContext();
   const [imagePrinter, setImagePrinter] = useState();
 
   useEffect(() => {
@@ -104,16 +104,20 @@ const VisualizationWrapper = props => {
   }, [imagePrinter, mapTitle]);
 
   const onDelete = useCallback(() => {
-    dispatch(deleteVisualizationConfig(data)).then(data => {
-      const success = _.get('meta.requestStatus', data) === 'fulfilled';
+    dispatch(deleteVisualizationConfig(data)).then(response => {
+      const success = _.get('meta.requestStatus', response) === 'fulfilled';
       if (success) {
         onDeleted();
         trackEvent('dataMap.delete', {
-          props: { owner: owner.slug, title: mapTitle },
+          props: {
+            [entityType]: owner.slug,
+            title: mapTitle,
+            file: data.dataEntry.name,
+          },
         });
       }
     });
-  }, [dispatch, data, onDeleted, owner, trackEvent, mapTitle]);
+  }, [dispatch, data, onDeleted, owner, trackEvent, mapTitle, entityType]);
 
   if (!data && !fetching) {
     return <NotFound />;

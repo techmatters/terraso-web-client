@@ -14,17 +14,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import { useCallback } from 'react';
+
 import { useAnalytics } from 'monitoring/analytics';
 import { useGroupContext } from 'group/groupContext';
 
 export const useSharedData = () => {
   const { trackEvent } = useAnalytics();
-  const { owner } = useGroupContext();
+  const { owner, entityType } = useGroupContext();
 
-  const downloadFile = file => {
-    trackEvent('dataEntry.file.download', { props: { owner: owner.slug } });
-    window.open(file.url, '_blank');
-  };
+  const downloadFile = useCallback(
+    file => {
+      trackEvent('dataEntry.file.download', {
+        props: { [entityType]: owner.slug },
+      });
+      window.open(file.url, '_blank');
+    },
+    [trackEvent, owner, entityType]
+  );
 
   return { downloadFile };
 };

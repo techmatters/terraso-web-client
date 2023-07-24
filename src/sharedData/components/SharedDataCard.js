@@ -43,7 +43,7 @@ import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 const SharedFilesCard = props => {
   const { t } = useTranslation();
   const { onUploadClick, onAddVisualizationClick } = props;
-  const { group, owner, entityType } = useGroupContext();
+  const { group, owner, entityTypeLocalized } = useGroupContext();
   const { allowed } = usePermission('group.viewFiles', group);
   const { data: sharedFiles, fetching } = useSelector(_.get('sharedData.list'));
   const hasFiles = !_.isEmpty(sharedFiles);
@@ -87,7 +87,7 @@ const SharedFilesCard = props => {
               ext => `*.${ext}`
             ).join(', '),
             name: owner.name,
-            entityType,
+            entityType: entityTypeLocalized,
           })}
         </Typography>
         {hasFiles && (
@@ -116,7 +116,9 @@ const SharedFilesCard = props => {
                 marginBottom: 2,
               }}
             >
-              {t('sharedData.description_with_files', { entityType })}
+              {t('sharedData.description_with_files', {
+                entityType: entityTypeLocalized,
+              })}
             </Typography>
             <ScrollTo />
           </>
