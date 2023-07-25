@@ -234,6 +234,7 @@ const MapboxMap = props => {
     width = '100%',
     sx,
     onBoundsChange,
+    disableElevation = false,
     children,
   } = props;
   const { i18n } = useTranslation();
@@ -257,11 +258,15 @@ const MapboxMap = props => {
     });
 
     map.on('load', function () {
-      if (!map.getSource('mapbox-dem')) {
+      if (!disableElevation && !map.getSource('mapbox-dem')) {
         map.addSource('mapbox-dem', MAPBOX_DEM_SOURCE);
 
         // add the DEM (Digital Elevation Model) source as a terrain layer with exaggerated height
         map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
+      }
+
+      if (disableElevation) {
+        map.setTerrain();
       }
 
       if (!map.getLayer('sky')) {
@@ -299,6 +304,7 @@ const MapboxMap = props => {
     setMap,
     disableRotation,
     bounds,
+    disableElevation,
   ]);
 
   useEffect(() => {

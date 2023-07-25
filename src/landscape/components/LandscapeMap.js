@@ -173,6 +173,7 @@ const LandscapeMap = props => {
       }}
     >
       <MapboxMap
+        disableElevation
         projection="mercator"
         mapStyle="mapbox://styles/mapbox/streets-v12"
         sx={{
