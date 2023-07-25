@@ -1,9 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Paper, Typography } from '@mui/material';
+import { Trans, useTranslation } from 'react-i18next';
+import { Box, Paper, Typography } from '@mui/material';
 
 import PageHeader from 'layout/PageHeader';
 import DrawControls from 'gis/components/DrawControls';
+import { MARKER_CONTROL_ICON } from 'gis/mapMarkers';
 
 import { OPTION_BOUNDARY_CHOICES } from '.';
 import BaseMap from '../../LandscapeMap';
@@ -49,7 +50,18 @@ const OptionAddPin = props => {
   return (
     <>
       <PageHeader header={t('landscape.form_boundary_pin_title')} />
-      <Typography>{t('landscape.form_boundary_pin_description')}</Typography>
+      <Trans i18nKey="landscape.form_boundary_pin_description">
+        <Typography>
+          first
+          <Box
+            component="img"
+            src={MARKER_CONTROL_ICON}
+            aria-label={t('landscape.form_boundary_map_basemap_label')}
+            sx={{ verticalAlign: 'middle' }}
+          />
+          third
+        </Typography>
+      </Trans>
       <Paper variant="outlined" sx={{ p: 2, mt: 2, mb: 2 }}>
         <BaseMap
           showGeocoder

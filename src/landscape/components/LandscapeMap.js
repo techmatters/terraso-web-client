@@ -26,19 +26,10 @@ import MapboxMap, { useMap } from 'gis/components/MapboxMap';
 import MapboxMapControls from 'gis/components/MapboxMapControls';
 import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';
 import mapboxgl from 'gis/mapbox';
-import { generateMarkerSvg, getMarkerImage } from 'gis/mapMarkers';
+import { getMarkerImage, MARKER_CONTROL_ICON } from 'gis/mapMarkers';
 import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';
 
 import theme from 'theme';
-
-const MARKER_CONTROL_ICON = (() => {
-  const svg = generateMarkerSvg({
-    color: theme.palette.map.markerControl,
-    size: 20,
-  });
-  const encodedSVG = encodeURIComponent(svg);
-  return `data:image/svg+xml;utf8,${encodedSVG}`;
-})();
 
 export const POLYGON_FILTER = feature =>
   _.includes(_.get('geometry.type', feature), ['Polygon', 'MultiPolygon']);
