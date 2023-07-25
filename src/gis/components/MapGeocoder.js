@@ -23,11 +23,11 @@ import { useTranslation } from 'react-i18next';
 
 import mapboxgl from 'gis/mapbox';
 
-import { useMap } from './MapboxMap';
+import { useMap } from './Map';
 
 import { MAPBOX_ACCESS_TOKEN } from 'config';
 
-const MapboxGeocoder = props => {
+const MapGeocoder = props => {
   const { position } = props;
   const { t } = useTranslation();
   const { map } = useMap();
@@ -46,4 +46,4 @@ const MapboxGeocoder = props => {
   return null;
 };
 
-export default MapboxGeocoder;
+export default MapGeocoder;

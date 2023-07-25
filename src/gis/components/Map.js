@@ -217,7 +217,7 @@ export const MapProvider = props => {
   );
 };
 
-const MapboxMap = props => {
+const Map = props => {
   const {
     id,
     mapStyle,
@@ -350,4 +350,4 @@ const MapboxMap = props => {
   );
 };
 
-export default withWrapper(MapboxMap, MapProvider);
+export default withWrapper(Map, MapProvider);

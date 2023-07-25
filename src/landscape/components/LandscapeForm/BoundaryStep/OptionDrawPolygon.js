@@ -24,7 +24,7 @@ import { Alert, Box, Paper, Stack, Typography } from '@mui/material';
 import ExternalLink from 'common/components/ExternalLink';
 import PageHeader from 'layout/PageHeader';
 import DrawControls from 'gis/components/DrawControls';
-import { useMap } from 'gis/components/MapboxMap';
+import { useMap } from 'gis/components/Map';
 import mapboxgl from 'gis/mapbox';
 
 import { OPTION_BOUNDARY_CHOICES } from '.';

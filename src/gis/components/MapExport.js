@@ -16,7 +16,7 @@
  */
 import { useCallback, useEffect } from 'react';
 
-import { useMap } from './MapboxMap';
+import { useMap } from './Map';
 
 const MapExport = props => {
   const { onImagePrinterChange } = props;

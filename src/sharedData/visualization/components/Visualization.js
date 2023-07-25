@@ -26,9 +26,9 @@ import bbox from '@turf/bbox';
 import { Box, Portal, Stack, Typography } from '@mui/material';
 
 import GeoJsonSource from 'gis/components/GeoJsonSource';
-import MapboxMap, { useMap as useMapboxMap } from 'gis/components/MapboxMap';
-import MapboxMapControls from 'gis/components/MapboxMapControls';
-import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';
+import Map, { useMap } from 'gis/components/Map';
+import MapControls from 'gis/components/MapControls';
+import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
 import { normalizeLongitude } from 'gis/gisUtils';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 import { getLayerImage } from 'sharedData/visualization/visualizationMarkers';
@@ -64,7 +64,7 @@ const PopupContent = props => {
 };
 const MapboxRemoteSource = props => {
   const { visualizationConfig } = props;
-  const { map, addSource } = useMapboxMap();
+  const { map, addSource } = useMap();
   const { tilesetId } = visualizationConfig || {};
   useEffect(() => {
     if (!map || !tilesetId) {
@@ -168,7 +168,7 @@ const SheetSource = props => {
 
 const MapboxLayer = props => {
   const { visualizationConfig, showPopup, useConfigBounds } = props;
-  const { map, addImage, addLayer } = useMapboxMap();
+  const { map, addImage, addLayer } = useMap();
   const [imageSvg, setimageSvg] = useState();
   const [popupData, setPopupData] = useState(null);
   const popupContainer = useMemo(() => document.createElement('div'), []);
@@ -371,7 +371,7 @@ const Visualization = props => {
 
   return (
     <>
-      <MapboxMap
+      <Map
         disableRotation
         projection="mercator"
         mapStyle={visualizationConfig?.viewportConfig?.baseMapStyle}
@@ -382,8 +382,8 @@ const Visualization = props => {
           height: '400px',
         }}
       >
-        <MapboxMapControls />
-        <MapboxMapStyleSwitcher />
+        <MapControls />
+        <MapStyleSwitcher />
         {useTileset ? (
           <MapboxRemoteSource visualizationConfig={visualizationConfig} />
         ) : (
@@ -398,7 +398,7 @@ const Visualization = props => {
           useConfigBounds={useConfigBounds}
         />
         {children}
-      </MapboxMap>
+      </Map>
     </>
   );
 };
