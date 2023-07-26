@@ -57,10 +57,10 @@ const Draw = props => {
       const mode = draw.getMode();
       const selected = draw.getSelected();
       const isNewPolygon = mode === 'draw_polygon';
-      const isEdditing =
+      const isEditing =
         _.includes(mode, ['direct_select', 'simple_select']) &&
         !_.isEmpty(selected.features);
-      if (isNewPolygon || isEdditing) {
+      if (isNewPolygon || isEditing) {
         setEditHelp(mode);
       } else {
         setEditHelp(null);
