@@ -95,7 +95,7 @@
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/parser": "^6.2.0",
     "depcheck": "^1.4.3",
-    "eslint-config-prettier": "^8.8.0",
+    "eslint-config-prettier": "^8.9.0",
     "eslint-plugin-lodash-fp": "^2.2.0-a1",
     "eslint-plugin-prettier": "^5.0.0",
     "flat": "^5.0.2",
