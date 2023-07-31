@@ -20,6 +20,7 @@ import _ from 'lodash/fp';
 import { useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
+import mapboxgl from 'gis/mapbox';
 import LandscapeView from 'landscape/components/LandscapeView';
 
 const GEOJSON =
@@ -31,6 +32,8 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(),
 }));
+
+jest.mock('gis/mapbox', () => ({}));
 
 global.fetch = jest.fn();
 
@@ -56,6 +59,28 @@ beforeEach(() => {
     slug: 'slug-1',
   });
   global.URL.createObjectURL = jest.fn();
+  mapboxgl.LngLatBounds = jest.fn();
+  mapboxgl.NavigationControl = jest.fn();
+  mapboxgl.Map = jest.fn();
+  mapboxgl.Map.prototype = {
+    on: jest.fn().mockImplementation((...args) => {
+      const event = args[0];
+      const callback = args.length === 2 ? args[1] : args[2];
+      if (event === 'load') {
+        callback();
+      }
+    }),
+    addSource: jest.fn(),
+    getSource: jest.fn(),
+    setTerrain: jest.fn(),
+    addLayer: jest.fn(),
+    getLayer: jest.fn(),
+    remove: jest.fn(),
+    addControl: jest.fn(),
+    removeControl: jest.fn(),
+    fitBounds: jest.fn(),
+    off: jest.fn(),
+  };
 });
 
 const baseViewTest = async (userRole = 'MEMBER') => {
@@ -169,10 +194,6 @@ const baseViewTest = async (userRole = 'MEMBER') => {
     screen.getByText(/6 Terraso members joined Landscape Name./i)
   ).toBeInTheDocument();
   expect(screen.getByText(/\+2/i)).toBeInTheDocument();
-
-  // Map
-  expect(screen.getByRole('button', { name: 'Zoom in' })).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Zoom out' })).toBeInTheDocument();
 
   // Shared Data
   const sharedDataRegion = within(

@@ -164,7 +164,7 @@ const MapLocationDialog = props => {
           height="100%"
           initialLocation={initialLocation}
           projection={config.projection}
-          style={config.style}
+          mapStyle={config.style}
         >
           <MapboxMapControls showCompass visualizePitch />
           <MapboxGeocoder />

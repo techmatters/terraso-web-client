@@ -44,8 +44,8 @@ import InlineHelp from 'common/components/InlineHelp';
 import RouterButton from 'common/components/RouterButton';
 import RouterLink from 'common/components/RouterLink';
 import { useSocialShareContext } from 'common/components/SocialShare';
+import { countryNameForCode } from 'common/countries';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
-import { countryNameForCode } from 'common/utils';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
@@ -55,7 +55,6 @@ import Restricted from 'permissions/components/Restricted';
 import { GroupContextProvider } from 'group/groupContext';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
-import LandscapeMap from 'landscape/components/LandscapeMap';
 import {
   fetchLandscapeView,
   refreshLandscapeView,
@@ -64,6 +63,7 @@ import { isBoundaryPin } from 'landscape/landscapeUtils';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 import SharedDataCard from 'sharedData/components/SharedDataCard';
 
+import BaseMap from './LandscapeMap';
 import { Partnership } from './LandscapeProfile/AffiliationCard';
 
 import theme from 'theme';
@@ -318,10 +318,12 @@ const LandscapeView = () => {
             <Card variant="outlined">
               <CardContent>
                 <Paper variant="outlined" sx={{ mb: 2 }}>
-                  <LandscapeMap
+                  <BaseMap
+                    showPolygons
+                    showMarkers
+                    label={t('landscape.view_map_title')}
                     areaPolygon={landscape.areaPolygon}
                     boundingBox={landscape.boundingBox}
-                    label={t('landscape.view_map_title')}
                   />
                   <LandscapeBoundaryDownload landscape={landscape} />
                 </Paper>

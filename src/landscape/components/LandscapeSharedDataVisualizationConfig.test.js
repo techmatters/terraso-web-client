@@ -315,7 +315,9 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
       });
     },
   });
-  visualizationMarkers.getImage.mockResolvedValue('image/svg;base64,abc123');
+  visualizationMarkers.getLayerImage.mockResolvedValue(
+    'image/svg;base64,abc123'
+  );
 
   await setup();
 

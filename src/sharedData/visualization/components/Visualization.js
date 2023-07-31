@@ -25,12 +25,13 @@ import './Visualization.css';
 import bbox from '@turf/bbox';
 import { Box, Portal, Stack, Typography } from '@mui/material';
 
+import GeoJsonSource from 'gis/components/GeoJsonSource';
 import MapboxMap, { useMap as useMapboxMap } from 'gis/components/MapboxMap';
 import MapboxMapControls from 'gis/components/MapboxMapControls';
 import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';
 import { normalizeLongitude } from 'gis/gisUtils';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
-import { getImage } from 'sharedData/visualization/visualizationMarkers';
+import { getLayerImage } from 'sharedData/visualization/visualizationMarkers';
 
 const PopupContent = props => {
   const { data } = props;
@@ -77,9 +78,8 @@ const MapboxRemoteSource = props => {
   }, [map, addSource, tilesetId]);
 };
 
-const MapboxGeoJsonSource = props => {
+const SheetSource = props => {
   const { visualizationConfig, sampleSize } = props;
-  const { map, addSource } = useMapboxMap();
   const { datasetConfig, annotateConfig } = visualizationConfig || {};
   const { sheetContext } = useVisualizationContext();
   const { sheet, colCount, rowCount } = sheetContext;
@@ -157,21 +157,13 @@ const MapboxGeoJsonSource = props => {
     [points]
   );
 
-  useEffect(() => {
-    if (!map || !geoJson) {
-      return;
-    }
-
-    const geojsonSource = map.getSource('visualization');
-    if (!geojsonSource) {
-      addSource('visualization', {
-        type: 'geojson',
-        data: geoJson,
-      });
-    } else {
-      geojsonSource.setData(geoJson);
-    }
-  }, [map, addSource, geoJson]);
+  return (
+    <GeoJsonSource
+      id="visualization"
+      geoJson={geoJson}
+      fitGeoJsonBounds={!visualizationConfig?.viewportConfig?.bounds}
+    />
+  );
 };
 
 const MapboxLayer = props => {
@@ -199,7 +191,7 @@ const MapboxLayer = props => {
     if (!visualizationConfig?.visualizeConfig) {
       return;
     }
-    getImage(visualizationConfig?.visualizeConfig).then(setimageSvg);
+    getLayerImage(visualizationConfig?.visualizeConfig).then(setimageSvg);
   }, [visualizationConfig?.visualizeConfig]);
 
   const openPopup = useCallback((feature, event) => {
@@ -382,7 +374,7 @@ const Visualization = props => {
       <MapboxMap
         disableRotation
         projection="mercator"
-        style={visualizationConfig?.viewportConfig?.baseMapStyle}
+        mapStyle={visualizationConfig?.viewportConfig?.baseMapStyle}
         onBoundsChange={onBoundsChange}
         onStyleChange={onStyleChange}
         sx={{
@@ -395,7 +387,7 @@ const Visualization = props => {
         {useTileset ? (
           <MapboxRemoteSource visualizationConfig={visualizationConfig} />
         ) : (
-          <MapboxGeoJsonSource
+          <SheetSource
             visualizationConfig={visualizationConfig}
             sampleSize={sampleSize}
           />

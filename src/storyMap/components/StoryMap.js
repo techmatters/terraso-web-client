@@ -282,7 +282,7 @@ const InsetMap = props => {
     <MapboxMap
       id="map-inset"
       projection="mercator"
-      style={STORY_MAP_INSET_STYLE}
+      mapStyle={STORY_MAP_INSET_STYLE}
       center={initialLocation?.center}
       zoom={3}
       interactive={false}

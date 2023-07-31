@@ -20,6 +20,7 @@ import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
+import mapboxgl from 'gis/mapbox';
 import LandscapeNew from 'landscape/components/LandscapeForm/New';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
@@ -29,8 +30,12 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(),
 }));
 
-const GEOJSON =
+jest.mock('gis/mapbox', () => ({}));
+
+const GEOJSON_STRING =
   '{"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": {"type": "Polygon", "coordinates": [[[-80.02098083496094, 0.8184536092473124], [-80.04364013671875, 0.8177670337355836], [-80.04844665527342, 0.8184536092473124], [-80.04981994628906, 0.8260059320976082], [-80.07247924804686, 0.802662342941431], [-80.09170532226562, 0.779318620539376], [-80.10063171386719, 0.7532284249372649], [-80.09857177734375, 0.7223319390984623], [-80.09307861328125, 0.7140928403610857], [-80.10337829589842, 0.6955548144696846], [-80.09788513183594, 0.6742703246919985], [-80.08827209472656, 0.6488661346824502], [-80.07797241210938, 0.6495527361122139], [-80.06561279296875, 0.6522991408974699], [-80.06235122680664, 0.6468063298344634], [-80.02098083496094, 0.8184536092473124]]]}, "properties": {}}]}';
+
+const GEOJSON = JSON.parse(GEOJSON_STRING);
 
 const setup = async () => {
   await render(<LandscapeNew />, {
@@ -74,9 +79,45 @@ const setup = async () => {
 
 beforeEach(() => {
   useParams.mockReturnValue({});
+  mapboxgl.Map = jest.fn();
+  mapboxgl.NavigationControl = jest.fn();
+  mapboxgl.LngLatBounds = jest.fn();
 });
 
 test('LandscapeNew: Save from GeoJSON', async () => {
+  const events = {};
+  mapboxgl.Map.mockImplementation(() => ({
+    on: jest.fn().mockImplementation((...args) => {
+      const event = args[0];
+      const callback = args.length === 2 ? args[1] : args[2];
+      const layer = args.length === 2 ? null : args[1];
+      events[[event, layer].filter(p => p).join(':')] = callback;
+
+      if (event === 'load') {
+        callback();
+      }
+    }),
+    addSource: jest.fn(),
+    getSource: jest.fn(),
+    setTerrain: jest.fn(),
+    addLayer: jest.fn(),
+    getLayer: jest.fn(),
+    remove: jest.fn(),
+    addControl: jest.fn(),
+    removeControl: jest.fn(),
+    fitBounds: jest.fn(),
+    off: jest.fn(),
+    getBounds: jest.fn().mockReturnValue({
+      getSouthWest: jest.fn().mockReturnValue({
+        lng: -76.29042998100137,
+        lat: 8.263885173441716,
+      }),
+      getNorthEast: jest.fn().mockReturnValue({
+        lng: -67.62077603784013,
+        lat: 11.325606896067784,
+      }),
+    }),
+  }));
   terrasoApi.requestGraphQL.mockImplementation(query => {
     const trimmedQuery = query.trim();
 
@@ -157,7 +198,9 @@ test('LandscapeNew: Save from GeoJSON', async () => {
     name: 'Select File Accepted file formats: *.geojson, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB',
   });
 
-  const file = new File([GEOJSON], 'test.json', { type: 'application/json' });
+  const file = new File([GEOJSON_STRING], 'test.json', {
+    type: 'application/json',
+  });
   const data = {
     dataTransfer: {
       files: [file],
@@ -181,6 +224,8 @@ test('LandscapeNew: Save from GeoJSON', async () => {
     ).toBeInTheDocument();
   });
 
+  await act(async () => events['moveend']());
+
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Next' }))
   );
@@ -197,7 +242,13 @@ test('LandscapeNew: Save from GeoJSON', async () => {
       email: 'info@other.org',
       website: 'https://www.other.org',
       location: 'AR',
-      areaPolygon: JSON.stringify(JSON.parse(GEOJSON)),
+      areaPolygon: JSON.stringify({
+        ...GEOJSON,
+        bbox: [
+          -76.29042998100137, 8.263885173441716, -67.62077603784013,
+          11.325606896067784,
+        ],
+      }),
       areaTypes: null,
       population: null,
       partnershipStatus: 'no',

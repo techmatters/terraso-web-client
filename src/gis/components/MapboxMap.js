@@ -154,7 +154,21 @@ export const MapProvider = props => {
       if (!map) {
         return;
       }
+
+      const currentSource = map.getSource(name);
+
       try {
+        const isGeoJson = source.type === 'geojson';
+        if (isGeoJson && currentSource) {
+          currentSource.setData(source.data);
+          setSources(prev => ({ ...prev, [name]: source }));
+          return;
+        }
+
+        if (currentSource) {
+          map.removeSource(name);
+        }
+
         map.addSource(name, source);
         setSources(prev => ({ ...prev, [name]: source }));
       } catch (error) {
@@ -206,29 +220,32 @@ export const MapProvider = props => {
 const MapboxMap = props => {
   const {
     id,
-    style,
+    mapStyle,
     projection,
     initialLocation,
     interactive = true,
     hash = false,
     attributionControl = true,
     center,
+    initialBounds,
     zoom = 1,
     disableRotation = false,
     height = '400px',
     width = '100%',
     sx,
     onBoundsChange,
+    disableElevation = false,
     children,
   } = props;
   const { i18n } = useTranslation();
   const { map, setMap } = useMap();
   const mapContainer = useRef(null);
+  const [bounds] = useState(initialBounds);
 
   useEffect(() => {
     const map = new mapboxgl.Map({
       container: mapContainer.current,
-      style: style || MAPBOX_STYLE_DEFAULT,
+      style: mapStyle || MAPBOX_STYLE_DEFAULT,
       interactive,
       projection: projection || MAPBOX_PROJECTION_DEFAULT,
       zoom,
@@ -236,15 +253,20 @@ const MapboxMap = props => {
       hash,
       attributionControl,
       preserveDrawingBuffer: true,
+      bounds,
       ...(initialLocation ? initialLocation : {}),
     });
 
     map.on('load', function () {
-      if (!map.getSource('mapbox-dem')) {
+      if (!disableElevation && !map.getSource('mapbox-dem')) {
         map.addSource('mapbox-dem', MAPBOX_DEM_SOURCE);
 
         // add the DEM (Digital Elevation Model) source as a terrain layer with exaggerated height
         map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
+      }
+
+      if (disableElevation) {
+        map.setTerrain();
       }
 
       if (!map.getLayer('sky')) {
@@ -271,7 +293,7 @@ const MapboxMap = props => {
       map.remove();
     };
   }, [
-    style,
+    mapStyle,
     initialLocation,
     projection,
     interactive,
@@ -281,17 +303,22 @@ const MapboxMap = props => {
     attributionControl,
     setMap,
     disableRotation,
+    bounds,
+    disableElevation,
   ]);
 
   useEffect(() => {
     if (!map) {
       return;
     }
-    const onMoveListener = () => onBoundsChange?.(map.getBounds());
+    const onMoveListener = () => {
+      const bounds = map.getBounds();
+      onBoundsChange?.(bounds);
+    };
     map.on('moveend', onMoveListener);
 
     return () => {
-      map.on('moveend', onMoveListener);
+      map.off('moveend', onMoveListener);
     };
   }, [map, onBoundsChange]);
 

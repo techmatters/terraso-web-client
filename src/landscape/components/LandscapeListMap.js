@@ -27,7 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
 import RouterLink from 'common/components/RouterLink';
-import { countryNameForCode } from 'common/utils';
+import { countryNameForCode } from 'common/countries';
 import MapboxMap, {
   useMap as useMapboxContext,
 } from 'gis/components/MapboxMap';
@@ -248,7 +248,10 @@ const Clusters = props => {
 
 const LandscapeListMap = props => {
   return (
-    <MapboxMap projection="mercator" style={MAPBOX_LANDSCAPE_DIRECTORY_STYLE}>
+    <MapboxMap
+      projection="mercator"
+      mapStyle={MAPBOX_LANDSCAPE_DIRECTORY_STYLE}
+    >
       <MapboxMapControls />
       <MapboxMapStyleSwitcher />
       <Clusters {...props} />

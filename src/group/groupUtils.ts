@@ -24,7 +24,7 @@ export const extractDataEntry = (
   dataEntry: DataEntryFragment & DataEntryVisualizationsFragment
 ) => ({
   ...dataEntry,
-  visualizations: dataEntry.visualizations.edges.map(edge => edge.node),
+  visualizations: dataEntry.visualizations?.edges?.map(edge => edge.node),
 });
 
 export const extractGroupDataEntries = (group: DataEntriesFragment) =>

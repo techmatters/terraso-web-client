@@ -26,8 +26,8 @@ import { withProps } from 'react-hoc';
 
 import ExternalLink from 'common/components/ExternalLink';
 import TableResponsive from 'common/components/TableResponsive';
+import { countryNameForCode } from 'common/countries';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
-import { countryNameForCode } from 'common/utils';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';

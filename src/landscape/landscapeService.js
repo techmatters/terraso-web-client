@@ -22,6 +22,7 @@ import {
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
+import { countryNameForCode } from 'common/countries';
 import * as gisService from 'gis/gisService';
 import { extractTerms } from 'taxonomies/taxonomiesUtils';
 
@@ -108,6 +109,7 @@ export const fetchLandscapeToUpdate = slug => {
         edges {
           node {
             ...landscapeProfileFields
+            areaPolygon
           }
         }
       }
@@ -176,12 +178,19 @@ export const fetchLandscapeToView = slug => {
 
       // Get bounding box from nominatim.openstreetmap.org if no areaPolygon data
       // AreaPolygon is not present when the user decided to skip it.
+      const currentCountry = countryNameForCode(landscape.location);
+
+      if (!currentCountry) {
+        return landscape;
+      }
+
       return gisService
-        .getPlaceInfoByName(landscape.location)
+        .getPlaceInfoByName(currentCountry.name)
         .then(placeInfo => ({
           ...landscape,
           boundingBox: placeInfo?.boundingbox,
-        }));
+        }))
+        .catch(() => landscape);
     });
 };
 

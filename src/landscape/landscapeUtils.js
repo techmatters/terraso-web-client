@@ -31,15 +31,15 @@ export const getLandscapeBoundingBox = (landscape = {}) => {
 
   if (areaBoundingBox) {
     return [
-      [areaBoundingBox[1], areaBoundingBox[0]],
-      [areaBoundingBox[3], areaBoundingBox[2]],
+      [areaBoundingBox[0], areaBoundingBox[1]],
+      [areaBoundingBox[2], areaBoundingBox[3]],
     ];
   }
 
   if (defaultBoundingBox) {
     return [
-      [defaultBoundingBox[1], defaultBoundingBox[2]],
-      [defaultBoundingBox[0], defaultBoundingBox[3]],
+      [defaultBoundingBox[2], defaultBoundingBox[1]],
+      [defaultBoundingBox[3], defaultBoundingBox[0]],
     ];
   }
 };

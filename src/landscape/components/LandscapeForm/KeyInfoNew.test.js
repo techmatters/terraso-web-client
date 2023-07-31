@@ -20,9 +20,12 @@ import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
+import { getPlaceInfoByName } from 'gis/gisService';
 import LandscapeNew from 'landscape/components/LandscapeForm/New';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
+
+jest.mock('gis/gisService');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -94,6 +97,10 @@ const handleQueryRequests = query => {
 beforeEach(() => {
   useParams.mockReturnValue({
     slug: null,
+  });
+
+  getPlaceInfoByName.mockResolvedValue({
+    boundingbox: ['-0.489', '51.28', '0.236', '51.686'],
   });
 });
 
@@ -327,4 +334,74 @@ test('LandscapeNew: Save form (add)', async () => {
       location: 'EC',
     },
   });
+});
+
+test('LandscapeNew: OSM API error', async () => {
+  getPlaceInfoByName.mockRejectedValue('gis.openstreetmap_api_error');
+  useParams.mockReturnValue({ slug: null });
+  terrasoApi.requestGraphQL.mockImplementation(query => {
+    const trimmedQuery = query.trim();
+
+    const queryRequests = handleQueryRequests(trimmedQuery);
+    if (queryRequests) {
+      return queryRequests;
+    }
+
+    if (trimmedQuery.startsWith('mutation addLandscape')) {
+      return Promise.resolve({
+        addLandscape: {
+          landscape: {
+            name: 'New name',
+            description: 'New description',
+            email: 'info@other.org',
+            website: 'http://www.other.org',
+            location: 'AR',
+          },
+        },
+      });
+    }
+    if (trimmedQuery.startsWith('mutation updateLandscape')) {
+      return Promise.resolve({
+        updateLandscape: {
+          landscape: {
+            name: 'New name',
+            description: 'New description',
+            website: 'http://www.other.org',
+            location: 'AR',
+          },
+        },
+      });
+    }
+  });
+
+  const { inputs } = await setup();
+
+  fireEvent.change(inputs.name, { target: { value: 'New name' } });
+  fireEvent.change(inputs.description, {
+    target: { value: 'New description' },
+  });
+  fireEvent.change(inputs.email, {
+    target: { value: 'other@other.org' },
+  });
+  fireEvent.change(inputs.website, {
+    target: { value: 'http://www.other.org' },
+  });
+  await inputs.changeLocation('Ecuador');
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
+  );
+  await waitFor(() => {
+    expect(
+      screen.getByRole('button', { name: 'Skip this step for now' })
+    ).toBeInTheDocument();
+  });
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Skip this step for now' })
+    )
+  );
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+  );
 });

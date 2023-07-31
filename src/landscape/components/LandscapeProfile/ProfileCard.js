@@ -32,7 +32,7 @@ import {
 
 import ConfirmButton from 'common/components/ConfirmButton';
 import RouterLink from 'common/components/RouterLink';
-import { countryNameForCode } from 'common/utils';
+import { countryNameForCode } from 'common/countries';
 import Restricted from 'permissions/components/Restricted';
 import { deleteProfileImage } from 'landscape/landscapeSlice';
 import {

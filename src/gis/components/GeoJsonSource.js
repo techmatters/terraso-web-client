@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2023 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -14,34 +14,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import * as yup from 'yup';
+import { useEffect } from 'react';
 
-export const getAcronym = name => name.match(/\b(\w)/g).join('');
+import { useMap } from './MapboxMap';
 
-export const transformURL = url => {
-  if (url === '' || url.startsWith('http:') || url.startsWith('https:')) {
-    return url;
-  }
+const GeoJsonSource = props => {
+  const { id, geoJson } = props;
+  const { map, addSource } = useMap();
 
-  return `https://${url}`;
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+
+    addSource(id, {
+      type: 'geojson',
+      data: geoJson ? geoJson : { type: 'FeatureCollection', features: [] },
+    });
+  }, [id, map, addSource, geoJson]);
 };
 
-export const URL_SCHEMA = yup.object({
-  url: yup
-    .string()
-    .trim()
-    .ensure()
-    .transform(transformURL)
-    .validTld()
-    .url()
-    .required(),
-});
-
-export const isUrl = url => {
-  try {
-    URL_SCHEMA.validateSync({ url });
-    return true;
-  } catch (err) {
-    return false;
-  }
-};
+export default GeoJsonSource;
