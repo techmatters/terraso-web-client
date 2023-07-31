@@ -14,22 +14,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import { act, fireEvent, render, screen, within } from 'tests/utils';
 import React from 'react';
-import { render, screen } from '@testing-library/react';
 import _ from 'lodash/fp';
 import * as SheetsJs from 'xlsx';
 
 import { VisualizationContext } from 'sharedData/visualization/visualizationContext';
 
-import { DatasetPreview } from './SetDatasetStep';
-
-// these libraries will print warning if they are not mocked!
-jest.mock('react-redux');
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: jest.fn(),
-  }),
-}));
+import SetDatasetStep, { DatasetPreview } from './SetDatasetStep';
 
 function mockCSVProps(headers, rows) {
   const sheet = SheetsJs.utils.aoa_to_sheet([headers, ...rows]);
@@ -52,7 +44,7 @@ function mockCSVProps(headers, rows) {
   };
 }
 
-test('Dataset Preview rendered', async () => {
+test('SetDatasetStep: Dataset Preview rendered', async () => {
   const value = mockCSVProps(
     ['foo', 'bar', 'blem'],
     [
@@ -61,7 +53,7 @@ test('Dataset Preview rendered', async () => {
       [4, 5, 6],
     ]
   );
-  render(
+  await render(
     <VisualizationContext.Provider value={value}>
       <DatasetPreview />
     </VisualizationContext.Provider>
@@ -84,12 +76,12 @@ test('Dataset Preview rendered', async () => {
   ]);
 });
 
-test('Dataset Preview with null columns', async () => {
+test('SetDatasetStep: Dataset Preview with null columns', async () => {
   const defectiveArray = [];
   defectiveArray[0] = 1;
   defectiveArray[2] = 3;
   const value = mockCSVProps(['foo', 'bar', 'baz'], [defectiveArray]);
-  render(
+  await render(
     <VisualizationContext.Provider value={value}>
       <DatasetPreview />
     </VisualizationContext.Provider>
@@ -99,4 +91,54 @@ test('Dataset Preview with null columns', async () => {
     '',
     '3',
   ]);
+});
+
+test('SetDatasetStep: Longitude and latitude auto detected', async () => {
+  const value = mockCSVProps(
+    ['lat', 'lng', 'foo', 'bar'],
+    [
+      [1, 2, 3, 4],
+      [2, 1, 2, 3],
+      [4, 5, 6, 7],
+    ]
+  );
+  await render(
+    <VisualizationContext.Provider value={value}>
+      <SetDatasetStep />
+    </VisualizationContext.Provider>
+  );
+
+  await act(async () =>
+    fireEvent.mouseDown(
+      screen.getByRole('button', { name: 'Latitude (required)' })
+    )
+  );
+  const latitudeList = screen.getByRole('listbox', {
+    name: 'Latitude (required)',
+  });
+  expect(
+    within(latitudeList).getByRole('option', {
+      name: 'lat',
+    })
+  ).toHaveAttribute('aria-selected', 'true');
+  await act(async () =>
+    fireEvent.click(
+      within(latitudeList).getByRole('option', {
+        name: 'lat',
+      })
+    )
+  );
+
+  await act(async () =>
+    fireEvent.mouseDown(
+      screen.getByRole('button', { name: 'Longitude (required)' })
+    )
+  );
+  expect(
+    within(
+      screen.getByRole('listbox', { name: 'Longitude (required)' })
+    ).getByRole('option', {
+      name: 'lng',
+    })
+  ).toHaveAttribute('aria-selected', 'true');
 });

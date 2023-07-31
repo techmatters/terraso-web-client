@@ -219,7 +219,7 @@ const getColumnMatch = scores => {
     _.sortBy(value => value.score),
     _.first
   )(scores);
-  const column = winner ? winner.index : null;
+  const column = winner ? winner.index : -1;
   return column;
 };
 
@@ -237,8 +237,8 @@ const identifyLatLngColumns = headers => {
   }));
   const lngColumnIndex = getColumnMatch(lngScores);
   return {
-    latColumn: latColumnIndex ? headers[latColumnIndex] : null,
-    lngColumn: lngColumnIndex ? headers[lngColumnIndex] : null,
+    latColumn: latColumnIndex !== -1 ? headers[latColumnIndex] : null,
+    lngColumn: lngColumnIndex !== -1 ? headers[lngColumnIndex] : null,
   };
 };
 
