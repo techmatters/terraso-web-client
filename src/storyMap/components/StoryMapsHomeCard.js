@@ -14,9 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
   List as BaseList,
@@ -34,7 +33,6 @@ import RouterButton from 'common/components/RouterButton';
 import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
 import HomeCard from 'home/components/HomeCard';
-import { removeStoryMap } from 'home/homeSlice';
 import {
   generateStoryMapEditUrl,
   generateStoryMapUrl,
@@ -51,24 +49,23 @@ const List = withProps(BaseList, {
 
 const GridListItem = withProps(Grid, { component: 'li' });
 
-const StoryMapsHomeCard = props => {
-  const dispatch = useDispatch();
+const StoryMapsHomeCard = ({
+  onDeleteSuccess,
+  storyMaps,
+  hasAction = true,
+}) => {
   const { t, i18n } = useTranslation();
-  const { storyMaps } = props;
-
-  const onDeleteSuccess = useCallback(
-    storyMap => dispatch(removeStoryMap(storyMap.id)),
-    [dispatch]
-  );
 
   return (
     <HomeCard
       title={t('storyMap.home_title')}
       titleId="story-maps-list-title"
-      action={{
-        label: t('storyMap.home_create'),
-        to: 'tools/story-maps/new',
-      }}
+      action={
+        hasAction && {
+          label: t('storyMap.home_create'),
+          to: 'tools/story-maps/new',
+        }
+      }
       contentBackgroundColor="white"
     >
       <List aria-labelledby="story-maps-list-title" sx={{ width: '100%' }}>
