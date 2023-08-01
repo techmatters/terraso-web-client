@@ -91,10 +91,12 @@ const StoryMapsToolsHome = () => {
           }}
         >
           <Grid container spacing={2}>
-            <Grid item xs={list.length === 0 ? 0 : 7}>
-              <StoryMaps storyMaps={list} fetching={fetching} />
-            </Grid>
-            <Grid item xs={list.length === 0 ? 12 : 5}>
+            {!_.isEmpty(list) && (
+              <Grid item xs={_.isEmpty(list) ? 0 : 7}>
+                <StoryMaps storyMaps={list} fetching={fetching} />
+              </Grid>
+            )}
+            <Grid item xs={_.isEmpty(list) ? 12 : 5}>
               <Paper variant="outlined" sx={{ bgcolor: 'white', p: 2 }}>
                 <Typography variant="body1">
                   {t('storyMap.tool_home_description')}
