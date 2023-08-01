@@ -106,7 +106,7 @@
     "react-scripts": "^5.0.1",
     "serve": "^14.2.0",
     "stylelint": "^15.10.2",
-    "stylelint-prettier": "^4.0.0"
+    "stylelint-prettier": "^4.0.2"
   },
   "jest": {
     "transform": {},
