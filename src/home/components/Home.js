@@ -30,7 +30,7 @@ import GroupsCard from 'group/components/GroupsHomeCard';
 import { fetchHomeData, removeStoryMap } from 'home/homeSlice';
 import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultHomeCard';
 import LandscapesCard from 'landscape/components/LandscapesHomeCard';
-import StoryMapsHomeCard from 'storyMap/components/StoryMapsHomeCard';
+import StoryMapsCard from 'storyMap/components/StoryMapsCard';
 import StoryMapsHomeCardDefault from 'storyMap/components/StoryMapsHomeCardDefault';
 import ToolHomeCard from 'tool/components/ToolHomeCard';
 
@@ -75,10 +75,7 @@ const StoryMaps = ({ storyMaps, fetching }) => {
   }
 
   return (
-    <StoryMapsHomeCard
-      onDeleteSuccess={onDeleteSuccess}
-      storyMaps={storyMaps}
-    />
+    <StoryMapsCard onDeleteSuccess={onDeleteSuccess} storyMaps={storyMaps} />
   );
 };
 

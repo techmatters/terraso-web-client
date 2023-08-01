@@ -49,11 +49,7 @@ const List = withProps(BaseList, {
 
 const GridListItem = withProps(Grid, { component: 'li' });
 
-const StoryMapsHomeCard = ({
-  onDeleteSuccess,
-  storyMaps,
-  hasAction = true,
-}) => {
+const StoryMapsCard = ({ onDeleteSuccess, storyMaps, hasAction = true }) => {
   const { t, i18n } = useTranslation();
 
   return (
@@ -171,4 +167,4 @@ const StoryMapsHomeCard = ({
   );
 };
 
-export default StoryMapsHomeCard;
+export default StoryMapsCard;

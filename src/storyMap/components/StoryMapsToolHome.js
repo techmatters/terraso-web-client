@@ -43,7 +43,7 @@ import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import { fetchSamples, removeUserStoryMap } from 'storyMap/storyMapSlice';
 import { generateStoryMapUrl } from 'storyMap/storyMapUtils';
 
-import StoryMapsHomeCard from './StoryMapsHomeCard';
+import StoryMapsCard from './StoryMapsCard';
 
 const StoryMaps = ({ storyMaps, fetching }) => {
   const dispatch = useDispatch();
@@ -61,7 +61,7 @@ const StoryMaps = ({ storyMaps, fetching }) => {
   }
 
   return (
-    <StoryMapsHomeCard
+    <StoryMapsCard
       onDeleteSuccess={onDeleteSuccess}
       hasAction={false}
       storyMaps={storyMaps}
