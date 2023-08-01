@@ -21,7 +21,14 @@ import { graphql } from 'terrasoApi/shared/graphqlSchema';
 export const fetchSamples = (params, currentUser) => {
   const query = graphql(`
     query storyMapsHome($accountEmail: String!) {
-      storyMaps(createdBy_Email_Not: $accountEmail) {
+      samples: storyMaps(createdBy_Email_Not: $accountEmail) {
+        edges {
+          node {
+            ...storyMapMetadataFields
+          }
+        }
+      }
+      userStoryMaps: storyMaps(createdBy_Email: $accountEmail) {
         edges {
           node {
             ...storyMapMetadataFields
@@ -33,7 +40,10 @@ export const fetchSamples = (params, currentUser) => {
   return terrasoApi
     .requestGraphQL(query, { accountEmail: currentUser.email })
     .then(response => ({
-      storyMaps: _.getOr([], 'storyMaps.edges', response).map(_.get('node')),
+      samples: _.getOr([], 'samples.edges', response).map(_.get('node')),
+      userStoryMaps: _.getOr([], 'userStoryMaps.edges', response).map(
+        _.get('node')
+      ),
     }));
 };
 
