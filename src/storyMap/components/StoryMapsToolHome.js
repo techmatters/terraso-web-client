@@ -73,9 +73,7 @@ const StoryMaps = ({ storyMaps, fetching }) => {
 const StoryMapsToolsHome = () => {
   const { t, i18n } = useTranslation();
   const { listSamples } = useSelector(_.get('storyMap.samples'));
-  const { listUserStoryMaps, fetching } = useSelector(
-    _.get('storyMap.userStoryMaps')
-  );
+  const { list, fetching } = useSelector(_.get('storyMap.userStoryMaps'));
   useDocumentTitle(t('storyMap.home_document_title'));
 
   useBreadcrumbsParams(useMemo(() => ({ loading: false }), []));
@@ -93,10 +91,10 @@ const StoryMapsToolsHome = () => {
           }}
         >
           <Grid container spacing={2}>
-            <Grid item xs={listUserStoryMaps.length === 0 ? 0 : 7}>
-              <StoryMaps storyMaps={listUserStoryMaps} fetching={fetching} />
+            <Grid item xs={list.length === 0 ? 0 : 7}>
+              <StoryMaps storyMaps={list} fetching={fetching} />
             </Grid>
-            <Grid item xs={listUserStoryMaps.length === 0 ? 12 : 5}>
+            <Grid item xs={list.length === 0 ? 12 : 5}>
               <Paper variant="outlined" sx={{ bgcolor: 'white', p: 2 }}>
                 <Typography variant="body1">
                   {t('storyMap.tool_home_description')}

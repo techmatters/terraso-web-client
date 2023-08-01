@@ -37,7 +37,7 @@ const initialState = {
   },
   userStoryMaps: {
     fetching: true,
-    listUserStoryMaps: [],
+    list: [],
   },
   delete: {},
 };
@@ -118,7 +118,7 @@ const storyMapSlice = createSlice({
         ...state,
         userStoryMaps: {
           ...state.userStoryMaps,
-          listUserStoryMaps: state.userStoryMaps.listUserStoryMaps.filter(
+          list: state.userStoryMaps.list.filter(
             userStoryMap => userStoryMap.id !== action.payload
           ),
         },
@@ -136,11 +136,11 @@ const storyMapSlice = createSlice({
       ...state,
       samples: {
         fetching: false,
-        listSamples: null,
+        listSamples: [],
       },
       userStoryMaps: {
         fetching: false,
-        listUserStoryMaps: null,
+        list: [],
       },
     }));
     builder.addCase(fetchSamples.fulfilled, (state, action) => ({
@@ -151,7 +151,7 @@ const storyMapSlice = createSlice({
       },
       userStoryMaps: {
         fetching: false,
-        listUserStoryMaps: action.payload.userStoryMaps,
+        list: action.payload.userStoryMaps,
       },
     }));
 
