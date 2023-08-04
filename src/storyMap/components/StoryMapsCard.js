@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
@@ -49,19 +49,21 @@ const List = withProps(BaseList, {
 
 const GridListItem = withProps(Grid, { component: 'li' });
 
-const StoryMapsCard = ({ onDeleteSuccess, storyMaps, hasAction = true }) => {
+const StoryMapsCard = ({ onDeleteSuccess, storyMaps, showCreate = true }) => {
   const { t, i18n } = useTranslation();
-
+  const action = useMemo(
+    () =>
+      showCreate && {
+        label: t('storyMap.home_create'),
+        to: 'tools/story-maps/new',
+      },
+    [t, showCreate]
+  );
   return (
     <HomeCard
       title={t('storyMap.home_title')}
       titleId="story-maps-list-title"
-      action={
-        hasAction && {
-          label: t('storyMap.home_create'),
-          to: 'tools/story-maps/new',
-        }
-      }
+      action={action}
       contentBackgroundColor="white"
     >
       <List aria-labelledby="story-maps-list-title" sx={{ width: '100%' }}>
