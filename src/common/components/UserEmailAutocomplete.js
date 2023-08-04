@@ -40,7 +40,7 @@ const FILTER_EMAILS = values =>
 
 const UserEmailAutocomplete = props => {
   const { t } = useTranslation();
-  const { value, onChange, id } = props;
+  const { value, onChange, id, label, helperText } = props;
 
   const getLabel = useCallback(
     option => (typeof option === 'string' ? option : option?.newTerm || ''),
@@ -76,13 +76,13 @@ const UserEmailAutocomplete = props => {
       getOptionLabel={getLabel}
       renderInput={params => (
         <TextField
+          label={label}
           {...params}
-          variant="outlined"
           placeholder={t('common.user_email_autocomplete_placeholder')}
-          inputProps={{
-            ...params.inputProps,
-            'aria-labelledby': `${id}-label`,
+          InputLabelProps={{
+            shrink: true,
           }}
+          helperText={helperText}
         />
       )}
       isOptionEqualToValue={(option, value) => option === value}
