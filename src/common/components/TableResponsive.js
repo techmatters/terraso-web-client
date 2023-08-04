@@ -79,7 +79,12 @@ const CardField = props => {
   }
 
   return (
-    <Grid direction="column" container item xs={column.cardSize || 12}>
+    <Grid
+      direction="column"
+      container
+      item
+      {...(column.cardFieldSizes || { xs: 12 })}
+    >
       {!isActions && (
         <Typography variant="caption">{column.headerName}</Typography>
       )}
@@ -124,9 +129,9 @@ const Cards = props => {
   const { columns, rows, cardsProps = {} } = props;
 
   return (
-    <List>
+    <List dense>
       {rows.map(row => (
-        <ListItem key={row.id} sx={theme => ({ padding: 0, marginBottom: 2 })}>
+        <ListItem key={row.id} sx={() => ({ padding: 0, marginBottom: 1 })}>
           <Card
             component={Stack}
             direction="row"
@@ -135,7 +140,16 @@ const Cards = props => {
             sx={{ width: '100%', padding: 2 }}
           >
             {cardsProps.avatarRender && cardsProps.avatarRender({ row })}
-            <Grid container spacing={2}>
+            <Grid
+              container
+              justifyContent="center"
+              alignItems="center"
+              columnSpacing={2}
+              rowSpacing={{
+                xs: 1,
+                sm: 0,
+              }}
+            >
               {columns.map(column => (
                 <CardField key={column.field} column={column} row={row} />
               ))}

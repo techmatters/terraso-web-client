@@ -41,7 +41,6 @@
         "list_new_button": "Create Group",
         "members_remove_confirmation_button": "Remove Member",
         "list_column_name": "Group",
-        "members_list_column_name": "Name",
         "role_member": "Member",
         "members_title_member": "{{name}} Members",
         "members_description_member": "",
@@ -81,10 +80,8 @@
         "list_column_contact": "Email",
         "list_column_members": "Members",
         "list_empty": "<0><0>Double-check the spelling of the group name.</0><1>If your group is missing from Terraso, you can <1>create a group</1>.</1></0>",
-        "members_list_empty": "No members",
         "members_list_leave": "Leave",
         "members_list_remove": "Remove",
-        "members_list_column_role": "Role",
         "form_edit_document_title": "Edit: {{name}}",
         "form_new_document_title": "Create Group",
         "form_edit_document_description": "Edit the properties of the group “{{name}}”",
@@ -96,7 +93,6 @@
         "members_document_title": "Members: {{name}}",
         "members_document_description": "Members of the “{{name}}” group",
         "list_column_actions_description": "Actions",
-        "members_list_column_actions_description": "Actions",
         "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). There should at least be one manager.",
         "unique": "The group “{{body.variables.input.name}}” already exists.",
         "shared_data_upload_title": "Share with {{name}}",
@@ -986,13 +982,23 @@
         "form_location_helper_text_bearing_icon_alt": "Bearing",
         "share_dialog_title": "Share {{title}} to contribute",
         "share_dialog_confirm_label": "Share",
-        "share_dialog_cancel_label": "Cancel" 
+        "share_dialog_cancel_label": "Cancel",
+        "remove_membership": "Remove",
+        "role_contributor": "Contributor",
+        "share_dialog_contributors_title": "Contributors",
+        "share_dialog_autocomplete_label": "Contributors",
+        "share_dialog_autocomplete_helper_text": "Your contributor will receive an email invitation to join this story map in a few minutes.",
+        "share_dialog_description": "Add your co-workers, friends as Contributors. <1>Learn more about managing Contributors</1>."
     },
     "site": {
         "description": "Free and powerful software tools to manage your landscape, protect your environment, and promote human livelihoods.",
         "default_image": "/favicon.png"
     },
     "memberships": {
-        "not_found": "Group not found"
+        "not_found": "Group not found",
+        "members_list_column_name": "Name",
+        "members_list_empty": "No members",
+        "members_list_column_role": "Role",
+        "members_list_column_actions_description": "Actions"
     }
 }

@@ -1,52 +1,139 @@
 import React, { useCallback } from 'react';
 import MembershipsList from 'collaboration/components/MembershipsList';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { LoadingButton } from '@mui/lab';
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Stack,
+  Typography,
 } from '@mui/material';
 
+import ExternalLink from 'common/components/ExternalLink';
 import UserEmailAutocomplete from 'common/components/UserEmailAutocomplete';
 
 import { useStoryMapConfigContext } from './storyMapConfigContext';
+
+const RoleComponent = ({ member }) => {
+  const { t } = useTranslation();
+  return (
+    <Typography>
+      {t(`storyMap.role_${member.userRole.toLowerCase()}`)}
+    </Typography>
+  );
+};
+
+const RemoveButton = props => {
+  const { t } = useTranslation();
+  const { member, tabIndex, onRemove } = props;
+
+  const onRemoveWrapper = useCallback(() => {
+    onRemove(member);
+  }, [member, onRemove]);
+
+  return (
+    <LoadingButton
+      loading={props.loading}
+      variant="outlined"
+      size="small"
+      tabIndex={tabIndex}
+      onClick={onRemoveWrapper}
+    >
+      {t('storyMap.remove_membership')}
+    </LoadingButton>
+  );
+};
 
 const ShareDialog = props => {
   const { t } = useTranslation();
   const { open, onClose, onShare } = props;
   const { storyMap } = useStoryMapConfigContext();
-  const [newCollaborators, setNewCollaborators] = React.useState([]);
+  const [newContributors, setNewContributors] = React.useState([]);
 
   console.log({ storyMap });
 
   const onChange = useCallback(
     value => {
-      setNewCollaborators(value);
+      setNewContributors(value);
     },
-    [setNewCollaborators]
+    [setNewContributors]
   );
 
   const onConfirm = useCallback(() => {
-    onShare(newCollaborators);
-  }, [newCollaborators, onShare]);
+    onShare(newContributors);
+  }, [newContributors, onShare]);
 
   return (
     <Dialog fullWidth maxWidth="md" open={open} onClose={onClose}>
-      <DialogTitle>
+      <Typography variant="h1" component={DialogTitle}>
         {t('storyMap.share_dialog_title', { title: storyMap.title })}
-      </DialogTitle>
-      <DialogContent>
-        <UserEmailAutocomplete value={newCollaborators} onChange={onChange} />
-      </DialogContent>
-      <DialogContent>
-        <MembershipsList
-          memberships={storyMap.memberships}
-          cardsBreakpoint="xl"
+      </Typography>
+      <Stack component={DialogContent} spacing={2}>
+        <Typography>
+          <Trans i18nKey="storyMap.share_dialog_description">
+            Prefix
+            <ExternalLink href={t('storyMap.share_dialog_help_url')}>
+              Link
+            </ExternalLink>
+          </Trans>
+        </Typography>
+        <UserEmailAutocomplete
+          label={t('storyMap.share_dialog_autocomplete_label')}
+          helperText={t('storyMap.share_dialog_autocomplete_helper_text')}
+          value={newContributors}
+          onChange={onChange}
         />
-      </DialogContent>
+        <Accordion
+          elevation={0}
+          sx={{
+            '&:before': {
+              display: 'none',
+            },
+            '& .MuiAccordionSummary-content': {
+              m: 0,
+            },
+            '& .MuiAccordionSummary-content.Mui-expanded': {
+              m: 0,
+              // minHeight: 'auto',
+            },
+            '& .MuiButtonBase-root.MuiAccordionSummary-root.Mui-expanded': {
+              minHeight: 'auto',
+            },
+          }}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            sx={{
+              p: 0,
+              minHeight: 'auto',
+              justifyContent: 'flex-start',
+              '& .MuiAccordionSummary-content': {
+                flexGrow: 0,
+              },
+            }}
+          >
+            <Typography variant="h2" sx={{ p: 0 }}>
+              {t('storyMap.share_dialog_contributors_title')}
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails sx={{ p: 0 }}>
+            <MembershipsList
+              memberships={storyMap.memberships}
+              cardsBreakpoint="xl"
+              RemoveComponent={RemoveButton}
+              RoleComponent={RoleComponent}
+            />
+          </AccordionDetails>
+        </Accordion>
+      </Stack>
       <DialogActions
         sx={{
           justifyContent: 'flex-end',

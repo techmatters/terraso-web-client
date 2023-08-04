@@ -75,16 +75,12 @@
         "membership_card_description_other": "{{count}} miembros de Terraso se unieron a {{name}}.",
         "membership_card_description_one": "{{count}} miembro de Terraso se unió a {{name}}.",
         "list_column_name": "Grupo",
-        "members_list_column_name": "Nombre",
         "list_column_website": "Sitio web",
         "list_column_contact": "Correo electrónico",
         "list_column_members": "Miembros",
         "list_empty": "<0><0>Verifica la ortografía del nombre del grupo.</0><1>Si tu grupo no está en Terraso, puedes <1>crear un grupo</1>.</1></0>",
         "members_list_empty": "No existen miembros",
         "membership_view_all": "Ver toda(o)s los miembros",
-        "members_list_leave": "Abandonar",
-        "members_list_remove": "Eliminar",
-        "members_list_column_role": "Rol",
         "form_edit_document_title": "Editar: {{name}}",
         "form_new_document_title": "Crear Grupo",
         "form_edit_document_description": "Editar las propiedades del grupo “{{name}}”",
@@ -96,7 +92,6 @@
         "members_document_title": "Miembros: {{name}}",
         "members_document_description": "Miembros del grupo “{{name}}”",
         "list_column_actions_description": "Acciones",
-        "members_list_column_actions_description": "Acciones",
         "delete_not_allowed_manager_count": "$t(terraso_api.delete_not_allowed_base). Debe existir al menos un administrador.",
         "unique": "El grupo “{{body.variables.input.name}}” ya existe.",
         "shared_data_upload_title": "Compartir con {{name}}",
@@ -995,6 +990,11 @@
         "default_image": "/favicon.png"
     },
     "memberships": {
-        "not_found": "Grupo no encontrado"
+        "not_found": "Grupo no encontrado",
+        "members_list_column_name": "Nombre",
+        "members_list_leave": "Abandonar",
+        "members_list_remove": "Eliminar",
+        "members_list_column_role": "Rol",
+        "members_list_column_actions_description": "Acciones"
     }
 }
