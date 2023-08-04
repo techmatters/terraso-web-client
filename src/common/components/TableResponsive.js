@@ -34,10 +34,12 @@ import {
   Stack,
   TextField,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 
 import BaseTable from 'common/components/Table';
-import ResponsiveSwitch from 'layout/ResponsiveSwitch';
+
+import theme from 'theme';
 
 const SEARCH_DEBOUNCE = 100; // milliseconds
 const SEARCH_MINIMUM_LENGTH = 2;
@@ -347,6 +349,8 @@ const EmptyList = props => {
 };
 
 const TableResponsive = props => {
+  const { cardsBreakpoint = 'md' } = props;
+  const showCards = useMediaQuery(theme.breakpoints.down(cardsBreakpoint));
   const [filteredRows, setFilterdRows] = useState(props.rows);
 
   const filteredProps = useMemo(
@@ -369,11 +373,10 @@ const TableResponsive = props => {
       />
       {_.isEmpty(filteredRows) ? (
         <EmptyList {...props} />
+      ) : showCards ? (
+        <Cards {...filteredProps} />
       ) : (
-        <ResponsiveSwitch
-          desktop={<Table {...filteredProps} />}
-          mobile={<Cards {...filteredProps} />}
-        />
+        <Table {...filteredProps} />
       )}
     </>
   );

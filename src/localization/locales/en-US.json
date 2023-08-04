@@ -684,7 +684,8 @@
         "rich_text_editor_toolbar_link_remove": "Unlink",
         "rich_text_editor_toolbar_bold": "Bold",
         "rich_text_editor_toolbar_italic": "Italic",
-        "rich_text_editor_toolbar_label": "Textbox toolbar"
+        "rich_text_editor_toolbar_label": "Textbox toolbar",
+        "user_email_autocomplete_placeholder": "Enter one or more email address"
     },
     "share": {
         "button": "Share",
@@ -860,6 +861,7 @@
         "form_chapter_no_title_label": "Untitled",
         "form_back_button": "Story Maps",
         "form_byline": "By $t(user.full_name)",
+        "form_share_button": "Share",
         "form_preview_button": "Preview",
         "form_save_draft_button": "Save draft",
         "form_publish_button": "Publish",
@@ -971,7 +973,10 @@
         "iframe_title": "Contact Terraso",
         "embed_header": "View Story Map on",
         "upload_rejected_file-too-large": "{{rejectedFiles}} cannot be added because the file is too large.",
-        "upload_rejected": "The file(s) cannot be added."
+        "upload_rejected": "The file(s) cannot be added.",
+        "share_dialog_title": "Share {{title}} to contribute",
+        "share_dialog_confirm_label": "Share",
+        "share_dialog_cancel_label": "Cancel" 
     },
     "site": {
         "description": "Free and powerful software tools to manage your landscape, protect your environment, and promote human livelihoods.",

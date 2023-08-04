@@ -147,18 +147,18 @@ const Table = props => {
   } = props;
 
   useEffect(() => {
-    const sort = searchParams.sort;
+    const sort = searchParams?.sort;
     setSortModel(sort ? parseSortQuery(sort) : props.initialSort);
   }, [props.initialSort, searchParams]);
 
   useEffect(() => {
-    const pageValue = searchParams.page;
+    const pageValue = searchParams?.page;
     setPage(parseInt(pageValue) || 0);
   }, [searchParams]);
 
   const onPageChange = useCallback(
     model => {
-      onSearchParamsChange({
+      onSearchParamsChange?.({
         ...searchParams,
         page: model.page,
       });
@@ -172,7 +172,7 @@ const Table = props => {
       const sort = model
         .map(column => `${SORT_DIRECTION_BY_WORD[column.sort]}${column.field}`)
         .join(',');
-      onSearchParamsChange({
+      onSearchParamsChange?.({
         ...searchParams,
         sort,
       });
