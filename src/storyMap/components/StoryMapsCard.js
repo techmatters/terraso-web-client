@@ -15,7 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useMemo } from 'react';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'terrasoApi/store';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
   List as BaseList,
@@ -48,6 +50,41 @@ const List = withProps(BaseList, {
 });
 
 const GridListItem = withProps(Grid, { component: 'li' });
+
+const CollaborationList = props => {
+  const { t } = useTranslation();
+  const { data: user } = useSelector(state => state.account.currentUser);
+
+  const {
+    storyMap: { memberships, createdBy },
+  } = props;
+
+  const collaborators = useMemo(() => {
+    return [...memberships, createdBy].filter(member => member.id !== user.id);
+  }, [memberships, createdBy, user]);
+
+  if (_.isEmpty(collaborators)) {
+    return null;
+  }
+
+  return (
+    <Typography variant="caption" sx={{ textTransform: 'uppercase' }}>
+      {t(
+        collaborators.length !== 2
+          ? 'storyMap.card_collaborators'
+          : 'storyMap.card_collaborators_two',
+        {
+          count: collaborators.length,
+          diff: collaborators.length - 2,
+          sample: collaborators
+            .slice(0, 2)
+            .map(member => member.firstName)
+            .join(', '),
+        }
+      )}
+    </Typography>
+  );
+};
 
 const StoryMapsCard = ({
   onDeleteSuccess,
@@ -92,23 +129,26 @@ const StoryMapsCard = ({
                 alignItems: 'flex-start',
               }}
             >
-              {!storyMap.isPublished && (
-                <Chip
-                  size="small"
-                  label={t('storyMap.home_draft_label')}
-                  sx={{
-                    borderRadius: 0,
-                    bgcolor: 'gray.dark1',
-                    color: 'white',
-                    textTransform: 'uppercase',
-                    fontWeight: 700,
-                    fontSize: '0.6rem',
-                    height: 'auto',
-                    pt: 0.25,
-                    pb: 0.25,
-                  }}
-                />
-              )}
+              <Stack direction="row" spacing={1}>
+                {!storyMap.isPublished && (
+                  <Chip
+                    size="small"
+                    label={t('storyMap.home_draft_label')}
+                    sx={{
+                      borderRadius: 0,
+                      bgcolor: 'gray.dark1',
+                      color: 'white',
+                      textTransform: 'uppercase',
+                      fontWeight: 700,
+                      fontSize: '0.6rem',
+                      height: 'auto',
+                      pt: 0.25,
+                      pb: 0.25,
+                    }}
+                  />
+                )}
+                <CollaborationList storyMap={storyMap} />
+              </Stack>
               <RouterLink
                 id={`story-map-${storyMap.slug}-link`}
                 to={

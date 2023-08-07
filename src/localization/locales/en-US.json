@@ -988,7 +988,10 @@
         "share_dialog_contributors_title": "Contributors",
         "share_dialog_autocomplete_label": "Contributors",
         "share_dialog_autocomplete_helper_text": "Your contributor will receive an email invitation to join this story map in a few minutes.",
-        "share_dialog_description": "Add your co-workers, friends as Contributors. <1>Learn more about managing Contributors</1>."
+        "share_dialog_description": "Add your co-workers, friends as Contributors. <1>Learn more about managing Contributors</1>.",
+        "card_collaborators_one": "{{sample}} is contributing",
+        "card_collaborators_two": "{{sample}} are contributing",
+        "card_collaborators_other": "{{sample}} and {{diff}} more are contributing"
     },
     "site": {
         "description": "Free and powerful software tools to manage your landscape, protect your environment, and promote human livelihoods.",

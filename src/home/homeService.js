@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
+import { extractMemberships } from 'terraso-client-shared/collaboration/membershipsUtils';
 import {
   extractAccountMembership,
   extractMembersInfo,
@@ -68,7 +69,7 @@ export const fetchHomeData = email => {
           }
         }
       }
-      storyMaps(createdBy_Email: $accountEmail) {
+      storyMaps(canChange_Email: $accountEmail) {
         edges {
           node {
             ...storyMapMetadataFields
@@ -103,6 +104,11 @@ export const fetchHomeData = email => {
       storyMaps: _.getOr([], 'storyMaps.edges', response)
         .map(_.get('node'))
         .sort(_.get('publishedAt'))
-        .reverse(),
+        .reverse()
+        .map(storyMap => ({
+          ..._.omit(['membershipList'], storyMap),
+          memberships: extractMemberships(storyMap.membershipList),
+          accountMembership: extractAccountMembership(storyMap.membershipList),
+        })),
     }));
 };
