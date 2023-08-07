@@ -1,6 +1,8 @@
 import React, { useCallback } from 'react';
 import MembershipsList from 'collaboration/components/MembershipsList';
+import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
+import { useDispatch } from 'terrasoApi/store';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { LoadingButton } from '@mui/lab';
 import {
@@ -18,6 +20,8 @@ import {
 
 import ExternalLink from 'common/components/ExternalLink';
 import UserEmailAutocomplete from 'common/components/UserEmailAutocomplete';
+import { MEMBERSHIP_ROLE_CONTRIBUTOR } from 'storyMap/storyMapConstants';
+import { addMemberships } from 'storyMap/storyMapSlice';
 
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 
@@ -52,12 +56,11 @@ const RemoveButton = props => {
 };
 
 const ShareDialog = props => {
+  const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { open, onClose, onShare } = props;
+  const { open, onClose } = props;
   const { storyMap } = useStoryMapConfigContext();
   const [newContributors, setNewContributors] = React.useState([]);
-
-  console.log({ storyMap });
 
   const onChange = useCallback(
     value => {
@@ -67,8 +70,14 @@ const ShareDialog = props => {
   );
 
   const onConfirm = useCallback(() => {
-    onShare(newContributors);
-  }, [newContributors, onShare]);
+    dispatch(
+      addMemberships({
+        storyMap,
+        emails: newContributors,
+        userRole: MEMBERSHIP_ROLE_CONTRIBUTOR,
+      })
+    );
+  }, [dispatch, storyMap, newContributors]);
 
   return (
     <Dialog fullWidth maxWidth="md" open={open} onClose={onClose}>
@@ -91,6 +100,7 @@ const ShareDialog = props => {
           onChange={onChange}
         />
         <Accordion
+          defaultExpanded={!_.isEmpty(storyMap.memberships)}
           elevation={0}
           sx={{
             '&:before': {

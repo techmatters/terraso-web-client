@@ -40,6 +40,14 @@ const initialState = {
     list: [],
   },
   delete: {},
+  memberships: {
+    add: {
+      saving: false,
+    },
+    delete: {
+      saving: false,
+    },
+  },
 };
 
 export const fetchSamples = createAsyncThunk(
@@ -100,6 +108,17 @@ export const deleteStoryMap = createAsyncThunk(
     content: 'storyMap.deleted_story_map',
     params: {
       title,
+    },
+  })
+);
+export const addMemberships = createAsyncThunk(
+  'storyMap/addMemberships',
+  storyMapService.addMemberships,
+  (storyMap, { storyMap: { config } }) => ({
+    severity: 'success',
+    content: 'storyMap.added_memberships',
+    params: {
+      title: config.title,
     },
   })
 );
@@ -208,6 +227,45 @@ const storyMapSlice = createSlice({
     builder.addCase(deleteStoryMap.fulfilled, (state, action) =>
       _.set(`delete.${action.meta.arg.storyMap.id}.deleting`, false, state)
     );
+
+    builder.addCase(
+      addMemberships.pending,
+      _.set('memberships.add.saving', true)
+    );
+    builder.addCase(
+      addMemberships.rejected,
+      _.set('memberships.add.saving', false)
+    );
+    builder.addCase(addMemberships.fulfilled, (state, action) => {
+      const memberships = [
+        ...state.form.data.memberships,
+        ...action.payload.map(({ id, user, userRole }) => ({
+          id: user.id,
+          membershipId: id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          userRole,
+        })),
+      ];
+      const uniqMemberships = _.uniqBy('id', memberships);
+      return {
+        ...state,
+        memberships: {
+          ...state.memberships,
+          add: {
+            saving: false,
+          },
+        },
+        form: {
+          ...state.form,
+          data: {
+            ...state.form.data,
+            memberships: uniqMemberships,
+          },
+        },
+      };
+    });
   },
 });
 
