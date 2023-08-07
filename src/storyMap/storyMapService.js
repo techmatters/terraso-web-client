@@ -15,7 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-import { extractMemberships } from 'terraso-client-shared/collaboration/membershipsUtils';
+import {
+  extractAccountMembership,
+  extractMemberships,
+} from 'terraso-client-shared/collaboration/membershipsUtils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
@@ -61,6 +64,7 @@ export const fetchStoryMap = ({ slug, storyMapId }) => {
             ...storyMapFields
             membershipList {
               ...collaborationMemberships
+              ...accountCollaborationMembership
             }
           }
         }
@@ -75,6 +79,7 @@ export const fetchStoryMap = ({ slug, storyMapId }) => {
       ..._.omit(['membershipList', 'configuration'], storyMap),
       config: JSON.parse(storyMap.configuration),
       memberships: extractMemberships(storyMap.membershipList),
+      accountMembership: extractAccountMembership(storyMap.membershipList),
     }));
 };
 
