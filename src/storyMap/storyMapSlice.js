@@ -122,6 +122,17 @@ export const addMemberships = createAsyncThunk(
     },
   })
 );
+export const deleteMembership = createAsyncThunk(
+  'storyMap/deleteMembership',
+  storyMapService.deleteMembership,
+  (storyMap, { storyMap: { config } }) => ({
+    severity: 'success',
+    content: 'storyMap.deleted_membership',
+    params: {
+      title: config.title,
+    },
+  })
+);
 
 const storyMapSlice = createSlice({
   name: 'storyMap',
@@ -262,6 +273,36 @@ const storyMapSlice = createSlice({
           data: {
             ...state.form.data,
             memberships: uniqMemberships,
+          },
+        },
+      };
+    });
+
+    builder.addCase(
+      deleteMembership.pending,
+      _.set('memberships.delete.saving', true)
+    );
+    builder.addCase(
+      deleteMembership.rejected,
+      _.set('memberships.delete.saving', false)
+    );
+    builder.addCase(deleteMembership.fulfilled, (state, action) => {
+      const memberships = state.form.data.memberships.filter(
+        ({ membershipId }) => membershipId !== action.payload.id
+      );
+      return {
+        ...state,
+        memberships: {
+          ...state.memberships,
+          delete: {
+            saving: false,
+          },
+        },
+        form: {
+          ...state.form,
+          data: {
+            ...state.form.data,
+            memberships,
           },
         },
       };

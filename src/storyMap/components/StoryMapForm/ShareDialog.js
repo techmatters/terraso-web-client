@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import MembershipsList from 'collaboration/components/MembershipsList';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
@@ -18,10 +18,11 @@ import {
   Typography,
 } from '@mui/material';
 
+import ConfirmButton from 'common/components/ConfirmButton';
 import ExternalLink from 'common/components/ExternalLink';
 import UserEmailAutocomplete from 'common/components/UserEmailAutocomplete';
 import { MEMBERSHIP_ROLE_CONTRIBUTOR } from 'storyMap/storyMapConstants';
-import { addMemberships } from 'storyMap/storyMapSlice';
+import { addMemberships, deleteMembership } from 'storyMap/storyMapSlice';
 
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 
@@ -35,23 +36,37 @@ const RoleComponent = ({ member }) => {
 };
 
 const RemoveButton = props => {
+  const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { member, tabIndex, onRemove } = props;
+  const { storyMap } = useStoryMapConfigContext();
+  const { member, tabIndex } = props;
 
   const onRemoveWrapper = useCallback(() => {
-    onRemove(member);
-  }, [member, onRemove]);
+    dispatch(
+      deleteMembership({
+        storyMap,
+        membership: member,
+      })
+    );
+  }, [dispatch, member, storyMap]);
 
   return (
-    <LoadingButton
+    <ConfirmButton
+      onConfirm={onRemoveWrapper}
+      confirmTitle={t('storyMap.remove_membership_confirm_title', {
+        member,
+      })}
+      confirmMessage={t('storyMap.remove_membership_confirm_message', {
+        member,
+      })}
+      confirmButton={t('storyMap.remove_membership_confirm_button')}
+      buttonLabel={t('storyMap.remove_membership')}
+      ariaLabel={t('storyMap.remove_membership')}
       loading={props.loading}
-      variant="outlined"
-      size="small"
-      tabIndex={tabIndex}
-      onClick={onRemoveWrapper}
-    >
-      {t('storyMap.remove_membership')}
-    </LoadingButton>
+      buttonProps={{
+        tabIndex,
+      }}
+    />
   );
 };
 
@@ -61,6 +76,11 @@ const ShareDialog = props => {
   const { open, onClose } = props;
   const { storyMap } = useStoryMapConfigContext();
   const [newContributors, setNewContributors] = React.useState([]);
+  const [expanded, setExpanded] = React.useState(false);
+
+  useEffect(() => {
+    setExpanded(!_.isEmpty(storyMap.memberships));
+  }, [storyMap.memberships]);
 
   const onChange = useCallback(
     value => {
@@ -100,7 +120,8 @@ const ShareDialog = props => {
           onChange={onChange}
         />
         <Accordion
-          defaultExpanded={!_.isEmpty(storyMap.memberships)}
+          expanded={expanded}
+          onChange={(event, isExpanded) => setExpanded(isExpanded)}
           elevation={0}
           sx={{
             '&:before': {
