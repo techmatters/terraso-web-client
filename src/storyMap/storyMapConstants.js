@@ -30,3 +30,5 @@ export const ALIGNMENTS = {
   right: 'righty',
   full: 'fully',
 };
+
+export const MEMBERSHIP_ROLE_CONTRIBUTOR = 'contributor';
