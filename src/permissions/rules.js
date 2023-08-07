@@ -21,6 +21,7 @@ import {
   MEMBERSHIP_STATUS_APPROVED,
   ROLE_MANAGER,
 } from 'group/membership/components/groupMembershipConstants';
+import { MEMBERSHIP_ROLE_CONTRIBUTOR } from 'storyMap/storyMapConstants';
 
 const getAccountMembership = group =>
   _.getOr(
@@ -120,7 +121,15 @@ const isAllowedToChangeLandscape = ({ resource: landscape }) => {
 
 const isAllowedToChangeStoryMap = ({ resource: storyMap, user }) => {
   const isOwner = _.get('createdBy.id', storyMap) === _.get('id', user);
-  return Promise.resolve(isOwner);
+  if (isOwner) {
+    return Promise.resolve(isOwner);
+  }
+  const accountMembership = storyMap.accountMembership;
+  return Promise.resolve(
+    accountMembership &&
+      accountMembership.userRole === MEMBERSHIP_ROLE_CONTRIBUTOR &&
+      accountMembership.membershipStatus === MEMBERSHIP_STATUS_APPROVED
+  );
 };
 
 const rules = {
