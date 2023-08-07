@@ -173,3 +173,30 @@ export const addMemberships = ({ storyMap, emails, userRole }) => {
     })
     .then(_.get('saveStoryMapMembership.memberships'));
 };
+
+export const deleteMembership = ({ storyMap, membership }) => {
+  const query = graphql(`
+    mutation deleteMembership(
+      $id: ID!
+      $storyMapId: String!
+      $storyMapSlug: String!
+    ) {
+      deleteStoryMapMembership(
+        input: { id: $id, storyMapId: $storyMapId, storyMapSlug: $storyMapSlug }
+      ) {
+        membership {
+          id
+        }
+        errors
+      }
+    }
+  `);
+
+  return terrasoApi
+    .requestGraphQL(query, {
+      id: membership.membershipId,
+      storyMapId: storyMap.storyMapId,
+      storyMapSlug: storyMap.slug,
+    })
+    .then(_.get('deleteStoryMapMembership.membership'));
+};
