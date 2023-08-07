@@ -41,9 +41,10 @@ export const fetchSamples = (params, currentUser) => {
     .requestGraphQL(query, { accountEmail: currentUser.email })
     .then(response => ({
       samples: _.getOr([], 'samples.edges', response).map(_.get('node')),
-      userStoryMaps: _.getOr([], 'userStoryMaps.edges', response).map(
-        _.get('node')
-      ),
+      userStoryMaps: _.getOr([], 'userStoryMaps.edges', response)
+        .map(_.get('node'))
+        .sort(_.get('publishedAt'))
+        .reverse(),
     }));
 };
 
