@@ -30,6 +30,10 @@ export const storyMapFields = /* GraphQL */ `
       lastName
       firstName
     }
+    membershipList {
+      ...collaborationMemberships
+      ...accountCollaborationMembership
+    }
   }
 `;
 
@@ -47,6 +51,10 @@ export const storyMapMetadataFields = /* GraphQL */ `
       id
       lastName
       firstName
+    }
+    membershipList {
+      ...collaborationMemberships
+      ...accountCollaborationMembership
     }
   }
 `;

@@ -25,14 +25,14 @@ import { graphql } from 'terrasoApi/shared/graphqlSchema';
 export const fetchSamples = (params, currentUser) => {
   const query = graphql(`
     query storyMapsHome($accountEmail: String!) {
-      samples: storyMaps(createdBy_Email_Not: $accountEmail) {
+      samples: storyMaps(canChange_Email_Not: $accountEmail) {
         edges {
           node {
             ...storyMapMetadataFields
           }
         }
       }
-      userStoryMaps: storyMaps(createdBy_Email: $accountEmail) {
+      userStoryMaps: storyMaps(canChange_Email: $accountEmail) {
         edges {
           node {
             ...storyMapMetadataFields
