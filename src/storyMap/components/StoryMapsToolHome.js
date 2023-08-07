@@ -84,7 +84,7 @@ const StoryMapsToolsHome = () => {
         <PageHeader header={t('storyMap.tool_home_title')} />
         <Grid container spacing={2}>
           {!_.isEmpty(list) && (
-            <Grid item xs={_.isEmpty(list) ? 0 : 7}>
+            <Grid item xs={7}>
               <StoryMaps storyMaps={list} fetching={fetching} />
             </Grid>
           )}
