@@ -1,3 +1,4 @@
+const TIME_ONE_DAY = 86400000;
 export const daysSince = dateString => {
   const date = new Date(dateString);
 
