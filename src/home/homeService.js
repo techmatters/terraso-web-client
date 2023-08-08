@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-import { extractMemberships } from 'terraso-client-shared/collaboration/membershipsUtils';
+import { extractMembershipsInfo } from 'terraso-client-shared/collaboration/membershipsUtils';
 import {
   extractAccountMembership,
   extractMembersInfo,
@@ -107,8 +107,8 @@ export const fetchHomeData = email => {
         .reverse()
         .map(storyMap => ({
           ..._.omit(['membershipList'], storyMap),
-          memberships: extractMemberships(storyMap.membershipList),
           accountMembership: extractAccountMembership(storyMap.membershipList),
+          membershipsInfo: extractMembershipsInfo(storyMap.membershipList),
         })),
     }));
 };

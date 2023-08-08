@@ -55,9 +55,13 @@ const CollaborationList = props => {
   const { t } = useTranslation();
   const { data: user } = useSelector(state => state.account.currentUser);
 
+  const { storyMap } = props;
+
   const {
-    storyMap: { memberships, createdBy },
-  } = props;
+    title,
+    membershipsInfo: { membershipsSample: memberships, totalCount },
+    createdBy,
+  } = storyMap;
 
   const collaborators = useMemo(() => {
     return [...memberships, createdBy].filter(member => member.id !== user.id);
@@ -70,12 +74,12 @@ const CollaborationList = props => {
   return (
     <Typography variant="caption" sx={{ textTransform: 'uppercase' }}>
       {t(
-        collaborators.length !== 2
+        totalCount !== 2
           ? 'storyMap.card_collaborators'
           : 'storyMap.card_collaborators_two',
         {
-          count: collaborators.length,
-          diff: collaborators.length - 2,
+          count: totalCount,
+          diff: totalCount - 2,
           sample: collaborators
             .slice(0, 2)
             .map(member => member.firstName)
