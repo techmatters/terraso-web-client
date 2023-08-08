@@ -58,7 +58,6 @@ const CollaborationList = props => {
   const { storyMap } = props;
 
   const {
-    title,
     membershipsInfo: { membershipsSample: memberships, totalCount },
     createdBy,
   } = storyMap;
