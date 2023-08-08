@@ -6,6 +6,6 @@ export const daysSince = dateString => {
     return null;
   }
 
-  const days = (new Date() - date) / (1000 * 60 * 60 * 24);
+  const days = (new Date() - date) / (TIME_ONE_DAY);
   return days.toFixed(4);
 };
