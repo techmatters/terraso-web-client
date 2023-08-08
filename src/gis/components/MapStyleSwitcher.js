@@ -19,8 +19,8 @@ import { useTranslation } from 'react-i18next';
 import LayersIcon from '@mui/icons-material/Layers';
 import { Button, Menu, MenuItem, Portal, Stack } from '@mui/material';
 
+import { useMap } from './Map';
 import { MAPBOX_STYLES } from './MapboxConstants';
-import { useMap } from './MapboxMap';
 
 class SwitcherControl {
   constructor(options) {
@@ -41,7 +41,7 @@ class SwitcherControl {
   }
 }
 
-const MapboxMapStyleSwitcher = () => {
+const MapStyleSwitcher = () => {
   const { t } = useTranslation();
   const { map, changeStyle } = useMap();
   const [container, setContainer] = useState(null);
@@ -133,4 +133,4 @@ const MapboxMapStyleSwitcher = () => {
   );
 };
 
-export default MapboxMapStyleSwitcher;
+export default MapStyleSwitcher;

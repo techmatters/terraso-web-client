@@ -28,11 +28,9 @@ import { Typography } from '@mui/material';
 
 import RouterLink from 'common/components/RouterLink';
 import { countryNameForCode } from 'common/countries';
-import MapboxMap, {
-  useMap as useMapboxContext,
-} from 'gis/components/MapboxMap';
-import MapboxMapControls from 'gis/components/MapboxMapControls';
-import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';
+import Map, { useMap as useMapboxContext } from 'gis/components/Map';
+import MapControls from 'gis/components/MapControls';
+import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
 import { isValidLatitude, isValidLongitude } from 'gis/gisUtils';
 
 import { MAPBOX_LANDSCAPE_DIRECTORY_STYLE } from 'config';
@@ -248,14 +246,11 @@ const Clusters = props => {
 
 const LandscapeListMap = props => {
   return (
-    <MapboxMap
-      projection="mercator"
-      mapStyle={MAPBOX_LANDSCAPE_DIRECTORY_STYLE}
-    >
-      <MapboxMapControls />
-      <MapboxMapStyleSwitcher />
+    <Map projection="mercator" mapStyle={MAPBOX_LANDSCAPE_DIRECTORY_STYLE}>
+      <MapControls />
+      <MapStyleSwitcher />
       <Clusters {...props} />
-    </MapboxMap>
+    </Map>
   );
 };
 

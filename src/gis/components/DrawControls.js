@@ -20,7 +20,7 @@ import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
 import { useEffect, useMemo } from 'react';
 
-import { useMap } from './MapboxMap';
+import { useMap } from './Map';
 
 const DrawControls = props => {
   const {

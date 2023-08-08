@@ -21,10 +21,10 @@ import { Box } from '@mui/material';
 
 import GeoJsonSource from 'gis/components/GeoJsonSource';
 import Layer from 'gis/components/Layer';
-import MapboxGeocoder from 'gis/components/MapboxGeocoder';
-import MapboxMap, { useMap } from 'gis/components/MapboxMap';
-import MapboxMapControls from 'gis/components/MapboxMapControls';
-import MapboxMapStyleSwitcher from 'gis/components/MapboxMapStyleSwitcher';
+import Map, { useMap } from 'gis/components/Map';
+import MapControls from 'gis/components/MapControls';
+import MapGeocoder from 'gis/components/MapGeocoder';
+import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
 import mapboxgl from 'gis/mapbox';
 import { getMarkerImage, MARKER_CONTROL_ICON } from 'gis/mapMarkers';
 import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';
@@ -172,7 +172,7 @@ const LandscapeMap = props => {
         },
       }}
     >
-      <MapboxMap
+      <Map
         disableElevation
         projection="mercator"
         mapStyle="mapbox://styles/mapbox/streets-v12"
@@ -184,13 +184,13 @@ const LandscapeMap = props => {
         {...rest}
       >
         <BoundingBox bounds={bounds} />
-        {showGeocoder && <MapboxGeocoder position="top-left" />}
-        <MapboxMapControls />
-        <MapboxMapStyleSwitcher />
+        {showGeocoder && <MapGeocoder position="top-left" />}
+        <MapControls />
+        <MapStyleSwitcher />
         {showPolygons && areaPolygon && <Polygons geoJson={areaPolygon} />}
         {showMarkers && areaPolygon && <Markers geoJson={areaPolygon} />}
         {children}
-      </MapboxMap>
+      </Map>
     </Box>
   );
 };

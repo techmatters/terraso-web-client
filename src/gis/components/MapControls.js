@@ -18,9 +18,9 @@ import { useEffect } from 'react';
 
 import mapboxgl from 'gis/mapbox';
 
-import { useMap } from './MapboxMap';
+import { useMap } from './Map';
 
-const MapboxMapControls = props => {
+const MapControls = props => {
   const { showCompass, showZoom = true, visualizePitch } = props;
   const { map } = useMap();
 
@@ -41,4 +41,4 @@ const MapboxMapControls = props => {
   return null;
 };
 
-export default MapboxMapControls;
+export default MapControls;

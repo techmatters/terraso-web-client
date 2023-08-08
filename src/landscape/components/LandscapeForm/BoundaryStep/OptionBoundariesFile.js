@@ -26,7 +26,7 @@ import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
 import PageHeader from 'layout/PageHeader';
 import { rollbar } from 'monitoring/rollbar';
-import { useMap } from 'gis/components/MapboxMap';
+import { useMap } from 'gis/components/Map';
 import { parseFileToGeoJSON } from 'gis/gisSlice';
 import mapboxgl from 'gis/mapbox';
 

@@ -31,7 +31,7 @@ import './StoryMap.css';
 
 import logger from 'terraso-client-shared/monitoring/logger';
 
-import MapboxMap, { MapContextConsumer } from 'gis/components/MapboxMap';
+import Map, { MapContextConsumer } from 'gis/components/Map';
 
 import StoryMapOutline from './StoryMapOutline';
 
@@ -279,7 +279,7 @@ const InsetMap = props => {
   }
 
   return (
-    <MapboxMap
+    <Map
       id="map-inset"
       projection="mercator"
       mapStyle={STORY_MAP_INSET_STYLE}
@@ -296,7 +296,7 @@ const InsetMap = props => {
           </>
         )}
       </MapContextConsumer>
-    </MapboxMap>
+    </Map>
   );
 };
 
@@ -514,7 +514,7 @@ const StoryMap = props => {
   return (
     <>
       <section aria-label={t('storyMap.view_map_label')}>
-        <MapboxMap
+        <Map
           id="map"
           interactive={false}
           style={config.style}
@@ -543,7 +543,7 @@ const StoryMap = props => {
               </InsetMap>
             )}
           </MapContextConsumer>
-        </MapboxMap>
+        </Map>
       </section>
       <Box id="story">
         <Box

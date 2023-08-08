@@ -26,9 +26,9 @@ import {
   Stack,
 } from '@mui/material';
 
-import MapboxGeocoder from 'gis/components/MapboxGeocoder';
-import MapboxMap, { useMap } from 'gis/components/MapboxMap';
-import MapboxMapControls from 'gis/components/MapboxMapControls';
+import Map, { useMap } from 'gis/components/Map';
+import MapControls from 'gis/components/MapControls';
+import MapGeocoder from 'gis/components/MapGeocoder';
 
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 
@@ -159,17 +159,17 @@ const MapLocationDialog = props => {
       </Stack>
 
       <DialogContent>
-        <MapboxMap
+        <Map
           use3dTerrain
           height="100%"
           initialLocation={initialLocation}
           projection={config.projection}
           mapStyle={config.style}
         >
-          <MapboxMapControls showCompass visualizePitch />
-          <MapboxGeocoder />
+          <MapControls showCompass visualizePitch />
+          <MapGeocoder />
           <MapLocationChange onPositionChange={handlePositionChange} />
-        </MapboxMap>
+        </Map>
       </DialogContent>
     </Dialog>
   );
