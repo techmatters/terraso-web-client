@@ -121,14 +121,12 @@ const SharedDataUpload = props => {
             trackEvent('dataEntry.link.create', {
               props: {
                 [entityType]: owner.slug,
-                name: _.get('value.meta.arg.link.name', result),
               },
             });
           } else {
             trackEvent('dataEntry.file.upload', {
               props: {
                 [entityType]: owner.slug,
-                name: _.get('value.meta.arg.file.name', result),
                 [ILM_OUTPUT_PROP]: RESULTS_ANALYSIS_IMPACT,
               },
             });

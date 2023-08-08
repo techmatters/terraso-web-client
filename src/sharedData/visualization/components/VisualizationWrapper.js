@@ -18,6 +18,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { daysSince } from 'timeUtils';
 import {
   Alert,
   Button,
@@ -111,13 +112,12 @@ const VisualizationWrapper = props => {
         trackEvent('dataMap.delete', {
           props: {
             [entityType]: owner.slug,
-            title: mapTitle,
-            file: data.dataEntry.name,
+            durationDays: daysSince(data.createdAt),
           },
         });
       }
     });
-  }, [dispatch, data, onDeleted, owner, trackEvent, mapTitle, entityType]);
+  }, [dispatch, data, onDeleted, owner, trackEvent, entityType]);
 
   if (!data && !fetching) {
     return <NotFound />;

@@ -18,6 +18,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { daysSince } from 'timeUtils';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Grid, ListItem, Stack, Typography } from '@mui/material';
 
@@ -67,7 +68,10 @@ const SharedDataEntryBase = props => {
         if (success) {
           updateOwner();
           trackEvent('dataEntry.delete', {
-            props: { [entityType]: owner.slug, name: dataEntry.name },
+            props: {
+              [entityType]: owner.slug,
+              durationDays: daysSince(dataEntry.createdAt),
+            },
           });
         }
         dispatch(resetProcessing(dataEntry.id));
@@ -97,7 +101,7 @@ const SharedDataEntryBase = props => {
         if (success) {
           updateOwner();
           trackEvent('dataEntry.edit', {
-            props: { [entityType]: owner.slug, name: dataEntry.name },
+            props: { [entityType]: owner.slug },
           });
         }
         dispatch(resetProcessing(dataEntry.id));

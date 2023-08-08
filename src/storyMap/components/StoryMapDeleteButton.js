@@ -18,6 +18,7 @@ import React, { useCallback } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { daysSince } from 'timeUtils';
 
 import ConfirmButton from 'common/components/ConfirmButton';
 import { useAnalytics } from 'monitoring/analytics';
@@ -38,7 +39,11 @@ const DeleteButton = props => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
           onSuccess?.(storyMap);
-          trackEvent('storymap.delete');
+          trackEvent('storymap.delete', {
+            props: {
+              durationDays: daysSince(storyMap.createdAt),
+            },
+          });
         }
       }),
     [dispatch, trackEvent, storyMap, onSuccess]
