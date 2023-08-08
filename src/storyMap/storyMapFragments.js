@@ -53,8 +53,20 @@ export const storyMapMetadataFields = /* GraphQL */ `
       firstName
     }
     membershipList {
-      ...collaborationMemberships
+      membershipsCount
       ...accountCollaborationMembership
+      memberships(user_Email_Not: $accountEmail, first: 2) {
+        edges {
+          node {
+            id
+            userRole
+            membershipStatus
+            user {
+              ...userFields
+            }
+          }
+        }
+      }
     }
   }
 `;
