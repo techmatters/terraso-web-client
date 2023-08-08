@@ -224,10 +224,10 @@ test('Home: Display Story Maps', async () => {
   const items = list.getAllByRole('listitem');
   expect(items.length).toBe(2);
 
-  const link1 = within(items[0]).getByRole('link', { name: 'Story 1' });
-  expect(link1).toHaveAttribute('href', '/tools/story-maps/46h36we/id-1/edit');
-  const link2 = within(items[1]).getByRole('link', { name: 'Story 2' });
-  expect(link2).toHaveAttribute('href', '/tools/story-maps/lftawa9/id-2');
+  const link1 = within(items[0]).getByRole('link', { name: 'Story 2' });
+  expect(link1).toHaveAttribute('href', '/tools/story-maps/lftawa9/id-2');
+  const link2 = within(items[1]).getByRole('link', { name: 'Story 1' });
+  expect(link2).toHaveAttribute('href', '/tools/story-maps/46h36we/id-1/edit');
 });
 test('Home: Display defaults', async () => {
   fetchHomeData.mockReturnValue(
