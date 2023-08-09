@@ -27,6 +27,7 @@ const colorTheme = createTheme({
       sm: 600,
       md: 900,
       xm: 1300,
+      ml: 1150,
       lg: 1200,
       xl: 1536,
     },
