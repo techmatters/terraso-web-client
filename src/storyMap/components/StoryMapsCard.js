@@ -49,7 +49,12 @@ const List = withProps(BaseList, {
 
 const GridListItem = withProps(Grid, { component: 'li' });
 
-const StoryMapsCard = ({ onDeleteSuccess, storyMaps, showCreate = true }) => {
+const StoryMapsCard = ({
+  onDeleteSuccess,
+  storyMaps,
+  title,
+  showCreate = true,
+}) => {
   const { t, i18n } = useTranslation();
   const action = useMemo(
     () =>
@@ -59,9 +64,10 @@ const StoryMapsCard = ({ onDeleteSuccess, storyMaps, showCreate = true }) => {
       },
     [t, showCreate]
   );
+
   return (
     <HomeCard
-      title={t('storyMap.home_title')}
+      title={title}
       titleId="story-maps-list-title"
       action={action}
       contentBackgroundColor="white"

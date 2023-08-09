@@ -56,6 +56,7 @@ test('StoryMapsToolHome: samples renders correctly', async () => {
       currentUser: {
         data: {
           email: 'account@email.com',
+          firstName: 'Jodie',
         },
       },
     },
@@ -69,11 +70,11 @@ test('StoryMapsToolHome: samples renders correctly', async () => {
   ).toBeInTheDocument();
   expect(
     screen.getByRole('region', {
-      name: 'Sample story maps: View what others created',
+      name: 'Community Story Maps',
     })
   ).toBeInTheDocument();
   const list = screen.getByRole('list', {
-    name: 'Sample story maps: View what others created',
+    name: 'Community Story Maps',
   });
   const items = within(list).getAllByRole('listitem');
   expect(items.length).toBe(2);
@@ -124,6 +125,7 @@ test('StoryMapsToolHome: user story maps render correctly', async () => {
       currentUser: {
         data: {
           email: 'account@email.com',
+          firstName: 'Jodies',
         },
       },
     },
@@ -136,7 +138,7 @@ test('StoryMapsToolHome: user story maps render correctly', async () => {
     screen.getByRole('link', { name: 'Create Story Map' })
   ).toBeInTheDocument();
   const list = screen.getByRole('region', {
-    name: 'Story Maps',
+    name: "Jodies' Story Maps",
   });
   const items = within(list).getAllByRole('listitem');
   expect(items.length).toBe(2);

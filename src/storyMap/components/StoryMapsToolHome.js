@@ -44,7 +44,7 @@ import { generateStoryMapUrl } from 'storyMap/storyMapUtils';
 
 import StoryMapsCard from './StoryMapsCard';
 
-const StoryMaps = ({ storyMaps, fetching }) => {
+const StoryMaps = ({ storyMaps, fetching, title }) => {
   const dispatch = useDispatch();
   const onDeleteSuccess = useCallback(
     storyMap => dispatch(removeUserStoryMap(storyMap.id)),
@@ -64,7 +64,7 @@ const StoryMaps = ({ storyMaps, fetching }) => {
       onDeleteSuccess={onDeleteSuccess}
       showCreate={false}
       storyMaps={storyMaps}
-      sx={{ width: '75%' }}
+      title={title}
     />
   );
 };
@@ -73,22 +73,30 @@ const StoryMapsToolsHome = () => {
   const { t, i18n } = useTranslation();
   const { listSamples } = useSelector(_.get('storyMap.samples'));
   const { list, fetching } = useSelector(_.get('storyMap.userStoryMaps'));
+  const { data: user } = useSelector(_.get('account.currentUser'));
+  const possession = user.firstName.slice(-1) === 's' ? "'" : "'s";
   useDocumentTitle(t('storyMap.home_document_title'));
 
   useBreadcrumbsParams(useMemo(() => ({ loading: false }), []));
-
   useFetchData(fetchSamples);
   return (
     <>
-      <PageContainer maxWidth="md">
+      <PageContainer maxWidth="ml">
         <PageHeader header={t('storyMap.tool_home_title')} />
         <Grid container spacing={2}>
           {!_.isEmpty(list) && (
-            <Grid item xs={7}>
-              <StoryMaps storyMaps={list} fetching={fetching} />
+            <Grid item xs={8}>
+              <StoryMaps
+                storyMaps={list}
+                fetching={fetching}
+                title={t('storyMap.story_maps_title', {
+                  name: user.firstName,
+                  possession: possession,
+                })}
+              />
             </Grid>
           )}
-          <Grid item xs={_.isEmpty(list) ? 12 : 5}>
+          <Grid item xs={_.isEmpty(list) ? 12 : 4}>
             <Paper variant="outlined" sx={{ bgcolor: 'white', p: 2 }}>
               <Typography variant="body1">
                 {t('storyMap.tool_home_description')}
