@@ -4,9 +4,9 @@ Terraso web client is a React application that powers the frontend of the Terras
 
 ## Requirements
 
-- Docker: Version 20.10.10
-- Node: Version 16.13.0
-- Npm: Version 8.1.0
+- Docker: Version 24.0.2
+- Node: Version 18.16.0
+- Npm: Version 9.8.0
 
 ## Running locally with Docker
 
