@@ -2,7 +2,8 @@ import React, { useCallback, useEffect } from 'react';
 import MembershipsList from 'collaboration/components/MembershipsList';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
-import { useDispatch } from 'terrasoApi/store';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'terrasoApi/store';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { LoadingButton } from '@mui/lab';
 import {
@@ -21,6 +22,7 @@ import {
 import ConfirmButton from 'common/components/ConfirmButton';
 import ExternalLink from 'common/components/ExternalLink';
 import UserEmailAutocomplete from 'common/components/UserEmailAutocomplete';
+import Restricted from 'permissions/components/Restricted';
 import { MEMBERSHIP_ROLE_CONTRIBUTOR } from 'storyMap/storyMapConstants';
 import { addMemberships, deleteMembership } from 'storyMap/storyMapSlice';
 
@@ -37,36 +39,51 @@ const RoleComponent = ({ member }) => {
 
 const RemoveButton = props => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { data: currentUser } = useSelector(state => state.account.currentUser);
   const { t } = useTranslation();
   const { storyMap } = useStoryMapConfigContext();
   const { member, tabIndex } = props;
 
   const onRemoveWrapper = useCallback(() => {
+    const isOwnMembership = member?.id === currentUser?.id;
     dispatch(
       deleteMembership({
         storyMap,
         membership: member,
       })
-    );
-  }, [dispatch, member, storyMap]);
+    ).then(data => {
+      const success = data?.meta?.requestStatus === 'fulfilled';
+      if (success) {
+        if (isOwnMembership) {
+          navigate(-1);
+        }
+      }
+    });
+  }, [dispatch, navigate, member, storyMap, currentUser]);
 
   return (
-    <ConfirmButton
-      onConfirm={onRemoveWrapper}
-      confirmTitle={t('storyMap.remove_membership_confirm_title', {
-        member,
-      })}
-      confirmMessage={t('storyMap.remove_membership_confirm_message', {
-        member,
-      })}
-      confirmButton={t('storyMap.remove_membership_confirm_button')}
-      buttonLabel={t('storyMap.remove_membership')}
-      ariaLabel={t('storyMap.remove_membership')}
-      loading={props.loading}
-      buttonProps={{
-        tabIndex,
-      }}
-    />
+    <Restricted
+      permission="storyMap.deleteMembership"
+      resource={{ storyMap, membership: member }}
+    >
+      <ConfirmButton
+        onConfirm={onRemoveWrapper}
+        confirmTitle={t('storyMap.remove_membership_confirm_title', {
+          member,
+        })}
+        confirmMessage={t('storyMap.remove_membership_confirm_message', {
+          member,
+        })}
+        confirmButton={t('storyMap.remove_membership_confirm_button')}
+        buttonLabel={t('storyMap.remove_membership')}
+        ariaLabel={t('storyMap.remove_membership')}
+        loading={props.loading}
+        buttonProps={{
+          tabIndex,
+        }}
+      />
+    </Restricted>
   );
 };
 
