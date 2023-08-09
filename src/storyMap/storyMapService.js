@@ -40,7 +40,10 @@ export const fetchSamples = (params, currentUser) => {
   return terrasoApi
     .requestGraphQL(query, { accountEmail: currentUser.email })
     .then(response => ({
-      samples: _.getOr([], 'samples.edges', response).map(_.get('node')),
+      samples: _.getOr([], 'samples.edges', response)
+        .map(_.get('node'))
+        .sort(_.get('publishedAt'))
+        .reverse(),
       userStoryMaps: _.getOr([], 'userStoryMaps.edges', response)
         .map(_.get('node'))
         .sort(_.get('publishedAt'))
