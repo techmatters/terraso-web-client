@@ -79,7 +79,10 @@ test('StoryMapsToolHome: samples renders correctly', async () => {
   expect(items.length).toBe(2);
 
   expect(
-    within(items[0]).getByRole('link', { name: 'Story 1' })
+    within(items[0]).getByRole('link', { name: 'Story 2' })
+  ).toBeInTheDocument();
+  expect(
+    within(items[1]).getByRole('link', { name: 'Story 1' })
   ).toBeInTheDocument();
   expect(
     within(items[0]).getByText(/By {{user.firstName}} {{user.lastName}}/i)
