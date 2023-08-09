@@ -132,6 +132,21 @@ const isAllowedToChangeStoryMap = ({ resource: storyMap, user }) => {
   );
 };
 
+const isAllowedToDeleteStoryMap = ({ resource: storyMap, user }) => {
+  console.log(storyMap.title, { storyMap, user });
+  const isOwner = storyMap?.createdBy?.id && storyMap.createdBy.id === user?.id;
+  return Promise.resolve(isOwner);
+};
+
+const isAllowedToDeleteStoryMapMembership = ({ resource, user }) => {
+  const { storyMap, membership } = resource;
+  const isOwner = storyMap?.createdBy?.id && storyMap.createdBy.id === user?.id;
+  if (isOwner) {
+    return Promise.resolve(isOwner);
+  }
+  return Promise.resolve(membership && membership.id === user?.id);
+};
+
 const rules = {
   'group.change': isAllowedToChangeGroup,
   'group.manageMembers': isAllowedToManageGroupMembers,
@@ -144,6 +159,8 @@ const rules = {
   'sharedData.delete': isAllowedToDeleteSharedData,
   'visualization.delete': isAllowedToDeleteVisualization,
   'storyMap.change': isAllowedToChangeStoryMap,
+  'storyMap.delete': isAllowedToDeleteStoryMap,
+  'storyMap.deleteMembership': isAllowedToDeleteStoryMapMembership,
 };
 
 export default rules;

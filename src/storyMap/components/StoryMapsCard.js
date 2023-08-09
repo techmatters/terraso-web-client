@@ -21,6 +21,7 @@ import { useSelector } from 'terrasoApi/store';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
   List as BaseList,
+  Box,
   Chip,
   Divider,
   Grid,
@@ -34,6 +35,7 @@ import { withProps } from 'react-hoc';
 import RouterButton from 'common/components/RouterButton';
 import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
+import Restricted from 'permissions/components/Restricted';
 import HomeCard from 'home/components/HomeCard';
 import {
   generateStoryMapEditUrl,
@@ -125,7 +127,7 @@ const StoryMapsCard = ({
               component={Grid}
               item
               spacing={1}
-              xs={6}
+              xs={8}
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -183,34 +185,44 @@ const StoryMapsCard = ({
                     })}
               </Typography>
             </Stack>
-            <Stack
-              component={Grid}
+            <Grid
+              container
               item
-              xs={6}
+              xs={4}
               justifyContent="flex-end"
               direction="row"
               spacing={2}
             >
-              <RouterButton
-                to={generateStoryMapEditUrl(storyMap)}
-                size="small"
-                variant="outlined"
-                sx={{ pr: 3, pl: 3 }}
-              >
-                {t('storyMap.home_edit')}
-              </RouterButton>
-              <DeleteButton
-                storyMap={storyMap}
-                onSuccess={onDeleteSuccess}
-                tooltip={t('storyMap.delete_label')}
-              >
-                <DeleteIcon
-                  sx={{
-                    color: 'secondary.main',
-                  }}
-                />
-              </DeleteButton>
-            </Stack>
+              <Grid item xs={6}>
+                <RouterButton
+                  to={generateStoryMapEditUrl(storyMap)}
+                  size="small"
+                  variant="outlined"
+                  sx={{ pr: 3, pl: 3 }}
+                >
+                  {t('storyMap.home_edit')}
+                </RouterButton>
+              </Grid>
+              <Grid item xs={6}>
+                <Restricted
+                  permission="storyMap.delete"
+                  resource={storyMap}
+                  FallbackComponent={Box}
+                >
+                  <DeleteButton
+                    storyMap={storyMap}
+                    onSuccess={onDeleteSuccess}
+                    tooltip={t('storyMap.delete_label')}
+                  >
+                    <DeleteIcon
+                      sx={{
+                        color: 'secondary.main',
+                      }}
+                    />
+                  </DeleteButton>
+                </Restricted>
+              </Grid>
+            </Grid>
           </ListItem>
         ))}
       </List>
