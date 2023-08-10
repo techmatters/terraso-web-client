@@ -15,8 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useContext } from 'react';
-import MemberName from 'collaboration/components/MemberName';
-import MembershipsList from 'collaboration/components/MembershipsList';
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
@@ -31,6 +29,8 @@ import { useDispatch, useSelector } from 'terrasoApi/store';
 import { LoadingButton } from '@mui/lab';
 import { ListItem, MenuItem, Select, Stack, Typography } from '@mui/material';
 
+import MemberName from 'collaboration/components/MemberName';
+import MembershipsList from 'collaboration/components/MembershipsList';
 import ConfirmButton from 'common/components/ConfirmButton';
 import List from 'common/components/List';
 import PageLoader from 'layout/PageLoader';

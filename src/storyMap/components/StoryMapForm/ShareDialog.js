@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect } from 'react';
-import MembershipsList from 'collaboration/components/MembershipsList';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +18,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import MembershipsList from 'collaboration/components/MembershipsList';
 import ConfirmButton from 'common/components/ConfirmButton';
 import ExternalLink from 'common/components/ExternalLink';
 import UserEmailAutocomplete from 'common/components/UserEmailAutocomplete';
