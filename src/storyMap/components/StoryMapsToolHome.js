@@ -81,11 +81,19 @@ const StoryMapsToolsHome = () => {
   useFetchData(fetchSamples);
   return (
     <>
-      <PageContainer maxWidth="ml">
+      <PageContainer maxWidth="lg">
         <PageHeader header={t('storyMap.tool_home_title')} />
-        <Grid container spacing={2}>
+        <Grid
+          container
+          spacing={2}
+          sx={
+            {
+              // flexDirection: { xs: 'column' },
+            }
+          }
+        >
           {!_.isEmpty(list) && (
-            <Grid item xs={8}>
+            <Grid item xs={12} sm={8}>
               <StoryMaps
                 storyMaps={list}
                 fetching={fetching}
@@ -96,8 +104,11 @@ const StoryMapsToolsHome = () => {
               />
             </Grid>
           )}
-          <Grid item xs={_.isEmpty(list) ? 12 : 4}>
-            <Paper variant="outlined" sx={{ bgcolor: 'white', p: 2 }}>
+          <Grid item sm={_.isEmpty(list) ? 12 : 4}>
+            <Paper
+              variant="outlined"
+              sx={{ bgcolor: 'white', p: 2, borderRadius: '8px' }}
+            >
               <Typography variant="body1">
                 {t('storyMap.tool_home_description')}
               </Typography>
