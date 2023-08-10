@@ -125,8 +125,9 @@ const StoryMapsToolsHome = () => {
                   Question
                   <ExternalLink
                     href={t('storyMap.tool_home_help_document_url')}
+                    underlined={true}
                   >
-                    Help
+                    <u>Help</u>
                   </ExternalLink>
                 </Typography>
               </Trans>
