@@ -58,8 +58,9 @@ const Groups = ({ groups, fetching }) => {
   return <GroupsCard groups={groups} />;
 };
 
-const StoryMaps = ({ storyMaps, title, fetching }) => {
+const StoryMaps = ({ storyMaps, fetching }) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const onDeleteSuccess = useCallback(
     storyMap => dispatch(removeStoryMap(storyMap.id)),
@@ -78,7 +79,7 @@ const StoryMaps = ({ storyMaps, title, fetching }) => {
     <StoryMapsCard
       onDeleteSuccess={onDeleteSuccess}
       storyMaps={storyMaps}
-      title={title}
+      title={t('storyMap.home_title')}
     />
   );
 };
@@ -106,11 +107,7 @@ const Home = () => {
         <Grid item xs={12} md={6}>
           <Stack spacing={3}>
             <Landscapes landscapes={landscapes} fetching={fetching} />
-            <StoryMaps
-              storyMaps={storyMaps}
-              fetching={fetching}
-              title={t('storyMap.home_title')}
-            />
+            <StoryMaps storyMaps={storyMaps} fetching={fetching} />
           </Stack>
         </Grid>
         <Grid item xs={12} md={6}>
