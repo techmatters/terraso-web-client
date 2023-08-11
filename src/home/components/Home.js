@@ -17,7 +17,7 @@
 import React, { useCallback } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Alert, Grid, Stack } from '@mui/material';
 
@@ -27,10 +27,10 @@ import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import GroupDefaultCard from 'group/components/GroupDefaultHomeCard';
 import GroupsCard from 'group/components/GroupsHomeCard';
-import { fetchHomeData } from 'home/homeSlice';
+import { fetchHomeData, removeStoryMap } from 'home/homeSlice';
 import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultHomeCard';
 import LandscapesCard from 'landscape/components/LandscapesHomeCard';
-import StoryMapsHomeCard from 'storyMap/components/StoryMapsHomeCard';
+import StoryMapsCard from 'storyMap/components/StoryMapsCard';
 import StoryMapsHomeCardDefault from 'storyMap/components/StoryMapsHomeCardDefault';
 import ToolHomeCard from 'tool/components/ToolHomeCard';
 
@@ -59,6 +59,14 @@ const Groups = ({ groups, fetching }) => {
 };
 
 const StoryMaps = ({ storyMaps, fetching }) => {
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
+
+  const onDeleteSuccess = useCallback(
+    storyMap => dispatch(removeStoryMap(storyMap.id)),
+    [dispatch]
+  );
+
   if (fetching) {
     return <LoaderCard />;
   }
@@ -67,7 +75,13 @@ const StoryMaps = ({ storyMaps, fetching }) => {
     return <StoryMapsHomeCardDefault />;
   }
 
-  return <StoryMapsHomeCard storyMaps={storyMaps} />;
+  return (
+    <StoryMapsCard
+      onDeleteSuccess={onDeleteSuccess}
+      storyMaps={storyMaps}
+      title={t('storyMap.home_title')}
+    />
+  );
 };
 
 const Home = () => {

@@ -33,7 +33,11 @@ const initialState = {
   },
   samples: {
     fetching: true,
-    list: null,
+    listSamples: [],
+  },
+  userStoryMaps: {
+    fetching: true,
+    list: [],
   },
   delete: {},
 };
@@ -109,25 +113,45 @@ const storyMapSlice = createSlice({
       ...state,
       form: initialState.form,
     }),
+    removeUserStoryMap: (state, action) => {
+      return {
+        ...state,
+        userStoryMaps: {
+          ...state.userStoryMaps,
+          list: state.userStoryMaps.list.filter(
+            userStoryMap => userStoryMap.id !== action.payload
+          ),
+        },
+      };
+    },
   },
 
   extraReducers: builder => {
     builder.addCase(fetchSamples.pending, state => ({
       ...state,
       samples: initialState.samples,
+      userStoryMaps: initialState.userStoryMaps,
     }));
     builder.addCase(fetchSamples.rejected, state => ({
       ...state,
       samples: {
         fetching: false,
-        list: null,
+        listSamples: [],
+      },
+      userStoryMaps: {
+        fetching: false,
+        list: [],
       },
     }));
     builder.addCase(fetchSamples.fulfilled, (state, action) => ({
       ...state,
       samples: {
         fetching: false,
-        list: action.payload.storyMaps,
+        listSamples: action.payload.samples,
+      },
+      userStoryMaps: {
+        fetching: false,
+        list: action.payload.userStoryMaps,
       },
     }));
 
@@ -187,6 +211,6 @@ const storyMapSlice = createSlice({
   },
 });
 
-export const { resetForm } = storyMapSlice.actions;
+export const { resetForm, removeUserStoryMap } = storyMapSlice.actions;
 
 export default storyMapSlice.reducer;

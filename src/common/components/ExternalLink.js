@@ -24,7 +24,13 @@ import { useAnalytics } from 'monitoring/analytics';
 // tab and tracking the analytics event.
 // This is neede because of this plausible issue:
 // https://github.com/plausible/plausible-tracker/issues/12
-const ExternalLink = ({ href, component, children, linkProps }) => {
+const ExternalLink = ({
+  href,
+  component,
+  children,
+  linkProps,
+  underlined = false,
+}) => {
   const { trackEvent } = useAnalytics();
   let props = { url: href };
 
@@ -47,6 +53,9 @@ const ExternalLink = ({ href, component, children, linkProps }) => {
       component={component}
       onClick={onClick}
       {..._.omit('trackingProps', linkProps)}
+      sx={{
+        ...(underlined && { textDecoration: 'underline' }),
+      }}
     >
       {children}
     </Link>

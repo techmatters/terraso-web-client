@@ -100,6 +100,9 @@ export const fetchHomeData = email => {
             _.get('defaultGroup', landscape)
           ),
         })),
-      storyMaps: _.getOr([], 'storyMaps.edges', response).map(_.get('node')),
+      storyMaps: _.getOr([], 'storyMaps.edges', response)
+        .map(_.get('node'))
+        .sort(_.get('publishedAt'))
+        .reverse(),
     }));
 };

@@ -109,23 +109,24 @@ const HomeCard = ({
         {children}
       </Stack>
     </Stack>
-    {showActionAsButton ? (
-      <CardActions sx={{ justifyContent: 'center' }}>
-        <RouterButton
-          variant="contained"
-          size="medium"
-          sx={{ color: 'white' }}
-          to={action.to}
-        >
-          {action.label}
-        </RouterButton>
-      </CardActions>
-    ) : (
-      <>
-        <Divider aria-hidden="false" />
-        <CardActionRouterLink label={action.label} to={action.to} />
-      </>
-    )}
+    {action &&
+      (showActionAsButton ? (
+        <CardActions sx={{ justifyContent: 'center' }}>
+          <RouterButton
+            variant="contained"
+            size="medium"
+            sx={{ color: 'white' }}
+            to={action.to}
+          >
+            {action.label}
+          </RouterButton>
+        </CardActions>
+      ) : (
+        <>
+          <Divider aria-hidden="false" />
+          <CardActionRouterLink label={action.label} to={action.to} />
+        </>
+      ))}
   </Card>
 );
 

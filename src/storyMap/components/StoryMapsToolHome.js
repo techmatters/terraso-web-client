@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import {
@@ -32,52 +32,98 @@ import {
 } from '@mui/material';
 
 import ExternalLink from 'common/components/ExternalLink';
+import LoaderCard from 'common/components/LoaderCard';
 import RouterLink from 'common/components/RouterLink';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import { formatDate } from 'localization/utils';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-import { fetchSamples } from 'storyMap/storyMapSlice';
+import { fetchSamples, removeUserStoryMap } from 'storyMap/storyMapSlice';
 import { generateStoryMapUrl } from 'storyMap/storyMapUtils';
+
+import StoryMapsCard from './StoryMapsCard';
+
+const StoryMaps = ({ storyMaps, fetching }) => {
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
+  const { data: user } = useSelector(_.get('account.currentUser'));
+  const possession = user.firstName.slice(-1) === 's' ? "'" : "'s";
+  const onDeleteSuccess = useCallback(
+    storyMap => dispatch(removeUserStoryMap(storyMap.id)),
+    [dispatch]
+  );
+
+  if (fetching) {
+    return <LoaderCard />;
+  }
+
+  if (_.isEmpty(storyMaps)) {
+    return;
+  }
+
+  return (
+    <StoryMapsCard
+      onDeleteSuccess={onDeleteSuccess}
+      showCreate={false}
+      storyMaps={storyMaps}
+      title={t('storyMap.story_maps_title', {
+        name: user.firstName,
+        possession: possession,
+      })}
+    />
+  );
+};
 
 const StoryMapsToolsHome = () => {
   const { t, i18n } = useTranslation();
-  const { list } = useSelector(_.get('storyMap.samples'));
-
+  const { listSamples } = useSelector(_.get('storyMap.samples'));
+  const { list, fetching } = useSelector(_.get('storyMap.userStoryMaps'));
   useDocumentTitle(t('storyMap.home_document_title'));
 
   useBreadcrumbsParams(useMemo(() => ({ loading: false }), []));
-
   useFetchData(fetchSamples);
-
   return (
     <>
-      <PageContainer maxWidth="md">
+      <PageContainer maxWidth="lg">
         <PageHeader header={t('storyMap.tool_home_title')} />
-
-        <Paper variant="outlined" sx={{ bgcolor: 'white', p: 2 }}>
-          <Typography variant="body1">
-            {t('storyMap.tool_home_description')}
-          </Typography>
-          <Button
-            variant="contained"
-            component={Link}
-            to="/tools/story-maps/new"
-            sx={{ mt: 2, mb: 3 }}
-          >
-            {t('storyMap.tool_home_create_button')}
-          </Button>
-          <Trans i18nKey="storyMap.tool_home_help">
-            <Typography>
-              Question
-              <ExternalLink href={t('storyMap.tool_home_help_document_url')}>
-                Help
-              </ExternalLink>
-            </Typography>
-          </Trans>
-        </Paper>
-        {!_.isEmpty(list) && (
+        <Grid container spacing={2}>
+          {!_.isEmpty(list) && (
+            <Grid item xs={12} sm={8}>
+              <StoryMaps storyMaps={list} fetching={fetching} />
+            </Grid>
+          )}
+          <Grid item sm={_.isEmpty(list) ? 12 : 4}>
+            <Paper
+              variant="outlined"
+              sx={{ bgcolor: 'white', p: 2, borderRadius: '8px' }}
+            >
+              <Typography variant="body1">
+                {t('storyMap.tool_home_description')}
+              </Typography>
+              <Button
+                variant="contained"
+                component={Link}
+                to="/tools/story-maps/new"
+                sx={{ mt: 2, mb: 3 }}
+              >
+                {t('storyMap.tool_home_create_button')}
+              </Button>
+              <Trans i18nKey="storyMap.tool_home_help">
+                <Typography>
+                  Question
+                  <ExternalLink
+                    href={t('storyMap.tool_home_help_document_url')}
+                    underlined={true}
+                  >
+                    <u>Help</u>
+                  </ExternalLink>
+                </Typography>
+              </Trans>
+            </Paper>
+          </Grid>
+        </Grid>
+        {!_.isEmpty(listSamples) && (
           <section aria-labelledby="story-map-examples-heading">
             <Typography
               id="story-map-examples-heading"
@@ -100,7 +146,7 @@ const StoryMapsToolsHome = () => {
                 },
               }}
             >
-              {list.map(sample => (
+              {listSamples.map(sample => (
                 <Grid
                   item
                   xs={12}
