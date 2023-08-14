@@ -133,7 +133,6 @@ const isAllowedToChangeStoryMap = ({ resource: storyMap, user }) => {
 };
 
 const isAllowedToDeleteStoryMap = ({ resource: storyMap, user }) => {
-  console.log(storyMap.title, { storyMap, user });
   const isOwner = storyMap?.createdBy?.id && storyMap.createdBy.id === user?.id;
   return Promise.resolve(isOwner);
 };
