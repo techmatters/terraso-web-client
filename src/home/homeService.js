@@ -15,13 +15,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-import { extractMembershipsInfo } from 'terraso-client-shared/collaboration/membershipsUtils';
 import {
   extractAccountMembership,
   extractMembersInfo,
 } from 'terraso-client-shared/memberships/membershipsUtils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
+
+import { extractStoryMap } from 'storyMap/storyMapUtils';
 
 export const fetchHomeData = email => {
   const query = graphql(`
@@ -105,10 +106,6 @@ export const fetchHomeData = email => {
         .map(_.get('node'))
         .sort(_.get('publishedAt'))
         .reverse()
-        .map(storyMap => ({
-          ..._.omit(['membershipList'], storyMap),
-          accountMembership: extractAccountMembership(storyMap.membershipList),
-          membershipsInfo: extractMembershipsInfo(storyMap.membershipList),
-        })),
+        .map(extractStoryMap),
     }));
 };
