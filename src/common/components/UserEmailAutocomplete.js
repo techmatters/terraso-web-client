@@ -53,7 +53,7 @@ const UserEmailAutocomplete = props => {
         const isNewValue = option.newTerm || typeof option === 'string';
         if (isNewValue) {
           const valueOriginal = option.newTerm || option;
-          return valueOriginal;
+          return valueOriginal.trim();
         }
         return option;
       });
