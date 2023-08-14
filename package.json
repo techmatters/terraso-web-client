@@ -19,7 +19,7 @@
     "@turf/center": "^6.5.0",
     "@turf/helpers": "^6.5.0",
     "canvg": "^4.0.1",
-    "filesize": "^10.0.8",
+    "filesize": "^10.0.12",
     "get-video-id": "^3.6.5",
     "i18next": "^23.2.11",
     "i18next-browser-languagedetector": "^7.1.0",
