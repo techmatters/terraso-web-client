@@ -18,19 +18,97 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Paper,
   Stack,
+  Typography,
 } from '@mui/material';
 
+import HelperText from 'common/components/HelperText';
 import Map, { useMap } from 'gis/components/Map';
 import MapControls from 'gis/components/MapControls';
 import MapGeocoder from 'gis/components/MapGeocoder';
 
 import { useStoryMapConfigContext } from './storyMapConfigContext';
+
+const BearingIcon = () => {
+  const { t } = useTranslation();
+  return (
+    <Paper
+      alt={t('storyMap.form_location_helper_text_bearing_icon_alt')}
+      variant="outlined"
+      component="img"
+      src="/storyMap/bearing-icon.svg"
+      width={24}
+      height={24}
+      sx={{
+        verticalAlign: 'middle',
+      }}
+    />
+  );
+};
+
+const SetMapHelperText = () => {
+  const { t } = useTranslation();
+  return (
+    <Stack spacing={3}>
+      <Box>
+        <Trans i18nKey="storyMap.form_location_helper_text_step_1">
+          <Typography gutterBottom variant="h3">
+            Title
+          </Typography>
+          <Typography gutterBottom>Paragraph 1</Typography>
+          <img
+            src="/storyMap/set-map-step-1.png"
+            alt={t('storyMap.form_location_helper_text_step_1_image_alt')}
+          />
+        </Trans>
+      </Box>
+      <Box>
+        <Trans i18nKey="storyMap.form_location_helper_text_step_2">
+          <Typography gutterBottom variant="h3">
+            Title
+          </Typography>
+          <Typography gutterBottom sx={{ mb: 2 }}>
+            Paragraph 1
+          </Typography>
+          <Typography gutterBottom>
+            Content
+            <BearingIcon />
+            content
+            <BearingIcon />
+            content
+          </Typography>
+          <img
+            src="/storyMap/set-map-step-2-1.png"
+            alt={t('storyMap.form_location_helper_text_step_2_1_image_alt')}
+          />
+          <img
+            src="/storyMap/set-map-step-2-2.png"
+            alt={t('storyMap.form_location_helper_text_step_2_2_image_alt')}
+          />
+        </Trans>
+      </Box>
+      <Box>
+        <Trans i18nKey="storyMap.form_location_helper_text_step_3">
+          <Typography gutterBottom variant="h3">
+            Title
+          </Typography>
+          <Typography gutterBottom>Paragraph 1</Typography>
+          <img
+            src="/storyMap/set-map-step-3.png"
+            alt={t('storyMap.form_location_helper_text_step_3_image_alt')}
+          />
+        </Trans>
+      </Box>
+    </Stack>
+  );
+};
 
 const MapLocationChange = props => {
   const { onPositionChange } = props;
@@ -69,7 +147,6 @@ const MapLocationDialog = props => {
   const [mapZoom, setMapZoom] = useState(location?.zoom);
   const [mapPitch, setMapPitch] = useState(location?.pitch);
   const [mapBearing, setMapBearing] = useState(location?.bearing);
-  const [marginTop, setMarginTop] = useState(0);
 
   const initialLocation = useMemo(() => {
     if (location) {
@@ -99,12 +176,6 @@ const MapLocationDialog = props => {
     return firstChapterWithLocation?.location;
   }, [location, config.chapters, config.titleTransition?.location, chapterId]);
 
-  useEffect(() => {
-    const headerHeight =
-      document.getElementById('header-container')?.clientHeight;
-    setMarginTop(headerHeight);
-  }, []);
-
   const handleConfirm = useCallback(() => {
     onConfirm({
       center: mapCenter,
@@ -132,22 +203,39 @@ const MapLocationDialog = props => {
       onClose={handleCancel}
       aria-labelledby="map-location-dialog-title"
       aria-describedby="map-location-dialog-content-text"
-      sx={{ mt: `${marginTop}px` }}
     >
       <Stack direction="row" justifyContent="space-between">
-        <DialogTitle component="h1" id="map-location-dialog-title">
-          {title ? (
-            <Trans
-              i18nKey="storyMap.form_location_dialog_title"
-              values={{ title: title }}
-            >
-              prefix
-              <i>italic</i>
-            </Trans>
-          ) : (
-            <>{t('storyMap.form_location_dialog_title_blank')}</>
-          )}
-        </DialogTitle>
+        <Stack>
+          <DialogTitle
+            component="h1"
+            id="map-location-dialog-title"
+            sx={{ pb: 0 }}
+          >
+            {title ? (
+              <Trans
+                i18nKey="storyMap.form_location_dialog_title"
+                values={{ title: title }}
+              >
+                prefix
+                <i>italic</i>
+              </Trans>
+            ) : (
+              <>{t('storyMap.form_location_dialog_title_blank')}</>
+            )}
+          </DialogTitle>
+          <DialogContent sx={{ pb: 0 }}>
+            <HelperText
+              showLabel
+              useAnchor={false}
+              maxWidth={586}
+              label={t('storyMap.form_location_dialog_helper_text_label')}
+              Component={SetMapHelperText}
+              buttonProps={{
+                sx: { pl: 0, color: 'gray.dark1' },
+              }}
+            />
+          </DialogContent>
+        </Stack>
         <DialogActions sx={{ pr: 3 }}>
           <Button size="small" onClick={handleCancel}>
             {t('storyMap.location_dialog_cancel_button')}
