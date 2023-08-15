@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -23,7 +23,10 @@ import ConfirmButton from 'common/components/ConfirmButton';
 import ExternalLink from 'common/components/ExternalLink';
 import UserEmailAutocomplete from 'common/components/UserEmailAutocomplete';
 import Restricted from 'permissions/components/Restricted';
-import { MEMBERSHIP_ROLE_CONTRIBUTOR } from 'storyMap/storyMapConstants';
+import {
+  MEMBERSHIP_ROLE_CONTRIBUTOR,
+  MEMBERSHIP_ROLE_OWNER,
+} from 'storyMap/storyMapConstants';
 import { addMemberships, deleteMembership } from 'storyMap/storyMapSlice';
 
 import { useStoryMapConfigContext } from './storyMapConfigContext';
@@ -61,6 +64,10 @@ const RemoveButton = props => {
       }
     });
   }, [dispatch, navigate, member, storyMap, currentUser]);
+
+  if (!member.useRole || member.useRole === MEMBERSHIP_ROLE_OWNER) {
+    return null;
+  }
 
   return (
     <Restricted
@@ -115,6 +122,17 @@ const ShareDialog = props => {
       })
     );
   }, [dispatch, storyMap, newContributors]);
+
+  const memberships = useMemo(
+    () => [
+      {
+        ...storyMap.createdBy,
+        userRole: MEMBERSHIP_ROLE_OWNER,
+      },
+      ...storyMap.memberships,
+    ],
+    [storyMap.memberships, storyMap.createdBy]
+  );
 
   return (
     <Dialog fullWidth maxWidth="md" open={open} onClose={onClose}>
@@ -174,7 +192,7 @@ const ShareDialog = props => {
           </AccordionSummary>
           <AccordionDetails sx={{ p: 0 }}>
             <MembershipsList
-              memberships={storyMap.memberships}
+              memberships={memberships}
               cardsBreakpoint="xl"
               RemoveComponent={RemoveButton}
               RoleComponent={RoleComponent}

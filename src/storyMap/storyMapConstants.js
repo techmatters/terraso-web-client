@@ -32,3 +32,4 @@ export const ALIGNMENTS = {
 };
 
 export const MEMBERSHIP_ROLE_CONTRIBUTOR = 'contributor';
+export const MEMBERSHIP_ROLE_OWNER = 'owner';
