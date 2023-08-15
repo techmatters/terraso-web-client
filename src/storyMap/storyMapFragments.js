@@ -26,9 +26,7 @@ export const storyMapFields = /* GraphQL */ `
     updatedAt
     publishedAt
     createdBy {
-      id
-      lastName
-      firstName
+      ...userFields
     }
     membershipList {
       ...collaborationMemberships

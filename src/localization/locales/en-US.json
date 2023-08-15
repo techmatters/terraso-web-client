@@ -985,6 +985,7 @@
         "share_dialog_cancel_label": "Cancel",
         "remove_membership": "Remove",
         "role_contributor": "Contributor",
+        "role_owner": "Owner",
         "share_dialog_contributors_title": "Contributors",
         "share_dialog_autocomplete_label": "Contributors",
         "share_dialog_autocomplete_helper_text": "Your contributor will receive an email invitation to join this story map in a few minutes.",
