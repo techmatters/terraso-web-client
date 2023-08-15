@@ -65,15 +65,18 @@ const RemoveButton = props => {
     });
   }, [dispatch, navigate, member, storyMap, currentUser]);
 
-  if (!member.useRole || member.useRole === MEMBERSHIP_ROLE_OWNER) {
-    return null;
-  }
+  const resource = useMemo(() => {
+    if (!member?.userRole || member?.userRole === MEMBERSHIP_ROLE_OWNER) {
+      return null;
+    }
+    return {
+      storyMap,
+      membership: member,
+    };
+  }, [storyMap, member]);
 
   return (
-    <Restricted
-      permission="storyMap.deleteMembership"
-      resource={{ storyMap, membership: member }}
-    >
+    <Restricted permission="storyMap.deleteMembership" resource={resource}>
       <ConfirmButton
         onConfirm={onRemoveWrapper}
         confirmTitle={t('storyMap.remove_membership_confirm_title', {
