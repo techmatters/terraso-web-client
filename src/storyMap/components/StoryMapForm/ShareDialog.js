@@ -80,10 +80,11 @@ const RemoveButton = props => {
       <ConfirmButton
         onConfirm={onRemoveWrapper}
         confirmTitle={t('storyMap.remove_membership_confirm_title', {
-          member,
+          user: member,
         })}
         confirmMessage={t('storyMap.remove_membership_confirm_message', {
-          member,
+          user: member,
+          storyMapTitle: storyMap.title,
         })}
         confirmButton={t('storyMap.remove_membership_confirm_button')}
         buttonLabel={t('storyMap.remove_membership')}
@@ -102,7 +103,7 @@ const ShareDialog = props => {
   const { t } = useTranslation();
   const { open, onClose } = props;
   const { storyMap } = useStoryMapConfigContext();
-  const [newContributors, setNewContributors] = React.useState([]);
+  const [newCollaborators, setNewCollaborators] = React.useState([]);
   const [expanded, setExpanded] = React.useState(false);
 
   useEffect(() => {
@@ -111,20 +112,20 @@ const ShareDialog = props => {
 
   const onChange = useCallback(
     value => {
-      setNewContributors(value);
+      setNewCollaborators(value);
     },
-    [setNewContributors]
+    [setNewCollaborators]
   );
 
   const onConfirm = useCallback(() => {
     dispatch(
       addMemberships({
         storyMap,
-        emails: newContributors,
+        emails: newCollaborators,
         userRole: MEMBERSHIP_ROLE_CONTRIBUTOR,
       })
     );
-  }, [dispatch, storyMap, newContributors]);
+  }, [dispatch, storyMap, newCollaborators]);
 
   const memberships = useMemo(
     () => [
@@ -154,7 +155,7 @@ const ShareDialog = props => {
         <UserEmailAutocomplete
           label={t('storyMap.share_dialog_autocomplete_label')}
           helperText={t('storyMap.share_dialog_autocomplete_helper_text')}
-          value={newContributors}
+          value={newCollaborators}
           onChange={onChange}
         />
         <Accordion
@@ -190,7 +191,7 @@ const ShareDialog = props => {
             }}
           >
             <Typography variant="h2" sx={{ p: 0 }}>
-              {t('storyMap.share_dialog_contributors_title')}
+              {t('storyMap.share_dialog_collaborators_title')}
             </Typography>
           </AccordionSummary>
           <AccordionDetails sx={{ p: 0 }}>
