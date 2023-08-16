@@ -974,13 +974,13 @@
         "upload_rejected": "The file(s) cannot be added.",
         "form_location_dialog_helper_text_label": "How to set the map location",
         "form_location_helper_text_step_1": "<0>Step 1. Find a location</0><1>Search for a location or find one by panning or zooming on the map.</1><2/>",
-        "form_location_helper_text_step_1_image_alt": "TODO",
+        "form_location_helper_text_step_1_image_alt": "A screenshot of the Guyana map in the Set Map Location screen.The location search field is filled with the keyword “Guyana”.",
         "form_location_helper_text_step_2": "<0>Step 2. Adjust the background map</0><1>Choose a location, then adjust  the map view by panning or zooming.</1><2>Select the <1 /> button to rotate the map.  Use the <3 /> button to reset the map. You can also right-click on the  mouse and drag left and right to rotate the view.</2><3 /><4 />",
-        "form_location_helper_text_step_2_1_image_alt": "TODO",
-        "form_location_helper_text_step_2_2_image_alt": "TODO",
+        "form_location_helper_text_step_2_1_image_alt": "A map with the rotation button pointing North and South.",
+        "form_location_helper_text_step_2_2_image_alt": "A map shows the same location as the previous map with the view rotated 90 degrees. The rotation button points east and west.",
         "form_location_helper_text_step_3": "<0>Step 3. Set the location with desired background map</0><1>Once you are satisfied with the background map, select Set Location. Each chapter can have a different background map.</1><2 />",
-        "form_location_helper_text_step_3_image_alt": "TODO",
-        "form_location_helper_text_bearing_icon_alt": "TODO"
+        "form_location_helper_text_step_3_image_alt": "A screenshot of the Set Map Location screen. The “Set Location” button in the top right is circled.",
+        "form_location_helper_text_bearing_icon_alt": "Bearing button icon"
     },
     "site": {
         "description": "Free and powerful software tools to manage your landscape, protect your environment, and promote human livelihoods.",
