@@ -70,7 +70,7 @@ export const fetchHomeData = email => {
           }
         }
       }
-      storyMaps(canChange_Email: $accountEmail) {
+      storyMaps(memberships_User_Email: $accountEmail) {
         edges {
           node {
             ...storyMapMetadataFields

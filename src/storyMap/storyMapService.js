@@ -27,14 +27,14 @@ import { extractStoryMap } from './storyMapUtils';
 export const fetchSamples = (params, currentUser) => {
   const query = graphql(`
     query storyMapsHome($accountEmail: String!) {
-      samples: storyMaps(canChange_Email_Not: $accountEmail) {
+      samples: storyMaps(memberships_User_Email_Not: $accountEmail) {
         edges {
           node {
             ...storyMapMetadataFields
           }
         }
       }
-      userStoryMaps: storyMaps(canChange_Email: $accountEmail) {
+      userStoryMaps: storyMaps(memberships_User_Email: $accountEmail) {
         edges {
           node {
             ...storyMapMetadataFields
