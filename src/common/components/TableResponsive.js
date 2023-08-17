@@ -363,8 +363,8 @@ const EmptyList = props => {
 };
 
 const TableResponsive = props => {
-  const { cardsBreakpoint = 'md' } = props;
-  const showCards = useMediaQuery(theme.breakpoints.down(cardsBreakpoint));
+  const { cardsBreakpoint = theme.breakpoints.down('md') } = props;
+  const showCards = useMediaQuery(cardsBreakpoint);
   const [filteredRows, setFilterdRows] = useState(props.rows);
 
   const filteredProps = useMemo(
