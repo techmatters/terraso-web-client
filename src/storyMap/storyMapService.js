@@ -209,3 +209,29 @@ export const deleteMembership = ({ storyMap, membership }) => {
     })
     .then(_.get('deleteStoryMapMembership.membership'));
 };
+
+export const approveMembership = ({ membership }, currentUser) => {
+  const query = graphql(`
+    mutation approveMembership($accountEmail: String!, $membershipId: String!) {
+      approveStoryMapMembership(input: { membershipId: $membershipId }) {
+        membership {
+          id
+        }
+        storyMap {
+          ...storyMapMetadataFields
+        }
+        errors
+      }
+    }
+  `);
+
+  return terrasoApi
+    .requestGraphQL(query, {
+      membershipId: membership.membershipId,
+      accountEmail: currentUser.email,
+    })
+    .then(response => ({
+      membership: response.approveStoryMapMembership.membership,
+      storyMap: extractStoryMap(response.approveStoryMapMembership.storyMap),
+    }));
+};

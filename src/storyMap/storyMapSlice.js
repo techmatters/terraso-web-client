@@ -45,6 +45,7 @@ const initialState = {
       saving: false,
     },
     delete: {},
+    approve: {},
   },
 };
 
@@ -128,6 +129,18 @@ export const deleteMembership = createAsyncThunk(
     content: 'storyMap.deleted_membership',
     params: {
       title: config.title,
+    },
+  })
+);
+
+export const approveMembership = createAsyncThunk(
+  'storyMap/approveMembership',
+  storyMapService.approveMembership,
+  (storyMap, { storyMap: { title } }) => ({
+    severity: 'success',
+    content: 'storyMap.approved_membership',
+    params: {
+      title,
     },
   })
 );
@@ -321,6 +334,54 @@ const storyMapSlice = createSlice({
         },
       };
     });
+
+    builder.addCase(approveMembership.pending, (state, action) => ({
+      ...state,
+      memberships: {
+        ...state.memberships,
+        approve: {
+          ...state.memberships.approve,
+          [action.meta.arg.membership.membershipId]: {
+            processing: true,
+          },
+        },
+      },
+    }));
+
+    builder.addCase(approveMembership.rejected, (state, action) => ({
+      ...state,
+      memberships: {
+        ...state.memberships,
+        approve: {
+          ...state.memberships.approve,
+          [action.meta.arg.membership.membershipId]: {
+            processing: false,
+          },
+        },
+      },
+    }));
+
+    builder.addCase(approveMembership.fulfilled, (state, action) => ({
+      ...state,
+      memberships: {
+        ...state.memberships,
+        approve: {
+          ...state.memberships.approve,
+          [action.meta.arg.membership.membershipId]: {
+            processing: false,
+          },
+        },
+      },
+      userStoryMaps: {
+        ...state.userStoryMaps,
+        list: state.userStoryMaps.list.map(userStoryMap => {
+          if (userStoryMap.id === action.payload.storyMap.id) {
+            return action.payload.storyMap;
+          }
+          return userStoryMap;
+        }),
+      },
+    }));
   },
 });
 

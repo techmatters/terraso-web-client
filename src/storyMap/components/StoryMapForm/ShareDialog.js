@@ -10,6 +10,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -18,6 +19,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import { MEMBERSHIP_STATUS_PENDING } from 'collaboration/collaborationConstants';
 import MembershipsList from 'collaboration/components/MembershipsList';
 import ConfirmButton from 'common/components/ConfirmButton';
 import ExternalLink from 'common/components/ExternalLink';
@@ -38,6 +40,18 @@ const RoleComponent = ({ member }) => {
   return (
     <Typography>
       {t(`storyMap.role_${member.userRole.toLowerCase()}`)}
+      {member.membershipStatus === MEMBERSHIP_STATUS_PENDING && (
+        <Chip
+          label={t('memberships.membership_pending')}
+          variant="outlined"
+          size="small"
+          sx={{
+            ml: 1,
+            borderRadius: 1,
+            textTransform: 'uppercase',
+          }}
+        />
+      )}
     </Typography>
   );
 };

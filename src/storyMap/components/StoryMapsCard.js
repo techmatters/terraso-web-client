@@ -14,11 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'terrasoApi/store';
+import { useDispatch, useSelector } from 'terrasoApi/store';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { LoadingButton } from '@mui/lab';
 import {
   List as BaseList,
   Box,
@@ -32,11 +33,16 @@ import {
 
 import { withProps } from 'react-hoc';
 
+import {
+  MEMBERSHIP_STATUS_APPROVED,
+  MEMBERSHIP_STATUS_PENDING,
+} from 'collaboration/collaborationConstants';
 import RouterButton from 'common/components/RouterButton';
 import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
 import Restricted from 'permissions/components/Restricted';
 import HomeCard from 'home/components/HomeCard';
+import { approveMembership } from 'storyMap/storyMapSlice';
 import {
   generateStoryMapEditUrl,
   generateStoryMapUrl,
@@ -60,12 +66,22 @@ const CollaborationList = props => {
   const { storyMap } = props;
 
   const {
-    membershipsInfo: { membershipsSample: memberships, totalCount },
+    membershipsInfo: {
+      membershipsSample: memberships,
+      totalCount: membershipsCount,
+    },
     createdBy,
   } = storyMap;
 
+  const totalCount = useMemo(() => membershipsCount + 1, [membershipsCount]);
+
   const collaborators = useMemo(() => {
-    return [...memberships, createdBy].filter(member => member.id !== user.id);
+    return [
+      ...memberships.filter(
+        membership => membership.membershipStatus === MEMBERSHIP_STATUS_APPROVED
+      ),
+      createdBy,
+    ].filter(member => member.id !== user.id);
   }, [memberships, createdBy, user]);
 
   if (_.isEmpty(collaborators)) {
@@ -91,13 +107,149 @@ const CollaborationList = props => {
   );
 };
 
-const StoryMapsCard = ({
-  onDeleteSuccess,
-  storyMaps,
-  title,
-  showCreate = true,
-}) => {
+const StoryMapListItem = props => {
+  const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
+  const { storyMap } = props;
+
+  const accountMembership = useMemo(
+    () => storyMap.membershipsInfo.accountMembership,
+    [storyMap.membershipsInfo.accountMembership]
+  );
+
+  const isPending = useMemo(
+    () => accountMembership?.membershipStatus === MEMBERSHIP_STATUS_PENDING,
+    [accountMembership]
+  );
+
+  const processing = useSelector(
+    state =>
+      state.storyMap.memberships.approve[accountMembership?.membershipId]
+        ?.processing || false
+  );
+
+  const onAcceptWrapper = useCallback(() => {
+    dispatch(approveMembership({ membership: accountMembership, storyMap }));
+  }, [dispatch, storyMap, accountMembership]);
+
+  return (
+    <ListItem
+      component={GridListItem}
+      container
+      aria-labelledby={`story-map-${storyMap.slug}-link`}
+      sx={{ pr: 0, pl: 0 }}
+    >
+      <Stack
+        component={Grid}
+        item
+        spacing={1}
+        xs={8}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+        }}
+      >
+        <Stack direction="row" spacing={1}>
+          {!storyMap.isPublished && (
+            <Chip
+              size="small"
+              label={t('storyMap.home_draft_label')}
+              sx={{
+                borderRadius: 0,
+                bgcolor: 'gray.dark1',
+                color: 'white',
+                textTransform: 'uppercase',
+                fontWeight: 700,
+                fontSize: '0.6rem',
+                height: 'auto',
+                pt: 0.25,
+                pb: 0.25,
+              }}
+            />
+          )}
+          <CollaborationList storyMap={storyMap} />
+        </Stack>
+        <RouterLink
+          id={`story-map-${storyMap.slug}-link`}
+          to={
+            storyMap.isPublished
+              ? generateStoryMapUrl(storyMap)
+              : generateStoryMapEditUrl(storyMap)
+          }
+        >
+          {storyMap.title}
+        </RouterLink>
+        <Typography
+          variant="caption"
+          sx={{
+            fontStyle: 'italic',
+          }}
+        >
+          {storyMap.isPublished && storyMap.publishedAt
+            ? t('storyMap.home_published_on', {
+                date: formatDate(i18n.resolvedLanguage, storyMap.publishedAt),
+              })
+            : t('storyMap.home_last_edited', {
+                date: formatDate(i18n.resolvedLanguage, storyMap.updatedAt),
+              })}
+        </Typography>
+      </Stack>
+      <Grid
+        container
+        item
+        xs={4}
+        justifyContent="flex-end"
+        direction="row"
+        spacing={2}
+      >
+        <Grid item xs={6}>
+          {isPending ? (
+            <LoadingButton
+              size="small"
+              variant="outlined"
+              sx={{ pr: 3, pl: 3 }}
+              onClick={onAcceptWrapper}
+              loading={processing}
+            >
+              {t('storyMap.home_accept')}
+            </LoadingButton>
+          ) : (
+            <RouterButton
+              to={generateStoryMapEditUrl(storyMap)}
+              size="small"
+              variant="outlined"
+              sx={{ pr: 3, pl: 3 }}
+            >
+              {t('storyMap.home_edit')}
+            </RouterButton>
+          )}
+        </Grid>
+        <Grid item xs={6}>
+          <Restricted
+            permission="storyMap.delete"
+            resource={storyMap}
+            FallbackComponent={Box}
+          >
+            <DeleteButton
+              storyMap={storyMap}
+              tooltip={t('storyMap.delete_label')}
+            >
+              <DeleteIcon
+                sx={{
+                  color: 'secondary.main',
+                }}
+              />
+            </DeleteButton>
+          </Restricted>
+        </Grid>
+      </Grid>
+    </ListItem>
+  );
+};
+
+const StoryMapsCard = ({ title, storyMaps, showCreate = true }) => {
+  const { t } = useTranslation();
   const action = useMemo(
     () =>
       showCreate && {
@@ -116,114 +268,7 @@ const StoryMapsCard = ({
     >
       <List aria-labelledby="story-maps-list-title" sx={{ width: '100%' }}>
         {storyMaps.map(storyMap => (
-          <ListItem
-            key={storyMap.id}
-            component={GridListItem}
-            container
-            aria-labelledby={`story-map-${storyMap.slug}-link`}
-            sx={{ pr: 0, pl: 0 }}
-          >
-            <Stack
-              component={Grid}
-              item
-              spacing={1}
-              xs={8}
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-              }}
-            >
-              <Stack direction="row" spacing={1}>
-                {!storyMap.isPublished && (
-                  <Chip
-                    size="small"
-                    label={t('storyMap.home_draft_label')}
-                    sx={{
-                      borderRadius: 0,
-                      bgcolor: 'gray.dark1',
-                      color: 'white',
-                      textTransform: 'uppercase',
-                      fontWeight: 700,
-                      fontSize: '0.6rem',
-                      height: 'auto',
-                      pt: 0.25,
-                      pb: 0.25,
-                    }}
-                  />
-                )}
-                <CollaborationList storyMap={storyMap} />
-              </Stack>
-              <RouterLink
-                id={`story-map-${storyMap.slug}-link`}
-                to={
-                  storyMap.isPublished
-                    ? generateStoryMapUrl(storyMap)
-                    : generateStoryMapEditUrl(storyMap)
-                }
-              >
-                {storyMap.title}
-              </RouterLink>
-              <Typography
-                variant="caption"
-                sx={{
-                  fontStyle: 'italic',
-                }}
-              >
-                {storyMap.isPublished && storyMap.publishedAt
-                  ? t('storyMap.home_published_on', {
-                      date: formatDate(
-                        i18n.resolvedLanguage,
-                        storyMap.publishedAt
-                      ),
-                    })
-                  : t('storyMap.home_last_edited', {
-                      date: formatDate(
-                        i18n.resolvedLanguage,
-                        storyMap.updatedAt
-                      ),
-                    })}
-              </Typography>
-            </Stack>
-            <Grid
-              container
-              item
-              xs={4}
-              justifyContent="flex-end"
-              direction="row"
-              spacing={2}
-            >
-              <Grid item xs={6}>
-                <RouterButton
-                  to={generateStoryMapEditUrl(storyMap)}
-                  size="small"
-                  variant="outlined"
-                  sx={{ pr: 3, pl: 3 }}
-                >
-                  {t('storyMap.home_edit')}
-                </RouterButton>
-              </Grid>
-              <Grid item xs={6}>
-                <Restricted
-                  permission="storyMap.delete"
-                  resource={storyMap}
-                  FallbackComponent={Box}
-                >
-                  <DeleteButton
-                    storyMap={storyMap}
-                    onSuccess={onDeleteSuccess}
-                    tooltip={t('storyMap.delete_label')}
-                  >
-                    <DeleteIcon
-                      sx={{
-                        color: 'secondary.main',
-                      }}
-                    />
-                  </DeleteButton>
-                </Restricted>
-              </Grid>
-            </Grid>
-          </ListItem>
+          <StoryMapListItem key={storyMap.id} storyMap={storyMap} />
         ))}
       </List>
     </HomeCard>

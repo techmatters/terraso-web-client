@@ -901,6 +901,7 @@
         "home_tools_link": "Terraso Story Maps",
         "home_draft_label": "Draft",
         "home_edit": "Edit",
+        "home_accept": "Accept",
         "home_default_description": "<0>Create an impactful story using maps, photos, videos, audio recordings and narrative. <1>Get inspired by other people’s story maps</1>.</0>",
         "delete_label": "Delete",
         "delete_confirm_title": "Delete story map {{title}}?",
@@ -1006,6 +1007,7 @@
         "members_list_column_name": "Name",
         "members_list_empty": "No members",
         "members_list_column_role": "Role",
-        "members_list_column_actions_description": "Actions"
+        "members_list_column_actions_description": "Actions",
+        "membership_pending": "Pending"
     }
 }
