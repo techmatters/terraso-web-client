@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import {
@@ -39,20 +39,15 @@ import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import { formatDate } from 'localization/utils';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-import { fetchSamples, removeUserStoryMap } from 'storyMap/storyMapSlice';
+import { fetchSamples } from 'storyMap/storyMapSlice';
 import { generateStoryMapUrl } from 'storyMap/storyMapUtils';
 
 import StoryMapsCard from './StoryMapsCard';
 
 const StoryMaps = ({ storyMaps, fetching }) => {
-  const dispatch = useDispatch();
   const { t } = useTranslation();
   const { data: user } = useSelector(_.get('account.currentUser'));
   const possession = user.firstName.slice(-1) === 's' ? "'" : "'s";
-  const onDeleteSuccess = useCallback(
-    storyMap => dispatch(removeUserStoryMap(storyMap.id)),
-    [dispatch]
-  );
 
   if (fetching) {
     return <LoaderCard />;
@@ -64,9 +59,7 @@ const StoryMaps = ({ storyMaps, fetching }) => {
 
   return (
     <StoryMapsCard
-      onDeleteSuccess={onDeleteSuccess}
       showCreate={false}
-      storyMaps={storyMaps}
       title={t('storyMap.story_maps_title', {
         name: user.firstName,
         possession: possession,
@@ -90,7 +83,7 @@ const StoryMapsToolsHome = () => {
         <Grid container spacing={2}>
           {!_.isEmpty(list) && (
             <Grid item xs={12} sm={8}>
-              <StoryMaps storyMaps={list} fetching={fetching} />
+              <StoryMaps fetching={fetching} />
             </Grid>
           )}
           <Grid item sm={_.isEmpty(list) ? 12 : 4}>

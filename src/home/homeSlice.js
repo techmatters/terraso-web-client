@@ -18,18 +18,22 @@ import { createSlice } from '@reduxjs/toolkit';
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
 import * as homeService from 'home/homeService';
+import { setUserStoryMaps } from 'storyMap/storyMapSlice';
 
 const initialState = {
   groups: [],
   landscapes: [],
-  storyMaps: [],
   fetching: true,
   error: null,
 };
 
 export const fetchHomeData = createAsyncThunk(
   'home/fetchData',
-  homeService.fetchHomeData
+  (email, currentUser, { dispatch }) =>
+    homeService.fetchHomeData(email).then(data => {
+      dispatch(setUserStoryMaps(data.storyMaps));
+      return data;
+    })
 );
 
 export const homeSlice = createSlice({
@@ -53,7 +57,6 @@ export const homeSlice = createSlice({
       error: null,
       groups: action.payload.groups,
       landscapes: action.payload.landscapes,
-      storyMaps: action.payload.storyMaps,
     }));
 
     builder.addCase(fetchHomeData.rejected, (state, action) => ({
