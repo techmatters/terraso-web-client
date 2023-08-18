@@ -44,9 +44,7 @@ const initialState = {
     add: {
       saving: false,
     },
-    delete: {
-      saving: false,
-    },
+    delete: {},
   },
 };
 
@@ -278,13 +276,19 @@ const storyMapSlice = createSlice({
       };
     });
 
-    builder.addCase(
-      deleteMembership.pending,
-      _.set('memberships.delete.saving', true)
+    builder.addCase(deleteMembership.pending, (state, action) =>
+      _.set(
+        `memberships.delete.${action.meta.arg.membership.membershipId}.processing`,
+        true,
+        state
+      )
     );
-    builder.addCase(
-      deleteMembership.rejected,
-      _.set('memberships.delete.saving', false)
+    builder.addCase(deleteMembership.rejected, (state, action) =>
+      _.set(
+        `memberships.delete.${action.meta.arg.membership.membershipId}.processing`,
+        false,
+        state
+      )
     );
     builder.addCase(deleteMembership.fulfilled, (state, action) => {
       const memberships = state.form.data.memberships.filter(
@@ -295,7 +299,10 @@ const storyMapSlice = createSlice({
         memberships: {
           ...state.memberships,
           delete: {
-            saving: false,
+            ...state.memberships.delete,
+            [action.meta.arg.membership.membershipId]: {
+              processing: false,
+            },
           },
         },
         form: {
