@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -46,6 +46,10 @@ const RemoveButton = props => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { data: currentUser } = useSelector(state => state.account.currentUser);
+  const processing = useSelector(
+    state =>
+      state.storyMap.memberships.delete[props.member.membershipId]?.processing
+  );
   const { t } = useTranslation();
   const { storyMap } = useStoryMapConfigContext();
   const { member, tabIndex } = props;
@@ -91,7 +95,7 @@ const RemoveButton = props => {
         confirmButton={t('storyMap.remove_membership_confirm_button')}
         buttonLabel={t('storyMap.remove_membership')}
         ariaLabel={t('storyMap.remove_membership')}
-        loading={props.loading}
+        loading={processing}
         buttonProps={{
           tabIndex,
         }}
@@ -103,9 +107,12 @@ const RemoveButton = props => {
 const ShareDialog = props => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const processing = useSelector(
+    state => state.storyMap.memberships.add.saving
+  );
   const { open, onClose } = props;
   const { storyMap } = useStoryMapConfigContext();
-  const [newCollaborators, setNewCollaborators] = React.useState([]);
+  const [newCollaborators, setNewCollaborators] = useState([]);
   const [expanded, setExpanded] = React.useState(false);
 
   useEffect(() => {
@@ -219,7 +226,8 @@ const ShareDialog = props => {
         <LoadingButton
           variant="contained"
           onClick={onConfirm}
-          // loading={loading}
+          loading={processing}
+          disabled={_.isEmpty(newCollaborators)}
         >
           {t('storyMap.share_dialog_confirm_label')}
         </LoadingButton>
