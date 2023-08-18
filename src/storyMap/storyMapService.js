@@ -167,6 +167,7 @@ export const addMemberships = ({ storyMap, emails, userRole }) => {
             ...userFields
           }
           userRole
+          membershipStatus
         }
         errors
       }

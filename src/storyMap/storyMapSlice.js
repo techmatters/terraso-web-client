@@ -268,13 +268,14 @@ const storyMapSlice = createSlice({
     builder.addCase(addMemberships.fulfilled, (state, action) => {
       const memberships = [
         ...state.form.data.memberships,
-        ...action.payload.map(({ id, user, userRole }) => ({
+        ...action.payload.map(({ id, user, userRole, membershipStatus }) => ({
           id: user.id,
           membershipId: id,
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
           userRole,
+          membershipStatus,
         })),
       ];
       const uniqMemberships = _.uniqBy('id', memberships);
