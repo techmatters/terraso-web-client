@@ -211,10 +211,16 @@ export const deleteMembership = ({ storyMap, membership }) => {
     .then(_.get('deleteStoryMapMembership.membership'));
 };
 
-export const approveMembership = ({ membership }, currentUser) => {
+export const approveMembership = ({ membership, token, accountEmail }) => {
   const query = graphql(`
-    mutation approveMembership($accountEmail: String!, $membershipId: String!) {
-      approveStoryMapMembership(input: { membershipId: $membershipId }) {
+    mutation approveMembership(
+      $accountEmail: String!
+      $membershipId: String
+      $inviteToken: String
+    ) {
+      approveStoryMapMembership(
+        input: { membershipId: $membershipId, inviteToken: $inviteToken }
+      ) {
         membership {
           id
         }
@@ -228,8 +234,9 @@ export const approveMembership = ({ membership }, currentUser) => {
 
   return terrasoApi
     .requestGraphQL(query, {
-      membershipId: membership.membershipId,
-      accountEmail: currentUser.email,
+      inviteToken: token,
+      membershipId: token ? null : membership.membershipId,
+      accountEmail,
     })
     .then(response => ({
       membership: response.approveStoryMapMembership.membership,

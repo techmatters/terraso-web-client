@@ -17,6 +17,7 @@
 import React, { useCallback, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'terrasoApi/store';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { LoadingButton } from '@mui/lab';
@@ -108,7 +109,9 @@ const CollaborationList = props => {
 };
 
 const StoryMapListItem = props => {
+  const { data: user } = useSelector(_.get('account.currentUser'));
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { storyMap } = props;
 
@@ -129,8 +132,21 @@ const StoryMapListItem = props => {
   );
 
   const onAcceptWrapper = useCallback(() => {
-    dispatch(approveMembership({ membership: accountMembership, storyMap }));
-  }, [dispatch, storyMap, accountMembership]);
+    dispatch(
+      approveMembership({
+        membership: accountMembership,
+        storyMap,
+        accountEmail: user.email,
+      })
+    ).then(data => {
+      const success = _.get('meta.requestStatus', data) === 'fulfilled';
+      if (success) {
+        const storyMapId = data.payload.storyMap.storyMapId;
+        const storyMapSlug = data.payload.storyMap.slug;
+        navigate(`/tools/story-maps/${storyMapId}/${storyMapSlug}/edit`);
+      }
+    });
+  }, [dispatch, navigate, storyMap, accountMembership, user.email]);
 
   return (
     <ListItem

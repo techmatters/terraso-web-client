@@ -133,10 +133,17 @@ export const deleteMembership = createAsyncThunk(
   })
 );
 
+export const approveMembershipToken = createAsyncThunk(
+  'storyMap/approveMembership',
+  storyMapService.approveMembership,
+  null,
+  false
+);
+
 export const approveMembership = createAsyncThunk(
   'storyMap/approveMembership',
   storyMapService.approveMembership,
-  (storyMap, { storyMap: { title } }) => ({
+  ({ storyMap: { title } }) => ({
     severity: 'success',
     content: 'storyMap.approved_membership',
     params: {
@@ -348,7 +355,6 @@ const storyMapSlice = createSlice({
         },
       },
     }));
-
     builder.addCase(approveMembership.rejected, (state, action) => ({
       ...state,
       memberships: {
@@ -357,11 +363,11 @@ const storyMapSlice = createSlice({
           ...state.memberships.approve,
           [action.meta.arg.membership.membershipId]: {
             processing: false,
+            error: true,
           },
         },
       },
     }));
-
     builder.addCase(approveMembership.fulfilled, (state, action) => ({
       ...state,
       memberships: {
@@ -370,6 +376,9 @@ const storyMapSlice = createSlice({
           ...state.memberships.approve,
           [action.meta.arg.membership.membershipId]: {
             processing: false,
+            success: true,
+            storyMapId: action.payload.storyMap.storyMapId,
+            storyMapSlug: action.payload.storyMap.slug,
           },
         },
       },

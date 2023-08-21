@@ -47,6 +47,7 @@ import LandscapeSharedDataVisualization from 'landscape/components/LandscapeShar
 import LandscapeSharedDataVisualizationConfig from 'landscape/components/LandscapeSharedDataVisualizationConfig';
 import LandscapeView from 'landscape/components/LandscapeView';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
+import StoryMapInvite from 'storyMap/components/StoryMapInvite';
 import StoryMapNew from 'storyMap/components/StoryMapNew';
 import StoryMapsToolsHome from 'storyMap/components/StoryMapsToolHome';
 import StoryMapUpdate from 'storyMap/components/StoryMapUpdate';
@@ -190,6 +191,11 @@ const paths = [
     optionalAuth: {
       enabled: true,
       isEmbedded: true,
+    },
+  }),
+  path('/tools/story-maps/accept', StoryMapInvite, {
+    optionalAuth: {
+      enabled: true,
     },
   }),
   path('*', NotFound),
