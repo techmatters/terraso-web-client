@@ -42,6 +42,7 @@ const RoleComponent = ({ member }) => {
       {t(`storyMap.role_${member.userRole.toLowerCase()}`)}
       {member.membershipStatus === MEMBERSHIP_STATUS_PENDING && (
         <Chip
+          component="span"
           label={t('memberships.membership_pending')}
           variant="outlined"
           size="small"
