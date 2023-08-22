@@ -28,6 +28,8 @@ import {
   Typography,
 } from '@mui/material';
 
+import { daysSince } from 'timeUtils';
+
 import ConfirmButton from 'common/components/ConfirmButton';
 import SocialShare, {
   useSocialShareContext,
@@ -36,6 +38,7 @@ import NotFound from 'layout/NotFound';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import { formatDate } from 'localization/utils';
+import { useAnalytics } from 'monitoring/analytics';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import Restricted from 'permissions/components/Restricted';
 import MapExport from 'gis/components/MapExport';
@@ -53,6 +56,7 @@ import {
 import Visualization from './Visualization';
 
 const VisualizationWrapper = props => {
+  const { trackEvent } = useAnalytics();
   const dispatch = useDispatch();
   const { i18n, t } = useTranslation();
   const { downloadFile } = useSharedData();
@@ -60,7 +64,7 @@ const VisualizationWrapper = props => {
   const { data, fetching, deleting } = useSelector(
     state => state.sharedData.visualizationConfig
   );
-  const { group, owner } = useGroupContext();
+  const { group, owner, entityType } = useGroupContext();
   const [imagePrinter, setImagePrinter] = useState();
 
   useEffect(() => {
@@ -101,14 +105,20 @@ const VisualizationWrapper = props => {
     imagePrinter(mapTitle);
   }, [imagePrinter, mapTitle]);
 
-  const onDelete = () => {
-    dispatch(deleteVisualizationConfig(data)).then(data => {
-      const success = _.get('meta.requestStatus', data) === 'fulfilled';
+  const onDelete = useCallback(() => {
+    dispatch(deleteVisualizationConfig(data)).then(response => {
+      const success = _.get('meta.requestStatus', response) === 'fulfilled';
       if (success) {
         onDeleted();
+        trackEvent('dataMap.delete', {
+          props: {
+            [entityType]: owner.slug,
+            durationDays: daysSince(data.createdAt),
+          },
+        });
       }
     });
-  };
+  }, [dispatch, data, onDeleted, owner, trackEvent, entityType]);
 
   if (!data && !fetching) {
     return <NotFound />;

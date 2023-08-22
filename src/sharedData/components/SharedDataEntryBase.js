@@ -21,6 +21,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Grid, ListItem, Stack, Typography } from '@mui/material';
 
+import { daysSince } from 'timeUtils';
+
 import ConfirmButton from 'common/components/ConfirmButton';
 import EditableText from 'common/components/EditableText';
 import { formatDate } from 'localization/utils';
@@ -43,7 +45,7 @@ const StackRow = props => (
 
 const SharedDataEntryBase = props => {
   const { i18n, t } = useTranslation();
-  const { group, owner, updateOwner } = useGroupContext();
+  const { group, owner, updateOwner, entityType } = useGroupContext();
   const {
     dataEntry,
     children,
@@ -66,12 +68,25 @@ const SharedDataEntryBase = props => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
           updateOwner();
-          trackEvent('dataEntry.delete', { props: { owner: owner.slug } });
+          trackEvent('dataEntry.delete', {
+            props: {
+              [entityType]: owner.slug,
+              durationDays: daysSince(dataEntry.createdAt),
+            },
+          });
         }
         dispatch(resetProcessing(dataEntry.id));
       }
     );
-  }, [dataEntry, dispatch, group.slug, owner.slug, trackEvent, updateOwner]);
+  }, [
+    dataEntry,
+    dispatch,
+    group.slug,
+    owner.slug,
+    trackEvent,
+    updateOwner,
+    entityType,
+  ]);
 
   const onUpdate = useCallback(
     field => value => {
@@ -86,12 +101,14 @@ const SharedDataEntryBase = props => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
           updateOwner();
-          trackEvent('dataEntry.edit', { props: { owner: owner.slug } });
+          trackEvent('dataEntry.edit', {
+            props: { [entityType]: owner.slug },
+          });
         }
         dispatch(resetProcessing(dataEntry.id));
       });
     },
-    [dataEntry, dispatch, owner.slug, trackEvent, updateOwner]
+    [dataEntry, dispatch, owner.slug, trackEvent, updateOwner, entityType]
   );
 
   const onUpdateName = useMemo(() => onUpdate('name'), [onUpdate]);

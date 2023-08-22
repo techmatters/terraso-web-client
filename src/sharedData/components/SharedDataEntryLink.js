@@ -20,26 +20,26 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { IconButton } from '@mui/material';
 
 import ExternalLink from 'common/components/ExternalLink';
-import { useAnalytics } from 'monitoring/analytics';
+import { useGroupContext } from 'group/groupContext';
 
 import LinkIcon from './LinkIcon';
 import SharedDataEntryBase, { ICON_SIZE } from './SharedDataEntryBase';
 
 const DownloadComponent = props => {
   const { t } = useTranslation();
-  const { trackEvent } = useAnalytics();
-  const { dataEntry, group } = props;
+  const { owner, entityType } = useGroupContext();
+  const { dataEntry } = props;
 
   return (
     <ExternalLink
       component={IconButton}
       href={dataEntry.url}
-      linkProps={{
-        trackingProps: { group: group.slug },
+      customTrackEvent={{
+        name: 'dataEntry.link.click',
+        props: {
+          [entityType]: owner.slug,
+        },
       }}
-      onClick={() =>
-        trackEvent('dataEntry.link.click', { props: { group: group.slug } })
-      }
       aria-label={t('sharedData.download_label', {
         name: dataEntry.name,
       })}

@@ -49,7 +49,7 @@ const SharedDataUpload = props => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
-  const { owner } = useGroupContext();
+  const { owner, entityType } = useGroupContext();
 
   const { groupSlug, onCancel, onCompleteSuccess } = props;
 
@@ -120,15 +120,13 @@ const SharedDataUpload = props => {
           if (isLink) {
             trackEvent('dataEntry.link.create', {
               props: {
-                owner: owner.slug,
-                name: _.get('value.meta.arg.link.name', result),
+                [entityType]: owner.slug,
               },
             });
           } else {
             trackEvent('dataEntry.file.upload', {
               props: {
-                owner: owner.slug,
-                name: _.get('value.meta.arg.file.name', result),
+                [entityType]: owner.slug,
                 [ILM_OUTPUT_PROP]: RESULTS_ANALYSIS_IMPACT,
               },
             });
@@ -136,7 +134,7 @@ const SharedDataUpload = props => {
         });
       setShowSummary(true);
     });
-  }, [owner.slug, toUpload, groupSlug, dispatch, trackEvent]);
+  }, [entityType, owner.slug, toUpload, groupSlug, dispatch, trackEvent]);
 
   const hasBlockingErrors = useMemo(
     () =>

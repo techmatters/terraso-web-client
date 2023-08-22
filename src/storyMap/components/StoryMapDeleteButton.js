@@ -19,10 +19,14 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { daysSince } from 'timeUtils';
+
 import ConfirmButton from 'common/components/ConfirmButton';
+import { useAnalytics } from 'monitoring/analytics';
 import { deleteStoryMap } from 'storyMap/storyMapSlice';
 
 const DeleteButton = props => {
+  const { trackEvent } = useAnalytics();
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { children, tooltip, buttonProps, storyMap, onSuccess } = props;
@@ -36,9 +40,14 @@ const DeleteButton = props => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
           onSuccess?.(storyMap);
+          trackEvent('storymap.delete', {
+            props: {
+              durationDays: daysSince(storyMap.createdAt),
+            },
+          });
         }
       }),
-    [dispatch, storyMap, onSuccess]
+    [dispatch, trackEvent, storyMap, onSuccess]
   );
 
   return (
