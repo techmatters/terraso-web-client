@@ -45,7 +45,7 @@ const StoryMapInvite = () => {
       console.log({ decodedToken });
       return approveMembershipToken({
         token,
-        accountEmail: decodedToken.email,
+        accountEmail: decodedToken.email || decodedToken.pendingEmail,
         membership: { membershipId },
       });
     }, [token, decodedToken, membershipId])

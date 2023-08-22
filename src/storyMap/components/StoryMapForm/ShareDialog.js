@@ -100,10 +100,14 @@ const RemoveButton = props => {
       <ConfirmButton
         onConfirm={onRemoveWrapper}
         confirmTitle={t('storyMap.remove_membership_confirm_title', {
-          user: member,
+          name: member.pendingEmail
+            ? member.pendingEmail
+            : t('user.full_name', { user: member }),
         })}
         confirmMessage={t('storyMap.remove_membership_confirm_message', {
-          user: member,
+          name: member.pendingEmail
+            ? member.pendingEmail
+            : t('user.full_name', { user: member }),
           storyMapTitle: storyMap.title,
         })}
         confirmButton={t('storyMap.remove_membership_confirm_button')}

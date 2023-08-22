@@ -135,7 +135,7 @@ export const deleteMembership = createAsyncThunk(
 
 export const approveMembershipToken = createAsyncThunk(
   'storyMap/approveMembership',
-  storyMapService.approveMembership,
+  storyMapService.approveMembershipToken,
   null,
   false
 );
@@ -275,14 +275,11 @@ const storyMapSlice = createSlice({
     builder.addCase(addMemberships.fulfilled, (state, action) => {
       const memberships = [
         ...state.form.data.memberships,
-        ...action.payload.map(({ id, user, userRole, membershipStatus }) => ({
-          id: user.id,
-          membershipId: id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          userRole,
-          membershipStatus,
+        ...action.payload.map(membership => ({
+          ...membership,
+          ...membership.user,
+          id: membership?.user?.id,
+          membershipId: membership.id,
         })),
       ];
       const uniqMemberships = _.uniqBy('id', memberships);

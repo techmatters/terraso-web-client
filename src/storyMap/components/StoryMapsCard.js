@@ -109,7 +109,6 @@ const CollaborationList = props => {
 };
 
 const StoryMapListItem = props => {
-  const { data: user } = useSelector(_.get('account.currentUser'));
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
@@ -136,7 +135,6 @@ const StoryMapListItem = props => {
       approveMembership({
         membership: accountMembership,
         storyMap,
-        accountEmail: user.email,
       })
     ).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
@@ -146,7 +144,7 @@ const StoryMapListItem = props => {
         navigate(`/tools/story-maps/${storyMapId}/${storyMapSlug}/edit`);
       }
     });
-  }, [dispatch, navigate, storyMap, accountMembership, user.email]);
+  }, [dispatch, navigate, storyMap, accountMembership]);
 
   return (
     <ListItem

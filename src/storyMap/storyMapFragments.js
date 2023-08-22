@@ -56,12 +56,7 @@ export const storyMapMetadataFields = /* GraphQL */ `
       memberships(user_Email_Not: $accountEmail, first: 2) {
         edges {
           node {
-            id
-            userRole
-            membershipStatus
-            user {
-              ...userFields
-            }
+            ...collaborationMembershipFields
           }
         }
       }

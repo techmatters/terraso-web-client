@@ -994,8 +994,8 @@
         "card_collaborators_one": "Collaborating with {{sample}}",
         "card_collaborators_two": "Collaborating with {{sample}}",
         "card_collaborators_other": "Collaborating with {{sample}} and {{diff}} more",
-        "remove_membership_confirm_title": "Remove $t(user.full_name)'s Access",
-        "remove_membership_confirm_message": "Once removed, $t(user.full_name) will not be able to edit {{storyMapTitle}} draft.",
+        "remove_membership_confirm_title": "Remove {{name}}'s Access",
+        "remove_membership_confirm_message": "Once removed, {{name}} will not be able to edit {{storyMapTitle}} draft.",
         "remove_membership_confirm_button": "Remove"
     },
     "site": {

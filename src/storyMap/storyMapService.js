@@ -162,12 +162,7 @@ export const addMemberships = ({ storyMap, emails, userRole }) => {
         }
       ) {
         memberships {
-          id
-          user {
-            ...userFields
-          }
-          userRole
-          membershipStatus
+          ...collaborationMembershipFields
         }
         errors
       }
@@ -211,16 +206,39 @@ export const deleteMembership = ({ storyMap, membership }) => {
     .then(_.get('deleteStoryMapMembership.membership'));
 };
 
-export const approveMembership = ({ membership, token, accountEmail }) => {
+export const approveMembership = ({ membership }, currentUser) => {
   const query = graphql(`
-    mutation approveMembership(
+    mutation approveMembership($accountEmail: String!, $membershipId: String!) {
+      approveStoryMapMembership(input: { membershipId: $membershipId }) {
+        membership {
+          id
+        }
+        storyMap {
+          ...storyMapMetadataFields
+        }
+        errors
+      }
+    }
+  `);
+
+  return terrasoApi
+    .requestGraphQL(query, {
+      membershipId: membership.membershipId,
+      accountEmail: currentUser.email,
+    })
+    .then(response => ({
+      membership: response.approveStoryMapMembership.membership,
+      storyMap: extractStoryMap(response.approveStoryMapMembership.storyMap),
+    }));
+};
+
+export const approveMembershipToken = ({ membership, token, accountEmail }) => {
+  const query = graphql(`
+    mutation approveMembershipToken(
       $accountEmail: String!
-      $membershipId: String
-      $inviteToken: String
+      $inviteToken: String!
     ) {
-      approveStoryMapMembership(
-        input: { membershipId: $membershipId, inviteToken: $inviteToken }
-      ) {
+      approveStoryMapMembershipToken(input: { inviteToken: $inviteToken }) {
         membership {
           id
         }
@@ -235,11 +253,11 @@ export const approveMembership = ({ membership, token, accountEmail }) => {
   return terrasoApi
     .requestGraphQL(query, {
       inviteToken: token,
-      membershipId: token ? null : membership.membershipId,
       accountEmail,
     })
+    .then(response => response.approveStoryMapMembershipToken)
     .then(response => ({
-      membership: response.approveStoryMapMembership.membership,
-      storyMap: extractStoryMap(response.approveStoryMapMembership.storyMap),
+      membership: response.membership,
+      storyMap: extractStoryMap(response.storyMap),
     }));
 };

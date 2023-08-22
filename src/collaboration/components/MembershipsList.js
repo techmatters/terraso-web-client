@@ -30,9 +30,16 @@ const MembershipsList = props => {
           xs: 12,
           sm: 3,
         },
-        valueGetter: ({ row: member }) => t('user.full_name', { user: member }),
+        valueGetter: ({ row: member }) =>
+          member.pendingEmail
+            ? member.pendingEmail
+            : t('user.full_name', { user: member }),
         cardRender: ({ row: member }) => (
-          <Typography>{t('user.full_name', { user: member })}</Typography>
+          <Typography>
+            {member.pendingEmail
+              ? member.pendingEmail
+              : t('user.full_name', { user: member })}
+          </Typography>
         ),
         renderCell: ({ row: member }) => <MemberName member={member} />,
       },
@@ -82,13 +89,14 @@ const MembershipsList = props => {
         onSearchParamsChange: setSearchParams,
       })}
       cardsProps={{
-        avatarRender: ({ row: member }) => (
-          <AccountAvatar
-            component="div"
-            sx={{ width: 40, height: 40 }}
-            user={member}
-          />
-        ),
+        avatarRender: ({ row: member }) =>
+          member.firstName && (
+            <AccountAvatar
+              component="div"
+              sx={{ width: 40, height: 40 }}
+              user={member}
+            />
+          ),
       }}
       tableProps={{
         initialSort: [
