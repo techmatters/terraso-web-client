@@ -101,7 +101,7 @@ const SetMapHelperText = () => {
           </Typography>
           <Typography gutterBottom>Paragraph 1</Typography>
           <img
-            src="/storyMap/set-map-step-3.png"
+            src={t('storyMap.form_location_helper_text_step_3_image_src')}
             alt={t('storyMap.form_location_helper_text_step_3_image_alt')}
           />
         </Trans>

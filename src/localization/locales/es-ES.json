@@ -978,7 +978,8 @@
         "iframe_title": "Mapa Grafico: {{title}}",
         "embed_header": "Ver Story Map en",
         "upload_rejected_file-too-large": "{{rejectedFiles}} no se puede agregar porque el archivo es demasiado grande.",
-        "upload_rejected": "No se pueden agregar los archivos."
+        "upload_rejected": "No se pueden agregar los archivos.",
+        "form_location_helper_text_step_3_image_src": "/storyMap/set-map-step-3-es.png"
     },
     "site": {
         "description": "Terraso es un conjunto de herramientas para gestionar paisajes, proteger el medio ambiente y fomentar el desarrollo humano.",
