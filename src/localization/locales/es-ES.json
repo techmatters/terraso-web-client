@@ -979,7 +979,16 @@
         "embed_header": "Ver Story Map en",
         "upload_rejected_file-too-large": "{{rejectedFiles}} no se puede agregar porque el archivo es demasiado grande.",
         "upload_rejected": "No se puede agregar el archivo.",
-        "form_location_helper_text_step_3_image_src": "/storyMap/set-map-step-3-es.png"
+        "form_location_dialog_helper_text_label": "Cómo configurar la ubicación del mapan",
+        "form_location_helper_text_step_1": "<0>Paso 1. Encuentra una ubicación</0><1>Busca una ubicación o encuentra una desplazándote o haciendo zoom en el mapa.</1><2/>",
+        "form_location_helper_text_step_1_image_alt": "Una captura de pantalla del mapa de Guyana en la pantalla Establecer ubicación del mapa. El campo de búsqueda de ubicación se completa con la palabra clave “Guyana”.",
+        "form_location_helper_text_step_2": "<0>Paso 2. Ajusta el mapa de fondo</0><1>Elige una ubicación y luego ajusta la vista del mapa desplazándote o haciendo zoom.</1><2>Selecciona el botón <1 /> para rotar el mapa. Utilice el botón <3 /> para restablecer el mapa. También puedes hacer clic derecho en el mouse y arrastrar hacia la izquierda y hacia la derecha para rotar la vista.</2><3 /><4 />",
+        "form_location_helper_text_step_2_1_image_alt": "Un mapa con el botón de rotación apuntando al norte y al sur.",
+        "form_location_helper_text_step_2_2_image_alt": "Un mapa muestra la misma ubicación que el mapa anterior con la vista girada 90 grados. El botón de rotación apunta al este y al oeste.",
+        "form_location_helper_text_step_3": "<0>Paso 3. Establece la ubicación con el mapa de fondo deseado</0><1>Una vez que estés satisfecho con el mapa de fondo, selecciona Establecer ubicación. Cada capítulo puede tener un mapa de fondo diferente.</1><2 />",
+        "form_location_helper_text_step_3_image_src": "/storyMap/set-map-step-3-es.png",
+        "form_location_helper_text_step_3_image_alt": "Una captura de pantalla de la pantalla Establecer ubicación en el mapa. El botón “Establecer ubicación” en la parte superior derecha tiene un círculo.",
+        "form_location_helper_text_bearing_icon_alt": "Icono del botón de rumbo"
     },
     "site": {
         "description": "Terraso es un conjunto de herramientas para gestionar paisajes, proteger el medio ambiente y fomentar el desarrollo humano.",
