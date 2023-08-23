@@ -176,7 +176,14 @@ export const addMemberships = ({ storyMap, emails, userRole }) => {
       userEmails: emails,
       userRole,
     })
-    .then(_.get('saveStoryMapMembership.memberships'));
+    .then(_.get('saveStoryMapMembership.memberships'))
+    .then(response =>
+      response.map(membership => ({
+        ...membership.user,
+        ..._.omit(['user'], membership),
+        membershipId: membership.id,
+      }))
+    );
 };
 
 export const deleteMembership = ({ storyMap, membership }) => {
