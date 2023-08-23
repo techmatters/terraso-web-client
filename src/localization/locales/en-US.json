@@ -971,7 +971,7 @@
         "iframe_title": "Contact Terraso",
         "embed_header": "View Story Map on",
         "upload_rejected_file-too-large": "{{rejectedFiles}} cannot be added because the file is too large.",
-        "upload_rejected": "The file(s) cannot be added.",
+        "upload_rejected": "The file cannot be added.",
         "form_location_dialog_helper_text_label": "How to set the map location",
         "form_location_helper_text_step_1": "<0>Step 1. Find a location</0><1>Search for a location or find one by panning or zooming on the map.</1><2/>",
         "form_location_helper_text_step_1_image_alt": "A screenshot of the Guyana map in the Set Map Location screen. The location search field is filled with the keyword “Guyana”.",
