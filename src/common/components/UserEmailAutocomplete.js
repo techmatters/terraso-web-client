@@ -49,11 +49,15 @@ const UserEmailAutocomplete = props => {
 
   const onChangeWrapper = useCallback(
     (event, newValue) => {
-      const values = newValue.map(option => {
+      const values = newValue.flatMap(option => {
         const isNewValue = option.newTerm || typeof option === 'string';
         if (isNewValue) {
           const valueOriginal = option.newTerm || option;
-          return valueOriginal.trim();
+          return _.flow(
+            _.split(' '),
+            _.map(_.trim),
+            _.compact
+          )(valueOriginal.trim());
         }
         return option;
       });
