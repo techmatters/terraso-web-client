@@ -18,6 +18,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
+import i18n from 'localization/i18n';
 import * as storyMapService from 'storyMap/storyMapService';
 
 const initialState = {
@@ -113,11 +114,16 @@ export const deleteStoryMap = createAsyncThunk(
 export const addMemberships = createAsyncThunk(
   'storyMap/addMemberships',
   storyMapService.addMemberships,
-  (storyMap, { storyMap: { config } }) => ({
+  (members, { storyMap: { config } }) => ({
     severity: 'success',
     content: 'storyMap.added_memberships',
     params: {
       title: config.title,
+      names: members.map(
+        member =>
+          member.pendingEmail || i18n.t('user.full_name', { user: member })
+      ),
+      count: members.length,
     },
   })
 );

@@ -60,7 +60,7 @@ const List = withProps(BaseList, {
 
 const GridListItem = withProps(Grid, { component: 'li' });
 
-const CollaborationList = props => {
+const CollaborationIndicator = props => {
   const { t } = useTranslation();
   const { data: user } = useSelector(state => state.account.currentUser);
 
@@ -182,7 +182,7 @@ const StoryMapListItem = props => {
               }}
             />
           )}
-          <CollaborationList storyMap={storyMap} />
+          <CollaborationIndicator storyMap={storyMap} />
         </Stack>
         <RouterLink
           id={`story-map-${storyMap.slug}-link`}

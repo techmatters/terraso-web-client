@@ -135,8 +135,8 @@ const ShareDialog = props => {
   const [expanded, setExpanded] = React.useState(false);
 
   useEffect(() => {
-    setExpanded(!_.isEmpty(storyMap.memberships));
-  }, [storyMap.memberships]);
+    setExpanded(!_.isEmpty(storyMap?.memberships));
+  }, [storyMap?.memberships]);
 
   const onChange = useCallback(
     value => {
@@ -168,7 +168,11 @@ const ShareDialog = props => {
 
   return (
     <Dialog fullWidth maxWidth="md" open={open} onClose={onClose}>
-      <Typography variant="h1" component={DialogTitle}>
+      <Typography
+        variant="h1"
+        component={DialogTitle}
+        sx={{ textTransform: 'uppercase' }}
+      >
         {t('storyMap.share_dialog_title', { title: storyMap.title })}
       </Typography>
       <Stack component={DialogContent} spacing={2}>
@@ -218,7 +222,7 @@ const ShareDialog = props => {
               },
             }}
           >
-            <Typography variant="h2" sx={{ p: 0 }}>
+            <Typography variant="h2" sx={{ p: 0, textTransform: 'none' }}>
               {t('storyMap.share_dialog_collaborators_title')}
             </Typography>
           </AccordionSummary>

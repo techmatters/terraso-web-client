@@ -61,4 +61,12 @@ i18n.services.formatter.add('lowercase', (value, lng, options) => {
   return i18n.t(value).toLowerCase();
 });
 
+i18n.services.formatter.add('andList', (value, lng, options) => {
+  console.log({ value });
+  if (value.length === 1) {
+    return value[0];
+  }
+  return `${value.slice(0, -1).join(', ')} ${i18n.t('and')} ${value.slice(-1)}`;
+});
+
 export default i18n;
