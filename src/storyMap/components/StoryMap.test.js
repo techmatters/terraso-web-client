@@ -36,6 +36,7 @@ beforeEach(() => {
 });
 
 const CONFIG = {
+  style: 'mapbox://styles/terraso/test',
   title: 'Story Map Title',
   subtitle: 'Story Map Subtitle',
   byline: 'by User',
@@ -106,4 +107,14 @@ test('StoryMap: Renders title and chapters correctly', async () => {
     image: 'https://test.com/image.png',
   });
   testChapter({ title: 'Chapter 2', description: 'Chapter 2 description' });
+});
+
+test('StoryMap: Use config style', async () => {
+  await setup();
+
+  expect(mapboxgl.Map).toHaveBeenCalledWith(
+    expect.objectContaining({
+      style: CONFIG.style,
+    })
+  );
 });
