@@ -135,8 +135,8 @@ const ShareDialog = props => {
   const [expanded, setExpanded] = React.useState(false);
 
   useEffect(() => {
-    setExpanded(!_.isEmpty(storyMap?.memberships));
-  }, [storyMap?.memberships]);
+    setExpanded(!_.isEmpty(storyMap.memberships));
+  }, [storyMap.memberships]);
 
   const onChange = useCallback(
     value => {

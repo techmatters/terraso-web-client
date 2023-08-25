@@ -35,10 +35,12 @@ const TopBar = props => {
 
   return (
     <>
-      <ShareDialog
-        open={openShareDialog}
-        onClose={() => setOpenShareDialog(false)}
-      />
+      {storyMap && (
+        <ShareDialog
+          open={openShareDialog}
+          onClose={() => setOpenShareDialog(false)}
+        />
+      )}
       <TopBarContainer>
         <Grid
           item
@@ -68,20 +70,24 @@ const TopBar = props => {
           xs={4}
           sx={{ display: 'flex', justifyContent: 'flex-end', pr: 2 }}
         >
-          <Button
-            variant="text"
-            color="primary"
-            onClick={() => setOpenShareDialog(true)}
-            sx={{
-              '&:hover': {
-                backgroundColor: 'transparent',
-                textDecoration: 'underline',
-              },
-            }}
-          >
-            {t('storyMap.form_share_button')}
-          </Button>
-          <Divider flexItem orientation="vertical" />
+          {storyMap && (
+            <>
+              <Button
+                variant="text"
+                color="primary"
+                onClick={() => setOpenShareDialog(true)}
+                sx={{
+                  '&:hover': {
+                    backgroundColor: 'transparent',
+                    textDecoration: 'underline',
+                  },
+                }}
+              >
+                {t('storyMap.form_share_button')}
+              </Button>
+              <Divider flexItem orientation="vertical" />
+            </>
+          )}
           <Button
             variant="text"
             color="primary"
