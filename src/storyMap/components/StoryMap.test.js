@@ -36,7 +36,7 @@ beforeEach(() => {
 });
 
 const CONFIG = {
-  "style": "mapbox://styles/terraso/test",
+  style: 'mapbox://styles/terraso/test',
   title: 'Story Map Title',
   subtitle: 'Story Map Subtitle',
   byline: 'by User',
