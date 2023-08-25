@@ -517,7 +517,7 @@ const StoryMap = props => {
         <Map
           id="map"
           interactive={false}
-          style={config.style}
+          mapStyle={config.style}
           projection={config.projection}
           zoom={1}
           initialLocation={initialLocation}
