@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'terrasoApi/store';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PeopleIcon from '@mui/icons-material/People';
 import { LoadingButton } from '@mui/lab';
 import {
   List as BaseList,
@@ -61,20 +62,13 @@ const List = withProps(BaseList, {
 const GridListItem = withProps(Grid, { component: 'li' });
 
 const CollaborationIndicator = props => {
-  const { t } = useTranslation();
   const { data: user } = useSelector(state => state.account.currentUser);
-
   const { storyMap } = props;
 
   const {
-    membershipsInfo: {
-      membershipsSample: memberships,
-      totalCount: membershipsCount,
-    },
+    membershipsInfo: { membershipsSample: memberships },
     createdBy,
   } = storyMap;
-
-  const totalCount = useMemo(() => membershipsCount + 1, [membershipsCount]);
 
   const collaborators = useMemo(() => {
     return [
@@ -89,23 +83,7 @@ const CollaborationIndicator = props => {
     return null;
   }
 
-  return (
-    <Typography variant="caption" sx={{ textTransform: 'uppercase' }}>
-      {t(
-        totalCount !== 2
-          ? 'storyMap.card_collaborators'
-          : 'storyMap.card_collaborators_two',
-        {
-          count: totalCount,
-          diff: totalCount - 2,
-          sample: collaborators
-            .slice(0, 2)
-            .map(member => member.firstName)
-            .join(', '),
-        }
-      )}
-    </Typography>
-  );
+  return <PeopleIcon sx={{ color: 'gray.dark1' }} />;
 };
 
 const StoryMapListItem = props => {
