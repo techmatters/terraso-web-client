@@ -243,6 +243,20 @@ const Map = props => {
   const [bounds] = useState(initialBounds);
 
   useEffect(() => {
+    const isValidBounds = (function () {
+      if (!bounds) {
+        return false;
+      }
+      const [swLng, swLat, neLng, neLat] = bounds;
+      const validLat = value => value >= -90 && value <= 90;
+      const validLng = value => value >= -180 && value <= 180;
+      return (
+        validLat(swLat) && validLat(neLat) && validLng(swLng) && validLng(neLng)
+      );
+    })();
+
+    console.log({ bounds, isValidBounds });
+
     const map = new mapboxgl.Map({
       container: mapContainer.current,
       style: mapStyle || MAPBOX_STYLE_DEFAULT,
@@ -253,7 +267,7 @@ const Map = props => {
       hash,
       attributionControl,
       preserveDrawingBuffer: true,
-      bounds,
+      bounds: isValidBounds ? bounds : undefined,
       ...(initialLocation ? initialLocation : {}),
     });
 
