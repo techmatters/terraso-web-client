@@ -172,7 +172,12 @@ const ShareDialog = props => {
         emails: newCollaborators,
         userRole: MEMBERSHIP_ROLE_CONTRIBUTOR,
       })
-    );
+    ).then(data => {
+      const success = data?.meta?.requestStatus === 'fulfilled';
+      if (success) {
+        setNewCollaborators([]);
+      }
+    });
   }, [dispatch, storyMap, newCollaborators]);
 
   const memberships = useMemo(
