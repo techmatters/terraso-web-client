@@ -988,7 +988,7 @@
         "form_location_helper_text_step_3": "<0>Paso 3. Establece la ubicación con el mapa de fondo deseado</0><1>Una vez que estés satisfecho con el mapa de fondo, selecciona Establecer ubicación. Cada capítulo puede tener un mapa de fondo diferente.</1><2 />",
         "form_location_helper_text_step_3_image_src": "/storyMap/set-map-step-3-es.png",
         "form_location_helper_text_step_3_image_alt": "Una captura de pantalla de la pantalla Establecer ubicación en el mapa. El botón “Establecer ubicación” en la parte superior derecha tiene un círculo.",
-        "form_location_helper_text_bearing_icon_alt": "Icono del botón de rumbo"
+        "form_location_helper_text_bearing_icon_alt": "Rumbo"
     },
     "site": {
         "description": "Terraso es un conjunto de herramientas para gestionar paisajes, proteger el medio ambiente y fomentar el desarrollo humano.",
