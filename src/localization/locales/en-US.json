@@ -983,6 +983,7 @@
         "form_location_helper_text_bearing_icon_alt": "Bearing",
         "share_dialog_title": "Invite Editors",
         "share_dialog_description": "Add one or more people to edit your story map. <1>Learn more about collaborating on story maps</1>.",
+        "share_dialog_help_url": "https://terraso.org/help/how-to-manage-editors-for-your-story-map/",
         "share_dialog_confirm_label": "Invite",
         "share_dialog_cancel_label": "Cancel",
         "remove_membership": "Remove",
