@@ -244,7 +244,7 @@ const Map = props => {
   const [bounds] = useState(initialBounds);
 
   useEffect(() => {
-    const validBounds = areValidBounds(bounds);
+    const validBounds = isValidBounds(bounds);
 
     const map = new mapboxgl.Map({
       container: mapContainer.current,
