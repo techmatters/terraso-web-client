@@ -76,3 +76,16 @@ export const parseGeoJson = areaPolygon => {
 };
 
 export const isValidGeoJson = areaPolygon => !!parseGeoJson(areaPolygon);
+
+export const areValidBounds = bounds => {
+  if (!bounds) {
+    return false;
+  }
+  const [swLng, swLat, neLng, neLat] = bounds;
+  return (
+    isValidLatitude(swLat) &&
+    isValidLatitude(neLat) &&
+    isValidLongitude(swLng) &&
+    isValidLongitude(neLng)
+  );
+};

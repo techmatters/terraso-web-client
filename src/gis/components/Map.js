@@ -22,7 +22,7 @@ import { Box } from '@mui/material';
 
 import { withWrapper } from 'react-hoc';
 
-import { isValidLatitude, isValidLongitude } from 'gis/gisUtils';
+import { areValidBounds } from 'gis/gisUtils';
 import mapboxgl from 'gis/mapbox';
 
 import {
@@ -244,18 +244,7 @@ const Map = props => {
   const [bounds] = useState(initialBounds);
 
   useEffect(() => {
-    const isValidBounds = (function () {
-      if (!bounds) {
-        return false;
-      }
-      const [swLng, swLat, neLng, neLat] = bounds;
-      return (
-        isValidLatitude(swLat) &&
-        isValidLatitude(neLat) &&
-        isValidLongitude(swLng) &&
-        isValidLongitude(neLng)
-      );
-    })();
+    const validBounds = areValidBounds(bounds);
 
     const map = new mapboxgl.Map({
       container: mapContainer.current,
@@ -267,7 +256,7 @@ const Map = props => {
       hash,
       attributionControl,
       preserveDrawingBuffer: true,
-      bounds: isValidBounds ? bounds : undefined,
+      bounds: validBounds ? bounds : undefined,
       ...(initialLocation ? initialLocation : {}),
     });
 
