@@ -255,8 +255,6 @@ const Map = props => {
       );
     })();
 
-    console.log({ bounds, isValidBounds });
-
     const map = new mapboxgl.Map({
       container: mapContainer.current,
       style: mapStyle || MAPBOX_STYLE_DEFAULT,
