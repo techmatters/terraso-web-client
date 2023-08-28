@@ -36,7 +36,7 @@ const StoryMapInvite = () => {
   const token = useMemo(() => searchParams.get('token'), [searchParams]);
   const decodedToken = useMemo(() => (token ? jwt(token) : null), [token]);
   const membershipId = useMemo(() => decodedToken.membershipId, [decodedToken]);
-  const { processing, success, error, storyMapId, storyMapSlug } =
+  const { processing, success, error, storyMap } =
     useSelector(state => state.storyMap.memberships.approve[membershipId]) ||
     {};
 
@@ -59,7 +59,10 @@ const StoryMapInvite = () => {
       dispatch(
         addMessage({
           severity: 'success',
-          content: 'storyMap.invite_success',
+          content: 'storyMap.approve_invite_success',
+          params: {
+            storyMapTitle: storyMap.title,
+          },
         })
       );
     }
@@ -68,29 +71,39 @@ const StoryMapInvite = () => {
       dispatch(
         addMessage({
           severity: 'error',
-          content: 'storyMap.invite_error',
+          content: 'storyMap.approve_invite_error',
+          params: {
+            storyMapTitle: storyMap.title,
+          },
         })
       );
     }
-  }, [success, error, dispatch, navigate]);
+  }, [success, error, storyMap, dispatch, navigate]);
 
   useEffect(() => {
     if (!success) {
       return;
     }
-    navigate(`/tools/story-maps/${storyMapId}/${storyMapSlug}/edit`);
-  }, [success, navigate, storyMapSlug, storyMapId]);
+    navigate(`/tools/story-maps/${storyMap.storyMapId}/${storyMap.slug}/edit`);
+  }, [success, navigate, storyMap]);
 
-  useDocumentTitle(t('storyMap.invite_title'));
+  useDocumentTitle(t('storyMap.invite_document_title'));
 
-  if (processing) {
+  if (processing || !storyMap) {
     return <PageLoader />;
   }
 
   return (
     <PageContainer>
       <Alert severity={success ? 'success' : 'error'}>
-        {success ? t('storyMap.invite_success') : t('storyMap.invite_error')}
+        {t(
+          success
+            ? 'storyMap.approve_invite_success'
+            : 'storyMap.approve_invite_error',
+          {
+            storyMapTitle: storyMap.title,
+          }
+        )}
       </Alert>
     </PageContainer>
   );

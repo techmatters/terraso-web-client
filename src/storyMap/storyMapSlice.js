@@ -377,8 +377,7 @@ const storyMapSlice = createSlice({
           [action.meta.arg.membership.membershipId]: {
             processing: false,
             success: true,
-            storyMapId: action.payload.storyMap.storyMapId,
-            storyMapSlug: action.payload.storyMap.slug,
+            storyMap: action.payload.storyMap,
           },
         },
       },

@@ -1001,7 +1001,10 @@
         "added_memberships_one": "{{names, andList}} has been invited to edit.",
         "added_memberships": "{{names, andList}} have been invited to edit.",
         "addMemberships.unique": "One or more users are already collaborators of this story map.",
-        "approved_membership": "You have been added to “{{storyMapTitle}}”"
+        "approved_membership": "You have been added to “{{storyMapTitle}}”",
+        "approve_invite_success": "You have been added to “{{storyMapTitle}}”",
+        "approve_invite_error": "Failed to accept Story Map invite to “{{storyMapTitle}}”",
+        "invite_document_title": "Story Map Invite"
     },
     "site": {
         "description": "Free and powerful software tools to manage your landscape, protect your environment, and promote human livelihoods.",
