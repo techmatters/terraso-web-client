@@ -77,7 +77,7 @@ export const parseGeoJson = areaPolygon => {
 
 export const isValidGeoJson = areaPolygon => !!parseGeoJson(areaPolygon);
 
-export const areValidBounds = bounds => {
+export const isValidBounds = bounds => {
   if (!bounds) {
     return false;
   }
