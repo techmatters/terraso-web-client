@@ -22,6 +22,7 @@ import { Box } from '@mui/material';
 
 import { withWrapper } from 'react-hoc';
 
+import { isValidLatitude, isValidLongitude } from 'gis/gisUtils';
 import mapboxgl from 'gis/mapbox';
 
 import {
@@ -248,10 +249,11 @@ const Map = props => {
         return false;
       }
       const [swLng, swLat, neLng, neLat] = bounds;
-      const validLat = value => value >= -90 && value <= 90;
-      const validLng = value => value >= -180 && value <= 180;
       return (
-        validLat(swLat) && validLat(neLat) && validLng(swLng) && validLng(neLng)
+        isValidLatitude(swLat) &&
+        isValidLatitude(neLat) &&
+        isValidLongitude(swLng) &&
+        isValidLongitude(neLng)
       );
     })();
 
