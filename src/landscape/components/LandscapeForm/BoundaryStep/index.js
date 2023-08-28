@@ -189,21 +189,32 @@ const BoundaryStep = props => {
     setAreaPolygon(landscape.areaPolygon);
   }, [landscape.areaPolygon]);
 
-  const onSaveWrapper = useCallback(
+  const getAreaPolygon = useCallback(
     updatedValues => {
       const hasFeatures = !_.isEmpty(updatedValues.areaPolygon?.features);
+      if (!hasFeatures) {
+        return null;
+      }
+      if (!boundingBox) {
+        return updatedValues.areaPolygon;
+      }
+      return {
+        ...updatedValues.areaPolygon,
+        bbox: boundingBox,
+      };
+    },
+    [boundingBox]
+  );
+
+  const onSaveWrapper = useCallback(
+    updatedValues => {
       onSave({
         boundaryOption: option,
         ...updatedValues,
-        areaPolygon: hasFeatures
-          ? {
-              ...updatedValues.areaPolygon,
-              bbox: boundingBox,
-            }
-          : null,
+        areaPolygon: getAreaPolygon(updatedValues),
       });
     },
-    [onSave, option, boundingBox]
+    [onSave, option, getAreaPolygon]
   );
 
   const setUpdatedLandscapeWrapper = useCallback(
@@ -211,13 +222,10 @@ const BoundaryStep = props => {
       setUpdatedLandscape({
         boundaryOption: option,
         ...updatedValues,
-        areaPolygon: {
-          ...updatedValues.areaPolygon,
-          bbox: boundingBox,
-        },
+        areaPolygon: getAreaPolygon(updatedValues),
       });
     },
-    [setUpdatedLandscape, option, boundingBox]
+    [setUpdatedLandscape, option, getAreaPolygon]
   );
 
   const onBoundsChange = useCallback(

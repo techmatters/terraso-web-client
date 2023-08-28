@@ -22,6 +22,7 @@ import { Box } from '@mui/material';
 
 import { withWrapper } from 'react-hoc';
 
+import { isValidBounds } from 'gis/gisUtils';
 import mapboxgl from 'gis/mapbox';
 
 import {
@@ -243,6 +244,8 @@ const Map = props => {
   const [bounds] = useState(initialBounds);
 
   useEffect(() => {
+    const validBounds = isValidBounds(bounds);
+
     const map = new mapboxgl.Map({
       container: mapContainer.current,
       style: mapStyle || MAPBOX_STYLE_DEFAULT,
@@ -253,7 +256,7 @@ const Map = props => {
       hash,
       attributionControl,
       preserveDrawingBuffer: true,
-      bounds,
+      bounds: validBounds ? bounds : undefined,
       ...(initialLocation ? initialLocation : {}),
     });
 

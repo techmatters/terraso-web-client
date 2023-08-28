@@ -305,6 +305,7 @@ test('LandscapeNew: Save form (add)', async () => {
     target: { value: 'http://www.other.org' },
   });
   await inputs.changeLocation('Ecuador');
+  expect(inputs.location).toHaveTextContent('Ecuador');
 
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
@@ -324,8 +325,8 @@ test('LandscapeNew: Save form (add)', async () => {
   );
 
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(6);
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[4];
-  expect(saveCall[1]).toStrictEqual({
+  const initialSaveCall = terrasoApi.requestGraphQL.mock.calls[4];
+  expect(initialSaveCall[1]).toStrictEqual({
     input: {
       description: 'New description',
       name: 'New name',
@@ -334,6 +335,9 @@ test('LandscapeNew: Save form (add)', async () => {
       location: 'EC',
     },
   });
+
+  const lastSaveCall = terrasoApi.requestGraphQL.mock.calls[5];
+  expect(lastSaveCall[1].input.areaPolygon).toBeNull();
 });
 
 test('LandscapeNew: OSM API error', async () => {
