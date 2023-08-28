@@ -101,7 +101,7 @@
     "prettier": "^3.0.2",
     "react-scripts": "^5.0.1",
     "serve": "^14.2.1",
-    "stylelint": "^15.10.2",
+    "stylelint": "^15.10.3",
     "stylelint-prettier": "^4.0.2"
   },
   "jest": {
