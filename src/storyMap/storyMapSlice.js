@@ -158,7 +158,7 @@ export const approveMembership = createAsyncThunk(
     severity: 'success',
     content: 'storyMap.approved_membership',
     params: {
-      title,
+      storyMapTitle: title,
     },
   })
 );
