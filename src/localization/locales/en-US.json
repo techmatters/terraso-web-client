@@ -986,7 +986,7 @@
         "share_dialog_confirm_label": "Invite",
         "share_dialog_cancel_label": "Cancel",
         "remove_membership": "Remove",
-        "role_collaborator": "Collaborator",
+        "role_collaborator": "Editor",
         "role_owner": "Owner",
         "share_dialog_collaborators_title": "People with access",
         "share_dialog_autocomplete_label": "Editors",
