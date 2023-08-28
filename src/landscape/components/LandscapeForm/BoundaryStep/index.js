@@ -191,16 +191,17 @@ const BoundaryStep = props => {
 
   const getAreaPolygon = useCallback(
     updatedValues => {
+      const hasFeatures = !_.isEmpty(updatedValues.areaPolygon?.features);
+      if (!hasFeatures) {
+        return null;
+      }
       if (!boundingBox) {
         return updatedValues.areaPolygon;
       }
-      const hasFeatures = !_.isEmpty(updatedValues.areaPolygon?.features);
-      return hasFeatures
-        ? {
-            ...updatedValues.areaPolygon,
-            bbox: boundingBox,
-          }
-        : null;
+      return {
+        ...updatedValues.areaPolygon,
+        bbox: boundingBox,
+      };
     },
     [boundingBox]
   );
