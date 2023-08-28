@@ -981,7 +981,7 @@
         "form_location_helper_text_step_3": "<0>Step 3. Set the location with desired background map</0><1>Once you are satisfied with the background map, select Set Location. Each chapter can have a different background map.</1><2 />",
         "form_location_helper_text_step_3_image_src": "/storyMap/set-map-step-3-en.png",
         "form_location_helper_text_step_3_image_alt": "A screenshot of the Set Map Location screen. The “Set Location” button in the top right is circled.",
-        "form_location_helper_text_bearing_icon_alt": "Bearing button icon"
+        "form_location_helper_text_bearing_icon_alt": "Bearing"
     },
     "site": {
         "description": "Free and powerful software tools to manage your landscape, protect your environment, and promote human livelihoods.",
