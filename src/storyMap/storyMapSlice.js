@@ -130,11 +130,16 @@ export const addMemberships = createAsyncThunk(
 export const deleteMembership = createAsyncThunk(
   'storyMap/deleteMembership',
   storyMapService.deleteMembership,
-  (storyMap, { storyMap: { config } }) => ({
+  (result, { isOwnMembership, membership, storyMap }) => ({
     severity: 'success',
-    content: 'storyMap.deleted_membership',
+    content: isOwnMembership
+      ? 'storyMap.left_membership'
+      : 'storyMap.deleted_membership',
     params: {
-      title: config.title,
+      storyMapTitle: storyMap.title,
+      name:
+        membership.pendingEmail ||
+        i18n.t('user.full_name', { user: membership }),
     },
   })
 );

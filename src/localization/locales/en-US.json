@@ -991,11 +991,16 @@
         "share_dialog_collaborators_title": "People with access",
         "share_dialog_autocomplete_label": "Editors",
         "share_dialog_autocomplete_helper_text": "The person you invite will receive an email invitation to join this story map in a few minutes.",
-        "remove_membership_confirm_title": "Remove {{name}}'s Access",
-        "remove_membership_confirm_message": "Once removed, {{name}} will not be able to edit {{storyMapTitle}} draft.",
+        "remove_membership_confirm_title": "Remove {{name}} from this story map",
+        "remove_membership_confirm_message": "{{name}} will no longer be able to edit the “{{storyMapTitle}}”.",
         "remove_membership_confirm_button": "Remove",
+        "leave_confirm_title": "Remove yourself from this story map",
+        "leave_confirm_message": "You will no longer be able to edit “{{storyMapTitle}}”.",
+        "deleted_membership": "{{name}} has been removed from “{{storyMapTitle}}”",
+        "left_membership": "You have been removed from “{{storyMapTitle}}”",
         "added_memberships_one": "{{names, andList}} has been invited to edit.",
-        "added_memberships": "{{names, andList}} have been invited to edit."
+        "added_memberships": "{{names, andList}} have been invited to edit.",
+        "addMemberships.unique": "One or more users are already collaborators of this story map."
     },
     "site": {
         "description": "Free and powerful software tools to manage your landscape, protect your environment, and promote human livelihoods.",

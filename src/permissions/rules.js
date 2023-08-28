@@ -143,7 +143,7 @@ const isAllowedToDeleteStoryMapMembership = ({ resource, user }) => {
   if (isOwner) {
     return Promise.resolve(isOwner);
   }
-  return Promise.resolve(membership && membership.id === user?.id);
+  return Promise.resolve(membership?.userId && membership.userId === user?.id);
 };
 
 const rules = {

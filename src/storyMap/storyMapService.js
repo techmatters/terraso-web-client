@@ -17,6 +17,7 @@
 import _ from 'lodash/fp';
 import {
   extractAccountMembership,
+  extractMembership,
   extractMemberships,
 } from 'terraso-client-shared/collaboration/membershipsUtils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
@@ -178,11 +179,7 @@ export const addMemberships = ({ storyMap, emails, userRole }) => {
     })
     .then(_.get('saveStoryMapMembership.memberships'))
     .then(response =>
-      response.map(membership => ({
-        ...membership.user,
-        ..._.omit(['user'], membership),
-        membershipId: membership.id,
-      }))
+      response.map(membership => extractMembership(membership))
     );
 };
 

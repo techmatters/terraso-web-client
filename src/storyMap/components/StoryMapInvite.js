@@ -42,7 +42,6 @@ const StoryMapInvite = () => {
 
   useFetchData(
     useCallback(() => {
-      console.log({ decodedToken });
       return approveMembershipToken({
         token,
         accountEmail: decodedToken.email || decodedToken.pendingEmail,
