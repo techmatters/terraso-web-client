@@ -62,7 +62,6 @@ i18n.services.formatter.add('lowercase', (value, lng, options) => {
 });
 
 i18n.services.formatter.add('andList', (value, lng, options) => {
-  console.log({ value });
   if (value.length === 1) {
     return value[0];
   }
