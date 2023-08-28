@@ -22,7 +22,7 @@ import { Box } from '@mui/material';
 
 import { withWrapper } from 'react-hoc';
 
-import { areValidBounds } from 'gis/gisUtils';
+import { isValidBounds } from 'gis/gisUtils';
 import mapboxgl from 'gis/mapbox';
 
 import {
