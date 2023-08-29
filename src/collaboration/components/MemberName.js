@@ -13,11 +13,13 @@ const MemberName = ({ member }) => {
       alignItems="center"
       spacing={2}
     >
-      <AccountAvatar
-        component="div"
-        sx={{ width: 34, height: 34 }}
-        user={member}
-      />
+      {!member.pendingEmail && (
+        <AccountAvatar
+          component="div"
+          sx={{ width: 34, height: 34 }}
+          user={member}
+        />
+      )}
       <Typography>{t('user.full_name', { user: member })}</Typography>
     </Stack>
   );
