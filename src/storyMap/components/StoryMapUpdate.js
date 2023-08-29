@@ -131,10 +131,7 @@ const ContextWrapper = props => {
   const { slug, storyMapId } = useParams();
   const dispatch = useDispatch();
   const { fetching, data: storyMap } = useSelector(_.get('storyMap.form'));
-  const { loading: loadingPermissions, allowed } = usePermission(
-    'storyMap.change',
-    storyMap
-  );
+  const { allowed } = usePermission('storyMap.change', storyMap);
 
   useEffect(() => {
     dispatch(resetForm());
@@ -147,7 +144,7 @@ const ContextWrapper = props => {
     )
   );
 
-  if (fetching || loadingPermissions) {
+  if (fetching) {
     return <PageLoader />;
   }
 

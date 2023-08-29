@@ -62,7 +62,6 @@ test('Restricted: Display custom loader', async () => {
     {
       resource: {},
       permission: 'resource.action',
-      LoadingComponent: () => <div>Loading...</div>,
       children: <div>Restricted content</div>,
     },
     rules

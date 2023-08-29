@@ -61,10 +61,7 @@ const LandscapeProfile = () => {
   const dispatch = useDispatch();
   const { landscape, fetching } = useSelector(state => state.landscape.profile);
   const { slug } = useParams();
-  const { loading: loadingPermissions, allowed } = usePermission(
-    'landscape.change',
-    landscape
-  );
+  const { allowed } = usePermission('landscape.change', landscape);
 
   const [isEmptySections, setIsEmptySections] = useState({
     developmentStrategy: false,
@@ -117,7 +114,7 @@ const LandscapeProfile = () => {
     dispatch(refreshLandscapeView(slug));
   }, [dispatch, slug]);
 
-  if (fetching || loadingPermissions) {
+  if (fetching) {
     return <PageLoader />;
   }
 

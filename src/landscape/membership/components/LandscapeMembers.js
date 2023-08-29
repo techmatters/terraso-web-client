@@ -43,10 +43,7 @@ const MemberLeaveButton = withProps(LandscapeMemberLeave, {
 
 const Header = ({ landscape, fetching }) => {
   const { t } = useTranslation();
-  const { loading: loadingPermissions, allowed } = usePermission(
-    'group.manageMembers',
-    landscape
-  );
+  const { allowed } = usePermission('group.manageMembers', landscape);
 
   useDocumentTitle(
     t('landscape.members_document_title', {
@@ -68,10 +65,6 @@ const Header = ({ landscape, fetching }) => {
       [landscape?.name]
     )
   );
-
-  if (loadingPermissions) {
-    return null;
-  }
 
   return (
     <>

@@ -60,13 +60,13 @@ const GroupSharedDataUpload = () => {
     navigate(`/groups/${slug}`);
   }, [navigate, slug]);
 
-  const { loading } = usePermissionRedirect(
+  usePermissionRedirect(
     'sharedData.add',
     group,
     useMemo(() => `/groups/${group?.slug}`, [group?.slug])
   );
 
-  if (fetching || loading) {
+  if (fetching) {
     return <PageLoader />;
   }
 

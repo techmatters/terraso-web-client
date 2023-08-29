@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -47,45 +47,26 @@ export const PermissionsProvider = ({ rules, children }) => {
 export const usePermissionRedirect = (permission, resource, path) => {
   const navigate = useNavigate();
 
-  const { loading, allowed } = usePermission(permission, resource);
+  const { allowed } = usePermission(permission, resource);
 
   useEffect(() => {
-    if (loading) {
-      return;
-    }
-
     if (!allowed && path) {
       navigate(path);
     }
-  }, [allowed, loading, navigate, path]);
+  }, [allowed, navigate, path]);
 
-  return { loading };
+  return { allowed };
 };
 
 export const usePermission = (permission, resource) => {
-  const isMounted = useRef(false);
-  const [loading, setLoading] = useState(true);
-  const [allowed, setAllowed] = useState();
   const { data: user } = useSelector(state => state.account.currentUser);
 
   const { isAllowedTo } = useContext(PermissionsContext);
 
-  useEffect(() => {
-    if (!resource) {
-      return;
-    }
-    isMounted.current = true;
-    setLoading(true);
-    isAllowedTo(permission, user, resource).then(allowed => {
-      if (isMounted.current) {
-        setLoading(false);
-        setAllowed(allowed);
-      }
-    });
-    return () => {
-      isMounted.current = false;
-    };
-  }, [isAllowedTo, permission, resource, user]);
+  const allowed = useMemo(
+    () => isAllowedTo(permission, user, resource),
+    [isAllowedTo, permission, resource, user]
+  );
 
-  return { loading, allowed };
+  return { allowed };
 };
