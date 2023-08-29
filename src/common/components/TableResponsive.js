@@ -126,12 +126,16 @@ const CardValue = props => {
 };
 
 const Cards = props => {
-  const { columns, rows, cardsProps = {} } = props;
+  const { columns, rows, cardsProps = {}, label, getItemLabel } = props;
 
   return (
-    <List dense>
+    <List dense aria-label={label}>
       {rows.map(row => (
-        <ListItem key={row.id} sx={() => ({ padding: 0, marginBottom: 1 })}>
+        <ListItem
+          key={row.id}
+          sx={() => ({ padding: 0, marginBottom: 1 })}
+          aria-label={getItemLabel && getItemLabel(row)}
+        >
           <Card
             component={Stack}
             direction="row"
@@ -363,8 +367,13 @@ const EmptyList = props => {
 };
 
 const TableResponsive = props => {
-  const { cardsBreakpoint = theme.breakpoints.down('md') } = props;
-  const showCards = useMediaQuery(cardsBreakpoint);
+  const {
+    cardsBreakpoint = theme.breakpoints.down('md'),
+    showCards = false,
+    label,
+    getItemLabel,
+  } = props;
+  const showCardsMediaQuery = useMediaQuery(cardsBreakpoint);
   const [filteredRows, setFilterdRows] = useState(props.rows);
 
   const filteredProps = useMemo(
@@ -387,8 +396,8 @@ const TableResponsive = props => {
       />
       {_.isEmpty(filteredRows) ? (
         <EmptyList {...props} />
-      ) : showCards ? (
-        <Cards {...filteredProps} />
+      ) : showCards || showCardsMediaQuery ? (
+        <Cards {...filteredProps} label={label} getItemLabel={getItemLabel} />
       ) : (
         <Table {...filteredProps} />
       )}

@@ -33,8 +33,6 @@ import { addMemberships, deleteMembership } from 'storyMap/storyMapSlice';
 
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 
-import theme from 'theme';
-
 const RoleComponent = ({ member }) => {
   const { t } = useTranslation();
   return (
@@ -253,8 +251,9 @@ const ShareDialog = props => {
           </AccordionSummary>
           <AccordionDetails sx={{ p: 0 }}>
             <MembershipsList
+              showCards
+              label={t('storyMap.share_dialog_collaborators_title')}
               memberships={memberships}
-              cardsBreakpoint={theme.breakpoints.up('xs')}
               RemoveComponent={RemoveButton}
               RoleComponent={RoleComponent}
             />

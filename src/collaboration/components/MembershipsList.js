@@ -10,12 +10,14 @@ import MemberName from './MemberName';
 const MembershipsList = props => {
   const { t } = useTranslation();
   const {
+    label,
     memberships,
     searchParams,
     setSearchParams,
     RoleComponent,
     RemoveComponent,
     cardsBreakpoint,
+    showCards,
     tableProps = {},
   } = props;
 
@@ -80,6 +82,11 @@ const MembershipsList = props => {
 
   return (
     <TableResponsive
+      label={label}
+      getItemLabel={member =>
+        member.pendingEmail || t('user.full_name', { user: member })
+      }
+      showCards={showCards}
       cardsBreakpoint={cardsBreakpoint}
       columns={columns}
       rows={memberships}
