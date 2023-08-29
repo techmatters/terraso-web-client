@@ -14,31 +14,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useContext, useEffect, useMemo } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 const defaultBehaviour = {
-  isAllowedTo: () => Promise.resolve(false),
+  isAllowedTo: () => false,
 };
 
 export const PermissionsContext = React.createContext(defaultBehaviour);
 
 export const PermissionsProvider = ({ rules, children }) => {
-  const isAllowedTo = (permission, user, resource) => {
+  const isAllowedTo = useCallback((permission, user, resource) => {
     const ruleResolver = _.getOr(
       defaultBehaviour.isAllowedTo,
       permission,
       rules
     );
     return !resource
-      ? Promise.resolve(false)
+      ? false
       : ruleResolver({ user, resource });
-  };
+  }, []);
 
   return (
-    <PermissionsContext.Provider value={{ isAllowedTo }}>
+    <PermissionsContext.Provider value={isAllowedTo}>
       {children}
     </PermissionsContext.Provider>
   );
@@ -61,7 +61,7 @@ export const usePermissionRedirect = (permission, resource, path) => {
 export const usePermission = (permission, resource) => {
   const { data: user } = useSelector(state => state.account.currentUser);
 
-  const { isAllowedTo } = useContext(PermissionsContext);
+  const isAllowedTo = useContext(PermissionsContext);
 
   const allowed = useMemo(
     () => isAllowedTo(permission, user, resource),
