@@ -26,16 +26,17 @@ const defaultBehaviour = {
 export const PermissionsContext = React.createContext(defaultBehaviour);
 
 export const PermissionsProvider = ({ rules, children }) => {
-  const isAllowedTo = useCallback((permission, user, resource) => {
-    const ruleResolver = _.getOr(
-      defaultBehaviour.isAllowedTo,
-      permission,
-      rules
-    );
-    return !resource
-      ? false
-      : ruleResolver({ user, resource });
-  }, []);
+  const isAllowedTo = useCallback(
+    (permission, user, resource) => {
+      const ruleResolver = _.getOr(
+        defaultBehaviour.isAllowedTo,
+        permission,
+        rules
+      );
+      return !resource ? false : ruleResolver({ user, resource });
+    },
+    [rules]
+  );
 
   return (
     <PermissionsContext.Provider value={isAllowedTo}>
