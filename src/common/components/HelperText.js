@@ -19,6 +19,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import CloseIcon from '@mui/icons-material/Close';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -54,11 +55,13 @@ const HelperText = props => {
   const { t } = useTranslation();
   const {
     label,
+    showLabel = false,
     Component,
     i18nKey,
     titleKey,
     useAnchor = true,
     maxWidth = '40rem',
+    buttonProps = {},
   } = props;
   const anchorEl = useRef(null);
   const [open, setOpen] = useState(false);
@@ -132,14 +135,26 @@ const HelperText = props => {
 
   return (
     <>
-      <IconButton
-        size="small"
-        ref={anchorEl}
-        aria-label={t('form.helper_text_info_label', { label })}
-        onClick={handleClick}
-      >
-        <InfoIcon fontSize="1rem" />
-      </IconButton>
+      {showLabel ? (
+        <Button
+          aria-label={t('form.helper_text_info_label', { label })}
+          endIcon={<InfoIcon ref={anchorEl} fontSize="1rem" />}
+          onClick={handleClick}
+          {...buttonProps}
+        >
+          {label}
+        </Button>
+      ) : (
+        <IconButton
+          size="small"
+          ref={anchorEl}
+          aria-label={t('form.helper_text_info_label', { label })}
+          onClick={handleClick}
+          {...buttonProps}
+        >
+          <InfoIcon fontSize="1rem" />
+        </IconButton>
+      )}
       <Container
         open={open}
         onClose={handleClose}
