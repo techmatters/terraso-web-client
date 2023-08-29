@@ -37,6 +37,7 @@ import RouterLink from 'common/components/RouterLink';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
+import PageLoader from 'layout/PageLoader';
 import { formatDate } from 'localization/utils';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import { fetchSamples } from 'storyMap/storyMapSlice';
@@ -60,6 +61,7 @@ const StoryMaps = ({ storyMaps, fetching }) => {
   return (
     <StoryMapsCard
       showCreate={false}
+      storyMaps={storyMaps}
       title={t('storyMap.story_maps_title', {
         name: user.firstName,
         possession: possession,
@@ -70,20 +72,26 @@ const StoryMaps = ({ storyMaps, fetching }) => {
 
 const StoryMapsToolsHome = () => {
   const { t, i18n } = useTranslation();
-  const { listSamples } = useSelector(_.get('storyMap.samples'));
-  const { list, fetching } = useSelector(_.get('storyMap.userStoryMaps'));
-  useDocumentTitle(t('storyMap.home_document_title'));
+  const { listSamples, fetching: fetchingSamples } = useSelector(
+    _.get('storyMap.samples')
+  );
+  const { list, fetching: fetchingStoryMaps } = useSelector(
+    _.get('storyMap.userStoryMaps')
+  );
 
+  useDocumentTitle(t('storyMap.home_document_title'));
   useBreadcrumbsParams(useMemo(() => ({ loading: false }), []));
   useFetchData(fetchSamples);
+
   return (
     <>
+      {(fetchingStoryMaps || fetchingSamples) && <PageLoader />}
       <PageContainer maxWidth="lg">
         <PageHeader header={t('storyMap.tool_home_title')} />
         <Grid container spacing={2}>
           {!_.isEmpty(list) && (
             <Grid item xs={12} sm={8}>
-              <StoryMaps fetching={fetching} />
+              <StoryMaps storyMaps={list} fetching={fetchingStoryMaps} />
             </Grid>
           )}
           <Grid item sm={_.isEmpty(list) ? 12 : 4}>
