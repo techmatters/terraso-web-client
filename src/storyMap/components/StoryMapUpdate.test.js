@@ -75,7 +75,7 @@ const API_STORY_MAP = {
           node: {
             id: '75bdc04e-9bdc-4c46-b8cb-916a93e8f4b8',
             userRole: 'collaborator',
-            membershipStatus: 'PENDING',
+            membershipStatus: 'APPROVED',
             pendingEmail: null,
             user: {
               id: '890ac05b-9c38-4e11-987f-8781b441b23f',
@@ -282,4 +282,52 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
     storyMapId: 'c4411282',
     storyMapSlug: 'test-slug',
   });
+});
+
+test('StoryMapUpdate: See story map as collaborator', async () => {
+  mockTerrasoAPIrequestGraphQL({
+    'query fetchStoryMap': Promise.resolve({
+      storyMaps: {
+        edges: [
+          {
+            node: {
+              ...API_STORY_MAP,
+              membershipList: {
+                ...API_STORY_MAP.membershipList,
+                accountMembership: {
+                  id: API_STORY_MAP.membershipList.memberships.edges[1].node.id,
+                  userRole: 'collaborator',
+                  membershipStatus: 'APPROVED',
+                },
+              },
+            },
+          },
+        ],
+      },
+    }),
+  });
+
+  await setup(API_STORY_MAP.membershipList.memberships.edges[1].node.user);
+
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+
+  expect(
+    screen.getByRole('button', { name: 'Save draft' })
+  ).toBeInTheDocument();
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Invite' }))
+  );
+
+  const membersList = screen.getByRole('list', { name: 'People with access' });
+  API_STORY_MAP.membershipList.memberships.edges.forEach(({ node }) => {
+    expect(
+      within(membersList).getByRole('listitem', {
+        name:
+          node.pendingEmail || i18n.t('user.full_name', { user: node.user }),
+      })
+    ).toBeInTheDocument();
+  });
+
+  expect(screen.queryAllByRole('button', { name: 'Remove' }).length).toBe(1);
 });
