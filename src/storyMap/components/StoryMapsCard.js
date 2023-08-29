@@ -35,10 +35,7 @@ import {
 
 import { withProps } from 'react-hoc';
 
-import {
-  MEMBERSHIP_STATUS_APPROVED,
-  MEMBERSHIP_STATUS_PENDING,
-} from 'collaboration/collaborationConstants';
+import { MEMBERSHIP_STATUS_PENDING } from 'collaboration/collaborationConstants';
 import RouterButton from 'common/components/RouterButton';
 import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
@@ -62,24 +59,13 @@ const List = withProps(BaseList, {
 const GridListItem = withProps(Grid, { component: 'li' });
 
 const CollaborationIndicator = props => {
-  const { data: user } = useSelector(state => state.account.currentUser);
   const { storyMap } = props;
 
   const {
     membershipsInfo: { membershipsSample: memberships },
-    createdBy,
   } = storyMap;
 
-  const collaborators = useMemo(() => {
-    return [
-      ...memberships.filter(
-        membership => membership.membershipStatus === MEMBERSHIP_STATUS_APPROVED
-      ),
-      createdBy,
-    ].filter(member => member.id !== user.id);
-  }, [memberships, createdBy, user]);
-
-  if (_.isEmpty(collaborators)) {
+  if (_.isEmpty(memberships)) {
     return null;
   }
 
