@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import TableResponsive from 'common/components/TableResponsive';
 import AccountAvatar from 'account/components/AccountAvatar';
@@ -90,7 +90,9 @@ const MembershipsList = props => {
       })}
       cardsProps={{
         avatarRender: ({ row: member }) =>
-          member.firstName && (
+          member.pendingEmail ? (
+            <Box sx={{ width: 40, height: 40 }} />
+          ) : (
             <AccountAvatar
               component="div"
               sx={{ width: 40, height: 40 }}
