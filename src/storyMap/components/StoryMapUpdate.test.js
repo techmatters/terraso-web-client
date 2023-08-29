@@ -174,7 +174,7 @@ test('StoryMapUpdate: Show Share Dialog', async () => {
   expect(cancelButton).toBeInTheDocument();
 });
 
-test('StoryMapUpdate: Show Share Dialog and invite members', async () => {
+test('StoryMapUpdate: Share Dialog invite members', async () => {
   mockTerrasoAPIrequestGraphQL({
     'query fetchStoryMap': Promise.resolve({
       storyMaps: {
@@ -241,4 +241,45 @@ test('StoryMapUpdate: Show Share Dialog and invite members', async () => {
   expect(
     within(membersList).getByRole('listitem', { name: 'Manuel Perez' })
   ).toBeInTheDocument();
+});
+
+test('StoryMapUpdate: Share Dialog remove members', async () => {
+  mockTerrasoAPIrequestGraphQL({
+    'query fetchStoryMap': Promise.resolve({
+      storyMaps: {
+        edges: [{ node: API_STORY_MAP }],
+      },
+    }),
+    'mutation removeMemberships': Promise.resolve({}),
+  });
+
+  await setup({ id: API_STORY_MAP.createdBy.id });
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Invite' }))
+  );
+
+  const removeButton = within(
+    screen.getByRole('listitem', { name: 'Jose Perez' })
+  ).getByRole('button', { name: 'Remove' });
+  expect(removeButton).toBeInTheDocument();
+
+  await act(async () => fireEvent.click(removeButton));
+
+  const confirmationButton = screen.getByRole('button', {
+    name: 'Remove',
+  });
+
+  await act(async () => fireEvent.click(confirmationButton));
+
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
+
+  const removeCall = terrasoApi.requestGraphQL.mock.calls[2][1];
+
+  expect(removeCall).toMatchObject({
+    id: '75bdc04e-9bdc-4c46-b8cb-916a93e8f4b8',
+    storyMapId: 'c4411282',
+    storyMapSlug: 'test-slug',
+  });
 });
