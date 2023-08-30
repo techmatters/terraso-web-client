@@ -72,9 +72,6 @@ const StoryMapInvite = () => {
         addMessage({
           severity: 'error',
           content: 'storyMap.approve_invite_error',
-          params: {
-            storyMapTitle: storyMap.title,
-          },
         })
       );
     }
@@ -93,18 +90,13 @@ const StoryMapInvite = () => {
     return <PageLoader />;
   }
 
+  if (success) {
+    return null;
+  }
+
   return (
     <PageContainer>
-      <Alert severity={success ? 'success' : 'error'}>
-        {t(
-          success
-            ? 'storyMap.approve_invite_success'
-            : 'storyMap.approve_invite_error',
-          {
-            storyMapTitle: storyMap.title,
-          }
-        )}
-      </Alert>
+      <Alert severity="error">{t('storyMap.approve_invite_error')}</Alert>
     </PageContainer>
   );
 };
