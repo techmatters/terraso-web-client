@@ -21,7 +21,6 @@ import { useSearchParams } from 'react-router-dom';
 import { fetchAuthURLs } from 'terraso-client-shared/account/accountSlice';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import AppleIcon from '@mui/icons-material/Apple';
-import GoogleIcon from '@mui/icons-material/Google';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import SvgIcon from '@mui/material/SvgIcon';
 
@@ -32,12 +31,17 @@ import PageLoader from 'layout/PageLoader';
 import LocalePicker from 'localization/components/LocalePicker';
 import { useAnalytics } from 'monitoring/analytics';
 
+import { ReactComponent as GoogleSvg } from 'assets/google.svg';
 import logo from 'assets/logo.svg';
 import { ReactComponent as MicrosoftSvg } from 'assets/microsoft.svg';
 
 // ref: https://mui.com/material-ui/icons/#component-prop
 const MicrosoftIcon = props => {
   return <SvgIcon component={MicrosoftSvg} {...props} />;
+};
+
+const GoogleIcon = props => {
+  return <SvgIcon component={GoogleSvg} {...props} />;
 };
 
 const appendReferrer = (url, referrer) =>
@@ -85,7 +89,9 @@ const AccountForm = () => {
           {urls.google && (
             <Button
               variant="outlined"
-              startIcon={<GoogleIcon sx={{ paddingRight: '5px' }} />}
+              startIcon={
+                <GoogleIcon sx={{ paddingLeft: '3px', paddingRight: '5px' }} />
+              }
               href={appendReferrer(urls.google, referrer)}
               onClick={() =>
                 trackEvent('user.login', { props: { source: 'google' } })
