@@ -51,6 +51,10 @@ jest.mock('plausible-tracker', () => ({
   })
 }));
 
+console.error = () => {
+  throw new Error('console.error called');
+}
+
 // Work around to avoid tests trying to render SVGs
 const createElementNSOrig = global.document.createElementNS;
 global.document.createElementNS = function (namespaceURI, qualifiedName) {
