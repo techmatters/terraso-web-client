@@ -183,7 +183,7 @@
             "img": {
                 "height": "95",
                 "width": "250",
-                "src": "tools/story-maps.svg",
+                "src": "tools/story-maps.png",
                 "caption": "Story Map de Rocky Hill"
             },
             "description": ["Crea hermosas historias basadas en mapas"],
