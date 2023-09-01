@@ -62,10 +62,11 @@ i18n.services.formatter.add('lowercase', (value, lng, options) => {
 });
 
 i18n.services.formatter.add('andList', (value, lng, options) => {
-  if (value.length === 1) {
-    return value[0];
-  }
-  return `${value.slice(0, -1).join(', ')} ${i18n.t('and')} ${value.slice(-1)}`;
+  const formatter = new Intl.ListFormat(lng, {
+    style: 'long',
+    type: 'conjunction',
+  });
+  return formatter.format(value);
 });
 
 export default i18n;
