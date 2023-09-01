@@ -66,7 +66,7 @@ const HomeCard = ({
       <Stack
         direction="row"
         spacing={2}
-        height={image ? 128 : null}
+        height={image ? 'auto' : null}
         sx={{
           backgroundColor: contentBackgroundColor,
           borderRadius: '4px',
@@ -94,7 +94,8 @@ const HomeCard = ({
                     background: 'transparent',
                     position: 'absolute',
                     bottom: 1,
-                    pl: 4.5,
+                    right: 4.5,
+                    pr: 1,
                   }}
                   spacing={2}
                 >
