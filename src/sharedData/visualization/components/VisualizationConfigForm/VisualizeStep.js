@@ -109,7 +109,7 @@ const Size = props => {
             step: 1,
             min: 5,
             max: 30,
-            sx: { padding: 1 },
+            sx: { p: 1 },
             type: 'number',
             'aria-labelledby': 'size-label',
           }}
