@@ -146,6 +146,7 @@ test('Auth: test fetch user', async () => {
         {
           firstName: 'John',
           lastName: 'Doe',
+          preferences: { edges: [] },
         },
         {}
       )
