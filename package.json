@@ -57,7 +57,7 @@
     "typescript": "^5.1.6"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "npm run generate-types -- -w -s & react-scripts start",
     "generate-types": "npx graphql-code-generator",
     "lint-js": "eslint ./ --ext .js --ext .ts --ext .tsx --max-warnings 0 --ignore-path .gitignore",
     "format-js": "npm run lint-js -- --fix",
@@ -67,9 +67,9 @@
     "check-modules": "depcheck",
     "build": "npm run generate-types && react-scripts build",
     "build-serve": "serve -s build",
-    "test": "react-scripts test",
-    "test-debug": "react-scripts --inspect-brk test --runInBand --no-cache",
-    "test-coverage": "react-scripts test --coverage --changedSince=origin/main --watchAll=falsed",
+    "test": "npm run generate-types && react-scripts test",
+    "test-debug": "npm run generate-types && react-scripts --inspect-brk test --runInBand --no-cache",
+    "test-coverage": "npm run generate-types && react-scripts test --coverage --changedSince=origin/main --watchAll=falsed",
     "localization-to-po": "node scripts/localization/transform-to.js po",
     "localization-to-json": "node scripts/localization/transform-to.js json",
     "localization-check-missing": "node scripts/localization/missing-check.js",
