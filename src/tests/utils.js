@@ -51,7 +51,9 @@ jest.mock('plausible-tracker', () => ({
   })
 }));
 
-console.error = () => {
+const originalConsoleError = console.error;
+console.error = (...params) => {
+  originalConsoleError(...params);
   throw new Error('console.error called');
 }
 
