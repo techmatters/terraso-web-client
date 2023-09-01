@@ -65,6 +65,9 @@ const LocalePickerSelect = props => {
           name: t(getLocaleLabel(currentLocale)),
         }),
       }}
+      sx={{
+        pl: 1.5,
+      }}
     >
       {Object.keys(LOCALES).map(locale => (
         <MenuItem key={locale} value={locale}>
