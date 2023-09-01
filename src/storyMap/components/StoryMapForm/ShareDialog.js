@@ -174,9 +174,10 @@ const ShareDialog = props => {
       const success = data?.meta?.requestStatus === 'fulfilled';
       if (success) {
         setNewCollaborators([]);
+        onClose();
       }
     });
-  }, [dispatch, storyMap, newCollaborators]);
+  }, [dispatch, onClose, storyMap, newCollaborators]);
 
   const memberships = useMemo(
     () => [
