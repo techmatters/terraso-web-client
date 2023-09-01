@@ -326,8 +326,8 @@ test('LandscapeView: Refresh profile on leave', async () => {
     deleteMembership: {
       membership: {
         group: {},
-      }
-    }
+      },
+    },
   });
   terrasoApi.requestGraphQL.mockReturnValueOnce(new Promise(() => {}));
 

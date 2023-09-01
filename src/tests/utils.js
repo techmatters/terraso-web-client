@@ -48,7 +48,7 @@ jest.mock('plausible-tracker', () => ({
   default: jest.fn().mockReturnValue({
     enableAutoPageviews: jest.fn(),
     trackEvent: jest.fn(),
-  })
+  }),
 }));
 
 // Work around to avoid tests trying to render SVGs
