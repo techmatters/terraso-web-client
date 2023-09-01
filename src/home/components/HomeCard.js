@@ -95,7 +95,7 @@ const HomeCard = ({
                     position: 'absolute',
                     bottom: 1,
                     right: 4.5,
-                    paddingRight: 1,
+                    pr: 1,
                   }}
                   spacing={2}
                 >
