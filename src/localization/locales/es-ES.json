@@ -79,7 +79,6 @@
         "list_column_contact": "Correo electrónico",
         "list_column_members": "Miembros",
         "list_empty": "<0><0>Verifica la ortografía del nombre del grupo.</0><1>Si tu grupo no está en Terraso, puedes <1>crear un grupo</1>.</1></0>",
-        "members_list_empty": "No existen miembros",
         "membership_view_all": "Ver toda(o)s los miembros",
         "form_edit_document_title": "Editar: {{name}}",
         "form_new_document_title": "Crear Grupo",
@@ -552,7 +551,8 @@
         "rich_text_editor_toolbar_link_remove": "Desvincular enlace",
         "rich_text_editor_toolbar_bold": "Negrita",
         "rich_text_editor_toolbar_italic": "Itálica",
-        "rich_text_editor_toolbar_label": "Barra de herramientas de cuadro de texto"
+        "rich_text_editor_toolbar_label": "Barra de herramientas de cuadro de texto",
+        "user_email_autocomplete_placeholder": "Introduce una o más direcciones de correo electrónico"
     },
     "sharedData": {
         "title": "Archivos y enlaces compartidos",
@@ -862,6 +862,7 @@
         "form_chapter_no_title_label": "Sin título",
         "form_back_button": "Story Maps",
         "form_byline": "Por $t(user.full_name)",
+        "form_share_button": "Invitar",
         "form_preview_button": "Vista previa",
         "form_save_draft_button": "Guardar borrador",
         "form_publish_button": "Publicar",
@@ -905,6 +906,7 @@
         "home_tools_link": "Story Maps de Terraso",
         "home_draft_label": "Borrador",
         "home_edit": "Editar",
+        "home_accept": "Aceptar",
         "home_default_description": "Usa mapas, fotos, videos, grabaciones de audio y narraciones para crear una historia impactante.",
         "delete_label": "Eliminar",
         "delete_confirm_title": "Eliminar el story map {{title}}?",
@@ -983,7 +985,32 @@
         "form_location_helper_text_step_3": "<0>Paso 3. Establece la ubicación con el mapa de fondo deseado</0><1>Una vez que estés satisfecho con el mapa de fondo, selecciona Establecer ubicación. Cada capítulo puede tener un mapa de fondo diferente.</1><2 />",
         "form_location_helper_text_step_3_image_src": "/storyMap/set-map-step-3-es.png",
         "form_location_helper_text_step_3_image_alt": "Una captura de pantalla de la pantalla Establecer ubicación en el mapa. El botón “Establecer ubicación” en la parte superior derecha tiene un círculo.",
-        "form_location_helper_text_bearing_icon_alt": "Rumbo"
+        "form_location_helper_text_bearing_icon_alt": "Rumbo",
+        "share_dialog_title": "Invitar a editores",
+        "share_dialog_description": "Agrega una o más personas para editar tu story map. <1>Más información sobre cómo colaborar en story maps</1>.",
+        "share_dialog_help_url": "https://terraso.org/help/how-to-manage-editors-for-your-story-map/",
+        "share_dialog_confirm_label": "Invitar",
+        "share_dialog_cancel_label": "Cancelar",
+        "remove_membership": "Eliminar",
+        "role_collaborator": "Editor",
+        "role_owner": "Dueña(o)",
+        "share_dialog_collaborators_title": "Personas con acceso",
+        "share_dialog_autocomplete_label": "Editores",
+        "share_dialog_autocomplete_helper_text": "Ella(o)s recibirán una invitación por correo electrónico para unirse a este story map.",
+        "remove_membership_confirm_title": "Eliminar {{name}} de este story map",
+        "remove_membership_confirm_message": "{{name}} ya no podrá editar “{{storyMapTitle}}”.",
+        "remove_membership_confirm_button": "Eliminar",
+        "leave_confirm_title": "Quitarte de este story map",
+        "leave_confirm_message": "Ya no podrás editar “{{storyMapTitle}}”.",
+        "deleted_membership": "{{name}} ha sido eliminado de “{{storyMapTitle}}”",
+        "left_membership": "Has sido eliminado de “{{storyMapTitle}}”",
+        "added_memberships_one": "{{names, list}} ha sido invitado a editar.",
+        "added_memberships": "{{names, list}} han sido invitados a editar.",
+        "addMemberships.unique": "Uno o más usuarios ya son colaboradores de este story map.",
+        "approved_membership": "Te han agregado a “{{storyMapTitle}}”",
+        "approve_invite_success": "Te han agregado a “{{storyMapTitle}}”",
+        "approve_invite_error": "No se pudo aceptar la invitación al Story Map",
+        "invite_document_title": "Invitación a Story Map"
     },
     "site": {
         "description": "Terraso es un conjunto de herramientas para gestionar paisajes, proteger el medio ambiente y fomentar el desarrollo humano.",
@@ -992,9 +1019,9 @@
     "memberships": {
         "not_found": "Grupo no encontrado",
         "members_list_column_name": "Nombre",
-        "members_list_leave": "Abandonar",
-        "members_list_remove": "Eliminar",
+        "members_list_empty": "No existen miembros",
         "members_list_column_role": "Rol",
-        "members_list_column_actions_description": "Acciones"
+        "members_list_column_actions_description": "Acciones",
+        "membership_pendin": "Pendiente"
     }
 }
