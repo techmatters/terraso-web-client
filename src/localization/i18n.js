@@ -61,12 +61,4 @@ i18n.services.formatter.add('lowercase', (value, lng, options) => {
   return i18n.t(value).toLowerCase();
 });
 
-i18n.services.formatter.add('andList', (value, lng, options) => {
-  const formatter = new Intl.ListFormat(lng, {
-    style: 'long',
-    type: 'conjunction',
-  });
-  return formatter.format(value);
-});
-
 export default i18n;
