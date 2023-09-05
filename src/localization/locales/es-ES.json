@@ -79,6 +79,8 @@
         "list_column_contact": "Correo electrónico",
         "list_column_members": "Miembros",
         "list_empty": "<0><0>Verifica la ortografía del nombre del grupo.</0><1>Si tu grupo no está en Terraso, puedes <1>crear un grupo</1>.</1></0>",
+        "members_list_leave": "Abandonar",
+        "members_list_remove": "Eliminar",
         "membership_view_all": "Ver toda(o)s los miembros",
         "form_edit_document_title": "Editar: {{name}}",
         "form_new_document_title": "Crear Grupo",
@@ -1022,6 +1024,6 @@
         "members_list_empty": "No existen miembros",
         "members_list_column_role": "Rol",
         "members_list_column_actions_description": "Acciones",
-        "membership_pendin": "Pendiente"
+        "membership_pending": "Pendiente"
     }
 }
