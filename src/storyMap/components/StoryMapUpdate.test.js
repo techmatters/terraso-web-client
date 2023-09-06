@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { act, fireEvent, render, screen, within } from 'tests/utils';
+import _ from 'lodash/fp';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { mockTerrasoAPIrequestGraphQL } from 'tests/apiUtils';
 import { changeCombobox } from 'tests/uiUtils';
@@ -226,10 +227,12 @@ test('StoryMapUpdate: Share Dialog invite members', async () => {
   const inviteCall = terrasoApi.requestGraphQL.mock.calls[2][1];
 
   expect(inviteCall).toMatchObject({
-    userEmails: ['email1@text.com', 'email2@test.com'],
-    userRole: 'collaborator',
-    storyMapId: API_STORY_MAP.storyMapId,
-    storyMapSlug: API_STORY_MAP.slug,
+    input: {
+      userEmails: ['email1@text.com', 'email2@test.com'],
+      userRole: 'collaborator',
+      storyMapId: API_STORY_MAP.storyMapId,
+      storyMapSlug: API_STORY_MAP.slug,
+    },
   });
 
   const membersList = screen.getByRole('list', { name: 'People with access' });
@@ -250,7 +253,9 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
         edges: [{ node: API_STORY_MAP }],
       },
     }),
-    'mutation removeMemberships': Promise.resolve({}),
+    'mutation deleteMembership': Promise.resolve(
+      _.set('deleteStoryMapMembership.membership', {}, {})
+    ),
   });
 
   await setup({ id: API_STORY_MAP.createdBy.id });
@@ -278,9 +283,11 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
   const removeCall = terrasoApi.requestGraphQL.mock.calls[2][1];
 
   expect(removeCall).toMatchObject({
-    id: '75bdc04e-9bdc-4c46-b8cb-916a93e8f4b8',
-    storyMapId: 'c4411282',
-    storyMapSlug: 'test-slug',
+    input: {
+      id: '75bdc04e-9bdc-4c46-b8cb-916a93e8f4b8',
+      storyMapId: 'c4411282',
+      storyMapSlug: 'test-slug',
+    },
   });
 });
 
