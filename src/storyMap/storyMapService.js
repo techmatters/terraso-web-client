@@ -148,20 +148,8 @@ export const deleteStoryMap = ({ storyMap }) => {
 
 export const addMemberships = ({ storyMap, emails, userRole }) => {
   const query = graphql(`
-    mutation addMemberships(
-      $storyMapId: String!
-      $storyMapSlug: String!
-      $userEmails: [String!]!
-      $userRole: String!
-    ) {
-      saveStoryMapMembership(
-        input: {
-          storyMapId: $storyMapId
-          storyMapSlug: $storyMapSlug
-          userEmails: $userEmails
-          userRole: $userRole
-        }
-      ) {
+    mutation addMemberships($input: StoryMapMembershipSaveMutationInput!) {
+      saveStoryMapMembership(input: $input) {
         memberships {
           ...collaborationMembershipFields
         }
@@ -172,10 +160,12 @@ export const addMemberships = ({ storyMap, emails, userRole }) => {
 
   return terrasoApi
     .requestGraphQL(query, {
-      storyMapId: storyMap.storyMapId,
-      storyMapSlug: storyMap.slug,
-      userEmails: emails,
-      userRole,
+      input: {
+        storyMapId: storyMap.storyMapId,
+        storyMapSlug: storyMap.slug,
+        userEmails: emails,
+        userRole,
+      },
     })
     .then(_.get('saveStoryMapMembership.memberships'))
     .then(response =>
