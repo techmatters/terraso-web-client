@@ -319,10 +319,16 @@ test('LandscapeView: Update Shared Data', async () => {
   });
 });
 
-test('LandscapeView: Refresh profile', async () => {
+test('LandscapeView: Refresh profile on leave', async () => {
   await baseViewTest();
 
-  terrasoApi.requestGraphQL.mockResolvedValueOnce({});
+  terrasoApi.requestGraphQL.mockResolvedValueOnce({
+    deleteMembership: {
+      membership: {
+        group: {},
+      },
+    },
+  });
   terrasoApi.requestGraphQL.mockReturnValueOnce(new Promise(() => {}));
 
   await act(async () =>

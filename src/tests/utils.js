@@ -42,6 +42,15 @@ jest.setTimeout(JEST_TEST_TIMEOUT);
 // Mock mapbox
 jest.mock('gis/mapbox', () => ({}));
 
+// Mock plausible calls
+jest.mock('plausible-tracker', () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue({
+    enableAutoPageviews: jest.fn(),
+    trackEvent: jest.fn(),
+  }),
+}));
+
 // Work around to avoid tests trying to render SVGs
 const createElementNSOrig = global.document.createElementNS;
 global.document.createElementNS = function (namespaceURI, qualifiedName) {
