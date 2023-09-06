@@ -175,14 +175,8 @@ export const addMemberships = ({ storyMap, emails, userRole }) => {
 
 export const deleteMembership = ({ storyMap, membership }) => {
   const query = graphql(`
-    mutation deleteMembership(
-      $id: ID!
-      $storyMapId: String!
-      $storyMapSlug: String!
-    ) {
-      deleteStoryMapMembership(
-        input: { id: $id, storyMapId: $storyMapId, storyMapSlug: $storyMapSlug }
-      ) {
+    mutation deleteMembership($input: StoryMapMembershipDeleteMutationInput!) {
+      deleteStoryMapMembership(input: $input) {
         membership {
           id
         }
@@ -193,17 +187,22 @@ export const deleteMembership = ({ storyMap, membership }) => {
 
   return terrasoApi
     .requestGraphQL(query, {
-      id: membership.membershipId,
-      storyMapId: storyMap.storyMapId,
-      storyMapSlug: storyMap.slug,
+      input: {
+        id: membership.membershipId,
+        storyMapId: storyMap.storyMapId,
+        storyMapSlug: storyMap.slug,
+      },
     })
     .then(_.get('deleteStoryMapMembership.membership'));
 };
 
 export const approveMembership = ({ membership }, currentUser) => {
   const query = graphql(`
-    mutation approveMembership($accountEmail: String!, $membershipId: String!) {
-      approveStoryMapMembership(input: { membershipId: $membershipId }) {
+    mutation approveMembership(
+      $accountEmail: String!
+      $input: StoryMapMembershipApproveMutationInput!
+    ) {
+      approveStoryMapMembership(input: $input) {
         membership {
           id
         }
@@ -217,7 +216,9 @@ export const approveMembership = ({ membership }, currentUser) => {
 
   return terrasoApi
     .requestGraphQL(query, {
-      membershipId: membership.membershipId,
+      input: {
+        membershipId: membership.membershipId,
+      },
       accountEmail: currentUser.email,
     })
     .then(response => ({
@@ -230,9 +231,9 @@ export const approveMembershipToken = ({ membership, token, accountEmail }) => {
   const query = graphql(`
     mutation approveMembershipToken(
       $accountEmail: String!
-      $inviteToken: String!
+      $input: StoryMapMembershipApproveTokenMutationInput!
     ) {
-      approveStoryMapMembershipToken(input: { inviteToken: $inviteToken }) {
+      approveStoryMapMembershipToken(input: $input) {
         membership {
           id
         }
@@ -246,7 +247,9 @@ export const approveMembershipToken = ({ membership, token, accountEmail }) => {
 
   return terrasoApi
     .requestGraphQL(query, {
-      inviteToken: token,
+      input: {
+        inviteToken: token,
+      },
       accountEmail,
     })
     .then(response => response.approveStoryMapMembershipToken)
