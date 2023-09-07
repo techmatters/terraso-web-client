@@ -80,6 +80,7 @@ const CardField = props => {
 
   return (
     <Grid
+      wrap="nowrap"
       direction="column"
       container
       item

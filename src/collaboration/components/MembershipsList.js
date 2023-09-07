@@ -46,14 +46,14 @@ const MembershipsList = props => {
         minWidth: 200,
         cardFieldSizes: {
           xs: 12,
-          sm: 3,
+          sm: 5,
         },
         valueGetter: ({ row: member }) =>
           member.pendingEmail
             ? member.pendingEmail
             : t('user.full_name', { user: member }),
         cardRender: ({ row: member }) => (
-          <Typography>
+          <Typography noWrap>
             {member.pendingEmail
               ? member.pendingEmail
               : t('user.full_name', { user: member })}
@@ -68,7 +68,7 @@ const MembershipsList = props => {
         minWidth: 200,
         cardFieldSizes: {
           xs: 6,
-          sm: 6,
+          sm: 4,
         },
         valueGetter: ({ row: member }) =>
           t(`group.role_${member.userRole.toLowerCase()}`),
