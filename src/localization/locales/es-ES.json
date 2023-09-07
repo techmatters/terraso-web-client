@@ -554,7 +554,7 @@
         "rich_text_editor_toolbar_bold": "Negrita",
         "rich_text_editor_toolbar_italic": "Itálica",
         "rich_text_editor_toolbar_label": "Barra de herramientas de cuadro de texto",
-        "user_email_autocomplete_placeholder": "Introduce una o más direcciones de correo electrónico"
+        "user_email_autocomplete_placeholder": "Introduce direcciones de correo electrónico"
     },
     "sharedData": {
         "title": "Archivos y enlaces compartidos",
@@ -989,7 +989,7 @@
         "form_location_helper_text_step_3_image_alt": "Una captura de pantalla de la pantalla Establecer ubicación en el mapa. El botón “Establecer ubicación” en la parte superior derecha tiene un círculo.",
         "form_location_helper_text_bearing_icon_alt": "Rumbo",
         "share_dialog_title": "Invitar a editores",
-        "share_dialog_description": "Agrega una o más personas para editar tu story map. <1>Más información sobre cómo colaborar en story maps</1>.",
+        "share_dialog_description": "Invita a personas a editar tu story map. <1>Más información sobre cómo colaborar en story maps</1>.",
         "share_dialog_help_url": "https://terraso.org/es/ayuda/como-gestionar-los-editores-de-tu-mapa-de-la-historia/",
         "share_dialog_confirm_label": "Invitar",
         "share_dialog_cancel_label": "Cancelar",
@@ -998,8 +998,8 @@
         "role_owner": "Dueña(o)",
         "share_dialog_collaborators_title": "Personas con acceso",
         "share_dialog_autocomplete_helper_text": "Ella(o)s recibirán una invitación por correo electrónico para unirse a este story map.",
-        "delete_membership_confirm_title": "Eliminar {{name}} de este story map",
-        "delete_membership_confirm_message": "{{name}} ya no podrá editar “{{storyMapTitle}}”.",
+        "delete_membership_confirm_title": "¿Eliminar {{name}} de este story map?",
+        "delete_membership_confirm_message": "{{name}} ya no podrá editar el story map “{{storyMapTitle}}”.",
         "delete_membership_confirm_title_pending": "¿Cancelar la invitación de {{name}} a este story map?",
         "delete_membership_confirm_message_pending": "{{name}} no podrá editar “{{storyMapTitle}}”.",
         "delete_membership_confirm_button": "Eliminar",

@@ -681,7 +681,7 @@
         "rich_text_editor_toolbar_bold": "Bold",
         "rich_text_editor_toolbar_italic": "Italic",
         "rich_text_editor_toolbar_label": "Textbox toolbar",
-        "user_email_autocomplete_placeholder": "Enter one or more email address"
+        "user_email_autocomplete_placeholder": "Enter email addresses"
     },
     "share": {
         "button": "Share",
@@ -982,7 +982,7 @@
         "form_location_helper_text_step_3_image_alt": "A screenshot of the Set Map Location screen. The “Set Location” button in the top right is circled.",
         "form_location_helper_text_bearing_icon_alt": "Bearing",
         "share_dialog_title": "Invite Editors",
-        "share_dialog_description": "Add one or more people to edit your story map. <1>Learn more about collaborating on story maps</1>.",
+        "share_dialog_description": "Invite people to edit your story map. <1>Learn more about collaborating on story maps</1>.",
         "share_dialog_help_url": "https://terraso.org/help/how-to-manage-editors-for-your-story-map/",
         "share_dialog_confirm_label": "Invite",
         "share_dialog_cancel_label": "Cancel",
@@ -991,8 +991,8 @@
         "role_owner": "Owner",
         "share_dialog_collaborators_title": "People with access",
         "share_dialog_autocomplete_helper_text": "They will receive an email invitation to join this story map.",
-        "delete_membership_confirm_title": "Remove {{name}} from this story map",
-        "delete_membership_confirm_message": "{{name}} will no longer be able to edit the “{{storyMapTitle}}”.",
+        "delete_membership_confirm_title": "Remove {{name}} from this story map?",
+        "delete_membership_confirm_message": "{{name}} will no longer be able to edit the story map “{{storyMapTitle}}”.",
         "delete_membership_confirm_title_pending": "Cancel {{name}}'s invitation to this story map?",
         "delete_membership_confirm_message_pending": "{{name}} will not be able to edit “{{storyMapTitle}}”.",
         "delete_membership_confirm_button": "Remove",
