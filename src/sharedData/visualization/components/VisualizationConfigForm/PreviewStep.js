@@ -70,7 +70,7 @@ const PreviewStep = props => {
     [setViewportConfig]
   );
 
-  const onPublish = () => {
+  const onPublish = useCallback(() => {
     const completeConfig = {
       ...visualizationConfig,
       viewportConfig,
@@ -104,7 +104,16 @@ const PreviewStep = props => {
         onSaved(data.payload.slug);
       }
     });
-  };
+  }, [
+    dispatch,
+    group,
+    onSaved,
+    owner.name,
+    selectedFile,
+    trackEvent,
+    viewportConfig,
+    visualizationConfig,
+  ]);
 
   return (
     <>
