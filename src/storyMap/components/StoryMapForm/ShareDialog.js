@@ -226,12 +226,7 @@ const ShareDialog = props => {
             </ExternalLink>
           </Trans>
         </Typography>
-        <UserEmailAutocomplete
-          label={t('storyMap.share_dialog_autocomplete_label')}
-          helperText={t('storyMap.share_dialog_autocomplete_helper_text')}
-          value={newCollaborators}
-          onChange={onChange}
-        />
+        <UserEmailAutocomplete value={newCollaborators} onChange={onChange} />
         <Accordion
           expanded={expanded}
           onChange={(event, isExpanded) => setExpanded(isExpanded)}
