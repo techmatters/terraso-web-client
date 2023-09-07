@@ -75,6 +75,7 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
     setDOMContent: jest.fn().mockReturnThis(),
     addTo: jest.fn().mockReturnThis(),
     remove: jest.fn(),
+    isOpen: jest.fn(),
   };
   mapboxgl.Popup.mockReturnValue(Popup);
   const events = {};
