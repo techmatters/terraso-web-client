@@ -997,6 +997,7 @@
         "role_collaborator": "Editor",
         "role_owner": "Dueña(o)",
         "share_dialog_collaborators_title": "Personas con acceso",
+        "share_dialog_autocomplete_label": "Editores",
         "share_dialog_autocomplete_helper_text": "Ella(o)s recibirán una invitación por correo electrónico para unirse a este story map.",
         "delete_membership_confirm_title": "¿Eliminar {{name}} de este story map?",
         "delete_membership_confirm_message": "{{name}} ya no podrá editar el story map “{{storyMapTitle}}”.",

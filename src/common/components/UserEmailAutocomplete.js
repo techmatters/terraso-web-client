@@ -40,7 +40,7 @@ const FILTER_EMAILS = values =>
 
 const UserEmailAutocomplete = props => {
   const { t } = useTranslation();
-  const { value, onChange, id, helperText } = props;
+  const { value, onChange, id, label, helperText } = props;
 
   const getLabel = useCallback(
     option => (typeof option === 'string' ? option : option?.newTerm || ''),
@@ -80,8 +80,12 @@ const UserEmailAutocomplete = props => {
       getOptionLabel={getLabel}
       renderInput={params => (
         <TextField
+          label={label}
           {...params}
           placeholder={t('common.user_email_autocomplete_placeholder')}
+          InputLabelProps={{
+            shrink: true,
+          }}
           helperText={helperText}
         />
       )}
