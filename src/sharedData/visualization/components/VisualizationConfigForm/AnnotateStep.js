@@ -82,6 +82,22 @@ const FORM_FIELDS = [
   },
 ];
 
+// Work around for react-beautiful-dnd issue. See: https://stackoverflow.com/a/75807063
+const StrictModeDroppable = ({ children, ...props }) => {
+  const [enabled, setEnabled] = useState(false);
+  useEffect(() => {
+    const animation = requestAnimationFrame(() => setEnabled(true));
+    return () => {
+      cancelAnimationFrame(animation);
+      setEnabled(false);
+    };
+  }, []);
+  if (!enabled) {
+    return null;
+  }
+  return <Droppable {...props}>{children}</Droppable>;
+};
+
 const DataPoints = props => {
   const { t } = useTranslation();
   const { value, onChange } = props.field;
@@ -167,7 +183,7 @@ const DataPoints = props => {
         onDragEnd={onDragEnd}
         onBeforeCapture={() => setDragging(true)}
       >
-        <Droppable droppableId="droppable-list">
+        <StrictModeDroppable droppableId="droppable-list">
           {provided => (
             <List
               aria-labelledby="data-points-description"
@@ -175,42 +191,44 @@ const DataPoints = props => {
               {...provided.droppableProps}
             >
               {dataPoints.map((dataPoint, index) => (
-                <Draggable
-                  key={dataPoint.column}
-                  draggableId={dataPoint.column}
-                  index={index}
-                >
-                  {(provided, snapshot) => (
-                    <ListItem
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <ListItemAvatar>
-                        <DragHandleIcon />
-                      </ListItemAvatar>
-                      <OutlinedInput
-                        inputProps={{
-                          'aria-label': t(
-                            'sharedData.form_step_annotate_data_points_input_label',
-                            {
-                              index: index + 1,
-                            }
-                          ),
-                        }}
-                        fullWidth
-                        placeholder={dataPoint.column}
-                        value={dataPoint.label || ''}
-                        onChange={onLabelChange(index)}
-                      />
-                    </ListItem>
-                  )}
-                </Draggable>
+                <React.Fragment key={dataPoint.column}>
+                  <Draggable
+                    key={dataPoint.column}
+                    draggableId={dataPoint.column}
+                    index={index}
+                  >
+                    {(provided, snapshot) => (
+                      <ListItem
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <ListItemAvatar>
+                          <DragHandleIcon />
+                        </ListItemAvatar>
+                        <OutlinedInput
+                          inputProps={{
+                            'aria-label': t(
+                              'sharedData.form_step_annotate_data_points_input_label',
+                              {
+                                index: index + 1,
+                              }
+                            ),
+                          }}
+                          fullWidth
+                          placeholder={dataPoint.column}
+                          value={dataPoint.label || ''}
+                          onChange={onLabelChange(index)}
+                        />
+                      </ListItem>
+                    )}
+                  </Draggable>
+                </React.Fragment>
               ))}
               {dragging && provided.placeholder}
             </List>
           )}
-        </Droppable>
+        </StrictModeDroppable>
       </DragDropContext>
     </>
   );
