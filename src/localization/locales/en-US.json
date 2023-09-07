@@ -994,6 +994,8 @@
         "share_dialog_autocomplete_helper_text": "They will receive an email invitation to join this story map.",
         "delete_membership_confirm_title": "Remove {{name}} from this story map",
         "delete_membership_confirm_message": "{{name}} will no longer be able to edit the “{{storyMapTitle}}”.",
+        "delete_membership_confirm_title_pending": "Cancel {{name}}'s invitation to this story map?",
+        "delete_membership_confirm_message_pending": "{{name}} will not be able to edit “{{storyMapTitle}}”.",
         "delete_membership_confirm_button": "Remove",
         "leave_membership_confirm_title": "Remove yourself from this story map",
         "leave_membership_confirm_message": "You will no longer be able to edit “{{storyMapTitle}}”.",

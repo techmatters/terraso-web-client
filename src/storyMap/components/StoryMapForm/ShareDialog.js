@@ -124,6 +124,7 @@ const RemoveButton = props => {
           name: member.pendingEmail
             ? member.pendingEmail
             : t('user.full_name', { user: member }),
+          context: member.membershipStatus?.toLowerCase(),
         }
       ),
       confirmMessage: t(
@@ -135,6 +136,7 @@ const RemoveButton = props => {
             ? member.pendingEmail
             : t('user.full_name', { user: member }),
           storyMapTitle: storyMap.title,
+          context: member.membershipStatus?.toLowerCase(),
         }
       ),
       confirmButton: t('storyMap.delete_membership_confirm_button'),
