@@ -118,8 +118,8 @@ const RemoveButton = props => {
     return {
       confirmTitle: t(
         isOwnMembership
-          ? 'storyMap.leave_confirm_title'
-          : 'storyMap.remove_membership_confirm_title',
+          ? 'storyMap.leave_membership_confirm_title'
+          : 'storyMap.delete_membership_confirm_title',
         {
           name: member.pendingEmail
             ? member.pendingEmail
@@ -128,8 +128,8 @@ const RemoveButton = props => {
       ),
       confirmMessage: t(
         isOwnMembership
-          ? 'storyMap.leave_confirm_message'
-          : 'storyMap.remove_membership_confirm_message',
+          ? 'storyMap.leave_membership_confirm_message'
+          : 'storyMap.delete_membership_confirm_message',
         {
           name: member.pendingEmail
             ? member.pendingEmail
@@ -137,9 +137,9 @@ const RemoveButton = props => {
           storyMapTitle: storyMap.title,
         }
       ),
-      confirmButton: t('storyMap.remove_membership_confirm_button'),
-      buttonLabel: t('storyMap.remove_membership'),
-      ariaLabel: t('storyMap.remove_membership'),
+      confirmButton: t('storyMap.delete_membership_confirm_button'),
+      buttonLabel: t('storyMap.delete_membership'),
+      ariaLabel: t('storyMap.delete_membership'),
     };
   }, [t, member, storyMap, isOwnMembership]);
 
