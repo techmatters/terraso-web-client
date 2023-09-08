@@ -720,7 +720,7 @@
         "validation_url_required": "Introduce una dirección web.",
         "validation_url_invalid": "Introduce una dirección web válida.",
         "validation_field_required_array": "$t({{path}}) {{arrayIndex}} es obligatorio",
-        "validation_field_max_length": "$t({{path}}) debe tener {{max}} caracteres como máximo.",
+        "validation_field_max_length": "$t({{path}}) debe tener menos de {{max}} caracteres.",
         "validation_array_min_one": "$t({{path}}) debe tener al menos {{min}} elemento.",
         "validation_array_min_other": "$t({{path}}) debe tener al menos {{min}} elementos.",
         "validation_number_integer": "$t({{path}}) debe ser un número entero.",
