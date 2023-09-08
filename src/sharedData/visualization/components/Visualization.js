@@ -375,6 +375,7 @@ const Visualization = props => {
     <>
       <Map
         disableRotation
+        disableElevation
         projection="mercator"
         mapStyle={visualizationConfig?.viewportConfig?.baseMapStyle}
         onBoundsChange={onBoundsChange}
