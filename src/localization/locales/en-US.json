@@ -645,6 +645,7 @@
         "upload_link_no_name": "Link {{index}}",
         "upload_link_form.url": "$t(sharedData.upload_url_label)",
         "upload_link_form.name": "$t(sharedData.upload_name_label)",
+        "upload_link_form.description": "$t(sharedData.upload_description_label)",
         "addSharedDataLink.terraso_api.invalid": "Invalid $t(sharedData.upload_{{field}}_label)",
         "link_delete_tooltip": "Remove link “{{name}}”.",
         "file_delete_tooltip": "Remove file “{{name}}”."
