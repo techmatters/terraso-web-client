@@ -42,7 +42,7 @@ import ExternalLink from 'common/components/ExternalLink';
 import UserEmailAutocomplete from 'common/components/UserEmailAutocomplete';
 import Restricted from 'permissions/components/Restricted';
 import {
-  MEMBERSHIP_ROLE_CONTRIBUTOR,
+  MEMBERSHIP_ROLE_EDITOR,
   MEMBERSHIP_ROLE_OWNER,
 } from 'storyMap/storyMapConstants';
 import { addMemberships, deleteMembership } from 'storyMap/storyMapSlice';
@@ -167,7 +167,7 @@ const ShareDialog = props => {
   );
   const { open, onClose } = props;
   const { storyMap } = useStoryMapConfigContext();
-  const [newCollaborators, setNewCollaborators] = useState([]);
+  const [newEditors, setNewEditors] = useState([]);
   const [expanded, setExpanded] = React.useState(false);
 
   useEffect(() => {
@@ -176,26 +176,26 @@ const ShareDialog = props => {
 
   const onChange = useCallback(
     value => {
-      setNewCollaborators(value);
+      setNewEditors(value);
     },
-    [setNewCollaborators]
+    [setNewEditors]
   );
 
   const onConfirm = useCallback(() => {
     dispatch(
       addMemberships({
         storyMap,
-        emails: newCollaborators,
-        userRole: MEMBERSHIP_ROLE_CONTRIBUTOR,
+        emails: newEditors,
+        userRole: MEMBERSHIP_ROLE_EDITOR,
       })
     ).then(data => {
       const success = data?.meta?.requestStatus === 'fulfilled';
       if (success) {
-        setNewCollaborators([]);
+        setNewEditors([]);
         onClose();
       }
     });
-  }, [dispatch, onClose, storyMap, newCollaborators]);
+  }, [dispatch, onClose, storyMap, newEditors]);
 
   const memberships = useMemo(
     () => [
@@ -229,7 +229,7 @@ const ShareDialog = props => {
         <UserEmailAutocomplete
           label={t('storyMap.share_dialog_autocomplete_label')}
           helperText={t('storyMap.share_dialog_autocomplete_helper_text')}
-          value={newCollaborators}
+          value={newEditors}
           onChange={onChange}
         />
         <Accordion
@@ -265,13 +265,13 @@ const ShareDialog = props => {
             }}
           >
             <Typography variant="h2" sx={{ p: 0, textTransform: 'none' }}>
-              {t('storyMap.share_dialog_collaborators_title')}
+              {t('storyMap.share_dialog_editors_title')}
             </Typography>
           </AccordionSummary>
           <AccordionDetails sx={{ p: 0 }}>
             <MembershipsList
               showCards
-              label={t('storyMap.share_dialog_collaborators_title')}
+              label={t('storyMap.share_dialog_editors_title')}
               memberships={memberships}
               RemoveComponent={RemoveButton}
               RoleComponent={RoleComponent}
@@ -293,7 +293,7 @@ const ShareDialog = props => {
           variant="contained"
           onClick={onConfirm}
           loading={processing}
-          disabled={_.isEmpty(newCollaborators)}
+          disabled={_.isEmpty(newEditors)}
         >
           {t('storyMap.share_dialog_confirm_label')}
         </LoadingButton>

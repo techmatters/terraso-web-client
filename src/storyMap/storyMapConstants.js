@@ -31,5 +31,5 @@ export const ALIGNMENTS = {
   full: 'fully',
 };
 
-export const MEMBERSHIP_ROLE_CONTRIBUTOR = 'collaborator';
+export const MEMBERSHIP_ROLE_EDITOR = 'editor';
 export const MEMBERSHIP_ROLE_OWNER = 'owner';

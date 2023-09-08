@@ -21,7 +21,7 @@ import {
   MEMBERSHIP_STATUS_APPROVED,
   ROLE_MANAGER,
 } from 'group/membership/components/groupMembershipConstants';
-import { MEMBERSHIP_ROLE_CONTRIBUTOR } from 'storyMap/storyMapConstants';
+import { MEMBERSHIP_ROLE_EDITOR } from 'storyMap/storyMapConstants';
 
 const getAccountMembership = group =>
   _.getOr(
@@ -127,7 +127,7 @@ const isAllowedToChangeStoryMap = ({ resource: storyMap, user }) => {
   const accountMembership = storyMap.accountMembership;
   return Promise.resolve(
     accountMembership &&
-      accountMembership.userRole === MEMBERSHIP_ROLE_CONTRIBUTOR &&
+      accountMembership.userRole === MEMBERSHIP_ROLE_EDITOR &&
       accountMembership.membershipStatus === MEMBERSHIP_STATUS_APPROVED
   );
 };

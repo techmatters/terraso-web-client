@@ -23,6 +23,7 @@ import { changeCombobox } from 'tests/uiUtils';
 import i18n from 'localization/i18n';
 
 import StoryMapUpdate from './StoryMapUpdate';
+import { MEMBERSHIP_ROLE_EDITOR } from 'storyMap/storyMapConstants';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
@@ -66,7 +67,7 @@ const API_STORY_MAP = {
         {
           node: {
             id: '08a06380-911e-49ea-b44b-24c7ddafce1f',
-            userRole: 'collaborator',
+            userRole: MEMBERSHIP_ROLE_EDITOR,
             membershipStatus: 'PENDING',
             pendingEmail: 'pending@test.com',
             user: null,
@@ -75,7 +76,7 @@ const API_STORY_MAP = {
         {
           node: {
             id: '75bdc04e-9bdc-4c46-b8cb-916a93e8f4b8',
-            userRole: 'collaborator',
+            userRole: MEMBERSHIP_ROLE_EDITOR
             membershipStatus: 'APPROVED',
             pendingEmail: null,
             user: {
@@ -187,13 +188,13 @@ test('StoryMapUpdate: Share Dialog invite members', async () => {
         memberships: [
           {
             id: 'new-id-1',
-            userRole: 'collaborator',
+            userRole: MEMBERSHIP_ROLE_EDITOR,
             membershipStatus: 'PENDING',
             pendingEmail: 'email2@test.com',
           },
           {
             id: 'new-id-2',
-            userRole: 'collaborator',
+            userRole: MEMBERSHIP_ROLE_EDITOR,
             membershipStatus: 'PENDING',
             user: {
               firstName: 'Manuel',
@@ -229,7 +230,7 @@ test('StoryMapUpdate: Share Dialog invite members', async () => {
   expect(inviteCall).toMatchObject({
     input: {
       userEmails: ['email1@text.com', 'email2@test.com'],
-      userRole: 'collaborator',
+      userRole: MEMBERSHIP_ROLE_EDITOR,
       storyMapId: API_STORY_MAP.storyMapId,
       storyMapSlug: API_STORY_MAP.slug,
     },
@@ -291,7 +292,7 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
   });
 });
 
-test('StoryMapUpdate: See story map as collaborator', async () => {
+test('StoryMapUpdate: See story map as editor', async () => {
   mockTerrasoAPIrequestGraphQL({
     'query fetchStoryMap': Promise.resolve({
       storyMaps: {
@@ -303,7 +304,7 @@ test('StoryMapUpdate: See story map as collaborator', async () => {
                 ...API_STORY_MAP.membershipList,
                 accountMembership: {
                   id: API_STORY_MAP.membershipList.memberships.edges[1].node.id,
-                  userRole: 'collaborator',
+                  userRole: MEMBERSHIP_ROLE_EDITOR,
                   membershipStatus: 'APPROVED',
                 },
               },
