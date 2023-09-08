@@ -245,7 +245,7 @@ test('AccountProfile: Save language', async () => {
   });
 });
 
-test('AccountProfile: Save notifications', async () => {
+test('AccountProfile: Save group notifications', async () => {
   terrasoApi.requestGraphQL.mockImplementation(query => {
     const trimmedQuery = query.trim();
 
@@ -278,7 +278,7 @@ test('AccountProfile: Save notifications', async () => {
             preferences: {
               edges: [
                 { node: { key: 'language', value: 'es-ES' } },
-                { node: { key: 'notifications', value: 'false' } },
+                { node: { key: 'group_notifications', value: 'false' } },
               ],
             },
           },
@@ -290,7 +290,7 @@ test('AccountProfile: Save notifications', async () => {
       return Promise.resolve(
         _.set(
           'updateUserPreference.preference',
-          { key: 'notifications', value: 'true' },
+          { key: 'group_notifications', value: 'true' },
           {}
         )
       );
@@ -311,7 +311,7 @@ test('AccountProfile: Save notifications', async () => {
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(4);
   expect(terrasoApi.requestGraphQL.mock.calls[3][1]).toStrictEqual({
     input: {
-      key: 'notifications',
+      key: 'group_notifications',
       userEmail: 'group@group.org',
       value: 'true',
     },
