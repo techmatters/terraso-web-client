@@ -232,9 +232,9 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
   ).toBeInTheDocument();
 
   // Map
-  await waitFor(() => expect(map.addSource).toHaveBeenCalledTimes(3));
-  expect(map.addSource.mock.calls[2][0]).toEqual('visualization');
-  const geojson = map.addSource.mock.calls[2][1].data;
+  await waitFor(() => expect(map.addSource).toHaveBeenCalledTimes(1));
+  expect(map.addSource.mock.calls[0][0]).toEqual('visualization');
+  const geojson = map.addSource.mock.calls[0][1].data;
   expect(geojson.features.length).toBe(3);
 
   expect(map.addLayer).toHaveBeenCalledTimes(3);
