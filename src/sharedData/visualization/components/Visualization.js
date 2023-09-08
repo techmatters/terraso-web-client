@@ -278,7 +278,10 @@ const MapboxLayer = props => {
     if (!map || !popupData?.coordinates) {
       return;
     }
-    popup.setLngLat(popupData?.coordinates).addTo(map);
+    popup.setLngLat(popupData?.coordinates);
+    if (!popup.isOpen()) {
+      popup.addTo(map);
+    }
   }, [popup, popupData?.coordinates, map]);
 
   useEffect(() => {
