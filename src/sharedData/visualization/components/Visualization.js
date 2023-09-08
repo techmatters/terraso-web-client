@@ -333,13 +333,15 @@ const MapboxLayer = props => {
       );
     })();
 
-    const bounds = useConfigBounds ? visualizationConfigBounds : geoJsonBounds;
+    const bounds =
+      useConfigBounds && visualizationConfigBounds
+        ? visualizationConfigBounds
+        : geoJsonBounds;
 
     if (bounds && !bounds.isEmpty()) {
       map.fitBounds(bounds, {
         padding: 50,
         animate: false,
-        maxZoom: 10,
       });
     }
   }, [map, visualizationConfig?.viewportConfig?.bounds, useConfigBounds]);
@@ -376,6 +378,7 @@ const Visualization = props => {
     <>
       <Map
         disableRotation
+        disableElevation
         projection="mercator"
         mapStyle={visualizationConfig?.viewportConfig?.baseMapStyle}
         onBoundsChange={onBoundsChange}
