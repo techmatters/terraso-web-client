@@ -212,7 +212,8 @@
         "profile_form_label": "Manage profile",
         "form_language_label": "Language",
         "form_notifications_section_label": "Email notifications",
-        "form_notifications_label": "Notify me when a group I manage has pending requests or my request to join a closed group is approved",
+        "form_notifications_group_label": "A group I manage has pending requests or my request to join a closed group is approved",
+        "form_notifications_story_map_label": "I am invited to edit a story map",
         "unsubscribe_title": "Unsubscribe",
         "unsubscribe_success": "You have been unsubscribed from Terraso emails.",
         "unsubscribe_error": "Error unsubscribing from Terraso emails"

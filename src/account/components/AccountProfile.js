@@ -25,7 +25,9 @@ import {
 } from 'terraso-client-shared/account/accountSlice';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import * as yup from 'yup';
-import { Checkbox, FormControlLabel } from '@mui/material';
+import { Checkbox, FormControlLabel, Typography } from '@mui/material';
+
+import { withProps } from 'react-hoc';
 
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import Form from 'forms/components/Form';
@@ -82,10 +84,47 @@ const FIELDS = [
     },
   },
   {
-    name: 'preferences.notifications',
-    label: 'account.form_notifications_section_label',
+    name: 'notifications',
+    renderStaticElement: ({ t }) => (
+      <Typography
+        variant="caption"
+        size="small"
+        sx={{ pl: 2, textTransform: 'uppercase', opacity: 0.6 }}
+      >
+        {t('account.form_notifications_section_label')}
+      </Typography>
+    ),
+  },
+  {
+    name: 'preferences.group_notifications',
     props: {
-      renderInput: ({ id, field }) => <NotificationsCheckboxes field={field} />,
+      renderInput: ({ id, field }) => (
+        <GroupNotificationsCheckbox field={field} />
+      ),
+      gridItemProps: {
+        sx: {
+          '&.MuiGrid-root.MuiGrid-item': {
+            pt: 0,
+          },
+          pb: 0,
+        },
+      },
+    },
+  },
+  {
+    name: 'preferences.story_map_notifications',
+    props: {
+      renderInput: ({ id, field }) => (
+        <StoryMapNotificationsCheckbox field={field} />
+      ),
+      gridItemProps: {
+        sx: {
+          '&.MuiGrid-root.MuiGrid-item': {
+            pt: 0,
+          },
+          m: 0,
+        },
+      },
     },
   },
   {
@@ -104,7 +143,11 @@ const FIELDS = [
   },
 ];
 
-const PREFERENCE_KEYS = ['language', 'notifications'];
+const PREFERENCE_KEYS = [
+  'language',
+  'group_notifications',
+  'story_map_notifications',
+];
 
 const ProfilePicture = () => {
   const { data: user } = useSelector(_.get('account.profile'));
@@ -133,7 +176,7 @@ const AccountProfile = () => {
     dispatch(
       saveUser(
         _.omit(
-          ['profilePicture', 'email'].concat(
+          ['profilePicture', 'notifications', 'email'].concat(
             PREFERENCE_KEYS.map(key => `preferences.${key}`)
           ),
           updatedProfile
@@ -158,7 +201,7 @@ const AccountProfile = () => {
           savePreference({ key: preferenceKey, value: newValue.toString() })
         );
 
-        if (preferenceKey === 'notifications') {
+        if (_.endsWith(preferenceKey, 'notifications')) {
           trackEvent('preference.update', {
             props: { emailNotifications: newValue },
           });
@@ -188,9 +231,9 @@ const AccountProfile = () => {
   );
 };
 
-const NotificationsCheckboxes = props => {
+const BaseNotificationsCheckbox = props => {
   const { t } = useTranslation();
-  const { field } = props;
+  const { field, formKey, label } = props;
 
   const handleChange = useCallback(
     event => {
@@ -201,7 +244,7 @@ const NotificationsCheckboxes = props => {
 
   return (
     <FormControlLabel
-      key="notifications"
+      key={formKey}
       control={
         <Checkbox
           sx={{ pt: 0 }}
@@ -212,9 +255,19 @@ const NotificationsCheckboxes = props => {
       sx={{
         alignItems: 'flex-start',
       }}
-      label={t('account.form_notifications_label')}
+      label={t(label)}
     />
   );
 };
+
+const GroupNotificationsCheckbox = withProps(BaseNotificationsCheckbox, {
+  formKey: 'group_notifications',
+  label: 'account.form_notifications_group_label',
+});
+
+const StoryMapNotificationsCheckbox = withProps(BaseNotificationsCheckbox, {
+  formKey: 'story_map_notifications',
+  label: 'account.form_notifications_story_map_label',
+});
 
 export default AccountProfile;
