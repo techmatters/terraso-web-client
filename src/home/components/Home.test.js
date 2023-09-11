@@ -202,6 +202,11 @@ test('Home: Display Story Maps', async () => {
               title: 'Story 1',
               isPublished: false,
               updatedAt: '2023-01-31T22:25:42.916303+00:00',
+              createdBy: {
+                userId: 'user-1',
+                firstName: 'Pablo',
+                lastName: 'Perez',
+              },
             },
           },
           {
@@ -212,6 +217,11 @@ test('Home: Display Story Maps', async () => {
               title: 'Story 2',
               isPublished: true,
               updatedAt: '2023-01-31T22:25:42.916303+00:00',
+              createdBy: {
+                userId: 'user-2',
+                firstName: 'Pedro',
+                lastName: 'Paez',
+              },
             },
           },
         ],

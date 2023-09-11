@@ -15,6 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
+import {
+  extractAccountMembership,
+  extractMembershipsInfo,
+} from 'terraso-client-shared/collaboration/membershipsUtils';
 
 import { REACT_APP_BASE_URL } from 'config';
 
@@ -40,3 +44,9 @@ export const generateStoryMapEmbedUrl = storyMap => {
 
 export const generateStoryMapEditUrl = storyMap =>
   `${generateStoryMapUrl(storyMap)}/edit`;
+
+export const extractStoryMap = storyMap => ({
+  ..._.omit(['membershipList'], storyMap),
+  accountMembership: extractAccountMembership(storyMap.membershipList),
+  membershipsInfo: extractMembershipsInfo(storyMap.membershipList),
+});

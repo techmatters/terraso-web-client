@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2023 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -14,18 +14,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import useMediaQuery from '@mui/material/useMediaQuery';
+import { fireEvent, within } from 'tests/utils';
 
-import theme from 'theme';
+export const changeCombobox = async (parent, name, newValue, isNew = true) => {
+  const combobox = parent.getByRole('combobox', {
+    name,
+  });
+  fireEvent.change(combobox, { target: { value: newValue } });
 
-const ResponsiveSwitch = props => {
-  const { desktop, mobile } = props;
-  const isSmall = useMediaQuery(theme.breakpoints.down('md'));
+  const optionsList = parent.getByRole('listbox', { name });
 
-  if (isSmall) {
-    return mobile;
+  if (isNew) {
+    fireEvent.keyDown(combobox, { key: 'Enter' });
+  } else {
+    const option = within(optionsList).getByRole('option', {
+      name: newValue,
+    });
+    fireEvent.click(option);
   }
-  return desktop;
 };
-
-export default ResponsiveSwitch;

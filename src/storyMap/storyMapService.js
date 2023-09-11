@@ -15,20 +15,27 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
+import {
+  extractAccountMembership,
+  extractMembership,
+  extractMemberships,
+} from 'terraso-client-shared/collaboration/membershipsUtils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
+
+import { extractStoryMap } from './storyMapUtils';
 
 export const fetchSamples = (params, currentUser) => {
   const query = graphql(`
     query storyMapsHome($accountEmail: String!) {
-      samples: storyMaps(createdBy_Email_Not: $accountEmail) {
+      samples: storyMaps(memberships_User_Email_Not: $accountEmail) {
         edges {
           node {
             ...storyMapMetadataFields
           }
         }
       }
-      userStoryMaps: storyMaps(createdBy_Email: $accountEmail) {
+      userStoryMaps: storyMaps(memberships_User_Email: $accountEmail) {
         edges {
           node {
             ...storyMapMetadataFields
@@ -43,11 +50,13 @@ export const fetchSamples = (params, currentUser) => {
       samples: _.getOr([], 'samples.edges', response)
         .map(_.get('node'))
         .sort(_.get('publishedAt'))
-        .reverse(),
+        .reverse()
+        .map(extractStoryMap),
       userStoryMaps: _.getOr([], 'userStoryMaps.edges', response)
         .map(_.get('node'))
         .sort(_.get('publishedAt'))
-        .reverse(),
+        .reverse()
+        .map(extractStoryMap),
     }));
 };
 
@@ -58,6 +67,10 @@ export const fetchStoryMap = ({ slug, storyMapId }) => {
         edges {
           node {
             ...storyMapFields
+            membershipList {
+              ...collaborationMemberships
+              ...accountCollaborationMembership
+            }
           }
         }
       }
@@ -68,8 +81,10 @@ export const fetchStoryMap = ({ slug, storyMapId }) => {
     .then(_.get('storyMaps.edges[0].node'))
     .then(storyMap => storyMap || Promise.reject('not_found'))
     .then(storyMap => ({
-      ...storyMap,
+      ..._.omit(['membershipList', 'configuration'], storyMap),
       config: JSON.parse(storyMap.configuration),
+      memberships: extractMemberships(storyMap.membershipList),
+      accountMembership: extractAccountMembership(storyMap.membershipList),
     }));
 };
 
@@ -129,4 +144,117 @@ export const deleteStoryMap = ({ storyMap }) => {
   return terrasoApi.requestGraphQL(query, {
     id: storyMap.id,
   });
+};
+
+export const addMemberships = ({ storyMap, emails, userRole }) => {
+  const query = graphql(`
+    mutation addMemberships($input: StoryMapMembershipSaveMutationInput!) {
+      saveStoryMapMembership(input: $input) {
+        memberships {
+          ...collaborationMembershipFields
+        }
+        errors
+      }
+    }
+  `);
+
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: {
+        storyMapId: storyMap.storyMapId,
+        storyMapSlug: storyMap.slug,
+        userEmails: emails,
+        userRole,
+      },
+    })
+    .then(_.get('saveStoryMapMembership.memberships'))
+    .then(response =>
+      response.map(membership => extractMembership(membership))
+    );
+};
+
+export const deleteMembership = ({ storyMap, membership }) => {
+  const query = graphql(`
+    mutation deleteMembership($input: StoryMapMembershipDeleteMutationInput!) {
+      deleteStoryMapMembership(input: $input) {
+        membership {
+          id
+        }
+        errors
+      }
+    }
+  `);
+
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: {
+        id: membership.membershipId,
+        storyMapId: storyMap.storyMapId,
+        storyMapSlug: storyMap.slug,
+      },
+    })
+    .then(_.get('deleteStoryMapMembership.membership'));
+};
+
+export const approveMembership = ({ membership }, currentUser) => {
+  const query = graphql(`
+    mutation approveMembership(
+      $accountEmail: String!
+      $input: StoryMapMembershipApproveMutationInput!
+    ) {
+      approveStoryMapMembership(input: $input) {
+        membership {
+          id
+        }
+        storyMap {
+          ...storyMapMetadataFields
+        }
+        errors
+      }
+    }
+  `);
+
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: {
+        membershipId: membership.membershipId,
+      },
+      accountEmail: currentUser.email,
+    })
+    .then(response => ({
+      membership: response.approveStoryMapMembership.membership,
+      storyMap: extractStoryMap(response.approveStoryMapMembership.storyMap),
+    }));
+};
+
+export const approveMembershipToken = ({ membership, token, accountEmail }) => {
+  const query = graphql(`
+    mutation approveMembershipToken(
+      $accountEmail: String!
+      $input: StoryMapMembershipApproveTokenMutationInput!
+    ) {
+      approveStoryMapMembershipToken(input: $input) {
+        membership {
+          id
+        }
+        storyMap {
+          ...storyMapMetadataFields
+        }
+        errors
+      }
+    }
+  `);
+
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: {
+        inviteToken: token,
+      },
+      accountEmail,
+    })
+    .then(response => response.approveStoryMapMembershipToken)
+    .then(response => ({
+      membership: response.membership,
+      storyMap: extractStoryMap(response.storyMap),
+    }));
 };

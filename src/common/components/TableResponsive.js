@@ -34,10 +34,12 @@ import {
   Stack,
   TextField,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 
 import BaseTable from 'common/components/Table';
-import ResponsiveSwitch from 'layout/ResponsiveSwitch';
+
+import theme from 'theme';
 
 const SEARCH_DEBOUNCE = 100; // milliseconds
 const SEARCH_MINIMUM_LENGTH = 2;
@@ -77,7 +79,13 @@ const CardField = props => {
   }
 
   return (
-    <Grid direction="column" container item xs={column.cardSize || 12}>
+    <Grid
+      wrap="nowrap"
+      direction="column"
+      container
+      item
+      {...(column.cardFieldSizes || { xs: 12 })}
+    >
       {!isActions && (
         <Typography variant="caption">{column.headerName}</Typography>
       )}
@@ -119,12 +127,16 @@ const CardValue = props => {
 };
 
 const Cards = props => {
-  const { columns, rows, cardsProps = {} } = props;
+  const { columns, rows, cardsProps = {}, label, getItemLabel } = props;
 
   return (
-    <List>
+    <List dense aria-label={label}>
       {rows.map(row => (
-        <ListItem key={row.id} sx={theme => ({ padding: 0, marginBottom: 2 })}>
+        <ListItem
+          key={row.id}
+          sx={() => ({ padding: 0, marginBottom: 1 })}
+          aria-label={getItemLabel && getItemLabel(row)}
+        >
           <Card
             component={Stack}
             direction="row"
@@ -133,7 +145,16 @@ const Cards = props => {
             sx={{ width: '100%', padding: 2 }}
           >
             {cardsProps.avatarRender && cardsProps.avatarRender({ row })}
-            <Grid container spacing={2}>
+            <Grid
+              container
+              justifyContent="center"
+              alignItems="center"
+              columnSpacing={2}
+              rowSpacing={{
+                xs: 1,
+                sm: 0,
+              }}
+            >
               {columns.map(column => (
                 <CardField key={column.field} column={column} row={row} />
               ))}
@@ -347,6 +368,13 @@ const EmptyList = props => {
 };
 
 const TableResponsive = props => {
+  const {
+    cardsBreakpoint = theme.breakpoints.down('md'),
+    showCards = false,
+    label,
+    getItemLabel,
+  } = props;
+  const showCardsMediaQuery = useMediaQuery(cardsBreakpoint);
   const [filteredRows, setFilterdRows] = useState(props.rows);
 
   const filteredProps = useMemo(
@@ -369,11 +397,10 @@ const TableResponsive = props => {
       />
       {_.isEmpty(filteredRows) ? (
         <EmptyList {...props} />
+      ) : showCards || showCardsMediaQuery ? (
+        <Cards {...filteredProps} label={label} getItemLabel={getItemLabel} />
       ) : (
-        <ResponsiveSwitch
-          desktop={<Table {...filteredProps} />}
-          mobile={<Cards {...filteredProps} />}
-        />
+        <Table {...filteredProps} />
       )}
     </>
   );

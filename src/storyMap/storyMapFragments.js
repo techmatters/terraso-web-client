@@ -26,9 +26,11 @@ export const storyMapFields = /* GraphQL */ `
     updatedAt
     publishedAt
     createdBy {
-      id
-      lastName
-      firstName
+      ...userFields
+    }
+    membershipList {
+      ...collaborationMemberships
+      ...accountCollaborationMembership
     }
   }
 `;
@@ -47,6 +49,17 @@ export const storyMapMetadataFields = /* GraphQL */ `
       id
       lastName
       firstName
+    }
+    membershipList {
+      membershipsCount
+      ...accountCollaborationMembership
+      memberships(user_Email_Not: $accountEmail, first: 2) {
+        edges {
+          node {
+            ...collaborationMembershipFields
+          }
+        }
+      }
     }
   }
 `;

@@ -17,7 +17,7 @@
 import React, { useCallback } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Alert, Grid, Stack } from '@mui/material';
 
@@ -27,7 +27,7 @@ import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import GroupDefaultCard from 'group/components/GroupDefaultHomeCard';
 import GroupsCard from 'group/components/GroupsHomeCard';
-import { fetchHomeData, removeStoryMap } from 'home/homeSlice';
+import { fetchHomeData } from 'home/homeSlice';
 import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultHomeCard';
 import LandscapesCard from 'landscape/components/LandscapesHomeCard';
 import StoryMapsCard from 'storyMap/components/StoryMapsCard';
@@ -59,13 +59,7 @@ const Groups = ({ groups, fetching }) => {
 };
 
 const StoryMaps = ({ storyMaps, fetching }) => {
-  const dispatch = useDispatch();
   const { t } = useTranslation();
-
-  const onDeleteSuccess = useCallback(
-    storyMap => dispatch(removeStoryMap(storyMap.id)),
-    [dispatch]
-  );
 
   if (fetching) {
     return <LoaderCard />;
@@ -76,11 +70,7 @@ const StoryMaps = ({ storyMaps, fetching }) => {
   }
 
   return (
-    <StoryMapsCard
-      onDeleteSuccess={onDeleteSuccess}
-      storyMaps={storyMaps}
-      title={t('storyMap.home_title')}
-    />
+    <StoryMapsCard storyMaps={storyMaps} title={t('storyMap.home_title')} />
   );
 };
 
@@ -88,8 +78,9 @@ const Home = () => {
   const { t } = useTranslation();
 
   const { data: user } = useSelector(state => state.account.currentUser);
+  const { list: storyMaps } = useSelector(_.get('storyMap.userStoryMaps'));
   const home = useSelector(state => state.userHome);
-  const { groups, landscapes, storyMaps, error, fetching } = home;
+  const { groups, landscapes, error, fetching } = home;
 
   useDocumentTitle(t('home.document_title'), false, true);
   useDocumentDescription(t('home.document_description'));

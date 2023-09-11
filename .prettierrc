@@ -10,7 +10,7 @@
 		"",
 		"^(custom-hooks|react-hoc|timeUtils)$",
 		"",
-		"^(common|forms|layout|localization|monitoring|navigation|notifications|permissions|state)/(.*)$",
+		"^(collaboration|common|forms|layout|localization|monitoring|navigation|notifications|permissions|state)/(.*)$",
 		"^(account|contact|gis|group|home|landscape|sharedData|storyMap|taxonomies|terrasoBackend|tool|user)/(.*)$",
 		"",
 		"^[./]",

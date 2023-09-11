@@ -18,6 +18,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
+import i18n from 'localization/i18n';
 import * as storyMapService from 'storyMap/storyMapService';
 
 const initialState = {
@@ -40,6 +41,13 @@ const initialState = {
     list: [],
   },
   delete: {},
+  memberships: {
+    add: {
+      saving: false,
+    },
+    delete: {},
+    approve: {},
+  },
 };
 
 export const fetchSamples = createAsyncThunk(
@@ -103,6 +111,57 @@ export const deleteStoryMap = createAsyncThunk(
     },
   })
 );
+export const addMemberships = createAsyncThunk(
+  'storyMap/addMemberships',
+  storyMapService.addMemberships,
+  (members, { storyMap: { config } }) => ({
+    severity: 'success',
+    content: 'storyMap.added_memberships',
+    params: {
+      title: config.title,
+      names: members.map(
+        member =>
+          member.pendingEmail || i18n.t('user.full_name', { user: member })
+      ),
+      count: members.length,
+    },
+  })
+);
+export const deleteMembership = createAsyncThunk(
+  'storyMap/deleteMembership',
+  storyMapService.deleteMembership,
+  (result, { isOwnMembership, membership, storyMap }) => ({
+    severity: 'success',
+    content: isOwnMembership
+      ? 'storyMap.left_membership'
+      : 'storyMap.deleted_membership',
+    params: {
+      storyMapTitle: storyMap.title,
+      name:
+        membership.pendingEmail ||
+        i18n.t('user.full_name', { user: membership }),
+    },
+  })
+);
+
+export const approveMembershipToken = createAsyncThunk(
+  'storyMap/approveMembership',
+  storyMapService.approveMembershipToken,
+  null,
+  false
+);
+
+export const approveMembership = createAsyncThunk(
+  'storyMap/approveMembership',
+  storyMapService.approveMembership,
+  ({ storyMap: { title } }) => ({
+    severity: 'success',
+    content: 'storyMap.approved_membership',
+    params: {
+      storyMapTitle: title,
+    },
+  })
+);
 
 const storyMapSlice = createSlice({
   name: 'storyMap',
@@ -124,6 +183,13 @@ const storyMapSlice = createSlice({
         },
       };
     },
+    setUserStoryMaps: (state, action) => ({
+      ...state,
+      userStoryMaps: {
+        ...state.userStoryMaps,
+        list: action.payload,
+      },
+    }),
   },
 
   extraReducers: builder => {
@@ -208,9 +274,127 @@ const storyMapSlice = createSlice({
     builder.addCase(deleteStoryMap.fulfilled, (state, action) =>
       _.set(`delete.${action.meta.arg.storyMap.id}.deleting`, false, state)
     );
+
+    builder.addCase(
+      addMemberships.pending,
+      _.set('memberships.add.saving', true)
+    );
+    builder.addCase(
+      addMemberships.rejected,
+      _.set('memberships.add.saving', false)
+    );
+    builder.addCase(addMemberships.fulfilled, (state, action) => {
+      const memberships = [...state.form.data.memberships, ...action.payload];
+      const uniqMemberships = _.uniqBy('id', memberships);
+      return {
+        ...state,
+        memberships: {
+          ...state.memberships,
+          add: {
+            saving: false,
+          },
+        },
+        form: {
+          ...state.form,
+          data: {
+            ...state.form.data,
+            memberships: uniqMemberships,
+          },
+        },
+      };
+    });
+
+    builder.addCase(deleteMembership.pending, (state, action) =>
+      _.set(
+        `memberships.delete.${action.meta.arg.membership.membershipId}.processing`,
+        true,
+        state
+      )
+    );
+    builder.addCase(deleteMembership.rejected, (state, action) =>
+      _.set(
+        `memberships.delete.${action.meta.arg.membership.membershipId}.processing`,
+        false,
+        state
+      )
+    );
+    builder.addCase(deleteMembership.fulfilled, (state, action) => {
+      const memberships = state.form.data.memberships.filter(
+        ({ membershipId }) => membershipId !== action.payload.id
+      );
+      return {
+        ...state,
+        memberships: {
+          ...state.memberships,
+          delete: {
+            ...state.memberships.delete,
+            [action.meta.arg.membership.membershipId]: {
+              processing: false,
+            },
+          },
+        },
+        form: {
+          ...state.form,
+          data: {
+            ...state.form.data,
+            memberships,
+          },
+        },
+      };
+    });
+
+    builder.addCase(approveMembership.pending, (state, action) => ({
+      ...state,
+      memberships: {
+        ...state.memberships,
+        approve: {
+          ...state.memberships.approve,
+          [action.meta.arg.membership.membershipId]: {
+            processing: true,
+          },
+        },
+      },
+    }));
+    builder.addCase(approveMembership.rejected, (state, action) => ({
+      ...state,
+      memberships: {
+        ...state.memberships,
+        approve: {
+          ...state.memberships.approve,
+          [action.meta.arg.membership.membershipId]: {
+            processing: false,
+            error: true,
+          },
+        },
+      },
+    }));
+    builder.addCase(approveMembership.fulfilled, (state, action) => ({
+      ...state,
+      memberships: {
+        ...state.memberships,
+        approve: {
+          ...state.memberships.approve,
+          [action.meta.arg.membership.membershipId]: {
+            processing: false,
+            success: true,
+            storyMap: action.payload.storyMap,
+          },
+        },
+      },
+      userStoryMaps: {
+        ...state.userStoryMaps,
+        list: state.userStoryMaps.list.map(userStoryMap => {
+          if (userStoryMap.id === action.payload.storyMap.id) {
+            return action.payload.storyMap;
+          }
+          return userStoryMap;
+        }),
+      },
+    }));
   },
 });
 
-export const { resetForm, removeUserStoryMap } = storyMapSlice.actions;
+export const { resetForm, removeUserStoryMap, setUserStoryMaps } =
+  storyMapSlice.actions;
 
 export default storyMapSlice.reducer;

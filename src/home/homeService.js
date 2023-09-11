@@ -22,6 +22,8 @@ import {
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
+import { extractStoryMap } from 'storyMap/storyMapUtils';
+
 export const fetchHomeData = email => {
   const query = graphql(`
     query home($accountEmail: String!) {
@@ -68,7 +70,7 @@ export const fetchHomeData = email => {
           }
         }
       }
-      storyMaps(createdBy_Email: $accountEmail) {
+      storyMaps(memberships_User_Email: $accountEmail) {
         edges {
           node {
             ...storyMapMetadataFields
@@ -103,6 +105,7 @@ export const fetchHomeData = email => {
       storyMaps: _.getOr([], 'storyMaps.edges', response)
         .map(_.get('node'))
         .sort(_.get('publishedAt'))
-        .reverse(),
+        .reverse()
+        .map(extractStoryMap),
     }));
 };

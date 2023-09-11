@@ -23,6 +23,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 
 import { useDocumentTitle } from 'common/document';
+import NotFound from 'layout/NotFound';
 import PageLoader from 'layout/PageLoader';
 import { useAnalytics } from 'monitoring/analytics';
 import { ILM_OUTPUT_PROP, LANDSCAPE_NARRATIVES } from 'monitoring/ilm';
@@ -152,7 +153,7 @@ const ContextWrapper = props => {
   }
 
   if (!storyMap || !allowed) {
-    return null;
+    return <NotFound />;
   }
 
   return (

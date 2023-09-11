@@ -29,12 +29,12 @@ import { useDispatch, useSelector } from 'terrasoApi/store';
 import { LoadingButton } from '@mui/lab';
 import { ListItem, MenuItem, Select, Stack, Typography } from '@mui/material';
 
+import MemberName from 'collaboration/components/MemberName';
+import MembershipsList from 'collaboration/components/MembershipsList';
 import ConfirmButton from 'common/components/ConfirmButton';
 import List from 'common/components/List';
-import TableResponsive from 'common/components/TableResponsive';
 import PageLoader from 'layout/PageLoader';
 import Restricted from 'permissions/components/Restricted';
-import AccountAvatar from 'account/components/AccountAvatar';
 import { useGroupContext } from 'group/groupContext';
 
 import {
@@ -117,25 +117,6 @@ const RemoveButton = ({ member, tabIndex }) => {
         buttonProps={{ tabIndex }}
       />
     </Restricted>
-  );
-};
-
-const MemberName = ({ member }) => {
-  const { t } = useTranslation();
-  return (
-    <Stack
-      direction="row"
-      justifyContent="flex-start"
-      alignItems="center"
-      spacing={2}
-    >
-      <AccountAvatar
-        component="div"
-        sx={{ width: 34, height: 34 }}
-        user={member}
-      />
-      <Typography>{t('user.full_name', { user: member })}</Typography>
-    </Stack>
   );
 };
 
@@ -252,45 +233,6 @@ const GroupMembersList = () => {
     members: groupedByStatus[MEMBERSHIP_STATUS_APPROVED],
   };
 
-  const columns = [
-    {
-      field: 'name',
-      headerName: t('group.members_list_column_name'),
-      flex: 1.5,
-      minWidth: 200,
-      valueGetter: ({ row: member }) => t('user.full_name', { user: member }),
-      cardRender: ({ row: member }) => (
-        <Typography>{t('user.full_name', { user: member })}</Typography>
-      ),
-      renderCell: ({ row: member }) => <MemberName member={member} />,
-    },
-    {
-      field: 'role',
-      headerName: t('group.members_list_column_role'),
-      flex: 1.5,
-      minWidth: 200,
-      cardSize: 6,
-      valueGetter: ({ row: member }) =>
-        t(`group.role_${member.userRole.toLowerCase()}`),
-      renderCell: ({ row: member, tabIndex }) => (
-        <RoleSelect member={member} tabIndex={tabIndex} />
-      ),
-    },
-    {
-      field: 'actions',
-      headerName: t('group.members_list_column_actions_description'),
-      type: 'actions',
-      sortable: false,
-      flex: 1.5,
-      minWidth: 200,
-      align: 'center',
-      cardSize: 6,
-      getActions: ({ row: member, tabIndex }) => [
-        <RemoveButton member={member} tabIndex={tabIndex} />,
-      ],
-    },
-  ];
-
   const membersTitle = t('group.members_list_title', {
     name: _.get('name', owner),
   });
@@ -314,29 +256,12 @@ const GroupMembersList = () => {
             </Typography>
           </Restricted>
         </Stack>
-        <TableResponsive
-          columns={columns}
-          rows={listContext.members}
-          emptyMessage={t('group.members_list_empty')}
-          searchParams={Object.fromEntries(searchParams.entries())}
-          onSearchParamsChange={setSearchParams}
-          cardsProps={{
-            avatarRender: ({ row: member }) => (
-              <AccountAvatar
-                component="div"
-                sx={{ width: 80, height: 80 }}
-                user={member}
-              />
-            ),
-          }}
-          tableProps={{
-            initialSort: [
-              {
-                field: 'name',
-                sort: 'asc',
-              },
-            ],
-          }}
+        <MembershipsList
+          memberships={listContext.members}
+          searchParams={searchParams}
+          setSearchParams={setSearchParams}
+          RoleComponent={RoleSelect}
+          RemoveComponent={RemoveButton}
         />
       </section>
     </GroupMembersListContext.Provider>
