@@ -21,9 +21,9 @@ import { mockTerrasoAPIrequestGraphQL } from 'tests/apiUtils';
 import { changeCombobox } from 'tests/uiUtils';
 
 import i18n from 'localization/i18n';
+import { MEMBERSHIP_ROLE_EDITOR } from 'storyMap/storyMapConstants';
 
 import StoryMapUpdate from './StoryMapUpdate';
-import { MEMBERSHIP_ROLE_EDITOR } from 'storyMap/storyMapConstants';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
@@ -76,7 +76,7 @@ const API_STORY_MAP = {
         {
           node: {
             id: '75bdc04e-9bdc-4c46-b8cb-916a93e8f4b8',
-            userRole: MEMBERSHIP_ROLE_EDITOR
+            userRole: MEMBERSHIP_ROLE_EDITOR,
             membershipStatus: 'APPROVED',
             pendingEmail: null,
             user: {
