@@ -852,6 +852,13 @@ test('StoryMapForm: Delete chapter', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Delete Chapter' }))
   );
 
+  // Wait for delete animation
+  await waitFor(() => {
+    expect(
+      screen.getByRole('button', { name: 'Save draft' })
+    ).toBeInTheDocument();
+  });
+
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
   );

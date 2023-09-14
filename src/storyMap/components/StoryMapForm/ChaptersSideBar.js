@@ -14,7 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { DragDropContext, Draggable } from 'react-beautiful-dnd';
 import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -33,6 +34,7 @@ import {
 } from '@mui/material';
 
 import ConfirmMenuItem from 'common/components/ConfirmMenuItem';
+import StrictModeDroppable from 'common/components/StrictModeDroppable';
 
 const SideBarItem = props => {
   const { t } = useTranslation();
@@ -106,7 +108,7 @@ const SideBarItem = props => {
   }, [handleMoveDown, handleMoveUp, item.index, chaptersLength, t]);
 
   return (
-    <ListItem sx={{ p: 0 }}>
+    <>
       <Button
         component="a"
         {...(item.active ? { 'aria-current': 'step' } : {})}
@@ -224,7 +226,7 @@ const SideBarItem = props => {
           </Grid>
         </Grid>
       </Button>
-    </ListItem>
+    </>
   );
 };
 
@@ -233,6 +235,7 @@ const ChaptersSidebar = props => {
   const { config, currentStepId, onAdd, onDelete, onMoveChapter, height } =
     props;
   const { chapters } = config;
+  const sensorAPIRef = useRef(null);
 
   const listItems = useMemo(
     () => [
@@ -263,34 +266,57 @@ const ChaptersSidebar = props => {
       aria-label={t('storyMap.form_chapters_sidebar_section_label')}
       sx={{ height, overflow: 'auto', width: '200px' }}
     >
-      <List>
-        {listItems.map(item => (
-          <SideBarItem
-            key={item.id}
-            item={item}
-            onDelete={onDelete}
-            onMoveChapter={onMoveChapter}
-            chaptersLength={chapters.length}
-          />
-        ))}
-        <ListItem component="li" sx={{ p: 0 }}>
-          <Button
-            onClick={onAdd}
-            sx={{
-              width: '100%',
-              borderRadius: 0,
-              bgcolor: 'gray.lite1',
-              m: 1,
-              display: 'flex',
-              alignItems: 'center',
-              flexDirection: 'column',
-            }}
-          >
-            <Typography>{t('storyMap.form_chapter_add')}</Typography>
-            <AddIcon />
-          </Button>
-        </ListItem>
-      </List>
+      <DragDropContext
+        sensors={[
+          api => {
+            sensorAPIRef.current = api;
+          },
+        ]}
+      >
+        <StrictModeDroppable droppableId="droppable-list">
+          {provided => (
+            <List ref={provided.innerRef} {...provided.droppableProps}>
+              {listItems.map((item, index) => (
+                <Draggable key={item.id} draggableId={item.id} index={index}>
+                  {(provided, snapshot) => (
+                    <ListItem
+                      key={item.id}
+                      ref={provided.innerRef}
+                      sx={{ p: 0 }}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <SideBarItem
+                        item={item}
+                        onDelete={onDelete}
+                        onMoveChapter={onMoveChapter}
+                        chaptersLength={chapters.length}
+                      />
+                    </ListItem>
+                  )}
+                </Draggable>
+              ))}
+              <ListItem component="li" sx={{ p: 0 }}>
+                <Button
+                  onClick={onAdd}
+                  sx={{
+                    width: '100%',
+                    borderRadius: 0,
+                    bgcolor: 'gray.lite1',
+                    m: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexDirection: 'column',
+                  }}
+                >
+                  <Typography>{t('storyMap.form_chapter_add')}</Typography>
+                  <AddIcon />
+                </Button>
+              </ListItem>
+            </List>
+          )}
+        </StrictModeDroppable>
+      </DragDropContext>
     </Grid>
   );
 };
