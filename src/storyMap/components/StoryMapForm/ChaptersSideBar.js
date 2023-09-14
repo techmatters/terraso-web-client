@@ -41,6 +41,8 @@ import StrictModeDroppable from 'common/components/StrictModeDroppable';
 
 import dragIcon from 'assets/drag-icon.svg';
 
+const DRAG_ANIMATION_DELAY = 300;
+
 const DragIcon = withProps(Box, {
   component: 'img',
   alt: '',
@@ -304,9 +306,7 @@ const ChaptersSidebar = props => {
       const preDrag = api.tryGetLock(chapterId, () => {});
       const drag = preDrag.snapLift();
       drag[action]();
-      setTimeout(() => {
-        drag.drop();
-      }, 300);
+      setTimeout(() => drag.drop(), DRAG_ANIMATION_DELAY);
     },
     [sensorAPIRef]
   );
