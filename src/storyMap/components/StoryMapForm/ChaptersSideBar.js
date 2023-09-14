@@ -140,8 +140,12 @@ const SideBarItem = props => {
                     size="small"
                     aria-label={t('storyMap.form_chapter_open_menu')}
                     onClick={handleOpenMenuClick}
+                    sx={{
+                      pt: '2px',
+                      color: 'secondary.main',
+                    }}
                   >
-                    <MoreVertIcon fontSize="inherit" />
+                    <MoreVertIcon fontSize="small" />
                   </IconButton>
                   <Menu
                     anchorEl={menuAnchorEl}
