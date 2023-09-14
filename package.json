@@ -7,7 +7,7 @@
   ],
   "dependencies": {
     "@graphql-codegen/client-preset": "^4.1.0",
-    "@hookform/resolvers": "^3.2.0",
+    "@hookform/resolvers": "^3.3.1",
     "@mapbox/mapbox-gl-draw": "^1.4.2",
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
     "@mui/icons-material": "^5.14.7",
