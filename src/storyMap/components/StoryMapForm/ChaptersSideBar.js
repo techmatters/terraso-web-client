@@ -293,7 +293,11 @@ const ChaptersSidebar = props => {
     ({ destination, source }) => {
       setDraggingId(null);
       const draggingElement = chapterItems[source.index];
-      const destinationIndex = destination.index;
+      const destinationIndex = destination?.index;
+
+      if (!destinationIndex) {
+        return;
+      }
 
       onMoveChapter(draggingElement.id, destinationIndex);
     },
