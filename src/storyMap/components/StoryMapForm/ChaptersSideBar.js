@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
+  Box,
   Button,
   Divider,
   Grid,
@@ -33,12 +34,25 @@ import {
   Typography,
 } from '@mui/material';
 
+import { withProps } from 'react-hoc';
+
 import ConfirmMenuItem from 'common/components/ConfirmMenuItem';
 import StrictModeDroppable from 'common/components/StrictModeDroppable';
 
+import dragIcon from 'assets/drag-icon.svg';
+
+const DragIcon = withProps(Box, {
+  component: 'img',
+  alt: '',
+  src: dragIcon,
+  width: 24,
+  height: 24,
+});
+
 const SideBarItem = props => {
   const { t } = useTranslation();
-  const { item, onDelete, onMoveChapter, chaptersLength } = props;
+  const { item, onDelete, onMoveDown, onMoveUp, chaptersLength, isDragging } =
+    props;
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const openMenu = useMemo(() => Boolean(menuAnchorEl), [menuAnchorEl]);
 
@@ -57,20 +71,20 @@ const SideBarItem = props => {
 
   const handleMoveUp = useCallback(
     event => {
-      onMoveChapter(item.id, item.index - 1);
+      onMoveUp(item.id);
       handleMenuClose();
       event.stopPropagation();
     },
-    [handleMenuClose, item.id, item.index, onMoveChapter]
+    [handleMenuClose, item.id, onMoveUp]
   );
 
   const handleMoveDown = useCallback(
     event => {
-      onMoveChapter(item.id, item.index + 1);
+      onMoveDown(item.id);
       handleMenuClose();
       event.stopPropagation();
     },
-    [handleMenuClose, item.id, item.index, onMoveChapter]
+    [handleMenuClose, item.id, onMoveDown]
   );
 
   const sortActions = useMemo(() => {
@@ -116,18 +130,24 @@ const SideBarItem = props => {
           width: '100%',
           borderRadius: 0,
           pl: 0,
-          bgcolor: item.active ? 'blue.mid' : 'transparent',
+          bgcolor: item.active || isDragging ? 'blue.mid' : 'transparent',
           '&:hover': { bgcolor: item.active ? 'blue.mid' : 'gray.lite1' },
         }}
         onClick={() => scrollTo(item.id)}
-        aria-label={item.label}
+        aria-label={
+          isDragging
+            ? t('storyMap.form_chapter_dragging_label', {
+                chapterLabel: item.label,
+              })
+            : item.label
+        }
       >
         <Grid container>
           <Grid
             item
             container
             xs={4}
-            alignItems="flex-end"
+            alignItems="flex-start"
             justifyContent="space-between"
             direction="column"
           >
@@ -206,12 +226,13 @@ const SideBarItem = props => {
                 {item.indexLabel}
               </Typography>
             </Stack>
+            {isDragging && <DragIcon sx={{ ml: 1 }} />}
           </Grid>
           <Grid item xs={8}>
             <Paper
               variant="outlined"
-              sx={{
-                borderRadius: 0,
+              sx={theme => ({
+                borderRadius: '4px',
                 bgcolor: 'gray.dark2',
                 color: 'white',
                 p: 1,
@@ -219,7 +240,7 @@ const SideBarItem = props => {
                 display: 'flex',
                 alignItems: 'center',
                 overflow: 'hidden',
-              }}
+              })}
             >
               {item.label}
             </Paper>
@@ -236,16 +257,21 @@ const ChaptersSidebar = props => {
     props;
   const { chapters } = config;
   const sensorAPIRef = useRef(null);
+  const [draggingId, setDraggingId] = useState(null);
 
-  const listItems = useMemo(
-    () => [
-      {
-        label: `${t('storyMap.form_title_chapter_label')}`,
-        id: 'story-map-title',
-        active: currentStepId === 'story-map-title',
-        index: 'T',
-      },
-      ...chapters.map((chapter, index) => ({
+  const titleItem = useMemo(
+    () => ({
+      label: `${t('storyMap.form_title_chapter_label')}`,
+      id: 'story-map-title',
+      active: currentStepId === 'story-map-title',
+      index: 'T',
+    }),
+    [currentStepId, t]
+  );
+
+  const chapterItems = useMemo(
+    () =>
+      chapters.map((chapter, index) => ({
         label: chapter.title || t('storyMap.form_chapter_no_title_label'),
         id: chapter.id,
         active: currentStepId === chapter.id,
@@ -254,8 +280,49 @@ const ChaptersSidebar = props => {
         index: index,
         indexLabel: index + 1,
       })),
-    ],
     [chapters, currentStepId, t]
+  );
+
+  const onDragStart = useCallback(data => {
+    setDraggingId(data.draggableId);
+  }, []);
+
+  const onDragEnd = useCallback(
+    ({ destination, source }) => {
+      setDraggingId(null);
+      const draggingElement = chapterItems[source.index];
+      const destinationIndex = destination.index;
+
+      onMoveChapter(draggingElement.id, destinationIndex);
+    },
+    [chapterItems, onMoveChapter]
+  );
+
+  const moveChapter = useCallback(
+    (chapterId, action) => {
+      const api = sensorAPIRef.current;
+      const preDrag = api.tryGetLock(chapterId, () => {});
+      const drag = preDrag.snapLift();
+      drag[action]();
+      setTimeout(() => {
+        drag.drop();
+      }, 300);
+    },
+    [sensorAPIRef]
+  );
+
+  const onMoveChapterDown = useCallback(
+    chapterId => {
+      moveChapter(chapterId, 'moveDown');
+    },
+    [moveChapter]
+  );
+
+  const onMoveChapterUp = useCallback(
+    chapterId => {
+      moveChapter(chapterId, 'moveUp');
+    },
+    [moveChapter]
   );
 
   return (
@@ -266,7 +333,10 @@ const ChaptersSidebar = props => {
       aria-label={t('storyMap.form_chapters_sidebar_section_label')}
       sx={{ height, overflow: 'auto', width: '200px' }}
     >
+      <SideBarItem item={titleItem} />
       <DragDropContext
+        onDragEnd={onDragEnd}
+        onBeforeCapture={onDragStart}
         sensors={[
           api => {
             sensorAPIRef.current = api;
@@ -276,7 +346,7 @@ const ChaptersSidebar = props => {
         <StrictModeDroppable droppableId="droppable-list">
           {provided => (
             <List ref={provided.innerRef} {...provided.droppableProps}>
-              {listItems.map((item, index) => (
+              {chapterItems.map((item, index) => (
                 <Draggable key={item.id} draggableId={item.id} index={index}>
                   {(provided, snapshot) => (
                     <ListItem
@@ -289,34 +359,35 @@ const ChaptersSidebar = props => {
                       <SideBarItem
                         item={item}
                         onDelete={onDelete}
-                        onMoveChapter={onMoveChapter}
+                        onMoveDown={onMoveChapterDown}
+                        onMoveUp={onMoveChapterUp}
                         chaptersLength={chapters.length}
+                        isDragging={item.id === draggingId}
                       />
                     </ListItem>
                   )}
                 </Draggable>
               ))}
-              <ListItem component="li" sx={{ p: 0 }}>
-                <Button
-                  onClick={onAdd}
-                  sx={{
-                    width: '100%',
-                    borderRadius: 0,
-                    bgcolor: 'gray.lite1',
-                    m: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexDirection: 'column',
-                  }}
-                >
-                  <Typography>{t('storyMap.form_chapter_add')}</Typography>
-                  <AddIcon />
-                </Button>
-              </ListItem>
+              {draggingId && provided.placeholder}
             </List>
           )}
         </StrictModeDroppable>
       </DragDropContext>
+      <Button
+        onClick={onAdd}
+        sx={{
+          width: '100%',
+          borderRadius: 0,
+          bgcolor: 'gray.lite1',
+          m: 1,
+          display: 'flex',
+          alignItems: 'center',
+          flexDirection: 'column',
+        }}
+      >
+        <Typography>{t('storyMap.form_chapter_add')}</Typography>
+        <AddIcon />
+      </Button>
     </Grid>
   );
 };
