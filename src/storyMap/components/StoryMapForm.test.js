@@ -706,6 +706,14 @@ test('StoryMapForm: Move chapter down with menu', async () => {
 
   await act(async () => fireEvent.click(moveDownButton));
 
+  await waitFor(() =>
+    expect(
+      screen.queryByRole('button', {
+        name: 'Dragging Chapter 1',
+      })
+    ).not.toBeInTheDocument()
+  );
+
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
   );
@@ -753,6 +761,20 @@ test('StoryMapForm: Move chapter up with menu', async () => {
   });
 
   await act(async () => fireEvent.click(moveUpButton));
+
+  expect(
+    screen.getByRole('button', {
+      name: 'Dragging Chapter 2',
+    })
+  ).toBeInTheDocument();
+
+  await waitFor(() =>
+    expect(
+      screen.queryByRole('button', {
+        name: 'Dragging Chapter 2',
+      })
+    ).not.toBeInTheDocument()
+  );
 
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
