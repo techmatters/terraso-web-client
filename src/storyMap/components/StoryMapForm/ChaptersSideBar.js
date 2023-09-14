@@ -295,7 +295,7 @@ const ChaptersSidebar = props => {
       const draggingElement = chapterItems[source.index];
       const destinationIndex = destination?.index;
 
-      if (!destinationIndex) {
+      if (destinationIndex === undefined) {
         return;
       }
 
