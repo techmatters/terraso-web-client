@@ -335,7 +335,14 @@ const ChaptersSidebar = props => {
       item
       component="nav"
       aria-label={t('storyMap.form_chapters_sidebar_section_label')}
-      sx={{ height, overflow: 'auto', width: '200px' }}
+      sx={{
+        height,
+        overflow: 'auto',
+        width: '200px',
+        display: 'flex',
+        alignItems: 'stretch',
+        flexDirection: 'column',
+      }}
     >
       <SideBarItem item={titleItem} />
       <DragDropContext
@@ -380,7 +387,6 @@ const ChaptersSidebar = props => {
       <Button
         onClick={onAdd}
         sx={{
-          width: '100%',
           borderRadius: 0,
           bgcolor: 'gray.lite1',
           m: 1,
