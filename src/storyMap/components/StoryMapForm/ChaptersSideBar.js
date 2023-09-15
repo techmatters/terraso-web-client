@@ -259,7 +259,7 @@ const ChaptersSidebar = props => {
     props;
   const { chapters } = config;
   const sensorAPIRef = useRef(null);
-  const [draggingId, setDraggingId] = useState(null);
+  const [dragging, setDragging] = useState(false);
 
   const titleItem = useMemo(
     () => ({
@@ -285,13 +285,11 @@ const ChaptersSidebar = props => {
     [chapters, currentStepId, t]
   );
 
-  const onDragStart = useCallback(data => {
-    setDraggingId(data.draggableId);
-  }, []);
+  const onDragStart = useCallback(() => setDragging(true), []);
 
   const onDragEnd = useCallback(
     ({ destination, source }) => {
-      setDraggingId(null);
+      setDragging(null);
       const draggingElement = chapterItems[source.index];
       const destinationIndex = destination?.index;
 
@@ -316,16 +314,12 @@ const ChaptersSidebar = props => {
   );
 
   const onMoveChapterDown = useCallback(
-    chapterId => {
-      moveChapter(chapterId, 'moveDown');
-    },
+    chapterId => moveChapter(chapterId, 'moveDown'),
     [moveChapter]
   );
 
   const onMoveChapterUp = useCallback(
-    chapterId => {
-      moveChapter(chapterId, 'moveUp');
-    },
+    chapterId => moveChapter(chapterId, 'moveUp'),
     [moveChapter]
   );
 
@@ -363,7 +357,12 @@ const ChaptersSidebar = props => {
                     <ListItem
                       key={item.id}
                       ref={provided.innerRef}
-                      sx={{ p: 0 }}
+                      sx={{
+                        p: 0,
+                        boxShadow: snapshot.isDragging
+                          ? '0px 2px 4px 0px rgba(0, 0, 0, 0.25)'
+                          : 'none',
+                      }}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                     >
@@ -373,13 +372,13 @@ const ChaptersSidebar = props => {
                         onMoveDown={onMoveChapterDown}
                         onMoveUp={onMoveChapterUp}
                         chaptersLength={chapters.length}
-                        isDragging={item.id === draggingId}
+                        isDragging={snapshot.isDragging}
                       />
                     </ListItem>
                   )}
                 </Draggable>
               ))}
-              {draggingId && provided.placeholder}
+              {dragging && provided.placeholder}
             </List>
           )}
         </StrictModeDroppable>
