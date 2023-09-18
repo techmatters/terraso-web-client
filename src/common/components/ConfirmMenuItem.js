@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { MenuItem } from '@mui/material';
 
 import ConfirmationDialog from 'common/components/ConfirmationDialog';
@@ -23,10 +23,6 @@ const ConfirmMenuItem = props => {
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const { confirmTitle, confirmMessage, confirmButton, onConfirm, children } =
     props;
-
-  useEffect(() => {
-    setOpenConfirmation(false);
-  }, []);
 
   const onClick = useCallback(event => {
     setOpenConfirmation(true);
