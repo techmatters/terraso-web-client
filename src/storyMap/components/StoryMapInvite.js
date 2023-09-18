@@ -26,12 +26,14 @@ import { Alert } from '@mui/material';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
+import { useAnalytics } from 'monitoring/analytics';
 import { approveMembershipToken } from 'storyMap/storyMapSlice';
 
 const StoryMapInvite = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { trackEvent } = useAnalytics();
   const [searchParams] = useSearchParams();
   const token = useMemo(() => searchParams.get('token'), [searchParams]);
   const decodedToken = useMemo(() => (token ? jwt(token) : null), [token]);
@@ -82,7 +84,8 @@ const StoryMapInvite = () => {
       return;
     }
     navigate(`/tools/story-maps/${storyMap.storyMapId}/${storyMap.slug}/edit`);
-  }, [success, navigate, storyMap]);
+    trackEvent('storymap.share.accept');
+  }, [success, navigate, trackEvent, storyMap]);
 
   useDocumentTitle(t('storyMap.invite_document_title'));
 

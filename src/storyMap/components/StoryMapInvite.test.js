@@ -18,6 +18,8 @@ import { render, screen, waitFor, within } from 'tests/utils';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { mockTerrasoAPIrequestGraphQL } from 'tests/apiUtils';
 
+import { useAnalytics } from 'monitoring/analytics';
+
 import StoryMapInvite from './StoryMapInvite';
 
 // Generated token with https://jwt.io/
@@ -38,11 +40,27 @@ jest.mock('react-router-dom', () => ({
   useSearchParams: jest.fn(),
 }));
 
+jest.mock('monitoring/analytics', () => ({
+  ...jest.requireActual('monitoring/analytics'),
+  useAnalytics: jest.fn(),
+}));
+
+beforeEach(() => {
+  useAnalytics.mockReturnValue({
+    trackEvent: jest.fn(),
+  });
+});
+
 const setup = async initialState => {
   await render(<StoryMapInvite />, initialState);
 };
 
 test('StoryMapInvite: Valid token', async () => {
+  const trackEvent = jest.fn();
+  useAnalytics.mockReturnValue({
+    trackEvent,
+  });
+
   const navigate = jest.fn();
   useNavigate.mockReturnValue(navigate);
 
@@ -79,6 +97,8 @@ test('StoryMapInvite: Valid token', async () => {
   expect(navigate.mock.calls[0]).toEqual([
     '/tools/story-maps/story-map-id-1/hello-world/edit',
   ]);
+
+  expect(trackEvent).toHaveBeenCalledWith('storymap.share.accept');
 });
 
 test('StoryMapInvite: Invalid token', async () => {
