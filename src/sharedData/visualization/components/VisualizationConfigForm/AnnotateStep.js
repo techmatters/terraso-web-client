@@ -22,7 +22,7 @@ import React, {
   useState,
 } from 'react';
 import _ from 'lodash/fp';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable } from 'react-beautiful-dnd';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -38,6 +38,7 @@ import {
 
 import List from 'common/components/List';
 import StepperStep from 'common/components/StepperStep';
+import StrictModeDroppable from 'common/components/StrictModeDroppable';
 import Form from 'forms/components/Form';
 import { FormContextProvider, useFormGetContext } from 'forms/formContext';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
@@ -81,27 +82,6 @@ const FORM_FIELDS = [
     },
   },
 ];
-
-// Work around for react-beautiful-dnd issue. The issues is that the
-// Droppable component is not compatible with React.StrictMode.
-// StricMode is used in the development environment by default.
-// See:
-// - https://stackoverflow.com/a/75807063
-// - https://github.com/atlassian/react-beautiful-dnd/issues/2396
-const StrictModeDroppable = ({ children, ...props }) => {
-  const [enabled, setEnabled] = useState(false);
-  useEffect(() => {
-    const animation = requestAnimationFrame(() => setEnabled(true));
-    return () => {
-      cancelAnimationFrame(animation);
-      setEnabled(false);
-    };
-  }, []);
-  if (!enabled) {
-    return null;
-  }
-  return <Droppable {...props}>{children}</Droppable>;
-};
 
 const DataPoints = props => {
   const { t } = useTranslation();

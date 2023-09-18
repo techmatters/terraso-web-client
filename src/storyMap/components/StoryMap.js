@@ -530,10 +530,10 @@ const StoryMap = props => {
                 map={map}
                 initialLocation={initialLocation}
               >
-                {insetMap => (
+                {insetMapContext => (
                   <Scroller
                     map={map}
-                    insetMap={insetMap}
+                    insetMap={insetMapContext?.map}
                     config={config}
                     animation={animation}
                     onStepChange={onStepChange}

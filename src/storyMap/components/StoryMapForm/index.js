@@ -174,6 +174,26 @@ const StoryMapForm = props => {
     [setConfig]
   );
 
+  const onMoveChapter = useCallback(
+    (id, index) => {
+      setConfig(config => ({
+        ...config,
+        chapters: (() => {
+          const withoutChapter = config.chapters.filter(
+            chapter => chapter.id !== id
+          );
+          const newChapters = [
+            ..._.slice(0, index, withoutChapter),
+            config.chapters.find(chapter => chapter.id === id),
+            ..._.slice(index, withoutChapter.length, withoutChapter),
+          ];
+          return newChapters;
+        })(),
+      }));
+    },
+    [setConfig]
+  );
+
   const onPublishWrapper = useCallback(() => {
     onPublish(config, mediaFiles).then(saved);
   }, [config, mediaFiles, onPublish, saved]);
@@ -209,6 +229,7 @@ const StoryMapForm = props => {
           currentStepId={currentStepId}
           onAdd={onAddChapter}
           onDelete={onDeleteChapter}
+          onMoveChapter={onMoveChapter}
           height={mapHeight}
         />
         <Grid

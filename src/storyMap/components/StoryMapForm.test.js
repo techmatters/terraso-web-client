@@ -62,6 +62,11 @@ const BASE_CONFIG = {
         zoom: 5,
       },
     },
+    {
+      id: 'chapter-3',
+      title: 'Chapter 3',
+      description: 'Chapter 3 description',
+    },
   ],
 };
 
@@ -395,13 +400,13 @@ test('StoryMapForm: Sidebar navigation', async () => {
   });
 
   const title = within(sidebarList).getByRole('button', {
-    name: 'T Title',
+    name: 'Title',
   });
   const chapter1 = within(sidebarList).getByRole('button', {
-    name: '1 Chapter 1',
+    name: 'Chapter 1',
   });
   const chapter2 = within(sidebarList).getByRole('button', {
-    name: '2 Chapter 2',
+    name: 'Chapter 2',
   });
 
   await waitFor(() => expect(scrollama).toHaveBeenCalled());
@@ -505,7 +510,7 @@ test('StoryMapForm: Adds new chapter', async () => {
       description: 'Chapter 2 description',
     })
   );
-  expect(saveCall[0].chapters[2]).toEqual(
+  expect(saveCall[0].chapters[3]).toEqual(
     expect.objectContaining({
       alignment: 'left',
       title: 'New chapter',
@@ -516,14 +521,14 @@ test('StoryMapForm: Adds new chapter', async () => {
       onChapterExit: [],
     })
   );
-  expect(saveCall[0].chapters[2].media).toEqual(
+  expect(saveCall[0].chapters[3].media).toEqual(
     expect.objectContaining({
       filename: 'test.jpg',
       type: 'image/jpeg',
     })
   );
 
-  expect(saveCall[0].chapters[2].media.contentId).toEqual(
+  expect(saveCall[0].chapters[3].media.contentId).toEqual(
     Object.keys(saveCall[1])[0]
   );
 });
@@ -671,6 +676,230 @@ test('StoryMapForm: Change chapter location', async () => {
         pitch: 64,
         zoom: 10,
       },
+    })
+  );
+});
+
+test('StoryMapForm: Move chapter down with menu', async () => {
+  const { onSaveDraft } = await setup(BASE_CONFIG);
+
+  const chaptersSection = screen.getByRole('navigation', {
+    name: 'Chapters sidebar',
+  });
+
+  const chapter1 = within(chaptersSection).getByRole('button', {
+    name: 'Chapter 1',
+  });
+
+  const menuButton = within(chapter1).getByRole('button', {
+    name: 'Open menu',
+  });
+  await act(async () => fireEvent.click(menuButton));
+
+  const menu = screen.getByRole('menu', {
+    name: 'Chapter 1 menu',
+  });
+
+  const moveDownButton = within(menu).getByRole('menuitem', {
+    name: 'Move Chapter Down',
+  });
+
+  await act(async () => fireEvent.click(moveDownButton));
+
+  await waitFor(() =>
+    expect(
+      screen.queryByRole('button', {
+        name: 'Dragging Chapter 1',
+      })
+    ).not.toBeInTheDocument()
+  );
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
+  );
+  expect(onSaveDraft).toHaveBeenCalledTimes(1);
+  const saveCall = onSaveDraft.mock.calls[0];
+
+  expect(saveCall[0].chapters[0]).toEqual(
+    expect.objectContaining({
+      id: 'chapter-2',
+      title: 'Chapter 2',
+      description: 'Chapter 2 description',
+    })
+  );
+  expect(saveCall[0].chapters[1]).toEqual(
+    expect.objectContaining({
+      id: 'chapter-1',
+      title: 'Chapter 1',
+      description: 'Chapter 1 description',
+    })
+  );
+});
+
+test('StoryMapForm: Move chapter up with menu', async () => {
+  const { onSaveDraft } = await setup(BASE_CONFIG);
+
+  const chaptersSection = screen.getByRole('navigation', {
+    name: 'Chapters sidebar',
+  });
+
+  const chapter2 = within(chaptersSection).getByRole('button', {
+    name: 'Chapter 2',
+  });
+
+  const menuButton = within(chapter2).getByRole('button', {
+    name: 'Open menu',
+  });
+  await act(async () => fireEvent.click(menuButton));
+
+  const menu = screen.getByRole('menu', {
+    name: 'Chapter 2 menu',
+  });
+
+  const moveUpButton = within(menu).getByRole('menuitem', {
+    name: 'Move Chapter Up',
+  });
+
+  await act(async () => fireEvent.click(moveUpButton));
+
+  expect(
+    screen.getByRole('button', {
+      name: 'Dragging Chapter 2',
+    })
+  ).toBeInTheDocument();
+
+  await waitFor(() =>
+    expect(
+      screen.queryByRole('button', {
+        name: 'Dragging Chapter 2',
+      })
+    ).not.toBeInTheDocument()
+  );
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
+  );
+  expect(onSaveDraft).toHaveBeenCalledTimes(1);
+  const saveCall = onSaveDraft.mock.calls[0];
+
+  expect(saveCall[0].chapters[0]).toEqual(
+    expect.objectContaining({
+      id: 'chapter-2',
+      title: 'Chapter 2',
+      description: 'Chapter 2 description',
+    })
+  );
+  expect(saveCall[0].chapters[1]).toEqual(
+    expect.objectContaining({
+      id: 'chapter-1',
+      title: 'Chapter 1',
+      description: 'Chapter 1 description',
+    })
+  );
+});
+
+test('StoryMapForm: Show correct sort buttons if chapter is first', async () => {
+  await setup(BASE_CONFIG);
+
+  const chaptersSection = screen.getByRole('navigation', {
+    name: 'Chapters sidebar',
+  });
+
+  const chapter1 = within(chaptersSection).getByRole('button', {
+    name: 'Chapter 1',
+  });
+  const menuButton = within(chapter1).getByRole('button', {
+    name: 'Open menu',
+  });
+  await act(async () => fireEvent.click(menuButton));
+  const menu = screen.getByRole('menu', {
+    name: 'Chapter 1 menu',
+  });
+  const moveUpButton = within(menu).queryByRole('menuitem', {
+    name: 'Move Chapter Up',
+  });
+
+  expect(moveUpButton).not.toBeInTheDocument();
+});
+
+test('StoryMapForm: Show correct sort buttons if chapter is last', async () => {
+  await setup(BASE_CONFIG);
+
+  const chaptersSection = screen.getByRole('navigation', {
+    name: 'Chapters sidebar',
+  });
+
+  const chapter3 = within(chaptersSection).getByRole('button', {
+    name: 'Chapter 3',
+  });
+  const menuButton = within(chapter3).getByRole('button', {
+    name: 'Open menu',
+  });
+  await act(async () => fireEvent.click(menuButton));
+  const menu = screen.getByRole('menu', {
+    name: 'Chapter 3 menu',
+  });
+  const moveDownButton = within(menu).queryByRole('menuitem', {
+    name: 'Move Chapter Down',
+  });
+
+  expect(moveDownButton).not.toBeInTheDocument();
+});
+
+test('StoryMapForm: Delete chapter', async () => {
+  const { onSaveDraft } = await setup(BASE_CONFIG);
+
+  const chaptersSection = screen.getByRole('navigation', {
+    name: 'Chapters sidebar',
+  });
+
+  const chapter1 = within(chaptersSection).getByRole('button', {
+    name: 'Chapter 1',
+  });
+  const menuButton = within(chapter1).getByRole('button', {
+    name: 'Open menu',
+  });
+  await act(async () => fireEvent.click(menuButton));
+  const menu = screen.getByRole('menu', {
+    name: 'Chapter 1 menu',
+  });
+  const deleteButton = within(menu).getByRole('menuitem', {
+    name: 'Delete Chapter',
+  });
+
+  await act(async () => fireEvent.click(deleteButton));
+
+  // Confirmation dialog
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Delete Chapter' }))
+  );
+
+  // Wait for delete animation
+  await waitFor(() => {
+    expect(
+      screen.getByRole('button', { name: 'Save draft' })
+    ).toBeInTheDocument();
+  });
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
+  );
+  expect(onSaveDraft).toHaveBeenCalledTimes(1);
+  const saveCall = onSaveDraft.mock.calls[0];
+
+  expect(saveCall[0].chapters.length).toEqual(2);
+  expect(saveCall[0].chapters[0]).toEqual(
+    expect.objectContaining({
+      id: 'chapter-2',
+      title: 'Chapter 2',
+      description: 'Chapter 2 description',
+    })
+  );
+  expect(saveCall[0].chapters[1]).toEqual(
+    expect.objectContaining({
+      id: 'chapter-3',
+      title: 'Chapter 3',
+      description: 'Chapter 3 description',
     })
   );
 });
