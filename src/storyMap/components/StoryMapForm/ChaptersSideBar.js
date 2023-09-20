@@ -159,6 +159,9 @@ const SideBarItem = props => {
             : item.label
         }
         {...draggableProps?.dragHandleProps}
+        style={{
+          cursor: 'pointer',
+        }}
       >
         <Grid container>
           <Grid
