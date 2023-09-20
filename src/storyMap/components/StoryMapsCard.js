@@ -41,7 +41,7 @@ import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
 import Restricted from 'permissions/components/Restricted';
 import HomeCard from 'home/components/HomeCard';
-import { approveMembership } from 'storyMap/storyMapSlice';
+import { approveMembership, removeUserStoryMap } from 'storyMap/storyMapSlice';
 import {
   generateStoryMapEditUrl,
   generateStoryMapUrl,
@@ -109,6 +109,10 @@ const StoryMapListItem = props => {
       }
     });
   }, [dispatch, navigate, storyMap, accountMembership]);
+
+  const onDeleteSuccess = useCallback(() => {
+    dispatch(removeUserStoryMap(storyMap.id));
+  }, [dispatch, storyMap.id]);
 
   return (
     <ListItem
@@ -212,6 +216,7 @@ const StoryMapListItem = props => {
             <DeleteButton
               storyMap={storyMap}
               tooltip={t('storyMap.delete_label')}
+              onSuccess={onDeleteSuccess}
             >
               <DeleteIcon
                 sx={{
