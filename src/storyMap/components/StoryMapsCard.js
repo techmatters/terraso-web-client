@@ -240,7 +240,7 @@ const StoryMapsCard = ({ title, storyMaps, showCreate = true }) => {
     () =>
       showCreate && {
         label: t('storyMap.home_create'),
-        to: 'tools/story-maps/new',
+        to: 'tools/story-maps/new?utm_source=home_page',
       },
     [t, showCreate]
   );
