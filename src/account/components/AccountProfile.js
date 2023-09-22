@@ -25,7 +25,7 @@ import {
 } from 'terraso-client-shared/account/accountSlice';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import * as yup from 'yup';
-import { Checkbox, FormControlLabel, Typography } from '@mui/material';
+import { Checkbox, FormControlLabel, Grid, Typography } from '@mui/material';
 
 import { withProps } from 'react-hoc';
 
@@ -86,13 +86,19 @@ const FIELDS = [
   {
     name: 'notifications',
     renderStaticElement: ({ t }) => (
-      <Typography
-        variant="caption"
-        size="small"
-        sx={{ pl: 2, textTransform: 'uppercase', opacity: 0.6 }}
-      >
-        {t('account.form_notifications_section_label')}
-      </Typography>
+      <Grid item>
+        <Typography
+          variant="caption"
+          component="p"
+          size="small"
+          sx={{ textTransform: 'uppercase', opacity: 0.6 }}
+        >
+          {t('account.form_notifications_section_label')}
+        </Typography>
+        <Typography sx={{ mt: 2, mb: 1 }}>
+          {t('account.form_notifications_section_when_label')}
+        </Typography>
+      </Grid>
     ),
   },
   {
