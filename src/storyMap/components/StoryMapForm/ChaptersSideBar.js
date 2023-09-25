@@ -53,8 +53,15 @@ const DragIcon = withProps(Box, {
 
 const SideBarItem = props => {
   const { t } = useTranslation();
-  const { item, onDelete, onMoveDown, onMoveUp, chaptersLength, isDragging } =
-    props;
+  const {
+    item,
+    onDelete,
+    onMoveDown,
+    onMoveUp,
+    chaptersLength,
+    draggableProps,
+    isDragging,
+  } = props;
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const openMenu = useMemo(() => Boolean(menuAnchorEl), [menuAnchorEl]);
 
@@ -124,7 +131,15 @@ const SideBarItem = props => {
   }, [handleMoveDown, handleMoveUp, item.index, chaptersLength, t]);
 
   return (
-    <>
+    <ListItem
+      key={item.id}
+      ref={draggableProps?.innerRef}
+      sx={{
+        p: 0,
+        boxShadow: isDragging ? '0px 2px 4px 0px rgba(0, 0, 0, 0.25)' : 'none',
+      }}
+      {...draggableProps?.draggableProps}
+    >
       <Button
         component="a"
         {...(item.active ? { 'aria-current': 'step' } : {})}
@@ -143,6 +158,10 @@ const SideBarItem = props => {
               })
             : item.label
         }
+        {...draggableProps?.dragHandleProps}
+        style={{
+          cursor: 'pointer',
+        }}
       >
         <Grid container>
           <Grid
@@ -249,7 +268,7 @@ const SideBarItem = props => {
           </Grid>
         </Grid>
       </Button>
-    </>
+    </ListItem>
   );
 };
 
@@ -354,27 +373,15 @@ const ChaptersSidebar = props => {
               {chapterItems.map((item, index) => (
                 <Draggable key={item.id} draggableId={item.id} index={index}>
                   {(provided, snapshot) => (
-                    <ListItem
-                      key={item.id}
-                      ref={provided.innerRef}
-                      sx={{
-                        p: 0,
-                        boxShadow: snapshot.isDragging
-                          ? '0px 2px 4px 0px rgba(0, 0, 0, 0.25)'
-                          : 'none',
-                      }}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <SideBarItem
-                        item={item}
-                        onDelete={onDelete}
-                        onMoveDown={onMoveChapterDown}
-                        onMoveUp={onMoveChapterUp}
-                        chaptersLength={chapters.length}
-                        isDragging={snapshot.isDragging}
-                      />
-                    </ListItem>
+                    <SideBarItem
+                      item={item}
+                      onDelete={onDelete}
+                      onMoveDown={onMoveChapterDown}
+                      onMoveUp={onMoveChapterUp}
+                      chaptersLength={chapters.length}
+                      isDragging={snapshot.isDragging}
+                      draggableProps={provided}
+                    />
                   )}
                 </Draggable>
               ))}
