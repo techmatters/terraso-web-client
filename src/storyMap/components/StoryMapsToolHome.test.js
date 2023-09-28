@@ -202,19 +202,6 @@ test('StoryMapsToolHome: accept story map invite', async () => {
                   userRole: 'editor',
                   membershipStatus: 'PENDING',
                 },
-                // memberships: {
-                //   edges: [
-                //     {
-                //       node: {
-                //         id: '92a116e3-65f8-4cf5-a564-de390928c87e',
-                //         userRole: 'editor',
-                //         membershipStatus: 'PENDING',
-                //         pendingEmail: 'test@test.com',
-                //         user: null,
-                //       },
-                //     },
-                //   ],
-                // },
               },
             },
           },
@@ -235,50 +222,6 @@ test('StoryMapsToolHome: accept story map invite', async () => {
       },
     }),
   });
-  // terrasoApi.requestGraphQL.mockReturnValue(
-  //   Promise.resolve({
-  //     userStoryMaps: {
-  //       edges: [
-  //         {
-  //           node: {
-  //             id: 'id-1',
-  //             slug: 'id-1',
-  //             storyMapId: '46h36we',
-  //             title: 'Story 1',
-  //             isPublished: false,
-  //             updatedAt: '2023-01-31T22:25:42.916303+00:00',
-  //             createdBy: {
-  //               userId: 'other-user-id',
-  //               firstName: 'Pablo',
-  //               lastName: 'Perez',
-  //             },
-  //             membershipList: {
-  //               membershipsCount: 0,
-  //               accountMembership: {
-  //                 id: '12eb041f-e847-4f78-89ec-46a6a6b7c5c6',
-  //                 userRole: 'editor',
-  //                 membershipStatus: 'PENDING',
-  //               },
-  //               // memberships: {
-  //               //   edges: [
-  //               //     {
-  //               //       node: {
-  //               //         id: '92a116e3-65f8-4cf5-a564-de390928c87e',
-  //               //         userRole: 'editor',
-  //               //         membershipStatus: 'PENDING',
-  //               //         pendingEmail: 'test@test.com',
-  //               //         user: null,
-  //               //       },
-  //               //     },
-  //               //   ],
-  //               // },
-  //             },
-  //           },
-  //         },
-  //       ],
-  //     },
-  //   })
-  // );
 
   await render(<StoryMapsToolsHome />, {
     account: {
