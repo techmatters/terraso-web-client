@@ -118,6 +118,7 @@ const HomeCard = ({
             size="medium"
             sx={{ color: 'white' }}
             to={action.to}
+            state={action.pathState}
           >
             {action.label}
           </RouterButton>
@@ -125,7 +126,11 @@ const HomeCard = ({
       ) : (
         <>
           <Divider aria-hidden="false" />
-          <CardActionRouterLink label={action.label} to={action.to} />
+          <CardActionRouterLink
+            label={action.label}
+            to={action.to}
+            state={action.pathState}
+          />
         </>
       ))}
   </Card>

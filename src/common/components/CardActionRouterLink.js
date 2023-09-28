@@ -18,7 +18,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button, CardActions } from '@mui/material';
 
-const CardActionRouterLink = ({ label, to }) => {
+const CardActionRouterLink = ({ label, to, state }) => {
   return (
     <CardActions
       sx={{
@@ -29,6 +29,7 @@ const CardActionRouterLink = ({ label, to }) => {
       <Button
         component={Link}
         to={to}
+        state={state}
         sx={{
           fontWeight: 200,
           width: '100%',

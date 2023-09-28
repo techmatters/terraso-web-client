@@ -105,7 +105,8 @@ const StoryMapsToolsHome = () => {
               <Button
                 variant="contained"
                 component={Link}
-                to="/tools/story-maps/new?source=story_maps_page"
+                to="/tools/story-maps/new"
+                state={{ source: 'story_maps_page' }}
                 sx={{ mt: 2, mb: 3 }}
               >
                 {t('storyMap.tool_home_create_button')}
