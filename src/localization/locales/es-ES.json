@@ -212,6 +212,7 @@
         "profile_form_label": "Administrar perfil",
         "form_language_label": "Idioma",
         "form_notifications_section_label": "Notificaciónes de Correo Electrónico",
+        "form_notifications_section_when_label": "Notifícame cuando:",
         "form_notifications_group_label": "Un grupo que administro tiene solicitudes pendientes o mi solicitud para unirme a un grupo cerrado está aprobada",
         "form_notifications_story_map_label": "Me invitan a editar un story map.",
         "unsubscribe_title": "Darse de baja",
