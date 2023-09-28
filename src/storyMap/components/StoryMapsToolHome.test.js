@@ -14,12 +14,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { render, screen, within } from 'tests/utils';
+import { act, fireEvent, render, screen, within } from 'tests/utils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import { mockTerrasoAPIrequestGraphQL } from 'tests/apiUtils';
+
+import { useAnalytics } from 'monitoring/analytics';
 
 import StoryMapsToolsHome from './StoryMapsToolHome';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
+
+jest.mock('monitoring/analytics', () => ({
+  ...jest.requireActual('monitoring/analytics'),
+  useAnalytics: jest.fn(),
+}));
+
+beforeEach(() => {
+  useAnalytics.mockReturnValue({
+    trackEvent: jest.fn(),
+  });
+});
 
 test('StoryMapsToolHome: samples renders correctly', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
@@ -157,4 +171,78 @@ test('StoryMapsToolHome: user story maps render correctly', async () => {
   expect(link2).toHaveAttribute('href', '/tools/story-maps/lftawa9/id-2');
   const link1 = within(items[1]).getByRole('link', { name: 'Story 1' });
   expect(link1).toHaveAttribute('href', '/tools/story-maps/46h36we/id-1/edit');
+});
+
+test('StoryMapsToolHome: accept story map invite', async () => {
+  const trackEvent = jest.fn();
+  useAnalytics.mockReturnValue({
+    trackEvent,
+  });
+  mockTerrasoAPIrequestGraphQL({
+    'query storyMapsHome': Promise.resolve({
+      userStoryMaps: {
+        edges: [
+          {
+            node: {
+              id: 'id-1',
+              slug: 'id-1',
+              storyMapId: '46h36we',
+              title: 'Story 1',
+              isPublished: false,
+              updatedAt: '2023-01-31T22:25:42.916303+00:00',
+              createdBy: {
+                userId: 'other-user-id',
+                firstName: 'Pablo',
+                lastName: 'Perez',
+              },
+              membershipList: {
+                membershipsCount: 0,
+                accountMembership: {
+                  id: '12eb041f-e847-4f78-89ec-46a6a6b7c5c6',
+                  userRole: 'editor',
+                  membershipStatus: 'PENDING',
+                },
+              },
+            },
+          },
+        ],
+      },
+    }),
+    'mutation approveMembership': Promise.resolve({
+      approveStoryMapMembership: {
+        membership: {
+          id: 'membership-id-1',
+        },
+        storyMap: {
+          id: 'story-map-id-1',
+          title: 'Hello world',
+          storyMapId: 'story-map-id-1',
+          slug: 'hello-world',
+        },
+      },
+    }),
+  });
+
+  await render(<StoryMapsToolsHome />, {
+    account: {
+      currentUser: {
+        data: {
+          email: 'account@email.com',
+          firstName: 'Jodies',
+        },
+      },
+    },
+  });
+
+  const storyMapItem = screen.getByRole('listitem', { name: 'Story 1' });
+
+  const acceptButton = within(storyMapItem).getByRole('button', {
+    name: 'Accept',
+  });
+
+  await act(async () => {
+    fireEvent.click(acceptButton);
+  });
+
+  expect(trackEvent).toHaveBeenCalledWith('storymap.share.accept');
 });

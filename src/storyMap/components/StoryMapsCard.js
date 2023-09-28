@@ -39,6 +39,7 @@ import { MEMBERSHIP_STATUS_PENDING } from 'collaboration/collaborationConstants'
 import RouterButton from 'common/components/RouterButton';
 import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
+import { useAnalytics } from 'monitoring/analytics';
 import Restricted from 'permissions/components/Restricted';
 import HomeCard from 'home/components/HomeCard';
 import { approveMembership, removeUserStoryMap } from 'storyMap/storyMapSlice';
@@ -75,6 +76,7 @@ const CollaborationIndicator = props => {
 const StoryMapListItem = props => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { trackEvent } = useAnalytics();
   const { t, i18n } = useTranslation();
   const { storyMap } = props;
 
@@ -106,9 +108,10 @@ const StoryMapListItem = props => {
         const storyMapId = data.payload.storyMap.storyMapId;
         const storyMapSlug = data.payload.storyMap.slug;
         navigate(`/tools/story-maps/${storyMapId}/${storyMapSlug}/edit`);
+        trackEvent('storymap.share.accept');
       }
     });
-  }, [dispatch, navigate, storyMap, accountMembership]);
+  }, [dispatch, navigate, trackEvent, storyMap, accountMembership]);
 
   const onDeleteSuccess = useCallback(() => {
     dispatch(removeUserStoryMap(storyMap.id));

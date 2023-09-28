@@ -21,6 +21,7 @@ import { mockTerrasoAPIrequestGraphQL } from 'tests/apiUtils';
 import { changeCombobox } from 'tests/uiUtils';
 
 import i18n from 'localization/i18n';
+import { useAnalytics } from 'monitoring/analytics';
 import { MEMBERSHIP_ROLE_EDITOR } from 'storyMap/storyMapConstants';
 
 import StoryMapUpdate from './StoryMapUpdate';
@@ -28,6 +29,11 @@ import StoryMapUpdate from './StoryMapUpdate';
 jest.mock('terraso-client-shared/terrasoApi/api');
 
 jest.mock('./StoryMap', () => props => <div>Test</div>);
+
+jest.mock('monitoring/analytics', () => ({
+  ...jest.requireActual('monitoring/analytics'),
+  useAnalytics: jest.fn(),
+}));
 
 const CONFIG = {
   title: 'Story Map Title',
@@ -91,6 +97,12 @@ const API_STORY_MAP = {
     },
   },
 };
+
+beforeEach(() => {
+  useAnalytics.mockReturnValue({
+    trackEvent: jest.fn(),
+  });
+});
 
 const setup = async user => {
   await render(<StoryMapUpdate />, {
@@ -177,6 +189,10 @@ test('StoryMapUpdate: Show Share Dialog', async () => {
 });
 
 test('StoryMapUpdate: Share Dialog invite members', async () => {
+  const trackEvent = jest.fn();
+  useAnalytics.mockReturnValue({
+    trackEvent,
+  });
   mockTerrasoAPIrequestGraphQL({
     'query fetchStoryMap': Promise.resolve({
       storyMaps: {
@@ -245,9 +261,19 @@ test('StoryMapUpdate: Share Dialog invite members', async () => {
   expect(
     within(membersList).getByRole('listitem', { name: 'Manuel Perez' })
   ).toBeInTheDocument();
+
+  expect(trackEvent).toHaveBeenCalledWith('storymap.share.invite', {
+    props: {
+      count: 2,
+    },
+  });
 });
 
 test('StoryMapUpdate: Share Dialog remove members', async () => {
+  const trackEvent = jest.fn();
+  useAnalytics.mockReturnValue({
+    trackEvent,
+  });
   mockTerrasoAPIrequestGraphQL({
     'query fetchStoryMap': Promise.resolve({
       storyMaps: {
@@ -290,6 +316,8 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
       storyMapSlug: 'test-slug',
     },
   });
+
+  expect(trackEvent).toHaveBeenCalledWith('storymap.share.remove');
 });
 
 test('StoryMapUpdate: See story map as editor', async () => {

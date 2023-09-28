@@ -40,6 +40,7 @@ import MembershipsList from 'collaboration/components/MembershipsList';
 import ConfirmButton from 'common/components/ConfirmButton';
 import ExternalLink from 'common/components/ExternalLink';
 import UserEmailAutocomplete from 'common/components/UserEmailAutocomplete';
+import { useAnalytics } from 'monitoring/analytics';
 import Restricted from 'permissions/components/Restricted';
 import {
   MEMBERSHIP_ROLE_EDITOR,
@@ -74,6 +75,7 @@ const RoleComponent = ({ member }) => {
 const RemoveButton = props => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { trackEvent } = useAnalytics();
   const { data: currentUser } = useSelector(state => state.account.currentUser);
   const processing = useSelector(
     state =>
@@ -100,9 +102,10 @@ const RemoveButton = props => {
         if (isOwnMembership) {
           navigate(-1);
         }
+        trackEvent('storymap.share.remove');
       }
     });
-  }, [dispatch, navigate, member, storyMap, isOwnMembership]);
+  }, [dispatch, navigate, trackEvent, member, storyMap, isOwnMembership]);
 
   const resource = useMemo(() => {
     if (!member?.userRole || member?.userRole === MEMBERSHIP_ROLE_OWNER) {
@@ -162,6 +165,7 @@ const RemoveButton = props => {
 const ShareDialog = props => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const { trackEvent } = useAnalytics();
   const processing = useSelector(
     state => state.storyMap.memberships.add.saving
   );
@@ -192,10 +196,15 @@ const ShareDialog = props => {
       const success = data?.meta?.requestStatus === 'fulfilled';
       if (success) {
         setNewEditors([]);
+        trackEvent('storymap.share.invite', {
+          props: {
+            count: newEditors.length,
+          },
+        });
         onClose();
       }
     });
-  }, [dispatch, onClose, storyMap, newEditors]);
+  }, [dispatch, trackEvent, onClose, storyMap, newEditors]);
 
   const memberships = useMemo(
     () => [
