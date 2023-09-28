@@ -22,6 +22,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Grid, useMediaQuery } from '@mui/material';
 
 import PageLoader from 'layout/PageLoader';
+import { useAnalytics } from 'monitoring/analytics';
 import NavigationBlockedDialog from 'navigation/components/NavigationBlockedDialog';
 import { useNavigationBlocker } from 'navigation/navigationContext';
 import { isChapterEmpty } from 'storyMap/storyMapUtils';
@@ -85,6 +86,7 @@ const Preview = props => {
 
 const StoryMapForm = props => {
   const { t } = useTranslation();
+  const { trackEvent } = useAnalytics();
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
   const { onPublish, onSaveDraft } = props;
   const { saving } = useSelector(_.get('storyMap.form'));
@@ -176,22 +178,34 @@ const StoryMapForm = props => {
 
   const onMoveChapter = useCallback(
     (id, index) => {
-      setConfig(config => ({
-        ...config,
-        chapters: (() => {
-          const withoutChapter = config.chapters.filter(
-            chapter => chapter.id !== id
-          );
-          const newChapters = [
-            ..._.slice(0, index, withoutChapter),
-            config.chapters.find(chapter => chapter.id === id),
-            ..._.slice(index, withoutChapter.length, withoutChapter),
-          ];
-          return newChapters;
-        })(),
-      }));
+      setConfig(config => {
+        const fromIndex = config.chapters.findIndex(
+          chapter => chapter.id === id
+        );
+        if (fromIndex === index) {
+          return config;
+        }
+        const withoutChapter = config.chapters.filter(
+          chapter => chapter.id !== id
+        );
+        const newChapters = [
+          ..._.slice(0, index, withoutChapter),
+          config.chapters.find(chapter => chapter.id === id),
+          ..._.slice(index, withoutChapter.length, withoutChapter),
+        ];
+        const toIndex = newChapters.findIndex(chapter => chapter.id === id);
+        trackEvent('storymap.chapter.move', {
+          props: {
+            distance: toIndex - fromIndex,
+          },
+        });
+        return {
+          ...config,
+          chapters: newChapters,
+        };
+      });
     },
-    [setConfig]
+    [setConfig, trackEvent]
   );
 
   const onPublishWrapper = useCallback(() => {
