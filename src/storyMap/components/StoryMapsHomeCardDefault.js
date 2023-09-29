@@ -32,6 +32,7 @@ const StoryMapsHomeCardDefault = () => {
       action={{
         label: t('storyMap.home_create'),
         to: 'tools/story-maps/new',
+        pathState: { source: 'home_page' },
       }}
       image={{
         src: storyMapImage,

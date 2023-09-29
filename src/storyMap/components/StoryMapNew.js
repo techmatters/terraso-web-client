@@ -18,7 +18,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Paper, useMediaQuery } from '@mui/material';
 
 import { useDocumentTitle } from 'common/document';
@@ -93,18 +93,21 @@ const StoryMapNew = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { state: locationState } = useLocation();
   const { trackEvent } = useAnalytics();
   const [saved, setSaved] = useState();
 
   useDocumentTitle(t('storyMap.new_document_title'));
 
   useEffect(() => {
+    const source = locationState?.source || 'direct';
     trackEvent('storymap.start', {
       props: {
         [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
+        source,
       },
     });
-  }, [trackEvent]);
+  }, [trackEvent, locationState]);
 
   useEffect(() => {
     if (!saved) {
