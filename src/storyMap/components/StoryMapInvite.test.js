@@ -123,3 +123,33 @@ test('StoryMapInvite: Invalid token', async () => {
     ).toBeInTheDocument()
   );
 });
+
+test('StoryMapInvite: Different user token', async () => {
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+
+  const searchParams = new URLSearchParams();
+  searchParams.set('token', TOKEN);
+  useSearchParams.mockReturnValue([searchParams]);
+
+  mockTerrasoAPIrequestGraphQL({
+    'mutation approveMembershipToken': Promise.reject({
+      content: 'update_not_allowed_permissions_validation',
+    }),
+  });
+
+  await setup({
+    user: {
+      id: 'user-id-2',
+      email: '',
+    },
+  });
+
+  expect(
+    within(screen.getByRole('alert')).getByText(
+      /You do not have permission to accept this Story Map invite/i
+    )
+  ).toBeInTheDocument();
+
+  expect(navigate).not.toHaveBeenCalled();
+});
