@@ -110,7 +110,9 @@ test('StoryMapInvite: Invalid token', async () => {
   useSearchParams.mockReturnValue([searchParams]);
 
   mockTerrasoAPIrequestGraphQL({
-    'mutation approveMembershipToken': Promise.reject('Error'),
+    'mutation approveMembershipToken': Promise.reject({
+      content: 'update_not_allowed',
+    }),
   });
 
   await setup();
@@ -138,12 +140,7 @@ test('StoryMapInvite: Different user token', async () => {
     }),
   });
 
-  await setup({
-    user: {
-      id: 'user-id-2',
-      email: '',
-    },
-  });
+  await setup();
 
   expect(
     within(screen.getByRole('alert')).getByText(
