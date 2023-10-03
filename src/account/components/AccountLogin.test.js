@@ -74,7 +74,7 @@ test('AccountLogin: Add referrer', async () => {
   );
   await render(<AccountLogin />);
   expect(screen.getByText('Continue with Google')).toBeInTheDocument();
-  const state = `/account?referrerBase64=${btoa(referrer)}`;
+  const state = `account?referrerBase64=${btoa(referrer)}`;
   expect(screen.getByText('Continue with Google')).toHaveAttribute(
     'href',
     `google.url&state=${state}`

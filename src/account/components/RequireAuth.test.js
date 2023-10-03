@@ -111,7 +111,7 @@ test('Auth: Test redirect referrer', async () => {
   );
 
   expect(
-    screen.getByText('To: /account?referrer=groups%3Fsort%3D-name%26other%3D1')
+    screen.getByText('To: /account?referrer=/groups%3Fsort%3D-name%26other%3D1')
   ).toBeInTheDocument();
 });
 
