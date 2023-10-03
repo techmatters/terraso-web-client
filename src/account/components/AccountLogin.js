@@ -17,7 +17,7 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
+import { Navigate, useSearchParams } from 'react-router-dom';
 import { fetchAuthURLs } from 'terraso-client-shared/account/accountSlice';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import AppleIcon from '@mui/icons-material/Apple';
@@ -40,14 +40,16 @@ const MicrosoftIcon = props => {
   return <SvgIcon component={MicrosoftSvg} {...props} />;
 };
 
-const appendReferrer = (url, referrer) =>
-  referrer ? `${url}&state=${referrer}` : url;
+const appendReferrer = (url, referrer) => {
+  return referrer ? `${url}&state=/account?referrer=${referrer}` : url;
+};
 
 const AccountForm = () => {
   const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
   const [searchParams] = useSearchParams();
   const { fetching, urls } = useSelector(state => state.account.login);
+  const hasToken = useSelector(state => state.account.hasToken);
   const referrer = searchParams.get('referrer');
 
   useDocumentTitle(t('account.login_document_title'));
@@ -57,6 +59,10 @@ const AccountForm = () => {
 
   if (fetching) {
     return <PageLoader />;
+  }
+
+  if (hasToken) {
+    return <Navigate to={referrer ? atob(referrer) : '/'} replace />;
   }
 
   return (
