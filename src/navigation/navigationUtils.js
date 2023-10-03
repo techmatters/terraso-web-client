@@ -25,5 +25,5 @@ export const generateReferrerPath = location => {
   if (!referrer) {
     return null;
   }
-  return btoa(`/${referrer}`);
+  return btoa(referrer);
 };
