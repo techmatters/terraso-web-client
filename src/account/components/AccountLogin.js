@@ -42,7 +42,7 @@ const MicrosoftIcon = props => {
 
 const appendReferrer = (url, referrer) => {
   return referrer
-    ? `${url}&state=account?referrerBase64=${btoa(referrer)}`
+    ? `${url}&state=/account?referrerBase64=${btoa(referrer)}`
     : url;
 };
 
