@@ -41,7 +41,7 @@ const MicrosoftIcon = props => {
 };
 
 const appendReferrer = (url, referrer) => {
-  return referrer ? `${url}&state=/account?referrer=${referrer}` : url;
+  return referrer ? `${url}&state=account?referrer=${referrer}` : url;
 };
 
 const AccountForm = () => {
