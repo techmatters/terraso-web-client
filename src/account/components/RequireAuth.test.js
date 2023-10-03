@@ -85,10 +85,24 @@ test('Auth: test redirect', async () => {
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
   expect(screen.getByText('To: /account')).toBeInTheDocument();
 });
-test('Auth: test redirect referrer', async () => {
+
+const REDIRECT_PATHNAME = '/groups';
+const REDIRECT_SEARCH = '?sort=-name&other=1';
+const REFERRER_PATH = `/account?referrer=${encodeURIComponent(
+  `${REDIRECT_PATHNAME}${REDIRECT_SEARCH}`
+)}`;
+const REFERRER_URL = new URL(`http://127.0.0.1${REFERRER_PATH}`);
+
+test('Auth: Test url parsing for referrer', async () => {
+  expect(REFERRER_URL.searchParams.get('referrer')).toBe(
+    '/groups?sort=-name&other=1'
+  );
+});
+
+test('Auth: Test redirect referrer', async () => {
   useLocation.mockReturnValue({
-    pathname: '/groups',
-    search: '?sort=-name',
+    pathname: REDIRECT_PATHNAME,
+    search: REDIRECT_SEARCH,
   });
   await render(
     <RequireAuth>
@@ -97,9 +111,10 @@ test('Auth: test redirect referrer', async () => {
   );
 
   expect(
-    screen.getByText('To: /account?referrer=groups?sort=-name')
+    screen.getByText('To: /account?referrer=groups%3Fsort%3D-name%26other%3D1')
   ).toBeInTheDocument();
 });
+
 test('Auth: test refresh tokens', async () => {
   useParams.mockReturnValue({
     slug: 'slug-1',

@@ -16,7 +16,7 @@
  */
 import { render, screen } from 'tests/utils';
 import React from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import * as accountService from 'terraso-client-shared/account/accountService';
 
 import AccountLogin from 'account/components/AccountLogin';
@@ -26,10 +26,12 @@ jest.mock('terraso-client-shared/account/accountService');
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useSearchParams: jest.fn(),
+  useNavigate: jest.fn(),
 }));
 
 beforeEach(() => {
   useSearchParams.mockReturnValue([new URLSearchParams(), () => {}]);
+  useNavigate.mockReturnValue(jest.fn());
 });
 
 test('AccountLogin: Display error', async () => {
@@ -61,7 +63,8 @@ test('AccountLogin: Display buttons', async () => {
 
 test('AccountLogin: Add referrer', async () => {
   const searchParams = new URLSearchParams();
-  searchParams.set('referrer', 'groups?sort=-name');
+  const referrer = encodeURIComponent('groups?sort=-name&other=1');
+  searchParams.set('referrer', referrer);
   useSearchParams.mockReturnValue([searchParams]);
   accountService.getAuthURLs.mockReturnValue(
     Promise.resolve({
@@ -71,15 +74,74 @@ test('AccountLogin: Add referrer', async () => {
   );
   await render(<AccountLogin />);
   expect(screen.getByText('Continue with Google')).toBeInTheDocument();
+  const state = `account?referrerBase64=${btoa(referrer)}`;
   expect(screen.getByText('Continue with Google')).toHaveAttribute(
     'href',
-    'google.url&state=groups?sort=-name'
+    `google.url&state=${state}`
   );
   expect(screen.getByText('Continue with Apple')).toBeInTheDocument();
   expect(screen.getByText('Continue with Apple')).toHaveAttribute(
     'href',
-    'apple.url&state=groups?sort=-name'
+    `apple.url&state=${state}`
   );
+});
+
+test('AccountLogin: Navigate to referrer if logged in', async () => {
+  accountService.getAuthURLs.mockReturnValue(
+    Promise.resolve({
+      google: 'google.url',
+      apple: 'apple.url',
+    })
+  );
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+  const searchParams = new URLSearchParams();
+  const referrer = encodeURIComponent('groups?sort=-name&other=1');
+  searchParams.set('referrer', referrer);
+  useSearchParams.mockReturnValue([searchParams]);
+  await render(<AccountLogin />, {
+    account: {
+      hasToken: true,
+      login: {},
+      currentUser: {
+        data: {
+          email: 'test@test.com',
+        },
+      },
+    },
+  });
+  expect(navigate).toHaveBeenCalledWith('groups?sort=-name&other=1', {
+    replace: true,
+  });
+});
+
+test('AccountLogin: Navigate to referrer base 64 if logged in', async () => {
+  accountService.getAuthURLs.mockReturnValue(
+    Promise.resolve({
+      google: 'google.url',
+      apple: 'apple.url',
+    })
+  );
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+  const searchParams = new URLSearchParams();
+  const referrer = encodeURIComponent('groups?sort=-name&other=1');
+  searchParams.set('referrerBase64', btoa(referrer));
+  useSearchParams.mockReturnValue([searchParams]);
+  await render(<AccountLogin />, {
+    account: {
+      hasToken: true,
+      login: {},
+      currentUser: {
+        data: {
+          email: 'test@test.com',
+        },
+      },
+    },
+  });
+  expect(navigate).toHaveBeenCalledWith('groups?sort=-name&other=1', {
+    replace: true,
+  });
 });
 
 test('AccountLogin: Display locale picker', async () => {

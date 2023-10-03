@@ -48,7 +48,9 @@ const RequireAuth = ({ children }) => {
 
   const referrer = generateReferrerPath(location);
 
-  const to = referrer ? `/account?referrer=${referrer}` : '/account';
+  const to = referrer
+    ? `/account?referrer=${encodeURIComponent(referrer)}`
+    : '/account';
   return <Navigate to={to} replace />;
 };
 
