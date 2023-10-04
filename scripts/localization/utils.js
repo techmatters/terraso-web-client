@@ -15,12 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-const { readdir } = require('fs').promises;
-const path = require('path');
+import { readdir } from 'fs/promises';
+import path from 'path';
 
-const filesInFolder = dirname =>
+export const filesInFolder = dirname =>
   readdir(dirname).then(filenames =>
     filenames.map(filename => path.join(dirname, filename))
   );
-
-module.exports = { filesInFolder };

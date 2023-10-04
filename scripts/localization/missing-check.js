@@ -15,12 +15,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-const { readFile } = require('fs').promises;
-const path = require('path');
-const flat = require('flat');
-const _ = require('lodash/fp');
+import { readFile } from 'fs/promises';
+import { fileURLToPath } from 'node:url';
+import path from 'path';
+import { flatten } from 'flat';
+import _ from 'lodash/fp.js';
 
-const { filesInFolder } = require('./utils');
+import { filesInFolder } from './utils.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const SOURCE_LOCALE = 'en-US';
 
@@ -31,7 +34,7 @@ const LOCALE_FILES_FOLDER = path.join(
 
 const getKeys = content => {
   const json = JSON.parse(content);
-  const keys = Object.keys(flat(json));
+  const keys = Object.keys(flatten(json));
   return keys;
 };
 
