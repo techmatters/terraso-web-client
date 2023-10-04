@@ -120,7 +120,7 @@ test('StoryMapInvite: Invalid token', async () => {
   await waitFor(() =>
     expect(
       within(screen.getByRole('alert')).getByText(
-        /Failed to accept Story Map invite/i
+        /Unable to accept Story Map invitation/i
       )
     ).toBeInTheDocument()
   );
@@ -144,7 +144,7 @@ test('StoryMapInvite: Different user token', async () => {
 
   expect(
     within(screen.getByRole('alert')).getByText(
-      /You do not have permission to accept this Story Map invite/i
+      /You can't accept this Story Map invitation. You must be logged in using the email address shown in the invitation/i
     )
   ).toBeInTheDocument();
 
