@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback } from 'react';
+import queryString from 'query-string';
 import { useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 import { fetchUser } from 'terraso-client-shared/account/accountSlice';
@@ -49,8 +50,14 @@ const RequireAuth = ({ children }) => {
   const referrer = generateReferrerPath(location);
 
   const to = referrer
-    ? `/account?referrer=/${encodeURIComponent(referrer)}`
+    ? queryString.stringifyUrl({
+        url: '/account',
+        query: {
+          referrer,
+        },
+      })
     : '/account';
+
   return <Navigate to={to} replace />;
 };
 

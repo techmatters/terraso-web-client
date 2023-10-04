@@ -52,12 +52,16 @@ test('AccountLogin: Display loader', async () => {
 test('AccountLogin: Display buttons', async () => {
   accountService.getAuthURLs.mockReturnValue(
     Promise.resolve({
-      google: 'google.url',
-      apple: 'apple.url',
+      google: 'google.url?param=value',
+      apple: 'apple.url?param=value',
     })
   );
   await render(<AccountLogin />);
   expect(screen.getByText('Continue with Google')).toBeInTheDocument();
+  expect(screen.getByText('Continue with Google')).toHaveAttribute(
+    'href',
+    `google.url?param=value`
+  );
   expect(screen.getByText('Continue with Apple')).toBeInTheDocument();
 });
 
@@ -68,21 +72,21 @@ test('AccountLogin: Add referrer', async () => {
   useSearchParams.mockReturnValue([searchParams]);
   accountService.getAuthURLs.mockReturnValue(
     Promise.resolve({
-      google: 'google.url',
-      apple: 'apple.url',
+      google: 'google.url?param=value',
+      apple: 'apple.url?param=value',
     })
   );
   await render(<AccountLogin />);
   expect(screen.getByText('Continue with Google')).toBeInTheDocument();
-  const state = `account?referrerBase64=${btoa(referrer)}`;
+  const state = `account%3FreferrerBase64%3D${btoa(referrer)}`;
   expect(screen.getByText('Continue with Google')).toHaveAttribute(
     'href',
-    `google.url&state=${state}`
+    `google.url?param=value&state=${state}`
   );
   expect(screen.getByText('Continue with Apple')).toBeInTheDocument();
   expect(screen.getByText('Continue with Apple')).toHaveAttribute(
     'href',
-    `apple.url&state=${state}`
+    `apple.url?param=value&state=${state}`
   );
 });
 

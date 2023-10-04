@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useEffect } from 'react';
+import queryString from 'query-string';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -41,9 +42,23 @@ const MicrosoftIcon = props => {
 };
 
 const appendReferrer = (url, referrer) => {
-  return referrer
-    ? `${url}&state=account?referrerBase64=${btoa(referrer)}`
-    : url;
+  if (!referrer) {
+    return url;
+  }
+  const parsedUrl = queryString.parseUrl(url);
+  const redirectUrl = queryString.stringifyUrl({
+    url: 'account',
+    query: {
+      referrerBase64: btoa(referrer),
+    },
+  });
+  return queryString.stringifyUrl({
+    ...parsedUrl,
+    query: {
+      ...parsedUrl.query,
+      state: redirectUrl,
+    },
+  });
 };
 
 const AccountForm = () => {
