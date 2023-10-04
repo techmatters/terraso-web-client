@@ -1021,8 +1021,8 @@
         "addMemberships.unique": "Uno o más usuarios ya son colaboradores de este story map.",
         "approved_membership": "Te han agregado a “{{storyMapTitle}}”",
         "approve_invite_success": "Te han agregado a “{{storyMapTitle}}”",
-        "approveMembership.update_not_allowed": "No se pudo aceptar la invitación al Story Map",
-        "approveMembership.update_not_allowed_permissions_validation": "No tienes permiso para aceptar esta invitación de Story Map",
+        "approveMembership.update_not_allowed": "No se puede aceptar la invitación de Story Map",
+        "approveMembership.update_not_allowed_permissions_validation": "No puedes aceptar esta invitación de Story Map. Debes iniciar sesión con la dirección de correo electrónico que se muestra en la invitación.",
         "invite_document_title": "Invitación a Story Map"
     },
     "site": {

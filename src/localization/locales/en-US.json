@@ -1015,7 +1015,7 @@
         "approved_membership": "You have been added to “{{storyMapTitle}}”",
         "approve_invite_success": "You have been added to “{{storyMapTitle}}”",
         "approveMembership.update_not_allowed": "Unable to accept Story Map invitation",
-        "approveMembership.update_not_allowed_permissions_validation": "You can’t accept this Story Map invitation. You must be logged in using the email address shown in the invitation.",
+        "approveMembership.update_not_allowed_permissions_validation": "You can't accept this Story Map invitation. You must be logged in using the email address shown in the invitation.",
         "invite_document_title": "Story Map Invite"
     },
     "site": {
