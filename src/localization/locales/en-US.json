@@ -1014,7 +1014,7 @@
         "addMemberships.unique": "One or more users are already collaborators of this story map.",
         "approved_membership": "You have been added to “{{storyMapTitle}}”",
         "approve_invite_success": "You have been added to “{{storyMapTitle}}”",
-        "approveMembership.update_not_allowed": "Failed to accept Story Map invite",
+        "approveMembership.update_not_allowed": "Unable to accept Story Map invitation",
         "approveMembership.update_not_allowed_permissions_validation": "You do not have permission to accept this Story Map invite",
         "invite_document_title": "Story Map Invite"
     },
