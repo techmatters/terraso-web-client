@@ -137,6 +137,13 @@ test('StoryMapInvite: Different user token', async () => {
   mockTerrasoAPIrequestGraphQL({
     'mutation approveMembershipToken': Promise.reject({
       content: 'update_not_allowed_permissions_validation',
+      params: {
+        response: {
+          storyMap: {
+            title: 'Story Map title',
+          },
+        },
+      },
     }),
   });
 
@@ -144,7 +151,7 @@ test('StoryMapInvite: Different user token', async () => {
 
   expect(
     within(screen.getByRole('alert')).getByText(
-      /You can't accept this Story Map invitation. You must be logged in using the email address shown in the invitation/i
+      /You can't accept the invitation for the Story Map “Story Map title”. You must be logged in using the email address shown in the invitation./i
     )
   ).toBeInTheDocument();
 

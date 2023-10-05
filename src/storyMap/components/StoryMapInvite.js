@@ -83,7 +83,10 @@ const StoryMapInvite = () => {
     <PageContainer>
       {error?.parsedErrors.map((error, index) => (
         <Alert key={index} severity={error.severity}>
-          {t(error.content, error.params)}
+          {t(error.content, {
+            ...error.params,
+            storyMapTitle: error.params?.response?.storyMap?.title,
+          })}
         </Alert>
       ))}
     </PageContainer>
