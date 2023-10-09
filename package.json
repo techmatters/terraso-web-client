@@ -13,7 +13,7 @@
     "@mui/icons-material": "^5.14.9",
     "@mui/lab": "^5.0.0-alpha.146",
     "@mui/material": "^5.14.8",
-    "@mui/x-data-grid": "^6.15.0",
+    "@mui/x-data-grid": "^6.16.1",
     "@reduxjs/toolkit": "^1.9.5",
     "@turf/bbox": "^6.5.0",
     "@turf/center": "^6.5.0",
