@@ -110,7 +110,9 @@ test('StoryMapInvite: Invalid token', async () => {
   useSearchParams.mockReturnValue([searchParams]);
 
   mockTerrasoAPIrequestGraphQL({
-    'mutation approveMembershipToken': Promise.reject('Error'),
+    'mutation approveMembershipToken': Promise.reject({
+      content: 'update_not_allowed',
+    }),
   });
 
   await setup();
@@ -118,8 +120,40 @@ test('StoryMapInvite: Invalid token', async () => {
   await waitFor(() =>
     expect(
       within(screen.getByRole('alert')).getByText(
-        /Failed to accept Story Map invite/i
+        /Unable to accept Story Map invitation/i
       )
     ).toBeInTheDocument()
   );
+});
+
+test('StoryMapInvite: Different user token', async () => {
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+
+  const searchParams = new URLSearchParams();
+  searchParams.set('token', TOKEN);
+  useSearchParams.mockReturnValue([searchParams]);
+
+  mockTerrasoAPIrequestGraphQL({
+    'mutation approveMembershipToken': Promise.reject({
+      content: 'update_not_allowed_permissions_validation',
+      params: {
+        response: {
+          storyMap: {
+            title: 'Story Map title',
+          },
+        },
+      },
+    }),
+  });
+
+  await setup();
+
+  expect(
+    within(screen.getByRole('alert')).getByText(
+      /You can't accept the invitation to edit “Story Map title.” You must log in using the email address shown in the invitation./i
+    )
+  ).toBeInTheDocument();
+
+  expect(navigate).not.toHaveBeenCalled();
 });

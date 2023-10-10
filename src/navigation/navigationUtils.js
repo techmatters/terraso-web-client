@@ -22,5 +22,5 @@ export const generateReferrerPath = location => {
   const referrer = [path.substring(1), queryParams]
     .filter(part => part)
     .join('');
-  return referrer;
+  return referrer ? `/${referrer}` : null;
 };

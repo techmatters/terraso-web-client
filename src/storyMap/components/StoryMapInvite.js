@@ -53,43 +53,25 @@ const StoryMapInvite = () => {
   );
 
   useEffect(() => {
-    if (!success && !error) {
-      return;
-    }
-
-    if (success) {
-      dispatch(
-        addMessage({
-          severity: 'success',
-          content: 'storyMap.approve_invite_success',
-          params: {
-            storyMapTitle: storyMap.title,
-          },
-        })
-      );
-    }
-
-    if (error) {
-      dispatch(
-        addMessage({
-          severity: 'error',
-          content: 'storyMap.approve_invite_error',
-        })
-      );
-    }
-  }, [success, error, storyMap, dispatch, navigate]);
-
-  useEffect(() => {
     if (!success) {
       return;
     }
     navigate(`/tools/story-maps/${storyMap.storyMapId}/${storyMap.slug}/edit`);
     trackEvent('storymap.share.accept');
-  }, [success, navigate, trackEvent, storyMap]);
+    dispatch(
+      addMessage({
+        severity: 'success',
+        content: 'storyMap.approve_invite_success',
+        params: {
+          storyMapTitle: storyMap.title,
+        },
+      })
+    );
+  }, [success, navigate, trackEvent, dispatch, storyMap]);
 
   useDocumentTitle(t('storyMap.invite_document_title'));
 
-  if (processing || !storyMap) {
+  if (processing) {
     return <PageLoader />;
   }
 
@@ -99,7 +81,14 @@ const StoryMapInvite = () => {
 
   return (
     <PageContainer>
-      <Alert severity="error">{t('storyMap.approve_invite_error')}</Alert>
+      {error?.parsedErrors.map((error, index) => (
+        <Alert key={index} severity={error.severity}>
+          {t(error.content, {
+            ...error.params,
+            storyMapTitle: error.params?.response?.storyMap?.title,
+          })}
+        </Alert>
+      ))}
     </PageContainer>
   );
 };

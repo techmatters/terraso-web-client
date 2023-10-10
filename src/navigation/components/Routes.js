@@ -193,11 +193,7 @@ const paths = [
       isEmbedded: true,
     },
   }),
-  path('/tools/story-maps/accept', StoryMapInvite, {
-    optionalAuth: {
-      enabled: true,
-    },
-  }),
+  path('/tools/story-maps/accept', StoryMapInvite),
   path('*', NotFound),
 ];
 

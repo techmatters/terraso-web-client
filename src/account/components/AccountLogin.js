@@ -14,10 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React from 'react';
+import React, { useEffect } from 'react';
+import queryString from 'query-string';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchAuthURLs } from 'terraso-client-shared/account/accountSlice';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import AppleIcon from '@mui/icons-material/Apple';
@@ -40,23 +41,57 @@ const MicrosoftIcon = props => {
   return <SvgIcon component={MicrosoftSvg} {...props} />;
 };
 
-const appendReferrer = (url, referrer) =>
-  referrer ? `${url}&state=${referrer}` : url;
+const appendReferrer = (url, referrer) => {
+  if (!referrer) {
+    return url;
+  }
+  const parsedUrl = queryString.parseUrl(url);
+  const redirectUrl = queryString.stringifyUrl({
+    url: 'account',
+    query: {
+      referrerBase64: btoa(referrer),
+    },
+  });
+  return queryString.stringifyUrl({
+    ...parsedUrl,
+    query: {
+      ...parsedUrl.query,
+      state: redirectUrl,
+    },
+  });
+};
 
 const AccountForm = () => {
   const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { fetching, urls } = useSelector(state => state.account.login);
+  const hasToken = useSelector(state => state.account.hasToken);
   const referrer = searchParams.get('referrer');
+  const referrerBase64 = searchParams.get('referrerBase64');
 
   useDocumentTitle(t('account.login_document_title'));
   useDocumentDescription(t('account.login_document_description'));
 
   useFetchData(fetchAuthURLs);
 
+  useEffect(() => {
+    if (!hasToken) {
+      return;
+    }
+    const url = referrerBase64 ? atob(referrerBase64) : referrer;
+    navigate(url ? decodeURIComponent(url) : '/', {
+      replace: true,
+    });
+  }, [hasToken, navigate, referrer, referrerBase64]);
+
   if (fetching) {
     return <PageLoader />;
+  }
+
+  if (hasToken) {
+    return null;
   }
 
   return (

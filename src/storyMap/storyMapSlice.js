@@ -363,7 +363,7 @@ const storyMapSlice = createSlice({
           ...state.memberships.approve,
           [action.meta.arg.membership.membershipId]: {
             processing: false,
-            error: true,
+            error: action.payload,
           },
         },
       },
