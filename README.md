@@ -90,7 +90,7 @@ Build: `REACT_APP_TERRASO_API_URL=https://api.terraso.org/graphql npm run build`
 
 ## Localization
 
-The localization is being hangled by the `react-i18next`. You can check the documentation here: [https://react.i18next.com/](https://react.i18next.com/)
+The localization is being handled by the `react-i18next`. You can check the documentation here: [https://react.i18next.com/](https://react.i18next.com/)
 
 ### Generate PO files
 
