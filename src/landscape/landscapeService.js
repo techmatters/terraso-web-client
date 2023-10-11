@@ -23,6 +23,8 @@ import {
   ALL_PARTNERSHIP_STATUS,
   MEMBERSHIP_ROLE_MEMBER,
 } from 'landscape/landscapeConstants';
+import { extractTerms } from 'taxonomies/taxonomiesUtils';
+
 import {
   extractAffiliatedGroups,
   extractDevelopmentStrategy,
@@ -227,7 +229,7 @@ export const fetchLandscapes = () => {
           .map(landscape => extractLandscape(landscape, false))
       )
     )
-    .then(_.orderBy([landscape => landscape.name.toLowerCase()], null));
+    .then(_.orderBy([landscape => landscape.name.toLowerCase()], null))
 };
 
 export const fetchLandscapeForMembers = slug => {

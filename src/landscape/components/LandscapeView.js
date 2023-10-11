@@ -70,6 +70,9 @@ import BaseMap from './LandscapeMap';
 import { Partnership } from './LandscapeProfile/AffiliationCard';
 
 import theme from 'theme';
+import MemberJoin from 'collaboration/components/MemberJoin';
+import { CollaborationContextProvider } from 'collaboration/collaborationContext';
+import MembershipCard from 'collaboration/components/MembershipCard';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.view_leave_label',
