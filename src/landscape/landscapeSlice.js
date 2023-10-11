@@ -62,14 +62,7 @@ const initialState = {
 
 export const fetchLandscapes = createAsyncThunk(
   'landscape/fetchLandscapes',
-  async (params, currentUser, { dispatch }) => {
-    const landscapes = await landscapeService.fetchLandscapes(
-      params,
-      currentUser
-    );
-    dispatch(setMemberships(getMemberships(landscapes)));
-    return landscapes;
-  }
+  landscapeService.fetchLandscapes
 );
 export const fetchLandscapeProfile = createAsyncThunk(
   'landscape/fetchLandscapeProfile',
@@ -82,7 +75,6 @@ export const fetchLandscapeView = createAsyncThunk(
       params,
       currentUser
     );
-    dispatch(setMemberships(getMemberships([landscape])));
     dispatch(setList(landscape.dataEntries));
     return landscape;
   }
@@ -393,9 +385,9 @@ export const {
 
 export default landscapeSlice.reducer;
 
-const getMemberships = landscapes => {
-  const groups = landscapes
-    .map(landscape => landscape.defaultGroup)
-    .filter(group => group.slug);
-  return membershipsUtils.getMemberships(groups);
-};
+// const getMemberships = landscapes => {
+//   const groups = landscapes
+//     .map(landscape => landscape.defaultGroup)
+//     .filter(group => group.slug);
+//   return membershipsUtils.getMemberships(groups);
+// };

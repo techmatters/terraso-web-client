@@ -24,6 +24,8 @@ import {
 } from 'terraso-client-shared/collaboration/membershipsUtils';
 import { Typography } from '@mui/material';
 
+import { countryNameForCode } from 'common/countries';
+import * as gisService from 'gis/gisService';
 import { normalizeLongitude, parseGeoJson } from 'gis/gisUtils';
 
 import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
@@ -134,7 +136,7 @@ export const extractDevelopmentStrategy = landscape =>
 
 export const extractLandscape = landscape => {
   const result = {
-    ...landscape,
+    ..._.omit('membershipList',landscape),
     accountMembership: extractAccountMembership(landscape.membershipList),
     membershipsInfo: extractMembershipsInfo(landscape.membershipList),
     areaPolygon: landscape.areaPolygon

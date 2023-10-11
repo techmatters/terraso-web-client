@@ -22,9 +22,6 @@ import {
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
-import { countryNameForCode } from 'common/countries';
-import * as gisService from 'gis/gisService';
-import { extractDataEntries } from 'sharedData/sharedDataUtils';
 import { extractTerms } from 'taxonomies/taxonomiesUtils';
 
 import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
@@ -239,15 +236,9 @@ export const fetchLandscapes = () => {
     .then(landscapes =>
       landscapes.edges
         .map(edge => edge.node)
-        .map(landscape => ({
-          ..._.omit(['defaultGroup'], landscape),
-          defaultGroup: getDefaultGroup(landscape),
-          areaPolygon: landscape.areaPolygon
-            ? JSON.parse(landscape.areaPolygon)
-            : null,
-        }))
+        .map(extractLandscape)
     )
-    .then(_.orderBy([landscape => landscape.name.toLowerCase()], null));
+    .then(_.orderBy([landscape => landscape.name.toLowerCase()], null))
 };
 
 export const fetchLandscapeForMembers = slug => {

@@ -31,33 +31,34 @@ import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
-import { GroupContextProvider } from 'group/groupContext';
-import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
-import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
-import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton';
 import { fetchLandscapes } from 'landscape/landscapeSlice';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 
 import LandscapeListMap from './LandscapeListMap';
+import MembershipListCount from 'collaboration/components/MembershipCount';
+import { CollaborationContextProvider } from 'collaboration/collaborationContext';
+import MembershipJoinLeaveButton from 'collaboration/components/MembershipJoinLeaveButton';
+import MemberJoin from 'collaboration/components/MemberJoin';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.list_leave_button',
 });
 
-const MemberJoinButton = withProps(GroupMemberJoin, {
+const MemberJoinButton = withProps(MemberJoin, {
   label: 'landscape.list_join_button',
   ariaLabel: 'landscape.list_join_label',
 });
 
 const MembershipButton = ({ landscape, tabIndex }) => (
-  <GroupContextProvider
+  <CollaborationContextProvider
     owner={landscape}
-    groupSlug={_.get('defaultGroup.slug', landscape)}
+    accountMembership={landscape.accountMembership}
+    membershipsInfo={landscape.membershipsInfo}
     MemberJoinButton={MemberJoinButton}
     MemberLeaveButton={MemberLeaveButton}
   >
-    <GroupMembershipJoinLeaveButton tabIndex={tabIndex} />
-  </GroupContextProvider>
+    <MembershipJoinLeaveButton tabIndex={tabIndex} />
+  </CollaborationContextProvider>
 );
 
 const LandscapeList = () => {
@@ -122,9 +123,9 @@ const LandscapeList = () => {
         xs: 6,
       },
       valueGetter: ({ row: landscape }) =>
-        _.getOr(0, 'defaultGroup.membersInfo.totalCount', landscape),
+        _.getOr(0, 'membershipsInfo.totalCount', landscape),
       renderCell: ({ row: landscape }) => (
-        <GroupMembershipCount groupSlug={landscape.defaultGroup.slug} />
+        <MembershipListCount membershipsInfo={landscape.membershipsInfo} />
       ),
     },
     {

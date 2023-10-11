@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Technology Matters
+ * Copyright © 2021-2023 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -14,8 +14,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-export const MEMBERSHIP_STATUS_APPROVED = 'APPROVED';
-export const MEMBERSHIP_STATUS_PENDING = 'PENDING';
+import React from 'react';
+import _ from 'lodash/fp';
+import { Typography } from '@mui/material';
 
-export const MEMBERSHIP_TYPE_CLOSED = 'CLOSED';
-export const MEMBERSHIP_TYPE_OPEN = 'OPEN';
+const MembershipListCount = props => {
+  const { membershipsInfo } = props;
+  const count = _.getOr(0, 'totalCount', membershipsInfo);
+  return <Typography variant="body1">{count}</Typography>;
+};
+
+export default MembershipListCount;

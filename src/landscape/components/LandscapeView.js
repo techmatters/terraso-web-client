@@ -52,9 +52,6 @@ import PageLoader from 'layout/PageLoader';
 import { useRefreshProgressContext } from 'layout/RefreshProgressProvider';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import Restricted from 'permissions/components/Restricted';
-import { GroupContextProvider } from 'group/groupContext';
-import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
-import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
 import {
   fetchLandscapeView,
   refreshLandscapeView,
@@ -67,12 +64,15 @@ import BaseMap from './LandscapeMap';
 import { Partnership } from './LandscapeProfile/AffiliationCard';
 
 import theme from 'theme';
+import MemberJoin from 'collaboration/components/MemberJoin';
+import { CollaborationContextProvider } from 'collaboration/collaborationContext';
+import MembershipCard from 'collaboration/components/MembershipCard';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.view_leave_label',
 });
 
-const MemberJoinButton = withProps(GroupMemberJoin, {
+const MemberJoinButton = withProps(MemberJoin, {
   label: 'landscape.view_join_label',
 });
 
@@ -285,11 +285,11 @@ const LandscapeView = () => {
   const currentCountry = countryNameForCode(landscape.location);
 
   return (
-    <GroupContextProvider
+    <CollaborationContextProvider
       owner={landscape}
       baseOwnerUrl={`/landscapes/${landscape.slug}`}
-      group={landscape.defaultGroup}
-      groupSlug={landscape.defaultGroup.slug}
+      accountMembership={landscape.accountMembership}
+      membershipsInfo={landscape.membershipsInfo}
       MemberJoinButton={MemberJoinButton}
       MemberLeaveButton={MemberLeaveButton}
       updateOwner={updateLandscape}
@@ -377,7 +377,8 @@ const LandscapeView = () => {
             md={6}
             style={{ display: 'flex', alignItems: 'flex-start' }}
           >
-            <GroupMembershipCard
+            <MembershipCard
+              // TODO allowedToManageMembers
               onViewMembers={() =>
                 navigate(`/landscapes/${landscape.slug}/members`)
               }
@@ -395,7 +396,7 @@ const LandscapeView = () => {
           </Grid>
         </Grid>
       </PageContainer>
-    </GroupContextProvider>
+    </CollaborationContextProvider>
   );
 };
 

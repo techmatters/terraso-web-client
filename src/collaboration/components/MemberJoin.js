@@ -15,23 +15,31 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
-import logger from 'terraso-client-shared/monitoring/logger';
+import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
+import { LoadingButton } from '@mui/lab';
 
-import UnexpectedError from 'common/components/UnexpectedError';
+import { useCollaborationContext } from 'collaboration/collaborationContext';
 
-const errorHandler = error => {
-  console.log('JOSEEEEEEEEEEEE');
-  console.log(error);
-  logger.error(error.message, error.stack);
-};
+const MemberJoin = props => {
+  const { t } = useTranslation();
+  const { owner } = useCollaborationContext();
+  const { ariaLabel, onJoin, buttonProps, loading } = props;
 
-const ErrorMonitoringProvider = props => {
   return (
-    <ErrorBoundary FallbackComponent={UnexpectedError} onError={errorHandler}>
-      {props.children}
-    </ErrorBoundary>
+    <LoadingButton
+      variant="outlined"
+      aria-label={t(ariaLabel, {
+        name: _.get('name', owner),
+      })}
+      onClick={onJoin}
+      loading={loading}
+      sx={{ flexGrow: 1 }}
+      {...buttonProps}
+    >
+      {t(props.label)}
+    </LoadingButton>
   );
 };
 
-export default ErrorMonitoringProvider;
+export default MemberJoin;

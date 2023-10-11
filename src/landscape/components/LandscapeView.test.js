@@ -137,8 +137,7 @@ const baseViewTest = async (userRole = 'MEMBER') => {
               description: 'Landscape Description',
               website: 'https://www.landscape.org',
               location: 'EC',
-              defaultGroup: {
-                slug: 'test-group-slug',
+              membershipList: {
                 memberships,
                 accountMembership,
                 membershipsCount: 6,
@@ -159,8 +158,7 @@ const baseViewTest = async (userRole = 'MEMBER') => {
               website: 'https://www.landscape.org',
               location: 'EC',
               areaPolygon: GEOJSON,
-              defaultGroup: {
-                slug: 'test-group-slug',
+              membershipList: {
                 memberships,
                 accountMembership,
               },
@@ -213,7 +211,7 @@ test('LandscapeView: Display error', async () => {
   await setup();
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
-test('LandscapeForm: Display loader', async () => {
+test('LandscapeView: Display loader', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
   await setup();
   const loader = screen.getByRole('progressbar', {
