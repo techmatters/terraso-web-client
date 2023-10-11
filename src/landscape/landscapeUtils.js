@@ -18,9 +18,16 @@ import turfCenter from '@turf/center';
 import * as turf from '@turf/helpers';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
+import {
+  extractAccountMembership,
+  extractMembershipsInfo,
+} from 'terraso-client-shared/collaboration/membershipsUtils';
 import { Typography } from '@mui/material';
 
 import { normalizeLongitude, parseGeoJson } from 'gis/gisUtils';
+
+import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
+import { extractDataEntries } from 'sharedData/sharedDataUtils';
 
 // Returns bounding box containing the defined areaPolygon data or
 // the bounding box requested from the landsace.location data
@@ -124,6 +131,40 @@ export const extractAffiliatedGroups = landscape =>
 
 export const extractDevelopmentStrategy = landscape =>
   _.get('associatedDevelopmentStrategy.edges[0].node', landscape);
+
+export const extractLandscape = landscape => {
+  const result = {
+    ...landscape,
+    accountMembership: extractAccountMembership(landscape.membershipList),
+    membershipsInfo: extractMembershipsInfo(landscape.membershipList),
+    areaPolygon: landscape.areaPolygon
+      ? JSON.parse(landscape.areaPolygon)
+      : null,
+    partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
+    partnership: extractPartnership(landscape),
+    dataEntries: extractDataEntries(landscape),
+  };
+
+  if (result.areaPolygon || !result.location) {
+    return result;
+  }
+
+  // Get bounding box from nominatim.openstreetmap.org if no areaPolygon data
+  // AreaPolygon is not present when the user decided to skip it.
+  const currentCountry = countryNameForCode(result.location);
+
+  if (!currentCountry) {
+    return result;
+  }
+
+  return gisService
+    .getPlaceInfoByName(currentCountry.name)
+    .then(placeInfo => ({
+      ...result,
+      boundingBox: placeInfo?.boundingbox,
+    }))
+    .catch(() => result);
+};
 
 export const Subheader = ({ id, text }) => {
   const { t } = useTranslation();

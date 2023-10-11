@@ -22,6 +22,7 @@ import {
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
+import { extractLandscape } from 'landscape/landscapeUtils';
 import { extractStoryMap } from 'storyMap/storyMapUtils';
 
 export const fetchHomeData = email => {
@@ -38,7 +39,7 @@ export const fetchHomeData = email => {
                 node {
                   landscape {
                     ...landscapeFields
-                    ...defaultGroup
+                    ...landscapeMembershipList
                   }
                 }
               }
@@ -96,12 +97,7 @@ export const fetchHomeData = email => {
         .flatMap(_.getOr([], 'node.associatedLandscapes.edges'))
         .map(_.get('node.landscape'))
         .filter(landscape => landscape)
-        .map(landscape => ({
-          ..._.omit(['associatedGroups'], landscape),
-          accountMembership: extractAccountMembership(
-            _.get('defaultGroup', landscape)
-          ),
-        })),
+        .map(extractLandscape),
       storyMaps: _.getOr([], 'storyMaps.edges', response)
         .map(_.get('node'))
         .sort(_.get('publishedAt'))

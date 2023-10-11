@@ -31,6 +31,7 @@ import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
 import {
   extractAffiliatedGroups,
   extractDevelopmentStrategy,
+  extractLandscape,
   extractPartnership,
 } from './landscapeUtils';
 
@@ -141,16 +142,16 @@ const getDefaultGroup = landscape => {
   };
 };
 
-export const fetchLandscapeToView = slug => {
+export const fetchLandscapeToView = (slug, { email: accountEmail }) => {
   const query = graphql(`
-    query landscapesToView($slug: String!) {
+    query landscapesToView($slug: String!, $accountEmail: String!) {
       landscapes(slug: $slug) {
         edges {
           node {
             ...landscapeFields
             ...landscapePartnershipField
-            ...defaultGroupWithMembersSample
             ...landscapeDataEntries
+            ...landscapeMembershipListWithMembersSample
             areaPolygon
           }
         }
@@ -158,45 +159,10 @@ export const fetchLandscapeToView = slug => {
     }
   `);
   return terrasoApi
-    .requestGraphQL(query, {
-      slug,
-    })
+    .requestGraphQL(query, { slug, accountEmail })
     .then(_.get('landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('not_found'))
-    .then(landscape => ({
-      ..._.omit('defaultGroup', landscape),
-      defaultGroup: getDefaultGroup(landscape),
-    }))
-    .then(landscape => ({
-      ...landscape,
-      areaPolygon: landscape.areaPolygon
-        ? JSON.parse(landscape.areaPolygon)
-        : null,
-      partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
-      partnership: extractPartnership(landscape),
-      dataEntries: extractDataEntries(landscape),
-    }))
-    .then(landscape => {
-      if (landscape.areaPolygon || !landscape.location) {
-        return landscape;
-      }
-
-      // Get bounding box from nominatim.openstreetmap.org if no areaPolygon data
-      // AreaPolygon is not present when the user decided to skip it.
-      const currentCountry = countryNameForCode(landscape.location);
-
-      if (!currentCountry) {
-        return landscape;
-      }
-
-      return gisService
-        .getPlaceInfoByName(currentCountry.name)
-        .then(placeInfo => ({
-          ...landscape,
-          boundingBox: placeInfo?.boundingbox,
-        }))
-        .catch(() => landscape);
-    });
+    .then(extractLandscape);
 };
 
 export const fetchLandscapeProfile = slug => {
@@ -206,7 +172,7 @@ export const fetchLandscapeProfile = slug => {
         edges {
           node {
             ...landscapeProfileFields
-            ...defaultGroup
+            ...landscapeMembershipList
           }
         }
       }
@@ -234,7 +200,7 @@ export const fetchLandscapeToUploadSharedData = slug => {
         edges {
           node {
             ...landscapeFields
-            ...defaultGroup
+            ...landscapeMembershipList
           }
         }
       }
@@ -257,7 +223,7 @@ export const fetchLandscapes = () => {
         edges {
           node {
             ...landscapeFields
-            ...defaultGroup
+            ...landscapeMembershipList
             centerCoordinates {
               lat
               lng
@@ -291,9 +257,9 @@ export const fetchLandscapeForMembers = slug => {
         edges {
           node {
             ...landscapeFields
-            defaultGroup {
-              slug
-              ...accountMembership
+            membershipList {
+              ...collaborationMemberships
+              ...accountCollaborationMembership
             }
           }
         }

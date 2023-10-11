@@ -37,20 +37,20 @@ test('LandscapeService: Fetch landscape with missing fields', async () => {
       },
     })
   );
-  const landscape = await landscapeService.fetchLandscapeToView('');
+  const landscape = await landscapeService.fetchLandscapeToView('', {
+    email: 'test@test.com',
+  });
   expect(landscape).toStrictEqual({
     name: 'Landscape name',
     description: 'Landscape description',
     website: 'https://www.landscape.org',
     areaPolygon: null,
     dataEntries: undefined,
-    defaultGroup: {
-      membersInfo: {
-        accountMembership: undefined,
-        membersSample: [],
-        pendingCount: undefined,
-        totalCount: undefined,
-      },
+    membershipsInfo: {
+      accountMembership: undefined,
+      membershipsSample: [],
+      pendingCount: undefined,
+      totalCount: undefined,
     },
     partnership: undefined,
     partnershipStatus: undefined,

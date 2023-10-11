@@ -52,7 +52,7 @@ export const landscapeProfileFields = /* GraphQL */ `
         }
       }
     }
-    associatedGroups(isDefaultLandscapeGroup: false) {
+    associatedGroups {
       edges {
         node {
           isPartnership
@@ -95,24 +95,31 @@ export const landscapePartnershipField = /* GraphQL */ `
   }
 `;
 
-export const defaultGroup = /* GraphQL */ `
-  fragment defaultGroup on LandscapeNode {
-    defaultGroup {
-      id
-      slug
+export const landscapeMembershipList = /* GraphQL */ `
+  fragment landscapeMembershipList on LandscapeNode {
+    membershipList {
       membershipsCount
-      ...accountMembership
+      ...accountCollaborationMembership
     }
   }
 `;
 
-export const defaultGroupWithMembersSample = /* GraphQL */ `
-  fragment defaultGroupWithMembersSample on LandscapeNode {
-    defaultGroup {
-      id
-      slug
-      ...groupMembersInfo
-      ...accountMembership
+export const landscapeMembershipListWithMembersSample = /* GraphQL */ `
+  fragment landscapeMembershipListWithMembersSample on LandscapeNode {
+    membershipList {
+      membershipsCount
+      ...accountCollaborationMembership
+      memberships(
+        user_Email_Not: $accountEmail
+        first: 5
+        membershipStatus: APPROVED
+      ) {
+        edges {
+          node {
+            ...collaborationMembershipFields
+          }
+        }
+      }
     }
   }
 `;

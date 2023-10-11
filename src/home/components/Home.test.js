@@ -82,9 +82,9 @@ test('Home: Display landscapes', async () => {
                     node: {
                       landscape: {
                         id: 'id-1',
-                        slug: 'id-1',
+                        slug: 'landsacpe-1',
                         name: 'Landscape 1',
-                        defaultGroup: _.set(
+                        membershipList: _.set(
                           'accountMembership.userRole',
                           'MEMBER',
                           {}
@@ -96,9 +96,9 @@ test('Home: Display landscapes', async () => {
                     node: {
                       landscape: {
                         id: 'id-2',
-                        slug: 'id-2',
+                        slug: 'landscape-2',
                         name: 'Landscape 2',
-                        defaultGroup: _.set(
+                        membershipList: _.set(
                           'accountMembership.userRole',
                           'MANAGER',
                           {}
@@ -115,10 +115,13 @@ test('Home: Display landscapes', async () => {
     })
   );
   await setup();
-  expect(screen.getByText(/Landscape 1/i)).toBeInTheDocument();
-  expect(screen.getByText(/Member/i)).toBeInTheDocument();
-  expect(screen.getByText(/Landscape 2/i)).toBeInTheDocument();
-  expect(screen.getByText(/Manager/i)).toBeInTheDocument();
+  const list = within(screen.getByRole('region', { name: 'Landscapes' }));
+  const landscape1 = list.getByRole('listitem', { name: 'Landscape 1' });
+  const landscape2 = list.getByRole('listitem', { name: 'Landscape 2' });
+  expect(landscape1).toBeInTheDocument();
+  expect(landscape2).toBeInTheDocument();
+  expect(within(landscape1).getByText(/Member/i)).toBeInTheDocument();
+  expect(within(landscape2).getByText(/Manager/i)).toBeInTheDocument();
 });
 test('Home: Display groups', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
