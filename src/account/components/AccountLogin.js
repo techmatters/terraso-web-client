@@ -22,7 +22,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchAuthURLs } from 'terraso-client-shared/account/accountSlice';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import AppleIcon from '@mui/icons-material/Apple';
-import GoogleIcon from '@mui/icons-material/Google';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import SvgIcon from '@mui/material/SvgIcon';
 
@@ -33,12 +32,17 @@ import PageLoader from 'layout/PageLoader';
 import LocalePicker from 'localization/components/LocalePicker';
 import { useAnalytics } from 'monitoring/analytics';
 
+import { ReactComponent as GoogleSvg } from 'assets/google.svg';
 import logo from 'assets/logo.svg';
 import { ReactComponent as MicrosoftSvg } from 'assets/microsoft.svg';
 
 // ref: https://mui.com/material-ui/icons/#component-prop
 const MicrosoftIcon = props => {
   return <SvgIcon component={MicrosoftSvg} {...props} />;
+};
+
+const GoogleIcon = props => {
+  return <SvgIcon component={GoogleSvg} {...props} />;
 };
 
 const appendReferrer = (url, referrer) => {
@@ -132,19 +136,6 @@ const AccountForm = () => {
             </Button>
           )}
 
-          {urls.apple && (
-            <Button
-              variant="outlined"
-              startIcon={<AppleIcon sx={{ paddingRight: '5px' }} />}
-              href={appendReferrer(urls.apple, referrer)}
-              onClick={() =>
-                trackEvent('user.login', { props: { source: 'apple' } })
-              }
-            >
-              {t('account.apple_login')}
-            </Button>
-          )}
-
           {urls.microsoft && (
             <Button
               variant="outlined"
@@ -159,6 +150,19 @@ const AccountForm = () => {
               }
             >
               {t('account.microsoft_login')}
+            </Button>
+          )}
+
+          {urls.apple && (
+            <Button
+              variant="outlined"
+              startIcon={<AppleIcon sx={{ paddingRight: '5px' }} />}
+              href={appendReferrer(urls.apple, referrer)}
+              onClick={() =>
+                trackEvent('user.login', { props: { source: 'apple' } })
+              }
+            >
+              {t('account.apple_login')}
             </Button>
           )}
         </Stack>
