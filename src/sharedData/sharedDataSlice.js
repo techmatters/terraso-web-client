@@ -74,9 +74,9 @@ export const updateSharedData = createAsyncThunk(
     params: { name: dataEntry.name },
   })
 );
-export const fetchGroupSharedData = createAsyncThunk(
-  'sharedData/fetchGroupSharedData',
-  sharedDataService.fetchGroupSharedData
+export const fetchSharedData = createAsyncThunk(
+  'sharedData/fetchSharedData',
+  sharedDataService.fetchSharedData
 );
 
 export const addVisualizationConfig = createAsyncThunk(
@@ -226,7 +226,7 @@ const sharedDataSlice = createSlice({
       )
     );
 
-    builder.addCase(fetchGroupSharedData.pending, (state, action) => ({
+    builder.addCase(fetchSharedData.pending, (state, action) => ({
       ...state,
       list: {
         fetching: true,
@@ -234,7 +234,7 @@ const sharedDataSlice = createSlice({
       },
     }));
 
-    builder.addCase(fetchGroupSharedData.fulfilled, (state, action) => ({
+    builder.addCase(fetchSharedData.fulfilled, (state, action) => ({
       ...state,
       list: {
         fetching: false,

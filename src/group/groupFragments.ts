@@ -35,13 +35,17 @@ export const groupsListFields = /* GraphQL */ `
   }
 `;
 
-export const dataEntries = /* GraphQL */ `
-  fragment dataEntries on GroupNode {
-    dataEntries(resourceType_In: $resourceTypes) {
+export const groupDataEntries = /* GraphQL */ `
+  fragment groupDataEntries on GroupNode {
+    sharedResources(source_DataEntry_ResourceType_In: $resourceTypes) {
       edges {
         node {
-          ...dataEntry
-          ...dataEntryVisualizations
+          source {
+            ... on DataEntryNode {
+              ...dataEntry
+              ...dataEntryVisualizations
+            }
+          }
         }
       }
     }

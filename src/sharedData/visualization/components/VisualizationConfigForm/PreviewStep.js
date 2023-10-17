@@ -44,7 +44,7 @@ const PreviewStep = props => {
   const [viewportConfig, setViewportConfig] = useState(
     visualizationConfig.viewportConfig
   );
-  const { owner, entityTypeLocalized, group } = useGroupContext();
+  const { owner, entityTypeLocalized, entityType } = useGroupContext();
 
   useEffect(() => {
     setViewportConfig(visualizationConfig.viewportConfig);
@@ -88,7 +88,8 @@ const PreviewStep = props => {
         title: _.get('annotateConfig.mapTitle', completeConfig),
         visualizationConfig: filteredConfig,
         selectedFile,
-        group,
+        ownerId: owner.id,
+        ownerType: entityType,
       })
     ).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
@@ -106,9 +107,10 @@ const PreviewStep = props => {
     });
   }, [
     dispatch,
-    group,
     onSaved,
     owner.name,
+    owner.id,
+    entityType,
     selectedFile,
     trackEvent,
     viewportConfig,

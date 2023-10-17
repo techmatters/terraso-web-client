@@ -255,33 +255,25 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
         },
       });
     }
-    if (trimmedQuery.startsWith('query group')) {
+    if (trimmedQuery.startsWith('query dataEntries')) {
       return Promise.resolve({
-        groups: {
+        dataEntries: {
           edges: [
             {
               node: {
-                dataEntries: {
-                  edges: [
-                    {
-                      node: {
-                        createdAt: '2022-05-17T23:32:50.606587+00:00',
-                        createdBy: {
-                          id: 'dc695d00-d6b4-45b2-ab8d-f48206d998da',
-                          lastName: 'Buitrón',
-                          firstName: 'José',
-                        },
-                        description: '',
-                        id: 'f00c5564-cf93-471a-94c2-b930cbb0a4f8',
-                        name: 'File 1',
-                        resourceType: 'text/csv',
-                        size: 3565,
-                        url: 'https://file-url',
-                        visualizations: { edges: [] },
-                      },
-                    },
-                  ],
+                createdAt: '2022-05-17T23:32:50.606587+00:00',
+                createdBy: {
+                  id: 'dc695d00-d6b4-45b2-ab8d-f48206d998da',
+                  lastName: 'Buitrón',
+                  firstName: 'José',
                 },
+                description: '',
+                id: 'f00c5564-cf93-471a-94c2-b930cbb0a4f8',
+                name: 'File 1',
+                resourceType: 'text/csv',
+                size: 3565,
+                url: 'https://file-url',
+                visualizations: { edges: [] },
               },
             },
           ],
@@ -327,6 +319,14 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
   await testAnnotateStep();
   await testPreviewStep(map, events);
 
+  // Fetch data entries validation
+  const fetchCall = terrasoApi.requestGraphQL.mock.calls[3];
+  expect(fetchCall[1]).toStrictEqual({
+    resourceTypes: ['csv', 'xls', 'xlsx'],
+    slug: 'landscape-slug',
+    type: 'landscape',
+  });
+
   // Save
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Publish' }))
@@ -335,7 +335,8 @@ test('LandscapeSharedDataVisualizationConfig: Create visualization', async () =>
   const saveCall = terrasoApi.requestGraphQL.mock.calls[4];
   expect(saveCall[1]).toStrictEqual({
     input: {
-      groupId: '6a625efb-4ec8-45e8-ad6a-eb052cc3fe65',
+      ownerId: 'e9a65bef-4ef1-4058-bba3-fc73b53eb779',
+      ownerType: 'landscape',
       title: 'Test Title',
       configuration: JSON.stringify({
         datasetConfig: {
