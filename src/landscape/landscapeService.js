@@ -24,6 +24,7 @@ import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
 import { countryNameForCode } from 'common/countries';
 import * as gisService from 'gis/gisService';
+import { extractDataEntries } from 'sharedData/sharedDataUtils';
 import { extractTerms } from 'taxonomies/taxonomiesUtils';
 
 import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
@@ -170,6 +171,7 @@ export const fetchLandscapeToView = slug => {
         : null,
       partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
       partnership: extractPartnership(landscape),
+      dataEntries: extractDataEntries(landscape),
     }))
     .then(landscape => {
       if (landscape.areaPolygon || !landscape.location) {

@@ -18,18 +18,27 @@ import _ from 'lodash/fp';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
-import { extractDataEntry, extractGroupDataEntries } from 'group/groupUtils';
+import { extractDataEntries, extractDataEntry } from './sharedDataUtils';
 
 import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
 const ALL_RESOURCE_TYPES = [...SHARED_DATA_ACCEPTED_EXTENSIONS, 'link'];
 
-export const uploadSharedDataFile = async ({ groupSlug, file }) => {
+export const uploadSharedDataFile = async ({
+  groupSlug,
+  landscapeSlug,
+  file,
+}) => {
   const path = '/shared-data/upload/';
 
   const body = new FormData();
   const filename = `${file.name}${file.resourceType}`;
-  body.append('groups', groupSlug);
+  if (groupSlug) {
+    body.append('groups', groupSlug);
+  }
+  if (landscapeSlug) {
+    body.append('landscapes', landscapeSlug);
+  }
   body.append('name', file.name);
   if (file.description) {
     body.append('description', file.description);
@@ -61,7 +70,7 @@ export const deleteSharedData = ({ dataEntry }) => {
   });
 };
 
-export const addSharedDataLink = ({ groupSlug, link }) => {
+export const addSharedDataLink = ({ targetType, targetSlug, link }) => {
   const query = graphql(`
     mutation addDataEntry($input: DataEntryAddMutationInput!) {
       addDataEntry(input: $input) {
@@ -80,7 +89,8 @@ export const addSharedDataLink = ({ groupSlug, link }) => {
         ..._.pick(['name', 'url', 'description'], link),
         entryType: 'link',
         resourceType: 'link',
-        groupSlug,
+        targetType,
+        targetSlug,
       },
     })
     .then(_.get('addDataEntry.dataEntry'));
@@ -131,7 +141,7 @@ export const fetchGroupSharedData = ({
     .requestGraphQL(query, { slug, resourceTypes })
     .then(_.get('groups.edges[0].node'))
     .then(group => group || Promise.reject('not_found'))
-    .then(group => extractGroupDataEntries(group));
+    .then(group => extractDataEntries(group));
 };
 
 export const addVisualizationConfig = ({
@@ -189,7 +199,7 @@ export const fetchVisualizationConfig = ({ groupSlug, configSlug }) => {
   const query = graphql(`
     query fetchVisualizationConfig($groupSlug: String!, $configSlug: String!) {
       visualizationConfigs(
-        dataEntry_Groups_Slug: $groupSlug
+        dataEntry_SharedResources_Target_Slug: $groupSlug
         slug: $configSlug
       ) {
         edges {

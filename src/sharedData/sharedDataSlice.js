@@ -124,6 +124,13 @@ const sharedDataSlice = createSlice({
       ...state,
       processing: _.omit(action.payload, state.processing),
     }),
+    setList: (state, action) => ({
+      ...state,
+      list: {
+        data: action.payload,
+        fetching: false,
+      },
+    }),
   },
 
   extraReducers: builder => {
@@ -278,6 +285,7 @@ const sharedDataSlice = createSlice({
   },
 });
 
-export const { resetUploads, resetProcessing } = sharedDataSlice.actions;
+export const { resetUploads, resetProcessing, setList } =
+  sharedDataSlice.actions;
 
 export default sharedDataSlice.reducer;

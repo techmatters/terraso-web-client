@@ -108,19 +108,21 @@ const baseViewTest = async (userRole = 'MEMBER') => {
     membershipStatus: 'APPROVED',
   };
 
-  const dataEntries = {
+  const sharedResources = {
     edges: Array(6)
       .fill(0)
       .map((item, index) => ({
         node: {
-          id: `de-${index}`,
-          createdAt: '2022-05-20T16:25:21.536679+00:00',
-          name: `Data Entry ${index}`,
-          createdBy: { id: 'user-id', firstName: 'First', lastName: 'Last' },
-          description: `Description ${index}`,
-          size: 3456,
-          entryType: 'FILE',
-          visualizations: { edges: [] },
+          source: {
+            id: `de-${index}`,
+            createdAt: '2022-05-20T16:25:21.536679+00:00',
+            name: `Data Entry ${index}`,
+            createdBy: { id: 'user-id', firstName: 'First', lastName: 'Last' },
+            description: `Description ${index}`,
+            size: 3456,
+            entryType: 'FILE',
+            visualizations: { edges: [] },
+          },
         },
       })),
   };
@@ -141,6 +143,7 @@ const baseViewTest = async (userRole = 'MEMBER') => {
                 accountMembership,
                 membershipsCount: 6,
               },
+              sharedResources,
             },
           },
         ],
@@ -161,17 +164,7 @@ const baseViewTest = async (userRole = 'MEMBER') => {
                 memberships,
                 accountMembership,
               },
-            },
-          },
-        ],
-      },
-    })
-    .mockResolvedValueOnce({
-      groups: {
-        edges: [
-          {
-            node: {
-              dataEntries,
+              sharedResources,
             },
           },
         ],
@@ -310,7 +303,7 @@ test('LandscapeView: Update Shared Data', async () => {
       })
     )
   );
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[3];
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
 
   expect(saveCall[1].input).toEqual({
     id: 'de-3',

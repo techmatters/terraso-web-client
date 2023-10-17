@@ -21,6 +21,7 @@ import * as membershipsUtils from 'terraso-client-shared/memberships/memberships
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
 import * as landscapeService from 'landscape/landscapeService';
+import { setList } from 'sharedData/sharedDataSlice';
 
 const initialState = {
   list: {
@@ -82,6 +83,7 @@ export const fetchLandscapeView = createAsyncThunk(
       currentUser
     );
     dispatch(setMemberships(getMemberships([landscape])));
+    dispatch(setList(landscape.dataEntries));
     return landscape;
   }
 );

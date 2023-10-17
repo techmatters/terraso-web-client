@@ -90,6 +90,10 @@ const LandscapeSharedDataUpload = () => {
           groupSlug={_.get('defaultGroup.slug', landscape)}
           onCancel={onCancel}
           onCompleteSuccess={onCompleteSuccess}
+          targetInput={{
+            targetType: 'landscape',
+            targetSlug: slug,
+          }}
         />
       </GroupContextProvider>
     </PageContainer>

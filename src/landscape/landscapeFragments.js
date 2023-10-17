@@ -116,3 +116,20 @@ export const defaultGroupWithMembersSample = /* GraphQL */ `
     }
   }
 `;
+
+export const landscapeDataEntries = /* GraphQL */ `
+  fragment landscapeDataEntries on LandscapeNode {
+    sharedResources(source_DataEntry_ResourceType_In: $resourceTypes) {
+      edges {
+        node {
+          source {
+            ... on DataEntryNode {
+              ...dataEntry
+              ...dataEntryVisualizations
+            }
+          }
+        }
+      }
+    }
+  }
+`;
