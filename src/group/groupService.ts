@@ -23,6 +23,8 @@ import {
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
+import { extractDataEntries } from 'sharedData/sharedDataUtils';
+
 import type { Group } from './groupSlice';
 
 export const fetchGroupToUpdate = (slug: string) => {
@@ -66,6 +68,7 @@ export const fetchGroupToView = async (slug: string) => {
       ..._.omit(['memberships', 'membershipsCount'], group),
       membersInfo: extractMembersInfo(group),
       accountMembership: extractAccountMembership(group),
+      dataEntries: extractDataEntries(group),
     }));
 };
 
