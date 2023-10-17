@@ -215,6 +215,10 @@ test('GroupSharedDataUpload: Complete Success', async () => {
   await waitFor(() => expect(uploadButton).not.toHaveAttribute('disabled'));
   await act(async () => fireEvent.click(uploadButton));
   expect(navigate.mock.calls[0]).toEqual(['/groups/slug-1']);
+
+  const saveCall = terrasoApi.request.mock.calls[0];
+  expect(saveCall[0].body.get('target_type')).toBe('group');
+  expect(saveCall[0].body.get('target_slug')).toBe('slug-1');
 });
 
 test('GroupSharedDataUpload: PDF Success', async () => {

@@ -85,9 +85,8 @@ const LandscapeSharedDataUpload = () => {
           name: landscape.name,
         })}
       />
-      <GroupContextProvider group={landscape.defaultGroup} owner={landscape}>
+      <GroupContextProvider owner={landscape}>
         <SharedDataUpload
-          groupSlug={_.get('defaultGroup.slug', landscape)}
           onCancel={onCancel}
           onCompleteSuccess={onCompleteSuccess}
           targetInput={{

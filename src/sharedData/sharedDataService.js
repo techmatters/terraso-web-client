@@ -25,20 +25,16 @@ import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 const ALL_RESOURCE_TYPES = [...SHARED_DATA_ACCEPTED_EXTENSIONS, 'link'];
 
 export const uploadSharedDataFile = async ({
-  groupSlug,
-  landscapeSlug,
+  targetType,
+  targetSlug,
   file,
 }) => {
   const path = '/shared-data/upload/';
 
   const body = new FormData();
   const filename = `${file.name}${file.resourceType}`;
-  if (groupSlug) {
-    body.append('groups', groupSlug);
-  }
-  if (landscapeSlug) {
-    body.append('landscapes', landscapeSlug);
-  }
+  body.append('target_type', targetType);
+  body.append('target_slug', targetSlug);
   body.append('name', file.name);
   if (file.description) {
     body.append('description', file.description);
