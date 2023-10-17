@@ -37,7 +37,7 @@ export const groupsListFields = /* GraphQL */ `
 
 export const groupDataEntries = /* GraphQL */ `
   fragment groupDataEntries on GroupNode {
-    sharedResources(source_DataEntry_ResourceType_In: $resourceTypes) {
+    sharedResources {
       edges {
         node {
           source {

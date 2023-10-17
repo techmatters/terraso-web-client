@@ -27,8 +27,6 @@ import { extractDataEntries } from 'sharedData/sharedDataUtils';
 
 import type { Group } from './groupSlice';
 
-import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
-
 export const fetchGroupToUpdate = (slug: string) => {
   const query = graphql(`
     query groupToUpdate($slug: String!) {
@@ -50,7 +48,7 @@ export const fetchGroupToUpdate = (slug: string) => {
 
 export const fetchGroupToView = async (slug: string) => {
   const query = graphql(`
-    query groupToView($slug: String!, $resourceTypes: [String]!) {
+    query groupToView($slug: String!) {
       groups(slug: $slug) {
         edges {
           node {
@@ -67,7 +65,6 @@ export const fetchGroupToView = async (slug: string) => {
   return terrasoApi
     .requestGraphQL(query, {
       slug,
-      resourceTypes: SHARED_DATA_ACCEPTED_EXTENSIONS,
     })
     .then(resp => resp.groups?.edges.at(0)?.node || Promise.reject('not_found'))
     .then(group => ({

@@ -119,7 +119,7 @@ export const defaultGroupWithMembersSample = /* GraphQL */ `
 
 export const landscapeDataEntries = /* GraphQL */ `
   fragment landscapeDataEntries on LandscapeNode {
-    sharedResources(source_DataEntry_ResourceType_In: $resourceTypes) {
+    sharedResources {
       edges {
         node {
           source {

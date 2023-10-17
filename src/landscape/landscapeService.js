@@ -34,8 +34,6 @@ import {
   extractPartnership,
 } from './landscapeUtils';
 
-import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
-
 const cleanLandscape = landscape =>
   _.flow(
     _.pick([
@@ -145,7 +143,7 @@ const getDefaultGroup = landscape => {
 
 export const fetchLandscapeToView = slug => {
   const query = graphql(`
-    query landscapesToView($slug: String!, $resourceTypes: [String]!) {
+    query landscapesToView($slug: String!) {
       landscapes(slug: $slug) {
         edges {
           node {
@@ -162,7 +160,6 @@ export const fetchLandscapeToView = slug => {
   return terrasoApi
     .requestGraphQL(query, {
       slug,
-      resourceTypes: SHARED_DATA_ACCEPTED_EXTENSIONS,
     })
     .then(_.get('landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('not_found'))
