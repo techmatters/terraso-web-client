@@ -20,10 +20,13 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchAuthURLs } from 'terraso-client-shared/account/accountSlice';
+import { GoogleSvg, MicrosoftSvg } from 'terraso-client-shared/icons';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import AppleIcon from '@mui/icons-material/Apple';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import SvgIcon from '@mui/material/SvgIcon';
+
+import { withProps } from 'react-hoc';
 
 import ExternalLink from 'common/components/ExternalLink';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
@@ -32,18 +35,11 @@ import PageLoader from 'layout/PageLoader';
 import LocalePicker from 'localization/components/LocalePicker';
 import { useAnalytics } from 'monitoring/analytics';
 
-import { ReactComponent as GoogleSvg } from 'assets/google.svg';
 import logo from 'assets/logo.svg';
-import { ReactComponent as MicrosoftSvg } from 'assets/microsoft.svg';
 
 // ref: https://mui.com/material-ui/icons/#component-prop
-const MicrosoftIcon = props => {
-  return <SvgIcon component={MicrosoftSvg} {...props} />;
-};
-
-const GoogleIcon = props => {
-  return <SvgIcon component={GoogleSvg} {...props} />;
-};
+const MicrosoftIcon = withProps(SvgIcon, { component: MicrosoftSvg });
+const GoogleIcon = withProps(SvgIcon, { component: GoogleSvg });
 
 const appendReferrer = (url, referrer) => {
   if (!referrer) {
