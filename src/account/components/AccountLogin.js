@@ -20,8 +20,8 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchAuthURLs } from 'terraso-client-shared/account/accountSlice';
-import { ReactComponent as GoogleSvg } from 'terraso-client-shared/assets/google.svg';
-import { ReactComponent as MicrosoftSvg } from 'terraso-client-shared/assets/microsoft.svg';
+import { ReactComponent as GoogleLogo } from 'terraso-client-shared/assets/google.svg';
+import { ReactComponent as MicrosoftLogo } from 'terraso-client-shared/assets/microsoft.svg';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import AppleIcon from '@mui/icons-material/Apple';
 import { Box, Button, Stack, Typography } from '@mui/material';
@@ -39,8 +39,8 @@ import { useAnalytics } from 'monitoring/analytics';
 import logo from 'assets/logo.svg';
 
 // ref: https://mui.com/material-ui/icons/#component-prop
-const MicrosoftIcon = withProps(SvgIcon, { component: MicrosoftSvg });
-const GoogleIcon = withProps(SvgIcon, { component: GoogleSvg });
+const MicrosoftIcon = withProps(SvgIcon, { component: MicrosoftLogo });
+const GoogleIcon = withProps(SvgIcon, { component: GoogleLogo });
 
 const appendReferrer = (url, referrer) => {
   if (!referrer) {
