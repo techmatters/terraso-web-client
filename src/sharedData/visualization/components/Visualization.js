@@ -393,10 +393,12 @@ const Visualization = props => {
         {useTileset ? (
           <MapboxRemoteSource visualizationConfig={visualizationConfig} />
         ) : (
-          <SheetSource
-            visualizationConfig={visualizationConfig}
-            sampleSize={sampleSize}
-          />
+          visualizationContext.sheetSource && (
+            <SheetSource
+              visualizationConfig={visualizationConfig}
+              sampleSize={sampleSize}
+            />
+          )
         )}
         <MapboxLayer
           visualizationConfig={visualizationConfig}

@@ -58,6 +58,10 @@ const FORM_FIELDS = [
     label: 'sharedData.form_step_annotate_map_title_label',
   },
   {
+    name: 'mapDescription',
+    label: 'sharedData.form_step_annotate_map_description_label',
+  },
+  {
     name: 'annotationTitle',
     label: 'sharedData.form_step_annotate_annotation_title_label',
     props: {

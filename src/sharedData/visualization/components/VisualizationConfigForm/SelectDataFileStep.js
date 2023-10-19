@@ -39,7 +39,15 @@ import SharedFileIcon from 'sharedData/components/SharedFileIcon';
 import { fetchSharedData } from 'sharedData/sharedDataSlice';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 
-const ACCEPTED_RESOURCE_TYPES = ['csv', 'xls', 'xlsx'];
+import {
+  DATA_SET_ACCPETED_EXTENSIONS,
+  MAP_DATA_ACCEPTED_EXTENSIONS,
+} from 'config';
+
+const ACCEPTED_RESOURCE_TYPES = [
+  ...MAP_DATA_ACCEPTED_EXTENSIONS,
+  ...DATA_SET_ACCPETED_EXTENSIONS,
+];
 
 const StackRow = props => (
   <Stack direction="row" alignItems="center" spacing={1} {...props} />

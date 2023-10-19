@@ -24,6 +24,11 @@ import GroupSharedDataVisualizationConfig from 'group/components/GroupSharedData
 import LandscapeSharedDataVisualizationConfig from 'landscape/components/LandscapeSharedDataVisualizationConfig';
 import * as visualizationMarkers from 'sharedData/visualization/visualizationMarkers';
 
+import {
+  DATA_SET_ACCPETED_EXTENSIONS,
+  MAP_DATA_ACCEPTED_EXTENSIONS,
+} from 'config';
+
 jest.mock('terraso-client-shared/terrasoApi/api');
 jest.mock('sharedData/visualization/visualizationMarkers');
 jest.mock('react-router-dom', () => ({
@@ -32,14 +37,162 @@ jest.mock('react-router-dom', () => ({
 }));
 jest.mock('gis/mapbox', () => ({}));
 
+const DATA_SET_STEPS = ['File', 'Data', 'Appearance', 'Annotate', 'Preview'];
+const MAP_STEPS = ['File', 'Appearance', 'Annotate', 'Preview'];
+
 const TEST_CSV = `
 col1,col2,col_longitude,col3,col4
 val1,val2,10,30,val4
 `.trim();
 
-const setup = async parentType => {
+const isMapFile = selectFile => selectFile.includes('kml');
+const isDataSetFile = selectFile => selectFile.includes('csv');
+
+const setup = async testParams => {
+  const events = {};
+  const map = {
+    on: jest.fn().mockImplementation((...args) => {
+      const event = args[0];
+      const callback = args.length === 2 ? args[1] : args[2];
+      const layer = args.length === 2 ? null : args[1];
+      events[[event, layer].filter(p => p).join(':')] = callback;
+
+      if (event === 'load') {
+        callback();
+      }
+    }),
+    remove: jest.fn(),
+    off: jest.fn(),
+    addControl: jest.fn(),
+    removeControl: jest.fn(),
+    addSource: jest.fn(),
+    getSource: jest.fn(),
+    addLayer: jest.fn(),
+    getLayer: jest.fn(),
+    setTerrain: jest.fn(),
+    hasImage: jest.fn(),
+    addImage: jest.fn(),
+    fitBounds: jest.fn(),
+    getBounds: jest.fn(),
+    dragRotate: { disable: jest.fn() },
+    touchZoomRotate: { disableRotation: jest.fn() },
+  };
+  mapboxgl.Map.mockReturnValue(map);
+  useParams.mockReturnValue({
+    slug: testParams.slug,
+  });
+  mockTerrasoAPIrequestGraphQL({
+    'query landscapesToUploadSharedData(': Promise.resolve({
+      landscapes: {
+        edges: [
+          {
+            node: {
+              defaultGroup: {
+                id: '6a625efb-4ec8-45e8-ad6a-eb052cc3fe65',
+                accountMembership: {},
+              },
+              id: 'e9a65bef-4ef1-4058-bba3-fc73b53eb779',
+              location: 'CM',
+              name: 'Landscape Test',
+              slug: 'landscape-slug',
+              website: '',
+            },
+          },
+        ],
+      },
+    }),
+    'query groupToUploadSharedData(': Promise.resolve({
+      groups: {
+        edges: [
+          {
+            node: {
+              accountMembership: {},
+              id: 'b3e54b43-d437-4612-95f1-2e0585ab7806',
+              name: 'Group Test',
+              slug: 'group-slug',
+            },
+          },
+        ],
+      },
+    }),
+    'query group(': Promise.resolve({
+      groups: {
+        edges: [
+          {
+            node: {
+              dataEntries: {
+                edges: [
+                  {
+                    node: {
+                      createdAt: '2022-05-17T23:32:50.606587+00:00',
+                      createdBy: {
+                        id: 'dc695d00-d6b4-45b2-ab8d-f48206d998da',
+                        lastName: 'Buitrón',
+                        firstName: 'José',
+                      },
+                      description: '',
+                      id: 'f00c5564-cf93-471a-94c2-b930cbb0a4f8',
+                      name: 'File csv',
+                      resourceType: 'text/csv',
+                      size: 3565,
+                      url: 'https://file-url',
+                      visualizations: { edges: [] },
+                    },
+                  },
+                  {
+                    node: {
+                      createdAt: '2022-05-17T23:32:50.606587+00:00',
+                      createdBy: {
+                        id: 'dc695d00-d6b4-45b2-ab8d-f48206d998da',
+                        lastName: 'Buitrón',
+                        firstName: 'José',
+                      },
+                      description: '',
+                      id: '0968419c-64ab-4561-ac72-671eedcde3ad',
+                      name: 'File kml',
+                      resourceType: 'application/xml',
+                      size: 3565,
+                      url: 'https://file-url',
+                      visualizations: { edges: [] },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      },
+    }),
+    'mutation addVisualizationConfig': Promise.resolve({
+      addVisualizationConfig: {
+        visualizationConfig: { id: 'b50b761e-faf8-471d-94ee-4991dc1cbd7f' },
+      },
+    }),
+  });
+  global.fetch.mockResolvedValue({
+    status: 200,
+    arrayBuffer: () => {
+      const file = new File([TEST_CSV], `test.csv`, { type: 'text/csv' });
+      return new Promise(function (resolve, reject) {
+        const reader = new FileReader();
+
+        reader.onerror = function onerror(ev) {
+          reject(ev.target.error);
+        };
+
+        reader.onload = function onload(ev) {
+          resolve(ev.target.result);
+        };
+
+        reader.readAsArrayBuffer(file);
+      });
+    },
+  });
+  visualizationMarkers.getLayerImage.mockResolvedValue(
+    'image/svg;base64,abc123'
+  );
   const Component =
-    parentType === 'landscape'
+    testParams.type === 'landscape'
       ? LandscapeSharedDataVisualizationConfig
       : GroupSharedDataVisualizationConfig;
   await render(<Component />, {
@@ -53,6 +206,7 @@ const setup = async parentType => {
       },
     },
   });
+  return { map, events };
 };
 
 beforeEach(() => {
@@ -74,13 +228,25 @@ beforeEach(() => {
   mapboxgl.Map = jest.fn();
 });
 
-const testSelectDataFileStep = async () => {
+const testSelectDataFileStep = async testParams => {
+  // Validate accepted file types
+  const fetchFilesCall = terrasoApi.requestGraphQL.mock.calls[3];
+  expect(fetchFilesCall[1].resourceTypes).toStrictEqual([
+    ...MAP_DATA_ACCEPTED_EXTENSIONS,
+    ...DATA_SET_ACCPETED_EXTENSIONS,
+  ]);
+
+  // Validate stepper not present in first step
+  expect(screen.queryByRole('list', { name: 'Steps' })).not.toBeInTheDocument();
+
   const filesList = within(screen.getByRole('list', { name: 'Data File' }));
   const nextButton = screen.getByRole('button', { name: 'Next' });
 
   expect(nextButton).toHaveAttribute('disabled');
 
-  fireEvent.click(filesList.getByRole('radio', { name: 'File 1' }));
+  fireEvent.click(
+    filesList.getByRole('radio', { name: testParams.selectFile })
+  );
 
   expect(nextButton).not.toHaveAttribute('disabled');
 
@@ -118,9 +284,31 @@ const changeSelectOption = async (name, newValue) => {
   await validateSelectValue(name, newValue);
 };
 
-const testSetDatasetStep = async () => {
+const testStepper = async testParams => {
+  // Validate stepper shows relevant steps for the selected file type
+  const stepper = screen.getByRole('list', { name: 'Steps' });
+  const steps = within(stepper).getAllByRole('listitem');
+  if (isDataSetFile(testParams.selectFile)) {
+    expect(steps).toHaveLength(DATA_SET_STEPS.length);
+    for (const step in DATA_SET_STEPS) {
+      expect(steps[step]).toHaveTextContent(DATA_SET_STEPS[step]);
+    }
+  }
+  if (isMapFile(testParams.selectFile)) {
+    expect(steps).toHaveLength(MAP_STEPS.length);
+    for (const step in MAP_STEPS) {
+      expect(steps[step]).toHaveTextContent(MAP_STEPS[step]);
+    }
+  }
+};
+
+const testSetDatasetStep = async testParams => {
   await waitFor(() =>
-    expect(screen.getByRole('heading', { name: 'Data from “File 1”' }))
+    expect(
+      screen.getByRole('heading', {
+        name: `Data from “${testParams.selectFile}”`,
+      })
+    )
   );
 
   await changeSelectOption('Latitude (required)', 'col3');
@@ -165,7 +353,7 @@ const testVisualizeStep = async () => {
   );
 };
 
-const testAnnotateStep = async () => {
+const testAnnotateStep = async testParams => {
   // Map Title
   const mapTitle = screen.getByRole('textbox', {
     name: 'Map Title (required)',
@@ -179,14 +367,27 @@ const testAnnotateStep = async () => {
   );
   expect(mapTitle).toHaveValue('Test Title');
 
-  // Popup title
-  await changeSelectOption('Pop-up Title', 'col4');
-
-  // Data points labels
-  const dataPoint = screen.getByRole('textbox', { name: 'Data point 1 label' });
+  // Map Description
+  const mapDescription = screen.getByRole('textbox', {
+    name: 'Map Description',
+  });
   await act(async () =>
-    fireEvent.change(dataPoint, { target: { value: 'Custom Label' } })
+    fireEvent.change(mapDescription, { target: { value: 'Test Description' } })
   );
+  expect(mapDescription).toHaveValue('Test Description');
+
+  if (isDataSetFile(testParams.selectFile)) {
+    // Popup title
+    await changeSelectOption('Pop-up Title', 'col4');
+
+    // Data points labels
+    const dataPoint = screen.getByRole('textbox', {
+      name: 'Data point 1 label',
+    });
+    await act(async () =>
+      fireEvent.change(dataPoint, { target: { value: 'Custom Label' } })
+    );
+  }
 
   // Next
   await act(async () =>
@@ -203,146 +404,87 @@ const testPreviewStep = async (map, events) => {
   await act(async () => events['moveend']());
 };
 
+const BASE_CONFIGURATION_EXPECTED_INPUT = {
+  visualizeConfig: { shape: 'triangle', size: '30', color: '#FF580D' },
+  viewportConfig: {
+    bounds: {
+      northEast: { lng: -67.62077603784013, lat: 11.325606896067784 },
+      southWest: { lng: -76.29042998100137, lat: 8.263885173441716 },
+    },
+  },
+};
 test.each([
-  {
-    type: 'landscape',
-    slug: 'landscape-slug',
-    expectedOwnerId: 'e9a65bef-4ef1-4058-bba3-fc73b53eb779',
-    expectedOwnerType: 'landscape',
-  },
-  {
-    type: 'group',
-    slug: 'group-slug',
-    expectedOwnerId: 'b3e54b43-d437-4612-95f1-2e0585ab7806',
-    expectedOwnerType: 'group',
-  },
+  [
+    'landscape csv',
+    {
+      type: 'landscape',
+      slug: 'landscape-slug',
+      
+      selectFile: 'File csv',
+      expectedApiInput: {
+        title: 'Test Title',
+        description: 'Test Description',
+        ownerId: 'e9a65bef-4ef1-4058-bba3-fc73b53eb779',
+        ownerType: 'landscape',
+        dataEntryId: 'f00c5564-cf93-471a-94c2-b930cbb0a4f8',
+      },
+      expectedConfiguration: {
+        ...BASE_CONFIGURATION_EXPECTED_INPUT,
+        datasetConfig: {
+          dataColumns: {
+            option: 'custom',
+            selectedColumns: ['col1', 'col4'],
+          },
+          longitude: 'col_longitude',
+          latitude: 'col3',
+        },
+        annotateConfig: {
+          annotationTitle: 'col4',
+          dataPoints: [{ column: 'col1', label: 'Custom Label' }],
+        },
+      },
+    },
+  ],
+  [
+    'group kml',
+    {
+      type: 'group',
+      slug: 'group-slug',
+      selectFile: 'File kml',
+      expectedApiInput: {
+        title: 'Test Title',
+        description: 'Test Description',
+        ownerId: 'b3e54b43-d437-4612-95f1-2e0585ab7806',
+        ownerType: 'group',
+        dataEntryId: '0968419c-64ab-4561-ac72-671eedcde3ad',
+      },
+      expectedConfiguration: {
+        ...BASE_CONFIGURATION_EXPECTED_INPUT,
+        datasetConfig: {
+          dataColumns: {
+            option: '',
+            selectedColumns: ['', '', ''],
+          },
+        },
+        annotateConfig: {
+          annotationTitle: '',
+          dataPoints: [],
+        },
+      },
+    },
+  ],
 ])(
   'VisualizationConfigForm: Create %s visualization',
-  async parent => {
-    const events = {};
-    const map = {
-      on: jest.fn().mockImplementation((...args) => {
-        const event = args[0];
-        const callback = args.length === 2 ? args[1] : args[2];
-        const layer = args.length === 2 ? null : args[1];
-        events[[event, layer].filter(p => p).join(':')] = callback;
+  async (caseDescription, testParams) => {
+    const { map, events } = await setup(testParams);
 
-        if (event === 'load') {
-          callback();
-        }
-      }),
-      remove: jest.fn(),
-      off: jest.fn(),
-      addControl: jest.fn(),
-      removeControl: jest.fn(),
-      addSource: jest.fn(),
-      getSource: jest.fn(),
-      addLayer: jest.fn(),
-      getLayer: jest.fn(),
-      setTerrain: jest.fn(),
-      hasImage: jest.fn(),
-      addImage: jest.fn(),
-      fitBounds: jest.fn(),
-      getBounds: jest.fn(),
-      dragRotate: { disable: jest.fn() },
-      touchZoomRotate: { disableRotation: jest.fn() },
-    };
-    mapboxgl.Map.mockReturnValue(map);
-    useParams.mockReturnValue({
-      slug: parent.slug,
-    });
-    mockTerrasoAPIrequestGraphQL({
-      'query landscapesToUploadSharedData(': Promise.resolve({
-        landscapes: {
-          edges: [
-            {
-              node: {
-                defaultGroup: {
-                  id: '6a625efb-4ec8-45e8-ad6a-eb052cc3fe65',
-                  accountMembership: {},
-                },
-                id: 'e9a65bef-4ef1-4058-bba3-fc73b53eb779',
-                location: 'CM',
-                name: 'Landscape Test',
-                slug: 'landscape-slug',
-                website: '',
-              },
-            },
-          ],
-        },
-      }),
-      'query groupToUploadSharedData(': Promise.resolve({
-        groups: {
-          edges: [
-            {
-              node: {
-                accountMembership: {},
-                id: 'b3e54b43-d437-4612-95f1-2e0585ab7806',
-                name: 'Group Test',
-                slug: 'group-slug',
-              },
-            },
-          ],
-        },
-      }),
-      'query dataEntries(': Promise.resolve({
-        dataEntries: {
-          edges: [
-            {
-              node: {
-                createdAt: '2022-05-17T23:32:50.606587+00:00',
-                createdBy: {
-                  id: 'dc695d00-d6b4-45b2-ab8d-f48206d998da',
-                  lastName: 'Buitrón',
-                  firstName: 'José',
-                },
-                description: '',
-                id: 'f00c5564-cf93-471a-94c2-b930cbb0a4f8',
-                name: 'File 1',
-                resourceType: 'text/csv',
-                size: 3565,
-                url: 'https://file-url',
-                visualizations: { edges: [] },
-              },
-            },
-          ],
-        },
-      }),
-      'mutation addVisualizationConfig': Promise.resolve({
-        addVisualizationConfig: {
-          visualizationConfig: { id: 'b50b761e-faf8-471d-94ee-4991dc1cbd7f' },
-        },
-      }),
-    });
-    global.fetch.mockResolvedValue({
-      status: 200,
-      arrayBuffer: () => {
-        const file = new File([TEST_CSV], `test.csv`, { type: 'text/csv' });
-        return new Promise(function (resolve, reject) {
-          const reader = new FileReader();
-
-          reader.onerror = function onerror(ev) {
-            reject(ev.target.error);
-          };
-
-          reader.onload = function onload(ev) {
-            resolve(ev.target.result);
-          };
-
-          reader.readAsArrayBuffer(file);
-        });
-      },
-    });
-    visualizationMarkers.getLayerImage.mockResolvedValue(
-      'image/svg;base64,abc123'
-    );
-
-    await setup(parent.type);
-
-    await testSelectDataFileStep();
-    await testSetDatasetStep();
+    await testSelectDataFileStep(testParams);
+    await testStepper(testParams);
+    if (isDataSetFile(testParams.selectFile)) {
+      await testSetDatasetStep(testParams);
+    }
     await testVisualizeStep();
-    await testAnnotateStep();
+    await testAnnotateStep(testParams);
     await testPreviewStep(map, events);
 
     // Fetch data entries validation
@@ -359,35 +501,12 @@ test.each([
     );
     expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(5);
     const saveCall = terrasoApi.requestGraphQL.mock.calls[4];
-    expect(saveCall[1]).toStrictEqual({
-      input: {
-        ownerId: parent.expectedOwnerId,
-        ownerType: parent.expectedOwnerType,
-        title: 'Test Title',
-        configuration: JSON.stringify({
-          datasetConfig: {
-            dataColumns: {
-              option: 'custom',
-              selectedColumns: ['col1', 'col4'],
-            },
-            longitude: 'col_longitude',
-            latitude: 'col3',
-          },
-          visualizeConfig: { shape: 'triangle', size: '30', color: '#FF580D' },
-          annotateConfig: {
-            annotationTitle: 'col4',
-            dataPoints: [{ column: 'col1', label: 'Custom Label' }],
-          },
-          viewportConfig: {
-            bounds: {
-              northEast: { lng: -67.62077603784013, lat: 11.325606896067784 },
-              southWest: { lng: -76.29042998100137, lat: 8.263885173441716 },
-            },
-          },
-        }),
-        dataEntryId: 'f00c5564-cf93-471a-94c2-b930cbb0a4f8',
-      },
-    });
+    expect(saveCall[1].input).toEqual(
+      expect.objectContaining(testParams.expectedApiInput)
+    );
+    expect(JSON.parse(saveCall[1].input.configuration)).toStrictEqual(
+      testParams.expectedConfiguration
+    );
   },
   30000
 );

@@ -76,45 +76,55 @@ export const MAP_DATA_ACCEPTED_TYPES_NAMES = [
   'ESRI Shapefile',
 ];
 
+const getTypesExtensions = (types: Record<string, string[]>) =>
+  Object.values(types)
+    .flat()
+    .map(ext => ext.substr(1))
+    .sort();
+
 export const MAP_DATA_ACCEPTED_TYPES = {
   'application/json': ['.json', '.geojson'],
   'application/xml': ['.kml'],
   'application/zip': ['.kmz', '.zip'],
 };
 
-export const MAP_DATA_ACCEPTED_EXTENSIONS = Object.values(
+export const MAP_DATA_ACCEPTED_EXTENSIONS = getTypesExtensions(
   MAP_DATA_ACCEPTED_TYPES
-)
-  .flat()
-  .map(ext => ext.substr(1))
-  .sort();
+);
 
-export const SHARED_DATA_ACCEPTED_TYPES = {
+export const DATA_SET_ACCEPTED_TYPES = {
   'text/csv': ['.csv'],
+  'application/vnd.ms-excel': ['.xls'],
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': [
+    '.xlsx',
+  ],
+};
+
+export const DATA_SET_ACCPETED_EXTENSIONS = getTypesExtensions(
+  DATA_SET_ACCEPTED_TYPES
+);
+
+export const DOCUMENT_ACCEPTED_TYPES = {
   'application/msword': ['.doc'],
   'application/pdf': ['.pdf'],
-  'application/vnd.ms-excel': ['.xls'],
   'application/vnd.ms-powerpoint': ['.ppt'],
   'application/vnd.openxmlformats-officedocument.presentationml.presentation': [
     '.pptx',
   ],
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': [
-    '.xlsx',
-  ],
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': [
     '.docx',
   ],
-  'application/json': ['.json', '.geojson'],
-  'application/xml': ['.kml', '.gpx'],
-  'application/zip': ['.kmz', '.zip'],
 };
 
-export const SHARED_DATA_ACCEPTED_EXTENSIONS = Object.values(
+export const SHARED_DATA_ACCEPTED_TYPES = {
+  ...DOCUMENT_ACCEPTED_TYPES,
+  ...DATA_SET_ACCEPTED_TYPES,
+  ...MAP_DATA_ACCEPTED_TYPES,
+};
+
+export const SHARED_DATA_ACCEPTED_EXTENSIONS = getTypesExtensions(
   SHARED_DATA_ACCEPTED_TYPES
-)
-  .flat()
-  .map(ext => ext.substr(1))
-  .sort();
+);
 
 export const IMAGE_ACCEPTED_EXTENSIONS = (
   process.env.REACT_APP_IMAGE_ACCEPTED_EXTENSIONS || 'jpg,jpeg'
@@ -162,9 +172,6 @@ export const STORY_MAP_MEDIA_ACCEPTED_TYPES = {
   'audio/aac': ['.aac'],
   'video/mpeg': ['.mp4'],
 };
-export const STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS = Object.values(
+export const STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS = getTypesExtensions(
   STORY_MAP_MEDIA_ACCEPTED_TYPES
-)
-  .flat()
-  .map(ext => ext.substr(1))
-  .sort();
+);

@@ -155,6 +155,7 @@ export const fetchSharedData = ({
 
 export const addVisualizationConfig = ({
   title,
+  description,
   ownerId,
   ownerType,
   selectedFile,
@@ -179,6 +180,7 @@ export const addVisualizationConfig = ({
     .requestGraphQL(query, {
       input: {
         title,
+        description,
         configuration,
         dataEntryId: selectedFile.id,
         ownerId,

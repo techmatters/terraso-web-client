@@ -80,12 +80,14 @@ const PreviewStep = props => {
         'datasetConfig.preview',
         'annotateConfig.dataPointsTitle',
         'annotateConfig.mapTitle',
+        'annotateConfig.mapDescription',
       ],
       completeConfig
     );
     dispatch(
       addVisualizationConfig({
         title: _.get('annotateConfig.mapTitle', completeConfig),
+        description: _.get('annotateConfig.mapDescription', completeConfig),
         visualizationConfig: filteredConfig,
         selectedFile,
         ownerId: owner.id,
