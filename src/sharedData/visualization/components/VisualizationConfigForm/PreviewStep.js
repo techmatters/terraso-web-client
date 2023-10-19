@@ -39,8 +39,7 @@ const PreviewStep = props => {
     state => state.sharedData.visualizationConfigForm
   );
   const visualizationContext = useVisualizationContext();
-  const { visualizationConfig, sheetContext: { selectedFile } = {} } =
-    visualizationContext;
+  const { visualizationConfig } = visualizationContext;
   const [viewportConfig, setViewportConfig] = useState(
     visualizationConfig.viewportConfig
   );
@@ -89,7 +88,7 @@ const PreviewStep = props => {
         title: _.get('annotateConfig.mapTitle', completeConfig),
         description: _.get('annotateConfig.mapDescription', completeConfig),
         visualizationConfig: filteredConfig,
-        selectedFile,
+        selectedFile: visualizationConfig.selectedFile,
         ownerId: owner.id,
         ownerType: entityType,
       })

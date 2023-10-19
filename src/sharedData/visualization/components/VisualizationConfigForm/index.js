@@ -14,8 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useMemo, useState } from 'react';
-import _ from 'lodash/fp';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Stepper from 'common/components/Stepper';
@@ -30,11 +29,9 @@ import SelectDataFileStep from './SelectDataFileStep';
 import SetDatasetStep from './SetDatasetStep';
 import VisualizeStep from './VisualizeStep';
 
-import { MAP_DATA_ACCEPTED_TYPES } from 'config';
-
 import theme from 'theme';
 
-const initialConfig = {
+const INITIAL_CONFIG = {
   datasetConfig: {
     dataColumns: {
       option: '',
@@ -50,19 +47,8 @@ const initialConfig = {
 
 const Steps = props => {
   const { t } = useTranslation();
-  const { visualizationConfig } = useVisualizationContext();
-  const { selectedFile } = visualizationConfig;
+  const { isMapFile } = useVisualizationContext();
   const { onCompleteSuccess, onCancel, onReadFileFails, onStepUpdate } = props;
-
-  const isMapFile = useMemo(() => {
-    if (!selectedFile) {
-      return;
-    }
-    return _.includes(
-      selectedFile.resourceType,
-      Object.keys(MAP_DATA_ACCEPTED_TYPES)
-    );
-  }, [selectedFile]);
 
   const selectFileStep = {
     label: t('sharedData.form_step_select_file_label'),
@@ -157,7 +143,8 @@ const Steps = props => {
 
 const VisualizationConfigForm = props => {
   const { onCompleteSuccess, onCancel } = props;
-  const [visualizationConfig, setVisualizationConfig] = useState(initialConfig);
+  const [visualizationConfig, setVisualizationConfig] =
+    useState(INITIAL_CONFIG);
 
   const onReadFileFails = setActiveStepIndex => () => {
     setActiveStepIndex(0);

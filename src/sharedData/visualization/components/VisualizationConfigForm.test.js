@@ -42,7 +42,21 @@ const MAP_STEPS = ['File', 'Appearance', 'Annotate', 'Preview'];
 
 const TEST_CSV = `
 col1,col2,col_longitude,col3,col4
-val1,val2,10,30,val4
+val1,val2,-0.1791468188936136,-78.4800216447845,val4
+`.trim();
+
+const TEST_KML = `
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Placemark>
+    <name>Simple placemark</name>
+    <description>Attached to the ground. Intelligently places itself 
+       at the height of the underlying terrain.</description>
+    <Point>
+      <coordinates>-122.0822035425683,37.42228990140251,0</coordinates>
+    </Point>
+  </Placemark>
+</kml>
 `.trim();
 
 const isMapFile = selectFile => selectFile.includes('kml');
@@ -78,6 +92,7 @@ const setup = async testParams => {
     touchZoomRotate: { disableRotation: jest.fn() },
   };
   mapboxgl.Map.mockReturnValue(map);
+  mapboxgl.LngLat = jest.fn();
   useParams.mockReturnValue({
     slug: testParams.slug,
   });
@@ -172,7 +187,6 @@ const setup = async testParams => {
   global.fetch.mockResolvedValue({
     status: 200,
     arrayBuffer: () => {
-      const file = new File([TEST_CSV], `test.csv`, { type: 'text/csv' });
       return new Promise(function (resolve, reject) {
         const reader = new FileReader();
 
@@ -184,7 +198,7 @@ const setup = async testParams => {
           resolve(ev.target.result);
         };
 
-        reader.readAsArrayBuffer(file);
+        reader.readAsArrayBuffer(testParams.file);
       });
     },
   });
@@ -376,6 +390,12 @@ const testAnnotateStep = async testParams => {
   );
   expect(mapDescription).toHaveValue('Test Description');
 
+  if (isMapFile(testParams.selectFile)) {
+    expect(
+      screen.queryByRole('button', { name: 'Pop-up Title' })
+    ).not.toBeInTheDocument();
+  }
+
   if (isDataSetFile(testParams.selectFile)) {
     // Popup title
     await changeSelectOption('Pop-up Title', 'col4');
@@ -402,6 +422,30 @@ const testPreviewStep = async (map, events) => {
   const ne = new LngLat(-67.62077603784013, 11.325606896067784);
   map.getBounds.mockReturnValue(new LngLatBounds(sw, ne));
   await act(async () => events['moveend']());
+
+  const addSourceCall = map.addSource.mock.calls[0];
+  expect(addSourceCall[0]).toBe('visualization');
+  expect(addSourceCall[1]).toStrictEqual({
+    type: 'geojson',
+    data: {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [-0.17914681889362782, -78.4800216447845],
+          },
+          properties: {
+            fields: '[]',
+            index: 0,
+            position: [-0.17914681889362782, -78.4800216447845],
+            title: undefined,
+          },
+        },
+      ],
+    },
+  });
 };
 
 const BASE_CONFIGURATION_EXPECTED_INPUT = {
@@ -421,6 +465,7 @@ test.each([
       slug: 'landscape-slug',
       
       selectFile: 'File csv',
+      file: new File([TEST_CSV], `test.csv`, { type: 'text/csv' }),
       expectedApiInput: {
         title: 'Test Title',
         description: 'Test Description',
@@ -451,6 +496,7 @@ test.each([
       type: 'group',
       slug: 'group-slug',
       selectFile: 'File kml',
+      file: new File([TEST_KML], `test.kml`, { type: 'application/xml' }),
       expectedApiInput: {
         title: 'Test Title',
         description: 'Test Description',
@@ -467,7 +513,6 @@ test.each([
           },
         },
         annotateConfig: {
-          annotationTitle: '',
           dataPoints: [],
         },
       },

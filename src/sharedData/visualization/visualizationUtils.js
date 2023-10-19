@@ -14,14 +14,50 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import _ from 'lodash/fp';
 import * as SheetsJs from 'xlsx';
 import * as yup from 'yup';
+
+import { normalizeLongitude } from 'gis/gisUtils';
+import mapboxgl from 'gis/mapbox';
 
 export const readFile = async file => {
   const response = await fetch(file.url);
   const arrayBuffer = await response.arrayBuffer();
   const workbook = SheetsJs.read(arrayBuffer);
   return workbook;
+};
+
+export const readDataSetFile = async file => {
+  return readFile(file).then(workbook => {
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const sheetRef = SheetsJs.utils.decode_range(sheet['!ref']);
+    const colCount = _.getOr(0, 'e.c', sheetRef);
+    const rowCount = _.getOr(0, 'e.r', sheetRef);
+
+    // {Object} s Start position
+    // {Object} e End position
+    // {number} e.c Column
+    // {number} e.r Row
+    const headersRange = SheetsJs.utils.encode_range({
+      s: { c: 0, r: 0 },
+      e: { c: colCount, r: 0 },
+    });
+    const headers = SheetsJs.utils.sheet_to_json(sheet, {
+      range: headersRange,
+      header: 1,
+    })[0];
+    const headersIndexes = _.fromPairs(
+      headers.map((header, index) => [header, index])
+    );
+    return {
+      headers,
+      headersIndexes,
+      colCount,
+      rowCount,
+      sheet,
+    };
+  });
 };
 
 export const validateCoordinateColumn = (sheetContext, column) => {
@@ -48,4 +84,65 @@ export const validateCoordinateColumn = (sheetContext, column) => {
   } catch (error) {
     return error;
   }
+};
+
+export const sheetToGeoJSON = (
+  sheetContext,
+  visualizationConfig,
+  sampleSize
+) => {
+  const { datasetConfig, annotateConfig } = visualizationConfig || {};
+  const { sheet, colCount, rowCount } = sheetContext;
+  // {Object} s Start position
+  // {Object} e End position
+  // {number} e.c Column
+  // {number} e.r Row
+  const fullRange = SheetsJs.utils.encode_range({
+    s: { c: 0, r: 0 },
+    e: { c: colCount, r: rowCount },
+  });
+  const rows = SheetsJs.utils.sheet_to_json(sheet, {
+    range: fullRange,
+  });
+  const dataPoints = annotateConfig?.dataPoints || [];
+  const titleColumn = annotateConfig?.annotationTitle;
+  const points = rows
+    .map((row, index) => {
+      const lat = parseFloat(row[datasetConfig.latitude]);
+      const lng = normalizeLongitude(parseFloat(row[datasetConfig.longitude]));
+
+      const fields = dataPoints.map(dataPoint => ({
+        label: dataPoint.label || dataPoint.column,
+        value: row[dataPoint.column],
+      }));
+
+      return {
+        index,
+        position: [lng, lat],
+        title: titleColumn && row[titleColumn],
+        fields: JSON.stringify(fields),
+      };
+    })
+    .filter(point => {
+      try {
+        new mapboxgl.LngLat(...point.position);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    })
+    .slice(0, sampleSize);
+
+  const geoJson = {
+    type: 'FeatureCollection',
+    features: points.map(point => ({
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: point.position,
+      },
+      properties: point,
+    })),
+  };
+  return geoJson;
 };

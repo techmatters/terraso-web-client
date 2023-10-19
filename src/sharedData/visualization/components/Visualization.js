@@ -16,7 +16,6 @@
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
-import * as SheetsJs from 'xlsx';
 
 import mapboxgl from 'gis/mapbox';
 
@@ -29,9 +28,10 @@ import GeoJsonSource from 'gis/components/GeoJsonSource';
 import Map, { useMap } from 'gis/components/Map';
 import MapControls from 'gis/components/MapControls';
 import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
-import { normalizeLongitude } from 'gis/gisUtils';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 import { getLayerImage } from 'sharedData/visualization/visualizationMarkers';
+
+import { sheetToGeoJSON } from '../visualizationUtils';
 
 const PopupContent = props => {
   const { data } = props;
@@ -80,81 +80,11 @@ const MapboxRemoteSource = props => {
 
 const SheetSource = props => {
   const { visualizationConfig, sampleSize } = props;
-  const { datasetConfig, annotateConfig } = visualizationConfig || {};
-  const { sheetContext } = useVisualizationContext();
-  const { sheet, colCount, rowCount } = sheetContext;
-  const fullRange = useMemo(
-    () =>
-      // {Object} s Start position
-      // {Object} e End position
-      // {number} e.c Column
-      // {number} e.r Row
-      SheetsJs.utils.encode_range({
-        s: { c: 0, r: 0 },
-        e: { c: colCount, r: rowCount },
-      }),
-    [colCount, rowCount]
-  );
-  const rows = useMemo(
-    () =>
-      SheetsJs.utils.sheet_to_json(sheet, {
-        range: fullRange,
-      }),
-    [sheet, fullRange]
-  );
-
-  const points = useMemo(() => {
-    const dataPoints = annotateConfig?.dataPoints || [];
-    const titleColumn = annotateConfig?.annotationTitle;
-    return rows
-      .map((row, index) => {
-        const lat = parseFloat(row[datasetConfig.latitude]);
-        const lng = normalizeLongitude(
-          parseFloat(row[datasetConfig.longitude])
-        );
-
-        const fields = dataPoints.map(dataPoint => ({
-          label: dataPoint.label || dataPoint.column,
-          value: row[dataPoint.column],
-        }));
-
-        return {
-          index,
-          position: [lng, lat],
-          title: titleColumn && row[titleColumn],
-          fields: JSON.stringify(fields),
-        };
-      })
-      .filter(point => {
-        try {
-          new mapboxgl.LngLat(...point.position);
-          return true;
-        } catch (error) {
-          return false;
-        }
-      })
-      .slice(0, sampleSize);
-  }, [
-    rows,
-    datasetConfig,
-    annotateConfig?.dataPoints,
-    annotateConfig?.annotationTitle,
-    sampleSize,
-  ]);
+  const { fileContext } = useVisualizationContext();
 
   const geoJson = useMemo(
-    () => ({
-      type: 'FeatureCollection',
-      features: points.map(point => ({
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: point.position,
-        },
-        properties: point,
-      })),
-    }),
-    [points]
+    () => sheetToGeoJSON(fileContext, visualizationConfig, sampleSize),
+    [fileContext, visualizationConfig, sampleSize]
   );
 
   return (
@@ -393,7 +323,7 @@ const Visualization = props => {
         {useTileset ? (
           <MapboxRemoteSource visualizationConfig={visualizationConfig} />
         ) : (
-          visualizationContext.sheetSource && (
+          visualizationContext.fileContext && (
             <SheetSource
               visualizationConfig={visualizationConfig}
               sampleSize={sampleSize}

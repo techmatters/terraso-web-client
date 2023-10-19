@@ -52,41 +52,6 @@ const VALIDATION_SCHEMA = yup
   })
   .required();
 
-const FORM_FIELDS = [
-  {
-    name: 'mapTitle',
-    label: 'sharedData.form_step_annotate_map_title_label',
-  },
-  {
-    name: 'mapDescription',
-    label: 'sharedData.form_step_annotate_map_description_label',
-  },
-  {
-    name: 'annotationTitle',
-    label: 'sharedData.form_step_annotate_annotation_title_label',
-    props: {
-      renderInput: ({ id, field }) => (
-        <ColumnSelect
-          showSelected
-          id={id}
-          field={field}
-          placeholder={
-            field.value
-              ? 'sharedData.form_step_annotate_annotation_title_empty_option'
-              : 'sharedData.form_step_annotate_annotation_title_placeholder'
-          }
-        />
-      ),
-    },
-  },
-  {
-    name: 'dataPoints',
-    props: {
-      renderInput: ({ field }) => <DataPoints field={field} />,
-    },
-  },
-];
-
 const DataPoints = props => {
   const { t } = useTranslation();
   const { value, onChange } = props.field;
@@ -226,9 +191,56 @@ const DataPoints = props => {
 const AnnotateStep = props => {
   const { t } = useTranslation();
   const { onNext, onBack } = props;
-  const { visualizationConfig, getDataColumns } = useVisualizationContext();
+  const { visualizationConfig, getDataColumns, isMapFile } =
+    useVisualizationContext();
   const [updatedValues, setUpdatedValues] = useState();
   const { trigger } = useFormGetContext();
+
+  const formFields = useMemo(() => {
+    const titleField = {
+      name: 'mapTitle',
+      label: 'sharedData.form_step_annotate_map_title_label',
+    };
+    const descriptionField = {
+      name: 'mapDescription',
+      label: 'sharedData.form_step_annotate_map_description_label',
+    };
+    const annotationTitleField = {
+      name: 'annotationTitle',
+      label: 'sharedData.form_step_annotate_annotation_title_label',
+      props: {
+        renderInput: ({ id, field }) => (
+          <ColumnSelect
+            showSelected
+            id={id}
+            field={field}
+            placeholder={
+              field.value
+                ? 'sharedData.form_step_annotate_annotation_title_empty_option'
+                : 'sharedData.form_step_annotate_annotation_title_placeholder'
+            }
+          />
+        ),
+      },
+    };
+
+    const dataPointsField = {
+      name: 'dataPoints',
+      props: {
+        renderInput: ({ field }) => <DataPoints field={field} />,
+      },
+    };
+
+    if (isMapFile) {
+      return [titleField, descriptionField];
+    }
+    return [
+      titleField,
+      descriptionField,
+      annotationTitleField,
+      dataPointsField,
+    ];
+  }, [isMapFile]);
 
   const annotateConfig = useMemo(() => {
     const dataColumns = getDataColumns();
@@ -236,6 +248,10 @@ const AnnotateStep = props => {
     const currentAnnotateConfig = visualizationConfig.annotateConfig || {
       dataPoints: [],
     };
+
+    if (isMapFile) {
+      return currentAnnotateConfig;
+    }
     const toAdd = _.difference(
       dataColumns,
       currentAnnotateConfig.dataPoints.map(point => point.column)
@@ -249,7 +265,7 @@ const AnnotateStep = props => {
       ...currentAnnotateConfig,
       dataPoints: [...filtered, ...toAdd],
     };
-  }, [visualizationConfig.annotateConfig, getDataColumns]);
+  }, [visualizationConfig.annotateConfig, getDataColumns, isMapFile]);
 
   const onNextWrapper = useCallback(async () => {
     const success = await trigger?.();
@@ -273,7 +289,7 @@ const AnnotateStep = props => {
             aria-describedby="visualization-annotate-step-description"
             prefix="annotate-config"
             localizationPrefix="sharedData.form_step_annotate_fields"
-            fields={FORM_FIELDS}
+            fields={formFields}
             values={annotateConfig}
             validationSchema={VALIDATION_SCHEMA}
             isMultiStep
