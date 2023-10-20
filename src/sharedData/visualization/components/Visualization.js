@@ -105,7 +105,7 @@ const MapboxLayer = props => {
   const [imageSvg, setimageSvg] = useState();
   const [popupData, setPopupData] = useState(null);
   const popupContainer = useMemo(() => document.createElement('div'), []);
-  const { useTileset } = useVisualizationContext();
+  const { useTileset, isMapFile } = useVisualizationContext();
 
   const useSvg = useMemo(
     () => visualizationConfig?.visualizeConfig?.shape !== 'circle',
@@ -114,39 +114,46 @@ const MapboxLayer = props => {
 
   const popup = useMemo(
     () =>
-      new mapboxgl.Popup({
-        className: 'visualization-marker-popup',
-      }).setDOMContent(popupContainer),
-    [popupContainer]
+      isMapFile
+        ? null
+        : new mapboxgl.Popup({
+            className: 'visualization-marker-popup',
+          }).setDOMContent(popupContainer),
+    [popupContainer, isMapFile]
   );
 
   useEffect(() => {
     if (!visualizationConfig?.visualizeConfig) {
       return;
     }
-    getLayerImage(visualizationConfig?.visualizeConfig).then(setimageSvg);
+    getLayerImage(visualizationConfig?.visualizeConfig).then(image => {
+      return setimageSvg(image);
+    });
   }, [visualizationConfig?.visualizeConfig]);
 
-  const openPopup = useCallback((feature, event) => {
-    if (!feature) {
-      return;
-    }
-    const coordinates = feature.geometry.coordinates;
-
-    if (event) {
-      // Ensure that if the map is zoomed out such that
-      // multiple copies of the feature are visible, the
-      // popup appears over the copy being pointed to.
-      while (Math.abs(event.lngLat.lng - coordinates[0]) > 180) {
-        coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
+  const openPopup = useCallback(
+    (feature, event) => {
+      if (!feature || isMapFile) {
+        return;
       }
-    }
+      const coordinates = feature.geometry.coordinates;
 
-    setPopupData({
-      coordinates,
-      data: feature.properties,
-    });
-  }, []);
+      if (event) {
+        // Ensure that if the map is zoomed out such that
+        // multiple copies of the feature are visible, the
+        // popup appears over the copy being pointed to.
+        while (Math.abs(event.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+      }
+
+      setPopupData({
+        coordinates,
+        data: feature.properties,
+      });
+    },
+    [isMapFile]
+  );
 
   useEffect(() => {
     if (!map || (useSvg && !imageSvg)) {
@@ -185,14 +192,18 @@ const MapboxLayer = props => {
       map.removeImage('custom-marker');
     }
 
-    addImage('custom-marker', imageSvg);
+    if (useSvg) {
+      addImage('custom-marker', imageSvg);
+    }
     addLayer(layer);
     const pointer = () => (map.getCanvas().style.cursor = 'pointer');
     const noPointer = () => (map.getCanvas().style.cursor = '');
-    const onUnclusteredPointClick = event => {
-      openPopup(event.features[0], event);
-    };
-    map.on('click', 'visualization', onUnclusteredPointClick);
+    if (!isMapFile) {
+      const onUnclusteredPointClick = event => {
+        openPopup(event.features[0], event);
+      };
+      map.on('click', 'visualization', onUnclusteredPointClick);
+    }
     map.on('mouseenter', 'visualization', pointer);
     map.on('mouseleave', 'visualization', noPointer);
   }, [
@@ -205,17 +216,18 @@ const MapboxLayer = props => {
     visualizationConfig?.tilesetId,
     visualizationConfig?.visualizeConfig,
     useSvg,
+    isMapFile,
   ]);
 
   useEffect(() => {
-    if (!map || !popupData?.coordinates) {
+    if (!map || !popupData?.coordinates || isMapFile) {
       return;
     }
     popup.setLngLat(popupData?.coordinates);
     if (!popup.isOpen()) {
       popup.addTo(map);
     }
-  }, [popup, popupData?.coordinates, map]);
+  }, [popup, popupData?.coordinates, map, isMapFile]);
 
   useEffect(() => {
     if (!showPopup || !map) {
@@ -297,7 +309,7 @@ const Visualization = props => {
     children,
   } = props;
   const visualizationContext = useVisualizationContext();
-  const { useTileset } = visualizationContext;
+  const { useTileset, isMapFile } = visualizationContext;
 
   const visualizationConfig = useMemo(
     () => ({
@@ -323,21 +335,26 @@ const Visualization = props => {
       >
         <MapControls />
         <MapStyleSwitcher />
-        {useTileset ? (
-          <MapboxRemoteSource visualizationConfig={visualizationConfig} />
-        ) : (
-          visualizationContext.fileContext && (
-            <FileContextSource
+        {!visualizationContext.loadingFile && (
+          <>
+            {useTileset ? (
+              <MapboxRemoteSource visualizationConfig={visualizationConfig} />
+            ) : (
+              visualizationContext.fileContext && (
+                <FileContextSource
+                  visualizationConfig={visualizationConfig}
+                  sampleSize={sampleSize}
+                />
+              )
+            )}
+            <MapboxLayer
               visualizationConfig={visualizationConfig}
-              sampleSize={sampleSize}
+              showPopup={isMapFile ? false : showPopup}
+              useConfigBounds={useConfigBounds}
             />
-          )
+          </>
         )}
-        <MapboxLayer
-          visualizationConfig={visualizationConfig}
-          showPopup={showPopup}
-          useConfigBounds={useConfigBounds}
-        />
+
         {children}
       </Map>
     </>

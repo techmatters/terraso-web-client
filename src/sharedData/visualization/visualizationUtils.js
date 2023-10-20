@@ -62,7 +62,7 @@ export const readDataSetFile = async file => {
 
 export const readMapFile = async dataEntry => {
   const response = await fetchSharedDataWithGeojson({ id: dataEntry.id });
-  const geojson = response.geojson;
+  const geojson = JSON.parse(response.geojson);
   return { geojson };
 };
 

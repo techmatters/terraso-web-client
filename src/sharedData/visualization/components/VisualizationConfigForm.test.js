@@ -198,7 +198,7 @@ const setup = async testParams => {
     }),
     'query dataEntryWithGeojson': Promise.resolve({
       dataEntry: {
-        geojson: PARSED_KML_TO_GEOJSON,
+        geojson: JSON.stringify(PARSED_KML_TO_GEOJSON),
       },
     }),
   });
