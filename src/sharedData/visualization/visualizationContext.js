@@ -25,9 +25,12 @@ import _ from 'lodash/fp';
 import { useDispatch } from 'react-redux';
 import { addMessage } from 'terraso-client-shared/notifications/notificationsSlice';
 
-import { readDataSetFile } from 'sharedData/visualization/visualizationUtils';
+import {
+  readDataSetFile,
+  readMapFile,
+} from 'sharedData/visualization/visualizationUtils';
 
-import { MAP_DATA_ACCEPTED_TYPES } from 'config';
+import { MAP_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
 export const VisualizationContext = React.createContext();
 
@@ -45,7 +48,7 @@ export const VisualizationContextProvider = props => {
     }
     return _.includes(
       visualizationConfig.selectedFile.resourceType,
-      Object.keys(MAP_DATA_ACCEPTED_TYPES)
+      MAP_DATA_ACCEPTED_EXTENSIONS
     );
   }, [visualizationConfig.selectedFile]);
 
@@ -62,15 +65,17 @@ export const VisualizationContextProvider = props => {
     if (!visualizationConfig.selectedFile || visualizationConfig.tilesetId) {
       return;
     }
-    const newSheetContext =
+    const newFileContext =
       visualizationConfig?.selectedFile?.id !== fileContext?.selectedFile?.id;
-    if (!newSheetContext) {
+    if (!newFileContext) {
       return;
     }
     setLoadingFile(true);
     setFileContext(undefined);
     const readFileRequest = {
-      promise: readDataSetFile(visualizationConfig.selectedFile),
+      promise: isMapFile
+        ? readMapFile(visualizationConfig.selectedFile)
+        : readDataSetFile(visualizationConfig.selectedFile),
       valid: true,
     };
     readFileRequest.promise
@@ -104,6 +109,7 @@ export const VisualizationContextProvider = props => {
     visualizationConfig.tilesetId,
     fileContext,
     dispatch,
+    isMapFile,
   ]);
 
   const getDataColumns = useCallback(() => {

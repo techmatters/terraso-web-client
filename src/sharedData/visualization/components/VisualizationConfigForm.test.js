@@ -58,9 +58,22 @@ const TEST_KML = `
   </Placemark>
 </kml>
 `.trim();
+const PARSED_KML_TO_GEOJSON = {
+  type: 'FeatureCollection',
+  features: [
+    {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [-122.0822035425683, 37.42228990140251],
+      },
+      properties: {},
+    },
+  ],
+};
 
-const isMapFile = selectFile => selectFile.includes('kml');
-const isDataSetFile = selectFile => selectFile.includes('csv');
+const isMapFile = selectFile => selectFile.includes('KML');
+const isDataSetFile = selectFile => selectFile.includes('CSV');
 
 const setup = async testParams => {
   const events = {};
@@ -147,8 +160,8 @@ const setup = async testParams => {
                       },
                       description: '',
                       id: 'f00c5564-cf93-471a-94c2-b930cbb0a4f8',
-                      name: 'File csv',
-                      resourceType: 'text/csv',
+                      name: 'CSV File',
+                      resourceType: 'csv',
                       size: 3565,
                       url: 'https://file-url',
                       visualizations: { edges: [] },
@@ -164,8 +177,8 @@ const setup = async testParams => {
                       },
                       description: '',
                       id: '0968419c-64ab-4561-ac72-671eedcde3ad',
-                      name: 'File kml',
-                      resourceType: 'application/xml',
+                      name: 'KML File',
+                      resourceType: 'kml',
                       size: 3565,
                       url: 'https://file-url',
                       visualizations: { edges: [] },
@@ -183,6 +196,9 @@ const setup = async testParams => {
         visualizationConfig: { id: 'b50b761e-faf8-471d-94ee-4991dc1cbd7f' },
       },
     }),
+  });
+  terrasoApi.request.mockResolvedValue({
+    geojson: PARSED_KML_TO_GEOJSON,
   });
   global.fetch.mockResolvedValue({
     status: 200,
@@ -336,6 +352,14 @@ const testSetDatasetStep = async testParams => {
 };
 
 const testVisualizeStep = async () => {
+  await waitFor(() =>
+    expect(
+      screen.getByRole('heading', {
+        name: 'Appearance',
+      })
+    )
+  );
+
   // Shape
   const shapes = screen.getByRole('group', { name: 'Shape:' });
   expect(
@@ -415,7 +439,7 @@ const testAnnotateStep = async testParams => {
   );
 };
 
-const testPreviewStep = async (map, events) => {
+const testPreviewStep = async (map, events, testParams) => {
   const LngLatBounds = jest.requireActual('mapbox-gl').LngLatBounds;
   const LngLat = jest.requireActual('mapbox-gl').LngLat;
   const sw = new LngLat(-76.29042998100137, 8.263885173441716);
@@ -425,27 +449,7 @@ const testPreviewStep = async (map, events) => {
 
   const addSourceCall = map.addSource.mock.calls[0];
   expect(addSourceCall[0]).toBe('visualization');
-  expect(addSourceCall[1]).toStrictEqual({
-    type: 'geojson',
-    data: {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [-0.17914681889362782, -78.4800216447845],
-          },
-          properties: {
-            fields: '[]',
-            index: 0,
-            position: [-0.17914681889362782, -78.4800216447845],
-            title: undefined,
-          },
-        },
-      ],
-    },
-  });
+  expect(addSourceCall[1]).toStrictEqual(testParams.expectedGeojsonSource);
 };
 
 const BASE_CONFIGURATION_EXPECTED_INPUT = {
@@ -463,9 +467,8 @@ test.each([
     {
       type: 'landscape',
       slug: 'landscape-slug',
-      
-      selectFile: 'File csv',
-      file: new File([TEST_CSV], `test.csv`, { type: 'text/csv' }),
+      selectFile: 'CSV File',
+      file: new File([TEST_CSV], `CSV File`, { type: 'text/csv' }),
       expectedApiInput: {
         title: 'Test Title',
         description: 'Test Description',
@@ -488,6 +491,27 @@ test.each([
           dataPoints: [{ column: 'col1', label: 'Custom Label' }],
         },
       },
+      expectedGeojsonSource: {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [-0.17914681889362782, -78.4800216447845],
+              },
+              properties: {
+                fields: '[]',
+                index: 0,
+                position: [-0.17914681889362782, -78.4800216447845],
+                title: undefined,
+              },
+            },
+          ],
+        },
+      },
     },
   ],
   [
@@ -495,8 +519,8 @@ test.each([
     {
       type: 'group',
       slug: 'group-slug',
-      selectFile: 'File kml',
-      file: new File([TEST_KML], `test.kml`, { type: 'application/xml' }),
+      selectFile: 'KML File',
+      file: new File([TEST_KML], `KML File`, { type: 'application/xml' }),
       expectedApiInput: {
         title: 'Test Title',
         description: 'Test Description',
@@ -516,6 +540,22 @@ test.each([
           dataPoints: [],
         },
       },
+      expectedGeojsonSource: {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [-122.0822035425683, 37.42228990140251],
+              },
+              properties: {},
+            },
+          ],
+        },
+      },
     },
   ],
 ])(
@@ -530,7 +570,7 @@ test.each([
     }
     await testVisualizeStep();
     await testAnnotateStep(testParams);
-    await testPreviewStep(map, events);
+    await testPreviewStep(map, events, testParams);
 
     // Fetch data entries validation
     const fetchCall = terrasoApi.requestGraphQL.mock.calls[3];

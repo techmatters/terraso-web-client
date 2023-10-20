@@ -78,13 +78,16 @@ const MapboxRemoteSource = props => {
   }, [map, addSource, tilesetId]);
 };
 
-const SheetSource = props => {
+const FileContextSource = props => {
   const { visualizationConfig, sampleSize } = props;
-  const { fileContext } = useVisualizationContext();
+  const { fileContext, isMapFile } = useVisualizationContext();
 
   const geoJson = useMemo(
-    () => sheetToGeoJSON(fileContext, visualizationConfig, sampleSize),
-    [fileContext, visualizationConfig, sampleSize]
+    () =>
+      isMapFile
+        ? fileContext.geojson
+        : sheetToGeoJSON(fileContext, visualizationConfig, sampleSize),
+    [isMapFile, fileContext, visualizationConfig, sampleSize]
   );
 
   return (
@@ -324,7 +327,7 @@ const Visualization = props => {
           <MapboxRemoteSource visualizationConfig={visualizationConfig} />
         ) : (
           visualizationContext.fileContext && (
-            <SheetSource
+            <FileContextSource
               visualizationConfig={visualizationConfig}
               sampleSize={sampleSize}
             />

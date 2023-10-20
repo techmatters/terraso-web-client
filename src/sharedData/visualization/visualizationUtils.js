@@ -18,8 +18,11 @@ import _ from 'lodash/fp';
 import * as SheetsJs from 'xlsx';
 import * as yup from 'yup';
 
+import { parseFileToGeoJSON } from 'gis/gisService';
 import { normalizeLongitude } from 'gis/gisUtils';
 import mapboxgl from 'gis/mapbox';
+
+import { MAP_CONTENT_TYPE_BY_EXTENSION } from 'config';
 
 export const readFile = async file => {
   const response = await fetch(file.url);
@@ -28,36 +31,51 @@ export const readFile = async file => {
   return workbook;
 };
 
-export const readDataSetFile = async file => {
-  return readFile(file).then(workbook => {
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const sheetRef = SheetsJs.utils.decode_range(sheet['!ref']);
-    const colCount = _.getOr(0, 'e.c', sheetRef);
-    const rowCount = _.getOr(0, 'e.r', sheetRef);
+export const getFileInstance = async file => {
+  const response = await fetch(file.url);
+  const arrayBuffer = response.arrayBuffer();
+  const contentType = MAP_CONTENT_TYPE_BY_EXTENSION[file.resourceType];
+  const filename = `${file.name}.${file.resourceType}`;
+  const blob = new Blob([arrayBuffer], { type: contentType });
+  const fileInstance = new File([blob], filename);
+  return fileInstance;
+};
 
-    // {Object} s Start position
-    // {Object} e End position
-    // {number} e.c Column
-    // {number} e.r Row
-    const headersRange = SheetsJs.utils.encode_range({
-      s: { c: 0, r: 0 },
-      e: { c: colCount, r: 0 },
-    });
-    const headers = SheetsJs.utils.sheet_to_json(sheet, {
-      range: headersRange,
-      header: 1,
-    })[0];
-    const headersIndexes = _.fromPairs(
-      headers.map((header, index) => [header, index])
-    );
-    return {
-      headers,
-      headersIndexes,
-      colCount,
-      rowCount,
-      sheet,
-    };
+export const readDataSetFile = async file => {
+  const workbook = await readFile(file);
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const sheetRef = SheetsJs.utils.decode_range(sheet['!ref']);
+  const colCount = _.getOr(0, 'e.c', sheetRef);
+  const rowCount = _.getOr(0, 'e.r', sheetRef);
+
+  // {Object} s Start position
+  // {Object} e End position
+  // {number} e.c Column
+  // {number} e.r Row
+  const headersRange = SheetsJs.utils.encode_range({
+    s: { c: 0, r: 0 },
+    e: { c: colCount, r: 0 },
   });
+  const headers = SheetsJs.utils.sheet_to_json(sheet, {
+    range: headersRange,
+    header: 1,
+  })[0];
+  const headersIndexes = _.fromPairs(
+    headers.map((header, index) => [header, index])
+  );
+  return {
+    headers,
+    headersIndexes,
+    colCount,
+    rowCount,
+    sheet,
+  };
+};
+
+export const readMapFile = async file => {
+  const fileInstance = await getFileInstance(file);
+  const geojson = await parseFileToGeoJSON(fileInstance);
+  return { geojson };
 };
 
 export const validateCoordinateColumn = (sheetContext, column) => {

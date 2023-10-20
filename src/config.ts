@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import Cookies from 'js-cookie';
+import _ from 'lodash/fp';
 import { setAPIConfig } from 'terraso-client-shared/config';
 import type { Severity } from 'terraso-client-shared/monitoring/logger';
 
@@ -91,6 +92,16 @@ export const MAP_DATA_ACCEPTED_TYPES = {
 export const MAP_DATA_ACCEPTED_EXTENSIONS = getTypesExtensions(
   MAP_DATA_ACCEPTED_TYPES
 );
+
+export const MAP_CONTENT_TYPE_BY_EXTENSION = _.flow(
+  _.keys,
+  _.flatMap((contentType: string) =>
+    (MAP_DATA_ACCEPTED_TYPES as Record<string, string[]>)[contentType].map(
+      (ext: string) => [ext, contentType]
+    )
+  ),
+  _.fromPairs
+)(MAP_DATA_ACCEPTED_TYPES);
 
 export const DATA_SET_ACCEPTED_TYPES = {
   'text/csv': ['.csv'],
