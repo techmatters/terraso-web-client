@@ -20,10 +20,7 @@ import * as yup from 'yup';
 
 import { normalizeLongitude } from 'gis/gisUtils';
 import mapboxgl from 'gis/mapbox';
-import {
-  fetchSharedDataWithGeojson,
-  getDataEntryasGeojson,
-} from 'sharedData/sharedDataService';
+import { fetchSharedDataWithGeojson } from 'sharedData/sharedDataService';
 
 export const readFile = async file => {
   const response = await fetch(file.url);
