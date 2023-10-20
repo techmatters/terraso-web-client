@@ -196,9 +196,11 @@ const setup = async testParams => {
         visualizationConfig: { id: 'b50b761e-faf8-471d-94ee-4991dc1cbd7f' },
       },
     }),
-  });
-  terrasoApi.request.mockResolvedValue({
-    geojson: PARSED_KML_TO_GEOJSON,
+    'query dataEntryWithGeojson': Promise.resolve({
+      dataEntry: {
+        geojson: PARSED_KML_TO_GEOJSON,
+      },
+    }),
   });
   global.fetch.mockResolvedValue({
     status: 200,
@@ -215,6 +217,21 @@ const setup = async testParams => {
         };
 
         reader.readAsArrayBuffer(testParams.file);
+      });
+    },
+    blob: () => {
+      return new Promise(function (resolve, reject) {
+        const reader = new FileReader();
+
+        reader.onerror = function onerror(ev) {
+          reject(ev.target.error);
+        };
+
+        reader.onload = function onload(ev) {
+          resolve(ev.target.result);
+        };
+
+        reader.readAsText(testParams.file);
       });
     },
   });
@@ -584,8 +601,10 @@ test.each([
     await act(async () =>
       fireEvent.click(screen.getByRole('button', { name: 'Publish' }))
     );
-    expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(5);
-    const saveCall = terrasoApi.requestGraphQL.mock.calls[4];
+    const saveCall =
+      terrasoApi.requestGraphQL.mock.calls[
+        terrasoApi.requestGraphQL.mock.calls.length - 1
+      ];
     expect(saveCall[1].input).toEqual(
       expect.objectContaining(testParams.expectedApiInput)
     );

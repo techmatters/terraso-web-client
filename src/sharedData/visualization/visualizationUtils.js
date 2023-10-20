@@ -18,27 +18,18 @@ import _ from 'lodash/fp';
 import * as SheetsJs from 'xlsx';
 import * as yup from 'yup';
 
-import { parseFileToGeoJSON } from 'gis/gisService';
 import { normalizeLongitude } from 'gis/gisUtils';
 import mapboxgl from 'gis/mapbox';
-
-import { MAP_CONTENT_TYPE_BY_EXTENSION } from 'config';
+import {
+  fetchSharedDataWithGeojson,
+  getDataEntryasGeojson,
+} from 'sharedData/sharedDataService';
 
 export const readFile = async file => {
   const response = await fetch(file.url);
   const arrayBuffer = await response.arrayBuffer();
   const workbook = SheetsJs.read(arrayBuffer);
   return workbook;
-};
-
-export const getFileInstance = async file => {
-  const response = await fetch(file.url);
-  const arrayBuffer = response.arrayBuffer();
-  const contentType = MAP_CONTENT_TYPE_BY_EXTENSION[file.resourceType];
-  const filename = `${file.name}.${file.resourceType}`;
-  const blob = new Blob([arrayBuffer], { type: contentType });
-  const fileInstance = new File([blob], filename);
-  return fileInstance;
 };
 
 export const readDataSetFile = async file => {
@@ -72,9 +63,9 @@ export const readDataSetFile = async file => {
   };
 };
 
-export const readMapFile = async file => {
-  const fileInstance = await getFileInstance(file);
-  const geojson = await parseFileToGeoJSON(fileInstance);
+export const readMapFile = async dataEntry => {
+  const response = await fetchSharedDataWithGeojson({ id: dataEntry.id });
+  const geojson = response.geojson;
   return { geojson };
 };
 
