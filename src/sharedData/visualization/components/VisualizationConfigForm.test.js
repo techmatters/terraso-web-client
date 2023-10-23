@@ -55,6 +55,34 @@ const TEST_KML = `
     <Point>
       <coordinates>-122.0822035425683,37.42228990140251,0</coordinates>
     </Point>
+    <Polygon>
+      <extrude>1</extrude>
+      <altitudeMode>relativeToGround</altitudeMode>
+      <outerBoundaryIs>
+        <LinearRing>
+          <coordinates>
+            -77.05788457660967,38.87253259892824,100 
+            -77.05465973756702,38.87291016281703,100 
+            -77.05315536854791,38.87053267794386,100 
+            -77.05552622493516,38.868757801256,100 
+            -77.05844056290393,38.86996206506943,100 
+            -77.05788457660967,38.87253259892824,100
+          </coordinates>
+        </LinearRing>
+      </outerBoundaryIs>
+      <innerBoundaryIs>
+        <LinearRing>
+          <coordinates>
+            -77.05668055019126,38.87154239798456,100 
+            -77.05542625960818,38.87167890344077,100 
+            -77.05485125901024,38.87076535397792,100 
+            -77.05577677433152,38.87008686581446,100 
+            -77.05691162017543,38.87054446963351,100 
+            -77.05668055019126,38.87154239798456,100
+          </coordinates>
+        </LinearRing>
+      </innerBoundaryIs>
+    </Polygon>
   </Placemark>
 </kml>
 `.trim();
@@ -66,6 +94,31 @@ const PARSED_KML_TO_GEOJSON = {
       geometry: {
         type: 'Point',
         coordinates: [-122.0822035425683, 37.42228990140251],
+      },
+      properties: {},
+    },
+    {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [-77.05788457660967, 38.87253259892824],
+            [-77.05465973756702, 38.87291016281703],
+            [-77.05315536854791, 38.87053267794386],
+            [-77.05552622493516, 38.868757801256],
+            [-77.05844056290393, 38.86996206506943],
+            [-77.05788457660967, 38.87253259892824],
+          ],
+          [
+            [-77.05668055019126, 38.87154239798456],
+            [-77.05542625960818, 38.87167890344077],
+            [-77.05485125901024, 38.87076535397792],
+            [-77.05577677433152, 38.87008686581446],
+            [-77.05691162017543, 38.87054446963351],
+            [-77.05668055019126, 38.87154239798456],
+          ],
+        ],
       },
       properties: {},
     },
@@ -467,6 +520,21 @@ const testPreviewStep = async (map, events, testParams) => {
   const addSourceCall = map.addSource.mock.calls[0];
   expect(addSourceCall[0]).toBe('visualization');
   expect(addSourceCall[1]).toStrictEqual(testParams.expectedGeojsonSource);
+
+  expect(map.addLayer).toHaveBeenCalledWith(
+    expect.objectContaining({
+      id: 'visualization-markers',
+      source: 'visualization',
+    }),
+    undefined
+  );
+  expect(map.addLayer).toHaveBeenCalledWith(
+    expect.objectContaining({
+      id: 'visualization-polygons',
+      source: 'visualization',
+    }),
+    undefined
+  );
 };
 
 const BASE_CONFIGURATION_EXPECTED_INPUT = {
@@ -559,19 +627,7 @@ test.each([
       },
       expectedGeojsonSource: {
         type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              geometry: {
-                type: 'Point',
-                coordinates: [-122.0822035425683, 37.42228990140251],
-              },
-              properties: {},
-            },
-          ],
-        },
+        data: PARSED_KML_TO_GEOJSON,
       },
     },
   ],

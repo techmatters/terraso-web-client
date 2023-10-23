@@ -25,6 +25,7 @@ import bbox from '@turf/bbox';
 import { Box, Portal, Stack, Typography } from '@mui/material';
 
 import GeoJsonSource from 'gis/components/GeoJsonSource';
+import Layer from 'gis/components/Layer';
 import Map, { useMap } from 'gis/components/Map';
 import MapControls from 'gis/components/MapControls';
 import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
@@ -101,7 +102,7 @@ const FileContextSource = props => {
 
 const MapboxLayer = props => {
   const { visualizationConfig, showPopup, useConfigBounds } = props;
-  const { map, addImage, addLayer } = useMap();
+  const { map } = useMap();
   const [imageSvg, setimageSvg] = useState();
   const [popupData, setPopupData] = useState(null);
   const popupContainer = useMemo(() => document.createElement('div'), []);
@@ -155,69 +156,71 @@ const MapboxLayer = props => {
     [isMapFile]
   );
 
-  useEffect(() => {
-    if (!map || (useSvg && !imageSvg)) {
-      return;
-    }
-    const { size, color } = visualizationConfig?.visualizeConfig || {};
+  // useEffect(() => {
+  //   if (!map || (useSvg && !imageSvg)) {
+  //     return;
+  //   }
+  //   const { size, color } = visualizationConfig?.visualizeConfig || {};
 
-    const layer = {
-      id: 'visualization',
-      source: 'visualization',
-      ...(useSvg
-        ? {
-            type: 'symbol',
-            layout: {
-              'icon-image': 'custom-marker',
-              'icon-allow-overlap': true,
-            },
-          }
-        : {
-            type: 'circle',
-            paint: {
-              'circle-color': color,
-              'circle-radius': size / 2.5,
-              'circle-opacity': 0.5,
-              'circle-stroke-width': 2,
-              'circle-stroke-color': color,
-            },
-          }),
-      ...(useTileset ? { 'source-layer': visualizationConfig?.tilesetId } : {}),
-    };
+  //   const layer = {
+  //     id: 'visualization',
+  //     source: 'visualization',
+  //     ...(useSvg
+  //       ? {
+  //           type: 'symbol',
+  //           layout: {
+  //             'icon-image': 'custom-marker',
+  //             'icon-allow-overlap': true,
+  //           },
+  //         }
+  //       : {
+  //           type: 'circle',
+  //           paint: {
+  //             'circle-color': color,
+  //             'circle-radius': size / 2.5,
+  //             'circle-opacity': 0.5,
+  //             'circle-stroke-width': 2,
+  //             'circle-stroke-color': color,
+  //           },
+  //         }),
+  //     ...(useTileset ? { 'source-layer': visualizationConfig?.tilesetId } : {}),
+  //   };
 
-    if (map.getLayer('visualization')) {
-      map.removeLayer('visualization');
-    }
-    if (map.hasImage('custom-marker')) {
-      map.removeImage('custom-marker');
-    }
+  //   console.log('ADD LAYER', layer);
 
-    if (useSvg) {
-      addImage('custom-marker', imageSvg);
-    }
-    addLayer(layer);
-    const pointer = () => (map.getCanvas().style.cursor = 'pointer');
-    const noPointer = () => (map.getCanvas().style.cursor = '');
-    if (!isMapFile) {
-      const onUnclusteredPointClick = event => {
-        openPopup(event.features[0], event);
-      };
-      map.on('click', 'visualization', onUnclusteredPointClick);
-    }
-    map.on('mouseenter', 'visualization', pointer);
-    map.on('mouseleave', 'visualization', noPointer);
-  }, [
-    map,
-    addImage,
-    addLayer,
-    imageSvg,
-    openPopup,
-    useTileset,
-    visualizationConfig?.tilesetId,
-    visualizationConfig?.visualizeConfig,
-    useSvg,
-    isMapFile,
-  ]);
+  //   if (map.getLayer('visualization')) {
+  //     map.removeLayer('visualization');
+  //   }
+  //   if (map.hasImage('custom-marker')) {
+  //     map.removeImage('custom-marker');
+  //   }
+
+  //   if (useSvg) {
+  //     addImage('custom-marker', imageSvg);
+  //   }
+  //   addLayer(layer);
+  //   const pointer = () => (map.getCanvas().style.cursor = 'pointer');
+  //   const noPointer = () => (map.getCanvas().style.cursor = '');
+  //   if (!isMapFile) {
+  //     const onUnclusteredPointClick = event => {
+  //       openPopup(event.features[0], event);
+  //     };
+  //     map.on('click', 'visualization', onUnclusteredPointClick);
+  //   }
+  //   map.on('mouseenter', 'visualization', pointer);
+  //   map.on('mouseleave', 'visualization', noPointer);
+  // }, [
+  //   map,
+  //   addImage,
+  //   addLayer,
+  //   imageSvg,
+  //   openPopup,
+  //   useTileset,
+  //   visualizationConfig?.tilesetId,
+  //   visualizationConfig?.visualizeConfig,
+  //   useSvg,
+  //   isMapFile,
+  // ]);
 
   useEffect(() => {
     if (!map || !popupData?.coordinates || isMapFile) {
@@ -291,10 +294,58 @@ const MapboxLayer = props => {
     }
   }, [map, visualizationConfig?.viewportConfig?.bounds, useConfigBounds]);
 
+  const layer = useMemo(() => {
+    if (!map || (useSvg && !imageSvg)) {
+      return;
+    }
+    const { size, color } = visualizationConfig?.visualizeConfig || {};
+    return {
+      id: 'visualization',
+      source: 'visualization',
+      ...(useSvg
+        ? {
+            type: 'symbol',
+            layout: {
+              'icon-image': 'custom-marker',
+              'icon-allow-overlap': true,
+            },
+          }
+        : {
+            type: 'circle',
+            paint: {
+              'circle-color': color,
+              'circle-radius': size / 2.5,
+              'circle-opacity': 0.5,
+              'circle-stroke-width': 2,
+              'circle-stroke-color': color,
+            },
+          }),
+      ...(useTileset ? { 'source-layer': visualizationConfig?.tilesetId } : {}),
+    };
+  }, [
+    visualizationConfig?.visualizeConfig,
+    visualizationConfig?.tilesetId,
+    useSvg,
+    imageSvg,
+    useTileset,
+    map,
+  ]);
+
   return (
-    <Portal container={popupContainer}>
-      {popupData?.data && <PopupContent data={popupData.data} />}
-    </Portal>
+    <>
+      {layer && (
+        <Layer
+        // TODO Events
+          id="visualization"
+          layer={layer}
+          images={[{ name: 'custom-marker', content: imageSvg }]}
+        />
+      )}
+
+      <Portal container={popupContainer}>
+        {popupData?.data && <PopupContent data={popupData.data} />}
+      </Portal>
+    </>
   );
 };
 
