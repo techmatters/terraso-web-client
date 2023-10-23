@@ -136,7 +136,11 @@ const VisualizationWrapper = props => {
         <VisualizationContext.Consumer>
           {({ loadingFile, loadingFileError }) => (
             <>
-              <PageHeader header={mapTitle} />
+              <PageHeader
+                header={mapTitle}
+                typographyProps={{ sx: { mb: 1 } }}
+              />
+              <Typography sx={{ mb: 3 }}>{data?.description}</Typography>
               <Restricted
                 permission="visualization.delete"
                 resource={{ owner, visualizationConfig: data }}

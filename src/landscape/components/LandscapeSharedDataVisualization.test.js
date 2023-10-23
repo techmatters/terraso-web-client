@@ -147,6 +147,7 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
             {
               node: {
                 title: 'Test Title',
+                description: 'Test Description',
                 configuration: JSON.stringify({
                   datasetConfig: {
                     dataColumns: {
@@ -231,6 +232,8 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
   expect(
     screen.getByRole('heading', { name: 'Test Title' })
   ).toBeInTheDocument();
+
+  expect(screen.getByText('Test Description')).toBeInTheDocument();
 
   // Map
   await waitFor(() => expect(map.addSource).toHaveBeenCalledTimes(1));
