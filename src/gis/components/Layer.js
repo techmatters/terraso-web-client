@@ -20,7 +20,7 @@ import { useMap } from './Map';
 
 const Layer = props => {
   const { id, layer, images, events } = props;
-  const { map, addLayer, addImage } = useMap();
+  const { map, addLayer, removeLayer, addImage, removeImage } = useMap();
 
   useEffect(() => {
     if (!map) {
@@ -28,14 +28,12 @@ const Layer = props => {
     }
 
     if (map.getLayer(id)) {
-      map.removeLayer(id);
+      removeLayer(id);
     }
-
-    map.getLayer(id);
 
     images?.forEach(image => {
       if (map.hasImage(image.name)) {
-        map.removeImage(image.name);
+        removeImage(image.name);
       }
       addImage(image.name, image.content);
     });
@@ -52,7 +50,17 @@ const Layer = props => {
       const eventParams = eventGenerator(map);
       map.on(...eventParams);
     }
-  }, [id, map, addLayer, images, addImage, layer, events]);
+  }, [
+    id,
+    map,
+    addLayer,
+    images,
+    addImage,
+    layer,
+    events,
+    removeLayer,
+    removeImage,
+  ]);
 };
 
 export default Layer;

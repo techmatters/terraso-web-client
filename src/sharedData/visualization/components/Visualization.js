@@ -233,9 +233,10 @@ const MapboxLayer = props => {
       return;
     }
     const { size, color } = visualizationConfig?.visualizeConfig || {};
+
     return {
-      id: 'visualization',
       source: 'visualization',
+      filter: ['==', '$type', 'Point'],
       ...(useSvg
         ? {
             type: 'symbol',
@@ -278,27 +279,56 @@ const MapboxLayer = props => {
     return [
       ...(isMapFile
         ? []
-        : [['click', 'visualization', onUnclusteredPointClick]]),
-      map => ['mouseenter', 'visualization', pointer(map)],
-      map => ['mouseleave', 'visualization', noPointer(map)],
+        : [['click', 'visualization-markers', onUnclusteredPointClick]]),
+      map => ['mouseenter', 'visualization-markers', pointer(map)],
+      map => ['mouseleave', 'visualization-markers', noPointer(map)],
     ];
   }, [isMapFile, openPopup]);
 
   const layerImages = useMemo(
-    () => [{ name: 'custom-marker', content: imageSvg }],
-    [imageSvg]
+    () => (useSvg ? [{ name: 'custom-marker', content: imageSvg }] : []),
+    [imageSvg, useSvg]
   );
+
+  const layerPolygonOutline = useMemo(() => {
+    const { color } = visualizationConfig?.visualizeConfig || {};
+    return {
+      type: 'line',
+      source: 'visualization',
+      filter: ['==', '$type', 'Polygon'],
+      layout: {},
+      paint: {
+        'line-color': color,
+        'line-width': 3,
+      },
+    };
+  }, [visualizationConfig?.visualizeConfig]);
+
+  const layerPolygonFill = useMemo(() => {
+    const { color } = visualizationConfig?.visualizeConfig || {};
+    return {
+      type: 'fill',
+      source: 'visualization',
+      filter: ['==', '$type', 'Polygon'],
+      paint: {
+        'fill-color': color,
+        'fill-opacity': 0.5,
+      },
+    };
+  }, [visualizationConfig?.visualizeConfig]);
 
   return (
     <>
       {layer && (
         <Layer
-          id="visualization"
+          id="visualization-markers"
           layer={layer}
           images={layerImages}
           events={layerEvents}
         />
       )}
+      <Layer id="visualization-polygons-outline" layer={layerPolygonOutline} />
+      <Layer id="visualization-polygons-fill" layer={layerPolygonFill} />
       <Portal container={popupContainer}>
         {popupData?.data && <PopupContent data={popupData.data} />}
       </Portal>

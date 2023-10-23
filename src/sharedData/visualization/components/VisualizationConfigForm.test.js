@@ -86,6 +86,7 @@ const TEST_KML = `
   </Placemark>
 </kml>
 `.trim();
+
 const PARSED_KML_TO_GEOJSON = {
   type: 'FeatureCollection',
   features: [
@@ -113,7 +114,6 @@ const PARSED_KML_TO_GEOJSON = {
           [
             [-77.05668055019126, 38.87154239798456],
             [-77.05542625960818, 38.87167890344077],
-            [-77.05485125901024, 38.87076535397792],
             [-77.05577677433152, 38.87008686581446],
             [-77.05691162017543, 38.87054446963351],
             [-77.05668055019126, 38.87154239798456],
@@ -532,7 +532,14 @@ const testPreviewStep = async (map, events, testParams) => {
   );
   expect(map.addLayer).toHaveBeenCalledWith(
     expect.objectContaining({
-      id: 'visualization-polygons',
+      id: 'visualization-polygons-outline',
+      source: 'visualization',
+    }),
+    undefined
+  );
+  expect(map.addLayer).toHaveBeenCalledWith(
+    expect.objectContaining({
+      id: 'visualization-polygons-fill',
       source: 'visualization',
     }),
     undefined

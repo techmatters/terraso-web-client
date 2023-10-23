@@ -150,6 +150,17 @@ export const MapProvider = props => {
     [map]
   );
 
+  const removeImage = useCallback(
+    name => {
+      if (!map) {
+        return;
+      }
+      setImages(_.omit(name));
+      map.removeImage(name);
+    },
+    [map]
+  );
+
   const addSource = useCallback(
     (name, source) => {
       if (!map) {
@@ -194,6 +205,21 @@ export const MapProvider = props => {
     [map]
   );
 
+  const removeLayer = useCallback(
+    layerId => {
+      if (!map) {
+        return;
+      }
+      try {
+        map.removeLayer(layerId);
+        setLayers(_.omit(layerId));
+      } catch (error) {
+        logger.warn('Error removing layer', error);
+      }
+    },
+    [map]
+  );
+
   const changeStyle = useCallback(
     newStyle => {
       switchStyle(map, newStyle, images, sources, layers);
@@ -209,8 +235,10 @@ export const MapProvider = props => {
         map,
         changeStyle,
         addImage,
+        removeImage,
         addSource,
         addLayer,
+        removeLayer,
       }}
     >
       {children}
