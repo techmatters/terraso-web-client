@@ -331,17 +331,37 @@ const MapboxLayer = props => {
     map,
   ]);
 
+  const layerEvents = useMemo(() => {
+    const pointer = map => () => {
+      map.getCanvas().style.cursor = 'pointer';
+    };
+    const noPointer = map => () => {
+      map.getCanvas().style.cursor = '';
+    };
+    const onUnclusteredPointClick = event => {
+      openPopup(event.features[0], event);
+    };
+    return [
+      ...(isMapFile
+        ? []
+        : [['click', 'visualization', onUnclusteredPointClick]]),
+      map => ['mouseenter', 'visualization', pointer(map)],
+      map => ['mouseleave', 'visualization', noPointer(map)],
+    ];
+  }, [isMapFile, openPopup]);
+
+  const layerImages = useMemo(() => [{ name: 'custom-marker', content: imageSvg }], [imageSvg]);
+
   return (
     <>
       {layer && (
         <Layer
-        // TODO Events
           id="visualization"
           layer={layer}
-          images={[{ name: 'custom-marker', content: imageSvg }]}
+          images={layerImages}
+          events={layerEvents}
         />
       )}
-
       <Portal container={popupContainer}>
         {popupData?.data && <PopupContent data={popupData.data} />}
       </Portal>

@@ -19,7 +19,7 @@ import { useEffect } from 'react';
 import { useMap } from './Map';
 
 const Layer = props => {
-  const { id, layer, images } = props;
+  const { id, layer, images, events } = props;
   const { map, addLayer, addImage } = useMap();
 
   useEffect(() => {
@@ -36,8 +36,17 @@ const Layer = props => {
         id,
         ...layer,
       });
+
+      for (const index in events) {
+        const eventGenerator =
+          typeof events[index] === 'function'
+            ? events[index]
+            : () => events[index];
+        const eventParams = eventGenerator(map);
+        map.on(...eventParams);
+      }
     }
-  }, [id, map, addLayer, images, addImage, layer]);
+  }, [id, map, addLayer, images, addImage, layer, events]);
 };
 
 export default Layer;
