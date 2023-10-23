@@ -510,6 +510,8 @@ const testAnnotateStep = async testParams => {
 };
 
 const testPreviewStep = async (map, events, testParams) => {
+  expect(screen.getByText('Test Description')).toBeInTheDocument();
+
   const LngLatBounds = jest.requireActual('mapbox-gl').LngLatBounds;
   const LngLat = jest.requireActual('mapbox-gl').LngLat;
   const sw = new LngLat(-76.29042998100137, 8.263885173441716);
