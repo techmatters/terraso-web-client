@@ -156,72 +156,6 @@ const MapboxLayer = props => {
     [isMapFile]
   );
 
-  // useEffect(() => {
-  //   if (!map || (useSvg && !imageSvg)) {
-  //     return;
-  //   }
-  //   const { size, color } = visualizationConfig?.visualizeConfig || {};
-
-  //   const layer = {
-  //     id: 'visualization',
-  //     source: 'visualization',
-  //     ...(useSvg
-  //       ? {
-  //           type: 'symbol',
-  //           layout: {
-  //             'icon-image': 'custom-marker',
-  //             'icon-allow-overlap': true,
-  //           },
-  //         }
-  //       : {
-  //           type: 'circle',
-  //           paint: {
-  //             'circle-color': color,
-  //             'circle-radius': size / 2.5,
-  //             'circle-opacity': 0.5,
-  //             'circle-stroke-width': 2,
-  //             'circle-stroke-color': color,
-  //           },
-  //         }),
-  //     ...(useTileset ? { 'source-layer': visualizationConfig?.tilesetId } : {}),
-  //   };
-
-  //   console.log('ADD LAYER', layer);
-
-  //   if (map.getLayer('visualization')) {
-  //     map.removeLayer('visualization');
-  //   }
-  //   if (map.hasImage('custom-marker')) {
-  //     map.removeImage('custom-marker');
-  //   }
-
-  //   if (useSvg) {
-  //     addImage('custom-marker', imageSvg);
-  //   }
-  //   addLayer(layer);
-  //   const pointer = () => (map.getCanvas().style.cursor = 'pointer');
-  //   const noPointer = () => (map.getCanvas().style.cursor = '');
-  //   if (!isMapFile) {
-  //     const onUnclusteredPointClick = event => {
-  //       openPopup(event.features[0], event);
-  //     };
-  //     map.on('click', 'visualization', onUnclusteredPointClick);
-  //   }
-  //   map.on('mouseenter', 'visualization', pointer);
-  //   map.on('mouseleave', 'visualization', noPointer);
-  // }, [
-  //   map,
-  //   addImage,
-  //   addLayer,
-  //   imageSvg,
-  //   openPopup,
-  //   useTileset,
-  //   visualizationConfig?.tilesetId,
-  //   visualizationConfig?.visualizeConfig,
-  //   useSvg,
-  //   isMapFile,
-  // ]);
-
   useEffect(() => {
     if (!map || !popupData?.coordinates || isMapFile) {
       return;
@@ -350,7 +284,10 @@ const MapboxLayer = props => {
     ];
   }, [isMapFile, openPopup]);
 
-  const layerImages = useMemo(() => [{ name: 'custom-marker', content: imageSvg }], [imageSvg]);
+  const layerImages = useMemo(
+    () => [{ name: 'custom-marker', content: imageSvg }],
+    [imageSvg]
+  );
 
   return (
     <>

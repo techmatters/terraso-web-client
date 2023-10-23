@@ -27,24 +27,30 @@ const Layer = props => {
       return;
     }
 
-    const mapLayer = map.getLayer(id);
-    if (!mapLayer) {
-      images?.forEach(image => {
-        addImage(image.name, image.content);
-      });
-      addLayer({
-        id,
-        ...layer,
-      });
+    if (map.getLayer(id)) {
+      map.removeLayer(id);
+    }
 
-      for (const index in events) {
-        const eventGenerator =
-          typeof events[index] === 'function'
-            ? events[index]
-            : () => events[index];
-        const eventParams = eventGenerator(map);
-        map.on(...eventParams);
+    map.getLayer(id);
+
+    images?.forEach(image => {
+      if (map.hasImage(image.name)) {
+        map.removeImage(image.name);
       }
+      addImage(image.name, image.content);
+    });
+    addLayer({
+      id,
+      ...layer,
+    });
+
+    for (const index in events) {
+      const eventGenerator =
+        typeof events[index] === 'function'
+          ? events[index]
+          : () => events[index];
+      const eventParams = eventGenerator(map);
+      map.on(...eventParams);
     }
   }, [id, map, addLayer, images, addImage, layer, events]);
 };
