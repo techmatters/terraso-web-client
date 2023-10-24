@@ -112,7 +112,6 @@ const PreviewStep = props => {
     owner.name,
     owner.id,
     entityType,
-    selectedFile,
     trackEvent,
     viewportConfig,
     visualizationConfig,

@@ -196,49 +196,41 @@ const setup = async testParams => {
         ],
       },
     }),
-    'query group(': Promise.resolve({
-      groups: {
+    'query dataEntries(': Promise.resolve({
+      dataEntries: {
         edges: [
           {
             node: {
-              dataEntries: {
-                edges: [
-                  {
-                    node: {
-                      createdAt: '2022-05-17T23:32:50.606587+00:00',
-                      createdBy: {
-                        id: 'dc695d00-d6b4-45b2-ab8d-f48206d998da',
-                        lastName: 'Buitrón',
-                        firstName: 'José',
-                      },
-                      description: '',
-                      id: 'f00c5564-cf93-471a-94c2-b930cbb0a4f8',
-                      name: 'CSV File',
-                      resourceType: 'csv',
-                      size: 3565,
-                      url: 'https://file-url',
-                      visualizations: { edges: [] },
-                    },
-                  },
-                  {
-                    node: {
-                      createdAt: '2022-05-17T23:32:50.606587+00:00',
-                      createdBy: {
-                        id: 'dc695d00-d6b4-45b2-ab8d-f48206d998da',
-                        lastName: 'Buitrón',
-                        firstName: 'José',
-                      },
-                      description: '',
-                      id: '0968419c-64ab-4561-ac72-671eedcde3ad',
-                      name: 'KML File',
-                      resourceType: 'kml',
-                      size: 3565,
-                      url: 'https://file-url',
-                      visualizations: { edges: [] },
-                    },
-                  },
-                ],
+              createdAt: '2022-05-17T23:32:50.606587+00:00',
+              createdBy: {
+                id: 'dc695d00-d6b4-45b2-ab8d-f48206d998da',
+                lastName: 'Buitrón',
+                firstName: 'José',
               },
+              description: '',
+              id: 'f00c5564-cf93-471a-94c2-b930cbb0a4f8',
+              name: 'CSV File',
+              resourceType: 'csv',
+              size: 3565,
+              url: 'https://file-url',
+              visualizations: { edges: [] },
+            },
+          },
+          {
+            node: {
+              createdAt: '2022-05-17T23:32:50.606587+00:00',
+              createdBy: {
+                id: 'dc695d00-d6b4-45b2-ab8d-f48206d998da',
+                lastName: 'Buitrón',
+                firstName: 'José',
+              },
+              description: '',
+              id: '0968419c-64ab-4561-ac72-671eedcde3ad',
+              name: 'KML File',
+              resourceType: 'kml',
+              size: 3565,
+              url: 'https://file-url',
+              visualizations: { edges: [] },
             },
           },
         ],
@@ -563,6 +555,20 @@ test.each([
       slug: 'landscape-slug',
       selectFile: 'CSV File',
       file: new File([TEST_CSV], `CSV File`, { type: 'text/csv' }),
+      expectedDataEntriesFetchInput: {
+        resourceTypes: [
+          'geojson',
+          'json',
+          'kml',
+          'kmz',
+          'zip',
+          'csv',
+          'xls',
+          'xlsx',
+        ],
+        slug: 'landscape-slug',
+        type: 'landscape',
+      },
       expectedApiInput: {
         title: 'Test Title',
         description: 'Test Description',
@@ -615,6 +621,20 @@ test.each([
       slug: 'group-slug',
       selectFile: 'KML File',
       file: new File([TEST_KML], `KML File`, { type: 'application/xml' }),
+      expectedDataEntriesFetchInput: {
+        resourceTypes: [
+          'geojson',
+          'json',
+          'kml',
+          'kmz',
+          'zip',
+          'csv',
+          'xls',
+          'xlsx',
+        ],
+        slug: 'group-slug',
+        type: 'group',
+      },
       expectedApiInput: {
         title: 'Test Title',
         description: 'Test Description',
@@ -656,11 +676,7 @@ test.each([
 
     // Fetch data entries validation
     const fetchCall = terrasoApi.requestGraphQL.mock.calls[3];
-    expect(fetchCall[1]).toStrictEqual({
-      resourceTypes: ['csv', 'xls', 'xlsx'],
-      slug: 'landscape-slug',
-      type: 'landscape',
-    });
+    expect(fetchCall[1]).toStrictEqual(testParams.expectedDataEntriesFetchInput);
 
     // Save
     await act(async () =>
