@@ -676,7 +676,9 @@ test.each([
 
     // Fetch data entries validation
     const fetchCall = terrasoApi.requestGraphQL.mock.calls[3];
-    expect(fetchCall[1]).toStrictEqual(testParams.expectedDataEntriesFetchInput);
+    expect(fetchCall[1]).toStrictEqual(
+      testParams.expectedDataEntriesFetchInput
+    );
 
     // Save
     await act(async () =>

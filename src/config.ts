@@ -85,7 +85,7 @@ const getTypesExtensions = (types: Record<string, string[]>) =>
 
 export const MAP_DATA_ACCEPTED_TYPES = {
   'application/json': ['.json', '.geojson'],
-  'application/xml': ['.kml'],
+  'application/xml': ['.kml', '.gpx'],
   'application/zip': ['.kmz', '.zip'],
 };
 

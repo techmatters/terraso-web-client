@@ -241,11 +241,30 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
   const geojson = map.addSource.mock.calls[0][1].data;
   expect(geojson.features.length).toBe(3);
 
-  expect(map.addLayer).toHaveBeenCalledTimes(3);
-  expect(map.addLayer.mock.calls[2][0]).toMatchObject({ id: 'visualization' });
+  expect(map.addLayer).toHaveBeenCalledWith(
+    expect.objectContaining({
+      id: 'visualization-markers',
+      source: 'visualization',
+    }),
+    undefined
+  );
+  expect(map.addLayer).toHaveBeenCalledWith(
+    expect.objectContaining({
+      id: 'visualization-polygons-outline',
+      source: 'visualization',
+    }),
+    undefined
+  );
+  expect(map.addLayer).toHaveBeenCalledWith(
+    expect.objectContaining({
+      id: 'visualization-polygons-fill',
+      source: 'visualization',
+    }),
+    undefined
+  );
 
   await act(async () =>
-    events['click:visualization']({
+    events['click:visualization-markers']({
       features: [geojson.features[1]],
       lngLat: {
         lng: 0,
