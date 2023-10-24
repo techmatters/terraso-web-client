@@ -301,8 +301,9 @@ const MapboxLayer = props => {
         'line-color': color,
         'line-width': 3,
       },
+      ...(useTileset ? { 'source-layer': visualizationConfig?.tilesetId } : {}),
     };
-  }, [visualizationConfig?.visualizeConfig]);
+  }, [visualizationConfig?.visualizeConfig, visualizationConfig?.tilesetId]);
 
   const layerPolygonFill = useMemo(() => {
     const { color } = visualizationConfig?.visualizeConfig || {};
@@ -314,8 +315,9 @@ const MapboxLayer = props => {
         'fill-color': color,
         'fill-opacity': 0.5,
       },
+      ...(useTileset ? { 'source-layer': visualizationConfig?.tilesetId } : {}),
     };
-  }, [visualizationConfig?.visualizeConfig]);
+  }, [visualizationConfig?.visualizeConfig, visualizationConfig?.tilesetId]);
 
   return (
     <>
