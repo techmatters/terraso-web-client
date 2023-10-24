@@ -303,7 +303,11 @@ const MapboxLayer = props => {
       },
       ...(useTileset ? { 'source-layer': visualizationConfig?.tilesetId } : {}),
     };
-  }, [visualizationConfig?.visualizeConfig, visualizationConfig?.tilesetId]);
+  }, [
+    useTileset,
+    visualizationConfig?.visualizeConfig,
+    visualizationConfig?.tilesetId,
+  ]);
 
   const layerPolygonFill = useMemo(() => {
     const { color } = visualizationConfig?.visualizeConfig || {};
@@ -317,7 +321,11 @@ const MapboxLayer = props => {
       },
       ...(useTileset ? { 'source-layer': visualizationConfig?.tilesetId } : {}),
     };
-  }, [visualizationConfig?.visualizeConfig, visualizationConfig?.tilesetId]);
+  }, [
+    useTileset,
+    visualizationConfig?.visualizeConfig,
+    visualizationConfig?.tilesetId,
+  ]);
 
   return (
     <>
