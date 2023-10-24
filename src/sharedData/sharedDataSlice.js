@@ -74,9 +74,9 @@ export const updateSharedData = createAsyncThunk(
     params: { name: dataEntry.name },
   })
 );
-export const fetchGroupSharedData = createAsyncThunk(
-  'sharedData/fetchGroupSharedData',
-  sharedDataService.fetchGroupSharedData
+export const fetchSharedData = createAsyncThunk(
+  'sharedData/fetchSharedData',
+  sharedDataService.fetchSharedData
 );
 
 export const addVisualizationConfig = createAsyncThunk(
@@ -123,6 +123,13 @@ const sharedDataSlice = createSlice({
     resetProcessing: (state, action) => ({
       ...state,
       processing: _.omit(action.payload, state.processing),
+    }),
+    setList: (state, action) => ({
+      ...state,
+      list: {
+        data: action.payload,
+        fetching: false,
+      },
     }),
   },
 
@@ -219,7 +226,7 @@ const sharedDataSlice = createSlice({
       )
     );
 
-    builder.addCase(fetchGroupSharedData.pending, (state, action) => ({
+    builder.addCase(fetchSharedData.pending, (state, action) => ({
       ...state,
       list: {
         fetching: true,
@@ -227,7 +234,7 @@ const sharedDataSlice = createSlice({
       },
     }));
 
-    builder.addCase(fetchGroupSharedData.fulfilled, (state, action) => ({
+    builder.addCase(fetchSharedData.fulfilled, (state, action) => ({
       ...state,
       list: {
         fetching: false,
@@ -278,6 +285,7 @@ const sharedDataSlice = createSlice({
   },
 });
 
-export const { resetUploads, resetProcessing } = sharedDataSlice.actions;
+export const { resetUploads, resetProcessing, setList } =
+  sharedDataSlice.actions;
 
 export default sharedDataSlice.reducer;

@@ -71,7 +71,7 @@ const LandscapeSharedDataVisualizationConfig = () => {
 
   return (
     <PageContainer>
-      <GroupContextProvider group={landscape.defaultGroup} owner={landscape}>
+      <GroupContextProvider owner={landscape}>
         <VisualizationConfigForm
           onCompleteSuccess={onCompleteSuccess}
           onCancel={onCancel}

@@ -51,7 +51,7 @@ const SharedDataUpload = props => {
   const { trackEvent } = useAnalytics();
   const { owner, entityType } = useGroupContext();
 
-  const { groupSlug, onCancel, onCompleteSuccess } = props;
+  const { targetInput, onCancel, onCompleteSuccess } = props;
 
   const [section, setSection] = useState('files');
 
@@ -103,10 +103,10 @@ const SharedDataUpload = props => {
   const onSave = useCallback(() => {
     setShowSummary(false);
     const linksPromises = toUpload.links.map(link =>
-      dispatch(addSharedDataLink({ groupSlug, link }))
+      dispatch(addSharedDataLink({ ...targetInput, link }))
     );
     const filesPromises = toUpload.files.map(file =>
-      dispatch(uploadSharedDataFile({ groupSlug, file }))
+      dispatch(uploadSharedDataFile({ ...targetInput, file }))
     );
 
     const allPromises = [...filesPromises, ...linksPromises];
@@ -134,7 +134,7 @@ const SharedDataUpload = props => {
         });
       setShowSummary(true);
     });
-  }, [entityType, owner.slug, toUpload, groupSlug, dispatch, trackEvent]);
+  }, [entityType, owner.slug, toUpload, targetInput, dispatch, trackEvent]);
 
   const hasBlockingErrors = useMemo(
     () =>

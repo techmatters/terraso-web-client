@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { render, screen } from 'tests/utils';
+import { render, screen, within } from 'tests/utils';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
@@ -98,6 +98,29 @@ test('GroupView: Display data', async () => {
         },
       })),
   };
+  const accountMembership = {
+    id: 'user-id',
+    userRole: 'MEMBER',
+    membershipStatus: 'APPROVED',
+  };
+  const sharedResources = {
+    edges: Array(6)
+      .fill(0)
+      .map((item, index) => ({
+        node: {
+          source: {
+            id: `de-${index}`,
+            createdAt: '2022-05-20T16:25:21.536679+00:00',
+            name: `Data Entry ${index}`,
+            createdBy: { id: 'user-id', firstName: 'First', lastName: 'Last' },
+            description: `Description ${index}`,
+            size: 3456,
+            entryType: 'FILE',
+            visualizations: { edges: [] },
+          },
+        },
+      })),
+  };
   terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       groups: {
@@ -109,6 +132,8 @@ test('GroupView: Display data', async () => {
               website: 'https://www.group.org',
               email: 'email@email.com',
               memberships,
+              accountMembership,
+              sharedResources,
             },
           },
         ],
@@ -135,6 +160,17 @@ test('GroupView: Display data', async () => {
   ).toBeInTheDocument();
   expect(screen.getByText(/\+2/i)).toBeInTheDocument();
   expect(
-    screen.getByRole('button', { name: 'Join Group' })
+    screen.getByRole('button', { name: 'Leave: Group name' })
   ).toBeInTheDocument();
+
+  // Shared Data
+  const sharedDataRegion = within(
+    screen.getByRole('region', { name: 'Shared files and Links' })
+  );
+  expect(
+    sharedDataRegion.getByRole('heading', { name: 'Shared files and Links' })
+  ).toBeInTheDocument();
+  const entriesList = within(sharedDataRegion.getByRole('list'));
+  const items = entriesList.getAllByRole('listitem');
+  expect(items.length).toBe(6);
 });

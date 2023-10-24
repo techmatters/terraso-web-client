@@ -255,4 +255,17 @@ test('LandscapeSharedDataUpload: Complete Success', async () => {
       search: 'scrollTo=shared-data-card-title',
     },
   ]);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
+  expect(saveCall[1]).toStrictEqual({
+    input: {
+      description: '',
+      entryType: 'link',
+      targetType: 'landscape',
+      targetSlug: 'slug-1',
+      name: 'name 1',
+      resourceType: 'link',
+      url: 'https://test1.com',
+    },
+  });
 });

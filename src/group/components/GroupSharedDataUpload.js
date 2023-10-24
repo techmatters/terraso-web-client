@@ -79,9 +79,12 @@ const GroupSharedDataUpload = () => {
       <PageHeader
         header={t('group.shared_data_upload_title', { name: group.name })}
       />
-      <GroupContextProvider group={group} owner={group}>
+      <GroupContextProvider owner={group}>
         <SharedDataUpload
-          groupSlug={slug}
+          targetInput={{
+            targetType: 'group',
+            targetSlug: slug,
+          }}
           onCancel={onCancel}
           onCompleteSuccess={onCompleteSuccess}
         />

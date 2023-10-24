@@ -18,18 +18,23 @@ import _ from 'lodash/fp';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
-import { extractDataEntry, extractGroupDataEntries } from 'group/groupUtils';
+import { extractDataEntry } from './sharedDataUtils';
 
 import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
 const ALL_RESOURCE_TYPES = [...SHARED_DATA_ACCEPTED_EXTENSIONS, 'link'];
 
-export const uploadSharedDataFile = async ({ groupSlug, file }) => {
+export const uploadSharedDataFile = async ({
+  targetType,
+  targetSlug,
+  file,
+}) => {
   const path = '/shared-data/upload/';
 
   const body = new FormData();
   const filename = `${file.name}${file.resourceType}`;
-  body.append('groups', groupSlug);
+  body.append('target_type', targetType);
+  body.append('target_slug', targetSlug);
   body.append('name', file.name);
   if (file.description) {
     body.append('description', file.description);
@@ -61,7 +66,7 @@ export const deleteSharedData = ({ dataEntry }) => {
   });
 };
 
-export const addSharedDataLink = ({ groupSlug, link }) => {
+export const addSharedDataLink = ({ targetType, targetSlug, link }) => {
   const query = graphql(`
     mutation addDataEntry($input: DataEntryAddMutationInput!) {
       addDataEntry(input: $input) {
@@ -80,7 +85,8 @@ export const addSharedDataLink = ({ groupSlug, link }) => {
         ..._.pick(['name', 'url', 'description'], link),
         entryType: 'link',
         resourceType: 'link',
-        groupSlug,
+        targetType,
+        targetSlug,
       },
     })
     .then(_.get('addDataEntry.dataEntry'));
@@ -112,31 +118,45 @@ export const updateSharedData = ({ dataEntry }) => {
     .then(extractDataEntry);
 };
 
-export const fetchGroupSharedData = ({
-  slug,
+export const fetchSharedData = ({
+  targetSlug,
+  targetType,
   resourceTypes = ALL_RESOURCE_TYPES,
 }) => {
   const query = graphql(`
-    query group($slug: String!, $resourceTypes: [String]!) {
-      groups(slug: $slug) {
+    query dataEntries(
+      $slug: String!
+      $type: String!
+      $resourceTypes: [String]!
+    ) {
+      dataEntries(
+        sharedResources_Target_Slug: $slug
+        sharedResources_TargetContentType: $type
+        resourceType_In: $resourceTypes
+      ) {
         edges {
           node {
-            ...dataEntries
+            ...dataEntry
+            ...dataEntryVisualizations
           }
         }
       }
     }
   `);
   return terrasoApi
-    .requestGraphQL(query, { slug, resourceTypes })
-    .then(_.get('groups.edges[0].node'))
-    .then(group => group || Promise.reject('not_found'))
-    .then(group => extractGroupDataEntries(group));
+    .requestGraphQL(query, {
+      slug: targetSlug,
+      type: targetType,
+      resourceTypes,
+    })
+    .then(_.get('dataEntries.edges'))
+    .then(edges => edges.map(edge => extractDataEntry(edge.node)));
 };
 
 export const addVisualizationConfig = ({
   title,
-  group,
+  ownerId,
+  ownerType,
   selectedFile,
   visualizationConfig,
 }) => {
@@ -161,7 +181,8 @@ export const addVisualizationConfig = ({
         title,
         configuration,
         dataEntryId: selectedFile.id,
-        groupId: group.id,
+        ownerId,
+        ownerType,
       },
     })
     .then(response => ({
@@ -185,11 +206,20 @@ export const deleteVisualizationConfig = config => {
   });
 };
 
-export const fetchVisualizationConfig = ({ groupSlug, configSlug }) => {
+export const fetchVisualizationConfig = ({
+  ownerSlug,
+  ownerType,
+  configSlug,
+}) => {
   const query = graphql(`
-    query fetchVisualizationConfig($groupSlug: String!, $configSlug: String!) {
+    query fetchVisualizationConfig(
+      $ownerSlug: String!
+      $ownerType: String!
+      $configSlug: String!
+    ) {
       visualizationConfigs(
-        dataEntry_Groups_Slug: $groupSlug
+        dataEntry_SharedResources_Target_Slug: $ownerSlug
+        dataEntry_SharedResources_TargetContentType: $ownerType
         slug: $configSlug
       ) {
         edges {
@@ -204,7 +234,7 @@ export const fetchVisualizationConfig = ({ groupSlug, configSlug }) => {
     }
   `);
   return terrasoApi
-    .requestGraphQL(query, { groupSlug, configSlug })
+    .requestGraphQL(query, { ownerSlug, ownerType, configSlug })
     .then(_.get('visualizationConfigs.edges[0].node'))
     .then(
       visualizationConfig => visualizationConfig || Promise.reject('not_found')

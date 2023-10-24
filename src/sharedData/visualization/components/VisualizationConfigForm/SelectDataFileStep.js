@@ -36,7 +36,7 @@ import PageLoader from 'layout/PageLoader';
 import { formatDate } from 'localization/utils';
 import { useGroupContext } from 'group/groupContext';
 import SharedFileIcon from 'sharedData/components/SharedFileIcon';
-import { fetchGroupSharedData } from 'sharedData/sharedDataSlice';
+import { fetchSharedData } from 'sharedData/sharedDataSlice';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 
 const ACCEPTED_RESOURCE_TYPES = ['csv', 'xls', 'xlsx'];
@@ -50,7 +50,7 @@ const SelectDataFileStep = props => {
   const { i18n, t } = useTranslation();
   const { visualizationConfig } = useVisualizationContext();
   const { onNext, onBack } = props;
-  const { group } = useGroupContext();
+  const { owner, entityType } = useGroupContext();
   const { data: sharedFiles, fetching } = useSelector(_.get('sharedData.list'));
   const [selected, setSelected] = useState();
 
@@ -62,12 +62,13 @@ const SelectDataFileStep = props => {
 
   useEffect(() => {
     dispatch(
-      fetchGroupSharedData({
-        slug: group.slug,
+      fetchSharedData({
+        targetSlug: owner.slug,
+        targetType: entityType,
         resourceTypes: ACCEPTED_RESOURCE_TYPES,
       })
     );
-  }, [dispatch, group.slug]);
+  }, [dispatch, owner.slug, entityType]);
 
   // If there are no files to map, go back to the landscape/group index page.
   useEffect(() => {

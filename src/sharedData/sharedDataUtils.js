@@ -14,18 +14,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {
-  DataEntriesFragment,
-  DataEntryFragment,
-  DataEntryVisualizationsFragment,
-} from 'terrasoApi/shared/graphqlSchema/graphql';
 
-export const extractDataEntry = (
-  dataEntry: DataEntryFragment & DataEntryVisualizationsFragment
-) => ({
+export const extractDataEntry = dataEntry => ({
   ...dataEntry,
-  visualizations: dataEntry.visualizations?.edges?.map(edge => edge.node),
+  visualizations: dataEntry?.visualizations?.edges?.map(edge => edge.node),
 });
 
-export const extractGroupDataEntries = (group: DataEntriesFragment) =>
-  group.dataEntries.edges.map(edge => extractDataEntry(edge.node));
+export const extractDataEntries = parent =>
+  parent.sharedResources?.edges
+    .map(edge => edge.node.source)
+    .map(dataEntry => extractDataEntry(dataEntry));

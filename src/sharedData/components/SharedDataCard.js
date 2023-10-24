@@ -14,12 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useCallback } from 'react';
+import React from 'react';
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useFetchData } from 'terraso-client-shared/store/utils';
 import {
   Button,
   Card,
@@ -33,7 +32,6 @@ import {
 import List from 'common/components/List';
 import { ScrollTo } from 'navigation/scrollTo';
 import { useGroupContext } from 'group/groupContext';
-import { fetchGroupSharedData } from 'sharedData/sharedDataSlice';
 
 import SharedDataEntryFile from './SharedDataEntryFile';
 import SharedDataEntryLink from './SharedDataEntryLink';
@@ -47,13 +45,6 @@ const SharedFilesCard = props => {
   const { allowed } = usePermission('group.viewFiles', group);
   const { data: sharedFiles, fetching } = useSelector(_.get('sharedData.list'));
   const hasFiles = !_.isEmpty(sharedFiles);
-
-  useFetchData(
-    useCallback(
-      () => (allowed ? fetchGroupSharedData({ slug: group.slug }) : null),
-      [group.slug, allowed]
-    )
-  );
 
   if (!allowed) {
     return null;

@@ -60,16 +60,22 @@ const VisualizationWrapper = props => {
   const dispatch = useDispatch();
   const { i18n, t } = useTranslation();
   const { downloadFile } = useSharedData();
-  const { groupSlug, configSlug, onDeleted } = props;
+  const { configSlug, onDeleted } = props;
   const { data, fetching, deleting } = useSelector(
     state => state.sharedData.visualizationConfig
   );
-  const { group, owner, entityType } = useGroupContext();
+  const { owner, entityType } = useGroupContext();
   const [imagePrinter, setImagePrinter] = useState();
 
   useEffect(() => {
-    dispatch(fetchVisualizationConfig({ groupSlug, configSlug }));
-  }, [dispatch, groupSlug, configSlug]);
+    dispatch(
+      fetchVisualizationConfig({
+        ownerSlug: owner.slug,
+        ownerType: entityType,
+        configSlug,
+      })
+    );
+  }, [dispatch, owner.slug, entityType, configSlug]);
 
   const visualizationConfig = useMemo(
     () =>
@@ -133,7 +139,7 @@ const VisualizationWrapper = props => {
               <PageHeader header={mapTitle} />
               <Restricted
                 permission="visualization.delete"
-                resource={{ group, visualizationConfig: data }}
+                resource={{ owner, visualizationConfig: data }}
               >
                 <ConfirmButton
                   onConfirm={onDelete}

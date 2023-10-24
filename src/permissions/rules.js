@@ -66,9 +66,10 @@ const isAllowedToDeleteSharedData = ({ resource, user }) => {
 };
 
 const isAllowedToDeleteVisualization = ({
-  resource: { group, visualizationConfig },
+  resource: { owner, visualizationConfig },
   user,
 }) => {
+  const group = owner.defaultGroup || owner;
   const isManager = hasRole({ group, role: ROLE_MANAGER });
   const isOwner =
     _.get('createdBy.id', visualizationConfig) === _.get('id', user);

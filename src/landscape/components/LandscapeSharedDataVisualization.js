@@ -58,10 +58,9 @@ const LandscapeSharedDataVisualization = () => {
   }
 
   return (
-    <GroupContextProvider group={landscape.defaultGroup} owner={landscape}>
+    <GroupContextProvider owner={landscape}>
       <VisualizationWrapper
         configSlug={configSlug}
-        groupSlug={landscape.defaultGroup.slug}
         onDeleted={() => navigate(`/landscapes/${landscapeSlug}`)}
       />
     </GroupContextProvider>
