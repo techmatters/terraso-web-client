@@ -90,7 +90,7 @@ const FORM_FIELDS = [
       i18nKey: 'landscape.form_email_helper_text',
     },
     placeholder: 'landscape.form_email_placeholder',
-    type: 'url',
+    type: 'email',
   },
   {
     name: 'website',

@@ -83,6 +83,7 @@ const UserEmailAutocomplete = props => {
           label={label}
           {...params}
           placeholder={t('common.user_email_autocomplete_placeholder')}
+          type="email"
           InputLabelProps={{
             shrink: true,
           }}
