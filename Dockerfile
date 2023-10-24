@@ -1,4 +1,4 @@
-FROM node:18.18.0-slim
+FROM node:20.9.0-slim
 
 RUN apt-get update && apt-get install -y python3 build-essential
 
