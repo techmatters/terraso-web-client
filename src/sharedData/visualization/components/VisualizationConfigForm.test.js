@@ -542,14 +542,19 @@ const testPreviewStep = async (map, events, testParams) => {
       paint: {
         'fill-color': '#FF580D',
         'fill-opacity': 0.8,
-      }
+      },
     }),
     undefined
   );
 };
 
 const BASE_CONFIGURATION_EXPECTED_INPUT = {
-  visualizeConfig: { shape: 'triangle', size: '30', color: '#FF580D', opacity: '80' },
+  visualizeConfig: {
+    shape: 'triangle',
+    size: '30',
+    color: '#FF580D',
+    opacity: '80',
+  },
   viewportConfig: {
     bounds: {
       northEast: { lng: -67.62077603784013, lat: 11.325606896067784 },
