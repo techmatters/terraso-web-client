@@ -42,6 +42,7 @@ const INITIAL_CONFIG = {
     shape: 'circle',
     size: 15,
     color: theme.palette.visualization.markerDefaultColor,
+    opacity: 50,
   },
 };
 

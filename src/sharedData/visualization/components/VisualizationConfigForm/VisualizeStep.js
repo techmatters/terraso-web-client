@@ -157,6 +157,54 @@ const Color = props => {
   );
 };
 
+const Opacity = props => {
+  const { t } = useTranslation();
+  const { opacity, setOpacity } = props;
+  const [value, setValue] = useState(opacity);
+  const [debouncedValue] = useDebounce(value, 100);
+
+  useEffect(() => {
+    setOpacity(debouncedValue);
+  }, [debouncedValue, setOpacity]);
+
+  return (
+    <>
+      <Grid item xs={3} component={Typography} id="opacity-label">
+        {t('sharedData.form_step_visualize_opacity')}:
+      </Grid>
+      <Grid item xs={5}>
+        <Slider
+          aria-hidden="true"
+          value={value}
+          onChange={(event, newValue) => setValue(newValue)}
+          step={10}
+          min={0}
+          max={100}
+        />
+      </Grid>
+      <Grid item xs={2}>
+        <OutlinedInput
+          value={opacity}
+          size="small"
+          onChange={event => setOpacity(event.target.value)}
+          inputProps={{
+            step: 10,
+            min: 0,
+            max: 100,
+            sx: { p: 1 },
+            type: 'number',
+            'aria-labelledby': 'opacity-label',
+          }}
+          sx={{ width: '100%' }}
+        />
+      </Grid>
+      <Grid item xs={1} component={Typography} variant="caption">
+        %
+      </Grid>
+    </>
+  );
+};
+
 const VisualizeStep = props => {
   const { t } = useTranslation();
   const { onNext, onBack } = props;
@@ -167,6 +215,9 @@ const VisualizeStep = props => {
   const [shape, setShape] = useState(visualizationConfig.visualizeConfig.shape);
   const [size, setSize] = useState(visualizationConfig.visualizeConfig.size);
   const [color, setColor] = useState(visualizationConfig.visualizeConfig.color);
+  const [opacity, setOpacity] = useState(
+    visualizationConfig.visualizeConfig.opacity
+  );
 
   useEffect(() => {
     setVisualizeConfig(visualizationConfig.visualizeConfig);
@@ -177,8 +228,9 @@ const VisualizeStep = props => {
       shape,
       size,
       color,
+      opacity,
     });
-  }, [shape, size, color]);
+  }, [shape, size, color, opacity]);
 
   return (
     <StepperStep
@@ -203,6 +255,7 @@ const VisualizeStep = props => {
             <Shape shape={shape} setShape={setShape} />
             <Size size={size} setSize={setSize} />
             <Color color={color} setColor={setColor} />
+            <Opacity opacity={opacity} setOpacity={setOpacity} />
           </Grid>
         </Grid>
         <Grid item xs={12} md={6}>

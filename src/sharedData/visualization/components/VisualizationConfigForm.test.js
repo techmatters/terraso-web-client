@@ -331,7 +331,7 @@ const testSelectDataFileStep = async testParams => {
   // Validate stepper not present in first step
   expect(screen.queryByRole('list', { name: 'Steps' })).not.toBeInTheDocument();
 
-  const filesList = within(screen.getByRole('list', { name: 'Data File' }));
+  const filesList = within(screen.getByRole('list', { name: 'Select a file' }));
   const nextButton = screen.getByRole('button', { name: 'Next' });
 
   expect(nextButton).toHaveAttribute('disabled');
@@ -422,8 +422,8 @@ const testVisualizeStep = async () => {
     )
   );
 
-  // Shape
-  const shapes = screen.getByRole('group', { name: 'Shape:' });
+  // Marker Shape
+  const shapes = screen.getByRole('group', { name: 'Marker Shape:' });
   expect(
     within(shapes).getByRole('button', { name: 'Circle' })
   ).toHaveAttribute('aria-pressed', 'true');
@@ -431,8 +431,8 @@ const testVisualizeStep = async () => {
     fireEvent.click(within(shapes).getByRole('button', { name: 'Triangle' }))
   );
 
-  // Size
-  const size = screen.getByRole('spinbutton', { name: 'Size:' });
+  // Marker Size
+  const size = screen.getByRole('spinbutton', { name: 'Marker Size:' });
   expect(size).toHaveValue(15);
   fireEvent.change(size, { target: { value: 30 } });
   expect(size).toHaveValue(30);
@@ -446,6 +446,12 @@ const testVisualizeStep = async () => {
     fireEvent.input(colorInput, { target: { value: '#e28979' } })
   );
   expect(colorInput).toHaveValue('#e28979');
+
+  // Polygon opacity
+  const opacity = screen.getByRole('spinbutton', { name: 'Polygon Opacity:' });
+  expect(opacity).toHaveValue(50);
+  fireEvent.change(opacity, { target: { value: 80 } });
+  expect(opacity).toHaveValue(80);
 
   // Next
   await act(async () =>
@@ -533,13 +539,17 @@ const testPreviewStep = async (map, events, testParams) => {
     expect.objectContaining({
       id: 'visualization-polygons-fill',
       source: 'visualization',
+      paint: {
+        'fill-color': '#FF580D',
+        'fill-opacity': 0.8,
+      }
     }),
     undefined
   );
 };
 
 const BASE_CONFIGURATION_EXPECTED_INPUT = {
-  visualizeConfig: { shape: 'triangle', size: '30', color: '#FF580D' },
+  visualizeConfig: { shape: 'triangle', size: '30', color: '#FF580D', opacity: '80' },
   viewportConfig: {
     bounds: {
       northEast: { lng: -67.62077603784013, lat: 11.325606896067784 },

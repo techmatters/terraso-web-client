@@ -310,14 +310,14 @@ const MapboxLayer = props => {
   ]);
 
   const layerPolygonFill = useMemo(() => {
-    const { color } = visualizationConfig?.visualizeConfig || {};
+    const { color, opacity } = visualizationConfig?.visualizeConfig || {};
     return {
       type: 'fill',
       source: 'visualization',
       filter: ['==', '$type', 'Polygon'],
       paint: {
         'fill-color': color,
-        'fill-opacity': 0.5,
+        'fill-opacity': opacity / 100,
       },
       ...(useTileset ? { 'source-layer': visualizationConfig?.tilesetId } : {}),
     };
