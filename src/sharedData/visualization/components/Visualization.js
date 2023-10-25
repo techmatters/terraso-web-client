@@ -56,6 +56,10 @@ const getSourceBounds = async (map, sourceId) => {
     return new mapboxgl.LngLatBounds(loadedSource.bounds);
   }
 
+  if (!loadedSource._data) {
+    return;
+  }
+
   const calculatedBbox = bbox(loadedSource._data);
   return new mapboxgl.LngLatBounds(
     [calculatedBbox[0], calculatedBbox[1]],
@@ -203,7 +207,10 @@ const MapboxLayer = props => {
     if (!source) {
       return;
     }
-    const features = source._data.features;
+    const features = source?._data?.features;
+    if (_.isEmpty(features)) {
+      return;
+    }
     openPopup(features[0]);
   }, [
     showPopup,

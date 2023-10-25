@@ -107,6 +107,11 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
     touchZoomRotate: { disableRotation: jest.fn() },
   };
   mapboxgl.Map.mockReturnValue(map);
+  map.getSource.mockReturnValueOnce();
+  map.getSource.mockReturnValueOnce({
+    setData: jest.fn(),
+    loaded: jest.fn().mockReturnValue(true),
+  });
   useParams.mockReturnValue({
     groupSlug: 'slug-1',
     configSlug: 'config-slug',

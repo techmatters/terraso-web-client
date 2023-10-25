@@ -157,6 +157,11 @@ const setup = async testParams => {
     dragRotate: { disable: jest.fn() },
     touchZoomRotate: { disableRotation: jest.fn() },
   };
+  map.getSource.mockReturnValueOnce();
+  map.getSource.mockReturnValue({
+    setData: jest.fn(),
+    loaded: jest.fn().mockReturnValue(true),
+  });
   mapboxgl.Map.mockReturnValue(map);
   mapboxgl.LngLat = jest.fn();
   useParams.mockReturnValue({
