@@ -85,7 +85,7 @@ const getTypesExtensions = (types: Record<string, string[]>) =>
 
 export const MAP_DATA_ACCEPTED_TYPES = {
   'application/json': ['.json', '.geojson'],
-  'application/xml': ['.kml', '.gpx'],
+  'application/xml': ['.kml'],
   'application/zip': ['.kmz', '.zip'],
 };
 
@@ -125,13 +125,14 @@ export const DOCUMENT_ACCEPTED_TYPES = {
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': [
     '.docx',
   ],
+  'application/xml': ['.gpx'],
 };
 
-export const SHARED_DATA_ACCEPTED_TYPES = {
-  ...DOCUMENT_ACCEPTED_TYPES,
-  ...DATA_SET_ACCEPTED_TYPES,
-  ...MAP_DATA_ACCEPTED_TYPES,
-};
+export const SHARED_DATA_ACCEPTED_TYPES = _.flow(
+  _.flatMap(_.toPairs),
+  _.groupBy(([contentType, _]) => contentType),
+  _.mapValues(_.flatMap(([_, extensions]) => extensions))
+)([DOCUMENT_ACCEPTED_TYPES, DATA_SET_ACCEPTED_TYPES, MAP_DATA_ACCEPTED_TYPES]);
 
 export const SHARED_DATA_ACCEPTED_EXTENSIONS = getTypesExtensions(
   SHARED_DATA_ACCEPTED_TYPES
