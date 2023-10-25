@@ -12,7 +12,7 @@
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
     "@mui/icons-material": "^5.14.12",
     "@mui/lab": "^5.0.0-alpha.148",
-    "@mui/material": "^5.14.8",
+    "@mui/material": "5.14.8",
     "@mui/x-data-grid": "^6.16.2",
     "@reduxjs/toolkit": "^1.9.5",
     "@turf/bbox": "^6.5.0",
