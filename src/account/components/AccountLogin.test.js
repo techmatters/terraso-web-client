@@ -57,12 +57,12 @@ test('AccountLogin: Display buttons', async () => {
     })
   );
   await render(<AccountLogin />);
-  expect(screen.getByText('Continue with Google')).toBeInTheDocument();
-  expect(screen.getByText('Continue with Google')).toHaveAttribute(
+  expect(screen.getByText('Sign in with Google')).toBeInTheDocument();
+  expect(screen.getByText('Sign in with Google')).toHaveAttribute(
     'href',
     `google.url?param=value`
   );
-  expect(screen.getByText('Continue with Apple')).toBeInTheDocument();
+  expect(screen.getByText('Sign in with Apple')).toBeInTheDocument();
 });
 
 test('AccountLogin: Add referrer', async () => {
@@ -77,14 +77,14 @@ test('AccountLogin: Add referrer', async () => {
     })
   );
   await render(<AccountLogin />);
-  expect(screen.getByText('Continue with Google')).toBeInTheDocument();
+  expect(screen.getByText('Sign in with Google')).toBeInTheDocument();
   const state = `account%3FreferrerBase64%3D${btoa(referrer)}`;
-  expect(screen.getByText('Continue with Google')).toHaveAttribute(
+  expect(screen.getByText('Sign in with Google')).toHaveAttribute(
     'href',
     `google.url?param=value&state=${state}`
   );
-  expect(screen.getByText('Continue with Apple')).toBeInTheDocument();
-  expect(screen.getByText('Continue with Apple')).toHaveAttribute(
+  expect(screen.getByText('Sign in with Apple')).toBeInTheDocument();
+  expect(screen.getByText('Sign in with Apple')).toHaveAttribute(
     'href',
     `apple.url?param=value&state=${state}`
   );
