@@ -600,7 +600,7 @@
         "form_step_visualize_step_description": "Choose how polygons and points will appear on the map.",
         "form_step_annotate_step_title": "Annotations",
         "form_step_preview_step_title": "Preview",
-        "form_step_preview_step_description": "Zoom and pan the map to set how {{entityType}} members will see it.",
+        "form_step_preview_step_description": "Zoom and pan the map to set how others will see it.",
         "form_step_preview_step_map_description": "After you publish the map, {{entityType}} members can view the map or download it as an image or data file.",
         "form_step_preview_step_save": "Publish",
         "added_visualization_config": "The map for {{name}} file has been published.",
