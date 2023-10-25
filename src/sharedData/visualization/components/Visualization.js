@@ -34,6 +34,35 @@ import { getLayerImage } from 'sharedData/visualization/visualizationMarkers';
 
 import { sheetToGeoJSON } from '../visualizationUtils';
 
+const getSourceBounds = async (map, sourceId) => {
+  const source = map.getSource(sourceId);
+  const loaded = source.loaded();
+  if (!source) {
+    return;
+  }
+
+  const loadedSource = loaded
+    ? source
+    : await new Promise(resolve => {
+        map.on('sourcedata', () => {
+          const source = map.getSource('visualization');
+          if (source.loaded()) {
+            resolve(source);
+          }
+        });
+      });
+
+  if (loadedSource.bounds) {
+    return new mapboxgl.LngLatBounds(loadedSource.bounds);
+  }
+
+  const calculatedBbox = bbox(loadedSource._data);
+  return new mapboxgl.LngLatBounds(
+    [calculatedBbox[0], calculatedBbox[1]],
+    [calculatedBbox[2], calculatedBbox[3]]
+  );
+};
+
 const PopupContent = props => {
   const { data } = props;
   const fields = JSON.parse(data.fields);
@@ -188,7 +217,7 @@ const MapboxLayer = props => {
     if (!map) {
       return;
     }
-    const visualizationConfigBounds = (function () {
+    const visualizationConfigBounds = (async function () {
       const viewportBounds = visualizationConfig?.viewportConfig?.bounds;
       if (!viewportBounds) {
         return;
@@ -203,29 +232,23 @@ const MapboxLayer = props => {
       return new mapboxgl.LngLatBounds(sw, ne);
     })();
 
-    const geoJsonBounds = (function () {
-      const source = map.getSource('visualization');
-      if (!source || !source._data) {
-        return;
+    const sourceBounds = getSourceBounds(map, 'visualization');
+
+    Promise.all([visualizationConfigBounds, sourceBounds]).then(
+      ([visualizationConfigBounds, sourceBounds]) => {
+        const bounds =
+          useConfigBounds && visualizationConfigBounds
+            ? visualizationConfigBounds
+            : sourceBounds;
+
+        if (bounds && !bounds.isEmpty()) {
+          map.fitBounds(bounds, {
+            padding: 50,
+            animate: false,
+          });
+        }
       }
-      const calculatedBbox = bbox(map.getSource('visualization')._data);
-      return new mapboxgl.LngLatBounds(
-        [calculatedBbox[0], calculatedBbox[1]],
-        [calculatedBbox[2], calculatedBbox[3]]
-      );
-    })();
-
-    const bounds =
-      useConfigBounds && visualizationConfigBounds
-        ? visualizationConfigBounds
-        : geoJsonBounds;
-
-    if (bounds && !bounds.isEmpty()) {
-      map.fitBounds(bounds, {
-        padding: 50,
-        animate: false,
-      });
-    }
+    );
   }, [map, visualizationConfig?.viewportConfig?.bounds, useConfigBounds]);
 
   const layer = useMemo(() => {
