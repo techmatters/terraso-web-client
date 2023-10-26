@@ -154,6 +154,7 @@ const setup = async testParams => {
     addImage: jest.fn(),
     fitBounds: jest.fn(),
     getBounds: jest.fn(),
+    setPadding: jest.fn(),
     dragRotate: { disable: jest.fn() },
     touchZoomRotate: { disableRotation: jest.fn() },
   };
