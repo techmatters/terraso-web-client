@@ -35,6 +35,13 @@ import { getLayerImage } from 'sharedData/visualization/visualizationMarkers';
 
 import { sheetToGeoJSON } from '../visualizationUtils';
 
+const MAP_PADDING = {
+  top: 50,
+  bottom: 50,
+  left: 50,
+  right: 50,
+};
+
 const getSourceBounds = async (map, sourceId) => {
   const source = map.getSource(sourceId);
   const loaded = source.loaded();
@@ -251,7 +258,6 @@ const MapboxLayer = props => {
 
         if (bounds && !bounds.isEmpty()) {
           map.fitBounds(bounds, {
-            padding: 50,
             animate: false,
           });
         }
@@ -410,6 +416,7 @@ const Visualization = props => {
         mapStyle={visualizationConfig?.viewportConfig?.baseMapStyle}
         onBoundsChange={onBoundsChange}
         onStyleChange={onStyleChange}
+        padding={MAP_PADDING}
         sx={{
           width: '100%',
           height: '400px',

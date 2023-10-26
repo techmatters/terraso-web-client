@@ -264,6 +264,7 @@ const Map = props => {
     sx,
     onBoundsChange,
     disableElevation = false,
+    padding = { top: 0, bottom: 0, left: 0, right: 0 },
     children,
   } = props;
   const { i18n } = useTranslation();
@@ -287,6 +288,8 @@ const Map = props => {
       bounds: validBounds ? bounds : undefined,
       ...(initialLocation ? initialLocation : {}),
     });
+
+    map.setPadding(padding);
 
     map.on('load', function () {
       if (!disableElevation && !map.getSource('mapbox-dem')) {
@@ -336,6 +339,7 @@ const Map = props => {
     disableRotation,
     bounds,
     disableElevation,
+    padding,
   ]);
 
   useEffect(() => {
