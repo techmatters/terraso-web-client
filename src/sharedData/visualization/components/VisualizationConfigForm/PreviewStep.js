@@ -128,9 +128,7 @@ const PreviewStep = props => {
         onNext={onPublish}
       >
         <Typography sx={{ mb: 2 }}>
-          {t('sharedData.form_step_preview_step_description', {
-            entityType: entityTypeLocalized,
-          })}
+          {t('sharedData.form_step_preview_step_description')}
         </Typography>
         <VisualizationPreview
           useConfigBounds
