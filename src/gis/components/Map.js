@@ -264,7 +264,7 @@ const Map = props => {
     sx,
     onBoundsChange,
     disableElevation = false,
-    padding = { top: 0, bottom: 0, left: 0, right: 0 },
+    padding,
     children,
   } = props;
   const { i18n } = useTranslation();
@@ -289,7 +289,9 @@ const Map = props => {
       ...(initialLocation ? initialLocation : {}),
     });
 
-    map.setPadding(padding);
+    if (padding) {
+      map.setPadding(padding);
+    }
 
     map.on('load', function () {
       if (!disableElevation && !map.getSource('mapbox-dem')) {
@@ -364,8 +366,15 @@ const Map = props => {
     const language = i18n.language.split('-')[0];
 
     TRANSLATABLE_LAYERS.forEach(layer => {
-      if (map.getLayer(layer)) {
-        map.setLayoutProperty(layer, 'text-field', ['get', `name_${language}`]);
+      try {
+        if (map.getLayer(layer)) {
+          map.setLayoutProperty(layer, 'text-field', [
+            'get',
+            `name_${language}`,
+          ]);
+        }
+      } catch (error) {
+        console.warn('Error setting layer text field', error);
       }
     });
   }, [map, i18n.language]);
