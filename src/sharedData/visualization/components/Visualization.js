@@ -326,7 +326,6 @@ const MapboxLayer = props => {
     return {
       type: 'line',
       source: 'visualization',
-      filter: ['==', '$type', 'Polygon'],
       layout: {},
       paint: {
         'line-color': color,

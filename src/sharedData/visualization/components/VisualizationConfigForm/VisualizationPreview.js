@@ -65,7 +65,8 @@ const VisualizationPreview = props => {
           )}
         </Typography>
       )}
-      <Typography sx={{ mb: 2 }}>
+      <Visualization onStyleChange={onStyleChange} {...props} />
+      <Typography sx={{ mt: 2 }}>
         {_.getOr(
           _.get(
             'visualizationConfig.annotateConfig.mapDescription',
@@ -75,8 +76,6 @@ const VisualizationPreview = props => {
           customConfig
         )}
       </Typography>
-
-      <Visualization onStyleChange={onStyleChange} {...props} />
     </Paper>
   );
 };

@@ -130,9 +130,8 @@ const VisualizationWrapper = props => {
             <>
               <PageHeader
                 header={mapTitle}
-                typographyProps={{ sx: { mb: 1 } }}
+                typographyProps={{ sx: { mb: 3 } }}
               />
-              <Typography sx={{ mb: 3 }}>{data?.description}</Typography>
               <Restricted
                 permission="visualization.delete"
                 resource={{ owner, visualizationConfig: data }}
@@ -176,24 +175,27 @@ const VisualizationWrapper = props => {
                   </Visualization>
                 )}
                 {!fetching && (
-                  <Trans
-                    i18nKey="sharedData.visualization_source_data"
-                    values={{
-                      date: formatDate(i18n.resolvedLanguage, data.createdAt),
-                      user: t('user.full_name', { user: data.createdBy }),
-                      file: data.dataEntry,
-                    }}
-                  >
-                    <Typography sx={{ fontWeight: 600 }}>
-                      Source data:
-                      <Link
-                        href={data.dataEntry.url}
-                        onClick={handleDownload(data.dataEntry)}
-                      >
-                        File
-                      </Link>
-                    </Typography>
-                  </Trans>
+                  <>
+                    <Typography sx={{ mt: 2 }}>{data?.description}</Typography>
+                    <Trans
+                      i18nKey="sharedData.visualization_source_data"
+                      values={{
+                        date: formatDate(i18n.resolvedLanguage, data.createdAt),
+                        user: t('user.full_name', { user: data.createdBy }),
+                        file: data.dataEntry,
+                      }}
+                    >
+                      <Typography sx={{ fontWeight: 600 }}>
+                        Source data:
+                        <Link
+                          href={data.dataEntry.url}
+                          onClick={handleDownload(data.dataEntry)}
+                        >
+                          File
+                        </Link>
+                      </Typography>
+                    </Trans>
+                  </>
                 )}
               </Stack>
               {!(loadingFile || loadingFileError || fetching) && (

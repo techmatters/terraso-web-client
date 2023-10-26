@@ -34,6 +34,7 @@ import {
   ListItemAvatar,
   OutlinedInput,
   Paper,
+  TextareaAutosize,
   Typography,
 } from '@mui/material';
 
@@ -205,6 +206,14 @@ const AnnotateStep = props => {
     const descriptionField = {
       name: 'mapDescription',
       label: 'sharedData.form_step_annotate_map_description_label',
+      props: {
+        inputProps: {
+          inputComponent: TextareaAutosize,
+          inputProps: {
+            minRows: 1,
+          },
+        },
+      },
     };
     const annotationTitleField = {
       name: 'annotationTitle',
