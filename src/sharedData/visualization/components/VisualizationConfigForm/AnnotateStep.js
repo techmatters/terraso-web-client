@@ -33,6 +33,7 @@ import {
   ListItem,
   ListItemAvatar,
   OutlinedInput,
+  Paper,
   Typography,
 } from '@mui/material';
 
@@ -282,30 +283,35 @@ const AnnotateStep = props => {
       nextLabel={t('sharedData.form_next')}
       onNext={onNextWrapper}
     >
-      <Grid container>
-        <Grid item container direction="column" xs={12} md={6}>
-          <Form
-            aria-labelledby="main-heading"
-            aria-describedby="visualization-annotate-step-description"
-            prefix="annotate-config"
-            localizationPrefix="sharedData.form_step_annotate_fields"
-            fields={formFields}
-            values={annotateConfig}
-            validationSchema={VALIDATION_SCHEMA}
-            isMultiStep
-            onChange={setUpdatedValues}
-          />
+      <Paper variant="outlined" sx={{ p: 2 }}>
+        <Grid container>
+          <Grid item container direction="column" xs={12} md={5}>
+            <Form
+              aria-labelledby="main-heading"
+              aria-describedby="visualization-annotate-step-description"
+              prefix="annotate-config"
+              localizationPrefix="sharedData.form_step_annotate_fields"
+              fields={formFields}
+              values={annotateConfig}
+              validationSchema={VALIDATION_SCHEMA}
+              isMultiStep
+              onChange={setUpdatedValues}
+              gridContainerProps={{
+                sx: { width: '100%' },
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} md={7}>
+            <VisualizationPreview
+              showPopup
+              customConfig={{
+                annotateConfig: updatedValues,
+              }}
+              sampleSize={1}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <VisualizationPreview
-            showPopup
-            customConfig={{
-              annotateConfig: updatedValues,
-            }}
-            sampleSize={1}
-          />
-        </Grid>
-      </Grid>
+      </Paper>
     </StepperStep>
   );
 };

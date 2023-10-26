@@ -28,6 +28,7 @@ import GeoJsonSource from 'gis/components/GeoJsonSource';
 import Layer from 'gis/components/Layer';
 import Map, { useMap } from 'gis/components/Map';
 import MapControls from 'gis/components/MapControls';
+import MapLoader from 'gis/components/MapLoader';
 import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 import { getLayerImage } from 'sharedData/visualization/visualizationMarkers';
@@ -387,7 +388,7 @@ const Visualization = props => {
     children,
   } = props;
   const visualizationContext = useVisualizationContext();
-  const { useTileset, isMapFile } = visualizationContext;
+  const { useTileset, isMapFile, loadingFile } = visualizationContext;
 
   const visualizationConfig = useMemo(
     () => ({
@@ -396,6 +397,10 @@ const Visualization = props => {
     }),
     [customConfig, visualizationContext.visualizationConfig]
   );
+
+  if (loadingFile) {
+    return <MapLoader height={400} />;
+  }
 
   return (
     <>

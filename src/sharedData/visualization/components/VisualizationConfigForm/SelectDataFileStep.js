@@ -24,6 +24,7 @@ import {
   ListItem,
   ListItemButton,
   ListItemIcon,
+  Paper,
   Radio,
   Stack,
   Typography,
@@ -98,69 +99,73 @@ const SelectDataFileStep = props => {
       nextDisabled={!selected}
       onNext={onNextWrapper}
     >
-      <Trans i18nKey="sharedData.form_step_data_file_step_description">
-        <Typography sx={{ mb: 2 }} id="visualization-file-requirements">
-          first
-        </Typography>
-        <Stack
-          component="ul"
-          spacing={1}
-          sx={{ mb: 2 }}
-          aria-labelledby="visualization-file-requirements"
-        >
-          <li>Requirement 1</li>
-          <li>Requirement 2</li>
-        </Stack>
-        <Typography sx={{ mb: 2 }}>
-          Recommendation
-          <ExternalLink
-            href={t('sharedData.form_step_data_file_step_description_help_url')}
+      <Paper variant="outlined" sx={{ p: 2 }}>
+        <Trans i18nKey="sharedData.form_step_data_file_step_description">
+          <Typography sx={{ mb: 2 }} id="visualization-file-requirements">
+            first
+          </Typography>
+          <Stack
+            component="ul"
+            spacing={1}
+            sx={{ mb: 2 }}
+            aria-labelledby="visualization-file-requirements"
           >
-            help link
-          </ExternalLink>
-        </Typography>
-      </Trans>
-      <List aria-labelledby="main-heading">
-        {fetching && <PageLoader />}
-        {sharedFiles?.map(file => (
-          <ListItem
-            key={file.id}
-            aria-labelledby={`selectable-file-${file.id}`}
-          >
-            <ListItemButton
-              role={undefined}
-              onClick={() => setSelected(file)}
-              dense
+            <li>Requirement 1</li>
+            <li>Requirement 2</li>
+          </Stack>
+          <Typography sx={{ mb: 2 }}>
+            Recommendation
+            <ExternalLink
+              href={t(
+                'sharedData.form_step_data_file_step_description_help_url'
+              )}
             >
-              <ListItemIcon>
-                <Radio
-                  edge="start"
-                  checked={file?.id === selected?.id}
-                  tabIndex={-1}
-                  inputProps={{
-                    'aria-labelledby': `selectable-file-${file.id}`,
-                  }}
-                />
-              </ListItemIcon>
-              <Grid container sx={{ fontSize: 14, color: 'gray.dark1' }}>
-                <Grid item component={StackRow} xs={8} md={4}>
-                  <SharedFileIcon resourceType={file.resourceType} />
-                  <Typography id={`selectable-file-${file.id}`}>
-                    {file.name}
-                  </Typography>
+              help link
+            </ExternalLink>
+          </Typography>
+        </Trans>
+        <List aria-labelledby="main-heading">
+          {fetching && <PageLoader />}
+          {sharedFiles?.map(file => (
+            <ListItem
+              key={file.id}
+              aria-labelledby={`selectable-file-${file.id}`}
+            >
+              <ListItemButton
+                role={undefined}
+                onClick={() => setSelected(file)}
+                dense
+              >
+                <ListItemIcon>
+                  <Radio
+                    edge="start"
+                    checked={file?.id === selected?.id}
+                    tabIndex={-1}
+                    inputProps={{
+                      'aria-labelledby': `selectable-file-${file.id}`,
+                    }}
+                  />
+                </ListItemIcon>
+                <Grid container sx={{ fontSize: 14, color: 'gray.dark1' }}>
+                  <Grid item component={StackRow} xs={8} md={4}>
+                    <SharedFileIcon resourceType={file.resourceType} />
+                    <Typography id={`selectable-file-${file.id}`}>
+                      {file.name}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={2} md={1}>
+                    {filesize(file.size, { round: 0 })}
+                  </Grid>
+                  <Grid item xs={9} md={5}>
+                    {formatDate(i18n.resolvedLanguage, file.createdAt)}, by{' '}
+                    {t('user.full_name', { user: file.createdBy })}
+                  </Grid>
                 </Grid>
-                <Grid item xs={2} md={1}>
-                  {filesize(file.size, { round: 0 })}
-                </Grid>
-                <Grid item xs={9} md={5}>
-                  {formatDate(i18n.resolvedLanguage, file.createdAt)}, by{' '}
-                  {t('user.full_name', { user: file.createdBy })}
-                </Grid>
-              </Grid>
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Paper>
     </StepperStep>
   );
 };

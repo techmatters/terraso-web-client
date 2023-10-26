@@ -18,15 +18,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  Alert,
-  Button,
-  CircularProgress,
-  Link,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Alert, Button, Link, Paper, Stack, Typography } from '@mui/material';
 
 import { daysSince } from 'timeUtils';
 
@@ -171,9 +163,6 @@ const VisualizationWrapper = props => {
                 sx={{ p: 2 }}
                 spacing={2}
               >
-                {(loadingFile || fetching) && (
-                  <CircularProgress aria-label={t('common.loader_label')} />
-                )}
                 {loadingFileError && (
                   <Alert severity="error">
                     {t('sharedData.visualization_file_load_error', {
@@ -181,7 +170,7 @@ const VisualizationWrapper = props => {
                     })}
                   </Alert>
                 )}
-                {!(loadingFile || loadingFileError || fetching) && (
+                {!(loadingFileError || fetching) && (
                   <Visualization useConfigBounds>
                     <MapExport onImagePrinterChange={setImagePrinter} />
                   </Visualization>

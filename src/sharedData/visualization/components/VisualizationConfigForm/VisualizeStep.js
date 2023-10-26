@@ -25,6 +25,7 @@ import SquareIcon from '@mui/icons-material/SquareTwoTone';
 import {
   Grid,
   OutlinedInput,
+  Paper,
   Slider,
   ToggleButton,
   ToggleButtonGroup,
@@ -48,13 +49,13 @@ const Shape = props => {
   const { shape, setShape } = props;
   return (
     <>
-      <Grid item xs={3} component={Typography} id="shape-label">
+      <Grid item xs={4} component={Typography} id="shape-label">
         {t('sharedData.form_step_visualize_shape')}:
       </Grid>
 
       <Grid
         item
-        xs={9}
+        xs={8}
         component={ToggleButtonGroup}
         value={shape}
         exclusive
@@ -63,6 +64,7 @@ const Shape = props => {
       >
         {_.toPairs(visualizeIcons).map(([key, IconComponent]) => (
           <ToggleButton
+            size="small"
             key={key}
             value={key}
             aria-label={t(`sharedData.form_step_visualize_shape_${key}`)}
@@ -87,11 +89,12 @@ const Size = props => {
 
   return (
     <>
-      <Grid item xs={3} component={Typography} id="size-label">
+      <Grid item xs={4} component={Typography} id="size-label">
         {t('sharedData.form_step_visualize_size')}:
       </Grid>
-      <Grid item xs={5}>
+      <Grid item xs={4}>
         <Slider
+          size="small"
           aria-hidden="true"
           value={value}
           onChange={(event, newValue) => setValue(newValue)}
@@ -135,10 +138,10 @@ const Color = props => {
 
   return (
     <>
-      <Grid item xs={3} component={Typography} id="color-label">
+      <Grid item xs={4} component={Typography} id="color-label">
         {t('sharedData.form_step_visualize_color')}:
       </Grid>
-      <Grid item xs={8}>
+      <Grid item xs={7}>
         <OutlinedInput
           value={value}
           size="small"
@@ -169,11 +172,12 @@ const Opacity = props => {
 
   return (
     <>
-      <Grid item xs={3} component={Typography} id="opacity-label">
+      <Grid item xs={4} component={Typography} id="opacity-label">
         {t('sharedData.form_step_visualize_opacity')}:
       </Grid>
-      <Grid item xs={5}>
+      <Grid item xs={4}>
         <Slider
+          size="small"
           aria-hidden="true"
           value={value}
           onChange={(event, newValue) => setValue(newValue)}
@@ -240,32 +244,34 @@ const VisualizeStep = props => {
       nextLabel={t('sharedData.form_next')}
       onNext={() => onNext(visualizeConfig)}
     >
-      <Typography sx={{ mb: 4 }} id="visualize-settings-label">
-        {t('sharedData.form_step_visualize_step_description')}
-      </Typography>
-      <Grid container spacing={2}>
-        <Grid
-          item
-          component="section"
-          aria-labelledby="visualize-settings-label"
-          xs={12}
-          md={6}
-        >
-          <Grid container alignItems="center" spacing={2}>
-            <Shape shape={shape} setShape={setShape} />
-            <Size size={size} setSize={setSize} />
-            <Color color={color} setColor={setColor} />
-            <Opacity opacity={opacity} setOpacity={setOpacity} />
+      <Paper variant="outlined" sx={{ p: 2 }}>
+        <Typography sx={{ mb: 4 }} id="visualize-settings-label">
+          {t('sharedData.form_step_visualize_step_description')}
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid
+            item
+            component="section"
+            aria-labelledby="visualize-settings-label"
+            xs={12}
+            md={5}
+          >
+            <Grid container alignItems="center" spacing={2}>
+              <Shape shape={shape} setShape={setShape} />
+              <Size size={size} setSize={setSize} />
+              <Color color={color} setColor={setColor} />
+              <Opacity opacity={opacity} setOpacity={setOpacity} />
+            </Grid>
+          </Grid>
+          <Grid item xs={12} md={7}>
+            <VisualizationPreview
+              useConfigBounds
+              title={t('sharedData.form_visualization_preview_title')}
+              customConfig={{ visualizeConfig }}
+            />
           </Grid>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <VisualizationPreview
-            useConfigBounds
-            title={t('sharedData.form_visualization_preview_title')}
-            customConfig={{ visualizeConfig }}
-          />
-        </Grid>
-      </Grid>
+      </Paper>
     </StepperStep>
   );
 };
