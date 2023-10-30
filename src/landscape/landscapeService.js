@@ -24,7 +24,10 @@ import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
 import { extractTerms } from 'taxonomies/taxonomiesUtils';
 
-import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
+import {
+  ALL_PARTNERSHIP_STATUS,
+  MEMBERSHIP_ROLE_MEMBER,
+} from './landscapeConstants';
 import {
   extractAffiliatedGroups,
   extractDevelopmentStrategy,
@@ -159,7 +162,7 @@ export const fetchLandscapeToView = (slug, { email: accountEmail }) => {
     .requestGraphQL(query, { slug, accountEmail })
     .then(_.get('landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('not_found'))
-    .then(extractLandscape);
+    .then(landscape => extractLandscape(landscape, false));
 };
 
 export const fetchLandscapeProfile = slug => {
@@ -234,11 +237,13 @@ export const fetchLandscapes = () => {
     .requestGraphQL(query)
     .then(response => response.landscapes)
     .then(landscapes =>
-      landscapes.edges
-        .map(edge => edge.node)
-        .map(extractLandscape)
+      Promise.all(
+        landscapes.edges
+          .map(edge => edge.node)
+          .map(landscape => extractLandscape(landscape, false))
+      )
     )
-    .then(_.orderBy([landscape => landscape.name.toLowerCase()], null))
+    .then(_.orderBy([landscape => landscape.name.toLowerCase()], null));
 };
 
 export const fetchLandscapeForMembers = slug => {
@@ -335,4 +340,124 @@ export const uploadProfileImage = async ({
   }
 
   return jsonResponse;
+};
+
+export const removeMember = (
+  { membershipId, landscapeSlug },
+  { email: accountEmail }
+) => {
+  const query = graphql(`
+    mutation deleteLandscapeMembership(
+      $input: LandscapeMembershipDeleteMutationInput!
+      $accountEmail: String!
+    ) {
+      deleteLandscapeMembership(input: $input) {
+        landscape {
+          ...landscapeFields
+          ...landscapePartnershipField
+          ...landscapeDataEntries
+          ...landscapeMembershipListWithMembersSample
+          areaPolygon
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: { id: membershipId, landscapeSlug },
+      accountEmail,
+    })
+    .then(resp => resp.deleteLandscapeMembership.landscape)
+    .then(landscape => extractLandscape(landscape, false));
+};
+
+export const joinLandscape = ({ landscapeSlug }, { email: accountEmail }) => {
+  const query = graphql(`
+    mutation joinLandscape(
+      $input: LandscapeMembershipSaveMutationInput!
+      $accountEmail: String!
+    ) {
+      saveLandscapeMembership(input: $input) {
+        landscape {
+          ...landscapeFields
+          ...landscapePartnershipField
+          ...landscapeDataEntries
+          ...landscapeMembershipListWithMembersSample
+          areaPolygon
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: {
+        landscapeSlug,
+        userEmails: [accountEmail],
+        userRole: MEMBERSHIP_ROLE_MEMBER,
+      },
+      accountEmail,
+    })
+    .then(resp => resp.saveLandscapeMembership.landscape)
+    .then(landscape => extractLandscape(landscape, false));
+};
+
+export const leaveLandscapeFromList = ({ membershipId, landscapeSlug }) => {
+  const query = graphql(`
+    mutation leaveLandscapeFromList(
+      $input: LandscapeMembershipDeleteMutationInput!
+    ) {
+      deleteLandscapeMembership(input: $input) {
+        landscape {
+          ...landscapeFields
+          ...landscapeMembershipList
+          centerCoordinates {
+            lat
+            lng
+          }
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: { id: membershipId, landscapeSlug },
+    })
+    .then(resp => resp.deleteLandscapeMembership.landscape)
+    .then(landscape => extractLandscape(landscape, false));
+};
+
+export const joinLandscapeFromList = (
+  { landscapeSlug },
+  { email: accountEmail }
+) => {
+  const query = graphql(`
+    mutation joinLandscapeFromList(
+      $input: LandscapeMembershipSaveMutationInput!
+    ) {
+      saveLandscapeMembership(input: $input) {
+        landscape {
+          ...landscapeFields
+          ...landscapeMembershipList
+          centerCoordinates {
+            lat
+            lng
+          }
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: {
+        landscapeSlug,
+        userEmails: [accountEmail],
+        userRole: MEMBERSHIP_ROLE_MEMBER,
+      },
+    })
+    .then(resp => resp.saveLandscapeMembership.landscape)
+    .then(landscape => extractLandscape(landscape, false));
 };

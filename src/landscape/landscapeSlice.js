@@ -16,8 +16,6 @@
  */
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
-import { setMemberships } from 'terraso-client-shared/memberships/membershipsSlice';
-import * as membershipsUtils from 'terraso-client-shared/memberships/membershipsUtils';
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
 import * as landscapeService from 'landscape/landscapeService';
@@ -81,14 +79,7 @@ export const fetchLandscapeView = createAsyncThunk(
 );
 export const refreshLandscapeView = createAsyncThunk(
   'landscape/refreshLandscapeView',
-  async (params, currentUser, { dispatch }) => {
-    const landscape = await landscapeService.fetchLandscapeToView(
-      params,
-      currentUser
-    );
-    dispatch(setMemberships(getMemberships([landscape])));
-    return landscape;
-  }
+  landscapeService.fetchLandscapeToView
 );
 export const fetchLandscapeUpload = createAsyncThunk(
   'landscape/fetchLandscapeUpload',
@@ -127,6 +118,22 @@ export const deleteProfileImage = createAsyncThunk(
     content: successKey,
     params: { name: landscape.name },
   })
+);
+export const leaveLandscape = createAsyncThunk(
+  'landscape/leaveLandscape',
+  landscapeService.removeMember
+);
+export const joinLandscape = createAsyncThunk(
+  'landscape/joinLandscape',
+  landscapeService.joinLandscape
+);
+export const leaveLandscapeFromList = createAsyncThunk(
+  'landscape/leaveLandscapeFromList',
+  landscapeService.leaveLandscapeFromList
+);
+export const joinLandscapeFromList = createAsyncThunk(
+  'landscape/joinLandscapeFromList',
+  landscapeService.joinLandscapeFromList
 );
 
 const updateView = (state, action) => ({
@@ -370,6 +377,66 @@ const landscapeSlice = createSlice({
         },
       },
     }));
+
+    builder.addCase(leaveLandscape.pending, (state, action) =>
+      _.set(`view.landscape.accountMembership.fetching`, true, state)
+    );
+    builder.addCase(leaveLandscape.fulfilled, updateView);
+    builder.addCase(leaveLandscape.rejected, (state, action) =>
+      _.set(`view.landscape.accountMembership.fetching`, false, state)
+    );
+
+    builder.addCase(joinLandscape.pending, (state, action) =>
+      _.set(`view.landscape.accountMembership.fetching`, true, state)
+    );
+    builder.addCase(joinLandscape.fulfilled, updateView);
+    builder.addCase(joinLandscape.rejected, (state, action) =>
+      _.set(`view.landscape.accountMembership.fetching`, false, state)
+    );
+
+    builder.addCase(leaveLandscapeFromList.pending, (state, action) => {
+      return updateLandscapeListItem(
+        state,
+        action.meta.arg.landscapeSlug,
+        _.set('accountMembership.fetching', true)
+      );
+    });
+    builder.addCase(leaveLandscapeFromList.fulfilled, (state, action) => {
+      return updateLandscapeListItem(
+        state,
+        action.meta.arg.landscapeSlug,
+        () => action.payload
+      );
+    });
+    builder.addCase(leaveLandscapeFromList.rejected, (state, action) => {
+      return updateLandscapeListItem(
+        state,
+        action.meta.arg.landscapeSlug,
+        _.set('accountMembership.fetching', false)
+      );
+    });
+
+    builder.addCase(joinLandscapeFromList.pending, (state, action) => {
+      return updateLandscapeListItem(
+        state,
+        action.meta.arg.landscapeSlug,
+        _.set('accountMembership.fetching', true)
+      );
+    });
+    builder.addCase(joinLandscapeFromList.fulfilled, (state, action) => {
+      return updateLandscapeListItem(
+        state,
+        action.meta.arg.landscapeSlug,
+        () => action.payload
+      );
+    });
+    builder.addCase(joinLandscapeFromList.rejected, (state, action) => {
+      return updateLandscapeListItem(
+        state,
+        action.meta.arg.landscapeSlug,
+        _.set('accountMembership.fetching', false)
+      );
+    });
   },
 });
 
@@ -385,9 +452,17 @@ export const {
 
 export default landscapeSlice.reducer;
 
-// const getMemberships = landscapes => {
-//   const groups = landscapes
-//     .map(landscape => landscape.defaultGroup)
-//     .filter(group => group.slug);
-//   return membershipsUtils.getMemberships(groups);
-// };
+const updateLandscapeListItem = (state, slug, valueGenerator) => {
+  return {
+    ...state,
+    list: {
+      ...state.list,
+      landscapes: state.list.landscapes.map(landscape => {
+        if (landscape.slug === slug) {
+          return valueGenerator(landscape);
+        }
+        return landscape;
+      }),
+    },
+  };
+};

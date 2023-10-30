@@ -15,10 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-import {
-  extractAccountMembership,
-  extractMembersInfo,
-} from 'terraso-client-shared/memberships/membershipsUtils';
+import { extractMembersInfo } from 'terraso-client-shared/memberships/membershipsUtils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
@@ -82,7 +79,7 @@ export const fetchHomeData = email => {
   `);
   return terrasoApi
     .requestGraphQL(query, { accountEmail: email })
-    .then(response => ({
+    .then(async response => ({
       groups: [
         ..._.getOr([], 'userIndependentGroups.edges', response),
         ..._.getOr([], 'userLandscapeGroups.edges', response),
@@ -93,11 +90,13 @@ export const fetchHomeData = email => {
           ..._.omit(['accountMembership'], group),
           membersInfo: extractMembersInfo(group),
         })),
-      landscapes: _.getOr([], 'landscapeGroups.edges', response)
-        .flatMap(_.getOr([], 'node.associatedLandscapes.edges'))
-        .map(_.get('node.landscape'))
-        .filter(landscape => landscape)
-        .map(extractLandscape),
+      landscapes: await Promise.all(
+        _.getOr([], 'landscapeGroups.edges', response)
+          .flatMap(_.getOr([], 'node.associatedLandscapes.edges'))
+          .map(_.get('node.landscape'))
+          .filter(landscape => landscape)
+          .map(landscape => extractLandscape(landscape, false))
+      ),
       storyMaps: _.getOr([], 'storyMaps.edges', response)
         .map(_.get('node'))
         .sort(_.get('publishedAt'))

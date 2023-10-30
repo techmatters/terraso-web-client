@@ -29,9 +29,9 @@ import {
   Stack,
 } from '@mui/material';
 
+import { useCollaborationContext } from 'collaboration/collaborationContext';
 import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
-import { useGroupContext } from 'group/groupContext';
 import { useSharedData } from 'sharedData/sharedDataHooks';
 
 import SharedDataEntryBase, { ICON_SIZE } from './SharedDataEntryBase';
@@ -42,7 +42,7 @@ const StackRow = props => (
 );
 
 const Visualizations = props => {
-  const { baseOwnerUrl } = useGroupContext();
+  const { baseOwnerUrl } = useCollaborationContext();
   const { i18n, t } = useTranslation();
   const { file } = props;
   if (_.isEmpty(file.visualizations)) {

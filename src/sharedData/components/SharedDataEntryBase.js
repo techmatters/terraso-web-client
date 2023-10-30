@@ -23,12 +23,12 @@ import { Grid, ListItem, Stack, Typography } from '@mui/material';
 
 import { daysSince } from 'timeUtils';
 
+import { useCollaborationContext } from 'collaboration/collaborationContext';
 import ConfirmButton from 'common/components/ConfirmButton';
 import EditableText from 'common/components/EditableText';
 import { formatDate } from 'localization/utils';
 import { useAnalytics } from 'monitoring/analytics';
 import Restricted from 'permissions/components/Restricted';
-import { useGroupContext } from 'group/groupContext';
 import {
   deleteSharedData,
   resetProcessing,
@@ -45,7 +45,7 @@ const StackRow = props => (
 
 const SharedDataEntryBase = props => {
   const { i18n, t } = useTranslation();
-  const { group, owner, updateOwner, entityType } = useGroupContext();
+  const { owner, entityType, updateOwner } = useCollaborationContext();
   const {
     dataEntry,
     children,
@@ -63,30 +63,20 @@ const SharedDataEntryBase = props => {
   const { trackEvent } = useAnalytics();
 
   const onConfirm = useCallback(() => {
-    dispatch(deleteSharedData({ groupSlug: group.slug, dataEntry })).then(
-      data => {
-        const success = _.get('meta.requestStatus', data) === 'fulfilled';
-        if (success) {
-          updateOwner();
-          trackEvent('dataEntry.delete', {
-            props: {
-              [entityType]: owner.slug,
-              durationDays: daysSince(dataEntry.createdAt),
-            },
-          });
-        }
-        dispatch(resetProcessing(dataEntry.id));
+    dispatch(deleteSharedData({ dataEntry })).then(data => {
+      const success = _.get('meta.requestStatus', data) === 'fulfilled';
+      if (success) {
+        updateOwner();
+        trackEvent('dataEntry.delete', {
+          props: {
+            [entityType]: owner.slug,
+            durationDays: daysSince(dataEntry.createdAt),
+          },
+        });
       }
-    );
-  }, [
-    dataEntry,
-    dispatch,
-    group.slug,
-    owner.slug,
-    trackEvent,
-    updateOwner,
-    entityType,
-  ]);
+      dispatch(resetProcessing(dataEntry.id));
+    });
+  }, [dataEntry, dispatch, owner.slug, trackEvent, updateOwner, entityType]);
 
   const onUpdate = useCallback(
     field => value => {
@@ -123,8 +113,8 @@ const SharedDataEntryBase = props => {
   );
 
   const permissionsResource = useMemo(
-    () => ({ group, dataEntry }),
-    [dataEntry, group]
+    () => ({ owner, dataEntry }),
+    [dataEntry, owner]
   );
 
   return (
@@ -223,8 +213,8 @@ const SharedDataEntryBase = props => {
               />
             </ConfirmButton>
           </Restricted>
-          <Restricted permission="sharedData.download" resource={group}>
-            <DownloadComponent group={group} dataEntry={dataEntry} />
+          <Restricted permission="sharedData.download" resource={owner}>
+            <DownloadComponent dataEntry={dataEntry} />
           </Restricted>
         </Grid>
         <Grid item xs={1} order={{ xs: 9 }} display={{ md: 'none' }} />

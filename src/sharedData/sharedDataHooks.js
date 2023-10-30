@@ -16,12 +16,12 @@
  */
 import { useCallback } from 'react';
 
+import { useCollaborationContext } from 'collaboration/collaborationContext';
 import { useAnalytics } from 'monitoring/analytics';
-import { useGroupContext } from 'group/groupContext';
 
 export const useSharedData = () => {
   const { trackEvent } = useAnalytics();
-  const { owner, entityType } = useGroupContext();
+  const { owner, entityType } = useCollaborationContext();
 
   const downloadFile = useCallback(
     file => {

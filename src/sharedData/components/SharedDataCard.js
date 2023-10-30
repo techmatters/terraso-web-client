@@ -29,9 +29,9 @@ import {
   Typography,
 } from '@mui/material';
 
+import { useCollaborationContext } from 'collaboration/collaborationContext';
 import List from 'common/components/List';
 import { ScrollTo } from 'navigation/scrollTo';
-import { useGroupContext } from 'group/groupContext';
 
 import SharedDataEntryFile from './SharedDataEntryFile';
 import SharedDataEntryLink from './SharedDataEntryLink';
@@ -39,8 +39,8 @@ import SharedDataEntryLink from './SharedDataEntryLink';
 const SharedFilesCard = props => {
   const { t } = useTranslation();
   const { onUploadClick, onAddVisualizationClick } = props;
-  const { group, entityTypeLocalized } = useGroupContext();
-  const { allowed } = usePermission('group.viewFiles', group);
+  const { owner, entityTypeLocalized } = useCollaborationContext();
+  const { allowed } = usePermission(`sharedData.viewFiles`, owner);
   const { data: sharedFiles, fetching } = useSelector(_.get('sharedData.list'));
   const hasFiles = !_.isEmpty(sharedFiles);
 
@@ -81,13 +81,11 @@ const SharedFilesCard = props => {
                   <SharedDataEntryLink
                     key={dataEntry.id}
                     dataEntry={dataEntry}
-                    group={group}
                   />
                 ) : (
                   <SharedDataEntryFile
                     key={dataEntry.id}
                     dataEntry={dataEntry}
-                    group={group}
                   />
                 )
               )}

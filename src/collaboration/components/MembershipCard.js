@@ -31,12 +31,14 @@ import {
   Typography,
 } from '@mui/material';
 
+import {
+  MEMBERSHIP_STATUS_PENDING,
+  MEMBERSHIP_TYPE_CLOSED,
+} from 'collaboration/collaborationConstants';
+import { useCollaborationContext } from 'collaboration/collaborationContext';
 import ExternalLink from 'common/components/ExternalLink';
-import Restricted from 'permissions/components/Restricted';
 import AccountAvatar from 'account/components/AccountAvatar';
 
-import { useCollaborationContext } from 'collaboration/collaborationContext';
-import { MEMBERSHIP_STATUS_PENDING, MEMBERSHIP_TYPE_CLOSED } from 'collaboration/collaborationConstants';
 import MembershipJoinLeaveButton from './MembershipJoinLeaveButton';
 import MembershipPendingWarning from './MembershipPendingWarning';
 
@@ -53,7 +55,8 @@ const Loader = () => {
 
 const Content = props => {
   const { t } = useTranslation();
-  const { owner, membershipsInfo, accountMembership } = useCollaborationContext();
+  const { owner, membershipsInfo, accountMembership } =
+    useCollaborationContext();
   const { user, fetching, onViewMembers } = props;
 
   const membersSample = _.getOr([], 'membershipsSample', membershipsInfo);
@@ -64,9 +67,10 @@ const Content = props => {
   }
 
   const pendingRequest =
-  accountMembership &&
-  accountMembership.membershipStatus === MEMBERSHIP_STATUS_PENDING;
-  const closedGroup = membershipsInfo?.membershipType === MEMBERSHIP_TYPE_CLOSED;
+    accountMembership &&
+    accountMembership.membershipStatus === MEMBERSHIP_STATUS_PENDING;
+  const closedGroup =
+    membershipsInfo?.membershipType === MEMBERSHIP_TYPE_CLOSED;
 
   if (pendingRequest) {
     return (
@@ -137,7 +141,8 @@ const Content = props => {
 const MembershipCard = props => {
   const { t } = useTranslation();
   const { membershipsInfo } = useCollaborationContext();
-  const { onViewMembers, InfoComponent, fetching, allowedToManageMembers } = props;
+  const { onViewMembers, InfoComponent, fetching, allowedToManageMembers } =
+    props;
   const { data: user } = useSelector(_.get('account.currentUser'));
 
   return (
@@ -159,36 +164,30 @@ const MembershipCard = props => {
           </Typography>
         }
       />
-      <Content
-        user={user}
-        fetching={fetching}
-        onViewMembers={onViewMembers}
-      />
+      <Content user={user} fetching={fetching} onViewMembers={onViewMembers} />
       {fetching || !user ? null : (
         <CardActions sx={{ display: 'block', paddingBottom: '24px' }}>
           {allowedToManageMembers ? (
             <Button variant="outlined" onClick={onViewMembers}>
               {t('group.membership_card_manage_members')}
             </Button>
-
-          ): (
-              <>
-                <MembershipJoinLeaveButton />
-                {InfoComponent && <InfoComponent />}
-              </>
-
+          ) : (
+            <>
+              <MembershipJoinLeaveButton />
+              {InfoComponent && <InfoComponent />}
+            </>
           )}
         </CardActions>
       )}
-        {allowedToManageMembers && membershipsInfo.pendingCount > 0 && (
-          <CardContent>
-            <MembershipPendingWarning
-              link
-              count={membershipsInfo.pendingCount}
-              onPendingClick={onViewMembers}
-            />
-          </CardContent>
-        )}
+      {allowedToManageMembers && membershipsInfo.pendingCount > 0 && (
+        <CardContent>
+          <MembershipPendingWarning
+            link
+            count={membershipsInfo.pendingCount}
+            onPendingClick={onViewMembers}
+          />
+        </CardContent>
+      )}
     </Card>
   );
 };

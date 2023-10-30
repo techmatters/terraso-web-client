@@ -23,15 +23,15 @@ import {
 } from 'group/membership/components/groupMembershipConstants';
 import { MEMBERSHIP_ROLE_EDITOR } from 'storyMap/storyMapConstants';
 
-const getAccountMembership = group =>
+const getAccountMembership = owner =>
   _.getOr(
-    _.get('membersInfo.accountMembership', group),
+    _.get('membersInfo.accountMembership', owner),
     'accountMembership',
-    group
+    owner
   );
 
-const isApprovedMember = group => {
-  const accountMembership = getAccountMembership(group);
+const isApprovedMember = owner => {
+  const accountMembership = getAccountMembership(owner);
   if (!accountMembership || !accountMembership.userRole) {
     return false;
   }
@@ -42,21 +42,21 @@ const isApprovedMember = group => {
   return isApproved;
 };
 
-const hasRole = ({ group, role }) => {
-  const isMember = isApprovedMember(group);
+const hasRole = ({ owner, role }) => {
+  const isMember = isApprovedMember(owner);
   if (!isMember) {
     return false;
   }
-  const accountMembership = getAccountMembership(group);
+  const accountMembership = getAccountMembership(owner);
   const hasRole = accountMembership.userRole === role;
   return hasRole;
 };
 
 const isAllowedToEditSharedData = ({
-  resource: { group, dataEntry },
+  resource: { owner, dataEntry },
   user,
 }) => {
-  const isManager = hasRole({ group, role: ROLE_MANAGER });
+  const isManager = hasRole({ owner, role: ROLE_MANAGER });
   const isOwner = _.get('createdBy.id', dataEntry) === _.get('id', user);
   return Promise.resolve(isManager || isOwner);
 };
@@ -69,15 +69,14 @@ const isAllowedToDeleteVisualization = ({
   resource: { owner, visualizationConfig },
   user,
 }) => {
-  const group = owner.defaultGroup || owner;
-  const isManager = hasRole({ group, role: ROLE_MANAGER });
+  const isManager = hasRole({ owner, role: ROLE_MANAGER });
   const isOwner =
     _.get('createdBy.id', visualizationConfig) === _.get('id', user);
   return Promise.resolve(isManager || isOwner);
 };
 
-const isAllowedToDownloadSharedData = ({ resource: group }) => {
-  const isMember = isApprovedMember(group);
+const isAllowedToDownloadSharedData = ({ resource: owner }) => {
+  const isMember = isApprovedMember(owner);
   return Promise.resolve(isMember);
 };
 
@@ -86,8 +85,8 @@ const isAllowedToAddSharedData = ({ resource: group }) => {
   return Promise.resolve(isMember);
 };
 
-const isAllowedToChangeGroup = ({ resource: group }) => {
-  const isManager = hasRole({ group, role: ROLE_MANAGER });
+const isAllowedToChangeGroup = ({ resource: owner }) => {
+  const isManager = hasRole({ owner, role: ROLE_MANAGER });
   return Promise.resolve(isManager);
 };
 
@@ -102,19 +101,19 @@ const isAllowedToViewGroupMembers = ({ resource: group }) => {
   return Promise.resolve(isMember);
 };
 
-const isAllowedToManageGroupMembers = ({ resource: group }) => {
-  const isManager = hasRole({ group, role: ROLE_MANAGER });
+const isAllowedToManageGroupMembers = ({ resource: owner }) => {
+  const isManager = hasRole({ owner, role: ROLE_MANAGER });
   return Promise.resolve(isManager);
 };
 
-const isAllowedToViewGroupSharedData = ({ resource: group }) => {
-  const isMember = isApprovedMember(group);
+const isAllowedToViewSharedDataFiles = ({ resource: owner }) => {
+  const isMember = isApprovedMember(owner);
   return Promise.resolve(isMember);
 };
 
 const isAllowedToChangeLandscape = ({ resource: landscape }) => {
   const isManager = hasRole({
-    group: landscape.defaultGroup,
+    owner: landscape,
     role: ROLE_MANAGER,
   });
   return Promise.resolve(isManager);
@@ -151,12 +150,12 @@ const rules = {
   'group.change': isAllowedToChangeGroup,
   'group.manageMembers': isAllowedToManageGroupMembers,
   'group.viewMembers': isAllowedToViewGroupMembers,
-  'group.viewFiles': isAllowedToViewGroupSharedData,
   'landscape.change': isAllowedToChangeLandscape,
   'sharedData.add': isAllowedToAddSharedData,
   'sharedData.download': isAllowedToDownloadSharedData,
   'sharedData.edit': isAllowedToEditSharedData,
   'sharedData.delete': isAllowedToDeleteSharedData,
+  'sharedData.viewFiles': isAllowedToViewSharedDataFiles,
   'visualization.delete': isAllowedToDeleteVisualization,
   'storyMap.change': isAllowedToChangeStoryMap,
   'storyMap.delete': isAllowedToDeleteStoryMap,

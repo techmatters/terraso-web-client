@@ -20,10 +20,15 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import { useFetchData } from 'terraso-client-shared/store/utils';
+import { useDispatch } from 'terrasoApi/store';
 import { Button, Card, Link, Stack, Typography } from '@mui/material';
 
 import { withProps } from 'react-hoc';
 
+import { CollaborationContextProvider } from 'collaboration/collaborationContext';
+import MemberJoin from 'collaboration/components/MemberJoin';
+import MembershipListCount from 'collaboration/components/MembershipCount';
+import MembershipJoinLeaveButton from 'collaboration/components/MembershipJoinLeaveButton';
 import ExternalLink from 'common/components/ExternalLink';
 import TableResponsive from 'common/components/TableResponsive';
 import { countryNameForCode } from 'common/countries';
@@ -31,14 +36,14 @@ import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
-import { fetchLandscapes } from 'landscape/landscapeSlice';
+import {
+  fetchLandscapes,
+  joinLandscapeFromList,
+  leaveLandscapeFromList,
+} from 'landscape/landscapeSlice';
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 
 import LandscapeListMap from './LandscapeListMap';
-import MembershipListCount from 'collaboration/components/MembershipCount';
-import { CollaborationContextProvider } from 'collaboration/collaborationContext';
-import MembershipJoinLeaveButton from 'collaboration/components/MembershipJoinLeaveButton';
-import MemberJoin from 'collaboration/components/MemberJoin';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.list_leave_button',
@@ -49,17 +54,38 @@ const MemberJoinButton = withProps(MemberJoin, {
   ariaLabel: 'landscape.list_join_label',
 });
 
-const MembershipButton = ({ landscape, tabIndex }) => (
-  <CollaborationContextProvider
-    owner={landscape}
-    accountMembership={landscape.accountMembership}
-    membershipsInfo={landscape.membershipsInfo}
-    MemberJoinButton={MemberJoinButton}
-    MemberLeaveButton={MemberLeaveButton}
-  >
-    <MembershipJoinLeaveButton tabIndex={tabIndex} />
-  </CollaborationContextProvider>
-);
+const MembershipButton = ({ landscape, tabIndex }) => {
+  const dispatch = useDispatch();
+  const onMemberLeave = membership => {
+    dispatch(
+      leaveLandscapeFromList({
+        membershipId: membership.membershipId,
+        landscapeSlug: landscape.slug,
+      })
+    );
+  };
+
+  const onMemberJoin = () => {
+    dispatch(
+      joinLandscapeFromList({
+        landscapeSlug: landscape.slug,
+      })
+    );
+  };
+  return (
+    <CollaborationContextProvider
+      owner={landscape}
+      accountMembership={landscape.accountMembership}
+      membershipsInfo={landscape.membershipsInfo}
+      MemberJoinButton={MemberJoinButton}
+      MemberLeaveButton={MemberLeaveButton}
+      onMemberJoin={onMemberJoin}
+      onMemberRemove={onMemberLeave}
+    >
+      <MembershipJoinLeaveButton tabIndex={tabIndex} />
+    </CollaborationContextProvider>
+  );
+};
 
 const LandscapeList = () => {
   const { t } = useTranslation();

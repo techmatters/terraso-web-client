@@ -81,6 +81,10 @@ const Clusters = props => {
       return;
     }
 
+    if (map.getSource('landscapes')) {
+      return;
+    }
+
     const source = {
       type: 'geojson',
       data: {

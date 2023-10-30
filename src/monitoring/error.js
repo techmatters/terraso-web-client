@@ -21,8 +21,6 @@ import logger from 'terraso-client-shared/monitoring/logger';
 import UnexpectedError from 'common/components/UnexpectedError';
 
 const errorHandler = error => {
-  console.log('JOSEEEEEEEEEEEE');
-  console.log(error);
   logger.error(error.message, error.stack);
 };
 

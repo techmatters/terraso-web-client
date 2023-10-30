@@ -14,10 +14,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React from 'react';
-import _ from 'lodash/fp';
+import React, { useCallback, useMemo } from 'react';
+
+import {
+  MEMBERSHIP_STATUS_PENDING,
+  MEMBERSHIP_TYPE_CLOSED,
+} from 'collaboration/collaborationConstants';
 import { useCollaborationContext } from 'collaboration/collaborationContext';
-import { MEMBERSHIP_STATUS_PENDING, MEMBERSHIP_TYPE_CLOSED } from 'collaboration/collaborationConstants';
 
 const MembershipJoinLeaveButton = props => {
   const {
@@ -33,40 +36,55 @@ const MembershipJoinLeaveButton = props => {
   } = useCollaborationContext();
   const { tabIndex } = props;
 
+  const onMemberRemoveWrapper = useCallback(() => {
+    onMemberRemove(accountMembership);
+  }, [onMemberRemove, accountMembership]);
+
+  const onMemberJoinWrapper = useCallback(() => {
+    onMemberJoin(owner);
+  }, [onMemberJoin, owner]);
+
+  const is_member = useMemo(
+    () => accountMembership?.membershipId,
+    [accountMembership]
+  );
+
   if (
-    accountMembership &&
+    is_member &&
     accountMembership.membershipStatus === MEMBERSHIP_STATUS_PENDING
   ) {
     return (
       <MemberRequestCancelButton
-        onConfirm={onMemberRemove}
+        onConfirm={onMemberRemoveWrapper}
         owner={owner}
         buttonProps={{ tabIndex }}
+        loading={accountMembership?.fetching}
       />
     );
   }
-  if (accountMembership) {
+  if (is_member) {
     return (
       <MemberLeaveButton
-        onConfirm={onMemberRemove}
+        onConfirm={onMemberRemoveWrapper}
         owner={owner}
         buttonProps={{ tabIndex }}
+        loading={accountMembership?.fetching}
       />
     );
   }
   if (membershipsInfo?.membershipType === MEMBERSHIP_TYPE_CLOSED) {
     return (
       <MemberRequestJoinButton
-        onJoin={onMemberJoin}
-        // loading={loading}
+        onJoin={onMemberJoinWrapper}
+        loading={accountMembership?.fetching}
         buttonProps={{ tabIndex }}
       />
     );
   }
   return (
     <MemberJoinButton
-      onJoin={onMemberJoin}
-      // loading={loading}
+      onJoin={onMemberJoinWrapper}
+      loading={accountMembership?.fetching}
       buttonProps={{ tabIndex }}
     />
   );

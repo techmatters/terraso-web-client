@@ -27,9 +27,9 @@ import { Typography } from '@mui/material';
 import { countryNameForCode } from 'common/countries';
 import * as gisService from 'gis/gisService';
 import { normalizeLongitude, parseGeoJson } from 'gis/gisUtils';
+import { extractDataEntries } from 'sharedData/sharedDataUtils';
 
 import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
-import { extractDataEntries } from 'sharedData/sharedDataUtils';
 
 // Returns bounding box containing the defined areaPolygon data or
 // the bounding box requested from the landsace.location data
@@ -134,9 +134,9 @@ export const extractAffiliatedGroups = landscape =>
 export const extractDevelopmentStrategy = landscape =>
   _.get('associatedDevelopmentStrategy.edges[0].node', landscape);
 
-export const extractLandscape = landscape => {
+export const extractLandscape = async (landscape, useLocationApi) => {
   const result = {
-    ..._.omit('membershipList',landscape),
+    ..._.omit('membershipList', landscape),
     accountMembership: extractAccountMembership(landscape.membershipList),
     membershipsInfo: extractMembershipsInfo(landscape.membershipList),
     areaPolygon: landscape.areaPolygon
@@ -147,7 +147,7 @@ export const extractLandscape = landscape => {
     dataEntries: extractDataEntries(landscape),
   };
 
-  if (result.areaPolygon || !result.location) {
+  if (!useLocationApi) {
     return result;
   }
 

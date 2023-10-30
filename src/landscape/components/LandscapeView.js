@@ -39,6 +39,9 @@ import {
 
 import { withProps } from 'react-hoc';
 
+import { CollaborationContextProvider } from 'collaboration/collaborationContext';
+import MemberJoin from 'collaboration/components/MemberJoin';
+import MembershipCard from 'collaboration/components/MembershipCard';
 import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
 import RouterButton from 'common/components/RouterButton';
@@ -54,6 +57,8 @@ import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import Restricted from 'permissions/components/Restricted';
 import {
   fetchLandscapeView,
+  joinLandscape,
+  leaveLandscape,
   refreshLandscapeView,
 } from 'landscape/landscapeSlice';
 import { isBoundaryPin } from 'landscape/landscapeUtils';
@@ -64,9 +69,6 @@ import BaseMap from './LandscapeMap';
 import { Partnership } from './LandscapeProfile/AffiliationCard';
 
 import theme from 'theme';
-import MemberJoin from 'collaboration/components/MemberJoin';
-import { CollaborationContextProvider } from 'collaboration/collaborationContext';
-import MembershipCard from 'collaboration/components/MembershipCard';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.view_leave_label',
@@ -274,6 +276,23 @@ const LandscapeView = () => {
     setRefreshing(refreshing);
   }, [refreshing, setRefreshing]);
 
+  const onMemberLeave = membership => {
+    dispatch(
+      leaveLandscape({
+        membershipId: membership.membershipId,
+        landscapeSlug: slug,
+      })
+    );
+  };
+
+  const onMemberJoin = () => {
+    dispatch(
+      joinLandscape({
+        landscapeSlug: slug,
+      })
+    );
+  };
+
   if (fetching) {
     return <PageLoader />;
   }
@@ -291,7 +310,9 @@ const LandscapeView = () => {
       accountMembership={landscape.accountMembership}
       membershipsInfo={landscape.membershipsInfo}
       MemberJoinButton={MemberJoinButton}
+      onMemberJoin={onMemberJoin}
       MemberLeaveButton={MemberLeaveButton}
+      onMemberRemove={onMemberLeave}
       updateOwner={updateLandscape}
     >
       <PageContainer>
