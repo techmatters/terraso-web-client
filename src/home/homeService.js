@@ -25,22 +25,11 @@ import { extractStoryMap } from 'storyMap/storyMapUtils';
 export const fetchHomeData = email => {
   const query = graphql(`
     query home($accountEmail: String!) {
-      landscapeGroups: groups(
-        memberships_Email: $accountEmail
-        associatedLandscapes_IsDefaultLandscapeGroup: true
-      ) {
+      landscapes(membershipList_Memberships_User_Email: $accountEmail) {
         edges {
           node {
-            associatedLandscapes {
-              edges {
-                node {
-                  landscape {
-                    ...landscapeFields
-                    ...landscapeMembershipList
-                  }
-                }
-              }
-            }
+            ...landscapeFields
+            ...landscapeMembershipList
           }
         }
       }
@@ -91,9 +80,8 @@ export const fetchHomeData = email => {
           membersInfo: extractMembersInfo(group),
         })),
       landscapes: await Promise.all(
-        _.getOr([], 'landscapeGroups.edges', response)
-          .flatMap(_.getOr([], 'node.associatedLandscapes.edges'))
-          .map(_.get('node.landscape'))
+        _.getOr([], 'landscapes.edges', response)
+          .map(_.get('node'))
           .filter(landscape => landscape)
           .map(landscape => extractLandscape(landscape, false))
       ),

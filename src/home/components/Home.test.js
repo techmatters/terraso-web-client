@@ -72,42 +72,30 @@ test('Home: Display landscapes', async () => {
       groups: {
         edges: [],
       },
-      landscapeGroups: {
+      landscapes: {
         edges: [
           {
             node: {
-              associatedLandscapes: {
-                edges: [
-                  {
-                    node: {
-                      landscape: {
-                        id: 'id-1',
-                        slug: 'landsacpe-1',
-                        name: 'Landscape 1',
-                        membershipList: _.set(
-                          'accountMembership.userRole',
-                          'MEMBER',
-                          {}
-                        ),
-                      },
-                    },
-                  },
-                  {
-                    node: {
-                      landscape: {
-                        id: 'id-2',
-                        slug: 'landscape-2',
-                        name: 'Landscape 2',
-                        membershipList: _.set(
-                          'accountMembership.userRole',
-                          'MANAGER',
-                          {}
-                        ),
-                      },
-                    },
-                  },
-                ],
-              },
+                id: 'id-1',
+                slug: 'landsacpe-1',
+                name: 'Landscape 1',
+                membershipList: _.set(
+                  'accountMembership.userRole',
+                  'MEMBER',
+                  {}
+                ),
+            },
+          },
+          {
+            node: {
+                id: 'id-2',
+                slug: 'landscape-2',
+                name: 'Landscape 2',
+                membershipList: _.set(
+                  'accountMembership.userRole',
+                  'MANAGER',
+                  {}
+                ),
             },
           },
         ],
