@@ -16,7 +16,6 @@
  */
 import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
-import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 import { useSearchParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
