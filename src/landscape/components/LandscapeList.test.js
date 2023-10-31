@@ -129,7 +129,7 @@ const baseListTest = async () => {
           membershipsCount: membersCounts[landscapeIndex],
           accountMembership: isMember[landscapeIndex]
             ? {
-                userRole: 'MEMBER',
+                userRole: 'member',
                 id: 'membership-id',
               }
             : null,
@@ -358,7 +358,7 @@ test('LandscapeList: Display list (small screen)', async () => {
           membershipsCount: membersCounts[landscapeIndex],
           accountMembership: isMember[landscapeIndex]
             ? {
-                userRole: 'MEMBER',
+                userRole: 'member',
                 id: 'membership-id',
               }
             : null,

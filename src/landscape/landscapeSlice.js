@@ -45,7 +45,7 @@ const initialState = {
     landscape: null,
     success: false,
   },
-  membersLandscape: {
+  members: {
     data: null,
     fetching: true,
   },
@@ -121,7 +121,7 @@ export const deleteProfileImage = createAsyncThunk(
 );
 export const leaveLandscape = createAsyncThunk(
   'landscape/leaveLandscape',
-  landscapeService.removeMember
+  landscapeService.leaveLandscape
 );
 export const joinLandscape = createAsyncThunk(
   'landscape/joinLandscape',
@@ -134,6 +134,14 @@ export const leaveLandscapeFromList = createAsyncThunk(
 export const joinLandscapeFromList = createAsyncThunk(
   'landscape/joinLandscapeFromList',
   landscapeService.joinLandscapeFromList
+);
+export const changeMemberRole = createAsyncThunk(
+  'landscape/changeMemberRole',
+  landscapeService.changeMemberRole
+);
+export const removeMember = createAsyncThunk(
+  'landscape/removeMember',
+  landscapeService.removeMember
 );
 
 const updateView = (state, action) => ({
@@ -261,12 +269,12 @@ const landscapeSlice = createSlice({
 
     builder.addCase(
       fetchLandscapeForMembers.pending,
-      _.set('membersLandscape', initialState.membersLandscape)
+      _.set('members', initialState.members)
     );
 
     builder.addCase(fetchLandscapeForMembers.fulfilled, (state, action) =>
       _.set(
-        'membersLandscape',
+        'members',
         {
           fetching: false,
           data: action.payload,
@@ -277,7 +285,7 @@ const landscapeSlice = createSlice({
 
     builder.addCase(
       fetchLandscapeForMembers.rejected,
-      _.set('membersLandscape', initialState.membersLandscape)
+      _.set('members', initialState.members)
     );
 
     builder.addCase(saveLandscape.pending, state => ({
@@ -437,6 +445,46 @@ const landscapeSlice = createSlice({
         _.set('accountMembership.fetching', false)
       );
     });
+
+    builder.addCase(changeMemberRole.pending, (state, action) => {
+      return updateMemberItem(
+        state,
+        action.meta.arg.email,
+        _.set('fetching', true)
+      );
+    });
+    builder.addCase(changeMemberRole.fulfilled, (state, action) => {
+      return updateMemberItem(
+        state,
+        action.meta.arg.email,
+        () => action.payload
+      );
+    });
+    builder.addCase(changeMemberRole.rejected, (state, action) => {
+      return updateMemberItem(
+        state,
+        action.meta.arg.email,
+        _.set('fetching', false)
+      );
+    });
+
+    builder.addCase(removeMember.pending, (state, action) => {
+      return updateMemberItem(
+        state,
+        action.meta.arg.email,
+        _.set('fetching', true)
+      );
+    });
+    builder.addCase(removeMember.fulfilled, (state, action) => {
+      return updateMemberItem(state, action.meta.arg.email, () => null);
+    });
+    builder.addCase(removeMember.rejected, (state, action) => {
+      return updateMemberItem(
+        state,
+        action.meta.arg.email,
+        _.set('fetching', false)
+      );
+    });
   },
 });
 
@@ -465,4 +513,19 @@ const updateLandscapeListItem = (state, slug, valueGenerator) => {
       }),
     },
   };
+};
+
+const updateMemberItem = (state, email, valueGenerator) => {
+  return _.set(
+    'members.data.membershipsInfo.membershipsSample',
+    state.members.data.membershipsInfo.membershipsSample
+      .map(membership => {
+        if (membership.email === email) {
+          return valueGenerator(membership);
+        }
+        return membership;
+      })
+      .filter(membership => membership),
+    state
+  );
 };

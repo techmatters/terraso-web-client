@@ -27,3 +27,8 @@ export const ALL_PARTNERSHIP_STATUS = {
 
 export const MEMBERSHIP_ROLE_MEMBER = 'member';
 export const MEMBERSHIP_ROLE_MANAGER = 'manager';
+
+export const ALL_MEMBERSHIP_ROLES = [
+  MEMBERSHIP_ROLE_MEMBER,
+  MEMBERSHIP_ROLE_MANAGER,
+];

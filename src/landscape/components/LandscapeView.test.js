@@ -86,7 +86,7 @@ beforeEach(() => {
 const baseViewTest = async (
   accountMembership = {
     id: 'account-membership-id',
-    userRole: 'MEMBER',
+    userRole: 'member',
     membershipStatus: 'APPROVED',
   }
 ) => {
@@ -365,7 +365,7 @@ test('LandscapeView: Refresh profile on join', async () => {
         membershipList: {
           accountMembership: {
             id: 'account-membership-id',
-            userRole: 'MEMBER',
+            userRole: 'member',
             membershipStatus: 'APPROVED',
           },
           membershipsCount: 6,
