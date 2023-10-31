@@ -68,7 +68,7 @@ test('LandscapeMembers: Empty', async () => {
         'landscapes.edges[0].node',
         {
           name: 'Landscape Name',
-          defaultGroup: { membershipsCount: 0 },
+          membershipList: { membershipsCount: 0 },
         },
         {}
       )
@@ -117,7 +117,7 @@ test('LandscapeMembers: Display list', async () => {
         },
       ],
     },
-    defaultGroup: {},
+    membershipList: {},
   };
 
   terrasoApi.requestGraphQL
@@ -202,7 +202,7 @@ test('LandscapeMembers: Display list (small)', async () => {
         },
       ],
     },
-    defaultGroup: {},
+    membershipList: {},
   };
 
   terrasoApi.requestGraphQL
@@ -251,9 +251,7 @@ test('LandscapeMembers: Display list manager', async () => {
       ),
   });
 
-  const defaultGroup = {
-    slug: 'test-group-slug',
-    name: 'Group Name',
+  const membershipList = {
     memberships: generateMemberhips(3, 57),
     accountMembership: { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
   };
@@ -265,7 +263,7 @@ test('LandscapeMembers: Display list manager', async () => {
     description: 'Landscape Description',
     website: 'https://www.landscape.org',
     location: 'Ecuador, Quito',
-    defaultGroup,
+    membershipList,
   };
 
   terrasoApi.requestGraphQL
@@ -276,10 +274,10 @@ test('LandscapeMembers: Display list manager', async () => {
       Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
     )
     .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', defaultGroup, {}))
+      Promise.resolve(_.set('groups.edges[0].node', membershipList, {}))
     )
     .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', defaultGroup, {}))
+      Promise.resolve(_.set('groups.edges[0].node', membershipList, {}))
     );
   await setup();
 
@@ -329,9 +327,7 @@ test('LandscapeMembers: Manager actions', async () => {
       ),
   });
 
-  const defaultGroup = {
-    slug: 'test-group-slug',
-    name: 'Group Name',
+  const membershipList = {
     memberships: generateMemberhips(3, 3),
     accountMembership: { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
   };
@@ -343,7 +339,7 @@ test('LandscapeMembers: Manager actions', async () => {
     description: 'Landscape Description',
     website: 'https://www.landscape.org',
     location: 'Ecuador, Quito',
-    defaultGroup,
+    membershipList,
   };
 
   terrasoApi.requestGraphQL.mockImplementation(query => {
@@ -352,12 +348,13 @@ test('LandscapeMembers: Manager actions', async () => {
       return Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}));
     }
     if (trimmedQuery.startsWith('query group')) {
-      return Promise.resolve(_.set('groups.edges[0].node', defaultGroup, {}));
+      return Promise.resolve(_.set('groups.edges[0].node', membershipList, {}));
     }
+    // TODO
     if (trimmedQuery.startsWith('mutation updateMembership')) {
       return Promise.resolve(
         _.flow(
-          _.set('updateMembership.membership.group', defaultGroup),
+          _.set('updateMembership.membership.group', membershipList),
           _.set(
             'updateMembership.membership.group.memberships.edges[2].node.userRole',
             'MANAGER'
@@ -372,10 +369,10 @@ test('LandscapeMembers: Manager actions', async () => {
     if (trimmedQuery.startsWith('mutation deleteMembership')) {
       return Promise.resolve(
         _.flow(
-          _.set('deleteMembership.membership.group', defaultGroup),
+          _.set('deleteMembership.membership.group', membershipList),
           _.set(
             'deleteMembership.membership.group.memberships.edges',
-            defaultGroup.memberships.edges.slice(0, -1)
+            membershipList.memberships.edges.slice(0, -1)
           )
         )({})
       );
