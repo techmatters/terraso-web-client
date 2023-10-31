@@ -36,7 +36,10 @@ const StoryMapInvite = () => {
   const { trackEvent } = useAnalytics();
   const [searchParams] = useSearchParams();
   const token = useMemo(() => searchParams.get('token'), [searchParams]);
-  const decodedToken = useMemo(() => (token ? jwtDecode(token) : null), [token]);
+  const decodedToken = useMemo(
+    () => (token ? jwtDecode(token) : null),
+    [token]
+  );
   const membershipId = useMemo(() => decodedToken.membershipId, [decodedToken]);
   const { processing, success, error, storyMap } =
     useSelector(state => state.storyMap.memberships.approve[membershipId]) ||
