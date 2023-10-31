@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { useCallback, useEffect, useMemo } from 'react';
-import jwt from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -36,7 +36,10 @@ const StoryMapInvite = () => {
   const { trackEvent } = useAnalytics();
   const [searchParams] = useSearchParams();
   const token = useMemo(() => searchParams.get('token'), [searchParams]);
-  const decodedToken = useMemo(() => (token ? jwt(token) : null), [token]);
+  const decodedToken = useMemo(
+    () => (token ? jwtDecode(token) : null),
+    [token]
+  );
   const membershipId = useMemo(() => decodedToken.membershipId, [decodedToken]);
   const { processing, success, error, storyMap } =
     useSelector(state => state.storyMap.memberships.approve[membershipId]) ||
