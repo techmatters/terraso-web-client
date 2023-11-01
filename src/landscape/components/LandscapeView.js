@@ -306,6 +306,7 @@ const LandscapeView = () => {
   return (
     <CollaborationContextProvider
       owner={landscape}
+      entityType="landscape"
       baseOwnerUrl={`/landscapes/${landscape.slug}`}
       accountMembership={landscape.accountMembership}
       membershipsInfo={landscape.membershipsInfo}

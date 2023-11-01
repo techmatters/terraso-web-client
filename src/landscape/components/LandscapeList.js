@@ -75,6 +75,7 @@ const MembershipButton = ({ landscape, tabIndex }) => {
   return (
     <CollaborationContextProvider
       owner={landscape}
+      entityType="landscape"
       accountMembership={landscape.accountMembership}
       membershipsInfo={landscape.membershipsInfo}
       MemberJoinButton={MemberJoinButton}

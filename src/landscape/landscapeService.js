@@ -16,7 +16,6 @@
  */
 import _ from 'lodash/fp';
 import { extractMembership } from 'terraso-client-shared/collaboration/membershipsUtils';
-import { extractMembersInfo } from 'terraso-client-shared/memberships/membershipsUtils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
@@ -132,14 +131,6 @@ export const fetchLandscapeToUpdate = slug => {
     }));
 };
 
-const getDefaultGroup = landscape => {
-  const group = _.get('defaultGroup', landscape);
-  return {
-    ..._.pick(['id', 'slug'], group),
-    membersInfo: extractMembersInfo(group),
-  };
-};
-
 export const fetchLandscapeToView = (slug, { email: accountEmail }) => {
   const query = graphql(`
     query landscapesToView($slug: String!, $accountEmail: String!) {
@@ -181,8 +172,7 @@ export const fetchLandscapeProfile = slug => {
     .then(_.get('landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('not_found'))
     .then(landscape => ({
-      ..._.omit('defaultGroup', landscape),
-      defaultGroup: getDefaultGroup(landscape),
+      ...landscape,
       taxonomyTerms: extractTerms(_.get('taxonomyTerms.edges', landscape)),
       partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
       partnership: extractPartnership(landscape),
@@ -208,10 +198,7 @@ export const fetchLandscapeToUploadSharedData = slug => {
     .requestGraphQL(query, { slug })
     .then(_.get('landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('not_found'))
-    .then(landscape => ({
-      ..._.omit('defaultGroup', landscape),
-      defaultGroup: getDefaultGroup(landscape),
-    }));
+    .then(extractLandscape);
 };
 
 export const fetchLandscapes = () => {

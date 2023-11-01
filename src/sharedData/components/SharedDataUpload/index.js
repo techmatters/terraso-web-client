@@ -22,9 +22,9 @@ import ErrorIcon from '@mui/icons-material/Report';
 import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Button, Paper, Stack, Tab, Typography } from '@mui/material';
 
+import { useCollaborationContext } from 'collaboration/collaborationContext';
 import { useAnalytics } from 'monitoring/analytics';
 import { ILM_OUTPUT_PROP, RESULTS_ANALYSIS_IMPACT } from 'monitoring/ilm';
-import { useGroupContext } from 'group/groupContext';
 import {
   addSharedDataLink,
   resetUploads,
@@ -49,7 +49,7 @@ const SharedDataUpload = props => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
-  const { owner, entityType } = useGroupContext();
+  const { owner, entityType } = useCollaborationContext();
 
   const { targetInput, onCancel, onCompleteSuccess } = props;
 

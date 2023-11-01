@@ -20,12 +20,12 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { CollaborationContextProvider } from 'collaboration/collaborationContext';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-import { GroupContextProvider } from 'group/groupContext';
 import { fetchLandscapeUpload } from 'landscape/landscapeSlice';
 import SharedDataUpload from 'sharedData/components/SharedDataUpload';
 
@@ -65,7 +65,7 @@ const LandscapeSharedDataUpload = () => {
 
   const { loading } = usePermissionRedirect(
     'sharedData.add',
-    landscape?.defaultGroup,
+    landscape,
     useMemo(() => `/landscapes/${landscape?.slug}`, [landscape?.slug])
   );
 
@@ -84,7 +84,7 @@ const LandscapeSharedDataUpload = () => {
           name: landscape.name,
         })}
       />
-      <GroupContextProvider owner={landscape}>
+      <CollaborationContextProvider owner={landscape} entityType="landscape">
         <SharedDataUpload
           onCancel={onCancel}
           onCompleteSuccess={onCompleteSuccess}
@@ -93,7 +93,7 @@ const LandscapeSharedDataUpload = () => {
             targetSlug: slug,
           }}
         />
-      </GroupContextProvider>
+      </CollaborationContextProvider>
     </PageContainer>
   );
 };

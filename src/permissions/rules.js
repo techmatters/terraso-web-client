@@ -81,8 +81,8 @@ const isAllowedToDownloadSharedData = ({ resource: owner }) => {
   return Promise.resolve(isMember);
 };
 
-const isAllowedToAddSharedData = ({ resource: group }) => {
-  const isMember = isApprovedMember(group);
+const isAllowedToAddSharedData = ({ resource: owner }) => {
+  const isMember = isApprovedMember(owner);
   return Promise.resolve(isMember);
 };
 
