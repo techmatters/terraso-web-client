@@ -24,9 +24,8 @@ export const CollaborationContextProvider = props => {
   const { t } = useTranslation();
   const { entityType } = props;
 
-  // TODO - Change localization key root to 'collaboration' instead of 'sharedData'
   const entityTypeLocalized = useMemo(
-    () => t('sharedData.entity_type', { context: entityType }),
+    () => t('collaboration.entity_type', { context: entityType }),
     [entityType, t]
   );
 
