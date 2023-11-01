@@ -47,7 +47,7 @@ export const fetchHomeData = email => {
       }
       userLandscapeGroups: groups(
         memberships_Email: $accountEmail
-        associatedLandscapes_IsDefaultLandscapeGroup: false
+        associatedLandscapes_Isnull: false
       ) {
         edges {
           node {
