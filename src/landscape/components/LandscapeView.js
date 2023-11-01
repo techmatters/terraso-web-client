@@ -69,6 +69,7 @@ import BaseMap from './LandscapeMap';
 import { Partnership } from './LandscapeProfile/AffiliationCard';
 
 import theme from 'theme';
+import { usePermission } from 'permissions';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.view_leave_label',
@@ -235,6 +236,7 @@ const LandscapeView = () => {
     state => state.landscape.view
   );
   const { slug } = useParams();
+  const { allowed: allowedToManageMembers } = usePermission('landscape.manageMembers', landscape);
 
   useDocumentTitle(
     t('landscape.view_document_title', {
@@ -400,7 +402,7 @@ const LandscapeView = () => {
             style={{ display: 'flex', alignItems: 'flex-start' }}
           >
             <MembershipCard
-              // TODO allowedToManageMembers
+              allowedToManageMembers={allowedToManageMembers}
               onViewMembers={() =>
                 navigate(`/landscapes/${landscape.slug}/members`)
               }
