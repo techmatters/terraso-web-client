@@ -229,7 +229,11 @@ const GroupView = () => {
             />
           </Grid>
           <Grid item xs={12} md={12}>
-            <CollaborationContextProvider owner={group} entityType="group">
+            <CollaborationContextProvider
+              owner={group}
+              entityType="group"
+              baseOwnerUrl={`/groups/${group.slug}`}
+            >
               <SharedDataCard
                 onUploadClick={() => navigate(`/groups/${group.slug}/upload`)}
                 onAddVisualizationClick={() =>
