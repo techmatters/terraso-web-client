@@ -16,6 +16,7 @@
  */
 import React, { useCallback, useEffect, useMemo } from 'react';
 import _ from 'lodash/fp';
+import { usePermission } from 'permissions';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -69,7 +70,6 @@ import BaseMap from './LandscapeMap';
 import { Partnership } from './LandscapeProfile/AffiliationCard';
 
 import theme from 'theme';
-import { usePermission } from 'permissions';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.view_leave_label',
@@ -236,7 +236,10 @@ const LandscapeView = () => {
     state => state.landscape.view
   );
   const { slug } = useParams();
-  const { allowed: allowedToManageMembers } = usePermission('landscape.manageMembers', landscape);
+  const { allowed: allowedToManageMembers } = usePermission(
+    'landscape.manageMembers',
+    landscape
+  );
 
   useDocumentTitle(
     t('landscape.view_document_title', {
