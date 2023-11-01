@@ -35,6 +35,7 @@ import {
 
 import { withProps } from 'react-hoc';
 
+import { CollaborationContextProvider } from 'collaboration/collaborationContext';
 import { useSocialShareContext } from 'common/components/SocialShare';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
@@ -228,12 +229,14 @@ const GroupView = () => {
             />
           </Grid>
           <Grid item xs={12} md={12}>
-            <SharedDataCard
-              onUploadClick={() => navigate(`/groups/${group.slug}/upload`)}
-              onAddVisualizationClick={() =>
-                navigate(`/groups/${group.slug}/map/new`)
-              }
-            />
+            <CollaborationContextProvider owner={group} entityType="group">
+              <SharedDataCard
+                onUploadClick={() => navigate(`/groups/${group.slug}/upload`)}
+                onAddVisualizationClick={() =>
+                  navigate(`/groups/${group.slug}/map/new`)
+                }
+              />
+            </CollaborationContextProvider>
           </Grid>
         </Grid>
       </PageContainer>
