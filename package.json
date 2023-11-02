@@ -98,7 +98,7 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-lodash-fp": "^2.2.0-a1",
     "eslint-plugin-prettier": "^5.0.1",
-    "flat": "^5.0.2",
+    "flat": "^6.0.1",
     "i18next-conv": "^14.0.0",
     "jest-axe": "^8.0.0",
     "plausible-tracker": "^0.3.8",
