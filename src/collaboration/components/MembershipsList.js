@@ -18,10 +18,10 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
 
-import TableResponsive from 'common/components/TableResponsive';
-import AccountAvatar from 'account/components/AccountAvatar';
+import TableResponsive from 'common/components/TableResponsive.js';
+import AccountAvatar from 'account/components/AccountAvatar.js';
 
-import MemberName from './MemberName';
+import MemberName from './MemberName.js';
 
 const MembershipsList = props => {
   const { t } = useTranslation();
@@ -77,9 +77,9 @@ const MembershipsList = props => {
         ),
       },
       {
-        field: 'actions',
+        field: 'Actions.js',
         headerName: t('memberships.members_list_column_actions_description'),
-        type: 'actions',
+        type: 'Actions.js',
         sortable: false,
         flex: 1.5,
         minWidth: 200,

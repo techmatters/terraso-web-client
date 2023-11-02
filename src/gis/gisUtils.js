@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import bbox from '@turf/bbox';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 
 export const isValidLatitude = lat => lat >= -90 && lat <= 90;
 export const isValidLongitude = lng => lng >= -180 && lng <= 180;

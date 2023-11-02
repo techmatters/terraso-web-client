@@ -15,10 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { act, fireEvent, render, screen, within } from 'tests/utils';
-import _ from 'lodash/fp';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import _ from 'lodash/fp.js';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
 
-import UserStoryMap from './UserStoryMap';
+import UserStoryMap from './UserStoryMap.js';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 

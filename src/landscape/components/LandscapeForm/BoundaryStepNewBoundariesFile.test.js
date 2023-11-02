@@ -18,10 +18,10 @@ import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
 
-import mapboxgl from 'gis/mapbox';
-import LandscapeNew from 'landscape/components/LandscapeForm/New';
+import mapboxgl from 'gis/mapbox.js';
+import LandscapeNew from 'landscape/components/LandscapeForm/New.js';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 

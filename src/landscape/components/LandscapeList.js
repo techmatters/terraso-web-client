@@ -15,30 +15,30 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
-import { useFetchData } from 'terraso-client-shared/store/utils';
+import { useFetchData } from 'terraso-client-shared/store/utils.js';
 import { Button, Card, Link, Stack, Typography } from '@mui/material';
 
 import { withProps } from 'react-hoc';
 
-import ExternalLink from 'common/components/ExternalLink';
-import TableResponsive from 'common/components/TableResponsive';
-import { countryNameForCode } from 'common/countries';
-import { useDocumentDescription, useDocumentTitle } from 'common/document';
-import PageContainer from 'layout/PageContainer';
-import PageHeader from 'layout/PageHeader';
-import PageLoader from 'layout/PageLoader';
-import { GroupContextProvider } from 'group/groupContext';
-import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
-import GroupMembershipCount from 'group/membership/components/GroupMembershipCount';
-import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton';
-import { fetchLandscapes } from 'landscape/landscapeSlice';
-import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
+import ExternalLink from 'common/components/ExternalLink.js';
+import TableResponsive from 'common/components/TableResponsive.js';
+import { countryNameForCode } from 'common/countries.js';
+import { useDocumentDescription, useDocumentTitle } from 'common/document.js';
+import PageContainer from 'layout/PageContainer.js';
+import PageHeader from 'layout/PageHeader.js';
+import PageLoader from 'layout/PageLoader.js';
+import { GroupContextProvider } from 'group/groupContext.js';
+import GroupMemberJoin from 'group/membership/components/GroupMemberJoin.js';
+import GroupMembershipCount from 'group/membership/components/GroupMembershipCount.js';
+import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton.js';
+import { fetchLandscapes } from 'landscape/landscapeSlice.js';
+import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave.js';
 
-import LandscapeListMap from './LandscapeListMap';
+import LandscapeListMap from './LandscapeListMap.js';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.list_leave_button',
@@ -128,8 +128,8 @@ const LandscapeList = () => {
       ),
     },
     {
-      field: 'actions',
-      type: 'actions',
+      field: 'Actions.js',
+      type: 'Actions.js',
       headerName: t('landscape.list_column_actions_description'),
       sortable: false,
       align: 'center',

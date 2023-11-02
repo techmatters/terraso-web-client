@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { Avatar, Typography } from '@mui/material';
 
 const AccountAvatar = props => {

@@ -15,13 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
-import { useFetchData } from 'terraso-client-shared/store/utils';
-import { useDispatch, useSelector } from 'terrasoApi/store';
-import EmailIcon from '@mui/icons-material/Email';
-import PublicIcon from '@mui/icons-material/Public';
+import { useFetchData } from 'terraso-client-shared/store/utils.js';
+import { useDispatch, useSelector } from 'terrasoApi/store.ts';
+import EmailIcon from '@mui/icons-material/Email.js';
+import PublicIcon from '@mui/icons-material/Public.js';
 import {
   Button,
   Card,
@@ -35,22 +35,22 @@ import {
 
 import { withProps } from 'react-hoc';
 
-import { useSocialShareContext } from 'common/components/SocialShare';
-import { useDocumentDescription, useDocumentTitle } from 'common/document';
-import PageContainer from 'layout/PageContainer';
-import PageHeader from 'layout/PageHeader';
-import PageLoader from 'layout/PageLoader';
-import { useRefreshProgressContext } from 'layout/RefreshProgressProvider';
-import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-import Restricted from 'permissions/components/Restricted';
-import { GroupContextProvider } from 'group/groupContext';
-import { fetchGroupView, refreshGroupView } from 'group/groupSlice';
-import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
-import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
-import GroupMemberRequestCancel from 'group/membership/components/GroupMemberRequestCancel';
-import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
-import GroupMembershipInfo from 'group/membership/components/GroupMembershipInfo';
-import SharedDataCard from 'sharedData/components/SharedDataCard';
+import { useSocialShareContext } from 'common/components/SocialShare.js';
+import { useDocumentDescription, useDocumentTitle } from 'common/document.js';
+import PageContainer from 'layout/PageContainer.js';
+import PageHeader from 'layout/PageHeader.js';
+import PageLoader from 'layout/PageLoader.js';
+import { useRefreshProgressContext } from 'layout/RefreshProgressProvider.js';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext.js';
+import Restricted from 'permissions/components/Restricted.js';
+import { GroupContextProvider } from 'group/groupContext.js';
+import { fetchGroupView, refreshGroupView } from 'group/groupSlice.ts';
+import GroupMemberJoin from 'group/membership/components/GroupMemberJoin.js';
+import GroupMemberLeave from 'group/membership/components/GroupMemberLeave.js';
+import GroupMemberRequestCancel from 'group/membership/components/GroupMemberRequestCancel.js';
+import GroupMembershipCard from 'group/membership/components/GroupMembershipCard.js';
+import GroupMembershipInfo from 'group/membership/components/GroupMembershipInfo.js';
+import SharedDataCard from 'sharedData/components/SharedDataCard.js';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
   label: 'group.view_leave_label',

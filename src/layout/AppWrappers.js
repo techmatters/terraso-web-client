@@ -22,23 +22,23 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material';
 
-import ErrorMonitoringProvider from 'monitoring/error';
-import NotificationsWrapper from 'notifications/NotificationsWrapper';
+import ErrorMonitoringProvider from 'monitoring/error.js';
+import NotificationsWrapper from 'notifications/NotificationsWrapper.js';
 
 import { REACT_APP_BASE_URL } from 'config';
 
 // Localization
-import 'localization/i18n';
+import 'localization/i18n.js';
 // Form validations
-import 'forms/yup';
+import 'forms/yup.js';
 // Analytics
-import 'monitoring/analytics';
+import 'monitoring/analytics.js';
 
-import { SocialShareContextProvider } from 'common/components/SocialShare';
-import { BreadcrumbsContextProvider } from 'navigation/breadcrumbsContext';
+import { SocialShareContextProvider } from 'common/components/SocialShare.js';
+import { BreadcrumbsContextProvider } from 'navigation/breadcrumbsContext.js';
 
-import { ContainerContextProvider } from './Container';
-import RefreshProgressProvider from './RefreshProgressProvider';
+import { ContainerContextProvider } from './Container.js';
+import RefreshProgressProvider from './RefreshProgressProvider.js';
 
 // Wrappers
 // Router, Theme, Global State, Permissions, Notifications, Breadcrumbs

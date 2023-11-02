@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import _ from 'lodash/fp';
-import logger from 'terraso-client-shared/monitoring/logger';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import _ from 'lodash/fp.js';
+import logger from 'terraso-client-shared/monitoring/logger.js';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
 
-import { isKmlFile, isShapefile, openGeoJsonFile } from 'gis/gisUtils';
+import { isKmlFile, isShapefile, openGeoJsonFile } from 'gis/gisUtils.js';
 
 const generateUrl = name =>
   `https://nominatim.openstreetmap.org/search.php?q=${name}&format=jsonv2`;

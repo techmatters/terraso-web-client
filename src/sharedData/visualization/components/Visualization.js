@@ -15,23 +15,23 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import * as SheetsJs from 'xlsx';
 
-import mapboxgl from 'gis/mapbox';
+import mapboxgl from 'gis/mapbox.js';
 
 import './Visualization.css';
 
 import bbox from '@turf/bbox';
 import { Box, Portal, Stack, Typography } from '@mui/material';
 
-import GeoJsonSource from 'gis/components/GeoJsonSource';
-import Map, { useMap } from 'gis/components/Map';
-import MapControls from 'gis/components/MapControls';
-import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
-import { normalizeLongitude } from 'gis/gisUtils';
-import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
-import { getLayerImage } from 'sharedData/visualization/visualizationMarkers';
+import GeoJsonSource from 'gis/components/GeoJsonSource.js';
+import Map, { useMap } from 'gis/components/Map.js';
+import MapControls from 'gis/components/MapControls.js';
+import MapStyleSwitcher from 'gis/components/MapStyleSwitcher.js';
+import { normalizeLongitude } from 'gis/gisUtils.js';
+import { useVisualizationContext } from 'sharedData/visualization/visualizationContext.js';
+import { getLayerImage } from 'sharedData/visualization/visualizationMarkers.js';
 
 const PopupContent = props => {
   const { data } = props;

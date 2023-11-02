@@ -17,9 +17,9 @@
 import { render, screen, within } from 'tests/utils';
 import React from 'react';
 
-import mapboxgl from 'gis/mapbox';
+import mapboxgl from 'gis/mapbox.js';
 
-import StoryMap from './StoryMap';
+import StoryMap from './StoryMap.js';
 
 // Mock mapboxgl
 jest.mock('gis/mapbox', () => ({}));

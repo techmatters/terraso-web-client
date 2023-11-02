@@ -19,9 +19,9 @@ import React, { useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
-import PageHeader from 'layout/PageHeader';
-import Navigation from 'navigation/components/Navigation';
-import SkipLinks from 'navigation/components/SkipLinks';
+import PageHeader from 'layout/PageHeader.js';
+import Navigation from 'navigation/components/Navigation.js';
+import SkipLinks from 'navigation/components/SkipLinks.js';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

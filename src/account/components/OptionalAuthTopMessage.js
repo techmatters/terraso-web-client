@@ -15,13 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { Trans, withTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Typography } from '@mui/material';
 
-import RouterLink from 'common/components/RouterLink';
-import { useOptionalAuth } from 'navigation/components/Routes';
+import RouterLink from 'common/components/RouterLink.js';
+import { useOptionalAuth } from 'navigation/components/Routes.js';
 
 const OptionalAuthTopMessage = () => {
   const { topMessage } = useOptionalAuth();

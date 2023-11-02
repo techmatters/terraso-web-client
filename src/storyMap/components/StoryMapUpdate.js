@@ -15,30 +15,30 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useState } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useFetchData } from 'terraso-client-shared/store/utils';
+import { useFetchData } from 'terraso-client-shared/store/utils.js';
 
-import { useDocumentTitle } from 'common/document';
-import NotFound from 'layout/NotFound';
-import PageLoader from 'layout/PageLoader';
-import { useAnalytics } from 'monitoring/analytics';
-import { ILM_OUTPUT_PROP, LANDSCAPE_NARRATIVES } from 'monitoring/ilm';
+import { useDocumentTitle } from 'common/document.js';
+import NotFound from 'layout/NotFound.js';
+import PageLoader from 'layout/PageLoader.js';
+import { useAnalytics } from 'monitoring/analytics.js';
+import { ILM_OUTPUT_PROP, LANDSCAPE_NARRATIVES } from 'monitoring/ilm.js';
 import {
   fetchStoryMapForm,
   resetForm,
   updateStoryMap,
-} from 'storyMap/storyMapSlice';
+} from 'storyMap/storyMapSlice.js';
 import {
   generateStoryMapEditUrl,
   generateStoryMapUrl,
-} from 'storyMap/storyMapUtils';
+} from 'storyMap/storyMapUtils.js';
 
-import StoryMapForm from './StoryMapForm';
-import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigContext';
+import StoryMapForm from './StoryMapForm/index.js';
+import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigContext.js';
 
 const StoryMapUpdate = props => {
   const navigate = useNavigate();

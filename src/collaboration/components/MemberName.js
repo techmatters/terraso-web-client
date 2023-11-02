@@ -18,7 +18,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Stack, Typography } from '@mui/material';
 
-import AccountAvatar from 'account/components/AccountAvatar';
+import AccountAvatar from 'account/components/AccountAvatar.js';
 
 const MemberName = ({ member }) => {
   const { t } = useTranslation();

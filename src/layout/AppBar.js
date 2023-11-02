@@ -18,16 +18,16 @@ import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { signOut } from 'terraso-client-shared/account/accountSlice';
+import { signOut } from 'terraso-client-shared/account/accountSlice.js';
 import { AppBar, Box, Button, Divider, Toolbar } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery/index.js';
 
-import ConditionalLink from 'common/components/ConditionalLink';
-import LocalePicker from 'localization/components/LocalePicker';
-import { useOptionalAuth } from 'navigation/components/Routes';
-import SkipLinks from 'navigation/components/SkipLinks';
-import { generateReferrerPath } from 'navigation/navigationUtils';
-import AccountAvatar from 'account/components/AccountAvatar';
+import ConditionalLink from 'common/components/ConditionalLink.js';
+import LocalePicker from 'localization/components/LocalePicker.js';
+import { useOptionalAuth } from 'navigation/components/Routes.js';
+import SkipLinks from 'navigation/components/SkipLinks.js';
+import { generateReferrerPath } from 'navigation/navigationUtils.js';
+import AccountAvatar from 'account/components/AccountAvatar.js';
 
 import logoSquare from 'assets/logo-square.svg';
 import logo from 'assets/logo.svg';

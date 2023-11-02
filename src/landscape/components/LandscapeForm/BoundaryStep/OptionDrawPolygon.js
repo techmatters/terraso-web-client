@@ -16,20 +16,20 @@
  */
 import React, { useCallback, useMemo, useState } from 'react';
 import bbox from '@turf/bbox';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { Trans, useTranslation } from 'react-i18next';
-import LayersIcon from '@mui/icons-material/Layers';
+import LayersIcon from '@mui/icons-material/Layers.js';
 import { Alert, Box, Paper, Stack, Typography } from '@mui/material';
 
-import ExternalLink from 'common/components/ExternalLink';
-import PageHeader from 'layout/PageHeader';
-import DrawControls from 'gis/components/DrawControls';
-import { useMap } from 'gis/components/Map';
-import mapboxgl from 'gis/mapbox';
+import ExternalLink from 'common/components/ExternalLink.js';
+import PageHeader from 'layout/PageHeader.js';
+import DrawControls from 'gis/components/DrawControls.js';
+import { useMap } from 'gis/components/Map.js';
+import mapboxgl from 'gis/mapbox.js';
 
-import { OPTION_BOUNDARY_CHOICES } from '.';
-import BaseMap, { POLYGON_FILTER } from '../../LandscapeMap';
-import Actions from '../Actions';
+import BaseMap, { POLYGON_FILTER } from '../../LandscapeMap.js';
+import Actions from '../Actions.js';
+import { OPTION_BOUNDARY_CHOICES } from './index.js';
 
 import drawPolygonIcon from 'assets/gis/draw-polygon.svg';
 

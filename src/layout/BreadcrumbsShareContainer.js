@@ -16,11 +16,11 @@
  */
 import React from 'react';
 
-import SocialShare from 'common/components/SocialShare';
-import Breadcrumbs from 'navigation/components/Breadcrumbs';
-import { usePathParams } from 'navigation/components/Routes';
+import SocialShare from 'common/components/SocialShare.js';
+import Breadcrumbs from 'navigation/components/Breadcrumbs.js';
+import { usePathParams } from 'navigation/components/Routes.js';
 
-import Container from './Container';
+import Container from './Container.js';
 
 const BreadcrumbsShareContainer = () => {
   const { breadcrumbsShareProps, showBreadcrumbs } = usePathParams();

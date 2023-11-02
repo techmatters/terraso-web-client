@@ -16,13 +16,13 @@
  */
 import { render, screen } from 'tests/utils';
 import React from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useLocation, useParams } from 'react-router-dom';
-import { getUserEmail } from 'terraso-client-shared/account/auth';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import { getUserEmail } from 'terraso-client-shared/account/auth.js';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
 
-import RequireAuth from 'account/components/RequireAuth';
-import GroupView from 'group/components/GroupView';
+import RequireAuth from 'account/components/RequireAuth.js';
+import GroupView from 'group/components/GroupView.js';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 

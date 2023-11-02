@@ -18,8 +18,8 @@ import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
 
-import RouterLink from 'common/components/RouterLink';
-import HomeCard from 'home/components/HomeCard';
+import RouterLink from 'common/components/RouterLink.js';
+import HomeCard from 'home/components/HomeCard.js';
 
 const GroupDefaultHomeCard = () => {
   const { t } = useTranslation();

@@ -16,8 +16,8 @@
  */
 import React, { useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import CloseIcon from '@mui/icons-material/Close';
-import InfoIcon from '@mui/icons-material/InfoOutlined';
+import CloseIcon from '@mui/icons-material/Close.js';
+import InfoIcon from '@mui/icons-material/InfoOutlined.js';
 import {
   Button,
   Dialog,

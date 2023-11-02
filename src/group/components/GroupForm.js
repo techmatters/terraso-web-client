@@ -15,11 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useFetchData } from 'terraso-client-shared/store/utils';
+import { useFetchData } from 'terraso-client-shared/store/utils.js';
 import * as yup from 'yup';
 import {
   FormControlLabel,
@@ -29,23 +29,23 @@ import {
   Typography,
 } from '@mui/material';
 
-import { useDocumentDescription, useDocumentTitle } from 'common/document';
-import { transformURL } from 'common/utils';
-import Form from 'forms/components/Form';
-import PageContainer from 'layout/PageContainer';
-import PageHeader from 'layout/PageHeader';
-import PageLoader from 'layout/PageLoader';
-import { useAnalytics } from 'monitoring/analytics';
+import { useDocumentDescription, useDocumentTitle } from 'common/document.js';
+import { transformURL } from 'common/utils.js';
+import Form from 'forms/components/Form.js';
+import PageContainer from 'layout/PageContainer.js';
+import PageHeader from 'layout/PageHeader.js';
+import PageLoader from 'layout/PageLoader.js';
+import { useAnalytics } from 'monitoring/analytics.js';
 import {
   fetchGroupForm,
   resetFormSuccess,
   saveGroup,
   setFormNewValues,
-} from 'group/groupSlice';
+} from 'group/groupSlice.ts';
 import {
   MEMBERSHIP_CLOSED,
   MEMBERSHIP_OPEN,
-} from 'group/membership/components/groupMembershipConstants';
+} from 'group/membership/components/groupMembershipConstants.js';
 
 import { MAX_DESCRIPTION_LENGTH } from 'config';
 

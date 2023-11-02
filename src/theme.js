@@ -14,8 +14,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import ErrorIcon from '@mui/icons-material/Report';
-import { createTheme } from '@mui/material/styles';
+import ErrorIcon from '@mui/icons-material/Report.js';
+import { createTheme } from '@mui/material/styles/index.js';
+
+import { withProps } from 'react-hoc';
 
 const defaultFontStack = 'Roboto, Helvetica, Arial, sans-serif';
 const headerFontStack = 'Lato, Helvetica, Arial, sans-serif';
@@ -241,7 +243,7 @@ const components = {
     },
     defaultProps: {
       iconMapping: {
-        error: <ErrorIcon fontSize="inherit" />,
+        error: withProps(ErrorIcon, { fontSize: 'inherit' }),
       },
     },
   },

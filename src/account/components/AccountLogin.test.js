@@ -17,9 +17,9 @@
 import { render, screen } from 'tests/utils';
 import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import * as accountService from 'terraso-client-shared/account/accountService';
+import * as accountService from 'terraso-client-shared/account/accountService.js';
 
-import AccountLogin from 'account/components/AccountLogin';
+import AccountLogin from 'account/components/AccountLogin.js';
 
 jest.mock('terraso-client-shared/account/accountService');
 

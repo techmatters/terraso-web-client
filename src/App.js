@@ -17,16 +17,16 @@
 import React, { useRef } from 'react';
 import { Box } from '@mui/material';
 
-import AppBar from 'layout/AppBar';
-import Footer from 'layout/Footer';
-import Navigation from 'navigation/components/Navigation';
-import Routes, { useOptionalAuth } from 'navigation/components/Routes';
+import AppBar from 'layout/AppBar.js';
+import Footer from 'layout/Footer.js';
+import Navigation from 'navigation/components/Navigation.js';
+import Routes, { useOptionalAuth } from 'navigation/components/Routes.js';
 
 import 'index.css';
 
-import BreadcrumbsShareContainer from 'layout/BreadcrumbsShareContainer';
-import OptionalAuthBottomMessage from 'account/components/OptionalAuthBottomMessage';
-import OptionalAuthTopMessage from 'account/components/OptionalAuthTopMessage';
+import BreadcrumbsShareContainer from 'layout/BreadcrumbsShareContainer.js';
+import OptionalAuthBottomMessage from 'account/components/OptionalAuthBottomMessage.js';
+import OptionalAuthTopMessage from 'account/components/OptionalAuthTopMessage.js';
 
 const App = () => {
   const contentRef = useRef();

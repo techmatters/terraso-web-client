@@ -15,11 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { createSlice } from '@reduxjs/toolkit';
-import _ from 'lodash/fp';
-import { createAsyncThunk } from 'terraso-client-shared/store/utils';
+import _ from 'lodash/fp.js';
+import { createAsyncThunk } from 'terraso-client-shared/store/utils.js';
 
-import i18n from 'localization/i18n';
-import * as storyMapService from 'storyMap/storyMapService';
+import i18n from 'localization/i18n.js';
+import * as storyMapService from 'storyMap/storyMapService.js';
 
 const initialState = {
   form: {

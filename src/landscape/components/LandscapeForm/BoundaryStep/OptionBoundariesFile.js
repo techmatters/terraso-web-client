@@ -16,23 +16,23 @@
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import bbox from '@turf/bbox';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert, Paper } from '@mui/material';
 
-import BaseDropZone from 'common/components/DropZone';
-import ExternalLink from 'common/components/ExternalLink';
-import InlineHelp from 'common/components/InlineHelp';
-import PageHeader from 'layout/PageHeader';
-import { rollbar } from 'monitoring/rollbar';
-import { useMap } from 'gis/components/Map';
-import { parseFileToGeoJSON } from 'gis/gisSlice';
-import mapboxgl from 'gis/mapbox';
+import BaseDropZone from 'common/components/DropZone.js';
+import ExternalLink from 'common/components/ExternalLink.js';
+import InlineHelp from 'common/components/InlineHelp.js';
+import PageHeader from 'layout/PageHeader.js';
+import { rollbar } from 'monitoring/rollbar.js';
+import { useMap } from 'gis/components/Map.js';
+import { parseFileToGeoJSON } from 'gis/gisSlice.js';
+import mapboxgl from 'gis/mapbox.js';
 
-import { OPTION_BOUNDARY_CHOICES } from '.';
-import BaseMap from '../../LandscapeMap';
-import Actions from '../Actions';
+import BaseMap from '../../LandscapeMap.js';
+import Actions from '../Actions.js';
+import { OPTION_BOUNDARY_CHOICES } from './index.js';
 
 import {
   GEOJSON_MAX_SIZE,

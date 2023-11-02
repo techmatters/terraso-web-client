@@ -16,7 +16,7 @@
  */
 import { Canvg } from 'canvg';
 
-import { getImage } from 'gis/mapMarkers';
+import { getImage } from 'gis/mapMarkers.js';
 
 const DEFAULT_OPACITY = 0.5;
 

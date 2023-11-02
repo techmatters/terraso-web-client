@@ -16,8 +16,8 @@
  */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import EmailIcon from '@mui/icons-material/Email';
-import PublicIcon from '@mui/icons-material/Public';
+import EmailIcon from '@mui/icons-material/Email.js';
+import PublicIcon from '@mui/icons-material/Public.js';
 import {
   Button,
   Card,
@@ -28,8 +28,8 @@ import {
   Typography,
 } from '@mui/material';
 
-import RouterLink from 'common/components/RouterLink';
-import Restricted from 'permissions/components/Restricted';
+import RouterLink from 'common/components/RouterLink.js';
+import Restricted from 'permissions/components/Restricted.js';
 
 const KeyInfoCard = ({ landscape }) => {
   const { t } = useTranslation();

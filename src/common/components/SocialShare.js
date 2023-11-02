@@ -16,10 +16,10 @@
  */
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import CloseIcon from '@mui/icons-material/Close';
-import EmailIcon from '@mui/icons-material/Email';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import CloseIcon from '@mui/icons-material/Close.js';
+import EmailIcon from '@mui/icons-material/Email.js';
+import FacebookIcon from '@mui/icons-material/Facebook.js';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp.js';
 import {
   Alert,
   Button,
@@ -32,9 +32,9 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery/index.js';
 
-import { useAnalytics } from 'monitoring/analytics';
+import { useAnalytics } from 'monitoring/analytics.js';
 
 import theme from 'theme';
 

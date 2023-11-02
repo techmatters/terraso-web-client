@@ -14,15 +14,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 
 import {
   UPLOAD_STATUS_ERROR,
   UPLOAD_STATUS_SUCCESS,
   UPLOAD_STATUS_UPLOADING,
-} from 'sharedData/sharedDataSlice';
+} from 'sharedData/sharedDataSlice.js';
 
-import { VALIDATION_SCHEMA as LINK_VALIDATION_SCHEMA } from './ShareDataLinks';
+import { VALIDATION_SCHEMA as LINK_VALIDATION_SCHEMA } from './ShareDataLinks.js';
 
 export const groupDataEntryUploadsByStatus = uploads => {
   const byStatus = _.flow(

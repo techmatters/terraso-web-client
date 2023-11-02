@@ -21,12 +21,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { DragDropContext, Draggable } from 'react-beautiful-dnd';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import DragHandleIcon from '@mui/icons-material/DragHandle';
+import DragHandleIcon from '@mui/icons-material/DragHandle.js';
 import {
   Grid,
   InputLabel,
@@ -36,15 +36,15 @@ import {
   Typography,
 } from '@mui/material';
 
-import List from 'common/components/List';
-import StepperStep from 'common/components/StepperStep';
-import StrictModeDroppable from 'common/components/StrictModeDroppable';
-import Form from 'forms/components/Form';
-import { FormContextProvider, useFormGetContext } from 'forms/formContext';
-import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
+import List from 'common/components/List.js';
+import StepperStep from 'common/components/StepperStep.js';
+import StrictModeDroppable from 'common/components/StrictModeDroppable.js';
+import Form from 'forms/components/Form.js';
+import { FormContextProvider, useFormGetContext } from 'forms/formContext.js';
+import { useVisualizationContext } from 'sharedData/visualization/visualizationContext.js';
 
-import ColumnSelect from './ColumnSelect';
-import VisualizationPreview from './VisualizationPreview';
+import ColumnSelect from './ColumnSelect.js';
+import VisualizationPreview from './VisualizationPreview.js';
 
 const VALIDATION_SCHEMA = yup
   .object({

@@ -16,12 +16,12 @@
  */
 import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useNavigate, useParams } from 'react-router-dom';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
 import { LANDSCAPE_TYPES_WITH_REDIRECTS } from 'tests/constants';
 
-import LandscapeSharedDataUpload from './LandscapeSharedDataUpload';
+import LandscapeSharedDataUpload from './LandscapeSharedDataUpload.js';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 

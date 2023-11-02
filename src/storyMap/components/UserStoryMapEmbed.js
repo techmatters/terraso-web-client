@@ -15,21 +15,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useMemo } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useFetchData } from 'terraso-client-shared/store/utils';
+import { useFetchData } from 'terraso-client-shared/store/utils.js';
 import { Box, Link, Stack } from '@mui/material';
 
-import { serialize } from 'common/components/RichTextEditor/utils';
-import { useSocialShareContext } from 'common/components/SocialShare';
-import { useDocumentDescription, useDocumentTitle } from 'common/document';
-import PageLoader from 'layout/PageLoader';
-import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-import StoryMap from 'storyMap/components/StoryMap';
-import { fetchStoryMap } from 'storyMap/storyMapSlice';
-import { generateStoryMapUrl, isChapterEmpty } from 'storyMap/storyMapUtils';
+import { serialize } from 'common/components/RichTextEditor/utils.js';
+import { useSocialShareContext } from 'common/components/SocialShare.js';
+import { useDocumentDescription, useDocumentTitle } from 'common/document.js';
+import PageLoader from 'layout/PageLoader.js';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext.js';
+import StoryMap from 'storyMap/components/StoryMap.js';
+import { fetchStoryMap } from 'storyMap/storyMapSlice.js';
+import { generateStoryMapUrl, isChapterEmpty } from 'storyMap/storyMapUtils.js';
 
 import logoWhite from 'assets/logo-white.svg';
 

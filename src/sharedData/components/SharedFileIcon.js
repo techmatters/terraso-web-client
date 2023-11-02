@@ -15,8 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import _ from 'lodash/fp';
-import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
+import _ from 'lodash/fp.js';
+import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined.js';
 
 const ICON_SIZE = 24;
 const ICON_FILES = {

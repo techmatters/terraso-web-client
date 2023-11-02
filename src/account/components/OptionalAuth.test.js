@@ -17,9 +17,9 @@
 import { render, screen } from 'tests/utils';
 import { useLocation } from 'react-router-dom';
 
-import OptionalAuth from './OptionalAuth';
-import OptionalAuthBottomMessage from './OptionalAuthBottomMessage';
-import OptionalAuthTopMessage from './OptionalAuthTopMessage';
+import OptionalAuth from './OptionalAuth.js';
+import OptionalAuthBottomMessage from './OptionalAuthBottomMessage.js';
+import OptionalAuthTopMessage from './OptionalAuthTopMessage.js';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

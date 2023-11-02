@@ -18,20 +18,20 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useSelector } from 'react-redux';
 
-import mapboxgl from 'gis/mapbox';
-import { getLandscapePin } from 'landscape/landscapeUtils';
+import mapboxgl from 'gis/mapbox.js';
+import { getLandscapePin } from 'landscape/landscapeUtils.js';
 
 import './LandscapeListMap.css';
 
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
-import RouterLink from 'common/components/RouterLink';
-import { countryNameForCode } from 'common/countries';
-import Map, { useMap as useMapboxContext } from 'gis/components/Map';
-import MapControls from 'gis/components/MapControls';
-import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
-import { isValidLatitude, isValidLongitude } from 'gis/gisUtils';
+import RouterLink from 'common/components/RouterLink.js';
+import { countryNameForCode } from 'common/countries.js';
+import Map, { useMap as useMapboxContext } from 'gis/components/Map.js';
+import MapControls from 'gis/components/MapControls.js';
+import MapStyleSwitcher from 'gis/components/MapStyleSwitcher.js';
+import { isValidLatitude, isValidLongitude } from 'gis/gisUtils.js';
 
 import { MAPBOX_LANDSCAPE_DIRECTORY_STYLE } from 'config';
 

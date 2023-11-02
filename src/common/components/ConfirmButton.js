@@ -18,7 +18,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { LoadingButton } from '@mui/lab';
 import { Tooltip } from '@mui/material';
 
-import ConfirmationDialog from 'common/components/ConfirmationDialog';
+import ConfirmationDialog from 'common/components/ConfirmationDialog.js';
 
 const ConfirmButton = props => {
   const [openConfirmation, setOpenConfirmation] = useState(false);

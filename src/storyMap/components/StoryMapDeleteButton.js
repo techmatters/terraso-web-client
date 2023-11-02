@@ -15,15 +15,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { daysSince } from 'timeUtils';
 
-import ConfirmButton from 'common/components/ConfirmButton';
-import { useAnalytics } from 'monitoring/analytics';
-import { deleteStoryMap } from 'storyMap/storyMapSlice';
+import ConfirmButton from 'common/components/ConfirmButton.js';
+import { useAnalytics } from 'monitoring/analytics.js';
+import { deleteStoryMap } from 'storyMap/storyMapSlice.js';
 
 const DeleteButton = props => {
   const { trackEvent } = useAnalytics();

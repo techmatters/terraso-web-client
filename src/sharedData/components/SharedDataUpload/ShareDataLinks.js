@@ -21,13 +21,13 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add.js';
+import DeleteIcon from '@mui/icons-material/Delete.js';
 import {
   Alert,
   Button,
@@ -38,16 +38,16 @@ import {
   Typography,
 } from '@mui/material';
 
-import ExternalLink from 'common/components/ExternalLink';
-import { transformURL } from 'common/utils';
-import Form from 'forms/components/Form';
-import { FormContextProvider, useFormGetContext } from 'forms/formContext';
-import { MAX_DESCRIPTION_CHARACTERS } from 'sharedData/sharedDataConstants';
+import ExternalLink from 'common/components/ExternalLink.js';
+import { transformURL } from 'common/utils.js';
+import Form from 'forms/components/Form.js';
+import { FormContextProvider, useFormGetContext } from 'forms/formContext.js';
+import { MAX_DESCRIPTION_CHARACTERS } from 'sharedData/sharedDataConstants.js';
 
-import LinkIcon from '../LinkIcon';
-import { useShareDataUploadContext } from './ShareDataUploadContext';
-import SuccessContainer from './SuccessContainer';
-import { groupDataEntryUploadsByStatus } from './utils';
+import LinkIcon from '../LinkIcon.js';
+import { useShareDataUploadContext } from './ShareDataUploadContext.js';
+import SuccessContainer from './SuccessContainer.js';
+import { groupDataEntryUploadsByStatus } from './utils.js';
 
 export const VALIDATION_SCHEMA = yup
   .object({

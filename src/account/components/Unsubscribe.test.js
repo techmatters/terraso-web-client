@@ -17,9 +17,9 @@
 import { render, screen, within } from 'tests/utils';
 import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
 
-import Unsubscribe from 'account/components/Unsubscribe';
+import Unsubscribe from 'account/components/Unsubscribe.js';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 

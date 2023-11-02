@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
@@ -28,13 +28,13 @@ import {
 
 import { withProps } from 'react-hoc';
 
-import Restricted from 'permissions/components/Restricted';
+import Restricted from 'permissions/components/Restricted.js';
 import {
   MEMBERSHIP_STATUS_APPROVED,
   MEMBERSHIP_STATUS_PENDING,
-} from 'group/membership/components/groupMembershipConstants';
-import GroupMembershipPendingWarning from 'group/membership/components/GroupMembershipPendingWarning';
-import HomeCard from 'home/components/HomeCard';
+} from 'group/membership/components/groupMembershipConstants.js';
+import GroupMembershipPendingWarning from 'group/membership/components/GroupMembershipPendingWarning.js';
+import HomeCard from 'home/components/HomeCard.js';
 
 import theme from 'theme';
 

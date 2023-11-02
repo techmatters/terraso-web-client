@@ -15,13 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useEffect, useState } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
-import TriangleIcon from '@mui/icons-material/ChangeHistoryTwoTone';
-import CircleIcon from '@mui/icons-material/CircleTwoTone';
-import HexagonIcon from '@mui/icons-material/HexagonTwoTone';
-import SquareIcon from '@mui/icons-material/SquareTwoTone';
+import TriangleIcon from '@mui/icons-material/ChangeHistoryTwoTone.js';
+import CircleIcon from '@mui/icons-material/CircleTwoTone.js';
+import HexagonIcon from '@mui/icons-material/HexagonTwoTone.js';
+import SquareIcon from '@mui/icons-material/SquareTwoTone.js';
 import {
   Grid,
   OutlinedInput,
@@ -31,10 +31,10 @@ import {
   Typography,
 } from '@mui/material';
 
-import StepperStep from 'common/components/StepperStep';
-import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
+import StepperStep from 'common/components/StepperStep.js';
+import { useVisualizationContext } from 'sharedData/visualization/visualizationContext.js';
 
-import VisualizationPreview from './VisualizationPreview';
+import VisualizationPreview from './VisualizationPreview.js';
 
 const visualizeIcons = {
   circle: CircleIcon,

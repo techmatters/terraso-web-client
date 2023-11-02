@@ -16,12 +16,12 @@
  */
 import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import { useParams } from 'react-router-dom';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
 
-import mapboxgl from 'gis/mapbox';
-import * as visualizationMarkers from 'sharedData/visualization/visualizationMarkers';
+import mapboxgl from 'gis/mapbox.js';
+import * as visualizationMarkers from 'sharedData/visualization/visualizationMarkers.js';
 
-import LandscapeSharedDataVisualizationConfig from './LandscapeSharedDataVisualizationConfig';
+import LandscapeSharedDataVisualizationConfig from './LandscapeSharedDataVisualizationConfig.js';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 jest.mock('sharedData/visualization/visualizationMarkers');

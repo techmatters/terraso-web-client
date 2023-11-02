@@ -19,9 +19,9 @@ import React from 'react';
 import AvatarEditor from 'react-avatar-editor';
 import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
 
-import ProfileImageUpdate from 'landscape/components/LandscapeForm/ProfileImageUpdate';
+import ProfileImageUpdate from 'landscape/components/LandscapeForm/ProfileImageUpdate.js';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 

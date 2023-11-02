@@ -15,10 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import Cookies from 'js-cookie';
-import { setAPIConfig } from 'terraso-client-shared/config';
-import type { Severity } from 'terraso-client-shared/monitoring/logger';
+import { setAPIConfig } from 'terraso-client-shared/config.js';
+import type { Severity } from 'terraso-client-shared/monitoring/logger.js';
 
-import { rollbar } from 'monitoring/rollbar';
+import { rollbar } from 'monitoring/rollbar.js';
 
 export const TERRASO_ENV = process.env.REACT_APP_TERRASO_ENV || 'local';
 

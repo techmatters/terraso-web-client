@@ -15,15 +15,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
-import logger from 'terraso-client-shared/monitoring/logger';
+import logger from 'terraso-client-shared/monitoring/logger.js';
 import { Box } from '@mui/material';
 
 import { withWrapper } from 'react-hoc';
 
-import { isValidBounds } from 'gis/gisUtils';
-import mapboxgl from 'gis/mapbox';
+import { isValidBounds } from 'gis/gisUtils.js';
+import mapboxgl from 'gis/mapbox.js';
 
 import {
   MAPBOX_ACCESS_TOKEN,

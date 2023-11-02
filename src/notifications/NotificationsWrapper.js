@@ -15,11 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useEffect } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { SnackbarProvider, useSnackbar } from 'notistack';
 import { Trans } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeMessage } from 'terraso-client-shared/notifications/notificationsSlice';
+import { removeMessage } from 'terraso-client-shared/notifications/notificationsSlice.js';
 import { Alert } from '@mui/material';
 
 const MAX_NOTIFICATIONS = 3;

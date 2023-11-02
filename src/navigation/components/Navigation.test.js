@@ -19,7 +19,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useLocation } from 'react-router-dom';
 
-import Navigation from 'navigation/components/Navigation';
+import Navigation from 'navigation/components/Navigation.js';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

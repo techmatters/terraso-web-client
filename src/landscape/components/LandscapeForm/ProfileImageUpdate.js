@@ -15,21 +15,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useFetchData } from 'terraso-client-shared/store/utils';
+import { useFetchData } from 'terraso-client-shared/store/utils.js';
 
-import { useDocumentTitle } from 'common/document';
-import PageContainer from 'layout/PageContainer';
-import PageLoader from 'layout/PageLoader';
-import ProfileImageStep from 'landscape/components/LandscapeForm/ProfileImageStep';
+import { useDocumentTitle } from 'common/document.js';
+import PageContainer from 'layout/PageContainer.js';
+import PageLoader from 'layout/PageLoader.js';
+import ProfileImageStep from 'landscape/components/LandscapeForm/ProfileImageStep.js';
 import {
   fetchLandscapeForm,
   setFormNewValues,
   uploadProfileImage,
-} from 'landscape/landscapeSlice';
+} from 'landscape/landscapeSlice.js';
 
 const ProfileImageUpdate = () => {
   const dispatch = useDispatch();

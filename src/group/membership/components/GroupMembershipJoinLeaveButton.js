@@ -15,20 +15,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useMemo } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import {
   joinMembershipList,
   leaveMembershipList,
-} from 'terraso-client-shared/memberships/membershipsSlice';
-import { useDispatch, useSelector } from 'terrasoApi/store';
+} from 'terraso-client-shared/memberships/membershipsSlice.js';
+import { useDispatch, useSelector } from 'terrasoApi/store.ts';
 
-import { useAnalytics } from 'monitoring/analytics';
-import { useGroupContext } from 'group/groupContext';
+import { useAnalytics } from 'monitoring/analytics.js';
+import { useGroupContext } from 'group/groupContext.js';
 
 import {
   MEMBERSHIP_CLOSED,
   MEMBERSHIP_STATUS_PENDING,
-} from './groupMembershipConstants';
+} from './groupMembershipConstants.js';
 
 const GroupMembershipJoinLeaveButton = props => {
   const dispatch = useDispatch();

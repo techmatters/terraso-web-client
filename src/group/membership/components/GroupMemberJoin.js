@@ -15,11 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
 import { LoadingButton } from '@mui/lab';
 
-import { useGroupContext } from 'group/groupContext';
+import { useGroupContext } from 'group/groupContext.js';
 
 const GroupMemberJoin = props => {
   const { t } = useTranslation();

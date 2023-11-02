@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import _ from 'lodash/fp';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
-import { graphql } from 'terrasoApi/shared/graphqlSchema';
+import _ from 'lodash/fp.js';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
+import { graphql } from 'terrasoApi/shared/graphqlSchema/index.ts';
 
-import { extractDataEntry } from './sharedDataUtils';
+import { extractDataEntry } from './sharedDataUtils.js';
 
 import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 

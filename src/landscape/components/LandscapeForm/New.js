@@ -15,35 +15,35 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useState } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useFetchData } from 'terraso-client-shared/store/utils';
+import { useFetchData } from 'terraso-client-shared/store/utils.js';
 import { Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 
-import Stepper from 'common/components/Stepper';
-import { useDocumentTitle } from 'common/document';
-import PageContainer from 'layout/PageContainer';
-import PageLoader from 'layout/PageLoader';
-import { useAnalytics } from 'monitoring/analytics';
-import { ILM_OUTPUT_PROP, MAP_LANDSCAPE_BOUNDARIES } from 'monitoring/ilm';
-import { fetchGroupsAutocompleteList } from 'group/groupSlice';
-import { saveLandscape, setFormNewValues } from 'landscape/landscapeSlice';
+import Stepper from 'common/components/Stepper.js';
+import { useDocumentTitle } from 'common/document.js';
+import PageContainer from 'layout/PageContainer.js';
+import PageLoader from 'layout/PageLoader.js';
+import { useAnalytics } from 'monitoring/analytics.js';
+import { ILM_OUTPUT_PROP, MAP_LANDSCAPE_BOUNDARIES } from 'monitoring/ilm.js';
+import { fetchGroupsAutocompleteList } from 'group/groupSlice.ts';
+import { saveLandscape, setFormNewValues } from 'landscape/landscapeSlice.js';
 import {
   TYPE_AGRICULTURAL_PRODUCTION_METHOD,
   TYPE_COMMODITY,
   TYPE_ECOSYSTEM_TYPE,
   TYPE_LIVELIHOOD,
   TYPE_ORGANIZATION,
-} from 'taxonomies/taxonomiesConstants';
-import { fetchTermsForTypes } from 'taxonomies/taxonomiesSlice';
+} from 'taxonomies/taxonomiesConstants.js';
+import { fetchTermsForTypes } from 'taxonomies/taxonomiesSlice.js';
 
-import AffiliationStep from './AffiliationStep';
-import BoundaryStep from './BoundaryStep';
-import InfoStep from './KeyInfoStep';
-import ProfileStep from './ProfileStep';
+import AffiliationStep from './AffiliationStep.js';
+import BoundaryStep from './BoundaryStep/index.js';
+import InfoStep from './KeyInfoStep.js';
+import ProfileStep from './ProfileStep.js';
 
 const STEP_BOUNDARY = 'boundary';
 const STEP_PROFILE = 'profile';

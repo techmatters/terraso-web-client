@@ -15,16 +15,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { act, fireEvent, render, screen, within } from 'tests/utils';
-import _ from 'lodash/fp';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import _ from 'lodash/fp.js';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
 import { mockTerrasoAPIrequestGraphQL } from 'tests/apiUtils';
 import { changeCombobox } from 'tests/uiUtils';
 
-import i18n from 'localization/i18n';
-import { useAnalytics } from 'monitoring/analytics';
-import { MEMBERSHIP_ROLE_EDITOR } from 'storyMap/storyMapConstants';
+import i18n from 'localization/i18n.js';
+import { useAnalytics } from 'monitoring/analytics.js';
+import { MEMBERSHIP_ROLE_EDITOR } from 'storyMap/storyMapConstants.js';
 
-import StoryMapUpdate from './StoryMapUpdate';
+import StoryMapUpdate from './StoryMapUpdate.js';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 

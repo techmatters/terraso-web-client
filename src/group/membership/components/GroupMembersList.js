@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useContext } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
@@ -23,25 +23,25 @@ import {
   fetchMembers,
   removeMember,
   updateMember,
-} from 'terraso-client-shared/memberships/membershipsSlice';
-import { useFetchData } from 'terraso-client-shared/store/utils';
-import { useDispatch, useSelector } from 'terrasoApi/store';
+} from 'terraso-client-shared/memberships/membershipsSlice.js';
+import { useFetchData } from 'terraso-client-shared/store/utils.js';
+import { useDispatch, useSelector } from 'terrasoApi/store.ts';
 import { LoadingButton } from '@mui/lab';
 import { ListItem, MenuItem, Select, Stack, Typography } from '@mui/material';
 
-import MemberName from 'collaboration/components/MemberName';
-import MembershipsList from 'collaboration/components/MembershipsList';
-import ConfirmButton from 'common/components/ConfirmButton';
-import List from 'common/components/List';
-import PageLoader from 'layout/PageLoader';
-import Restricted from 'permissions/components/Restricted';
-import { useGroupContext } from 'group/groupContext';
+import MemberName from 'collaboration/components/MemberName.js';
+import MembershipsList from 'collaboration/components/MembershipsList.js';
+import ConfirmButton from 'common/components/ConfirmButton.js';
+import List from 'common/components/List.js';
+import PageLoader from 'layout/PageLoader.js';
+import Restricted from 'permissions/components/Restricted.js';
+import { useGroupContext } from 'group/groupContext.js';
 
 import {
   MEMBERSHIP_STATUS_APPROVED,
   MEMBERSHIP_STATUS_PENDING,
-} from './groupMembershipConstants';
-import GroupMembershipPendingWarning from './GroupMembershipPendingWarning';
+} from './groupMembershipConstants.js';
+import GroupMembershipPendingWarning from './GroupMembershipPendingWarning.js';
 
 const ROLES = ['MEMBER', 'MANAGER'];
 

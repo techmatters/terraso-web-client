@@ -15,15 +15,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useMemo, useState } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
-import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed.js';
 import { Box, Button, Stack } from '@mui/material';
 
-import StoryMapOutline from '../StoryMapOutline';
-import EditableText from './EditableText';
-import MapLocationDialog from './MapLocationDialog';
-import { useStoryMapConfigContext } from './storyMapConfigContext';
+import StoryMapOutline from '../StoryMapOutline.js';
+import EditableText from './EditableText.js';
+import MapLocationDialog from './MapLocationDialog.js';
+import { useStoryMapConfigContext } from './storyMapConfigContext.js';
 
 const TitleForm = props => {
   const { t } = useTranslation();

@@ -15,13 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { createSlice } from '@reduxjs/toolkit';
-import _ from 'lodash/fp';
-import { setMemberships } from 'terraso-client-shared/memberships/membershipsSlice';
-import * as membershipsUtils from 'terraso-client-shared/memberships/membershipsUtils';
-import { createAsyncThunk } from 'terraso-client-shared/store/utils';
+import _ from 'lodash/fp.js';
+import { setMemberships } from 'terraso-client-shared/memberships/membershipsSlice.js';
+import * as membershipsUtils from 'terraso-client-shared/memberships/membershipsUtils.js';
+import { createAsyncThunk } from 'terraso-client-shared/store/utils.js';
 
-import * as landscapeService from 'landscape/landscapeService';
-import { setList } from 'sharedData/sharedDataSlice';
+import * as landscapeService from 'landscape/landscapeService.js';
+import { setList } from 'sharedData/sharedDataSlice.js';
 
 const initialState = {
   list: {

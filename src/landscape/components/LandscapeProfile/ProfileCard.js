@@ -15,11 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useEffect, useMemo } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from '@mui/icons-material/Delete.js';
 import {
   Box,
   Button,
@@ -30,19 +30,19 @@ import {
   Typography,
 } from '@mui/material';
 
-import ConfirmButton from 'common/components/ConfirmButton';
-import RouterLink from 'common/components/RouterLink';
-import { countryNameForCode } from 'common/countries';
-import Restricted from 'permissions/components/Restricted';
-import { deleteProfileImage } from 'landscape/landscapeSlice';
+import ConfirmButton from 'common/components/ConfirmButton.js';
+import RouterLink from 'common/components/RouterLink.js';
+import { countryNameForCode } from 'common/countries.js';
+import Restricted from 'permissions/components/Restricted.js';
+import { deleteProfileImage } from 'landscape/landscapeSlice.js';
 import {
   TYPE_AGRICULTURAL_PRODUCTION_METHOD,
   TYPE_COMMODITY,
   TYPE_ECOSYSTEM_TYPE,
   TYPE_LANGUAGE,
   TYPE_LIVELIHOOD,
-} from 'taxonomies/taxonomiesConstants';
-import { getTermLabel } from 'taxonomies/taxonomiesUtils';
+} from 'taxonomies/taxonomiesConstants.js';
+import { getTermLabel } from 'taxonomies/taxonomiesUtils.js';
 
 const PROFILE_IMAGE_DEFAULT = '/landscape/profile-image-default.jpg';
 

@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import {
   extractAccountMembership,
   extractMembershipsInfo,
-} from 'terraso-client-shared/collaboration/membershipsUtils';
+} from 'terraso-client-shared/collaboration/membershipsUtils.js';
 
 import { REACT_APP_BASE_URL } from 'config';
 

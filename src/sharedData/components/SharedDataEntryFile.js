@@ -16,10 +16,10 @@
  */
 import React from 'react';
 import { filesize } from 'filesize';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import MapIcon from '@mui/icons-material/Map';
+import FileDownloadIcon from '@mui/icons-material/FileDownload.js';
+import MapIcon from '@mui/icons-material/Map.js';
 import {
   Divider,
   Grid,
@@ -29,13 +29,13 @@ import {
   Stack,
 } from '@mui/material';
 
-import RouterLink from 'common/components/RouterLink';
-import { formatDate } from 'localization/utils';
-import { useGroupContext } from 'group/groupContext';
-import { useSharedData } from 'sharedData/sharedDataHooks';
+import RouterLink from 'common/components/RouterLink.js';
+import { formatDate } from 'localization/utils.js';
+import { useGroupContext } from 'group/groupContext.js';
+import { useSharedData } from 'sharedData/sharedDataHooks.js';
 
-import SharedDataEntryBase, { ICON_SIZE } from './SharedDataEntryBase';
-import SharedFileIcon from './SharedFileIcon';
+import SharedDataEntryBase, { ICON_SIZE } from './SharedDataEntryBase.js';
+import SharedFileIcon from './SharedFileIcon.js';
 
 const StackRow = props => (
   <Stack direction="row" alignItems="center" spacing={1} {...props} />

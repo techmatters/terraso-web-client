@@ -16,7 +16,7 @@
  */
 import React from 'react';
 
-import RichTextEditor from 'common/components/RichTextEditor';
+import RichTextEditor from 'common/components/RichTextEditor/index.js';
 
 const EditableRichText = props => {
   const { label, value, onChange, placeholder } = props;

@@ -16,8 +16,8 @@
  */
 import { useCallback } from 'react';
 
-import { useAnalytics } from 'monitoring/analytics';
-import { useGroupContext } from 'group/groupContext';
+import { useAnalytics } from 'monitoring/analytics.js';
+import { useGroupContext } from 'group/groupContext.js';
 
 export const useSharedData = () => {
   const { trackEvent } = useAnalytics();

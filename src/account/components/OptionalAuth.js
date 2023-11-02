@@ -15,12 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useSelector } from 'react-redux';
-import { fetchUser } from 'terraso-client-shared/account/accountSlice';
-import { useFetchData } from 'terraso-client-shared/store/utils';
+import { fetchUser } from 'terraso-client-shared/account/accountSlice.js';
+import { useFetchData } from 'terraso-client-shared/store/utils.js';
 
-import PageLoader from 'layout/PageLoader';
+import PageLoader from 'layout/PageLoader.js';
 
 const OptionalAuth = ({ children }) => {
   const { data: user, fetching } = useSelector(_.get('account.currentUser'));

@@ -15,13 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
 import { Paper, Typography } from '@mui/material';
 
-import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
+import { useVisualizationContext } from 'sharedData/visualization/visualizationContext.js';
 
-import Visualization from '../Visualization';
+import Visualization from '../Visualization.js';
 
 const VisualizationPreview = props => {
   const { t } = useTranslation();

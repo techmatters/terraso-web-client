@@ -18,13 +18,13 @@ import React, { useCallback, useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Box, Paper, Typography } from '@mui/material';
 
-import PageHeader from 'layout/PageHeader';
-import DrawControls from 'gis/components/DrawControls';
-import { MARKER_CONTROL_ICON } from 'gis/mapMarkers';
+import PageHeader from 'layout/PageHeader.js';
+import DrawControls from 'gis/components/DrawControls.js';
+import { MARKER_CONTROL_ICON } from 'gis/mapMarkers.js';
 
-import { OPTION_BOUNDARY_CHOICES } from '.';
-import BaseMap from '../../LandscapeMap';
-import Actions from '../Actions';
+import BaseMap from '../../LandscapeMap.js';
+import Actions from '../Actions.js';
+import { OPTION_BOUNDARY_CHOICES } from './index.js';
 
 const OptionAddPin = props => {
   const { t } = useTranslation();

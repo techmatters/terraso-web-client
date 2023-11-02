@@ -17,8 +17,8 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { DragDropContext, Draggable } from 'react-beautiful-dnd';
 import { useTranslation } from 'react-i18next';
-import AddIcon from '@mui/icons-material/Add';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import AddIcon from '@mui/icons-material/Add.js';
+import MoreVertIcon from '@mui/icons-material/MoreVert.js';
 import {
   Box,
   Button,
@@ -36,8 +36,8 @@ import {
 
 import { withProps } from 'react-hoc';
 
-import ConfirmMenuItem from 'common/components/ConfirmMenuItem';
-import StrictModeDroppable from 'common/components/StrictModeDroppable';
+import ConfirmMenuItem from 'common/components/ConfirmMenuItem.js';
+import StrictModeDroppable from 'common/components/StrictModeDroppable.js';
 
 import dragIcon from 'assets/drag-icon.svg';
 

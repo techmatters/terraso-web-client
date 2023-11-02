@@ -15,13 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
 import { MenuItem, Select as SelectBase } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import { styled } from '@mui/material/styles/index.js';
+import useMediaQuery from '@mui/material/useMediaQuery/index.js';
 
-import { LOCALES } from 'localization/i18n';
+import { LOCALES } from 'localization/i18n.js';
 
 import theme from 'theme';
 

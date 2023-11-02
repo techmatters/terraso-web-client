@@ -18,10 +18,10 @@ import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
 import scrollama from 'scrollama';
 
-import mapboxgl from 'gis/mapbox';
+import mapboxgl from 'gis/mapbox.js';
 
-import StoryMapForm from './StoryMapForm';
-import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigContext';
+import StoryMapForm from './StoryMapForm/index.js';
+import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigContext.js';
 
 // Mock mapboxgl
 jest.mock('gis/mapbox', () => ({}));

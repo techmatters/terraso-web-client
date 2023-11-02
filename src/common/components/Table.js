@@ -21,10 +21,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
-import ImportExportIcon from '@mui/icons-material/ImportExport';
+import ImportExportIcon from '@mui/icons-material/ImportExport.js';
 import { IconButton, List, ListItem, Stack } from '@mui/material';
 import { DataGrid, GridColumnMenu, GridPagination } from '@mui/x-data-grid';
 

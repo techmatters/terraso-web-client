@@ -14,25 +14,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import {
   extractAccountMembership,
   extractMembersInfo,
-} from 'terraso-client-shared/memberships/membershipsUtils';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
-import { graphql } from 'terrasoApi/shared/graphqlSchema';
+} from 'terraso-client-shared/memberships/membershipsUtils.js';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
+import { graphql } from 'terrasoApi/shared/graphqlSchema/index.ts';
 
-import { countryNameForCode } from 'common/countries';
-import * as gisService from 'gis/gisService';
-import { extractDataEntries } from 'sharedData/sharedDataUtils';
-import { extractTerms } from 'taxonomies/taxonomiesUtils';
+import { countryNameForCode } from 'common/countries.js';
+import * as gisService from 'gis/gisService.js';
+import { extractDataEntries } from 'sharedData/sharedDataUtils.js';
+import { extractTerms } from 'taxonomies/taxonomiesUtils.js';
 
-import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
+import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants.js';
 import {
   extractAffiliatedGroups,
   extractDevelopmentStrategy,
   extractPartnership,
-} from './landscapeUtils';
+} from './landscapeUtils.js';
 
 const cleanLandscape = landscape =>
   _.flow(

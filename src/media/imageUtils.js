@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { readAsDataURL } from './fileUtils';
+import { readAsDataURL } from './fileUtils.js';
 
 export const openImageUrl = url =>
   fetch(url)

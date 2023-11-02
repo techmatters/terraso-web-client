@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 
 import {
   MEMBERSHIP_OPEN,
   MEMBERSHIP_STATUS_APPROVED,
   ROLE_MANAGER,
-} from 'group/membership/components/groupMembershipConstants';
-import { MEMBERSHIP_ROLE_EDITOR } from 'storyMap/storyMapConstants';
+} from 'group/membership/components/groupMembershipConstants.js';
+import { MEMBERSHIP_ROLE_EDITOR } from 'storyMap/storyMapConstants.js';
 
 const getAccountMembership = group =>
   _.getOr(

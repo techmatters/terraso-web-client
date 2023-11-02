@@ -15,16 +15,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useEffect, useState } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { addMessage } from 'terraso-client-shared/notifications/notificationsSlice';
+import { addMessage } from 'terraso-client-shared/notifications/notificationsSlice.js';
 
 import { useScript } from 'custom-hooks';
 
-import { useDocumentTitle } from 'common/document';
-import PageContainer from 'layout/PageContainer';
-import PageLoader from 'layout/PageLoader';
+import { useDocumentTitle } from 'common/document.js';
+import PageContainer from 'layout/PageContainer.js';
+import PageLoader from 'layout/PageLoader.js';
 
 import { HUBSPOT_FORMS } from 'config';
 

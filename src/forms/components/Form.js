@@ -16,7 +16,7 @@
  */
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import {
   Controller,
   FormProvider,
@@ -26,8 +26,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Button, Grid } from '@mui/material';
 
-import FormField from 'forms/components/FormField';
-import { useFormSetContext } from 'forms/formContext';
+import FormField from 'forms/components/FormField.js';
+import { useFormSetContext } from 'forms/formContext.js';
 
 const getInitialEmptyValues = _.flow(
   _.map(field => [field.name, '']),

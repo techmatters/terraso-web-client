@@ -16,19 +16,19 @@
  */
 import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { act } from 'react-dom/test-utils';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
+import useMediaQuery from '@mui/material/useMediaQuery/index.js';
 
-import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
+import LandscapeMembers from 'landscape/membership/components/LandscapeMembers.js';
 
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850
 global.console.error = jest.fn();
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
-jest.mock('@mui/material/useMediaQuery');
+jest.mock('@mui/material/useMediaQuery/index.js');
 
 const setup = async initialState => {
   await render(<LandscapeMembers />, {
@@ -159,7 +159,7 @@ test('LandscapeMembers: Display list', async () => {
     within(rows[1])
       .getByRole('button', { name: 'Leave: Landscape Name' })
       .closest('[role="cell"]')
-  ).toHaveAttribute('data-field', 'actions');
+  ).toHaveAttribute('data-field', 'Actions.js');
 });
 test('LandscapeMembers: Display list (small)', async () => {
   useMediaQuery.mockReturnValue(true);
@@ -306,9 +306,9 @@ test('LandscapeMembers: Display list manager', async () => {
     within(rows[2])
       .getByRole('button', { name: 'Remove' })
       .closest('[role="cell"]')
-  ).toHaveAttribute('data-field', 'actions');
+  ).toHaveAttribute('data-field', 'Actions.js');
 });
-test('LandscapeMembers: Manager actions', async () => {
+test('LandscapeMembers: Manager Actions.js', async () => {
   const generateMemberhips = (index, count) => ({
     edges: Array(count)
       .fill(0)

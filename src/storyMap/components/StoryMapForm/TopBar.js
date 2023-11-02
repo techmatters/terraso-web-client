@@ -16,14 +16,14 @@
  */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack.js';
 import { Button, Divider, Grid, Typography } from '@mui/material';
 
-import RouterLink from 'common/components/RouterLink';
+import RouterLink from 'common/components/RouterLink.js';
 
-import ShareDialog from './ShareDialog';
-import { useStoryMapConfigContext } from './storyMapConfigContext';
-import TopBarContainer from './TopBarContainer';
+import ShareDialog from './ShareDialog.js';
+import { useStoryMapConfigContext } from './storyMapConfigContext.js';
+import TopBarContainer from './TopBarContainer.js';
 
 const TopBar = props => {
   const { t } = useTranslation();

@@ -15,25 +15,25 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useMemo, useState } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from '@mui/icons-material/Delete.js';
 import { Grid, ListItem, Stack, Typography } from '@mui/material';
 
 import { daysSince } from 'timeUtils';
 
-import ConfirmButton from 'common/components/ConfirmButton';
-import EditableText from 'common/components/EditableText';
-import { formatDate } from 'localization/utils';
-import { useAnalytics } from 'monitoring/analytics';
-import Restricted from 'permissions/components/Restricted';
-import { useGroupContext } from 'group/groupContext';
+import ConfirmButton from 'common/components/ConfirmButton.js';
+import EditableText from 'common/components/EditableText.js';
+import { formatDate } from 'localization/utils.js';
+import { useAnalytics } from 'monitoring/analytics.js';
+import Restricted from 'permissions/components/Restricted.js';
+import { useGroupContext } from 'group/groupContext.js';
 import {
   deleteSharedData,
   resetProcessing,
   updateSharedData,
-} from 'sharedData/sharedDataSlice';
+} from 'sharedData/sharedDataSlice.js';
 
 import theme from 'theme';
 

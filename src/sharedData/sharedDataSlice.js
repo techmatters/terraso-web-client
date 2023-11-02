@@ -15,10 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { createSlice } from '@reduxjs/toolkit';
-import _ from 'lodash/fp';
-import { createAsyncThunk } from 'terraso-client-shared/store/utils';
+import _ from 'lodash/fp.js';
+import { createAsyncThunk } from 'terraso-client-shared/store/utils.js';
 
-import * as sharedDataService from 'sharedData/sharedDataService';
+import * as sharedDataService from 'sharedData/sharedDataService.js';
 
 export const UPLOAD_STATUS_UPLOADING = 'uploading';
 export const UPLOAD_STATUS_SUCCESS = 'success';

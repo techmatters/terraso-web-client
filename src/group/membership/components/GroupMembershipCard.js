@@ -15,9 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { Trans, useTranslation } from 'react-i18next';
-import { useSelector } from 'terrasoApi/store';
+import { useSelector } from 'terrasoApi/store.ts';
 import {
   AvatarGroup,
   Box,
@@ -31,17 +31,17 @@ import {
   Typography,
 } from '@mui/material';
 
-import ExternalLink from 'common/components/ExternalLink';
-import Restricted from 'permissions/components/Restricted';
-import AccountAvatar from 'account/components/AccountAvatar';
-import { useGroupContext } from 'group/groupContext';
+import ExternalLink from 'common/components/ExternalLink.js';
+import Restricted from 'permissions/components/Restricted.js';
+import AccountAvatar from 'account/components/AccountAvatar.js';
+import { useGroupContext } from 'group/groupContext.js';
 
 import {
   MEMBERSHIP_CLOSED,
   MEMBERSHIP_STATUS_PENDING,
-} from './groupMembershipConstants';
-import GroupMembershipJoinLeaveButton from './GroupMembershipJoinLeaveButton';
-import GroupMembershipPendingWarning from './GroupMembershipPendingWarning';
+} from './groupMembershipConstants.js';
+import GroupMembershipJoinLeaveButton from './GroupMembershipJoinLeaveButton.js';
+import GroupMembershipPendingWarning from './GroupMembershipPendingWarning.js';
 
 const Loader = () => {
   const { t } = useTranslation();

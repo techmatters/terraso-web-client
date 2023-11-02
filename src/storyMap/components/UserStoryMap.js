@@ -15,29 +15,29 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useFetchData } from 'terraso-client-shared/store/utils';
+import { useFetchData } from 'terraso-client-shared/store/utils.js';
 
-import { serialize } from 'common/components/RichTextEditor/utils';
-import RouterButton from 'common/components/RouterButton';
-import { useSocialShareContext } from 'common/components/SocialShare';
-import { useDocumentDescription, useDocumentTitle } from 'common/document';
-import Container, { useContainerContext } from 'layout/Container';
-import PageLoader from 'layout/PageLoader';
-import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-import Restricted from 'permissions/components/Restricted';
-import StoryMap from 'storyMap/components/StoryMap';
-import { fetchStoryMap } from 'storyMap/storyMapSlice';
+import { serialize } from 'common/components/RichTextEditor/utils.js';
+import RouterButton from 'common/components/RouterButton.js';
+import { useSocialShareContext } from 'common/components/SocialShare.js';
+import { useDocumentDescription, useDocumentTitle } from 'common/document.js';
+import Container, { useContainerContext } from 'layout/Container.js';
+import PageLoader from 'layout/PageLoader.js';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext.js';
+import Restricted from 'permissions/components/Restricted.js';
+import StoryMap from 'storyMap/components/StoryMap.js';
+import { fetchStoryMap } from 'storyMap/storyMapSlice.js';
 import {
   generateStoryMapEditUrl,
   generateStoryMapEmbedUrl,
   isChapterEmpty,
-} from 'storyMap/storyMapUtils';
+} from 'storyMap/storyMapUtils.js';
 
-import DeleteButton from './StoryMapDeleteButton';
+import DeleteButton from './StoryMapDeleteButton.js';
 
 const UserStoryMap = () => {
   const navigate = useNavigate();

@@ -19,13 +19,13 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { useDocumentTitle } from 'common/document';
-import PageContainer from 'layout/PageContainer';
-import PageLoader from 'layout/PageLoader';
-import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-import { GroupContextProvider } from 'group/groupContext';
-import { fetchGroupUpload } from 'group/groupSlice';
-import VisualizationConfigForm from 'sharedData/visualization/components/VisualizationConfigForm';
+import { useDocumentTitle } from 'common/document.js';
+import PageContainer from 'layout/PageContainer.js';
+import PageLoader from 'layout/PageLoader.js';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext.js';
+import { GroupContextProvider } from 'group/groupContext.js';
+import { fetchGroupUpload } from 'group/groupSlice.ts';
+import VisualizationConfigForm from 'sharedData/visualization/components/VisualizationConfigForm/index.js';
 
 const GroupSharedDataVisualizationConfig = () => {
   const { t } = useTranslation();

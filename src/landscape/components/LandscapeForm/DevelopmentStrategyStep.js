@@ -19,12 +19,12 @@ import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { Box, TextareaAutosize, Typography } from '@mui/material';
 
-import ExternalLink from 'common/components/ExternalLink';
-import Form from 'forms/components/Form';
-import { FormContextProvider } from 'forms/formContext';
-import PageHeader from 'layout/PageHeader';
+import ExternalLink from 'common/components/ExternalLink.js';
+import Form from 'forms/components/Form.js';
+import { FormContextProvider } from 'forms/formContext.js';
+import PageHeader from 'layout/PageHeader.js';
 
-import Actions from './Actions';
+import Actions from './Actions.js';
 
 const VALIDATION_SCHEMA = yup.object().shape({}).required();
 

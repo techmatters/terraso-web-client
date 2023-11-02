@@ -18,8 +18,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Stack, Typography } from '@mui/material';
 
-import RouterLink from 'common/components/RouterLink';
-import HomeCard from 'home/components/HomeCard';
+import RouterLink from 'common/components/RouterLink.js';
+import HomeCard from 'home/components/HomeCard.js';
 
 const ToolHomeCard = () => {
   const { t } = useTranslation();

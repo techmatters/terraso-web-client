@@ -15,11 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useMemo } from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { useFetchData } from 'terraso-client-shared/store/utils';
+import { useFetchData } from 'terraso-client-shared/store/utils.js';
 import {
   Button,
   Card,
@@ -31,19 +31,19 @@ import {
   Typography,
 } from '@mui/material';
 
-import ExternalLink from 'common/components/ExternalLink';
-import LoaderCard from 'common/components/LoaderCard';
-import RouterLink from 'common/components/RouterLink';
-import { useDocumentTitle } from 'common/document';
-import PageContainer from 'layout/PageContainer';
-import PageHeader from 'layout/PageHeader';
-import PageLoader from 'layout/PageLoader';
-import { formatDate } from 'localization/utils';
-import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-import { fetchSamples } from 'storyMap/storyMapSlice';
-import { generateStoryMapUrl } from 'storyMap/storyMapUtils';
+import ExternalLink from 'common/components/ExternalLink.js';
+import LoaderCard from 'common/components/LoaderCard.js';
+import RouterLink from 'common/components/RouterLink.js';
+import { useDocumentTitle } from 'common/document.js';
+import PageContainer from 'layout/PageContainer.js';
+import PageHeader from 'layout/PageHeader.js';
+import PageLoader from 'layout/PageLoader.js';
+import { formatDate } from 'localization/utils.js';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext.js';
+import { fetchSamples } from 'storyMap/storyMapSlice.js';
+import { generateStoryMapUrl } from 'storyMap/storyMapUtils.js';
 
-import StoryMapsCard from './StoryMapsCard';
+import StoryMapsCard from './StoryMapsCard.js';
 
 const StoryMaps = ({ storyMaps, fetching }) => {
   const { t } = useTranslation();

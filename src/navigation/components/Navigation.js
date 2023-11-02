@@ -15,15 +15,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { Box, Button, List, ListItem, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { styled } from '@mui/material/styles/index.js';
 import { visuallyHidden } from '@mui/utils';
 
-import Container from 'layout/Container';
+import Container from 'layout/Container.js';
 
 const PAGES = {
   '/': {

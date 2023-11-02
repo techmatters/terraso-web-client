@@ -25,10 +25,10 @@ import {
   Typography,
 } from '@mui/material';
 
-import CardActionRouterLink from 'common/components/CardActionRouterLink';
-import HelperText from 'common/components/HelperText';
-import RouterButton from 'common/components/RouterButton';
-import RouterLink from 'common/components/RouterLink';
+import CardActionRouterLink from 'common/components/CardActionRouterLink.js';
+import HelperText from 'common/components/HelperText.js';
+import RouterButton from 'common/components/RouterButton.js';
+import RouterLink from 'common/components/RouterLink.js';
 
 const HomeCard = ({
   title,

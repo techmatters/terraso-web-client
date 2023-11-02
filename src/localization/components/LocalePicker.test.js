@@ -16,15 +16,15 @@
  */
 import { fireEvent, render, screen, within } from 'tests/utils';
 import React from 'react';
-import _ from 'lodash/fp';
+import _ from 'lodash/fp.js';
 import { act } from 'react-dom/test-utils';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
+import useMediaQuery from '@mui/material/useMediaQuery/index.js';
 
-import LocalePicker from 'localization/components/LocalePicker';
-import i18n from 'localization/i18n';
+import LocalePicker from 'localization/components/LocalePicker.js';
+import i18n from 'localization/i18n.js';
 
-jest.mock('@mui/material/useMediaQuery');
+jest.mock('@mui/material/useMediaQuery/index.js');
 jest.mock('terraso-client-shared/terrasoApi/api');
 
 const setup = async () => {
