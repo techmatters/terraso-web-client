@@ -50,6 +50,23 @@ const ACCEPTED_RESOURCE_TYPES = [
   ...DATA_SET_ACCPETED_EXTENSIONS,
 ];
 
+const TYPE_LABEL = {
+  csv: 'CSV',
+  doc: 'DOC',
+  docx: 'DOCX',
+  pdf: 'PDF',
+  ppt: 'PPT',
+  pptx: 'PPTX',
+  xls: 'XLS',
+  xlsx: 'XLSX',
+  kmz: 'KMZ',
+  kml: 'KMZ',
+  gpx: 'GPX',
+  geojson: 'GeoJSON',
+  json: 'JSON',
+  zip: 'ESRI',
+};
+
 const StackRow = props => (
   <Stack direction="row" alignItems="center" spacing={1} {...props} />
 );
@@ -158,7 +175,7 @@ const SelectDataFileStep = props => {
                     </Typography>
                   </Grid>
                   <Grid item xs={3} md={1}>
-                    {file.resourceType.toUpperCase()}
+                    {TYPE_LABEL[file.resourceType]}
                   </Grid>
                   <Grid item xs={2} md={1}>
                     {filesize(file.size, { round: 0 })}
