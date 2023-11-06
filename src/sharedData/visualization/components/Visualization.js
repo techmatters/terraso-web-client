@@ -171,7 +171,7 @@ const MapboxLayer = props => {
       return;
     }
     getLayerImage({
-      ...visualizationConfig?.visualizeConfig || {},
+      ...(visualizationConfig?.visualizeConfig || {}),
       opacity: DEFAULT_MARKER_OPACITY,
     }).then(image => {
       return setimageSvg(image);

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
@@ -212,7 +212,7 @@ const Opacity = props => {
 const VisualizeStep = props => {
   const { t } = useTranslation();
   const { onNext, onBack } = props;
-  const { visualizationConfig } = useVisualizationContext();
+  const { visualizationConfig, fileContext } = useVisualizationContext();
   const [visualizeConfig, setVisualizeConfig] = useState(
     visualizationConfig.visualizeConfig
   );
@@ -222,6 +222,8 @@ const VisualizeStep = props => {
   const [opacity, setOpacity] = useState(
     visualizationConfig.visualizeConfig.opacity
   );
+
+  const showPolygonFields = useMemo(() => fileContext?.geojson, [fileContext]);
 
   useEffect(() => {
     setVisualizeConfig(visualizationConfig.visualizeConfig);
@@ -260,7 +262,9 @@ const VisualizeStep = props => {
               <Shape shape={shape} setShape={setShape} />
               <Size size={size} setSize={setSize} />
               <Color color={color} setColor={setColor} />
-              <Opacity opacity={opacity} setOpacity={setOpacity} />
+              {showPolygonFields && (
+                <Opacity opacity={opacity} setOpacity={setOpacity} />
+              )}
             </Grid>
           </Grid>
           <Grid item xs={12} md={7}>
