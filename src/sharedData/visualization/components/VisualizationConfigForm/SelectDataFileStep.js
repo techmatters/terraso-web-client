@@ -146,17 +146,24 @@ const SelectDataFileStep = props => {
                     }}
                   />
                 </ListItemIcon>
-                <Grid container sx={{ fontSize: 14, color: 'gray.dark1' }}>
-                  <Grid item component={StackRow} xs={8} md={4}>
+                <Grid
+                  container
+                  sx={{ fontSize: 14, color: 'gray.dark1' }}
+                  spacing={1}
+                >
+                  <Grid item component={StackRow} xs={12} md={6}>
                     <SharedFileIcon resourceType={file.resourceType} />
                     <Typography id={`selectable-file-${file.id}`}>
                       {file.name}
                     </Typography>
                   </Grid>
+                  <Grid item xs={3} md={1}>
+                    {file.resourceType.toUpperCase()}
+                  </Grid>
                   <Grid item xs={2} md={1}>
                     {filesize(file.size, { round: 0 })}
                   </Grid>
-                  <Grid item xs={9} md={5}>
+                  <Grid item xs={12} md={4}>
                     {formatDate(i18n.resolvedLanguage, file.createdAt)}, by{' '}
                     {t('user.full_name', { user: file.createdBy })}
                   </Grid>
