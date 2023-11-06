@@ -167,7 +167,7 @@ const Opacity = props => {
   const [debouncedValue] = useDebounce(value, 100);
 
   useEffect(() => {
-    setOpacity(debouncedValue);
+    setOpacity(Number(debouncedValue));
   }, [debouncedValue, setOpacity]);
 
   return (
@@ -190,7 +190,7 @@ const Opacity = props => {
         <OutlinedInput
           value={opacity}
           size="small"
-          onChange={event => setOpacity(event.target.value)}
+          onChange={event => setOpacity(Number(event.target.value))}
           inputProps={{
             step: 10,
             min: 0,

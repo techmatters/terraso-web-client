@@ -419,7 +419,7 @@ const testSetDatasetStep = async testParams => {
   );
 };
 
-const testVisualizeStep = async () => {
+const testVisualizeStep = async testParams => {
   await waitFor(() =>
     expect(
       screen.getByRole('heading', {
@@ -453,11 +453,15 @@ const testVisualizeStep = async () => {
   );
   expect(colorInput).toHaveValue('#e28979');
 
-  // Polygon opacity
-  const opacity = screen.getByRole('spinbutton', { name: 'Polygon Opacity:' });
-  expect(opacity).toHaveValue(50);
-  fireEvent.change(opacity, { target: { value: 80 } });
-  expect(opacity).toHaveValue(80);
+  if (isMapFile(testParams.selectFile)) {
+    // Polygon opacity
+    const opacity = screen.getByRole('spinbutton', {
+      name: 'Polygon Opacity:',
+    });
+    expect(opacity).toHaveValue(50);
+    fireEvent.change(opacity, { target: { value: 80 } });
+    expect(opacity).toHaveValue(80);
+  }
 
   // Next
   await act(async () =>
@@ -534,33 +538,29 @@ const testPreviewStep = async (map, events, testParams) => {
     }),
     undefined
   );
-  expect(map.addLayer).toHaveBeenCalledWith(
-    expect.objectContaining({
-      id: 'visualization-polygons-outline',
-      source: 'visualization',
-    }),
-    undefined
-  );
-  expect(map.addLayer).toHaveBeenCalledWith(
-    expect.objectContaining({
-      id: 'visualization-polygons-fill',
-      source: 'visualization',
-      paint: {
-        'fill-color': '#FF580D',
-        'fill-opacity': 0.8,
-      },
-    }),
-    undefined
-  );
+  if (isMapFile(testParams.selectFile)) {
+    expect(map.addLayer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'visualization-polygons-outline',
+        source: 'visualization',
+      }),
+      undefined
+    );
+    expect(map.addLayer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'visualization-polygons-fill',
+        source: 'visualization',
+        paint: {
+          'fill-color': '#FF580D',
+          'fill-opacity': 0.8,
+        },
+      }),
+      undefined
+    );
+  }
 };
 
 const BASE_CONFIGURATION_EXPECTED_INPUT = {
-  visualizeConfig: {
-    shape: 'triangle',
-    size: '30',
-    color: '#FF580D',
-    opacity: '80',
-  },
   viewportConfig: {
     bounds: {
       northEast: { lng: -67.62077603784013, lat: 11.325606896067784 },
@@ -599,6 +599,12 @@ test.each([
       },
       expectedConfiguration: {
         ...BASE_CONFIGURATION_EXPECTED_INPUT,
+        visualizeConfig: {
+          shape: 'triangle',
+          size: '30',
+          color: '#FF580D',
+          opacity: 50,
+        },
         datasetConfig: {
           dataColumns: {
             option: 'custom',
@@ -665,6 +671,12 @@ test.each([
       },
       expectedConfiguration: {
         ...BASE_CONFIGURATION_EXPECTED_INPUT,
+        visualizeConfig: {
+          shape: 'triangle',
+          size: '30',
+          color: '#FF580D',
+          opacity: 80,
+        },
         datasetConfig: {
           dataColumns: {
             option: '',
@@ -691,7 +703,7 @@ test.each([
     if (isDataSetFile(testParams.selectFile)) {
       await testSetDatasetStep(testParams);
     }
-    await testVisualizeStep();
+    await testVisualizeStep(testParams);
     await testAnnotateStep(testParams);
     await testPreviewStep(map, events, testParams);
 
