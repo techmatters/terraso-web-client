@@ -42,6 +42,8 @@ const MAP_PADDING = {
   right: 50,
 };
 
+const DEFAULT_MARKER_OPACITY = 1;
+
 const getSourceBounds = async (map, sourceId) => {
   const source = map.getSource(sourceId);
   const loaded = source.loaded();
@@ -168,7 +170,10 @@ const MapboxLayer = props => {
     if (!visualizationConfig?.visualizeConfig) {
       return;
     }
-    getLayerImage(visualizationConfig?.visualizeConfig).then(image => {
+    getLayerImage({
+      ...visualizationConfig?.visualizeConfig || {},
+      opacity: DEFAULT_MARKER_OPACITY,
+    }).then(image => {
       return setimageSvg(image);
     });
   }, [visualizationConfig?.visualizeConfig]);
@@ -287,7 +292,7 @@ const MapboxLayer = props => {
             paint: {
               'circle-color': color,
               'circle-radius': size / 2.5,
-              'circle-opacity': 0.5,
+              'circle-opacity': DEFAULT_MARKER_OPACITY,
               'circle-stroke-width': 2,
               'circle-stroke-color': color,
             },
