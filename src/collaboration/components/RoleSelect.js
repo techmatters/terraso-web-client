@@ -20,8 +20,15 @@ import { MenuItem, Select, Typography } from '@mui/material';
 import Restricted from 'permissions/components/Restricted';
 
 const RoleSelect = props => {
-  const { roles, member, tabIndex, onMemberRoleChange, permission, resource, label } =
-    props;
+  const {
+    roles,
+    member,
+    tabIndex,
+    onMemberRoleChange,
+    permission,
+    resource,
+    label,
+  } = props;
 
   const onChange = useCallback(
     event => {
