@@ -51,7 +51,7 @@ const MembershipJoinLeaveButton = props => {
 
   if (
     is_member &&
-    accountMembership.membershipStatus === MEMBERSHIP_STATUS_PENDING
+    accountMembership?.membershipStatus === MEMBERSHIP_STATUS_PENDING
   ) {
     return (
       <MemberRequestCancelButton
