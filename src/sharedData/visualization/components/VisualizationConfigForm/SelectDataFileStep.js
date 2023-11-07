@@ -60,7 +60,7 @@ const TYPE_LABEL = {
   xls: 'XLS',
   xlsx: 'XLSX',
   kmz: 'KMZ',
-  kml: 'KMZ',
+  kml: 'KML',
   gpx: 'GPX',
   geojson: 'GeoJSON',
   json: 'JSON',
