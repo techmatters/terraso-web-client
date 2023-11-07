@@ -634,7 +634,7 @@
         "form_step_annotate_data_points_label": "Datos",
         "form_step_annotate_data_points_description": "Personaliza los nombres de las etiquetas. Arrastra para reordenar las columnas.",
         "form_step_data_file_step_title": "Seleccione un archivo",
-        "form_step_data_file_step_description": "<0>Se pueden crear mapas a partir de</0><1><0>Hojas de cálculo (Excel, CSV) que contienen columnas con información de latitud y longitud</0><1>Archivos de datos geoespaciales (ESRI shapefile, GeoJSON, KML, KMZ)</1></1><2>Lee más sobre cómo <1>preparar tu archivo de datos para el mapeo</1>.</2>",
+        "form_step_data_file_step_description": "<0>Se pueden crear mapas a partir de:</0><1><0>Hojas de cálculo (Excel, CSV) que contienen columnas con información de latitud y longitud</0><1>Archivos de datos geoespaciales (ESRI shapefile, GeoJSON, KML, KMZ)</1></1><2>Lee más sobre cómo <1>preparar tu archivo de datos para el mapeo</1>.</2>",
         "form_step_data_file_step_description_help_url": "https://terraso.org/es/ayuda/prepare-su-archivo-de-datos-para-el-mapeo/",
         "form_step_set_dataset_step_title": "Datos de “{{selectedFile.name}}”",
         "form_step_set_dataset_step_description": "Columnas",

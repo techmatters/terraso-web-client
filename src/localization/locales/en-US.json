@@ -591,7 +591,7 @@
         "form_step_annotate_data_points_label": "Data",
         "form_step_annotate_data_points_description": "Customize the names of the labels. Drag to reorder the columns.",
         "form_step_data_file_step_title": "Select a file",
-        "form_step_data_file_step_description": "<0>Maps can be created from</0><1><0>Spreadsheets (Excel, CSV) containing columns with latitude and longitude information</0><1>Geospatial data files (ESRI shapefile, GeoJSON, KML, KMZ)</1></1><2>Read more about <1>preparing your data file for mapping</1>.</2>",
+        "form_step_data_file_step_description": "<0>Maps can be created from:</0><1><0>Spreadsheets (Excel, CSV) containing columns with latitude and longitude information</0><1>Geospatial data files (ESRI shapefile, GeoJSON, KML, KMZ)</1></1><2>Read more about <1>preparing your data file for mapping</1>.</2>",
         "form_step_data_file_step_description_help_url": "https://terraso.org/help/prepare-your-data-file-for-mapping/",
         "form_step_set_dataset_step_title": "Data from “{{selectedFile.name}}”",
         "form_step_set_dataset_step_description": "Columns",
@@ -604,7 +604,8 @@
         "form_step_preview_step_map_description": "After you publish the map, {{entityType}} members can view the map or download it as an image or data file.",
         "form_step_preview_step_save": "Publish",
         "added_visualization_config": "The map for {{name}} file has been published.",
-        "visualization_source_data": "<0>Created by {{user}} on {{date}} | SOURCE DATA: <1>{{file.name}}.{{file.resourceType}}</1></0>",
+        "visualization_source_data": "<0>Created
+        user}} on {{date}} | SOURCE DATA: <1>{{file.name}}.{{file.resourceType}}</1></0>",
         "visualization_delete": "Delete",
         "visualization_delete_confirm_title": "Delete map “{{visualization.title}}“?",
         "visualization_delete_confirm_message": "Are you sure you wish to delete the map “{{visualization.title}}“",
