@@ -134,14 +134,24 @@ export const extractAffiliatedGroups = landscape =>
 export const extractDevelopmentStrategy = landscape =>
   _.get('associatedDevelopmentStrategy.edges[0].node', landscape);
 
+const extractLandscapeGeoJson = landscape => {
+  if (!landscape.areaPolygon) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(landscape.areaPolygon);
+  } catch (error) {
+    return null;
+  }
+};
+
 export const extractLandscape = async (landscape, useLocationApi) => {
   const result = {
     ..._.omit('membershipList', landscape),
     accountMembership: extractAccountMembership(landscape.membershipList),
     membershipsInfo: extractMembershipsInfo(landscape.membershipList),
-    areaPolygon: landscape.areaPolygon
-      ? JSON.parse(landscape.areaPolygon)
-      : null,
+    areaPolygon: extractLandscapeGeoJson(landscape),
     partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
     partnership: extractPartnership(landscape),
     dataEntries: extractDataEntries(landscape),
@@ -152,7 +162,8 @@ export const extractLandscape = async (landscape, useLocationApi) => {
   }
 
   // Get bounding box from nominatim.openstreetmap.org if no areaPolygon data
-  // AreaPolygon is not present when the user decided to skip it.
+  // AreaPolygon is not present when the user decided to skip it in the
+  // landscape creation process as part of the wizard steps
   const currentCountry = countryNameForCode(result.location);
 
   if (!currentCountry) {

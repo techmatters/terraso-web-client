@@ -19,18 +19,17 @@ import { extractMembership } from 'terraso-client-shared/collaboration/membershi
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
-import { extractTerms } from 'taxonomies/taxonomiesUtils';
-
 import {
   ALL_PARTNERSHIP_STATUS,
   MEMBERSHIP_ROLE_MEMBER,
-} from './landscapeConstants';
+} from 'landscape/landscapeConstants';
 import {
   extractAffiliatedGroups,
   extractDevelopmentStrategy,
   extractLandscape,
   extractPartnership,
-} from './landscapeUtils';
+} from 'landscape/landscapeUtils';
+import { extractTerms } from 'taxonomies/taxonomiesUtils';
 
 const cleanLandscape = landscape =>
   _.flow(
