@@ -61,13 +61,15 @@ test('LocalePicker: Change locale', async () => {
   await setup();
   expect(screen.getByText('English')).toBeInTheDocument();
   await act(async () =>
-    fireEvent.mouseDown(screen.getByRole('button', { name: /English/i }))
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: /English/i }))
   );
   const listbox = within(screen.getByRole('listbox'));
   await act(async () =>
     fireEvent.click(listbox.getByRole('option', { name: /Español/i }))
   );
-  expect(screen.getByRole('button', { name: /Español/i })).toBeInTheDocument();
+  expect(
+    screen.getByRole('combobox', { name: /Español/i })
+  ).toBeInTheDocument();
 
   const savePreferenceCall = terrasoApi.requestGraphQL.mock.calls[0];
   expect(savePreferenceCall[1]).toStrictEqual({
@@ -84,13 +86,15 @@ test('LocalePicker: Dont save if no user', async () => {
 
   expect(screen.getByText('English')).toBeInTheDocument();
   await act(async () =>
-    fireEvent.mouseDown(screen.getByRole('button', { name: /English/i }))
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: /English/i }))
   );
   const listbox = within(screen.getByRole('listbox'));
   await act(async () =>
     fireEvent.click(listbox.getByRole('option', { name: /Español/i }))
   );
-  expect(screen.getByRole('button', { name: /Español/i })).toBeInTheDocument();
+  expect(
+    screen.getByRole('combobox', { name: /Español/i })
+  ).toBeInTheDocument();
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(0);
 });
 test('LocalePicker: Change locale (small screen)', async () => {
@@ -106,11 +110,11 @@ test('LocalePicker: Change locale (small screen)', async () => {
 
   expect(screen.getByText('EN')).toBeInTheDocument();
   await act(async () =>
-    fireEvent.mouseDown(screen.getByRole('button', { name: /EN/i }))
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: /EN/i }))
   );
   const listbox = within(screen.getByRole('listbox'));
   await act(async () =>
     fireEvent.click(listbox.getByRole('option', { name: /ES/i }))
   );
-  expect(screen.getByRole('button', { name: /ES/i })).toBeInTheDocument();
+  expect(screen.getByRole('combobox', { name: /ES/i })).toBeInTheDocument();
 });

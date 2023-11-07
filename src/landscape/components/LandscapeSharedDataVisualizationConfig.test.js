@@ -83,7 +83,7 @@ const testSelectDataFileStep = async () => {
 };
 
 const validateSelectValue = async (name, value) => {
-  const select = screen.getByRole('button', { name });
+  const select = screen.getByRole('combobox', { name });
   await act(async () => fireEvent.mouseDown(select));
   expect(
     within(screen.getByRole('listbox', { name })).getByRole('option', {
@@ -99,8 +99,8 @@ const validateSelectValue = async (name, value) => {
   );
 };
 const changeSelectOption = async (name, newValue) => {
-  await screen.findByRole('button', { name });
-  const select = screen.getByRole('button', { name });
+  await screen.findByRole('combobox', { name });
+  const select = screen.getByRole('combobox', { name });
 
   await act(async () => fireEvent.mouseDown(select));
   await act(async () =>

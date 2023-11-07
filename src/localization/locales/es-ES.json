@@ -134,7 +134,8 @@
         "breadcrumbs_visualization": "{{mapTitle}}",
         "breadcrumbs_visualization_new": "Nuevo mapa",
         "breadcrumbs_upload": "Compartir archivos y enlaces",
-        "autocomplete_no_options": "No existen opciones"
+        "autocomplete_no_options": "No existen opciones",
+        "members_list_role_select_label": "Rol"
     },
     "tool": {
         "avilability": "Disponibilidad",
