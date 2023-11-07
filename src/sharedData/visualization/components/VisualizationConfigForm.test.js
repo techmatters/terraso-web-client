@@ -429,7 +429,7 @@ const testVisualizeStep = async testParams => {
   );
 
   // Marker Shape
-  const shapes = screen.getByRole('group', { name: 'Marker Shape:' });
+  const shapes = screen.getByRole('group', { name: 'Symbol Shape:' });
   expect(
     within(shapes).getByRole('button', { name: 'Circle' })
   ).toHaveAttribute('aria-pressed', 'true');
@@ -438,7 +438,7 @@ const testVisualizeStep = async testParams => {
   );
 
   // Marker Size
-  const size = screen.getByRole('spinbutton', { name: 'Marker Size:' });
+  const size = screen.getByRole('spinbutton', { name: 'Symbol Size:' });
   expect(size).toHaveValue(15);
   fireEvent.change(size, { target: { value: 30 } });
   expect(size).toHaveValue(30);
