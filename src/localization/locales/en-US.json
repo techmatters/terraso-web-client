@@ -604,8 +604,7 @@
         "form_step_preview_step_map_description": "After you publish the map, {{entityType}} members can view the map or download it as an image or data file.",
         "form_step_preview_step_save": "Publish",
         "added_visualization_config": "The map for {{name}} file has been published.",
-        "visualization_source_data": "<0>Created
-        user}} on {{date}} | SOURCE DATA: <1>{{file.name}}.{{file.resourceType}}</1></0>",
+        "visualization_source_data": "<0>Created by {{user}} on {{date}} | SOURCE DATA: <1>{{file.name}}.{{file.resourceType}}</1></0>",
         "visualization_delete": "Delete",
         "visualization_delete_confirm_title": "Delete map “{{visualization.title}}“?",
         "visualization_delete_confirm_message": "Are you sure you wish to delete the map “{{visualization.title}}“",
