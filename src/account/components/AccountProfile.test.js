@@ -217,13 +217,15 @@ test('AccountProfile: Save language', async () => {
 
   expect(screen.getByText('English')).toBeInTheDocument();
   await act(async () =>
-    fireEvent.mouseDown(screen.getByRole('button', { name: /English/i }))
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: /English/i }))
   );
   const listbox = within(screen.getByRole('listbox'));
   await act(async () =>
     fireEvent.click(listbox.getByRole('option', { name: /Español/i }))
   );
-  expect(screen.getByRole('button', { name: /Español/i })).toBeInTheDocument();
+  expect(
+    screen.getByRole('combobox', { name: /Español/i })
+  ).toBeInTheDocument();
 
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
