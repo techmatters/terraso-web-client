@@ -564,7 +564,7 @@
         "description_with_files": "Solo los miembros de tu {{entityType}} pueden descargar estos archivos o crear un mapa con ellos.",
         "entity_type_group": "grupo",
         "entity_type_landscape": "paisaje",
-        "card_description": "Carga documentos y comparte enlaces con otros miembros. Crea mapas con archivos de datos (se requieren latitud y longitud) y archivos de mapas (GeoJSON, KML, KMZ, Shapefiles de Esri).",
+        "card_description": "Carga documentos y comparte enlaces con otros miembros. Crea mapas con archivos de datos (se requieren latitud y longitud) y archivos de mapas (GeoJSON, KML, KMZ, Shapefiles de ESRI).",
         "upload_button": "Compartir archivos y enlaces",
         "delete_confirm_title": "Eliminar “{{name}}”?",
         "delete_file_confirm_message": "¿Estás segura(o) de que deseas eliminar el archivo “{{name}}”?",
