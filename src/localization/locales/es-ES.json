@@ -134,8 +134,7 @@
         "breadcrumbs_visualization": "{{mapTitle}}",
         "breadcrumbs_visualization_new": "Nuevo mapa",
         "breadcrumbs_upload": "Compartir archivos y enlaces",
-        "autocomplete_no_options": "No existen opciones",
-        "members_list_role_select_label": "Rol"
+        "autocomplete_no_options": "No existen opciones"
     },
     "tool": {
         "avilability": "Disponibilidad",
@@ -1038,7 +1037,8 @@
         "members_list_empty": "No existen miembros",
         "members_list_column_role": "Rol",
         "members_list_column_actions_description": "Acciones",
-        "membership_pending": "Pendiente"
+        "membership_pending": "Pendiente",
+        "members_list_role_select_label": "Rol"
     },
     "collaboration": {
         "entity_type_group": "grupo",

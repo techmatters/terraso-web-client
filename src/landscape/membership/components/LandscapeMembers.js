@@ -215,6 +215,7 @@ const LandscapeMembers = () => {
             roles,
             permission: 'landscape.manageMembers',
             resource: landscape,
+            label: t('memberships.members_list_role_select_label'),
             onMemberRoleChange,
           })}
           RemoveComponent={withProps(RemoveButton, {

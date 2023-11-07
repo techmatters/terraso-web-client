@@ -20,7 +20,7 @@ import { MenuItem, Select, Typography } from '@mui/material';
 import Restricted from 'permissions/components/Restricted';
 
 const RoleSelect = props => {
-  const { roles, member, tabIndex, onMemberRoleChange, permission, resource } =
+  const { roles, member, tabIndex, onMemberRoleChange, permission, resource, label } =
     props;
 
   const onChange = useCallback(
@@ -48,6 +48,7 @@ const RoleSelect = props => {
         disabled={member.fetching}
         inputProps={{
           tabIndex,
+          'aria-label': label,
         }}
         disableUnderline
       >

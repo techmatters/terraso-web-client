@@ -134,8 +134,7 @@
         "breadcrumbs_visualization": "{{mapTitle}}",
         "breadcrumbs_visualization_new": "New Map",
         "breadcrumbs_upload": "Share Files and Links",
-        "autocomplete_no_options": "No options",
-        "members_list_role_select_label": "Role"
+        "autocomplete_no_options": "No options"
     },
     "tool": {
         "requirements": "System requirements",
@@ -1031,7 +1030,8 @@
         "members_list_empty": "No members",
         "members_list_column_role": "Role",
         "members_list_column_actions_description": "Actions",
-        "membership_pending": "Pending"
+        "membership_pending": "Pending",
+        "members_list_role_select_label": "Role"
     },
     "collaboration": {
         "entity_type_group": "group",

@@ -74,7 +74,7 @@ const RoleSelect = ({ member, tabIndex }) => {
         disabled={member.fetching}
         inputProps={{
           tabIndex,
-          'aria-label': t('group.members_list_role_select_label'),
+          'aria-label': t('memberships.members_list_role_select_label'),
         }}
         disableUnderline
       >
