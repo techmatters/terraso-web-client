@@ -47,9 +47,10 @@ const setup = async (countryName = 'Landscape location') => {
   });
   const email = screen.getByRole('textbox', { name: 'Email address' });
   const website = screen.getByRole('textbox', { name: 'Website' });
-  const location = screen.getByRole('button', {
-    name: `Country or region (required) ${countryName}`,
+  const location = screen.getByRole('combobox', {
+    name: `Country or region (required)`,
   });
+  expect(within(location).getByText(countryName)).toBeInTheDocument();
 
   const changeLocation = async newLocation => {
     await act(async () => fireEvent.mouseDown(location));

@@ -56,8 +56,8 @@ const setup = async () => {
   };
 
   const changeYear = async newYear => {
-    const yearSelect = screen.getByRole('button', {
-      name: 'Year of landscape partnership inception Select a year',
+    const yearSelect = screen.getByRole('combobox', {
+      name: 'Year of landscape partnership inception',
     });
     await act(async () => fireEvent.mouseDown(yearSelect));
     const listbox = within(screen.getByRole('listbox'));

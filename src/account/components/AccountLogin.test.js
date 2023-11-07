@@ -156,5 +156,5 @@ test('AccountLogin: Display locale picker', async () => {
     })
   );
   await render(<AccountLogin />);
-  expect(screen.getByRole('button', { name: /English/i })).toBeInTheDocument();
+  expect(screen.getByRole('combobox', { name: /English/i })).toBeInTheDocument();
 });

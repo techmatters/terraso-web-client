@@ -397,7 +397,7 @@ test('LandscapeMembers: Manager actions', async () => {
   ).toHaveAttribute('data-field', 'name');
   expect(
     within(rows[3])
-      .getByRole('button', { name: 'Member' })
+      .getByRole('combobox', { name: /Member/i })
       .closest('[role="cell"]')
   ).toHaveAttribute('data-field', 'role');
   const roleButton = within(rows[3]).getByRole('button', { name: 'Member' });
