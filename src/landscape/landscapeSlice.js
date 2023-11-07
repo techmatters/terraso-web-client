@@ -519,12 +519,7 @@ const updateMemberItem = (state, email, valueGenerator) => {
   return _.set(
     'members.data.membershipsInfo.membershipsSample',
     state.members.data.membershipsInfo.membershipsSample
-      .map(membership => {
-        if (membership.email === email) {
-          return valueGenerator(membership);
-        }
-        return membership;
-      })
+      .map(membership => membership.email === email ? valueGenerator(membership) : membership )
       .filter(membership => membership),
     state
   );
