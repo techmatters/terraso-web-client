@@ -134,7 +134,8 @@
         "breadcrumbs_visualization": "{{mapTitle}}",
         "breadcrumbs_visualization_new": "New Map",
         "breadcrumbs_upload": "Share Files and Links",
-        "autocomplete_no_options": "No options"
+        "autocomplete_no_options": "No options",
+        "members_list_role_select_label": "Role"
     },
     "tool": {
         "requirements": "System requirements",

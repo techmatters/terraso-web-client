@@ -67,7 +67,9 @@ test('LocalePicker: Change locale', async () => {
   await act(async () =>
     fireEvent.click(listbox.getByRole('option', { name: /Español/i }))
   );
-  expect(screen.getByRole('combobox', { name: /Español/i })).toBeInTheDocument();
+  expect(
+    screen.getByRole('combobox', { name: /Español/i })
+  ).toBeInTheDocument();
 
   const savePreferenceCall = terrasoApi.requestGraphQL.mock.calls[0];
   expect(savePreferenceCall[1]).toStrictEqual({
@@ -90,7 +92,9 @@ test('LocalePicker: Dont save if no user', async () => {
   await act(async () =>
     fireEvent.click(listbox.getByRole('option', { name: /Español/i }))
   );
-  expect(screen.getByRole('combobox', { name: /Español/i })).toBeInTheDocument();
+  expect(
+    screen.getByRole('combobox', { name: /Español/i })
+  ).toBeInTheDocument();
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(0);
 });
 test('LocalePicker: Change locale (small screen)', async () => {

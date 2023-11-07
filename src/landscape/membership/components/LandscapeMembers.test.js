@@ -296,11 +296,13 @@ test('LandscapeMembers: Display list manager', async () => {
   ).toHaveAttribute('data-field', 'name');
   expect(
     within(rows[9])
-      .getByRole('button', { name: 'Member' })
+      .getByRole('combobox', { name: 'Role' })
       .closest('[role="cell"]')
   ).toHaveAttribute('data-field', 'role');
   expect(
-    within(rows[9]).getByRole('button', { name: 'Member' })
+    within(within(rows[9]).getByRole('combobox', { name: 'Role' })).getByText(
+      'Member'
+    )
   ).toBeInTheDocument();
   expect(
     within(rows[2])
@@ -397,10 +399,11 @@ test('LandscapeMembers: Manager actions', async () => {
   ).toHaveAttribute('data-field', 'name');
   expect(
     within(rows[3])
-      .getByRole('combobox', { name: /Member/i })
+      .getByRole('combobox', { name: 'Role' })
       .closest('[role="cell"]')
   ).toHaveAttribute('data-field', 'role');
-  const roleButton = within(rows[3]).getByRole('button', { name: 'Member' });
+  const roleButton = within(rows[3]).getByRole('combobox', { name: 'Role' });
+  expect(within(roleButton).getByText('Member')).toBeInTheDocument();
   expect(roleButton).toBeInTheDocument();
   await act(async () => fireEvent.mouseDown(roleButton));
   expect(screen.getByRole('option', { name: 'Manager' })).toBeInTheDocument();
@@ -417,8 +420,8 @@ test('LandscapeMembers: Manager actions', async () => {
   await waitFor(() =>
     expect(
       within(screen.getAllByRole('row')[3])
-        .getByRole('button', {
-          name: 'Manager',
+        .getByRole('combobox', {
+          name: 'Role',
         })
         .closest('[role="cell"]')
     ).toHaveAttribute('data-field', 'role')

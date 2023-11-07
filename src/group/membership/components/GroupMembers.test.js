@@ -262,12 +262,12 @@ test('GroupMembers: Display list manager', async () => {
   ).toHaveAttribute('data-field', 'name');
   expect(
     within(rows[9])
-      .getByRole('button', { name: 'Member' })
+      .getByRole('combobox', { name: 'Role' })
       .closest('[role="cell"]')
   ).toHaveAttribute('data-field', 'role');
   expect(
-    within(rows[9]).getByRole('button', { name: 'Member' })
-  ).toBeInTheDocument();
+    within(rows[9]).getByRole('combobox', { name: 'Role' })
+  ).toHaveTextContent('Member');
   expect(
     within(rows[2])
       .getByRole('button', { name: 'Remove' })
@@ -352,11 +352,11 @@ test('GroupMembers: Manager actions', async () => {
   ).toHaveAttribute('data-field', 'name');
   expect(
     within(rows[3])
-      .getByRole('button', { name: 'Member' })
+      .getByRole('combobox', { name: 'Role' })
       .closest('[role="cell"]')
   ).toHaveAttribute('data-field', 'role');
-  const roleButton = within(rows[3]).getByRole('button', { name: 'Member' });
-  expect(roleButton).toBeInTheDocument();
+  const roleButton = within(rows[3]).getByRole('combobox', { name: 'Role' });
+  expect(within(roleButton).getByText('Member')).toBeInTheDocument();
   await act(async () => fireEvent.mouseDown(roleButton));
   expect(screen.getByRole('option', { name: 'Manager' })).toBeInTheDocument();
   await act(
@@ -372,12 +372,17 @@ test('GroupMembers: Manager actions', async () => {
   await waitFor(() =>
     expect(
       within(screen.getAllByRole('row')[3])
-        .getByRole('button', {
-          name: 'Manager',
+        .getByRole('combobox', {
+          name: 'Role',
         })
         .closest('[role="cell"]')
     ).toHaveAttribute('data-field', 'role')
   );
+  expect(
+    within(screen.getAllByRole('row')[3]).getByRole('combobox', {
+      name: 'Role',
+    })
+  ).toHaveTextContent('Manager');
 
   // Remove member
   expect(rows.length).toBe(4);
