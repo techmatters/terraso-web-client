@@ -57,13 +57,13 @@ const validateCoordinateField = coordinate => ({
   test: (value, ctx) => {
     const {
       parent: {
-        context: { sheetContext },
+        context: { fileContext },
       },
     } = ctx;
     if (_.isEmpty(value)) {
       return;
     }
-    const error = validateCoordinateColumn(sheetContext, value);
+    const error = validateCoordinateColumn(fileContext, value);
     if (!error) {
       return true;
     }
@@ -136,8 +136,8 @@ const FORM_FIELDS = [
 
 export const DatasetPreview = () => {
   const { t } = useTranslation();
-  const { sheetContext } = useVisualizationContext();
-  const { sheet, colCount, rowCount, headers } = sheetContext;
+  const { fileContext } = useVisualizationContext();
+  const { sheet, colCount, rowCount, headers } = fileContext;
 
   const sampleRange = useMemo(
     () =>
@@ -387,9 +387,9 @@ const SetDatasetStep = props => {
     loadingFile,
     loadingFileError,
     visualizationConfig,
-    sheetContext = {},
+    fileContext = {},
   } = useVisualizationContext();
-  const { selectedFile, headers } = sheetContext;
+  const { selectedFile, headers } = fileContext;
   const [datasetConfig, setDatasetStepConfig] = useState(
     visualizationConfig.datasetConfig || {}
   );
@@ -422,25 +422,25 @@ const SetDatasetStep = props => {
     const { latColumn, lngColumn } = identifyLatLngColumns(headers);
 
     const validLatColumn =
-      latColumn && !validateCoordinateColumn(sheetContext, latColumn);
+      latColumn && !validateCoordinateColumn(fileContext, latColumn);
     const validLngColumn =
-      lngColumn && !validateCoordinateColumn(sheetContext, lngColumn);
+      lngColumn && !validateCoordinateColumn(fileContext, lngColumn);
 
     setDatasetStepConfig(current => ({
       ...current,
       latitude: validLatColumn ? latColumn : '',
       longitude: validLngColumn ? lngColumn : '',
     }));
-  }, [headers, datasetConfig.latitude, datasetConfig.longitude, sheetContext]);
+  }, [headers, datasetConfig.latitude, datasetConfig.longitude, fileContext]);
 
   const datasetConfigWithContext = useMemo(
     () => ({
       ...datasetConfig,
       context: {
-        sheetContext,
+        fileContext,
       },
     }),
-    [datasetConfig, sheetContext]
+    [datasetConfig, fileContext]
   );
 
   const cleaneadData = useMemo(() => {

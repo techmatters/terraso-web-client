@@ -36,12 +36,10 @@ import { useGroupContext } from 'group/groupContext';
 import SharedDataEntryFile from './SharedDataEntryFile';
 import SharedDataEntryLink from './SharedDataEntryLink';
 
-import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
-
 const SharedFilesCard = props => {
   const { t } = useTranslation();
   const { onUploadClick, onAddVisualizationClick } = props;
-  const { group, owner, entityTypeLocalized } = useGroupContext();
+  const { group, entityTypeLocalized } = useGroupContext();
   const { allowed } = usePermission('group.viewFiles', group);
   const { data: sharedFiles, fetching } = useSelector(_.get('sharedData.list'));
   const hasFiles = !_.isEmpty(sharedFiles);
@@ -73,13 +71,7 @@ const SharedFilesCard = props => {
       )}
       <CardContent>
         <Typography sx={{ mb: 2 }}>
-          {t('sharedData.card_description', {
-            extensions: SHARED_DATA_ACCEPTED_EXTENSIONS.map(
-              ext => `*.${ext}`
-            ).join(', '),
-            name: owner.name,
-            entityType: entityTypeLocalized,
-          })}
+          {t('sharedData.card_description')}
         </Typography>
         {hasFiles && (
           <>

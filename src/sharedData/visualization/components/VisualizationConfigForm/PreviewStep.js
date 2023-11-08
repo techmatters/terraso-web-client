@@ -39,8 +39,7 @@ const PreviewStep = props => {
     state => state.sharedData.visualizationConfigForm
   );
   const visualizationContext = useVisualizationContext();
-  const { visualizationConfig, sheetContext: { selectedFile } = {} } =
-    visualizationContext;
+  const { visualizationConfig } = visualizationContext;
   const [viewportConfig, setViewportConfig] = useState(
     visualizationConfig.viewportConfig
   );
@@ -80,14 +79,16 @@ const PreviewStep = props => {
         'datasetConfig.preview',
         'annotateConfig.dataPointsTitle',
         'annotateConfig.mapTitle',
+        'annotateConfig.mapDescription',
       ],
       completeConfig
     );
     dispatch(
       addVisualizationConfig({
         title: _.get('annotateConfig.mapTitle', completeConfig),
+        description: _.get('annotateConfig.mapDescription', completeConfig),
         visualizationConfig: filteredConfig,
-        selectedFile,
+        selectedFile: visualizationConfig.selectedFile,
         ownerId: owner.id,
         ownerType: entityType,
       })
@@ -111,7 +112,6 @@ const PreviewStep = props => {
     owner.name,
     owner.id,
     entityType,
-    selectedFile,
     trackEvent,
     viewportConfig,
     visualizationConfig,
@@ -128,9 +128,7 @@ const PreviewStep = props => {
         onNext={onPublish}
       >
         <Typography sx={{ mb: 2 }}>
-          {t('sharedData.form_step_preview_step_description', {
-            entityType: entityTypeLocalized,
-          })}
+          {t('sharedData.form_step_preview_step_description')}
         </Typography>
         <VisualizationPreview
           useConfigBounds

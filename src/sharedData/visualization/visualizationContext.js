@@ -14,23 +14,43 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import _ from 'lodash/fp';
 import { useDispatch } from 'react-redux';
 import { addMessage } from 'terraso-client-shared/notifications/notificationsSlice';
-import * as SheetsJs from 'xlsx';
 
-import { readFile } from 'sharedData/visualization/visualizationUtils';
+import {
+  readDataSetFile,
+  readMapFile,
+} from 'sharedData/visualization/visualizationUtils';
+
+import { MAP_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
 export const VisualizationContext = React.createContext();
 
 export const VisualizationContextProvider = props => {
   const dispatch = useDispatch();
   const { visualizationConfig, setVisualizationConfig, children } = props;
-  const [sheetContext, setSheetContext] = useState();
+  const [fileContext, setFileContext] = useState();
   const [loadingFile, setLoadingFile] = useState(true);
   const [loadingFileError, setLoadingFileError] = useState();
   const [useTileset, setUseTileset] = useState(null);
+
+  const isMapFile = useMemo(() => {
+    if (!visualizationConfig.selectedFile) {
+      return;
+    }
+    return _.includes(
+      visualizationConfig.selectedFile.resourceType,
+      MAP_DATA_ACCEPTED_EXTENSIONS
+    );
+  }, [visualizationConfig.selectedFile]);
 
   useEffect(() => {
     if (!visualizationConfig.tilesetId) {
@@ -45,48 +65,26 @@ export const VisualizationContextProvider = props => {
     if (!visualizationConfig.selectedFile || visualizationConfig.tilesetId) {
       return;
     }
-    const newSheetContext =
-      visualizationConfig?.selectedFile?.id !== sheetContext?.selectedFile?.id;
-    if (!newSheetContext) {
+    const newFileContext =
+      visualizationConfig?.selectedFile?.id !== fileContext?.selectedFile?.id;
+    if (!newFileContext) {
       return;
     }
     setLoadingFile(true);
-    setSheetContext(undefined);
+    setFileContext(undefined);
     const readFileRequest = {
-      promise: readFile(visualizationConfig.selectedFile),
+      promise: isMapFile
+        ? readMapFile(visualizationConfig.selectedFile)
+        : readDataSetFile(visualizationConfig.selectedFile),
       valid: true,
     };
     readFileRequest.promise
-      .then(workbook => {
+      .then(fileContext => {
         if (!readFileRequest.valid) {
           return;
         }
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const sheetRef = SheetsJs.utils.decode_range(sheet['!ref']);
-        const colCount = _.getOr(0, 'e.c', sheetRef);
-        const rowCount = _.getOr(0, 'e.r', sheetRef);
-
-        // {Object} s Start position
-        // {Object} e End position
-        // {number} e.c Column
-        // {number} e.r Row
-        const headersRange = SheetsJs.utils.encode_range({
-          s: { c: 0, r: 0 },
-          e: { c: colCount, r: 0 },
-        });
-        const headers = SheetsJs.utils.sheet_to_json(sheet, {
-          range: headersRange,
-          header: 1,
-        })[0];
-        const headersIndexes = _.fromPairs(
-          headers.map((header, index) => [header, index])
-        );
-        setSheetContext({
-          headers,
-          headersIndexes,
-          colCount,
-          rowCount,
-          sheet,
+        setFileContext({
+          ...fileContext,
           selectedFile: visualizationConfig.selectedFile,
         });
 
@@ -109,29 +107,31 @@ export const VisualizationContextProvider = props => {
   }, [
     visualizationConfig.selectedFile,
     visualizationConfig.tilesetId,
-    sheetContext,
+    fileContext,
     dispatch,
+    isMapFile,
   ]);
 
   const getDataColumns = useCallback(() => {
     const dataColumns = visualizationConfig?.datasetConfig?.dataColumns;
     const selected =
       dataColumns.option === 'all'
-        ? sheetContext?.headers
+        ? fileContext?.headers
         : dataColumns.selectedColumns;
     return selected;
-  }, [visualizationConfig?.datasetConfig?.dataColumns, sheetContext?.headers]);
+  }, [visualizationConfig?.datasetConfig?.dataColumns, fileContext?.headers]);
 
   return (
     <VisualizationContext.Provider
       value={{
         visualizationConfig,
         setVisualizationConfig,
-        sheetContext,
+        fileContext,
         loadingFile,
         loadingFileError,
         getDataColumns,
         useTileset,
+        isMapFile,
       }}
     >
       {children}

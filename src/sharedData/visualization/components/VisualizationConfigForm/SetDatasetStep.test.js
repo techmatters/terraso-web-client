@@ -33,7 +33,7 @@ function mockCSVProps(headers, rows) {
   const selectedFile = { id: 1 };
   return {
     visualizationConfig: { selectedFile },
-    sheetContext: {
+    fileContext: {
       selectedFile,
       sheet,
       headers,

@@ -18,7 +18,10 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Stepper from 'common/components/Stepper';
-import { VisualizationContextProvider } from 'sharedData/visualization/visualizationContext';
+import {
+  useVisualizationContext,
+  VisualizationContextProvider,
+} from 'sharedData/visualization/visualizationContext';
 
 import AnnotateStep from './AnnotateStep';
 import PreviewStep from './PreviewStep';
@@ -28,7 +31,7 @@ import VisualizeStep from './VisualizeStep';
 
 import theme from 'theme';
 
-const initialConfig = {
+const INITIAL_CONFIG = {
   datasetConfig: {
     dataColumns: {
       option: '',
@@ -39,13 +42,110 @@ const initialConfig = {
     shape: 'circle',
     size: 15,
     color: theme.palette.visualization.markerDefaultColor,
+    opacity: 50,
   },
 };
 
-const VisualizationConfigForm = props => {
+const Steps = props => {
   const { t } = useTranslation();
+  const { isMapFile } = useVisualizationContext();
+  const { onCompleteSuccess, onCancel, onReadFileFails, onStepUpdate } = props;
+
+  const selectFileStep = {
+    label: t('sharedData.form_step_select_file_label'),
+    showStepper: false,
+    render: ({ setActiveStepIndex }) => (
+      <SelectDataFileStep
+        onNext={selectedFile => {
+          onStepUpdate({ selectedFile });
+          setActiveStepIndex(current => current + 1);
+        }}
+        onBack={onCancel}
+      />
+    ),
+  };
+  const setDataSetStep = {
+    label: t('sharedData.form_step_set_dataset_label'),
+    render: ({ setActiveStepIndex }) => (
+      <SetDatasetStep
+        onBack={datasetConfig => {
+          onStepUpdate({ datasetConfig });
+          setActiveStepIndex(current => current - 1);
+        }}
+        onNext={datasetConfig => {
+          onStepUpdate({ datasetConfig });
+          setActiveStepIndex(current => current + 1);
+        }}
+        onReadFileFails={onReadFileFails(setActiveStepIndex)}
+      />
+    ),
+  };
+  const visualizeStep = {
+    label: t('sharedData.form_step_visualize_label'),
+    render: ({ setActiveStepIndex }) => (
+      <VisualizeStep
+        onBack={visualizeConfig => {
+          onStepUpdate({ visualizeConfig });
+          setActiveStepIndex(current => current - 1);
+        }}
+        onNext={visualizeConfig => {
+          onStepUpdate({ visualizeConfig });
+          setActiveStepIndex(current => current + 1);
+        }}
+      />
+    ),
+  };
+  const annotateStep = {
+    label: t('sharedData.form_step_annotate_label'),
+    render: ({ setActiveStepIndex }) => (
+      <AnnotateStep
+        onBack={annotateConfig => {
+          onStepUpdate({ annotateConfig });
+          setActiveStepIndex(current => current - 1);
+        }}
+        onNext={annotateConfig => {
+          onStepUpdate({ annotateConfig });
+          setActiveStepIndex(current => current + 1);
+        }}
+      />
+    ),
+  };
+  const previewStep = {
+    label: t('sharedData.form_step_preview_label'),
+    render: ({ setActiveStepIndex }) => (
+      <PreviewStep
+        onBack={viewportConfig => {
+          onStepUpdate({ viewportConfig });
+          setActiveStepIndex(current => current - 1);
+        }}
+        onSaved={onCompleteSuccess}
+      />
+    ),
+  };
+
+  const steps = isMapFile
+    ? [selectFileStep, visualizeStep, annotateStep, previewStep]
+    : [
+        selectFileStep,
+        setDataSetStep,
+        visualizeStep,
+        annotateStep,
+        previewStep,
+      ];
+  return (
+    <Stepper
+      steps={steps}
+      listProps={{
+        'aria-label': t('sharedData.form_stepper_label'),
+      }}
+    />
+  );
+};
+
+const VisualizationConfigForm = props => {
   const { onCompleteSuccess, onCancel } = props;
-  const [visualizationConfig, setVisualizationConfig] = useState(initialConfig);
+  const [visualizationConfig, setVisualizationConfig] =
+    useState(INITIAL_CONFIG);
 
   const onReadFileFails = setActiveStepIndex => () => {
     setActiveStepIndex(0);
@@ -57,85 +157,17 @@ const VisualizationConfigForm = props => {
       ...update,
     }));
 
-  const steps = [
-    {
-      label: t('sharedData.form_step_select_file_label'),
-      render: ({ setActiveStepIndex }) => (
-        <SelectDataFileStep
-          onNext={selectedFile => {
-            onStepUpdate({ selectedFile });
-            setActiveStepIndex(current => current + 1);
-          }}
-          onBack={onCancel}
-        />
-      ),
-    },
-    {
-      label: t('sharedData.form_step_set_dataset_label'),
-      render: ({ setActiveStepIndex }) => (
-        <SetDatasetStep
-          onBack={datasetConfig => {
-            onStepUpdate({ datasetConfig });
-            setActiveStepIndex(current => current - 1);
-          }}
-          onNext={datasetConfig => {
-            onStepUpdate({ datasetConfig });
-            setActiveStepIndex(current => current + 1);
-          }}
-          onReadFileFails={onReadFileFails(setActiveStepIndex)}
-        />
-      ),
-    },
-    {
-      label: t('sharedData.form_step_visualize_label'),
-      render: ({ setActiveStepIndex }) => (
-        <VisualizeStep
-          onBack={visualizeConfig => {
-            onStepUpdate({ visualizeConfig });
-            setActiveStepIndex(current => current - 1);
-          }}
-          onNext={visualizeConfig => {
-            onStepUpdate({ visualizeConfig });
-            setActiveStepIndex(current => current + 1);
-          }}
-        />
-      ),
-    },
-    {
-      label: t('sharedData.form_step_annotate_label'),
-      render: ({ setActiveStepIndex }) => (
-        <AnnotateStep
-          onBack={annotateConfig => {
-            onStepUpdate({ annotateConfig });
-            setActiveStepIndex(current => current - 1);
-          }}
-          onNext={annotateConfig => {
-            onStepUpdate({ annotateConfig });
-            setActiveStepIndex(current => current + 1);
-          }}
-        />
-      ),
-    },
-    {
-      label: t('sharedData.form_step_preview_label'),
-      render: ({ setActiveStepIndex }) => (
-        <PreviewStep
-          onBack={viewportConfig => {
-            onStepUpdate({ viewportConfig });
-            setActiveStepIndex(current => current - 1);
-          }}
-          onSaved={onCompleteSuccess}
-        />
-      ),
-    },
-  ];
-
   return (
     <VisualizationContextProvider
       visualizationConfig={visualizationConfig}
       setVisualizationConfig={setVisualizationConfig}
     >
-      <Stepper steps={steps} />
+      <Steps
+        onReadFileFails={onReadFileFails}
+        onStepUpdate={onStepUpdate}
+        onCompleteSuccess={onCompleteSuccess}
+        onCancel={onCancel}
+      />
     </VisualizationContextProvider>
   );
 };

@@ -150,6 +150,17 @@ export const MapProvider = props => {
     [map]
   );
 
+  const removeImage = useCallback(
+    name => {
+      if (!map) {
+        return;
+      }
+      setImages(_.omit(name));
+      map.removeImage(name);
+    },
+    [map]
+  );
+
   const addSource = useCallback(
     (name, source) => {
       if (!map) {
@@ -194,6 +205,21 @@ export const MapProvider = props => {
     [map]
   );
 
+  const removeLayer = useCallback(
+    layerId => {
+      if (!map) {
+        return;
+      }
+      try {
+        map.removeLayer(layerId);
+        setLayers(_.omit(layerId));
+      } catch (error) {
+        logger.warn('Error removing layer', error);
+      }
+    },
+    [map]
+  );
+
   const changeStyle = useCallback(
     newStyle => {
       switchStyle(map, newStyle, images, sources, layers);
@@ -209,8 +235,10 @@ export const MapProvider = props => {
         map,
         changeStyle,
         addImage,
+        removeImage,
         addSource,
         addLayer,
+        removeLayer,
       }}
     >
       {children}
@@ -236,6 +264,7 @@ const Map = props => {
     sx,
     onBoundsChange,
     disableElevation = false,
+    padding,
     children,
   } = props;
   const { i18n } = useTranslation();
@@ -259,6 +288,10 @@ const Map = props => {
       bounds: validBounds ? bounds : undefined,
       ...(initialLocation ? initialLocation : {}),
     });
+
+    if (padding) {
+      map.setPadding(padding);
+    }
 
     map.on('load', function () {
       if (!disableElevation && !map.getSource('mapbox-dem')) {
@@ -308,6 +341,7 @@ const Map = props => {
     disableRotation,
     bounds,
     disableElevation,
+    padding,
   ]);
 
   useEffect(() => {
@@ -332,8 +366,15 @@ const Map = props => {
     const language = i18n.language.split('-')[0];
 
     TRANSLATABLE_LAYERS.forEach(layer => {
-      if (map.getLayer(layer)) {
-        map.setLayoutProperty(layer, 'text-field', ['get', `name_${language}`]);
+      try {
+        if (map.getLayer(layer)) {
+          map.setLayoutProperty(layer, 'text-field', [
+            'get',
+            `name_${language}`,
+          ]);
+        }
+      } catch (error) {
+        console.warn('Error setting layer text field', error);
       }
     });
   }, [map, i18n.language]);

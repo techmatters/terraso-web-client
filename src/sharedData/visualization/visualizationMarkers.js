@@ -70,7 +70,7 @@ export const getImageBitmap = ({ shape, size, color }) => {
   );
 };
 
-export const getLayerImage = ({ shape, size, color }) => {
-  const svg = iconsSvg({ shape, size, color });
+export const getLayerImage = ({ shape, size, color, opacity }) => {
+  const svg = iconsSvg({ shape, size, color, opacity });
   return getImage({ svg, size });
 };
