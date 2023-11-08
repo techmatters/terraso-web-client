@@ -593,6 +593,7 @@
         "form_step_data_file_step_title": "Select a file",
         "form_step_data_file_step_description": "<0>Maps can be created from:</0><1><0>Spreadsheets (Excel, CSV) containing columns with latitude and longitude information</0><1>Geospatial data files (ESRI shapefile, GeoJSON, KML, KMZ)</1></1><2>Read more about <1>preparing your data file for mapping</1>.</2>",
         "form_step_data_file_step_description_help_url": "https://terraso.org/help/prepare-your-data-file-for-mapping/",
+        "form_step_data_file_step_created_at": "{{date}}, by $t(user.full_name)",
         "form_step_set_dataset_step_title": "Data from “{{selectedFile.name}}”",
         "form_step_set_dataset_step_description": "Columns",
         "form_step_set_dataset_step_lat_lng_descriptionn": "Select the latitude and longitude columns from your dataset.",

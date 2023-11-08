@@ -181,8 +181,10 @@ const SelectDataFileStep = props => {
                     {filesize(file.size, { round: 0 })}
                   </Grid>
                   <Grid item xs={12} md={4}>
-                    {formatDate(i18n.resolvedLanguage, file.createdAt)}, by{' '}
-                    {t('user.full_name', { user: file.createdBy })}
+                    {t('sharedData.form_step_data_file_step_created_at', {
+                      date: formatDate(i18n.resolvedLanguage, file.createdAt),
+                      user: file.createdBy,
+                    })}
                   </Grid>
                 </Grid>
               </ListItemButton>

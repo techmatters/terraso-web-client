@@ -636,6 +636,7 @@
         "form_step_data_file_step_title": "Seleccione un archivo",
         "form_step_data_file_step_description": "<0>Se pueden crear mapas a partir de:</0><1><0>Hojas de cálculo (Excel, CSV) que contienen columnas con información de latitud y longitud</0><1>Archivos de datos geoespaciales (ESRI shapefile, GeoJSON, KML, KMZ)</1></1><2>Lee más sobre cómo <1>preparar tu archivo de datos para el mapeo</1>.</2>",
         "form_step_data_file_step_description_help_url": "https://terraso.org/es/ayuda/prepare-su-archivo-de-datos-para-el-mapeo/",
+        "form_step_data_file_step_created_at": "{{date}}, por $t(user.full_name)",
         "form_step_set_dataset_step_title": "Datos de “{{selectedFile.name}}”",
         "form_step_set_dataset_step_description": "Columnas",
         "form_step_set_dataset_step_lat_lng_descriptionn": "Selecciona las columnas de latitud y longitud de tu conjunto de datos.",
