@@ -102,7 +102,11 @@ const RemoveButton = props => {
         if (isOwnMembership) {
           navigate(-1);
         }
-        trackEvent('storymap.share.remove');
+        trackEvent('storymap.share.remove', {
+          props: {
+            map: storyMap.id,
+          },
+        });
       }
     });
   }, [dispatch, navigate, trackEvent, member, storyMap, isOwnMembership]);
@@ -199,6 +203,7 @@ const ShareDialog = props => {
         trackEvent('storymap.share.invite', {
           props: {
             count: newEditors.length,
+            map: storyMap.id,
           },
         });
         onClose();

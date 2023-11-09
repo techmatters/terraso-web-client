@@ -114,13 +114,13 @@ const StoryMapNew = () => {
       return;
     }
     setSaved(null);
-    const { slug, storyMapId, published } = saved;
+    const { id, slug, storyMapId, published } = saved;
     const url = generateStoryMapUrl({ slug, storyMapId });
     const event = published ? 'storymap.publish' : 'storymap.saveDraft';
     trackEvent(event, {
       props: {
-        url: `${window.location.origin}${url}`,
         [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
+        map: id,
       },
     });
     if (published) {
@@ -146,8 +146,9 @@ const StoryMapNew = () => {
         if (success) {
           const slug = _.get('payload.slug', data);
           const storyMapId = _.get('payload.story_map_id', data);
+          const id = _.get('payload.id', data);
 
-          setSaved({ slug, storyMapId, published });
+          setSaved({ id, slug, storyMapId, published });
           return;
         }
         return Promise.reject(data);

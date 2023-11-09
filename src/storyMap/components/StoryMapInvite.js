@@ -60,7 +60,11 @@ const StoryMapInvite = () => {
       return;
     }
     navigate(`/tools/story-maps/${storyMap.storyMapId}/${storyMap.slug}/edit`);
-    trackEvent('storymap.share.accept');
+    trackEvent('storymap.share.accept', {
+      props: {
+        map: storyMap.id,
+      },
+    });
     dispatch(
       addMessage({
         severity: 'success',
