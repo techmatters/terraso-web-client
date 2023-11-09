@@ -111,27 +111,32 @@ const SharedDataUpload = props => {
 
     const allPromises = [...filesPromises, ...linksPromises];
     Promise.allSettled(allPromises).then(results => {
-      results
-        .filter(
-          result => _.get('value.meta.requestStatus', result) === 'fulfilled'
-        )
-        .forEach(result => {
-          const isLink = _.has('value.meta.arg.link', result);
-          if (isLink) {
-            trackEvent('dataEntry.link.create', {
-              props: {
-                [entityType]: owner.slug,
-              },
-            });
-          } else {
-            trackEvent('dataEntry.file.upload', {
-              props: {
-                [entityType]: owner.slug,
-                [ILM_OUTPUT_PROP]: RESULTS_ANALYSIS_IMPACT,
-              },
-            });
-          }
+      const byType = _.groupBy(
+        result => (_.has('value.meta.arg.link', result) ? 'links' : 'files'),
+        results
+      );
+      byType.files?.forEach(result => {
+        const file = _.get('value.meta.arg.file.file', result);
+        const size = file.size;
+        const type = file.type;
+        trackEvent('dataEntry.file.upload', {
+          props: {
+            [entityType]: owner.slug,
+            [ILM_OUTPUT_PROP]: RESULTS_ANALYSIS_IMPACT,
+            size,
+            type,
+            success: result.status === 'fulfilled',
+          },
         });
+      });
+      byType.links?.forEach(result => {
+        trackEvent('dataEntry.link.create', {
+          props: {
+            [entityType]: owner.slug,
+            success: result.status === 'fulfilled',
+          },
+        });
+      });
       setShowSummary(true);
     });
   }, [entityType, owner.slug, toUpload, targetInput, dispatch, trackEvent]);
