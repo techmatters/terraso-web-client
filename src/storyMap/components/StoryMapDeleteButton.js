@@ -43,6 +43,7 @@ const DeleteButton = props => {
           trackEvent('storymap.delete', {
             props: {
               durationDays: daysSince(storyMap.createdAt),
+              map: storyMap.id,
             },
           });
         }

@@ -18,6 +18,7 @@ import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
 import scrollama from 'scrollama';
 
+import { useAnalytics } from 'monitoring/analytics';
 import mapboxgl from 'gis/mapbox';
 
 import StoryMapForm from './StoryMapForm';
@@ -41,6 +42,11 @@ jest.mock('common/components/RichTextEditor', () => props => {
     />
   );
 });
+
+jest.mock('monitoring/analytics', () => ({
+  ...jest.requireActual('monitoring/analytics'),
+  useAnalytics: jest.fn(),
+}));
 
 const BASE_CONFIG = {
   title: 'Story Map Title',
@@ -111,6 +117,9 @@ beforeEach(() => {
     destroy: jest.fn(),
   };
   scrollama.mockImplementation(() => scroller);
+  useAnalytics.mockReturnValue({
+    trackEvent: jest.fn(),
+  });
 });
 
 const setup = async config => {
@@ -118,7 +127,13 @@ const setup = async config => {
   const onSaveDraft = jest.fn().mockImplementation(() => Promise.resolve());
 
   await render(
-    <StoryMapConfigContextProvider baseConfig={config}>
+    <StoryMapConfigContextProvider
+      baseConfig={config}
+      storyMap={{
+        id: 'story-map-id-1',
+        memberships: [],
+      }}
+    >
       <StoryMapForm onPublish={onPublish} onSaveDraft={onSaveDraft} />
     </StoryMapConfigContextProvider>
   );
@@ -681,6 +696,10 @@ test('StoryMapForm: Change chapter location', async () => {
 });
 
 test('StoryMapForm: Move chapter down with menu', async () => {
+  const trackEvent = jest.fn();
+  useAnalytics.mockReturnValue({
+    trackEvent,
+  });
   const { onSaveDraft } = await setup(BASE_CONFIG);
 
   const chaptersSection = screen.getByRole('navigation', {
@@ -734,6 +753,13 @@ test('StoryMapForm: Move chapter down with menu', async () => {
       description: 'Chapter 1 description',
     })
   );
+
+  expect(trackEvent).toHaveBeenCalledWith('storymap.chapter.move', {
+    props: {
+      distance: 1,
+      map: 'story-map-id-1',
+    },
+  });
 });
 
 test('StoryMapForm: Move chapter up with menu', async () => {
