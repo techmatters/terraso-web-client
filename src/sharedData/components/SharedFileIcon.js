@@ -34,6 +34,9 @@ const ICON_FILES = {
   geojson: 'json.png',
   json: 'json.png',
   zip: 'esri.png',
+  jpg: 'jpg.png',
+  jpeg: 'jpg.png',
+  png: 'png.png',
 };
 
 const SharedFileIcon = ({ resourceType }) => {
