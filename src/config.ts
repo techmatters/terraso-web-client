@@ -62,7 +62,7 @@ export const GEOJSON_MAX_SIZE =
   process.env.REACT_APP_GEOJSON_MAX_SIZE || 10000000; // 10 MB
 
 export const SHARED_DATA_MAX_SIZE =
-  process.env.REACT_APP_SHARED_DATA_MAX_SIZE || 10000000;
+  process.env.REACT_APP_SHARED_DATA_MAX_SIZE || 50000000; // 50 MB
 
 export const SHARED_DATA_MAX_FILES =
   process.env.REACT_APP_SHARED_DATA_MAX_FILES || 20;
@@ -184,7 +184,7 @@ export const MAPBOX_LANDSCAPE_DIRECTORY_STYLE =
   MAPBOX_STYLE_DEFAULT;
 
 export const STORY_MAP_INSET_STYLE = 'mapbox://styles/mapbox/dark-v10';
-export const STORY_MAP_MEDIA_MAX_SIZE = 50000000; // 50 MB
+export const STORY_MAP_MEDIA_MAX_SIZE = 10000000; // 10 MB
 export const STORY_MAP_MEDIA_ACCEPTED_TYPES = {
   'image/jpeg': ['.jpg', '.jpeg'],
   'image/png': ['.png'],
