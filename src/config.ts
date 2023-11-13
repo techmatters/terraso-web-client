@@ -62,7 +62,7 @@ export const GEOJSON_MAX_SIZE =
   process.env.REACT_APP_GEOJSON_MAX_SIZE || 10000000; // 10 MB
 
 export const SHARED_DATA_MAX_SIZE =
-  process.env.REACT_APP_SHARED_DATA_MAX_SIZE || 10000000;
+  process.env.REACT_APP_SHARED_DATA_MAX_SIZE || 50000000; // 50 MB
 
 export const SHARED_DATA_MAX_FILES =
   process.env.REACT_APP_SHARED_DATA_MAX_FILES || 20;
@@ -93,16 +93,6 @@ export const MAP_DATA_ACCEPTED_EXTENSIONS = getTypesExtensions(
   MAP_DATA_ACCEPTED_TYPES
 );
 
-export const MAP_CONTENT_TYPE_BY_EXTENSION = _.flow(
-  _.keys,
-  _.flatMap((contentType: string) =>
-    (MAP_DATA_ACCEPTED_TYPES as Record<string, string[]>)[contentType].map(
-      (ext: string) => [ext, contentType]
-    )
-  ),
-  _.fromPairs
-)(MAP_DATA_ACCEPTED_TYPES);
-
 export const DATA_SET_ACCEPTED_TYPES = {
   'text/csv': ['.csv'],
   'application/vnd.ms-excel': ['.xls'],
@@ -110,10 +100,6 @@ export const DATA_SET_ACCEPTED_TYPES = {
     '.xlsx',
   ],
 };
-
-export const DATA_SET_ACCPETED_EXTENSIONS = getTypesExtensions(
-  DATA_SET_ACCEPTED_TYPES
-);
 
 export const DOCUMENT_ACCEPTED_TYPES = {
   'application/msword': ['.doc'],
@@ -128,11 +114,35 @@ export const DOCUMENT_ACCEPTED_TYPES = {
   'application/xml': ['.gpx'],
 };
 
+export const MEDIA_ACCEPTED_TYPES = {
+  'image/jpeg': ['.jpg', '.jpeg'],
+  'image/png': ['.png'],
+};
+
+export const MAP_CONTENT_TYPE_BY_EXTENSION = _.flow(
+  _.keys,
+  _.flatMap((contentType: string) =>
+    (MAP_DATA_ACCEPTED_TYPES as Record<string, string[]>)[contentType].map(
+      (ext: string) => [ext, contentType]
+    )
+  ),
+  _.fromPairs
+)(MAP_DATA_ACCEPTED_TYPES);
+
+export const DATA_SET_ACCPETED_EXTENSIONS = getTypesExtensions(
+  DATA_SET_ACCEPTED_TYPES
+);
+
 export const SHARED_DATA_ACCEPTED_TYPES = _.flow(
   _.flatMap(_.toPairs),
   _.groupBy(([contentType, _]) => contentType),
   _.mapValues(_.flatMap(([_, extensions]) => extensions))
-)([DOCUMENT_ACCEPTED_TYPES, DATA_SET_ACCEPTED_TYPES, MAP_DATA_ACCEPTED_TYPES]);
+)([
+  DOCUMENT_ACCEPTED_TYPES,
+  DATA_SET_ACCEPTED_TYPES,
+  MAP_DATA_ACCEPTED_TYPES,
+  MEDIA_ACCEPTED_TYPES,
+]);
 
 export const SHARED_DATA_ACCEPTED_EXTENSIONS = getTypesExtensions(
   SHARED_DATA_ACCEPTED_TYPES
