@@ -21,6 +21,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { GROUP_TYPES_WITH_REDIRECTS } from 'tests/constants';
 
+import { useAnalytics } from 'monitoring/analytics';
+
 import GroupSharedDataUpload from './GroupSharedDataUpload';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
@@ -29,6 +31,11 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(),
   useNavigate: jest.fn(),
+}));
+
+jest.mock('monitoring/analytics', () => ({
+  ...jest.requireActual('monitoring/analytics'),
+  useAnalytics: jest.fn(),
 }));
 
 const setup = async (membershipType = 'OPEN', userRole = 'MEMBER') => {
@@ -56,6 +63,9 @@ beforeEach(() => {
     slug: 'slug-1',
   });
   useNavigate.mockReturnValue(() => {});
+  useAnalytics.mockReturnValue({
+    trackEvent: jest.fn(),
+  });
 });
 
 const dropFiles = async files => {
@@ -197,6 +207,10 @@ test('GroupSharedDataUpload: Partial Success', async () => {
 });
 
 test('GroupSharedDataUpload: Complete Success', async () => {
+  const trackEvent = jest.fn();
+  useAnalytics.mockReturnValue({
+    trackEvent,
+  });
   const navigate = jest.fn();
   useNavigate.mockReturnValue(navigate);
   terrasoApi.request.mockResolvedValueOnce({});
@@ -219,6 +233,16 @@ test('GroupSharedDataUpload: Complete Success', async () => {
   const saveCall = terrasoApi.request.mock.calls[0];
   expect(saveCall[0].body.get('target_type')).toBe('group');
   expect(saveCall[0].body.get('target_slug')).toBe('slug-1');
+
+  expect(trackEvent).toHaveBeenCalledWith('dataEntry.file.upload', {
+    props: {
+      'ILM Output': 'Results and analysis of impact',
+      group: 'slug-1',
+      size: 7,
+      type: 'text/csv',
+      success: true,
+    },
+  });
 });
 
 test('GroupSharedDataUpload: PDF Success', async () => {
