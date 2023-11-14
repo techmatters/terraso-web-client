@@ -117,8 +117,6 @@ const SharedDataUpload = props => {
       );
       byType.files?.forEach(result => {
         const file = _.get('value.meta.arg.file.file', result);
-        const size = file.size;
-        const type = file.type;
         trackEvent('dataEntry.file.upload', {
           props: {
             [entityType]: owner.slug,
