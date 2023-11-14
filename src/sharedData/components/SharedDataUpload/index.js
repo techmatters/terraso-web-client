@@ -121,8 +121,8 @@ const SharedDataUpload = props => {
           props: {
             [entityType]: owner.slug,
             [ILM_OUTPUT_PROP]: RESULTS_ANALYSIS_IMPACT,
-            size,
-            type,
+            size: file.size,
+            type: file.type,
             success: result.status === 'fulfilled',
           },
         });
