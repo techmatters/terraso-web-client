@@ -186,7 +186,7 @@ test('GroupMembershipCard: Join', async () => {
         membership: {
           group: {
             slug: 'group-slug',
-            accountMembership: _.set('edges[0].node.userRole', 'MEMBER', {}),
+            accountMembership: _.set('edges[0].node.userRole', 'member', {}),
             memberships: {
               totalCount: 1,
               edges: [
@@ -242,7 +242,7 @@ test('GroupMembershipCard: Request Join', async () => {
             slug: 'group-slug',
             membershipType: 'CLOSED',
             accountMembership: {
-              userRole: 'MEMBER',
+              userRole: 'member',
               membershipStatus: 'PENDING',
             },
             memberships: {
@@ -315,7 +315,7 @@ test('GroupMembershipCard: Leave error', async () => {
                   lastName: 'Doe',
                 },
               ],
-              accountMembership: { userRole: 'MEMBER' },
+              accountMembership: { userRole: 'member' },
             },
           },
         },
@@ -374,7 +374,7 @@ test('GroupMembershipCard: Leave', async () => {
                   lastName: 'Doe',
                 },
               ],
-              accountMembership: { userRole: 'MEMBER' },
+              accountMembership: { userRole: 'member' },
             },
           },
         },
@@ -437,7 +437,7 @@ test('GroupMembershipCard: Manager', async () => {
                 },
               ],
               accountMembership: {
-                userRole: 'MANAGER',
+                userRole: 'manager',
                 membershipStatus: 'APPROVED',
               },
             },

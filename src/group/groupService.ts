@@ -16,16 +16,23 @@
  */
 import _ from 'lodash/fp';
 import { cleanSensitiveCharacters } from 'stringUtils';
+import type { User } from 'terraso-client-shared/account/accountSlice';
+import { extractMembership } from 'terraso-client-shared/collaboration/membershipsUtils';
 import {
-  extractAccountMembership,
-  extractMembersInfo,
-} from 'terraso-client-shared/memberships/membershipsUtils';
+  CollaborationMembershipFieldsFragment,
+  GroupMembershipDeleteMutationInput,
+  GroupMembershipSaveMutationInput,
+} from 'terraso-client-shared/graphqlSchema/graphql';
+// import {
+//   extractAccountMembership,
+//   extractMembersInfo,
+// } from 'terraso-client-shared/memberships/membershipsUtils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
-import { extractDataEntries } from 'sharedData/sharedDataUtils';
-
 import type { Group } from './groupSlice';
+import { extractGroup } from './groupUtils';
+import { ROLE_MEMBER } from './membership/components/groupMembershipConstants';
 
 export const fetchGroupToUpdate = (slug: string) => {
   const query = graphql(`
@@ -46,17 +53,15 @@ export const fetchGroupToUpdate = (slug: string) => {
     );
 };
 
-export const fetchGroupToView = async (slug: string) => {
+export const fetchGroupToView = async (slug: string, user: User | null) => {
   const query = graphql(`
-    query groupToView($slug: String!) {
+    query groupToView($slug: String!, $accountEmail: String!) {
       groups(slug: $slug) {
         edges {
           node {
             ...groupFields
-            ...groupMembersInfo
-            ...groupMembersPending
-            ...accountMembership
             ...groupDataEntries
+            ...groupMembershipListWithMembersSample
           }
         }
       }
@@ -65,14 +70,10 @@ export const fetchGroupToView = async (slug: string) => {
   return terrasoApi
     .requestGraphQL(query, {
       slug,
+      accountEmail: user!.email,
     })
     .then(resp => resp.groups?.edges.at(0)?.node || Promise.reject('not_found'))
-    .then(group => ({
-      ..._.omit(['memberships', 'membershipsCount'], group),
-      membersInfo: extractMembersInfo(group),
-      accountMembership: extractAccountMembership(group),
-      dataEntries: extractDataEntries(group),
-    }));
+    .then(extractGroup);
 };
 
 export const fetchGroups = () => {
@@ -82,8 +83,7 @@ export const fetchGroups = () => {
         edges {
           node {
             ...groupFields
-            ...groupMembersInfo
-            ...accountMembership
+            ...groupMembershipList
           }
         }
       }
@@ -91,8 +91,7 @@ export const fetchGroups = () => {
         edges {
           node {
             ...groupFields
-            ...groupMembersInfo
-            ...accountMembership
+            ...groupMembershipList
           }
         }
       }
@@ -105,15 +104,7 @@ export const fetchGroups = () => {
         ...(response.independentGroups?.edges || []),
         ...(response.landscapeGroups?.edges || []),
       ])
-      .then(groups =>
-        groups.map(edge => ({
-          ..._.omit(
-            ['memberships', 'accountMembership', 'membershipsCount'],
-            edge.node
-          ),
-          membersInfo: extractMembersInfo(edge.node),
-        }))
-      )
+      .then(groups => groups.map(edge => extractGroup(edge.node)))
       // eslint-disable-next-line lodash-fp/no-extraneous-function-wrapping
       .then(groups => {
         return _.orderBy([group => group.name.toLowerCase()], [], groups);
@@ -162,7 +153,10 @@ export const fetchGroupForMembers = (slug: string) => {
         edges {
           node {
             ...groupFields
-            ...accountMembership
+            membershipList {
+              ...collaborationMemberships
+              ...accountCollaborationMembership
+            }
           }
         }
       }
@@ -171,10 +165,7 @@ export const fetchGroupForMembers = (slug: string) => {
   return terrasoApi
     .requestGraphQL(query, { slug })
     .then(resp => resp.groups?.edges.at(0)?.node || Promise.reject('not_found'))
-    .then(group => ({
-      ...group,
-      accountMembership: extractAccountMembership(group),
-    }));
+    .then(extractGroup);
 };
 
 export const fetchGroupToUploadSharedData = (slug: string) => {
@@ -186,7 +177,7 @@ export const fetchGroupToUploadSharedData = (slug: string) => {
             id
             slug
             name
-            ...accountMembership
+            ...groupMembershipList
           }
         }
       }
@@ -195,10 +186,7 @@ export const fetchGroupToUploadSharedData = (slug: string) => {
   return terrasoApi
     .requestGraphQL(query, { slug })
     .then(resp => resp.groups?.edges.at(0)?.node || Promise.reject('not_found'))
-    .then(group => ({
-      ..._.omit('accountMembership', group),
-      membersInfo: extractMembersInfo(group),
-    }));
+    .then(extractGroup);
 };
 
 const updateGroup = (group: Group) => {
@@ -240,3 +228,159 @@ const addGroup = (group: Group) => {
 
 export const saveGroup = ({ group }: { group: Group }) =>
   group.id ? updateGroup(group) : addGroup(group);
+
+export const leaveGroup = (
+  input: GroupMembershipDeleteMutationInput,
+  user: User | null
+) => {
+  const query = graphql(`
+    mutation deleteGroupMembership(
+      $input: GroupMembershipDeleteMutationInput!
+      $accountEmail: String!
+    ) {
+      deleteGroupMembership(input: $input) {
+        group {
+          ...groupFields
+          ...groupDataEntries
+          ...groupMembershipListWithMembersSample
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input,
+      accountEmail: user!.email,
+    })
+    .then(resp => resp.deleteGroupMembership.group)
+    .then(extractGroup);
+};
+
+export const joinGroup = (
+  { groupSlug }: { groupSlug: string },
+  user: User | null
+) => {
+  const query = graphql(`
+    mutation joinGroup(
+      $input: GroupMembershipSaveMutationInput!
+      $accountEmail: String!
+    ) {
+      saveGroupMembership(input: $input) {
+        group {
+          ...groupFields
+          ...groupDataEntries
+          ...groupMembershipListWithMembersSample
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: {
+        groupSlug,
+        userEmails: [user!.email],
+        userRole: ROLE_MEMBER,
+      },
+      accountEmail: user!.email,
+    })
+    .then(resp => resp.saveGroupMembership.group)
+    .then(extractGroup);
+};
+
+export const leaveGroupFromList = (
+  input: GroupMembershipDeleteMutationInput
+) => {
+  const query = graphql(`
+    mutation leaveGroupFromList($input: GroupMembershipDeleteMutationInput!) {
+      deleteGroupMembership(input: $input) {
+        group {
+          ...groupFields
+          ...groupMembershipList
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input,
+    })
+    .then(resp => resp.deleteGroupMembership.group)
+    .then(extractGroup);
+};
+
+export const joinGroupFromList = (
+  { groupSlug }: { groupSlug: string },
+  user: User | null
+) => {
+  const query = graphql(`
+    mutation joinGroupFromList($input: GroupMembershipSaveMutationInput!) {
+      saveGroupMembership(input: $input) {
+        group {
+          ...groupFields
+          ...groupMembershipList
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: {
+        groupSlug,
+        userEmails: [user!.email],
+        userRole: ROLE_MEMBER,
+      },
+    })
+    .then(resp => resp.saveGroupMembership.group)
+    .then(extractGroup);
+};
+
+export const changeMemberRole = (input: GroupMembershipSaveMutationInput) => {
+  const query = graphql(`
+    mutation changeGroupMemberRole($input: GroupMembershipSaveMutationInput!) {
+      saveGroupMembership(input: $input) {
+        memberships {
+          ...collaborationMembershipFields
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input,
+    })
+    .then(resp => resp.saveGroupMembership.memberships?.[0])
+    .then(membership => membership as CollaborationMembershipFieldsFragment)
+    .then(extractMembership);
+};
+
+export const removeMember = (
+  input: GroupMembershipDeleteMutationInput & {
+    email: string;
+  }
+) => {
+  const query = graphql(`
+    mutation removeGroupMember($input: GroupMembershipDeleteMutationInput!) {
+      deleteGroupMembership(input: $input) {
+        membership {
+          ...collaborationMembershipFields
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: _.omit('email', input),
+    })
+    .then(
+      resp =>
+        resp.deleteGroupMembership
+          .membership as CollaborationMembershipFieldsFragment
+    )
+    .then(extractMembership);
+};

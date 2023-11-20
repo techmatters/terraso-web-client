@@ -35,7 +35,8 @@ import { fetchGroups } from 'group/groupSlice';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberRequestCancel from 'group/membership/components/GroupMemberRequestCancel';
-import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton';
+
+// import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton';
 
 import theme from 'theme';
 
@@ -67,7 +68,7 @@ const MembershipButton = ({ group, tabIndex }) => (
     MemberRequestCancelButton={MemberRequestCancelButton}
     MemberLeaveButton={MemberLeaveButton}
   >
-    <GroupMembershipJoinLeaveButton tabIndex={tabIndex} />
+    {/* <GroupMembershipJoinLeaveButton tabIndex={tabIndex} /> */}
   </GroupContextProvider>
 );
 

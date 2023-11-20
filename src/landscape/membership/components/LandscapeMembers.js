@@ -111,25 +111,25 @@ const Header = ({ landscape, fetching }) => {
 
 const RemoveButton = props => {
   const dispatch = useDispatch();
-  const { landscape, member, tabIndex } = props;
+  const { landscape, membership, tabIndex } = props;
   const { data: currentUser } = useSelector(state => state.account.currentUser);
 
   const onConfirm = useCallback(() => {
     dispatch(
       removeMember({
         landscapeSlug: landscape.slug,
-        membershipId: member.id,
-        email: member.email,
+        membershipId: membership.id,
+        email: membership.user.email,
       })
     );
-  }, [dispatch, landscape, member]);
+  }, [dispatch, landscape, membership]);
 
-  if (member.email === currentUser.email) {
+  if (membership.user.email === currentUser.email) {
     return (
       <MemberLeaveButton
         onConfirm={onConfirm}
         owner={landscape}
-        loading={member.fetching}
+        loading={membership.fetching}
         buttonProps={{ tabIndex }}
       />
     );
@@ -140,13 +140,14 @@ const RemoveButton = props => {
       <LandscapeMemberRemove
         onConfirm={onConfirm}
         owner={landscape}
-        member={member}
-        loading={member.fetching}
+        membership={membership}
+        loading={membership.fetching}
         buttonProps={{ tabIndex }}
       />
     </Restricted>
   );
 };
+
 const LandscapeMembers = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -172,11 +173,11 @@ const LandscapeMembers = () => {
   );
 
   const onMemberRoleChange = useCallback(
-    (member, newRole) => {
+    (membership, newRole) => {
       dispatch(
         changeMemberRole({
           landscapeSlug: landscape.slug,
-          email: member.email,
+          email: membership.user.email,
           userRole: newRole,
         })
       );

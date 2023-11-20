@@ -79,7 +79,7 @@ test('Home: Display landscapes', async () => {
               id: 'id-1',
               slug: 'landsacpe-1',
               name: 'Landscape 1',
-              membershipList: _.set('accountMembership.userRole', 'MEMBER', {}),
+              membershipList: _.set('accountMembership.userRole', 'member', {}),
             },
           },
           {
@@ -89,7 +89,7 @@ test('Home: Display landscapes', async () => {
               name: 'Landscape 2',
               membershipList: _.set(
                 'accountMembership.userRole',
-                'MANAGER',
+                'manager',
                 {}
               ),
             },
@@ -118,7 +118,7 @@ test('Home: Display groups', async () => {
               slug: 'id-1',
               name: 'Group 1',
               accountMembership: {
-                userRole: 'MEMBER',
+                userRole: 'member',
                 membershipStatus: 'APPROVED',
               },
             },
@@ -133,7 +133,7 @@ test('Home: Display groups', async () => {
               slug: 'id-2',
               name: 'Group 2',
               accountMembership: {
-                userRole: 'MANAGER',
+                userRole: 'manager',
                 membershipStatus: 'APPROVED',
               },
 
@@ -146,7 +146,7 @@ test('Home: Display groups', async () => {
               slug: 'id-3',
               name: 'Group 3',
               accountMembership: {
-                userRole: 'MEMBER',
+                userRole: 'member',
                 membershipStatus: 'PENDING',
               },
 

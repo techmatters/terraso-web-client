@@ -115,7 +115,7 @@ test('GroupList: Display list', async () => {
         email: 'email@email.com',
         memberships: generateMemberhips(groupIndex, membersCounts[groupIndex]),
         accountMembership: isMember[groupIndex]
-          ? _.set('edges[0].node.userRole', 'MEMBER', {})
+          ? _.set('edges[0].node.userRole', 'member', {})
           : null,
       },
     }));
@@ -251,7 +251,7 @@ test('GroupList: Display list (small screen)', async () => {
         email: 'email@email.com',
         memberships: generateMemberhips(groupIndex, membersCounts[groupIndex]),
         accountMembership: isMember[groupIndex]
-          ? _.set('edges[0].node.userRole', 'MEMBER', {})
+          ? _.set('edges[0].node.userRole', 'member', {})
           : null,
       },
     }));

@@ -100,7 +100,7 @@ test('GroupView: Display data', async () => {
   };
   const accountMembership = {
     id: 'user-id',
-    userRole: 'MEMBER',
+    userRole: 'member',
     membershipStatus: 'APPROVED',
   };
   const sharedResources = {

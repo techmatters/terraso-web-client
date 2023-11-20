@@ -360,7 +360,7 @@ test('LandscapeMembers: Manager actions', async () => {
   //         _.set('updateMembership.membership.group', membershipList),
   //         _.set(
   //           'updateMembership.membership.group.memberships.edges[2].node.userRole',
-  //           'MANAGER'
+  //           'manager'
   //         ),
   //         _.set(
   //           'updateMembership.membership.group.memberships.edges[2].node.membershipStatus',

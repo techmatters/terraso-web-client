@@ -250,7 +250,7 @@ test('LandscapeView: Display data', async () => {
 test('LandscapeView: Managers do not see warning', async () => {
   await baseViewTest({
     id: 'account-membership-id',
-    userRole: 'MANAGER',
+    userRole: 'manager',
     membershipStatus: 'APPROVED',
   });
 

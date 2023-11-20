@@ -130,7 +130,7 @@ const RemoveButton = props => {
         {
           name: member.pendingEmail
             ? member.pendingEmail
-            : t('user.full_name', { user: member }),
+            : t('user.full_name', { user: member.user }),
           context: member.membershipStatus?.toLowerCase(),
         }
       ),
@@ -141,7 +141,7 @@ const RemoveButton = props => {
         {
           name: member.pendingEmail
             ? member.pendingEmail
-            : t('user.full_name', { user: member }),
+            : t('user.full_name', { user: member.user }),
           storyMapTitle: storyMap.title,
           context: member.membershipStatus?.toLowerCase(),
         }

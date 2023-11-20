@@ -15,10 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-import { extractMembersInfo } from 'terraso-client-shared/memberships/membershipsUtils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
+import { extractGroup } from 'group/groupUtils';
 import { extractLandscape } from 'landscape/landscapeUtils';
 import { extractStoryMap } from 'storyMap/storyMapUtils';
 
@@ -40,8 +40,10 @@ export const fetchHomeData = email => {
         edges {
           node {
             ...groupFields
-            ...groupMembersPending
-            ...accountMembership
+            membershipList {
+              ...collaborationMembershipsPending
+              ...accountCollaborationMembership
+            }
           }
         }
       }
@@ -52,8 +54,10 @@ export const fetchHomeData = email => {
         edges {
           node {
             ...groupFields
-            ...groupMembersPending
-            ...accountMembership
+            membershipList {
+              ...collaborationMembershipsPending
+              ...accountCollaborationMembership
+            }
           }
         }
       }
@@ -75,10 +79,7 @@ export const fetchHomeData = email => {
       ]
         .map(_.get('node'))
         .filter(group => group)
-        .map(group => ({
-          ..._.omit(['accountMembership'], group),
-          membersInfo: extractMembersInfo(group),
-        })),
+        .map(extractGroup),
       landscapes: await Promise.all(
         _.getOr([], 'landscapes.edges', response)
           .map(_.get('node'))

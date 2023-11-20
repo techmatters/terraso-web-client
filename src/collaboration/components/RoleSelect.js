@@ -22,7 +22,7 @@ import Restricted from 'permissions/components/Restricted';
 const RoleSelect = props => {
   const {
     roles,
-    member,
+    membership,
     tabIndex,
     onMemberRoleChange,
     permission,
@@ -33,9 +33,9 @@ const RoleSelect = props => {
   const onChange = useCallback(
     event => {
       const newRole = event.target.value;
-      onMemberRoleChange(member, newRole);
+      onMemberRoleChange(membership, newRole);
     },
-    [onMemberRoleChange, member]
+    [onMemberRoleChange, membership]
   );
 
   return (
@@ -44,15 +44,15 @@ const RoleSelect = props => {
       resource={resource}
       FallbackComponent={() => (
         <Typography>
-          {roles.find(role => role.value === member.userRole).label}
+          {roles.find(role => role.value === membership.userRole).label}
         </Typography>
       )}
     >
       <Select
         variant="standard"
-        value={member.userRole}
+        value={membership.userRole}
         onChange={onChange}
-        disabled={member.fetching}
+        disabled={membership.fetching}
         inputProps={{
           tabIndex,
           'aria-label': label,
