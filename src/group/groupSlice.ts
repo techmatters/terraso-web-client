@@ -486,7 +486,7 @@ const updateMemberItem = (
     'members.data.membershipsInfo.membershipsSample',
     state.members.data?.membershipsInfo?.membershipsSample
       ?.map((membership: Membership) =>
-        _.includes(membership.user.email, userEmails)
+        _.includes(membership.user?.email, userEmails)
           ? valueGenerator(membership)
           : membership
       )
