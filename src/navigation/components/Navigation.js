@@ -128,6 +128,11 @@ const Navigation = React.forwardRef((props, ref) => {
         ref={ref}
         value={value}
         aria-label={t('navigation.nav_label_short')}
+        sx={{
+          maxWidth: {
+            md: 1200,
+          },
+        }}
       >
         <Typography sx={visuallyHidden} variant="h2">
           {t('navigation.nav_label')}
