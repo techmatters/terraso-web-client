@@ -30,8 +30,8 @@ const getAccountMembership = group =>
     group
   );
 
-const isApprovedMember = group => {
-  const accountMembership = getAccountMembership(group);
+const isApprovedMember = owner => {
+  const accountMembership = getAccountMembership(owner);
   if (!accountMembership || !accountMembership.userRole) {
     return false;
   }
@@ -76,13 +76,13 @@ const isAllowedToDeleteVisualization = ({
   return Promise.resolve(isManager || isOwner);
 };
 
-const isAllowedToDownloadSharedData = ({ resource: group }) => {
-  const isMember = isApprovedMember(group);
+const isAllowedToDownloadSharedData = ({ resource: owner }) => {
+  const isMember = isApprovedMember(owner);
   return Promise.resolve(isMember);
 };
 
-const isAllowedToAddSharedData = ({ resource: group }) => {
-  const isMember = isApprovedMember(group);
+const isAllowedToAddSharedData = ({ resource: owner }) => {
+  const isMember = isApprovedMember(owner);
   return Promise.resolve(isMember);
 };
 
@@ -107,8 +107,8 @@ const isAllowedToManageGroupMembers = ({ resource: group }) => {
   return Promise.resolve(isManager);
 };
 
-const isAllowedToViewGroupSharedData = ({ resource: group }) => {
-  const isMember = isApprovedMember(group);
+const isAllowedToViewSharedDataFiles = ({ resource: owner }) => {
+  const isMember = isApprovedMember(owner);
   return Promise.resolve(isMember);
 };
 
@@ -151,12 +151,12 @@ const rules = {
   'group.change': isAllowedToChangeGroup,
   'group.manageMembers': isAllowedToManageGroupMembers,
   'group.viewMembers': isAllowedToViewGroupMembers,
-  'group.viewFiles': isAllowedToViewGroupSharedData,
   'landscape.change': isAllowedToChangeLandscape,
   'sharedData.add': isAllowedToAddSharedData,
   'sharedData.download': isAllowedToDownloadSharedData,
   'sharedData.edit': isAllowedToEditSharedData,
   'sharedData.delete': isAllowedToDeleteSharedData,
+  'sharedData.viewFiles': isAllowedToViewSharedDataFiles,
   'visualization.delete': isAllowedToDeleteVisualization,
   'storyMap.change': isAllowedToChangeStoryMap,
   'storyMap.delete': isAllowedToDeleteStoryMap,
