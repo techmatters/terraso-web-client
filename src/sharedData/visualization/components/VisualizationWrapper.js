@@ -101,7 +101,19 @@ const VisualizationWrapper = props => {
 
   const handleDownloadPng = useCallback(() => {
     imagePrinter(mapTitle);
-  }, [imagePrinter, mapTitle]);
+    trackEvent('map.png', {
+      props: {
+        owner: owner.name,
+        fileID: visualizationConfig?.selectedFile.id,
+      },
+    });
+  }, [
+    imagePrinter,
+    mapTitle,
+    owner,
+    trackEvent,
+    visualizationConfig?.selectedFile,
+  ]);
 
   const onDelete = useCallback(() => {
     dispatch(deleteVisualizationConfig(data)).then(response => {
