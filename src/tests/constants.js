@@ -18,7 +18,7 @@
 export const GROUP_TYPES_WITH_REDIRECTS = {
   'Open member': {
     membershipType: 'OPEN',
-    userRole: 'MEMBER',
+    userRole: 'member',
     uploadRedirectCount: 0,
     memberListRedirectCount: 0,
   },
@@ -30,13 +30,13 @@ export const GROUP_TYPES_WITH_REDIRECTS = {
   },
   'Open manager': {
     membershipType: 'OPEN',
-    userRole: 'MANAGER',
+    userRole: 'manager',
     uploadRedirectCount: 0,
     memberListRedirectCount: 0,
   },
   'Closed member': {
     membershipType: 'CLOSED',
-    userRole: 'MEMBER',
+    userRole: 'member',
     uploadRedirectCount: 0,
     memberListRedirectCount: 0,
   },
@@ -48,7 +48,7 @@ export const GROUP_TYPES_WITH_REDIRECTS = {
   },
   'Closed manager': {
     membershipType: 'CLOSED',
-    userRole: 'MANAGER',
+    userRole: 'manager',
     uploadRedirectCount: 0,
     memberListRedirectCount: 0,
   },
@@ -56,11 +56,11 @@ export const GROUP_TYPES_WITH_REDIRECTS = {
 
 export const LANDSCAPE_TYPES_WITH_REDIRECTS = {
   Member: {
-    userRole: 'MEMBER',
+    userRole: 'member',
     uploadRedirectCount: 0,
   },
   Manager: {
-    userRole: 'MANAGER',
+    userRole: 'manager',
     uploadRedirectCount: 0,
   },
   Nonmember: {

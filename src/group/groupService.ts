@@ -181,7 +181,7 @@ export const fetchGroupToUploadSharedData = (slug: string) => {
             id
             slug
             name
-            ...accountMembership
+            ...groupMembershipList
           }
         }
       }
@@ -190,10 +190,7 @@ export const fetchGroupToUploadSharedData = (slug: string) => {
   return terrasoApi
     .requestGraphQL(query, { slug })
     .then(resp => resp.groups?.edges.at(0)?.node || Promise.reject('not_found'))
-    .then(group => ({
-      ..._.omit('accountMembership', group),
-      membersInfo: extractMembersInfo(group),
-    }));
+    .then(extractGroup);
 };
 
 const updateGroup = (group: Group) => {
