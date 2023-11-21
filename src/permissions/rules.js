@@ -93,7 +93,7 @@ const isAllowedToChangeGroup = ({ resource: owner }) => {
 
 // is open group or closed + you are a member
 const isAllowedToViewGroupMembers = ({ resource: group }) => {
-  const isOpenGroup = group.membershipType === MEMBERSHIP_OPEN;
+  const isOpenGroup = group.membershipsInfo.membershipType === MEMBERSHIP_OPEN;
   if (isOpenGroup) {
     return Promise.resolve(true);
   }
@@ -102,8 +102,8 @@ const isAllowedToViewGroupMembers = ({ resource: group }) => {
   return Promise.resolve(isMember);
 };
 
-const isAllowedToManageGroupMembers = ({ resource: group }) => {
-  const isManager = hasRole({ group, role: ROLE_MANAGER });
+const isAllowedToManageGroupMembers = ({ resource: owner }) => {
+  const isManager = hasRole({ owner, role: ROLE_MANAGER });
   return Promise.resolve(isManager);
 };
 

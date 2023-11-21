@@ -104,6 +104,14 @@ export const joinGroupFromList = createAsyncThunk(
   'group/joinGroupFromList',
   groupService.joinGroupFromList
 );
+export const changeMemberRole = createAsyncThunk(
+  'group/changeMemberRole',
+  groupService.changeMemberRole
+);
+export const removeMember = createAsyncThunk(
+  'group/removeMember',
+  groupService.removeMember
+);
 
 type GroupSliceState = typeof initialState;
 
@@ -123,7 +131,7 @@ const initialState = {
     fetching: true,
     groups: [] as { slug: string; name: string }[],
   },
-  membersGroup: {
+  members: {
     data: null as Omit<MembershipList, 'membersInfo'> | null,
     fetching: true,
   },
@@ -283,12 +291,12 @@ const groupSlice = createSlice({
 
     builder.addCase(
       fetchGroupForMembers.pending,
-      _.set('membersGroup', initialState.membersGroup)
+      _.set('members', initialState.members)
     );
 
     builder.addCase(fetchGroupForMembers.fulfilled, (state, action) => ({
       ...state,
-      membersGroup: {
+      members: {
         fetching: false,
         data: action.payload,
       },
@@ -296,7 +304,7 @@ const groupSlice = createSlice({
 
     builder.addCase(
       fetchGroupForMembers.rejected,
-      _.set('membersGroup', initialState.membersGroup)
+      _.set('members', initialState.members)
     );
 
     builder.addCase(saveGroup.pending, state => ({
@@ -422,6 +430,46 @@ const groupSlice = createSlice({
         _.set('accountMembership.fetching', false)
       );
     });
+
+    builder.addCase(changeMemberRole.pending, (state, action) => {
+      return updateMemberItem(
+        state,
+        action.meta.arg.userEmails as Array<string>,
+        _.set('fetching', true)
+      );
+    });
+    builder.addCase(changeMemberRole.fulfilled, (state, action) => {
+      return updateMemberItem(
+        state,
+        action.meta.arg.userEmails as Array<string>,
+        () => action.payload as Membership
+      );
+    });
+    builder.addCase(changeMemberRole.rejected, (state, action) => {
+      return updateMemberItem(
+        state,
+        action.meta.arg.userEmails as Array<string>,
+        _.set('fetching', false)
+      );
+    });
+
+    builder.addCase(removeMember.pending, (state, action) => {
+      return updateMemberItem(
+        state,
+        [action.meta.arg.email],
+        _.set('fetching', true)
+      );
+    });
+    builder.addCase(removeMember.fulfilled, (state, action) => {
+      return updateMemberItem(state, [action.meta.arg.email], () => null);
+    });
+    builder.addCase(removeMember.rejected, (state, action) => {
+      return updateMemberItem(
+        state,
+        [action.meta.arg.email],
+        _.set('fetching', false)
+      );
+    });
   },
 });
 
@@ -443,4 +491,22 @@ const updateGroupListItem = (
       ),
     },
   };
+};
+
+const updateMemberItem = (
+  state: GroupSliceState,
+  userEmails: Array<string>,
+  valueGenerator: (membership: Membership) => Membership | null
+) => {
+  return _.set(
+    'members.data.membershipsInfo.membershipsSample',
+    state.members.data?.membershipsInfo?.membershipsSample
+      ?.map((membership: Membership) =>
+        _.includes(membership.user?.email, userEmails)
+          ? valueGenerator(membership)
+          : membership
+      )
+      .filter(membership => membership),
+    state
+  );
 };

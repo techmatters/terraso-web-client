@@ -150,7 +150,10 @@ export const fetchGroupForMembers = (slug: string) => {
         edges {
           node {
             ...groupFields
-            ...accountMembership
+            membershipList {
+              ...collaborationMemberships
+              ...accountCollaborationMembership
+            }
           }
         }
       }
@@ -159,10 +162,7 @@ export const fetchGroupForMembers = (slug: string) => {
   return terrasoApi
     .requestGraphQL(query, { slug })
     .then(resp => resp.groups?.edges.at(0)?.node || Promise.reject('not_found'))
-    .then(group => ({
-      ...group,
-      accountMembership: extractAccountMembership(group),
-    }));
+    .then(extractGroup);
 };
 
 export const fetchGroupToUploadSharedData = (slug: string) => {
@@ -333,4 +333,51 @@ export const joinGroupFromList = (
     })
     .then(resp => resp.saveGroupMembership.group)
     .then(extractGroup);
+};
+
+export const changeMemberRole = (input: GroupMembershipSaveMutationInput) => {
+  const query = graphql(`
+    mutation changeGroupMemberRole($input: GroupMembershipSaveMutationInput!) {
+      saveGroupMembership(input: $input) {
+        memberships {
+          ...collaborationMembershipFields
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input,
+    })
+    .then(resp => resp.saveGroupMembership.memberships?.[0])
+    .then(membership => membership as CollaborationMembershipFieldsFragment)
+    .then(extractMembership);
+};
+
+export const removeMember = (
+  input: GroupMembershipDeleteMutationInput & {
+    email: string;
+  }
+) => {
+  const query = graphql(`
+    mutation removeGroupMember($input: GroupMembershipDeleteMutationInput!) {
+      deleteGroupMembership(input: $input) {
+        membership {
+          ...collaborationMembershipFields
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: _.omit('email', input),
+    })
+    .then(
+      resp =>
+        resp.deleteGroupMembership
+          .membership as CollaborationMembershipFieldsFragment
+    )
+    .then(extractMembership);
 };
