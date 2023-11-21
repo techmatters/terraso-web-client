@@ -19,6 +19,7 @@ import React from 'react';
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import { mockTerrasoAPIrequestGraphQL } from 'tests/apiUtils';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
@@ -68,7 +69,7 @@ test('LandscapeMembers: Empty', async () => {
         'landscapes.edges[0].node',
         {
           name: 'Landscape Name',
-          defaultGroup: { membershipsCount: 0 },
+          membershipList: { membershipsCount: 0 },
         },
         {}
       )
@@ -97,9 +98,7 @@ test('LandscapeMembers: Display list', async () => {
       ),
   });
 
-  const group = {
-    slug: 'test-group-slug',
-    name: 'Group Name',
+  const membershipList = {
     memberships: generateMemberhips(3, 20),
   };
 
@@ -110,14 +109,7 @@ test('LandscapeMembers: Display list', async () => {
     description: 'Landscape Description',
     website: 'https://www.landscape.org',
     location: 'Ecuador, Quito',
-    associatedGroups: {
-      edges: [
-        {
-          node: { group },
-        },
-      ],
-    },
-    defaultGroup: {},
+    membershipList,
   };
 
   terrasoApi.requestGraphQL
@@ -126,13 +118,13 @@ test('LandscapeMembers: Display list', async () => {
     )
     .mockReturnValueOnce(
       Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', group, {}))
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', group, {}))
     );
+  // .mockReturnValueOnce(
+  //   Promise.resolve(_.set('groups.edges[0].node', group, {}))
+  // )
+  // .mockReturnValueOnce(
+  //   Promise.resolve(_.set('groups.edges[0].node', group, {}))
+  // );
   await setup();
 
   // Landscape info
@@ -182,9 +174,7 @@ test('LandscapeMembers: Display list (small)', async () => {
       ),
   });
 
-  const group = {
-    slug: 'test-group-slug',
-    name: 'Group Name',
+  const membershipList = {
     memberships: generateMemberhips(3, 20),
   };
 
@@ -195,14 +185,7 @@ test('LandscapeMembers: Display list (small)', async () => {
     description: 'Landscape Description',
     website: 'https://www.landscape.org',
     location: 'Ecuador, Quito',
-    associatedGroups: {
-      edges: [
-        {
-          node: { group },
-        },
-      ],
-    },
-    defaultGroup: {},
+    membershipList,
   };
 
   terrasoApi.requestGraphQL
@@ -211,12 +194,6 @@ test('LandscapeMembers: Display list (small)', async () => {
     )
     .mockReturnValueOnce(
       Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', group, {}))
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', group, {}))
     );
   await setup();
 
@@ -244,18 +221,16 @@ test('LandscapeMembers: Display list manager', async () => {
             lastName: `Member Last Name ${index}`,
             email: `email${index}@email.com`,
           }),
-          _.set('node.userRole', 'MEMBER'),
+          _.set('node.userRole', 'member'),
           _.set('node.id', `membership-${index}`),
           _.set('node.membershipStatus', 'APPROVED')
         )({})
       ),
   });
 
-  const defaultGroup = {
-    slug: 'test-group-slug',
-    name: 'Group Name',
+  const membershipList = {
     memberships: generateMemberhips(3, 57),
-    accountMembership: { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
+    accountMembership: { userRole: 'manager', membershipStatus: 'APPROVED' },
   };
 
   const landscape = {
@@ -265,7 +240,7 @@ test('LandscapeMembers: Display list manager', async () => {
     description: 'Landscape Description',
     website: 'https://www.landscape.org',
     location: 'Ecuador, Quito',
-    defaultGroup,
+    membershipList,
   };
 
   terrasoApi.requestGraphQL
@@ -274,12 +249,6 @@ test('LandscapeMembers: Display list manager', async () => {
     )
     .mockReturnValueOnce(
       Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', defaultGroup, {}))
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(_.set('groups.edges[0].node', defaultGroup, {}))
     );
   await setup();
 
@@ -322,18 +291,16 @@ test('LandscapeMembers: Manager actions', async () => {
             lastName: `Member Last Name ${index}`,
             email: `email${index}@email.com`,
           }),
-          _.set('node.userRole', 'MEMBER'),
+          _.set('node.userRole', 'member'),
           _.set('node.id', `membership-${index}`),
           _.set('node.membershipStatus', 'APPROVED')
         )({})
       ),
   });
 
-  const defaultGroup = {
-    slug: 'test-group-slug',
-    name: 'Group Name',
+  const membershipList = {
     memberships: generateMemberhips(3, 3),
-    accountMembership: { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
+    accountMembership: { userRole: 'manager', membershipStatus: 'APPROVED' },
   };
 
   const landscape = {
@@ -343,47 +310,39 @@ test('LandscapeMembers: Manager actions', async () => {
     description: 'Landscape Description',
     website: 'https://www.landscape.org',
     location: 'Ecuador, Quito',
-    defaultGroup,
+    membershipList,
   };
 
-  terrasoApi.requestGraphQL.mockImplementation(query => {
-    const trimmedQuery = query.trim();
-    if (trimmedQuery.startsWith('query landscapes')) {
-      return Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}));
-    }
-    if (trimmedQuery.startsWith('query group')) {
-      return Promise.resolve(_.set('groups.edges[0].node', defaultGroup, {}));
-    }
-    if (trimmedQuery.startsWith('mutation updateMembership')) {
-      return Promise.resolve(
-        _.flow(
-          _.set('updateMembership.membership.group', defaultGroup),
-          _.set(
-            'updateMembership.membership.group.memberships.edges[2].node.userRole',
-            'MANAGER'
-          ),
-          _.set(
-            'updateMembership.membership.group.memberships.edges[2].node.membershipStatus',
-            'APPROVED'
-          )
-        )({})
-      );
-    }
-    if (trimmedQuery.startsWith('mutation deleteMembership')) {
-      return Promise.resolve(
-        _.flow(
-          _.set('deleteMembership.membership.group', defaultGroup),
-          _.set(
-            'deleteMembership.membership.group.memberships.edges',
-            defaultGroup.memberships.edges.slice(0, -1)
-          )
-        )({})
-      );
-    }
+  mockTerrasoAPIrequestGraphQL({
+    'query landscapes': Promise.resolve(
+      _.set('landscapes.edges[0].node', landscape, {})
+    ),
+    'mutation changeMemberRole': Promise.resolve(
+      _.set(
+        'saveLandscapeMembership.memberships[0]',
+        {
+          id: 'membership-2',
+          userRole: 'manager',
+          membershipStatus: 'APPROVED',
+          user: {
+            firstName: 'Member name 2',
+            lastName: 'Member Last Name 2',
+            email: `email2@email.com`,
+          },
+        },
+        {}
+      )
+    ),
+    'mutation removeMember': Promise.resolve(
+      _.set(
+        'deleteLandscapeMembership.membership',
+        membershipList.memberships.edges.slice(0, -1),
+        {}
+      )
+    ),
   });
-  await setup();
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(4);
+  await setup();
 
   // Landscape info
   expect(
@@ -411,7 +370,16 @@ test('LandscapeMembers: Manager actions', async () => {
     async () =>
       await fireEvent.click(screen.getByRole('option', { name: 'Manager' }))
   );
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(5);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledWith(
+    expect.anything(),
+    expect.objectContaining({
+      input: {
+        landscapeSlug: landscape.slug,
+        userEmails: ['email2@email.com'],
+        userRole: 'manager',
+      },
+    })
+  );
   expect(
     within(screen.getAllByRole('row')[3]).getByRole('cell', {
       name: 'Member name 2 Member Last Name 2',
@@ -437,11 +405,21 @@ test('LandscapeMembers: Manager actions', async () => {
         screen.getByRole('button', { name: 'Remove Member' })
       )
   );
-  await screen.findByRole('region', {
-    name: 'Current Members',
-  });
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(6);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledWith(
+    expect.anything(),
+    expect.objectContaining({
+      input: { id: 'membership-2', landscapeSlug: landscape.slug },
+    })
+  );
+
+  expect(screen.getAllByRole('row').length).toBe(3);
   await waitFor(() => expect(screen.getAllByRole('row').length).toBe(3));
   const removedRows = screen.getAllByRole('row');
   expect(removedRows.length).toBe(3);
+
+  expect(
+    screen.getByRole('region', {
+      name: 'Current Members',
+    })
+  ).toBeInTheDocument();
 });

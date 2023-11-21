@@ -15,17 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-import {
-  extractAccountMembership,
-  extractMembersInfo,
-} from 'terraso-client-shared/memberships/membershipsUtils';
+import { extractMembership } from 'terraso-client-shared/collaboration/membershipsUtils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
-
-import { countryNameForCode } from 'common/countries';
-import * as gisService from 'gis/gisService';
-import { extractDataEntries } from 'sharedData/sharedDataUtils';
-import { extractTerms } from 'taxonomies/taxonomiesUtils';
 
 import {
   ALL_PARTNERSHIP_STATUS,
@@ -37,6 +29,7 @@ import {
   extractLandscape,
   extractPartnership,
 } from 'landscape/landscapeUtils';
+import { extractTerms } from 'taxonomies/taxonomiesUtils';
 
 const cleanLandscape = landscape =>
   _.flow(
@@ -244,9 +237,9 @@ export const fetchLandscapeForMembers = slug => {
         edges {
           node {
             ...landscapeFields
-            defaultGroup {
-              slug
-              ...accountMembership
+            membershipList {
+              ...collaborationMemberships
+              ...accountCollaborationMembership
             }
           }
         }
@@ -257,14 +250,7 @@ export const fetchLandscapeForMembers = slug => {
     .requestGraphQL(query, { slug })
     .then(_.get('landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('not_found'))
-    .then(landscape => {
-      const group = _.get('defaultGroup', landscape);
-      return {
-        ...landscape,
-        accountMembership: extractAccountMembership(group),
-        groupSlug: _.get('slug', group),
-      };
-    });
+    .then(extractLandscape);
 };
 
 const updateLandscape = landscape => {
@@ -451,4 +437,46 @@ export const joinLandscapeFromList = (
     })
     .then(resp => resp.saveLandscapeMembership.landscape)
     .then(landscape => extractLandscape(landscape, false));
+};
+
+export const changeMemberRole = ({ landscapeSlug, userRole, email }) => {
+  const query = graphql(`
+    mutation changeMemberRole($input: LandscapeMembershipSaveMutationInput!) {
+      saveLandscapeMembership(input: $input) {
+        memberships {
+          ...collaborationMembershipFields
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: {
+        landscapeSlug,
+        userEmails: [email],
+        userRole,
+      },
+    })
+    .then(resp => resp.saveLandscapeMembership.memberships[0])
+    .then(extractMembership);
+};
+
+export const removeMember = ({ membershipId, landscapeSlug }) => {
+  const query = graphql(`
+    mutation removeMember($input: LandscapeMembershipDeleteMutationInput!) {
+      deleteLandscapeMembership(input: $input) {
+        membership {
+          ...collaborationMembershipFields
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: { id: membershipId, landscapeSlug },
+    })
+    .then(resp => resp.deleteLandscapeMembership.membership)
+    .then(extractMembership);
 };

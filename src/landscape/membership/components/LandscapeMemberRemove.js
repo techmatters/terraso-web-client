@@ -22,13 +22,13 @@ import ConfirmButton from 'common/components/ConfirmButton';
 
 const LandscapeMemberRemove = props => {
   const { t } = useTranslation();
-  const { owner, member, onConfirm, loading, buttonProps } = props;
+  const { owner, membership, onConfirm, loading, buttonProps } = props;
   return (
     <ConfirmButton
       onConfirm={onConfirm}
       confirmTitle={t('landscape.members_remove_confirmation_title')}
       confirmMessage={t('landscape.members_remove_confirmation_message', {
-        userName: t('user.full_name', { user: member }),
+        userName: t('user.full_name', { user: membership.user }),
         name: _.get('name', owner),
       })}
       confirmButton={t('landscape.members_remove_confirmation_button')}
