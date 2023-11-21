@@ -104,13 +104,22 @@ export const landscapeMembershipList = /* GraphQL */ `
   }
 `;
 
-export const defaultGroupWithMembersSample = /* GraphQL */ `
-  fragment defaultGroupWithMembersSample on LandscapeNode {
-    defaultGroup {
-      id
-      slug
-      ...groupMembersInfo
-      ...accountMembership
+export const landscapeMembershipListWithMembersSample = /* GraphQL */ `
+  fragment landscapeMembershipListWithMembersSample on LandscapeNode {
+    membershipList {
+      membershipsCount
+      ...accountCollaborationMembership
+      memberships(
+        user_Email_Not: $accountEmail
+        first: 5
+        membershipStatus: APPROVED
+      ) {
+        edges {
+          node {
+            ...collaborationMembershipFields
+          }
+        }
+      }
     }
   }
 `;

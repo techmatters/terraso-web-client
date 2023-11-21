@@ -27,12 +27,16 @@ import * as gisService from 'gis/gisService';
 import { extractDataEntries } from 'sharedData/sharedDataUtils';
 import { extractTerms } from 'taxonomies/taxonomiesUtils';
 
-import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
+import {
+  ALL_PARTNERSHIP_STATUS,
+  MEMBERSHIP_ROLE_MEMBER,
+} from 'landscape/landscapeConstants';
 import {
   extractAffiliatedGroups,
   extractDevelopmentStrategy,
+  extractLandscape,
   extractPartnership,
-} from './landscapeUtils';
+} from 'landscape/landscapeUtils';
 
 const cleanLandscape = landscape =>
   _.flow(
@@ -133,24 +137,16 @@ export const fetchLandscapeToUpdate = slug => {
     }));
 };
 
-const getDefaultGroup = landscape => {
-  const group = _.get('defaultGroup', landscape);
-  return {
-    ..._.pick(['id', 'slug'], group),
-    membersInfo: extractMembersInfo(group),
-  };
-};
-
-export const fetchLandscapeToView = slug => {
+export const fetchLandscapeToView = (slug, { email: accountEmail }) => {
   const query = graphql(`
-    query landscapesToView($slug: String!) {
+    query landscapesToView($slug: String!, $accountEmail: String!) {
       landscapes(slug: $slug) {
         edges {
           node {
             ...landscapeFields
             ...landscapePartnershipField
-            ...defaultGroupWithMembersSample
             ...landscapeDataEntries
+            ...landscapeMembershipListWithMembersSample
             areaPolygon
           }
         }
@@ -158,45 +154,10 @@ export const fetchLandscapeToView = slug => {
     }
   `);
   return terrasoApi
-    .requestGraphQL(query, {
-      slug,
-    })
+    .requestGraphQL(query, { slug, accountEmail })
     .then(_.get('landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('not_found'))
-    .then(landscape => ({
-      ..._.omit('defaultGroup', landscape),
-      defaultGroup: getDefaultGroup(landscape),
-    }))
-    .then(landscape => ({
-      ...landscape,
-      areaPolygon: landscape.areaPolygon
-        ? JSON.parse(landscape.areaPolygon)
-        : null,
-      partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
-      partnership: extractPartnership(landscape),
-      dataEntries: extractDataEntries(landscape),
-    }))
-    .then(landscape => {
-      if (landscape.areaPolygon || !landscape.location) {
-        return landscape;
-      }
-
-      // Get bounding box from nominatim.openstreetmap.org if no areaPolygon data
-      // AreaPolygon is not present when the user decided to skip it.
-      const currentCountry = countryNameForCode(landscape.location);
-
-      if (!currentCountry) {
-        return landscape;
-      }
-
-      return gisService
-        .getPlaceInfoByName(currentCountry.name)
-        .then(placeInfo => ({
-          ...landscape,
-          boundingBox: placeInfo?.boundingbox,
-        }))
-        .catch(() => landscape);
-    });
+    .then(landscape => extractLandscape(landscape, false));
 };
 
 export const fetchLandscapeProfile = slug => {
@@ -373,6 +334,67 @@ export const uploadProfileImage = async ({
   }
 
   return jsonResponse;
+};
+
+export const leaveLandscape = (
+  { membershipId, landscapeSlug },
+  { email: accountEmail }
+) => {
+  const query = graphql(`
+    mutation deleteLandscapeMembership(
+      $input: LandscapeMembershipDeleteMutationInput!
+      $accountEmail: String!
+    ) {
+      deleteLandscapeMembership(input: $input) {
+        landscape {
+          ...landscapeFields
+          ...landscapePartnershipField
+          ...landscapeDataEntries
+          ...landscapeMembershipListWithMembersSample
+          areaPolygon
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: { id: membershipId, landscapeSlug },
+      accountEmail,
+    })
+    .then(resp => resp.deleteLandscapeMembership.landscape)
+    .then(landscape => extractLandscape(landscape, false));
+};
+
+export const joinLandscape = ({ landscapeSlug }, { email: accountEmail }) => {
+  const query = graphql(`
+    mutation joinLandscape(
+      $input: LandscapeMembershipSaveMutationInput!
+      $accountEmail: String!
+    ) {
+      saveLandscapeMembership(input: $input) {
+        landscape {
+          ...landscapeFields
+          ...landscapePartnershipField
+          ...landscapeDataEntries
+          ...landscapeMembershipListWithMembersSample
+          areaPolygon
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: {
+        landscapeSlug,
+        userEmails: [accountEmail],
+        userRole: MEMBERSHIP_ROLE_MEMBER,
+      },
+      accountEmail,
+    })
+    .then(resp => resp.saveLandscapeMembership.landscape)
+    .then(landscape => extractLandscape(landscape, false));
 };
 
 export const leaveLandscapeFromList = ({ membershipId, landscapeSlug }) => {

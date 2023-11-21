@@ -21,6 +21,7 @@ import {
   MEMBERSHIP_STATUS_APPROVED,
   ROLE_MANAGER,
 } from 'group/membership/components/groupMembershipConstants';
+import { MEMBERSHIP_ROLE_MANAGER } from 'landscape/landscapeConstants';
 import { MEMBERSHIP_ROLE_EDITOR } from 'storyMap/storyMapConstants';
 
 const getAccountMembership = owner =>
@@ -106,6 +107,11 @@ const isAllowedToManageGroupMembers = ({ resource: group }) => {
   return Promise.resolve(isManager);
 };
 
+const isAllowedToManageLandscapeMembers = ({ resource: owner }) => {
+  const isManager = hasRole({ owner, role: MEMBERSHIP_ROLE_MANAGER });
+  return Promise.resolve(isManager);
+};
+
 const isAllowedToViewSharedDataFiles = ({ resource: owner }) => {
   const isMember = isApprovedMember(owner);
   return Promise.resolve(isMember);
@@ -151,6 +157,7 @@ const rules = {
   'group.manageMembers': isAllowedToManageGroupMembers,
   'group.viewMembers': isAllowedToViewGroupMembers,
   'landscape.change': isAllowedToChangeLandscape,
+  'landscape.manageMembers': isAllowedToManageLandscapeMembers,
   'sharedData.add': isAllowedToAddSharedData,
   'sharedData.download': isAllowedToDownloadSharedData,
   'sharedData.edit': isAllowedToEditSharedData,

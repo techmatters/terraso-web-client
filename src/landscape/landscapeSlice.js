@@ -129,6 +129,14 @@ export const deleteProfileImage = createAsyncThunk(
     params: { name: landscape.name },
   })
 );
+export const leaveLandscape = createAsyncThunk(
+  'landscape/leaveLandscape',
+  landscapeService.leaveLandscape
+);
+export const joinLandscape = createAsyncThunk(
+  'landscape/joinLandscape',
+  landscapeService.joinLandscape
+);
 export const leaveLandscapeFromList = createAsyncThunk(
   'landscape/leaveLandscapeFromList',
   landscapeService.leaveLandscapeFromList
@@ -379,6 +387,39 @@ const landscapeSlice = createSlice({
         },
       },
     }));
+
+    builder.addCase(leaveLandscape.pending, (state, action) =>
+      _.set(
+        `view.landscape.membershipsInfo.accountMembership.fetching`,
+        true,
+        state
+      )
+    );
+    builder.addCase(leaveLandscape.fulfilled, updateView);
+    builder.addCase(leaveLandscape.rejected, (state, action) =>
+      _.set(
+        `view.landscape.membershipsInfo.accountMembership.fetching`,
+        false,
+        state
+      )
+    );
+
+    builder.addCase(joinLandscape.pending, (state, action) =>
+      _.set(
+        `view.landscape.membershipsInfo.accountMembership.fetching`,
+        true,
+        state
+      )
+    );
+    builder.addCase(joinLandscape.fulfilled, updateView);
+    builder.addCase(joinLandscape.rejected, (state, action) =>
+      _.set(
+        `view.landscape.membershipsInfo.accountMembership.fetching`,
+        false,
+        state
+      )
+    );
+
     builder.addCase(leaveLandscapeFromList.pending, (state, action) => {
       return updateLandscapeListItem(
         state,

@@ -83,7 +83,13 @@ beforeEach(() => {
   };
 });
 
-const baseViewTest = async (userRole = 'MEMBER') => {
+const baseViewTest = async (
+  accountMembership = {
+    id: 'account-membership-id',
+    userRole: 'member',
+    membershipStatus: 'APPROVED',
+  }
+) => {
   global.fetch.mockReturnValue(
     Promise.resolve({
       json: () => [],
@@ -100,12 +106,6 @@ const baseViewTest = async (userRole = 'MEMBER') => {
           },
         },
       })),
-  };
-
-  const accountMembership = {
-    id: 'user-id',
-    userRole: userRole,
-    membershipStatus: 'APPROVED',
   };
 
   const sharedResources = {
@@ -137,8 +137,7 @@ const baseViewTest = async (userRole = 'MEMBER') => {
               description: 'Landscape Description',
               website: 'https://www.landscape.org',
               location: 'EC',
-              defaultGroup: {
-                slug: 'test-group-slug',
+              membershipList: {
                 memberships,
                 accountMembership,
                 membershipsCount: 6,
@@ -159,10 +158,10 @@ const baseViewTest = async (userRole = 'MEMBER') => {
               website: 'https://www.landscape.org',
               location: 'EC',
               areaPolygon: GEOJSON,
-              defaultGroup: {
-                slug: 'test-group-slug',
+              membershipList: {
                 memberships,
                 accountMembership,
+                membershipsCount: 6,
               },
               sharedResources,
             },
@@ -171,41 +170,6 @@ const baseViewTest = async (userRole = 'MEMBER') => {
       },
     });
   await setup();
-
-  // Landscape info
-  expect(
-    screen.getByRole('heading', { name: 'Landscape Name' })
-  ).toBeInTheDocument();
-  expect(screen.getByText(/Ecuador/i)).toBeInTheDocument();
-  expect(screen.getByText(/Landscape Description/i)).toBeInTheDocument();
-  expect(
-    screen.getByRole('link', { name: 'https://www.landscape.org' })
-  ).toBeInTheDocument();
-
-  // Members
-  expect(
-    screen.getByText(/6 Terraso members joined Landscape Name./i)
-  ).toBeInTheDocument();
-  expect(screen.getByText(/\+2/i)).toBeInTheDocument();
-
-  // Shared Data
-  const sharedDataRegion = within(
-    screen.getByRole('region', { name: 'Shared files and Links' })
-  );
-  expect(
-    sharedDataRegion.getByRole('heading', { name: 'Shared files and Links' })
-  ).toBeInTheDocument();
-  const entriesList = within(sharedDataRegion.getByRole('list'));
-  const items = entriesList.getAllByRole('listitem');
-  expect(items.length).toBe(6);
-
-  // Boundary
-  expect(
-    screen.getByRole('region', { name: 'Landscape map' })
-  ).toBeInTheDocument();
-  expect(
-    screen.getByRole('button', { name: 'Download boundary (GeoJSON)' })
-  ).toBeInTheDocument();
 };
 
 test('LandscapeView: Display error', async () => {
@@ -213,7 +177,7 @@ test('LandscapeView: Display error', async () => {
   await setup();
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
-test('LandscapeForm: Display loader', async () => {
+test('LandscapeView: Display loader', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
   await setup();
   const loader = screen.getByRole('progressbar', {
@@ -239,6 +203,44 @@ test('LandscapeView: Not found', async () => {
 test('LandscapeView: Display data', async () => {
   await baseViewTest();
 
+  // Landscape info
+  expect(
+    screen.getByRole('heading', { name: 'Landscape Name' })
+  ).toBeInTheDocument();
+  expect(screen.getByText(/Ecuador/i)).toBeInTheDocument();
+  expect(screen.getByText(/Landscape Description/i)).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'https://www.landscape.org' })
+  ).toBeInTheDocument();
+
+  // Members
+  const membersSection = screen.getByRole('region', { name: 'Members' });
+  expect(
+    within(membersSection).getByText(
+      /6 Terraso members joined Landscape Name./i
+    )
+  ).toBeInTheDocument();
+  expect(screen.getByText(/\+2/i)).toBeInTheDocument();
+
+  // Shared Data
+  const sharedDataRegion = within(
+    screen.getByRole('region', { name: 'Shared files and Links' })
+  );
+  expect(
+    sharedDataRegion.getByRole('heading', { name: 'Shared files and Links' })
+  ).toBeInTheDocument();
+  const entriesList = within(sharedDataRegion.getByRole('list'));
+  const items = entriesList.getAllByRole('listitem');
+  expect(items.length).toBe(6);
+
+  // Boundary
+  expect(
+    screen.getByRole('region', { name: 'Landscape map' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Download boundary (GeoJSON)' })
+  ).toBeInTheDocument();
+
   expect(
     screen.getByRole('button', { name: 'Leave: Landscape Name' })
   ).toBeInTheDocument();
@@ -246,7 +248,11 @@ test('LandscapeView: Display data', async () => {
 });
 
 test('LandscapeView: Managers do not see warning', async () => {
-  await baseViewTest('MANAGER');
+  await baseViewTest({
+    id: 'account-membership-id',
+    userRole: 'manager',
+    membershipStatus: 'APPROVED',
+  });
 
   expect(
     screen.queryByText('Something wrong with the map?')
@@ -316,13 +322,14 @@ test('LandscapeView: Refresh profile on leave', async () => {
   await baseViewTest();
 
   terrasoApi.requestGraphQL.mockResolvedValueOnce({
-    deleteMembership: {
-      membership: {
-        group: {},
-      },
+    deleteLandscapeMembership: {
+      landscape: {},
     },
   });
-  terrasoApi.requestGraphQL.mockReturnValueOnce(new Promise(() => {}));
+
+  expect(
+    screen.getByRole('region', { name: 'Shared files and Links' })
+  ).toBeInTheDocument();
 
   await act(async () =>
     fireEvent.click(
@@ -338,8 +345,51 @@ test('LandscapeView: Refresh profile on leave', async () => {
     )
   );
 
-  const loader = screen.getByRole('progressbar', {
-    name: 'Refreshing',
+  const leaveCall = terrasoApi.requestGraphQL.mock.calls[2];
+  expect(leaveCall[1].input).toEqual({
+    id: 'account-membership-id',
+    landscapeSlug: 'slug-1',
   });
-  expect(loader).toBeInTheDocument();
+
+  expect(
+    screen.queryByRole('region', { name: 'Shared files and Links' })
+  ).not.toBeInTheDocument();
+});
+
+test('LandscapeView: Refresh profile on join', async () => {
+  await baseViewTest({});
+
+  terrasoApi.requestGraphQL.mockResolvedValueOnce({
+    saveLandscapeMembership: {
+      landscape: {
+        membershipList: {
+          accountMembership: {
+            id: 'account-membership-id',
+            userRole: 'member',
+            membershipStatus: 'APPROVED',
+          },
+          membershipsCount: 6,
+        },
+      },
+    },
+  });
+
+  expect(
+    screen.queryByRole('region', { name: 'Shared files and Links' })
+  ).not.toBeInTheDocument();
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Join Landscape' }))
+  );
+
+  const joinCall = terrasoApi.requestGraphQL.mock.calls[2];
+  expect(joinCall[1].input).toEqual({
+    landscapeSlug: 'slug-1',
+    userEmails: ['email@email.com'],
+    userRole: 'member',
+  });
+
+  expect(
+    screen.getByRole('region', { name: 'Shared files and Links' })
+  ).toBeInTheDocument();
 });
