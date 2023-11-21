@@ -72,42 +72,26 @@ test('Home: Display landscapes', async () => {
       groups: {
         edges: [],
       },
-      landscapeGroups: {
+      landscapes: {
         edges: [
           {
             node: {
-              associatedLandscapes: {
-                edges: [
-                  {
-                    node: {
-                      landscape: {
-                        id: 'id-1',
-                        slug: 'id-1',
-                        name: 'Landscape 1',
-                        defaultGroup: _.set(
-                          'accountMembership.userRole',
-                          'MEMBER',
-                          {}
-                        ),
-                      },
-                    },
-                  },
-                  {
-                    node: {
-                      landscape: {
-                        id: 'id-2',
-                        slug: 'id-2',
-                        name: 'Landscape 2',
-                        defaultGroup: _.set(
-                          'accountMembership.userRole',
-                          'MANAGER',
-                          {}
-                        ),
-                      },
-                    },
-                  },
-                ],
-              },
+              id: 'id-1',
+              slug: 'landsacpe-1',
+              name: 'Landscape 1',
+              membershipList: _.set('accountMembership.userRole', 'member', {}),
+            },
+          },
+          {
+            node: {
+              id: 'id-2',
+              slug: 'landscape-2',
+              name: 'Landscape 2',
+              membershipList: _.set(
+                'accountMembership.userRole',
+                'manager',
+                {}
+              ),
             },
           },
         ],
@@ -115,10 +99,13 @@ test('Home: Display landscapes', async () => {
     })
   );
   await setup();
-  expect(screen.getByText(/Landscape 1/i)).toBeInTheDocument();
-  expect(screen.getByText(/Member/i)).toBeInTheDocument();
-  expect(screen.getByText(/Landscape 2/i)).toBeInTheDocument();
-  expect(screen.getByText(/Manager/i)).toBeInTheDocument();
+  const list = within(screen.getByRole('region', { name: 'Landscapes' }));
+  const landscape1 = list.getByRole('listitem', { name: 'Landscape 1' });
+  const landscape2 = list.getByRole('listitem', { name: 'Landscape 2' });
+  expect(landscape1).toBeInTheDocument();
+  expect(landscape2).toBeInTheDocument();
+  expect(within(landscape1).getByText(/Member/i)).toBeInTheDocument();
+  expect(within(landscape2).getByText(/Manager/i)).toBeInTheDocument();
 });
 test('Home: Display groups', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
@@ -130,9 +117,12 @@ test('Home: Display groups', async () => {
               id: 'id-1',
               slug: 'id-1',
               name: 'Group 1',
-              accountMembership: {
-                userRole: 'MEMBER',
-                membershipStatus: 'APPROVED',
+              membershipList: {
+                accountMembership: {
+                  id: 'id-1',
+                  userRole: 'member',
+                  membershipStatus: 'APPROVED',
+                },
               },
             },
           },
@@ -145,12 +135,14 @@ test('Home: Display groups', async () => {
               id: 'id-2',
               slug: 'id-2',
               name: 'Group 2',
-              accountMembership: {
-                userRole: 'MANAGER',
-                membershipStatus: 'APPROVED',
+              membershipList: {
+                accountMembership: {
+                  id: 'id-2',
+                  userRole: 'manager',
+                  membershipStatus: 'APPROVED',
+                },
+                pending: { totalCount: 1 },
               },
-
-              pending: { totalCount: 1 },
             },
           },
           {
@@ -158,12 +150,14 @@ test('Home: Display groups', async () => {
               id: 'id-3',
               slug: 'id-3',
               name: 'Group 3',
-              accountMembership: {
-                userRole: 'MEMBER',
-                membershipStatus: 'PENDING',
+              membershipList: {
+                accountMembership: {
+                  id: 'id-3',
+                  userRole: 'member',
+                  membershipStatus: 'PENDING',
+                },
+                pending: { totalCount: 1 },
               },
-
-              pending: { totalCount: 1 },
             },
           },
         ],

@@ -46,13 +46,13 @@ const GroupItem = ({ group, index }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const pendingCount = _.getOr(0, 'membersInfo.pendingCount', group);
+  const pendingCount = _.getOr(0, 'membershipsInfo.pendingCount', group);
   const isApproved =
-    _.get('membersInfo.accountMembership.membershipStatus', group) ===
+    _.get('membershipsInfo.accountMembership.membershipStatus', group) ===
     MEMBERSHIP_STATUS_APPROVED;
 
   const role = isApproved
-    ? _.getOr('member', 'membersInfo.accountMembership.userRole', group)
+    ? _.getOr('member', 'membershipsInfo.accountMembership.userRole', group)
     : MEMBERSHIP_STATUS_PENDING;
 
   return (
@@ -95,7 +95,7 @@ const GroupsHomeCard = ({ groups }) => {
 
   const sortedGroups = _.sortBy(
     group =>
-      _.get('membersInfo.accountMembership.membershipStatus', group) ===
+      _.get('membershipsInfo.accountMembership.membershipStatus', group) ===
       MEMBERSHIP_STATUS_APPROVED,
     groups
   );
