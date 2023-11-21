@@ -68,7 +68,7 @@ const MembershipButton = ({ group, tabIndex }) => {
   const onMemberLeave = membership => {
     dispatch(
       leaveGroupFromList({
-        membershipId: membership.membershipId,
+        id: membership.membershipId,
         groupSlug: group.slug,
       })
     );
