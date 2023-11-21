@@ -19,11 +19,11 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { LoadingButton } from '@mui/lab';
 
-import { useGroupContext } from 'group/groupContext';
+import { useCollaborationContext } from 'collaboration/collaborationContext';
 
 const GroupMemberJoin = props => {
   const { t } = useTranslation();
-  const { owner } = useGroupContext();
+  const { owner } = useCollaborationContext();
   const { ariaLabel, onJoin, buttonProps, loading } = props;
 
   return (

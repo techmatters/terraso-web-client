@@ -24,7 +24,6 @@ export const groupFields = /* GraphQL */ `
     email
     website
     email
-    membershipType
   }
 `;
 
@@ -48,6 +47,15 @@ export const groupDataEntries = /* GraphQL */ `
           }
         }
       }
+    }
+  }
+`;
+
+export const groupMembershipList = /* GraphQL */ `
+  fragment groupMembershipList on GroupNode {
+    membershipList {
+      membershipsCount
+      ...accountCollaborationMembership
     }
   }
 `;

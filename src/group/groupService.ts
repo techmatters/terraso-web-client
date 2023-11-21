@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
+import type { User } from 'terraso-client-shared/account/accountSlice';
 import {
   extractAccountMembership,
   extractMembersInfo,
@@ -26,6 +27,8 @@ import { graphql } from 'terrasoApi/shared/graphqlSchema';
 import { extractDataEntries } from 'sharedData/sharedDataUtils';
 
 import type { Group } from './groupSlice';
+import { extractGroup } from './groupUtils';
+import { ROLE_MEMBER } from './membership/components/groupMembershipConstants';
 
 export const fetchGroupToUpdate = (slug: string) => {
   const query = graphql(`
@@ -82,19 +85,15 @@ export const fetchGroups = () => {
         edges {
           node {
             ...groupFields
-            ...groupMembersInfo
-            ...accountMembership
+            ...groupMembershipList
           }
         }
       }
-      landscapeGroups: groups(
-        associatedLandscapes_IsDefaultLandscapeGroup: false
-      ) {
+      landscapeGroups: groups(associatedLandscapes_Isnull: false) {
         edges {
           node {
             ...groupFields
-            ...groupMembersInfo
-            ...accountMembership
+            ...groupMembershipList
           }
         }
       }
@@ -107,15 +106,7 @@ export const fetchGroups = () => {
         ...(response.independentGroups?.edges || []),
         ...(response.landscapeGroups?.edges || []),
       ])
-      .then(groups =>
-        groups.map(edge => ({
-          ..._.omit(
-            ['memberships', 'accountMembership', 'membershipsCount'],
-            edge.node
-          ),
-          membersInfo: extractMembersInfo(edge.node),
-        }))
-      )
+      .then(groups => groups.map(edge => extractGroup(edge.node)))
       // eslint-disable-next-line lodash-fp/no-extraneous-function-wrapping
       .then(groups => {
         return _.orderBy([group => group.name.toLowerCase()], [], groups);
@@ -244,3 +235,52 @@ const addGroup = (group: Group) => {
 
 export const saveGroup = ({ group }: { group: Group }) =>
   group.id ? updateGroup(group) : addGroup(group);
+
+export const leaveGroupFromList = (
+  input: GroupMembershipDeleteMutationInput
+) => {
+  const query = graphql(`
+    mutation leaveGroupFromList($input: GroupMembershipDeleteMutationInput!) {
+      deleteGroupMembership(input: $input) {
+        group {
+          ...groupFields
+          ...groupMembershipList
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input,
+    })
+    .then(resp => resp.deleteGroupMembership.group)
+    .then(extractGroup);
+};
+
+export const joinGroupFromList = (
+  { groupSlug }: { groupSlug: string },
+  user: User | null
+) => {
+  const query = graphql(`
+    mutation joinGroupFromList($input: GroupMembershipSaveMutationInput!) {
+      saveGroupMembership(input: $input) {
+        group {
+          ...groupFields
+          ...groupMembershipList
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: {
+        groupSlug,
+        userEmails: [user!.email],
+        userRole: ROLE_MEMBER,
+      },
+    })
+    .then(resp => resp.saveGroupMembership.group)
+    .then(extractGroup);
+};

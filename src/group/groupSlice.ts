@@ -21,6 +21,7 @@ import {
   setMemberships,
 } from 'terraso-client-shared/memberships/membershipsSlice';
 import { getMemberships } from 'terraso-client-shared/memberships/membershipsUtils';
+import type { MembershipsInfo } from 'terraso-client-shared/collaboration/membershipsUtils';
 import type { Message } from 'terraso-client-shared/notifications/notificationsSlice';
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
@@ -34,7 +35,8 @@ export type Group = {
   name: string;
   description: string;
   website: string;
-} & MembershipList;
+  membershipInfo?: MembershipsInfo;
+};
 
 export const fetchGroupForm = createAsyncThunk(
   'group/fetchGroupForm',
@@ -65,7 +67,6 @@ export const fetchGroups = createAsyncThunk(
   'group/fetchGroups',
   async (arg, user, { dispatch }) => {
     const groups = await groupService.fetchGroups();
-    dispatch(setMemberships(getMemberships(groups)));
     return groups;
   }
 );
@@ -88,6 +89,14 @@ export const saveGroup = createAsyncThunk(
     content: group.new ? 'group.added' : 'group.updated',
     params: { name: group.name },
   })
+);
+export const leaveGroupFromList = createAsyncThunk(
+  'group/leaveGroupFromList',
+  groupService.leaveGroupFromList
+);
+export const joinGroupFromList = createAsyncThunk(
+  'group/joinGroupFromList',
+  groupService.joinGroupFromList
 );
 
 type GroupSliceState = typeof initialState;
@@ -329,9 +338,69 @@ const groupSlice = createSlice({
         fetching: false,
       },
     }));
+
+    builder.addCase(leaveGroupFromList.pending, (state, action) => {
+      return updateGroupListItem(
+        state,
+        action.meta.arg.groupSlug,
+        _.set('accountMembership.fetching', true)
+      );
+    });
+    builder.addCase(leaveGroupFromList.fulfilled, (state, action) => {
+      return updateGroupListItem(
+        state,
+        action.meta.arg.groupSlug,
+        () => action.payload
+      );
+    });
+    builder.addCase(leaveGroupFromList.rejected, (state, action) => {
+      return updateGroupListItem(
+        state,
+        action.meta.arg.groupSlug,
+        _.set('accountMembership.fetching', false)
+      );
+    });
+
+    builder.addCase(joinGroupFromList.pending, (state, action) => {
+      return updateGroupListItem(
+        state,
+        action.meta.arg.groupSlug,
+        _.set('accountMembership.fetching', true)
+      );
+    });
+    builder.addCase(joinGroupFromList.fulfilled, (state, action) => {
+      return updateGroupListItem(
+        state,
+        action.meta.arg.groupSlug,
+        () => action.payload
+      );
+    });
+    builder.addCase(joinGroupFromList.rejected, (state, action) => {
+      return updateGroupListItem(
+        state,
+        action.meta.arg.groupSlug,
+        _.set('accountMembership.fetching', false)
+      );
+    });
   },
 });
 
 export const { setFormNewValues, resetFormSuccess } = groupSlice.actions;
 
 export default groupSlice.reducer;
+
+const updateGroupListItem = (
+  state: GroupSliceState,
+  slug: string,
+  valueGenerator: (group: Group) => Group
+) => {
+  return {
+    ...state,
+    list: {
+      ...state.list,
+      groups: state.list.groups.map(group =>
+        group.slug === slug ? valueGenerator(group) : group
+      ),
+    },
+  };
+};
