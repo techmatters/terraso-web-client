@@ -18,9 +18,18 @@ import turfCenter from '@turf/center';
 import * as turf from '@turf/helpers';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
+import {
+  extractAccountMembership,
+  extractMembershipsInfo,
+} from 'terraso-client-shared/collaboration/membershipsUtils';
 import { Typography } from '@mui/material';
 
+import { countryNameForCode } from 'common/countries';
+import * as gisService from 'gis/gisService';
 import { normalizeLongitude, parseGeoJson } from 'gis/gisUtils';
+import { extractDataEntries } from 'sharedData/sharedDataUtils';
+
+import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
 
 // Returns bounding box containing the defined areaPolygon data or
 // the bounding box requested from the landsace.location data
@@ -124,6 +133,51 @@ export const extractAffiliatedGroups = landscape =>
 
 export const extractDevelopmentStrategy = landscape =>
   _.get('associatedDevelopmentStrategy.edges[0].node', landscape);
+
+const extractLandscapeGeoJson = landscape => {
+  if (!landscape.areaPolygon) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(landscape.areaPolygon);
+  } catch (error) {
+    return null;
+  }
+};
+
+export const extractLandscape = async (landscape, useLocationApi) => {
+  const result = {
+    ..._.omit('membershipList', landscape),
+    accountMembership: extractAccountMembership(landscape.membershipList),
+    membershipsInfo: extractMembershipsInfo(landscape.membershipList),
+    areaPolygon: extractLandscapeGeoJson(landscape),
+    partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
+    partnership: extractPartnership(landscape),
+    dataEntries: extractDataEntries(landscape),
+  };
+
+  if (!useLocationApi) {
+    return result;
+  }
+
+  // Get bounding box from nominatim.openstreetmap.org if no areaPolygon data
+  // AreaPolygon is not present when the user decided to skip it in the
+  // landscape creation process as part of the wizard steps
+  const currentCountry = countryNameForCode(result.location);
+
+  if (!currentCountry) {
+    return result;
+  }
+
+  return gisService
+    .getPlaceInfoByName(currentCountry.name)
+    .then(placeInfo => ({
+      ...result,
+      boundingBox: placeInfo?.boundingbox,
+    }))
+    .catch(() => result);
+};
 
 export const Subheader = ({ id, text }) => {
   const { t } = useTranslation();

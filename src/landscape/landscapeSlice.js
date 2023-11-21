@@ -62,14 +62,7 @@ const initialState = {
 
 export const fetchLandscapes = createAsyncThunk(
   'landscape/fetchLandscapes',
-  async (params, currentUser, { dispatch }) => {
-    const landscapes = await landscapeService.fetchLandscapes(
-      params,
-      currentUser
-    );
-    dispatch(setMemberships(getMemberships(landscapes)));
-    return landscapes;
-  }
+  landscapeService.fetchLandscapes
 );
 export const fetchLandscapeProfile = createAsyncThunk(
   'landscape/fetchLandscapeProfile',
@@ -135,6 +128,14 @@ export const deleteProfileImage = createAsyncThunk(
     content: successKey,
     params: { name: landscape.name },
   })
+);
+export const leaveLandscapeFromList = createAsyncThunk(
+  'landscape/leaveLandscapeFromList',
+  landscapeService.leaveLandscapeFromList
+);
+export const joinLandscapeFromList = createAsyncThunk(
+  'landscape/joinLandscapeFromList',
+  landscapeService.joinLandscapeFromList
 );
 
 const updateView = (state, action) => ({
@@ -378,6 +379,49 @@ const landscapeSlice = createSlice({
         },
       },
     }));
+    builder.addCase(leaveLandscapeFromList.pending, (state, action) => {
+      return updateLandscapeListItem(
+        state,
+        action.meta.arg.landscapeSlug,
+        _.set('accountMembership.fetching', true)
+      );
+    });
+    builder.addCase(leaveLandscapeFromList.fulfilled, (state, action) => {
+      return updateLandscapeListItem(
+        state,
+        action.meta.arg.landscapeSlug,
+        () => action.payload
+      );
+    });
+    builder.addCase(leaveLandscapeFromList.rejected, (state, action) => {
+      return updateLandscapeListItem(
+        state,
+        action.meta.arg.landscapeSlug,
+        _.set('accountMembership.fetching', false)
+      );
+    });
+
+    builder.addCase(joinLandscapeFromList.pending, (state, action) => {
+      return updateLandscapeListItem(
+        state,
+        action.meta.arg.landscapeSlug,
+        _.set('accountMembership.fetching', true)
+      );
+    });
+    builder.addCase(joinLandscapeFromList.fulfilled, (state, action) => {
+      return updateLandscapeListItem(
+        state,
+        action.meta.arg.landscapeSlug,
+        () => action.payload
+      );
+    });
+    builder.addCase(joinLandscapeFromList.rejected, (state, action) => {
+      return updateLandscapeListItem(
+        state,
+        action.meta.arg.landscapeSlug,
+        _.set('accountMembership.fetching', false)
+      );
+    });
   },
 });
 

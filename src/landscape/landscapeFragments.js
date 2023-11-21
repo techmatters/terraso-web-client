@@ -95,13 +95,11 @@ export const landscapePartnershipField = /* GraphQL */ `
   }
 `;
 
-export const defaultGroup = /* GraphQL */ `
-  fragment defaultGroup on LandscapeNode {
-    defaultGroup {
-      id
-      slug
+export const landscapeMembershipList = /* GraphQL */ `
+  fragment landscapeMembershipList on LandscapeNode {
+    membershipList {
       membershipsCount
-      ...accountMembership
+      ...accountCollaborationMembership
     }
   }
 `;
