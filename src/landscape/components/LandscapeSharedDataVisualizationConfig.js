@@ -19,11 +19,11 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { CollaborationContextProvider } from 'collaboration/collaborationContext';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-import { GroupContextProvider } from 'group/groupContext';
 import { fetchLandscapeUpload } from 'landscape/landscapeSlice';
 import VisualizationConfigForm from 'sharedData/visualization/components/VisualizationConfigForm';
 
@@ -71,12 +71,12 @@ const LandscapeSharedDataVisualizationConfig = () => {
 
   return (
     <PageContainer>
-      <GroupContextProvider owner={landscape}>
+      <CollaborationContextProvider owner={landscape} entityType="landscape">
         <VisualizationConfigForm
           onCompleteSuccess={onCompleteSuccess}
           onCancel={onCancel}
         />
-      </GroupContextProvider>
+      </CollaborationContextProvider>
     </PageContainer>
   );
 };
