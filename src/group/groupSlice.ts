@@ -17,10 +17,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import * as _ from 'lodash/fp';
 import {
+  Membership,
   MembershipList,
-  setMemberships,
-} from 'terraso-client-shared/memberships/membershipsSlice';
-import { getMemberships } from 'terraso-client-shared/memberships/membershipsUtils';
+} from 'terraso-client-shared/collaboration/membershipsUtils';
 import type { MembershipsInfo } from 'terraso-client-shared/collaboration/membershipsUtils';
 import type { Message } from 'terraso-client-shared/notifications/notificationsSlice';
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
@@ -46,8 +45,7 @@ export const fetchGroupForm = createAsyncThunk(
 export const fetchGroupView = createAsyncThunk(
   'group/fetchGroupView',
   async (slug: string, user, { dispatch }) => {
-    const group = await groupService.fetchGroupToView(slug);
-    dispatch(setMemberships(getMemberships([group])));
+    const group = await groupService.fetchGroupToView(slug, user);
     dispatch(setList(group.dataEntries));
     return group;
   }
@@ -89,6 +87,14 @@ export const saveGroup = createAsyncThunk(
     content: group.new ? 'group.added' : 'group.updated',
     params: { name: group.name },
   })
+);
+export const leaveGroup = createAsyncThunk(
+  'group/leaveGroup',
+  groupService.leaveGroup
+);
+export const joinGroup = createAsyncThunk(
+  'group/joinGroup',
+  groupService.joinGroup
 );
 export const leaveGroupFromList = createAsyncThunk(
   'group/leaveGroupFromList',
@@ -138,7 +144,9 @@ const initialState = {
 
 const updateView = (
   state: GroupSliceState,
-  action: ReturnType<typeof fetchGroupView.fulfilled>
+  action:
+    | ReturnType<typeof fetchGroupView.fulfilled>
+    | ReturnType<typeof joinGroup.fulfilled>
 ): GroupSliceState => ({
   ...state,
   view: {
@@ -338,6 +346,38 @@ const groupSlice = createSlice({
         fetching: false,
       },
     }));
+
+    builder.addCase(leaveGroup.pending, (state, action) =>
+      _.set(
+        `view.group.membershipsInfo.accountMembership.fetching`,
+        true,
+        state
+      )
+    );
+    builder.addCase(leaveGroup.fulfilled, updateView);
+    builder.addCase(leaveGroup.rejected, (state, action) =>
+      _.set(
+        `view.group.membershipsInfo.accountMembership.fetching`,
+        false,
+        state
+      )
+    );
+
+    builder.addCase(joinGroup.pending, (state, action) =>
+      _.set(
+        `view.group.membershipsInfo.accountMembership.fetching`,
+        true,
+        state
+      )
+    );
+    builder.addCase(joinGroup.fulfilled, updateView);
+    builder.addCase(joinGroup.rejected, (state, action) =>
+      _.set(
+        `view.group.membershipsInfo.accountMembership.fetching`,
+        false,
+        state
+      )
+    );
 
     builder.addCase(leaveGroupFromList.pending, (state, action) => {
       return updateGroupListItem(

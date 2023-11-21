@@ -59,3 +59,24 @@ export const groupMembershipList = /* GraphQL */ `
     }
   }
 `;
+
+export const groupMembershipListWithMembersSample = /* GraphQL */ `
+  fragment groupMembershipListWithMembersSample on GroupNode {
+    membershipList {
+      membershipsCount
+      ...accountCollaborationMembership
+      ...collaborationMembershipsPending
+      memberships(
+        user_Email_Not: $accountEmail
+        first: 5
+        membershipStatus: APPROVED
+      ) {
+        edges {
+          node {
+            ...collaborationMembershipFields
+          }
+        }
+      }
+    }
+  }
+`;

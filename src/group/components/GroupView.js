@@ -16,6 +16,7 @@
  */
 import React, { useCallback, useEffect, useMemo } from 'react';
 import _ from 'lodash/fp';
+import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 import { useFetchData } from 'terraso-client-shared/store/utils';
@@ -35,6 +36,8 @@ import {
 
 import { withProps } from 'react-hoc';
 
+import { CollaborationContextProvider } from 'collaboration/collaborationContext';
+import MembershipCard from 'collaboration/components/MembershipCard';
 import { useSocialShareContext } from 'common/components/SocialShare';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
@@ -43,12 +46,15 @@ import PageLoader from 'layout/PageLoader';
 import { useRefreshProgressContext } from 'layout/RefreshProgressProvider';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import Restricted from 'permissions/components/Restricted';
-import { GroupContextProvider } from 'group/groupContext';
-import { fetchGroupView, refreshGroupView } from 'group/groupSlice';
+import {
+  fetchGroupView,
+  joinGroup,
+  leaveGroup,
+  refreshGroupView,
+} from 'group/groupSlice';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberRequestCancel from 'group/membership/components/GroupMemberRequestCancel';
-import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
 import GroupMembershipInfo from 'group/membership/components/GroupMembershipInfo';
 import SharedDataCard from 'sharedData/components/SharedDataCard';
 
@@ -147,6 +153,10 @@ const GroupView = () => {
     state => state.group.view
   );
   const { slug } = useParams();
+  const { allowed: allowedToManageMembers } = usePermission(
+    'group.manageMembers',
+    group
+  );
 
   useDocumentTitle(
     t('group.view_document_title', { name: _.get('name', group) }),
@@ -186,6 +196,26 @@ const GroupView = () => {
     setRefreshing(refreshing);
   }, [refreshing, setRefreshing]);
 
+  const onMemberLeave = useCallback(
+    membership => {
+      dispatch(
+        leaveGroup({
+          membershipId: membership.membershipId,
+          groupSlug: slug,
+        })
+      );
+    },
+    [dispatch, slug]
+  );
+
+  const onMemberJoin = useCallback(() => {
+    dispatch(
+      joinGroup({
+        groupSlug: slug,
+      })
+    );
+  }, [dispatch, slug]);
+
   if (fetching) {
     return <PageLoader />;
   }
@@ -195,15 +225,18 @@ const GroupView = () => {
   }
 
   return (
-    <GroupContextProvider
+    <CollaborationContextProvider
       owner={group}
+      entityType="group"
       baseOwnerUrl={`/groups/${group.slug}`}
-      group={group}
-      groupSlug={group.slug}
+      accountMembership={group.membershipsInfo.accountMembership}
+      membershipsInfo={group.membershipsInfo}
       MemberJoinButton={MemberJoinButton}
-      MemberRequestJoinButton={MemberRequestJoinButton}
-      MemberRequestCancelButton={MemberRequestCancelButton}
+      onMemberJoin={onMemberJoin}
       MemberLeaveButton={MemberLeaveButton}
+      onMemberRemove={onMemberLeave}
+      MemberRequestCancelButton={MemberRequestCancelButton}
+      MemberRequestJoinButton={MemberRequestJoinButton}
       updateOwner={updateGroup}
     >
       <PageContainer>
@@ -222,7 +255,8 @@ const GroupView = () => {
             <GroupCard group={group} />
           </Grid>
           <Grid item xs={12} md={6} style={{ display: 'flex' }}>
-            <GroupMembershipCard
+            <MembershipCard
+              allowedToManageMembers={allowedToManageMembers}
               onViewMembers={() => navigate(`/groups/${group.slug}/members`)}
               InfoComponent={GroupMembershipInfo}
             />
@@ -237,7 +271,7 @@ const GroupView = () => {
           </Grid>
         </Grid>
       </PageContainer>
-    </GroupContextProvider>
+    </CollaborationContextProvider>
   );
 };
 
