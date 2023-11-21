@@ -30,12 +30,12 @@ import {
   Typography,
 } from '@mui/material';
 
+import { useCollaborationContext } from 'collaboration/collaborationContext';
 import ExternalLink from 'common/components/ExternalLink';
 import List from 'common/components/List';
 import StepperStep from 'common/components/StepperStep';
 import PageLoader from 'layout/PageLoader';
 import { formatDate } from 'localization/utils';
-import { useGroupContext } from 'group/groupContext';
 import SharedFileIcon from 'sharedData/components/SharedFileIcon';
 import { fetchSharedData } from 'sharedData/sharedDataSlice';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
@@ -76,7 +76,7 @@ const SelectDataFileStep = props => {
   const { i18n, t } = useTranslation();
   const { visualizationConfig } = useVisualizationContext();
   const { onNext, onBack } = props;
-  const { owner, entityType } = useGroupContext();
+  const { owner, entityType } = useCollaborationContext();
   const { data: sharedFiles, fetching } = useSelector(_.get('sharedData.list'));
   const [selected, setSelected] = useState();
 

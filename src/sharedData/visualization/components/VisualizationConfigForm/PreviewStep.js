@@ -20,11 +20,11 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Typography } from '@mui/material';
 
+import { useCollaborationContext } from 'collaboration/collaborationContext';
 import StepperStep from 'common/components/StepperStep';
 import PageLoader from 'layout/PageLoader';
 import { useAnalytics } from 'monitoring/analytics';
 import { ILM_OUTPUT_PROP, RESULTS_ANALYSIS_IMPACT } from 'monitoring/ilm';
-import { useGroupContext } from 'group/groupContext';
 import { addVisualizationConfig } from 'sharedData/sharedDataSlice';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 
@@ -43,7 +43,7 @@ const PreviewStep = props => {
   const [viewportConfig, setViewportConfig] = useState(
     visualizationConfig.viewportConfig
   );
-  const { owner, entityTypeLocalized, entityType } = useGroupContext();
+  const { owner, entityTypeLocalized, entityType } = useCollaborationContext();
 
   useEffect(() => {
     setViewportConfig(visualizationConfig.viewportConfig);

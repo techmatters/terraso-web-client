@@ -174,8 +174,7 @@ const setup = async testParams => {
         edges: [
           {
             node: {
-              defaultGroup: {
-                id: '6a625efb-4ec8-45e8-ad6a-eb052cc3fe65',
+              membershipList: {
                 accountMembership: {},
               },
               id: 'e9a65bef-4ef1-4058-bba3-fc73b53eb779',
