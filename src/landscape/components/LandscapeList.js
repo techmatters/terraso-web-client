@@ -44,10 +44,6 @@ import {
 import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 
 import LandscapeListMap from './LandscapeListMap';
-import MembershipListCount from 'collaboration/components/MembershipCount';
-import { CollaborationContextProvider } from 'collaboration/collaborationContext';
-import MembershipJoinLeaveButton from 'collaboration/components/MembershipJoinLeaveButton';
-import MemberJoin from 'collaboration/components/MemberJoin';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.list_leave_button',
