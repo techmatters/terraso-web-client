@@ -117,9 +117,12 @@ test('Home: Display groups', async () => {
               id: 'id-1',
               slug: 'id-1',
               name: 'Group 1',
-              accountMembership: {
-                userRole: 'member',
-                membershipStatus: 'APPROVED',
+              membershipList: {
+                accountMembership: {
+                  id: 'id-1',
+                  userRole: 'member',
+                  membershipStatus: 'APPROVED',
+                },
               },
             },
           },
@@ -132,12 +135,14 @@ test('Home: Display groups', async () => {
               id: 'id-2',
               slug: 'id-2',
               name: 'Group 2',
-              accountMembership: {
-                userRole: 'manager',
-                membershipStatus: 'APPROVED',
+              membershipList: {
+                accountMembership: {
+                  id: 'id-2',
+                  userRole: 'manager',
+                  membershipStatus: 'APPROVED',
+                },
+                pending: { totalCount: 1 },
               },
-
-              pending: { totalCount: 1 },
             },
           },
           {
@@ -145,12 +150,14 @@ test('Home: Display groups', async () => {
               id: 'id-3',
               slug: 'id-3',
               name: 'Group 3',
-              accountMembership: {
-                userRole: 'member',
-                membershipStatus: 'PENDING',
+              membershipList: {
+                accountMembership: {
+                  id: 'id-3',
+                  userRole: 'member',
+                  membershipStatus: 'PENDING',
+                },
+                pending: { totalCount: 1 },
               },
-
-              pending: { totalCount: 1 },
             },
           },
         ],
