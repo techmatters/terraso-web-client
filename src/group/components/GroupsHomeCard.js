@@ -66,14 +66,12 @@ const GroupItem = ({ group, index }) => {
         borderTop: index && `1px solid ${theme.palette.gray.lite1}`, // skip first item
       }}
     >
-      <Stack direction="row">
+      <Typography component="span">
         <Link component={RouterLink} to={`/groups/${group.slug}`}>
           {group.name}
-        </Link>
-        <Typography sx={{ ml: 1 }}>
-          ({t(`group.role_${role.toLowerCase()}`)})
-        </Typography>
-      </Stack>
+        </Link>{' '}
+        ({t(`group.role_${role.toLowerCase()}`)})
+      </Typography>
       {!isApproved && (
         <Typography color="text.secondary">
           {t('group.home_pending_message')}
