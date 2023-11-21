@@ -117,9 +117,7 @@ export const fetchGroupsAutocompleteList = () => {
           }
         }
       }
-      landscapeGroups: groups(
-        associatedLandscapes_IsDefaultLandscapeGroup: false
-      ) {
+      landscapeGroups: groups(associatedLandscapes_Isnull: false) {
         edges {
           node {
             ...groupsListFields
