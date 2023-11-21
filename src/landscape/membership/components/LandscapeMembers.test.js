@@ -348,39 +348,6 @@ test('LandscapeMembers: Manager actions', async () => {
     ),
   });
 
-  // terrasoApi.requestGraphQL.mockImplementation(query => {
-  //   const trimmedQuery = query.trim();
-  //   if (trimmedQuery.startsWith('query landscapes')) {
-  //     return Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}));
-  //   }
-  //   // TODO
-  //   if (trimmedQuery.startsWith('mutation changeMemberRole')) {
-  //     return Promise.resolve(
-  //       _.flow(
-  //         _.set('updateMembership.membership.group', membershipList),
-  //         _.set(
-  //           'updateMembership.membership.group.memberships.edges[2].node.userRole',
-  //           'manager'
-  //         ),
-  //         _.set(
-  //           'updateMembership.membership.group.memberships.edges[2].node.membershipStatus',
-  //           'APPROVED'
-  //         )
-  //       )({})
-  //     );
-  //   }
-  //   if (trimmedQuery.startsWith('mutation removeMember')) {
-  //     return Promise.resolve(
-  //       _.flow(
-  //         _.set('deleteMembership.membership.group', membershipList),
-  //         _.set(
-  //           'deleteMembership.membership.group.memberships.edges',
-  //           membershipList.memberships.edges.slice(0, -1)
-  //         )
-  //       )({})
-  //     );
-  //   }
-  // });
   await setup();
 
   // Landscape info

@@ -517,7 +517,9 @@ const updateMemberItem = (state, email, valueGenerator) => {
     'members.data.membershipsInfo.membershipsSample',
     state.members.data.membershipsInfo.membershipsSample
       .map(membership =>
-        membership.email === email ? valueGenerator(membership) : membership
+        membership.user.email === email
+          ? valueGenerator(membership)
+          : membership
       )
       .filter(membership => membership),
     state
