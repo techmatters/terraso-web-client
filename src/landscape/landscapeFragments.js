@@ -52,7 +52,7 @@ export const landscapeProfileFields = /* GraphQL */ `
         }
       }
     }
-    associatedGroups(isDefaultLandscapeGroup: false) {
+    associatedGroups {
       edges {
         node {
           isPartnership
