@@ -71,6 +71,7 @@ export const MAX_DESCRIPTION_LENGTH = 600;
 
 export const MAP_DATA_ACCEPTED_TYPES_NAMES = [
   'GeoJSON',
+  'GPX',
   'JSON',
   'KML',
   'KMZ',
@@ -85,7 +86,7 @@ const getTypesExtensions = (types: Record<string, string[]>) =>
 
 export const MAP_DATA_ACCEPTED_TYPES = {
   'application/json': ['.json', '.geojson'],
-  'application/xml': ['.kml'],
+  'application/xml': ['gpx', '.kml'],
   'application/zip': ['.kmz', '.zip'],
 };
 
