@@ -18,7 +18,12 @@ import _ from 'lodash/fp';
 import logger from 'terraso-client-shared/monitoring/logger';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
-import { isKmlFile, isShapefile, openGeoJsonFile } from 'gis/gisUtils';
+import {
+  isGpxFile,
+  isKmlFile,
+  isShapefile,
+  openGeoJsonFile,
+} from 'gis/gisUtils';
 
 const generateUrl = name =>
   `https://nominatim.openstreetmap.org/search.php?q=${name}&format=jsonv2`;
@@ -52,7 +57,7 @@ const sendFileToTerrasoApi = async file => {
 };
 
 export const parseFileToGeoJSON = async file => {
-  return isKmlFile(file) || isShapefile(file)
+  return isKmlFile(file) || isShapefile(file) || isGpxFile(file)
     ? sendFileToTerrasoApi(file)
     : openGeoJsonFile(file);
 };
