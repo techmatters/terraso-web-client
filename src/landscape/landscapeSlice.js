@@ -516,6 +516,17 @@ export const {
 
 export default landscapeSlice.reducer;
 
+const updateLandscapeListItem = (state, slug, valueGenerator) => {
+  return {
+    ...state,
+    list: {
+      ...state.list,
+      landscapes: state.list.landscapes.map(landscape =>
+        landscape.slug === slug ? valueGenerator(landscape) : landscape
+      ),
+    },
+  };
+};
 
 const updateMemberItem = (state, email, valueGenerator) => {
   return _.set(
