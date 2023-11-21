@@ -194,7 +194,7 @@ export const fetchLandscapeToUploadSharedData = slug => {
         edges {
           node {
             ...landscapeFields
-            ...defaultGroup
+            ...landscapeMembershipList
           }
         }
       }
@@ -204,10 +204,7 @@ export const fetchLandscapeToUploadSharedData = slug => {
     .requestGraphQL(query, { slug })
     .then(_.get('landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('not_found'))
-    .then(landscape => ({
-      ..._.omit('defaultGroup', landscape),
-      defaultGroup: getDefaultGroup(landscape),
-    }));
+    .then(extractLandscape);
 };
 
 export const fetchLandscapes = () => {
