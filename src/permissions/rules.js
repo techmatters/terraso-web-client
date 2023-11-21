@@ -23,11 +23,11 @@ import {
 } from 'group/membership/components/groupMembershipConstants';
 import { MEMBERSHIP_ROLE_EDITOR } from 'storyMap/storyMapConstants';
 
-const getAccountMembership = group =>
+const getAccountMembership = owner =>
   _.getOr(
-    _.get('membersInfo.accountMembership', group),
+    _.get('membershipsInfo.accountMembership', owner),
     'accountMembership',
-    group
+    owner
   );
 
 const isApprovedMember = owner => {
@@ -42,21 +42,21 @@ const isApprovedMember = owner => {
   return isApproved;
 };
 
-const hasRole = ({ group, role }) => {
-  const isMember = isApprovedMember(group);
+const hasRole = ({ owner, role }) => {
+  const isMember = isApprovedMember(owner);
   if (!isMember) {
     return false;
   }
-  const accountMembership = getAccountMembership(group);
+  const accountMembership = getAccountMembership(owner);
   const hasRole = accountMembership.userRole === role;
   return hasRole;
 };
 
 const isAllowedToEditSharedData = ({
-  resource: { group, dataEntry },
+  resource: { owner, dataEntry },
   user,
 }) => {
-  const isManager = hasRole({ group, role: ROLE_MANAGER });
+  const isManager = hasRole({ owner, role: ROLE_MANAGER });
   const isOwner = _.get('createdBy.id', dataEntry) === _.get('id', user);
   return Promise.resolve(isManager || isOwner);
 };
@@ -69,8 +69,7 @@ const isAllowedToDeleteVisualization = ({
   resource: { owner, visualizationConfig },
   user,
 }) => {
-  const group = owner.defaultGroup || owner;
-  const isManager = hasRole({ group, role: ROLE_MANAGER });
+  const isManager = hasRole({ owner, role: ROLE_MANAGER });
   const isOwner =
     _.get('createdBy.id', visualizationConfig) === _.get('id', user);
   return Promise.resolve(isManager || isOwner);
@@ -86,8 +85,8 @@ const isAllowedToAddSharedData = ({ resource: owner }) => {
   return Promise.resolve(isMember);
 };
 
-const isAllowedToChangeGroup = ({ resource: group }) => {
-  const isManager = hasRole({ group, role: ROLE_MANAGER });
+const isAllowedToChangeGroup = ({ resource: owner }) => {
+  const isManager = hasRole({ owner, role: ROLE_MANAGER });
   return Promise.resolve(isManager);
 };
 
@@ -114,7 +113,7 @@ const isAllowedToViewSharedDataFiles = ({ resource: owner }) => {
 
 const isAllowedToChangeLandscape = ({ resource: landscape }) => {
   const isManager = hasRole({
-    group: landscape.defaultGroup,
+    owner: landscape,
     role: ROLE_MANAGER,
   });
   return Promise.resolve(isManager);
