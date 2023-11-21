@@ -102,6 +102,10 @@ test('GroupView: Display data', async () => {
     id: 'user-id',
     userRole: 'member',
     membershipStatus: 'APPROVED',
+    user: {
+      firstName: 'Member name',
+      lastName: 'Member Last Name',
+    },
   };
   const sharedResources = {
     edges: Array(6)
@@ -131,8 +135,10 @@ test('GroupView: Display data', async () => {
               description: 'Group description',
               website: 'https://www.group.org',
               email: 'email@email.com',
-              memberships,
-              accountMembership,
+              membershipList: {
+                memberships,
+                accountMembership,
+              },
               sharedResources,
             },
           },

@@ -124,8 +124,8 @@ const Content = props => {
           paddingLeft: 0,
         }}
       >
-        {membersSample.map((member, index) => (
-          <AccountAvatar key={index} user={member} component="li" />
+        {membersSample.map((membership, index) => (
+          <AccountAvatar key={index} user={membership.user} component="li" />
         ))}
       </AvatarGroup>
       {user && (

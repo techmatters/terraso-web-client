@@ -115,14 +115,14 @@ const MembershipsList = props => {
         onSearchParamsChange: setSearchParams,
       })}
       cardsProps={{
-        avatarRender: ({ row: member }) =>
-          member.pendingEmail ? (
+        avatarRender: ({ row: membership }) =>
+          membership.pendingEmail ? (
             <Box sx={{ width: 40, height: 40 }} />
           ) : (
             <AccountAvatar
               component="div"
               sx={{ width: 40, height: 40 }}
-              user={member.user}
+              user={membership.user}
             />
           ),
       }}
