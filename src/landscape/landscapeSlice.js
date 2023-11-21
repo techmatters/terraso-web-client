@@ -75,21 +75,13 @@ export const fetchLandscapeView = createAsyncThunk(
       params,
       currentUser
     );
-    dispatch(setMemberships(getMemberships([landscape])));
     dispatch(setList(landscape.dataEntries));
     return landscape;
   }
 );
 export const refreshLandscapeView = createAsyncThunk(
   'landscape/refreshLandscapeView',
-  async (params, currentUser, { dispatch }) => {
-    const landscape = await landscapeService.fetchLandscapeToView(
-      params,
-      currentUser
-    );
-    dispatch(setMemberships(getMemberships([landscape])));
-    return landscape;
-  }
+  landscapeService.fetchLandscapeToView
 );
 export const fetchLandscapeUpload = createAsyncThunk(
   'landscape/fetchLandscapeUpload',
