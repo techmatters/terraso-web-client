@@ -387,19 +387,35 @@ const landscapeSlice = createSlice({
     }));
 
     builder.addCase(leaveLandscape.pending, (state, action) =>
-      _.set(`view.landscape.accountMembership.fetching`, true, state)
+      _.set(
+        `view.landscape.membershipsInfo.accountMembership.fetching`,
+        true,
+        state
+      )
     );
     builder.addCase(leaveLandscape.fulfilled, updateView);
     builder.addCase(leaveLandscape.rejected, (state, action) =>
-      _.set(`view.landscape.accountMembership.fetching`, false, state)
+      _.set(
+        `view.landscape.membershipsInfo.accountMembership.fetching`,
+        false,
+        state
+      )
     );
 
     builder.addCase(joinLandscape.pending, (state, action) =>
-      _.set(`view.landscape.accountMembership.fetching`, true, state)
+      _.set(
+        `view.landscape.membershipsInfo.accountMembership.fetching`,
+        true,
+        state
+      )
     );
     builder.addCase(joinLandscape.fulfilled, updateView);
     builder.addCase(joinLandscape.rejected, (state, action) =>
-      _.set(`view.landscape.accountMembership.fetching`, false, state)
+      _.set(
+        `view.landscape.membershipsInfo.accountMembership.fetching`,
+        false,
+        state
+      )
     );
 
     builder.addCase(leaveLandscapeFromList.pending, (state, action) => {

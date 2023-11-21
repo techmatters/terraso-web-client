@@ -316,7 +316,7 @@ const LandscapeView = () => {
       owner={landscape}
       entityType="landscape"
       baseOwnerUrl={`/landscapes/${landscape.slug}`}
-      accountMembership={landscape.accountMembership}
+      accountMembership={landscape.membershipsInfo.accountMembership}
       membershipsInfo={landscape.membershipsInfo}
       MemberJoinButton={MemberJoinButton}
       onMemberJoin={onMemberJoin}

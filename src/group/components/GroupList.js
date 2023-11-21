@@ -20,23 +20,27 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import { useFetchData } from 'terraso-client-shared/store/utils';
+import { useDispatch } from 'terrasoApi/store';
 import { Button, Card, Link, Stack, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { withProps } from 'react-hoc';
 
+import { CollaborationContextProvider } from 'collaboration/collaborationContext';
+import MembershipJoinLeaveButton from 'collaboration/components/MembershipJoinLeaveButton';
 import TableResponsive from 'common/components/TableResponsive';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
-import { GroupContextProvider } from 'group/groupContext';
-import { fetchGroups } from 'group/groupSlice';
+import {
+  fetchGroups,
+  joinGroupFromList,
+  leaveGroupFromList,
+} from 'group/groupSlice';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberRequestCancel from 'group/membership/components/GroupMemberRequestCancel';
-
-// import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton';
 
 import theme from 'theme';
 
@@ -59,18 +63,42 @@ const MemberRequestJoinButton = withProps(GroupMemberJoin, {
   ariaLabel: 'group.list_request_join_label',
 });
 
-const MembershipButton = ({ group, tabIndex }) => (
-  <GroupContextProvider
-    owner={group}
-    groupSlug={group.slug}
-    MemberJoinButton={MemberJoinButton}
-    MemberRequestJoinButton={MemberRequestJoinButton}
-    MemberRequestCancelButton={MemberRequestCancelButton}
-    MemberLeaveButton={MemberLeaveButton}
-  >
-    {/* <GroupMembershipJoinLeaveButton tabIndex={tabIndex} /> */}
-  </GroupContextProvider>
-);
+const MembershipButton = ({ group, tabIndex }) => {
+  const dispatch = useDispatch();
+  const onMemberLeave = membership => {
+    dispatch(
+      leaveGroupFromList({
+        membershipId: membership.membershipId,
+        groupSlug: group.slug,
+      })
+    );
+  };
+
+  const onMemberJoin = () => {
+    dispatch(
+      joinGroupFromList({
+        groupSlug: group.slug,
+      })
+    );
+  };
+
+  return (
+    <CollaborationContextProvider
+      owner={group}
+      entityType="group"
+      accountMembership={group.membershipsInfo.accountMembership}
+      membershipsInfo={group.membershipsInfo}
+      MemberJoinButton={MemberJoinButton}
+      MemberLeaveButton={MemberLeaveButton}
+      onMemberJoin={onMemberJoin}
+      onMemberRemove={onMemberLeave}
+      MemberRequestJoinButton={MemberRequestJoinButton}
+      MemberRequestCancelButton={MemberRequestCancelButton}
+    >
+      <MembershipJoinLeaveButton tabIndex={tabIndex} />
+    </CollaborationContextProvider>
+  );
+};
 
 const GroupList = () => {
   const { t } = useTranslation();

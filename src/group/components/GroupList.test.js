@@ -86,12 +86,13 @@ test('GroupList: Display list', async () => {
     3: true,
   };
 
-  const generateMemberhips = (index, count) => ({
+  const generateMemberships = (index, count) => ({
     totalCount: count,
     edges: Array(5)
       .fill(0)
-      .map(() => ({
+      .map((_, index) => ({
         node: {
+          id: `membership-${index}`,
           user: {
             firstName: 'Member name',
             lastName: 'Member Last Name',
@@ -113,10 +114,15 @@ test('GroupList: Display list', async () => {
         description: 'Group description',
         website: 'https://www.group.org',
         email: 'email@email.com',
-        memberships: generateMemberhips(groupIndex, membersCounts[groupIndex]),
-        accountMembership: isMember[groupIndex]
-          ? _.set('edges[0].node.userRole', 'member', {})
-          : null,
+        membershipList: {
+          memberships: generateMemberships(
+            groupIndex,
+            membersCounts[groupIndex]
+          ),
+          accountMembership: isMember[groupIndex]
+            ? { userRole: 'member', id: `membership-user-${groupIndex}` }
+            : null,
+        },
       },
     }));
 
@@ -148,7 +154,7 @@ test('GroupList: Display list', async () => {
       .closest('[role="cell"]')
   ).toHaveAttribute('data-field', 'actions');
   expect(
-    within(rows[9])
+    screen
       .getByRole('button', { name: 'Leave: Group name 3' })
       .closest('[role="cell"]')
   ).toHaveAttribute('data-field', 'actions');
@@ -184,7 +190,12 @@ test('GroupList: List sort', async () => {
         description: 'Group description',
         website: 'https://www.group.org',
         email: 'email@email.com',
-        memberships: generateMemberhips(groupIndex, membersCounts[groupIndex]),
+        membershipList: {
+          memberships: generateMemberhips(
+            groupIndex,
+            membersCounts[groupIndex]
+          ),
+        },
       },
     }));
 
@@ -249,10 +260,15 @@ test('GroupList: Display list (small screen)', async () => {
         description: 'Group description',
         website: 'https://www.group.org',
         email: 'email@email.com',
-        memberships: generateMemberhips(groupIndex, membersCounts[groupIndex]),
-        accountMembership: isMember[groupIndex]
-          ? _.set('edges[0].node.userRole', 'member', {})
-          : null,
+        membershipList: {
+          memberships: generateMemberhips(
+            groupIndex,
+            membersCounts[groupIndex]
+          ),
+          accountMembership: isMember[groupIndex]
+            ? { userRole: 'member', id: `membership-user-${groupIndex}` }
+            : null,
+        },
       },
     }));
 
@@ -293,7 +309,9 @@ test('GroupList: URL params', async () => {
         description: 'Group description',
         website: 'https://www.group.org',
         email: 'email@email.com',
-        memberships: { edges: [] },
+        membershipList: {
+          memberships: { edges: [] },
+        },
       },
     }));
 
