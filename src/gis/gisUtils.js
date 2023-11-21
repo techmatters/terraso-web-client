@@ -21,6 +21,8 @@ import { isValidLatitude, isValidLongitude } from 'terraso-client-shared/utils';
 // From: https://gis.stackexchange.com/a/303362
 export const normalizeLongitude = lng => (((lng % 360) + 540) % 360) - 180;
 
+export const isGpxFile = file => file.name.endsWith('.gpx');
+
 export const isKmlFile = file =>
   file.name.endsWith('.kml') || file.name.endsWith('.kmz');
 
