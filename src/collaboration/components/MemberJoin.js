@@ -14,8 +14,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-export const MEMBERSHIP_STATUS_APPROVED = 'APPROVED';
-export const MEMBERSHIP_STATUS_PENDING = 'PENDING';
+import React from 'react';
+import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
+import { LoadingButton } from '@mui/lab';
 
-export const MEMBERSHIP_TYPE_CLOSED = 'CLOSED';
-export const MEMBERSHIP_TYPE_OPEN = 'OPEN';
+import { useCollaborationContext } from 'collaboration/collaborationContext';
+
+const MemberJoin = props => {
+  const { t } = useTranslation();
+  const { owner } = useCollaborationContext();
+  const { ariaLabel, onJoin, buttonProps, loading } = props;
+
+  return (
+    <LoadingButton
+      variant="outlined"
+      aria-label={t(ariaLabel, {
+        name: _.get('name', owner),
+      })}
+      onClick={onJoin}
+      loading={loading}
+      sx={{ flexGrow: 1 }}
+      {...buttonProps}
+    >
+      {t(props.label)}
+    </LoadingButton>
+  );
+};
+
+export default MemberJoin;
