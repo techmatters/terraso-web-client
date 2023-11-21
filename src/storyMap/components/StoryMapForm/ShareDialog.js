@@ -50,12 +50,12 @@ import { addMemberships, deleteMembership } from 'storyMap/storyMapSlice';
 
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 
-const RoleComponent = ({ member }) => {
+const RoleComponent = ({ membership }) => {
   const { t } = useTranslation();
   return (
     <Typography>
-      {t(`storyMap.role_${member.userRole.toLowerCase()}`)}
-      {member.membershipStatus === MEMBERSHIP_STATUS_PENDING && (
+      {t(`storyMap.role_${membership.userRole.toLowerCase()}`)}
+      {membership.membershipStatus === MEMBERSHIP_STATUS_PENDING && (
         <Chip
           component="span"
           label={t('memberships.membership_pending')}
@@ -79,21 +79,22 @@ const RemoveButton = props => {
   const { data: currentUser } = useSelector(state => state.account.currentUser);
   const processing = useSelector(
     state =>
-      state.storyMap.memberships.delete[props.member.membershipId]?.processing
+      state.storyMap.memberships.delete[props.membership.membershipId]
+        ?.processing
   );
   const { t } = useTranslation();
   const { storyMap } = useStoryMapConfigContext();
-  const { member, tabIndex } = props;
+  const { membership, tabIndex } = props;
   const isOwnMembership = useMemo(
-    () => member?.userId === currentUser?.id,
-    [member, currentUser]
+    () => membership?.userId === currentUser?.id,
+    [membership, currentUser]
   );
 
   const onRemoveWrapper = useCallback(() => {
     dispatch(
       deleteMembership({
         storyMap,
-        membership: member,
+        membership,
         isOwnMembership,
       })
     ).then(data => {
@@ -109,17 +110,20 @@ const RemoveButton = props => {
         });
       }
     });
-  }, [dispatch, navigate, trackEvent, member, storyMap, isOwnMembership]);
+  }, [dispatch, navigate, trackEvent, membership, storyMap, isOwnMembership]);
 
   const resource = useMemo(() => {
-    if (!member?.userRole || member?.userRole === MEMBERSHIP_ROLE_OWNER) {
+    if (
+      !membership?.userRole ||
+      membership?.userRole === MEMBERSHIP_ROLE_OWNER
+    ) {
       return null;
     }
     return {
       storyMap,
-      membership: member,
+      membership,
     };
-  }, [storyMap, member]);
+  }, [storyMap, membership]);
 
   const confirmationContent = useMemo(() => {
     return {
@@ -128,10 +132,10 @@ const RemoveButton = props => {
           ? 'storyMap.leave_membership_confirm_title'
           : 'storyMap.delete_membership_confirm_title',
         {
-          name: member.pendingEmail
-            ? member.pendingEmail
-            : t('user.full_name', { user: member }),
-          context: member.membershipStatus?.toLowerCase(),
+          name: membership.pendingEmail
+            ? membership.pendingEmail
+            : t('user.full_name', { user: membership.user }),
+          context: membership.membershipStatus?.toLowerCase(),
         }
       ),
       confirmMessage: t(
@@ -139,18 +143,18 @@ const RemoveButton = props => {
           ? 'storyMap.leave_membership_confirm_message'
           : 'storyMap.delete_membership_confirm_message',
         {
-          name: member.pendingEmail
-            ? member.pendingEmail
-            : t('user.full_name', { user: member }),
+          name: membership.pendingEmail
+            ? membership.pendingEmail
+            : t('user.full_name', { user: membership.user }),
           storyMapTitle: storyMap.title,
-          context: member.membershipStatus?.toLowerCase(),
+          context: membership.membershipStatus?.toLowerCase(),
         }
       ),
       confirmButton: t('storyMap.delete_membership_confirm_button'),
       buttonLabel: t('storyMap.delete_membership'),
       ariaLabel: t('storyMap.delete_membership'),
     };
-  }, [t, member, storyMap, isOwnMembership]);
+  }, [t, membership, storyMap, isOwnMembership]);
 
   return (
     <Restricted permission="storyMap.deleteMembership" resource={resource}>

@@ -120,8 +120,9 @@ export const addMemberships = createAsyncThunk(
     params: {
       title: config.title,
       names: members.map(
-        member =>
-          member.pendingEmail || i18n.t('user.full_name', { user: member })
+        membership =>
+          membership.pendingEmail ||
+          i18n.t('user.full_name', { user: membership.user })
       ),
       count: members.length,
     },
@@ -139,7 +140,7 @@ export const deleteMembership = createAsyncThunk(
       storyMapTitle: storyMap.title,
       name:
         membership.pendingEmail ||
-        i18n.t('user.full_name', { user: membership }),
+        i18n.t('user.full_name', { user: membership.user }),
     },
   })
 );
