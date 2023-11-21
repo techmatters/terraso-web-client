@@ -579,6 +579,7 @@ test.each([
       expectedDataEntriesFetchInput: {
         resourceTypes: [
           'geojson',
+          'gpx',
           'json',
           'kml',
           'kmz',
