@@ -16,11 +16,12 @@
  */
 import React from 'react';
 import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
 import { Avatar, Typography } from '@mui/material';
 
 const AccountAvatar = props => {
+  const { t } = useTranslation();
   const { user, showAlt, component } = props;
-  const name = `${user.firstName} ${user.lastName}`;
 
   const muiAvatarAllowedProps = [
     'alt',
@@ -36,9 +37,13 @@ const AccountAvatar = props => {
     'variant',
   ];
 
+  if (!user) {
+    return null;
+  }
+
   return (
     <Avatar
-      alt={name}
+      alt={t('user.full_name', { user })}
       src={user.profileImage}
       {...(!showAlt ? { imgProps: { alt: '' } } : {})}
       {..._.pick(muiAvatarAllowedProps, props)}
