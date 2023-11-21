@@ -206,7 +206,7 @@ export const fetchLandscapeProfile = slug => {
         edges {
           node {
             ...landscapeProfileFields
-            ...defaultGroup
+            ...landscapeMembershipList
           }
         }
       }
@@ -217,8 +217,7 @@ export const fetchLandscapeProfile = slug => {
     .then(_.get('landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('not_found'))
     .then(landscape => ({
-      ..._.omit('defaultGroup', landscape),
-      defaultGroup: getDefaultGroup(landscape),
+      ...landscape,
       taxonomyTerms: extractTerms(_.get('taxonomyTerms.edges', landscape)),
       partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
       partnership: extractPartnership(landscape),
