@@ -134,8 +134,7 @@
         "breadcrumbs_visualization": "{{mapTitle}}",
         "breadcrumbs_visualization_new": "New Map",
         "breadcrumbs_upload": "Share Files and Links",
-        "autocomplete_no_options": "No options",
-        "members_list_role_select_label": "Role"
+        "autocomplete_no_options": "No options"
     },
     "tool": {
         "requirements": "System requirements",
@@ -540,8 +539,6 @@
     "sharedData": {
         "title": "Shared files and Links",
         "description_with_files": "Only members of your {{entityType}} can download these files or create a map with them.",
-        "entity_type_group": "group",
-        "entity_type_landscape": "landscape",
         "card_description": "Upload documents and share links with other members. Make maps with data files (latitude and longitude required) and map files (GeoJSON, KML, KMZ, ESRI shapefiles).",
         "upload_button": "Share Files and Links",
         "delete_confirm_title": "Delete “{{name}}”?",
@@ -1054,6 +1051,11 @@
         "members_list_empty": "No members",
         "members_list_column_role": "Role",
         "members_list_column_actions_description": "Actions",
-        "membership_pending": "Pending"
+        "membership_pending": "Pending",
+        "members_list_role_select_label": "Role"
+    },
+    "collaboration": {
+        "entity_type_group": "group",
+        "entity_type_landscape": "landscape"
     }
 }

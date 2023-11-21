@@ -134,8 +134,7 @@
         "breadcrumbs_visualization": "{{mapTitle}}",
         "breadcrumbs_visualization_new": "Nuevo mapa",
         "breadcrumbs_upload": "Compartir archivos y enlaces",
-        "autocomplete_no_options": "No existen opciones",
-        "members_list_role_select_label": "Rol"
+        "autocomplete_no_options": "No existen opciones"
     },
     "tool": {
         "avilability": "Disponibilidad",
@@ -583,8 +582,6 @@
     "sharedData": {
         "title": "Archivos y enlaces compartidos",
         "description_with_files": "Solo los miembros de tu {{entityType}} pueden descargar estos archivos o crear un mapa con ellos.",
-        "entity_type_group": "grupo",
-        "entity_type_landscape": "paisaje",
         "card_description": "Carga documentos y comparte enlaces con otros miembros. Crea mapas con archivos de datos (se requieren latitud y longitud) y archivos de mapas (GeoJSON, KML, KMZ, Shapefiles de ESRI).",
         "upload_button": "Compartir archivos y enlaces",
         "delete_confirm_title": "Eliminar “{{name}}”?",
@@ -1061,6 +1058,11 @@
         "members_list_empty": "No existen miembros",
         "members_list_column_role": "Rol",
         "members_list_column_actions_description": "Acciones",
-        "membership_pending": "Pendiente"
+        "membership_pending": "Pendiente",
+        "members_list_role_select_label": "Rol"
+    },
+    "collaboration": {
+        "entity_type_group": "grupo",
+        "entity_type_landscape": "paisaje"
     }
 }
