@@ -22,18 +22,14 @@ import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { useDispatch } from 'terrasoApi/store';
-import { Stack, Typography } from '@mui/material';
 
 import { withProps } from 'react-hoc';
 
-import MembershipsList from 'collaboration/components/MembershipsList';
-import RoleSelect from 'collaboration/components/RoleSelect';
+import { CollaborationContextProvider } from 'collaboration/collaborationContext';
+import MembersPage from 'collaboration/components/MembersPage';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
-import PageContainer from 'layout/PageContainer';
-import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-import Restricted from 'permissions/components/Restricted';
 import { ALL_MEMBERSHIP_ROLES } from 'landscape/landscapeConstants';
 import {
   changeMemberRole,
@@ -48,116 +44,12 @@ const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.members_list_leave',
 });
 
-const Header = ({ landscape, fetching }) => {
-  const { t } = useTranslation();
-  const { loading: loadingPermissions, allowed } = usePermission(
-    'landscape.manageMembers',
-    landscape
-  );
-
-  useDocumentTitle(
-    t('landscape.members_document_title', {
-      name: _.get('name', landscape),
-    }),
-    fetching
-  );
-
-  useDocumentDescription(
-    t('landscape.members_document_description', {
-      name: _.get('name', landscape),
-    }),
-    fetching
-  );
-
-  useBreadcrumbsParams(
-    useMemo(
-      () => ({ landscapeName: landscape?.name, loading: !landscape?.name }),
-      [landscape?.name]
-    )
-  );
-
-  if (loadingPermissions) {
-    return null;
-  }
-
-  return (
-    <>
-      <PageHeader
-        header={t(
-          allowed
-            ? 'landscape.members_title_manager'
-            : 'landscape.members_title_member',
-          { name: _.get('name', landscape) }
-        )}
-      />
-      <Typography
-        variant="body2"
-        display="block"
-        sx={{
-          marginBottom: 3,
-          marginTop: 2,
-        }}
-      >
-        {t(
-          allowed
-            ? 'landscape.members_description_manager'
-            : 'landscape.members_description_member',
-          { name: _.get('name', landscape) }
-        )}
-      </Typography>
-    </>
-  );
-};
-
-const RemoveButton = props => {
-  const dispatch = useDispatch();
-  const { landscape, membership, tabIndex } = props;
-  const { data: currentUser } = useSelector(state => state.account.currentUser);
-
-  const onConfirm = useCallback(() => {
-    dispatch(
-      removeMember({
-        landscapeSlug: landscape.slug,
-        membershipId: membership.id,
-        email: membership.user.email,
-      })
-    );
-  }, [dispatch, landscape, membership]);
-
-  if (membership.user.email === currentUser.email) {
-    return (
-      <MemberLeaveButton
-        onConfirm={onConfirm}
-        owner={landscape}
-        loading={membership.fetching}
-        buttonProps={{ tabIndex }}
-      />
-    );
-  }
-
-  return (
-    <Restricted permission="landscape.manageMembers" resource={landscape}>
-      <LandscapeMemberRemove
-        onConfirm={onConfirm}
-        owner={landscape}
-        membership={membership}
-        loading={membership.fetching}
-        buttonProps={{ tabIndex }}
-      />
-    </Restricted>
-  );
-};
-
 const LandscapeMembers = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { slug } = useParams();
   const { data: landscape, fetching } = useSelector(
     state => state.landscape.members
-  );
-  const memberships = useMemo(
-    () => landscape?.membershipsInfo?.membershipsSample || [],
-    [landscape]
   );
 
   useFetchData(useCallback(() => fetchLandscapeForMembers(slug), [slug]));
@@ -184,47 +76,59 @@ const LandscapeMembers = () => {
     },
     [dispatch, landscape]
   );
+  const onMemberRemove = useCallback(
+    membership => {
+      dispatch(
+        removeMember({
+          landscapeSlug: landscape.slug,
+          membershipId: membership.id,
+          email: membership.user.email,
+        })
+      );
+    },
+    [dispatch, landscape]
+  );
 
-  if (fetching) {
+  const { loading: loadingPermissions, allowed: allowedToManageMembers } =
+    usePermission('landscape.manageMembers', landscape);
+
+  useDocumentTitle(
+    t('landscape.members_document_title', {
+      name: _.get('name', landscape),
+    }),
+    fetching
+  );
+
+  useDocumentDescription(
+    t('landscape.members_document_description', {
+      name: _.get('name', landscape),
+    }),
+    fetching
+  );
+
+  useBreadcrumbsParams(
+    useMemo(
+      () => ({ landscapeName: landscape?.name, loading: !landscape?.name }),
+      [landscape?.name]
+    )
+  );
+
+  if (fetching || loadingPermissions) {
     return <PageLoader />;
   }
 
   return (
-    <PageContainer>
-      <Header landscape={landscape} fetching={fetching} />
-      <section aria-labelledby="members-list-title-id">
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{
-            marginTop: 2,
-            marginBottom: 2,
-          }}
-        >
-          <Restricted permission="landscape.manageMembers" resource={landscape}>
-            <Typography variant="h2" id="members-list-title-id">
-              {t('group.members_list_title', {
-                name: landscape?.name,
-              })}
-            </Typography>
-          </Restricted>
-        </Stack>
-        <MembershipsList
-          memberships={memberships}
-          RoleComponent={withProps(RoleSelect, {
-            roles,
-            permission: 'landscape.manageMembers',
-            resource: landscape,
-            label: t('memberships.members_list_role_select_label'),
-            onMemberRoleChange,
-          })}
-          RemoveComponent={withProps(RemoveButton, {
-            landscape,
-          })}
-        />
-      </section>
-    </PageContainer>
+    <CollaborationContextProvider
+      owner={landscape}
+      onMemberRoleChange={onMemberRoleChange}
+      onMemberRemove={onMemberRemove}
+      MemberLeaveButton={MemberLeaveButton}
+      MemberRemoveButton={LandscapeMemberRemove}
+      acceptedRoles={roles}
+      allowedToManageMembers={allowedToManageMembers}
+    >
+      <MembersPage />
+    </CollaborationContextProvider>
   );
 };
 

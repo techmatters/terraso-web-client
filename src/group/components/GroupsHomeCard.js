@@ -28,12 +28,12 @@ import {
 
 import { withProps } from 'react-hoc';
 
+import MembershipPendingWarning from 'collaboration/components/MembershipPendingWarning';
 import Restricted from 'permissions/components/Restricted';
 import {
   MEMBERSHIP_STATUS_APPROVED,
   MEMBERSHIP_STATUS_PENDING,
 } from 'group/membership/components/groupMembershipConstants';
-import GroupMembershipPendingWarning from 'group/membership/components/GroupMembershipPendingWarning';
 import HomeCard from 'home/components/HomeCard';
 
 import theme from 'theme';
@@ -79,7 +79,7 @@ const GroupItem = ({ group, index }) => {
       )}
       <Restricted permission="group.change" resource={group}>
         {pendingCount > 0 && (
-          <GroupMembershipPendingWarning
+          <MembershipPendingWarning
             link
             count={pendingCount}
             onPendingClick={() => navigate(`/groups/${group.slug}/members`)}

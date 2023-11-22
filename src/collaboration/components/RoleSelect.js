@@ -17,17 +17,14 @@
 import React, { useCallback } from 'react';
 import { MenuItem, Select, Typography } from '@mui/material';
 
-import Restricted from 'permissions/components/Restricted';
-
 const RoleSelect = props => {
   const {
     roles,
     membership,
     tabIndex,
     onMemberRoleChange,
-    permission,
-    resource,
     label,
+    allowedToManageMembers,
   } = props;
 
   const onChange = useCallback(
@@ -38,34 +35,32 @@ const RoleSelect = props => {
     [onMemberRoleChange, membership]
   );
 
+  if (!allowedToManageMembers) {
+    return (
+      <Typography>
+        {roles.find(role => role.value === membership.userRole).label}
+      </Typography>
+    );
+  }
+
   return (
-    <Restricted
-      permission={permission}
-      resource={resource}
-      FallbackComponent={() => (
-        <Typography>
-          {roles.find(role => role.value === membership.userRole).label}
-        </Typography>
-      )}
+    <Select
+      variant="standard"
+      value={membership.userRole}
+      onChange={onChange}
+      disabled={membership.fetching}
+      inputProps={{
+        tabIndex,
+        'aria-label': label,
+      }}
+      disableUnderline
     >
-      <Select
-        variant="standard"
-        value={membership.userRole}
-        onChange={onChange}
-        disabled={membership.fetching}
-        inputProps={{
-          tabIndex,
-          'aria-label': label,
-        }}
-        disableUnderline
-      >
-        {roles.map(role => (
-          <MenuItem key={role.key} value={role.value}>
-            {role.label}
-          </MenuItem>
-        ))}
-      </Select>
-    </Restricted>
+      {roles.map(role => (
+        <MenuItem key={role.key} value={role.value}>
+          {role.label}
+        </MenuItem>
+      ))}
+    </Select>
   );
 };
 
