@@ -25,9 +25,9 @@ import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { normalizeText } from 'terraso-client-shared/utils';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
-import type { Group } from './groupSlice';
-import { extractGroup } from './groupUtils';
-import { ROLE_MEMBER } from './membership/components/groupMembershipConstants';
+import type { Group } from 'group/groupSlice';
+import { extractGroup } from 'group/groupUtils';
+import { ROLE_MEMBER } from 'group/membership/components/groupMembershipConstants';
 
 export const fetchGroupToUpdate = (slug: string) => {
   const query = graphql(`

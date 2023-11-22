@@ -49,6 +49,7 @@ const MembershipJoinLeaveButton = props => {
     [accountMembership]
   );
 
+  // Component to cancel a pending membership request
   if (
     is_member &&
     accountMembership?.membershipStatus === MEMBERSHIP_STATUS_PENDING
@@ -62,6 +63,8 @@ const MembershipJoinLeaveButton = props => {
       />
     );
   }
+
+  // Component to leave a membership if the user is a member
   if (is_member) {
     return (
       <MemberLeaveButton
@@ -72,6 +75,9 @@ const MembershipJoinLeaveButton = props => {
       />
     );
   }
+
+  // Component to request to join a membership if the user is not a member
+  // and the membership_list is closed
   if (membershipsInfo?.membershipType === MEMBERSHIP_TYPE_CLOSED) {
     return (
       <MemberRequestJoinButton
@@ -81,6 +87,9 @@ const MembershipJoinLeaveButton = props => {
       />
     );
   }
+
+  // Component to join a membership if the user is not a member and
+  // the membership_list is open
   return (
     <MemberJoinButton
       onJoin={onMemberJoinWrapper}

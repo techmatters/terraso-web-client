@@ -119,12 +119,7 @@ test('LandscapeMembers: Display list', async () => {
     .mockReturnValueOnce(
       Promise.resolve(_.set('landscapes.edges[0].node', landscape, {}))
     );
-  // .mockReturnValueOnce(
-  //   Promise.resolve(_.set('groups.edges[0].node', group, {}))
-  // )
-  // .mockReturnValueOnce(
-  //   Promise.resolve(_.set('groups.edges[0].node', group, {}))
-  // );
+
   await setup();
 
   // Landscape info
