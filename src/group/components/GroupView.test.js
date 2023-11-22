@@ -103,7 +103,7 @@ test('GroupView: Display data', async () => {
     userRole: 'member',
     membershipStatus: 'APPROVED',
     user: {
-      firstName: 'Member name',
+      firstName: 'Member First Name',
       lastName: 'Member Last Name',
     },
   };
