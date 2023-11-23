@@ -40,7 +40,8 @@ import MembershipPendingWarning from './MembershipPendingWarning';
 
 const Header = () => {
   const { t } = useTranslation();
-  const { owner, allowedToManageMembers, entityTypeLocalized } = useCollaborationContext();
+  const { owner, allowedToManageMembers, entityTypeLocalized } =
+    useCollaborationContext();
 
   return (
     <>
