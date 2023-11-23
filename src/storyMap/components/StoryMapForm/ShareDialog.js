@@ -58,7 +58,7 @@ const RoleComponent = ({ membership }) => {
       {membership.membershipStatus === MEMBERSHIP_STATUS_PENDING && (
         <Chip
           component="span"
-          label={t('memberships.membership_pending')}
+          label={t('collaboration.membership_pending')}
           variant="outlined"
           size="small"
           sx={{

@@ -41,7 +41,7 @@ const MembershipsList = props => {
     () => [
       {
         field: 'name',
-        headerName: t('memberships.members_list_column_name'),
+        headerName: t('collaboration.members_list_column_name'),
         flex: 1.5,
         minWidth: 200,
         cardFieldSizes: {
@@ -65,7 +65,7 @@ const MembershipsList = props => {
       },
       {
         field: 'role',
-        headerName: t('memberships.members_list_column_role'),
+        headerName: t('collaboration.members_list_column_role'),
         flex: 1.5,
         minWidth: 200,
         cardFieldSizes: {
@@ -80,7 +80,7 @@ const MembershipsList = props => {
       },
       {
         field: 'actions',
-        headerName: t('memberships.members_list_column_actions_description'),
+        headerName: t('collaboration.members_list_column_actions_description'),
         type: 'actions',
         sortable: false,
         flex: 1.5,
@@ -109,7 +109,7 @@ const MembershipsList = props => {
       cardsBreakpoint={cardsBreakpoint}
       columns={columns}
       rows={memberships}
-      emptyMessage={t('memberships.members_list_empty')}
+      emptyMessage={t('collaboration.members_list_empty')}
       {...(setSearchParams && {
         searchParams: Object.fromEntries(searchParams.entries()),
         onSearchParamsChange: setSearchParams,

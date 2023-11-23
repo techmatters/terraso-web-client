@@ -137,6 +137,7 @@ const GroupMembers = () => {
   return (
     <CollaborationContextProvider
       owner={group}
+      entityType="group"
       onMemberRoleChange={onMemberRoleChange}
       onMemberRemove={onMemberRemove}
       onMemberApprove={onMemberApprove}

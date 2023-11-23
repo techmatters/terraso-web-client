@@ -40,15 +40,15 @@ import MembershipPendingWarning from './MembershipPendingWarning';
 
 const Header = () => {
   const { t } = useTranslation();
-  const { owner, allowedToManageMembers } = useCollaborationContext();
+  const { owner, allowedToManageMembers, entityTypeLocalized } = useCollaborationContext();
 
   return (
     <>
       <PageHeader
         header={t(
           allowedToManageMembers
-            ? 'group.members_title_manager'
-            : 'group.members_title_member',
+            ? 'collaboration.members_title_manager'
+            : 'collaboration.members_title_member',
           { name: _.get('name', owner) }
         )}
       />
@@ -62,9 +62,9 @@ const Header = () => {
       >
         {t(
           allowedToManageMembers
-            ? 'group.members_description_manager'
-            : 'group.members_description_member',
-          { name: _.get('name', owner) }
+            ? 'collaboration.members_description_manager'
+            : 'collaboration.members_description_member',
+          { name: _.get('name', owner), entityType: entityTypeLocalized }
         )}
       </Typography>
     </>
@@ -125,7 +125,7 @@ const PendingApprovals = props => {
         variant="h2"
         sx={{ marginBottom: 2 }}
       >
-        {t('group.members_list_pending_title')}
+        {t('collaboration.members_list_pending_title')}
       </Typography>
       <MembershipPendingWarning count={memberships.length} sx={{ mb: 2 }} />
       <List aria-labelledby="members-pending-title-id">
@@ -140,24 +140,24 @@ const PendingApprovals = props => {
                   loading={membership.fetching}
                   onClick={() => onMemberApprove(membership)}
                 >
-                  {t('group.members_list_pending_approve')}
+                  {t('collaboration.members_list_pending_approve')}
                 </LoadingButton>
                 <ConfirmButton
                   onConfirm={() => onMemberRemove(membership)}
                   confirmTitle={t(
-                    'group.members_list_pending_confirmation_title'
+                    'collaboration.members_list_pending_confirmation_title'
                   )}
                   confirmMessage={t(
-                    'group.members_list_pending_confirmation_message',
+                    'collaboration.members_list_pending_confirmation_message',
                     {
                       userName: t('user.full_name', { user: membership.user }),
                       name: owner?.name,
                     }
                   )}
                   confirmButton={t(
-                    'group.members_list_pending_confirmation_button'
+                    'collaboration.members_list_pending_confirmation_button'
                   )}
-                  buttonLabel={t('group.members_list_pending_reject')}
+                  buttonLabel={t('collaboration.members_list_pending_reject')}
                   loading={membership.fetching}
                 />
               </Stack>
@@ -209,7 +209,7 @@ const MembersPage = () => {
         >
           {allowedToManageMembers && (
             <Typography variant="h2" id="members-list-title-id">
-              {t('group.members_list_title', {
+              {t('collaboration.members_list_title', {
                 name: owner?.name,
               })}
             </Typography>
@@ -220,7 +220,7 @@ const MembersPage = () => {
           RoleComponent={withProps(RoleSelect, {
             roles: acceptedRoles,
             allowedToManageMembers,
-            label: t('memberships.members_list_role_select_label'),
+            label: t('collaboration.members_list_role_select_label'),
             onMemberRoleChange,
           })}
           RemoveComponent={RemoveButton}

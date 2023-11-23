@@ -120,6 +120,7 @@ const LandscapeMembers = () => {
   return (
     <CollaborationContextProvider
       owner={landscape}
+      entityType="landscape"
       onMemberRoleChange={onMemberRoleChange}
       onMemberRemove={onMemberRemove}
       MemberLeaveButton={MemberLeaveButton}
