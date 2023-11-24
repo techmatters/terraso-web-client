@@ -15,12 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-const path = require('path');
-const { readFileSync } = require('fs');
-const { writeFile } = require('fs').promises;
-const { i18nextToPo, gettextToI18next } = require('i18next-conv');
+import { readFileSync } from 'fs';
+import { writeFile } from 'fs/promises';
+import path from 'path';
+import { gettextToI18next, i18nextToPo } from 'i18next-conv';
 
-const { filesInFolder } = require('./utils');
+import { filesInFolder } from './utils.js';
 
 // Script arguments
 const args = process.argv.slice(2);
@@ -37,14 +37,18 @@ const save = target => result => writeFile(target, result);
 
 // Base transform function
 const transform = (process, from, i18Transform) =>
-  filesInFolder(path.join(__dirname, from))
+  filesInFolder(new URL(from, import.meta.url))
     .then(files => {
-      console.log(`${process} transform starting.`, 'Files:', files);
+      console.log(
+        `${process} transform starting.`,
+        'Files:',
+        files.map(f => f.pathname)
+      );
       return files;
     })
     .then(files =>
       files.map(filePath => {
-        const locale = path.parse(filePath).name;
+        const locale = path.parse(filePath.pathname).name;
         return i18Transform(locale, filePath).then(() => locale);
       })
     )
