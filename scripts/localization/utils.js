@@ -16,9 +16,8 @@
  */
 
 import { readdir } from 'fs/promises';
-import path from 'path';
 
 export const filesInFolder = dirname =>
   readdir(dirname).then(filenames =>
-    filenames.map(filename => path.join(dirname, filename))
+    filenames.map(filename => new URL(filename, dirname))
   );
