@@ -16,7 +16,7 @@
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import EditIcon from '@mui/icons-material/Edit.js';
+import EditIcon from '@mui/icons-material/Edit';
 import { LoadingButton } from '@mui/lab';
 import {
   Button,

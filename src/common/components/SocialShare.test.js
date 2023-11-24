@@ -20,7 +20,7 @@ import { useMemo } from 'react';
 import SocialShare, {
   SocialShareContextProvider,
   useSocialShareContext,
-} from './SocialShare.js';
+} from './SocialShare';
 
 const SocialShareWrapper = ({ name, embedUrl }) => {
   useSocialShareContext(

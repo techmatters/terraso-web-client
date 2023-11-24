@@ -16,7 +16,7 @@
  */
 import { render, screen } from 'tests/utils';
 
-import ToolList from './ToolList.js';
+import ToolList from './ToolList';
 
 test('ToolList: renders correctly', async () => {
   await render(<ToolList />);

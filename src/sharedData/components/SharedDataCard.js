@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -29,12 +29,12 @@ import {
   Typography,
 } from '@mui/material';
 
-import List from 'common/components/List.js';
-import { ScrollTo } from 'navigation/scrollTo.js';
-import { useGroupContext } from 'group/groupContext.js';
+import List from 'common/components/List';
+import { ScrollTo } from 'navigation/scrollTo';
+import { useGroupContext } from 'group/groupContext';
 
-import SharedDataEntryFile from './SharedDataEntryFile.js';
-import SharedDataEntryLink from './SharedDataEntryLink.js';
+import SharedDataEntryFile from './SharedDataEntryFile';
+import SharedDataEntryLink from './SharedDataEntryLink';
 
 import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 

@@ -17,14 +17,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useFetchData } from 'terraso-client-shared/store/utils.js';
+import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Typography } from '@mui/material';
 
-import { useDocumentTitle } from 'common/document.js';
-import PageLoader from 'layout/PageLoader.js';
-import { fetchLandscapes } from 'landscape/landscapeSlice.js';
+import { useDocumentTitle } from 'common/document';
+import PageLoader from 'layout/PageLoader';
+import { fetchLandscapes } from 'landscape/landscapeSlice';
 
-import LandscapeListMap from './LandscapeListMap.js';
+import LandscapeListMap from './LandscapeListMap';
 
 const LandscapeDescriptionPopup = ({ landscape }) => (
   <>

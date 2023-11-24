@@ -15,19 +15,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { useCallback, useEffect } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { unsubscribeFromNotifications } from 'terraso-client-shared/account/accountSlice.js';
-import { addMessage } from 'terraso-client-shared/notifications/notificationsSlice.js';
-import { useFetchData } from 'terraso-client-shared/store/utils.js';
+import { unsubscribeFromNotifications } from 'terraso-client-shared/account/accountSlice';
+import { addMessage } from 'terraso-client-shared/notifications/notificationsSlice';
+import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Alert } from '@mui/material';
 
-import { useDocumentTitle } from 'common/document.js';
-import PageContainer from 'layout/PageContainer.js';
-import PageLoader from 'layout/PageLoader.js';
-import { useAnalytics } from 'monitoring/analytics.js';
+import { useDocumentTitle } from 'common/document';
+import PageContainer from 'layout/PageContainer';
+import PageLoader from 'layout/PageLoader';
+import { useAnalytics } from 'monitoring/analytics';
 
 const Unsubscribe = () => {
   const { t } = useTranslation();

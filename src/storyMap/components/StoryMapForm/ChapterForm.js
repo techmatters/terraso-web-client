@@ -16,10 +16,10 @@
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import AlignHorizontalCenterIcon from '@mui/icons-material/AlignHorizontalCenter.js';
-import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft.js';
-import AlignHorizontalRightIcon from '@mui/icons-material/AlignHorizontalRight.js';
-import GpsFixedIcon from '@mui/icons-material/GpsFixed.js';
+import AlignHorizontalCenterIcon from '@mui/icons-material/AlignHorizontalCenter';
+import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft';
+import AlignHorizontalRightIcon from '@mui/icons-material/AlignHorizontalRight';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import {
   Box,
   Button,
@@ -31,14 +31,14 @@ import {
 
 import { withProps } from 'react-hoc';
 
-import { chapterHasVisualMedia } from 'storyMap/storyMapUtils.js';
+import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
 
-import { ALIGNMENTS } from '../../storyMapConstants.js';
-import EditableMedia from './EditableMedia.js';
-import EditableRichText from './EditableRichText.js';
-import EditableText from './EditableText.js';
-import MapLocationDialog from './MapLocationDialog.js';
-import { useStoryMapConfigContext } from './storyMapConfigContext.js';
+import { ALIGNMENTS } from '../../storyMapConstants';
+import EditableMedia from './EditableMedia';
+import EditableRichText from './EditableRichText';
+import EditableText from './EditableText';
+import MapLocationDialog from './MapLocationDialog';
+import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 const ConfigButton = withProps(IconButton, {
   size: 'small',

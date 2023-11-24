@@ -16,7 +16,7 @@
  */
 import { useEffect } from 'react';
 
-import { useMap } from './Map.js';
+import { useMap } from './Map';
 
 const GeoJsonSource = props => {
   const { id, geoJson } = props;

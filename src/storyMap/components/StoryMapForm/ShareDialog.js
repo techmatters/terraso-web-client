@@ -15,11 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'terrasoApi/store.ts';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore.js';
+import { useDispatch, useSelector } from 'terrasoApi/store';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { LoadingButton } from '@mui/lab';
 import {
   Accordion,
@@ -35,20 +35,20 @@ import {
   Typography,
 } from '@mui/material';
 
-import { MEMBERSHIP_STATUS_PENDING } from 'collaboration/collaborationConstants.js';
-import MembershipsList from 'collaboration/components/MembershipsList.js';
-import ConfirmButton from 'common/components/ConfirmButton.js';
-import ExternalLink from 'common/components/ExternalLink.js';
-import UserEmailAutocomplete from 'common/components/UserEmailAutocomplete.js';
-import { useAnalytics } from 'monitoring/analytics.js';
-import Restricted from 'permissions/components/Restricted.js';
+import { MEMBERSHIP_STATUS_PENDING } from 'collaboration/collaborationConstants';
+import MembershipsList from 'collaboration/components/MembershipsList';
+import ConfirmButton from 'common/components/ConfirmButton';
+import ExternalLink from 'common/components/ExternalLink';
+import UserEmailAutocomplete from 'common/components/UserEmailAutocomplete';
+import { useAnalytics } from 'monitoring/analytics';
+import Restricted from 'permissions/components/Restricted';
 import {
   MEMBERSHIP_ROLE_EDITOR,
   MEMBERSHIP_ROLE_OWNER,
-} from 'storyMap/storyMapConstants.js';
-import { addMemberships, deleteMembership } from 'storyMap/storyMapSlice.js';
+} from 'storyMap/storyMapConstants';
+import { addMemberships, deleteMembership } from 'storyMap/storyMapSlice';
 
-import { useStoryMapConfigContext } from './storyMapConfigContext.js';
+import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 const RoleComponent = ({ member }) => {
   const { t } = useTranslation();

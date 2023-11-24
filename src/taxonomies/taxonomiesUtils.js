@@ -14,9 +14,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 
-import { ALL_TYPES } from './taxonomiesConstants.js';
+import { ALL_TYPES } from './taxonomiesConstants';
 
 const LOCALE_MAPPING = {
   'en-US': 'valueEn',

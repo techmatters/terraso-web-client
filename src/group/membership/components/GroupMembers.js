@@ -15,26 +15,26 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useMemo } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { usePermission, usePermissionRedirect } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useFetchData } from 'terraso-client-shared/store/utils.js';
+import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Typography } from '@mui/material';
 
 import { withProps } from 'react-hoc';
 
-import { useDocumentDescription, useDocumentTitle } from 'common/document.js';
-import PageContainer from 'layout/PageContainer.js';
-import PageHeader from 'layout/PageHeader.js';
-import PageLoader from 'layout/PageLoader.js';
-import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext.js';
-import { GroupContextProvider } from 'group/groupContext.js';
-import { fetchGroupForMembers } from 'group/groupSlice.ts';
-import GroupMemberLeave from 'group/membership/components/GroupMemberLeave.js';
-import GroupMemberRemove from 'group/membership/components/GroupMemberRemove.js';
-import GroupMembersList from 'group/membership/components/GroupMembersList.js';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
+import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import PageLoader from 'layout/PageLoader';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
+import { GroupContextProvider } from 'group/groupContext';
+import { fetchGroupForMembers } from 'group/groupSlice';
+import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
+import GroupMemberRemove from 'group/membership/components/GroupMemberRemove';
+import GroupMembersList from 'group/membership/components/GroupMembersList';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
   label: 'group.members_list_leave',

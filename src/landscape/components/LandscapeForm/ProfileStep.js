@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useMemo, useState } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import {
@@ -28,21 +28,21 @@ import {
 
 import { withProps } from 'react-hoc';
 
-import HelperText from 'common/components/HelperText.js';
-import Form from 'forms/components/Form.js';
-import { FormContextProvider } from 'forms/formContext.js';
-import PageHeader from 'layout/PageHeader.js';
-import { iso639en, iso639es } from 'localization/iso639/index.js';
-import TaxonomyAutocomplete from 'taxonomies/components/TaxonomyAutocomplete.js';
+import HelperText from 'common/components/HelperText';
+import Form from 'forms/components/Form';
+import { FormContextProvider } from 'forms/formContext';
+import PageHeader from 'layout/PageHeader';
+import { iso639en, iso639es } from 'localization/iso639';
+import TaxonomyAutocomplete from 'taxonomies/components/TaxonomyAutocomplete';
 import {
   TYPE_AGRICULTURAL_PRODUCTION_METHOD,
   TYPE_COMMODITY,
   TYPE_ECOSYSTEM_TYPE,
   TYPE_LANGUAGE,
   TYPE_LIVELIHOOD,
-} from 'taxonomies/taxonomiesConstants.js';
+} from 'taxonomies/taxonomiesConstants';
 
-import Actions from './Actions.js';
+import Actions from './Actions';
 
 import { AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS } from 'config';
 

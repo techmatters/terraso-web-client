@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useMemo } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import {
@@ -27,7 +27,7 @@ import {
 
 import { withProps } from 'react-hoc';
 
-import { getTermLabel } from 'taxonomies/taxonomiesUtils.js';
+import { getTermLabel } from 'taxonomies/taxonomiesUtils';
 
 const FILTER = createFilterOptions();
 

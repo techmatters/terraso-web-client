@@ -15,20 +15,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useState } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Typography } from '@mui/material';
 
-import StepperStep from 'common/components/StepperStep.js';
-import PageLoader from 'layout/PageLoader.js';
-import { useAnalytics } from 'monitoring/analytics.js';
-import { ILM_OUTPUT_PROP, RESULTS_ANALYSIS_IMPACT } from 'monitoring/ilm.js';
-import { useGroupContext } from 'group/groupContext.js';
-import { addVisualizationConfig } from 'sharedData/sharedDataSlice.js';
-import { useVisualizationContext } from 'sharedData/visualization/visualizationContext.js';
+import StepperStep from 'common/components/StepperStep';
+import PageLoader from 'layout/PageLoader';
+import { useAnalytics } from 'monitoring/analytics';
+import { ILM_OUTPUT_PROP, RESULTS_ANALYSIS_IMPACT } from 'monitoring/ilm';
+import { useGroupContext } from 'group/groupContext';
+import { addVisualizationConfig } from 'sharedData/sharedDataSlice';
+import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 
-import VisualizationPreview from './VisualizationPreview.js';
+import VisualizationPreview from './VisualizationPreview';
 
 const PreviewStep = props => {
   const { t } = useTranslation();

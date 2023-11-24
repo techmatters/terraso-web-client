@@ -15,26 +15,26 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import ErrorIcon from '@mui/icons-material/Report.js';
+import ErrorIcon from '@mui/icons-material/Report';
 import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Button, Paper, Stack, Tab, Typography } from '@mui/material';
 
-import { useAnalytics } from 'monitoring/analytics.js';
-import { ILM_OUTPUT_PROP, RESULTS_ANALYSIS_IMPACT } from 'monitoring/ilm.js';
-import { useGroupContext } from 'group/groupContext.js';
+import { useAnalytics } from 'monitoring/analytics';
+import { ILM_OUTPUT_PROP, RESULTS_ANALYSIS_IMPACT } from 'monitoring/ilm';
+import { useGroupContext } from 'group/groupContext';
 import {
   addSharedDataLink,
   resetUploads,
   uploadSharedDataFile,
-} from 'sharedData/sharedDataSlice.js';
+} from 'sharedData/sharedDataSlice';
 
-import ShareDataFiles, { useFilesState } from './ShareDataFiles.js';
-import ShareDataLinks, { useLinksState } from './ShareDataLinks.js';
-import { ShareDataUploadContextProvider } from './ShareDataUploadContext.js';
-import { validateLink } from './utils.js';
+import ShareDataFiles, { useFilesState } from './ShareDataFiles';
+import ShareDataLinks, { useLinksState } from './ShareDataLinks';
+import { ShareDataUploadContextProvider } from './ShareDataUploadContext';
+import { validateLink } from './utils';
 
 const localizedCounts = (t, files, links) =>
   [

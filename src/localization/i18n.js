@@ -18,15 +18,12 @@ import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 
-import enTranslations from './locales/en-US.json';
-import esTranslations from './locales/es-ES.json';
-
 export const LOCALES = {
   'en-US': {
-    translation: enTranslations,
+    translation: require('./locales/en-US.json'),
   },
   'es-ES': {
-    translation: esTranslations,
+    translation: require('./locales/es-ES.json'),
   },
 };
 

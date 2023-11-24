@@ -16,7 +16,7 @@
  */
 import React from 'react';
 import { filesize } from 'filesize';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useDropzone } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
 import {

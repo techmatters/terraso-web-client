@@ -18,10 +18,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { List, Stack, Typography } from '@mui/material';
 
-import { useDocumentDescription, useDocumentTitle } from 'common/document.js';
-import PageContainer from 'layout/PageContainer.js';
-import PageHeader from 'layout/PageHeader.js';
-import ToolCard from 'tool/components/ToolCard.js';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
+import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import ToolCard from 'tool/components/ToolCard';
 
 const ToolList = () => {
   const { t } = useTranslation();

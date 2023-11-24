@@ -16,7 +16,7 @@
  */
 import React from 'react';
 import { Trans } from 'react-i18next';
-import NotificationImportantIcon from '@mui/icons-material/NotificationImportant.js';
+import NotificationImportantIcon from '@mui/icons-material/NotificationImportant';
 import { Link, Stack, Typography } from '@mui/material';
 
 import { withProps } from 'react-hoc';

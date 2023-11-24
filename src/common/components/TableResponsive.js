@@ -15,13 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import Highlighter from 'react-highlight-words';
 import { useTranslation } from 'react-i18next';
 import { cleanSensitiveCharacters } from 'stringUtils';
 import { useDebounce } from 'use-debounce';
-import CloseIcon from '@mui/icons-material/Close.js';
-import SearchIcon from '@mui/icons-material/Search.js';
+import CloseIcon from '@mui/icons-material/Close';
+import SearchIcon from '@mui/icons-material/Search';
 import {
   Card,
   Divider,
@@ -37,7 +37,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 
-import BaseTable from 'common/components/Table.js';
+import BaseTable from 'common/components/Table';
 
 import theme from 'theme';
 
@@ -66,7 +66,7 @@ const Table = props => {
 
 const CardField = props => {
   const { column, row } = props;
-  const isActions = column.field === 'Actions.js';
+  const isActions = column.field === 'actions';
 
   const value = column.valueGetter
     ? column.valueGetter({ row })

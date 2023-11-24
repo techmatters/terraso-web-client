@@ -15,12 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Box, Link, List, ListItem, Typography } from '@mui/material';
 
-import RouterLink from 'common/components/RouterLink.js';
-import HomeCard from 'home/components/HomeCard.js';
+import RouterLink from 'common/components/RouterLink';
+import HomeCard from 'home/components/HomeCard';
 
 import landscapePlaceholder from 'assets/landscape.svg';
 import theme from 'theme';

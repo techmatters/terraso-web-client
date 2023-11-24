@@ -18,14 +18,14 @@ import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useFetchData } from 'terraso-client-shared/store/utils.js';
+import { useFetchData } from 'terraso-client-shared/store/utils';
 
-import { useDocumentTitle } from 'common/document.js';
-import PageLoader from 'layout/PageLoader.js';
-import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext.js';
-import { GroupContextProvider } from 'group/groupContext.js';
-import { fetchLandscapeUpload } from 'landscape/landscapeSlice.js';
-import VisualizationWrapper from 'sharedData/visualization/components/VisualizationWrapper.js';
+import { useDocumentTitle } from 'common/document';
+import PageLoader from 'layout/PageLoader';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
+import { GroupContextProvider } from 'group/groupContext';
+import { fetchLandscapeUpload } from 'landscape/landscapeSlice';
+import VisualizationWrapper from 'sharedData/visualization/components/VisualizationWrapper';
 
 const LandscapeSharedDataVisualization = () => {
   const { t } = useTranslation();

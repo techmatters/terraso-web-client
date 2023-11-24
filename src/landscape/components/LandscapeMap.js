@@ -15,19 +15,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useEffect, useMemo, useState } from 'react';
-import _ from 'lodash/fp.js';
-import logger from 'terraso-client-shared/monitoring/logger.js';
+import _ from 'lodash/fp';
+import logger from 'terraso-client-shared/monitoring/logger';
 import { Box } from '@mui/material';
 
-import GeoJsonSource from 'gis/components/GeoJsonSource.js';
-import Layer from 'gis/components/Layer.js';
-import Map, { useMap } from 'gis/components/Map.js';
-import MapControls from 'gis/components/MapControls.js';
-import MapGeocoder from 'gis/components/MapGeocoder.js';
-import MapStyleSwitcher from 'gis/components/MapStyleSwitcher.js';
-import mapboxgl from 'gis/mapbox.js';
-import { getMarkerImage, MARKER_CONTROL_ICON } from 'gis/mapMarkers.js';
-import { getLandscapeBoundingBox } from 'landscape/landscapeUtils.js';
+import GeoJsonSource from 'gis/components/GeoJsonSource';
+import Layer from 'gis/components/Layer';
+import Map, { useMap } from 'gis/components/Map';
+import MapControls from 'gis/components/MapControls';
+import MapGeocoder from 'gis/components/MapGeocoder';
+import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
+import mapboxgl from 'gis/mapbox';
+import { getMarkerImage, MARKER_CONTROL_ICON } from 'gis/mapMarkers';
+import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';
 
 import theme from 'theme';
 

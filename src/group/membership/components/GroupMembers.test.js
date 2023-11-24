@@ -16,21 +16,21 @@
  */
 import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 import { useNavigate } from 'react-router-dom';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { GROUP_TYPES_WITH_REDIRECTS } from 'tests/constants';
-import useMediaQuery from '@mui/material/useMediaQuery/index.js';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-import GroupMembers from 'group/membership/components/GroupMembers.js';
+import GroupMembers from 'group/membership/components/GroupMembers';
 
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850
 global.console.error = jest.fn();
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
-jest.mock('@mui/material/useMediaQuery/index.js');
+jest.mock('@mui/material/useMediaQuery');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -171,7 +171,7 @@ test('GroupMembers: Display list', async () => {
     within(rows[1])
       .getByRole('button', { name: 'Leave: Group Name' })
       .closest('[role="cell"]')
-  ).toHaveAttribute('data-field', 'Actions.js');
+  ).toHaveAttribute('data-field', 'actions');
 });
 test('GroupMembers: Display list (small)', async () => {
   useMediaQuery.mockReturnValue(true);
@@ -272,9 +272,9 @@ test('GroupMembers: Display list manager', async () => {
     within(rows[2])
       .getByRole('button', { name: 'Remove' })
       .closest('[role="cell"]')
-  ).toHaveAttribute('data-field', 'Actions.js');
+  ).toHaveAttribute('data-field', 'actions');
 });
-test('GroupMembers: Manager Actions.js', async () => {
+test('GroupMembers: Manager actions', async () => {
   const generateMemberhips = (index, count) => ({
     edges: [
       ...Array(count)
@@ -397,7 +397,7 @@ test('GroupMembers: Manager Actions.js', async () => {
   const removedRows = screen.getAllByRole('row');
   expect(removedRows.length).toBe(3);
 });
-test('GroupMembers: Closed group manager Actions.js', async () => {
+test('GroupMembers: Closed group manager actions', async () => {
   const generateMemberhips = (index, count) => ({
     edges: [
       ...Array(count)

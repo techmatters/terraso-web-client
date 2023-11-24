@@ -16,11 +16,11 @@
  */
 import { fireEvent, render, screen, within } from 'tests/utils';
 import React from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
-import AccountProfile from 'account/components/AccountProfile.js';
+import AccountProfile from 'account/components/AccountProfile';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 

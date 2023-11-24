@@ -15,9 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import LaunchIcon from '@mui/icons-material/Launch.js';
+import LaunchIcon from '@mui/icons-material/Launch';
 import {
   Box,
   Card,
@@ -27,9 +27,9 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery/index.js';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-import ExternalLink from 'common/components/ExternalLink.js';
+import ExternalLink from 'common/components/ExternalLink';
 
 import theme from 'theme';
 

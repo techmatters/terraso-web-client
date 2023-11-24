@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -30,30 +30,30 @@ import {
 
 import { daysSince } from 'timeUtils';
 
-import ConfirmButton from 'common/components/ConfirmButton.js';
+import ConfirmButton from 'common/components/ConfirmButton';
 import SocialShare, {
   useSocialShareContext,
-} from 'common/components/SocialShare.js';
-import NotFound from 'layout/NotFound.js';
-import PageContainer from 'layout/PageContainer.js';
-import PageHeader from 'layout/PageHeader.js';
-import { formatDate } from 'localization/utils.js';
-import { useAnalytics } from 'monitoring/analytics.js';
-import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext.js';
-import Restricted from 'permissions/components/Restricted.js';
-import MapExport from 'gis/components/MapExport.js';
-import { useGroupContext } from 'group/groupContext.js';
-import { useSharedData } from 'sharedData/sharedDataHooks.js';
+} from 'common/components/SocialShare';
+import NotFound from 'layout/NotFound';
+import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import { formatDate } from 'localization/utils';
+import { useAnalytics } from 'monitoring/analytics';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
+import Restricted from 'permissions/components/Restricted';
+import MapExport from 'gis/components/MapExport';
+import { useGroupContext } from 'group/groupContext';
+import { useSharedData } from 'sharedData/sharedDataHooks';
 import {
   deleteVisualizationConfig,
   fetchVisualizationConfig,
-} from 'sharedData/sharedDataSlice.js';
+} from 'sharedData/sharedDataSlice';
 import {
   VisualizationContext,
   VisualizationContextProvider,
-} from 'sharedData/visualization/visualizationContext.js';
+} from 'sharedData/visualization/visualizationContext';
 
-import Visualization from './Visualization.js';
+import Visualization from './Visualization';
 
 const VisualizationWrapper = props => {
   const { trackEvent } = useAnalytics();

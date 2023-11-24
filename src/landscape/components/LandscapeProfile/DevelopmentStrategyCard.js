@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useEffect, useMemo } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import {
   Button,
@@ -25,9 +25,9 @@ import {
   Typography,
 } from '@mui/material';
 
-import ExternalLink from 'common/components/ExternalLink.js';
-import RouterLink from 'common/components/RouterLink.js';
-import Restricted from 'permissions/components/Restricted.js';
+import ExternalLink from 'common/components/ExternalLink';
+import RouterLink from 'common/components/RouterLink';
+import Restricted from 'permissions/components/Restricted';
 
 const FIELDS = [
   'objectives',

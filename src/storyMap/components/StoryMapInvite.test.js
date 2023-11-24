@@ -18,9 +18,9 @@ import { render, screen, waitFor, within } from 'tests/utils';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { mockTerrasoAPIrequestGraphQL } from 'tests/apiUtils';
 
-import { useAnalytics } from 'monitoring/analytics.js';
+import { useAnalytics } from 'monitoring/analytics';
 
-import StoryMapInvite from './StoryMapInvite.js';
+import StoryMapInvite from './StoryMapInvite';
 
 // Generated token with https://jwt.io/
 // {

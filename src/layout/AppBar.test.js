@@ -18,11 +18,11 @@ import { fireEvent, render, screen } from 'tests/utils';
 import React from 'react';
 import Cookies from 'js-cookie';
 import { act } from 'react-dom/test-utils';
-import useMediaQuery from '@mui/material/useMediaQuery/index.js';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-import AppBar from 'layout/AppBar.js';
+import AppBar from 'layout/AppBar';
 
-jest.mock('@mui/material/useMediaQuery/index.js');
+jest.mock('@mui/material/useMediaQuery');
 jest.mock('js-cookie');
 
 const setup = async () => {

@@ -17,7 +17,7 @@
 import React from 'react';
 import { Button, Stack } from '@mui/material';
 
-import PageHeader from 'layout/PageHeader.js';
+import PageHeader from 'layout/PageHeader';
 
 const StepperStep = props => {
   const {

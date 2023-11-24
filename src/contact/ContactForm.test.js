@@ -16,14 +16,14 @@
  */
 import { render, screen } from 'tests/utils';
 import React from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 
 import { useScript } from 'custom-hooks';
 
-import ContactForm from 'contact/ContactForm.js';
+import ContactForm from 'contact/ContactForm';
 
-jest.mock('@mui/material/useMediaQuery/index.js');
+jest.mock('@mui/material/useMediaQuery');
 jest.mock('js-cookie');
 jest.mock('custom-hooks');
 

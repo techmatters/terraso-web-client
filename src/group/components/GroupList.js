@@ -15,27 +15,27 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useMemo } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
-import { useFetchData } from 'terraso-client-shared/store/utils.js';
+import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Button, Card, Link, Stack, Typography } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery/index.js';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { withProps } from 'react-hoc';
 
-import TableResponsive from 'common/components/TableResponsive.js';
-import { useDocumentDescription, useDocumentTitle } from 'common/document.js';
-import PageContainer from 'layout/PageContainer.js';
-import PageHeader from 'layout/PageHeader.js';
-import PageLoader from 'layout/PageLoader.js';
-import { GroupContextProvider } from 'group/groupContext.js';
-import { fetchGroups } from 'group/groupSlice.ts';
-import GroupMemberJoin from 'group/membership/components/GroupMemberJoin.js';
-import GroupMemberLeave from 'group/membership/components/GroupMemberLeave.js';
-import GroupMemberRequestCancel from 'group/membership/components/GroupMemberRequestCancel.js';
-import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton.js';
+import TableResponsive from 'common/components/TableResponsive';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
+import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import PageLoader from 'layout/PageLoader';
+import { GroupContextProvider } from 'group/groupContext';
+import { fetchGroups } from 'group/groupSlice';
+import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
+import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
+import GroupMemberRequestCancel from 'group/membership/components/GroupMemberRequestCancel';
+import GroupMembershipJoinLeaveButton from 'group/membership/components/GroupMembershipJoinLeaveButton';
 
 import theme from 'theme';
 
@@ -150,8 +150,8 @@ const GroupList = () => {
         ),
     },
     {
-      field: 'Actions.js',
-      type: 'Actions.js',
+      field: 'actions',
+      type: 'actions',
       headerName: t('group.list_column_actions_description'),
       sortable: false,
       align: 'center',

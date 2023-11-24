@@ -15,25 +15,25 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useState } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
-import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt.js';
-import MapIcon from '@mui/icons-material/Map.js';
-import PinDropIcon from '@mui/icons-material/PinDrop.js';
-import UploadFileIcon from '@mui/icons-material/UploadFile.js';
+import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
+import MapIcon from '@mui/icons-material/Map';
+import PinDropIcon from '@mui/icons-material/PinDrop';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { Button, Stack, Typography } from '@mui/material';
 
 import { useIsMounted } from 'custom-hooks';
 
-import ExternalLink from 'common/components/ExternalLink.js';
-import { countryNameForCode } from 'common/countries.js';
-import PageHeader from 'layout/PageHeader.js';
-import { scrollToNavBar } from 'navigation/scrollTo.js';
-import { getPlaceInfoByName } from 'gis/gisService.js';
-import OptionBoundariesFile from 'landscape/components/LandscapeForm/BoundaryStep/OptionBoundariesFile.js';
+import ExternalLink from 'common/components/ExternalLink';
+import { countryNameForCode } from 'common/countries';
+import PageHeader from 'layout/PageHeader';
+import { scrollToNavBar } from 'navigation/scrollTo';
+import { getPlaceInfoByName } from 'gis/gisService';
+import OptionBoundariesFile from 'landscape/components/LandscapeForm/BoundaryStep/OptionBoundariesFile';
 
-import OptionAddPin from './OptionAddPin.js';
-import OptionDrawPolygon from './OptionDrawPolygon.js';
+import OptionAddPin from './OptionAddPin';
+import OptionDrawPolygon from './OptionDrawPolygon';
 
 import { MAP_DATA_ACCEPTED_TYPES_NAMES } from 'config';
 

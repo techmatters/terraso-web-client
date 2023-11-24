@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import i18n from 'i18next';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import countries from 'world-countries';
 
 export const countriesList = () => {

@@ -21,13 +21,13 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import path from 'path-browserify';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
-import DeleteIcon from '@mui/icons-material/Delete.js';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Alert,
   Divider,
@@ -37,15 +37,15 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery/index.js';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { styled } from '@mui/system';
 
-import BaseDropZone from 'common/components/DropZone.js';
-import FormField from 'forms/components/FormField.js';
-import { MAX_DESCRIPTION_CHARACTERS } from 'sharedData/sharedDataConstants.js';
+import BaseDropZone from 'common/components/DropZone';
+import FormField from 'forms/components/FormField';
+import { MAX_DESCRIPTION_CHARACTERS } from 'sharedData/sharedDataConstants';
 
-import SuccessContainer from './SuccessContainer.js';
-import { groupDataEntryUploadsByStatus } from './utils.js';
+import SuccessContainer from './SuccessContainer';
+import { groupDataEntryUploadsByStatus } from './utils';
 
 import {
   SHARED_DATA_ACCEPTED_EXTENSIONS,

@@ -26,10 +26,10 @@ import {
 } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import { act } from 'react-dom/test-utils';
-import createStore from 'terrasoApi/store.ts';
+import createStore from 'terrasoApi/store';
 
-import AppWrappers from 'layout/AppWrappers.js';
-import rules from 'permissions/rules.js';
+import AppWrappers from 'layout/AppWrappers';
+import rules from 'permissions/rules';
 
 import { AXE_TEST_TIMEOUT, JEST_TEST_TIMEOUT, WAIT_FOR_TIMEOUT } from 'config';
 

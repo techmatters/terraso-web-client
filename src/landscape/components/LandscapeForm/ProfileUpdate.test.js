@@ -18,10 +18,10 @@ import { fireEvent, render, screen, within } from 'tests/utils';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
-import { iso639en, iso639es } from 'localization/iso639/index.js';
-import ProfileUpdate from 'landscape/components/LandscapeForm/ProfileUpdate.js';
+import { iso639en, iso639es } from 'localization/iso639';
+import ProfileUpdate from 'landscape/components/LandscapeForm/ProfileUpdate';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 

@@ -15,10 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { createSlice } from '@reduxjs/toolkit';
-import { createAsyncThunk } from 'terraso-client-shared/store/utils.js';
+import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
-import * as homeService from 'home/homeService.js';
-import { setUserStoryMaps } from 'storyMap/storyMapSlice.js';
+import * as homeService from 'home/homeService';
+import { setUserStoryMaps } from 'storyMap/storyMapSlice';
 
 const initialState = {
   groups: [],
