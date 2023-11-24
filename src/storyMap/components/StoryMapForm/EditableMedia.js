@@ -17,11 +17,11 @@
 // Component for editing and uploading a pictures or a audio file
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import getVideoId from 'get-video-id';
-import _ from 'lodash/fp.js';
-import { openFile } from 'media/fileUtils.js';
+import _ from 'lodash/fp';
+import { openFile } from 'media/fileUtils';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
-import DeleteIcon from '@mui/icons-material/Delete.js';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Button,
   Dialog,
@@ -37,10 +37,10 @@ import {
   Typography,
 } from '@mui/material';
 
-import ConfirmButton from 'common/components/ConfirmButton.js';
-import DropZone from 'common/components/DropZone.js';
+import ConfirmButton from 'common/components/ConfirmButton';
+import DropZone from 'common/components/DropZone';
 
-import { useStoryMapConfigContext } from './storyMapConfigContext.js';
+import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 import {
   STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS,

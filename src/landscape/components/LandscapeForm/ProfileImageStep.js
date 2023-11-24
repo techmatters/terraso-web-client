@@ -15,25 +15,25 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import _ from 'lodash/fp.js';
-import { dataURItoBlob, openFile } from 'media/fileUtils.js';
-import { openImageUrl } from 'media/imageUtils.js';
+import _ from 'lodash/fp';
+import { dataURItoBlob, openFile } from 'media/fileUtils';
+import { openImageUrl } from 'media/imageUtils';
 import AvatarEditor from 'react-avatar-editor';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
-import AddIcon from '@mui/icons-material/Add.js';
-import RemoveIcon from '@mui/icons-material/Remove.js';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import { Paper, Slider, Stack, Typography } from '@mui/material';
 
-import DropZone from 'common/components/DropZone.js';
-import HelperText from 'common/components/HelperText.js';
-import Form from 'forms/components/Form.js';
-import { FormContextProvider } from 'forms/formContext.js';
-import PageHeader from 'layout/PageHeader.js';
-import PageLoader from 'layout/PageLoader.js';
+import DropZone from 'common/components/DropZone';
+import HelperText from 'common/components/HelperText';
+import Form from 'forms/components/Form';
+import { FormContextProvider } from 'forms/formContext';
+import PageHeader from 'layout/PageHeader';
+import PageLoader from 'layout/PageLoader';
 
-import Actions from './Actions.js';
+import Actions from './Actions';
 
 import {
   IMAGE_ACCEPTED_EXTENSIONS,

@@ -16,20 +16,20 @@
  */
 import { fireEvent, render, screen, within } from 'tests/utils';
 import React from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
 import { useSearchParams } from 'react-router-dom';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
-import useMediaQuery from '@mui/material/useMediaQuery/index.js';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-import GroupList from 'group/components/GroupList.js';
+import GroupList from 'group/components/GroupList';
 
 // Omit console error for DataGrid issue: https://github.com/mui/mui-x/issues/3850
 global.console.error = jest.fn();
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
-jest.mock('@mui/material/useMediaQuery/index.js');
+jest.mock('@mui/material/useMediaQuery');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -146,12 +146,12 @@ test('GroupList: Display list', async () => {
     within(rows[2])
       .getByRole('button', { name: 'Join: Group name 1' })
       .closest('[role="cell"]')
-  ).toHaveAttribute('data-field', 'Actions.js');
+  ).toHaveAttribute('data-field', 'actions');
   expect(
     within(rows[9])
       .getByRole('button', { name: 'Leave: Group name 3' })
       .closest('[role="cell"]')
-  ).toHaveAttribute('data-field', 'Actions.js');
+  ).toHaveAttribute('data-field', 'actions');
 });
 test('GroupList: List sort', async () => {
   const isMember = {

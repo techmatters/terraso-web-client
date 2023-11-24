@@ -15,38 +15,38 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useMemo, useState } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useFetchData } from 'terraso-client-shared/store/utils.js';
+import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Grid, Stack } from '@mui/material';
 
 import { withProps } from 'react-hoc';
 
-import { useSocialShareContext } from 'common/components/SocialShare.js';
+import { useSocialShareContext } from 'common/components/SocialShare';
 import {
   useDocumentDescription,
   useDocumentImage,
   useDocumentTitle,
-} from 'common/document.js';
-import PageContainer from 'layout/PageContainer.js';
-import PageHeader from 'layout/PageHeader.js';
-import PageLoader from 'layout/PageLoader.js';
-import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext.js';
-import { GroupContextProvider } from 'group/groupContext.js';
-import GroupMemberJoin from 'group/membership/components/GroupMemberJoin.js';
+} from 'common/document';
+import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import PageLoader from 'layout/PageLoader';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
+import { GroupContextProvider } from 'group/groupContext';
+import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
 import {
   fetchLandscapeProfile,
   refreshLandscapeView,
-} from 'landscape/landscapeSlice.js';
-import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave.js';
+} from 'landscape/landscapeSlice';
+import LandscapeMemberLeave from 'landscape/membership/components/LandscapeMemberLeave';
 
-import AffiliationCard from './AffiliationCard.js';
-import DevelopmentStrategyCard from './DevelopmentStrategyCard.js';
-import KeyInfoCard from './KeyInfoCard.js';
-import ProfileCard from './ProfileCard.js';
+import AffiliationCard from './AffiliationCard';
+import DevelopmentStrategyCard from './DevelopmentStrategyCard';
+import KeyInfoCard from './KeyInfoCard';
+import ProfileCard from './ProfileCard';
 
 const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.view_leave_label',

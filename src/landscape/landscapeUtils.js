@@ -16,11 +16,11 @@
  */
 import turfCenter from '@turf/center';
 import * as turf from '@turf/helpers';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
-import { normalizeLongitude, parseGeoJson } from 'gis/gisUtils.js';
+import { normalizeLongitude, parseGeoJson } from 'gis/gisUtils';
 
 // Returns bounding box containing the defined areaPolygon data or
 // the bounding box requested from the landsace.location data

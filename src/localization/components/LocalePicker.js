@@ -15,13 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useEffect } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { savePreference } from 'terraso-client-shared/account/accountSlice.js';
+import { savePreference } from 'terraso-client-shared/account/accountSlice';
 
-import LocalePickerSelect from 'localization/components/LocalePickerSelect.js';
-import { LOCALES } from 'localization/i18n.js';
+import LocalePickerSelect from 'localization/components/LocalePickerSelect';
+import { LOCALES } from 'localization/i18n';
 
 const LocalePicker = () => {
   const { i18n } = useTranslation();

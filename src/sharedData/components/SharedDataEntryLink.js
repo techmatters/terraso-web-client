@@ -16,14 +16,14 @@
  */
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew.js';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { IconButton } from '@mui/material';
 
-import ExternalLink from 'common/components/ExternalLink.js';
-import { useGroupContext } from 'group/groupContext.js';
+import ExternalLink from 'common/components/ExternalLink';
+import { useGroupContext } from 'group/groupContext';
 
-import LinkIcon from './LinkIcon.js';
-import SharedDataEntryBase, { ICON_SIZE } from './SharedDataEntryBase.js';
+import LinkIcon from './LinkIcon';
+import SharedDataEntryBase, { ICON_SIZE } from './SharedDataEntryBase';
 
 const DownloadComponent = props => {
   const { t } = useTranslation();

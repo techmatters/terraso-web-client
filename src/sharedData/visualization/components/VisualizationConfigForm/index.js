@@ -17,14 +17,14 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Stepper from 'common/components/Stepper.js';
-import { VisualizationContextProvider } from 'sharedData/visualization/visualizationContext.js';
+import Stepper from 'common/components/Stepper';
+import { VisualizationContextProvider } from 'sharedData/visualization/visualizationContext';
 
-import AnnotateStep from './AnnotateStep.js';
-import PreviewStep from './PreviewStep.js';
-import SelectDataFileStep from './SelectDataFileStep.js';
-import SetDatasetStep from './SetDatasetStep.js';
-import VisualizeStep from './VisualizeStep.js';
+import AnnotateStep from './AnnotateStep';
+import PreviewStep from './PreviewStep';
+import SelectDataFileStep from './SelectDataFileStep';
+import SetDatasetStep from './SetDatasetStep';
+import VisualizeStep from './VisualizeStep';
 
 import theme from 'theme';
 

@@ -18,7 +18,7 @@ import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Stack } from '@mui/material';
 
-import { useFormGetContext } from 'forms/formContext.js';
+import { useFormGetContext } from 'forms/formContext';
 
 const Actions = props => {
   const { t } = useTranslation();

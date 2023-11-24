@@ -19,11 +19,11 @@ import React from 'react';
 import 'config';
 
 import { createRoot } from 'react-dom/client';
-import createStore from 'terrasoApi/store.ts';
+import createStore from 'terrasoApi/store';
 
-import AppWrappers from 'layout/AppWrappers.js';
-import reportWebVitals from 'monitoring/reportWebVitals.js';
-import rules from 'permissions/rules.js';
+import AppWrappers from 'layout/AppWrappers';
+import reportWebVitals from 'monitoring/reportWebVitals';
+import rules from 'permissions/rules';
 
 import theme from 'theme';
 

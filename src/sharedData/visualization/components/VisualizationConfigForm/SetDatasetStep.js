@@ -15,12 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { cleanSensitiveCharacters } from 'stringUtils';
 import * as SheetsJs from 'xlsx';
 import * as yup from 'yup';
-import CloseIcon from '@mui/icons-material/Close.js';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Button,
   FormControlLabel,
@@ -37,14 +37,14 @@ import {
   Typography,
 } from '@mui/material';
 
-import StepperStep from 'common/components/StepperStep.js';
-import Form from 'forms/components/Form.js';
-import { FormContextProvider, useFormGetContext } from 'forms/formContext.js';
-import PageLoader from 'layout/PageLoader.js';
-import { useVisualizationContext } from 'sharedData/visualization/visualizationContext.js';
-import { validateCoordinateColumn } from 'sharedData/visualization/visualizationUtils.js';
+import StepperStep from 'common/components/StepperStep';
+import Form from 'forms/components/Form';
+import { FormContextProvider, useFormGetContext } from 'forms/formContext';
+import PageLoader from 'layout/PageLoader';
+import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
+import { validateCoordinateColumn } from 'sharedData/visualization/visualizationUtils';
 
-import ColumnSelect from './ColumnSelect.js';
+import ColumnSelect from './ColumnSelect';
 
 const TABLE_SAMPLE_SIZE = 3;
 

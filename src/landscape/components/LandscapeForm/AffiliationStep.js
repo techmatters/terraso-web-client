@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useState } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import {
@@ -28,16 +28,16 @@ import {
   Typography,
 } from '@mui/material';
 
-import HelperText from 'common/components/HelperText.js';
-import Form from 'forms/components/Form.js';
-import { FormContextProvider } from 'forms/formContext.js';
-import PageHeader from 'layout/PageHeader.js';
-import GroupAutocomplete from 'group/components/GroupAutocomplete.js';
-import { Subheader } from 'landscape/landscapeUtils.js';
-import TaxonomyAutocomplete from 'taxonomies/components/TaxonomyAutocomplete.js';
-import { TYPE_ORGANIZATION } from 'taxonomies/taxonomiesConstants.js';
+import HelperText from 'common/components/HelperText';
+import Form from 'forms/components/Form';
+import { FormContextProvider } from 'forms/formContext';
+import PageHeader from 'layout/PageHeader';
+import GroupAutocomplete from 'group/components/GroupAutocomplete';
+import { Subheader } from 'landscape/landscapeUtils';
+import TaxonomyAutocomplete from 'taxonomies/components/TaxonomyAutocomplete';
+import { TYPE_ORGANIZATION } from 'taxonomies/taxonomiesConstants';
 
-import Actions from './Actions.js';
+import Actions from './Actions';
 
 const PARTNERSHIP_START_YEAR = 1900;
 

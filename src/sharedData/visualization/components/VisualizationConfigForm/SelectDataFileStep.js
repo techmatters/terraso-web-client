@@ -16,7 +16,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { filesize } from 'filesize';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -29,15 +29,15 @@ import {
   Typography,
 } from '@mui/material';
 
-import ExternalLink from 'common/components/ExternalLink.js';
-import List from 'common/components/List.js';
-import StepperStep from 'common/components/StepperStep.js';
-import PageLoader from 'layout/PageLoader.js';
-import { formatDate } from 'localization/utils.js';
-import { useGroupContext } from 'group/groupContext.js';
-import SharedFileIcon from 'sharedData/components/SharedFileIcon.js';
-import { fetchSharedData } from 'sharedData/sharedDataSlice.js';
-import { useVisualizationContext } from 'sharedData/visualization/visualizationContext.js';
+import ExternalLink from 'common/components/ExternalLink';
+import List from 'common/components/List';
+import StepperStep from 'common/components/StepperStep';
+import PageLoader from 'layout/PageLoader';
+import { formatDate } from 'localization/utils';
+import { useGroupContext } from 'group/groupContext';
+import SharedFileIcon from 'sharedData/components/SharedFileIcon';
+import { fetchSharedData } from 'sharedData/sharedDataSlice';
+import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 
 const ACCEPTED_RESOURCE_TYPES = ['csv', 'xls', 'xlsx'];
 

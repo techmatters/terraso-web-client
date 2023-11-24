@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Link } from '@mui/material';
 

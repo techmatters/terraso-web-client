@@ -17,7 +17,7 @@
 import React, { useCallback, useState } from 'react';
 import { MenuItem } from '@mui/material';
 
-import ConfirmationDialog from 'common/components/ConfirmationDialog.js';
+import ConfirmationDialog from 'common/components/ConfirmationDialog';
 
 const ConfirmMenuItem = props => {
   const [openConfirmation, setOpenConfirmation] = useState(false);

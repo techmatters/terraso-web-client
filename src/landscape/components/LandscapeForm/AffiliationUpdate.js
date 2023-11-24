@@ -15,24 +15,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useFetchData } from 'terraso-client-shared/store/utils.js';
+import { useFetchData } from 'terraso-client-shared/store/utils';
 
-import { useDocumentTitle } from 'common/document.js';
-import PageContainer from 'layout/PageContainer.js';
-import PageLoader from 'layout/PageLoader.js';
-import { fetchGroupsAutocompleteList } from 'group/groupSlice.ts';
-import AffiliationStep from 'landscape/components/LandscapeForm/AffiliationStep.js';
+import { useDocumentTitle } from 'common/document';
+import PageContainer from 'layout/PageContainer';
+import PageLoader from 'layout/PageLoader';
+import { fetchGroupsAutocompleteList } from 'group/groupSlice';
+import AffiliationStep from 'landscape/components/LandscapeForm/AffiliationStep';
 import {
   fetchLandscapeForm,
   saveLandscape,
   setFormNewValues,
-} from 'landscape/landscapeSlice.js';
-import { TYPE_ORGANIZATION } from 'taxonomies/taxonomiesConstants.js';
-import { fetchTermsForTypes } from 'taxonomies/taxonomiesSlice.js';
+} from 'landscape/landscapeSlice';
+import { TYPE_ORGANIZATION } from 'taxonomies/taxonomiesConstants';
+import { fetchTermsForTypes } from 'taxonomies/taxonomiesSlice';
 
 const AffiliationUpdate = () => {
   const dispatch = useDispatch();

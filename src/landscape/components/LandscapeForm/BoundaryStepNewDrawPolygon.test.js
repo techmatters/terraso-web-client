@@ -19,10 +19,10 @@ import React from 'react';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
-import mapboxgl from 'gis/mapbox.js';
-import LandscapeNew from 'landscape/components/LandscapeForm/New.js';
+import mapboxgl from 'gis/mapbox';
+import LandscapeNew from 'landscape/components/LandscapeForm/New';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 

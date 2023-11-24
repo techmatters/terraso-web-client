@@ -16,11 +16,11 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import LayersIcon from '@mui/icons-material/Layers.js';
+import LayersIcon from '@mui/icons-material/Layers';
 import { Button, Menu, MenuItem, Portal, Stack } from '@mui/material';
 
-import { useMap } from './Map.js';
-import { MAPBOX_STYLES } from './MapboxConstants.js';
+import { useMap } from './Map';
+import { MAPBOX_STYLES } from './MapboxConstants';
 
 class SwitcherControl {
   constructor(options) {

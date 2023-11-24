@@ -16,16 +16,16 @@
  */
 import { fireEvent, render, screen } from 'tests/utils';
 import React from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
-import { GroupContextProvider } from 'group/groupContext.js';
-import GroupMemberJoin from 'group/membership/components/GroupMemberJoin.js';
-import GroupMemberLeave from 'group/membership/components/GroupMemberLeave.js';
-import GroupMembershipCard from 'group/membership/components/GroupMembershipCard.js';
+import { GroupContextProvider } from 'group/groupContext';
+import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
+import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
+import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
 
-import GroupMemberRequestCancel from './GroupMemberRequestCancel.js';
+import GroupMemberRequestCancel from './GroupMemberRequestCancel';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 

@@ -16,11 +16,11 @@
  */
 import { render, screen, within } from 'tests/utils';
 import React from 'react';
-import _ from 'lodash/fp.js';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
+import _ from 'lodash/fp';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
-import Home from 'home/components/Home.js';
-import { fetchHomeData } from 'home/homeService.js';
+import Home from 'home/components/Home';
+import { fetchHomeData } from 'home/homeService';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 

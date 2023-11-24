@@ -15,12 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useMemo } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'terrasoApi/store.ts';
-import DeleteIcon from '@mui/icons-material/Delete.js';
-import PeopleIcon from '@mui/icons-material/People.js';
+import { useDispatch, useSelector } from 'terrasoApi/store';
+import DeleteIcon from '@mui/icons-material/Delete';
+import PeopleIcon from '@mui/icons-material/People';
 import { LoadingButton } from '@mui/lab';
 import {
   List as BaseList,
@@ -35,23 +35,20 @@ import {
 
 import { withProps } from 'react-hoc';
 
-import { MEMBERSHIP_STATUS_PENDING } from 'collaboration/collaborationConstants.js';
-import RouterButton from 'common/components/RouterButton.js';
-import RouterLink from 'common/components/RouterLink.js';
-import { formatDate } from 'localization/utils.js';
-import { useAnalytics } from 'monitoring/analytics.js';
-import Restricted from 'permissions/components/Restricted.js';
-import HomeCard from 'home/components/HomeCard.js';
-import {
-  approveMembership,
-  removeUserStoryMap,
-} from 'storyMap/storyMapSlice.js';
+import { MEMBERSHIP_STATUS_PENDING } from 'collaboration/collaborationConstants';
+import RouterButton from 'common/components/RouterButton';
+import RouterLink from 'common/components/RouterLink';
+import { formatDate } from 'localization/utils';
+import { useAnalytics } from 'monitoring/analytics';
+import Restricted from 'permissions/components/Restricted';
+import HomeCard from 'home/components/HomeCard';
+import { approveMembership, removeUserStoryMap } from 'storyMap/storyMapSlice';
 import {
   generateStoryMapEditUrl,
   generateStoryMapUrl,
-} from 'storyMap/storyMapUtils.js';
+} from 'storyMap/storyMapUtils';
 
-import DeleteButton from './StoryMapDeleteButton.js';
+import DeleteButton from './StoryMapDeleteButton';
 
 const List = withProps(BaseList, {
   component: withProps(Stack, {

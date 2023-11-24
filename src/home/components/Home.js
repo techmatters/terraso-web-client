@@ -15,24 +15,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useFetchData } from 'terraso-client-shared/store/utils.js';
+import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Alert, Grid, Stack } from '@mui/material';
 
-import LoaderCard from 'common/components/LoaderCard.js';
-import { useDocumentDescription, useDocumentTitle } from 'common/document.js';
-import PageContainer from 'layout/PageContainer.js';
-import PageHeader from 'layout/PageHeader.js';
-import GroupDefaultCard from 'group/components/GroupDefaultHomeCard.js';
-import GroupsCard from 'group/components/GroupsHomeCard.js';
-import { fetchHomeData } from 'home/homeSlice.js';
-import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultHomeCard.js';
-import LandscapesCard from 'landscape/components/LandscapesHomeCard.js';
-import StoryMapsCard from 'storyMap/components/StoryMapsCard.js';
-import StoryMapsHomeCardDefault from 'storyMap/components/StoryMapsHomeCardDefault.js';
-import ToolHomeCard from 'tool/components/ToolHomeCard.js';
+import LoaderCard from 'common/components/LoaderCard';
+import { useDocumentDescription, useDocumentTitle } from 'common/document';
+import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import GroupDefaultCard from 'group/components/GroupDefaultHomeCard';
+import GroupsCard from 'group/components/GroupsHomeCard';
+import { fetchHomeData } from 'home/homeSlice';
+import LandscapeDefaultCard from 'landscape/components/LandscapeDefaultHomeCard';
+import LandscapesCard from 'landscape/components/LandscapesHomeCard';
+import StoryMapsCard from 'storyMap/components/StoryMapsCard';
+import StoryMapsHomeCardDefault from 'storyMap/components/StoryMapsHomeCardDefault';
+import ToolHomeCard from 'tool/components/ToolHomeCard';
 
 const Landscapes = ({ landscapes, fetching }) => {
   if (fetching) {

@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import {

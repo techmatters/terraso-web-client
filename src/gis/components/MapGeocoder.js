@@ -21,9 +21,9 @@ import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
 import { useTranslation } from 'react-i18next';
 
-import mapboxgl from 'gis/mapbox.js';
+import mapboxgl from 'gis/mapbox';
 
-import { useMap } from './Map.js';
+import { useMap } from './Map';
 
 import { MAPBOX_ACCESS_TOKEN } from 'config';
 

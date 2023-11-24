@@ -1,8 +1,8 @@
 import { render } from 'tests/utils';
 import React from 'react';
 
-import Map from 'gis/components/Map.js';
-import mapboxgl from 'gis/mapbox.js';
+import Map from 'gis/components/Map';
+import mapboxgl from 'gis/mapbox';
 
 jest.mock('gis/mapbox', () => ({}));
 

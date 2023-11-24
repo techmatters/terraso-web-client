@@ -25,7 +25,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery/index.js';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import theme from 'theme';
 

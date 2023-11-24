@@ -14,18 +14,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { cleanSensitiveCharacters } from 'stringUtils';
 import {
   extractAccountMembership,
   extractMembersInfo,
-} from 'terraso-client-shared/memberships/membershipsUtils.js';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
+} from 'terraso-client-shared/memberships/membershipsUtils';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
-import { extractDataEntries } from 'sharedData/sharedDataUtils.js';
+import { extractDataEntries } from 'sharedData/sharedDataUtils';
 
-import type { Group } from './groupSlice.js';
+import type { Group } from './groupSlice';
 
 export const fetchGroupToUpdate = (slug: string) => {
   const query = graphql(`

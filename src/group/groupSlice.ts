@@ -19,10 +19,10 @@ import * as _ from 'lodash/fp';
 import {
   MembershipList,
   setMemberships,
-} from 'terraso-client-shared/memberships/membershipsSlice.js';
-import { getMemberships } from 'terraso-client-shared/memberships/membershipsUtils.js';
-import type { Message } from 'terraso-client-shared/notifications/notificationsSlice.js';
-import { createAsyncThunk } from 'terraso-client-shared/store/utils.js';
+} from 'terraso-client-shared/memberships/membershipsSlice';
+import { getMemberships } from 'terraso-client-shared/memberships/membershipsUtils';
+import type { Message } from 'terraso-client-shared/notifications/notificationsSlice';
+import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
 import * as groupService from 'group/groupService';
 import { setList } from 'sharedData/sharedDataSlice';

@@ -16,9 +16,9 @@
  */
 import 'tests/utils';
 
-import * as terrasoApiToMock from 'terraso-client-shared/terrasoApi/api.js';
+import * as terrasoApiToMock from 'terraso-client-shared/terrasoApi/api';
 
-import * as groupService from 'group/groupService.js';
+import * as groupService from 'group/groupService';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 const terrasoApi = jest.mocked(terrasoApiToMock);

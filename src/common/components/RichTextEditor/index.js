@@ -25,10 +25,10 @@ import {
 } from 'slate';
 import { withHistory } from 'slate-history';
 import { Editable, Slate, useSelected, useSlate, withReact } from 'slate-react';
-import FormatBoldIcon from '@mui/icons-material/FormatBold.js';
-import FormatItalicIcon from '@mui/icons-material/FormatItalic.js';
-import InsertLinkIcon from '@mui/icons-material/InsertLink.js';
-import LinkOffIcon from '@mui/icons-material/LinkOff.js';
+import FormatBoldIcon from '@mui/icons-material/FormatBold';
+import FormatItalicIcon from '@mui/icons-material/FormatItalic';
+import InsertLinkIcon from '@mui/icons-material/InsertLink';
+import LinkOffIcon from '@mui/icons-material/LinkOff';
 import {
   Tooltip as BaseTooltip,
   Box,
@@ -45,11 +45,11 @@ import {
 
 import { withProps } from 'react-hoc';
 
-import { isUrl, transformURL, URL_SCHEMA } from 'common/utils.js';
+import { isUrl, transformURL, URL_SCHEMA } from 'common/utils';
 
-import ExternalLink from '../ExternalLink.js';
-import Toolbar from './Toolbar.js';
-import { deserialize } from './utils.js';
+import ExternalLink from '../ExternalLink';
+import Toolbar from './Toolbar';
+import { deserialize } from './utils';
 
 import { focusOutline } from 'theme';
 

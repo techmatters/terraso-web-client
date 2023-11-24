@@ -14,16 +14,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import {
   extractAccountMembership,
   extractMembership,
   extractMemberships,
-} from 'terraso-client-shared/collaboration/membershipsUtils.js';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
-import { graphql } from 'terrasoApi/shared/graphqlSchema/index.ts';
+} from 'terraso-client-shared/collaboration/membershipsUtils';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
-import { extractStoryMap } from './storyMapUtils.js';
+import { extractStoryMap } from './storyMapUtils';
 
 export const fetchSamples = (params, currentUser) => {
   const query = graphql(`

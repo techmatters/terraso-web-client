@@ -15,26 +15,26 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Paper, useMediaQuery } from '@mui/material';
 
-import { useDocumentTitle } from 'common/document.js';
-import PageContainer from 'layout/PageContainer.js';
-import PageHeader from 'layout/PageHeader.js';
-import { useAnalytics } from 'monitoring/analytics.js';
-import { ILM_OUTPUT_PROP, LANDSCAPE_NARRATIVES } from 'monitoring/ilm.js';
-import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext.js';
-import { addStoryMap } from 'storyMap/storyMapSlice.js';
+import { useDocumentTitle } from 'common/document';
+import PageContainer from 'layout/PageContainer';
+import PageHeader from 'layout/PageHeader';
+import { useAnalytics } from 'monitoring/analytics';
+import { ILM_OUTPUT_PROP, LANDSCAPE_NARRATIVES } from 'monitoring/ilm';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
+import { addStoryMap } from 'storyMap/storyMapSlice';
 import {
   generateStoryMapEditUrl,
   generateStoryMapUrl,
-} from 'storyMap/storyMapUtils.js';
+} from 'storyMap/storyMapUtils';
 
-import StoryMapForm from './StoryMapForm/index.js';
-import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigContext.js';
+import StoryMapForm from './StoryMapForm';
+import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigContext';
 
 import { MAPBOX_STYLE_DEFAULT } from 'config';
 

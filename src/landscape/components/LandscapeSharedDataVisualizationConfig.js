@@ -19,13 +19,13 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { useDocumentTitle } from 'common/document.js';
-import PageContainer from 'layout/PageContainer.js';
-import PageLoader from 'layout/PageLoader.js';
-import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext.js';
-import { GroupContextProvider } from 'group/groupContext.js';
-import { fetchLandscapeUpload } from 'landscape/landscapeSlice.js';
-import VisualizationConfigForm from 'sharedData/visualization/components/VisualizationConfigForm/index.js';
+import { useDocumentTitle } from 'common/document';
+import PageContainer from 'layout/PageContainer';
+import PageLoader from 'layout/PageLoader';
+import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
+import { GroupContextProvider } from 'group/groupContext';
+import { fetchLandscapeUpload } from 'landscape/landscapeSlice';
+import VisualizationConfigForm from 'sharedData/visualization/components/VisualizationConfigForm';
 
 const LandscapeSharedDataVisualizationConfig = () => {
   const { t } = useTranslation();

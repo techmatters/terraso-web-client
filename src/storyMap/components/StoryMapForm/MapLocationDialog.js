@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import {
   Box,
@@ -29,12 +29,12 @@ import {
   Typography,
 } from '@mui/material';
 
-import HelperText from 'common/components/HelperText.js';
-import Map, { useMap } from 'gis/components/Map.js';
-import MapControls from 'gis/components/MapControls.js';
-import MapGeocoder from 'gis/components/MapGeocoder.js';
+import HelperText from 'common/components/HelperText';
+import Map, { useMap } from 'gis/components/Map';
+import MapControls from 'gis/components/MapControls';
+import MapGeocoder from 'gis/components/MapGeocoder';
 
-import { useStoryMapConfigContext } from './storyMapConfigContext.js';
+import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 const BearingIcon = () => {
   const { t } = useTranslation();

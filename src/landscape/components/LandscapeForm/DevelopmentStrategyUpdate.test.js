@@ -18,9 +18,9 @@ import { fireEvent, render, screen } from 'tests/utils';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { useParams } from 'react-router-dom';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
-import DevelopmentStrategyUpdate from 'landscape/components/LandscapeForm/DevelopmentStrategyUpdate.js';
+import DevelopmentStrategyUpdate from 'landscape/components/LandscapeForm/DevelopmentStrategyUpdate';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 

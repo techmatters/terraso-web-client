@@ -15,9 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useMemo } from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import ErrorIcon from '@mui/icons-material/Report.js';
+import ErrorIcon from '@mui/icons-material/Report';
 import {
   Box,
   FormHelperText,
@@ -27,8 +27,8 @@ import {
   Typography,
 } from '@mui/material';
 
-import HelperText from 'common/components/HelperText.js';
-import { parseError } from 'forms/yup.js';
+import HelperText from 'common/components/HelperText';
+import { parseError } from 'forms/yup';
 
 const FormFieldInput = props => {
   const {

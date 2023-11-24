@@ -15,12 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { act, fireEvent, render, screen, within } from 'tests/utils';
-import * as terrasoApi from 'terraso-client-shared/terrasoApi/api.js';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { mockTerrasoAPIrequestGraphQL } from 'tests/apiUtils';
 
-import { useAnalytics } from 'monitoring/analytics.js';
+import { useAnalytics } from 'monitoring/analytics';
 
-import StoryMapsToolsHome from './StoryMapsToolHome.js';
+import StoryMapsToolsHome from './StoryMapsToolHome';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 

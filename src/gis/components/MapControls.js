@@ -16,9 +16,9 @@
  */
 import { useEffect } from 'react';
 
-import mapboxgl from 'gis/mapbox.js';
+import mapboxgl from 'gis/mapbox';
 
-import { useMap } from './Map.js';
+import { useMap } from './Map';
 
 const MapControls = props => {
   const { showCompass, showZoom = true, visualizePitch } = props;

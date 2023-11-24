@@ -18,7 +18,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MenuItem, Select, Typography } from '@mui/material';
 
-import { useVisualizationContext } from 'sharedData/visualization/visualizationContext.js';
+import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 
 const ColumnSelect = props => {
   const { t } = useTranslation();

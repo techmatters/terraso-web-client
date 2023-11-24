@@ -16,12 +16,12 @@
  */
 import { act, fireEvent, render, screen, within } from 'tests/utils';
 import React from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 import * as SheetsJs from 'xlsx';
 
-import { VisualizationContext } from 'sharedData/visualization/visualizationContext.js';
+import { VisualizationContext } from 'sharedData/visualization/visualizationContext';
 
-import SetDatasetStep, { DatasetPreview } from './SetDatasetStep.js';
+import SetDatasetStep, { DatasetPreview } from './SetDatasetStep';
 
 function mockCSVProps(headers, rows) {
   const sheet = SheetsJs.utils.aoa_to_sheet([headers, ...rows]);

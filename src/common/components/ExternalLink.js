@@ -17,7 +17,7 @@
 import React, { useCallback } from 'react';
 import { Link } from '@mui/material';
 
-import { useAnalytics } from 'monitoring/analytics.js';
+import { useAnalytics } from 'monitoring/analytics';
 
 // Link for external resources. It handles opening it on a new
 // tab and tracking the analytics event.

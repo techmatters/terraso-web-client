@@ -16,7 +16,7 @@
  */
 import { useEffect } from 'react';
 
-import { useMap } from './Map.js';
+import { useMap } from './Map';
 
 const Layer = props => {
   const { id, layer, images } = props;

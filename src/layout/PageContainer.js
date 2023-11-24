@@ -15,11 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-import _ from 'lodash/fp.js';
+import _ from 'lodash/fp';
 
-import { usePathParams } from 'navigation/components/Routes.js';
+import { usePathParams } from 'navigation/components/Routes';
 
-import Container from './Container.js';
+import Container from './Container';
 
 const PageContainer = props => {
   const { showBreadcrumbs } = usePathParams();

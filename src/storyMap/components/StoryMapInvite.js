@@ -19,15 +19,15 @@ import { jwtDecode } from 'jwt-decode';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { addMessage } from 'terraso-client-shared/notifications/notificationsSlice.js';
-import { useFetchData } from 'terraso-client-shared/store/utils.js';
+import { addMessage } from 'terraso-client-shared/notifications/notificationsSlice';
+import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Alert } from '@mui/material';
 
-import { useDocumentTitle } from 'common/document.js';
-import PageContainer from 'layout/PageContainer.js';
-import PageLoader from 'layout/PageLoader.js';
-import { useAnalytics } from 'monitoring/analytics.js';
-import { approveMembershipToken } from 'storyMap/storyMapSlice.js';
+import { useDocumentTitle } from 'common/document';
+import PageContainer from 'layout/PageContainer';
+import PageLoader from 'layout/PageLoader';
+import { useAnalytics } from 'monitoring/analytics';
+import { approveMembershipToken } from 'storyMap/storyMapSlice';
 
 const StoryMapInvite = () => {
   const { t } = useTranslation();
