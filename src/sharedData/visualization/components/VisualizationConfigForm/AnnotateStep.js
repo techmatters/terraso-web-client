@@ -33,6 +33,8 @@ import {
   ListItem,
   ListItemAvatar,
   OutlinedInput,
+  Paper,
+  TextareaAutosize,
   Typography,
 } from '@mui/material';
 
@@ -51,37 +53,6 @@ const VALIDATION_SCHEMA = yup
     mapTitle: yup.string().trim().required(),
   })
   .required();
-
-const FORM_FIELDS = [
-  {
-    name: 'mapTitle',
-    label: 'sharedData.form_step_annotate_map_title_label',
-  },
-  {
-    name: 'annotationTitle',
-    label: 'sharedData.form_step_annotate_annotation_title_label',
-    props: {
-      renderInput: ({ id, field }) => (
-        <ColumnSelect
-          showSelected
-          id={id}
-          field={field}
-          placeholder={
-            field.value
-              ? 'sharedData.form_step_annotate_annotation_title_empty_option'
-              : 'sharedData.form_step_annotate_annotation_title_placeholder'
-          }
-        />
-      ),
-    },
-  },
-  {
-    name: 'dataPoints',
-    props: {
-      renderInput: ({ field }) => <DataPoints field={field} />,
-    },
-  },
-];
 
 const DataPoints = props => {
   const { t } = useTranslation();
@@ -222,9 +193,64 @@ const DataPoints = props => {
 const AnnotateStep = props => {
   const { t } = useTranslation();
   const { onNext, onBack } = props;
-  const { visualizationConfig, getDataColumns } = useVisualizationContext();
+  const { visualizationConfig, getDataColumns, isMapFile } =
+    useVisualizationContext();
   const [updatedValues, setUpdatedValues] = useState();
   const { trigger } = useFormGetContext();
+
+  const formFields = useMemo(() => {
+    const titleField = {
+      name: 'mapTitle',
+      label: 'sharedData.form_step_annotate_map_title_label',
+    };
+    const descriptionField = {
+      name: 'mapDescription',
+      label: 'sharedData.form_step_annotate_map_description_label',
+      props: {
+        inputProps: {
+          inputComponent: TextareaAutosize,
+          inputProps: {
+            minRows: 1,
+          },
+        },
+      },
+    };
+    const annotationTitleField = {
+      name: 'annotationTitle',
+      label: 'sharedData.form_step_annotate_annotation_title_label',
+      props: {
+        renderInput: ({ id, field }) => (
+          <ColumnSelect
+            showSelected
+            id={id}
+            field={field}
+            placeholder={
+              field.value
+                ? 'sharedData.form_step_annotate_annotation_title_empty_option'
+                : 'sharedData.form_step_annotate_annotation_title_placeholder'
+            }
+          />
+        ),
+      },
+    };
+
+    const dataPointsField = {
+      name: 'dataPoints',
+      props: {
+        renderInput: ({ field }) => <DataPoints field={field} />,
+      },
+    };
+
+    if (isMapFile) {
+      return [titleField, descriptionField];
+    }
+    return [
+      titleField,
+      descriptionField,
+      annotationTitleField,
+      dataPointsField,
+    ];
+  }, [isMapFile]);
 
   const annotateConfig = useMemo(() => {
     const dataColumns = getDataColumns();
@@ -232,6 +258,10 @@ const AnnotateStep = props => {
     const currentAnnotateConfig = visualizationConfig.annotateConfig || {
       dataPoints: [],
     };
+
+    if (isMapFile) {
+      return currentAnnotateConfig;
+    }
     const toAdd = _.difference(
       dataColumns,
       currentAnnotateConfig.dataPoints.map(point => point.column)
@@ -245,7 +275,7 @@ const AnnotateStep = props => {
       ...currentAnnotateConfig,
       dataPoints: [...filtered, ...toAdd],
     };
-  }, [visualizationConfig.annotateConfig, getDataColumns]);
+  }, [visualizationConfig.annotateConfig, getDataColumns, isMapFile]);
 
   const onNextWrapper = useCallback(async () => {
     const success = await trigger?.();
@@ -262,30 +292,35 @@ const AnnotateStep = props => {
       nextLabel={t('sharedData.form_next')}
       onNext={onNextWrapper}
     >
-      <Grid container>
-        <Grid item container direction="column" xs={12} md={6}>
-          <Form
-            aria-labelledby="main-heading"
-            aria-describedby="visualization-annotate-step-description"
-            prefix="annotate-config"
-            localizationPrefix="sharedData.form_step_annotate_fields"
-            fields={FORM_FIELDS}
-            values={annotateConfig}
-            validationSchema={VALIDATION_SCHEMA}
-            isMultiStep
-            onChange={setUpdatedValues}
-          />
+      <Paper variant="outlined" sx={{ p: 2 }}>
+        <Grid container>
+          <Grid item container direction="column" xs={12} md={5}>
+            <Form
+              aria-labelledby="main-heading"
+              aria-describedby="visualization-annotate-step-description"
+              prefix="annotate-config"
+              localizationPrefix="sharedData.form_step_annotate_fields"
+              fields={formFields}
+              values={annotateConfig}
+              validationSchema={VALIDATION_SCHEMA}
+              isMultiStep
+              onChange={setUpdatedValues}
+              gridContainerProps={{
+                sx: { width: '100%' },
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} md={7}>
+            <VisualizationPreview
+              showPopup
+              customConfig={{
+                annotateConfig: updatedValues,
+              }}
+              sampleSize={1}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <VisualizationPreview
-            showPopup
-            customConfig={{
-              annotateConfig: updatedValues,
-            }}
-            sampleSize={1}
-          />
-        </Grid>
-      </Grid>
+      </Paper>
     </StepperStep>
   );
 };

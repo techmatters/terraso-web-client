@@ -23,8 +23,8 @@ import { useVisualizationContext } from 'sharedData/visualization/visualizationC
 const ColumnSelect = props => {
   const { t } = useTranslation();
   const { id, field, fieldState, placeholder, showSelected = false } = props;
-  const { sheetContext, getDataColumns } = useVisualizationContext();
-  const { headers } = sheetContext;
+  const { fileContext, getDataColumns } = useVisualizationContext();
+  const { headers } = fileContext;
 
   const options = useMemo(
     () => (showSelected ? getDataColumns() : headers),

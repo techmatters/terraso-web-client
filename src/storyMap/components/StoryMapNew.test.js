@@ -17,11 +17,24 @@
 import { act, fireEvent, render, screen } from 'tests/utils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
+import { useAnalytics } from 'monitoring/analytics';
+
 import StoryMapNew from './StoryMapNew';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
 jest.mock('./StoryMap', () => props => <div>Test</div>);
+
+jest.mock('monitoring/analytics', () => ({
+  ...jest.requireActual('monitoring/analytics'),
+  useAnalytics: jest.fn(),
+}));
+
+beforeEach(() => {
+  useAnalytics.mockReturnValue({
+    trackEvent: jest.fn(),
+  });
+});
 
 test('StoryMapNew: Renders editor', async () => {
   await render(<StoryMapNew />);
@@ -35,10 +48,26 @@ test('StoryMapNew: Renders editor', async () => {
 });
 
 test('StoryMapNew: Save', async () => {
+  const trackEvent = jest.fn();
+  useAnalytics.mockReturnValue({
+    trackEvent,
+  });
+
+  terrasoApi.request.mockResolvedValue({
+    id: 'story-map-id-1',
+  });
+
   await render(<StoryMapNew />);
 
   const saveButton = screen.getByRole('button', { name: 'Save draft' });
   await act(async () => fireEvent.click(saveButton));
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+
+  expect(trackEvent).toHaveBeenCalledWith('storymap.saveDraft', {
+    props: {
+      'ILM Output': 'Landscape Narratives',
+      map: 'story-map-id-1',
+    },
+  });
 });

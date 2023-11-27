@@ -33,7 +33,7 @@ function mockCSVProps(headers, rows) {
   const selectedFile = { id: 1 };
   return {
     visualizationConfig: { selectedFile },
-    sheetContext: {
+    fileContext: {
       selectedFile,
       sheet,
       headers,
@@ -110,7 +110,7 @@ test('SetDatasetStep: Longitude and latitude auto detected', async () => {
 
   await act(async () =>
     fireEvent.mouseDown(
-      screen.getByRole('button', { name: 'Latitude (required)' })
+      screen.getByRole('combobox', { name: 'Latitude (required)' })
     )
   );
   const latitudeList = screen.getByRole('listbox', {
@@ -131,7 +131,7 @@ test('SetDatasetStep: Longitude and latitude auto detected', async () => {
 
   await act(async () =>
     fireEvent.mouseDown(
-      screen.getByRole('button', { name: 'Longitude (required)' })
+      screen.getByRole('combobox', { name: 'Longitude (required)' })
     )
   );
   expect(

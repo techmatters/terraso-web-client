@@ -153,8 +153,25 @@ export const fetchSharedData = ({
     .then(edges => edges.map(edge => extractDataEntry(edge.node)));
 };
 
+export const fetchSharedDataWithGeojson = ({ id }) => {
+  const query = graphql(`
+    query dataEntryWithGeojson($id: ID!) {
+      dataEntry(id: $id) {
+        ...dataEntry
+        geojson
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, { id })
+    .then(_.get('dataEntry'))
+    .then(dataEntry => dataEntry || Promise.reject('not_found'))
+    .then(extractDataEntry);
+};
+
 export const addVisualizationConfig = ({
   title,
+  description,
   ownerId,
   ownerType,
   selectedFile,
@@ -179,6 +196,7 @@ export const addVisualizationConfig = ({
     .requestGraphQL(query, {
       input: {
         title,
+        description,
         configuration,
         dataEntryId: selectedFile.id,
         ownerId,

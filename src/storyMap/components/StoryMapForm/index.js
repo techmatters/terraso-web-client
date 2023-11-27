@@ -90,8 +90,16 @@ const StoryMapForm = props => {
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
   const { onPublish, onSaveDraft } = props;
   const { saving } = useSelector(_.get('storyMap.form'));
-  const { config, setConfig, preview, init, mediaFiles, saved, isDirty } =
-    useStoryMapConfigContext();
+  const {
+    storyMap,
+    config,
+    setConfig,
+    preview,
+    init,
+    mediaFiles,
+    saved,
+    isDirty,
+  } = useStoryMapConfigContext();
   const [mapHeight, setMapHeight] = useState();
   const [mapWidth, setMapWidth] = useState();
   const [currentStepId, setCurrentStepId] = useState();
@@ -197,6 +205,7 @@ const StoryMapForm = props => {
         trackEvent('storymap.chapter.move', {
           props: {
             distance: toIndex - fromIndex,
+            map: storyMap.id,
           },
         });
         return {
@@ -205,7 +214,7 @@ const StoryMapForm = props => {
         };
       });
     },
-    [setConfig, trackEvent]
+    [setConfig, trackEvent, storyMap]
   );
 
   const onPublishWrapper = useCallback(() => {

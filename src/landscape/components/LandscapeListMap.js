@@ -24,6 +24,7 @@ import { getLandscapePin } from 'landscape/landscapeUtils';
 import './LandscapeListMap.css';
 
 import { useTranslation } from 'react-i18next';
+import { isValidLatitude, isValidLongitude } from 'terraso-client-shared/utils';
 import { Typography } from '@mui/material';
 
 import RouterLink from 'common/components/RouterLink';
@@ -31,7 +32,6 @@ import { countryNameForCode } from 'common/countries';
 import Map, { useMap as useMapboxContext } from 'gis/components/Map';
 import MapControls from 'gis/components/MapControls';
 import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
-import { isValidLatitude, isValidLongitude } from 'gis/gisUtils';
 
 import { MAPBOX_LANDSCAPE_DIRECTORY_STYLE } from 'config';
 

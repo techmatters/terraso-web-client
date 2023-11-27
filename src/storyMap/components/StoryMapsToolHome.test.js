@@ -244,5 +244,7 @@ test('StoryMapsToolHome: accept story map invite', async () => {
     fireEvent.click(acceptButton);
   });
 
-  expect(trackEvent).toHaveBeenCalledWith('storymap.share.accept');
+  expect(trackEvent).toHaveBeenCalledWith('storymap.share.accept', {
+    props: { map: 'id-1' },
+  });
 });

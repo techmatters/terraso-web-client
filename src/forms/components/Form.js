@@ -51,6 +51,7 @@ const Form = props => {
     isMultiStep,
     onChange,
     filterField,
+    gridContainerProps = {},
   } = props;
   const setFormContext = useFormSetContext();
 
@@ -172,6 +173,7 @@ const Form = props => {
           borderStyle: 'solid',
           borderColor: 'cardBorder',
         }}
+        {...gridContainerProps}
       >
         {fields
           .filter(field =>

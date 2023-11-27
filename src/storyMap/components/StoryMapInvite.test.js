@@ -98,7 +98,9 @@ test('StoryMapInvite: Valid token', async () => {
     '/tools/story-maps/story-map-id-1/hello-world/edit',
   ]);
 
-  expect(trackEvent).toHaveBeenCalledWith('storymap.share.accept');
+  expect(trackEvent).toHaveBeenCalledWith('storymap.share.accept', {
+    props: { map: 'story-map-id-1' },
+  });
 });
 
 test('StoryMapInvite: Invalid token', async () => {

@@ -72,8 +72,8 @@ const StoryMapUpdate = props => {
 
     trackEvent(event, {
       props: {
-        url: `${window.location.origin}${url}`,
         [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
+        map: storyMap.id,
       },
     });
     if (published) {
@@ -103,8 +103,10 @@ const StoryMapUpdate = props => {
           const slug = _.get('payload.slug', data);
           const storyMapId = _.get('payload.story_map_id', data);
           const title = _.get('payload.title', data);
+          const id = _.get('payload.id', data);
 
           setSaved({
+            id,
             title,
             slug,
             storyMapId,

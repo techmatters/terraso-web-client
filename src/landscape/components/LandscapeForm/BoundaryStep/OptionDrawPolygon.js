@@ -137,16 +137,16 @@ const OptionDrawPolygon = props => {
         <Trans i18nKey="landscape.form_boundary_draw_polygon_description">
           <Typography>
             first
+            <LayersIcon
+              aria-label={t('gis.map_draw.draw.toolbar.buttons.polygon')}
+              sx={{ fontSize: 20, verticalAlign: 'middle' }}
+            />
+            third
             <Box
               component="img"
               src={drawPolygonIcon}
               aria-label={t('landscape.form_boundary_map_basemap_label')}
               sx={{ verticalAlign: 'middle' }}
-            />
-            third
-            <LayersIcon
-              aria-label={t('gis.map_draw.draw.toolbar.buttons.polygon')}
-              sx={{ fontSize: 20, verticalAlign: 'middle' }}
             />
           </Typography>
         </Trans>

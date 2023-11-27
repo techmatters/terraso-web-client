@@ -49,6 +49,7 @@ export const visualizationConfig = /* GraphQL */ `
   fragment visualizationConfig on VisualizationConfigNode {
     id
     title
+    description
     slug
     createdAt
     createdBy {

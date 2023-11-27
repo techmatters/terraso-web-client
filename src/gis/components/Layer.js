@@ -19,25 +19,48 @@ import { useEffect } from 'react';
 import { useMap } from './Map';
 
 const Layer = props => {
-  const { id, layer, images } = props;
-  const { map, addLayer, addImage } = useMap();
+  const { id, layer, images, events } = props;
+  const { map, addLayer, removeLayer, addImage, removeImage } = useMap();
 
   useEffect(() => {
     if (!map) {
       return;
     }
 
-    const mapLayer = map.getLayer(id);
-    if (!mapLayer) {
-      images?.forEach(image => {
-        addImage(image.name, image.content);
-      });
-      addLayer({
-        id,
-        ...layer,
-      });
+    if (map.getLayer(id)) {
+      removeLayer(id);
     }
-  }, [id, map, addLayer, images, addImage, layer]);
+
+    images?.forEach(image => {
+      if (map.hasImage(image.name)) {
+        removeImage(image.name);
+      }
+      addImage(image.name, image.content);
+    });
+    addLayer({
+      id,
+      ...layer,
+    });
+
+    for (const index in events) {
+      const eventGenerator =
+        typeof events[index] === 'function'
+          ? events[index]
+          : () => events[index];
+      const eventParams = eventGenerator(map);
+      map.on(...eventParams);
+    }
+  }, [
+    id,
+    map,
+    addLayer,
+    images,
+    addImage,
+    layer,
+    events,
+    removeLayer,
+    removeImage,
+  ]);
 };
 
 export default Layer;

@@ -18,15 +18,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  Alert,
-  Button,
-  CircularProgress,
-  Link,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Alert, Button, Link, Paper, Stack, Typography } from '@mui/material';
 
 import { daysSince } from 'timeUtils';
 
@@ -109,7 +101,19 @@ const VisualizationWrapper = props => {
 
   const handleDownloadPng = useCallback(() => {
     imagePrinter(mapTitle);
-  }, [imagePrinter, mapTitle]);
+    trackEvent('map.png', {
+      props: {
+        owner: owner.name,
+        fileID: visualizationConfig?.selectedFile.id,
+      },
+    });
+  }, [
+    imagePrinter,
+    mapTitle,
+    owner,
+    trackEvent,
+    visualizationConfig?.selectedFile,
+  ]);
 
   const onDelete = useCallback(() => {
     dispatch(deleteVisualizationConfig(data)).then(response => {
@@ -136,7 +140,10 @@ const VisualizationWrapper = props => {
         <VisualizationContext.Consumer>
           {({ loadingFile, loadingFileError }) => (
             <>
-              <PageHeader header={mapTitle} />
+              <PageHeader
+                header={mapTitle}
+                typographyProps={{ sx: { mb: 3 } }}
+              />
               <Restricted
                 permission="visualization.delete"
                 resource={{ owner, visualizationConfig: data }}
@@ -167,9 +174,6 @@ const VisualizationWrapper = props => {
                 sx={{ p: 2 }}
                 spacing={2}
               >
-                {(loadingFile || fetching) && (
-                  <CircularProgress aria-label={t('common.loader_label')} />
-                )}
                 {loadingFileError && (
                   <Alert severity="error">
                     {t('sharedData.visualization_file_load_error', {
@@ -177,30 +181,33 @@ const VisualizationWrapper = props => {
                     })}
                   </Alert>
                 )}
-                {!(loadingFile || loadingFileError || fetching) && (
+                {!(loadingFileError || fetching) && (
                   <Visualization useConfigBounds>
                     <MapExport onImagePrinterChange={setImagePrinter} />
                   </Visualization>
                 )}
                 {!fetching && (
-                  <Trans
-                    i18nKey="sharedData.visualization_source_data"
-                    values={{
-                      date: formatDate(i18n.resolvedLanguage, data.createdAt),
-                      user: t('user.full_name', { user: data.createdBy }),
-                      file: data.dataEntry,
-                    }}
-                  >
-                    <Typography sx={{ fontWeight: 600 }}>
-                      Source data:
-                      <Link
-                        href={data.dataEntry.url}
-                        onClick={handleDownload(data.dataEntry)}
-                      >
-                        File
-                      </Link>
-                    </Typography>
-                  </Trans>
+                  <>
+                    <Typography sx={{ mt: 2 }}>{data?.description}</Typography>
+                    <Trans
+                      i18nKey="sharedData.visualization_source_data"
+                      values={{
+                        date: formatDate(i18n.resolvedLanguage, data.createdAt),
+                        user: t('user.full_name', { user: data.createdBy }),
+                        file: data.dataEntry,
+                      }}
+                    >
+                      <Typography sx={{ fontWeight: 600 }}>
+                        Source data:
+                        <Link
+                          href={data.dataEntry.url}
+                          onClick={handleDownload(data.dataEntry)}
+                        >
+                          File
+                        </Link>
+                      </Typography>
+                    </Trans>
+                  </>
                 )}
               </Stack>
               {!(loadingFile || loadingFileError || fetching) && (

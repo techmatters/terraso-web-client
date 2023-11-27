@@ -138,6 +138,10 @@ test('StoryMapUpdate: Renders editor', async () => {
 });
 
 test('StoryMapUpdate: Save', async () => {
+  const trackEvent = jest.fn();
+  useAnalytics.mockReturnValue({
+    trackEvent,
+  });
   terrasoApi.requestGraphQL.mockResolvedValue({
     storyMaps: {
       edges: [
@@ -153,6 +157,13 @@ test('StoryMapUpdate: Save', async () => {
   await act(async () => fireEvent.click(saveButton));
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+
+  expect(trackEvent).toHaveBeenCalledWith('storymap.saveDraft', {
+    props: {
+      'ILM Output': 'Landscape Narratives',
+      map: '2b8b8352-2d41-4c92-9b97-0d5eb019d5ee',
+    },
+  });
 });
 
 test('StoryMapUpdate: Show Share Dialog', async () => {
@@ -265,6 +276,7 @@ test('StoryMapUpdate: Share Dialog invite members', async () => {
   expect(trackEvent).toHaveBeenCalledWith('storymap.share.invite', {
     props: {
       count: 2,
+      map: '2b8b8352-2d41-4c92-9b97-0d5eb019d5ee',
     },
   });
 });
@@ -317,7 +329,9 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
     },
   });
 
-  expect(trackEvent).toHaveBeenCalledWith('storymap.share.remove');
+  expect(trackEvent).toHaveBeenCalledWith('storymap.share.remove', {
+    props: { map: '2b8b8352-2d41-4c92-9b97-0d5eb019d5ee' },
+  });
 });
 
 test('StoryMapUpdate: See story map as editor', async () => {

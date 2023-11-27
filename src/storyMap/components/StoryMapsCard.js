@@ -108,7 +108,11 @@ const StoryMapListItem = props => {
         const storyMapId = data.payload.storyMap.storyMapId;
         const storyMapSlug = data.payload.storyMap.slug;
         navigate(`/tools/story-maps/${storyMapId}/${storyMapSlug}/edit`);
-        trackEvent('storymap.share.accept');
+        trackEvent('storymap.share.accept', {
+          props: {
+            map: storyMap.id,
+          },
+        });
       }
     });
   }, [dispatch, navigate, trackEvent, storyMap, accountMembership]);

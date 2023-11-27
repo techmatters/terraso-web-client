@@ -54,8 +54,8 @@ const setup = async () => {
     name: 'Description (required)',
   });
   const website = screen.getByRole('textbox', { name: 'Website' });
-  const location = screen.getByRole('button', {
-    name: 'Country or region (required) Landscape location',
+  const location = screen.getByRole('combobox', {
+    name: 'Country or region (required)',
   });
 
   const changeLocation = async newLocation => {

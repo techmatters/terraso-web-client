@@ -16,9 +16,7 @@
  */
 import bbox from '@turf/bbox';
 import _ from 'lodash/fp';
-
-export const isValidLatitude = lat => lat >= -90 && lat <= 90;
-export const isValidLongitude = lng => lng >= -180 && lng <= 180;
+import { isValidLatitude, isValidLongitude } from 'terraso-client-shared/utils';
 
 // From: https://gis.stackexchange.com/a/303362
 export const normalizeLongitude = lng => (((lng % 360) + 540) % 360) - 180;

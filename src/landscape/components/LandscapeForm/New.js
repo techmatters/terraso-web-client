@@ -231,7 +231,12 @@ const LandscapeNew = () => {
       <Typography variant="h1" sx={visuallyHidden} id="landscape-page-title">
         {t('landscape.form_new_document_title')}
       </Typography>
-      <Stepper steps={steps} ariaLabel="landscape-page-title" />
+      <Stepper
+        steps={steps}
+        listProps={{
+          'aria-labelledby': 'landscape-page-title',
+        }}
+      />
     </PageContainer>
   );
 };

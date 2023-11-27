@@ -103,10 +103,16 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
     setTerrain: jest.fn(),
     fitBounds: jest.fn(),
     hasImage: jest.fn(),
+    setPadding: jest.fn(),
     dragRotate: { disable: jest.fn() },
     touchZoomRotate: { disableRotation: jest.fn() },
   };
   mapboxgl.Map.mockReturnValue(map);
+  map.getSource.mockReturnValueOnce();
+  map.getSource.mockReturnValueOnce({
+    setData: jest.fn(),
+    loaded: jest.fn().mockReturnValue(true),
+  });
   useParams.mockReturnValue({
     groupSlug: 'slug-1',
     configSlug: 'config-slug',
@@ -147,6 +153,7 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
             {
               node: {
                 title: 'Test Title',
+                description: 'Test Description',
                 configuration: JSON.stringify({
                   datasetConfig: {
                     dataColumns: {
@@ -232,17 +239,38 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
     screen.getByRole('heading', { name: 'Test Title' })
   ).toBeInTheDocument();
 
+  expect(screen.getByText('Test Description')).toBeInTheDocument();
+
   // Map
   await waitFor(() => expect(map.addSource).toHaveBeenCalledTimes(1));
   expect(map.addSource.mock.calls[0][0]).toEqual('visualization');
   const geojson = map.addSource.mock.calls[0][1].data;
   expect(geojson.features.length).toBe(3);
 
-  expect(map.addLayer).toHaveBeenCalledTimes(3);
-  expect(map.addLayer.mock.calls[2][0]).toMatchObject({ id: 'visualization' });
+  expect(map.addLayer).toHaveBeenCalledWith(
+    expect.objectContaining({
+      id: 'visualization-markers',
+      source: 'visualization',
+    }),
+    undefined
+  );
+  expect(map.addLayer).toHaveBeenCalledWith(
+    expect.objectContaining({
+      id: 'visualization-polygons-outline',
+      source: 'visualization',
+    }),
+    undefined
+  );
+  expect(map.addLayer).toHaveBeenCalledWith(
+    expect.objectContaining({
+      id: 'visualization-polygons-fill',
+      source: 'visualization',
+    }),
+    undefined
+  );
 
   await act(async () =>
-    events['click:visualization']({
+    events['click:visualization-markers']({
       features: [geojson.features[1]],
       lngLat: {
         lng: 0,
