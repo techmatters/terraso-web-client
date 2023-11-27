@@ -75,9 +75,9 @@
     "test-debug": "npm run generate-types && react-scripts --inspect-brk test --runInBand --no-cache",
     "test-coverage": "npm run generate-types && react-scripts test --coverage --changedSince=origin/main --watchAll=falsed",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "localization-to-po": "node scripts/localization/transform-to.js po",
-    "localization-to-json": "node scripts/localization/transform-to.js json",
-    "localization-check-missing": "node scripts/localization/missing-check.js",
+    "localization-to-po": "node scripts/localization/transform-to.mjs po",
+    "localization-to-json": "node scripts/localization/transform-to.mjs json",
+    "localization-check-missing": "node scripts/localization/missing-check.mjs",
     "eject": "react-scripts eject"
   },
   "browserslist": [
@@ -101,7 +101,7 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-lodash-fp": "^2.2.0-a1",
     "eslint-plugin-prettier": "^5.0.1",
-    "flat": "^5.0.2",
+    "flat": "^6.0.1",
     "i18next-conv": "^14.0.0",
     "jest-axe": "^8.0.0",
     "plausible-tracker": "^0.3.8",

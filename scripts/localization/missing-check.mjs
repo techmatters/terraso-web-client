@@ -15,28 +15,28 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-const { readFile } = require('fs').promises;
-const path = require('path');
-const flat = require('flat');
-const _ = require('lodash/fp');
+import { readFile } from 'fs/promises';
+import path from 'path';
+import { flatten } from 'flat';
+import _ from 'lodash/fp.js';
 
-const { filesInFolder } = require('./utils');
+import { filesInFolder } from './utils.mjs';
 
 const SOURCE_LOCALE = 'en-US';
 
-const LOCALE_FILES_FOLDER = path.join(
-  __dirname,
-  '../../src/localization/locales/'
+const LOCALE_FILES_FOLDER = new URL(
+  '../../src/localization/locales/',
+  import.meta.url
 );
 
 const getKeys = content => {
   const json = JSON.parse(content);
-  const keys = Object.keys(flat(json));
+  const keys = Object.keys(flatten(json));
   return keys;
 };
 
 const checkMissingKeys = () =>
-  readFile(path.join(LOCALE_FILES_FOLDER, `${SOURCE_LOCALE}.json`))
+  readFile(new URL(`${SOURCE_LOCALE}.json`, LOCALE_FILES_FOLDER))
     // Get source locale keys
     .then(sourceContent => getKeys(sourceContent))
     // Get all locale files
@@ -53,7 +53,7 @@ const checkMissingKeys = () =>
                 return null;
               }
               console.log(
-                `Missing keys for ${path.parse(filePath).name}.`,
+                `Missing keys for ${path.parse(filePath.pathname).name}.`,
                 'Missing:',
                 localeDiff
               );
