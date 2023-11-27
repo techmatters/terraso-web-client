@@ -20,7 +20,7 @@ import { writeFile } from 'fs/promises';
 import path from 'path';
 import { gettextToI18next, i18nextToPo } from 'i18next-conv';
 
-import { filesInFolder } from './utils.js';
+import { filesInFolder } from './utils.mjs';
 
 // Script arguments
 const args = process.argv.slice(2);
