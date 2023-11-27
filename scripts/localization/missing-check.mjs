@@ -20,7 +20,7 @@ import path from 'path';
 import { flatten } from 'flat';
 import _ from 'lodash/fp.js';
 
-import { filesInFolder } from './utils.js';
+import { filesInFolder } from './utils.mjs';
 
 const SOURCE_LOCALE = 'en-US';
 
