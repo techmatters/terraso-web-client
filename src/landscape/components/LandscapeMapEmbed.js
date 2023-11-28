@@ -36,7 +36,7 @@ const LandscapeDescriptionPopup = ({ landscape }) => {
       <Typography variant="body2">{landscape.data.description}</Typography>
       <Typography variant="body2">
         <ExternalLink href={`/landscapes/${landscape.data.slug}/profile`}>
-          {t('landscape.map_profile_link_text')}
+          {t('landscape.map_profile_link_text', { name: landscape.data.name })}
         </ExternalLink>
       </Typography>
     </>
