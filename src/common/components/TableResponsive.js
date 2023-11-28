@@ -18,7 +18,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import Highlighter from 'react-highlight-words';
 import { useTranslation } from 'react-i18next';
-import { cleanSensitiveCharacters } from 'stringUtils';
+import { normalizeText } from 'terraso-client-shared/utils';
 import { useDebounce } from 'use-debounce';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
@@ -167,9 +167,8 @@ const Cards = props => {
 };
 
 const indexOfMatchPartial = query => {
-  const cleanedQuery = cleanSensitiveCharacters(query);
-  return fieldValue =>
-    cleanSensitiveCharacters(fieldValue).indexOf(cleanedQuery);
+  const cleanedQuery = normalizeText(query);
+  return fieldValue => normalizeText(fieldValue).indexOf(cleanedQuery);
 };
 
 const getHighlightLimits = ({ textToHighlight, searchWords }) => {
