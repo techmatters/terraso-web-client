@@ -337,7 +337,7 @@
         "boundaries_document_description": "Actualiza la frontera geográfica del paisaje “{{name}}”",
         "list_column_actions_description": "Acciones",
         "view_map_title": "Mapa del paisaje",
-        "map_profile_link_text": "View profile del {{name}}",
+        "map_profile_link_text": "Ver el perfil de {{name}}",
         "boundaries_title": "Actualiza la información geográfica del {{name}}",
         "boundaries_help_geojson": "¿No tienes un archivo GeoJSON?",
         "boundaries_help_geojson_detail": "<1>Aprende a crear uno</1>.",
