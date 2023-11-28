@@ -334,6 +334,7 @@
         "boundaries_document_description": "Updated the boundary of the “{{name}}” landscape",
         "list_column_actions_description": "Actions",
         "view_map_title": "Landscape map",
+        "map_profile_link_text": "View profile",
         "boundaries_title": "Update {{name}}’s boundaries",
         "boundaries_help_geojson": "Don’t have a GeoJSON file?",
         "boundaries_help_geojson_detail": "<1>Learn how to create one</1>.",
