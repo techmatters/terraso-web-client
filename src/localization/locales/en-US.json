@@ -148,7 +148,7 @@
         "home_explore_label": "Explore more tools",
         "go_to": "Go to {{tool}}",
         "learn_more": "Learn more about {{tool}}",
-        "description": "Use this tool to",
+        "description": "Use this tool to:",
         "actions_bookmark": "Bookmark",
         "actions_recommend": "Recommend this to my team",
         "list_document_title": "Tools",
