@@ -184,11 +184,11 @@
                 "src": "tools/landscale-screenshot.png"
             },
             "description": [
-                "Assess landscape sustainability performance",
-                "Validate results through LandScale validation and local review",
-                "Publish results on the LandScale platform"
+                "Evaluar el desempeño de la sostenibilidad del paisaje",
+                "Validar resultados mediante validación LandScale y revisión local",
+                "Publicar resultados en la plataforma LandScale"
             ],
-            "requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
+            "requirements": "Navegador web moderno (Chrome, Edge, Firefox, Safari)",
             "external": "true"
         },
         "storyMap": {
