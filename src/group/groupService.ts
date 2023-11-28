@@ -15,12 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-import { cleanSensitiveCharacters } from 'stringUtils';
 import {
   extractAccountMembership,
   extractMembersInfo,
 } from 'terraso-client-shared/memberships/membershipsUtils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import { normalizeText } from 'terraso-client-shared/utils';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
 import { extractDataEntries } from 'sharedData/sharedDataUtils';
@@ -154,7 +154,7 @@ export const fetchGroupsAutocompleteList = () => {
       .then(groups => groups.map(group => group.node))
       // eslint-disable-next-line lodash-fp/no-extraneous-function-wrapping
       .then(groups =>
-        _.orderBy([group => cleanSensitiveCharacters(group.name)], [], groups)
+        _.orderBy([group => normalizeText(group.name)], [], groups)
       )
   );
 };

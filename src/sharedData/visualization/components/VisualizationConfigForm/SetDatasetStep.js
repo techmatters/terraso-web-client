@@ -17,7 +17,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { cleanSensitiveCharacters } from 'stringUtils';
+import { normalizeText } from 'terraso-client-shared/utils';
 import * as SheetsJs from 'xlsx';
 import * as yup from 'yup';
 import CloseIcon from '@mui/icons-material/Close';
@@ -224,7 +224,7 @@ const getColumnMatch = scores => {
 };
 
 const identifyLatLngColumns = headers => {
-  const cleanedHeaders = headers.map(cleanSensitiveCharacters);
+  const cleanedHeaders = headers.map(normalizeText);
   const latScores = cleanedHeaders.map((header, index) => ({
     score: getScore(LAT_COLUMN_OPTIONS, header),
     index,
