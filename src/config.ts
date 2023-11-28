@@ -113,7 +113,6 @@ export const DOCUMENT_ACCEPTED_TYPES = {
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': [
     '.docx',
   ],
-  'application/xml': ['.gpx'],
 };
 
 export const MEDIA_ACCEPTED_TYPES = {
