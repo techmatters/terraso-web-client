@@ -189,13 +189,13 @@ test('LandscapeNew: Save from GeoJSON', async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a map file. Accepted file formats: GeoJSON, JSON, KML, KMZ, ESRI Shapefile',
+        name: 'Upload a map file. Accepted file formats: GeoJSON, GPX, JSON, KML, KMZ, ESRI Shapefile',
       })
     )
   );
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.geojson, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB',
+    name: 'Select File Accepted file formats: *.geojson, *.gpx, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB',
   });
 
   const file = new File([GEOJSON_STRING], 'test.json', {
@@ -219,7 +219,7 @@ test('LandscapeNew: Save from GeoJSON', async () => {
   await waitFor(async () => {
     expect(
       await screen.findByRole('button', {
-        name: 'Select File Accepted file formats: *.geojson, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB test.json 804 B',
+        name: 'Select File Accepted file formats: *.geojson, *.gpx, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB test.json 804 B',
       })
     ).toBeInTheDocument();
   });
