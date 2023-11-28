@@ -26,7 +26,7 @@ import ToolCard from 'tool/components/ToolCard';
 const ToolList = () => {
   const { t } = useTranslation();
 
-  const toolList = ['storyMap', 'kobo'];
+  const toolList = ['storyMap', 'kobo', 'landscale'];
 
   useDocumentTitle(t('tool.list_document_title'));
   useDocumentDescription(t('tool.list_document_description'));
