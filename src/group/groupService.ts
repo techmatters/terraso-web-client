@@ -16,6 +16,7 @@
  */
 import _ from 'lodash/fp';
 import type { User } from 'terraso-client-shared/account/accountSlice';
+import { extractMembership } from 'terraso-client-shared/collaboration/membershipsUtils';
 import {
   CollaborationMembershipFieldsFragment,
   GroupMembershipDeleteMutationInput,
