@@ -53,20 +53,13 @@ const ToolIconAndLink = ({ tool, title, external }) => {
       }}
     />
   );
+  const LinkComponent = external ? ExternalLink : Link;
 
   return (
     <React.Fragment>
-      {external ? (
-        <ExternalLink href={toolUrl}>{toolIcon}</ExternalLink>
-      ) : (
-        <Link href={toolUrl}>{toolIcon}</Link>
-      )}
+      <LinkComponent href={toolUrl}>{toolIcon}</LinkComponent>
       <p>
-        {external ? (
-          <ExternalLink href={toolUrl}>{toolText}</ExternalLink>
-        ) : (
-          <Link href={toolUrl}>{toolText}</Link>
-        )}
+        <LinkComponent href={toolUrl}>{toolText}</LinkComponent>
         {external && (
           <LaunchIcon
             sx={{
@@ -98,7 +91,8 @@ const ToolCard = ({ tool }) => {
     attributes['aria-label'] = pronunciation;
   }
 
-  const isToolExternal = t(`tools.${tool}.external`) === 'true';
+  const external = t(`tools.${tool}.external`) === 'true';
+  const LinkComponent = external ? ExternalLink : Link;
 
   return (
     <React.Fragment>
@@ -138,9 +132,9 @@ const ToolCard = ({ tool }) => {
 
             {learnMoreUrl && (
               <Typography sx={{ mt: '1em' }}>
-                {isToolExternal ? (
-                  <ExternalLink href={learnMoreUrl}>
-                    {t('tool.learn_more', { tool: toolTitle })}
+                <LinkComponent href={learnMoreUrl}>
+                  {t('tool.learn_more', { tool: toolTitle })}
+                  {external && (
                     <LaunchIcon
                       sx={{
                         paddingLeft: 1,
@@ -149,22 +143,14 @@ const ToolCard = ({ tool }) => {
                         verticalAlign: '-0.2rem',
                       }}
                     />
-                  </ExternalLink>
-                ) : (
-                  <Link href={t('tool.learn_more')}>
-                    {t('tool.learn_more', { tool: toolTitle })}
-                  </Link>
-                )}
+                  )}
+                </LinkComponent>
               </Typography>
             )}
           </section>
 
           <section>
-            <ToolIconAndLink
-              tool={tool}
-              title={toolTitle}
-              external={isToolExternal}
-            />
+            <ToolIconAndLink tool={tool} title={toolTitle} external />
           </section>
         </Stack>
       </Card>
