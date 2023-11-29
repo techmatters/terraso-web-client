@@ -67,6 +67,7 @@ const ToolIconAndLink = ({ tool, title, external }) => {
               height: '1.2rem',
               width: '1.2rem',
               verticalAlign: 'bottom',
+              color: theme.palette.link,
             }}
           />
         )}
