@@ -1045,7 +1045,7 @@
         "members_list_pending_approve": "Approve",
         "members_list_pending_confirmation_title": "Deny membership request?",
         "members_list_pending_confirmation_message": "Do you want to reject {{userName}}’s request for membership in {{name}}?",
-        "members_list_pending_confirmation_button": "Deny Request",
+        "members_list_pending_confirmation_button": "Reject Request",
         "members_list_pending_reject": "Deny",
         "members_list_title": "Current Members",
         "members_list_role_select_label": "Role",
