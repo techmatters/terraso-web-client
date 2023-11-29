@@ -71,6 +71,7 @@ export const MAX_DESCRIPTION_LENGTH = 600;
 
 export const MAP_DATA_ACCEPTED_TYPES_NAMES = [
   'GeoJSON',
+  'GPX',
   'JSON',
   'KML',
   'KMZ',
@@ -85,6 +86,7 @@ const getTypesExtensions = (types: Record<string, string[]>) =>
 
 export const MAP_DATA_ACCEPTED_TYPES = {
   'application/json': ['.json', '.geojson'],
+  'application/gpx': ['.gpx'],
   'application/xml': ['.kml'],
   'application/zip': ['.kmz', '.zip'],
 };
@@ -111,7 +113,6 @@ export const DOCUMENT_ACCEPTED_TYPES = {
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': [
     '.docx',
   ],
-  'application/xml': ['.gpx'],
 };
 
 export const MEDIA_ACCEPTED_TYPES = {
