@@ -1043,7 +1043,7 @@
         "members_list_column_actions_description": "Actions",
         "members_list_pending_title": "Pending Members",
         "members_list_pending_approve": "Approve",
-        "members_list_pending_confirmation_title": "Deny membership request?",
+        "members_list_pending_confirmation_title": "Reject membership request?",
         "members_list_pending_confirmation_message": "Do you want to reject {{userName}}’s request for membership in {{name}}?",
         "members_list_pending_confirmation_button": "Reject Request",
         "members_list_pending_reject": "Deny",
