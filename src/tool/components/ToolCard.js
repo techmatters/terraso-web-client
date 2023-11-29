@@ -42,7 +42,7 @@ const ToolIconAndLink = ({ tool, title, external }) => {
       <Box
         component="img"
         src={toolImage}
-        alt=""
+        alt={t(`tools.${tool}.img.alt`)}
         width={t(`tools.${tool}.img.width`)}
         height={t(`tools.${tool}.img.height`)}
         sx={{

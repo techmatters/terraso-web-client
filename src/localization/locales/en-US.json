@@ -164,7 +164,8 @@
             "img": {
                 "height": "140",
                 "width": "250",
-                "src": "tools/kobotoolbox-screenshot.png"
+                "src": "tools/kobotoolbox-screenshot.png",
+                "alt": "A phone, a laptop, and a tablet, each displaying a data collection form. The tool’s logo is in the foreground."
             },
             "description": [
                 "Design and build forms quickly",
@@ -181,7 +182,8 @@
             "img": {
                 "height": "140",
                 "width": "250",
-                "src": "tools/landscale-screenshot.png"
+                "src": "tools/landscale-screenshot.png",
+                "alt": "A dashboard containing charts and graphs about a landscape. The tool’s logo is in the foreground."
             },
             "description": [
                 "Assess landscape sustainability performance",
@@ -198,6 +200,7 @@
                 "height": "188",
                 "width": "250",
                 "src": "tools/story-maps.png",
+                "alt": "A satellite map of a bend in a river, overlayed by a window containing a picture and a block of text.",
                 "caption": "Rocky Hill’s Story Map"
             },
             "description": ["Create beautiful map-based stories"],
