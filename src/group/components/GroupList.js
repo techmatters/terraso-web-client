@@ -35,7 +35,7 @@ import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import {
   fetchGroups,
-  joinGroupFromList,
+  joinGroupFromListPage,
   leaveGroupFromList,
 } from 'group/groupSlice';
 import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
@@ -76,7 +76,7 @@ const MembershipButton = ({ group, tabIndex }) => {
 
   const onMemberJoin = () => {
     dispatch(
-      joinGroupFromList({
+      joinGroupFromListPage({
         groupSlug: group.slug,
       })
     );

@@ -100,9 +100,9 @@ export const leaveGroupFromList = createAsyncThunk(
   'group/leaveGroupFromList',
   groupService.leaveGroupFromList
 );
-export const joinGroupFromList = createAsyncThunk(
-  'group/joinGroupFromList',
-  groupService.joinGroupFromList
+export const joinGroupFromListPage = createAsyncThunk(
+  'group/joinGroupFromListPage',
+  groupService.joinGroupFromListPage
 );
 export const changeMemberRole = createAsyncThunk(
   'group/changeMemberRole',
@@ -409,21 +409,21 @@ const groupSlice = createSlice({
       );
     });
 
-    builder.addCase(joinGroupFromList.pending, (state, action) => {
+    builder.addCase(joinGroupFromListPage.pending, (state, action) => {
       return updateGroupListItem(
         state,
         action.meta.arg.groupSlug,
         _.set('accountMembership.fetching', true)
       );
     });
-    builder.addCase(joinGroupFromList.fulfilled, (state, action) => {
+    builder.addCase(joinGroupFromListPage.fulfilled, (state, action) => {
       return updateGroupListItem(
         state,
         action.meta.arg.groupSlug,
         () => action.payload
       );
     });
-    builder.addCase(joinGroupFromList.rejected, (state, action) => {
+    builder.addCase(joinGroupFromListPage.rejected, (state, action) => {
       return updateGroupListItem(
         state,
         action.meta.arg.groupSlug,

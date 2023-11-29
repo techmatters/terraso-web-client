@@ -306,12 +306,12 @@ export const leaveGroupFromList = (
     .then(extractGroup);
 };
 
-export const joinGroupFromList = (
+export const joinGroupFromListPage = (
   { groupSlug }: { groupSlug: string },
   user: User | null
 ) => {
   const query = graphql(`
-    mutation joinGroupFromList($input: GroupMembershipSaveMutationInput!) {
+    mutation joinGroupFromListPage($input: GroupMembershipSaveMutationInput!) {
       saveGroupMembership(input: $input) {
         group {
           ...groupFields
