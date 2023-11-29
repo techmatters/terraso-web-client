@@ -36,24 +36,37 @@ import theme from 'theme';
 const ToolIconAndLink = ({ tool, title, external }) => {
   const { t } = useTranslation();
   const toolImage = require(`assets/${t(`tools.${tool}.img.src`)}`);
+  const toolUrl = t(`tools.${tool}.url`);
+  const toolText = t('tool.go_to', { tool: title });
+  const toolIcon = (
+    <Box
+      component="img"
+      src={toolImage}
+      alt={t(`tools.${tool}.img.alt`)}
+      width={t(`tools.${tool}.img.width`)}
+      height={t(`tools.${tool}.img.height`)}
+      sx={{
+        width: `${t(`tools.${tool}.img.width`)}px`,
+        height: `${t(`tools.${tool}.img.height`)}px`,
+        borderRadius: '4px',
+        border: '1px solid rgba(0, 0, 0, 0.12)',
+      }}
+    />
+  );
 
   return (
     <React.Fragment>
-      <Box
-        component="img"
-        src={toolImage}
-        alt={t(`tools.${tool}.img.alt`)}
-        width={t(`tools.${tool}.img.width`)}
-        height={t(`tools.${tool}.img.height`)}
-        sx={{
-          width: `${t(`tools.${tool}.img.width`)}px`,
-          height: `${t(`tools.${tool}.img.height`)}px`,
-          borderRadius: '4px',
-          border: '1px solid rgba(0, 0, 0, 0.12)',
-        }}
-      />
+      {external ? (
+        <ExternalLink href={toolUrl}>{toolIcon}</ExternalLink>
+      ) : (
+        <Link href={toolUrl}>{toolIcon}</Link>
+      )}
       <p>
-        {t('tool.go_to', { tool: title })}
+        {external ? (
+          <ExternalLink href={toolUrl}>{toolText}</ExternalLink>
+        ) : (
+          <Link href={toolUrl}>{toolText}</Link>
+        )}
         {external && (
           <LaunchIcon
             sx={{
@@ -147,23 +160,11 @@ const ToolCard = ({ tool }) => {
           </section>
 
           <section>
-            {isToolExternal ? (
-              <ExternalLink href={t(`tools.${tool}.url`)}>
-                <ToolIconAndLink
-                  tool={tool}
-                  title={toolTitle}
-                  external={isToolExternal}
-                />
-              </ExternalLink>
-            ) : (
-              <Link href={t(`tools.${tool}.url`)}>
-                <ToolIconAndLink
-                  tool={tool}
-                  title={toolTitle}
-                  external={isToolExternal}
-                />
-              </Link>
-            )}
+            <ToolIconAndLink
+              tool={tool}
+              title={toolTitle}
+              external={isToolExternal}
+            />
           </section>
         </Stack>
       </Card>
