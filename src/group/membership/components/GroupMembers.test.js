@@ -532,14 +532,14 @@ test('GroupMembers: Closed group manager actions', async () => {
     async () =>
       await fireEvent.click(
         within(pendingSection.getAllByRole('listitem')[0]).getByRole('button', {
-          name: 'Deny',
+          name: 'Reject',
         })
       )
   );
   await act(
     async () =>
       await fireEvent.click(
-        screen.getByRole('button', { name: 'Deny Request' })
+        screen.getByRole('button', { name: 'Reject Request' })
       )
   );
   await waitFor(() =>

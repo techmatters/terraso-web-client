@@ -1052,8 +1052,8 @@
         "members_list_pending_approve": "Aprobar",
         "members_list_pending_confirmation_title": "¿Rechazar la solicitud de membresía?",
         "members_list_pending_confirmation_message": "¿Quieres denegar la solicitud de membresía de {{userName}} en {{name}}?",
-        "members_list_pending_confirmation_button": "Denegar solicitud",
-        "members_list_pending_reject": "Denegar",
+        "members_list_pending_confirmation_button": "¿Rechazar solicitud",
+        "members_list_pending_reject": "¿Rechazar",
         "members_list_title": "{{name}} Miembros",
         "members_list_role_select_label": "Rol",
         "membership_pending": "Pendiente"
