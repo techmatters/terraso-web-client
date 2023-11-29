@@ -101,7 +101,7 @@ const VisualizationWrapper = props => {
 
   const handleDownloadPng = useCallback(() => {
     imagePrinter(mapTitle);
-    trackEvent('map.png', {
+    trackEvent('map.png.download', {
       props: {
         owner: owner.name,
         fileID: visualizationConfig?.selectedFile.id,
