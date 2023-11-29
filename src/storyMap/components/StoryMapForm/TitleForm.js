@@ -120,6 +120,9 @@ const TitleForm = props => {
             ...inputProps,
             inputProps: {
               'aria-label': t('storyMap.form_title_aria_label'),
+              sx: {
+                textAlign: 'center',
+              },
             },
           }}
         />
@@ -132,6 +135,9 @@ const TitleForm = props => {
             ...inputProps,
             inputProps: {
               'aria-label': t('storyMap.form_subtitle_aria_label'),
+              sx: {
+                textAlign: 'center',
+              },
             },
           }}
         />
