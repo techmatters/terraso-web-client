@@ -148,7 +148,7 @@
         "home_explore_label": "Explore more tools",
         "go_to": "Go to {{tool}}",
         "learn_more": "Learn more about {{tool}}",
-        "description": "Use this tool to",
+        "description": "Use this tool to:",
         "actions_bookmark": "Bookmark",
         "actions_recommend": "Recommend this to my team",
         "list_document_title": "Tools",
@@ -170,6 +170,23 @@
                 "Design and build forms quickly",
                 "Collect data offline and online",
                 "Analyze and manage data"
+            ],
+            "requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
+            "external": "true"
+        },
+        "landscale": {
+            "title": "LandScale",
+            "url": "https://www.landscale.org/",
+            "learn_more_url": "https://www.landscale.org/initiative/",
+            "img": {
+                "height": "140",
+                "width": "250",
+                "src": "tools/landscale-screenshot.png"
+            },
+            "description": [
+                "Assess landscape sustainability performance",
+                "Validate results through LandScale validation and local review",
+                "Publish results on the LandScale platform"
             ],
             "requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
             "external": "true"

@@ -48,6 +48,8 @@ const ToolIconAndLink = ({ tool, title, external }) => {
         sx={{
           width: `${t(`tools.${tool}.img.width`)}px`,
           height: `${t(`tools.${tool}.img.height`)}px`,
+          borderRadius: '4px',
+          border: '1px solid rgba(0, 0, 0, 0.12)',
         }}
       />
       <p>
