@@ -20,18 +20,28 @@ import { useSelector } from 'react-redux';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Typography } from '@mui/material';
 
+import ExternalLink from 'common/components/ExternalLink';
 import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
 import { fetchLandscapes } from 'landscape/landscapeSlice';
 
 import LandscapeListMap from './LandscapeListMap';
 
-const LandscapeDescriptionPopup = ({ landscape }) => (
-  <>
-    <Typography variant="h2">{landscape.data.name}</Typography>
-    <Typography variant="body2">{landscape.data.description}</Typography>
-  </>
-);
+const LandscapeDescriptionPopup = ({ landscape }) => {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      <Typography variant="h2">{landscape.data.name}</Typography>
+      <Typography variant="body2">{landscape.data.description}</Typography>
+      <Typography variant="body2">
+        <ExternalLink href={`/landscapes/${landscape.data.slug}/profile`}>
+          {t('landscape.map_profile_link_text', { name: landscape.data.name })}
+        </ExternalLink>
+      </Typography>
+    </>
+  );
+};
 
 const LandscapeMapEmbed = () => {
   const { t } = useTranslation();
