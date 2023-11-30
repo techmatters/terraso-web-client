@@ -25,6 +25,7 @@ import { daysSince } from 'timeUtils';
 
 import ConfirmButton from 'common/components/ConfirmButton';
 import EditableText from 'common/components/EditableText';
+import MiddleEllipsis from 'common/components/MiddleEllipsis';
 import { formatDate } from 'localization/utils';
 import { useAnalytics } from 'monitoring/analytics';
 import Restricted from 'permissions/components/Restricted';
@@ -146,7 +147,11 @@ const SharedDataEntryBase = props => {
           <Restricted
             permission="sharedData.edit"
             resource={permissionsResource}
-            FallbackComponent={() => <Typography>{dataEntry.name}</Typography>}
+            FallbackComponent={() => (
+              <MiddleEllipsis>
+                <Typography component="span">{dataEntry.name}</Typography>
+              </MiddleEllipsis>
+            )}
           >
             <EditableText
               id={`name-${dataEntry.id}`}
