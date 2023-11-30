@@ -36,34 +36,43 @@ import theme from 'theme';
 const ToolIconAndLink = ({ tool, title, external }) => {
   const { t } = useTranslation();
   const toolImage = require(`assets/${t(`tools.${tool}.img.src`)}`);
+  const toolUrl = t(`tools.${tool}.url`);
+  const toolText = t('tool.go_to', { tool: title });
+  const toolIcon = (
+    <Box
+      component="img"
+      src={toolImage}
+      alt={t(`tools.${tool}.img.alt`)}
+      width={t(`tools.${tool}.img.width`)}
+      height={t(`tools.${tool}.img.height`)}
+      sx={{
+        width: `${t(`tools.${tool}.img.width`)}px`,
+        height: `${t(`tools.${tool}.img.height`)}px`,
+        borderRadius: '4px',
+        border: '1px solid rgba(0, 0, 0, 0.12)',
+      }}
+    />
+  );
+  const LinkComponent = external ? ExternalLink : Link;
 
   return (
     <React.Fragment>
-      <Box
-        component="img"
-        src={toolImage}
-        alt=""
-        width={t(`tools.${tool}.img.width`)}
-        height={t(`tools.${tool}.img.height`)}
-        sx={{
-          width: `${t(`tools.${tool}.img.width`)}px`,
-          height: `${t(`tools.${tool}.img.height`)}px`,
-          borderRadius: '4px',
-          border: '1px solid rgba(0, 0, 0, 0.12)',
-        }}
-      />
+      <LinkComponent href={toolUrl}>{toolIcon}</LinkComponent>
       <p>
-        {t('tool.go_to', { tool: title })}
-        {external && (
-          <LaunchIcon
-            sx={{
-              paddingLeft: 1,
-              height: '1.2rem',
-              width: '1.2rem',
-              verticalAlign: 'bottom',
-            }}
-          />
-        )}
+        <LinkComponent href={toolUrl}>
+          {toolText}
+          {external && (
+            <LaunchIcon
+              sx={{
+                paddingLeft: 1,
+                height: '1.2rem',
+                width: '1.2rem',
+                verticalAlign: 'bottom',
+                color: theme.palette.link,
+              }}
+            />
+          )}
+        </LinkComponent>
       </p>
     </React.Fragment>
   );
@@ -85,7 +94,8 @@ const ToolCard = ({ tool }) => {
     attributes['aria-label'] = pronunciation;
   }
 
-  const isToolExternal = t(`tools.${tool}.external`) === 'true';
+  const external = t(`tools.${tool}.external`) === 'true';
+  const LinkComponent = external ? ExternalLink : Link;
 
   return (
     <React.Fragment>
@@ -125,9 +135,9 @@ const ToolCard = ({ tool }) => {
 
             {learnMoreUrl && (
               <Typography sx={{ mt: '1em' }}>
-                {isToolExternal ? (
-                  <ExternalLink href={learnMoreUrl}>
-                    {t('tool.learn_more', { tool: toolTitle })}
+                <LinkComponent href={learnMoreUrl}>
+                  {t('tool.learn_more', { tool: toolTitle })}
+                  {external && (
                     <LaunchIcon
                       sx={{
                         paddingLeft: 1,
@@ -136,34 +146,14 @@ const ToolCard = ({ tool }) => {
                         verticalAlign: '-0.2rem',
                       }}
                     />
-                  </ExternalLink>
-                ) : (
-                  <Link href={t('tool.learn_more')}>
-                    {t('tool.learn_more', { tool: toolTitle })}
-                  </Link>
-                )}
+                  )}
+                </LinkComponent>
               </Typography>
             )}
           </section>
 
           <section>
-            {isToolExternal ? (
-              <ExternalLink href={t(`tools.${tool}.url`)}>
-                <ToolIconAndLink
-                  tool={tool}
-                  title={toolTitle}
-                  external={isToolExternal}
-                />
-              </ExternalLink>
-            ) : (
-              <Link href={t(`tools.${tool}.url`)}>
-                <ToolIconAndLink
-                  tool={tool}
-                  title={toolTitle}
-                  external={isToolExternal}
-                />
-              </Link>
-            )}
+            <ToolIconAndLink tool={tool} title={toolTitle} external />
           </section>
         </Stack>
       </Card>
