@@ -59,18 +59,20 @@ const ToolIconAndLink = ({ tool, title, external }) => {
     <React.Fragment>
       <LinkComponent href={toolUrl}>{toolIcon}</LinkComponent>
       <p>
-        <LinkComponent href={toolUrl}>{toolText}</LinkComponent>
-        {external && (
-          <LaunchIcon
-            sx={{
-              paddingLeft: 1,
-              height: '1.2rem',
-              width: '1.2rem',
-              verticalAlign: 'bottom',
-              color: theme.palette.link,
-            }}
-          />
-        )}
+        <LinkComponent href={toolUrl}>
+          {toolText}
+          {external && (
+            <LaunchIcon
+              sx={{
+                paddingLeft: 1,
+                height: '1.2rem',
+                width: '1.2rem',
+                verticalAlign: 'bottom',
+                color: theme.palette.link,
+              }}
+            />
+          )}
+        </LinkComponent>
       </p>
     </React.Fragment>
   );
