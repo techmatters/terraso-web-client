@@ -164,7 +164,8 @@
             "img": {
                 "height": "140",
                 "width": "250",
-                "src": "tools/kobotoolbox-screenshot.png"
+                "src": "tools/kobotoolbox-screenshot.png",
+                "alt": "Un teléfono, una computadora portátil y una tableta, cada uno de los cuales muestra un formulario de recopilación de datos. El logotipo de la herramienta está en primer plano."
             },
             "description": [
                 "Diseñe y cree formularios rápidamente",
@@ -181,7 +182,8 @@
             "img": {
                 "height": "140",
                 "width": "250",
-                "src": "tools/landscale-screenshot.png"
+                "src": "tools/landscale-screenshot.png",
+                "alt": "Un panel que contiene cuadros y gráficos sobre un paisaje. El logotipo de la herramienta está en primer plano."
             },
             "description": [
                 "Evaluar el desempeño de la sostenibilidad del paisaje",
@@ -198,6 +200,7 @@
                 "height": "188",
                 "width": "250",
                 "src": "tools/story-maps.png",
+                "alt": "Un mapa satelital de un recodo de un río, superpuesto por una ventana que contiene una imagen y un bloque de texto.",
                 "caption": "Story Map de Rocky Hill"
             },
             "description": ["Crea hermosas historias basadas en mapas"],
