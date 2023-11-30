@@ -157,11 +157,15 @@ const SharedDataEntryBase = props => {
               id={`name-${dataEntry.id}`}
               label={t('sharedData.name_update')}
               value={dataEntry.name}
+              truncateLongNames={true}
               onSave={onUpdateName}
               processing={processing}
               isEditing={isEditingName}
               setIsEditing={setIsEditingName}
-              viewProps={{ color: 'black', sx: { flexGrow: 1 } }}
+              viewProps={{
+                color: 'black',
+                sx: { flexGrow: 1, overflow: 'hidden' },
+              }}
             />
           </Restricted>
         </Grid>
