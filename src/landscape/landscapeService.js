@@ -170,14 +170,7 @@ export const fetchLandscapeProfile = slug => {
     .requestGraphQL(query, { slug })
     .then(_.get('landscapes.edges[0].node'))
     .then(landscape => landscape || Promise.reject('not_found'))
-    .then(landscape => ({
-      ...landscape,
-      taxonomyTerms: extractTerms(_.get('taxonomyTerms.edges', landscape)),
-      partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
-      partnership: extractPartnership(landscape),
-      affiliatedGroups: extractAffiliatedGroups(landscape),
-      developmentStrategy: extractDevelopmentStrategy(landscape),
-    }));
+    .then(landscape => extractLandscape(landscape, false));
 };
 
 export const fetchLandscapeToUploadSharedData = slug => {
