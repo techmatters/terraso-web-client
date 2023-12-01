@@ -66,7 +66,7 @@ export const fetchGroupToView = async (slug: string, user: User | null) => {
   return terrasoApi
     .requestGraphQL(query, {
       slug,
-      accountEmail: user!.email,
+      accountEmail: user?.email ?? '',
     })
     .then(resp => resp.groups?.edges.at(0)?.node || Promise.reject('not_found'))
     .then(extractGroup);
