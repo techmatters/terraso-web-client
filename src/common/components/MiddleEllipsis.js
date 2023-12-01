@@ -20,30 +20,33 @@
 import React, { useCallback } from 'react';
 
 const Component = props => {
-  const prepEllipses = node => {
-      const parent = node.parentNode;
-      const targetTextNode = node.childNodes[0];
+  const prepEllipses = useCallback(node => {
+    const parent = node.parentNode;
+    const targetTextNode = node.childNodes[0];
 
-      if (targetTextNode !== null) {
-        if (targetTextNode.hasAttribute('data-original')) {
-          targetTextNode.textContent =
-            targetTextNode.getAttribute('data-original');
-        }
-
-        ellipses(
-          node.offsetWidth < parent.offsetWidth ? node : parent,
-          targetTextNode
-        );
+    if (targetTextNode !== null) {
+      if (targetTextNode.hasAttribute('data-original')) {
+        targetTextNode.textContent =
+          targetTextNode.getAttribute('data-original');
       }
-    },
-    measuredParent = useCallback(node => {
+
+      ellipses(
+        node.offsetWidth < parent.offsetWidth ? node : parent,
+        targetTextNode
+      );
+    }
+  }, []);
+  const measuredParent = useCallback(
+    node => {
       if (node !== null) {
         window.addEventListener('resize', () => {
           prepEllipses(node);
         });
         prepEllipses(node);
       }
-    });
+    },
+    [prepEllipses]
+  );
 
   return (
     <span
