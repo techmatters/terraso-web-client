@@ -157,7 +157,7 @@ const SharedDataEntryBase = props => {
               id={`name-${dataEntry.id}`}
               label={t('sharedData.name_update')}
               value={dataEntry.name}
-              truncateLongNames={true}
+              truncateLongNames
               onSave={onUpdateName}
               processing={processing}
               isEditing={isEditingName}
