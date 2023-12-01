@@ -95,7 +95,7 @@ const FIELDS = [
     type: 'url',
   },
   {
-    name: 'membershipType',
+    name: 'membershipsInfo.membershipType',
     label: 'group.form_membershipType_label',
     defaultValue: MEMBERSHIP_OPEN,
     props: {
@@ -218,7 +218,10 @@ const GroupForm = () => {
   const onSave = group => {
     dispatch(
       saveGroup({
-        group,
+        group: {
+          ..._.omit(['membershipsInfo.membershipType'], group),
+          membershipType: group.membershipsInfo.membershipType,
+        },
         user,
       })
     ).then(() => {

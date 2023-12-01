@@ -37,6 +37,7 @@ export const fetchGroupToUpdate = (slug: string) => {
         edges {
           node {
             ...groupFields
+            ...groupMembershipList
           }
         }
       }
@@ -44,9 +45,8 @@ export const fetchGroupToUpdate = (slug: string) => {
   `);
   return terrasoApi
     .requestGraphQL(query, { slug })
-    .then(
-      resp => resp.groups?.edges.at(0)?.node || Promise.reject('not_found')
-    );
+    .then(resp => resp.groups?.edges.at(0)?.node || Promise.reject('not_found'))
+    .then(extractGroup);
 };
 
 export const fetchGroupToView = async (slug: string, user: User | null) => {
@@ -197,7 +197,12 @@ const updateGroup = (group: Group) => {
     }
   `);
   return terrasoApi
-    .requestGraphQL(query, { input: _.omit('slug', group) })
+    .requestGraphQL(query, {
+      input: {
+        ..._.omit(['slug', 'membershipsInfo', 'membershipList'], group),
+        id: group.id || '',
+      },
+    })
     .then(response => ({
       new: false,
       ...response.updateGroup.group!,

@@ -54,6 +54,7 @@ export const groupDataEntries = /* GraphQL */ `
 export const groupMembershipList = /* GraphQL */ `
   fragment groupMembershipList on GroupNode {
     membershipList {
+      membershipType
       membershipsCount
       ...accountCollaborationMembership
     }
@@ -63,6 +64,7 @@ export const groupMembershipList = /* GraphQL */ `
 export const groupMembershipListWithMembersSample = /* GraphQL */ `
   fragment groupMembershipListWithMembersSample on GroupNode {
     membershipList {
+      membershipType
       membershipsCount
       ...accountCollaborationMembership
       ...collaborationMembershipsPending
