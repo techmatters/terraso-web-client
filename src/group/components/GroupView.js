@@ -200,7 +200,7 @@ const GroupView = () => {
     membership => {
       dispatch(
         leaveGroup({
-          membershipId: membership.membershipId,
+          id: membership.membershipId,
           groupSlug: slug,
         })
       );
