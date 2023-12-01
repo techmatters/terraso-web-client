@@ -27,6 +27,8 @@ import {
   Typography,
 } from '@mui/material';
 
+import MiddleEllipsis from 'common/components/MiddleEllipsis';
+
 const EditableText = props => {
   const { t } = useTranslation();
   const {
@@ -36,6 +38,7 @@ const EditableText = props => {
     processing,
     addMessage,
     viewProps,
+    truncateLongNames,
     onSave,
     isEditing,
     setIsEditing,
@@ -106,7 +109,7 @@ const EditableText = props => {
 
   if (isEditing) {
     return (
-      <Stack direction="row" spacing={1}>
+      <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
         <InputLabel htmlFor={id} className="visually-hidden">
           {label}
         </InputLabel>
@@ -133,6 +136,14 @@ const EditableText = props => {
     );
   }
 
+  const textValue = truncateLongNames ? (
+    <MiddleEllipsis>
+      <Typography component="span">{value}</Typography>
+    </MiddleEllipsis>
+  ) : (
+    value
+  );
+
   return (
     <Typography
       component={Stack}
@@ -154,7 +165,7 @@ const EditableText = props => {
         ...(viewProps?.sx || {}),
       }}
     >
-      {value || <Link href="#">+ {addMessage}</Link>}
+      {textValue || <Link href="#">+ {addMessage}</Link>}
       {isHovering && <EditIcon sx={{ color: 'blue.dark' }} />}
     </Typography>
   );
