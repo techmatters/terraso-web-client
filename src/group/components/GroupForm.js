@@ -139,7 +139,7 @@ const MembershipRadioButtons = props => {
 
   return (
     <RadioGroup
-      aria-labelledby="group-membershipType-label"
+      aria-labelledby="group-membershipsInfo.membershipType-label"
       value={value}
       onChange={handleChange}
     >
@@ -260,7 +260,11 @@ const GroupForm = () => {
         aria-labelledby="group-form-page-title"
         prefix="group"
         fields={FIELDS}
-        values={isNew ? { membershipType: MEMBERSHIP_OPEN } : group}
+        values={
+          isNew
+            ? { membershipsInfo: { membershipType: MEMBERSHIP_OPEN } }
+            : group
+        }
         validationSchema={VALIDATION_SCHEMA}
         onSave={onSave}
         saveLabel={isNew ? 'group.form_create_label' : 'group.form_save_label'}

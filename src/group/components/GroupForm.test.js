@@ -491,14 +491,16 @@ test('GroupForm: Save form (add)', async () => {
 
   await act(async () => fireEvent.click(screen.getByText(/Create Group/i)));
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[0];
-  expect(saveCall[1]).toStrictEqual({
-    input: {
-      description: 'New description',
-      name: 'New name',
-      website: 'https://www.other.org',
-      email: 'other@group.org',
-      membershipType: 'CLOSED',
-    },
-  });
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledWith(
+    expect.stringContaining('mutation addGroup'),
+    expect.objectContaining({
+      input: {
+        description: 'New description',
+        name: 'New name',
+        website: 'https://www.other.org',
+        email: 'other@group.org',
+        membershipType: 'CLOSED',
+      },
+    })
+  );
 });

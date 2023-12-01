@@ -57,5 +57,8 @@ test('LandscapeService: Fetch landscape with missing fields', async () => {
     },
     partnership: undefined,
     partnershipStatus: undefined,
+    taxonomyTerms: {},
+    developmentStrategy: undefined,
+    affiliatedGroups: [],
   });
 });

@@ -199,7 +199,10 @@ const updateGroup = (group: Group) => {
   return terrasoApi
     .requestGraphQL(query, {
       input: {
-        ..._.omit(['slug', 'membershipsInfo', 'membershipList'], group),
+        ..._.omit(
+          ['slug', 'membershipsInfo', 'membershipList', 'dataEntries'],
+          group
+        ),
         id: group.id || '',
       },
     })
@@ -221,10 +224,17 @@ const addGroup = (group: Group) => {
     }
   `);
 
-  return terrasoApi.requestGraphQL(query, { input: group }).then(response => ({
-    new: true,
-    ...response.addGroup.group!,
-  }));
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: {
+        ..._.omit(['slug', 'membershipsInfo', 'membershipList'], group),
+        name: group.name ?? '',
+      },
+    })
+    .then(response => ({
+      new: true,
+      ...response.addGroup.group!,
+    }));
 };
 
 export const saveGroup = ({ group }: { group: Group }) =>
