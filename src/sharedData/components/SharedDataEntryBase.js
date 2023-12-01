@@ -139,7 +139,7 @@ const SharedDataEntryBase = props => {
         <Grid
           item
           xs={isEditingName ? 12 : 8}
-          md={4}
+          md={6}
           order={{ xs: 2, md: 2 }}
           component={StackRow}
         >
@@ -173,8 +173,8 @@ const SharedDataEntryBase = props => {
         <Grid
           item
           xs={11}
-          md={3}
-          order={{ xs: 6, md: 3 }}
+          md={1}
+          order={{ xs: 6, md: 4 }}
           sx={{ wordWrap: 'break-word' }}
         >
           {info}

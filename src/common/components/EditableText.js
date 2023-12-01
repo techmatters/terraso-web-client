@@ -109,7 +109,7 @@ const EditableText = props => {
 
   if (isEditing) {
     return (
-      <Stack direction="row" spacing={1}>
+      <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
         <InputLabel htmlFor={id} className="visually-hidden">
           {label}
         </InputLabel>
