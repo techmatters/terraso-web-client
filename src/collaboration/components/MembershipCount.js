@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2023 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -14,21 +14,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import React from 'react';
+import _ from 'lodash/fp';
+import { Typography } from '@mui/material';
 
-export const PARTNERSHIP_STATUS_NO = 'no';
-export const PARTNERSHIP_STATUS_IN_PROGRESS = 'in-progress';
-export const PARTNERSHIP_STATUS_YES = 'yes';
-
-export const ALL_PARTNERSHIP_STATUS = {
-  NO: PARTNERSHIP_STATUS_NO,
-  IN_PROGRESS: PARTNERSHIP_STATUS_IN_PROGRESS,
-  YES: PARTNERSHIP_STATUS_YES,
+const MembershipListCount = props => {
+  const { membershipsInfo } = props;
+  const count = _.getOr(0, 'totalCount', membershipsInfo);
+  return <Typography variant="body1">{count}</Typography>;
 };
 
-export const MEMBERSHIP_ROLE_MEMBER = 'member';
-export const MEMBERSHIP_ROLE_MANAGER = 'manager';
-
-export const ALL_MEMBERSHIP_ROLES = [
-  MEMBERSHIP_ROLE_MEMBER,
-  MEMBERSHIP_ROLE_MANAGER,
-];
+export default MembershipListCount;

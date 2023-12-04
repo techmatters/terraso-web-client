@@ -44,6 +44,15 @@ test('GroupService: Fetch group', async () => {
     name: 'Group name',
     description: 'Group description',
     website: 'https://www.group.org',
+    membershipsInfo: {
+      accountMembership: undefined,
+      enrollMethod: undefined,
+      membershipType: undefined,
+      membershipsSample: [],
+      pendingCount: undefined,
+      totalCount: undefined,
+    },
+    dataEntries: undefined,
   });
 });
 test('GroupService: Fetch group not found', async () => {

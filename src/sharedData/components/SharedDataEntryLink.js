@@ -19,15 +19,15 @@ import { useTranslation } from 'react-i18next';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { IconButton } from '@mui/material';
 
+import { useCollaborationContext } from 'collaboration/collaborationContext';
 import ExternalLink from 'common/components/ExternalLink';
-import { useGroupContext } from 'group/groupContext';
 
 import LinkIcon from './LinkIcon';
 import SharedDataEntryBase, { ICON_SIZE } from './SharedDataEntryBase';
 
 const DownloadComponent = props => {
   const { t } = useTranslation();
-  const { owner, entityType } = useGroupContext();
+  const { owner, entityType } = useCollaborationContext();
   const { dataEntry } = props;
 
   return (

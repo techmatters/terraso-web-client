@@ -22,6 +22,7 @@ import { Alert, Button, Link, Paper, Stack, Typography } from '@mui/material';
 
 import { daysSince } from 'timeUtils';
 
+import { useCollaborationContext } from 'collaboration/collaborationContext';
 import ConfirmButton from 'common/components/ConfirmButton';
 import SocialShare, {
   useSocialShareContext,
@@ -34,7 +35,6 @@ import { useAnalytics } from 'monitoring/analytics';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import Restricted from 'permissions/components/Restricted';
 import MapExport from 'gis/components/MapExport';
-import { useGroupContext } from 'group/groupContext';
 import { useSharedData } from 'sharedData/sharedDataHooks';
 import {
   deleteVisualizationConfig,
@@ -56,7 +56,7 @@ const VisualizationWrapper = props => {
   const { data, fetching, deleting } = useSelector(
     state => state.sharedData.visualizationConfig
   );
-  const { owner, entityType } = useGroupContext();
+  const { owner, entityType } = useCollaborationContext();
   const [imagePrinter, setImagePrinter] = useState();
 
   useEffect(() => {

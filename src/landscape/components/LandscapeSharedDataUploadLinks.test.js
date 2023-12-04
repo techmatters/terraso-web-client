@@ -31,16 +31,14 @@ jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
 }));
 
-const setup = async (userRole = 'MEMBER') => {
+const setup = async (userRole = 'member') => {
   const landscape = _.set(
     'landscapes.edges[0].node',
     {
       id: 'landscape-id',
       name: 'Landscape Name',
       slug: 'slug-1',
-      defaultGroup: {
-        id: 'group-id',
-        slug: 'group-slug',
+      membershipList: {
         accountMembership: {
           userRole,
           membershipStatus: 'APPROVED',
@@ -222,7 +220,9 @@ test('LandscapeSharedDataUpload: Partial Success', async () => {
 test('LandscapeSharedDataUpload: Complete Success', async () => {
   const navigate = jest.fn();
   useNavigate.mockReturnValue(navigate);
+
   await setup();
+
   expect(navigate).toHaveBeenCalledTimes(0);
   terrasoApi.requestGraphQL.mockResolvedValueOnce(
     _.set(

@@ -16,6 +16,7 @@
  */
 import React, { useCallback, useEffect, useMemo } from 'react';
 import _ from 'lodash/fp';
+import { usePermission } from 'permissions';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -39,6 +40,9 @@ import {
 
 import { withProps } from 'react-hoc';
 
+import { CollaborationContextProvider } from 'collaboration/collaborationContext';
+import MemberJoin from 'collaboration/components/MemberJoin';
+import MembershipCard from 'collaboration/components/MembershipCard';
 import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
 import RouterButton from 'common/components/RouterButton';
@@ -52,11 +56,10 @@ import PageLoader from 'layout/PageLoader';
 import { useRefreshProgressContext } from 'layout/RefreshProgressProvider';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import Restricted from 'permissions/components/Restricted';
-import { GroupContextProvider } from 'group/groupContext';
-import GroupMemberJoin from 'group/membership/components/GroupMemberJoin';
-import GroupMembershipCard from 'group/membership/components/GroupMembershipCard';
 import {
   fetchLandscapeView,
+  joinLandscape,
+  leaveLandscape,
   refreshLandscapeView,
 } from 'landscape/landscapeSlice';
 import { isBoundaryPin } from 'landscape/landscapeUtils';
@@ -72,7 +75,7 @@ const MemberLeaveButton = withProps(LandscapeMemberLeave, {
   label: 'landscape.view_leave_label',
 });
 
-const MemberJoinButton = withProps(GroupMemberJoin, {
+const MemberJoinButton = withProps(MemberJoin, {
   label: 'landscape.view_join_label',
 });
 
@@ -233,6 +236,10 @@ const LandscapeView = () => {
     state => state.landscape.view
   );
   const { slug } = useParams();
+  const { allowed: allowedToManageMembers } = usePermission(
+    'landscape.manageMembers',
+    landscape
+  );
 
   useDocumentTitle(
     t('landscape.view_document_title', {
@@ -274,6 +281,23 @@ const LandscapeView = () => {
     setRefreshing(refreshing);
   }, [refreshing, setRefreshing]);
 
+  const onMemberLeave = membership => {
+    dispatch(
+      leaveLandscape({
+        membershipId: membership.membershipId,
+        landscapeSlug: slug,
+      })
+    );
+  };
+
+  const onMemberJoin = () => {
+    dispatch(
+      joinLandscape({
+        landscapeSlug: slug,
+      })
+    );
+  };
+
   if (fetching) {
     return <PageLoader />;
   }
@@ -285,13 +309,16 @@ const LandscapeView = () => {
   const currentCountry = countryNameForCode(landscape.location);
 
   return (
-    <GroupContextProvider
+    <CollaborationContextProvider
       owner={landscape}
+      entityType="landscape"
       baseOwnerUrl={`/landscapes/${landscape.slug}`}
-      group={landscape.defaultGroup}
-      groupSlug={landscape.defaultGroup.slug}
+      accountMembership={landscape.membershipsInfo.accountMembership}
+      membershipsInfo={landscape.membershipsInfo}
       MemberJoinButton={MemberJoinButton}
+      onMemberJoin={onMemberJoin}
       MemberLeaveButton={MemberLeaveButton}
+      onMemberRemove={onMemberLeave}
       updateOwner={updateLandscape}
     >
       <PageContainer>
@@ -377,7 +404,8 @@ const LandscapeView = () => {
             md={6}
             style={{ display: 'flex', alignItems: 'flex-start' }}
           >
-            <GroupMembershipCard
+            <MembershipCard
+              allowedToManageMembers={allowedToManageMembers}
               onViewMembers={() =>
                 navigate(`/landscapes/${landscape.slug}/members`)
               }
@@ -395,7 +423,7 @@ const LandscapeView = () => {
           </Grid>
         </Grid>
       </PageContainer>
-    </GroupContextProvider>
+    </CollaborationContextProvider>
   );
 };
 

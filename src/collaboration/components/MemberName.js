@@ -20,7 +20,7 @@ import { Stack, Typography } from '@mui/material';
 
 import AccountAvatar from 'account/components/AccountAvatar';
 
-const MemberName = ({ member }) => {
+const MemberName = ({ membership }) => {
   const { t } = useTranslation();
   return (
     <Stack
@@ -29,14 +29,14 @@ const MemberName = ({ member }) => {
       alignItems="center"
       spacing={2}
     >
-      {!member.pendingEmail && (
+      {!membership.pendingEmail && (
         <AccountAvatar
           component="div"
           sx={{ width: 34, height: 34 }}
-          user={member}
+          user={membership.user}
         />
       )}
-      <Typography>{t('user.full_name', { user: member })}</Typography>
+      <Typography>{t('user.full_name', { user: membership.user })}</Typography>
     </Stack>
   );
 };

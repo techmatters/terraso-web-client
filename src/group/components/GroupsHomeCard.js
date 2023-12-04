@@ -28,12 +28,12 @@ import {
 
 import { withProps } from 'react-hoc';
 
+import MembershipPendingWarning from 'collaboration/components/MembershipPendingWarning';
 import Restricted from 'permissions/components/Restricted';
 import {
   MEMBERSHIP_STATUS_APPROVED,
   MEMBERSHIP_STATUS_PENDING,
 } from 'group/membership/components/groupMembershipConstants';
-import GroupMembershipPendingWarning from 'group/membership/components/GroupMembershipPendingWarning';
 import HomeCard from 'home/components/HomeCard';
 
 import theme from 'theme';
@@ -46,13 +46,13 @@ const GroupItem = ({ group, index }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const pendingCount = _.getOr(0, 'membersInfo.pendingCount', group);
+  const pendingCount = _.getOr(0, 'membershipsInfo.pendingCount', group);
   const isApproved =
-    _.get('membersInfo.accountMembership.membershipStatus', group) ===
+    _.get('membershipsInfo.accountMembership.membershipStatus', group) ===
     MEMBERSHIP_STATUS_APPROVED;
 
   const role = isApproved
-    ? _.getOr('member', 'membersInfo.accountMembership.userRole', group)
+    ? _.getOr('member', 'membershipsInfo.accountMembership.userRole', group)
     : MEMBERSHIP_STATUS_PENDING;
 
   return (
@@ -79,7 +79,7 @@ const GroupItem = ({ group, index }) => {
       )}
       <Restricted permission="group.change" resource={group}>
         {pendingCount > 0 && (
-          <GroupMembershipPendingWarning
+          <MembershipPendingWarning
             link
             count={pendingCount}
             onPendingClick={() => navigate(`/groups/${group.slug}/members`)}
@@ -95,7 +95,7 @@ const GroupsHomeCard = ({ groups }) => {
 
   const sortedGroups = _.sortBy(
     group =>
-      _.get('membersInfo.accountMembership.membershipStatus', group) ===
+      _.get('membershipsInfo.accountMembership.membershipStatus', group) ===
       MEMBERSHIP_STATUS_APPROVED,
     groups
   );

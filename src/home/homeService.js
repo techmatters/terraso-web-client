@@ -15,34 +15,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import _ from 'lodash/fp';
-import {
-  extractAccountMembership,
-  extractMembersInfo,
-} from 'terraso-client-shared/memberships/membershipsUtils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
+import { extractGroup } from 'group/groupUtils';
+import { extractLandscape } from 'landscape/landscapeUtils';
 import { extractStoryMap } from 'storyMap/storyMapUtils';
 
 export const fetchHomeData = email => {
   const query = graphql(`
     query home($accountEmail: String!) {
-      landscapeGroups: groups(
-        memberships_Email: $accountEmail
-        associatedLandscapes_IsDefaultLandscapeGroup: true
-      ) {
+      landscapes(membershipList_Memberships_User_Email: $accountEmail) {
         edges {
           node {
-            associatedLandscapes {
-              edges {
-                node {
-                  landscape {
-                    ...landscapeFields
-                    ...defaultGroup
-                  }
-                }
-              }
-            }
+            ...landscapeFields
+            ...landscapeMembershipList
           }
         }
       }
@@ -53,20 +40,24 @@ export const fetchHomeData = email => {
         edges {
           node {
             ...groupFields
-            ...groupMembersPending
-            ...accountMembership
+            membershipList {
+              ...collaborationMembershipsPending
+              ...accountCollaborationMembership
+            }
           }
         }
       }
       userLandscapeGroups: groups(
         memberships_Email: $accountEmail
-        associatedLandscapes_IsDefaultLandscapeGroup: false
+        associatedLandscapes_Isnull: false
       ) {
         edges {
           node {
             ...groupFields
-            ...groupMembersPending
-            ...accountMembership
+            membershipList {
+              ...collaborationMembershipsPending
+              ...accountCollaborationMembership
+            }
           }
         }
       }
@@ -81,27 +72,20 @@ export const fetchHomeData = email => {
   `);
   return terrasoApi
     .requestGraphQL(query, { accountEmail: email })
-    .then(response => ({
+    .then(async response => ({
       groups: [
         ..._.getOr([], 'userIndependentGroups.edges', response),
         ..._.getOr([], 'userLandscapeGroups.edges', response),
       ]
         .map(_.get('node'))
         .filter(group => group)
-        .map(group => ({
-          ..._.omit(['accountMembership'], group),
-          membersInfo: extractMembersInfo(group),
-        })),
-      landscapes: _.getOr([], 'landscapeGroups.edges', response)
-        .flatMap(_.getOr([], 'node.associatedLandscapes.edges'))
-        .map(_.get('node.landscape'))
-        .filter(landscape => landscape)
-        .map(landscape => ({
-          ..._.omit(['associatedGroups'], landscape),
-          accountMembership: extractAccountMembership(
-            _.get('defaultGroup', landscape)
-          ),
-        })),
+        .map(extractGroup),
+      landscapes: await Promise.all(
+        _.getOr([], 'landscapes.edges', response)
+          .map(_.get('node'))
+          .filter(landscape => landscape)
+          .map(landscape => extractLandscape(landscape, false))
+      ),
       storyMaps: _.getOr([], 'storyMaps.edges', response)
         .map(_.get('node'))
         .sort(_.get('publishedAt'))

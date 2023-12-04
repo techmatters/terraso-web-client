@@ -21,28 +21,84 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useFetchData } from 'terraso-client-shared/store/utils';
-import { Typography } from '@mui/material';
+import { useDispatch } from 'terrasoApi/store';
 
 import { withProps } from 'react-hoc';
 
+import { MEMBERSHIP_STATUS_APPROVED } from 'collaboration/collaborationConstants';
+import { CollaborationContextProvider } from 'collaboration/collaborationContext';
+import MembersPage from 'collaboration/components/MembersPage';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
-import PageContainer from 'layout/PageContainer';
-import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-import { GroupContextProvider } from 'group/groupContext';
-import { fetchGroupForMembers } from 'group/groupSlice';
+import {
+  changeMemberRole,
+  fetchGroupForMembers,
+  removeMember,
+} from 'group/groupSlice';
 import GroupMemberLeave from 'group/membership/components/GroupMemberLeave';
 import GroupMemberRemove from 'group/membership/components/GroupMemberRemove';
-import GroupMembersList from 'group/membership/components/GroupMembersList';
+
+import { ALL_MEMBERSHIP_ROLES } from './groupMembershipConstants';
 
 const MemberLeaveButton = withProps(GroupMemberLeave, {
   label: 'group.members_list_leave',
 });
 
-const Header = props => {
+const GroupMembers = () => {
   const { t } = useTranslation();
-  const { group, fetching } = props;
+  const dispatch = useDispatch();
+  const { slug } = useParams();
+  const { data: group, fetching } = useSelector(state => state.group.members);
+
+  useFetchData(useCallback(() => fetchGroupForMembers(slug), [slug]));
+
+  const roles = useMemo(
+    () =>
+      ALL_MEMBERSHIP_ROLES.map(role => ({
+        key: role,
+        value: role,
+        label: t(`group.role_${role.toLowerCase()}`),
+      })),
+    [t]
+  );
+
+  const onMemberRoleChange = useCallback(
+    (membership, newRole) => {
+      dispatch(
+        changeMemberRole({
+          groupSlug: group.slug,
+          userEmails: [membership.user.email],
+          userRole: newRole,
+        })
+      );
+    },
+    [dispatch, group]
+  );
+  const onMemberApprove = useCallback(
+    membership => {
+      dispatch(
+        changeMemberRole({
+          groupSlug: group.slug,
+          userEmails: [membership.user.email],
+          membershipStatus: MEMBERSHIP_STATUS_APPROVED,
+        })
+      );
+    },
+    [dispatch, group]
+  );
+  const onMemberRemove = useCallback(
+    membership => {
+      dispatch(
+        removeMember({
+          groupSlug: group.slug,
+          id: membership.id,
+          email: membership.user.email,
+        })
+      );
+    },
+    [dispatch, group]
+  );
 
   useDocumentTitle(
     t('group.members_document_title', {
@@ -65,10 +121,8 @@ const Header = props => {
     )
   );
 
-  const { loading: loadingPermissions, allowed } = usePermission(
-    'group.manageMembers',
-    group
-  );
+  const { loading: loadingPermissions, allowed: allowedToManageMembers } =
+    usePermission('group.manageMembers', group);
 
   const { loading } = usePermissionRedirect(
     'group.viewMembers',
@@ -77,63 +131,23 @@ const Header = props => {
   );
 
   if (fetching || loading || loadingPermissions) {
-    return null;
-  }
-
-  return (
-    <>
-      <PageHeader
-        header={t(
-          allowed
-            ? 'group.members_title_manager'
-            : 'group.members_title_member',
-          { name: _.get('name', group) }
-        )}
-      />
-      <Typography
-        variant="body2"
-        display="block"
-        sx={{
-          marginBottom: 3,
-          marginTop: 2,
-        }}
-      >
-        {t(
-          allowed
-            ? 'group.members_description_manager'
-            : 'group.members_description_member',
-          { name: _.get('name', group) }
-        )}
-      </Typography>
-    </>
-  );
-};
-
-const GroupMembers = () => {
-  const { slug } = useParams();
-  const { data: group, fetching } = useSelector(
-    state => state.group.membersGroup
-  );
-
-  useFetchData(useCallback(() => fetchGroupForMembers(slug), [slug]));
-
-  if (fetching) {
     return <PageLoader />;
   }
 
   return (
-    <PageContainer>
-      <Header group={group} fetching={fetching} />
-      <GroupContextProvider
-        owner={group}
-        groupSlug={slug}
-        group={group}
-        MemberLeaveButton={MemberLeaveButton}
-        MemberRemoveButton={GroupMemberRemove}
-      >
-        <GroupMembersList />
-      </GroupContextProvider>
-    </PageContainer>
+    <CollaborationContextProvider
+      owner={group}
+      entityType="group"
+      onMemberRoleChange={onMemberRoleChange}
+      onMemberRemove={onMemberRemove}
+      onMemberApprove={onMemberApprove}
+      MemberLeaveButton={MemberLeaveButton}
+      MemberRemoveButton={GroupMemberRemove}
+      acceptedRoles={roles}
+      allowedToManageMembers={allowedToManageMembers}
+    >
+      <MembersPage />
+    </CollaborationContextProvider>
   );
 };
 

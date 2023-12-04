@@ -18,7 +18,7 @@ import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { GROUP_TYPES_WITH_REDIRECTS } from 'tests/constants';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -35,6 +35,7 @@ jest.mock('@mui/material/useMediaQuery');
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn(),
+  useParams: jest.fn(),
 }));
 
 const setup = async initialState => {
@@ -53,6 +54,11 @@ const setup = async initialState => {
     ...initialState,
   });
 };
+beforeEach(() => {
+  useParams.mockReturnValue({
+    slug: 'slug-1',
+  });
+});
 
 Object.keys(GROUP_TYPES_WITH_REDIRECTS).forEach(currentGroup =>
   test(`GroupMembers: Redirection: ${currentGroup}`, async () => {
@@ -67,11 +73,13 @@ Object.keys(GROUP_TYPES_WITH_REDIRECTS).forEach(currentGroup =>
             id: 'group-id',
             slug: 'slug-1',
             name: 'Group Name',
-            membershipType:
-              GROUP_TYPES_WITH_REDIRECTS[currentGroup].membershipType,
-            accountMembership: {
-              userRole: GROUP_TYPES_WITH_REDIRECTS[currentGroup].userRole,
-              membershipStatus: 'APPROVED',
+            membershipList: {
+              membershipType:
+                GROUP_TYPES_WITH_REDIRECTS[currentGroup].membershipType,
+              accountMembership: {
+                userRole: GROUP_TYPES_WITH_REDIRECTS[currentGroup].userRole,
+                membershipStatus: 'APPROVED',
+              },
             },
           },
           {}
@@ -108,7 +116,9 @@ test('GroupMembers: Empty', async () => {
         'groups.edges[0].node',
         {
           name: 'Group Name',
-          membershipType: 'OPEN',
+          membershipList: {
+            membershipType: 'OPEN',
+          },
         },
         {}
       )
@@ -140,8 +150,10 @@ test('GroupMembers: Display list', async () => {
   const group = {
     slug: 'test-group-slug',
     name: 'Group Name',
-    membershipType: 'OPEN',
-    memberships: generateMemberhips(3, 20),
+    membershipList: {
+      membershipType: 'OPEN',
+      memberships: generateMemberhips(3, 20),
+    },
   };
 
   terrasoApi.requestGraphQL.mockReturnValue(
@@ -197,8 +209,10 @@ test('GroupMembers: Display list (small)', async () => {
   const group = {
     slug: 'test-group-slug',
     name: 'Group Name',
-    membershipType: 'OPEN',
-    memberships: generateMemberhips(3, 20),
+    membershipList: {
+      membershipType: 'OPEN',
+      memberships: generateMemberhips(3, 20),
+    },
   };
 
   terrasoApi.requestGraphQL.mockReturnValue(
@@ -230,7 +244,7 @@ test('GroupMembers: Display list manager', async () => {
             lastName: 'Member Last Name',
             email: 'email@email.com',
           }),
-          _.set('node.userRole', 'MEMBER'),
+          _.set('node.userRole', 'member'),
           _.set('node.id', `membership-${index}`),
           _.set('node.membershipStatus', 'APPROVED')
         )({})
@@ -240,8 +254,10 @@ test('GroupMembers: Display list manager', async () => {
   const group = {
     slug: 'test-group-slug',
     name: 'Group Name',
-    memberships: generateMemberhips(3, 57),
-    accountMembership: { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
+    membershipList: {
+      memberships: generateMemberhips(3, 57),
+      accountMembership: { userRole: 'manager', membershipStatus: 'APPROVED' },
+    },
   };
 
   terrasoApi.requestGraphQL.mockReturnValue(
@@ -275,19 +291,20 @@ test('GroupMembers: Display list manager', async () => {
   ).toHaveAttribute('data-field', 'actions');
 });
 test('GroupMembers: Manager actions', async () => {
+  const generateUser = index => ({
+    id: `index-${index}`,
+    firstName: `Member name ${index}`,
+    lastName: `Member Last Name ${index}`,
+    email: `email${index}@email.com`,
+  });
   const generateMemberhips = (index, count) => ({
     edges: [
       ...Array(count)
         .fill(0)
         .map((i, index) =>
           _.flow(
-            _.set('node.user', {
-              id: `index-${index}`,
-              firstName: `Member name ${index}`,
-              lastName: `Member Last Name ${index}`,
-              email: `email${index}@email.com`,
-            }),
-            _.set('node.userRole', 'MEMBER'),
+            _.set('node.user', generateUser(index)),
+            _.set('node.userRole', 'member'),
             _.set('node.id', `membership-${index}`),
             _.set('node.membershipStatus', 'APPROVED')
           )({})
@@ -298,8 +315,10 @@ test('GroupMembers: Manager actions', async () => {
   const baseGroup = {
     slug: 'test-group-slug',
     name: 'Group Name',
-    memberships: generateMemberhips(3, 3),
-    accountMembership: { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
+    membershipList: {
+      memberships: generateMemberhips(3, 3),
+      accountMembership: { userRole: 'manager', membershipStatus: 'APPROVED' },
+    },
   };
 
   terrasoApi.requestGraphQL.mockImplementation(query => {
@@ -307,36 +326,35 @@ test('GroupMembers: Manager actions', async () => {
     if (trimmedQuery.startsWith('query group')) {
       return Promise.resolve(_.set('groups.edges[0].node', baseGroup, {}));
     }
-    if (trimmedQuery.startsWith('mutation updateMembership')) {
+    if (trimmedQuery.startsWith('mutation changeGroupMemberRole')) {
       return Promise.resolve(
         _.flow(
-          _.set('updateMembership.membership.group', baseGroup),
-          _.set(
-            'updateMembership.membership.group.memberships.edges[2].node.userRole',
-            'MANAGER'
-          ),
-          _.set(
-            'updateMembership.membership.group.memberships.edges[2].node.membershipStatus',
-            'APPROVED'
-          )
+          _.set('saveGroupMembership.group', baseGroup),
+          _.set('saveGroupMembership.memberships[0]', {
+            userRole: 'manager',
+            membershipStatus: 'APPROVED',
+            id: 'membership-2',
+            user: generateUser(2),
+          })
         )({})
       );
     }
-    if (trimmedQuery.startsWith('mutation deleteMembership')) {
+    if (trimmedQuery.startsWith('mutation removeGroupMember')) {
       return Promise.resolve(
-        _.flow(
-          _.set('deleteMembership.membership.group', baseGroup),
-          _.set(
-            'deleteMembership.membership.group.memberships.edges',
-            baseGroup.memberships.edges.slice(0, -1)
-          )
-        )({})
+        _.set(
+          'deleteGroupMembership.membership',
+          baseGroup.membershipList.memberships.edges.slice(0, -1),
+          {}
+        )
       );
     }
   });
   await setup();
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(4);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledWith(
+    expect.stringContaining('query group'),
+    { slug: 'slug-1' }
+  );
 
   // Group info
   expect(
@@ -363,7 +381,17 @@ test('GroupMembers: Manager actions', async () => {
     async () =>
       await fireEvent.click(screen.getByRole('option', { name: 'Manager' }))
   );
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(5);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledWith(
+    expect.stringContaining('mutation changeGroupMemberRole'),
+    {
+      input: {
+        userEmails: ['email2@email.com'],
+        groupSlug: 'test-group-slug',
+        userRole: 'manager',
+      },
+    }
+  );
+
   expect(
     within(screen.getAllByRole('row')[3]).getByRole('cell', {
       name: 'Member name 2 Member Last Name 2',
@@ -397,25 +425,36 @@ test('GroupMembers: Manager actions', async () => {
   await screen.findByRole('region', {
     name: 'Current Members',
   });
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(6);
+
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledWith(
+    expect.stringContaining('mutation removeGroupMember'),
+    {
+      input: {
+        groupSlug: 'test-group-slug',
+        id: 'membership-2',
+      },
+    }
+  );
+
   await waitFor(() => expect(screen.getAllByRole('row').length).toBe(3));
   const removedRows = screen.getAllByRole('row');
   expect(removedRows.length).toBe(3);
 });
 test('GroupMembers: Closed group manager actions', async () => {
+  const generateUser = index => ({
+    id: `index-${index}`,
+    firstName: `Pending Member name ${index}`,
+    lastName: `Pending Member Last Name ${index}`,
+    email: `email${index}@email.com`,
+  });
   const generateMemberhips = (index, count) => ({
     edges: [
       ...Array(count)
         .fill(0)
         .map((i, index) =>
           _.flow(
-            _.set('node.user', {
-              id: `index-pending-${index}`,
-              firstName: `Pending Member name ${index}`,
-              lastName: `Pending Member Last Name ${index}`,
-              email: `email${index}@email.com`,
-            }),
-            _.set('node.userRole', 'MEMBER'),
+            _.set('node.user', generateUser(index)),
+            _.set('node.userRole', 'member'),
             _.set('node.id', `membership-pending-${index}`),
             _.set('node.membershipStatus', 'PENDING')
           )({})
@@ -426,8 +465,10 @@ test('GroupMembers: Closed group manager actions', async () => {
   const baseGroup = {
     slug: 'test-group-slug',
     name: 'Group Name',
-    memberships: generateMemberhips(3, 3),
-    accountMembership: { userRole: 'MANAGER', membershipStatus: 'APPROVED' },
+    membershipList: {
+      memberships: generateMemberhips(3, 3),
+      accountMembership: { userRole: 'manager', membershipStatus: 'APPROVED' },
+    },
   };
 
   terrasoApi.requestGraphQL.mockImplementation(query => {
@@ -435,36 +476,40 @@ test('GroupMembers: Closed group manager actions', async () => {
     if (trimmedQuery.startsWith('query group')) {
       return Promise.resolve(_.set('groups.edges[0].node', baseGroup, {}));
     }
-    if (trimmedQuery.startsWith('mutation updateMembership')) {
+    if (trimmedQuery.startsWith('mutation changeGroupMemberRole')) {
       return Promise.resolve(
-        _.flow(
-          _.set('updateMembership.membership.group', baseGroup),
-          _.set(
-            'updateMembership.membership.group.memberships.edges[1].node.membershipStatus',
-            'APPROVED'
-          )
-        )({})
+        _.set(
+          'saveGroupMembership.memberships[0]',
+          {
+            id: 'membership-pending-1',
+            membershipStatus: 'APPROVED',
+            userRole: 'member',
+            user: generateUser(1),
+          },
+          {}
+        )
       );
     }
-    if (trimmedQuery.startsWith('mutation deleteMembership')) {
+    if (trimmedQuery.startsWith('mutation removeGroupMember')) {
       return Promise.resolve(
-        _.flow(
-          _.set('deleteMembership.membership.group', baseGroup),
-          _.set(
-            'deleteMembership.membership.group.memberships.edges',
-            baseGroup.memberships.edges
-              .map(member =>
-                member.node.id === 'membership-pending-0' ? null : member
-              )
-              .filter(member => member)
-          )
-        )({})
+        _.set(
+          'deleteGroupMembership.membership',
+          baseGroup.membershipList.memberships.edges
+            .map(member =>
+              member.node.id === 'membership-pending-0' ? null : member
+            )
+            .filter(member => member),
+          {}
+        )
       );
     }
   });
   await setup();
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(4);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledWith(
+    expect.stringContaining('query group'),
+    { slug: 'slug-1' }
+  );
 
   // Group info
   await screen.findByRole('heading', { name: 'Manage Members' });
@@ -487,18 +532,27 @@ test('GroupMembers: Closed group manager actions', async () => {
     async () =>
       await fireEvent.click(
         within(pendingSection.getAllByRole('listitem')[0]).getByRole('button', {
-          name: 'Deny',
+          name: 'Reject',
         })
       )
   );
   await act(
     async () =>
       await fireEvent.click(
-        screen.getByRole('button', { name: 'Deny Request' })
+        screen.getByRole('button', { name: 'Reject Request' })
       )
   );
   await waitFor(() =>
     expect(pendingSection.getAllByRole('listitem').length).toBe(2)
+  );
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledWith(
+    expect.stringContaining('mutation removeGroupMember'),
+    {
+      input: {
+        groupSlug: 'test-group-slug',
+        id: 'membership-pending-0',
+      },
+    }
   );
 
   // Approve
@@ -515,12 +569,29 @@ test('GroupMembers: Closed group manager actions', async () => {
         })
       )
   );
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledWith(
+    expect.stringContaining('mutation changeGroupMemberRole'),
+    {
+      input: {
+        groupSlug: 'test-group-slug',
+        userEmails: ['email1@email.com'],
+        membershipStatus: 'APPROVED',
+      },
+    }
+  );
 
-  expect(pendingSection.getAllByRole('listitem').length).toBe(2);
+  expect(pendingSection.getAllByRole('listitem').length).toBe(1);
   expect(
-    within(pendingSection.getAllByRole('listitem')[0]).getByText(
-      'Pending Member name 0 Pending Member Last Name 0'
-    )
+    within(
+      screen.getByRole('region', {
+        name: 'Pending Members',
+      })
+    ).getByRole('listitem', {
+      name: 'Pending Member name 2 Pending Member Last Name 2',
+    })
+  ).toBeInTheDocument();
+  expect(
+    pendingSection.getByText('Pending Member name 2 Pending Member Last Name 2')
   ).toBeInTheDocument();
   const listSection = screen.getByRole('region', {
     name: 'Current Members',

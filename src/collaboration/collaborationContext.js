@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2023 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -18,18 +18,14 @@ import React, { useContext, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 
-const GroupContext = React.createContext();
+const CollaborationContext = React.createContext();
 
-export const GroupContextProvider = props => {
+export const CollaborationContextProvider = props => {
   const { t } = useTranslation();
-
-  const entityType = useMemo(
-    () => (props?.owner?.defaultGroup ? 'landscape' : 'group'),
-    [props?.owner?.defaultGroup]
-  );
+  const { entityType } = props;
 
   const entityTypeLocalized = useMemo(
-    () => t('sharedData.entity_type', { context: entityType }),
+    () => t('collaboration.entity_type', { context: entityType }),
     [entityType, t]
   );
 
@@ -41,17 +37,20 @@ export const GroupContextProvider = props => {
         [
           'owner',
           'baseOwnerUrl',
-          'group',
-          'groupSlug',
-          'members',
+          'accountMembership',
+          'membershipsInfo',
+          'onMemberJoin',
           'onMemberRemove',
           'onMemberRoleChange',
+          'onMemberApprove',
           'MemberLeaveButton',
           'MemberRemoveButton',
           'MemberJoinButton',
           'MemberRequestJoinButton',
           'MemberRequestCancelButton',
           'updateOwner',
+          'acceptedRoles',
+          'allowedToManageMembers',
         ],
         props
       ),
@@ -60,13 +59,13 @@ export const GroupContextProvider = props => {
   );
 
   return (
-    <GroupContext.Provider value={providerValue}>
+    <CollaborationContext.Provider value={providerValue}>
       {props.children}
-    </GroupContext.Provider>
+    </CollaborationContext.Provider>
   );
 };
 
-export const useGroupContext = () => {
-  const context = useContext(GroupContext);
+export const useCollaborationContext = () => {
+  const context = useContext(CollaborationContext);
   return context;
 };

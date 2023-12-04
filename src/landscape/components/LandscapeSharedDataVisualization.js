@@ -20,10 +20,10 @@ import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 
+import { CollaborationContextProvider } from 'collaboration/collaborationContext';
 import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-import { GroupContextProvider } from 'group/groupContext';
 import { fetchLandscapeUpload } from 'landscape/landscapeSlice';
 import VisualizationWrapper from 'sharedData/visualization/components/VisualizationWrapper';
 
@@ -58,12 +58,12 @@ const LandscapeSharedDataVisualization = () => {
   }
 
   return (
-    <GroupContextProvider owner={landscape}>
+    <CollaborationContextProvider owner={landscape} entityType="landscape">
       <VisualizationWrapper
         configSlug={configSlug}
         onDeleted={() => navigate(`/landscapes/${landscapeSlug}`)}
       />
-    </GroupContextProvider>
+    </CollaborationContextProvider>
   );
 };
 

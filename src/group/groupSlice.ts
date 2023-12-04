@@ -17,10 +17,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import * as _ from 'lodash/fp';
 import {
+  Membership,
   MembershipList,
-  setMemberships,
-} from 'terraso-client-shared/memberships/membershipsSlice';
-import { getMemberships } from 'terraso-client-shared/memberships/membershipsUtils';
+} from 'terraso-client-shared/collaboration/membershipsUtils';
+import type { MembershipsInfo } from 'terraso-client-shared/collaboration/membershipsUtils';
 import type { Message } from 'terraso-client-shared/notifications/notificationsSlice';
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
@@ -34,7 +34,8 @@ export type Group = {
   name: string;
   description: string;
   website: string;
-} & MembershipList;
+  membershipInfo?: MembershipsInfo;
+};
 
 export const fetchGroupForm = createAsyncThunk(
   'group/fetchGroupForm',
@@ -44,8 +45,7 @@ export const fetchGroupForm = createAsyncThunk(
 export const fetchGroupView = createAsyncThunk(
   'group/fetchGroupView',
   async (slug: string, user, { dispatch }) => {
-    const group = await groupService.fetchGroupToView(slug);
-    dispatch(setMemberships(getMemberships([group])));
+    const group = await groupService.fetchGroupToView(slug, user);
     dispatch(setList(group.dataEntries));
     return group;
   }
@@ -65,7 +65,6 @@ export const fetchGroups = createAsyncThunk(
   'group/fetchGroups',
   async (arg, user, { dispatch }) => {
     const groups = await groupService.fetchGroups();
-    dispatch(setMemberships(getMemberships(groups)));
     return groups;
   }
 );
@@ -89,6 +88,30 @@ export const saveGroup = createAsyncThunk(
     params: { name: group.name },
   })
 );
+export const leaveGroup = createAsyncThunk(
+  'group/leaveGroup',
+  groupService.leaveGroup
+);
+export const joinGroup = createAsyncThunk(
+  'group/joinGroup',
+  groupService.joinGroup
+);
+export const leaveGroupFromList = createAsyncThunk(
+  'group/leaveGroupFromList',
+  groupService.leaveGroupFromList
+);
+export const joinGroupFromListPage = createAsyncThunk(
+  'group/joinGroupFromListPage',
+  groupService.joinGroupFromListPage
+);
+export const changeMemberRole = createAsyncThunk(
+  'group/changeMemberRole',
+  groupService.changeMemberRole
+);
+export const removeMember = createAsyncThunk(
+  'group/removeMember',
+  groupService.removeMember
+);
 
 type GroupSliceState = typeof initialState;
 
@@ -108,7 +131,7 @@ const initialState = {
     fetching: true,
     groups: [] as { slug: string; name: string }[],
   },
-  membersGroup: {
+  members: {
     data: null as Omit<MembershipList, 'membersInfo'> | null,
     fetching: true,
   },
@@ -129,7 +152,9 @@ const initialState = {
 
 const updateView = (
   state: GroupSliceState,
-  action: ReturnType<typeof fetchGroupView.fulfilled>
+  action:
+    | ReturnType<typeof fetchGroupView.fulfilled>
+    | ReturnType<typeof joinGroup.fulfilled>
 ): GroupSliceState => ({
   ...state,
   view: {
@@ -266,12 +291,12 @@ const groupSlice = createSlice({
 
     builder.addCase(
       fetchGroupForMembers.pending,
-      _.set('membersGroup', initialState.membersGroup)
+      _.set('members', initialState.members)
     );
 
     builder.addCase(fetchGroupForMembers.fulfilled, (state, action) => ({
       ...state,
-      membersGroup: {
+      members: {
         fetching: false,
         data: action.payload,
       },
@@ -279,7 +304,7 @@ const groupSlice = createSlice({
 
     builder.addCase(
       fetchGroupForMembers.rejected,
-      _.set('membersGroup', initialState.membersGroup)
+      _.set('members', initialState.members)
     );
 
     builder.addCase(saveGroup.pending, state => ({
@@ -329,9 +354,159 @@ const groupSlice = createSlice({
         fetching: false,
       },
     }));
+
+    builder.addCase(leaveGroup.pending, (state, action) =>
+      _.set(
+        `view.group.membershipsInfo.accountMembership.fetching`,
+        true,
+        state
+      )
+    );
+    builder.addCase(leaveGroup.fulfilled, updateView);
+    builder.addCase(leaveGroup.rejected, (state, action) =>
+      _.set(
+        `view.group.membershipsInfo.accountMembership.fetching`,
+        false,
+        state
+      )
+    );
+
+    builder.addCase(joinGroup.pending, (state, action) =>
+      _.set(
+        `view.group.membershipsInfo.accountMembership.fetching`,
+        true,
+        state
+      )
+    );
+    builder.addCase(joinGroup.fulfilled, updateView);
+    builder.addCase(joinGroup.rejected, (state, action) =>
+      _.set(
+        `view.group.membershipsInfo.accountMembership.fetching`,
+        false,
+        state
+      )
+    );
+
+    builder.addCase(leaveGroupFromList.pending, (state, action) => {
+      return updateGroupListItem(
+        state,
+        action.meta.arg.groupSlug,
+        _.set('accountMembership.fetching', true)
+      );
+    });
+    builder.addCase(leaveGroupFromList.fulfilled, (state, action) => {
+      return updateGroupListItem(
+        state,
+        action.meta.arg.groupSlug,
+        () => action.payload
+      );
+    });
+    builder.addCase(leaveGroupFromList.rejected, (state, action) => {
+      return updateGroupListItem(
+        state,
+        action.meta.arg.groupSlug,
+        _.set('accountMembership.fetching', false)
+      );
+    });
+
+    builder.addCase(joinGroupFromListPage.pending, (state, action) => {
+      return updateGroupListItem(
+        state,
+        action.meta.arg.groupSlug,
+        _.set('accountMembership.fetching', true)
+      );
+    });
+    builder.addCase(joinGroupFromListPage.fulfilled, (state, action) => {
+      return updateGroupListItem(
+        state,
+        action.meta.arg.groupSlug,
+        () => action.payload
+      );
+    });
+    builder.addCase(joinGroupFromListPage.rejected, (state, action) => {
+      return updateGroupListItem(
+        state,
+        action.meta.arg.groupSlug,
+        _.set('accountMembership.fetching', false)
+      );
+    });
+
+    builder.addCase(changeMemberRole.pending, (state, action) => {
+      return updateMemberItem(
+        state,
+        action.meta.arg.userEmails as Array<string>,
+        _.set('fetching', true)
+      );
+    });
+    builder.addCase(changeMemberRole.fulfilled, (state, action) => {
+      return updateMemberItem(
+        state,
+        action.meta.arg.userEmails as Array<string>,
+        () => action.payload as Membership
+      );
+    });
+    builder.addCase(changeMemberRole.rejected, (state, action) => {
+      return updateMemberItem(
+        state,
+        action.meta.arg.userEmails as Array<string>,
+        _.set('fetching', false)
+      );
+    });
+
+    builder.addCase(removeMember.pending, (state, action) => {
+      return updateMemberItem(
+        state,
+        [action.meta.arg.email],
+        _.set('fetching', true)
+      );
+    });
+    builder.addCase(removeMember.fulfilled, (state, action) => {
+      return updateMemberItem(state, [action.meta.arg.email], () => null);
+    });
+    builder.addCase(removeMember.rejected, (state, action) => {
+      return updateMemberItem(
+        state,
+        [action.meta.arg.email],
+        _.set('fetching', false)
+      );
+    });
   },
 });
 
 export const { setFormNewValues, resetFormSuccess } = groupSlice.actions;
 
 export default groupSlice.reducer;
+
+const updateGroupListItem = (
+  state: GroupSliceState,
+  slug: string,
+  valueGenerator: (group: Group) => Group
+) => {
+  return {
+    ...state,
+    list: {
+      ...state.list,
+      groups: state.list.groups.map(group =>
+        group.slug === slug ? valueGenerator(group) : group
+      ),
+    },
+  };
+};
+
+const updateMemberItem = (
+  state: GroupSliceState,
+  userEmails: Array<string>,
+  valueGenerator: (membership: Membership) => Membership | null
+) => {
+  return _.set(
+    'members.data.membershipsInfo.membershipsSample',
+    state.members.data?.membershipsInfo?.membershipsSample
+      ?.map((membership: Membership) =>
+        _.includes(membership.user?.email, userEmails)
+          ? valueGenerator(membership)
+          : membership
+      )
+      .filter(membership => membership),
+    state
+  );
+};

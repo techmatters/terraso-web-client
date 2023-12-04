@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2023 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -31,17 +31,16 @@ import {
   Typography,
 } from '@mui/material';
 
-import ExternalLink from 'common/components/ExternalLink';
-import Restricted from 'permissions/components/Restricted';
-import AccountAvatar from 'account/components/AccountAvatar';
-import { useGroupContext } from 'group/groupContext';
-
 import {
-  MEMBERSHIP_CLOSED,
   MEMBERSHIP_STATUS_PENDING,
-} from './groupMembershipConstants';
-import GroupMembershipJoinLeaveButton from './GroupMembershipJoinLeaveButton';
-import GroupMembershipPendingWarning from './GroupMembershipPendingWarning';
+  MEMBERSHIP_TYPE_CLOSED,
+} from 'collaboration/collaborationConstants';
+import { useCollaborationContext } from 'collaboration/collaborationContext';
+import ExternalLink from 'common/components/ExternalLink';
+import AccountAvatar from 'account/components/AccountAvatar';
+
+import MembershipJoinLeaveButton from './MembershipJoinLeaveButton';
+import MembershipPendingWarning from './MembershipPendingWarning';
 
 const Loader = () => {
   const { t } = useTranslation();
@@ -56,21 +55,21 @@ const Loader = () => {
 
 const Content = props => {
   const { t } = useTranslation();
-  const { owner } = useGroupContext();
-  const { user, membersInfo, fetching, group, onViewMembers } = props;
+  const { owner, membershipsInfo, accountMembership } =
+    useCollaborationContext();
+  const { user, fetching, onViewMembers } = props;
 
-  const membersSample = _.getOr([], 'membersSample', membersInfo);
-  const totalCount = _.getOr(0, 'totalCount', membersInfo);
+  const membersSample = _.getOr([], 'membershipsSample', membershipsInfo);
+  const totalCount = _.getOr(0, 'totalCount', membershipsInfo);
 
   if (fetching) {
     return <Loader />;
   }
 
-  const userMembership = _.get('membersInfo.accountMembership', group);
   const pendingRequest =
-    userMembership &&
-    userMembership.membershipStatus === MEMBERSHIP_STATUS_PENDING;
-  const closedGroup = group?.membershipType === MEMBERSHIP_CLOSED;
+    accountMembership?.membershipStatus === MEMBERSHIP_STATUS_PENDING;
+  const closedGroup =
+    membershipsInfo?.membershipType === MEMBERSHIP_TYPE_CLOSED;
 
   if (pendingRequest) {
     return (
@@ -85,7 +84,7 @@ const Content = props => {
     );
   }
 
-  if (!userMembership && closedGroup) {
+  if (!accountMembership && closedGroup) {
     return (
       <CardContent>
         <Trans
@@ -125,8 +124,8 @@ const Content = props => {
           paddingLeft: 0,
         }}
       >
-        {membersSample.map((member, index) => (
-          <AccountAvatar key={index} user={member} component="li" />
+        {membersSample.map((membership, index) => (
+          <AccountAvatar key={index} user={membership.user} component="li" />
         ))}
       </AvatarGroup>
       {user && (
@@ -138,15 +137,12 @@ const Content = props => {
   );
 };
 
-const GroupMembershipCard = props => {
+const MembershipCard = props => {
   const { t } = useTranslation();
-  const { groupSlug } = useGroupContext();
-  const { onViewMembers, InfoComponent } = props;
-  const { fetching, group } =
-    useSelector(state => state.memberships.lists[groupSlug]) || {};
+  const { membershipsInfo } = useCollaborationContext();
+  const { onViewMembers, InfoComponent, fetching, allowedToManageMembers } =
+    props;
   const { data: user } = useSelector(_.get('account.currentUser'));
-
-  const membersInfo = group?.membersInfo ?? {};
 
   return (
     <Card
@@ -167,44 +163,32 @@ const GroupMembershipCard = props => {
           </Typography>
         }
       />
-      <Content
-        user={user}
-        group={group}
-        fetching={fetching}
-        membersInfo={membersInfo}
-        onViewMembers={onViewMembers}
-      />
+      <Content user={user} fetching={fetching} onViewMembers={onViewMembers} />
       {fetching || !user ? null : (
         <CardActions sx={{ display: 'block', paddingBottom: '24px' }}>
-          <Restricted
-            permission="group.change"
-            resource={group}
-            FallbackComponent={() => (
-              <>
-                <GroupMembershipJoinLeaveButton />
-                {InfoComponent && <InfoComponent />}
-              </>
-            )}
-          >
+          {allowedToManageMembers ? (
             <Button variant="outlined" onClick={onViewMembers}>
               {t('group.membership_card_manage_members')}
             </Button>
-          </Restricted>
+          ) : (
+            <>
+              <MembershipJoinLeaveButton />
+              {InfoComponent && <InfoComponent />}
+            </>
+          )}
         </CardActions>
       )}
-      <Restricted permission="group.change" resource={group}>
-        {membersInfo.pendingCount > 0 && (
-          <CardContent>
-            <GroupMembershipPendingWarning
-              link
-              count={membersInfo.pendingCount}
-              onPendingClick={onViewMembers}
-            />
-          </CardContent>
-        )}
-      </Restricted>
+      {allowedToManageMembers && membershipsInfo.pendingCount > 0 && (
+        <CardContent>
+          <MembershipPendingWarning
+            link
+            count={membershipsInfo.pendingCount}
+            onPendingClick={onViewMembers}
+          />
+        </CardContent>
+      )}
     </Card>
   );
 };
 
-export default GroupMembershipCard;
+export default MembershipCard;

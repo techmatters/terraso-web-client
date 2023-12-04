@@ -37,7 +37,7 @@ const LandscapeItem = ({ landscape, index }) => {
         paddingLeft: 0,
         borderTop: index && `1px solid ${theme.palette.gray.lite1}`, // skip first item
       }}
-      aria-label={landscape.slug}
+      aria-label={landscape.name}
     >
       <Link component={RouterLink} to={landscapeUrl}>
         <img

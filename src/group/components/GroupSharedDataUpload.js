@@ -20,12 +20,12 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { CollaborationContextProvider } from 'collaboration/collaborationContext';
 import { useDocumentTitle } from 'common/document';
 import PageContainer from 'layout/PageContainer';
 import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-import { GroupContextProvider } from 'group/groupContext';
 import { fetchGroupUpload } from 'group/groupSlice';
 import SharedDataUpload from 'sharedData/components/SharedDataUpload';
 
@@ -79,7 +79,7 @@ const GroupSharedDataUpload = () => {
       <PageHeader
         header={t('group.shared_data_upload_title', { name: group.name })}
       />
-      <GroupContextProvider owner={group}>
+      <CollaborationContextProvider owner={group} entityType="group">
         <SharedDataUpload
           targetInput={{
             targetType: 'group',
@@ -88,7 +88,7 @@ const GroupSharedDataUpload = () => {
           onCancel={onCancel}
           onCompleteSuccess={onCompleteSuccess}
         />
-      </GroupContextProvider>
+      </CollaborationContextProvider>
     </PageContainer>
   );
 };

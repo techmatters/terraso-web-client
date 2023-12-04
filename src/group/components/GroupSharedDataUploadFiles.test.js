@@ -38,7 +38,7 @@ jest.mock('monitoring/analytics', () => ({
   useAnalytics: jest.fn(),
 }));
 
-const setup = async (membershipType = 'OPEN', userRole = 'MEMBER') => {
+const setup = async (membershipType = 'OPEN', userRole = 'member') => {
   terrasoApi.requestGraphQL.mockResolvedValue(
     _.set(
       'groups.edges[0].node',

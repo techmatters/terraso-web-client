@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2023 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -14,24 +14,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { useCallback } from 'react';
+import React from 'react';
+import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
+import { LoadingButton } from '@mui/lab';
 
 import { useCollaborationContext } from 'collaboration/collaborationContext';
-import { useAnalytics } from 'monitoring/analytics';
 
-export const useSharedData = () => {
-  const { trackEvent } = useAnalytics();
-  const { owner, entityType } = useCollaborationContext();
+const MemberJoin = props => {
+  const { t } = useTranslation();
+  const { owner } = useCollaborationContext();
+  const { ariaLabel, onJoin, buttonProps, loading } = props;
 
-  const downloadFile = useCallback(
-    file => {
-      trackEvent('dataEntry.file.download', {
-        props: { [entityType]: owner.slug },
-      });
-      window.open(file.url, '_blank');
-    },
-    [trackEvent, owner, entityType]
+  return (
+    <LoadingButton
+      variant="outlined"
+      aria-label={t(ariaLabel, {
+        name: _.get('name', owner),
+      })}
+      onClick={onJoin}
+      loading={loading}
+      sx={{ flexGrow: 1 }}
+      {...buttonProps}
+    >
+      {t(props.label)}
+    </LoadingButton>
   );
-
-  return { downloadFile };
 };
+
+export default MemberJoin;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2023 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -21,7 +21,7 @@ import { Link, Stack, Typography } from '@mui/material';
 
 import { withProps } from 'react-hoc';
 
-const GroupMembershipPendingWarning = props => {
+const MembershipPendingWarning = props => {
   const { count, onPendingClick, link = false, sx } = props;
 
   const onClick = event => {
@@ -47,4 +47,4 @@ const GroupMembershipPendingWarning = props => {
   );
 };
 
-export default GroupMembershipPendingWarning;
+export default MembershipPendingWarning;

@@ -19,10 +19,10 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { CollaborationContextProvider } from 'collaboration/collaborationContext';
 import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
-import { GroupContextProvider } from 'group/groupContext';
 import { fetchGroupUpload } from 'group/groupSlice';
 import VisualizationWrapper from 'sharedData/visualization/components/VisualizationWrapper';
 
@@ -58,13 +58,13 @@ const GroupSharedDataVisualization = () => {
   }
 
   return (
-    <GroupContextProvider group={group} owner={group}>
+    <CollaborationContextProvider owner={group} entityType="group">
       <VisualizationWrapper
         configSlug={configSlug}
         groupSlug={groupSlug}
         onDeleted={() => navigate(`/groups/${groupSlug}`)}
       />
-    </GroupContextProvider>
+    </CollaborationContextProvider>
   );
 };
 

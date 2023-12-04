@@ -41,29 +41,31 @@ const MembershipsList = props => {
     () => [
       {
         field: 'name',
-        headerName: t('memberships.members_list_column_name'),
+        headerName: t('collaboration.members_list_column_name'),
         flex: 1.5,
         minWidth: 200,
         cardFieldSizes: {
           xs: 12,
           sm: 5,
         },
-        valueGetter: ({ row: member }) =>
-          member.pendingEmail
-            ? member.pendingEmail
-            : t('user.full_name', { user: member }),
-        cardRender: ({ row: member }) => (
+        valueGetter: ({ row: membership }) =>
+          membership.pendingEmail
+            ? membership.pendingEmail
+            : t('user.full_name', { user: membership.user }),
+        cardRender: ({ row: membership }) => (
           <Typography noWrap>
-            {member.pendingEmail
-              ? member.pendingEmail
-              : t('user.full_name', { user: member })}
+            {membership.pendingEmail
+              ? membership.pendingEmail
+              : t('user.full_name', { user: membership.user })}
           </Typography>
         ),
-        renderCell: ({ row: member }) => <MemberName member={member} />,
+        renderCell: ({ row: membership }) => (
+          <MemberName membership={membership} />
+        ),
       },
       {
         field: 'role',
-        headerName: t('memberships.members_list_column_role'),
+        headerName: t('collaboration.members_list_column_role'),
         flex: 1.5,
         minWidth: 200,
         cardFieldSizes: {
@@ -72,13 +74,13 @@ const MembershipsList = props => {
         },
         valueGetter: ({ row: member }) =>
           t(`group.role_${member.userRole.toLowerCase()}`),
-        renderCell: ({ row: member, tabIndex }) => (
-          <RoleComponent member={member} tabIndex={tabIndex} />
+        renderCell: ({ row: membership, tabIndex }) => (
+          <RoleComponent membership={membership} tabIndex={tabIndex} />
         ),
       },
       {
         field: 'actions',
-        headerName: t('memberships.members_list_column_actions_description'),
+        headerName: t('collaboration.members_list_column_actions_description'),
         type: 'actions',
         sortable: false,
         flex: 1.5,
@@ -88,8 +90,8 @@ const MembershipsList = props => {
           xs: 6,
           sm: 3,
         },
-        getActions: ({ row: member, tabIndex }) => [
-          <RemoveComponent member={member} tabIndex={tabIndex} />,
+        getActions: ({ row: membership, tabIndex }) => [
+          <RemoveComponent membership={membership} tabIndex={tabIndex} />,
         ],
       },
     ],
@@ -99,27 +101,28 @@ const MembershipsList = props => {
   return (
     <TableResponsive
       label={label}
-      getItemLabel={member =>
-        member.pendingEmail || t('user.full_name', { user: member })
+      getItemLabel={membership =>
+        membership.pendingEmail ||
+        t('user.full_name', { user: membership.user })
       }
       showCards={showCards}
       cardsBreakpoint={cardsBreakpoint}
       columns={columns}
       rows={memberships}
-      emptyMessage={t('memberships.members_list_empty')}
+      emptyMessage={t('collaboration.members_list_empty')}
       {...(setSearchParams && {
         searchParams: Object.fromEntries(searchParams.entries()),
         onSearchParamsChange: setSearchParams,
       })}
       cardsProps={{
-        avatarRender: ({ row: member }) =>
-          member.pendingEmail ? (
+        avatarRender: ({ row: membership }) =>
+          membership.pendingEmail ? (
             <Box sx={{ width: 40, height: 40 }} />
           ) : (
             <AccountAvatar
               component="div"
               sx={{ width: 40, height: 40 }}
-              user={member}
+              user={membership.user}
             />
           ),
       }}

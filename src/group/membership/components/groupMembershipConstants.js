@@ -21,5 +21,7 @@ export const MEMBERSHIP_OPEN = 'OPEN';
 export const MEMBERSHIP_STATUS_PENDING = 'PENDING';
 export const MEMBERSHIP_STATUS_APPROVED = 'APPROVED';
 
-export const ROLE_MEMBER = 'MEMBER';
-export const ROLE_MANAGER = 'MANAGER';
+export const ROLE_MEMBER = 'member';
+export const ROLE_MANAGER = 'manager';
+
+export const ALL_MEMBERSHIP_ROLES = [ROLE_MEMBER, ROLE_MANAGER];
