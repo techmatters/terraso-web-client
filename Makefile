@@ -50,6 +50,11 @@ lint-css:
 		"--name terraso_web_client_lint" \
 		"npm run lint-css"
 
+check-ts:
+	./scripts/docker/run.sh \
+		"--name terraso_web_client_lint" \
+		"npm run check-ts"
+
 test:
 	./scripts/docker/run.sh \
 		"--name terraso_web_client_test" \
