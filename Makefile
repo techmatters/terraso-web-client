@@ -5,6 +5,13 @@ clean-docker:
 	docker ps --filter name=terraso_web_client* -aq | xargs docker stop
 	docker ps --filter name=terraso_web_client* -aq | xargs docker rm
 
+setup-git-hooks:
+	@cp scripts/git/pre-commit.sample .git/hooks/pre-commit
+	@cp scripts/git/commit-msg.sample .git/hooks/commit-msg
+	@echo "git hooks installed"
+
+pre-commit: lint
+
 run:
 	./scripts/docker/run.sh \
 		"--name terraso_web_client -p 3000:3000" \
@@ -21,34 +28,25 @@ build:
 		"npm run build"
 
 format:
-	./scripts/docker/run.sh \
-		"--name terraso_web_client_format" \
-		"npm run format-js && npm run format-css"
+		npm run format-js && npm run format-css
 
 lint:
-	./scripts/docker/run.sh \
-		"--name terraso_web_client_lint" \
-		"npm run lint-js && npm run lint-css"
+		npm run lint-js && npm run lint-css && npm run check-ts
 
 format-css:
-	./scripts/docker/run.sh \
-		"--name terraso_web_client_format" \
-		"npm run format-css"
+		npm run format-css
 
 format-js:
-	./scripts/docker/run.sh \
-		"--name terraso_web_client_format" \
-		"npm run format-js"
+		npm run format-js
 
 lint-js:
-	./scripts/docker/run.sh \
-		"--name terraso_web_client_lint" \
-		"npm run lint-js"
+		npm run lint-js
 
 lint-css:
-	./scripts/docker/run.sh \
-		"--name terraso_web_client_lint" \
-		"npm run lint-css"
+		npm run lint-css
+
+check-ts:
+		npm run check-ts
 
 test:
 	./scripts/docker/run.sh \

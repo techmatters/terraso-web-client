@@ -2,6 +2,18 @@
 
 Terraso web client is a React application that powers the frontend of the Terraso platform.
 
+## Contributing
+
+Before contributing to the project, it's recommended that you set up
+your local git running the following command:
+
+```sh
+$ make setup-git-hooks
+```
+
+This will activate two git hooks to automatically check JavaScript code
+style and commit message structure before each commit.
+
 ## Requirements
 
 - Docker: Version 24.0.2
