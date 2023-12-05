@@ -27,3 +27,6 @@ local.env
 
 # generated
 src/terrasoApi/shared/graphqlSchema
+
+# Sentry Config File
+.sentryclirc
