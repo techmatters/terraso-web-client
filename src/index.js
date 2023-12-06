@@ -16,15 +16,14 @@
  */
 import React from 'react';
 import * as Sentry from '@sentry/react';
-
-import 'config';
-
 import { createRoot } from 'react-dom/client';
 import createStore from 'terrasoApi/store';
 
 import AppWrappers from 'layout/AppWrappers';
 import reportWebVitals from 'monitoring/reportWebVitals';
 import rules from 'permissions/rules';
+
+import { SENTRY_DSN } from 'config';
 
 import theme from 'theme';
 
@@ -33,7 +32,7 @@ import 'index.css';
 import App from 'App';
 
 Sentry.init({
-  dsn: config.SENTRY_DSN,
+  dsn: SENTRY_DSN,
   integrations: [
     new Sentry.BrowserTracing({
       // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
