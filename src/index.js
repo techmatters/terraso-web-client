@@ -33,7 +33,7 @@ import 'index.css';
 import App from 'App';
 
 Sentry.init({
-  dsn: 'https://dac0c436847fc922e68de0855b5ff738@o4506299756642304.ingest.sentry.io/4506345074130944',
+  dsn: config.SENTRY_DSN,
   integrations: [
     new Sentry.BrowserTracing({
       // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled

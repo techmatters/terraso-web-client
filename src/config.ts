@@ -38,6 +38,8 @@ const COOKIES_PARAMS = { path: '/', domain: COOKIES_DOMAIN };
 
 export const ROLLBAR_TOKEN = process.env.REACT_APP_ROLLBAR_TOKEN;
 
+export const SENTRY_DSN = process.env.SENTRY_DSN;
+
 setAPIConfig({
   terrasoAPIURL: TERRASO_API_URL,
   graphQLEndpoint: GRAPHQL_ENDPOINT,
