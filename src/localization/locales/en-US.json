@@ -654,7 +654,9 @@
         "upload_link_form.description": "$t(sharedData.upload_description_label)",
         "addSharedDataLink.terraso_api.invalid": "Invalid $t(sharedData.upload_{{field}}_label)",
         "link_delete_tooltip": "Remove link “{{name}}”.",
-        "file_delete_tooltip": "Remove file “{{name}}”."
+        "file_delete_tooltip": "Remove file “{{name}}”.",
+        "visualization_unsaved_changes_title": "Leave Map?",
+        "visualization_unsaved_changes_message": "You have unsaved changes that will be lost if you leave the page. Finish map before you leave."
     },
     "common": {
         "dialog_cancel_label": "Cancel",
