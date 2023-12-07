@@ -21,7 +21,7 @@ import type { Severity } from 'terraso-client-shared/monitoring/logger';
 
 import { rollbar } from 'monitoring/rollbar';
 
-export const TERRASO_ENV = process.env.REACT_APP_TERRASO_ENV || 'local';
+export const TERRASO_ENV = process.env.REACT_APP_TERRASO_ENV || 'development';
 
 export const TERRASO_API_URL =
   process.env.REACT_APP_TERRASO_API_URL || 'http://127.0.0.1:8000';
