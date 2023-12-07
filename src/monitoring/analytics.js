@@ -22,7 +22,7 @@ import { PLAUSIBLE_DOMAIN, TERRASO_ENV } from 'config';
 
 export const plausible = Plausible({
   domain: PLAUSIBLE_DOMAIN,
-  trackLocalhost: TERRASO_ENV === 'local',
+  trackLocalhost: TERRASO_ENV === 'development',
 });
 
 plausible.enableAutoPageviews();

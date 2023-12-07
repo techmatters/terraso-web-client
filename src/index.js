@@ -15,9 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React from 'react';
-
-import 'config';
-
+import * as Sentry from '@sentry/react';
 import { createRoot } from 'react-dom/client';
 import createStore from 'terrasoApi/store';
 
@@ -25,11 +23,30 @@ import AppWrappers from 'layout/AppWrappers';
 import reportWebVitals from 'monitoring/reportWebVitals';
 import rules from 'permissions/rules';
 
+import { SENTRY_DSN, TERRASO_ENV } from 'config';
+
 import theme from 'theme';
 
 import 'index.css';
 
 import App from 'App';
+
+Sentry.init({
+  dsn: SENTRY_DSN,
+  environment: TERRASO_ENV,
+  integrations: [
+    new Sentry.BrowserTracing({
+      // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
+      tracePropagationTargets: ['localhost', /^https:\/\/yourserver\.io\/api/],
+    }),
+    new Sentry.Replay(),
+  ],
+  // Performance Monitoring
+  tracesSampleRate: 1.0, // Capture 100% of the transactions
+  // Session Replay
+  replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+  replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+});
 
 createRoot(document.getElementById('root')).render(
   <AppWrappers store={createStore()} theme={theme} permissionsRules={rules}>
