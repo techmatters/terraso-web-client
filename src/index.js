@@ -23,7 +23,7 @@ import AppWrappers from 'layout/AppWrappers';
 import reportWebVitals from 'monitoring/reportWebVitals';
 import rules from 'permissions/rules';
 
-import { SENTRY_DSN } from 'config';
+import { SENTRY_DSN, TERRASO_ENV } from 'config';
 
 import theme from 'theme';
 
@@ -33,6 +33,7 @@ import App from 'App';
 
 Sentry.init({
   dsn: SENTRY_DSN,
+  environment: TERRASO_ENV,
   integrations: [
     new Sentry.BrowserTracing({
       // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
