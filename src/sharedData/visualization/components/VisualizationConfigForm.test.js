@@ -722,7 +722,7 @@ test.each([
       testParams.expectedDataEntriesFetchInput
     );
 
-    // Block navigation if there are unsaved changes
+    // Blocked navigation
     window.dispatchEvent(new Event('beforeunload'));
     expect(preventDefault).toHaveBeenCalledTimes(1);
 
