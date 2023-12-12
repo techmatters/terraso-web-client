@@ -656,7 +656,7 @@
         "link_delete_tooltip": "Remove link “{{name}}”.",
         "file_delete_tooltip": "Remove file “{{name}}”.",
         "visualization_unsaved_changes_title": "Leave Map?",
-        "visualization_unsaved_changes_message": "You have unsaved changes that will be lost if you leave the page. Finish map before you leave."
+        "visualization_unsaved_changes_message": "You have unsaved changes that will be lost if you leave the page."
     },
     "common": {
         "dialog_cancel_label": "Cancel",
