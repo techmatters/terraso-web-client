@@ -51,12 +51,12 @@ const MembershipsList = props => {
         valueGetter: ({ row: membership }) =>
           membership.pendingEmail
             ? membership.pendingEmail
-            : t('user.full_name', { user: membership.user }),
+            : t('user.full_name', { user: membership }),
         cardRender: ({ row: membership }) => (
           <Typography noWrap>
             {membership.pendingEmail
               ? membership.pendingEmail
-              : t('user.full_name', { user: membership.user })}
+              : t('user.full_name', { user: membership })}
           </Typography>
         ),
         renderCell: ({ row: membership }) => (
