@@ -697,7 +697,9 @@
         "upload_link_form.description": "$t(sharedData.upload_description_label)",
         "addSharedDataLink.terraso_api.invalid": "$t(sharedData.upload_{{field}}_label) inválido",
         "link_delete_tooltip": "Eliminar enlace “{{name}}”.",
-        "file_delete_tooltip": "Eliminar archivo “{{name}}”."
+        "file_delete_tooltip": "Eliminar archivo “{{name}}”.",
+        "visualization_unsaved_changes_title": "¿Dejar el mapa?",
+        "visualization_unsaved_changes_message": "Tienes cambios no guardados que se perderán si abandonas la página."
     },
     "share": {
         "button": "Comparte",

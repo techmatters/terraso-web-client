@@ -697,7 +697,15 @@ test.each([
 ])(
   'VisualizationConfigForm: Create %s visualization',
   async (caseDescription, testParams) => {
+    const preventDefault = jest.fn();
+    window.onbeforeunload = jest.fn(event => {
+      event.preventDefault = preventDefault;
+    });
     const { map, events } = await setup(testParams);
+
+    // Navigation is not blocked in the first step
+    window.dispatchEvent(new Event('beforeunload'));
+    expect(preventDefault).toHaveBeenCalledTimes(0);
 
     await testSelectDataFileStep(testParams);
     await testStepper(testParams);
@@ -714,6 +722,10 @@ test.each([
       testParams.expectedDataEntriesFetchInput
     );
 
+    // Blocked navigation
+    window.dispatchEvent(new Event('beforeunload'));
+    expect(preventDefault).toHaveBeenCalledTimes(1);
+
     // Save
     await act(async () =>
       fireEvent.click(screen.getByRole('button', { name: 'Publish' }))
@@ -728,6 +740,10 @@ test.each([
     expect(JSON.parse(saveCall[1].input.configuration)).toStrictEqual(
       testParams.expectedConfiguration
     );
+
+    // Navigation is not blocked after saving
+    window.dispatchEvent(new Event('beforeunload'));
+    expect(preventDefault).toHaveBeenCalledTimes(1);
   },
   30000
 );

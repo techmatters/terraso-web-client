@@ -14,10 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Stepper from 'common/components/Stepper';
+import NavigationBlockedDialog from 'navigation/components/NavigationBlockedDialog';
+import { useNavigationBlocker } from 'navigation/navigationContext';
 import {
   useVisualizationContext,
   VisualizationContextProvider,
@@ -143,32 +145,59 @@ const Steps = props => {
 };
 
 const VisualizationConfigForm = props => {
+  const { t } = useTranslation();
   const { onCompleteSuccess, onCancel } = props;
   const [visualizationConfig, setVisualizationConfig] =
     useState(INITIAL_CONFIG);
+  const [isDirty, setIsDirty] = useState(false);
 
-  const onReadFileFails = setActiveStepIndex => () => {
-    setActiveStepIndex(0);
-  };
+  const { isBlocked, unblock, cancel } = useNavigationBlocker(
+    isDirty,
+    t('sharedData.visualization_unsaved_changes_message')
+  );
 
-  const onStepUpdate = update =>
+  const onReadFileFails = useCallback(
+    setActiveStepIndex => () => {
+      setActiveStepIndex(0);
+    },
+    []
+  );
+
+  const onStepUpdate = useCallback(update => {
     setVisualizationConfig(current => ({
       ...current,
       ...update,
     }));
+    setIsDirty(true);
+  }, []);
+
+  const onCompleteSuccessWrapper = useCallback(() => {
+    onCompleteSuccess(visualizationConfig);
+    setIsDirty(false);
+  }, [onCompleteSuccess, visualizationConfig]);
 
   return (
-    <VisualizationContextProvider
-      visualizationConfig={visualizationConfig}
-      setVisualizationConfig={setVisualizationConfig}
-    >
-      <Steps
-        onReadFileFails={onReadFileFails}
-        onStepUpdate={onStepUpdate}
-        onCompleteSuccess={onCompleteSuccess}
-        onCancel={onCancel}
-      />
-    </VisualizationContextProvider>
+    <>
+      {isBlocked && (
+        <NavigationBlockedDialog
+          title={t('sharedData.visualization_unsaved_changes_title')}
+          message={t('sharedData.visualization_unsaved_changes_message')}
+          onConfirm={unblock}
+          onCancel={cancel}
+        />
+      )}
+      <VisualizationContextProvider
+        visualizationConfig={visualizationConfig}
+        setVisualizationConfig={setVisualizationConfig}
+      >
+        <Steps
+          onReadFileFails={onReadFileFails}
+          onStepUpdate={onStepUpdate}
+          onCompleteSuccess={onCompleteSuccessWrapper}
+          onCancel={onCancel}
+        />
+      </VisualizationContextProvider>
+    </>
   );
 };
 
