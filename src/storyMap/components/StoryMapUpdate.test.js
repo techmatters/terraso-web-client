@@ -194,6 +194,11 @@ test('StoryMapUpdate: Show Share Dialog', async () => {
     ).toBeInTheDocument();
   });
 
+  // Show owner
+  expect(
+    within(membersList).getByRole('listitem', { name: 'Pedro Paez' })
+  ).toBeInTheDocument();
+
   // Show cancel button
   const cancelButton = screen.getByRole('button', { name: 'Cancel' });
   expect(cancelButton).toBeInTheDocument();
