@@ -19,8 +19,6 @@ import _ from 'lodash/fp';
 import { setAPIConfig } from 'terraso-client-shared/config';
 import type { Severity } from 'terraso-client-shared/monitoring/logger';
 
-import { rollbar } from 'monitoring/rollbar';
-
 export const TERRASO_ENV = process.env.ENV || 'development';
 
 export const TERRASO_API_URL =
@@ -36,8 +34,6 @@ export const COOKIES_DOMAIN =
 
 const COOKIES_PARAMS = { path: '/', domain: COOKIES_DOMAIN };
 
-export const ROLLBAR_TOKEN = process.env.REACT_APP_ROLLBAR_TOKEN;
-
 export const SENTRY_DSN = process.env.SENTRY_DSN;
 
 setAPIConfig({
@@ -50,7 +46,7 @@ setAPIConfig({
       Cookies.set(name, token, COOKIES_PARAMS);
     },
   },
-  logger: (severity: Severity, ...args) => rollbar[severity](...args),
+  logger: (severity: Severity, ...args) => console.log(...args),
 });
 
 export const WAIT_FOR_TIMEOUT = process.env.REACT_APP_WAIT_FOR_TIMEOUT || 3000;
