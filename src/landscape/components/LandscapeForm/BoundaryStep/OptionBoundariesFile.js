@@ -25,7 +25,6 @@ import BaseDropZone from 'common/components/DropZone';
 import ExternalLink from 'common/components/ExternalLink';
 import InlineHelp from 'common/components/InlineHelp';
 import PageHeader from 'layout/PageHeader';
-import { rollbar } from 'monitoring/rollbar';
 import { useMap } from 'gis/components/Map';
 import { parseFileToGeoJSON } from 'gis/gisSlice';
 import mapboxgl from 'gis/mapbox';
@@ -74,7 +73,7 @@ const DropZone = props => {
         if (success) {
           setCurrentFile(selectedFile);
         } else {
-          rollbar.error(data.payload);
+          console.error(data.payload);
         }
       });
     },

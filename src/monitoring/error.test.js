@@ -17,10 +17,6 @@
 import { render, screen } from 'tests/utils';
 import React from 'react';
 
-import { rollbar } from 'monitoring/rollbar';
-
-jest.mock('monitoring/rollbar');
-
 global.console.error = jest.fn();
 
 const Bomb = () => {
@@ -52,12 +48,6 @@ test('ErrorMonitoringProvider: component error', async () => {
     )
   ).toBe(true);
   expect(console.error.mock.calls[3][0]).toStrictEqual('💥 CABOOM 💥');
-
-  // Rollbar
-  expect(rollbar.error).toHaveBeenCalledTimes(1);
-  const rollbarCall = rollbar.error.mock.calls[0];
-  expect(rollbarCall[0]).toStrictEqual('💥 CABOOM 💥');
-  expect(rollbarCall[1].startsWith('Error: 💥 CABOOM 💥')).toBe(true);
 
   // Show error page
   expect(
