@@ -11,9 +11,6 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    env:
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-      SENTRY_DISABLE_AUTO_UPLOAD: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
 
     steps:
       - name: Checkout
@@ -82,9 +79,6 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    env:
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-      SENTRY_DISABLE_AUTO_UPLOAD: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
 
     steps:
       - name: Checkout
