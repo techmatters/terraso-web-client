@@ -84,7 +84,7 @@ const Content = props => {
     );
   }
 
-  if (!accountMembership && closedGroup) {
+  if ((!accountMembership || accountMembership.fetching) && closedGroup) {
     return (
       <CardContent>
         <Trans
