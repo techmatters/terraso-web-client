@@ -70,6 +70,7 @@ const GroupMembers = () => {
           groupSlug: group.slug,
           userEmails: [membership.user.email],
           userRole: newRole,
+          membershipStatus: MEMBERSHIP_STATUS_APPROVED,
         })
       );
     },
