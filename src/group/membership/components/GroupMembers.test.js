@@ -388,6 +388,7 @@ test('GroupMembers: Manager actions', async () => {
         userEmails: ['email2@email.com'],
         groupSlug: 'test-group-slug',
         userRole: 'manager',
+        membershipStatus: 'APPROVED',
       },
     }
   );
