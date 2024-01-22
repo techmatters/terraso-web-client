@@ -13,7 +13,7 @@
     "@mui/icons-material": "^5.14.15",
     "@mui/lab": "^5.0.0-alpha.150",
     "@mui/material": "^5.15.3",
-    "@mui/x-data-grid": "^6.17.0",
+    "@mui/x-data-grid": "^6.19.1",
     "@reduxjs/toolkit": "^1.9.7",
     "@sentry/cli": "^2.22.3",
     "@sentry/react": "^7.93.0",
