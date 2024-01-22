@@ -112,7 +112,7 @@
     "react-scripts": "^5.0.1",
     "serve": "^14.2.1",
     "stylelint": "^16.1.0",
-    "stylelint-prettier": "^4.1.0"
+    "stylelint-prettier": "^5.0.0"
   },
   "jest": {
     "transform": {},
