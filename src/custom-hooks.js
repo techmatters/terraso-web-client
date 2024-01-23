@@ -47,3 +47,17 @@ export const useIsMounted = () => {
 
   return isMounted;
 };
+
+export const useCopy = (content, onCopy) => {
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => () => setCopied(false), []);
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(content);
+    setCopied(true);
+    onCopy?.();
+  };
+
+  return { copied, copyToClipboard };
+};

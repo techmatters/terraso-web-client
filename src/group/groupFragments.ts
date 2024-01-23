@@ -39,6 +39,8 @@ export const groupDataEntries = /* GraphQL */ `
     sharedResources {
       edges {
         node {
+          shareAccess
+          shareUrl
           source {
             ... on DataEntryNode {
               ...dataEntry

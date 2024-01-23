@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { render, screen, within } from 'tests/utils';
+import { act, fireEvent, render, screen, within } from 'tests/utils';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
@@ -49,6 +49,11 @@ const setup = async () => {
 beforeEach(() => {
   useParams.mockReturnValue({
     slug: 'slug-1',
+  });
+  Object.assign(navigator, {
+    clipboard: {
+      writeText: jest.fn(),
+    },
   });
 });
 
@@ -179,4 +184,113 @@ test('GroupView: Display data', async () => {
   const entriesList = within(sharedDataRegion.getByRole('list'));
   const items = entriesList.getAllByRole('listitem');
   expect(items.length).toBe(6);
+});
+test('GroupView: Share link', async () => {
+  global.fetch.mockReturnValue(
+    Promise.resolve({
+      json: () => [],
+    })
+  );
+  const memberships = {
+    totalCount: 6,
+    edges: Array(5)
+      .fill(0)
+      .map(() => ({
+        node: {
+          user: {
+            firstName: 'Member name',
+            lastName: 'Member Last Name',
+          },
+        },
+      })),
+  };
+  const accountMembership = {
+    id: 'user-id',
+    userRole: 'member',
+    membershipStatus: 'APPROVED',
+    user: {
+      firstName: 'Member First Name',
+      lastName: 'Member Last Name',
+    },
+  };
+  const sharedResources = {
+    edges: Array(6)
+      .fill(0)
+      .map((item, index) => ({
+        node: {
+          shareAccess: 'NO',
+          shareUrl: 'https://test-url',
+          source: {
+            id: `de-${index}`,
+            createdAt: '2022-05-20T16:25:21.536679+00:00',
+            name: `Data Entry ${index}`,
+            createdBy: { id: 'user-id', firstName: 'First', lastName: 'Last' },
+            description: `Description ${index}`,
+            size: 3456,
+            entryType: 'FILE',
+            visualizations: { edges: [] },
+          },
+        },
+      })),
+  };
+  terrasoApi.requestGraphQL.mockReturnValue(
+    Promise.resolve({
+      groups: {
+        edges: [
+          {
+            node: {
+              name: 'Group name',
+              description: 'Group description',
+              website: 'https://www.group.org',
+              email: 'email@email.com',
+              membershipList: {
+                memberships,
+                accountMembership,
+              },
+              sharedResources,
+            },
+          },
+        ],
+      },
+    })
+  );
+  await setup();
+
+  const sharedDataRegion = within(
+    screen.getByRole('region', { name: 'Shared files and Links' })
+  );
+  expect(
+    sharedDataRegion.getByRole('heading', { name: 'Shared files and Links' })
+  ).toBeInTheDocument();
+  const entriesList = within(sharedDataRegion.getByRole('list'));
+  const items = entriesList.getAllByRole('listitem');
+  expect(items.length).toBe(6);
+
+  const shareButton = within(items[0]).getByRole('button', {
+    name: 'Share File “Data Entry 0”',
+  });
+  await act(async () => fireEvent.click(shareButton));
+
+  const dialog = screen.getByRole('dialog', {
+    name: 'Share “Data Entry 0” File',
+  });
+
+  // Access level
+  const shareAccess = within(dialog).getByRole('combobox', {
+    name: `Share access level`,
+  });
+  await act(async () => fireEvent.mouseDown(shareAccess));
+  const listbox = within(screen.getByRole('listbox'));
+  await act(async () =>
+    fireEvent.click(listbox.getByRole('option', { name: 'Anyone with link' }))
+  );
+
+  // TODO test change access level
+
+  // Copy link
+  await act(async () =>
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Copy Link' }))
+  );
+  const copyCall = navigator.clipboard.writeText.mock.calls[0];
+  expect(copyCall[0].toString()).toStrictEqual('https://test-url');
 });

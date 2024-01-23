@@ -14,13 +14,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import _ from 'lodash/fp';
 
 export const extractDataEntry = dataEntry => ({
   ...dataEntry,
   visualizations: dataEntry?.visualizations?.edges?.map(edge => edge.node),
 });
 
+// TODO remove
 export const extractDataEntries = parent =>
   parent.sharedResources?.edges
     .map(edge => edge.node.source)
     .map(dataEntry => extractDataEntry(dataEntry));
+
+export const extractSharedResources = parent =>
+  parent.sharedResources?.edges.map(edge => ({
+    ..._.omit('source', edge.node),
+    dataEntry: extractDataEntry(edge.node.source),
+  }));

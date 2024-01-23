@@ -28,7 +28,11 @@ import SharedDataEntryBase, { ICON_SIZE } from './SharedDataEntryBase';
 const DownloadComponent = props => {
   const { t } = useTranslation();
   const { owner, entityType } = useCollaborationContext();
-  const { dataEntry } = props;
+  const { sharedResource } = props;
+  const dataEntry = useMemo(
+    () => sharedResource.dataEntry,
+    [sharedResource.dataEntry]
+  );
 
   return (
     <ExternalLink
@@ -58,7 +62,11 @@ const DownloadComponent = props => {
 
 const SharedDataEntryLink = props => {
   const { t } = useTranslation();
-  const { dataEntry } = props;
+  const { sharedResource } = props;
+  const dataEntry = useMemo(
+    () => sharedResource.dataEntry,
+    [sharedResource.dataEntry]
+  );
 
   const domain = useMemo(() => {
     const url = new URL(dataEntry.url);
@@ -72,7 +80,7 @@ const SharedDataEntryLink = props => {
 
   return (
     <SharedDataEntryBase
-      dataEntry={dataEntry}
+      sharedResource={sharedResource}
       EntryTypeIcon={() => <LinkIcon />}
       DownloadComponent={DownloadComponent}
       info={domain}

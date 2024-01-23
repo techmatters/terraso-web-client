@@ -36,13 +36,15 @@ import { ScrollTo } from 'navigation/scrollTo';
 import SharedDataEntryFile from './SharedDataEntryFile';
 import SharedDataEntryLink from './SharedDataEntryLink';
 
-const SharedFilesCard = props => {
+const SharedDataCard = props => {
   const { t } = useTranslation();
   const { onUploadClick, onAddVisualizationClick } = props;
   const { owner, entityTypeLocalized } = useCollaborationContext();
   const { allowed } = usePermission(`sharedData.viewFiles`, owner);
-  const { data: sharedFiles, fetching } = useSelector(_.get('sharedData.list'));
-  const hasFiles = !_.isEmpty(sharedFiles);
+  const { data: sharedResources, fetching } = useSelector(
+    _.get('sharedData.list')
+  );
+  const hasSharedData = !_.isEmpty(sharedResources);
 
   if (!allowed) {
     return null;
@@ -73,19 +75,19 @@ const SharedFilesCard = props => {
         <Typography sx={{ mb: 2 }}>
           {t('sharedData.card_description')}
         </Typography>
-        {hasFiles && (
+        {hasSharedData && (
           <>
             <List aria-describedby="shared-data-card-title">
-              {sharedFiles.map(dataEntry =>
-                dataEntry.entryType === 'LINK' ? (
+              {sharedResources.map(sharedResource =>
+                sharedResource.dataEntry.entryType === 'LINK' ? (
                   <SharedDataEntryLink
-                    key={dataEntry.id}
-                    dataEntry={dataEntry}
+                    key={sharedResource.dataEntry.id}
+                    sharedResource={sharedResource}
                   />
                 ) : (
                   <SharedDataEntryFile
-                    key={dataEntry.id}
-                    dataEntry={dataEntry}
+                    key={sharedResource.dataEntry.id}
+                    sharedResource={sharedResource}
                   />
                 )
               )}
@@ -108,7 +110,7 @@ const SharedFilesCard = props => {
           <Button variant="contained" onClick={onUploadClick}>
             {t('sharedData.upload_button')}
           </Button>
-          {onAddVisualizationClick && hasFiles && (
+          {onAddVisualizationClick && hasSharedData && (
             <Button variant="outlined" onClick={onAddVisualizationClick}>
               {t('sharedData.add_visualization_button')}
             </Button>
@@ -119,4 +121,4 @@ const SharedFilesCard = props => {
   );
 };
 
-export default SharedFilesCard;
+export default SharedDataCard;

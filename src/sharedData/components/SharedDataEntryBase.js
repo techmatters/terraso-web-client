@@ -48,15 +48,20 @@ const SharedDataEntryBase = props => {
   const { i18n, t } = useTranslation();
   const { owner, entityType, updateOwner } = useCollaborationContext();
   const {
-    dataEntry,
+    sharedResource,
     children,
     EntryTypeIcon,
     DownloadComponent,
+    ShareComponent,
     info,
     deleteTooltip,
   } = props;
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const dataEntry = useMemo(
+    () => sharedResource.dataEntry,
+    [sharedResource.dataEntry]
+  );
   const processing = useSelector(
     _.get(`sharedData.processing.${dataEntry.id}`)
   );
@@ -183,6 +188,7 @@ const SharedDataEntryBase = props => {
           justifyContent="flex-end"
           display={isEditingName ? 'none' : 'inherit'}
         >
+          {ShareComponent && <ShareComponent sharedResource={sharedResource} />}
           <Restricted
             permission="sharedData.delete"
             resource={permissionsResource}
@@ -223,7 +229,7 @@ const SharedDataEntryBase = props => {
             </ConfirmButton>
           </Restricted>
           <Restricted permission="sharedData.download" resource={owner}>
-            <DownloadComponent dataEntry={dataEntry} />
+            <DownloadComponent sharedResource={sharedResource} />
           </Restricted>
         </Grid>
         <Grid item xs={1} order={{ xs: 9 }} display={{ md: 'none' }} />

@@ -34,7 +34,11 @@ import {
 } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
+import { useCopy } from 'custom-hooks';
+
 import { useAnalytics } from 'monitoring/analytics';
+
+import CopyLink from './CopyLink';
 
 import theme from 'theme';
 
@@ -60,20 +64,6 @@ export const SocialShareContextProvider = props => {
       {children}
     </SocialShareContext.Provider>
   );
-};
-
-const useCopy = (content, onCopy) => {
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => () => setCopied(false), []);
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(content);
-    setCopied(true);
-    onCopy?.();
-  };
-
-  return { copied, copyToClipboard };
 };
 
 const CopyEmbededCode = props => {
@@ -144,68 +134,6 @@ const CopyEmbededCode = props => {
       {copied && (
         <Alert severity="success" sx={{ mt: 2 }}>
           {t('share.copy_embed_button_done')}
-        </Alert>
-      )}
-    </>
-  );
-};
-
-const CopyLink = props => {
-  const { pageUrl, onShare } = props;
-  const { t } = useTranslation();
-
-  const { copied, copyToClipboard } = useCopy(pageUrl, () => {
-    onShare('link');
-  });
-
-  return (
-    <>
-      <InputLabel
-        htmlFor="share-link"
-        sx={{
-          marginTop: 4,
-          color: 'black',
-          fontSize: '1.3rem',
-        }}
-      >
-        {t('share.copy')}
-      </InputLabel>
-      <TextField
-        size="small"
-        variant="outlined"
-        value={pageUrl}
-        fullWidth
-        sx={{
-          '& .MuiInputBase-input': {
-            flexGrow: 1,
-            width: 'auto',
-          },
-        }}
-        InputProps={{
-          id: 'share-link',
-          sx: {
-            flexDirection: { xs: 'column', sm: 'row' },
-            paddingRight: 0,
-          },
-          readOnly: true,
-          endAdornment: (
-            <Button
-              variant="outlined"
-              onClick={copyToClipboard}
-              sx={{
-                marginLeft: { xs: 0, sm: 2 },
-                minWidth: '100px',
-                width: { xs: '100%', sm: 'auto' },
-              }}
-            >
-              {t('share.copy_button')}
-            </Button>
-          ),
-        }}
-      />
-      {copied && (
-        <Alert severity="success" sx={{ mt: 1 }}>
-          {t('share.copy_button_done')}
         </Alert>
       )}
     </>
