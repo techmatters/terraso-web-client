@@ -18,7 +18,7 @@ import _ from 'lodash/fp';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
-import { extractDataEntry } from './sharedDataUtils';
+import { extractDataEntry, extractSharedResource } from './sharedDataUtils';
 
 import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
@@ -269,6 +269,8 @@ export const updateSharedResource = ({ sharedResource }) => {
       updateSharedResource(input: $input) {
         sharedResource {
           id
+          shareAccess
+          shareUrl
           source {
             ... on DataEntryNode {
               ...dataEntry
@@ -284,6 +286,6 @@ export const updateSharedResource = ({ sharedResource }) => {
     .requestGraphQL(query, {
       input: _.pick(['id', 'shareAccess'], sharedResource),
     })
-    .then(_.get('updateSharedResource.sharedResource.source'))
-    .then(extractDataEntry);
+    .then(_.get('updateSharedResource.sharedResource'))
+    .then(extractSharedResource);
 };

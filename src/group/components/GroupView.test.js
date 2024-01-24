@@ -218,6 +218,7 @@ test('GroupView: Share link', async () => {
       .fill(0)
       .map((item, index) => ({
         node: {
+          id: 'shared-resource-id-1',
           shareAccess: 'NO',
           shareUrl: 'https://test-url',
           source: {
@@ -285,7 +286,15 @@ test('GroupView: Share link', async () => {
     fireEvent.click(listbox.getByRole('option', { name: 'Anyone with link' }))
   );
 
-  // TODO test change access level
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledWith(
+    expect.stringContaining('mutation updateSharedResource'),
+    {
+      input: {
+        id: 'shared-resource-id-1',
+        shareAccess: 'ALL',
+      },
+    }
+  );
 
   // Copy link
   await act(async () =>

@@ -64,13 +64,13 @@ const SharedDataEntryBase = props => {
     [sharedResource.dataEntry]
   );
   const processing = useSelector(
-    _.get(`sharedData.processing.${dataEntry.id}`)
+    _.get(`sharedData.processing.${sharedResource.id}`)
   );
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
 
   const onConfirm = useCallback(() => {
-    dispatch(deleteSharedData({ dataEntry })).then(data => {
+    dispatch(deleteSharedData({ dataEntry, sharedResource })).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
       if (success) {
         updateOwner();
@@ -83,12 +83,21 @@ const SharedDataEntryBase = props => {
       }
       dispatch(resetProcessing(dataEntry.id));
     });
-  }, [dataEntry, dispatch, owner.slug, trackEvent, updateOwner, entityType]);
+  }, [
+    dataEntry,
+    dispatch,
+    owner.slug,
+    trackEvent,
+    updateOwner,
+    entityType,
+    sharedResource,
+  ]);
 
   const onUpdate = useCallback(
     field => value => {
       dispatch(
         updateSharedData({
+          sharedResource,
           dataEntry: {
             ..._.pick(['id', 'name', 'description'], dataEntry),
             [field]: value,
@@ -105,7 +114,15 @@ const SharedDataEntryBase = props => {
         dispatch(resetProcessing(dataEntry.id));
       });
     },
-    [dataEntry, dispatch, owner.slug, trackEvent, updateOwner, entityType]
+    [
+      dataEntry,
+      dispatch,
+      owner.slug,
+      trackEvent,
+      updateOwner,
+      entityType,
+      sharedResource,
+    ]
   );
 
   const onUpdateName = useMemo(() => onUpdate('name'), [onUpdate]);

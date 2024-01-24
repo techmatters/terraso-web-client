@@ -21,14 +21,10 @@ export const extractDataEntry = dataEntry => ({
   visualizations: dataEntry?.visualizations?.edges?.map(edge => edge.node),
 });
 
-// TODO remove
-export const extractDataEntries = parent =>
-  parent.sharedResources?.edges
-    .map(edge => edge.node.source)
-    .map(dataEntry => extractDataEntry(dataEntry));
+export const extractSharedResource = sharedResource => ({
+  ..._.omit('source', sharedResource),
+  dataEntry: extractDataEntry(sharedResource.source),
+});
 
 export const extractSharedResources = parent =>
-  parent.sharedResources?.edges.map(edge => ({
-    ..._.omit('source', edge.node),
-    dataEntry: extractDataEntry(edge.node.source),
-  }));
+  parent.sharedResources?.edges.map(edge => extractSharedResource(edge.node));

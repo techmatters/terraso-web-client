@@ -18,6 +18,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { filesize } from 'filesize';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'terrasoApi/store';
 import CloseIcon from '@mui/icons-material/Close';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import MapIcon from '@mui/icons-material/Map';
@@ -131,6 +132,9 @@ const ShareDialog = props => {
     () => sharedResource.dataEntry,
     [sharedResource.dataEntry]
   );
+  const processing = useSelector(
+    _.get(`sharedData.processing.${sharedResource.id}`)
+  );
 
   // focus on the close button on open
   const onCloseRefChange = ref => {
@@ -185,6 +189,7 @@ const ShareDialog = props => {
         <Stack spacing={1} direction="row" alignItems="center">
           {/* TODO Aria to read as full sentence */}
           <Select
+            disabled={processing}
             value={sharedResource.shareAccess}
             onChange={onChange}
             inputProps={{

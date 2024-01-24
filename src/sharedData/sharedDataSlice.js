@@ -113,8 +113,8 @@ export const updateSharedResource = createAsyncThunk(
   })
 );
 
-const setProcessing = (state, requestStatus, dataEntry) =>
-  _.set(`processing.${dataEntry.id}`, requestStatus === 'pending', state);
+const setProcessing = (state, requestStatus, sharedResource) =>
+  _.set(`processing.${sharedResource.id}`, requestStatus === 'pending', state);
 
 const sharedDataSlice = createSlice({
   name: 'sharedData',
@@ -140,17 +140,27 @@ const sharedDataSlice = createSlice({
 
   extraReducers: builder => {
     builder.addCase(updateSharedData.pending, (state, action) =>
-      setProcessing(state, action.meta.requestStatus, action.meta.arg.dataEntry)
+      setProcessing(
+        state,
+        action.meta.requestStatus,
+        action.meta.arg.sharedResource
+      )
     );
     builder.addCase(updateSharedData.rejected, (state, action) =>
-      setProcessing(state, action.meta.requestStatus, action.meta.arg.dataEntry)
+      setProcessing(
+        state,
+        action.meta.requestStatus,
+        action.meta.arg.sharedResource
+      )
     );
     builder.addCase(updateSharedData.fulfilled, (state, action) => ({
       ...state,
       list: {
         ...state.list,
         data: state.list.data.map(item =>
-          item.id === action.meta.arg.dataEntry.id ? action.payload : item
+          item.id === action.meta.arg.sharedResource.id
+            ? { ...item, dataEntry: action.payload }
+            : item
         ),
       },
     }));
@@ -159,33 +169,46 @@ const sharedDataSlice = createSlice({
       setProcessing(
         state,
         action.meta.requestStatus,
-        action.meta.arg.sharedResource.dataEntry
+        action.meta.arg.sharedResource
       )
     );
     builder.addCase(updateSharedResource.rejected, (state, action) => {
       return setProcessing(
         state,
         action.meta.requestStatus,
-        action.meta.arg.sharedResource.dataEntry
+        action.meta.arg.sharedResource
       );
     });
-    builder.addCase(updateSharedResource.fulfilled, (state, action) => ({
-      ...state,
-      list: {
-        ...state.list,
-        data: state.list.data.map(item =>
-          item.id === action.meta.arg.sharedResource.dataEntry.id
-            ? action.payload
-            : item
-        ),
-      },
-    }));
+    builder.addCase(updateSharedResource.fulfilled, (state, action) => {
+      return {
+        ...state,
+        processing: _.omit(action.meta.arg.sharedResource.id, {
+          ...state.processing,
+        }),
+        list: {
+          ...state.list,
+          data: state.list.data.map(item =>
+            item.id === action.meta.arg.sharedResource.id
+              ? action.payload
+              : item
+          ),
+        },
+      };
+    });
 
     builder.addCase(deleteSharedData.pending, (state, action) =>
-      setProcessing(state, action.meta.requestStatus, action.meta.arg.dataEntry)
+      setProcessing(
+        state,
+        action.meta.requestStatus,
+        action.meta.arg.sharedResource
+      )
     );
     builder.addCase(deleteSharedData.rejected, (state, action) =>
-      setProcessing(state, action.meta.requestStatus, action.meta.arg.dataEntry)
+      setProcessing(
+        state,
+        action.meta.requestStatus,
+        action.meta.arg.sharedResource
+      )
     );
 
     builder.addCase(deleteSharedData.fulfilled, (state, action) => ({
@@ -193,7 +216,7 @@ const sharedDataSlice = createSlice({
       list: {
         ...state.list,
         data: state.list.data.filter(
-          item => item.id !== action.meta.arg.dataEntry.id
+          item => item.id !== action.meta.arg.sharedResource.id
         ),
       },
     }));
