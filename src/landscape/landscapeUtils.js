@@ -27,7 +27,7 @@ import { Typography } from '@mui/material';
 import { countryNameForCode } from 'common/countries';
 import * as gisService from 'gis/gisService';
 import { normalizeLongitude, parseGeoJson } from 'gis/gisUtils';
-import { extractDataEntries } from 'sharedData/sharedDataUtils';
+import { extractSharedResources } from 'sharedData/sharedDataUtils';
 import { extractTerms } from 'taxonomies/taxonomiesUtils';
 
 import { ALL_PARTNERSHIP_STATUS } from './landscapeConstants';
@@ -155,7 +155,7 @@ export const extractLandscape = async (landscape, useLocationApi) => {
     areaPolygon: extractLandscapeGeoJson(landscape),
     partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
     partnership: extractPartnership(landscape),
-    dataEntries: extractDataEntries(landscape),
+    sharedResources: extractSharedResources(landscape),
     taxonomyTerms: extractTerms(_.get('taxonomyTerms.edges', landscape)),
     affiliatedGroups: extractAffiliatedGroups(landscape),
     developmentStrategy: extractDevelopmentStrategy(landscape),

@@ -34,6 +34,7 @@ import {
   deleteSharedData,
   resetProcessing,
   updateSharedData,
+  updateSharedResource,
 } from 'sharedData/sharedDataSlice';
 
 import theme from 'theme';
@@ -113,6 +114,26 @@ const SharedDataEntryBase = props => {
     [onUpdate]
   );
 
+  const onUpdateSharedResource = useCallback(
+    sharedResource => {
+      dispatch(
+        updateSharedResource({
+          sharedResource,
+        })
+      ).then(data => {
+        const success = _.get('meta.requestStatus', data) === 'fulfilled';
+        if (success) {
+          updateOwner();
+          trackEvent('dataEntry.edit', {
+            props: { [entityType]: owner.slug },
+          });
+        }
+        dispatch(resetProcessing(dataEntry.id));
+      });
+    },
+    [dataEntry, dispatch, owner.slug, trackEvent, updateOwner, entityType]
+  );
+
   const description = useMemo(
     () => _.get('description', dataEntry),
     [dataEntry]
@@ -188,7 +209,12 @@ const SharedDataEntryBase = props => {
           justifyContent="flex-end"
           display={isEditingName ? 'none' : 'inherit'}
         >
-          {ShareComponent && <ShareComponent sharedResource={sharedResource} />}
+          {ShareComponent && (
+            <ShareComponent
+              sharedResource={sharedResource}
+              onUpdateSharedResource={onUpdateSharedResource}
+            />
+          )}
           <Restricted
             permission="sharedData.delete"
             resource={permissionsResource}

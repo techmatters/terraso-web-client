@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { filesize } from 'filesize';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
@@ -126,7 +126,7 @@ const DownloadComponent = props => {
 
 const ShareDialog = props => {
   const { t } = useTranslation();
-  const { sharedResource, open, handleClose } = props;
+  const { sharedResource, open, handleClose, onUpdateSharedResource } = props;
   const dataEntry = useMemo(
     () => sharedResource.dataEntry,
     [sharedResource.dataEntry]
@@ -138,6 +138,17 @@ const ShareDialog = props => {
       ref.focus();
     }
   };
+
+  const onChange = useCallback(
+    event => {
+      const shareAccess = event.target.value;
+      onUpdateSharedResource({
+        ...sharedResource,
+        shareAccess,
+      });
+    },
+    [onUpdateSharedResource, sharedResource]
+  );
 
   return (
     <Dialog
@@ -172,8 +183,10 @@ const ShareDialog = props => {
       </DialogTitle>
       <DialogContent sx={{ pb: 5 }}>
         <Stack spacing={1} direction="row" alignItems="center">
+          {/* TODO Aria to read as full sentence */}
           <Select
             value={sharedResource.shareAccess}
+            onChange={onChange}
             inputProps={{
               'aria-label': t(
                 'sharedData.share_file_dialog_share_access_label'
@@ -200,7 +213,7 @@ const ShareDialog = props => {
 
 const ShareComponent = props => {
   const { t } = useTranslation();
-  const { sharedResource } = props;
+  const { sharedResource, onUpdateSharedResource } = props;
   const dataEntry = useMemo(
     () => sharedResource.dataEntry,
     [sharedResource.dataEntry]
@@ -233,6 +246,7 @@ const ShareComponent = props => {
       </Tooltip>
       <ShareDialog
         sharedResource={sharedResource}
+        onUpdateSharedResource={onUpdateSharedResource}
         open={open}
         handleClose={handleClose}
       />

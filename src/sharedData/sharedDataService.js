@@ -262,3 +262,28 @@ export const fetchVisualizationConfig = ({
       configuration: JSON.parse(visualizationConfig.configuration),
     }));
 };
+
+export const updateSharedResource = ({ sharedResource }) => {
+  const query = graphql(`
+    mutation updateSharedResource($input: SharedResourceUpdateMutationInput!) {
+      updateSharedResource(input: $input) {
+        sharedResource {
+          id
+          source {
+            ... on DataEntryNode {
+              ...dataEntry
+              ...dataEntryVisualizations
+            }
+          }
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: _.pick(['id', 'shareAccess'], sharedResource),
+    })
+    .then(_.get('updateSharedResource.sharedResource.source'))
+    .then(extractDataEntry);
+};

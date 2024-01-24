@@ -60,7 +60,7 @@ const CopyLink = props => {
           readOnly: true,
           endAdornment: (
             <Button
-              variant="outlined"
+              variant="contained"
               onClick={copyToClipboard}
               sx={{
                 marginLeft: { xs: 0, sm: 2 },
