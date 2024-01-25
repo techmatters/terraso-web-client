@@ -17,10 +17,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { filesize } from 'filesize';
 import _ from 'lodash/fp';
+import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'terrasoApi/store';
 import CloseIcon from '@mui/icons-material/Close';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import LockIcon from '@mui/icons-material/Lock';
 import MapIcon from '@mui/icons-material/Map';
 import ShareIcon from '@mui/icons-material/Share';
 import {
@@ -127,6 +129,8 @@ const DownloadComponent = props => {
 
 const ShareDialog = props => {
   const { t } = useTranslation();
+  const { owner } = useCollaborationContext();
+
   const { sharedResource, open, handleClose, onUpdateSharedResource } = props;
   const dataEntry = useMemo(
     () => sharedResource.dataEntry,
@@ -134,6 +138,13 @@ const ShareDialog = props => {
   );
   const processing = useSelector(
     _.get(`sharedData.processing.${sharedResource.id}`)
+  );
+  const { allowed: allowedToEditSharedData } = usePermission(
+    'sharedData.edit',
+    {
+      owner,
+      dataEntry,
+    }
   );
 
   // focus on the close button on open
@@ -186,10 +197,24 @@ const ShareDialog = props => {
         </IconButton>
       </DialogTitle>
       <DialogContent sx={{ pb: 5 }}>
-        <Stack spacing={1} direction="row" alignItems="center">
-          {/* TODO Aria to read as full sentence */}
+        {!allowedToEditSharedData && (
+          <span className="sr-only sr-only-focusable">
+            {[
+              t('sharedData.share_file_dialog_share_access_type', {
+                context: sharedResource.shareAccess,
+              }),
+              t('sharedData.share_file_dialog_share_access_suffix'),
+            ].join(' ')}
+          </span>
+        )}
+        <Stack
+          spacing={1}
+          direction="row"
+          alignItems="center"
+          {...(allowedToEditSharedData ? {} : { 'aria-hidden': true })}
+        >
           <Select
-            disabled={processing}
+            disabled={!allowedToEditSharedData || processing}
             value={sharedResource.shareAccess}
             onChange={onChange}
             inputProps={{
@@ -210,6 +235,14 @@ const ShareDialog = props => {
             {t('sharedData.share_file_dialog_share_access_suffix')}
           </Typography>
         </Stack>
+        {!allowedToEditSharedData && (
+          <Stack direction="row" alignItems="center" sx={{ mt: 2 }}>
+            <LockIcon />
+            <Typography>
+              {t('sharedData.share_file_dialog_share_access_not_allowed')}
+            </Typography>
+          </Stack>
+        )}
         <CopyLink pageUrl={sharedResource.shareUrl} />
       </DialogContent>
     </Dialog>
