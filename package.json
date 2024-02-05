@@ -108,7 +108,7 @@
     "i18next-conv": "^14.0.0",
     "jest-axe": "^8.0.0",
     "plausible-tracker": "^0.3.8",
-    "prettier": "^3.0.3",
+    "prettier": "^3.2.5",
     "react-scripts": "^5.0.1",
     "serve": "^14.2.1",
     "stylelint": "^16.2.0",
