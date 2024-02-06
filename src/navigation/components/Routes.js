@@ -45,6 +45,7 @@ import LandscapeProfile from 'landscape/components/LandscapeProfile';
 import LandscapeSharedDataUpload from 'landscape/components/LandscapeSharedDataUpload';
 import LandscapeSharedDataVisualization from 'landscape/components/LandscapeSharedDataVisualization';
 import LandscapeSharedDataVisualizationConfig from 'landscape/components/LandscapeSharedDataVisualizationConfig';
+import LandscapeSharedResourceDownload from 'landscape/components/LandscapeSharedResourceDownload';
 import LandscapeView from 'landscape/components/LandscapeView';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
 import StoryMapInvite from 'storyMap/components/StoryMapInvite';
@@ -155,6 +156,17 @@ const paths = [
     {
       showBreadcrumbs: true,
       breadcrumbsLabel: 'landscape.breadcrumbs_visualization',
+    }
+  ),
+  path(
+    '/landscapes/:landscapeSlug/shared-resource/download/:shareUuid',
+    LandscapeSharedResourceDownload,
+    {
+      showBreadcrumbs: true,
+      breadcrumbsLabel: 'landscape.breadcrumbs_visualization',
+      optionalAuth: {
+        enabled: true,
+      },
     }
   ),
   path('/notifications/unsubscribe', Unsubscribe, {

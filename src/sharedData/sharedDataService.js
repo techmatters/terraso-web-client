@@ -289,3 +289,24 @@ export const updateSharedResource = ({ sharedResource }) => {
     .then(_.get('updateSharedResource.sharedResource'))
     .then(extractSharedResource);
 };
+
+export const fetchSharedResource = ({ shareUuid }) => {
+  const query = graphql(`
+    query sharedResource($shareUuid: String!) {
+      sharedResource(shareUuid: $shareUuid) {
+        downloadUrl
+        source {
+          ... on DataEntryNode {
+            ...dataEntry
+          }
+        }
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      shareUuid,
+    })
+    .then(_.get('sharedResource'))
+    .then(extractSharedResource);
+};

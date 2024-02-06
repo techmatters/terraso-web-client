@@ -42,6 +42,10 @@ const initialState = {
     data: null,
     deleting: false,
   },
+  sharedResource: {
+    fetching: true,
+    data: null,
+  },
 };
 
 export const uploadSharedDataFile = createAsyncThunk(
@@ -111,6 +115,10 @@ export const updateSharedResource = createAsyncThunk(
     content: 'sharedData.updated',
     params: { name: sharedResource.dataEntry.name },
   })
+);
+export const fetchSharedResource = createAsyncThunk(
+  'sharedData/fetchSharedResource',
+  sharedDataService.fetchSharedResource
 );
 
 const setProcessing = (state, requestStatus, sharedResource) =>
@@ -328,17 +336,33 @@ const sharedDataSlice = createSlice({
       ...state,
       visualizationConfig: initialState.visualizationConfig,
     }));
-
     builder.addCase(fetchVisualizationConfig.rejected, state => ({
       ...state,
       visualizationConfig: {
         fetching: false,
       },
     }));
-
     builder.addCase(fetchVisualizationConfig.fulfilled, (state, action) => ({
       ...state,
       visualizationConfig: {
+        fetching: false,
+        data: action.payload,
+      },
+    }));
+
+    builder.addCase(fetchSharedResource.pending, state => ({
+      ...state,
+      sharedResource: initialState.sharedResource,
+    }));
+    builder.addCase(fetchSharedResource.rejected, state => ({
+      ...state,
+      sharedResource: {
+        fetching: false,
+      },
+    }));
+    builder.addCase(fetchSharedResource.fulfilled, (state, action) => ({
+      ...state,
+      sharedResource: {
         fetching: false,
         data: action.payload,
       },
