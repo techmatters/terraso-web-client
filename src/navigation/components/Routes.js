@@ -45,9 +45,9 @@ import LandscapeProfile from 'landscape/components/LandscapeProfile';
 import LandscapeSharedDataUpload from 'landscape/components/LandscapeSharedDataUpload';
 import LandscapeSharedDataVisualization from 'landscape/components/LandscapeSharedDataVisualization';
 import LandscapeSharedDataVisualizationConfig from 'landscape/components/LandscapeSharedDataVisualizationConfig';
-import LandscapeSharedResourceDownload from 'landscape/components/LandscapeSharedResourceDownload';
 import LandscapeView from 'landscape/components/LandscapeView';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
+import SharedResourceDownload from 'sharedData/components/SharedResourceDownload';
 import StoryMapInvite from 'storyMap/components/StoryMapInvite';
 import StoryMapNew from 'storyMap/components/StoryMapNew';
 import StoryMapsToolsHome from 'storyMap/components/StoryMapsToolHome';
@@ -108,6 +108,17 @@ const paths = [
     showBreadcrumbs: true,
     breadcrumbsLabel: 'group.breadcrumbs_visualization',
   }),
+  path(
+    '/groups/:groupSlug/shared-resource/download/:shareUuid',
+    SharedResourceDownload,
+    {
+      optionalAuth: {
+        enabled: true,
+        topMessage:
+          'sharedData.shared_resource_download_optional_auth_top_message',
+      },
+    }
+  ),
   path('/landscapes/map', LandscapeMapEmbed, {
     optionalAuth: {
       enabled: true,
@@ -160,12 +171,12 @@ const paths = [
   ),
   path(
     '/landscapes/:landscapeSlug/shared-resource/download/:shareUuid',
-    LandscapeSharedResourceDownload,
+    SharedResourceDownload,
     {
-      showBreadcrumbs: true,
-      breadcrumbsLabel: 'landscape.breadcrumbs_visualization',
       optionalAuth: {
         enabled: true,
+        topMessage:
+          'sharedData.shared_resource_download_optional_auth_top_message',
       },
     }
   ),

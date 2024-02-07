@@ -665,7 +665,10 @@
         "link_delete_tooltip": "Remove link “{{name}}”.",
         "file_delete_tooltip": "Remove file “{{name}}”.",
         "visualization_unsaved_changes_title": "Leave Map?",
-        "visualization_unsaved_changes_message": "You have unsaved changes that will be lost if you leave the page."
+        "visualization_unsaved_changes_message": "You have unsaved changes that will be lost if you leave the page.",
+        "shared_resource_download_no_preview": "No file preview available",
+        "shared_resource_download_button": "Download File",
+        "shared_resource_download_optional_auth_top_message": "<1>Join Terraso</1> and create your own story map for free."
     },
     "common": {
         "dialog_cancel_label": "Cancel",

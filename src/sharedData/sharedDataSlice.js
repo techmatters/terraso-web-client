@@ -118,7 +118,9 @@ export const updateSharedResource = createAsyncThunk(
 );
 export const fetchSharedResource = createAsyncThunk(
   'sharedData/fetchSharedResource',
-  sharedDataService.fetchSharedResource
+  sharedDataService.fetchSharedResource,
+  null,
+  null
 );
 
 const setProcessing = (state, requestStatus, sharedResource) =>
@@ -358,6 +360,7 @@ const sharedDataSlice = createSlice({
       ...state,
       sharedResource: {
         fetching: false,
+        data: null,
       },
     }));
     builder.addCase(fetchSharedResource.fulfilled, (state, action) => ({

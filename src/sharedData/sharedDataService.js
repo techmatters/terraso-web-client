@@ -308,5 +308,6 @@ export const fetchSharedResource = ({ shareUuid }) => {
       shareUuid,
     })
     .then(_.get('sharedResource'))
+    .then(sharedResource => sharedResource || Promise.reject('not_found'))
     .then(extractSharedResource);
 };
