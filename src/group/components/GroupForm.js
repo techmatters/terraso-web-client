@@ -219,7 +219,10 @@ const GroupForm = () => {
     dispatch(
       saveGroup({
         group: {
-          ..._.omit(['membershipsInfo.membershipType'], group),
+          ..._.omit(
+            ['membershipsInfo.membershipType', 'sharedResources'],
+            group
+          ),
           membershipType: group.membershipsInfo.membershipType,
         },
         user,

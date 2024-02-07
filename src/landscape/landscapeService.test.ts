@@ -45,7 +45,6 @@ test('LandscapeService: Fetch landscape with missing fields', async () => {
     description: 'Landscape description',
     website: 'https://www.landscape.org',
     areaPolygon: null,
-    dataEntries: undefined,
     accountMembership: undefined,
     membershipsInfo: {
       accountMembership: undefined,
@@ -57,6 +56,7 @@ test('LandscapeService: Fetch landscape with missing fields', async () => {
     },
     partnership: undefined,
     partnershipStatus: undefined,
+    sharedResources: undefined,
     taxonomyTerms: {},
     developmentStrategy: undefined,
     affiliatedGroups: [],
