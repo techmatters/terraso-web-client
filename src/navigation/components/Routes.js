@@ -166,7 +166,7 @@ const paths = [
     }
   ),
   path(
-    '/landscapes/:landscapeSlug/shared-resource/download/:shareUuid',
+    '/landscapes/:landscapeSlug/download/:shareUuid',
     SharedResourceDownload,
     {
       optionalAuth: {
