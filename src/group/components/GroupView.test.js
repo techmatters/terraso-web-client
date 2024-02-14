@@ -122,7 +122,7 @@ const groupViewMemberBase = async (
       .map((item, index) => ({
         node: {
           id: `shared-resource-id-${index}`,
-          shareAccess: 'NO',
+          shareAccess: 'TARGET_MEMBERS',
           shareUrl: 'https://test-url',
           source: {
             id: `de-${index}`,
@@ -305,7 +305,7 @@ test('GroupView: Share link member', async () => {
 
   // Access level disabled display text
   expect(
-    within(dialog).getByText(/No one can view and download this file/i)
+    within(dialog).getByText(/Members can view and download this file/i)
   ).toBeInTheDocument();
 
   // Copy link
