@@ -108,17 +108,13 @@ const paths = [
     showBreadcrumbs: true,
     breadcrumbsLabel: 'group.breadcrumbs_visualization',
   }),
-  path(
-    '/groups/:groupSlug/shared-resource/download/:shareUuid',
-    SharedResourceDownload,
-    {
-      optionalAuth: {
-        enabled: true,
-        topMessage:
-          'sharedData.shared_resource_download_optional_auth_top_message',
-      },
-    }
-  ),
+  path('/groups/:groupSlug/download/:shareUuid', SharedResourceDownload, {
+    optionalAuth: {
+      enabled: true,
+      topMessage:
+        'sharedData.shared_resource_download_optional_auth_top_message',
+    },
+  }),
   path('/landscapes/map', LandscapeMapEmbed, {
     optionalAuth: {
       enabled: true,
