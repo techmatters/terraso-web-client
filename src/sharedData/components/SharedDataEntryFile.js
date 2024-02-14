@@ -24,6 +24,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import LockIcon from '@mui/icons-material/Lock';
 import MapIcon from '@mui/icons-material/Map';
+import PublicIcon from '@mui/icons-material/Public';
 import ShareIcon from '@mui/icons-material/Share';
 import {
   Alert,
@@ -48,7 +49,10 @@ import { useCollaborationContext } from 'collaboration/collaborationContext';
 import CopyLink from 'common/components/CopyLink';
 import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
-import { SHARE_ACCESS_TYPES } from 'sharedData/sharedDataConstants';
+import {
+  SHARE_ACCESS_ALL,
+  SHARE_ACCESS_TYPES,
+} from 'sharedData/sharedDataConstants';
 import { useSharedData } from 'sharedData/sharedDataHooks';
 
 import SharedDataEntryBase, { ICON_SIZE } from './SharedDataEntryBase';
@@ -250,6 +254,19 @@ const ShareDialog = props => {
             {t('sharedData.share_file_dialog_share_access_suffix')}
           </Typography>
         </Stack>
+        {sharedResource.shareAccess === SHARE_ACCESS_ALL && (
+          <Stack
+            alignItems="center"
+            direction="row"
+            spacing={0.5}
+            sx={{ mt: 1 }}
+          >
+            <PublicIcon sx={{ fontSize: 16, color: 'gray.dark1' }} />
+            <Typography variant="caption">
+              {t('sharedData.share_file_dialog_share_access_all_warning')}
+            </Typography>
+          </Stack>
+        )}
         {!allowedToEditSharedData && (
           <Stack direction="row" alignItems="center" sx={{ mt: 2 }}>
             <LockIcon />
