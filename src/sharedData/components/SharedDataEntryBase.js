@@ -133,7 +133,7 @@ const SharedDataEntryBase = props => {
 
   const onUpdateSharedResource = useCallback(
     sharedResource => {
-      dispatch(
+      return dispatch(
         updateSharedResource({
           sharedResource,
         })
@@ -146,6 +146,7 @@ const SharedDataEntryBase = props => {
           });
         }
         dispatch(resetProcessing(dataEntry.id));
+        return data;
       });
     },
     [dataEntry, dispatch, owner.slug, trackEvent, updateOwner, entityType]

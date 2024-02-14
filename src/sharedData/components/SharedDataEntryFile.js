@@ -26,7 +26,10 @@ import LockIcon from '@mui/icons-material/Lock';
 import MapIcon from '@mui/icons-material/Map';
 import ShareIcon from '@mui/icons-material/Share';
 import {
+  Alert,
+  Button,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
@@ -146,6 +149,7 @@ const ShareDialog = props => {
       dataEntry,
     }
   );
+  const [showUpdateSuccess, setShowUpdateSuccess] = useState();
 
   // focus on the close button on open
   const onCloseRefChange = ref => {
@@ -156,10 +160,16 @@ const ShareDialog = props => {
 
   const onChange = useCallback(
     event => {
+      setShowUpdateSuccess(false);
       const shareAccess = event.target.value;
       onUpdateSharedResource({
         ...sharedResource,
         shareAccess,
+      }).then(data => {
+        const success = _.get('meta.requestStatus', data) === 'fulfilled';
+        if (success) {
+          setShowUpdateSuccess(true);
+        }
       });
     },
     [onUpdateSharedResource, sharedResource]
@@ -245,6 +255,28 @@ const ShareDialog = props => {
         )}
         <CopyLink pageUrl={sharedResource.shareUrl} />
       </DialogContent>
+      <DialogActions
+        sx={{
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          pl: 3,
+          pr: 3,
+          pb: 3,
+        }}
+      >
+        {showUpdateSuccess ? (
+          <Alert severity="success" sx={{ pt: 0, pb: 0 }}>
+            {t('sharedData.share_file_dialog_share_access_updated', {
+              name: sharedResource.dataEntry.name,
+            })}
+          </Alert>
+        ) : (
+          <div />
+        )}
+        <Button variant="outlined" onClick={handleClose}>
+          {t('sharedData.share_file_dialog_share_access_done')}
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };

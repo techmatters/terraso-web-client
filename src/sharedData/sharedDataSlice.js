@@ -109,12 +109,7 @@ export const deleteVisualizationConfig = createAsyncThunk(
 );
 export const updateSharedResource = createAsyncThunk(
   'sharedData/updateSharedResource',
-  sharedDataService.updateSharedResource,
-  (_, { sharedResource }) => ({
-    severity: 'success',
-    content: 'sharedData.updated',
-    params: { name: sharedResource.dataEntry.name },
-  })
+  sharedDataService.updateSharedResource
 );
 export const fetchSharedResource = createAsyncThunk(
   'sharedData/fetchSharedResource',

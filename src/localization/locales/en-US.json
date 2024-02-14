@@ -561,6 +561,8 @@
         "share_file_dialog_share_access_type_TARGET_MEMBERS": "Members",
         "share_file_dialog_share_access_suffix": "can view and download this file",
         "share_file_dialog_share_access_not_allowed": "Only group managers and file owners can change this setting.",
+        "share_file_dialog_share_access_updated": "Access updated.",
+        "share_file_dialog_share_access_done": "Done",
         "invalid_extension": "The file extension ({{file.resourceType}}) does not match the file’s contents",
         "invalid_extension_zip": "The file {{file.name}}{{file.resourceType}} is a not a valid zip.",
         "invalid_shapefile": "The file {{file.name}}{{file.resourceType}} is a valid zip, but is not a valid ESRI shapefile.",
