@@ -175,10 +175,15 @@ const ShareDialog = props => {
     [onUpdateSharedResource, sharedResource]
   );
 
+  const onCloseWrapper = useCallback(() => {
+    setShowUpdateSuccess(false);
+    handleClose();
+  }, [handleClose]);
+
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
+      onClose={onCloseWrapper}
       aria-labelledby="share-file-dialog-title"
       fullWidth
       maxWidth="sm"
@@ -199,7 +204,7 @@ const ShareDialog = props => {
         </Typography>
         <IconButton
           ref={onCloseRefChange}
-          onClick={handleClose}
+          onClick={onCloseWrapper}
           sx={{ ml: 3 }}
           aria-label={t('sharedData.share_file_dialog_close')}
         >
@@ -273,7 +278,7 @@ const ShareDialog = props => {
         ) : (
           <div />
         )}
-        <Button variant="outlined" onClick={handleClose}>
+        <Button variant="outlined" onClick={onCloseWrapper}>
           {t('sharedData.share_file_dialog_share_access_done')}
         </Button>
       </DialogActions>
