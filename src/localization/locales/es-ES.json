@@ -595,6 +595,16 @@
         "description_update": "Actualizar descripción",
         "delete_label": "Elminar “{{name}}”",
         "download_label": "Descargar “{{name}}”",
+        "share_file_label": "Compartir archivo “{{name}}”",
+        "share_file_dialog_title": "Compartir “{{name}}” archivo",
+        "share_file_dialog_close": "Cerrar",
+        "share_file_dialog_share_access_label": "Nivel de acceso",
+        "share_file_dialog_share_access_type_ALL": "Cualquier persona con el enlace",
+        "share_file_dialog_share_access_type_TARGET_MEMBERS": "Miembros",
+        "share_file_dialog_share_access_suffix": "pueden ver y descargar este archivo",
+        "share_file_dialog_share_access_not_allowed": "Sólo los administradores de grupos y propietarios de archivos pueden cambiar esta configuración.",
+        "share_file_dialog_share_access_updated": "Acceso actualizado.",
+        "share_file_dialog_share_access_done": "Hecho",
         "invalid_extension": "La extensión del archivo ({{file.resourceType}}) no coincide con el contenido del archivo",
         "invalid_extension_zip": "El archivo {{file.name}}{{file.resourceType}} no es un zip válido.",
         "invalid_shapefile": "El archivo {{file.name}}{{file.resourceType}} es un zip válido, pero no es un archivo de ESRI shapefile válido.",
@@ -699,7 +709,10 @@
         "link_delete_tooltip": "Eliminar enlace “{{name}}”.",
         "file_delete_tooltip": "Eliminar archivo “{{name}}”.",
         "visualization_unsaved_changes_title": "¿Dejar el mapa?",
-        "visualization_unsaved_changes_message": "Tienes cambios no guardados que se perderán si abandonas la página."
+        "visualization_unsaved_changes_message": "Tienes cambios no guardados que se perderán si abandonas la página.",
+        "shared_resource_download_no_preview": "No hay vista previa de archivos disponible",
+        "shared_resource_download_button": "Descargar archivo",
+        "shared_resource_download_optional_auth_top_message": "<1>Únete a Terraso</1> y comparte archivos con tu comunidad."
     },
     "share": {
         "button": "Comparte",

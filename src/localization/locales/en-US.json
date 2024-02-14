@@ -556,7 +556,6 @@
         "share_file_dialog_title": "Share “{{name}}” File",
         "share_file_dialog_close": "Close",
         "share_file_dialog_share_access_label": "Share access level",
-        "share_file_dialog_share_access_type_NO": "No one",
         "share_file_dialog_share_access_type_ALL": "Anyone with link",
         "share_file_dialog_share_access_type_TARGET_MEMBERS": "Members",
         "share_file_dialog_share_access_suffix": "can view and download this file",
