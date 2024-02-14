@@ -206,7 +206,7 @@ const ShareDialog = props => {
           <CloseIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{ pb: 5 }}>
+      <DialogContent>
         {!allowedToEditSharedData && (
           <span className="sr-only sr-only-focusable">
             {[
