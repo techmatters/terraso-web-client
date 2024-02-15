@@ -254,6 +254,19 @@ const ShareDialog = props => {
             {t('sharedData.share_file_dialog_share_access_suffix')}
           </Typography>
         </Stack>
+        {!allowedToEditSharedData && (
+          <Stack
+            alignItems="center"
+            direction="row"
+            spacing={0.5}
+            sx={{ mt: 1 }}
+          >
+            <LockIcon sx={{ fontSize: 16, color: 'gray.dark1' }} />
+            <Typography variant="caption">
+              {t('sharedData.share_file_dialog_share_access_not_allowed')}
+            </Typography>
+          </Stack>
+        )}
         {sharedResource.shareAccess === SHARE_ACCESS_ALL && (
           <Stack
             alignItems="center"
@@ -264,14 +277,6 @@ const ShareDialog = props => {
             <PublicIcon sx={{ fontSize: 16, color: 'gray.dark1' }} />
             <Typography variant="caption">
               {t('sharedData.share_file_dialog_share_access_all_warning')}
-            </Typography>
-          </Stack>
-        )}
-        {!allowedToEditSharedData && (
-          <Stack direction="row" alignItems="center" sx={{ mt: 2 }}>
-            <LockIcon />
-            <Typography>
-              {t('sharedData.share_file_dialog_share_access_not_allowed')}
             </Typography>
           </Stack>
         )}
