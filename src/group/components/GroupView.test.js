@@ -123,7 +123,7 @@ const groupViewMemberBase = async (
         node: {
           id: `shared-resource-id-${index}`,
           shareAccess: 'MEMBERS',
-          shareUrl: 'https://test-url',
+          shareUrl: 'https://example.com',
           source: {
             id: `de-${index}`,
             createdAt: '2022-05-20T16:25:21.536679+00:00',
@@ -209,7 +209,7 @@ test('GroupView: Share link manager', async () => {
         sharedResource: {
           id: `shared-resource-id-0`,
           shareAccess: 'ALL',
-          shareUrl: 'https://test-url',
+          shareUrl: 'https://example.com',
           source: {
             id: `de-0`,
             createdAt: '2022-05-20T16:25:21.536679+00:00',
@@ -279,7 +279,7 @@ test('GroupView: Share link manager', async () => {
     fireEvent.click(within(dialog).getByRole('button', { name: 'Copy Link' }))
   );
   const copyCall = navigator.clipboard.writeText.mock.calls[0];
-  expect(copyCall[0].toString()).toStrictEqual('https://test-url');
+  expect(copyCall[0].toString()).toStrictEqual('https://example.com');
 });
 
 test('GroupView: Share link member', async () => {
@@ -313,5 +313,5 @@ test('GroupView: Share link member', async () => {
     fireEvent.click(within(dialog).getByRole('button', { name: 'Copy Link' }))
   );
   const copyCall = navigator.clipboard.writeText.mock.calls[0];
-  expect(copyCall[0].toString()).toStrictEqual('https://test-url');
+  expect(copyCall[0].toString()).toStrictEqual('https://example.com');
 });

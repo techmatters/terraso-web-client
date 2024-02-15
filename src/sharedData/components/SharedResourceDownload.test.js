@@ -63,7 +63,7 @@ test('SharedResourceDownload: Has access', async () => {
     )
     .mockResolvedValue({
       sharedResource: {
-        downloadUrl: 'https://test-url',
+        downloadUrl: 'https://example.com',
         source: {
           name: 'map',
           resourceType: 'geojson',
@@ -78,7 +78,7 @@ test('SharedResourceDownload: Has access', async () => {
   const downloadButton = screen.getByRole('button', { name: 'Download File' });
   await act(async () => fireEvent.click(downloadButton));
 
-  expect(window.open).toHaveBeenCalledWith('https://test-url', '_blank');
+  expect(window.open).toHaveBeenCalledWith('https://example.com', '_blank');
 });
 
 test('SharedResourceDownload: No access', async () => {
