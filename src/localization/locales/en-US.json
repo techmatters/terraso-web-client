@@ -557,7 +557,7 @@
         "share_file_dialog_close": "Close",
         "share_file_dialog_share_access_label": "Share access level",
         "share_file_dialog_share_access_type_ALL": "Anyone with link",
-        "share_file_dialog_share_access_type_TARGET_MEMBERS": "Members",
+        "share_file_dialog_share_access_type_MEMBERS": "Members",
         "share_file_dialog_share_access_suffix": "can view and download this file",
         "share_file_dialog_share_access_all_warning": "Anyone on the internet with the link can access this file.",
         "share_file_dialog_share_access_not_allowed": "Only group managers and file owners can change this setting.",

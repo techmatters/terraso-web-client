@@ -122,7 +122,7 @@ const groupViewMemberBase = async (
       .map((item, index) => ({
         node: {
           id: `shared-resource-id-${index}`,
-          shareAccess: 'TARGET_MEMBERS',
+          shareAccess: 'MEMBERS',
           shareUrl: 'https://test-url',
           source: {
             id: `de-${index}`,
