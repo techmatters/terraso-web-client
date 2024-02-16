@@ -303,7 +303,6 @@ test('GroupView: Share link member', async () => {
     name: 'Share “Data Entry 0” File',
   });
 
-  // Access level disabled display text
   expect(
     within(dialog).getByText(/Members can view and download this file/i)
   ).toBeInTheDocument();
