@@ -42,6 +42,10 @@ const initialState = {
     data: null,
     deleting: false,
   },
+  sharedResource: {
+    fetching: true,
+    data: null,
+  },
 };
 
 export const uploadSharedDataFile = createAsyncThunk(
@@ -103,13 +107,19 @@ export const deleteVisualizationConfig = createAsyncThunk(
     },
   })
 );
+export const updateSharedResource = createAsyncThunk(
+  'sharedData/updateSharedResource',
+  sharedDataService.updateSharedResource
+);
+export const fetchSharedResource = createAsyncThunk(
+  'sharedData/fetchSharedResource',
+  sharedDataService.fetchSharedResource,
+  null,
+  null
+);
 
-const setProcessing = (state, action) =>
-  _.set(
-    `processing.${action.meta.arg.dataEntry.id}`,
-    action.meta.requestStatus === 'pending',
-    state
-  );
+const setProcessing = (state, requestStatus, sharedResource) =>
+  _.set(`processing.${sharedResource.id}`, requestStatus === 'pending', state);
 
 const sharedDataSlice = createSlice({
   name: 'sharedData',
@@ -134,28 +144,84 @@ const sharedDataSlice = createSlice({
   },
 
   extraReducers: builder => {
-    builder.addCase(updateSharedData.pending, setProcessing);
-    builder.addCase(updateSharedData.rejected, setProcessing);
-
+    builder.addCase(updateSharedData.pending, (state, action) =>
+      setProcessing(
+        state,
+        action.meta.requestStatus,
+        action.meta.arg.sharedResource
+      )
+    );
+    builder.addCase(updateSharedData.rejected, (state, action) =>
+      setProcessing(
+        state,
+        action.meta.requestStatus,
+        action.meta.arg.sharedResource
+      )
+    );
     builder.addCase(updateSharedData.fulfilled, (state, action) => ({
       ...state,
       list: {
         ...state.list,
         data: state.list.data.map(item =>
-          item.id === action.meta.arg.dataEntry.id ? action.payload : item
+          item.id === action.meta.arg.sharedResource.id
+            ? { ...item, dataEntry: action.payload }
+            : item
         ),
       },
     }));
 
-    builder.addCase(deleteSharedData.pending, setProcessing);
-    builder.addCase(deleteSharedData.rejected, setProcessing);
+    builder.addCase(updateSharedResource.pending, (state, action) =>
+      setProcessing(
+        state,
+        action.meta.requestStatus,
+        action.meta.arg.sharedResource
+      )
+    );
+    builder.addCase(updateSharedResource.rejected, (state, action) => {
+      return setProcessing(
+        state,
+        action.meta.requestStatus,
+        action.meta.arg.sharedResource
+      );
+    });
+    builder.addCase(updateSharedResource.fulfilled, (state, action) => {
+      return {
+        ...state,
+        processing: _.omit(action.meta.arg.sharedResource.id, {
+          ...state.processing,
+        }),
+        list: {
+          ...state.list,
+          data: state.list.data.map(item =>
+            item.id === action.meta.arg.sharedResource.id
+              ? action.payload
+              : item
+          ),
+        },
+      };
+    });
+
+    builder.addCase(deleteSharedData.pending, (state, action) =>
+      setProcessing(
+        state,
+        action.meta.requestStatus,
+        action.meta.arg.sharedResource
+      )
+    );
+    builder.addCase(deleteSharedData.rejected, (state, action) =>
+      setProcessing(
+        state,
+        action.meta.requestStatus,
+        action.meta.arg.sharedResource
+      )
+    );
 
     builder.addCase(deleteSharedData.fulfilled, (state, action) => ({
       ...state,
       list: {
         ...state.list,
         data: state.list.data.filter(
-          item => item.id !== action.meta.arg.dataEntry.id
+          item => item.id !== action.meta.arg.sharedResource.id
         ),
       },
     }));
@@ -267,17 +333,34 @@ const sharedDataSlice = createSlice({
       ...state,
       visualizationConfig: initialState.visualizationConfig,
     }));
-
     builder.addCase(fetchVisualizationConfig.rejected, state => ({
       ...state,
       visualizationConfig: {
         fetching: false,
       },
     }));
-
     builder.addCase(fetchVisualizationConfig.fulfilled, (state, action) => ({
       ...state,
       visualizationConfig: {
+        fetching: false,
+        data: action.payload,
+      },
+    }));
+
+    builder.addCase(fetchSharedResource.pending, state => ({
+      ...state,
+      sharedResource: initialState.sharedResource,
+    }));
+    builder.addCase(fetchSharedResource.rejected, state => ({
+      ...state,
+      sharedResource: {
+        fetching: false,
+        data: null,
+      },
+    }));
+    builder.addCase(fetchSharedResource.fulfilled, (state, action) => ({
+      ...state,
+      sharedResource: {
         fetching: false,
         data: action.payload,
       },

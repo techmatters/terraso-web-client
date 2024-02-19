@@ -52,7 +52,7 @@ test('GroupService: Fetch group', async () => {
       pendingCount: undefined,
       totalCount: undefined,
     },
-    dataEntries: undefined,
+    sharedResources: undefined,
   });
 });
 test('GroupService: Fetch group not found', async () => {

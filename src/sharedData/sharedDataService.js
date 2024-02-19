@@ -18,7 +18,7 @@ import _ from 'lodash/fp';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
-import { extractDataEntry } from './sharedDataUtils';
+import { extractDataEntry, extractSharedResource } from './sharedDataUtils';
 
 import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
@@ -261,4 +261,53 @@ export const fetchVisualizationConfig = ({
       ...visualizationConfig,
       configuration: JSON.parse(visualizationConfig.configuration),
     }));
+};
+
+export const updateSharedResource = ({ sharedResource }) => {
+  const query = graphql(`
+    mutation updateSharedResource($input: SharedResourceUpdateMutationInput!) {
+      updateSharedResource(input: $input) {
+        sharedResource {
+          id
+          shareAccess
+          shareUrl
+          source {
+            ... on DataEntryNode {
+              ...dataEntry
+              ...dataEntryVisualizations
+            }
+          }
+        }
+        errors
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: _.pick(['id', 'shareAccess'], sharedResource),
+    })
+    .then(_.get('updateSharedResource.sharedResource'))
+    .then(extractSharedResource);
+};
+
+export const fetchSharedResource = ({ shareUuid }) => {
+  const query = graphql(`
+    query sharedResource($shareUuid: String!) {
+      sharedResource(shareUuid: $shareUuid) {
+        downloadUrl
+        source {
+          ... on DataEntryNode {
+            ...dataEntry
+          }
+        }
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      shareUuid,
+    })
+    .then(_.get('sharedResource'))
+    .then(sharedResource => sharedResource || Promise.reject('not_found'))
+    .then(extractSharedResource);
 };

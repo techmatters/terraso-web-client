@@ -129,6 +129,9 @@ export const landscapeDataEntries = /* GraphQL */ `
     sharedResources {
       edges {
         node {
+          id
+          shareAccess
+          shareUrl
           source {
             ... on DataEntryNode {
               ...dataEntry

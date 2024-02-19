@@ -34,6 +34,7 @@ import {
   deleteSharedData,
   resetProcessing,
   updateSharedData,
+  updateSharedResource,
 } from 'sharedData/sharedDataSlice';
 
 import theme from 'theme';
@@ -48,23 +49,28 @@ const SharedDataEntryBase = props => {
   const { i18n, t } = useTranslation();
   const { owner, entityType, updateOwner } = useCollaborationContext();
   const {
-    dataEntry,
+    sharedResource,
     children,
     EntryTypeIcon,
     DownloadComponent,
+    ShareComponent,
     info,
     deleteTooltip,
   } = props;
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const dataEntry = useMemo(
+    () => sharedResource.dataEntry,
+    [sharedResource.dataEntry]
+  );
   const processing = useSelector(
-    _.get(`sharedData.processing.${dataEntry.id}`)
+    _.get(`sharedData.processing.${sharedResource.id}`)
   );
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
 
   const onConfirm = useCallback(() => {
-    dispatch(deleteSharedData({ dataEntry })).then(data => {
+    dispatch(deleteSharedData({ dataEntry, sharedResource })).then(data => {
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
       if (success) {
         updateOwner();
@@ -77,12 +83,21 @@ const SharedDataEntryBase = props => {
       }
       dispatch(resetProcessing(dataEntry.id));
     });
-  }, [dataEntry, dispatch, owner.slug, trackEvent, updateOwner, entityType]);
+  }, [
+    dataEntry,
+    dispatch,
+    owner.slug,
+    trackEvent,
+    updateOwner,
+    entityType,
+    sharedResource,
+  ]);
 
   const onUpdate = useCallback(
     field => value => {
       dispatch(
         updateSharedData({
+          sharedResource,
           dataEntry: {
             ..._.pick(['id', 'name', 'description'], dataEntry),
             [field]: value,
@@ -99,13 +114,42 @@ const SharedDataEntryBase = props => {
         dispatch(resetProcessing(dataEntry.id));
       });
     },
-    [dataEntry, dispatch, owner.slug, trackEvent, updateOwner, entityType]
+    [
+      dataEntry,
+      dispatch,
+      owner.slug,
+      trackEvent,
+      updateOwner,
+      entityType,
+      sharedResource,
+    ]
   );
 
   const onUpdateName = useMemo(() => onUpdate('name'), [onUpdate]);
   const onUpdateDescription = useMemo(
     () => onUpdate('description'),
     [onUpdate]
+  );
+
+  const onUpdateSharedResource = useCallback(
+    sharedResource => {
+      return dispatch(
+        updateSharedResource({
+          sharedResource,
+        })
+      ).then(data => {
+        const success = _.get('meta.requestStatus', data) === 'fulfilled';
+        if (success) {
+          updateOwner();
+          trackEvent('dataEntry.edit', {
+            props: { [entityType]: owner.slug },
+          });
+        }
+        dispatch(resetProcessing(dataEntry.id));
+        return data;
+      });
+    },
+    [dataEntry, dispatch, owner.slug, trackEvent, updateOwner, entityType]
   );
 
   const description = useMemo(
@@ -183,6 +227,12 @@ const SharedDataEntryBase = props => {
           justifyContent="flex-end"
           display={isEditingName ? 'none' : 'inherit'}
         >
+          {ShareComponent && (
+            <ShareComponent
+              sharedResource={sharedResource}
+              onUpdateSharedResource={onUpdateSharedResource}
+            />
+          )}
           <Restricted
             permission="sharedData.delete"
             resource={permissionsResource}
@@ -223,7 +273,7 @@ const SharedDataEntryBase = props => {
             </ConfirmButton>
           </Restricted>
           <Restricted permission="sharedData.download" resource={owner}>
-            <DownloadComponent dataEntry={dataEntry} />
+            <DownloadComponent sharedResource={sharedResource} />
           </Restricted>
         </Grid>
         <Grid item xs={1} order={{ xs: 9 }} display={{ md: 'none' }} />

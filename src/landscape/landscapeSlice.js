@@ -73,7 +73,7 @@ export const fetchLandscapeView = createAsyncThunk(
       params,
       currentUser
     );
-    dispatch(setList(landscape.dataEntries));
+    dispatch(setList(landscape.sharedResources));
     return landscape;
   }
 );

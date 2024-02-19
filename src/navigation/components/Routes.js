@@ -47,6 +47,7 @@ import LandscapeSharedDataVisualization from 'landscape/components/LandscapeShar
 import LandscapeSharedDataVisualizationConfig from 'landscape/components/LandscapeSharedDataVisualizationConfig';
 import LandscapeView from 'landscape/components/LandscapeView';
 import LandscapeMembers from 'landscape/membership/components/LandscapeMembers';
+import SharedResourceDownload from 'sharedData/components/SharedResourceDownload';
 import StoryMapInvite from 'storyMap/components/StoryMapInvite';
 import StoryMapNew from 'storyMap/components/StoryMapNew';
 import StoryMapsToolsHome from 'storyMap/components/StoryMapsToolHome';
@@ -107,6 +108,13 @@ const paths = [
     showBreadcrumbs: true,
     breadcrumbsLabel: 'group.breadcrumbs_visualization',
   }),
+  path('/groups/:groupSlug/download/:shareUuid', SharedResourceDownload, {
+    optionalAuth: {
+      enabled: true,
+      topMessage:
+        'sharedData.shared_resource_download_optional_auth_top_message',
+    },
+  }),
   path('/landscapes/map', LandscapeMapEmbed, {
     optionalAuth: {
       enabled: true,
@@ -155,6 +163,17 @@ const paths = [
     {
       showBreadcrumbs: true,
       breadcrumbsLabel: 'landscape.breadcrumbs_visualization',
+    }
+  ),
+  path(
+    '/landscapes/:landscapeSlug/download/:shareUuid',
+    SharedResourceDownload,
+    {
+      optionalAuth: {
+        enabled: true,
+        topMessage:
+          'sharedData.shared_resource_download_optional_auth_top_message',
+      },
     }
   ),
   path('/notifications/unsubscribe', Unsubscribe, {
