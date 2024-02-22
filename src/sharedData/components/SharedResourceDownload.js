@@ -85,9 +85,6 @@ const SharedResourceDownload = () => {
         sx={{ p: 4, mt: 6 }}
       >
         <Typography variant="h1">{`${sharedResource.dataEntry?.name}.${sharedResource.dataEntry?.resourceType}`}</Typography>
-        <Typography>
-          {t('sharedData.shared_resource_download_no_preview')}
-        </Typography>
         <Button variant="contained" onClick={downloadFile}>
           {t('sharedData.shared_resource_download_button')}
         </Button>
