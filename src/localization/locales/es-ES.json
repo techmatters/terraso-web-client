@@ -602,7 +602,7 @@
         "share_file_dialog_share_access_type_ALL": "Cualquier persona con el enlace",
         "share_file_dialog_share_access_type_MEMBERS": "Miembros",
         "share_file_dialog_share_access_suffix": "pueden ver y descargar este archivo",
-        "share_file_dialog_share_access_all_warning": "Cualquiera que tenga el enlace puede acceder a este archivo.",
+        "share_file_dialog_share_access_all_warning": "Cualquier persona en el internet con el enlace puede acceder a este archivo",
         "share_file_dialog_share_access_not_allowed": "Sólo los administradores de grupos y propietarios de archivos pueden cambiar esta configuración.",
         "share_file_dialog_share_access_updated": "Acceso actualizado",
         "share_file_dialog_share_access_done": "Hecho",
