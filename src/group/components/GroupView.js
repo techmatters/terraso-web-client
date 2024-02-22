@@ -149,6 +149,7 @@ const GroupView = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { setRefreshing } = useRefreshProgressContext();
+  const hasToken = useSelector(state => state.account.hasToken);
   const { group, fetching, refreshing } = useSelector(
     state => state.group.view
   );
@@ -186,7 +187,9 @@ const GroupView = () => {
     )
   );
 
-  useFetchData(useCallback(() => fetchGroupView(slug), [slug]));
+  // Ignore eslint to force reloading data after logout
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useFetchData(useCallback(() => fetchGroupView(slug), [slug, hasToken]));
 
   const updateGroup = useCallback(() => {
     dispatch(refreshGroupView(slug));
