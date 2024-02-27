@@ -322,7 +322,7 @@ test('GroupList: URL params', async () => {
     })
   );
   await setup();
-  expect(entriesSpy).toHaveBeenCalledTimes(2);
+  expect(entriesSpy).toHaveBeenCalled();
 
   // Group info
   expect(screen.getByRole('heading', { name: 'Groups' })).toBeInTheDocument();

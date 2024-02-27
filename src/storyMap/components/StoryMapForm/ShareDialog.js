@@ -218,6 +218,7 @@ const ShareDialog = props => {
   const memberships = useMemo(
     () => [
       {
+        id: 'owner-user-membership-id',
         user: storyMap.createdBy,
         userRole: MEMBERSHIP_ROLE_OWNER,
       },
