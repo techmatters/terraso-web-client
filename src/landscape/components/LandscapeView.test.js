@@ -113,6 +113,7 @@ const baseViewTest = async (
       .fill(0)
       .map((item, index) => ({
         node: {
+          id: `sr-${index}`,
           source: {
             id: `de-${index}`,
             createdAt: '2022-05-20T16:25:21.536679+00:00',

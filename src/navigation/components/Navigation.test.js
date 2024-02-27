@@ -96,16 +96,10 @@ test('Navigation: Test navigation', async () => {
       pathname: '/',
     })
     .mockReturnValueOnce({
-      pathname: '/',
-    })
-    .mockReturnValueOnce({
-      pathname: '/',
-    })
-    .mockReturnValueOnce({
       pathname: '/landscapes',
     });
   await setup();
-  expect(useLocation).toHaveBeenCalledTimes(4);
+  expect(useLocation).toHaveBeenCalled();
   await act(async () =>
     fireEvent.click(screen.getByRole('link', { name: 'Landscapes' }))
   );

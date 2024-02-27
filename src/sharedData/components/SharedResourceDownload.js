@@ -45,11 +45,6 @@ const SharedResourceDownload = () => {
     if (fetchingSharedResource || sharedResource || hasToken) {
       return;
     }
-    console.log({
-      fetchingSharedResource,
-      sharedResource,
-      hasToken,
-    });
     const referrer = generateReferrerPath(location);
 
     const to = referrer
