@@ -27,7 +27,7 @@ jest.mock('navigation/components/Routes', () => ({
   ...jest.requireActual('navigation/components/Routes'),
   __esModule: true,
   default: jest.fn(),
-}))
+}));
 
 const setup = async () => {
   await render(<App />, {
