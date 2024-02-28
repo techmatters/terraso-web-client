@@ -30,3 +30,6 @@ src/terrasoApi/shared/graphqlSchema
 
 # Sentry Config File
 .sentryclirc
+
+# Sentry Config File
+.sentryclirc
