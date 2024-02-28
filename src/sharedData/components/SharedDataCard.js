@@ -42,7 +42,7 @@ const SharedDataCard = props => {
   const { owner, entityTypeLocalized } = useCollaborationContext();
   const { allowed } = usePermission(`sharedData.viewFiles`, owner);
   const { data: sharedResources, fetching } = useSelector(
-    _.get('sharedData.list')
+    _.get('sharedData.sharedResources')
   );
   const hasSharedData = !_.isEmpty(sharedResources);
 
