@@ -203,9 +203,12 @@ const Clusters = props => {
       new mapboxgl.LngLatBounds()
     );
 
-    map.fitBounds(bounds, {
-      padding: 50,
-    });
+    if (!bounds.isEmpty()) {
+      map.fitBounds(bounds, {
+        padding: 50,
+      });
+    }
+
     return () => {
       map.off('click', 'clusters', onClusterClick);
       map.off('click', 'unclustered-point', onUnclusteredPointClick);
