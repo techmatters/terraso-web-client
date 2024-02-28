@@ -19,7 +19,7 @@ import _ from 'lodash/fp';
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
 import * as landscapeService from 'landscape/landscapeService';
-import { setList } from 'sharedData/sharedDataSlice';
+import { setSharedResourcesList } from 'sharedData/sharedDataSlice';
 
 const initialState = {
   list: {
@@ -73,7 +73,7 @@ export const fetchLandscapeView = createAsyncThunk(
       params,
       currentUser
     );
-    dispatch(setList(landscape.sharedResources));
+    dispatch(setSharedResourcesList(landscape.sharedResources));
     return landscape;
   }
 );

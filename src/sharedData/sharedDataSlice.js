@@ -30,7 +30,11 @@ const initialState = {
     links: {},
   },
   processing: {},
-  list: {
+  sharedResources: {
+    fetching: true,
+    data: null,
+  },
+  dataEntries: {
     fetching: true,
     data: null,
   },
@@ -78,9 +82,9 @@ export const updateSharedData = createAsyncThunk(
     params: { name: dataEntry.name },
   })
 );
-export const fetchSharedData = createAsyncThunk(
-  'sharedData/fetchSharedData',
-  sharedDataService.fetchSharedData
+export const fetchDataEntries = createAsyncThunk(
+  'sharedData/fetchDataEntries',
+  sharedDataService.fetchDataEntries
 );
 
 export const addVisualizationConfig = createAsyncThunk(
@@ -134,9 +138,9 @@ const sharedDataSlice = createSlice({
       ...state,
       processing: _.omit(action.payload, state.processing),
     }),
-    setList: (state, action) => ({
+    setSharedResourcesList: (state, action) => ({
       ...state,
-      list: {
+      sharedResources: {
         data: action.payload,
         fetching: false,
       },
@@ -160,9 +164,9 @@ const sharedDataSlice = createSlice({
     );
     builder.addCase(updateSharedData.fulfilled, (state, action) => ({
       ...state,
-      list: {
-        ...state.list,
-        data: state.list.data.map(item =>
+      sharedResources: {
+        ...state.sharedResources,
+        data: state.sharedResources.data.map(item =>
           item.id === action.meta.arg.sharedResource.id
             ? { ...item, dataEntry: action.payload }
             : item
@@ -190,9 +194,9 @@ const sharedDataSlice = createSlice({
         processing: _.omit(action.meta.arg.sharedResource.id, {
           ...state.processing,
         }),
-        list: {
-          ...state.list,
-          data: state.list.data.map(item =>
+        sharedResources: {
+          ...state.sharedResources,
+          data: state.sharedResources.data.map(item =>
             item.id === action.meta.arg.sharedResource.id
               ? action.payload
               : item
@@ -218,9 +222,9 @@ const sharedDataSlice = createSlice({
 
     builder.addCase(deleteSharedData.fulfilled, (state, action) => ({
       ...state,
-      list: {
-        ...state.list,
-        data: state.list.data.filter(
+      sharedResources: {
+        ...state.sharedResources,
+        data: state.sharedResources.data.filter(
           item => item.id !== action.meta.arg.sharedResource.id
         ),
       },
@@ -292,17 +296,17 @@ const sharedDataSlice = createSlice({
       )
     );
 
-    builder.addCase(fetchSharedData.pending, (state, action) => ({
+    builder.addCase(fetchDataEntries.pending, (state, action) => ({
       ...state,
-      list: {
+      dataEntries: {
         fetching: true,
         data: null,
       },
     }));
 
-    builder.addCase(fetchSharedData.fulfilled, (state, action) => ({
+    builder.addCase(fetchDataEntries.fulfilled, (state, action) => ({
       ...state,
-      list: {
+      dataEntries: {
         fetching: false,
         data: action.payload,
       },
@@ -368,7 +372,7 @@ const sharedDataSlice = createSlice({
   },
 });
 
-export const { resetUploads, resetProcessing, setList } =
+export const { resetUploads, resetProcessing, setSharedResourcesList } =
   sharedDataSlice.actions;
 
 export default sharedDataSlice.reducer;

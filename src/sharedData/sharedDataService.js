@@ -118,7 +118,7 @@ export const updateSharedData = ({ dataEntry }) => {
     .then(extractDataEntry);
 };
 
-export const fetchSharedData = ({
+export const fetchDataEntries = ({
   targetSlug,
   targetType,
   resourceTypes = ALL_RESOURCE_TYPES,
@@ -153,7 +153,7 @@ export const fetchSharedData = ({
     .then(edges => edges.map(edge => extractDataEntry(edge.node)));
 };
 
-export const fetchSharedDataWithGeojson = ({ id }) => {
+export const fetchDataEntriesWithGeojson = ({ id }) => {
   const query = graphql(`
     query dataEntryWithGeojson($id: ID!) {
       dataEntry(id: $id) {

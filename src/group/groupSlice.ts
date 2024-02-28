@@ -25,7 +25,7 @@ import type { Message } from 'terraso-client-shared/notifications/notificationsS
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
 import * as groupService from 'group/groupService';
-import { setList } from 'sharedData/sharedDataSlice';
+import { setSharedResourcesList } from 'sharedData/sharedDataSlice';
 
 export type Group = {
   slug: string;
@@ -46,7 +46,7 @@ export const fetchGroupView = createAsyncThunk(
   'group/fetchGroupView',
   async (slug: string, user, { dispatch }) => {
     const group = await groupService.fetchGroupToView(slug, user);
-    dispatch(setList(group.sharedResources));
+    dispatch(setSharedResourcesList(group.sharedResources));
     return group;
   }
 );

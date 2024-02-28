@@ -37,7 +37,7 @@ import StepperStep from 'common/components/StepperStep';
 import PageLoader from 'layout/PageLoader';
 import { formatDate } from 'localization/utils';
 import SharedFileIcon from 'sharedData/components/SharedFileIcon';
-import { fetchSharedData } from 'sharedData/sharedDataSlice';
+import { fetchDataEntries } from 'sharedData/sharedDataSlice';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 
 import {
@@ -77,7 +77,9 @@ const SelectDataFileStep = props => {
   const { visualizationConfig } = useVisualizationContext();
   const { onNext, onBack } = props;
   const { owner, entityType } = useCollaborationContext();
-  const { data: sharedFiles, fetching } = useSelector(_.get('sharedData.list'));
+  const { data: sharedFiles, fetching } = useSelector(
+    _.get('sharedData.dataEntries')
+  );
   const [selected, setSelected] = useState();
 
   useEffect(() => {
@@ -88,7 +90,7 @@ const SelectDataFileStep = props => {
 
   useEffect(() => {
     dispatch(
-      fetchSharedData({
+      fetchDataEntries({
         targetSlug: owner.slug,
         targetType: entityType,
         resourceTypes: ACCEPTED_RESOURCE_TYPES,
