@@ -113,6 +113,10 @@ export const DOCUMENT_ACCEPTED_TYPES = {
   ],
 };
 
+export const PROFILE_IMAGE_ACCEPTED_TYPES = {
+  'image/jpeg': ['.jpg', '.jpeg'],
+};
+
 export const MEDIA_ACCEPTED_TYPES = {
   'image/jpeg': ['.jpg', '.jpeg'],
   'image/png': ['.png'],
@@ -147,9 +151,9 @@ export const SHARED_DATA_ACCEPTED_EXTENSIONS = getTypesExtensions(
   SHARED_DATA_ACCEPTED_TYPES
 );
 
-export const IMAGE_ACCEPTED_EXTENSIONS = (
-  process.env.REACT_APP_IMAGE_ACCEPTED_EXTENSIONS || 'jpg,jpeg'
-).split(',');
+export const PROFILE_IMAGE_ACCEPTED_EXTENSIONS = getTypesExtensions(
+  PROFILE_IMAGE_ACCEPTED_TYPES
+);
 
 export const HUBSPOT_FORMS = {
   region: process.env.REACT_APP_HUBSPOT_FORMS_REGION || 'na1',
