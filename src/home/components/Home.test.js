@@ -249,3 +249,33 @@ test('Home: Display defaults', async () => {
     )
   ).toBeInTheDocument();
 });
+
+test('Home: Display title', async () => {
+  fetchHomeData.mockReturnValue(
+    Promise.resolve({
+      groups: [],
+      landscapes: [],
+    })
+  );
+  await setup();
+  expect(screen.getByText(/First’s Terraso/i)).toBeInTheDocument();
+});
+
+test('Home: Display title (default)', async () => {
+  terrasoApi.requestGraphQL.mockReturnValue(
+    Promise.resolve(
+      _.set(
+        'users.edges[0].node',
+        {
+          firstName: undefined,
+          lastName: undefined,
+          profileImage: 'test.com',
+          preferences: { edges: [] },
+        },
+        {}
+      )
+    )
+  );
+  await setup();
+  expect(screen.getByText(/Terraso Home/i)).toBeInTheDocument();
+});
