@@ -36,8 +36,8 @@ import PageLoader from 'layout/PageLoader';
 import Actions from './Actions';
 
 import {
-  IMAGE_ACCEPTED_EXTENSIONS,
   LANDSCAPE_PROFILE_IMAGE_MAX_SIZE,
+  PROFILE_IMAGE_ACCEPTED_EXTENSIONS,
 } from 'config';
 
 const ASPECT_RATIO = 0.5625; // 9 / 16
@@ -99,7 +99,7 @@ const ProfileImage = props => {
       if (_.isEmpty(acceptedFiles)) {
         setError(
           t('landscape.form_profile_image_file_no_accepted', {
-            extensions: IMAGE_ACCEPTED_EXTENSIONS.join(', '),
+            extensions: PROFILE_IMAGE_ACCEPTED_EXTENSIONS.join(', '),
           })
         );
         return;
@@ -146,7 +146,7 @@ const ProfileImage = props => {
       )}
       <DropZone
         errors={error ? [error] : null}
-        fileExtensions={IMAGE_ACCEPTED_EXTENSIONS}
+        fileExtensions={PROFILE_IMAGE_ACCEPTED_EXTENSIONS}
         maxSize={LANDSCAPE_PROFILE_IMAGE_MAX_SIZE}
         onDrop={onDrop}
       />

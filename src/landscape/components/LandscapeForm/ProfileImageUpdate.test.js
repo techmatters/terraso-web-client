@@ -38,7 +38,7 @@ const setup = async () => {
   });
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.jpg, *.jpeg Maximum file size: 10 MB',
+    name: 'Select File Accepted file formats: *.jpeg, *.jpg Maximum file size: 10 MB',
   });
 
   const dropFiles = async files => {
