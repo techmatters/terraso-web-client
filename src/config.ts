@@ -34,7 +34,7 @@ export const COOKIES_DOMAIN =
 
 const COOKIES_PARAMS = { path: '/', domain: COOKIES_DOMAIN };
 
-export const SENTRY_DSN = process.env.SENTRY_DSN;
+export const SENTRY_DSN = process.env.REACT_APP_SENTRY_DSN || '';
 
 setAPIConfig({
   terrasoAPIURL: TERRASO_API_URL,
