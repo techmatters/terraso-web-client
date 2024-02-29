@@ -6,7 +6,6 @@
     "src/config.ts"
   ],
   "dependencies": {
-    "@graphql-codegen/client-preset": "^4.1.0",
     "@hookform/resolvers": "^3.3.4",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
@@ -90,8 +89,8 @@
   ],
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@graphql-codegen/cli": "^5.0.0",
-    "@graphql-codegen/client-preset": "^4.1.0",
+    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/client-preset": "^4.2.4",
     "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^14.2.1",
