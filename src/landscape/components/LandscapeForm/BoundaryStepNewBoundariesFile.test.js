@@ -23,11 +23,13 @@ import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import mapboxgl from 'gis/mapbox';
 import LandscapeNew from 'landscape/components/LandscapeForm/New';
 
-jest.mock('custom-hooks', () => ({
-  useIsMounted: () => {
-    false;
-  },
-}));
+jest.mock('custom-hooks', () => {
+  return {
+    useIsMounted: () => {
+      return { current: false };
+    },
+  };
+});
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
