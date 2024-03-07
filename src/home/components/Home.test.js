@@ -29,16 +29,15 @@ jest.mock('home/homeService', () => ({
   fetchHomeData: jest.fn(),
 }));
 
-const setup = async () => {
+const setup = async (
+  currentUserData = { firstName: 'First', lastName: 'Last' }
+) => {
   await render(<Home />, {
     account: {
       hasToken: true,
       currentUser: {
         fetching: false,
-        data: {
-          firstName: 'First',
-          lastName: 'Last',
-        },
+        data: currentUserData,
       },
     },
   });
@@ -248,4 +247,26 @@ test('Home: Display defaults', async () => {
       /Create an impactful story using maps, photos, videos, audio recordings and narrative/i
     )
   ).toBeInTheDocument();
+});
+
+test('Home: Display title', async () => {
+  fetchHomeData.mockReturnValue(
+    Promise.resolve({
+      groups: [],
+      landscapes: [],
+    })
+  );
+  await setup();
+  expect(screen.getByText(/First’s Terraso/i)).toBeInTheDocument();
+});
+
+test('Home: Display title (default)', async () => {
+  fetchHomeData.mockReturnValue(
+    Promise.resolve({
+      groups: [],
+      landscapes: [],
+    })
+  );
+  await setup({ firstName: undefined, lastName: undefined });
+  expect(screen.getByText(/Terraso Home/i)).toBeInTheDocument();
 });

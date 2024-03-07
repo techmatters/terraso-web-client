@@ -93,7 +93,13 @@ const Home = () => {
 
   return (
     <PageContainer>
-      <PageHeader header={t('home.page_title', { name: user.firstName })} />
+      <PageHeader
+        header={
+          user.firstName
+            ? t('home.page_title', { name: user.firstName })
+            : t('home.document_title')
+        }
+      />
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <Stack spacing={3}>

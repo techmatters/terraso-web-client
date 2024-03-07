@@ -153,7 +153,11 @@ const ToolCard = ({ tool }) => {
           </section>
 
           <section>
-            <ToolIconAndLink tool={tool} title={toolTitle} external />
+            <ToolIconAndLink
+              tool={tool}
+              title={toolTitle}
+              external={external}
+            />
           </section>
         </Stack>
       </Card>
