@@ -29,16 +29,15 @@ jest.mock('home/homeService', () => ({
   fetchHomeData: jest.fn(),
 }));
 
-const setup = async () => {
+const setup = async (
+  currentUserData = { firstName: 'First', lastName: 'Last' }
+) => {
   await render(<Home />, {
     account: {
       hasToken: true,
       currentUser: {
         fetching: false,
-        data: {
-          firstName: 'First',
-          lastName: 'Last',
-        },
+        data: currentUserData,
       },
     },
   });
@@ -262,20 +261,12 @@ test('Home: Display title', async () => {
 });
 
 test('Home: Display title (default)', async () => {
-  terrasoApi.requestGraphQL.mockReturnValue(
-    Promise.resolve(
-      _.set(
-        'users.edges[0].node',
-        {
-          firstName: undefined,
-          lastName: undefined,
-          profileImage: 'test.com',
-          preferences: { edges: [] },
-        },
-        {}
-      )
-    )
+  fetchHomeData.mockReturnValue(
+    Promise.resolve({
+      groups: [],
+      landscapes: [],
+    })
   );
-  await setup();
+  await setup({ firstName: undefined, lastName: undefined });
   expect(screen.getByText(/Terraso Home/i)).toBeInTheDocument();
 });
