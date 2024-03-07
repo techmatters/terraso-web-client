@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import * as util from 'util';
 import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import { useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
@@ -28,6 +29,13 @@ import {
   DATA_SET_ACCPETED_EXTENSIONS,
   MAP_DATA_ACCEPTED_EXTENSIONS,
 } from 'config';
+
+// mapbox-gl 3.x no longer has TextDecoder defined
+// https://github.com/mapbox/mapbox-gl-js/issues/13027
+Object.defineProperty(window, 'TextDecoder', {
+  writable: true,
+  value: util.TextDecoder,
+});
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 jest.mock('sharedData/visualization/visualizationMarkers');
