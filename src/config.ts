@@ -36,6 +36,9 @@ const COOKIES_PARAMS = { path: '/', domain: COOKIES_DOMAIN };
 
 export const SENTRY_DSN = process.env.REACT_APP_SENTRY_DSN || '';
 
+export const SENTRY_ENABLED =
+  process.env.REACT_APP_SENTRY_ENABLED === 'true' || false;
+
 setAPIConfig({
   terrasoAPIURL: TERRASO_API_URL,
   graphQLEndpoint: GRAPHQL_ENDPOINT,

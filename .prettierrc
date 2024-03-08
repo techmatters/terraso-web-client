@@ -8,7 +8,7 @@
 		"<THIRD_PARTY_MODULES>",
 		"^@mui/(.*)$",
 		"",
-		"^(custom-hooks|react-hoc|timeUtils)$",
+		"^(custom-hooks|react-hoc|timeUtils|utils)$",
 		"",
 		"^(collaboration|common|forms|layout|localization|monitoring|navigation|notifications|permissions|state)/(.*)$",
 		"^(account|contact|gis|group|home|landscape|sharedData|storyMap|taxonomies|terrasoBackend|tool|user)/(.*)$",

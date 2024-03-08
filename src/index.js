@@ -26,7 +26,12 @@ import AppWrappers from 'layout/AppWrappers';
 import reportWebVitals from 'monitoring/reportWebVitals';
 import rules from 'permissions/rules';
 
-import { SENTRY_DSN, TERRASO_ENV } from 'config';
+import {
+  REACT_APP_BASE_URL,
+  SENTRY_DSN,
+  SENTRY_ENABLED,
+  TERRASO_ENV,
+} from 'config';
 
 import theme from 'theme';
 
@@ -34,30 +39,36 @@ import 'index.css';
 
 import App from 'App';
 
-Sentry.init({
-  dsn: SENTRY_DSN,
-  environment: TERRASO_ENV,
-  integrations: [
-    // See docs for support of different versions of variation of react router
-    // https://docs.sentry.io/platforms/javascript/guides/react/configuration/integrations/react-router/
-    Sentry.reactRouterV6BrowserTracingIntegration({
-      useEffect: React.useEffect,
-    }),
-    Sentry.replayIntegration(),
-  ],
+import { escapeStringRegex } from 'utils';
 
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  tracesSampleRate: 1.0,
+if (SENTRY_ENABLED) {
+  Sentry.init({
+    dsn: SENTRY_DSN,
+    environment: TERRASO_ENV,
+    integrations: [
+      // See docs for support of different versions of variation of react router
+      // https://docs.sentry.io/platforms/javascript/guides/react/configuration/integrations/react-router/
+      Sentry.reactRouterV6BrowserTracingIntegration({
+        useEffect: React.useEffect,
+      }),
+      Sentry.replayIntegration(),
+    ],
 
-  // Set `tracePropagationTargets` to control for which URLs distributed tracing should be enabled
-  tracePropagationTargets: ['127.0.0.1', /^https:\/\/terraso\.org/],
+    // Set tracesSampleRate to 1.0 to capture 100%
+    // of transactions for performance monitoring.
+    tracesSampleRate: 1.0,
 
-  // Capture Replay for 10% of all sessions,
-  // plus for 100% of sessions with an error
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1.0,
-});
+    // Set `tracePropagationTargets` to control for which URLs distributed tracing should be enabled
+    tracePropagationTargets: [
+      new RegExp(`^${escapeStringRegex(REACT_APP_BASE_URL)}`),
+    ],
+
+    // Capture Replay for 10% of all sessions,
+    // plus for 100% of sessions with an error
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0,
+  });
+}
 
 createRoot(document.getElementById('root')).render(
   <AppWrappers store={createStore()} theme={theme} permissionsRules={rules}>
