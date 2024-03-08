@@ -38,6 +38,7 @@ import theme from 'theme';
 import 'index.css';
 
 import App from 'App';
+
 import { escapeStringRegex } from 'utils';
 
 if (SENTRY_ENABLED) {
