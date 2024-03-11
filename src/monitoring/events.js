@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2021-2024 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -14,26 +14,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { useCallback } from 'react';
 
-import { useCollaborationContext } from 'collaboration/collaborationContext';
+import { useMemo } from 'react';
+
 import { useAnalytics } from 'monitoring/analytics';
 
-export const useSharedData = () => {
+export const useShareEvent = () => {
   const { trackEvent } = useAnalytics();
-  const { owner, entityType } = useCollaborationContext();
+  const pageUrl = useMemo(() => window.location, []);
 
-  const downloadFile = useCallback(
-    file => {
-      trackEvent('dataEntry.file.download', {
-        props: {
-          [entityType]: owner.slug,
-        },
-      });
-      window.open(file.url, '_blank');
-    },
-    [trackEvent, owner, entityType]
-  );
+  const onShare = method => {
+    trackEvent('share', { props: { url: pageUrl.toString(), method } });
+  };
 
-  return { downloadFile };
+  return { onShare };
 };

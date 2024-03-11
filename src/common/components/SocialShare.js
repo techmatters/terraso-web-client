@@ -36,7 +36,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { useCopy } from 'custom-hooks';
 
-import { useAnalytics } from 'monitoring/analytics';
+import { useShareEvent } from 'monitoring/events';
 
 import CopyLink from './CopyLink';
 
@@ -261,7 +261,7 @@ const PostToService = props => {
 const SocialShare = props => {
   const { buttonProps } = props;
   const { t } = useTranslation();
-  const { trackEvent } = useAnalytics();
+  const { onShare } = useShareEvent();
   const { socialShareProps } = useContext(SocialShareContext);
   const { name } = socialShareProps;
   const [open, setOpen] = useState(false);
@@ -278,10 +278,6 @@ const SocialShare = props => {
     if (ref) {
       ref.focus();
     }
-  };
-
-  const onShare = method => {
-    trackEvent('share', { props: { url: pageUrl.toString(), method } });
   };
 
   if (!name) {

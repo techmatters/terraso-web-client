@@ -14,26 +14,39 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { useCallback } from 'react';
+import { render } from 'tests/utils';
 
-import { useCollaborationContext } from 'collaboration/collaborationContext';
 import { useAnalytics } from 'monitoring/analytics';
+import { useShareEvent } from 'monitoring/events';
 
-export const useSharedData = () => {
-  const { trackEvent } = useAnalytics();
-  const { owner, entityType } = useCollaborationContext();
+jest.mock('monitoring/analytics', () => ({
+  ...jest.requireActual('monitoring/analytics'),
+  useAnalytics: jest.fn(),
+}));
 
-  const downloadFile = useCallback(
-    file => {
-      trackEvent('dataEntry.file.download', {
-        props: {
-          [entityType]: owner.slug,
-        },
-      });
-      window.open(file.url, '_blank');
-    },
-    [trackEvent, owner, entityType]
-  );
+const Component = () => {
+  const { onShare } = useShareEvent();
 
-  return { downloadFile };
+  onShare('test');
+  return <div></div>;
 };
+
+test('Events: onShare', async () => {
+  const trackEvent = jest.fn();
+  useAnalytics.mockReturnValue({
+    trackEvent,
+  });
+
+  const expectedUrl = window.location.toString();
+
+  await render(<Component />);
+
+  const eventCall = trackEvent.mock.calls[0];
+  expect(eventCall[0]).toStrictEqual('share');
+  expect(eventCall[1]).toStrictEqual({
+    props: {
+      method: 'test',
+      url: expectedUrl,
+    },
+  });
+});
