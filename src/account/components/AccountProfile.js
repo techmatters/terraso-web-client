@@ -14,10 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import {
   fetchProfile,
   savePreference,
@@ -25,7 +26,13 @@ import {
 } from 'terraso-client-shared/account/accountSlice';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import * as yup from 'yup';
-import { Checkbox, FormControlLabel, Grid, Typography } from '@mui/material';
+import {
+  Alert,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  Typography,
+} from '@mui/material';
 
 import { withProps } from 'react-hoc';
 
@@ -36,6 +43,7 @@ import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePickerSelect from 'localization/components/LocalePickerSelect';
 import { useAnalytics } from 'monitoring/analytics';
+import { profileCompleted } from 'account/accountProfileUtils';
 
 import AccountAvatar from './AccountAvatar';
 
@@ -170,12 +178,20 @@ const AccountProfile = () => {
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
   const { t } = useTranslation();
+  const { completeProfile } = useParams();
   const { data: user, fetching } = useSelector(_.get('account.profile'));
 
   useFetchData(fetchProfile);
 
   useDocumentTitle(t('account.profile_document_title'));
   useDocumentDescription(t('account.profile_document_description'));
+
+  useEffect(
+    () => () => {
+      profileCompleted(user?.email);
+    },
+    [user?.email]
+  );
 
   const onSave = updatedProfile => {
     // Save user data
@@ -223,6 +239,9 @@ const AccountProfile = () => {
   return (
     <PageContainer>
       <PageHeader header={t('account.profile')} />
+      {completeProfile && (
+        <Alert severity="info">{t('account.profile_complete_message')}</Alert>
+      )}
 
       <Form
         aria-label={t('account.profile_form_label')}

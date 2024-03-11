@@ -185,6 +185,7 @@ const paths = [
     breadcrumbsLabel: 'tools.breadcrumbs_list',
   }),
   path('/account', AccountLogin, { auth: false }),
+  path('/account/profile/:completeProfile', AccountProfile),
   path('/account/profile', AccountProfile),
   path('/contact', ContactForm),
   path('/tools/story-maps', StoryMapsToolsHome, {
