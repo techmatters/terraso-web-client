@@ -23,6 +23,7 @@ import { useFetchData } from 'terraso-client-shared/store/utils';
 
 import PageLoader from 'layout/PageLoader';
 import { generateReferrerPath } from 'navigation/navigationUtils';
+import { useCompleteProfile } from 'account/accountProfileUtils';
 
 const RequireAuth = ({ children }) => {
   const location = useLocation();
@@ -30,6 +31,8 @@ const RequireAuth = ({ children }) => {
     state => state.account.currentUser
   );
   const hasToken = useSelector(state => state.account.hasToken);
+
+  useCompleteProfile();
 
   useFetchData(
     useCallback(
