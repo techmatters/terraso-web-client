@@ -17,8 +17,8 @@
 import { render, screen } from 'tests/utils';
 import React from 'react';
 import _ from 'lodash/fp';
-import { useLocation, useParams } from 'react-router-dom';
-import { getUserEmail } from 'terraso-client-shared/account/auth';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { getToken, getUserEmail } from 'terraso-client-shared/account/auth';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import RequireAuth from 'account/components/RequireAuth';
@@ -29,17 +29,24 @@ jest.mock('terraso-client-shared/terrasoApi/api');
 jest.mock('terraso-client-shared/account/auth', () => ({
   ...jest.requireActual('terraso-client-shared/account/auth'),
   getUserEmail: jest.fn(),
+  getToken: jest.fn(),
 }));
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(),
   useLocation: jest.fn(),
+  useNavigate: jest.fn(),
   Navigate: props => <div>To: {props.to}</div>,
 }));
 
+// Payload: { "createdWithService": "google" }
+const CREATED_WITH_SERVICE_TOKEN =
+  'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkV2l0aFNlcnZpY2UiOiJnb29nbGUifQ.aznynzRP1qRh-GVKPM_Xhi7ZhG7XuM7R6SIXNd7rfCo2bgnXJen3btm4VnpcVDalnCQPpp8e-1f7t8qlTLZu0Q';
+
 beforeEach(() => {
   global.fetch = jest.fn();
+  useNavigate.mockReturnValue(jest.fn());
 });
 
 test('Auth: test redirect', async () => {
@@ -185,4 +192,56 @@ test('Auth: test fetch user', async () => {
   );
 
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+});
+
+test('Auth: Test redirect complete profile', async () => {
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+  getToken.mockResolvedValue(CREATED_WITH_SERVICE_TOKEN);
+  await render(
+    <RequireAuth>
+      <div />
+    </RequireAuth>,
+    {
+      account: {
+        currentUser: {
+          data: {
+            email: 'test@test.com',
+          },
+        },
+      },
+    }
+  );
+
+  expect(navigate).toHaveBeenCalledWith('/account/profile/completeProfile');
+});
+
+test('Auth: Avoid redirect if profile complete already displayed for user', async () => {
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+  getToken.mockResolvedValue(CREATED_WITH_SERVICE_TOKEN);
+
+  localStorage.setItem(
+    'completedProfileDisplayed',
+    JSON.stringify({
+      'test@test.com': true,
+    })
+  );
+
+  await render(
+    <RequireAuth>
+      <div />
+    </RequireAuth>,
+    {
+      account: {
+        currentUser: {
+          data: {
+            email: 'test@test.com',
+          },
+        },
+      },
+    }
+  );
+
+  expect(navigate).not.toHaveBeenCalled();
 });

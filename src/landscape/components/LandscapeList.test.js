@@ -45,6 +45,7 @@ beforeEach(() => {
   mapboxgl.LngLatBounds = jest.fn();
   mapboxgl.LngLatBounds.prototype = {
     extend: jest.fn().mockReturnThis(),
+    isEmpty: jest.fn().mockReturnValue(false),
   };
   mapboxgl.Map = jest.fn();
   mapboxgl.Map.mockReturnValue({
@@ -74,7 +75,7 @@ const setup = async initialState => {
   });
 };
 
-const baseListTest = async () => {
+const setupTestMap = async () => {
   const events = {};
   const map = {
     on: jest.fn().mockImplementation((...args) => {
@@ -108,12 +109,19 @@ const baseListTest = async () => {
     remove: jest.fn(),
   };
   mapboxgl.Popup.mockReturnValue(Popup);
+  return {
+    map: map,
+    events: events,
+    Popup: Popup,
+  };
+};
+
+const baseListTest = async () => {
+  const { map, events, Popup } = await setupTestMap();
+  const membersCounts = [0, 23, 59, 2, 1, 28, 6, 23, 9, 11, 1, 2, 3, 4, 5];
   const isMember = {
     3: true,
   };
-
-  const membersCounts = [0, 23, 59, 2, 1, 28, 6, 23, 9, 11, 1, 2, 3, 4, 5];
-
   const landscapes = Array(15)
     .fill(0)
     .map((i, landscapeIndex) => ({
@@ -197,7 +205,11 @@ test('LandscapeList: Display loader', async () => {
   });
   expect(loader).toBeInTheDocument();
 });
+
 test('LandscapeList: Empty', async () => {
+  const { map } = await setupTestMap();
+  mapboxgl.LngLatBounds.prototype.isEmpty = jest.fn().mockReturnValue(true);
+
   terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       landscapes: {
@@ -209,7 +221,26 @@ test('LandscapeList: Empty', async () => {
   expect(
     screen.getByText('First, double check the spelling of the landscape name.')
   ).toBeInTheDocument();
+
+  expect(map.fitBounds.mock.calls).toHaveLength(0);
 });
+
+test('LandscapeList: Non-empty', async () => {
+  const { map } = await setupTestMap();
+  mapboxgl.LngLatBounds.prototype.isEmpty = jest.fn().mockReturnValue(false);
+
+  terrasoApi.requestGraphQL.mockReturnValue(
+    Promise.resolve({
+      landscapes: {
+        edges: [],
+      },
+    })
+  );
+  await setup();
+
+  expect(map.fitBounds.mock.calls).toHaveLength(1);
+});
+
 test('LandscapeList: Display list', async () => {
   await baseListTest();
 

@@ -56,57 +56,59 @@ const BearingIcon = () => {
 const SetMapHelperText = () => {
   const { t } = useTranslation();
   return (
-    <Stack spacing={3}>
-      <Box>
-        <Trans i18nKey="storyMap.form_location_helper_text_step_1">
-          <Typography gutterBottom variant="h3">
-            Title
-          </Typography>
-          <Typography gutterBottom>Paragraph 1</Typography>
-          <img
-            src="/storyMap/set-map-step-1.png"
-            alt={t('storyMap.form_location_helper_text_step_1_image_alt')}
-          />
-        </Trans>
-      </Box>
-      <Box>
-        <Trans i18nKey="storyMap.form_location_helper_text_step_2">
-          <Typography gutterBottom variant="h3">
-            Title
-          </Typography>
-          <Typography gutterBottom sx={{ mb: 2 }}>
-            Paragraph 1
-          </Typography>
-          <Typography gutterBottom>
-            Content
-            <BearingIcon />
-            content
-            <BearingIcon />
-            content
-          </Typography>
-          <img
-            src="/storyMap/set-map-step-2-1.png"
-            alt={t('storyMap.form_location_helper_text_step_2_1_image_alt')}
-          />
-          <img
-            src="/storyMap/set-map-step-2-2.png"
-            alt={t('storyMap.form_location_helper_text_step_2_2_image_alt')}
-          />
-        </Trans>
-      </Box>
-      <Box>
-        <Trans i18nKey="storyMap.form_location_helper_text_step_3">
-          <Typography gutterBottom variant="h3">
-            Title
-          </Typography>
-          <Typography gutterBottom>Paragraph 1</Typography>
-          <img
-            src={t('storyMap.form_location_helper_text_step_3_image_src')}
-            alt={t('storyMap.form_location_helper_text_step_3_image_alt')}
-          />
-        </Trans>
-      </Box>
-    </Stack>
+    <DialogContent>
+      <Stack spacing={3}>
+        <Box>
+          <Trans i18nKey="storyMap.form_location_helper_text_step_1">
+            <Typography gutterBottom variant="h3">
+              Title
+            </Typography>
+            <Typography gutterBottom>Paragraph 1</Typography>
+            <img
+              src="/storyMap/set-map-step-1.png"
+              alt={t('storyMap.form_location_helper_text_step_1_image_alt')}
+            />
+          </Trans>
+        </Box>
+        <Box>
+          <Trans i18nKey="storyMap.form_location_helper_text_step_2">
+            <Typography gutterBottom variant="h3">
+              Title
+            </Typography>
+            <Typography gutterBottom sx={{ mb: 2 }}>
+              Paragraph 1
+            </Typography>
+            <Typography gutterBottom>
+              Content
+              <BearingIcon />
+              content
+              <BearingIcon />
+              content
+            </Typography>
+            <img
+              src="/storyMap/set-map-step-2-1.png"
+              alt={t('storyMap.form_location_helper_text_step_2_1_image_alt')}
+            />
+            <img
+              src="/storyMap/set-map-step-2-2.png"
+              alt={t('storyMap.form_location_helper_text_step_2_2_image_alt')}
+            />
+          </Trans>
+        </Box>
+        <Box>
+          <Trans i18nKey="storyMap.form_location_helper_text_step_3">
+            <Typography gutterBottom variant="h3">
+              Title
+            </Typography>
+            <Typography gutterBottom>Paragraph 1</Typography>
+            <img
+              src={t('storyMap.form_location_helper_text_step_3_image_src')}
+              alt={t('storyMap.form_location_helper_text_step_3_image_alt')}
+            />
+          </Trans>
+        </Box>
+      </Stack>
+    </DialogContent>
   );
 };
 
@@ -226,7 +228,6 @@ const MapLocationDialog = props => {
           <DialogContent sx={{ pb: 0 }}>
             <HelperText
               showLabel
-              useAnchor={false}
               maxWidth={586}
               label={t('storyMap.form_location_dialog_helper_text_label')}
               Component={SetMapHelperText}
