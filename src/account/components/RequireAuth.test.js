@@ -40,9 +40,9 @@ jest.mock('react-router-dom', () => ({
   Navigate: props => <div>To: {props.to}</div>,
 }));
 
-// Payload: { "createdWithService": "google" }
-const CREATED_WITH_SERVICE_TOKEN =
-  'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkV2l0aFNlcnZpY2UiOiJnb29nbGUifQ.aznynzRP1qRh-GVKPM_Xhi7ZhG7XuM7R6SIXNd7rfCo2bgnXJen3btm4VnpcVDalnCQPpp8e-1f7t8qlTLZu0Q';
+// Payload: { "isFirstLogin": true }
+const IS_FIRST_LOGIN_TOKEN =
+  'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc0ZpcnN0TG9naW4iOnRydWV9.Z5WctUFTDZuFDAr0QiczFKIIx8qWzWJ38kiIHnGSiUQ29z7VQqGz9F5mfFfrt48sRob-fyw5sWxIxm3qbcxrEQ';
 
 beforeEach(() => {
   global.fetch = jest.fn();
@@ -197,7 +197,7 @@ test('Auth: test fetch user', async () => {
 test('Auth: Test redirect complete profile', async () => {
   const navigate = jest.fn();
   useNavigate.mockReturnValue(navigate);
-  getToken.mockResolvedValue(CREATED_WITH_SERVICE_TOKEN);
+  getToken.mockResolvedValue(IS_FIRST_LOGIN_TOKEN);
   await render(
     <RequireAuth>
       <div />
@@ -219,7 +219,7 @@ test('Auth: Test redirect complete profile', async () => {
 test('Auth: Avoid redirect if profile complete already displayed for user', async () => {
   const navigate = jest.fn();
   useNavigate.mockReturnValue(navigate);
-  getToken.mockResolvedValue(CREATED_WITH_SERVICE_TOKEN);
+  getToken.mockResolvedValue(IS_FIRST_LOGIN_TOKEN);
 
   localStorage.setItem(
     'completedProfileDisplayed',
