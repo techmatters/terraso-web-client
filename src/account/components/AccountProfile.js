@@ -18,7 +18,7 @@ import React, { useCallback, useEffect } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   fetchProfile,
   savePreference,
@@ -175,6 +175,7 @@ const ProfilePicture = () => {
 };
 
 const AccountProfile = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
   const { t } = useTranslation();
@@ -195,7 +196,7 @@ const AccountProfile = () => {
 
   const onSave = updatedProfile => {
     // Save user data
-    dispatch(
+    const saveUserPromise = dispatch(
       saveUser(
         _.omit(
           ['profilePicture', 'notifications', 'email'].concat(
@@ -207,7 +208,7 @@ const AccountProfile = () => {
     );
 
     // Save language and notifications preferences
-    PREFERENCE_KEYS.forEach(preferenceKey => {
+    const savePreferencesPromises = PREFERENCE_KEYS.map(preferenceKey => {
       const currentValue = _.get(['preferences', preferenceKey], user);
       const newValue = _.get(['preferences', preferenceKey], updatedProfile);
 
@@ -215,19 +216,32 @@ const AccountProfile = () => {
       // database. newValue coments from user data and will be a string,
       // so the strict equality check below is not enough
       if (newValue === '' && typeof currentValue === 'undefined') {
-        return;
+        return null;
       }
 
       if (newValue !== currentValue) {
-        dispatch(
-          savePreference({ key: preferenceKey, value: newValue.toString() })
-        );
-
         if (_.endsWith(preferenceKey, 'notifications')) {
           trackEvent('preference.update', {
             props: { emailNotifications: newValue },
           });
         }
+
+        return dispatch(
+          savePreference({ key: preferenceKey, value: newValue.toString() })
+        );
+      }
+      return null;
+    });
+
+    const allPromises = [saveUserPromise, ...savePreferencesPromises].filter(
+      promise => !!promise
+    );
+    Promise.all(allPromises).then(responses => {
+      const allSuccess = responses.every(
+        response => _.get('meta.requestStatus', response) === 'fulfilled'
+      );
+      if (allSuccess) {
+        navigate('/account/profile');
       }
     });
   };

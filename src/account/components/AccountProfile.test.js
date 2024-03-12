@@ -16,13 +16,21 @@
  */
 import { fireEvent, render, screen, within } from 'tests/utils';
 import React from 'react';
+import { when } from 'jest-when';
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
+import { useNavigate, useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import AccountProfile from 'account/components/AccountProfile';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: jest.fn(),
+  useNavigate: jest.fn(),
+}));
 
 const setup = async (
   initialState = {
@@ -51,6 +59,11 @@ const setup = async (
     },
   };
 };
+
+beforeEach(() => {
+  useNavigate.mockReturnValue(jest.fn());
+  useParams.mockReturnValue({});
+});
 
 test('AccountProfile: Display Avatar', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
@@ -367,4 +380,59 @@ test('AccountProfile: Save error', async () => {
 
   // Test error display
   expect(screen.getByText(/Save Error/i)).toBeInTheDocument();
+});
+
+test('AccountProfile: Complete profile', async () => {
+  useParams.mockReturnValue({
+    completeProfile: 'completeProfile',
+  });
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+  when(terrasoApi.requestGraphQL)
+    .calledWith(expect.stringContaining('query userProfile'), expect.anything())
+    .mockReturnValue(
+      Promise.resolve(
+        _.set(
+          'users.edges[0].node',
+          {
+            id: 'user-id',
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'group@group.org',
+            profileImage: '',
+            preferences: { edges: [] },
+          },
+          {}
+        )
+      )
+    );
+
+  when(terrasoApi.requestGraphQL)
+    .calledWith(
+      expect.stringContaining('mutation updateUser'),
+      expect.anything()
+    )
+    .mockResolvedValue(
+      _.set(
+        'updateUser.user',
+        {
+          id: '1',
+          firstName: 'Pablo',
+          lastName: 'Perez',
+          email: 'group@group.org',
+          profileImage: 'https://www.group.org/image.jpg',
+          preferences: {
+            edges: [{ node: { key: 'language', value: 'es-ES' } }],
+          },
+        },
+        {}
+      )
+    );
+
+  const { inputs } = await setup();
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
+  );
+  expect(navigate).toHaveBeenCalledWith('/account/profile');
 });
