@@ -62,7 +62,6 @@ const FIELDS = [
   {
     name: 'firstName',
     label: 'account.form_first_name_label',
-    info: 'account.form_first_name_info',
     props: {
       gridItemProps: {
         xs: 12,
