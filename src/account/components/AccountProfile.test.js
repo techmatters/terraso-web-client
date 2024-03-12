@@ -431,8 +431,10 @@ test('AccountProfile: Complete profile', async () => {
 
   await setup();
 
-  expect(screen.getByRole('alert')).toHaveTextContent('We just need a few details about you before you can get started.')
-  
+  expect(screen.getByRole('alert')).toHaveTextContent(
+    'We just need a few details about you before you can get started.'
+  );
+
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
   );
