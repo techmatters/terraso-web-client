@@ -24,9 +24,7 @@ import {
   useFormState,
 } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Button, Grid, Paper } from '@mui/material';
-
-import { withProps } from 'react-hoc';
+import { Button, Grid } from '@mui/material';
 
 import FormField from 'forms/components/FormField';
 import { useFormSetContext } from 'forms/formContext';
@@ -153,92 +151,95 @@ const Form = props => {
     ]);
   }, [saveLabel, t, onCancel, cancelLabel, isMultiStep]);
 
-  const Container = outlined
-    ? withProps(Paper, { variant: 'outlined' })
-    : React.Fragment;
-
   return (
-    <Container>
-      <FormProvider watch={watch} getValues={getValues}>
-        <Grid
-          component="form"
-          {...ariaProps}
-          noValidate
-          container
-          spacing={2}
-          onSubmit={handleSubmit(onSubmit)}
-          sx={{
-            width: '100%',
-            pr: 3,
-            pb: 3,
-            pl: 1,
-            pt: 2,
-            ml: 0,
-            mt: '-8px',
-          }}
-          {...gridContainerProps}
-        >
-          {fields
-            .filter(field =>
-              filterField ? filterField(field, { getValues }) : true
+    <FormProvider watch={watch} getValues={getValues}>
+      <Grid
+        component="form"
+        {...ariaProps}
+        noValidate
+        container
+        spacing={2}
+        onSubmit={handleSubmit(onSubmit)}
+        sx={{
+          width: '100%',
+          pr: 3,
+          pb: 3,
+          pl: 1,
+          pt: 2,
+          ml: 0,
+          mt: '-8px',
+          ...(outlined
+            ? {
+                background: 'white',
+                borderRadius: '4px',
+                borderWidth: 1,
+                borderStyle: 'solid',
+                borderColor: 'cardBorder',
+              }
+            : {}),
+        }}
+        {...gridContainerProps}
+      >
+        {fields
+          .filter(field =>
+            filterField ? filterField(field, { getValues }) : true
+          )
+          .map(field =>
+            field.renderStaticElement ? (
+              <React.Fragment key={field.name}>
+                {field.renderStaticElement({ t })}
+              </React.Fragment>
+            ) : (
+              <Grid
+                key={field.name}
+                item
+                xs={12}
+                {..._.get('props.gridItemProps', field)}
+                sx={{
+                  pb: 3,
+                  ..._.getOr({}, 'props.gridItemProps.sx', field),
+                }}
+              >
+                <Controller
+                  name={field.name}
+                  control={control}
+                  render={controllerProps => (
+                    <FormField
+                      field={controllerProps.field}
+                      fieldState={controllerProps.fieldState}
+                      required={_.includes(field.name, requiredFields)}
+                      id={`${prefix}-${field.name}`}
+                      label={field.label}
+                      info={field.info}
+                      helperText={field.helperText}
+                      localizationPrefix={localizationPrefix}
+                      {..._.getOr({}, 'props', field)}
+                      inputProps={{
+                        type: field.type || 'text',
+                        placeholder: t(field.placeholder),
+                        ..._.getOr({}, 'props.inputProps', field),
+                      }}
+                    />
+                  )}
+                />
+              </Grid>
             )
-            .map(field =>
-              field.renderStaticElement ? (
-                <React.Fragment key={field.name}>
-                  {field.renderStaticElement({ t })}
-                </React.Fragment>
-              ) : (
-                <Grid
-                  key={field.name}
-                  item
-                  xs={12}
-                  {..._.get('props.gridItemProps', field)}
-                  sx={{
-                    pb: 3,
-                    ..._.getOr({}, 'props.gridItemProps.sx', field),
-                  }}
-                >
-                  <Controller
-                    name={field.name}
-                    control={control}
-                    render={controllerProps => (
-                      <FormField
-                        field={controllerProps.field}
-                        fieldState={controllerProps.fieldState}
-                        required={_.includes(field.name, requiredFields)}
-                        id={`${prefix}-${field.name}`}
-                        label={field.label}
-                        info={field.info}
-                        helperText={field.helperText}
-                        localizationPrefix={localizationPrefix}
-                        {..._.getOr({}, 'props', field)}
-                        inputProps={{
-                          type: field.type || 'text',
-                          placeholder: t(field.placeholder),
-                          ..._.getOr({}, 'props.inputProps', field),
-                        }}
-                      />
-                    )}
-                  />
-                </Grid>
-              )
-            )}
-          {children}
-          {!_.isEmpty(actions) && (
-            <Grid
-              item
-              container
-              xs={12}
-              direction="row"
-              justifyContent={isMultiStep ? 'space-between' : 'start'}
-              sx={{ marginTop: 2 }}
-            >
-              {isMultiStep ? actions.reverse() : actions}
-            </Grid>
           )}
-        </Grid>
-      </FormProvider>
-    </Container>
+        {children}
+        {!_.isEmpty(actions) && (
+          <Grid
+            item
+            container
+            xs={12}
+            direction="row"
+            justifyContent={isMultiStep ? 'space-between' : 'start'}
+            sx={{ marginTop: 2 }}
+          >
+            {isMultiStep ? actions.reverse() : actions}
+          </Grid>
+        )}
+      </Grid>
+    </FormProvider>
   );
 };
 
