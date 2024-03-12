@@ -31,6 +31,7 @@ import {
   Checkbox,
   FormControlLabel,
   Grid,
+  Paper,
   Typography,
 } from '@mui/material';
 
@@ -253,19 +254,27 @@ const AccountProfile = () => {
   return (
     <PageContainer>
       <PageHeader header={t('account.profile')} />
-      {completeProfile && (
-        <Alert severity="info">{t('account.profile_complete_message')}</Alert>
-      )}
 
-      <Form
-        aria-label={t('account.profile_form_label')}
-        prefix="profile"
-        fields={FIELDS}
-        values={user}
-        validationSchema={VALIDATION_SCHEMA}
-        onSave={onSave}
-        saveLabel="account.form_save_label"
-      />
+      <Paper variant="outlined">
+        {completeProfile && (
+          <Alert
+            severity="info"
+            sx={({ spacing }) => ({ m: spacing(3, 3, 0, 3) })}
+          >
+            {t('account.profile_complete_message')}
+          </Alert>
+        )}
+        <Form
+          outlined={false}
+          aria-label={t('account.profile_form_label')}
+          prefix="profile"
+          fields={FIELDS}
+          values={user}
+          validationSchema={VALIDATION_SCHEMA}
+          onSave={onSave}
+          saveLabel="account.form_save_label"
+        />
+      </Paper>
     </PageContainer>
   );
 };
