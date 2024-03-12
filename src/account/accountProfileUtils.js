@@ -20,9 +20,9 @@ import { useNavigate } from 'react-router-dom';
 import { getToken } from 'terraso-client-shared/account/auth';
 import { useSelector } from 'terrasoApi/store';
 
-const getCreatedWithService = async () => {
+const getIsFirstLogin = async () => {
   const token = await getToken();
-  return token === undefined ? undefined : jwtDecode(token).createdWithService;
+  return token === undefined ? undefined : jwtDecode(token).isFirstLogin;
 };
 
 const getStoredCompletedProfile = email => {
@@ -52,16 +52,16 @@ export const profileCompleted = email => {
 export const useCompleteProfile = () => {
   const navigate = useNavigate();
   const { data: user } = useSelector(state => state.account.currentUser);
-  const [createdWithService, setCreatedWithService] = useState();
+  const [isFirstLogin, setIsFirstLogin] = useState();
 
   useEffect(() => {
-    getCreatedWithService().then(createdWithService => {
-      setCreatedWithService(createdWithService);
+    getIsFirstLogin().then(isFirstLogin => {
+      setIsFirstLogin(isFirstLogin);
     });
   }, []);
 
   useEffect(() => {
-    if (!createdWithService || !user?.email) {
+    if (!isFirstLogin || !user?.email) {
       return;
     }
 
@@ -71,5 +71,5 @@ export const useCompleteProfile = () => {
     }
 
     navigate('/account/profile/completeProfile');
-  }, [createdWithService, user?.email, navigate]);
+  }, [isFirstLogin, user?.email, navigate]);
 };
