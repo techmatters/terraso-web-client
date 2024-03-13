@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useAnalytics } from 'monitoring/analytics';
 
@@ -23,9 +23,30 @@ export const useShareEvent = () => {
   const { trackEvent } = useAnalytics();
   const pageUrl = useMemo(() => window.location, []);
 
-  const onShare = method => {
-    trackEvent('share', { props: { url: pageUrl.toString(), method } });
-  };
+  const onShare = useCallback(
+    method => {
+      trackEvent('share', { props: { url: pageUrl.toString(), method } });
+    },
+    [trackEvent, pageUrl]
+  );
 
   return { onShare };
+};
+
+export const useDownloadEvent = () => {
+  const { trackEvent } = useAnalytics();
+
+  const onDownload = useCallback(
+    (entityType, ownerSlug, location) => {
+      trackEvent('dataEntry.file.download', {
+        props: {
+          [entityType]: ownerSlug,
+          'download location': location,
+        },
+      });
+    },
+    [trackEvent]
+  );
+
+  return { onDownload };
 };

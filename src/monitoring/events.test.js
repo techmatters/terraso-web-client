@@ -17,21 +17,20 @@
 import { render } from 'tests/utils';
 
 import { useAnalytics } from 'monitoring/analytics';
-import { useShareEvent } from 'monitoring/events';
+import { useDownloadEvent, useShareEvent } from 'monitoring/events';
 
 jest.mock('monitoring/analytics', () => ({
   ...jest.requireActual('monitoring/analytics'),
   useAnalytics: jest.fn(),
 }));
 
-const Component = () => {
-  const { onShare } = useShareEvent();
-
-  onShare('test');
-  return <div></div>;
-};
-
 test('Events: onShare', async () => {
+  const Component = () => {
+    const { onShare } = useShareEvent();
+    onShare('test');
+    return <div></div>;
+  };
+
   const trackEvent = jest.fn();
   useAnalytics.mockReturnValue({
     trackEvent,
@@ -47,6 +46,30 @@ test('Events: onShare', async () => {
     props: {
       method: 'test',
       url: expectedUrl,
+    },
+  });
+});
+
+test('Events: onDownload', async () => {
+  const Component = () => {
+    const { onDownload } = useDownloadEvent();
+    onDownload('group', 'abc', 'test');
+    return <div></div>;
+  };
+
+  const trackEvent = jest.fn();
+  useAnalytics.mockReturnValue({
+    trackEvent,
+  });
+
+  await render(<Component />);
+
+  const eventCall = trackEvent.mock.calls[0];
+  expect(eventCall[0]).toStrictEqual('dataEntry.file.download');
+  expect(eventCall[1]).toStrictEqual({
+    props: {
+      group: 'abc',
+      'download location': 'test',
     },
   });
 });
