@@ -19,9 +19,15 @@ import { when } from 'jest-when';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
+import { useDownloadEvent } from 'monitoring/events';
+
 import SharedResourceDownload from './SharedResourceDownload';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
+
+jest.mock('monitoring/events', () => ({
+  useDownloadEvent: jest.fn(),
+}));
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -37,25 +43,7 @@ const DEFAULT_ACCOUNT = {
   },
 };
 
-const setup = async (account = DEFAULT_ACCOUNT) => {
-  await render(<SharedResourceDownload />, {
-    account,
-  });
-};
-
-beforeEach(() => {
-  window.open = jest.fn();
-  useParams.mockReturnValue({
-    shareUuid: 'share-uuid-1',
-  });
-  useNavigate.mockReturnValue(jest.fn());
-  useLocation.mockReturnValue({
-    pathname:
-      '/groups/private-1/shared-resource/download/72bd83f7-229e-4770-a686-42f5a922468b',
-  });
-});
-
-test('SharedResourceDownload: Has access', async () => {
+const setupData = () => {
   when(terrasoApi.requestGraphQL)
     .calledWith(
       expect.stringContaining('query sharedResource'),
@@ -70,6 +58,34 @@ test('SharedResourceDownload: Has access', async () => {
         },
       },
     });
+};
+
+const setup = async (account = DEFAULT_ACCOUNT, entityType = 'group') => {
+  await render(<SharedResourceDownload entityType={entityType} />, {
+    account,
+  });
+};
+
+beforeEach(() => {
+  window.open = jest.fn();
+  useParams.mockReturnValue({
+    shareUuid: 'share-uuid-1',
+    groupSlug: 'private-1',
+    landscapeSlug: 'private-2',
+  });
+  useNavigate.mockReturnValue(jest.fn());
+  useLocation.mockReturnValue({
+    pathname:
+      '/groups/private-1/shared-resource/download/72bd83f7-229e-4770-a686-42f5a922468b',
+  });
+
+  useDownloadEvent.mockReturnValue({
+    onDownload: jest.fn(),
+  });
+});
+
+test('SharedResourceDownload: Has access', async () => {
+  setupData();
   await setup();
 
   expect(
@@ -112,5 +128,35 @@ test('SharedResourceDownload: Login redirect', async () => {
 
   expect(navigate).toHaveBeenCalledWith(
     '/account?referrer=%2Fgroups%2Fprivate-1%2Fshared-resource%2Fdownload%2F72bd83f7-229e-4770-a686-42f5a922468b'
+  );
+});
+
+test('SharedResourceDownload: Group download event', async () => {
+  const { onDownload } = useDownloadEvent();
+  setupData();
+  await setup(DEFAULT_ACCOUNT, 'group');
+
+  const downloadButton = screen.getByRole('button', { name: 'Download File' });
+  await act(async () => fireEvent.click(downloadButton));
+
+  expect(onDownload).toHaveBeenCalledWith(
+    'group',
+    'private-1',
+    'download page'
+  );
+});
+
+test('SharedResourceDownload: Landscape download event', async () => {
+  const { onDownload } = useDownloadEvent();
+  setupData();
+  await setup(DEFAULT_ACCOUNT, 'landscape');
+
+  const downloadButton = screen.getByRole('button', { name: 'Download File' });
+  await act(async () => fireEvent.click(downloadButton));
+
+  expect(onDownload).toHaveBeenCalledWith(
+    'landscape',
+    'private-2',
+    'download page'
   );
 });

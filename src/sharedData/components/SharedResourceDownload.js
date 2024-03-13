@@ -25,17 +25,23 @@ import { Button, Paper, Stack, Typography } from '@mui/material';
 import NotFound from 'layout/NotFound';
 import PageContainer from 'layout/PageContainer';
 import PageLoader from 'layout/PageLoader';
+import { useDownloadEvent } from 'monitoring/events';
 import { generateReferrerPath } from 'navigation/navigationUtils';
 import { fetchSharedResource } from 'sharedData/sharedDataSlice';
 
-const SharedResourceDownload = () => {
+const SharedResourceDownload = props => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { shareUuid } = useParams();
+  const { shareUuid, ...params } = useParams();
   const { data: sharedResource, fetching: fetchingSharedResource } =
     useSelector(state => state.sharedData.sharedResource);
   const hasToken = useSelector(state => state.account.hasToken);
+
+  const { entityType } = props;
+  const ownerSlug =
+    entityType === 'group' ? params.groupSlug : params.landscapeSlug;
+  const { onDownload } = useDownloadEvent();
 
   useFetchData(
     useCallback(() => fetchSharedResource({ shareUuid }), [shareUuid])
@@ -59,8 +65,9 @@ const SharedResourceDownload = () => {
   }, [fetchingSharedResource, location, sharedResource, hasToken, navigate]);
 
   const downloadFile = useCallback(() => {
+    onDownload(entityType, ownerSlug, 'download page');
     window.open(sharedResource.downloadUrl, '_blank');
-  }, [sharedResource]);
+  }, [onDownload, entityType, ownerSlug, sharedResource]);
 
   if (fetchingSharedResource) {
     return <PageLoader />;

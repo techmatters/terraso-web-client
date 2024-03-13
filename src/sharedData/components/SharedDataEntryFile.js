@@ -49,6 +49,7 @@ import { useCollaborationContext } from 'collaboration/collaborationContext';
 import CopyLink from 'common/components/CopyLink';
 import RouterLink from 'common/components/RouterLink';
 import { formatDate } from 'localization/utils';
+import { useShareEvent } from 'monitoring/events';
 import {
   SHARE_ACCESS_ALL,
   SHARE_ACCESS_TYPES,
@@ -161,6 +162,8 @@ const ShareDialog = props => {
       ref.focus();
     }
   };
+
+  const { onShare } = useShareEvent();
 
   const onChange = useCallback(
     event => {
@@ -280,7 +283,7 @@ const ShareDialog = props => {
             </Typography>
           </Stack>
         )}
-        <CopyLink pageUrl={sharedResource.shareUrl} />
+        <CopyLink pageUrl={sharedResource.shareUrl} onShare={onShare} />
       </DialogContent>
       <DialogActions
         sx={{
