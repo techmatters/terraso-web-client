@@ -54,7 +54,7 @@ test('Events: onDownload', async () => {
   const Component = () => {
     const { onDownload } = useDownloadEvent();
     onDownload('group', 'abc', 'test');
-    return <div></div>;
+    return <div />;
   };
 
   const trackEvent = jest.fn();
