@@ -69,7 +69,7 @@ test('Events: onDownload', async () => {
   expect(eventCall[1]).toStrictEqual({
     props: {
       group: 'abc',
-      'download location': 'test',
+      downloadLocation: 'test',
     },
   });
 });

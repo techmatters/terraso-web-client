@@ -41,7 +41,7 @@ export const useDownloadEvent = () => {
       trackEvent('dataEntry.file.download', {
         props: {
           [entityType]: ownerSlug,
-          'download location': location,
+          downloadLocation: location,
         },
       });
     },
