@@ -27,7 +27,7 @@ export const useNavigationBlocker = (when, message) => {
   const [blockedArgs, setBlockedArgs] = useState();
 
   /*
-   * we cache a reference to the original push method if we don't have one yet,
+   * We store a reference to the original push method (if we don't have one yet),
    * so that we can be sure we're restoring the original when the blocker is
    * disabled or otherwised cleaned up.
    */
