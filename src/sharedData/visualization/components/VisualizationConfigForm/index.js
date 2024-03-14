@@ -151,7 +151,7 @@ const VisualizationConfigForm = props => {
     useState(INITIAL_CONFIG);
   const [isDirty, setIsDirty] = useState(false);
 
-  const { isBlocked, unblock, cancel } = useNavigationBlocker(
+  const { isBlocked, proceed, cancel, disable } = useNavigationBlocker(
     isDirty,
     t('sharedData.visualization_unsaved_changes_message')
   );
@@ -173,10 +173,11 @@ const VisualizationConfigForm = props => {
 
   const onCompleteSuccessWrapper = useCallback(
     mapSlug => {
-      onCompleteSuccess(mapSlug);
       setIsDirty(false);
+      disable();
+      onCompleteSuccess(mapSlug);
     },
-    [onCompleteSuccess]
+    [onCompleteSuccess, disable]
   );
 
   return (
@@ -185,7 +186,7 @@ const VisualizationConfigForm = props => {
         <NavigationBlockedDialog
           title={t('sharedData.visualization_unsaved_changes_title')}
           message={t('sharedData.visualization_unsaved_changes_message')}
-          onConfirm={unblock}
+          onConfirm={proceed}
           onCancel={cancel}
         />
       )}

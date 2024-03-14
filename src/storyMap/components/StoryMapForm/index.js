@@ -110,7 +110,7 @@ const StoryMapForm = props => {
     []
   );
 
-  const { isBlocked, unblock, cancel } = useNavigationBlocker(
+  const { isBlocked, proceed, cancel } = useNavigationBlocker(
     isDirty,
     t('storyMap.form_unsaved_changes_message')
   );
@@ -235,7 +235,7 @@ const StoryMapForm = props => {
         <NavigationBlockedDialog
           title={t('storyMap.form_unsaved_changes_title')}
           message={t('storyMap.form_unsaved_changes_message')}
-          onConfirm={unblock}
+          onConfirm={proceed}
           onCancel={cancel}
         />
       )}

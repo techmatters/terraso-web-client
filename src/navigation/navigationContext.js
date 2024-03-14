@@ -26,7 +26,16 @@ export const useNavigationBlocker = (when, message) => {
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockedArgs, setBlockedArgs] = useState();
 
-  const unblock = useCallback(() => {
+  /*
+   * we cache a reference to the original push method if we don't have one yet,
+   * so that we can be sure we're restoring the original when the blocker is
+   * disabled or otherwised cleaned up.
+   */
+  if (!navigator.originalPush) {
+    navigator.originalPush = navigator.push;
+  }
+
+  const proceed = useCallback(() => {
     const to = blockedArgs[0];
     const options = blockedArgs[2];
     navigate(to, {
@@ -34,26 +43,35 @@ export const useNavigationBlocker = (when, message) => {
       force: true,
     });
   }, [blockedArgs, navigate]);
+
   const cancel = useCallback(() => {
     setIsBlocked(false);
   }, []);
+
+  const preventNavigation = useCallback(
+    event => {
+      event.preventDefault();
+      event.returnValue = message;
+    },
+    [message]
+  );
+
+  const disable = useCallback(() => {
+    window.removeEventListener('beforeunload', preventNavigation);
+    navigator.push = navigator.originalPush;
+  }, [preventNavigation, navigator]);
 
   useEffect(() => {
     if (!when) {
       setIsBlocked(false);
       return;
     }
-    const beforeUnload = event => {
-      event.preventDefault();
-      event.returnValue = message;
-    };
-    window.addEventListener('beforeunload', beforeUnload);
-    const push = navigator.push;
+    window.addEventListener('beforeunload', preventNavigation);
 
     navigator.push = (...args) => {
       const options = args[2];
       if (options?.force) {
-        push(...args);
+        navigator.originalPush(...args);
         return;
       }
 
@@ -62,10 +80,9 @@ export const useNavigationBlocker = (when, message) => {
     };
 
     return () => {
-      window.removeEventListener('beforeunload', beforeUnload);
-      navigator.push = push;
+      disable();
     };
-  }, [when, message, navigator]);
+  }, [when, navigator, preventNavigation, disable]);
 
-  return { isBlocked, unblock, cancel };
+  return { isBlocked, proceed, cancel, disable };
 };
