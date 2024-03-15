@@ -18,7 +18,7 @@ import React, { useCallback, useEffect } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   fetchProfile,
   savePreference,
@@ -44,6 +44,7 @@ import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePickerSelect from 'localization/components/LocalePickerSelect';
 import { useAnalytics } from 'monitoring/analytics';
+import { useReferrer } from 'navigation/navigationUtils';
 import { profileCompleted } from 'account/accountProfileUtils';
 
 import AccountAvatar from './AccountAvatar';
@@ -175,7 +176,6 @@ const ProfilePicture = () => {
 };
 
 const AccountProfile = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
   const { t } = useTranslation();
@@ -186,6 +186,8 @@ const AccountProfile = () => {
 
   useDocumentTitle(t('account.profile_document_title'));
   useDocumentDescription(t('account.profile_document_description'));
+
+  const { goToReferrer } = useReferrer();
 
   useEffect(
     () => () => {
@@ -241,7 +243,7 @@ const AccountProfile = () => {
         response => _.get('meta.requestStatus', response) === 'fulfilled'
       );
       if (allSuccess) {
-        navigate('/account/profile');
+        goToReferrer('/account/profile');
       }
     });
   };
