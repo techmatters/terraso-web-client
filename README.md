@@ -16,19 +16,20 @@ style and commit message structure before each commit.
 
 ## Requirements
 
-- Docker: Version 24.0.2
-- Node: Version 18.18.0
-- NPM: Version 9.8.1
+- Docker: Version 25.0.3
+- Node: Version 20.11.1
+- NPM: Version 10.2.4
 
-## Running locally with Docker
+## Running locally
 
-Set up your environment file
+Set up your environment file. `local.env` is used for Docker and `.env.local` is used for `npm run start`.
 
 ```sh
-$ cp local.env.sample local.env
+$ cp local.env.sample .env.local
+$ ln -s .env.local local.env
 ```
 
-In the `local.env` file
+In the `.env.local` file
 
 - set value for `REACT_APP_MAPBOX_ACCESS_TOKEN` based on what you have set up in https://account.mapbox.com/ > Access tokens.
 
@@ -40,10 +41,10 @@ In the project directory, you can run:
 
 Builds docker image for local environment
 
-### `make run`
+### `npm run start` or `make run`
 
 Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://127.0.0.1:3000](http://127.0.0.1:3000) to view it in the browser.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2024 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -15,15 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-const TIME_ONE_DAY = 86400000;
-
-export const daysSince = dateString => {
-  const date = new Date(dateString);
-
-  if (isNaN(date)) {
-    return null;
-  }
-
-  const days = (new Date() - date) / TIME_ONE_DAY;
-  return days.toFixed(4);
+export const escapeStringRegex = input => {
+  return input.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 };

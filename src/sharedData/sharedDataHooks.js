@@ -17,20 +17,18 @@
 import { useCallback } from 'react';
 
 import { useCollaborationContext } from 'collaboration/collaborationContext';
-import { useAnalytics } from 'monitoring/analytics';
+import { useDownloadEvent } from 'monitoring/events';
 
 export const useSharedData = () => {
-  const { trackEvent } = useAnalytics();
+  const { onDownload } = useDownloadEvent();
   const { owner, entityType } = useCollaborationContext();
 
   const downloadFile = useCallback(
     file => {
-      trackEvent('dataEntry.file.download', {
-        props: { [entityType]: owner.slug },
-      });
+      onDownload(entityType, owner.slug, 'landscape/group page');
       window.open(file.url, '_blank');
     },
-    [trackEvent, owner, entityType]
+    [onDownload, owner, entityType]
   );
 
   return { downloadFile };

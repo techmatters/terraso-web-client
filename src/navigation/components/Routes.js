@@ -17,6 +17,8 @@
 import React, { useMemo } from 'react';
 import { matchPath, Route, Routes, useLocation } from 'react-router-dom';
 
+import { withProps } from 'react-hoc';
+
 import NotFound from 'layout/NotFound';
 import AccountLogin from 'account/components/AccountLogin';
 import AccountProfile from 'account/components/AccountProfile';
@@ -108,13 +110,17 @@ const paths = [
     showBreadcrumbs: true,
     breadcrumbsLabel: 'group.breadcrumbs_visualization',
   }),
-  path('/groups/:groupSlug/download/:shareUuid', SharedResourceDownload, {
-    optionalAuth: {
-      enabled: true,
-      topMessage:
-        'sharedData.shared_resource_download_optional_auth_top_message',
-    },
-  }),
+  path(
+    '/groups/:groupSlug/download/:shareUuid',
+    withProps(SharedResourceDownload, { entityType: 'group' }),
+    {
+      optionalAuth: {
+        enabled: true,
+        topMessage:
+          'sharedData.shared_resource_download_optional_auth_top_message',
+      },
+    }
+  ),
   path('/landscapes/map', LandscapeMapEmbed, {
     optionalAuth: {
       enabled: true,
@@ -167,7 +173,7 @@ const paths = [
   ),
   path(
     '/landscapes/:landscapeSlug/download/:shareUuid',
-    SharedResourceDownload,
+    withProps(SharedResourceDownload, { entityType: 'landscape' }),
     {
       optionalAuth: {
         enabled: true,
