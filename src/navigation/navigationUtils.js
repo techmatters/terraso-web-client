@@ -14,7 +14,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import { useCallback, useMemo } from 'react';
 import _ from 'lodash/fp';
+import queryString from 'query-string';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export const generateReferrerPath = location => {
   const path = _.getOr('', 'pathname', location);
@@ -23,4 +26,63 @@ export const generateReferrerPath = location => {
     .filter(part => part)
     .join('');
   return referrer ? `/${referrer}` : null;
+};
+
+export const generateReferrerUrl = (to, location) => {
+  const referrer = generateReferrerPath(location);
+
+  return referrer
+    ? queryString.stringifyUrl({
+        url: to,
+        query: {
+          referrer,
+        },
+      })
+    : to;
+};
+
+export const useReferrer = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const referrer = searchParams.get('referrer');
+  const referrerBase64 = searchParams.get('referrerBase64');
+
+  const url = useMemo(() => {
+    return referrerBase64 ? atob(referrerBase64) : referrer;
+  }, [referrer, referrerBase64]);
+
+  const goToReferrer = useCallback(
+    (defaultUrl = '/') => {
+      navigate(url ? decodeURIComponent(url) : defaultUrl, {
+        replace: true,
+      });
+    },
+    [navigate, url]
+  );
+
+  const appendReferrerBase64 = useCallback(
+    url => {
+      if (!referrer) {
+        return url;
+      }
+      const parsedUrl = queryString.parseUrl(url);
+      const redirectUrl = queryString.stringifyUrl({
+        url: 'account',
+        query: {
+          referrerBase64: btoa(referrer),
+        },
+      });
+      return queryString.stringifyUrl({
+        ...parsedUrl,
+        query: {
+          ...parsedUrl.query,
+          state: redirectUrl,
+        },
+      });
+    },
+    [referrer]
+  );
+
+  return { goToReferrer, appendReferrerBase64 };
 };
