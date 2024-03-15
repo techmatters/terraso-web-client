@@ -15,10 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useEffect } from 'react';
-import queryString from 'query-string';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchAuthURLs } from 'terraso-client-shared/account/accountSlice';
 import { ReactComponent as GoogleLogo } from 'terraso-client-shared/assets/google.svg';
 import { ReactComponent as MicrosoftLogo } from 'terraso-client-shared/assets/microsoft.svg';
@@ -35,6 +33,7 @@ import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePicker from 'localization/components/LocalePicker';
 import { useAnalytics } from 'monitoring/analytics';
+import { useReferrer } from 'navigation/navigationUtils';
 
 import logo from 'assets/logo.svg';
 
@@ -42,50 +41,25 @@ import logo from 'assets/logo.svg';
 const MicrosoftIcon = withProps(SvgIcon, { component: MicrosoftLogo });
 const GoogleIcon = withProps(SvgIcon, { component: GoogleLogo });
 
-const appendReferrer = (url, referrer) => {
-  if (!referrer) {
-    return url;
-  }
-  const parsedUrl = queryString.parseUrl(url);
-  const redirectUrl = queryString.stringifyUrl({
-    url: 'account',
-    query: {
-      referrerBase64: btoa(referrer),
-    },
-  });
-  return queryString.stringifyUrl({
-    ...parsedUrl,
-    query: {
-      ...parsedUrl.query,
-      state: redirectUrl,
-    },
-  });
-};
-
 const AccountForm = () => {
   const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { fetching, urls } = useSelector(state => state.account.login);
   const hasToken = useSelector(state => state.account.hasToken);
-  const referrer = searchParams.get('referrer');
-  const referrerBase64 = searchParams.get('referrerBase64');
 
   useDocumentTitle(t('account.login_document_title'));
   useDocumentDescription(t('account.login_document_description'));
 
   useFetchData(fetchAuthURLs);
 
+  const { goToReferrer, appendReferrerBase64 } = useReferrer();
+
   useEffect(() => {
     if (!hasToken) {
       return;
     }
-    const url = referrerBase64 ? atob(referrerBase64) : referrer;
-    navigate(url ? decodeURIComponent(url) : '/', {
-      replace: true,
-    });
-  }, [hasToken, navigate, referrer, referrerBase64]);
+    goToReferrer();
+  }, [hasToken, goToReferrer]);
 
   if (fetching) {
     return <PageLoader />;
@@ -124,7 +98,7 @@ const AccountForm = () => {
               startIcon={
                 <GoogleIcon sx={{ paddingLeft: '3px', paddingRight: '5px' }} />
               }
-              href={appendReferrer(urls.google, referrer)}
+              href={appendReferrerBase64(urls.google)}
               onClick={() =>
                 trackEvent('user.login', { props: { source: 'google' } })
               }
@@ -141,7 +115,7 @@ const AccountForm = () => {
                   sx={{ paddingLeft: '24px', paddingRight: '5px' }}
                 />
               }
-              href={appendReferrer(urls.microsoft, referrer)}
+              href={appendReferrerBase64(urls.microsoft)}
               onClick={() =>
                 trackEvent('user.login', { props: { source: 'microsoft' } })
               }
@@ -154,7 +128,7 @@ const AccountForm = () => {
             <Button
               variant="outlined"
               startIcon={<AppleIcon sx={{ paddingRight: '5px' }} />}
-              href={appendReferrer(urls.apple, referrer)}
+              href={appendReferrerBase64(urls.apple)}
               onClick={() =>
                 trackEvent('user.login', { props: { source: 'apple' } })
               }

@@ -17,7 +17,12 @@
 import { render, screen } from 'tests/utils';
 import React from 'react';
 import _ from 'lodash/fp';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import { getToken, getUserEmail } from 'terraso-client-shared/account/auth';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
@@ -37,6 +42,7 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(),
   useLocation: jest.fn(),
   useNavigate: jest.fn(),
+  useSearchParams: jest.fn(),
   Navigate: props => <div>To: {props.to}</div>,
 }));
 
@@ -47,6 +53,7 @@ const IS_FIRST_LOGIN_TOKEN =
 beforeEach(() => {
   global.fetch = jest.fn();
   useNavigate.mockReturnValue(jest.fn());
+  useSearchParams.mockReturnValue([new URLSearchParams(), () => {}]);
 });
 
 test('Auth: test redirect', async () => {
@@ -214,6 +221,35 @@ test('Auth: Test redirect complete profile', async () => {
   );
 
   expect(navigate).toHaveBeenCalledWith('/account/profile/completeProfile');
+});
+
+test('Auth: Test redirect to profile with referrer', async () => {
+  useLocation.mockReturnValue({
+    pathname: REDIRECT_PATHNAME,
+    search: REDIRECT_SEARCH,
+  });
+
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+  getToken.mockResolvedValue(IS_FIRST_LOGIN_TOKEN);
+  await render(
+    <RequireAuth>
+      <div />
+    </RequireAuth>,
+    {
+      account: {
+        currentUser: {
+          data: {
+            email: 'test@test.com',
+          },
+        },
+      },
+    }
+  );
+
+  expect(navigate).toHaveBeenCalledWith(
+    '/account/profile/completeProfile?referrer=%2Fgroups%3Fsort%3D-name%26other%3D1'
+  );
 });
 
 test('Auth: Avoid redirect if profile complete already displayed for user', async () => {

@@ -19,7 +19,7 @@ import React from 'react';
 import { when } from 'jest-when';
 import _ from 'lodash/fp';
 import { act } from 'react-dom/test-utils';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import AccountProfile from 'account/components/AccountProfile';
@@ -30,6 +30,7 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(),
   useNavigate: jest.fn(),
+  useSearchParams: jest.fn(),
 }));
 
 const setup = async (
@@ -63,6 +64,7 @@ const setup = async (
 beforeEach(() => {
   useNavigate.mockReturnValue(jest.fn());
   useParams.mockReturnValue({});
+  useSearchParams.mockReturnValue([new URLSearchParams(), () => {}]);
 });
 
 test('AccountProfile: Display Avatar', async () => {
@@ -438,5 +440,67 @@ test('AccountProfile: Complete profile', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
   );
-  expect(navigate).toHaveBeenCalledWith('/account/profile');
+  expect(navigate).toHaveBeenCalledWith('/account/profile', { replace: true });
+});
+
+test('AccountProfile: Navigate to referrer after complete profile', async () => {
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+  const searchParams = new URLSearchParams();
+  const referrer = encodeURIComponent('groups?sort=-name&other=1');
+  searchParams.set('referrer', referrer);
+  useSearchParams.mockReturnValue([searchParams]);
+  useParams.mockReturnValue({
+    completeProfile: 'completeProfile',
+  });
+
+  when(terrasoApi.requestGraphQL)
+    .calledWith(expect.stringContaining('query userProfile'), expect.anything())
+    .mockReturnValue(
+      Promise.resolve(
+        _.set(
+          'users.edges[0].node',
+          {
+            id: 'user-id',
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'group@group.org',
+            profileImage: '',
+            preferences: { edges: [] },
+          },
+          {}
+        )
+      )
+    );
+
+  when(terrasoApi.requestGraphQL)
+    .calledWith(
+      expect.stringContaining('mutation updateUser'),
+      expect.anything()
+    )
+    .mockResolvedValue(
+      _.set(
+        'updateUser.user',
+        {
+          id: '1',
+          firstName: 'Pablo',
+          lastName: 'Perez',
+          email: 'group@group.org',
+          profileImage: 'https://www.group.org/image.jpg',
+          preferences: {
+            edges: [{ node: { key: 'language', value: 'es-ES' } }],
+          },
+        },
+        {}
+      )
+    );
+
+  await setup();
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
+  );
+  expect(navigate).toHaveBeenCalledWith('groups?sort=-name&other=1', {
+    replace: true,
+  });
 });

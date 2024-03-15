@@ -16,9 +16,11 @@
  */
 import { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { getToken } from 'terraso-client-shared/account/auth';
 import { useSelector } from 'terrasoApi/store';
+
+import { generateReferrerUrl } from 'navigation/navigationUtils';
 
 const getIsFirstLogin = async () => {
   const token = await getToken();
@@ -50,6 +52,7 @@ export const profileCompleted = email => {
 };
 
 export const useCompleteProfile = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const { data: user } = useSelector(state => state.account.currentUser);
   const [isFirstLogin, setIsFirstLogin] = useState();
@@ -70,6 +73,15 @@ export const useCompleteProfile = () => {
       return;
     }
 
-    navigate('/account/profile/completeProfile');
-  }, [isFirstLogin, user?.email, navigate]);
+    if (location?.pathname.includes('/account/profile/completeProfile')) {
+      return;
+    }
+
+    const to = generateReferrerUrl(
+      '/account/profile/completeProfile',
+      location
+    );
+
+    navigate(to);
+  }, [isFirstLogin, user?.email, navigate, location]);
 };
