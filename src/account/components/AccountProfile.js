@@ -236,7 +236,7 @@ const AccountProfile = () => {
     });
 
     const allPromises = [saveUserPromise, ...savePreferencesPromises].filter(
-      promise => !!promise
+      promise => Boolean(promise)
     );
     Promise.all(allPromises).then(responses => {
       const allSuccess = responses.every(
