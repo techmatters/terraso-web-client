@@ -359,7 +359,13 @@ const SharedDataEntryFile = props => {
       EntryTypeIcon={SharedFileIcon}
       DownloadComponent={DownloadComponent}
       ShareComponent={ShareComponent}
-      info={filesize(sharedResource.dataEntry.size, { round: 0 })}
+      fileSize={filesize(sharedResource.dataEntry.size, { round: 0 })}
+      resourceType={sharedResource.dataEntry.resourceType.toUpperCase()}
+      // TODO-cknipe: Just add resourceType to info, maybe?
+      // Hmm but Base does have to know about info regardless I guess
+      // we want it to be another
+      // Could just be info1 and info2 I guess
+      // but iono
     >
       <Visualizations file={sharedResource.dataEntry} />
     </SharedDataEntryBase>
