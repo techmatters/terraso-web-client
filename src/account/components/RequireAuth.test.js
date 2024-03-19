@@ -272,7 +272,7 @@ test('Auth: Avoid redirect if profile complete already displayed for user', asyn
       account: {
         currentUser: {
           data: {
-            email: 'test@test.com',
+            email: 'test@example.com',
           },
         },
       },
