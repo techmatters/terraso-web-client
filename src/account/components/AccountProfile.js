@@ -236,14 +236,14 @@ const AccountProfile = () => {
     });
 
     const allPromises = [saveUserPromise, ...savePreferencesPromises].filter(
-      promise => !!promise
+      promise => Boolean(promise)
     );
     Promise.all(allPromises).then(responses => {
       const allSuccess = responses.every(
         response => _.get('meta.requestStatus', response) === 'fulfilled'
       );
       if (allSuccess) {
-        goToReferrer('/account/profile');
+        goToReferrer(completeProfile ? '/' : '/account/profile');
       }
     });
   };

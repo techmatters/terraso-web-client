@@ -73,7 +73,7 @@ export const useCompleteProfile = () => {
       return;
     }
 
-    if (location?.pathname.includes('/account/profile/completeProfile')) {
+    if (location?.pathname.startsWith('/account/profile/completeProfile')) {
       return;
     }
 

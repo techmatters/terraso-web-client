@@ -213,7 +213,7 @@ test('Auth: Test redirect complete profile', async () => {
       account: {
         currentUser: {
           data: {
-            email: 'test@test.com',
+            email: 'test@example.com',
           },
         },
       },
@@ -240,7 +240,7 @@ test('Auth: Test redirect to profile with referrer', async () => {
       account: {
         currentUser: {
           data: {
-            email: 'test@test.com',
+            email: 'test@example.com',
           },
         },
       },
@@ -260,7 +260,7 @@ test('Auth: Avoid redirect if profile complete already displayed for user', asyn
   localStorage.setItem(
     'completedProfileDisplayed',
     JSON.stringify({
-      'test@test.com': true,
+      'test@example.com': true,
     })
   );
 
@@ -272,7 +272,7 @@ test('Auth: Avoid redirect if profile complete already displayed for user', asyn
       account: {
         currentUser: {
           data: {
-            email: 'test@test.com',
+            email: 'test@example.com',
           },
         },
       },

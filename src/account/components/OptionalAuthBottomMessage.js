@@ -18,12 +18,15 @@ import React from 'react';
 import _ from 'lodash/fp';
 import { Trans, withTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 
 import RouterLink from 'common/components/RouterLink';
 import { useOptionalAuth } from 'navigation/components/Routes';
+import { generateReferrerUrl } from 'navigation/navigationUtils';
 
 const OptionalAuthBottomMessage = () => {
+  const location = useLocation();
   const { bottomMessage } = useOptionalAuth();
   const hasToken = useSelector(_.get('account.hasToken'));
 
@@ -48,7 +51,10 @@ const OptionalAuthBottomMessage = () => {
       >
         <Trans i18nKey={bottomMessage}>
           prefix
-          <RouterLink to="/account" sx={{ textDecoration: 'underline' }}>
+          <RouterLink
+            to={generateReferrerUrl('/account', location)}
+            sx={{ textDecoration: 'underline' }}
+          >
             link
           </RouterLink>
           suffix

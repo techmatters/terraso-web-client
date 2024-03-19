@@ -440,7 +440,7 @@ test('AccountProfile: Complete profile', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
   );
-  expect(navigate).toHaveBeenCalledWith('/account/profile', { replace: true });
+  expect(navigate).toHaveBeenCalledWith('/', { replace: true });
 });
 
 test('AccountProfile: Navigate to referrer after complete profile', async () => {
