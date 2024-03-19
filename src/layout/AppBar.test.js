@@ -18,15 +18,28 @@ import { fireEvent, render, screen } from 'tests/utils';
 import React from 'react';
 import Cookies from 'js-cookie';
 import { act } from 'react-dom/test-utils';
+import { useLocation, useNavigate } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import AppBar from 'layout/AppBar';
+import { useOptionalAuth } from 'navigation/components/Routes';
 
 jest.mock('@mui/material/useMediaQuery');
 jest.mock('js-cookie');
 
-const setup = async () => {
-  await render(<AppBar />, {
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: jest.fn(),
+  useLocation: jest.fn(),
+}));
+
+jest.mock('navigation/components/Routes', () => ({
+  ...jest.requireActual('navigation/components/Routes'),
+  useOptionalAuth: jest.fn(),
+}));
+
+const setup = async (
+  initialState = {
     account: {
       hasToken: true,
       currentUser: {
@@ -37,11 +50,21 @@ const setup = async () => {
         },
       },
     },
-  });
+  }
+) => {
+  await render(<AppBar />, initialState);
 };
 
 beforeEach(() => {
   global.fetch = jest.fn();
+  useNavigate.mockReturnValue(jest.fn());
+  useOptionalAuth.mockReturnValue({
+    enabled: false,
+  });
+  useLocation.mockReturnValue({
+    pathname: '/groups',
+    search: '?sort=-name&other=1',
+  });
 });
 
 test('AppBar: Dont display if no user', async () => {
@@ -98,4 +121,35 @@ test('AppBar: Sign out', async () => {
     domain: '127.0.0.1',
     path: '/',
   });
+});
+
+test('AppBar: Add log in referrer', async () => {
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+
+  useOptionalAuth.mockReturnValue({
+    enabled: true,
+  });
+
+  global.fetch.mockResolvedValueOnce({
+    status: 200,
+  });
+  useMediaQuery.mockReturnValue(false);
+  await setup({
+    account: {
+      hasToken: false,
+      currentUser: {
+        fetching: false,
+        data: {},
+      },
+    },
+  });
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Log In' }))
+  );
+
+  expect(navigate).toHaveBeenCalledWith(
+    '/account?referrer=%2Fgroups%3Fsort%3D-name%26other%3D1'
+  );
 });

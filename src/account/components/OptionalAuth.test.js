@@ -47,7 +47,7 @@ test('OptionalAuth: Display messages', async () => {
 
   expect(screen.getByRole('link', { name: 'Join Terraso' })).toHaveAttribute(
     'href',
-    '/account'
+    '/account?referrer=%2Ftools%2Fstory-maps%2Fjqbb8ss%2Ftest-story'
   );
   expect(
     screen.getByText(/and create your own story map for free/i)
@@ -57,7 +57,10 @@ test('OptionalAuth: Display messages', async () => {
   ).toBeInTheDocument();
   expect(
     screen.getByRole('link', { name: 'signing up for Terraso' })
-  ).toHaveAttribute('href', '/account');
+  ).toHaveAttribute(
+    'href',
+    '/account?referrer=%2Ftools%2Fstory-maps%2Fjqbb8ss%2Ftest-story'
+  );
 });
 
 test('OptionalAuth: Dont Display messages', async () => {

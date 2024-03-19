@@ -26,7 +26,7 @@ import ConditionalLink from 'common/components/ConditionalLink';
 import LocalePicker from 'localization/components/LocalePicker';
 import { useOptionalAuth } from 'navigation/components/Routes';
 import SkipLinks from 'navigation/components/SkipLinks';
-import { generateReferrerPath } from 'navigation/navigationUtils';
+import { generateReferrerUrl } from 'navigation/navigationUtils';
 import AccountAvatar from 'account/components/AccountAvatar';
 
 import logoSquare from 'assets/logo-square.svg';
@@ -49,8 +49,7 @@ const AppBarComponent = () => {
   }, [dispatch]);
 
   const onSignIn = useCallback(() => {
-    const referrer = generateReferrerPath(location);
-    const to = referrer ? `/account?referrer=${referrer}` : '/account';
+    const to = generateReferrerUrl('/account', location);
     navigate(to);
   }, [location, navigate]);
 

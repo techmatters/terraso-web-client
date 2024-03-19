@@ -52,6 +52,7 @@ const Form = props => {
     onChange,
     filterField,
     gridContainerProps = {},
+    outlined = true,
   } = props;
   const setFormContext = useFormSetContext();
 
@@ -161,17 +162,21 @@ const Form = props => {
         onSubmit={handleSubmit(onSubmit)}
         sx={{
           width: '100%',
-          paddingRight: 3,
-          paddingBottom: 3,
-          paddingLeft: 1,
-          paddingTop: 2,
-          marginLeft: 0,
-          marginTop: '-8px',
-          background: 'white',
-          borderRadius: '4px',
-          borderWidth: 1,
-          borderStyle: 'solid',
-          borderColor: 'cardBorder',
+          pr: 3,
+          pb: 3,
+          pl: 1,
+          pt: 2,
+          ml: 0,
+          mt: '-8px',
+          ...(outlined
+            ? {
+                background: 'white',
+                borderRadius: '4px',
+                borderWidth: 1,
+                borderStyle: 'solid',
+                borderColor: 'cardBorder',
+              }
+            : {}),
         }}
         {...gridContainerProps}
       >

@@ -17,8 +17,13 @@
 import { render, screen } from 'tests/utils';
 import React from 'react';
 import _ from 'lodash/fp';
-import { useLocation, useParams } from 'react-router-dom';
-import { getUserEmail } from 'terraso-client-shared/account/auth';
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
+import { getToken, getUserEmail } from 'terraso-client-shared/account/auth';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import RequireAuth from 'account/components/RequireAuth';
@@ -29,17 +34,26 @@ jest.mock('terraso-client-shared/terrasoApi/api');
 jest.mock('terraso-client-shared/account/auth', () => ({
   ...jest.requireActual('terraso-client-shared/account/auth'),
   getUserEmail: jest.fn(),
+  getToken: jest.fn(),
 }));
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(),
   useLocation: jest.fn(),
+  useNavigate: jest.fn(),
+  useSearchParams: jest.fn(),
   Navigate: props => <div>To: {props.to}</div>,
 }));
 
+// Payload: { "isFirstLogin": true }
+const IS_FIRST_LOGIN_TOKEN =
+  'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc0ZpcnN0TG9naW4iOnRydWV9.Z5WctUFTDZuFDAr0QiczFKIIx8qWzWJ38kiIHnGSiUQ29z7VQqGz9F5mfFfrt48sRob-fyw5sWxIxm3qbcxrEQ';
+
 beforeEach(() => {
   global.fetch = jest.fn();
+  useNavigate.mockReturnValue(jest.fn());
+  useSearchParams.mockReturnValue([new URLSearchParams(), () => {}]);
 });
 
 test('Auth: test redirect', async () => {
@@ -185,4 +199,85 @@ test('Auth: test fetch user', async () => {
   );
 
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+});
+
+test('Auth: Test redirect complete profile', async () => {
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+  getToken.mockResolvedValue(IS_FIRST_LOGIN_TOKEN);
+  await render(
+    <RequireAuth>
+      <div />
+    </RequireAuth>,
+    {
+      account: {
+        currentUser: {
+          data: {
+            email: 'test@example.com',
+          },
+        },
+      },
+    }
+  );
+
+  expect(navigate).toHaveBeenCalledWith('/account/profile/completeProfile');
+});
+
+test('Auth: Test redirect to profile with referrer', async () => {
+  useLocation.mockReturnValue({
+    pathname: REDIRECT_PATHNAME,
+    search: REDIRECT_SEARCH,
+  });
+
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+  getToken.mockResolvedValue(IS_FIRST_LOGIN_TOKEN);
+  await render(
+    <RequireAuth>
+      <div />
+    </RequireAuth>,
+    {
+      account: {
+        currentUser: {
+          data: {
+            email: 'test@example.com',
+          },
+        },
+      },
+    }
+  );
+
+  expect(navigate).toHaveBeenCalledWith(
+    '/account/profile/completeProfile?referrer=%2Fgroups%3Fsort%3D-name%26other%3D1'
+  );
+});
+
+test('Auth: Avoid redirect if profile complete already displayed for user', async () => {
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+  getToken.mockResolvedValue(IS_FIRST_LOGIN_TOKEN);
+
+  localStorage.setItem(
+    'completedProfileDisplayed',
+    JSON.stringify({
+      'test@example.com': true,
+    })
+  );
+
+  await render(
+    <RequireAuth>
+      <div />
+    </RequireAuth>,
+    {
+      account: {
+        currentUser: {
+          data: {
+            email: 'test@example.com',
+          },
+        },
+      },
+    }
+  );
+
+  expect(navigate).not.toHaveBeenCalled();
 });

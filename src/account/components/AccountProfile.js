@@ -14,10 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import {
   fetchProfile,
   savePreference,
@@ -25,7 +26,14 @@ import {
 } from 'terraso-client-shared/account/accountSlice';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import * as yup from 'yup';
-import { Checkbox, FormControlLabel, Grid, Typography } from '@mui/material';
+import {
+  Alert,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  Paper,
+  Typography,
+} from '@mui/material';
 
 import { withProps } from 'react-hoc';
 
@@ -36,6 +44,8 @@ import PageHeader from 'layout/PageHeader';
 import PageLoader from 'layout/PageLoader';
 import LocalePickerSelect from 'localization/components/LocalePickerSelect';
 import { useAnalytics } from 'monitoring/analytics';
+import { useReferrer } from 'navigation/navigationUtils';
+import { profileCompleted } from 'account/accountProfileUtils';
 
 import AccountAvatar from './AccountAvatar';
 
@@ -53,7 +63,6 @@ const FIELDS = [
   {
     name: 'firstName',
     label: 'account.form_first_name_label',
-    info: 'account.form_first_name_info',
     props: {
       gridItemProps: {
         xs: 12,
@@ -170,6 +179,7 @@ const AccountProfile = () => {
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
   const { t } = useTranslation();
+  const { completeProfile } = useParams();
   const { data: user, fetching } = useSelector(_.get('account.profile'));
 
   useFetchData(fetchProfile);
@@ -177,9 +187,18 @@ const AccountProfile = () => {
   useDocumentTitle(t('account.profile_document_title'));
   useDocumentDescription(t('account.profile_document_description'));
 
+  const { goToReferrer } = useReferrer();
+
+  useEffect(
+    () => () => {
+      profileCompleted(user?.email);
+    },
+    [user?.email]
+  );
+
   const onSave = updatedProfile => {
     // Save user data
-    dispatch(
+    const saveUserPromise = dispatch(
       saveUser(
         _.omit(
           ['profilePicture', 'notifications', 'email'].concat(
@@ -191,7 +210,7 @@ const AccountProfile = () => {
     );
 
     // Save language and notifications preferences
-    PREFERENCE_KEYS.forEach(preferenceKey => {
+    const savePreferencesPromises = PREFERENCE_KEYS.map(preferenceKey => {
       const currentValue = _.get(['preferences', preferenceKey], user);
       const newValue = _.get(['preferences', preferenceKey], updatedProfile);
 
@@ -199,19 +218,32 @@ const AccountProfile = () => {
       // database. newValue coments from user data and will be a string,
       // so the strict equality check below is not enough
       if (newValue === '' && typeof currentValue === 'undefined') {
-        return;
+        return null;
       }
 
       if (newValue !== currentValue) {
-        dispatch(
-          savePreference({ key: preferenceKey, value: newValue.toString() })
-        );
-
         if (_.endsWith(preferenceKey, 'notifications')) {
           trackEvent('preference.update', {
             props: { emailNotifications: newValue },
           });
         }
+
+        return dispatch(
+          savePreference({ key: preferenceKey, value: newValue.toString() })
+        );
+      }
+      return null;
+    });
+
+    const allPromises = [saveUserPromise, ...savePreferencesPromises].filter(
+      promise => Boolean(promise)
+    );
+    Promise.all(allPromises).then(responses => {
+      const allSuccess = responses.every(
+        response => _.get('meta.requestStatus', response) === 'fulfilled'
+      );
+      if (allSuccess) {
+        goToReferrer(completeProfile ? '/' : '/account/profile');
       }
     });
   };
@@ -224,15 +256,26 @@ const AccountProfile = () => {
     <PageContainer>
       <PageHeader header={t('account.profile')} />
 
-      <Form
-        aria-label={t('account.profile_form_label')}
-        prefix="profile"
-        fields={FIELDS}
-        values={user}
-        validationSchema={VALIDATION_SCHEMA}
-        onSave={onSave}
-        saveLabel="account.form_save_label"
-      />
+      <Paper variant="outlined">
+        {completeProfile && (
+          <Alert
+            severity="info"
+            sx={({ spacing }) => ({ m: spacing(3, 3, 0, 3) })}
+          >
+            {t('account.profile_complete_message')}
+          </Alert>
+        )}
+        <Form
+          outlined={false}
+          aria-label={t('account.profile_form_label')}
+          prefix="profile"
+          fields={FIELDS}
+          values={user}
+          validationSchema={VALIDATION_SCHEMA}
+          onSave={onSave}
+          saveLabel="account.form_save_label"
+        />
+      </Paper>
     </PageContainer>
   );
 };
