@@ -21,10 +21,13 @@ import { fetchUser } from 'terraso-client-shared/account/accountSlice';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 
 import PageLoader from 'layout/PageLoader';
+import { useCompleteProfile } from 'account/accountProfileUtils';
 
 const OptionalAuth = ({ children }) => {
   const { data: user, fetching } = useSelector(_.get('account.currentUser'));
   const hasToken = useSelector(_.get('account.hasToken'));
+
+  useCompleteProfile();
 
   useFetchData(
     useCallback(
