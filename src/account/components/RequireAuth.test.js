@@ -260,7 +260,7 @@ test('Auth: Avoid redirect if profile complete already displayed for user', asyn
   localStorage.setItem(
     'completedProfileDisplayed',
     JSON.stringify({
-      'test@test.com': true,
+      'test@example.com': true,
     })
   );
 
