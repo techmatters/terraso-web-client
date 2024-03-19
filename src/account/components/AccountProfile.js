@@ -243,7 +243,7 @@ const AccountProfile = () => {
         response => _.get('meta.requestStatus', response) === 'fulfilled'
       );
       if (allSuccess) {
-        goToReferrer('/account/profile');
+        goToReferrer(completeProfile ? '/' : '/account/profile');
       }
     });
   };
