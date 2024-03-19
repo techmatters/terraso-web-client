@@ -240,7 +240,7 @@ test('Auth: Test redirect to profile with referrer', async () => {
       account: {
         currentUser: {
           data: {
-            email: 'test@test.com',
+            email: 'test@example.com',
           },
         },
       },
