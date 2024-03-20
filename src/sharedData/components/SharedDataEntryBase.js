@@ -174,7 +174,7 @@ const SharedDataEntryBase = props => {
         <Grid
           item
           xs={isEditingName ? 12 : 8}
-          md={6}
+          md={5}
           order={{ xs: 2, md: 2 }}
           component={StackRow}
         >
@@ -205,21 +205,50 @@ const SharedDataEntryBase = props => {
           </Restricted>
         </Grid>
 
+        <Grid item xs={1} order={{ xs: 4 }} display={{ md: 'none' }} />
+        <Grid
+          item
+          xs={2}
+          md={1}
+          order={{ xs: 5, md: 4 }}
+          sx={{ wordWrap: 'break-word' }}
+        >
+          {resourceType}
+        </Grid>
+        <Grid
+          item
+          xs={2}
+          md={1}
+          order={{ xs: 6, md: 5 }}
+          sx={{ wordWrap: 'break-word' }}
+        >
+          {fileSize}
+        </Grid>
+        <Grid item xs={7} order={{ xs: 7 }} display={{ md: 'none' }} />
+        <Grid item xs={1} order={{ xs: 7 }} display={{ md: 'none' }} />
+        <Grid item xs={11} md={3} order={{ xs: 8, md: 6 }}>
+          {formatDate(i18n.resolvedLanguage, dataEntry.createdAt)}, by{' '}
+          {t('user.full_name', { user: dataEntry.createdBy })}
+        </Grid>
+
+        {/* 
+        <Grid item xs={10} order={{ xs: 4 }} display={{ md: 'none' }} />
         <Grid item xs={12} md={4} order={{ xs: 5, md: 3 }}>
           <Grid container>
+            <Grid item xs={1} order={{ xs: 1 }} display={{ md: 'none' }} />
             <Grid item xs={11} md={2} sx={{ wordWrap: 'break-word' }}>
               {resourceType}
             </Grid>
             <Grid item xs={11} md={2} sx={{ wordWrap: 'break-word' }}>
               {fileSize}
             </Grid>
-            <Grid item xs={1} order={{ xs: 7 }} display={{ md: 'none' }} />
             <Grid item xs={11} md={8}>
               {formatDate(i18n.resolvedLanguage, dataEntry.createdAt)}, by{' '}
               {t('user.full_name', { user: dataEntry.createdBy })}
             </Grid>
           </Grid>
         </Grid>
+*/}
 
         <Grid
           item
