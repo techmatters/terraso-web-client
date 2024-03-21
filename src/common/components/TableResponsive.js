@@ -322,7 +322,7 @@ const SearchBar = props => {
                 </IconButton>
               )}
               <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-              <IconButton aria-label={searchPlaceholder}>
+              <IconButton title={searchPlaceholder}>
                 <SearchIcon />
               </IconButton>
             </>
