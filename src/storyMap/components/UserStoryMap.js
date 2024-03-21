@@ -126,7 +126,7 @@ const UserStoryMap = () => {
             onSuccess={onDeleteSuccess}
             buttonProps={{ variant: 'outlined', sx: { ml: 3 } }}
           >
-            {t('storyMap.delete_label')}
+            {t('storyMap.delete_label', { name: storyMap.title })}
           </DeleteButton>
         </Container>
       </Restricted>
