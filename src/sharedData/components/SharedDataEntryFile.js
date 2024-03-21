@@ -84,7 +84,7 @@ const Visualizations = props => {
         >
           <Grid container spacing={1}>
             <Grid item sm={7} xs={12} component={StackRow}>
-              <MapIcon />
+              <MapIcon alt={t('sharedData.map_label')} role="img" />
               <Link
                 component={RouterLink}
                 to={`${baseOwnerUrl}/map/${visualization.slug}`}
