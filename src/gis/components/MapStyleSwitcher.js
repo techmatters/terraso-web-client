@@ -106,7 +106,7 @@ const MapStyleSwitcher = () => {
             '&:hover': { border: 'none' },
           }}
         >
-          <LayersIcon />
+          <LayersIcon aria-label={t('gis.basemap_label')} />
         </Button>
         <Menu
           id="basic-menu"
