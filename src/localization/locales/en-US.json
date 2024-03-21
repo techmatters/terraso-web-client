@@ -713,6 +713,7 @@
         "rich_text_editor_toolbar_italic": "Italic",
         "rich_text_editor_toolbar_label": "Textbox toolbar",
         "user_email_autocomplete_placeholder": "Enter email addresses"
+        "vertical_menu": "More options"
     },
     "share": {
         "button": "Share",
@@ -917,7 +918,6 @@
         "form_chapter_alignment_left": "Left",
         "form_chapter_alignment_center": "Center",
         "form_chapter_alignment_right": "Right",
-        "form_chapter_open_menu": "Open menu",
         "form_chapter_menu_label": "{{chapterLabel}} menu",
         "form_chapter_move_up": "Move Chapter Up",
         "form_chapter_move_down": "Move Chapter Down",

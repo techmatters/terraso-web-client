@@ -564,6 +564,7 @@
         "rich_text_editor_toolbar_italic": "Itálica",
         "rich_text_editor_toolbar_label": "Barra de herramientas de cuadro de texto",
         "user_email_autocomplete_placeholder": "Introduce direcciones de correo electrónico"
+        "vertical_menu": "TKTK"
     },
     "sharedData": {
         "title": "Archivos y enlaces compartidos",
@@ -924,7 +925,6 @@
         "form_chapter_alignment_left": "Izquierda",
         "form_chapter_alignment_center": "Centro",
         "form_chapter_alignment_right": "Derecha",
-        "form_chapter_open_menu": "Abrir menú",
         "form_chapter_menu_label": "{{chapterLabel}} menú",
         "form_chapter_move_up": "Mover capítulo hacia arriba",
         "form_chapter_move_down": "Mover capítulo hacia abajo",
