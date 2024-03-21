@@ -222,7 +222,7 @@ const StoryMapListItem = props => {
           >
             <DeleteButton
               storyMap={storyMap}
-              tooltip={t('storyMap.delete_label')}
+              tooltip={t('storyMap.delete_label', { name: storyMap.title })}
               onSuccess={onDeleteSuccess}
             >
               <DeleteIcon

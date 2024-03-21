@@ -935,7 +935,7 @@
         "home_edit": "Edit",
         "home_accept": "Accept",
         "home_default_description": "<0>Create an impactful story using maps, photos, videos, audio recordings and narrative. <1>Get inspired by other people’s story maps</1>.</0>",
-        "delete_label": "Delete",
+        "delete_label": "Delete {{name}}",
         "delete_confirm_title": "Delete story map {{title}}?",
         "delete_confirm_message": "Are you sure you wish to delete the story map? This cannot be undone.",
         "delete_confirm_button": "Delete Story Map",
