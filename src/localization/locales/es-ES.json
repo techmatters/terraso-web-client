@@ -748,7 +748,8 @@
         "validation_array_min_other": "$t({{path}}) debe tener al menos {{min}} elementos.",
         "validation_number_integer": "$t({{path}}) debe ser un número entero.",
         "validation_number_max": "$t({{path}}) debe ser menor que {{max, number()}}.",
-        "helper_text_info_label": "Información sobre $t({{label}})",
+        "helper_text_info": "Información",
+        "helper_text_info_label": "Información sobre $t({{label}})"
     },
     "localization": {
         "locale_select_label": "Idioma seleccionado: {{name}}",

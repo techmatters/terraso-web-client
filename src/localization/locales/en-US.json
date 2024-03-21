@@ -743,7 +743,8 @@
         "validation_array_min_other": "$t({{path}}) must have at least {{min}} items.",
         "validation_number_integer": "$t({{path}}) must be an integer.",
         "validation_number_max": "$t({{path}}) must be less than {{max, number()}}.",
-        "helper_text_info_label": "Information about $t({{label}})",
+        "helper_text_info": "Info",
+        "helper_text_info_label": "Information about $t({{label}})"
     },
     "localization": {
         "locale_select_label": "Selected language: {{name}}",
