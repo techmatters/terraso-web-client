@@ -166,7 +166,12 @@ const EditableText = props => {
       }}
     >
       {textValue || <Link href="#">+ {addMessage}</Link>}
-      {isHovering && <EditIcon sx={{ color: 'blue.dark' }} />}
+      {isHovering && (
+        <EditIcon
+          aria-label={t('common.editable_text_label')}
+          sx={{ color: 'blue.dark' }}
+        />
+      )}
     </Typography>
   );
 };

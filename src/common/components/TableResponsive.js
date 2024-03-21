@@ -316,13 +316,13 @@ const SearchBar = props => {
                 <IconButton
                   onClick={onClickClear}
                   sx={{ p: '10px' }}
-                  aria-label={t('common.table_search_filter_clear')}
+                  title={t('common.table_search_filter_clear')}
                 >
                   <CloseIcon />
                 </IconButton>
               )}
               <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-              <IconButton aria-label={searchPlaceholder}>
+              <IconButton title={searchPlaceholder}>
                 <SearchIcon />
               </IconButton>
             </>

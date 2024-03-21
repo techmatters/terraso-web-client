@@ -124,7 +124,7 @@ const ChapterConfig = props => {
             {options.map(option => (
               <ConfigButton
                 key={option.value}
-                aria-label={option.label}
+                title={option.label}
                 onClick={() => onAlignmentChange(option.value)}
               >
                 <option.Icon />

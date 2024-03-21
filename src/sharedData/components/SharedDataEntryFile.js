@@ -84,7 +84,7 @@ const Visualizations = props => {
         >
           <Grid container spacing={1}>
             <Grid item sm={7} xs={12} component={StackRow}>
-              <MapIcon />
+              <MapIcon alt={t('sharedData.map_label')} role="img" />
               <Link
                 component={RouterLink}
                 to={`${baseOwnerUrl}/map/${visualization.slug}`}
@@ -119,7 +119,7 @@ const DownloadComponent = props => {
   return (
     <IconButton
       onClick={handleDownload}
-      aria-label={t('sharedData.download_label', {
+      title={t('sharedData.download_label', {
         name: dataEntry.name,
       })}
     >
@@ -213,7 +213,7 @@ const ShareDialog = props => {
           ref={onCloseRefChange}
           onClick={onCloseWrapper}
           sx={{ ml: 3 }}
-          aria-label={t('sharedData.share_file_dialog_close')}
+          title={t('common.dialog_close_label')}
         >
           <CloseIcon fontSize="small" />
         </IconButton>

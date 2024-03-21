@@ -37,7 +37,7 @@ const CloseIconButton = props => {
   return (
     <IconButton
       size="small"
-      aria-label={t('form.helper_text_info_close')}
+      title={t('common.dialog_close_label')}
       onClick={onClick}
       sx={{
         position: 'absolute',
@@ -137,7 +137,7 @@ const HelperText = props => {
     <>
       {showLabel ? (
         <Button
-          aria-label={t('form.helper_text_info_label', { label })}
+          title={t('form.helper_text_info_label', { label })}
           endIcon={<InfoIcon ref={anchorEl} fontSize="1rem" />}
           onClick={handleClick}
           {...buttonProps}
@@ -148,7 +148,11 @@ const HelperText = props => {
         <IconButton
           size="small"
           ref={anchorEl}
-          aria-label={t('form.helper_text_info_label', { label })}
+          title={
+            label
+              ? t('form.helper_text_info_label', { label: label })
+              : t('form.helper_text_info')
+          }
           onClick={handleClick}
           {...buttonProps}
         >

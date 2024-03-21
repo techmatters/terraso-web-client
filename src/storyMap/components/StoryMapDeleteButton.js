@@ -57,7 +57,7 @@ const DeleteButton = props => {
       loading={deleting}
       variant="text"
       buttonProps={{
-        'aria-label': t('storyMap.delete_label'),
+        'aria-label': t('storyMap.delete_label', { name: storyMap.title }),
         ...buttonProps,
       }}
       confirmTitle={t('storyMap.delete_confirm_title', {
