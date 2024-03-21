@@ -61,6 +61,7 @@ const GridListItem = withProps(Grid, { component: 'li' });
 
 const CollaborationIndicator = props => {
   const { storyMap } = props;
+  const { t } = useTranslation();
 
   const {
     membershipsInfo: { membershipsSample: memberships },
@@ -70,7 +71,12 @@ const CollaborationIndicator = props => {
     return null;
   }
 
-  return <PeopleIcon sx={{ color: 'gray.dark1' }} />;
+  return (
+    <PeopleIcon
+      aria-label={t('storyMap.home_shared_label')}
+      sx={{ color: 'gray.dark1' }}
+    />
+  );
 };
 
 const StoryMapListItem = props => {
