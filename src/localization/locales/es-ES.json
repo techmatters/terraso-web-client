@@ -109,7 +109,6 @@
         "membership_card_pending_description": "<0>Tu solicitud ha sido enviada al administrador del grupo. <1>Tu membresía está actualmente pendiente</1>.</0>",
         "membership_card_closed_description": "<0>{{name}} es un grupo cerrado, por lo que la lista de miembros no es visible para los que no son miembros.</0><1>Solicita unirte con un solo clic a continuación. <1>Más información sobre la pertenencia a grupos</1>.</1>",
         "membership_card_closed_help_url": "https://terraso.org/es/ayuda/groupos/",
-        "membership_card_info_close": "Cerrar",
         "membership_card_info_closed_title": "¿Cómo unirse a un grupo cerrado?",
         "membership_card_info_close_description": "<0>1. Has clic en ”Solicitud para unirse”. El estado cambiará a ”Pendiente”.</0><1>2. El administrador del grupo aprobará o denegará la solicitud.</1>",
         "membership_card_info_open_title": "¿Cómo unirse a un grupo abierto?",
@@ -528,6 +527,7 @@
     },
     "common": {
         "dialog_cancel_label": "Cancelar",
+        "dialog_close_label": "Cerrar",
         "terraso_projectName": "Terraso",
         "terraso_logoText": "Logo: Terraso",
         "unexpected_error": "Ups! Algo salió mal. Vuelve a intentarlo en unos minutos. {{error, errorParam(label: Error)}}",
@@ -599,7 +599,6 @@
         "download_label": "Descargar “{{name}}”",
         "share_file_label": "Compartir archivo “{{name}}”",
         "share_file_dialog_title": "Compartir “{{name}}” archivo",
-        "share_file_dialog_close": "Cerrar",
         "share_file_dialog_share_access_label": "Nivel de acceso",
         "share_file_dialog_share_access_type_ALL": "Cualquier persona con el enlace",
         "share_file_dialog_share_access_type_MEMBERS": "Miembros",
@@ -732,8 +731,7 @@
         "invite_text": "Echa un vistazo a {{name}} en Terraso y únete: {{url}}",
         "whatsapp": "WhatsApp",
         "email": "Email",
-        "facebook": "Facebook",
-        "close": "Cerrar"
+        "facebook": "Facebook"
     },
     "form": {
         "required_label": "Obligatorio",
@@ -751,7 +749,6 @@
         "validation_number_integer": "$t({{path}}) debe ser un número entero.",
         "validation_number_max": "$t({{path}}) debe ser menor que {{max, number()}}.",
         "helper_text_info_label": "Información sobre $t({{label}})",
-        "helper_text_info_close": "Cerrar"
     },
     "localization": {
         "locale_select_label": "Idioma seleccionado: {{name}}",

@@ -109,7 +109,6 @@
         "membership_card_pending_description": "<0>Your request has been sent to group manager. <1>Your membership is currently pending</1>.</0>",
         "membership_card_closed_description": "<0>{{name}} is a closed group, so the member list is not visible to non-members.</0><1>Request to join with a single click below. <1>Read more about group membership</1>.</1>",
         "membership_card_closed_help_url": "https://terraso.org/help/groups/",
-        "membership_card_info_close": "Close",
         "membership_card_info_closed_title": "How to join a closed group",
         "membership_card_info_close_description": "<0>1.  Click the “Request to Join.” Status will change to “Pending.”</0><1>2. Group manager will approve or deny the request.</1>",
         "membership_card_info_open_title": "How to join an open group",
@@ -556,7 +555,6 @@
         "download_label": "Download “{{name}}”",
         "share_file_label": "Share File “{{name}}”",
         "share_file_dialog_title": "Share “{{name}}” File",
-        "share_file_dialog_close": "Close",
         "share_file_dialog_share_access_label": "Share access level",
         "share_file_dialog_share_access_type_ALL": "Anyone with link",
         "share_file_dialog_share_access_type_MEMBERS": "Members",
@@ -676,6 +674,7 @@
     },
     "common": {
         "dialog_cancel_label": "Cancel",
+        "dialog_close_label": "Close",
         "terraso_projectName": "Terraso",
         "terraso_logoText": "Logo: Terraso",
         "unexpected_error": "Oops, something went wrong. Try again in a few minutes. {{error, errorParam(label: Error)}}",
@@ -727,8 +726,7 @@
         "invite_text": "Check out {{name}} on Terraso and join me: {{url}}",
         "whatsapp": "WhatsApp",
         "email": "Email",
-        "facebook": "Facebook",
-        "close": "Close"
+        "facebook": "Facebook"
     },
     "form": {
         "required_label": "required",
@@ -746,7 +744,6 @@
         "validation_number_integer": "$t({{path}}) must be an integer.",
         "validation_number_max": "$t({{path}}) must be less than {{max, number()}}.",
         "helper_text_info_label": "Information about $t({{label}})",
-        "helper_text_info_close": "Close"
     },
     "localization": {
         "locale_select_label": "Selected language: {{name}}",
