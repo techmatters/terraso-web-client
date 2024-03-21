@@ -211,7 +211,7 @@ const SharedDataEntryBase = props => {
           xs={2}
           md={1}
           order={{ xs: 5, md: 4 }}
-          sx={{ wordWrap: 'break-word' }}
+          sx={{ wordWrap: 'break-word', textTransform: 'uppercase' }}
         >
           {resourceType}
         </Grid>

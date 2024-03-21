@@ -360,7 +360,7 @@ const SharedDataEntryFile = props => {
       DownloadComponent={DownloadComponent}
       ShareComponent={ShareComponent}
       fileSize={filesize(sharedResource.dataEntry.size, { round: 0 })}
-      resourceType={sharedResource.dataEntry.resourceType.toUpperCase()}
+      resourceType={sharedResource.dataEntry.resourceType}
     >
       <Visualizations file={sharedResource.dataEntry} />
     </SharedDataEntryBase>
