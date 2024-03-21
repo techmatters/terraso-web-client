@@ -310,7 +310,7 @@ const SocialShare = props => {
             ref={onCloseRefChange}
             onClick={handleClose}
             sx={{ marginLeft: 3 }}
-            aria-label={t('share.close')}
+            title={t('common.dialog_close_label')}
           >
             <CloseIcon fontSize="small" />
           </IconButton>

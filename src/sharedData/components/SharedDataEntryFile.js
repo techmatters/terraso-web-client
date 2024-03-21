@@ -213,7 +213,7 @@ const ShareDialog = props => {
           ref={onCloseRefChange}
           onClick={onCloseWrapper}
           sx={{ ml: 3 }}
-          aria-label={t('sharedData.share_file_dialog_close')}
+          title={t('common.dialog_close_label')}
         >
           <CloseIcon fontSize="small" />
         </IconButton>

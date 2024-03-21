@@ -316,7 +316,7 @@ const SearchBar = props => {
                 <IconButton
                   onClick={onClickClear}
                   sx={{ p: '10px' }}
-                  aria-label={t('common.table_search_filter_clear')}
+                  title={t('common.table_search_filter_clear')}
                 >
                   <CloseIcon />
                 </IconButton>

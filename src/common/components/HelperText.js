@@ -37,7 +37,7 @@ const CloseIconButton = props => {
   return (
     <IconButton
       size="small"
-      aria-label={t('form.helper_text_info_close')}
+      title={t('common.dialog_close_label')}
       onClick={onClick}
       sx={{
         position: 'absolute',
