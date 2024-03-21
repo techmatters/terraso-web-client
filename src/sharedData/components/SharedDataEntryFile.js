@@ -119,7 +119,7 @@ const DownloadComponent = props => {
   return (
     <IconButton
       onClick={handleDownload}
-      aria-label={t('sharedData.download_label', {
+      title={t('sharedData.download_label', {
         name: dataEntry.name,
       })}
     >
