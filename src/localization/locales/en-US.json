@@ -712,7 +712,8 @@
         "rich_text_editor_toolbar_bold": "Bold",
         "rich_text_editor_toolbar_italic": "Italic",
         "rich_text_editor_toolbar_label": "Textbox toolbar",
-        "user_email_autocomplete_placeholder": "Enter email addresses"
+        "user_email_autocomplete_placeholder": "Enter email addresses",
+        "external_link": "Open in new window",
         "vertical_menu": "More options"
     },
     "share": {

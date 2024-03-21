@@ -63,6 +63,7 @@ const ToolIconAndLink = ({ tool, title, external }) => {
           {toolText}
           {external && (
             <LaunchIcon
+              aria-label={t('common.external_link')}
               sx={{
                 paddingLeft: 1,
                 height: '1.2rem',

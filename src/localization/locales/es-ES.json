@@ -563,7 +563,8 @@
         "rich_text_editor_toolbar_bold": "Negrita",
         "rich_text_editor_toolbar_italic": "Itálica",
         "rich_text_editor_toolbar_label": "Barra de herramientas de cuadro de texto",
-        "user_email_autocomplete_placeholder": "Introduce direcciones de correo electrónico"
+        "user_email_autocomplete_placeholder": "Introduce direcciones de correo electrónico",
+        "external_link": "TKTK",
         "vertical_menu": "TKTK"
     },
     "sharedData": {
