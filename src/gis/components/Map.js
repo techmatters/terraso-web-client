@@ -166,8 +166,13 @@ export const MapProvider = props => {
       if (!map) {
         return;
       }
+      let currentSource;
 
-      const currentSource = map.getSource(name);
+      try {
+        currentSource = map.getSource(name);
+      } catch (error) {
+        console.log('Error getting source', error);
+      }
 
       try {
         const isGeoJson = source.type === 'geojson';
