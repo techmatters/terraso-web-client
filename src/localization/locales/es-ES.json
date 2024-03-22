@@ -570,6 +570,7 @@
         "title": "Archivos y enlaces compartidos",
         "description_with_files": "Solo los miembros de tu {{entityType}} pueden descargar estos archivos o crear un mapa con ellos.",
         "card_description": "Carga documentos y comparte enlaces con otros miembros. Crea mapas con archivos de datos (se requieren latitud y longitud) y archivos de mapas (GeoJSON, KML, KMZ, Shapefiles de ESRI).",
+        "file_date_and_author": "{{date}}, por $t(user.full_name)",
         "upload_button": "Compartir archivos y enlaces",
         "delete_confirm_title": "Eliminar “{{name}}”?",
         "delete_file_confirm_message": "¿Estás segura(o) de que deseas eliminar el archivo “{{name}}”?",
