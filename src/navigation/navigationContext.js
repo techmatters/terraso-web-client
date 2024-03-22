@@ -20,6 +20,8 @@ import {
   useNavigate,
 } from 'react-router-dom';
 
+let originalPush;
+
 export const useNavigationBlocker = (when, message) => {
   const navigate = useNavigate();
   const { navigator } = useContext(NavigationContext);
@@ -27,12 +29,12 @@ export const useNavigationBlocker = (when, message) => {
   const [blockedArgs, setBlockedArgs] = useState();
 
   /*
-   * we cache a reference to the original push method if we don't have one yet,
+   * We store a reference to the original push method (if we don't have one yet),
    * so that we can be sure we're restoring the original when the blocker is
    * disabled or otherwised cleaned up.
    */
-  if (!navigator.originalPush) {
-    navigator.originalPush = navigator.push;
+  if (!originalPush) {
+    originalPush = navigator.push;
   }
 
   const proceed = useCallback(() => {
@@ -58,7 +60,7 @@ export const useNavigationBlocker = (when, message) => {
 
   const disable = useCallback(() => {
     window.removeEventListener('beforeunload', preventNavigation);
-    navigator.push = navigator.originalPush;
+    navigator.push = originalPush;
   }, [preventNavigation, navigator]);
 
   useEffect(() => {
@@ -71,7 +73,7 @@ export const useNavigationBlocker = (when, message) => {
     navigator.push = (...args) => {
       const options = args[2];
       if (options?.force) {
-        navigator.originalPush(...args);
+        originalPush(...args);
         return;
       }
 

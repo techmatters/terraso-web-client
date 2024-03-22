@@ -38,7 +38,7 @@ const GroupMembershipInfo = () => {
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogContent>
           <IconButton
-            aria-label={t('group.membership_card_info_close')}
+            title={t('common.dialog_close_label')}
             onClick={() => setOpen(false)}
             sx={{
               position: 'absolute',

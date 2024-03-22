@@ -174,7 +174,7 @@ const File = props => {
             }}
           />
           <IconButton
-            aria-label="delete"
+            title={t('sharedData.delete_file_label')}
             onClick={() => onFileDelete(file.id)}
             sx={{ alignItems: 'end' }}
           >

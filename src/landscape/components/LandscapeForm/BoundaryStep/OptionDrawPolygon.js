@@ -18,7 +18,6 @@ import React, { useCallback, useMemo, useState } from 'react';
 import bbox from '@turf/bbox';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
-import LayersIcon from '@mui/icons-material/Layers';
 import { Alert, Box, Paper, Stack, Typography } from '@mui/material';
 
 import ExternalLink from 'common/components/ExternalLink';
@@ -32,6 +31,7 @@ import BaseMap, { POLYGON_FILTER } from '../../LandscapeMap';
 import Actions from '../Actions';
 
 import drawPolygonIcon from 'assets/gis/draw-polygon.svg';
+import setBasemapIcon from 'assets/gis/set-basemap.svg';
 
 const Draw = props => {
   const { areaPolygon, setAreaPolygon, setEditHelp } = props;
@@ -137,15 +137,17 @@ const OptionDrawPolygon = props => {
         <Trans i18nKey="landscape.form_boundary_draw_polygon_description">
           <Typography>
             first
-            <LayersIcon
-              aria-label={t('gis.map_draw.draw.toolbar.buttons.polygon')}
-              sx={{ fontSize: 20, verticalAlign: 'middle' }}
+            <Box
+              component="img"
+              src={setBasemapIcon}
+              title={t('gis.basemap_label')}
+              sx={{ verticalAlign: 'middle' }}
             />
             third
             <Box
               component="img"
               src={drawPolygonIcon}
-              aria-label={t('landscape.form_boundary_map_basemap_label')}
+              title={t('gis.map_draw.draw.toolbar.buttons.polygon')}
               sx={{ verticalAlign: 'middle' }}
             />
           </Typography>

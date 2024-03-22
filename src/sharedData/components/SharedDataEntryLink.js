@@ -81,7 +81,9 @@ const SharedDataEntryLink = props => {
   return (
     <SharedDataEntryBase
       sharedResource={sharedResource}
-      EntryTypeIcon={() => <LinkIcon />}
+      EntryTypeIcon={() => (
+        <LinkIcon alt={t('sharedData.link_label')} role="img" />
+      )}
       DownloadComponent={DownloadComponent}
       info={domain}
       deleteTooltip={t(toolTipKey, {

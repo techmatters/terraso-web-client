@@ -310,9 +310,7 @@ const AddDialog = props => {
         </Paper>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>
-          {t('storyMap.form_media_add_dialog_close')}
-        </Button>
+        <Button onClick={onClose}>{t('common.dialog_close_label')}</Button>
         <Button
           variant="contained"
           onClick={onAddWrapper}
