@@ -217,7 +217,7 @@ const SharedDataEntryBase = props => {
         <Grid item xs={11} md={3} order={{ xs: 8, md: 4 }}>
           {t('sharedData.file_date_and_author', {
             date: formatDate(i18n.resolvedLanguage, dataEntry.createdAt),
-            user: dataEntry.createdBy,
+            author: t('user.full_name', { user: dataEntry.createdBy }),
           })}
         </Grid>
         <Grid
