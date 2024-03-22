@@ -523,6 +523,7 @@
         "title": "Shared files and Links",
         "description_with_files": "Only members of your {{entityType}} can download these files or create a map with them.",
         "card_description": "Upload documents and share links with other members. Make maps with data files (latitude and longitude required) and map files (GeoJSON, KML, KMZ, ESRI shapefiles).",
+        "file_date_and_author": "{{date}}, by $t(user.full_name)",
         "upload_button": "Share Files and Links",
         "delete_confirm_title": "Delete “{{name}}”?",
         "delete_file_confirm_message": "Are you sure you wish to delete the file “{{name}}”?",
