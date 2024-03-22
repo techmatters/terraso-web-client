@@ -122,6 +122,7 @@ const baseViewTest = async (
             description: `Description ${index}`,
             size: 3456,
             entryType: 'FILE',
+            resourceType: 'txt',
             visualizations: { edges: [] },
           },
         },
@@ -233,6 +234,9 @@ test('LandscapeView: Display data', async () => {
   const entriesList = within(sharedDataRegion.getByRole('list'));
   const items = entriesList.getAllByRole('listitem');
   expect(items.length).toBe(6);
+  const firstEntry = within(items[0]);
+  expect(firstEntry.getByText('Data Entry 0')).toBeInTheDocument();
+  expect(firstEntry.getByText('txt')).toBeInTheDocument();
 
   // Boundary
   expect(

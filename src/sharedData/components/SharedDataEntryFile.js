@@ -362,7 +362,8 @@ const SharedDataEntryFile = props => {
       EntryTypeIcon={SharedFileIcon}
       DownloadComponent={DownloadComponent}
       ShareComponent={ShareComponent}
-      info={filesize(sharedResource.dataEntry.size, { round: 0 })}
+      fileSize={filesize(sharedResource.dataEntry.size, { round: 0 })}
+      resourceType={sharedResource.dataEntry.resourceType}
     >
       <Visualizations file={sharedResource.dataEntry} />
     </SharedDataEntryBase>
