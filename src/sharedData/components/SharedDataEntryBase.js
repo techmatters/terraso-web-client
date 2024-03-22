@@ -54,7 +54,8 @@ const SharedDataEntryBase = props => {
     EntryTypeIcon,
     DownloadComponent,
     ShareComponent,
-    info,
+    fileSize,
+    resourceType,
     deleteTooltip,
   } = props;
   const [isEditingName, setIsEditingName] = useState(false);
@@ -173,7 +174,7 @@ const SharedDataEntryBase = props => {
         <Grid
           item
           xs={isEditingName ? 12 : 8}
-          md={6}
+          md={5}
           order={{ xs: 2, md: 2 }}
           component={StackRow}
         >
@@ -203,26 +204,38 @@ const SharedDataEntryBase = props => {
             />
           </Restricted>
         </Grid>
-        <Grid item xs={1} order={{ xs: 5 }} display={{ md: 'none' }} />
+
+        <Grid item xs={1} order={{ xs: 4 }} display={{ md: 'none' }} />
         <Grid
           item
-          xs={11}
+          xs={2}
           md={1}
-          order={{ xs: 6, md: 4 }}
+          order={{ xs: 5, md: 4 }}
+          sx={{ wordWrap: 'break-word', textTransform: 'uppercase' }}
+        >
+          {resourceType}
+        </Grid>
+        <Grid
+          item
+          xs={2}
+          md={1}
+          order={{ xs: 6, md: 5 }}
           sx={{ wordWrap: 'break-word' }}
         >
-          {info}
+          {fileSize}
         </Grid>
+        <Grid item xs={7} order={{ xs: 7 }} display={{ md: 'none' }} />
         <Grid item xs={1} order={{ xs: 7 }} display={{ md: 'none' }} />
-        <Grid item xs={11} md={3} order={{ xs: 8, md: 4 }}>
+        <Grid item xs={11} md={3} order={{ xs: 8, md: 6 }}>
           {formatDate(i18n.resolvedLanguage, dataEntry.createdAt)}, by{' '}
           {t('user.full_name', { user: dataEntry.createdBy })}
         </Grid>
+
         <Grid
           item
           xs={4}
           md={2}
-          order={{ xs: 3, md: 4 }}
+          order={{ xs: 3, md: 6 }}
           component={StackRow}
           justifyContent="flex-end"
           display={isEditingName ? 'none' : 'inherit'}
