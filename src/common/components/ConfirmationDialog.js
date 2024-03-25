@@ -57,7 +57,7 @@ const ConfirmationDialog = props => {
       aria-labelledby="confirmation-dialog-title"
       aria-describedby="confirmation-dialog-content-text"
     >
-      <DialogTitle component="h1" id="confirmation-dialog-title">
+      <DialogTitle component="h1" id="confirmation-dialog-title" sx={{ mt: 2 }}>
         {title}
       </DialogTitle>
       <DialogContent>
