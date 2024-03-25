@@ -39,11 +39,15 @@ const ICON_FILES = {
   png: 'png.png',
 };
 
-const SharedFileIcon = ({ resourceType }) => {
+const SharedFileIcon = props => {
+  const { resourceType, style } = props;
   if (_.includes(resourceType, Object.keys(ICON_FILES))) {
     return (
       <img
-        style={{ filter: 'opacity(50%)' }}
+        style={{
+          filter: 'opacity(50%)',
+          ...style,
+        }}
         width="24"
         height="24"
         src={`/files/${ICON_FILES[resourceType]}`}
