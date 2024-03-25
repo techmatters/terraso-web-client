@@ -563,8 +563,8 @@
         "rich_text_editor_toolbar_italic": "Itálica",
         "rich_text_editor_toolbar_label": "Barra de herramientas de cuadro de texto",
         "user_email_autocomplete_placeholder": "Introduce direcciones de correo electrónico",
-        "external_link": "TKTK",
-        "vertical_menu": "TKTK"
+        "external_link": "Abrir en Nueva ventana",
+        "vertical_menu": "Mas opciones"
     },
     "sharedData": {
         "title": "Archivos y enlaces compartidos",
@@ -788,7 +788,7 @@
         "map_layer_streets": "Calles",
         "map_layer_satellite": "Satélite",
         "default_marker_label": "Marcador",
-        "basemap_label": "TKTKTK",
+        "basemap_label": "Establecer mapa base",
         "latitude": "latitud",
         "longitude": "longitud",
         "boundaries_file_empty": "El archivo {{name}} está vacío.",
@@ -939,7 +939,7 @@
         "breadcrumbs_tool_home": "Story Maps de Terraso",
         "home_title": "Story Maps",
         "home_create": "Crear nuevo Story Map",
-        "home_shared_label": "TKTK",
+        "home_shared_label": "Story Map compartido",
         "home_last_edited": "Última edición el {{date}}",
         "home_published_on": "Publicado en {{date}}",
         "home_tools_link": "Story Maps de Terraso",
