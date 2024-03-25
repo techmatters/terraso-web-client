@@ -42,7 +42,7 @@ import theme from 'theme';
 export const ICON_SIZE = 24;
 
 const StackRow = props => (
-  <Stack direction="row" alignItems="center" spacing={1} {...props} />
+  <Stack direction="row" alignItems="center" {...props} />
 );
 
 const SharedDataEntryBase = props => {
@@ -169,11 +169,15 @@ const SharedDataEntryBase = props => {
         container
         spacing={1}
         alignItems="center"
-        sx={{ fontSize: 14, color: 'gray.dark1', p: 1 }}
+        sx={{
+          fontSize: 14,
+          color: 'gray.dark1',
+          p: 1,
+        }}
       >
         <Grid
           item
-          xs={isEditingName ? 12 : 8}
+          xs={isEditingName ? 12 : 7}
           md={5}
           order={{ xs: 2, md: 2 }}
           component={StackRow}
@@ -233,7 +237,7 @@ const SharedDataEntryBase = props => {
 
         <Grid
           item
-          xs={4}
+          xs={5}
           md={2}
           order={{ xs: 3, md: 6 }}
           component={StackRow}
