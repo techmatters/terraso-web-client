@@ -42,7 +42,7 @@ const ICON_FILES = {
 
 const SharedFileIcon = props => {
   const { resourceType, styleProps } = props;
-  console.log(styleProps);
+
   if (_.includes(resourceType, Object.keys(ICON_FILES))) {
     return (
       <Box
