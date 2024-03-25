@@ -20,7 +20,6 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Grid, ListItem, Stack, Typography } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { daysSince } from 'timeUtils';
 
@@ -70,7 +69,6 @@ const SharedDataEntryBase = props => {
   );
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
-  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
   const onConfirm = useCallback(() => {
     dispatch(deleteSharedData({ dataEntry, sharedResource })).then(data => {
@@ -193,7 +191,7 @@ const SharedDataEntryBase = props => {
           <EntryTypeIcon
             resourceType={dataEntry.resourceType}
             styleProps={{
-              marginTop: { xs: '1em', md: 'inherit' },
+              marginTop: { xs: '0.8em', md: 'inherit' },
               marginLeft: { xs: '-5px', md: 'inherit' },
               paddingRight: { xs: '5px', md: 'inherit' },
             }}
