@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Grid, ListItem, Stack, Typography } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { daysSince } from 'timeUtils';
 
@@ -42,7 +43,7 @@ import theme from 'theme';
 export const ICON_SIZE = 24;
 
 const StackRow = props => (
-  <Stack direction="row" alignItems="center" spacing={1} {...props} />
+  <Stack direction="row" alignItems="center" {...props} />
 );
 
 const SharedDataEntryBase = props => {
@@ -69,6 +70,7 @@ const SharedDataEntryBase = props => {
   );
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
   const onConfirm = useCallback(() => {
     dispatch(deleteSharedData({ dataEntry, sharedResource })).then(data => {
@@ -169,16 +171,23 @@ const SharedDataEntryBase = props => {
         container
         spacing={1}
         alignItems="center"
-        sx={{ fontSize: 14, color: 'gray.dark1', p: 1 }}
+        sx={{
+          fontSize: 14,
+          color: 'gray.dark1',
+          p: 1,
+        }}
       >
         <Grid
           item
-          xs={isEditingName ? 12 : 8}
+          xs={isEditingName ? 12 : 7}
           md={5}
           order={{ xs: 2, md: 2 }}
           component={StackRow}
         >
-          <EntryTypeIcon resourceType={dataEntry.resourceType} />
+          <EntryTypeIcon
+            resourceType={dataEntry.resourceType}
+            style={isSmall ? { marginTop: '-1em', paddingRight: '5px' } : {}}
+          />
           <Restricted
             permission="sharedData.edit"
             resource={permissionsResource}
@@ -226,16 +235,22 @@ const SharedDataEntryBase = props => {
         </Grid>
         <Grid item xs={7} order={{ xs: 7 }} display={{ md: 'none' }} />
         <Grid item xs={1} order={{ xs: 7 }} display={{ md: 'none' }} />
+<<<<<<< HEAD
         <Grid item xs={11} md={3} order={{ xs: 8, md: 4 }}>
           {t('sharedData.file_date_and_author', {
             date: formatDate(i18n.resolvedLanguage, dataEntry.createdAt),
             author: t('user.full_name', { user: dataEntry.createdBy }),
           })}
+=======
+        <Grid item xs={11} md={3} order={{ xs: 8, md: 6 }}>
+          {formatDate(i18n.resolvedLanguage, dataEntry.createdAt)}, by{' '}
+          {t('user.full_name', { user: dataEntry.createdBy })}
+>>>>>>> fix/files-layout
         </Grid>
 
         <Grid
           item
-          xs={4}
+          xs={5}
           md={2}
           order={{ xs: 3, md: 6 }}
           component={StackRow}
