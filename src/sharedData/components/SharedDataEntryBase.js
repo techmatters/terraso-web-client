@@ -191,7 +191,7 @@ const SharedDataEntryBase = props => {
           <EntryTypeIcon
             resourceType={dataEntry.resourceType}
             styleProps={{
-              marginTop: { xs: '1em', md: 'inherit' },
+              marginTop: { xs: '0.8em', md: 'inherit' },
               marginLeft: { xs: '-5px', md: 'inherit' },
               paddingRight: { xs: '5px', md: 'inherit' },
             }}
