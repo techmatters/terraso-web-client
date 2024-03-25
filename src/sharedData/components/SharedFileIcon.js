@@ -17,6 +17,7 @@
 import React from 'react';
 import _ from 'lodash/fp';
 import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
+import { Box } from '@mui/material';
 
 const ICON_SIZE = 24;
 const ICON_FILES = {
@@ -40,16 +41,18 @@ const ICON_FILES = {
 };
 
 const SharedFileIcon = props => {
-  const { resourceType, style } = props;
+  const { resourceType, styleProps } = props;
+  console.log(styleProps);
   if (_.includes(resourceType, Object.keys(ICON_FILES))) {
     return (
-      <img
-        style={{
+      <Box
+        component="img"
+        sx={{
           filter: 'opacity(50%)',
-          ...style,
+          width: 24,
+          height: 24,
+          ...styleProps,
         }}
-        width="24"
-        height="24"
         src={`/files/${ICON_FILES[resourceType]}`}
         alt={resourceType.toUpperCase()}
       />
