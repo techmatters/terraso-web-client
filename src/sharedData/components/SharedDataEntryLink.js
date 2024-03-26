@@ -73,11 +73,6 @@ const SharedDataEntryLink = props => {
     return url.hostname;
   }, [dataEntry.url]);
 
-  const toolTipKey =
-    dataEntry.entryType === 'LINK'
-      ? 'sharedData.link_delete_tooltip'
-      : 'sharedData.file_delete_tooltip';
-
   return (
     <SharedDataEntryBase
       sharedResource={sharedResource}
@@ -86,9 +81,6 @@ const SharedDataEntryLink = props => {
       )}
       DownloadComponent={DownloadComponent}
       info={domain}
-      deleteTooltip={t(toolTipKey, {
-        name: dataEntry.name,
-      })}
     />
   );
 };
