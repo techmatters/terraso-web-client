@@ -357,6 +357,11 @@ const SharedDataEntryFile = props => {
     <SharedDataEntryBase
       sharedResource={sharedResource}
       EntryTypeIcon={SharedFileIcon}
+          fallbackStyleProps={{
+            marginTop: '0.5em',
+            marginLeft: '-5px',
+            paddingRight: '5px',
+          }}
       DownloadComponent={DownloadComponent}
       ShareComponent={ShareComponent}
       fileSize={filesize(sharedResource.dataEntry.size, { round: 0 })}

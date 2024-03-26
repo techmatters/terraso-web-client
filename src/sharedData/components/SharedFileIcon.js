@@ -41,7 +41,7 @@ const ICON_FILES = {
 };
 
 const SharedFileIcon = props => {
-  const { resourceType, styleProps } = props;
+  const { resourceType, styleProps, fallbackStyleProps } = props;
 
   if (_.includes(resourceType, Object.keys(ICON_FILES))) {
     return (
@@ -64,6 +64,7 @@ const SharedFileIcon = props => {
       sx={{
         fontSize: ICON_SIZE,
         color: 'gray.dark1',
+        ...fallbackStyleProps,
       }}
     />
   );
