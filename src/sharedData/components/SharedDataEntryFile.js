@@ -41,7 +41,6 @@ import {
   MenuItem,
   Select,
   Stack,
-  Tooltip,
   Typography,
 } from '@mui/material';
 
@@ -332,18 +331,16 @@ const ShareComponent = props => {
 
   return (
     <>
-      <Tooltip title={label}>
-        <IconButton aria-label={label} onClick={handleOpen}>
-          <ShareIcon
-            sx={theme => ({
-              marginTop: '2px',
-              width: ICON_SIZE,
-              height: ICON_SIZE,
-              color: theme.palette.secondary.main,
-            })}
-          />
-        </IconButton>
-      </Tooltip>
+      <IconButton title={label} onClick={handleOpen}>
+        <ShareIcon
+          sx={theme => ({
+            marginTop: '2px',
+            width: ICON_SIZE,
+            height: ICON_SIZE,
+            color: theme.palette.secondary.main,
+          })}
+        />
+      </IconButton>
       <ShareDialog
         sharedResource={sharedResource}
         onUpdateSharedResource={onUpdateSharedResource}
