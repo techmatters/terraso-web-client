@@ -226,7 +226,7 @@ const SharedDataEntryBase = props => {
         </Grid>
         <Grid item xs={7} order={{ xs: 7 }} display={{ md: 'none' }} />
         <Grid item xs={1} order={{ xs: 7 }} display={{ md: 'none' }} />
-        <Grid item xs={11} md={3} order={{ xs: 8, md: 4 }}>
+        <Grid item xs={11} md={3} order={{ xs: 8, md: 6 }}>
           {t('sharedData.file_date_and_author', {
             date: formatDate(i18n.resolvedLanguage, dataEntry.createdAt),
             user: dataEntry.createdBy,
