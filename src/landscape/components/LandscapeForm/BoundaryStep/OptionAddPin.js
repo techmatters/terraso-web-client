@@ -72,7 +72,7 @@ const OptionAddPin = props => {
           <Box
             component="img"
             src={MARKER_CONTROL_ICON}
-            aria-label={t('landscape.form_boundary_map_basemap_label')}
+            aria-label={t('gis.map_draw.draw.toolbar.buttons.polygon')}
             sx={{ verticalAlign: 'middle' }}
           />
           third

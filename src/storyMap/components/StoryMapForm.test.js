@@ -711,7 +711,7 @@ test('StoryMapForm: Move chapter down with menu', async () => {
   });
 
   const menuButton = within(chapter1).getByRole('button', {
-    name: 'Open menu',
+    name: 'More options',
   });
   await act(async () => fireEvent.click(menuButton));
 
@@ -774,7 +774,7 @@ test('StoryMapForm: Move chapter up with menu', async () => {
   });
 
   const menuButton = within(chapter2).getByRole('button', {
-    name: 'Open menu',
+    name: 'More options',
   });
   await act(async () => fireEvent.click(menuButton));
 
@@ -835,7 +835,7 @@ test('StoryMapForm: Show correct sort buttons if chapter is first', async () => 
     name: 'Chapter 1',
   });
   const menuButton = within(chapter1).getByRole('button', {
-    name: 'Open menu',
+    name: 'More options',
   });
   await act(async () => fireEvent.click(menuButton));
   const menu = screen.getByRole('menu', {
@@ -859,7 +859,7 @@ test('StoryMapForm: Show correct sort buttons if chapter is last', async () => {
     name: 'Chapter 3',
   });
   const menuButton = within(chapter3).getByRole('button', {
-    name: 'Open menu',
+    name: 'More options',
   });
   await act(async () => fireEvent.click(menuButton));
   const menu = screen.getByRole('menu', {
@@ -883,7 +883,7 @@ test('StoryMapForm: Delete chapter', async () => {
     name: 'Chapter 1',
   });
   const menuButton = within(chapter1).getByRole('button', {
-    name: 'Open menu',
+    name: 'More options',
   });
   await act(async () => fireEvent.click(menuButton));
   const menu = screen.getByRole('menu', {

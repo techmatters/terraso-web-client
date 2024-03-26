@@ -181,7 +181,7 @@ const SideBarItem = props => {
                 <>
                   <IconButton
                     size="small"
-                    aria-label={t('storyMap.form_chapter_open_menu')}
+                    title={t('common.vertical_menu')}
                     onClick={handleOpenMenuClick}
                     sx={{
                       pt: '2px',

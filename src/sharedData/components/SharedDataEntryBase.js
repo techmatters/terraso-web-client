@@ -255,7 +255,7 @@ const SharedDataEntryBase = props => {
               loading={processing}
               variant="text"
               buttonProps={{
-                'aria-label': t('sharedData.delete_label', {
+                title: t('sharedData.delete_label', {
                   name: dataEntry.name,
                 }),
               }}

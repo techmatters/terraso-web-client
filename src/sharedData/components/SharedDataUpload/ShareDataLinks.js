@@ -80,6 +80,7 @@ const BASE_FIELD_PROPS = {
 
 const UrlWrapper = props => {
   const { linkId, children } = props;
+  const { t } = useTranslation();
   const { onLinkDelete } = useContext(LinksContextFunctions);
   const links = useContext(LinksContext);
 
@@ -89,7 +90,10 @@ const UrlWrapper = props => {
     <Stack direction="row">
       {children}
       {!isLastLink && (
-        <IconButton aria-label="delete" onClick={() => onLinkDelete(linkId)}>
+        <IconButton
+          title={t('sharedData.delete_link_label')}
+          onClick={() => onLinkDelete(linkId)}
+        >
           <DeleteIcon sx={{ color: 'secondary.main' }} />
         </IconButton>
       )}
