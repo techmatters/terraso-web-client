@@ -150,7 +150,7 @@ const SharedDataEntryBase = props => {
         return data;
       });
     },
-    [dataEntry, dispatch, owner.slug, trackEvent, updateOwner, entityType]
+    [dispatch, owner.slug, trackEvent, updateOwner, entityType]
   );
 
   const description = useMemo(
