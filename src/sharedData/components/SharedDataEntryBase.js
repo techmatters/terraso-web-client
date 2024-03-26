@@ -185,14 +185,7 @@ const SharedDataEntryBase = props => {
             alignItems: 'flex-start',
           }}
         >
-          <EntryTypeIcon
-            resourceType={dataEntry.resourceType}
-            styleProps={{
-              marginTop: '0.8em',
-              marginLeft: '-5px',
-              paddingRight: '5px',
-            }}
-          />
+          <EntryTypeIcon resourceType={dataEntry.resourceType} />
           <Restricted
             permission="sharedData.edit"
             resource={permissionsResource}
