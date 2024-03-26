@@ -138,7 +138,7 @@ const AccountForm = () => {
           )}
         </Stack>
 
-        <Typography sx={{ mb: 4 }}>
+        <Typography sx={{ m: 2.5 }}>
           <Trans i18nKey="account.disclaimer">
             prefix
             <ExternalLink href={t('account.disclaimer_url')}>text</ExternalLink>
