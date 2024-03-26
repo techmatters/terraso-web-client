@@ -182,18 +182,15 @@ const SharedDataEntryBase = props => {
           order={{ xs: 2, md: 2 }}
           component={StackRow}
           sx={{
-            alignItems: {
-              xs: 'flex-start',
-              md: 'inherit',
-            },
+            alignItems: 'flex-start',
           }}
         >
           <EntryTypeIcon
             resourceType={dataEntry.resourceType}
             styleProps={{
-              marginTop: { xs: '0.8em', md: 'inherit' },
-              marginLeft: { xs: '-5px', md: 'inherit' },
-              paddingRight: { xs: '5px', md: 'inherit' },
+              marginTop: '0.8em',
+              marginLeft: '-5px',
+              paddingRight: '5px',
             }}
           />
           <Restricted
