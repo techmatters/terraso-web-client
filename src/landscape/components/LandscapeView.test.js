@@ -289,7 +289,7 @@ test('LandscapeView: Update Shared Data', async () => {
   const entriesList = within(sharedDataRegion.getByRole('list'));
   const items = entriesList.getAllByRole('listitem');
 
-  const nameField = within(items[3]).getByRole('button', {
+  let nameField = within(items[3]).getByRole('button', {
     name: 'Data Entry 3',
   });
   expect(nameField).toBeInTheDocument();
@@ -303,7 +303,7 @@ test('LandscapeView: Update Shared Data', async () => {
     ).toBeInTheDocument()
   );
 
-  const name = within(items[3]).getByRole('textbox', {
+  let name = within(items[3]).getByRole('textbox', {
     name: 'Update name',
   });
   fireEvent.change(name, { target: { value: 'Data Entry 3 updated' } });
@@ -314,11 +314,45 @@ test('LandscapeView: Update Shared Data', async () => {
       })
     )
   );
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
+  let saveCall = terrasoApi.requestGraphQL.mock.calls[2];
 
   expect(saveCall[1].input).toEqual({
     id: 'de-3',
     name: 'Data Entry 3 updated',
+    description: 'Description 3',
+  });
+
+  // Rename a second time to ensure state is reset
+  nameField = within(items[3]).getByRole('button', {
+    name: 'Data Entry 3 updated',
+  });
+  expect(nameField).toBeInTheDocument();
+  await act(async () => fireEvent.click(nameField));
+
+  await waitFor(() =>
+    expect(
+      within(items[3]).getByRole('textbox', {
+        name: 'Update name',
+      })
+    ).toBeInTheDocument()
+  );
+
+  name = within(items[3]).getByRole('textbox', {
+    name: 'Update name',
+  });
+  fireEvent.change(name, { target: { value: 'Data Entry 3 revised' } });
+  await act(async () =>
+    fireEvent.click(
+      within(items[3]).getByRole('button', {
+        name: 'Save',
+      })
+    )
+  );
+  saveCall = terrasoApi.requestGraphQL.mock.calls[2];
+
+  expect(saveCall[1].input).toEqual({
+    id: 'de-3',
+    name: 'Data Entry 3 revised',
     description: 'Description 3',
   });
 });
