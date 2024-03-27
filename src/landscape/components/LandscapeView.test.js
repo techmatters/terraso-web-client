@@ -16,6 +16,7 @@
  */
 import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
+import { when } from 'jest-when';
 import _ from 'lodash/fp';
 import { useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
@@ -129,28 +130,12 @@ const baseViewTest = async (
       })),
   };
 
-  terrasoApi.requestGraphQL
-    .mockResolvedValueOnce({
-      landscapes: {
-        edges: [
-          {
-            node: {
-              name: 'Landscape Name',
-              description: 'Landscape Description',
-              website: 'https://www.landscape.org',
-              location: 'EC',
-              membershipList: {
-                memberships,
-                accountMembership,
-                membershipsCount: 6,
-              },
-              sharedResources,
-            },
-          },
-        ],
-      },
-    })
-    .mockResolvedValueOnce({
+  when(terrasoApi.requestGraphQL)
+    .calledWith(
+      expect.stringContaining('query landscapesToView'),
+      expect.anything()
+    )
+    .mockResolvedValue({
       landscapes: {
         edges: [
           {
@@ -267,21 +252,58 @@ test('LandscapeView: Managers do not see warning', async () => {
 test('LandscapeView: Update Shared Data', async () => {
   await baseViewTest();
 
-  terrasoApi.requestGraphQL.mockResolvedValueOnce(
-    _.set(
-      'updateDataEntry.dataEntry',
-      {
-        id: `de-3`,
-        createdAt: '2022-05-20T16:25:21.536679+00:00',
-        name: `Data Entry 3`,
-        createdBy: { id: 'user-id', firstName: 'First', lastName: 'Last' },
-        size: 3456,
-        entryType: 'FILE',
-      },
-      {}
+  when(terrasoApi.requestGraphQL)
+    .calledWith(
+      expect.stringContaining('mutation updateSharedData'),
+      expect.objectContaining({
+        input: {
+          id: `de-3`,
+          name: 'Data Entry 3 updated',
+          description: 'Description 3',
+        },
+      })
     )
-  );
-  terrasoApi.requestGraphQL.mockResolvedValueOnce({});
+    .mockResolvedValueOnce(
+      _.set(
+        'updateDataEntry.dataEntry',
+        {
+          id: `de-3`,
+          createdAt: '2022-05-20T16:25:21.536679+00:00',
+          name: `Data Entry 3 updated`,
+          description: 'Description 3',
+          createdBy: { id: 'user-id', firstName: 'First', lastName: 'Last' },
+          size: 3456,
+          entryType: 'FILE',
+        },
+        {}
+      )
+    );
+  when(terrasoApi.requestGraphQL)
+    .calledWith(
+      expect.stringContaining('mutation updateSharedData'),
+      expect.objectContaining({
+        input: {
+          id: 'de-3',
+          name: 'Data Entry 3 revised',
+          description: 'Description 3',
+        },
+      })
+    )
+    .mockResolvedValueOnce(
+      _.set(
+        'updateDataEntry.dataEntry',
+        {
+          id: `de-3`,
+          createdAt: '2022-05-20T16:25:21.536679+00:00',
+          name: `Data Entry 3 revised`,
+          description: 'Description 3',
+          createdBy: { id: 'user-id', firstName: 'First', lastName: 'Last' },
+          size: 3456,
+          entryType: 'FILE',
+        },
+        {}
+      )
+    );
 
   const sharedDataRegion = within(
     screen.getByRole('region', { name: 'Shared files and Links' })
@@ -289,7 +311,7 @@ test('LandscapeView: Update Shared Data', async () => {
   const entriesList = within(sharedDataRegion.getByRole('list'));
   const items = entriesList.getAllByRole('listitem');
 
-  const nameField = within(items[3]).getByRole('button', {
+  let nameField = within(items[3]).getByRole('button', {
     name: 'Data Entry 3',
   });
   expect(nameField).toBeInTheDocument();
@@ -303,7 +325,7 @@ test('LandscapeView: Update Shared Data', async () => {
     ).toBeInTheDocument()
   );
 
-  const name = within(items[3]).getByRole('textbox', {
+  let name = within(items[3]).getByRole('textbox', {
     name: 'Update name',
   });
   fireEvent.change(name, { target: { value: 'Data Entry 3 updated' } });
@@ -314,13 +336,54 @@ test('LandscapeView: Update Shared Data', async () => {
       })
     )
   );
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
 
-  expect(saveCall[1].input).toEqual({
-    id: 'de-3',
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledWith(
+    expect.stringContaining('mutation updateSharedData'),
+    {
+      input: {
+        id: 'de-3',
+        name: 'Data Entry 3 updated',
+        description: 'Description 3',
+      },
+    }
+  );
+
+  // Rename a second time to ensure state is reset
+  nameField = within(items[3]).getByRole('button', {
     name: 'Data Entry 3 updated',
-    description: 'Description 3',
   });
+  expect(nameField).toBeInTheDocument();
+  await act(async () => fireEvent.click(nameField));
+
+  await waitFor(() =>
+    expect(
+      within(items[3]).getByRole('textbox', {
+        name: 'Update name',
+      })
+    ).toBeInTheDocument()
+  );
+
+  name = within(items[3]).getByRole('textbox', {
+    name: 'Update name',
+  });
+  fireEvent.change(name, { target: { value: 'Data Entry 3 revised' } });
+  await act(async () =>
+    fireEvent.click(
+      within(items[3]).getByRole('button', {
+        name: 'Save',
+      })
+    )
+  );
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledWith(
+    expect.stringContaining('mutation updateSharedData'),
+    {
+      input: {
+        id: 'de-3',
+        name: 'Data Entry 3 revised',
+        description: 'Description 3',
+      },
+    }
+  );
 });
 
 test('LandscapeView: Refresh profile on leave', async () => {

@@ -82,7 +82,7 @@ const SharedDataEntryBase = props => {
           },
         });
       }
-      dispatch(resetProcessing(dataEntry.id));
+      dispatch(resetProcessing(sharedResource.id));
     });
   }, [
     dataEntry,
@@ -112,7 +112,7 @@ const SharedDataEntryBase = props => {
             props: { [entityType]: owner.slug },
           });
         }
-        dispatch(resetProcessing(dataEntry.id));
+        dispatch(resetProcessing(sharedResource.id));
       });
     },
     [
@@ -146,11 +146,11 @@ const SharedDataEntryBase = props => {
             props: { [entityType]: owner.slug },
           });
         }
-        dispatch(resetProcessing(dataEntry.id));
+        dispatch(resetProcessing(sharedResource.id));
         return data;
       });
     },
-    [dataEntry, dispatch, owner.slug, trackEvent, updateOwner, entityType]
+    [dispatch, owner.slug, trackEvent, updateOwner, entityType]
   );
 
   const description = useMemo(
