@@ -56,7 +56,6 @@ const SharedDataEntryBase = props => {
     ShareComponent,
     fileSize,
     resourceType,
-    deleteTooltip,
   } = props;
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
@@ -264,9 +263,14 @@ const SharedDataEntryBase = props => {
               loading={processing}
               variant="text"
               buttonProps={{
-                title: t('sharedData.delete_label', {
-                  name: dataEntry.name,
-                }),
+                title: t(
+                  dataEntry.entryType === 'LINK'
+                    ? 'sharedData.link_delete_tooltip'
+                    : 'sharedData.file_delete_tooltip',
+                  {
+                    name: dataEntry.name,
+                  }
+                ),
               }}
               confirmTitle={t('sharedData.delete_confirm_title', {
                 name: dataEntry.name,
@@ -284,7 +288,6 @@ const SharedDataEntryBase = props => {
                   ? 'sharedData.delete_link_confirm_button'
                   : 'sharedData.delete_file_confirm_button'
               )}
-              tooltip={deleteTooltip}
             >
               <DeleteIcon
                 sx={{
