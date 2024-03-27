@@ -88,7 +88,7 @@ const SharedDataEntryLink = props => {
         />
       )}
       DownloadComponent={DownloadComponent}
-      info={domain}
+      domain={domain}
     />
   );
 };

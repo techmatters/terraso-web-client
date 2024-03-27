@@ -56,6 +56,7 @@ const SharedDataEntryBase = props => {
     ShareComponent,
     fileSize,
     resourceType,
+    domain,
   } = props;
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
@@ -162,6 +163,45 @@ const SharedDataEntryBase = props => {
     [dataEntry, owner]
   );
 
+  const LinkInfo = ({ domain }) => {
+    return (
+      <Grid
+        item
+        xs={4}
+        md={2}
+        order={{ xs: 5, md: 4 }}
+        sx={{ wordWrap: 'break-word' }}
+      >
+        {domain}
+      </Grid>
+    );
+  };
+
+  const FileInfo = ({ fileSize, resourceType }) => {
+    return (
+      <>
+        <Grid
+          item
+          xs={2}
+          md={1}
+          order={{ xs: 5, md: 4 }}
+          sx={{ wordWrap: 'break-word', textTransform: 'uppercase' }}
+        >
+          {resourceType}
+        </Grid>
+        <Grid
+          item
+          xs={2}
+          md={1}
+          order={{ xs: 6, md: 5 }}
+          sx={{ wordWrap: 'break-word' }}
+        >
+          {fileSize}
+        </Grid>
+      </>
+    );
+  };
+
   return (
     <ListItem sx={{ p: 0, flexDirection: 'column' }}>
       <Grid
@@ -212,24 +252,12 @@ const SharedDataEntryBase = props => {
         </Grid>
 
         <Grid item xs={1} order={{ xs: 4 }} display={{ md: 'none' }} />
-        <Grid
-          item
-          xs={2}
-          md={1}
-          order={{ xs: 5, md: 4 }}
-          sx={{ wordWrap: 'break-word', textTransform: 'uppercase' }}
-        >
-          {resourceType}
-        </Grid>
-        <Grid
-          item
-          xs={2}
-          md={1}
-          order={{ xs: 6, md: 5 }}
-          sx={{ wordWrap: 'break-word' }}
-        >
-          {fileSize}
-        </Grid>
+        {dataEntry.entryType === 'LINK' ? (
+          <LinkInfo domain={domain} />
+        ) : (
+          <FileInfo fileSize={fileSize} resourceType={resourceType} />
+        )}
+
         <Grid item xs={7} order={{ xs: 7 }} display={{ md: 'none' }} />
         <Grid item xs={1} order={{ xs: 7 }} display={{ md: 'none' }} />
         <Grid item xs={11} md={3} order={{ xs: 8, md: 6 }}>
