@@ -54,9 +54,10 @@ const SharedDataEntryBase = props => {
     EntryTypeIcon,
     DownloadComponent,
     ShareComponent,
-    fileSize,
-    resourceType,
-    domain,
+    InfoComponent,
+    //fileSize, //TODO-cknipe: REMOVE
+    //fileType,
+    //linkDomain,
   } = props;
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
@@ -163,44 +164,45 @@ const SharedDataEntryBase = props => {
     [dataEntry, owner]
   );
 
-  const LinkInfo = ({ domain }) => {
-    return (
-      <Grid
-        item
-        xs={4}
-        md={2}
-        order={{ xs: 5, md: 4 }}
-        sx={{ wordWrap: 'break-word' }}
-      >
-        {domain}
-      </Grid>
-    );
-  };
+  // const LinkInfo = ({ linkDomain }) => {
+  //   return (
+  //     <Grid
+  //       item
+  //       xs={4}
+  //       md={2}
+  //       order={{ xs: 5, md: 4 }}
+  //       sx={{ wordWrap: 'break-word' }}
+  //     >
+  //       {linkDomain}
+  //     </Grid>
+  //   );
+  // };
 
-  const FileInfo = ({ fileSize, resourceType }) => {
-    return (
-      <>
-        <Grid
-          item
-          xs={2}
-          md={1}
-          order={{ xs: 5, md: 4 }}
-          sx={{ wordWrap: 'break-word', textTransform: 'uppercase' }}
-        >
-          {resourceType}
-        </Grid>
-        <Grid
-          item
-          xs={2}
-          md={1}
-          order={{ xs: 6, md: 5 }}
-          sx={{ wordWrap: 'break-word' }}
-        >
-          {fileSize}
-        </Grid>
-      </>
-    );
-  };
+  // TODO-cknipe: Remove
+  // const FileInfo = ({ fileSize, fileType }) => {
+  //   return (
+  //     <>
+  //       <Grid
+  //         item
+  //         xs={2}
+  //         md={1}
+  //         order={{ xs: 5, md: 4 }}
+  //         sx={{ wordWrap: 'break-word', textTransform: 'uppercase' }}
+  //       >
+  //         {fileType}
+  //       </Grid>
+  //       <Grid
+  //         item
+  //         xs={2}
+  //         md={1}
+  //         order={{ xs: 6, md: 5 }}
+  //         sx={{ wordWrap: 'break-word' }}
+  //       >
+  //         {fileSize}
+  //       </Grid>
+  //     </>
+  //   );
+  // };
 
   return (
     <ListItem sx={{ p: 0, flexDirection: 'column' }}>
@@ -252,11 +254,7 @@ const SharedDataEntryBase = props => {
         </Grid>
 
         <Grid item xs={1} order={{ xs: 4 }} display={{ md: 'none' }} />
-        {dataEntry.entryType === 'LINK' ? (
-          <LinkInfo domain={domain} />
-        ) : (
-          <FileInfo fileSize={fileSize} resourceType={resourceType} />
-        )}
+        {InfoComponent && <InfoComponent sharedResource={sharedResource} />}
 
         <Grid item xs={7} order={{ xs: 7 }} display={{ md: 'none' }} />
         <Grid item xs={1} order={{ xs: 7 }} display={{ md: 'none' }} />

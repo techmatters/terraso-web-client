@@ -17,7 +17,7 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { IconButton } from '@mui/material';
+import { Grid, IconButton } from '@mui/material';
 
 import { useCollaborationContext } from 'collaboration/collaborationContext';
 import ExternalLink from 'common/components/ExternalLink';
@@ -60,9 +60,8 @@ const DownloadComponent = props => {
   );
 };
 
-const SharedDataEntryLink = props => {
-  const { t } = useTranslation();
-  const { sharedResource } = props;
+// TODO-cknipe: Move this and finsih
+const InfoComponent = ({ sharedResource }) => {
   const dataEntry = useMemo(
     () => sharedResource.dataEntry,
     [sharedResource.dataEntry]
@@ -72,6 +71,33 @@ const SharedDataEntryLink = props => {
     const url = new URL(dataEntry.url);
     return url.hostname;
   }, [dataEntry.url]);
+
+  return (
+    <Grid
+      item
+      xs={4}
+      md={2}
+      order={{ xs: 5, md: 4 }}
+      sx={{ wordWrap: 'break-word' }}
+    >
+      {domain}
+    </Grid>
+  );
+};
+
+const SharedDataEntryLink = props => {
+  const { t } = useTranslation();
+  const { sharedResource } = props;
+  // TODO-cknipe: Think move this up to InfoComponent?
+  // const dataEntry = useMemo(
+  //   () => sharedResource.dataEntry,
+  //   [sharedResource.dataEntry]
+  // );
+
+  // const domain = useMemo(() => {
+  //   const url = new URL(dataEntry.url);
+  //   return url.hostname;
+  // }, [dataEntry.url]);
 
   return (
     <SharedDataEntryBase
@@ -87,8 +113,8 @@ const SharedDataEntryLink = props => {
           }}
         />
       )}
+      InfoComponent={InfoComponent}
       DownloadComponent={DownloadComponent}
-      domain={domain}
     />
   );
 };
