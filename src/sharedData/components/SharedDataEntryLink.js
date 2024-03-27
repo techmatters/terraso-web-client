@@ -82,7 +82,15 @@ const SharedDataEntryLink = props => {
     <SharedDataEntryBase
       sharedResource={sharedResource}
       EntryTypeIcon={() => (
-        <LinkIcon alt={t('sharedData.link_label')} role="img" />
+        <LinkIcon
+          alt={t('sharedData.link_label')}
+          role="img"
+          sx={{
+            marginTop: '0.6em',
+            marginLeft: '-3px',
+            paddingRight: '3px',
+          }}
+        />
       )}
       DownloadComponent={DownloadComponent}
       info={domain}
