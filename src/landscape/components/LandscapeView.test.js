@@ -270,6 +270,7 @@ test('LandscapeView: Update Shared Data', async () => {
           id: `de-3`,
           createdAt: '2022-05-20T16:25:21.536679+00:00',
           name: `Data Entry 3 updated`,
+          description: 'Description 3',
           createdBy: { id: 'user-id', firstName: 'First', lastName: 'Last' },
           size: 3456,
           entryType: 'FILE',
@@ -284,6 +285,7 @@ test('LandscapeView: Update Shared Data', async () => {
         input: {
           id: 'de-3',
           name: 'Data Entry 3 revised',
+          description: 'Description 3'
         },
       })
     )
@@ -294,6 +296,7 @@ test('LandscapeView: Update Shared Data', async () => {
           id: `de-3`,
           createdAt: '2022-05-20T16:25:21.536679+00:00',
           name: `Data Entry 3 revised`,
+          description: 'Description 3',
           createdBy: { id: 'user-id', firstName: 'First', lastName: 'Last' },
           size: 3456,
           entryType: 'FILE',
@@ -373,7 +376,7 @@ test('LandscapeView: Update Shared Data', async () => {
   );
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledWith(
     expect.stringContaining('mutation updateSharedData'),
-    { input: { id: 'de-3', name: 'Data Entry 3 revised' } }
+    { input: { id: 'de-3', name: 'Data Entry 3 revised', description: 'Description 3' } }
   );
 });
 
