@@ -285,7 +285,7 @@ test('LandscapeView: Update Shared Data', async () => {
         input: {
           id: 'de-3',
           name: 'Data Entry 3 revised',
-          description: 'Description 3'
+          description: 'Description 3',
         },
       })
     )
@@ -376,7 +376,13 @@ test('LandscapeView: Update Shared Data', async () => {
   );
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledWith(
     expect.stringContaining('mutation updateSharedData'),
-    { input: { id: 'de-3', name: 'Data Entry 3 revised', description: 'Description 3' } }
+    {
+      input: {
+        id: 'de-3',
+        name: 'Data Entry 3 revised',
+        description: 'Description 3',
+      },
+    }
   );
 });
 
