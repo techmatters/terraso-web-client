@@ -109,6 +109,7 @@ const baseViewTest = async (
       })),
   };
 
+  // Add files to the shared resources
   const sharedResources = {
     edges: Array(6)
       .fill(0)
@@ -129,6 +130,25 @@ const baseViewTest = async (
         },
       })),
   };
+  // Add a link to the shared resources
+  let index = 6;
+  sharedResources.edges.push({
+    node: {
+      id: `sr-${index}`,
+      source: {
+        id: `de-${index}`,
+        createdAt: '2023-05-20T16:25:21.536679+00:00',
+        name: `Data Entry ${index}`,
+        createdBy: { id: 'user-id', firstName: 'First', lastName: 'Last' },
+        description: `Description ${index}`,
+        size: null,
+        entryType: 'LINK',
+        resourceType: 'link',
+        url: `https://www.link-${index}.com`,
+        visualizations: { edges: [] },
+      },
+    },
+  });
 
   when(terrasoApi.requestGraphQL)
     .calledWith(
@@ -218,10 +238,22 @@ test('LandscapeView: Display data', async () => {
   ).toBeInTheDocument();
   const entriesList = within(sharedDataRegion.getByRole('list'));
   const items = entriesList.getAllByRole('listitem');
-  expect(items.length).toBe(6);
-  const firstEntry = within(items[0]);
-  expect(firstEntry.getByText('Data Entry 0')).toBeInTheDocument();
-  expect(firstEntry.getByText('txt')).toBeInTheDocument();
+  expect(items.length).toBe(7);
+  const fileEntry = within(items[0]);
+  expect(fileEntry.getByText('Data Entry 0')).toBeInTheDocument();
+  expect(fileEntry.getByText('txt')).toBeInTheDocument();
+  expect(fileEntry.getByText('3 kB')).toBeInTheDocument();
+  expect(
+    fileEntry.getByText('May 20, 2022, by First Last')
+  ).toBeInTheDocument();
+  expect(fileEntry.getByText('Description 0')).toBeInTheDocument();
+  const linkEntry = within(items[6]);
+  expect(linkEntry.getByText('Data Entry 6')).toBeInTheDocument();
+  expect(linkEntry.getByText('www.link-6.com')).toBeInTheDocument();
+  expect(
+    linkEntry.getByText('May 20, 2023, by First Last')
+  ).toBeInTheDocument();
+  expect(linkEntry.getByText('Description 6')).toBeInTheDocument();
 
   // Boundary
   expect(
