@@ -49,9 +49,13 @@ export const fetchGroupToUpdate = (slug: string) => {
     .then(extractGroup);
 };
 
-export const fetchGroupToView = async (slug: string, user: User | null) => {
+export const fetchGroupToView = async (slug: string, user: User | null, memberSampleCount: number | 5) => {
   const query = graphql(`
-    query groupToView($slug: String!, $accountEmail: String!) {
+    query groupToView(
+      $slug: String!
+      $accountEmail: String!
+      $memberSampleCount: Int = 5
+    ) {
       groups(slug: $slug) {
         edges {
           node {
@@ -248,6 +252,7 @@ export const leaveGroup = (
     mutation deleteGroupMembership(
       $input: GroupMembershipDeleteMutationInput!
       $accountEmail: String!
+      $memberSampleCount: Int = 5
     ) {
       deleteGroupMembership(input: $input) {
         group {
@@ -276,6 +281,7 @@ export const joinGroup = (
     mutation joinGroup(
       $input: GroupMembershipSaveMutationInput!
       $accountEmail: String!
+      memberSampleCount: Int = 5
     ) {
       saveGroupMembership(input: $input) {
         group {

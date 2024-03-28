@@ -73,7 +73,7 @@ export const groupMembershipListWithMembersSample = /* GraphQL */ `
       ...collaborationMembershipsPending
       memberships(
         user_Email_Not: $accountEmail
-        first: 5
+        first: $memberSampleCount
         membershipStatus: APPROVED
       ) {
         edges {

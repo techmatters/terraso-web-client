@@ -44,8 +44,8 @@ export const fetchGroupForm = createAsyncThunk(
 
 export const fetchGroupView = createAsyncThunk(
   'group/fetchGroupView',
-  async (slug: string, user, { dispatch }) => {
-    const group = await groupService.fetchGroupToView(slug, user);
+  async (slug: string, user, memberSampleCount, { dispatch }) => {
+    const group = await groupService.fetchGroupToView(slug, user, memberSampleCount);
     dispatch(setSharedResourcesList(group.sharedResources));
     return group;
   }
