@@ -66,26 +66,20 @@ const InfoComponent = ({ sharedResource }) => {
   const fileSize = filesize(sharedResource.dataEntry.size, { round: 0 });
   const fileType = sharedResource.dataEntry.resourceType;
   return (
-    <>
+    <Grid container>
       <Grid
         item
-        xs={2}
-        md={1}
-        order={{ xs: 5, md: 4 }}
+        xs={3}
+        md={6}
         sx={{ wordWrap: 'break-word', textTransform: 'uppercase' }}
       >
         {fileType}
       </Grid>
-      <Grid
-        item
-        xs={2}
-        md={1}
-        order={{ xs: 6, md: 5 }}
-        sx={{ wordWrap: 'break-word' }}
-      >
+      <Grid item xs={8} md={6} sx={{ wordWrap: 'break-word' }}>
         {fileSize}
       </Grid>
-    </>
+      <Grid item xs={1} display={{ md: 'none' }} />
+    </Grid>
   );
 };
 
