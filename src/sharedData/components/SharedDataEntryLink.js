@@ -60,7 +60,6 @@ const DownloadComponent = props => {
   );
 };
 
-// TODO-cknipe: Move this and finsih
 const InfoComponent = ({ sharedResource }) => {
   const dataEntry = useMemo(
     () => sharedResource.dataEntry,
@@ -82,16 +81,6 @@ const InfoComponent = ({ sharedResource }) => {
 const SharedDataEntryLink = props => {
   const { t } = useTranslation();
   const { sharedResource } = props;
-  // TODO-cknipe: Think move this up to InfoComponent?
-  // const dataEntry = useMemo(
-  //   () => sharedResource.dataEntry,
-  //   [sharedResource.dataEntry]
-  // );
-
-  // const domain = useMemo(() => {
-  //   const url = new URL(dataEntry.url);
-  //   return url.hostname;
-  // }, [dataEntry.url]);
 
   return (
     <SharedDataEntryBase

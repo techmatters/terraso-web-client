@@ -395,10 +395,6 @@ const SharedDataEntryFile = props => {
       DownloadComponent={DownloadComponent}
       ShareComponent={ShareComponent}
       InfoComponent={InfoComponent}
-      // TODO-cknipe: Remove
-      //fileSize: filesize(sharedResource.dataEntry.size, { round: 0 }),
-      //fileType: sharedResource.dataEntry.fileType,
-      //}}
     >
       <Visualizations file={sharedResource.dataEntry} />
     </SharedDataEntryBase>

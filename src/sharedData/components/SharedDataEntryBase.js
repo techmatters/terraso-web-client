@@ -55,9 +55,6 @@ const SharedDataEntryBase = props => {
     DownloadComponent,
     ShareComponent,
     InfoComponent,
-    //fileSize, //TODO-cknipe: REMOVE
-    //fileType,
-    //linkDomain,
   } = props;
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
@@ -163,46 +160,6 @@ const SharedDataEntryBase = props => {
     () => ({ owner, dataEntry }),
     [dataEntry, owner]
   );
-
-  // const LinkInfo = ({ linkDomain }) => {
-  //   return (
-  //     <Grid
-  //       item
-  //       xs={4}
-  //       md={2}
-  //       order={{ xs: 5, md: 4 }}
-  //       sx={{ wordWrap: 'break-word' }}
-  //     >
-  //       {linkDomain}
-  //     </Grid>
-  //   );
-  // };
-
-  // TODO-cknipe: Remove
-  // const FileInfo = ({ fileSize, fileType }) => {
-  //   return (
-  //     <>
-  //       <Grid
-  //         item
-  //         xs={2}
-  //         md={1}
-  //         order={{ xs: 5, md: 4 }}
-  //         sx={{ wordWrap: 'break-word', textTransform: 'uppercase' }}
-  //       >
-  //         {fileType}
-  //       </Grid>
-  //       <Grid
-  //         item
-  //         xs={2}
-  //         md={1}
-  //         order={{ xs: 6, md: 5 }}
-  //         sx={{ wordWrap: 'break-word' }}
-  //       >
-  //         {fileSize}
-  //       </Grid>
-  //     </>
-  //   );
-  // };
 
   return (
     <ListItem sx={{ p: 0, flexDirection: 'column' }}>
