@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'terrasoApi/store';
@@ -58,9 +58,24 @@ const Content = props => {
   const { owner, membershipsInfo, accountMembership } =
     useCollaborationContext();
   const { user, fetching, onViewMembers } = props;
+  const avatarGroupRef = useRef();
+  const [avatarCount, setAvatarCount] = useState();
 
   const membersSample = _.getOr([], 'membershipsSample', membershipsInfo);
   const totalCount = _.getOr(0, 'totalCount', membershipsInfo);
+
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(event => {
+      setAvatarCount(
+        event[0].contentBoxSize[0].inlineSize /
+          event[0].contentBoxSize[0].blockSize
+      );
+    });
+
+    if (avatarGroupRef) {
+      resizeObserver.observe(avatarGroupRef.current);
+    }
+  }, [avatarGroupRef]);
 
   if (fetching) {
     return <Loader />;
@@ -105,6 +120,8 @@ const Content = props => {
     );
   }
 
+  console.log(membersSample);
+
   return (
     <CardContent>
       <Typography variant="body2" color="text.secondary">
@@ -117,17 +134,18 @@ const Content = props => {
         component="ul"
         aria-labelledby="membership-card-title"
         total={totalCount}
+        max={avatarCount}
         sx={{
           flexDirection: 'row',
           marginTop: 2,
           marginBottom: 2,
           paddingLeft: 0,
         }}
-      >
-        {membersSample.map((membership, index) => (
+        children={membersSample.map((membership, index) => (
           <AccountAvatar key={index} user={membership.user} component="li" />
         ))}
-      </AvatarGroup>
+        ref={avatarGroupRef}
+      ></AvatarGroup>
       {user && (
         <Link sx={{ cursor: 'pointer' }} onClick={onViewMembers}>
           {t('group.membership_view_all')}
