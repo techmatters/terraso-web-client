@@ -41,7 +41,6 @@ import {
   MenuItem,
   Select,
   Stack,
-  Tooltip,
   Typography,
 } from '@mui/material';
 
@@ -62,6 +61,27 @@ import SharedFileIcon from './SharedFileIcon';
 const StackRow = props => (
   <Stack direction="row" alignItems="center" spacing={1} {...props} />
 );
+
+const InfoComponent = ({ sharedResource }) => {
+  const fileSize = filesize(sharedResource.dataEntry.size, { round: 0 });
+  const fileType = sharedResource.dataEntry.resourceType;
+  return (
+    <>
+      <Grid
+        item
+        xs={3}
+        md={6}
+        sx={{ wordWrap: 'break-word', textTransform: 'uppercase' }}
+      >
+        {fileType}
+      </Grid>
+      <Grid item xs={8} md={6} sx={{ wordWrap: 'break-word' }}>
+        {fileSize}
+      </Grid>
+      <Grid item xs={1} display={{ md: 'none' }} />
+    </>
+  );
+};
 
 const Visualizations = props => {
   const { baseOwnerUrl } = useCollaborationContext();
@@ -332,18 +352,16 @@ const ShareComponent = props => {
 
   return (
     <>
-      <Tooltip title={label}>
-        <IconButton aria-label={label} onClick={handleOpen}>
-          <ShareIcon
-            sx={theme => ({
-              marginTop: '2px',
-              width: ICON_SIZE,
-              height: ICON_SIZE,
-              color: theme.palette.secondary.main,
-            })}
-          />
-        </IconButton>
-      </Tooltip>
+      <IconButton title={label} onClick={handleOpen}>
+        <ShareIcon
+          sx={theme => ({
+            marginTop: '2px',
+            width: ICON_SIZE,
+            height: ICON_SIZE,
+            color: theme.palette.secondary.main,
+          })}
+        />
+      </IconButton>
       <ShareDialog
         sharedResource={sharedResource}
         onUpdateSharedResource={onUpdateSharedResource}
@@ -359,11 +377,24 @@ const SharedDataEntryFile = props => {
   return (
     <SharedDataEntryBase
       sharedResource={sharedResource}
-      EntryTypeIcon={SharedFileIcon}
+      EntryTypeIcon={() => (
+        <SharedFileIcon
+          resourceType={sharedResource.dataEntry.resourceType}
+          styleProps={{
+            marginTop: '0.8em',
+            marginLeft: '-5px',
+            paddingRight: '5px',
+          }}
+          fallbackStyleProps={{
+            marginTop: '0.5em',
+            marginLeft: '-5px',
+            paddingRight: '5px',
+          }}
+        />
+      )}
       DownloadComponent={DownloadComponent}
       ShareComponent={ShareComponent}
-      fileSize={filesize(sharedResource.dataEntry.size, { round: 0 })}
-      resourceType={sharedResource.dataEntry.resourceType}
+      InfoComponent={InfoComponent}
     >
       <Visualizations file={sharedResource.dataEntry} />
     </SharedDataEntryBase>

@@ -17,7 +17,7 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { IconButton } from '@mui/material';
+import { Grid, IconButton } from '@mui/material';
 
 import { useCollaborationContext } from 'collaboration/collaborationContext';
 import ExternalLink from 'common/components/ExternalLink';
@@ -60,9 +60,7 @@ const DownloadComponent = props => {
   );
 };
 
-const SharedDataEntryLink = props => {
-  const { t } = useTranslation();
-  const { sharedResource } = props;
+const InfoComponent = ({ sharedResource }) => {
   const dataEntry = useMemo(
     () => sharedResource.dataEntry,
     [sharedResource.dataEntry]
@@ -73,16 +71,24 @@ const SharedDataEntryLink = props => {
     return url.hostname;
   }, [dataEntry.url]);
 
-  const toolTipKey =
-    dataEntry.entryType === 'LINK'
-      ? 'sharedData.link_delete_tooltip'
-      : 'sharedData.file_delete_tooltip';
+  return (
+    <Grid item xs={12} md={12} sx={{ wordWrap: 'break-word' }}>
+      {domain}
+    </Grid>
+  );
+};
+
+const SharedDataEntryLink = props => {
+  const { t } = useTranslation();
+  const { sharedResource } = props;
 
   return (
     <SharedDataEntryBase
       sharedResource={sharedResource}
       EntryTypeIcon={() => (
         <LinkIcon
+          alt={t('sharedData.link_label')}
+          role="img"
           sx={{
             marginTop: '0.6em',
             marginLeft: '-3px',
@@ -90,11 +96,8 @@ const SharedDataEntryLink = props => {
           }}
         />
       )}
+      InfoComponent={InfoComponent}
       DownloadComponent={DownloadComponent}
-      info={domain}
-      deleteTooltip={t(toolTipKey, {
-        name: dataEntry.name,
-      })}
     />
   );
 };
