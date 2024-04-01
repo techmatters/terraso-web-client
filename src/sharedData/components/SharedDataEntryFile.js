@@ -66,7 +66,7 @@ const InfoComponent = ({ sharedResource }) => {
   const fileSize = filesize(sharedResource.dataEntry.size, { round: 0 });
   const fileType = sharedResource.dataEntry.resourceType;
   return (
-    <Grid container>
+    <>
       <Grid
         item
         xs={3}
@@ -79,7 +79,7 @@ const InfoComponent = ({ sharedResource }) => {
         {fileSize}
       </Grid>
       <Grid item xs={1} display={{ md: 'none' }} />
-    </Grid>
+    </>
   );
 };
 
