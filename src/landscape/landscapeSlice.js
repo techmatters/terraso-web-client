@@ -530,8 +530,8 @@ const updateLandscapeListItem = (state, slug, valueGenerator) => {
 
 const updateMemberItem = (state, email, valueGenerator) => {
   return _.set(
-    'members.data.membershipsInfo.membershipsSample',
-    state.members.data.membershipsInfo.membershipsSample
+    'members.data.membershipsInfo.memberships',
+    state.members.data.membershipsInfo.memberships
       .map(membership =>
         membership.user.email === email
           ? valueGenerator(membership)

@@ -59,7 +59,7 @@ const Content = props => {
     useCollaborationContext();
   const { user, fetching, onViewMembers } = props;
 
-  const membersSample = _.getOr([], 'membershipsSample', membershipsInfo);
+  const membersSample = _.getOr([], 'memberships', membershipsInfo);
   const totalCount = _.getOr(0, 'totalCount', membershipsInfo);
 
   if (fetching) {

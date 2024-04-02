@@ -48,7 +48,7 @@ test('GroupService: Fetch group', async () => {
       accountMembership: undefined,
       enrollMethod: undefined,
       membershipType: undefined,
-      membershipsSample: [],
+      memberships: [],
       pendingCount: undefined,
       totalCount: undefined,
     },

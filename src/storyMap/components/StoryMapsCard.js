@@ -64,7 +64,7 @@ const CollaborationIndicator = props => {
   const { t } = useTranslation();
 
   const {
-    membershipsInfo: { membershipsSample: memberships },
+    membershipsInfo: { memberships: memberships },
   } = storyMap;
 
   if (_.isEmpty(memberships)) {

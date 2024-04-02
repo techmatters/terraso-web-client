@@ -499,8 +499,8 @@ const updateMemberItem = (
   valueGenerator: (membership: Membership) => Membership | null
 ) => {
   return _.set(
-    'members.data.membershipsInfo.membershipsSample',
-    state.members.data?.membershipsInfo?.membershipsSample
+    'members.data.membershipsInfo.memberships',
+    state.members.data?.membershipsInfo?.memberships
       ?.map((membership: Membership) =>
         _.includes(membership.user?.email, userEmails)
           ? valueGenerator(membership)
