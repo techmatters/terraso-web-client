@@ -68,8 +68,7 @@ const Content = props => {
 
   const pendingRequest =
     accountMembership?.membershipStatus === MEMBERSHIP_STATUS_PENDING;
-  const closedGroup =
-    membershipInfo?.membershipType === MEMBERSHIP_TYPE_CLOSED;
+  const closedGroup = membershipInfo?.membershipType === MEMBERSHIP_TYPE_CLOSED;
 
   if (pendingRequest) {
     return (

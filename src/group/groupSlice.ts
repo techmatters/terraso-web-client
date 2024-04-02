@@ -356,11 +356,7 @@ const groupSlice = createSlice({
     }));
 
     builder.addCase(leaveGroup.pending, (state, action) =>
-      _.set(
-        `view.group.membershipInfo.accountMembership.fetching`,
-        true,
-        state
-      )
+      _.set(`view.group.membershipInfo.accountMembership.fetching`, true, state)
     );
     builder.addCase(leaveGroup.fulfilled, updateView);
     builder.addCase(leaveGroup.rejected, (state, action) =>
@@ -372,11 +368,7 @@ const groupSlice = createSlice({
     );
 
     builder.addCase(joinGroup.pending, (state, action) =>
-      _.set(
-        `view.group.membershipInfo.accountMembership.fetching`,
-        true,
-        state
-      )
+      _.set(`view.group.membershipInfo.accountMembership.fetching`, true, state)
     );
     builder.addCase(joinGroup.fulfilled, updateView);
     builder.addCase(joinGroup.rejected, (state, action) =>
