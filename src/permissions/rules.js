@@ -26,7 +26,7 @@ import { MEMBERSHIP_ROLE_EDITOR } from 'storyMap/storyMapConstants';
 
 const getAccountMembership = owner =>
   _.getOr(
-    _.get('membershipsInfo.accountMembership', owner),
+    _.get('membershipInfo.accountMembership', owner),
     'accountMembership',
     owner
   );
@@ -93,7 +93,7 @@ const isAllowedToChangeGroup = ({ resource: owner }) => {
 
 // is open group or closed + you are a member
 const isAllowedToViewGroupMembers = ({ resource: group }) => {
-  const isOpenGroup = group.membershipsInfo.membershipType === MEMBERSHIP_OPEN;
+  const isOpenGroup = group.membershipInfo.membershipType === MEMBERSHIP_OPEN;
   if (isOpenGroup) {
     return Promise.resolve(true);
   }

@@ -178,7 +178,7 @@ const MembersPage = () => {
   const { t } = useTranslation();
 
   const memberships = useMemo(
-    () => owner?.membershipsInfo?.memberships || [],
+    () => owner?.membershipInfo?.memberships || [],
     [owner]
   );
 

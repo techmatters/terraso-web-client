@@ -38,7 +38,7 @@ export const CollaborationContextProvider = props => {
           'owner',
           'baseOwnerUrl',
           'accountMembership',
-          'membershipsInfo',
+          'membershipInfo',
           'onMemberJoin',
           'onMemberRemove',
           'onMemberRoleChange',

@@ -64,7 +64,7 @@ const CollaborationIndicator = props => {
   const { t } = useTranslation();
 
   const {
-    membershipsInfo: { memberships: memberships },
+    membershipInfo: { memberships: memberships },
   } = storyMap;
 
   if (_.isEmpty(memberships)) {
@@ -87,8 +87,8 @@ const StoryMapListItem = props => {
   const { storyMap } = props;
 
   const accountMembership = useMemo(
-    () => storyMap.membershipsInfo.accountMembership,
-    [storyMap.membershipsInfo.accountMembership]
+    () => storyMap.membershipInfo.accountMembership,
+    [storyMap.membershipInfo.accountMembership]
   );
 
   const isPending = useMemo(

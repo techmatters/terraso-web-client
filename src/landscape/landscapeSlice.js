@@ -388,7 +388,7 @@ const landscapeSlice = createSlice({
 
     builder.addCase(leaveLandscape.pending, (state, action) =>
       _.set(
-        `view.landscape.membershipsInfo.accountMembership.fetching`,
+        `view.landscape.membershipInfo.accountMembership.fetching`,
         true,
         state
       )
@@ -396,7 +396,7 @@ const landscapeSlice = createSlice({
     builder.addCase(leaveLandscape.fulfilled, updateView);
     builder.addCase(leaveLandscape.rejected, (state, action) =>
       _.set(
-        `view.landscape.membershipsInfo.accountMembership.fetching`,
+        `view.landscape.membershipInfo.accountMembership.fetching`,
         false,
         state
       )
@@ -404,7 +404,7 @@ const landscapeSlice = createSlice({
 
     builder.addCase(joinLandscape.pending, (state, action) =>
       _.set(
-        `view.landscape.membershipsInfo.accountMembership.fetching`,
+        `view.landscape.membershipInfo.accountMembership.fetching`,
         true,
         state
       )
@@ -412,7 +412,7 @@ const landscapeSlice = createSlice({
     builder.addCase(joinLandscape.fulfilled, updateView);
     builder.addCase(joinLandscape.rejected, (state, action) =>
       _.set(
-        `view.landscape.membershipsInfo.accountMembership.fetching`,
+        `view.landscape.membershipInfo.accountMembership.fetching`,
         false,
         state
       )
@@ -530,8 +530,8 @@ const updateLandscapeListItem = (state, slug, valueGenerator) => {
 
 const updateMemberItem = (state, email, valueGenerator) => {
   return _.set(
-    'members.data.membershipsInfo.memberships',
-    state.members.data.membershipsInfo.memberships
+    'members.data.membershipInfo.memberships',
+    state.members.data.membershipInfo.memberships
       .map(membership =>
         membership.user.email === email
           ? valueGenerator(membership)

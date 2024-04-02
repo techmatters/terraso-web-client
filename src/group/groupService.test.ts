@@ -44,7 +44,7 @@ test('GroupService: Fetch group', async () => {
     name: 'Group name',
     description: 'Group description',
     website: 'https://www.group.org',
-    membershipsInfo: {
+    membershipInfo: {
       accountMembership: undefined,
       enrollMethod: undefined,
       membershipType: undefined,

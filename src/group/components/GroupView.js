@@ -232,8 +232,8 @@ const GroupView = () => {
       owner={group}
       entityType="group"
       baseOwnerUrl={`/groups/${group.slug}`}
-      accountMembership={group.membershipsInfo.accountMembership}
-      membershipsInfo={group.membershipsInfo}
+      accountMembership={group.membershipInfo.accountMembership}
+      membershipInfo={group.membershipInfo}
       MemberJoinButton={MemberJoinButton}
       onMemberJoin={onMemberJoin}
       MemberLeaveButton={MemberLeaveButton}

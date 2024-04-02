@@ -25,7 +25,7 @@ import { useCollaborationContext } from 'collaboration/collaborationContext';
 const MembershipJoinLeaveButton = props => {
   const {
     owner,
-    membershipsInfo,
+    membershipInfo,
     accountMembership,
     MemberLeaveButton,
     onMemberRemove,
@@ -78,7 +78,7 @@ const MembershipJoinLeaveButton = props => {
 
   // Component to request to join a membership if the user is not a member
   // and the membership_list is closed
-  if (membershipsInfo?.membershipType === MEMBERSHIP_TYPE_CLOSED) {
+  if (membershipInfo?.membershipType === MEMBERSHIP_TYPE_CLOSED) {
     return (
       <MemberRequestJoinButton
         onJoin={onMemberJoinWrapper}
