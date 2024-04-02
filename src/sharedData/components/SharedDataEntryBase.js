@@ -54,8 +54,7 @@ const SharedDataEntryBase = props => {
     EntryTypeIcon,
     DownloadComponent,
     ShareComponent,
-    fileSize,
-    resourceType,
+    InfoComponent,
   } = props;
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
@@ -214,23 +213,16 @@ const SharedDataEntryBase = props => {
         <Grid item xs={1} order={{ xs: 4 }} display={{ md: 'none' }} />
         <Grid
           item
-          xs={2}
-          md={1}
+          xs={9}
+          md={2}
           order={{ xs: 5, md: 4 }}
-          sx={{ wordWrap: 'break-word', textTransform: 'uppercase' }}
+          component={StackRow}
+          justifyContent="space-between"
         >
-          {resourceType}
+          {InfoComponent && <InfoComponent sharedResource={sharedResource} />}
         </Grid>
-        <Grid
-          item
-          xs={2}
-          md={1}
-          order={{ xs: 6, md: 5 }}
-          sx={{ wordWrap: 'break-word' }}
-        >
-          {fileSize}
-        </Grid>
-        <Grid item xs={7} order={{ xs: 7 }} display={{ md: 'none' }} />
+        <Grid item xs={2} order={{ xs: 6 }} display={{ md: 'none' }} />
+
         <Grid item xs={1} order={{ xs: 7 }} display={{ md: 'none' }} />
         <Grid item xs={11} md={3} order={{ xs: 8, md: 6 }}>
           {t('sharedData.file_date_and_author', {

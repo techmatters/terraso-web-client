@@ -62,6 +62,27 @@ const StackRow = props => (
   <Stack direction="row" alignItems="center" spacing={1} {...props} />
 );
 
+const InfoComponent = ({ sharedResource }) => {
+  const fileSize = filesize(sharedResource.dataEntry.size, { round: 0 });
+  const fileType = sharedResource.dataEntry.resourceType;
+  return (
+    <>
+      <Grid
+        item
+        xs={3}
+        md={6}
+        sx={{ wordWrap: 'break-word', textTransform: 'uppercase' }}
+      >
+        {fileType}
+      </Grid>
+      <Grid item xs={8} md={6} sx={{ wordWrap: 'break-word' }}>
+        {fileSize}
+      </Grid>
+      <Grid item xs={1} display={{ md: 'none' }} />
+    </>
+  );
+};
+
 const Visualizations = props => {
   const { baseOwnerUrl } = useCollaborationContext();
   const { i18n, t } = useTranslation();
@@ -373,8 +394,7 @@ const SharedDataEntryFile = props => {
       )}
       DownloadComponent={DownloadComponent}
       ShareComponent={ShareComponent}
-      fileSize={filesize(sharedResource.dataEntry.size, { round: 0 })}
-      resourceType={sharedResource.dataEntry.resourceType}
+      InfoComponent={InfoComponent}
     >
       <Visualizations file={sharedResource.dataEntry} />
     </SharedDataEntryBase>
