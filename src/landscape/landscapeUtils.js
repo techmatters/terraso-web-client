@@ -20,7 +20,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import {
   extractAccountMembership,
-  extractMembershipsInfo,
+  extractMembershipInfo,
 } from 'terraso-client-shared/collaboration/membershipsUtils';
 import { Typography } from '@mui/material';
 
@@ -151,7 +151,7 @@ export const extractLandscape = async (landscape, useLocationApi) => {
   const result = {
     ..._.omit('membershipList', landscape),
     accountMembership: extractAccountMembership(landscape.membershipList),
-    membershipsInfo: extractMembershipsInfo(landscape.membershipList),
+    membershipInfo: extractMembershipInfo(landscape.membershipList),
     areaPolygon: extractLandscapeGeoJson(landscape),
     partnershipStatus: ALL_PARTNERSHIP_STATUS[landscape.partnershipStatus],
     partnership: extractPartnership(landscape),

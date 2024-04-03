@@ -46,11 +46,11 @@ test('LandscapeService: Fetch landscape with missing fields', async () => {
     website: 'https://www.landscape.org',
     areaPolygon: null,
     accountMembership: undefined,
-    membershipsInfo: {
+    membershipInfo: {
       accountMembership: undefined,
       enrollMethod: undefined,
       membershipType: undefined,
-      membershipsSample: [],
+      memberships: [],
       pendingCount: undefined,
       totalCount: undefined,
     },

@@ -86,8 +86,8 @@ const MembershipButton = ({ group, tabIndex }) => {
     <CollaborationContextProvider
       owner={group}
       entityType="group"
-      accountMembership={group.membershipsInfo.accountMembership}
-      membershipsInfo={group.membershipsInfo}
+      accountMembership={group.membershipInfo.accountMembership}
+      membershipInfo={group.membershipInfo}
       MemberJoinButton={MemberJoinButton}
       MemberLeaveButton={MemberLeaveButton}
       onMemberJoin={onMemberJoin}

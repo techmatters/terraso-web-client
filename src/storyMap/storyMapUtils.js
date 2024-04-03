@@ -17,7 +17,7 @@
 import _ from 'lodash/fp';
 import {
   extractAccountMembership,
-  extractMembershipsInfo,
+  extractMembershipInfo,
 } from 'terraso-client-shared/collaboration/membershipsUtils';
 
 import { REACT_APP_BASE_URL } from 'config';
@@ -48,5 +48,5 @@ export const generateStoryMapEditUrl = storyMap =>
 export const extractStoryMap = storyMap => ({
   ..._.omit(['membershipList'], storyMap),
   accountMembership: extractAccountMembership(storyMap.membershipList),
-  membershipsInfo: extractMembershipsInfo(storyMap.membershipList),
+  membershipInfo: extractMembershipInfo(storyMap.membershipList),
 });

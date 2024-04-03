@@ -328,7 +328,7 @@ test('LandscapeList: List sort', async () => {
         website: 'https://www.landscape.org',
         location: 'Ecuador, Quito',
         membershipList: {
-          membershipsSample: generateMemberhips(
+          memberships: generateMemberhips(
             landscapeIndex,
             membersCounts[landscapeIndex]
           ),

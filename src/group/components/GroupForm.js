@@ -95,7 +95,7 @@ const FIELDS = [
     type: 'url',
   },
   {
-    name: 'membershipsInfo.membershipType',
+    name: 'membershipInfo.membershipType',
     label: 'group.form_membershipType_label',
     defaultValue: MEMBERSHIP_OPEN,
     props: {
@@ -139,7 +139,7 @@ const MembershipRadioButtons = props => {
 
   return (
     <RadioGroup
-      aria-labelledby="group-membershipsInfo.membershipType-label"
+      aria-labelledby="group-membershipInfo.membershipType-label"
       value={value}
       onChange={handleChange}
     >
@@ -220,10 +220,10 @@ const GroupForm = () => {
       saveGroup({
         group: {
           ..._.omit(
-            ['membershipsInfo.membershipType', 'sharedResources'],
+            ['membershipInfo.membershipType', 'sharedResources'],
             group
           ),
-          membershipType: group.membershipsInfo.membershipType,
+          membershipType: group.membershipInfo.membershipType,
         },
         user,
       })
@@ -265,7 +265,7 @@ const GroupForm = () => {
         fields={FIELDS}
         values={
           isNew
-            ? { membershipsInfo: { membershipType: MEMBERSHIP_OPEN } }
+            ? { membershipInfo: { membershipType: MEMBERSHIP_OPEN } }
             : group
         }
         validationSchema={VALIDATION_SCHEMA}
