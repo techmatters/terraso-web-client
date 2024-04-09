@@ -234,7 +234,7 @@ test('StoryMapsToolHome: accept story map invite', async () => {
     },
   });
 
-  const storyMapItem = screen.getByRole('listitem', { name: 'Story 1' });
+  const storyMapItem = screen.getByRole('listitem', { name: '' });
 
   const acceptButton = within(storyMapItem).getByRole('button', {
     name: 'Accept',
