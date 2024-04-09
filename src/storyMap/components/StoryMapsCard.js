@@ -168,7 +168,7 @@ const StoryMapListItem = props => {
         <RouterLink
           id={`story-map-${storyMap.slug}-link`}
           to={
-            storyMap.isPublished
+            storyMap.isPublished || isPending
               ? generateStoryMapUrl(storyMap)
               : generateStoryMapEditUrl(storyMap)
           }
