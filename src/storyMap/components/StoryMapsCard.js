@@ -91,7 +91,7 @@ const StoryMapListItem = props => {
     [storyMap.membershipInfo.accountMembership]
   );
 
-  const isPending = useMemo(
+  const isStoryMapMembershipPending = useMemo(
     () => accountMembership?.membershipStatus === MEMBERSHIP_STATUS_PENDING,
     [accountMembership]
   );
@@ -170,13 +170,13 @@ const StoryMapListItem = props => {
           Published and not accepted get a view link.
           Published and accepted get an edit link.
         */}
-        {!storyMap.isPublished && isPending ? (
+        {!storyMap.isPublished && isStoryMapMembershipPending ? (
           storyMap.title
         ) : (
           <RouterLink
             id={`story-map-${storyMap.slug}-link`}
             to={
-              isPending
+              isStoryMapMembershipPending
                 ? generateStoryMapUrl(storyMap)
                 : generateStoryMapEditUrl(storyMap)
             }
@@ -208,7 +208,7 @@ const StoryMapListItem = props => {
         spacing={2}
       >
         <Grid item xs={6}>
-          {isPending ? (
+          {isStoryMapMembershipPending ? (
             <LoadingButton
               size="small"
               variant="outlined"
