@@ -91,7 +91,7 @@ const StoryMapListItem = props => {
     [storyMap.membershipInfo.accountMembership]
   );
 
-  const isPending = useMemo(
+  const isStoryMapMembershipPending = useMemo(
     () => accountMembership?.membershipStatus === MEMBERSHIP_STATUS_PENDING,
     [accountMembership]
   );
@@ -165,16 +165,25 @@ const StoryMapListItem = props => {
           )}
           <CollaborationIndicator storyMap={storyMap} />
         </Stack>
-        <RouterLink
-          id={`story-map-${storyMap.slug}-link`}
-          to={
-            storyMap.isPublished
-              ? generateStoryMapUrl(storyMap)
-              : generateStoryMapEditUrl(storyMap)
-          }
-        >
-          {storyMap.title}
-        </RouterLink>
+        {/*
+          Unpublished drafts you have not accepted get no link, as it would 404.
+          Published and not accepted get a view link.
+          Published and accepted get an edit link.
+        */}
+        {!storyMap.isPublished && isStoryMapMembershipPending ? (
+          storyMap.title
+        ) : (
+          <RouterLink
+            id={`story-map-${storyMap.slug}-link`}
+            to={
+              isStoryMapMembershipPending
+                ? generateStoryMapUrl(storyMap)
+                : generateStoryMapEditUrl(storyMap)
+            }
+          >
+            {storyMap.title}
+          </RouterLink>
+        )}
         <Typography
           variant="caption"
           sx={{
@@ -199,7 +208,7 @@ const StoryMapListItem = props => {
         spacing={2}
       >
         <Grid item xs={6}>
-          {isPending ? (
+          {isStoryMapMembershipPending ? (
             <LoadingButton
               size="small"
               variant="outlined"

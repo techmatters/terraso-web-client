@@ -168,7 +168,7 @@ test('StoryMapsToolHome: user story maps render correctly', async () => {
   expect(items.length).toBe(2);
 
   const link2 = within(items[0]).getByRole('link', { name: 'Story 2' });
-  expect(link2).toHaveAttribute('href', '/tools/story-maps/lftawa9/id-2');
+  expect(link2).toHaveAttribute('href', '/tools/story-maps/lftawa9/id-2/edit');
   const link1 = within(items[1]).getByRole('link', { name: 'Story 1' });
   expect(link1).toHaveAttribute('href', '/tools/story-maps/46h36we/id-1/edit');
 });
@@ -234,7 +234,7 @@ test('StoryMapsToolHome: accept story map invite', async () => {
     },
   });
 
-  const storyMapItem = screen.getByRole('listitem', { name: 'Story 1' });
+  const storyMapItem = screen.getByRole('listitem', { name: '' });
 
   const acceptButton = within(storyMapItem).getByRole('button', {
     name: 'Accept',
