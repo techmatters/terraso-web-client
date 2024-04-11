@@ -166,7 +166,7 @@ const MapLocationDialog = props => {
   const [mapZoom, setMapZoom] = useState(location?.zoom);
   const [mapPitch, setMapPitch] = useState(location?.pitch);
   const [mapBearing, setMapBearing] = useState(location?.bearing);
-  const [mapStyle, setMapStyle] = useState(config.style);
+  const [mapStyle, setMapStyle] = useState();
   const [onConfirmStyleChange, setOnConfirmStyleChange] = useState();
 
   const initialLocation = useMemo(() => {
@@ -204,9 +204,16 @@ const MapLocationDialog = props => {
       pitch: mapPitch,
       bearing: mapBearing,
     });
-    console.log({ location });
-    onConfirm(location, mapStyle);
-  }, [onConfirm, mapCenter, mapZoom, mapPitch, mapBearing, mapStyle]);
+    onConfirm(location, mapStyle || config.style);
+  }, [
+    onConfirm,
+    mapCenter,
+    mapZoom,
+    mapPitch,
+    mapBearing,
+    mapStyle,
+    config.style,
+  ]);
 
   const handleCancel = useCallback(() => {
     onClose();
