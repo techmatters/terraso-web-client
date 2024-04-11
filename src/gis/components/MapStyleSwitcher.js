@@ -59,11 +59,11 @@ const MapStyleSwitcher = props => {
 
   const changeStylePartial = useCallback(
     newStyle => () => {
-      if (newStyle.title === styleName) {
+      if (newStyle.titleKey === styleName) {
         handleClose();
         return;
       }
-      setStyleName(newStyle.title);
+      setStyleName(newStyle.titleKey);
       changeStyle(newStyle.data);
       handleClose();
     },
