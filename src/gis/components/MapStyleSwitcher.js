@@ -41,7 +41,8 @@ class SwitcherControl {
   }
 }
 
-const MapStyleSwitcher = () => {
+const MapStyleSwitcher = props => {
+  const { position = 'top-right', onStyleChange } = props;
   const { t } = useTranslation();
   const { map, changeStyle } = useMap();
   const [container, setContainer] = useState(null);
@@ -56,7 +57,7 @@ const MapStyleSwitcher = () => {
     setAnchorEl(null);
   }, []);
 
-  const handleChangeStyle = useCallback(
+  const changeStylePartial = useCallback(
     (title, newStyle) => () => {
       if (title === styleName) {
         handleClose();
@@ -66,7 +67,25 @@ const MapStyleSwitcher = () => {
       changeStyle(newStyle);
       handleClose();
     },
-    [handleClose, styleName, changeStyle]
+    [changeStyle, handleClose, styleName]
+  );
+
+  const handleChangeStyle = useCallback(
+    (title, newStyle) => () => {
+      const confirmChangeStyle = changeStylePartial(title, newStyle);
+      if (
+        onStyleChange &&
+        !onStyleChange({
+          title,
+          newStyle,
+          confirmChangeStyle,
+        })
+      ) {
+        return;
+      }
+      confirmChangeStyle();
+    },
+    [changeStylePartial, onStyleChange]
   );
 
   useEffect(() => {
@@ -79,13 +98,13 @@ const MapStyleSwitcher = () => {
         setContainer(container);
       },
     });
-    map.addControl(stylesControl, 'top-right');
+    map.addControl(stylesControl, position);
 
     return () => {
       map.removeControl(stylesControl);
       map.off('styledata');
     };
-  }, [map]);
+  }, [map, position]);
 
   if (!container) {
     return null;
@@ -104,6 +123,8 @@ const MapStyleSwitcher = () => {
             minWidth: 'auto',
             border: 'none',
             '&:hover': { border: 'none' },
+            pb: 0.7,
+            pt: 0.7,
           }}
         >
           <LayersIcon aria-label={t('gis.basemap_label')} />
