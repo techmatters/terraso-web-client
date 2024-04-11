@@ -51,7 +51,16 @@ jest.mock('monitoring/analytics', () => ({
 jest.mock('gis/components/MapStyleSwitcher', () => ({
   __esModule: true,
   default: ({ onStyleChange }) => (
-    <button onClick={() => onStyleChange({ newStyle: { data: 'newStyle' }, confirmChangeStyle: () => {}})}>Change Style</button>
+    <button
+      onClick={() =>
+        onStyleChange({
+          newStyle: { data: 'newStyle' },
+          confirmChangeStyle: () => {},
+        })
+      }
+    >
+      Change Style
+    </button>
   ),
 }));
 
@@ -75,7 +84,6 @@ const baseMapOptions = () => ({
   setTerrain: jest.fn(),
   addLayer: jest.fn(),
   getLayer: jest.fn(),
-  setTerrain: jest.fn(),
   flyTo: jest.fn(),
 });
 
@@ -706,19 +714,13 @@ test('StoryMapForm: Change chapter style', async () => {
   await act(async () => fireEvent.click(baseMapButton));
 
   await act(async () =>
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Confirm' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
   );
 
-  await waitFor(() => 
-    expect(screen.getByRole('button', { name: 'Set Location' })).toBeInTheDocument()
-  )
+  await screen.findByRole('button', { name: 'Set Location' });
 
   await act(async () =>
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Set Location' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Set Location' }))
   );
 
   await waitFor(() => {
@@ -733,7 +735,7 @@ test('StoryMapForm: Change chapter style', async () => {
   );
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
-  expect(saveCall[0].style).toEqual('newStyle')
+  expect(saveCall[0].style).toEqual('newStyle');
 });
 
 test('StoryMapForm: Move chapter down with menu', async () => {
