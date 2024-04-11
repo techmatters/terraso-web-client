@@ -233,7 +233,6 @@ const MapLocationDialog = props => {
     ({ newStyle, confirmChangeStyle }) => {
       setConfirmStyleProps({
         onConfirm: () => {
-          console.log({ newStyle })
           setMapStyle(newStyle.data);
           confirmChangeStyle();
           setConfirmStyleProps(null);
