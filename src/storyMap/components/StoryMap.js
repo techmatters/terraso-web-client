@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import scrollama from 'scrollama';
 import { Box } from '@mui/material';
@@ -348,7 +349,7 @@ const Scroller = props => {
         return;
       }
 
-      if (transition.location) {
+      if (transition.location && !_.isEmpty(transition.location)) {
         const mapCenter = map.getCenter();
         const transitionCenter = transition.location.center;
 
