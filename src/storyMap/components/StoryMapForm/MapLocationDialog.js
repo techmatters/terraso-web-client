@@ -39,13 +39,16 @@ import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 const ConfirmStyleChangeDialog = props => {
-  const { onCancel, onConfirm } = props;
+  const { onCancel, onConfirm, oldStyle, newStyle } = props;
   const { t } = useTranslation();
   return (
     <ConfirmationDialog
       open={onConfirm ? true : false}
       title={t('storyMap.form_location_style_confirm_title')}
-      message={t('storyMap.form_location_style_confirm_message')}
+      message={t('storyMap.form_location_style_confirm_message', {
+        oldStyle,
+        newStyle,
+      })}
       confirmButtonLabel={t('storyMap.form_location_style_confirm_button')}
       onCancel={onCancel}
       onConfirm={onConfirm}
@@ -167,7 +170,7 @@ const MapLocationDialog = props => {
   const [mapPitch, setMapPitch] = useState(location?.pitch);
   const [mapBearing, setMapBearing] = useState(location?.bearing);
   const [mapStyle, setMapStyle] = useState();
-  const [onConfirmStyleChange, setOnConfirmStyleChange] = useState();
+  const [confirmStyleProps, setConfirmStyleProps] = useState();
 
   const initialLocation = useMemo(() => {
     if (location) {
@@ -228,14 +231,18 @@ const MapLocationDialog = props => {
 
   const onStyleChange = useCallback(
     ({ newStyle, confirmChangeStyle }) => {
-      setOnConfirmStyleChange(() => () => {
-        setMapStyle(newStyle);
-        confirmChangeStyle();
-        setOnConfirmStyleChange(null);
+      setConfirmStyleProps({
+        onConfirm: () => {
+          console.log({ newStyle })
+          setMapStyle(newStyle.data);
+          confirmChangeStyle();
+          setConfirmStyleProps(null);
+        },
+        newStyle: t(newStyle.titleKey),
       });
       return false;
     },
-    [setOnConfirmStyleChange]
+    [setConfirmStyleProps, t]
   );
 
   return (
@@ -307,8 +314,8 @@ const MapLocationDialog = props => {
         </DialogContent>
       </Dialog>
       <ConfirmStyleChangeDialog
-        onConfirm={onConfirmStyleChange}
-        onCancel={() => setOnConfirmStyleChange(null)}
+        onCancel={() => setConfirmStyleProps(null)}
+        {...confirmStyleProps}
       />
     </>
   );

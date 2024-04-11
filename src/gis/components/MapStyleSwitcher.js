@@ -58,25 +58,24 @@ const MapStyleSwitcher = props => {
   }, []);
 
   const changeStylePartial = useCallback(
-    (title, newStyle) => () => {
-      if (title === styleName) {
+    newStyle => () => {
+      if (newStyle.title === styleName) {
         handleClose();
         return;
       }
-      setStyleName(title);
-      changeStyle(newStyle);
+      setStyleName(newStyle.title);
+      changeStyle(newStyle.data);
       handleClose();
     },
     [changeStyle, handleClose, styleName]
   );
 
   const handleChangeStyle = useCallback(
-    (title, newStyle) => () => {
-      const confirmChangeStyle = changeStylePartial(title, newStyle);
+    newStyle => () => {
+      const confirmChangeStyle = changeStylePartial(newStyle);
       if (
         onStyleChange &&
         !onStyleChange({
-          title,
           newStyle,
           confirmChangeStyle,
         })
@@ -139,13 +138,13 @@ const MapStyleSwitcher = props => {
             'aria-label': t('gis.mapbox_style_switcher_label'),
           }}
         >
-          {MAPBOX_STYLES.map(({ style, titleKey }) => (
+          {MAPBOX_STYLES.map(style => (
             <MenuItem
-              key={titleKey}
-              onClick={handleChangeStyle(titleKey, style)}
-              selected={styleName === titleKey}
+              key={style.titleKey}
+              onClick={handleChangeStyle(style)}
+              selected={styleName === style.titleKey}
             >
-              {t(titleKey)}
+              {t(style.titleKey)}
             </MenuItem>
           ))}
         </Menu>

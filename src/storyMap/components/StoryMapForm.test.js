@@ -48,6 +48,37 @@ jest.mock('monitoring/analytics', () => ({
   useAnalytics: jest.fn(),
 }));
 
+jest.mock('gis/components/MapStyleSwitcher', () => ({
+  __esModule: true,
+  default: ({ onStyleChange }) => (
+    <button onClick={() => onStyleChange({ newStyle: { data: 'newStyle' }, confirmChangeStyle: () => {}})}>Change Style</button>
+  ),
+}));
+
+const baseMapOptions = () => ({
+  onEvents: {},
+  on: function (type, cb) {
+    if (type === 'load') {
+      cb();
+    }
+    this.onEvents[type] = cb;
+  },
+  remove: jest.fn(),
+  off: jest.fn(),
+  getCanvas: jest.fn(),
+  addControl: jest.fn(),
+  removeControl: jest.fn(),
+  getCenter: jest.fn(),
+  getZoom: jest.fn(),
+  addSource: jest.fn(),
+  getSource: jest.fn(),
+  setTerrain: jest.fn(),
+  addLayer: jest.fn(),
+  getLayer: jest.fn(),
+  setTerrain: jest.fn(),
+  flyTo: jest.fn(),
+});
+
 const BASE_CONFIG = {
   title: 'Story Map Title',
   subtitle: 'Story Map Subtitle',
@@ -79,27 +110,7 @@ const BASE_CONFIG = {
 beforeEach(() => {
   mapboxgl.NavigationControl = jest.fn();
   mapboxgl.Map = jest.fn();
-  mapboxgl.Map.mockReturnValue({
-    onEvents: {},
-    on: function (type, cb) {
-      if (type === 'load') {
-        cb();
-      }
-      this.onEvents[type] = cb;
-    },
-    remove: jest.fn(),
-    off: jest.fn(),
-    getCanvas: jest.fn(),
-    addControl: jest.fn(),
-    removeControl: jest.fn(),
-    getCenter: jest.fn(),
-    getZoom: jest.fn(),
-    addSource: jest.fn(),
-    getSource: jest.fn(),
-    setTerrain: jest.fn(),
-    addLayer: jest.fn(),
-    getLayer: jest.fn(),
-  });
+  mapboxgl.Map.mockReturnValue(baseMapOptions());
   window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
   const scroller = {
@@ -370,26 +381,8 @@ test('StoryMapForm: Change title', async () => {
 
 test('StoryMapForm: Sidebar navigation', async () => {
   const map = {
-    onEvents: {},
-    on: function (type, cb) {
-      if (type === 'load') {
-        cb();
-      }
-      this.onEvents[type] = cb;
-    },
-    remove: jest.fn(),
-    off: jest.fn(),
-    getCanvas: jest.fn(),
-    addControl: jest.fn(),
-    removeControl: jest.fn(),
+    ...baseMapOptions(),
     getCenter: () => ({ lng: -99.91122777353772, lat: 21.64458705609789 }),
-    getZoom: jest.fn(),
-    flyTo: jest.fn(),
-    addSource: jest.fn(),
-    getSource: jest.fn(),
-    setTerrain: jest.fn(),
-    addLayer: jest.fn(),
-    getLayer: jest.fn(),
   };
   mapboxgl.Map.mockReturnValue(map);
   const scroller = {
@@ -625,27 +618,11 @@ test('StoryMapForm: Show preview', async () => {
 });
 test('StoryMapForm: Change chapter location', async () => {
   const map = {
-    onEvents: {},
-    on: function (type, cb) {
-      if (type === 'load') {
-        cb();
-      }
-      this.onEvents[type] = cb;
-    },
-    remove: jest.fn(),
-    off: jest.fn(),
-    getCanvas: jest.fn(),
-    addControl: jest.fn(),
-    removeControl: jest.fn(),
-    addSource: jest.fn(),
-    getSource: jest.fn(),
-    addLayer: jest.fn(),
-    getLayer: jest.fn(),
+    ...baseMapOptions(),
     getCenter: () => ({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
     getZoom: () => 10,
     getPitch: () => 64,
     getBearing: () => 45,
-    setTerrain: jest.fn(),
   };
   mapboxgl.Map.mockReturnValue(map);
   const { onSaveDraft } = await setup(BASE_CONFIG);
@@ -698,6 +675,67 @@ test('StoryMapForm: Change chapter location', async () => {
   );
 });
 
+test('StoryMapForm: Change chapter style', async () => {
+  const map = {
+    ...baseMapOptions(),
+    getCenter: () => ({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
+    getZoom: () => 10,
+    getPitch: () => 64,
+    getBearing: () => 45,
+  };
+  mapboxgl.Map.mockReturnValue(map);
+  const { onSaveDraft } = await setup(BASE_CONFIG);
+
+  const chapter1 = screen.getByRole('region', {
+    name: 'Chapter: Chapter 1',
+  });
+
+  const locationDialogButton = within(chapter1).getByRole('button', {
+    name: 'Set Map Location',
+  });
+  await act(async () => fireEvent.click(locationDialogButton));
+
+  const dialog = screen.getByRole('dialog', {
+    name: 'Set map location for Chapter 1',
+  });
+
+  const baseMapButton = within(dialog).getByRole('button', {
+    name: 'Change Style',
+  });
+
+  await act(async () => fireEvent.click(baseMapButton));
+
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Confirm' })
+    )
+  );
+
+  await waitFor(() => 
+    expect(screen.getByRole('button', { name: 'Set Location' })).toBeInTheDocument()
+  )
+
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Set Location' })
+    )
+  );
+
+  await waitFor(() => {
+    expect(
+      screen.getByRole('button', { name: 'Save draft' })
+    ).toBeInTheDocument();
+  });
+
+  // Save
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
+  );
+  expect(onSaveDraft).toHaveBeenCalledTimes(1);
+  const saveCall = onSaveDraft.mock.calls[0];
+  expect(saveCall[0].style).toEqual('newStyle')
+});
+
 test('StoryMapForm: Move chapter down with menu', async () => {
   const trackEvent = jest.fn();
   useAnalytics.mockReturnValue({
@@ -710,10 +748,12 @@ test('StoryMapForm: Move chapter down with menu', async () => {
   });
 
   await waitFor(() =>
-    expect(within(chaptersSection).getByRole('button', {
-      name: 'Chapter 1',
-    })).toBeInTheDocument()
-  )
+    expect(
+      within(chaptersSection).getByRole('button', {
+        name: 'Chapter 1',
+      })
+    ).toBeInTheDocument()
+  );
 
   const chapter1 = within(chaptersSection).getByRole('button', {
     name: 'Chapter 1',
