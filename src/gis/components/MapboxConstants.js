@@ -17,27 +17,27 @@
 export const MAPBOX_STYLES = [
   {
     titleKey: 'gis.mapbox_style_streets',
-    style: 'mapbox://styles/mapbox/streets-v12',
+    data: 'mapbox://styles/mapbox/streets-v12',
   },
   {
     titleKey: 'gis.mapbox_style_satellite',
-    style: 'mapbox://styles/mapbox/satellite-v9',
+    data: 'mapbox://styles/mapbox/satellite-v9',
   },
   {
     titleKey: 'gis.mapbox_style_outdoors',
-    style: 'mapbox://styles/mapbox/outdoors-v12',
+    data: 'mapbox://styles/mapbox/outdoors-v12',
   },
   {
     titleKey: 'gis.mapbox_style_light',
-    style: 'mapbox://styles/mapbox/light-v11',
+    data: 'mapbox://styles/mapbox/light-v11',
   },
   {
     titleKey: 'gis.mapbox_style_dark',
-    style: 'mapbox://styles/mapbox/dark-v11',
+    data: 'mapbox://styles/mapbox/dark-v11',
   },
   {
     titleKey: 'gis.mapbox_style_osm',
-    style: {
+    data: {
       name: 'osm',
       version: 8,
       glyphs: 'mapbox://fonts/mapbox/{fontstack}/{range}.pbf',
