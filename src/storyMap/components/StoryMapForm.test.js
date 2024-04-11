@@ -91,6 +91,7 @@ beforeEach(() => {
     off: jest.fn(),
     getCanvas: jest.fn(),
     addControl: jest.fn(),
+    removeControl: jest.fn(),
     getCenter: jest.fn(),
     getZoom: jest.fn(),
     addSource: jest.fn(),
@@ -380,6 +381,7 @@ test('StoryMapForm: Sidebar navigation', async () => {
     off: jest.fn(),
     getCanvas: jest.fn(),
     addControl: jest.fn(),
+    removeControl: jest.fn(),
     getCenter: () => ({ lng: -99.91122777353772, lat: 21.64458705609789 }),
     getZoom: jest.fn(),
     flyTo: jest.fn(),
@@ -634,6 +636,7 @@ test('StoryMapForm: Change chapter location', async () => {
     off: jest.fn(),
     getCanvas: jest.fn(),
     addControl: jest.fn(),
+    removeControl: jest.fn(),
     addSource: jest.fn(),
     getSource: jest.fn(),
     addLayer: jest.fn(),
@@ -705,6 +708,12 @@ test('StoryMapForm: Move chapter down with menu', async () => {
   const chaptersSection = screen.getByRole('navigation', {
     name: 'Chapters sidebar',
   });
+
+  await waitFor(() =>
+    expect(within(chaptersSection).getByRole('button', {
+      name: 'Chapter 1',
+    })).toBeInTheDocument()
+  )
 
   const chapter1 = within(chaptersSection).getByRole('button', {
     name: 'Chapter 1',
