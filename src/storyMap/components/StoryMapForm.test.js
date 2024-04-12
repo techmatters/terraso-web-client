@@ -713,10 +713,6 @@ test('StoryMapForm: Change chapter style', async () => {
 
   await act(async () => fireEvent.click(baseMapButton));
 
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
-  );
-
   await waitFor(() => {
     expect(
       screen.getByRole('button', { name: 'Set Location' })
