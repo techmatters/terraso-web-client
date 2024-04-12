@@ -19,8 +19,8 @@ import _ from 'lodash/fp';
 import { Typography } from '@mui/material';
 
 const MembershipListCount = props => {
-  const { membershipsInfo } = props;
-  const count = _.getOr(0, 'totalCount', membershipsInfo);
+  const { membershipInfo } = props;
+  const count = _.getOr(0, 'totalCount', membershipInfo);
   return <Typography variant="body1">{count}</Typography>;
 };
 

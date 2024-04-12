@@ -55,12 +55,12 @@ const Loader = () => {
 
 const Content = props => {
   const { t } = useTranslation();
-  const { owner, membershipsInfo, accountMembership } =
+  const { owner, membershipInfo, accountMembership } =
     useCollaborationContext();
   const { user, fetching, onViewMembers } = props;
 
-  const membersSample = _.getOr([], 'membershipsSample', membershipsInfo);
-  const totalCount = _.getOr(0, 'totalCount', membershipsInfo);
+  const membersSample = _.getOr([], 'memberships', membershipInfo);
+  const totalCount = _.getOr(0, 'totalCount', membershipInfo);
 
   if (fetching) {
     return <Loader />;
@@ -68,8 +68,7 @@ const Content = props => {
 
   const pendingRequest =
     accountMembership?.membershipStatus === MEMBERSHIP_STATUS_PENDING;
-  const closedGroup =
-    membershipsInfo?.membershipType === MEMBERSHIP_TYPE_CLOSED;
+  const closedGroup = membershipInfo?.membershipType === MEMBERSHIP_TYPE_CLOSED;
 
   if (pendingRequest) {
     return (
@@ -139,7 +138,7 @@ const Content = props => {
 
 const MembershipCard = props => {
   const { t } = useTranslation();
-  const { membershipsInfo } = useCollaborationContext();
+  const { membershipInfo } = useCollaborationContext();
   const { onViewMembers, InfoComponent, fetching, allowedToManageMembers } =
     props;
   const { data: user } = useSelector(_.get('account.currentUser'));
@@ -178,11 +177,11 @@ const MembershipCard = props => {
           )}
         </CardActions>
       )}
-      {allowedToManageMembers && membershipsInfo.pendingCount > 0 && (
+      {allowedToManageMembers && membershipInfo.pendingCount > 0 && (
         <CardContent>
           <MembershipPendingWarning
             link
-            count={membershipsInfo.pendingCount}
+            count={membershipInfo.pendingCount}
             onPendingClick={onViewMembers}
           />
         </CardContent>

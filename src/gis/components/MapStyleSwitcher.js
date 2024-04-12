@@ -41,7 +41,8 @@ class SwitcherControl {
   }
 }
 
-const MapStyleSwitcher = () => {
+const MapStyleSwitcher = props => {
+  const { position = 'top-right', onStyleChange } = props;
   const { t } = useTranslation();
   const { map, changeStyle } = useMap();
   const [container, setContainer] = useState(null);
@@ -56,17 +57,34 @@ const MapStyleSwitcher = () => {
     setAnchorEl(null);
   }, []);
 
-  const handleChangeStyle = useCallback(
-    (title, newStyle) => () => {
-      if (title === styleName) {
+  const changeStylePartial = useCallback(
+    newStyle => () => {
+      if (newStyle.titleKey === styleName) {
         handleClose();
         return;
       }
-      setStyleName(title);
-      changeStyle(newStyle);
+      setStyleName(newStyle.titleKey);
+      changeStyle(newStyle.data);
       handleClose();
     },
-    [handleClose, styleName, changeStyle]
+    [changeStyle, handleClose, styleName]
+  );
+
+  const handleChangeStyle = useCallback(
+    newStyle => () => {
+      const confirmChangeStyle = changeStylePartial(newStyle);
+      if (
+        onStyleChange &&
+        !onStyleChange({
+          newStyle,
+          confirmChangeStyle,
+        })
+      ) {
+        return;
+      }
+      confirmChangeStyle();
+    },
+    [changeStylePartial, onStyleChange]
   );
 
   useEffect(() => {
@@ -79,13 +97,13 @@ const MapStyleSwitcher = () => {
         setContainer(container);
       },
     });
-    map.addControl(stylesControl, 'top-right');
+    map.addControl(stylesControl, position);
 
     return () => {
       map.removeControl(stylesControl);
       map.off('styledata');
     };
-  }, [map]);
+  }, [map, position]);
 
   if (!container) {
     return null;
@@ -104,6 +122,8 @@ const MapStyleSwitcher = () => {
             minWidth: 'auto',
             border: 'none',
             '&:hover': { border: 'none' },
+            pb: 0.7,
+            pt: 0.7,
           }}
         >
           <LayersIcon aria-label={t('gis.basemap_label')} />
@@ -118,13 +138,13 @@ const MapStyleSwitcher = () => {
             'aria-label': t('gis.mapbox_style_switcher_label'),
           }}
         >
-          {MAPBOX_STYLES.map(({ style, titleKey }) => (
+          {MAPBOX_STYLES.map(style => (
             <MenuItem
-              key={titleKey}
-              onClick={handleChangeStyle(titleKey, style)}
-              selected={styleName === titleKey}
+              key={style.titleKey}
+              onClick={handleChangeStyle(style)}
+              selected={styleName === style.titleKey}
             >
-              {t(titleKey)}
+              {t(style.titleKey)}
             </MenuItem>
           ))}
         </Menu>

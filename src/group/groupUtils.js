@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { extractMembershipsInfo } from 'terraso-client-shared/collaboration/membershipsUtils';
+import { extractMembershipInfo } from 'terraso-client-shared/collaboration/membershipsUtils';
 
 import { extractSharedResources } from 'sharedData/sharedDataUtils';
 
 export const extractGroup = group => ({
   ...group,
-  membershipsInfo: extractMembershipsInfo(group.membershipList),
+  membershipInfo: extractMembershipInfo(group.membershipList),
   sharedResources: extractSharedResources(group),
 });

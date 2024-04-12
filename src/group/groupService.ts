@@ -200,7 +200,7 @@ const updateGroup = (group: Group) => {
     .requestGraphQL(query, {
       input: {
         ..._.omit(
-          ['slug', 'membershipsInfo', 'membershipList', 'dataEntries'],
+          ['slug', 'membershipInfo', 'membershipList', 'dataEntries'],
           group
         ),
         id: group.id || '',
@@ -227,7 +227,7 @@ const addGroup = (group: Group) => {
   return terrasoApi
     .requestGraphQL(query, {
       input: {
-        ..._.omit(['slug', 'membershipsInfo', 'membershipList'], group),
+        ..._.omit(['slug', 'membershipInfo', 'membershipList'], group),
         name: group.name ?? '',
       },
     })

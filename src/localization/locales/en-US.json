@@ -792,12 +792,9 @@
         "invalid_kml_file": "The file {{name}} is not a valid KML file",
         "invalid_kmz_file": "The file {{name}} is not a valid KMZ file",
         "mapbox_style_switcher_label": "Base map",
-        "mapbox_style_streets": "Streets",
         "mapbox_style_satellite": "Satellite",
-        "mapbox_style_outdoors": "Outdoors",
-        "mapbox_style_light": "Light",
-        "mapbox_style_dark": "Dark",
-        "mapbox_style_osm": "OpenStreetMap",
+        "mapbox_style_detailed_satellite": "Detailed Satellite",
+        "mapbox_style_terrain": "Terrain",
         "map_draw": {
             "draw": {
                 "toolbar": {
@@ -1019,6 +1016,9 @@
         "form_location_helper_text_step_3_image_src": "/storyMap/set-map-step-3-en.png",
         "form_location_helper_text_step_3_image_alt": "A screenshot of the Set Map Location screen. The “Set Location” button in the top right is circled.",
         "form_location_helper_text_bearing_icon_alt": "Bearing",
+        "form_location_style_confirm_title": "Change Basemap for this story?",
+        "form_location_style_confirm_message": "{{newStyle}} will be replaced in all chapters.",
+        "form_location_style_confirm_button": "Confirm",
         "share_dialog_title": "Invite Editors",
         "share_dialog_description": "Invite people to edit your story map. <1>Learn more about collaborating on story maps</1>.",
         "share_dialog_help_url": "https://terraso.org/help/how-to-manage-editors-for-your-story-map/",

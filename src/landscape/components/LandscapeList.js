@@ -76,8 +76,8 @@ const MembershipButton = ({ landscape, tabIndex }) => {
     <CollaborationContextProvider
       owner={landscape}
       entityType="landscape"
-      accountMembership={landscape.membershipsInfo.accountMembership}
-      membershipsInfo={landscape.membershipsInfo}
+      accountMembership={landscape.membershipInfo.accountMembership}
+      membershipInfo={landscape.membershipInfo}
       MemberJoinButton={MemberJoinButton}
       MemberLeaveButton={MemberLeaveButton}
       onMemberJoin={onMemberJoin}
@@ -150,9 +150,9 @@ const LandscapeList = () => {
         xs: 6,
       },
       valueGetter: ({ row: landscape }) =>
-        _.getOr(0, 'membershipsInfo.totalCount', landscape),
+        _.getOr(0, 'membershipInfo.totalCount', landscape),
       renderCell: ({ row: landscape }) => (
-        <MembershipListCount membershipsInfo={landscape.membershipsInfo} />
+        <MembershipListCount membershipInfo={landscape.membershipInfo} />
       ),
     },
     {

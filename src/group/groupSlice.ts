@@ -20,7 +20,7 @@ import {
   Membership,
   MembershipList,
 } from 'terraso-client-shared/collaboration/membershipsUtils';
-import type { MembershipsInfo } from 'terraso-client-shared/collaboration/membershipsUtils';
+import type { MembershipInfo } from 'terraso-client-shared/collaboration/membershipsUtils';
 import type { Message } from 'terraso-client-shared/notifications/notificationsSlice';
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
@@ -34,7 +34,7 @@ export type Group = {
   name: string;
   description: string;
   website: string;
-  membershipInfo?: MembershipsInfo;
+  membershipInfo?: MembershipInfo;
 };
 
 export const fetchGroupForm = createAsyncThunk(
@@ -356,32 +356,24 @@ const groupSlice = createSlice({
     }));
 
     builder.addCase(leaveGroup.pending, (state, action) =>
-      _.set(
-        `view.group.membershipsInfo.accountMembership.fetching`,
-        true,
-        state
-      )
+      _.set(`view.group.membershipInfo.accountMembership.fetching`, true, state)
     );
     builder.addCase(leaveGroup.fulfilled, updateView);
     builder.addCase(leaveGroup.rejected, (state, action) =>
       _.set(
-        `view.group.membershipsInfo.accountMembership.fetching`,
+        `view.group.membershipInfo.accountMembership.fetching`,
         false,
         state
       )
     );
 
     builder.addCase(joinGroup.pending, (state, action) =>
-      _.set(
-        `view.group.membershipsInfo.accountMembership.fetching`,
-        true,
-        state
-      )
+      _.set(`view.group.membershipInfo.accountMembership.fetching`, true, state)
     );
     builder.addCase(joinGroup.fulfilled, updateView);
     builder.addCase(joinGroup.rejected, (state, action) =>
       _.set(
-        `view.group.membershipsInfo.accountMembership.fetching`,
+        `view.group.membershipInfo.accountMembership.fetching`,
         false,
         state
       )
@@ -499,8 +491,8 @@ const updateMemberItem = (
   valueGenerator: (membership: Membership) => Membership | null
 ) => {
   return _.set(
-    'members.data.membershipsInfo.membershipsSample',
-    state.members.data?.membershipsInfo?.membershipsSample
+    'members.data.membershipInfo.memberships',
+    state.members.data?.membershipInfo?.memberships
       ?.map((membership: Membership) =>
         _.includes(membership.user?.email, userEmails)
           ? valueGenerator(membership)
