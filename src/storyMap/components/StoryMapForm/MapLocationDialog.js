@@ -229,19 +229,26 @@ const MapLocationDialog = props => {
     setMapBearing(position.bearing);
   }, []);
 
+  const onStyleChangeConfirmationClose = useCallback(() => {
+    setConfirmStyleProps(currentProps => ({
+      ...currentProps,
+      onConfirm: null,
+    }));
+  }, []);
+
   const onStyleChange = useCallback(
     ({ newStyle, confirmChangeStyle }) => {
       setConfirmStyleProps({
         onConfirm: () => {
           setMapStyle(newStyle.data);
           confirmChangeStyle();
-          setConfirmStyleProps(null);
+          onStyleChangeConfirmationClose();
         },
         newStyle: t(newStyle.titleKey),
       });
       return false;
     },
-    [setConfirmStyleProps, t]
+    [setConfirmStyleProps, onStyleChangeConfirmationClose, t]
   );
 
   return (
@@ -313,7 +320,7 @@ const MapLocationDialog = props => {
         </DialogContent>
       </Dialog>
       <ConfirmStyleChangeDialog
-        onCancel={() => setConfirmStyleProps(null)}
+        onCancel={onStyleChangeConfirmationClose}
         {...confirmStyleProps}
       />
     </>
