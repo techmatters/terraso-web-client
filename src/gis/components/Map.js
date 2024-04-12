@@ -33,6 +33,8 @@ import {
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
+const TERRAIN_EXAGGERATION = 1;
+
 export const MAPBOX_DEM_SOURCE = {
   type: 'raster-dem',
   url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
@@ -303,7 +305,10 @@ const Map = props => {
         map.addSource('mapbox-dem', MAPBOX_DEM_SOURCE);
 
         // add the DEM (Digital Elevation Model) source as a terrain layer with exaggerated height
-        map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
+        map.setTerrain({
+          source: 'mapbox-dem',
+          exaggeration: TERRAIN_EXAGGERATION,
+        });
       }
 
       if (disableElevation) {
