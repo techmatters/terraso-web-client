@@ -1016,7 +1016,7 @@
         "form_location_helper_text_step_3_image_src": "/storyMap/set-map-step-3-en.png",
         "form_location_helper_text_step_3_image_alt": "A screenshot of the Set Map Location screen. The “Set Location” button in the top right is circled.",
         "form_location_helper_text_bearing_icon_alt": "Bearing",
-        "form_location_style_confirm_title": "Change Basemap for this story?",
+        "form_location_style_confirm_title": "Change basemap for this story?",
         "form_location_style_confirm_message": "{{newStyle}} will be replaced in all chapters.",
         "form_location_style_confirm_button": "Confirm",
         "share_dialog_title": "Invite Editors",
