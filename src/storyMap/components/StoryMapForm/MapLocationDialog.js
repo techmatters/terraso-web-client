@@ -29,7 +29,6 @@ import {
   Typography,
 } from '@mui/material';
 
-import ConfirmationDialog from 'common/components/ConfirmationDialog';
 import HelperText from 'common/components/HelperText';
 import Map, { useMap } from 'gis/components/Map';
 import MapControls from 'gis/components/MapControls';
@@ -37,24 +36,6 @@ import MapGeocoder from 'gis/components/MapGeocoder';
 import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
 
 import { useStoryMapConfigContext } from './storyMapConfigContext';
-
-const ConfirmStyleChangeDialog = props => {
-  const { onCancel, onConfirm, oldStyle, newStyle } = props;
-  const { t } = useTranslation();
-  return (
-    <ConfirmationDialog
-      open={onConfirm ? true : false}
-      title={t('storyMap.form_location_style_confirm_title')}
-      message={t('storyMap.form_location_style_confirm_message', {
-        oldStyle,
-        newStyle,
-      })}
-      confirmButtonLabel={t('storyMap.form_location_style_confirm_button')}
-      onCancel={onCancel}
-      onConfirm={onConfirm}
-    />
-  );
-};
 
 const BearingIcon = () => {
   const { t } = useTranslation();
@@ -170,7 +151,6 @@ const MapLocationDialog = props => {
   const [mapPitch, setMapPitch] = useState(location?.pitch);
   const [mapBearing, setMapBearing] = useState(location?.bearing);
   const [mapStyle, setMapStyle] = useState();
-  const [confirmStyleProps, setConfirmStyleProps] = useState();
 
   const initialLocation = useMemo(() => {
     if (location) {
@@ -229,101 +209,77 @@ const MapLocationDialog = props => {
     setMapBearing(position.bearing);
   }, []);
 
-  const onStyleChangeConfirmationClose = useCallback(() => {
-    setConfirmStyleProps(currentProps => ({
-      ...currentProps,
-      onConfirm: null,
-    }));
+  const onStyleChange = useCallback(({ newStyle }) => {
+    setMapStyle(newStyle.data);
   }, []);
 
-  const onStyleChange = useCallback(
-    ({ newStyle, confirmChangeStyle }) => {
-      setConfirmStyleProps({
-        onConfirm: () => {
-          setMapStyle(newStyle.data);
-          confirmChangeStyle();
-          onStyleChangeConfirmationClose();
-        },
-        newStyle: t(newStyle.titleKey),
-      });
-      return false;
-    },
-    [setConfirmStyleProps, onStyleChangeConfirmationClose, t]
-  );
-
   return (
-    <>
-      <Dialog
-        fullScreen
-        open={open}
-        onClose={handleCancel}
-        aria-labelledby="map-location-dialog-title"
-        aria-describedby="map-location-dialog-content-text"
-      >
-        <Stack direction="row" justifyContent="space-between">
-          <Stack>
-            <DialogTitle
-              component="h1"
-              id="map-location-dialog-title"
-              sx={{ pb: 0 }}
-            >
-              {title ? (
-                <Trans
-                  i18nKey="storyMap.form_location_dialog_title"
-                  values={{ title: title }}
-                >
-                  prefix
-                  <i>italic</i>
-                </Trans>
-              ) : (
-                <>{t('storyMap.form_location_dialog_title_blank')}</>
-              )}
-            </DialogTitle>
-            <DialogContent sx={{ pb: 0 }}>
-              <HelperText
-                showLabel
-                maxWidth={586}
-                label={t('storyMap.form_location_dialog_helper_text_label')}
-                Component={SetMapHelperText}
-                buttonProps={{
-                  sx: { pl: 0, color: 'gray.dark1' },
-                }}
-              />
-            </DialogContent>
-          </Stack>
-          <DialogActions sx={{ pr: 3 }}>
-            <Button size="small" onClick={handleCancel}>
-              {t('storyMap.location_dialog_cancel_button')}
-            </Button>
-            <Button size="small" onClick={handleConfirm} variant="contained">
-              {t('storyMap.location_dialog_confirm_button')}
-            </Button>
-          </DialogActions>
-        </Stack>
-
-        <DialogContent>
-          <Map
-            use3dTerrain
-            height="100%"
-            initialLocation={initialLocation}
-            projection={config.projection}
-            mapStyle={config.style}
+    <Dialog
+      fullScreen
+      open={open}
+      onClose={handleCancel}
+      aria-labelledby="map-location-dialog-title"
+      aria-describedby="map-location-dialog-content-text"
+    >
+      <Stack direction="row" justifyContent="space-between">
+        <Stack>
+          <DialogTitle
+            component="h1"
+            id="map-location-dialog-title"
+            sx={{ pb: 0 }}
           >
-            <MapControls showCompass visualizePitch />
-            <MapGeocoder position="top-right" />
-            <MapStyleSwitcher
-              position="top-right"
-              onStyleChange={onStyleChange}
+            {title ? (
+              <Trans
+                i18nKey="storyMap.form_location_dialog_title"
+                values={{ title: title }}
+              >
+                prefix
+                <i>italic</i>
+              </Trans>
+            ) : (
+              <>{t('storyMap.form_location_dialog_title_blank')}</>
+            )}
+          </DialogTitle>
+          <DialogContent sx={{ pb: 0 }}>
+            <HelperText
+              showLabel
+              maxWidth={586}
+              label={t('storyMap.form_location_dialog_helper_text_label')}
+              Component={SetMapHelperText}
+              buttonProps={{
+                sx: { pl: 0, color: 'gray.dark1' },
+              }}
             />
-            <MapLocationChange onPositionChange={handlePositionChange} />
-          </Map>
-        </DialogContent>
-      </Dialog>
-      <ConfirmStyleChangeDialog
-        onCancel={onStyleChangeConfirmationClose}
-        {...confirmStyleProps}
-      />
-    </>
+          </DialogContent>
+        </Stack>
+        <DialogActions sx={{ pr: 3 }}>
+          <Button size="small" onClick={handleCancel}>
+            {t('storyMap.location_dialog_cancel_button')}
+          </Button>
+          <Button size="small" onClick={handleConfirm} variant="contained">
+            {t('storyMap.location_dialog_confirm_button')}
+          </Button>
+        </DialogActions>
+      </Stack>
+
+      <DialogContent>
+        <Map
+          use3dTerrain
+          height="100%"
+          initialLocation={initialLocation}
+          projection={config.projection}
+          mapStyle={config.style}
+        >
+          <MapControls showCompass visualizePitch />
+          <MapGeocoder position="top-right" />
+          <MapStyleSwitcher
+            position="top-right"
+            onStyleChange={onStyleChange}
+          />
+          <MapLocationChange onPositionChange={handlePositionChange} />
+        </Map>
+      </DialogContent>
+    </Dialog>
   );
 };
 
