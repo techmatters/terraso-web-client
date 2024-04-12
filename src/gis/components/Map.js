@@ -33,6 +33,8 @@ import {
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
+const TERRAIN_EXAGGERATION = 1;
+
 export const MAPBOX_DEM_SOURCE = {
   type: 'raster-dem',
   url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
@@ -58,7 +60,21 @@ export const MAPBOX_FOG = {
   'star-intensity': 0.1, // Background star brightness (default 0.35 at low zoooms )
 };
 
-const TRANSLATABLE_LAYERS = ['country-label', 'continent-label'];
+const TRANSLATABLE_LAYERS = [
+  'country-label',
+  'continent-label',
+  'state-label',
+  'settlement-label',
+  'settlement-subdivision-label',
+  'airport-label',
+  'poi-label',
+  'water-point-label',
+  'water-line-label',
+  'natural-point-label',
+  'natural-line-label',
+  'waterway-label',
+  'road-label',
+];
 
 const MapContext = React.createContext();
 
@@ -97,7 +113,7 @@ export const fetchStyle = async style => {
 
 // Set Style doesn't keep the current layers, so we need to copy them across
 // Issue: https://github.com/mapbox/mapbox-gl-js/issues/4006
-async function switchStyle(map, style, images, sources, layers) {
+async function switchStyle(map, style, images, sources, layers, language) {
   const newStyle = await fetchStyle(style);
 
   const mergedSources = {
@@ -127,12 +143,27 @@ async function switchStyle(map, style, images, sources, layers) {
       }
       map.addImage(name, image);
     });
+    localizeLayers(map, language);
   });
 }
+
+const localizeLayers = (map, language) => {
+  TRANSLATABLE_LAYERS.forEach(layer => {
+    try {
+      if (map.getLayer(layer)) {
+        map.setLayoutProperty(layer, 'text-field', ['get', `name_${language}`]);
+      }
+    } catch (error) {
+      console.warn('Error setting layer text field', error);
+    }
+  });
+};
 
 export const MapContextConsumer = props => <MapContext.Consumer {...props} />;
 
 export const MapProvider = props => {
+  const { i18n } = useTranslation();
+  const language = i18n.language.split('-')[0];
   const { children, onStyleChange } = props;
   const [map, setMap] = useState(null);
   const [images, setImages] = useState({});
@@ -227,10 +258,10 @@ export const MapProvider = props => {
 
   const changeStyle = useCallback(
     newStyle => {
-      switchStyle(map, newStyle, images, sources, layers);
+      switchStyle(map, newStyle, images, sources, layers, language);
       onStyleChange?.(newStyle);
     },
-    [map, images, sources, layers, onStyleChange]
+    [map, images, sources, layers, onStyleChange, language]
   );
 
   return (
@@ -303,7 +334,10 @@ const Map = props => {
         map.addSource('mapbox-dem', MAPBOX_DEM_SOURCE);
 
         // add the DEM (Digital Elevation Model) source as a terrain layer with exaggerated height
-        map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
+        map.setTerrain({
+          source: 'mapbox-dem',
+          exaggeration: TERRAIN_EXAGGERATION,
+        });
       }
 
       if (disableElevation) {
@@ -370,18 +404,7 @@ const Map = props => {
     }
     const language = i18n.language.split('-')[0];
 
-    TRANSLATABLE_LAYERS.forEach(layer => {
-      try {
-        if (map.getLayer(layer)) {
-          map.setLayoutProperty(layer, 'text-field', [
-            'get',
-            `name_${language}`,
-          ]);
-        }
-      } catch (error) {
-        console.warn('Error setting layer text field', error);
-      }
-    });
+    localizeLayers(map, language);
   }, [map, i18n.language]);
 
   return (
