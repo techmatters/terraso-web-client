@@ -57,7 +57,7 @@ const MapStyleSwitcher = props => {
     setAnchorEl(null);
   }, []);
 
-  const changeStylePartial = useCallback(
+  const handleChangeStyle = useCallback(
     newStyle => () => {
       if (newStyle.titleKey === styleName) {
         handleClose();
@@ -65,26 +65,10 @@ const MapStyleSwitcher = props => {
       }
       setStyleName(newStyle.titleKey);
       changeStyle(newStyle.data);
+      onStyleChange({ newStyle });
       handleClose();
     },
-    [changeStyle, handleClose, styleName]
-  );
-
-  const handleChangeStyle = useCallback(
-    newStyle => () => {
-      const confirmChangeStyle = changeStylePartial(newStyle);
-      if (
-        onStyleChange &&
-        !onStyleChange({
-          newStyle,
-          confirmChangeStyle,
-        })
-      ) {
-        return;
-      }
-      confirmChangeStyle();
-    },
-    [changeStylePartial, onStyleChange]
+    [handleClose, onStyleChange, styleName, changeStyle]
   );
 
   useEffect(() => {
