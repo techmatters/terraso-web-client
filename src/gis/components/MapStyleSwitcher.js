@@ -65,7 +65,7 @@ const MapStyleSwitcher = props => {
       }
       setStyleName(newStyle.titleKey);
       changeStyle(newStyle.data);
-      onStyleChange({ newStyle });
+      onStyleChange?.({ newStyle });
       handleClose();
     },
     [handleClose, onStyleChange, styleName, changeStyle]
