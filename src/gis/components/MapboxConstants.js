@@ -20,11 +20,11 @@ export const MAPBOX_STYLES = [
     data: 'mapbox://styles/terraso/clux9zsa500k401p6grzm1xb8',
   },
   {
-    titleKey: 'gis.mapbox_style_detailed_satellite',
+    titleKey: 'gis.mapbox_style_combined',
     data: 'mapbox://styles/terraso/cltsvsgyk00gj01qeavbd6rnw',
   },
   {
-    titleKey: 'gis.mapbox_style_terrain',
+    titleKey: 'gis.mapbox_style_streets',
     data: 'mapbox://styles/terraso/cltt1087x00jm01pbfwqagsw8',
   },
 ];

@@ -800,8 +800,8 @@
         "invalid_kmz_file": "El archivo {{name}} no es un archivo KMZ válido",
         "mapbox_style_switcher_label": "Mapa base",
         "mapbox_style_satellite": "Satélite",
-        "mapbox_style_detailed_satellite": "Satélite detallado",
-        "mapbox_style_terrain": "Terreno",
+        "mapbox_style_combined": "Satélite y TKTK",
+        "mapbox_style_streets": "TKTK",
         "map_draw": {
             "draw": {
                 "toolbar": {

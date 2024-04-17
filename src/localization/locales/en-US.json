@@ -793,8 +793,8 @@
         "invalid_kmz_file": "The file {{name}} is not a valid KMZ file",
         "mapbox_style_switcher_label": "Base map",
         "mapbox_style_satellite": "Satellite",
-        "mapbox_style_detailed_satellite": "Detailed Satellite",
-        "mapbox_style_terrain": "Terrain",
+        "mapbox_style_combined": "Satellite and streets",
+        "mapbox_style_streets": "Streets",
         "map_draw": {
             "draw": {
                 "toolbar": {
