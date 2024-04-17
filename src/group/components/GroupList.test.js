@@ -139,23 +139,23 @@ test('GroupList: Display list', async () => {
   const rows = screen.getAllByRole('row');
   expect(rows.length).toBe(16); // 15 displayed + header
   expect(
-    within(rows[2]).getByRole('cell', { name: 'Group name 1' })
+    within(rows[2]).getByRole('gridcell', { name: 'Group name 1' })
   ).toHaveAttribute('data-field', 'name');
   expect(
-    within(rows[2]).getByRole('cell', { name: 'www.group.org' })
+    within(rows[2]).getByRole('gridcell', { name: 'www.group.org' })
   ).toHaveAttribute('data-field', 'website');
   expect(
-    within(rows[2]).getByRole('cell', { name: 'email@email.com' })
+    within(rows[2]).getByRole('gridcell', { name: 'email@email.com' })
   ).toHaveAttribute('data-field', 'email');
   expect(
     within(rows[2])
       .getByRole('button', { name: 'Join: Group name 1' })
-      .closest('[role="cell"]')
+      .closest('[role="gridcell"]')
   ).toHaveAttribute('data-field', 'actions');
   expect(
     screen
       .getByRole('button', { name: 'Leave: Group name 3' })
-      .closest('[role="cell"]')
+      .closest('[role="gridcell"]')
   ).toHaveAttribute('data-field', 'actions');
 });
 test('GroupList: List sort', async () => {
@@ -214,7 +214,7 @@ test('GroupList: List sort', async () => {
 
   // Sorting
   expect(
-    within(rows[1]).getByRole('cell', { name: 'Group name 0' })
+    within(rows[1]).getByRole('gridcell', { name: 'Group name 0' })
   ).toHaveAttribute('data-field', 'name');
   await act(async () =>
     fireEvent.click(
@@ -223,7 +223,7 @@ test('GroupList: List sort', async () => {
   );
   const sortedRows = screen.getAllByRole('row');
   expect(
-    within(sortedRows[1]).getByRole('cell', { name: 'Group name 9' })
+    within(sortedRows[1]).getByRole('gridcell', { name: 'Group name 9' })
   ).toHaveAttribute('data-field', 'name');
 });
 test('GroupList: Display list (small screen)', async () => {

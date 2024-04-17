@@ -168,7 +168,7 @@ test('GroupMembers: Display list', async () => {
   const rows = screen.getAllByRole('row');
   expect(rows.length).toBe(16); // 15 displayed + header
   expect(
-    within(rows[2]).getByRole('cell', {
+    within(rows[2]).getByRole('gridcell', {
       name: 'First name Last Name',
     })
   ).toHaveAttribute('data-field', 'name');
@@ -176,13 +176,13 @@ test('GroupMembers: Display list', async () => {
     within(rows[9]).queryByRole('button', { name: 'Member' })
   ).not.toBeInTheDocument();
   expect(
-    within(rows[9]).getByText('Member').closest('[role="cell"]')
+    within(rows[9]).getByText('Member').closest('[role="gridcell"]')
   ).toHaveAttribute('data-field', 'role');
   expect(within(rows[2]).queryByRole('button')).not.toBeInTheDocument();
   expect(
     within(rows[1])
       .getByRole('button', { name: 'Leave: Group Name' })
-      .closest('[role="cell"]')
+      .closest('[role="gridcell"]')
   ).toHaveAttribute('data-field', 'actions');
 });
 test('GroupMembers: Display list (small)', async () => {
@@ -272,14 +272,14 @@ test('GroupMembers: Display list manager', async () => {
   const rows = screen.getAllByRole('row');
   expect(rows.length).toBe(16); // 15 displayed + header
   expect(
-    within(rows[2]).getByRole('cell', {
+    within(rows[2]).getByRole('gridcell', {
       name: 'Member name Member Last Name',
     })
   ).toHaveAttribute('data-field', 'name');
   expect(
     within(rows[9])
       .getByRole('combobox', { name: 'Role' })
-      .closest('[role="cell"]')
+      .closest('[role="gridcell"]')
   ).toHaveAttribute('data-field', 'role');
   expect(
     within(rows[9]).getByRole('combobox', { name: 'Role' })
@@ -287,7 +287,7 @@ test('GroupMembers: Display list manager', async () => {
   expect(
     within(rows[2])
       .getByRole('button', { name: 'Remove' })
-      .closest('[role="cell"]')
+      .closest('[role="gridcell"]')
   ).toHaveAttribute('data-field', 'actions');
 });
 test('GroupMembers: Manager actions', async () => {
@@ -364,14 +364,14 @@ test('GroupMembers: Manager actions', async () => {
 
   // Role Change
   expect(
-    within(rows[3]).getByRole('cell', {
+    within(rows[3]).getByRole('gridcell', {
       name: 'Member name 2 Member Last Name 2',
     })
   ).toHaveAttribute('data-field', 'name');
   expect(
     within(rows[3])
       .getByRole('combobox', { name: 'Role' })
-      .closest('[role="cell"]')
+      .closest('[role="gridcell"]')
   ).toHaveAttribute('data-field', 'role');
   const roleButton = within(rows[3]).getByRole('combobox', { name: 'Role' });
   expect(within(roleButton).getByText('Member')).toBeInTheDocument();
@@ -394,7 +394,7 @@ test('GroupMembers: Manager actions', async () => {
   );
 
   expect(
-    within(screen.getAllByRole('row')[3]).getByRole('cell', {
+    within(screen.getAllByRole('row')[3]).getByRole('gridcell', {
       name: 'Member name 2 Member Last Name 2',
     })
   ).toHaveAttribute('data-field', 'name');
@@ -404,7 +404,7 @@ test('GroupMembers: Manager actions', async () => {
         .getByRole('combobox', {
           name: 'Role',
         })
-        .closest('[role="cell"]')
+        .closest('[role="gridcell"]')
     ).toHaveAttribute('data-field', 'role')
   );
   expect(

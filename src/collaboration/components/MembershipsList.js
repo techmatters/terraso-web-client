@@ -48,10 +48,10 @@ const MembershipsList = props => {
           xs: 12,
           sm: 5,
         },
-        valueGetter: ({ row: membership }) =>
-          membership.pendingEmail
-            ? membership.pendingEmail
-            : t('user.full_name', { user: membership.user }),
+        valueGetter: (value, row, column, apiRef) =>
+          row.pendingEmail
+            ? row.pendingEmail
+            : t('user.full_name', { user: row.user }),
         cardRender: ({ row: membership }) => (
           <Typography noWrap>
             {membership.pendingEmail
@@ -72,8 +72,8 @@ const MembershipsList = props => {
           xs: 6,
           sm: 4,
         },
-        valueGetter: ({ row: member }) =>
-          t(`group.role_${member.userRole.toLowerCase()}`),
+        valueGetter: (value, row, column, apiRef) =>
+          t(`group.role_${row.userRole.toLowerCase()}`),
         renderCell: ({ row: membership, tabIndex }) => (
           <RoleComponent membership={membership} tabIndex={tabIndex} />
         ),

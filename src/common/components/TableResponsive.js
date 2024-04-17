@@ -69,7 +69,7 @@ const CardField = props => {
   const isActions = column.field === 'actions';
 
   const value = column.valueGetter
-    ? column.valueGetter({ row })
+    ? column.valueGetter(null, row, null, null)
     : _.get(column.field, row);
 
   const showValue = isActions || _.isInteger(value) || !_.isEmpty(value);
@@ -112,7 +112,7 @@ const CardValue = props => {
   }
 
   const formattedValue = _.has('valueFormatter', column)
-    ? column.valueFormatter({ value })
+    ? column.valueFormatter(value)
     : value;
 
   if (column.renderCell) {
@@ -341,10 +341,10 @@ const setSearchHighligthRender = props => {
     }
     return {
       ...column,
-      valueFormatter: params => {
+      valueFormatter: (value, ...params) => {
         const formattedValue = _.has('valueFormatter', column)
-          ? column.valueFormatter(params)
-          : params.value;
+          ? column.valueFormatter(value, ...params)
+          : value;
         return (
           <Highlighter
             searchWords={[searchParams.search]}
