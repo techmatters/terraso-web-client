@@ -126,8 +126,8 @@ const LandscapeList = () => {
       headerName: t('landscape.list_column_location'),
       flex: 0.5,
       minWidth: 200,
-      valueGetter: ({ row: landscape }) =>
-        landscape.location && countryNameForCode(landscape.location)?.name,
+      valueGetter: (value, row, column, apiRef) =>
+        row.location && countryNameForCode(row.location)?.name,
     },
     {
       field: 'website',
@@ -149,8 +149,8 @@ const LandscapeList = () => {
       cardFieldSizes: {
         xs: 6,
       },
-      valueGetter: ({ row: landscape }) =>
-        _.getOr(0, 'membershipInfo.totalCount', landscape),
+      valueGetter: (value, row, column, apiRef) =>
+        _.getOr(0, 'membershipInfo.totalCount', row),
       renderCell: ({ row: landscape }) => (
         <MembershipListCount membershipInfo={landscape.membershipInfo} />
       ),
