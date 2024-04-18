@@ -794,7 +794,7 @@
         "mapbox_style_switcher_label": "Base map",
         "mapbox_style_satellite": "Satellite",
         "mapbox_style_combined": "Satellite and streets",
-        "mapbox_style_streets": "Streets",
+        "mapbox_style_streets": "Streets and topography",
         "map_draw": {
             "draw": {
                 "toolbar": {

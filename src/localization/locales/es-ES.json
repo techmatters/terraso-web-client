@@ -786,8 +786,6 @@
         "openstreetmap_api_error": "Error al solicitar datos de la API nominatim.openstreetmap.org",
         "map_search_placeholder": "Ingresa una ciudad, pueblo o región",
         "map_search_clear": "Borrar búsqueda",
-        "map_layer_streets": "Calles",
-        "map_layer_satellite": "Satélite",
         "default_marker_label": "Marcador",
         "basemap_label": "Establecer mapa base",
         "latitude": "latitud",
@@ -801,7 +799,7 @@
         "mapbox_style_switcher_label": "Mapa base",
         "mapbox_style_satellite": "Satélite",
         "mapbox_style_combined": "Satélite y calles",
-        "mapbox_style_streets": "Calles",
+        "mapbox_style_streets": "Calles y topografía",
         "map_draw": {
             "draw": {
                 "toolbar": {

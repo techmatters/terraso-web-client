@@ -247,21 +247,21 @@ test('LandscapeList: Display list', async () => {
   const rows = screen.getAllByRole('row');
   expect(rows.length).toBe(16); // 15 displayed + header
   expect(
-    within(rows[2]).getByRole('cell', { name: 'Landscape Name 1' })
+    within(rows[2]).getByRole('gridcell', { name: 'Landscape Name 1' })
   ).toHaveAttribute('data-field', 'name');
-  expect(within(rows[2]).getByRole('cell', { name: '23' })).toHaveAttribute(
+  expect(within(rows[2]).getByRole('gridcell', { name: '23' })).toHaveAttribute(
     'data-field',
     'members'
   );
   expect(
     within(rows[2])
       .getByRole('button', { name: 'Join: Landscape Name 1' })
-      .closest('[role="cell"]')
+      .closest('[role="gridcell"]')
   ).toHaveAttribute('data-field', 'actions');
   expect(
     within(rows[9])
       .getByRole('button', { name: 'Leave: Landscape Name 3' })
-      .closest('[role="cell"]')
+      .closest('[role="gridcell"]')
   ).toHaveAttribute('data-field', 'actions');
 });
 test('LandscapeList: Search', async () => {
@@ -354,7 +354,7 @@ test('LandscapeList: List sort', async () => {
 
   // Sorting
   expect(
-    within(rows[1]).getByRole('cell', { name: 'Landscape Name 0' })
+    within(rows[1]).getByRole('gridcell', { name: 'Landscape Name 0' })
   ).toHaveAttribute('data-field', 'name');
   await act(async () =>
     fireEvent.click(
@@ -364,7 +364,7 @@ test('LandscapeList: List sort', async () => {
   const sortedRows = screen.getAllByRole('row');
   expect(sortedRows.length).toBe(16); // 15 displayed + header
   expect(
-    within(sortedRows[1]).getByRole('cell', { name: 'Landscape Name 9' })
+    within(sortedRows[1]).getByRole('gridcell', { name: 'Landscape Name 9' })
   ).toHaveAttribute('data-field', 'name');
 });
 test('LandscapeList: Display list (small screen)', async () => {
