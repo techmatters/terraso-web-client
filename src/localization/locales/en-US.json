@@ -792,12 +792,9 @@
         "invalid_kml_file": "The file {{name}} is not a valid KML file",
         "invalid_kmz_file": "The file {{name}} is not a valid KMZ file",
         "mapbox_style_switcher_label": "Base map",
-        "mapbox_style_streets": "Streets",
         "mapbox_style_satellite": "Satellite",
-        "mapbox_style_outdoors": "Outdoors",
-        "mapbox_style_light": "Light",
-        "mapbox_style_dark": "Dark",
-        "mapbox_style_osm": "OpenStreetMap",
+        "mapbox_style_combined": "Satellite and streets",
+        "mapbox_style_streets": "Streets",
         "map_draw": {
             "draw": {
                 "toolbar": {

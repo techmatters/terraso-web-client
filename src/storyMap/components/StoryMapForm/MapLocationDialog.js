@@ -33,6 +33,7 @@ import HelperText from 'common/components/HelperText';
 import Map, { useMap } from 'gis/components/Map';
 import MapControls from 'gis/components/MapControls';
 import MapGeocoder from 'gis/components/MapGeocoder';
+import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
 
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 
@@ -149,6 +150,7 @@ const MapLocationDialog = props => {
   const [mapZoom, setMapZoom] = useState(location?.zoom);
   const [mapPitch, setMapPitch] = useState(location?.pitch);
   const [mapBearing, setMapBearing] = useState(location?.bearing);
+  const [mapStyle, setMapStyle] = useState();
 
   const initialLocation = useMemo(() => {
     if (location) {
@@ -179,13 +181,22 @@ const MapLocationDialog = props => {
   }, [location, config.chapters, config.titleTransition?.location, chapterId]);
 
   const handleConfirm = useCallback(() => {
-    onConfirm({
+    const location = _.omitBy(_.isNil, {
       center: mapCenter,
       zoom: mapZoom,
       pitch: mapPitch,
       bearing: mapBearing,
     });
-  }, [onConfirm, mapCenter, mapZoom, mapPitch, mapBearing]);
+    onConfirm(location, mapStyle || config.style);
+  }, [
+    onConfirm,
+    mapCenter,
+    mapZoom,
+    mapPitch,
+    mapBearing,
+    mapStyle,
+    config.style,
+  ]);
 
   const handleCancel = useCallback(() => {
     onClose();
@@ -196,6 +207,10 @@ const MapLocationDialog = props => {
     setMapZoom(position.zoom);
     setMapPitch(position.pitch);
     setMapBearing(position.bearing);
+  }, []);
+
+  const onStyleChange = useCallback(({ newStyle }) => {
+    setMapStyle(newStyle.data);
   }, []);
 
   return (
@@ -256,7 +271,11 @@ const MapLocationDialog = props => {
           mapStyle={config.style}
         >
           <MapControls showCompass visualizePitch />
-          <MapGeocoder />
+          <MapGeocoder position="top-right" />
+          <MapStyleSwitcher
+            position="top-right"
+            onStyleChange={onStyleChange}
+          />
           <MapLocationChange onPositionChange={handlePositionChange} />
         </Map>
       </DialogContent>

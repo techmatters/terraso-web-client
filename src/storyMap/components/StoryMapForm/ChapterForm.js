@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import AlignHorizontalCenterIcon from '@mui/icons-material/AlignHorizontalCenter';
 import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft';
@@ -50,7 +51,13 @@ const ConfigButton = withProps(IconButton, {
 });
 const ChapterConfig = props => {
   const { t } = useTranslation();
-  const { onAlignmentChange, chapter, onLocationChange, children } = props;
+  const {
+    onAlignmentChange,
+    chapter,
+    onLocationChange,
+    onMapStyleChange,
+    children,
+  } = props;
   const [locationOpen, setLocationOpen] = useState(false);
 
   const options = useMemo(
@@ -83,11 +90,12 @@ const ChapterConfig = props => {
   }, []);
 
   const onLocationChangeWrapper = useCallback(
-    location => {
+    (location, mapStyle) => {
       onLocationChange(location);
+      onMapStyleChange(mapStyle);
       onLocationClose();
     },
-    [onLocationChange, onLocationClose]
+    [onLocationChange, onLocationClose, onMapStyleChange]
   );
 
   const hasVisualMedia = chapterHasVisualMedia(chapter);
@@ -171,6 +179,13 @@ const ChapterForm = ({ theme, record }) => {
     [record.id, setConfig]
   );
 
+  const onMapStyleChange = useCallback(
+    style => {
+      setConfig(_.set('style', style));
+    },
+    [setConfig]
+  );
+
   return (
     <Box
       className={classList}
@@ -186,6 +201,7 @@ const ChapterForm = ({ theme, record }) => {
         chapter={record}
         onAlignmentChange={onFieldChange('alignment')}
         onLocationChange={onFieldChange('location')}
+        onMapStyleChange={onMapStyleChange}
       >
         <Stack
           className={`${theme} step-content`}
