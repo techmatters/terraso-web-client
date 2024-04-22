@@ -15,7 +15,7 @@
     "@mui/x-data-grid": "^7.1.1",
     "@reduxjs/toolkit": "^1.9.7",
     "@sentry/cli": "^2.31.0",
-    "@sentry/react": "^7.109.0",
+    "@sentry/react": "^7.111.0",
     "@turf/bbox": "^6.5.0",
     "@turf/center": "^6.5.0",
     "@turf/helpers": "^6.5.0",
