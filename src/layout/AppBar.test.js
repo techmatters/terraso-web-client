@@ -15,9 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { fireEvent, render, screen } from 'tests/utils';
-import React from 'react';
+import React, { act } from 'react';
 import Cookies from 'js-cookie';
-import { act } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 

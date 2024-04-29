@@ -15,8 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { fireEvent, render, screen } from 'tests/utils';
-import React from 'react';
-import { act } from 'react';
+import React, { act } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import Navigation from 'navigation/components/Navigation';

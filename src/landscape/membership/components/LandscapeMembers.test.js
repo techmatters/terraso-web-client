@@ -15,9 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
-import React from 'react';
+import React, { act } from 'react';
 import _ from 'lodash/fp';
-import { act } from 'react';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { mockTerrasoAPIrequestGraphQL } from 'tests/apiUtils';
 import useMediaQuery from '@mui/material/useMediaQuery';

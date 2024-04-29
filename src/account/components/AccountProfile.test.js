@@ -15,10 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import { fireEvent, render, screen, within } from 'tests/utils';
-import React from 'react';
+import React, { act } from 'react';
 import { when } from 'jest-when';
 import _ from 'lodash/fp';
-import { act } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
