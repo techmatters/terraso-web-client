@@ -17,7 +17,7 @@
 import { fireEvent, render, screen, within } from 'tests/utils';
 import React from 'react';
 import _ from 'lodash/fp';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import useMediaQuery from '@mui/material/useMediaQuery';
 

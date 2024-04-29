@@ -16,7 +16,7 @@
  */
 import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { mockTerrasoAPIrequestGraphQL } from 'tests/apiUtils';

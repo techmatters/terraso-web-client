@@ -17,7 +17,7 @@
 import { fireEvent, render, screen, waitFor } from 'tests/utils';
 import React from 'react';
 import AvatarEditor from 'react-avatar-editor';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 import { useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 

@@ -18,7 +18,7 @@ import { fireEvent, render, screen, within } from 'tests/utils';
 import React from 'react';
 import { when } from 'jest-when';
 import _ from 'lodash/fp';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 

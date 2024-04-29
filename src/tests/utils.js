@@ -25,7 +25,7 @@ import {
   render as rtlRender,
 } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 import createStore from 'terrasoApi/store';
 
 import AppWrappers from 'layout/AppWrappers';

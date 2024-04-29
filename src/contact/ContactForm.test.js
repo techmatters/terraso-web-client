@@ -17,7 +17,7 @@
 import { render, screen } from 'tests/utils';
 import React from 'react';
 import _ from 'lodash/fp';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 
 import { useScript } from 'custom-hooks';
 

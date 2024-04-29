@@ -17,7 +17,7 @@
 import { fireEvent, render, screen } from 'tests/utils';
 import React from 'react';
 import Cookies from 'js-cookie';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 

@@ -17,7 +17,7 @@
 import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
 import _ from 'lodash/fp';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { GROUP_TYPES_WITH_REDIRECTS } from 'tests/constants';
