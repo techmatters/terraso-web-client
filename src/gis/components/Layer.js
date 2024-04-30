@@ -50,6 +50,10 @@ const Layer = props => {
       const eventParams = eventGenerator(map);
       map.on(...eventParams);
     }
+
+    return () => {
+      removeLayer(id);
+    };
   }, [
     id,
     map,

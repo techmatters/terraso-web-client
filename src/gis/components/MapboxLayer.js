@@ -10,6 +10,19 @@ import { getLayerImage } from 'sharedData/visualization/visualizationMarkers';
 
 const DEFAULT_MARKER_OPACITY = 1;
 
+export const LAYER_TYPES = ['markers', 'polygons-outline', 'polygons-fill'];
+
+export const getLayerOpacity = (type, visualizationConfig) => {
+  const opacity =
+    visualizationConfig?.visualizeConfig?.opacity || DEFAULT_MARKER_OPACITY;
+  switch (type) {
+    case 'polygons-fill':
+      return opacity / 100;
+    default:
+      return DEFAULT_MARKER_OPACITY;
+  }
+};
+
 const getSourceBounds = async (map, sourceId) => {
   const source = map.getSource(sourceId);
   const loaded = source.loaded();
@@ -21,7 +34,7 @@ const getSourceBounds = async (map, sourceId) => {
     ? source
     : await new Promise(resolve => {
         map.on('sourcedata', () => {
-          const source = map.getSource('visualization');
+          const source = map.getSource(sourceId);
           if (source.loaded()) {
             resolve(source);
           }
@@ -72,11 +85,14 @@ const PopupContent = props => {
     </Box>
   );
 };
+
 const MapboxLayer = props => {
   const {
+    sourceName,
     visualizationConfig,
     showPopup,
     useConfigBounds,
+    changeBounds = true,
     useTileset,
     isMapFile,
   } = props;
@@ -95,9 +111,9 @@ const MapboxLayer = props => {
       isMapFile
         ? null
         : new mapboxgl.Popup({
-            className: 'visualization-marker-popup',
+            className: `${sourceName}-marker-popup`,
           }).setDOMContent(popupContainer),
-    [popupContainer, isMapFile]
+    [popupContainer, isMapFile, sourceName]
   );
 
   useEffect(() => {
@@ -150,7 +166,7 @@ const MapboxLayer = props => {
     if (!showPopup || !map) {
       return;
     }
-    const source = map.getSource('visualization');
+    const source = map.getSource(sourceName);
     if (!source) {
       return;
     }
@@ -165,6 +181,7 @@ const MapboxLayer = props => {
     map,
     visualizationConfig?.annotateConfig?.annotationTitle,
     visualizationConfig?.annotateConfig?.dataPoints,
+    sourceName,
   ]);
 
   useEffect(() => {
@@ -186,10 +203,13 @@ const MapboxLayer = props => {
       return new mapboxgl.LngLatBounds(sw, ne);
     })();
 
-    const sourceBounds = getSourceBounds(map, 'visualization');
+    const sourceBounds = getSourceBounds(map, sourceName);
 
     Promise.all([visualizationConfigBounds, sourceBounds]).then(
       ([visualizationConfigBounds, sourceBounds]) => {
+        if (!changeBounds) {
+          return;
+        }
         const bounds =
           useConfigBounds && visualizationConfigBounds
             ? visualizationConfigBounds
@@ -202,7 +222,13 @@ const MapboxLayer = props => {
         }
       }
     );
-  }, [map, visualizationConfig?.viewportConfig?.bounds, useConfigBounds]);
+  }, [
+    map,
+    visualizationConfig?.viewportConfig?.bounds,
+    useConfigBounds,
+    sourceName,
+    changeBounds,
+  ]);
 
   const layer = useMemo(() => {
     if (!map || (useSvg && !imageSvg)) {
@@ -211,7 +237,7 @@ const MapboxLayer = props => {
     const { size, color } = visualizationConfig?.visualizeConfig || {};
 
     return {
-      source: 'visualization',
+      source: sourceName,
       filter: ['==', '$type', 'Point'],
       ...(useSvg
         ? {
@@ -240,9 +266,8 @@ const MapboxLayer = props => {
     imageSvg,
     useTileset,
     map,
+    sourceName,
   ]);
-
-  console.log({ layer });
 
   const layerEvents = useMemo(() => {
     const pointer = map => () => {
@@ -257,11 +282,11 @@ const MapboxLayer = props => {
     return [
       ...(isMapFile
         ? []
-        : [['click', 'visualization-markers', onUnclusteredPointClick]]),
-      map => ['mouseenter', 'visualization-markers', pointer(map)],
-      map => ['mouseleave', 'visualization-markers', noPointer(map)],
+        : [['click', `${sourceName}-markers`, onUnclusteredPointClick]]),
+      map => ['mouseenter', `${sourceName}-markers`, pointer(map)],
+      map => ['mouseleave', `${sourceName}-markers`, noPointer(map)],
     ];
-  }, [isMapFile, openPopup]);
+  }, [isMapFile, openPopup, sourceName]);
 
   const layerImages = useMemo(
     () => (useSvg ? [{ name: 'custom-marker', content: imageSvg }] : []),
@@ -272,7 +297,7 @@ const MapboxLayer = props => {
     const { color } = visualizationConfig?.visualizeConfig || {};
     return {
       type: 'line',
-      source: 'visualization',
+      source: sourceName,
       layout: {},
       paint: {
         'line-color': color,
@@ -284,13 +309,14 @@ const MapboxLayer = props => {
     useTileset,
     visualizationConfig?.visualizeConfig,
     visualizationConfig?.tilesetId,
+    sourceName,
   ]);
 
   const layerPolygonFill = useMemo(() => {
     const { color, opacity } = visualizationConfig?.visualizeConfig || {};
     return {
       type: 'fill',
-      source: 'visualization',
+      source: sourceName,
       filter: ['==', '$type', 'Polygon'],
       paint: {
         'fill-color': color,
@@ -302,20 +328,24 @@ const MapboxLayer = props => {
     useTileset,
     visualizationConfig?.visualizeConfig,
     visualizationConfig?.tilesetId,
+    sourceName,
   ]);
 
   return (
     <>
       {layer && (
         <Layer
-          id="visualization-markers"
+          id={`${sourceName}-markers`}
           layer={layer}
           images={layerImages}
           events={layerEvents}
         />
       )}
-      <Layer id="visualization-polygons-outline" layer={layerPolygonOutline} />
-      <Layer id="visualization-polygons-fill" layer={layerPolygonFill} />
+      <Layer
+        id={`${sourceName}-polygons-outline`}
+        layer={layerPolygonOutline}
+      />
+      <Layer id={`${sourceName}-polygons-fill`} layer={layerPolygonFill} />
       <Portal container={popupContainer}>
         {popupData?.data && <PopupContent data={popupData.data} />}
       </Portal>

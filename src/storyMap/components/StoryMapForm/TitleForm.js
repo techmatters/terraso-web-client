@@ -67,7 +67,7 @@ const TitleForm = props => {
   }, []);
 
   const onLocationChangeWrapper = useCallback(
-    (location, mapStyle) => {
+    ({ location, mapStyle }) => {
       onFieldChange('titleTransition.location')(location);
       onFieldChange('style')(mapStyle);
       onLocationClose();

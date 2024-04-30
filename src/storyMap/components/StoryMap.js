@@ -33,6 +33,8 @@ import './StoryMap.css';
 import logger from 'terraso-client-shared/monitoring/logger';
 
 import Map, { MapContextConsumer } from 'gis/components/Map';
+import MapboxLayer from 'gis/components/MapboxLayer';
+import MapboxRemoteSource from 'gis/components/MapboxRemoteSource';
 
 import StoryMapOutline from './StoryMapOutline';
 
@@ -544,6 +546,23 @@ const StoryMap = props => {
               </InsetMap>
             )}
           </MapContextConsumer>
+
+          {!_.isEmpty(config.dataLayers) &&
+            Object.values(config.dataLayers).map(dataLayerConfig => (
+              <>
+                <MapboxRemoteSource
+                  sourceName={dataLayerConfig.id}
+                  visualizationConfig={dataLayerConfig}
+                />
+                <MapboxLayer
+                  sourceName={dataLayerConfig.id}
+                  visualizationConfig={dataLayerConfig}
+                  showPopup={false}
+                  useTileset={true}
+                  changeBounds={false}
+                />
+              </>
+            ))}
         </Map>
       </section>
       <Box id="story">
