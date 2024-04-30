@@ -31,10 +31,13 @@ import {
 
 import HelperText from 'common/components/HelperText';
 import Map, { useMap } from 'gis/components/Map';
+import MapboxLayer from 'gis/components/MapboxLayer';
+import MapboxRemoteSource from 'gis/components/MapboxRemoteSource';
 import MapControls from 'gis/components/MapControls';
 import MapGeocoder from 'gis/components/MapGeocoder';
 import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
 
+import DataLayerDialog from './DataLayerDialog';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 const BearingIcon = () => {
@@ -113,6 +116,45 @@ const SetMapHelperText = () => {
   );
 };
 
+const DataLayer = props => {
+  const { title, onConfirm } = props;
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+
+  const onConfirmWrapper = useCallback(
+    dataLayerConfig => {
+      console.log({ dataLayerConfig });
+      onConfirm(dataLayerConfig);
+      setOpen(false);
+    },
+    [onConfirm]
+  );
+
+  return (
+    <>
+      <Paper
+        variant="outlined"
+        sx={theme => ({
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0,
+          backgroundColor: 'gray.lite2',
+          p: theme.spacing(1, 2, 1, 2),
+        })}
+      >
+        <Button variant="outlined" size="small" onClick={() => setOpen(true)}>
+          {t('storyMap.form_location_add_data_layer_button')}
+        </Button>
+      </Paper>
+      <DataLayerDialog
+        title={title}
+        open={open}
+        onClose={() => setOpen(false)}
+        onConfirm={onConfirmWrapper}
+      />
+    </>
+  );
+};
+
 const MapLocationChange = props => {
   const { onPositionChange } = props;
   const { map } = useMap();
@@ -151,6 +193,7 @@ const MapLocationDialog = props => {
   const [mapPitch, setMapPitch] = useState(location?.pitch);
   const [mapBearing, setMapBearing] = useState(location?.bearing);
   const [mapStyle, setMapStyle] = useState();
+  const [dataLayerConfig, setDataLayerConfig] = useState();
 
   const initialLocation = useMemo(() => {
     if (location) {
@@ -213,6 +256,11 @@ const MapLocationDialog = props => {
     setMapStyle(newStyle.data);
   }, []);
 
+  const onAddDataLayer = useCallback(
+    dataLayerConfig => setDataLayerConfig(dataLayerConfig),
+    []
+  );
+
   return (
     <Dialog
       fullScreen
@@ -263,6 +311,7 @@ const MapLocationDialog = props => {
       </Stack>
 
       <DialogContent>
+        <DataLayer title={title} onConfirm={onAddDataLayer} />
         <Map
           use3dTerrain
           height="100%"
@@ -277,6 +326,17 @@ const MapLocationDialog = props => {
             onStyleChange={onStyleChange}
           />
           <MapLocationChange onPositionChange={handlePositionChange} />
+          {dataLayerConfig && (
+            <>
+              <MapboxRemoteSource visualizationConfig={dataLayerConfig} />
+              <MapboxLayer
+                visualizationConfig={dataLayerConfig}
+                showPopup={false}
+                useTileset={true}
+                // useConfigBounds={useConfigBounds}
+              />
+            </>
+          )}
         </Map>
       </DialogContent>
     </Dialog>

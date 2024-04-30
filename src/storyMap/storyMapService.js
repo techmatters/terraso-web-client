@@ -258,3 +258,31 @@ export const approveMembershipToken = ({ membership, token, accountEmail }) => {
       storyMap: extractStoryMap(response.storyMap),
     }));
 };
+
+export const fetchDataLayers = () => {
+  const query = graphql(`
+    query visualizationConfigs {
+      visualizationConfigs {
+        edges {
+          node {
+            ...visualizationConfigWithConfiguration
+            dataEntry {
+              ...dataEntry
+            }
+          }
+        }
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query)
+    .then(_.get('visualizationConfigs.edges'))
+    .then(list => list || Promise.reject('not_found'))
+    .then(
+      _.map(entry => ({
+        ...entry.node,
+        tilesetId: entry.node.mapboxTilesetId,
+        ...JSON.parse(entry.node.configuration),
+      }))
+    );
+};
