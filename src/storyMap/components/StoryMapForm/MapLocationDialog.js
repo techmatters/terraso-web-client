@@ -14,7 +14,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import * as turf from '@turf/helpers';
+import turfIntersect from '@turf/intersect';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import {
@@ -123,7 +131,6 @@ const DataLayer = props => {
 
   const onConfirmWrapper = useCallback(
     dataLayerConfig => {
-      console.log({ dataLayerConfig });
       onConfirm(dataLayerConfig);
       setOpen(false);
     },
@@ -169,6 +176,7 @@ const MapLocationChange = props => {
         zoom: map.getZoom(),
         pitch: map.getPitch(),
         bearing: map.getBearing(),
+        bounds: map.getBounds(),
       });
     };
     map.on('load', updatePosition);
@@ -194,6 +202,8 @@ const MapLocationDialog = props => {
   const [mapBearing, setMapBearing] = useState(location?.bearing);
   const [mapStyle, setMapStyle] = useState();
   const [dataLayerConfig, setDataLayerConfig] = useState();
+
+  const mapRef = useRef(null);
 
   const initialLocation = useMemo(() => {
     if (location) {
@@ -230,7 +240,11 @@ const MapLocationDialog = props => {
       pitch: mapPitch,
       bearing: mapBearing,
     });
-    onConfirm(location, mapStyle || config.style);
+    onConfirm({
+      location,
+      mapStyle: mapStyle || config.style,
+      dataLayerConfig,
+    });
   }, [
     onConfirm,
     mapCenter,
@@ -239,6 +253,7 @@ const MapLocationDialog = props => {
     mapBearing,
     mapStyle,
     config.style,
+    dataLayerConfig,
   ]);
 
   const handleCancel = useCallback(() => {
@@ -260,6 +275,41 @@ const MapLocationDialog = props => {
     dataLayerConfig => setDataLayerConfig(dataLayerConfig),
     []
   );
+
+  const changeBounds = useMemo(() => {
+    const currentBounds = mapRef.current?.getBounds();
+    if (!currentBounds) {
+      return true;
+    }
+    const dataLayerBounds = dataLayerConfig?.viewportConfig?.bounds;
+
+    const currentPoly = turf.polygon([
+      [
+        [currentBounds.getSouthWest().lng, currentBounds.getSouthWest().lat],
+        [currentBounds.getSouthWest().lng, currentBounds.getNorthEast().lat],
+        [currentBounds.getNorthEast().lng, currentBounds.getNorthEast().lat],
+        [currentBounds.getNorthEast().lng, currentBounds.getSouthWest().lat],
+        [currentBounds.getSouthWest().lng, currentBounds.getSouthWest().lat],
+      ],
+    ]);
+
+    const dataLayerPoly = turf.polygon([
+      [
+        [dataLayerBounds.southWest.lng, dataLayerBounds.southWest.lat],
+        [dataLayerBounds.southWest.lng, dataLayerBounds.northEast.lat],
+        [dataLayerBounds.northEast.lng, dataLayerBounds.northEast.lat],
+        [dataLayerBounds.northEast.lng, dataLayerBounds.southWest.lat],
+        [dataLayerBounds.southWest.lng, dataLayerBounds.southWest.lat],
+      ],
+    ]);
+
+    const intersection = turfIntersect(currentPoly, dataLayerPoly);
+
+    if (intersection) {
+      return false;
+    }
+    return true;
+  }, [dataLayerConfig]);
 
   return (
     <Dialog
@@ -313,6 +363,7 @@ const MapLocationDialog = props => {
       <DialogContent>
         <DataLayer title={title} onConfirm={onAddDataLayer} />
         <Map
+          ref={mapRef}
           use3dTerrain
           height="100%"
           initialLocation={initialLocation}
@@ -328,12 +379,17 @@ const MapLocationDialog = props => {
           <MapLocationChange onPositionChange={handlePositionChange} />
           {dataLayerConfig && (
             <>
-              <MapboxRemoteSource visualizationConfig={dataLayerConfig} />
+              <MapboxRemoteSource
+                sourceName={dataLayerConfig.id}
+                visualizationConfig={dataLayerConfig}
+              />
               <MapboxLayer
+                sourceName={dataLayerConfig.id}
                 visualizationConfig={dataLayerConfig}
                 showPopup={false}
                 useTileset={true}
-                // useConfigBounds={useConfigBounds}
+                useConfigBounds={true}
+                changeBounds={changeBounds}
               />
             </>
           )}

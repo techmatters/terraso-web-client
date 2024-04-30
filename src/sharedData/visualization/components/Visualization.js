@@ -102,7 +102,10 @@ const Visualization = props => {
         {!visualizationContext.loadingFile && (
           <>
             {useTileset ? (
-              <MapboxRemoteSource visualizationConfig={visualizationConfig} />
+              <MapboxRemoteSource
+                sourceName="visualization"
+                visualizationConfig={visualizationConfig}
+              />
             ) : (
               visualizationContext.fileContext && (
                 <FileContextSource
@@ -112,6 +115,7 @@ const Visualization = props => {
               )
             )}
             <MapboxLayer
+              sourceName="visualization"
               visualizationConfig={visualizationConfig}
               showPopup={isMapFile ? false : showPopup}
               useConfigBounds={useConfigBounds}

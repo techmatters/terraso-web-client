@@ -226,6 +226,21 @@ export const MapProvider = props => {
     [map]
   );
 
+  const removeSource = useCallback(
+    sourceName => {
+      if (!map) {
+        return;
+      }
+      try {
+        map.removeSource(sourceName);
+        setSources(_.omit(sourceName));
+      } catch (error) {
+        logger.warn('Error removing source', error);
+      }
+    },
+    [map]
+  );
+
   const addLayer = useCallback(
     (layer, before) => {
       if (!map) {
@@ -247,7 +262,7 @@ export const MapProvider = props => {
         return;
       }
       try {
-        map.removeLayer(layerId);
+        map?.removeLayer(layerId);
         setLayers(_.omit(layerId));
       } catch (error) {
         logger.warn('Error removing layer', error);
@@ -273,6 +288,7 @@ export const MapProvider = props => {
         addImage,
         removeImage,
         addSource,
+        removeSource,
         addLayer,
         removeLayer,
       }}
@@ -282,7 +298,7 @@ export const MapProvider = props => {
   );
 };
 
-const Map = props => {
+const Map = React.forwardRef((props, ref) => {
   const {
     id,
     mapStyle,
@@ -324,6 +340,10 @@ const Map = props => {
       bounds: validBounds ? bounds : undefined,
       ...(initialLocation ? initialLocation : {}),
     });
+
+    if (ref) {
+      ref.current = map;
+    }
 
     if (padding) {
       map.setPadding(padding);
@@ -381,6 +401,7 @@ const Map = props => {
     bounds,
     disableElevation,
     padding,
+    ref,
   ]);
 
   useEffect(() => {
@@ -420,6 +441,6 @@ const Map = props => {
       {children}
     </Box>
   );
-};
+});
 
 export default withWrapper(Map, MapProvider);
