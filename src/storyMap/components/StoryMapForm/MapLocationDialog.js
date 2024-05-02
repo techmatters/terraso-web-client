@@ -201,7 +201,7 @@ const MapLocationDialog = props => {
   const [mapPitch, setMapPitch] = useState(location?.pitch);
   const [mapBearing, setMapBearing] = useState(location?.bearing);
   const [mapStyle, setMapStyle] = useState();
-  const [dataLayerConfig, setDataLayerConfig] = useState();
+  const [dataLayerConfig, setDataLayerConfig] = useState(props.dataLayerConfig);
 
   const mapRef = useRef(null);
 
