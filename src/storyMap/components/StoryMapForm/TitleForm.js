@@ -20,6 +20,8 @@ import { useTranslation } from 'react-i18next';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import { Box, Button, Stack } from '@mui/material';
 
+import { getLayerOpacity, LAYER_TYPES } from 'gis/components/MapboxLayer';
+
 import StoryMapOutline from '../StoryMapOutline';
 import EditableText from './EditableText';
 import MapLocationDialog from './MapLocationDialog';
@@ -58,6 +60,28 @@ const TitleForm = props => {
     [setConfig]
   );
 
+  const onDataLayerChange = useCallback(
+    dataLayerConfig => {
+      const baseEvents = LAYER_TYPES.map(name => ({
+        layer: `${dataLayerConfig.id}-${name}`,
+        opacity: getLayerOpacity(name, dataLayerConfig),
+        duration: 0,
+      }));
+      const onChapterEnter = baseEvents;
+      const onChapterExit = baseEvents.map(_.set('opacity', 0));
+
+      setConfig(
+        _.flow(
+          _.set(`dataLayers.${dataLayerConfig.id}`, dataLayerConfig),
+          _.set('titleTransition.dataLayerConfigId', dataLayerConfig.id),
+          _.set('titleTransition.onChapterEnter', onChapterEnter),
+          _.set('titleTransition.onChapterExit', onChapterExit)
+        )
+      );
+    },
+    [setConfig]
+  );
+
   const onLocationClick = useCallback(() => {
     setLocationOpen(true);
   }, []);
@@ -67,12 +91,14 @@ const TitleForm = props => {
   }, []);
 
   const onLocationChangeWrapper = useCallback(
-    ({ location, mapStyle }) => {
+    ({ location, mapStyle, dataLayerConfig }) => {
       onFieldChange('titleTransition.location')(location);
       onFieldChange('style')(mapStyle);
+      onDataLayerChange(dataLayerConfig);
+
       onLocationClose();
     },
-    [onFieldChange, onLocationClose]
+    [onFieldChange, onLocationClose, onDataLayerChange]
   );
 
   const onTitleBlur = useCallback(
@@ -90,13 +116,20 @@ const TitleForm = props => {
       })}
       sx={{ opacity: 0.99, pb: '35vh' }}
     >
-      <MapLocationDialog
-        open={locationOpen}
-        location={config.titleTransition?.location}
-        title={t('storyMap.form_title_location_dialog_title')}
-        onClose={onLocationClose}
-        onConfirm={onLocationChangeWrapper}
-      />
+      {locationOpen && (
+        <MapLocationDialog
+          open={locationOpen}
+          location={config.titleTransition?.location}
+          dataLayerConfig={_.get(
+            `dataLayers.${_.get('titleTransition.dataLayerConfigId', config)}`,
+            config
+          )}
+          title={t('storyMap.form_title_location_dialog_title')}
+          onClose={onLocationClose}
+          onConfirm={onLocationChangeWrapper}
+        />
+      )}
+
       <Button
         variant="contained"
         startIcon={<GpsFixedIcon />}

@@ -265,7 +265,7 @@ export const MapProvider = props => {
         map?.removeLayer(layerId);
         setLayers(_.omit(layerId));
       } catch (error) {
-        logger.warn('Error removing layer', error);
+        logger.warn('Error removing layer', layerId);
       }
     },
     [map]
