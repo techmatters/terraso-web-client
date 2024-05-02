@@ -549,7 +549,7 @@ const StoryMap = props => {
 
           {!_.isEmpty(config.dataLayers) &&
             Object.values(config.dataLayers).map(dataLayerConfig => (
-              <>
+              <React.Fragment key={dataLayerConfig.id}>
                 <MapboxRemoteSource
                   sourceName={dataLayerConfig.id}
                   visualizationConfig={dataLayerConfig}
@@ -561,7 +561,7 @@ const StoryMap = props => {
                   useTileset={true}
                   changeBounds={false}
                 />
-              </>
+              </React.Fragment>
             ))}
         </Map>
       </section>

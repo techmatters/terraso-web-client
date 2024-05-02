@@ -61,6 +61,7 @@ const ChapterConfig = props => {
     children,
   } = props;
   const [locationOpen, setLocationOpen] = useState(false);
+  const { config } = useStoryMapConfigContext();
 
   const options = useMemo(
     () => [
@@ -105,14 +106,21 @@ const ChapterConfig = props => {
 
   return (
     <>
-      <MapLocationDialog
-        open={locationOpen}
-        location={chapter.location}
-        title={chapter.title}
-        chapterId={chapter.id}
-        onClose={onLocationClose}
-        onConfirm={onLocationChangeWrapper}
-      />
+      {locationOpen && (
+        <MapLocationDialog
+          open={locationOpen}
+          location={chapter.location}
+          dataLayerConfig={_.get(
+            `dataLayers.${chapter.dataLayerConfigId}`,
+            config
+          )}
+          title={chapter.title}
+          chapterId={chapter.id}
+          onClose={onLocationClose}
+          onConfirm={onLocationChangeWrapper}
+        />
+      )}
+
       <Grid container sx={{ width: hasVisualMedia ? '50vw' : '35vw' }}>
         <Grid item xs={11}>
           <Button
@@ -191,22 +199,23 @@ const ChapterForm = ({ theme, record }) => {
 
   const onDataLayerChange = useCallback(
     dataLayerConfig => {
+      const baseEvents = LAYER_TYPES.map(name => ({
+        layer: `${dataLayerConfig.id}-${name}`,
+        opacity: getLayerOpacity(name, dataLayerConfig),
+        duration: 0,
+      }));
+      const onChapterEnter = baseEvents;
+      const onChapterExit = baseEvents.map(_.set('opacity', 0));
+
       setConfig(config => ({
         ..._.set(`dataLayers.${dataLayerConfig.id}`, dataLayerConfig, config),
         chapters: config.chapters.map(chapter =>
           chapter.id === record.id
             ? {
                 ...chapter,
-                onChapterEnter: LAYER_TYPES.map(name => ({
-                  layer: `${dataLayerConfig.id}-${name}`,
-                  opacity: getLayerOpacity(name, dataLayerConfig),
-                  duration: 0,
-                })),
-                onChapterExit: LAYER_TYPES.map(name => ({
-                  layer: `${dataLayerConfig.id}-${name}`,
-                  opacity: 0,
-                  duration: 0,
-                })),
+                dataLayerConfigId: dataLayerConfig.id,
+                onChapterEnter,
+                onChapterExit,
               }
             : chapter
         ),

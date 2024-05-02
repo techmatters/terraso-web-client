@@ -11,11 +11,6 @@ const MapboxRemoteSource = props => {
       return;
     }
 
-    const currentSource = map.getSource(sourceName);
-    if (currentSource) {
-      return;
-    }
-
     addSource(sourceName, {
       type: 'vector',
       url: `mapbox://terraso.${tilesetId}`,
