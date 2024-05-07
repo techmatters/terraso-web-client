@@ -25,6 +25,7 @@ import * as turf from '@turf/helpers';
 import turfIntersect from '@turf/intersect';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Box,
   Button,
@@ -32,6 +33,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
   Paper,
   Stack,
   Typography,
@@ -47,6 +49,36 @@ import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
 
 import DataLayerDialog from './DataLayerDialog';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
+
+const getDatalayerBoundsIntersection = (currentBounds, dataLayerBounds) => {
+  if (!dataLayerBounds) {
+    return true;
+  }
+  if (!currentBounds) {
+    return false;
+  }
+  const currentPoly = turf.polygon([
+    [
+      [currentBounds.getSouthWest().lng, currentBounds.getSouthWest().lat],
+      [currentBounds.getSouthWest().lng, currentBounds.getNorthEast().lat],
+      [currentBounds.getNorthEast().lng, currentBounds.getNorthEast().lat],
+      [currentBounds.getNorthEast().lng, currentBounds.getSouthWest().lat],
+      [currentBounds.getSouthWest().lng, currentBounds.getSouthWest().lat],
+    ],
+  ]);
+
+  const dataLayerPoly = turf.polygon([
+    [
+      [dataLayerBounds.southWest.lng, dataLayerBounds.southWest.lat],
+      [dataLayerBounds.southWest.lng, dataLayerBounds.northEast.lat],
+      [dataLayerBounds.northEast.lng, dataLayerBounds.northEast.lat],
+      [dataLayerBounds.northEast.lng, dataLayerBounds.southWest.lat],
+      [dataLayerBounds.southWest.lng, dataLayerBounds.southWest.lat],
+    ],
+  ]);
+
+  return turfIntersect(currentPoly, dataLayerPoly);
+};
 
 const BearingIcon = () => {
   const { t } = useTranslation();
@@ -125,7 +157,7 @@ const SetMapHelperText = () => {
 };
 
 const DataLayer = props => {
-  const { title, onConfirm } = props;
+  const { title, onConfirm, dataLayerConfig } = props;
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
@@ -136,6 +168,10 @@ const DataLayer = props => {
     },
     [onConfirm]
   );
+
+  const onRemove = useCallback(() => {
+    onConfirm(null);
+  }, [onConfirm]);
 
   return (
     <>
@@ -148,9 +184,24 @@ const DataLayer = props => {
           p: theme.spacing(1, 2, 1, 2),
         })}
       >
-        <Button variant="outlined" size="small" onClick={() => setOpen(true)}>
-          {t('storyMap.form_location_add_data_layer_button')}
-        </Button>
+        {dataLayerConfig ? (
+          <>
+            <Trans
+              i18nKey="storyMap.form_location_add_data_layer_current"
+              values={{ title: dataLayerConfig.title }}
+            >
+              prefix
+              <strong>title</strong>
+            </Trans>
+            <IconButton onClick={onRemove}>
+              <DeleteIcon sx={{ color: 'blue.dark2' }} />
+            </IconButton>
+          </>
+        ) : (
+          <Button variant="outlined" size="small" onClick={() => setOpen(true)}>
+            {t('storyMap.form_location_add_data_layer_button')}
+          </Button>
+        )}
       </Paper>
       <DataLayerDialog
         title={title}
@@ -201,6 +252,7 @@ const MapLocationDialog = props => {
   const [mapPitch, setMapPitch] = useState(location?.pitch);
   const [mapBearing, setMapBearing] = useState(location?.bearing);
   const [mapStyle, setMapStyle] = useState();
+  const [changeBounds, setChangeBounds] = useState(false);
   const [dataLayerConfig, setDataLayerConfig] = useState(props.dataLayerConfig);
 
   const mapRef = useRef(null);
@@ -271,51 +323,16 @@ const MapLocationDialog = props => {
     setMapStyle(newStyle.data);
   }, []);
 
-  const onAddDataLayer = useCallback(
-    dataLayerConfig => setDataLayerConfig(dataLayerConfig),
-    []
-  );
-
-  const changeBounds = useMemo(() => {
-    const currentDataLayerId = props.dataLayerConfig?.id;
-    const newDataLayerId = dataLayerConfig?.id;
-    if (currentDataLayerId === newDataLayerId) {
-      return false;
-    }
-
+  const onAddDataLayer = useCallback(dataLayerConfig => {
     const currentBounds = mapRef.current?.getBounds();
-    if (!currentBounds) {
-      return true;
-    }
     const dataLayerBounds = dataLayerConfig?.viewportConfig?.bounds;
-
-    const currentPoly = turf.polygon([
-      [
-        [currentBounds.getSouthWest().lng, currentBounds.getSouthWest().lat],
-        [currentBounds.getSouthWest().lng, currentBounds.getNorthEast().lat],
-        [currentBounds.getNorthEast().lng, currentBounds.getNorthEast().lat],
-        [currentBounds.getNorthEast().lng, currentBounds.getSouthWest().lat],
-        [currentBounds.getSouthWest().lng, currentBounds.getSouthWest().lat],
-      ],
-    ]);
-
-    const dataLayerPoly = turf.polygon([
-      [
-        [dataLayerBounds.southWest.lng, dataLayerBounds.southWest.lat],
-        [dataLayerBounds.southWest.lng, dataLayerBounds.northEast.lat],
-        [dataLayerBounds.northEast.lng, dataLayerBounds.northEast.lat],
-        [dataLayerBounds.northEast.lng, dataLayerBounds.southWest.lat],
-        [dataLayerBounds.southWest.lng, dataLayerBounds.southWest.lat],
-      ],
-    ]);
-
-    const intersection = turfIntersect(currentPoly, dataLayerPoly);
-
-    if (intersection) {
-      return false;
-    }
-    return true;
-  }, [dataLayerConfig, props.dataLayerConfig]);
+    const intersection = getDatalayerBoundsIntersection(
+      currentBounds,
+      dataLayerBounds
+    );
+    setChangeBounds(!intersection);
+    setDataLayerConfig(dataLayerConfig);
+  }, []);
 
   return (
     <Dialog
@@ -367,7 +384,11 @@ const MapLocationDialog = props => {
       </Stack>
 
       <DialogContent>
-        <DataLayer title={title} onConfirm={onAddDataLayer} />
+        <DataLayer
+          title={title}
+          dataLayerConfig={dataLayerConfig}
+          onConfirm={onAddDataLayer}
+        />
         <Map
           ref={mapRef}
           use3dTerrain
