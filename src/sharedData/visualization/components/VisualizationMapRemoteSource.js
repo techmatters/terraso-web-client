@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { useMap } from './Map';
+import { useMap } from 'gis/components/Map';
 
 const MapboxRemoteSource = props => {
   const { sourceName, visualizationConfig } = props;
