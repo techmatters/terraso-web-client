@@ -95,11 +95,17 @@ const MapboxLayer = props => {
     changeBounds = true,
     useTileset,
     isMapFile,
+    opacity: initialOpacity,
   } = props;
   const { map } = useMap();
   const [imageSvg, setimageSvg] = useState();
   const [popupData, setPopupData] = useState(null);
   const popupContainer = useMemo(() => document.createElement('div'), []);
+
+  const getOpacity = useCallback(
+    fallback => (_.isNil(initialOpacity) ? fallback : initialOpacity),
+    [initialOpacity]
+  );
 
   const useSvg = useMemo(
     () => visualizationConfig?.visualizeConfig?.shape !== 'circle',
@@ -246,15 +252,20 @@ const MapboxLayer = props => {
               'icon-image': 'custom-marker',
               'icon-allow-overlap': true,
             },
+            paint: {
+              'icon-opacity': getOpacity(1),
+              'text-opacity': getOpacity(1),
+            },
           }
         : {
             type: 'circle',
             paint: {
               'circle-color': color,
               'circle-radius': size / 2.5,
-              'circle-opacity': DEFAULT_MARKER_OPACITY,
+              'circle-opacity': getOpacity(DEFAULT_MARKER_OPACITY),
               'circle-stroke-width': 2,
               'circle-stroke-color': color,
+              'circle-stroke-opacity': getOpacity(1),
             },
           }),
       ...(useTileset ? { 'source-layer': visualizationConfig?.tilesetId } : {}),
@@ -267,6 +278,7 @@ const MapboxLayer = props => {
     useTileset,
     map,
     sourceName,
+    getOpacity,
   ]);
 
   const layerEvents = useMemo(() => {
@@ -302,6 +314,7 @@ const MapboxLayer = props => {
       paint: {
         'line-color': color,
         'line-width': 3,
+        'line-opacity': getOpacity(1),
       },
       ...(useTileset ? { 'source-layer': visualizationConfig?.tilesetId } : {}),
     };
@@ -310,6 +323,7 @@ const MapboxLayer = props => {
     visualizationConfig?.visualizeConfig,
     visualizationConfig?.tilesetId,
     sourceName,
+    getOpacity,
   ]);
 
   const layerPolygonFill = useMemo(() => {
@@ -320,7 +334,7 @@ const MapboxLayer = props => {
       filter: ['==', '$type', 'Polygon'],
       paint: {
         'fill-color': color,
-        'fill-opacity': opacity / 100,
+        'fill-opacity': getOpacity(opacity / 100),
       },
       ...(useTileset ? { 'source-layer': visualizationConfig?.tilesetId } : {}),
     };
@@ -329,6 +343,7 @@ const MapboxLayer = props => {
     visualizationConfig?.visualizeConfig,
     visualizationConfig?.tilesetId,
     sourceName,
+    getOpacity,
   ]);
 
   return (
