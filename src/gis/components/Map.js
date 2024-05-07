@@ -258,14 +258,15 @@ export const MapProvider = props => {
 
   const removeLayer = useCallback(
     layerId => {
-      if (!map) {
+      if (!map || !map?.getStyle()) {
         return;
       }
+
       try {
         map?.removeLayer(layerId);
         setLayers(_.omit(layerId));
       } catch (error) {
-        logger.warn('Error removing layer', layerId);
+        logger.warn('Error removing layer', layerId, error);
       }
     },
     [map]
