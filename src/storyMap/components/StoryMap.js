@@ -564,6 +564,7 @@ const StoryMap = props => {
                   showPopup={false}
                   useTileset={true}
                   changeBounds={false}
+                  opacity={0}
                 />
               </React.Fragment>
             ))}
