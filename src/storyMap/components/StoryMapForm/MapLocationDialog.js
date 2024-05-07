@@ -41,11 +41,11 @@ import {
 
 import HelperText from 'common/components/HelperText';
 import Map, { useMap } from 'gis/components/Map';
-import MapboxLayer from 'gis/components/MapboxLayer';
-import MapboxRemoteSource from 'gis/components/MapboxRemoteSource';
 import MapControls from 'gis/components/MapControls';
 import MapGeocoder from 'gis/components/MapGeocoder';
 import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
+import VisualizationMapLayer from 'sharedData/visualization/components/VisualizationMapLayer';
+import VisualizationMapRemoteSource from 'sharedData/visualization/components/VisualizationMapRemoteSource';
 
 import DataLayerDialog from './DataLayerDialog';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
@@ -406,11 +406,11 @@ const MapLocationDialog = props => {
           <MapLocationChange onPositionChange={handlePositionChange} />
           {dataLayerConfig && (
             <>
-              <MapboxRemoteSource
+              <VisualizationMapRemoteSource
                 sourceName={dataLayerConfig.id}
                 visualizationConfig={dataLayerConfig}
               />
-              <MapboxLayer
+              <VisualizationMapLayer
                 sourceName={dataLayerConfig.id}
                 visualizationConfig={dataLayerConfig}
                 showPopup={false}

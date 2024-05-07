@@ -32,7 +32,10 @@ import {
 
 import { withProps } from 'react-hoc';
 
-import { getLayerOpacity, LAYER_TYPES } from 'gis/components/MapboxLayer';
+import {
+  getLayerOpacity,
+  LAYER_TYPES,
+} from 'sharedData/visualization/components/VisualizationMapLayer';
 import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
 
 import { ALIGNMENTS } from '../../storyMapConstants';

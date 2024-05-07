@@ -20,7 +20,10 @@ import { useTranslation } from 'react-i18next';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import { Box, Button, Stack } from '@mui/material';
 
-import { getLayerOpacity, LAYER_TYPES } from 'gis/components/MapboxLayer';
+import {
+  getLayerOpacity,
+  LAYER_TYPES,
+} from 'sharedData/visualization/components/VisualizationMapLayer';
 
 import StoryMapOutline from '../StoryMapOutline';
 import EditableText from './EditableText';

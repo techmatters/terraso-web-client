@@ -20,11 +20,11 @@ import './Visualization.css';
 
 import GeoJsonSource from 'gis/components/GeoJsonSource';
 import Map from 'gis/components/Map';
-import MapboxLayer from 'gis/components/MapboxLayer';
-import MapboxRemoteSource from 'gis/components/MapboxRemoteSource';
 import MapControls from 'gis/components/MapControls';
 import MapLoader from 'gis/components/MapLoader';
 import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
+import MapboxLayer from 'sharedData/visualization/components/VisualizationMapLayer';
+import MapboxRemoteSource from 'sharedData/visualization/components/VisualizationMapRemoteSource';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 
 import { sheetToGeoJSON } from '../visualizationUtils';
