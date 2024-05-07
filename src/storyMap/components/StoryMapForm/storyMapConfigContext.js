@@ -22,6 +22,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import _ from 'lodash/fp';
 import { v4 as uuidv4 } from 'uuid';
 
 const StoryMapConfigContext = createContext();
@@ -45,8 +46,25 @@ export const StoryMapConfigContextProvider = props => {
   const saved = useCallback(() => setIsDirty(false), []);
 
   const setConfigWrapper = useCallback(
-    newConfig => {
-      setConfig(newConfig);
+    newConfigSetter => {
+      setConfig(currentConfig => {
+        const newConfig =
+          typeof newConfigSetter === 'function'
+            ? newConfigSetter(currentConfig)
+            : newConfigSetter;
+
+        const usedDataLayersIds = _.flow(
+          _.flatMap(ids => ids),
+          _.compact
+        )([
+          newConfig.titleTransition.dataLayerConfigId,
+          newConfig.chapters.map(chapter => chapter.dataLayerConfigId),
+        ]);
+        return {
+          ...newConfig,
+          dataLayers: _.pick(usedDataLayersIds, newConfig.dataLayers),
+        };
+      });
       setIsDirty(true);
     },
     [setConfig]

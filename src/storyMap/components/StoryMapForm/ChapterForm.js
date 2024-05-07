@@ -199,21 +199,25 @@ const ChapterForm = ({ theme, record }) => {
 
   const onDataLayerChange = useCallback(
     dataLayerConfig => {
-      const baseEvents = LAYER_TYPES.map(name => ({
-        layer: `${dataLayerConfig.id}-${name}`,
-        opacity: getLayerOpacity(name, dataLayerConfig),
-        duration: 0,
-      }));
+      const baseEvents = dataLayerConfig
+        ? LAYER_TYPES.map(name => ({
+            layer: `${dataLayerConfig.id}-${name}`,
+            opacity: getLayerOpacity(name, dataLayerConfig),
+            duration: 0,
+          }))
+        : [];
       const onChapterEnter = baseEvents;
       const onChapterExit = baseEvents.map(_.set('opacity', 0));
 
       setConfig(config => ({
-        ..._.set(`dataLayers.${dataLayerConfig.id}`, dataLayerConfig, config),
+        ...(dataLayerConfig
+          ? _.set(`dataLayers.${dataLayerConfig.id}`, dataLayerConfig, config)
+          : config),
         chapters: config.chapters.map(chapter =>
           chapter.id === record.id
             ? {
                 ...chapter,
-                dataLayerConfigId: dataLayerConfig.id,
+                dataLayerConfigId: dataLayerConfig?.id,
                 onChapterEnter,
                 onChapterExit,
               }
