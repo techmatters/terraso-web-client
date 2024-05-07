@@ -317,6 +317,10 @@ const Scroller = props => {
 
   const getLayerPaintType = useCallback(
     layer => {
+      if (!map.getStyle()) {
+        return [];
+      }
+
       const layerType = map.getLayer(layer)?.type;
       if (!layerType) {
         logger.warn(`Layer ${layer} not found`);

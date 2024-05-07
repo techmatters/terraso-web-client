@@ -277,6 +277,12 @@ const MapLocationDialog = props => {
   );
 
   const changeBounds = useMemo(() => {
+    const currentDataLayerId = props.dataLayerConfig?.id;
+    const newDataLayerId = dataLayerConfig?.id;
+    if (currentDataLayerId === newDataLayerId) {
+      return false;
+    }
+
     const currentBounds = mapRef.current?.getBounds();
     if (!currentBounds) {
       return true;
@@ -309,7 +315,7 @@ const MapLocationDialog = props => {
       return false;
     }
     return true;
-  }, [dataLayerConfig]);
+  }, [dataLayerConfig, props.dataLayerConfig]);
 
   return (
     <Dialog
