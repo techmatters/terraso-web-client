@@ -278,11 +278,13 @@ export const fetchDataLayers = () => {
     .requestGraphQL(query)
     .then(_.get('visualizationConfigs.edges'))
     .then(list => list || Promise.reject('not_found'))
-    .then(
-      _.map(entry => ({
-        ...entry.node,
-        tilesetId: entry.node.mapboxTilesetId,
-        ...JSON.parse(entry.node.configuration),
-      }))
+    .then(list =>
+      list
+        .filter(entry => !!entry.node.mapboxTilesetId)
+        .map(entry => ({
+          ...entry.node,
+          tilesetId: entry.node.mapboxTilesetId,
+          ...JSON.parse(entry.node.configuration),
+        }))
     );
 };
