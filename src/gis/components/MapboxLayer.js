@@ -25,7 +25,7 @@ export const getLayerOpacity = (type, visualizationConfig) => {
 
 const getSourceBounds = async (map, sourceId) => {
   const source = map.getSource(sourceId);
-  const loaded = source.loaded();
+  const loaded = source?.loaded();
   if (!source) {
     return;
   }

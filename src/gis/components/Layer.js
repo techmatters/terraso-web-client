@@ -27,7 +27,7 @@ const Layer = props => {
       return;
     }
 
-    if (map.getLayer(id)) {
+    if (map.getStyle() && map.getLayer(id)) {
       removeLayer(id);
     }
 

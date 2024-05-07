@@ -267,7 +267,8 @@ export const fetchDataLayers = () => {
           node {
             ...visualizationConfigWithConfiguration
             dataEntry {
-              ...dataEntry
+              name
+              resourceType
             }
           }
         }
