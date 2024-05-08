@@ -23,6 +23,8 @@ import {
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
+import { MEMBERSHIP_TYPE_CLOSED } from 'collaboration/collaborationConstants';
+
 import { extractStoryMap } from './storyMapUtils';
 
 export const fetchSamples = (params, currentUser) => {
@@ -269,6 +271,27 @@ export const fetchDataLayers = () => {
             dataEntry {
               name
               resourceType
+              createdBy {
+                lastName
+                firstName
+              }
+              sharedResources {
+                edges {
+                  node {
+                    target {
+                      ... on GroupNode {
+                        name
+                        membershipList {
+                          membershipType
+                        }
+                      }
+                      ... on LandscapeNode {
+                        name
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -285,6 +308,17 @@ export const fetchDataLayers = () => {
         .map(entry => ({
           ...entry.node,
           tilesetId: entry.node.mapboxTilesetId,
+          dataEntry: {
+            ...entry.node.dataEntry,
+            sharedResources: entry.node.dataEntry.sharedResources?.edges.map(
+              edge => edge.node?.target.name
+            ),
+          },
+          isRestricted: entry.node.dataEntry.sharedResources?.edges.some(
+            edge =>
+              edge.node?.target?.membershipList?.membershipType ===
+              MEMBERSHIP_TYPE_CLOSED
+          ),
           ...JSON.parse(entry.node.configuration),
         }))
     );
