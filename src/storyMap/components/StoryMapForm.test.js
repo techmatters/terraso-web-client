@@ -738,6 +738,70 @@ test('StoryMapForm: Change chapter style', async () => {
   expect(saveCall[0].style).toEqual('newStyle');
 });
 
+test('StoryMapForm: Add data layer', async () => {
+  const map = {
+    ...baseMapOptions(),
+    getCenter: () => ({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
+    getZoom: () => 10,
+    getPitch: () => 64,
+    getBearing: () => 45,
+  };
+  mapboxgl.Map.mockReturnValue(map);
+  const { onSaveDraft } = await setup(BASE_CONFIG);
+
+  const chapter1 = screen.getByRole('region', {
+    name: 'Chapter: Chapter 1',
+  });
+
+  const locationDialogButton = within(chapter1).getByRole('button', {
+    name: 'Set Map Location',
+  });
+  await act(async () => fireEvent.click(locationDialogButton));
+
+  const dialog = screen.getByRole('dialog', {
+    name: 'Set map location for Chapter 1',
+  });
+
+  const addDataLayerButton = within(dialog).getByRole('button', {
+    name: 'Add Data Layer',
+  });
+  await act(async () => fireEvent.click(addDataLayerButton));
+
+  const dataMapDialog = screen.getByRole('dialog', {
+    name: 'Add a data layer to Chapter 1',
+  });
+
+  // const baseMapButton = within(dialog).getByRole('button', {
+  //   name: 'Change Style',
+  // });
+
+  // await act(async () => fireEvent.click(baseMapButton));
+
+  // await waitFor(() => {
+  //   expect(
+  //     screen.getByRole('button', { name: 'Set Location' })
+  //   ).toBeInTheDocument();
+  // });
+
+  // await act(async () =>
+  //   fireEvent.click(screen.getByRole('button', { name: 'Set Location' }))
+  // );
+
+  // await waitFor(() => {
+  //   expect(
+  //     screen.getByRole('button', { name: 'Save draft' })
+  //   ).toBeInTheDocument();
+  // });
+
+  // // Save
+  // await act(async () =>
+  //   fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
+  // );
+  // expect(onSaveDraft).toHaveBeenCalledTimes(1);
+  // const saveCall = onSaveDraft.mock.calls[0];
+  // expect(saveCall[0].style).toEqual('newStyle');
+});
+
 test('StoryMapForm: Move chapter down with menu', async () => {
   const trackEvent = jest.fn();
   useAnalytics.mockReturnValue({

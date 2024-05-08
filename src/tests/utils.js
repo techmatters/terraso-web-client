@@ -19,13 +19,13 @@ import React from 'react';
 // import for side effects to ensure config happens before running tests
 import 'config';
 
+import { act } from 'react';
 import {
   waitFor as baseWaitFor,
   cleanup,
   render as rtlRender,
 } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import { act } from 'react-dom/test-utils';
 import createStore from 'terrasoApi/store';
 
 import AppWrappers from 'layout/AppWrappers';
