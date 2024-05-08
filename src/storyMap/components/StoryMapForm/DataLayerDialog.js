@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
+  List as BaseList,
+  ListItem as BaseListItem,
   Box,
   Button,
   Card,
@@ -14,18 +16,30 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  List,
-  ListItem,
   ListItemIcon,
   Radio,
   RadioGroup,
+  Stack,
+  Typography,
 } from '@mui/material';
 
+import { withProps } from 'react-hoc';
+
+import { formatDate } from 'localization/utils';
 import { fetchDataLayers } from 'storyMap/storyMapSlice';
+
+const List = withProps(BaseList, {
+  component: withProps(Stack, { component: 'ul', spacing: 1 }),
+});
+const ListItem = withProps(BaseListItem, {
+  component: withProps(Card, {
+    component: withProps(Card, { component: 'li' }),
+  }),
+});
 
 const DataLayerDialog = props => {
   const { open, title, onClose, onConfirm } = props;
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { fetching, list: dataLayers } = useSelector(
     state => state.storyMap.dataLayers
   );
@@ -43,7 +57,7 @@ const DataLayerDialog = props => {
   }, [onConfirm, selected, dataLayersById]);
 
   return (
-    <Dialog fullScreen open={open}>
+    <Dialog open={open}>
       <DialogTitle component="h1" sx={{ pb: 0 }}>
         <IconButton size="small" sx={{ color: 'blue.dark' }} onClick={onClose}>
           <ArrowBackIcon />
@@ -72,7 +86,16 @@ const DataLayerDialog = props => {
           >
             <List>
               {dataLayers.map(dataLayer => (
-                <ListItem key={dataLayer.id} component={Card}>
+                <ListItem
+                  key={dataLayer.id}
+                  sx={theme => ({
+                    display: 'grid',
+                    justifyContent: 'stretch',
+                    rowGap: theme.spacing(1),
+                    gridTemplateColumns: '30px auto 180px',
+                    gridTemplateRows: '20px 30px',
+                  })}
+                >
                   <ListItemIcon>
                     <Radio
                       value={dataLayer.id}
@@ -81,9 +104,52 @@ const DataLayerDialog = props => {
                       inputProps={{ 'aria-label': dataLayer.title }}
                     />
                   </ListItemIcon>
-                  {dataLayer.title}
-                  {dataLayer.description}
-                  {dataLayer.dataEntry.title}
+                  <Typography
+                    component="h2"
+                    sx={{
+                      gridColumn: '2/4',
+                      fontWeight: '700',
+                      fontSize: '16px',
+                      color: 'blue.dark1',
+                    }}
+                  >
+                    {dataLayer.title}
+                  </Typography>
+                  <Typography sx={{ gridColumn: '2/3', color: 'blue.dark1' }}>
+                    {dataLayer.dataEntry.sharedResources.join(', ')}
+                  </Typography>
+                  <Typography sx={{ gridColumn: '3/4' }}>
+                    {t('sharedData.file_date_and_author', {
+                      date: formatDate(
+                        i18n.resolvedLanguage,
+                        dataLayer.createdAt
+                      ),
+                      user: dataLayer.createdBy,
+                    })}
+                  </Typography>
+                  {dataLayer.description && (
+                    <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
+                      {dataLayer.description}
+                    </Typography>
+                  )}
+                  <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
+                    {t(
+                      'storyMap.form_location_add_data_layer_dialog_source_file',
+                      {
+                        filename: `${dataLayer.dataEntry.name}.${dataLayer.dataEntry.resourceType}`,
+                      }
+                    )}
+                  </Typography>
+                  {dataLayer.isRestricted && (
+                    <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
+                      {t(
+                        'storyMap.form_location_add_data_layer_dialog_restricted',
+                        {
+                          user: dataLayer.dataEntry.createdBy,
+                        }
+                      )}
+                    </Typography>
+                  )}
                 </ListItem>
               ))}
             </List>
