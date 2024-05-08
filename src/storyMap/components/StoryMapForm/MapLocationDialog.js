@@ -182,6 +182,9 @@ const DataLayer = props => {
           borderBottomRightRadius: 0,
           backgroundColor: 'gray.lite2',
           p: theme.spacing(1, 2, 1, 2),
+          minHeight: '40px',
+          display: 'flex',
+          alignItems: 'center',
         })}
       >
         {dataLayerConfig ? (
@@ -191,7 +194,7 @@ const DataLayer = props => {
               values={{ title: dataLayerConfig.title }}
             >
               prefix
-              <strong>title</strong>
+              <Typography sx={{ fontWeight: 700, ml: 1 }}>title</Typography>
             </Trans>
             <IconButton onClick={onRemove}>
               <DeleteIcon sx={{ color: 'blue.dark2' }} />
