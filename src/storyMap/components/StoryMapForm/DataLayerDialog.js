@@ -50,6 +50,10 @@ const DataLayerDialog = props => {
     [dataLayers]
   );
 
+  const sortedDataLayers = useMemo(() => {
+    return _.sortBy([dataLayer => dataLayer.title?.toLowerCase()], dataLayers);
+  }, [dataLayers]);
+
   useFetchData(fetchDataLayers);
 
   const onConfirmWrapper = useCallback(() => {
@@ -100,7 +104,7 @@ const DataLayerDialog = props => {
               onChange={event => setSelected(event.target.value)}
             >
               <List>
-                {dataLayers.map(dataLayer => (
+                {sortedDataLayers.map(dataLayer => (
                   <ListItem
                     key={dataLayer.id}
                     sx={theme => ({
