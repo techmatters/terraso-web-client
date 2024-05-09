@@ -21,8 +21,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import * as turf from '@turf/helpers';
-import turfIntersect from '@turf/intersect';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -49,36 +47,6 @@ import VisualizationMapRemoteSource from 'sharedData/visualization/components/Vi
 
 import DataLayerDialog from './DataLayerDialog';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
-
-const getDatalayerBoundsIntersection = (currentBounds, dataLayerBounds) => {
-  if (!dataLayerBounds) {
-    return true;
-  }
-  if (!currentBounds) {
-    return false;
-  }
-  const currentPoly = turf.polygon([
-    [
-      [currentBounds.getSouthWest().lng, currentBounds.getSouthWest().lat],
-      [currentBounds.getSouthWest().lng, currentBounds.getNorthEast().lat],
-      [currentBounds.getNorthEast().lng, currentBounds.getNorthEast().lat],
-      [currentBounds.getNorthEast().lng, currentBounds.getSouthWest().lat],
-      [currentBounds.getSouthWest().lng, currentBounds.getSouthWest().lat],
-    ],
-  ]);
-
-  const dataLayerPoly = turf.polygon([
-    [
-      [dataLayerBounds.southWest.lng, dataLayerBounds.southWest.lat],
-      [dataLayerBounds.southWest.lng, dataLayerBounds.northEast.lat],
-      [dataLayerBounds.northEast.lng, dataLayerBounds.northEast.lat],
-      [dataLayerBounds.northEast.lng, dataLayerBounds.southWest.lat],
-      [dataLayerBounds.southWest.lng, dataLayerBounds.southWest.lat],
-    ],
-  ]);
-
-  return turfIntersect(currentPoly, dataLayerPoly);
-};
 
 const BearingIcon = () => {
   const { t } = useTranslation();
@@ -327,13 +295,7 @@ const MapLocationDialog = props => {
   }, []);
 
   const onAddDataLayer = useCallback(dataLayerConfig => {
-    const currentBounds = mapRef.current?.getBounds();
-    const dataLayerBounds = dataLayerConfig?.viewportConfig?.bounds;
-    const intersection = getDatalayerBoundsIntersection(
-      currentBounds,
-      dataLayerBounds
-    );
-    setChangeBounds(!intersection);
+    setChangeBounds(true);
     setDataLayerConfig(dataLayerConfig);
   }, []);
 
