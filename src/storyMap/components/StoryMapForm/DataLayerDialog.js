@@ -84,90 +84,92 @@ const DataLayerDialog = props => {
         <Typography variant="caption" component="p" sx={{ mt: 1 }}>
           {t('storyMap.form_location_add_data_layer_dialog_description')}
         </Typography>
-        <Typography variant="caption" component="p" sx={{ mt: 3 }}>
-          {t('storyMap.form_location_add_data_layer_dialog_layers_count', {
-            count: dataLayers.length,
-          })}
-        </Typography>
         {fetching ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
             <CircularProgress aria-label={t('common.loader_label')} />
           </Box>
         ) : (
-          <RadioGroup
-            value={selected}
-            onChange={event => setSelected(event.target.value)}
-          >
-            <List>
-              {dataLayers.map(dataLayer => (
-                <ListItem
-                  key={dataLayer.id}
-                  sx={theme => ({
-                    display: 'grid',
-                    justifyContent: 'stretch',
-                    rowGap: theme.spacing(1),
-                    gridTemplateColumns: '30px auto 180px',
-                    gridTemplateRows: '20px 30px',
-                  })}
-                >
-                  <ListItemIcon>
-                    <Radio
-                      value={dataLayer.id}
-                      edge="start"
-                      disableRipple
-                      inputProps={{ 'aria-label': dataLayer.title }}
-                    />
-                  </ListItemIcon>
-                  <Typography
-                    component="h2"
-                    sx={{
-                      gridColumn: '2/4',
-                      fontWeight: '700',
-                      fontSize: '16px',
-                      color: 'blue.dark1',
-                    }}
-                  >
-                    {dataLayer.title}
-                  </Typography>
-                  <Typography sx={{ gridColumn: '2/3', color: 'blue.dark1' }}>
-                    {dataLayer.dataEntry.sharedResources.join(', ')}
-                  </Typography>
-                  <Typography sx={{ gridColumn: '3/4' }}>
-                    {t('sharedData.file_date_and_author', {
-                      date: formatDate(
-                        i18n.resolvedLanguage,
-                        dataLayer.createdAt
-                      ),
-                      user: dataLayer.createdBy,
+          <>
+            <Typography variant="caption" component="p" sx={{ mt: 3 }}>
+              {t('storyMap.form_location_add_data_layer_dialog_layers_count', {
+                count: dataLayers.length,
+              })}
+            </Typography>
+            <RadioGroup
+              value={selected}
+              onChange={event => setSelected(event.target.value)}
+            >
+              <List>
+                {dataLayers.map(dataLayer => (
+                  <ListItem
+                    key={dataLayer.id}
+                    sx={theme => ({
+                      display: 'grid',
+                      justifyContent: 'stretch',
+                      rowGap: theme.spacing(1),
+                      gridTemplateColumns: '30px auto 180px',
+                      gridTemplateRows: '20px 30px',
                     })}
-                  </Typography>
-                  {dataLayer.description && (
-                    <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
-                      {dataLayer.description}
+                  >
+                    <ListItemIcon>
+                      <Radio
+                        value={dataLayer.id}
+                        edge="start"
+                        disableRipple
+                        inputProps={{ 'aria-label': dataLayer.title }}
+                      />
+                    </ListItemIcon>
+                    <Typography
+                      component="h2"
+                      sx={{
+                        gridColumn: '2/4',
+                        fontWeight: '700',
+                        fontSize: '16px',
+                        color: 'blue.dark1',
+                      }}
+                    >
+                      {dataLayer.title}
                     </Typography>
-                  )}
-                  <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
-                    {t(
-                      'storyMap.form_location_add_data_layer_dialog_source_file',
-                      {
-                        filename: `${dataLayer.dataEntry.name}.${dataLayer.dataEntry.resourceType}`,
-                      }
+                    <Typography sx={{ gridColumn: '2/3', color: 'blue.dark1' }}>
+                      {dataLayer.dataEntry.sharedResources.join(', ')}
+                    </Typography>
+                    <Typography sx={{ gridColumn: '3/4' }}>
+                      {t('sharedData.file_date_and_author', {
+                        date: formatDate(
+                          i18n.resolvedLanguage,
+                          dataLayer.createdAt
+                        ),
+                        user: dataLayer.createdBy,
+                      })}
+                    </Typography>
+                    {dataLayer.description && (
+                      <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
+                        {dataLayer.description}
+                      </Typography>
                     )}
-                  </Typography>
-                  {dataLayer.isRestricted && (
                     <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
                       {t(
-                        'storyMap.form_location_add_data_layer_dialog_restricted',
+                        'storyMap.form_location_add_data_layer_dialog_source_file',
                         {
-                          user: dataLayer.dataEntry.createdBy,
+                          filename: `${dataLayer.dataEntry.name}.${dataLayer.dataEntry.resourceType}`,
                         }
                       )}
                     </Typography>
-                  )}
-                </ListItem>
-              ))}
-            </List>
-          </RadioGroup>
+                    {dataLayer.isRestricted && (
+                      <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
+                        {t(
+                          'storyMap.form_location_add_data_layer_dialog_restricted',
+                          {
+                            user: dataLayer.dataEntry.createdBy,
+                          }
+                        )}
+                      </Typography>
+                    )}
+                  </ListItem>
+                ))}
+              </List>
+            </RadioGroup>
+          </>
         )}
       </DialogContent>
       <DialogActions
