@@ -57,7 +57,10 @@ const DataLayerDialog = props => {
   }, [onConfirm, selected, dataLayersById]);
 
   return (
-    <Dialog open={open}>
+    <Dialog
+      open={open}
+      sx={{ '& .MuiDialog-paper': { backgroundColor: 'gray.lite2' } }}
+    >
       <DialogTitle component="h1" sx={{ pb: 0 }}>
         <IconButton size="small" sx={{ color: 'blue.dark' }} onClick={onClose}>
           <ArrowBackIcon />
@@ -75,6 +78,17 @@ const DataLayerDialog = props => {
         )}
       </DialogTitle>
       <DialogContent>
+        <Typography sx={{ fontWeight: 700, mt: 2 }}>
+          {t('storyMap.form_location_add_data_layer_dialog_subtitle')}
+        </Typography>
+        <Typography variant="caption" component="p" sx={{ mt: 1 }}>
+          {t('storyMap.form_location_add_data_layer_dialog_description')}
+        </Typography>
+        <Typography variant="caption" component="p" sx={{ mt: 3 }}>
+          {t('storyMap.form_location_add_data_layer_dialog_layers_count', {
+            count: dataLayers.length,
+          })}
+        </Typography>
         {fetching ? (
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <CircularProgress aria-label={t('common.loader_label')} />
