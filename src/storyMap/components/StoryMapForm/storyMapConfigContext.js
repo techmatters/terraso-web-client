@@ -57,7 +57,7 @@ export const StoryMapConfigContextProvider = props => {
           _.flatMap(ids => ids),
           _.compact
         )([
-          newConfig.titleTransition.dataLayerConfigId,
+          newConfig.titleTransition?.dataLayerConfigId,
           newConfig.chapters.map(chapter => chapter.dataLayerConfigId),
         ]);
         return {
