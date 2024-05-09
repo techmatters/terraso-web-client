@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import bbox from '@turf/bbox';
 import _ from 'lodash/fp';
+import logger from 'terraso-client-shared/monitoring/logger';
 import { Box, Portal, Stack, Typography } from '@mui/material';
 
 import Layer from 'gis/components/Layer';
@@ -56,9 +57,18 @@ const getSourceBounds = async (map, sourceId) => {
   );
 };
 
+const parseJson = content => {
+  try {
+    return JSON.parse(content);
+  } catch (error) {
+    logger.warn('Failed to parse popup json content', error);
+  }
+  return [];
+};
+
 const PopupContent = props => {
   const { data } = props;
-  const fields = JSON.parse(data.fields);
+  const fields = parseJson(data.fields);
   const title = data.title;
 
   return (
