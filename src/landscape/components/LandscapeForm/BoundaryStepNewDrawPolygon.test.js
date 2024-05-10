@@ -103,6 +103,7 @@ test('LandscapeNew: Save form draw polygon boundary', async () => {
     addControl: jest.fn(),
     removeControl: jest.fn(),
     fitBounds: jest.fn(),
+    getStyle: jest.fn(),
     off: jest.fn(),
     getBounds: jest.fn().mockReturnValue({
       getSouthWest: jest.fn().mockReturnValue({
