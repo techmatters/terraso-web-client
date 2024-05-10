@@ -306,7 +306,7 @@ export const fetchDataLayers = () => {
       list
         .filter(entry => !!entry.node.mapboxTilesetId)
         .map(entry => ({
-          ...entry.node,
+          ..._.omit('configuration', entry.node),
           tilesetId: entry.node.mapboxTilesetId,
           dataEntry: {
             ...entry.node.dataEntry,
