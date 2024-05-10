@@ -102,6 +102,7 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
     addImage: jest.fn(),
     setTerrain: jest.fn(),
     fitBounds: jest.fn(),
+    getStyle: jest.fn(),
     hasImage: jest.fn(),
     setPadding: jest.fn(),
     dragRotate: { disable: jest.fn() },
