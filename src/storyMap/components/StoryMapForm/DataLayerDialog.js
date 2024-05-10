@@ -82,7 +82,10 @@ const DataLayerDialog = props => {
         )}
       </DialogTitle>
       <DialogContent>
-        <Typography sx={{ fontWeight: 700, mt: 2 }}>
+        <Typography
+          id="data-layer-dialog-subtitle"
+          sx={{ fontWeight: 700, mt: 2 }}
+        >
           {t('storyMap.form_location_add_data_layer_dialog_subtitle')}
         </Typography>
         <Typography variant="caption" component="p" sx={{ mt: 1 }}>
@@ -103,9 +106,10 @@ const DataLayerDialog = props => {
               value={selected}
               onChange={event => setSelected(event.target.value)}
             >
-              <List>
+              <List aria-labelledby="data-layer-dialog-subtitle">
                 {sortedDataLayers.map(dataLayer => (
                   <ListItem
+                    aria-label={dataLayer.title}
                     key={dataLayer.id}
                     sx={theme => ({
                       display: 'grid',
