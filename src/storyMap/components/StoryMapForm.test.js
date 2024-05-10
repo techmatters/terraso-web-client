@@ -904,9 +904,9 @@ test('StoryMapForm: Add data layer', async () => {
         'ac0853a2-99e4-4794-93ca-aafc89f361b6': expect.objectContaining({
           visualizeConfig: expect.anything(),
           mapboxTilesetId: expect.anything(),
-          dataEntry: expect.anything()
-        })
-      }
+          dataEntry: expect.anything(),
+        }),
+      },
     }),
     expect.anything()
   );
