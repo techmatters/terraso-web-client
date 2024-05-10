@@ -16,7 +16,9 @@
  */
 import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
+import { when } from 'jest-when';
 import scrollama from 'scrollama';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import { useAnalytics } from 'monitoring/analytics';
 import mapboxgl from 'gis/mapbox';
@@ -64,6 +66,64 @@ jest.mock('gis/components/MapStyleSwitcher', () => ({
   ),
 }));
 
+jest.mock('terraso-client-shared/terrasoApi/api');
+
+const VISUALIZATION_CONFIG_JSON = {
+  datasetConfig: {
+    dataColumns: { option: '', selectedColumns: ['', '', ''] },
+  },
+  annotateConfig: { dataPoints: [] },
+  viewportConfig: {
+    bounds: {
+      northEast: { lat: -0.001761313889005578, lng: -77.90754677404158 },
+      southWest: { lat: -0.34553971461512845, lng: -79.07181671821586 },
+    },
+  },
+  visualizeConfig: {
+    size: 15,
+    color: '#FF580D',
+    shape: 'circle',
+    opacity: 50,
+  },
+};
+
+const VISUALIZATION_CONFIG = {
+  id: 'ac0853a2-99e4-4794-93ca-aafc89f361b6',
+  title: 'Datalayer title 1',
+  description: 'Visualization description',
+  slug: 'map-title-1',
+  createdAt: '2024-01-10T15:36:11.684190+00:00',
+  createdBy: {
+    id: '9de58095-749a-4d62-b6e0-d0b6034d8949',
+    lastName: '',
+    firstName: 'Jose',
+  },
+  mapboxTilesetId: 'ac0853a299e4479493caaafc89f361b6',
+  configuration: JSON.stringify(VISUALIZATION_CONFIG_JSON),
+  dataEntry: {
+    name: 'Data Entry Name',
+    resourceType: 'geojson',
+    createdBy: {
+      lastName: 'Paez',
+      firstName: 'Maria',
+    },
+    sharedResources: {
+      edges: [
+        {
+          node: {
+            target: {
+              name: 'Private 1',
+              membershipList: {
+                membershipType: 'CLOSED',
+              },
+            },
+          },
+        },
+      ],
+    },
+  },
+};
+
 const baseMapOptions = () => ({
   onEvents: {},
   on: function (type, cb) {
@@ -85,6 +145,9 @@ const baseMapOptions = () => ({
   addLayer: jest.fn(),
   getLayer: jest.fn(),
   flyTo: jest.fn(),
+  getBounds: jest.fn(),
+  getStyle: jest.fn(),
+  fitBounds: jest.fn(),
 });
 
 const BASE_CONFIG = {
@@ -116,6 +179,20 @@ const BASE_CONFIG = {
 };
 
 beforeEach(() => {
+  mapboxgl.LngLatBounds = jest.fn();
+  mapboxgl.LngLatBounds.prototype = {
+    isEmpty: jest.fn().mockReturnValue(false),
+  };
+  mapboxgl.LngLat = jest.fn();
+  mapboxgl.Popup = jest.fn();
+  const Popup = {
+    setLngLat: jest.fn().mockReturnThis(),
+    setMaxWidth: jest.fn().mockReturnThis(),
+    setDOMContent: jest.fn().mockReturnThis(),
+    addTo: jest.fn().mockReturnThis(),
+    remove: jest.fn(),
+  };
+  mapboxgl.Popup.mockReturnValue(Popup);
   mapboxgl.NavigationControl = jest.fn();
   mapboxgl.Map = jest.fn();
   mapboxgl.Map.mockReturnValue(baseMapOptions());
@@ -747,6 +824,19 @@ test('StoryMapForm: Add data layer', async () => {
     getBearing: () => 45,
   };
   mapboxgl.Map.mockReturnValue(map);
+
+  when(terrasoApi.requestGraphQL)
+    .calledWith(expect.stringContaining('query visualizationConfigs'))
+    .mockResolvedValue({
+      visualizationConfigs: {
+        edges: [
+          {
+            node: VISUALIZATION_CONFIG,
+          },
+        ],
+      },
+    });
+
   const { onSaveDraft } = await setup(BASE_CONFIG);
 
   const chapter1 = screen.getByRole('region', {
@@ -754,7 +844,7 @@ test('StoryMapForm: Add data layer', async () => {
   });
 
   const locationDialogButton = within(chapter1).getByRole('button', {
-    name: 'Set Map Location',
+    name: 'Edit Map',
   });
   await act(async () => fireEvent.click(locationDialogButton));
 
@@ -771,35 +861,55 @@ test('StoryMapForm: Add data layer', async () => {
     name: 'Add a data layer to Chapter 1',
   });
 
-  // const baseMapButton = within(dialog).getByRole('button', {
-  //   name: 'Change Style',
-  // });
+  const dataLayerItem = within(dataMapDialog).getByRole('listitem', {
+    name: 'Datalayer title 1',
+  });
 
-  // await act(async () => fireEvent.click(baseMapButton));
+  const radioButton = within(dataLayerItem).getByRole('radio');
+  await act(async () => fireEvent.click(radioButton));
 
-  // await waitFor(() => {
-  //   expect(
-  //     screen.getByRole('button', { name: 'Set Location' })
-  //   ).toBeInTheDocument();
-  // });
+  const addMapButton = within(dataMapDialog).getByRole('button', {
+    name: 'Add Map',
+  });
+  await act(async () => fireEvent.click(addMapButton));
 
-  // await act(async () =>
-  //   fireEvent.click(screen.getByRole('button', { name: 'Set Location' }))
-  // );
+  await waitFor(() => {
+    expect(
+      within(dialog).getByRole('button', { name: 'Save Map' })
+    ).toBeInTheDocument();
+  });
+  const saveMapButton = within(dialog).getByRole('button', {
+    name: 'Save Map',
+  });
+  await act(async () => fireEvent.click(saveMapButton));
 
-  // await waitFor(() => {
-  //   expect(
-  //     screen.getByRole('button', { name: 'Save draft' })
-  //   ).toBeInTheDocument();
-  // });
+  await waitFor(() => {
+    expect(
+      screen.getByRole('button', { name: 'Save draft' })
+    ).toBeInTheDocument();
+  });
 
-  // // Save
-  // await act(async () =>
-  //   fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
-  // );
-  // expect(onSaveDraft).toHaveBeenCalledTimes(1);
-  // const saveCall = onSaveDraft.mock.calls[0];
-  // expect(saveCall[0].style).toEqual('newStyle');
+  // Save
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
+  );
+  expect(onSaveDraft).toHaveBeenCalledWith(
+    expect.objectContaining({
+      chapters: expect.arrayContaining([
+        expect.objectContaining({
+          dataLayerConfigId: 'ac0853a2-99e4-4794-93ca-aafc89f361b6',
+        }),
+      ]),
+      dataLayers: {
+        'ac0853a2-99e4-4794-93ca-aafc89f361b6': expect.objectContaining({
+          visualizeConfig: expect.anything(),
+          mapboxTilesetId: expect.anything(),
+          dataEntry: expect.anything()
+        })
+      }
+    }),
+    expect.anything()
+  );
 });
 
 test('StoryMapForm: Move chapter down with menu', async () => {
