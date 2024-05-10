@@ -202,6 +202,9 @@ const ChapterForm = ({ theme, record }) => {
 
   const onDataLayerChange = useCallback(
     dataLayerConfig => {
+      if (!dataLayerConfig?.id) {
+        return;
+      }
       const baseEvents = dataLayerConfig
         ? LAYER_TYPES.map(name => ({
             layer: `${dataLayerConfig.id}-${name}`,

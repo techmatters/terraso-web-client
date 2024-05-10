@@ -65,6 +65,10 @@ const TitleForm = props => {
 
   const onDataLayerChange = useCallback(
     dataLayerConfig => {
+      if (!dataLayerConfig?.id) {
+        return;
+      }
+
       const baseEvents = LAYER_TYPES.map(name => ({
         layer: `${dataLayerConfig.id}-${name}`,
         opacity: getLayerOpacity(name, dataLayerConfig),
