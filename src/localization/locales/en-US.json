@@ -1026,7 +1026,7 @@
         "form_location_add_data_layer_dialog_layers_count_one": "{{count}} data map is available for you",
         "form_location_add_data_layer_dialog_layers_count_other": "{{count}} data maps are available for you",
         "form_location_add_data_layer_dialog_source_file": "Source file: {{filename}}",
-        "form_location_add_data_layer_dialog_restricted": "This map has restricted access. Adding it to a story map may violate the access permission. Consulting with $t(user.full_name) is recommended.",
+        "form_location_add_data_layer_dialog_restricted": "This map has restricted access. Adding it to a story map will make it public. Consulting with $t(user.full_name) is recommended.",
         "form_location_add_data_layer_dialog_cancel": "Cancel",
         "form_location_add_data_layer_confirm": "Add Map",
         "share_dialog_title": "Invite Editors",
