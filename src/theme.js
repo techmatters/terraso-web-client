@@ -70,7 +70,8 @@ const colorTheme = createTheme({
       mid: '#D2EDF7',
       dark: '#2C7690',
       dark1: '#125A7E',
-      dark2: '#00344D',
+      dark2: '#076B8E',
+      dark3: '#00344D',
       background: '#F7FAFB', // rgba(44, 118, 144, 0.04) converted to hex for use on nonwhite background where alpha can't be used
     },
     black: '#000000',
