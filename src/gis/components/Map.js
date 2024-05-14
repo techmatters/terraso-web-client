@@ -235,7 +235,7 @@ export const MapProvider = props => {
         map.removeSource(sourceName);
         setSources(_.omit(sourceName));
       } catch (error) {
-        logger.warn('Error removing source', error);
+        logger.error('Error removing source', error);
       }
     },
     [map]
