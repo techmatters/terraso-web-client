@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
+  Alert,
   List as BaseList,
   ListItem as BaseListItem,
   Box,
@@ -97,11 +98,23 @@ const DataLayerDialog = props => {
           </Box>
         ) : (
           <>
-            <Typography variant="caption" component="p" sx={{ mt: 3 }}>
-              {t('storyMap.form_location_add_data_layer_dialog_layers_count', {
-                count: dataLayers.length,
-              })}
-            </Typography>
+            {_.isEmpty(dataLayers) ? (
+              <Alert severity="info" sx={{ mt: 2 }}>
+                {t(
+                  'storyMap.form_location_add_data_layer_dialog_layers_count_zero'
+                )}
+              </Alert>
+            ) : (
+              <Typography variant="caption" component="p" sx={{ mt: 3 }}>
+                {t(
+                  'storyMap.form_location_add_data_layer_dialog_layers_count',
+                  {
+                    count: dataLayers.length,
+                  }
+                )}
+              </Typography>
+            )}
+
             <RadioGroup
               value={selected}
               onChange={event => setSelected(event.target.value)}
@@ -189,7 +202,12 @@ const DataLayerDialog = props => {
         <Button onClick={onClose}>
           {t('storyMap.form_location_add_data_layer_dialog_cancel')}
         </Button>
-        <Button variant="contained" onClick={onConfirmWrapper} autoFocus>
+        <Button
+          variant="contained"
+          onClick={onConfirmWrapper}
+          autoFocus
+          disabled={fetching || _.isEmpty(selected)}
+        >
           {t('storyMap.form_location_add_data_layer_confirm')}
         </Button>
       </DialogActions>
