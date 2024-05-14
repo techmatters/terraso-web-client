@@ -717,7 +717,7 @@ test('StoryMapForm: Change chapter location', async () => {
   });
 
   const locationDialogButton = within(chapter1).getByRole('button', {
-    name: 'Set Map Location',
+    name: 'Edit Map',
   });
   await act(async () => fireEvent.click(locationDialogButton));
 
@@ -728,9 +728,7 @@ test('StoryMapForm: Change chapter location', async () => {
   await act(async () => map.onEvents['move']());
 
   await act(async () =>
-    fireEvent.click(
-      within(dialog).getByRole('button', { name: 'Set Location' })
-    )
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save Map' }))
   );
 
   await waitFor(() => {
@@ -776,7 +774,7 @@ test('StoryMapForm: Change chapter style', async () => {
   });
 
   const locationDialogButton = within(chapter1).getByRole('button', {
-    name: 'Set Map Location',
+    name: 'Edit Map',
   });
   await act(async () => fireEvent.click(locationDialogButton));
 
@@ -792,12 +790,12 @@ test('StoryMapForm: Change chapter style', async () => {
 
   await waitFor(() => {
     expect(
-      screen.getByRole('button', { name: 'Set Location' })
+      screen.getByRole('button', { name: 'Save Map' })
     ).toBeInTheDocument();
   });
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Set Location' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save Map' }))
   );
 
   await waitFor(() => {

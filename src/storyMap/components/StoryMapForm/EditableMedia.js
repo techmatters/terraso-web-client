@@ -366,7 +366,7 @@ const EditableImage = props => {
           sx={({ palette }) => ({
             backgroundColor: 'white',
             '&:hover': {
-              backgroundColor: palette.blue.dark2,
+              backgroundColor: palette.blue.dark3,
             },
           })}
         >
@@ -438,7 +438,7 @@ const EditableAudio = props => {
           sx={({ palette }) => ({
             backgroundColor: 'white',
             '&:hover': {
-              backgroundColor: palette.blue.dark2,
+              backgroundColor: palette.blue.dark3,
             },
           })}
         >
@@ -512,7 +512,7 @@ const EditableVideo = props => {
           sx={({ palette }) => ({
             backgroundColor: 'white',
             '&:hover': {
-              backgroundColor: palette.blue.dark2,
+              backgroundColor: palette.blue.dark3,
             },
           })}
         >
@@ -570,7 +570,7 @@ const EditableEmbedded = props => {
           sx={({ palette }) => ({
             backgroundColor: 'white',
             '&:hover': {
-              backgroundColor: palette.blue.dark2,
+              backgroundColor: palette.blue.dark3,
             },
           })}
         >
