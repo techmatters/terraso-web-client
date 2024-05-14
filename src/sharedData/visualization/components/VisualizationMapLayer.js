@@ -78,7 +78,7 @@ const parseJson = content => {
   try {
     return JSON.parse(content);
   } catch (error) {
-    logger.warn('Failed to parse popup json content', error);
+    logger.error('Failed to parse popup JSON content', error);
   }
   return [];
 };
