@@ -165,11 +165,16 @@ const DataLayer = props => {
               <Typography sx={{ fontWeight: 700, ml: 1 }}>title</Typography>
             </Trans>
             <IconButton onClick={onRemove}>
-              <DeleteIcon sx={{ color: 'blue.dark2' }} />
+              <DeleteIcon sx={{ color: 'blue.dark3' }} />
             </IconButton>
           </>
         ) : (
-          <Button variant="outlined" size="small" onClick={() => setOpen(true)}>
+          <Button
+            variant="outlined"
+            size="small"
+            sx={{ color: 'blue.dark2', borderColor: 'blue.dark2' }}
+            onClick={() => setOpen(true)}
+          >
             {t('storyMap.form_location_add_data_layer_button')}
           </Button>
         )}
