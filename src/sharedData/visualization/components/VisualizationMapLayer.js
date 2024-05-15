@@ -1,3 +1,20 @@
+/*
+ * Copyright © 2024 Technology Matters
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import bbox from '@turf/bbox';
 import _ from 'lodash/fp';
@@ -13,15 +30,14 @@ const DEFAULT_MARKER_OPACITY = 1;
 
 export const LAYER_TYPES = ['markers', 'polygons-outline', 'polygons-fill'];
 
+// Opacity range between 0 - 100
 export const getLayerOpacity = (type, visualizationConfig) => {
+  if (type !== 'polygons-fill') {
+    return DEFAULT_MARKER_OPACITY;
+  }
   const opacity =
     visualizationConfig?.visualizeConfig?.opacity || DEFAULT_MARKER_OPACITY;
-  switch (type) {
-    case 'polygons-fill':
-      return opacity / 100;
-    default:
-      return DEFAULT_MARKER_OPACITY;
-  }
+  return opacity / 100;
 };
 
 const getSourceBounds = async (map, sourceId) => {
@@ -61,7 +77,7 @@ const parseJson = content => {
   try {
     return JSON.parse(content);
   } catch (error) {
-    logger.warn('Failed to parse popup json content', error);
+    logger.error('Failed to parse popup JSON content', error);
   }
   return [];
 };
