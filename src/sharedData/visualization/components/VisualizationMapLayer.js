@@ -30,15 +30,14 @@ const DEFAULT_MARKER_OPACITY = 1;
 
 export const LAYER_TYPES = ['markers', 'polygons-outline', 'polygons-fill'];
 
+// Opacity range between 0 - 100
 export const getLayerOpacity = (type, visualizationConfig) => {
+  if (type !== 'polygons-fill') {
+    return DEFAULT_MARKER_OPACITY;
+  }
   const opacity =
     visualizationConfig?.visualizeConfig?.opacity || DEFAULT_MARKER_OPACITY;
-  switch (type) {
-    case 'polygons-fill':
-      return opacity / 100;
-    default:
-      return DEFAULT_MARKER_OPACITY;
-  }
+  return opacity / 100;
 };
 
 const getSourceBounds = async (map, sourceId) => {
