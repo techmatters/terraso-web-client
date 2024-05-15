@@ -222,7 +222,7 @@ const GroupList = () => {
               <Typography>First</Typography>
               <Typography>
                 Prefix
-                <Link component={RouterLink} to={`/groups/new`}>
+                <Link component={RouterLink} to="/groups/new">
                   to add
                 </Link>
                 .
