@@ -65,22 +65,23 @@ const TitleForm = props => {
 
   const onDataLayerChange = useCallback(
     dataLayerConfig => {
-      if (!dataLayerConfig?.id) {
-        return;
-      }
+      const baseEvents = dataLayerConfig
+        ? LAYER_TYPES.map(name => ({
+            layer: `${dataLayerConfig.id}-${name}`,
+            opacity: getLayerOpacity(name, dataLayerConfig),
+            duration: 0,
+          }))
+        : [];
 
-      const baseEvents = LAYER_TYPES.map(name => ({
-        layer: `${dataLayerConfig.id}-${name}`,
-        opacity: getLayerOpacity(name, dataLayerConfig),
-        duration: 0,
-      }));
       const onChapterEnter = baseEvents;
       const onChapterExit = baseEvents.map(_.set('opacity', 0));
 
       setConfig(
         _.flow(
-          _.set(`dataLayers.${dataLayerConfig.id}`, dataLayerConfig),
-          _.set('titleTransition.dataLayerConfigId', dataLayerConfig.id),
+          dataLayerConfig
+            ? _.set(`dataLayers.${dataLayerConfig.id}`, dataLayerConfig)
+            : _.identity,
+          _.set('titleTransition.dataLayerConfigId', dataLayerConfig?.id),
           _.set('titleTransition.onChapterEnter', onChapterEnter),
           _.set('titleTransition.onChapterExit', onChapterExit)
         )
