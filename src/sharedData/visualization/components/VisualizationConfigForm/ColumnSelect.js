@@ -47,7 +47,7 @@ const ColumnSelect = props => {
         )
       }
     >
-      <MenuItem sx={{ color: 'gray.mid2' }} value={''}>
+      <MenuItem sx={{ color: 'gray.mid2' }} value="">
         {t(placeholder)}
       </MenuItem>
       {options.map((option, index) => (

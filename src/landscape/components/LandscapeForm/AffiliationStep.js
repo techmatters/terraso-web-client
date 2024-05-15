@@ -136,7 +136,7 @@ const YearSelect = props => {
       labelId={`${id}-label`}
       id={id}
     >
-      <MenuItem value={''}>
+      <MenuItem value="">
         {t('landscape.form_profile_partnership_year_placeholder')}
       </MenuItem>
       {_.range(PARTNERSHIP_START_YEAR, new Date().getFullYear() + 1)
