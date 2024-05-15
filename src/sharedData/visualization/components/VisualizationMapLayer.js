@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
- 
+
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import bbox from '@turf/bbox';
 import _ from 'lodash/fp';
