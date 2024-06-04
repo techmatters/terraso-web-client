@@ -49,7 +49,7 @@
     "slate-react": "^0.104.0",
     "source-map-explorer": "^2.5.3",
     "terraso-client-shared": "github:techmatters/terraso-client-shared#3cc8574",
-    "use-debounce": "^10.0.0",
+    "use-debounce": "^10.0.1",
     "uuid": "^9.0.1",
     "web-vitals": "^3.5.2",
     "world-countries": "4.0.0",
