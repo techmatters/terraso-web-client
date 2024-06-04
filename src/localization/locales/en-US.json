@@ -159,7 +159,6 @@
                 "Collect data offline and online",
                 "Analyze and manage data"
             ],
-            "requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
             "external": "true"
         },
         "landscale": {
@@ -177,7 +176,6 @@
                 "Validate results through LandScale validation and local review",
                 "Publish results on the LandScale platform"
             ],
-            "requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
             "external": "true"
         },
         "learning_landscapes": {
@@ -194,7 +192,6 @@
                 "Learn how to practice Integrated Landscape Management",
                 "Develop your skills to achieve ILM outputs"
             ],
-            "requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
             "external": "true"
         },
         "storyMap": {
@@ -208,7 +205,7 @@
                 "caption": "Rocky Hill’s Story Map"
             },
             "description": ["Create beautiful map-based stories"],
-            "requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
+            "": "Modern web browser (Chrome, Edge, Firefox, Safari)",
             "external": "false"
         }
     },
