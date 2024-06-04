@@ -97,6 +97,7 @@ const ToolCard = ({ tool }) => {
 
   const external = t(`tools.${tool}.external`) === 'true';
   const LinkComponent = external ? ExternalLink : Link;
+  const requirements = t(`tools.${tool}.requirements`, '');
 
   return (
     <React.Fragment>
@@ -131,8 +132,12 @@ const ToolCard = ({ tool }) => {
               <Typography>{toolDescription}</Typography>
             )}
 
-            <Typography variant="h3">{t('tool.requirements')}</Typography>
-            <Typography>{t(`tools.${tool}.requirements`)}</Typography>
+            {requirements && (
+              <>
+                <Typography variant="h3">{t('tool.requirements')}</Typography>
+                <Typography>{t(`tools.${tool}.requirements`)}</Typography>
+              </>
+            )}
 
             {learnMoreUrl && (
               <Typography sx={{ mt: '1em' }}>
