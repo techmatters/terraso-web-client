@@ -22,6 +22,7 @@
     "prettier/prettier": "error",
     "testing-library/no-unnecessary-act": "off",
     "testing-library/prefer-find-by": "off",
-    "curly": "error"
+    "curly": "error",
+    "react/jsx-curly-brace-presence": "error"
   }
 }

@@ -192,7 +192,7 @@ const LandscapeList = () => {
         <Trans i18nKey="landscape.list_map_help">
           <Typography>
             Prefix
-            <Link component={RouterLink} to={`/landscapes/new`}>
+            <Link component={RouterLink} to="/landscapes/new">
               add link
             </Link>
             or
@@ -218,7 +218,7 @@ const LandscapeList = () => {
               <Typography>First</Typography>
               <Typography>
                 Prefix
-                <Link component={RouterLink} to={`/landscapes/new`}>
+                <Link component={RouterLink} to="/landscapes/new">
                   to add
                 </Link>
                 .

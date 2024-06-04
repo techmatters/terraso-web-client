@@ -180,6 +180,23 @@
             "requirements": "Navegador web moderno (Chrome, Edge, Firefox, Safari)",
             "external": "true"
         },
+        "learning_landscapes": {
+            "title": "Learning Landscapes",
+            "url": "https://learn.landscapes.global/",
+            "learn_more_url": "https://landscapes.global/",
+            "img": {
+                "height": "140",
+                "width": "250",
+                "src": "tools/learning-landscapes-screenshot.png",
+                "alt": "A list of chapters in a course, with one chapter selected."
+            },
+            "description": [
+                "Learn how to practice Integrated Landscape Management",
+                "Develop your skills to achieve ILM outputs"
+            ],
+            "requirements": "Navegador web moderno (Chrome, Edge, Firefox, Safari)",
+            "external": "true"
+        },
         "storyMap": {
             "title": "Terraso Story Maps",
             "url": "/tools/story-maps",

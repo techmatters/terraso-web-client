@@ -123,7 +123,7 @@ const CountrySelector = props => {
         )
       }
     >
-      <MenuItem value={''}>{t('landscape.form_location_select')}</MenuItem>
+      <MenuItem value="">{t('landscape.form_location_select')}</MenuItem>
       {countries.map((country, index) => (
         <MenuItem key={index} value={country.code}>
           {country.name}
