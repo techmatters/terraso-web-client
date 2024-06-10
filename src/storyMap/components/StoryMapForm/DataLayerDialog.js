@@ -81,6 +81,7 @@ const DataLayerDialog = props => {
   return (
     <Dialog
       open={open}
+      onClose={onClose}
       sx={{ '& .MuiDialog-paper': { backgroundColor: 'gray.lite2' } }}
     >
       <DialogTitle component="h1" sx={{ pb: 0 }}>
