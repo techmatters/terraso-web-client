@@ -217,6 +217,17 @@ beforeEach(() => {
   useAnalytics.mockReturnValue({
     trackEvent: jest.fn(),
   });
+  when(terrasoApi.requestGraphQL)
+    .calledWith(expect.stringContaining('query visualizationConfigs'))
+    .mockResolvedValue({
+      visualizationConfigs: {
+        edges: [
+          {
+            node: VISUALIZATION_CONFIG,
+          },
+        ],
+      },
+    });
 });
 
 const setup = async config => {
@@ -823,18 +834,6 @@ test('StoryMapForm: Add data layer', async () => {
   };
   mapboxgl.Map.mockReturnValue(map);
 
-  when(terrasoApi.requestGraphQL)
-    .calledWith(expect.stringContaining('query visualizationConfigs'))
-    .mockResolvedValue({
-      visualizationConfigs: {
-        edges: [
-          {
-            node: VISUALIZATION_CONFIG,
-          },
-        ],
-      },
-    });
-
   const { onSaveDraft } = await setup(BASE_CONFIG);
 
   const chapter1 = screen.getByRole('region', {
@@ -856,7 +855,7 @@ test('StoryMapForm: Add data layer', async () => {
   await act(async () => fireEvent.click(addDataLayerButton));
 
   const dataMapDialog = screen.getByRole('dialog', {
-    name: 'Add a data layer to Chapter 1',
+    name: 'Add a map layer to Chapter 1',
   });
 
   const dataLayerItem = within(dataMapDialog).getByRole('listitem', {
@@ -867,7 +866,7 @@ test('StoryMapForm: Add data layer', async () => {
   await act(async () => fireEvent.click(radioButton));
 
   const addMapButton = within(dataMapDialog).getByRole('button', {
-    name: 'Add Map',
+    name: 'Add Map Layer',
   });
   await act(async () => fireEvent.click(addMapButton));
 
