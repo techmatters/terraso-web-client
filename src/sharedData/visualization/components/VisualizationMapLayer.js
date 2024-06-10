@@ -73,7 +73,7 @@ const getSourceBounds = async (map, sourceId) => {
   );
 };
 
-const parseJson = content => {
+const parsePopupJsonFields = content => {
   try {
     return JSON.parse(content);
   } catch (error) {
@@ -84,7 +84,7 @@ const parseJson = content => {
 
 const PopupContent = props => {
   const { data } = props;
-  const fields = parseJson(data.fields);
+  const fields = parsePopupJsonFields(data.fields);
   const title = data.title;
 
   return (
