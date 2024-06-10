@@ -824,7 +824,7 @@ test('StoryMapForm: Change chapter style', async () => {
   expect(saveCall[0].style).toEqual('newStyle');
 });
 
-test('StoryMapForm: Add data layer', async () => {
+test('StoryMapForm: Add map layer', async () => {
   const map = {
     ...baseMapOptions(),
     getCenter: () => ({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
@@ -850,7 +850,7 @@ test('StoryMapForm: Add data layer', async () => {
   });
 
   const addDataLayerButton = within(dialog).getByRole('button', {
-    name: 'Add Data Layer',
+    name: 'Add Map Layer',
   });
   await act(async () => fireEvent.click(addDataLayerButton));
 
