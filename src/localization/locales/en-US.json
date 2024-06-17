@@ -1017,7 +1017,7 @@
         "form_location_helper_text_step_3_image_alt": "A screenshot of the Set Map Location screen. The “Set Location” button in the top right is circled.",
         "form_location_helper_text_bearing_icon_alt": "Bearing",
         "form_location_add_data_layer_button": "Add Map Layer",
-        "form_location_add_data_layer_current": "Data Layer: <1>{{title}}</1>",
+        "form_location_add_data_layer_current": "Map Layer: <1>{{title}}</1>",
         "form_location_add_data_layer_dialog_title": "<0>Add a map layer to </0><1>{{title}}</1>",
         "form_location_add_data_layer_dialog_title_blank": "Add a map layer to chapter",
         "form_location_add_data_layer_dialog_subtitle": "Select a map from your landscape or group",
