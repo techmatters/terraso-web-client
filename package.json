@@ -13,7 +13,7 @@
     "@mui/lab": "^5.0.0-alpha.170",
     "@mui/material": "^5.15.19",
     "@mui/x-data-grid": "^7.6.2",
-    "@reduxjs/toolkit": "^1.9.7",
+    "@reduxjs/toolkit": "^2.2.5",
     "@sentry/cli": "^2.32.1",
     "@sentry/react": "^8.7.0",
     "@turf/bbox": "^7.0.0",
