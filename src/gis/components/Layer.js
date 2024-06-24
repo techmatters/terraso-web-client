@@ -27,7 +27,7 @@ const Layer = props => {
       return;
     }
 
-    if (map.getLayer(id)) {
+    if (map.getStyle() && map.getLayer(id)) {
       removeLayer(id);
     }
 
@@ -42,14 +42,18 @@ const Layer = props => {
       ...layer,
     });
 
-    for (const index in events) {
-      const eventGenerator =
-        typeof events[index] === 'function'
-          ? events[index]
-          : () => events[index];
-      const eventParams = eventGenerator(map);
-      map.on(...eventParams);
-    }
+    const eventsParams =
+      events?.map((event, index) => {
+        const eventGenerator =
+          typeof event === 'function' ? event : () => event;
+        return eventGenerator(map);
+      }) || [];
+    eventsParams.forEach(eventParams => map.on(...eventParams));
+
+    return () => {
+      eventsParams.forEach(eventParams => map.off(...eventParams));
+      removeLayer(id);
+    };
   }, [
     id,
     map,

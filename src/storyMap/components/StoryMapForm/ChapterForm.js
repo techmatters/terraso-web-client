@@ -32,6 +32,10 @@ import {
 
 import { withProps } from 'react-hoc';
 
+import {
+  getLayerOpacity,
+  LAYER_TYPES,
+} from 'sharedData/visualization/components/VisualizationMapLayer';
 import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
 
 import { ALIGNMENTS } from '../../storyMapConstants';
@@ -56,9 +60,11 @@ const ChapterConfig = props => {
     chapter,
     onLocationChange,
     onMapStyleChange,
+    onDataLayerChange,
     children,
   } = props;
   const [locationOpen, setLocationOpen] = useState(false);
+  const { config } = useStoryMapConfigContext();
 
   const options = useMemo(
     () => [
@@ -90,26 +96,34 @@ const ChapterConfig = props => {
   }, []);
 
   const onLocationChangeWrapper = useCallback(
-    (location, mapStyle) => {
+    ({ location, mapStyle, dataLayerConfig }) => {
       onLocationChange(location);
       onMapStyleChange(mapStyle);
+      onDataLayerChange(dataLayerConfig);
       onLocationClose();
     },
-    [onLocationChange, onLocationClose, onMapStyleChange]
+    [onLocationChange, onLocationClose, onMapStyleChange, onDataLayerChange]
   );
 
   const hasVisualMedia = chapterHasVisualMedia(chapter);
 
   return (
     <>
-      <MapLocationDialog
-        open={locationOpen}
-        location={chapter.location}
-        title={chapter.title}
-        chapterId={chapter.id}
-        onClose={onLocationClose}
-        onConfirm={onLocationChangeWrapper}
-      />
+      {locationOpen && (
+        <MapLocationDialog
+          open={locationOpen}
+          location={chapter.location}
+          dataLayerConfig={_.get(
+            `dataLayers.${chapter.dataLayerConfigId}`,
+            config
+          )}
+          title={chapter.title}
+          chapterId={chapter.id}
+          onClose={onLocationClose}
+          onConfirm={onLocationChangeWrapper}
+        />
+      )}
+
       <Grid container sx={{ width: hasVisualMedia ? '50vw' : '35vw' }}>
         <Grid item xs={11}>
           <Button
@@ -186,6 +200,37 @@ const ChapterForm = ({ theme, record }) => {
     [setConfig]
   );
 
+  const onDataLayerChange = useCallback(
+    dataLayerConfig => {
+      const baseEvents = dataLayerConfig
+        ? LAYER_TYPES.map(name => ({
+            layer: `${dataLayerConfig.id}-${name}`,
+            opacity: getLayerOpacity(name, dataLayerConfig),
+            duration: 0,
+          }))
+        : [];
+      const onChapterEnter = baseEvents;
+      const onChapterExit = baseEvents.map(_.set('opacity', 0));
+
+      setConfig(config => ({
+        ...(dataLayerConfig
+          ? _.set(`dataLayers.${dataLayerConfig.id}`, dataLayerConfig, config)
+          : config),
+        chapters: config.chapters.map(chapter =>
+          chapter.id === record.id
+            ? {
+                ...chapter,
+                dataLayerConfigId: dataLayerConfig?.id,
+                onChapterEnter,
+                onChapterExit,
+              }
+            : chapter
+        ),
+      }));
+    },
+    [record.id, setConfig]
+  );
+
   return (
     <Box
       className={classList}
@@ -202,6 +247,7 @@ const ChapterForm = ({ theme, record }) => {
         onAlignmentChange={onFieldChange('alignment')}
         onLocationChange={onFieldChange('location')}
         onMapStyleChange={onMapStyleChange}
+        onDataLayerChange={onDataLayerChange}
       >
         <Stack
           className={`${theme} step-content`}
