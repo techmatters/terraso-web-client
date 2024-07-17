@@ -46,7 +46,7 @@
     "scrollama": "^3.2.0",
     "slate-history": "^0.100.0",
     "slate-hyperscript": "^0.100.0",
-    "slate-react": "^0.105.0",
+    "slate-react": "^0.107.0",
     "source-map-explorer": "^2.5.3",
     "terraso-client-shared": "github:techmatters/terraso-client-shared#3cc8574",
     "use-debounce": "^10.0.1",
