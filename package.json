@@ -51,7 +51,7 @@
     "terraso-client-shared": "github:techmatters/terraso-client-shared#3cc8574",
     "use-debounce": "^10.0.1",
     "uuid": "^10.0.0",
-    "web-vitals": "^4.0.1",
+    "web-vitals": "^4.2.1",
     "world-countries": "4.0.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.18.10/xlsx-0.18.10.tgz",
     "yup": "^1.4.0"
