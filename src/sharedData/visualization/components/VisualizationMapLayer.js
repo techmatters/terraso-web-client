@@ -73,18 +73,18 @@ const getSourceBounds = async (map, sourceId) => {
   );
 };
 
-const parsePopupJsonFields = content => {
+const parseMarkerPopupJsonFields = content => {
   try {
     return JSON.parse(content);
   } catch (error) {
-    logger.error('Failed to parse popup JSON content', error);
+    logger.error('Failed to marker defined fields JSON content', error);
   }
   return [];
 };
 
-const PopupContent = props => {
+const MarkerPopupContent = props => {
   const { data } = props;
-  const fields = parsePopupJsonFields(data.fields);
+  const fields = parseMarkerPopupJsonFields(data.fields);
   const title = data.title;
 
   return (
@@ -388,7 +388,7 @@ const MapboxLayer = props => {
       />
       <Layer id={`${sourceName}-polygons-fill`} layer={layerPolygonFill} />
       <Portal container={popupContainer}>
-        {popupData?.data && <PopupContent data={popupData.data} />}
+        {popupData?.data && <MarkerPopupContent data={popupData.data} />}
       </Portal>
     </>
   );
