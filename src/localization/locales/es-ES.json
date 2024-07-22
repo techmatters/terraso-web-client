@@ -1027,7 +1027,7 @@
         "form_location_add_data_layer_dialog_title_blank": "Agregar una capa de mapa al capítulo",
         "form_location_add_data_layer_dialog_subtitle": "Selecciona un mapa de tu paisaje o grupo",
         "form_location_add_data_layer_dialog_description": "A este capítulo se agregarán polígonos, líneas y puntos del mapa. Este contenido será visible para el público al publicar este story map.",
-        "form_location_add_data_layer_dialog_layers_count_zero": "No has agregado/creado ningún mapa en Terraso. Haz un mapa en un grupo o paisaje.",
+        "form_location_add_data_layer_dialog_layers_count_zero": "No has creado ningún mapa en Terraso. Haz un mapa en un grupo o paisaje.",
         "form_location_add_data_layer_dialog_layers_count_one": "{{count}} mapa está disponible",
         "form_location_add_data_layer_dialog_layers_count_other": "{{count}} mapas están disponibles",
         "form_location_add_data_layer_dialog_source_file": "Archivo fuente: {{filename}}",
