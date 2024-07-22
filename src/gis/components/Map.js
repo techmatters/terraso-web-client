@@ -258,7 +258,7 @@ export const MapProvider = props => {
 
   const removeLayer = useCallback(
     layerId => {
-      if (!map || !map?.getStyle()) {
+      if (!map?.getStyle()) {
         return;
       }
 
