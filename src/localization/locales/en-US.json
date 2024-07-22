@@ -1022,7 +1022,7 @@
         "form_location_add_data_layer_dialog_title_blank": "Add a map layer to chapter",
         "form_location_add_data_layer_dialog_subtitle": "Select a map from your landscape or group",
         "form_location_add_data_layer_dialog_description": "Polygons, lines, points from the map will be added to this chapter. This content will be visible to the public when publishing this story map.",
-        "form_location_add_data_layer_dialog_layers_count_zero": "You haven't added/created any maps in Terraso. Make a map in a group or landscape.",
+        "form_location_add_data_layer_dialog_layers_count_zero": "You haven’t created any maps in Terraso. Make a map in a group or landscape.",
         "form_location_add_data_layer_dialog_layers_count_one": "{{count}} map is available",
         "form_location_add_data_layer_dialog_layers_count_other": "{{count}} maps are available",
         "form_location_add_data_layer_dialog_source_file": "Source file: {{filename}}",
