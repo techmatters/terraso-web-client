@@ -48,6 +48,10 @@ const initialState = {
     delete: {},
     approve: {},
   },
+  dataLayers: {
+    fetching: true,
+    list: [],
+  },
 };
 
 export const fetchSamples = createAsyncThunk(
@@ -162,6 +166,11 @@ export const approveMembership = createAsyncThunk(
       storyMapTitle: title,
     },
   })
+);
+
+export const fetchDataLayers = createAsyncThunk(
+  'storyMap/fetchDataLayers',
+  storyMapService.fetchDataLayers
 );
 
 const storyMapSlice = createSlice({
@@ -390,6 +399,25 @@ const storyMapSlice = createSlice({
           }
           return userStoryMap;
         }),
+      },
+    }));
+
+    builder.addCase(fetchDataLayers.pending, state => ({
+      ...state,
+      dataLayers: initialState.dataLayers,
+    }));
+    builder.addCase(fetchDataLayers.rejected, state => ({
+      ...state,
+      dataLayers: {
+        fetching: false,
+        list: [],
+      },
+    }));
+    builder.addCase(fetchDataLayers.fulfilled, (state, action) => ({
+      ...state,
+      dataLayers: {
+        fetching: false,
+        list: action.payload,
       },
     }));
   },

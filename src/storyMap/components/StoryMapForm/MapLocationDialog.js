@@ -14,9 +14,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Box,
   Button,
@@ -24,6 +31,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
   Paper,
   Stack,
   Typography,
@@ -34,7 +42,10 @@ import Map, { useMap } from 'gis/components/Map';
 import MapControls from 'gis/components/MapControls';
 import MapGeocoder from 'gis/components/MapGeocoder';
 import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
+import VisualizationMapLayer from 'sharedData/visualization/components/VisualizationMapLayer';
+import VisualizationMapRemoteSource from 'sharedData/visualization/components/VisualizationMapRemoteSource';
 
+import DataLayerDialog from './DataLayerDialog';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 const BearingIcon = () => {
@@ -113,6 +124,71 @@ const SetMapHelperText = () => {
   );
 };
 
+const DataLayer = props => {
+  const { title, onConfirm, dataLayerConfig } = props;
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+
+  const onConfirmWrapper = useCallback(
+    dataLayerConfig => {
+      onConfirm(dataLayerConfig);
+      setOpen(false);
+    },
+    [onConfirm]
+  );
+
+  const onRemove = useCallback(() => {
+    onConfirm(null);
+  }, [onConfirm]);
+
+  return (
+    <>
+      <Paper
+        variant="outlined"
+        sx={theme => ({
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0,
+          backgroundColor: 'gray.lite2',
+          p: theme.spacing(1, 2, 1, 2),
+          minHeight: '40px',
+          display: 'flex',
+          alignItems: 'center',
+        })}
+      >
+        {dataLayerConfig ? (
+          <>
+            <Trans
+              i18nKey="storyMap.form_location_add_data_layer_current"
+              values={{ title: dataLayerConfig.title }}
+            >
+              prefix
+              <Typography sx={{ fontWeight: 700, ml: 1 }}>title</Typography>
+            </Trans>
+            <IconButton onClick={onRemove}>
+              <DeleteIcon sx={{ color: 'blue.dark3' }} />
+            </IconButton>
+          </>
+        ) : (
+          <Button
+            variant="outlined"
+            size="small"
+            sx={{ color: 'blue.dark2', borderColor: 'blue.dark2' }}
+            onClick={() => setOpen(true)}
+          >
+            {t('storyMap.form_location_add_data_layer_button')}
+          </Button>
+        )}
+      </Paper>
+      <DataLayerDialog
+        title={title}
+        open={open}
+        onClose={() => setOpen(false)}
+        onConfirm={onConfirmWrapper}
+      />
+    </>
+  );
+};
+
 const MapLocationChange = props => {
   const { onPositionChange } = props;
   const { map } = useMap();
@@ -127,6 +203,7 @@ const MapLocationChange = props => {
         zoom: map.getZoom(),
         pitch: map.getPitch(),
         bearing: map.getBearing(),
+        bounds: map.getBounds(),
       });
     };
     map.on('load', updatePosition);
@@ -151,6 +228,10 @@ const MapLocationDialog = props => {
   const [mapPitch, setMapPitch] = useState(location?.pitch);
   const [mapBearing, setMapBearing] = useState(location?.bearing);
   const [mapStyle, setMapStyle] = useState();
+  const [changeBounds, setChangeBounds] = useState(false);
+  const [dataLayerConfig, setDataLayerConfig] = useState(props.dataLayerConfig);
+
+  const mapRef = useRef(null);
 
   const initialLocation = useMemo(() => {
     if (location) {
@@ -187,7 +268,11 @@ const MapLocationDialog = props => {
       pitch: mapPitch,
       bearing: mapBearing,
     });
-    onConfirm(location, mapStyle || config.style);
+    onConfirm({
+      location,
+      mapStyle: mapStyle || config.style,
+      dataLayerConfig,
+    });
   }, [
     onConfirm,
     mapCenter,
@@ -196,6 +281,7 @@ const MapLocationDialog = props => {
     mapBearing,
     mapStyle,
     config.style,
+    dataLayerConfig,
   ]);
 
   const handleCancel = useCallback(() => {
@@ -211,6 +297,11 @@ const MapLocationDialog = props => {
 
   const onStyleChange = useCallback(({ newStyle }) => {
     setMapStyle(newStyle.data);
+  }, []);
+
+  const onAddDataLayer = useCallback(dataLayerConfig => {
+    setChangeBounds(true);
+    setDataLayerConfig(dataLayerConfig);
   }, []);
 
   return (
@@ -263,7 +354,13 @@ const MapLocationDialog = props => {
       </Stack>
 
       <DialogContent>
+        <DataLayer
+          title={title}
+          dataLayerConfig={dataLayerConfig}
+          onConfirm={onAddDataLayer}
+        />
         <Map
+          ref={mapRef}
           use3dTerrain
           height="100%"
           initialLocation={initialLocation}
@@ -277,6 +374,22 @@ const MapLocationDialog = props => {
             onStyleChange={onStyleChange}
           />
           <MapLocationChange onPositionChange={handlePositionChange} />
+          {dataLayerConfig && (
+            <>
+              <VisualizationMapRemoteSource
+                sourceName={dataLayerConfig.id}
+                visualizationConfig={dataLayerConfig}
+              />
+              <VisualizationMapLayer
+                sourceName={dataLayerConfig.id}
+                visualizationConfig={dataLayerConfig}
+                showPopup={false}
+                useTileset={true}
+                useConfigBounds={true}
+                changeBounds={changeBounds}
+              />
+            </>
+          )}
         </Map>
       </DialogContent>
     </Dialog>

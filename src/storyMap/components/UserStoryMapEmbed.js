@@ -45,7 +45,7 @@ const EmbedHeader = props => {
       justifyContent="flex-end"
       sx={{
         color: 'white',
-        bgcolor: 'blue.dark2',
+        bgcolor: 'blue.dark3',
         zIndex: 2,
         position: 'fixed',
         width: '100%',

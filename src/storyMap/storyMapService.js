@@ -23,6 +23,8 @@ import {
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
+import { MEMBERSHIP_TYPE_CLOSED } from 'collaboration/collaborationConstants';
+
 import { extractStoryMap } from './storyMapUtils';
 
 export const fetchSamples = (params, currentUser) => {
@@ -257,4 +259,67 @@ export const approveMembershipToken = ({ membership, token, accountEmail }) => {
       membership: response.membership,
       storyMap: extractStoryMap(response.storyMap),
     }));
+};
+
+export const fetchDataLayers = () => {
+  const query = graphql(`
+    query visualizationConfigs {
+      visualizationConfigs {
+        edges {
+          node {
+            ...visualizationConfigWithConfiguration
+            dataEntry {
+              name
+              resourceType
+              createdBy {
+                lastName
+                firstName
+              }
+              sharedResources {
+                edges {
+                  node {
+                    target {
+                      ... on GroupNode {
+                        name
+                        membershipList {
+                          membershipType
+                        }
+                      }
+                      ... on LandscapeNode {
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query)
+    .then(_.get('visualizationConfigs.edges'))
+    .then(list => list || Promise.reject('not_found'))
+    .then(list =>
+      list
+        .filter(entry => !!entry.node.mapboxTilesetId)
+        .map(entry => ({
+          ..._.omit('configuration', entry.node),
+          tilesetId: entry.node.mapboxTilesetId,
+          dataEntry: {
+            ...entry.node.dataEntry,
+            sharedResources: entry.node.dataEntry.sharedResources?.edges.map(
+              edge => edge.node?.target.name
+            ),
+          },
+          isRestricted: entry.node.dataEntry.sharedResources?.edges.some(
+            edge =>
+              edge.node?.target?.membershipList?.membershipType ===
+              MEMBERSHIP_TYPE_CLOSED
+          ),
+          ...JSON.parse(entry.node.configuration),
+        }))
+    );
 };

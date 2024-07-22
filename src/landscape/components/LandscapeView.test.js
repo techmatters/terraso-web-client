@@ -80,6 +80,7 @@ beforeEach(() => {
     addControl: jest.fn(),
     removeControl: jest.fn(),
     fitBounds: jest.fn(),
+    getStyle: jest.fn(),
     off: jest.fn(),
   };
 });
