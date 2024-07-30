@@ -86,7 +86,8 @@ const ListItemContainer = props => {
         display: 'grid',
         placeItems: 'center',
         placeContent: 'center',
-        gridTemplate: 'container',
+        gridTemplateColumns: '1fr',
+        gridTemplateRows: '1fr',
       }}
     >
       <Paper
@@ -94,7 +95,7 @@ const ListItemContainer = props => {
         component={withProps(Stack, { component: 'p' })}
         alignItems="center"
         sx={theme => ({
-          gridArea: 'container',
+          gridArea: '1/1/1/1',
           zIndex: 1,
           backgroundColor: 'gray.lite2',
           p: theme.spacing(1, 6),
@@ -107,7 +108,7 @@ const ListItemContainer = props => {
           {t('storyMap.form_location_add_data_layer_dialog_processing_message')}
         </span>
       </Paper>
-      <ListItem style={{ gridArea: 'container' }}>{children}</ListItem>
+      <ListItem style={{ gridArea: '1/1/1/1' }}>{children}</ListItem>
     </Box>
   );
 };
