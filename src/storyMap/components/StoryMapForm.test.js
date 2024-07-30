@@ -124,6 +124,13 @@ const VISUALIZATION_CONFIG = {
   },
 };
 
+const VISUALIZATION_CONFIG_PROCESSING = {
+  ...VISUALIZATION_CONFIG,
+  mapboxTilesetId: null,
+  id: '0f9cd329-ded8-4984-a8fd-5cb19c465382',
+  title: 'Datalayer title 2'
+}
+
 const baseMapOptions = () => ({
   onEvents: {},
   on: function (type, cb) {
@@ -224,6 +231,9 @@ beforeEach(() => {
         edges: [
           {
             node: VISUALIZATION_CONFIG,
+          },
+          {
+            node: VISUALIZATION_CONFIG_PROCESSING,
           },
         ],
       },
@@ -861,6 +871,12 @@ test('StoryMapForm: Add map layer', async () => {
   const dataLayerItem = within(dataMapDialog).getByRole('listitem', {
     name: 'Datalayer title 1',
   });
+
+  const dataLayerItemProcessing = within(dataMapDialog).getByRole('listitem', {
+    name: 'Datalayer title 2',
+  });
+  expect(within(dataLayerItemProcessing).getByText('Map Processing')).toBeInTheDocument()
+  expect(within(dataLayerItemProcessing).getByText('Try in a few minutes')).toBeInTheDocument()
 
   const radioButton = within(dataLayerItem).getByRole('radio');
   await act(async () => fireEvent.click(radioButton));
