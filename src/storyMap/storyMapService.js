@@ -303,23 +303,22 @@ export const fetchDataLayers = () => {
     .then(_.get('visualizationConfigs.edges'))
     .then(list => list || Promise.reject('not_found'))
     .then(list =>
-      list
-        .filter(entry => !!entry.node.mapboxTilesetId)
-        .map(entry => ({
-          ..._.omit('configuration', entry.node),
-          tilesetId: entry.node.mapboxTilesetId,
-          dataEntry: {
-            ...entry.node.dataEntry,
-            sharedResources: entry.node.dataEntry.sharedResources?.edges.map(
-              edge => edge.node?.target.name
-            ),
-          },
-          isRestricted: entry.node.dataEntry.sharedResources?.edges.some(
-            edge =>
-              edge.node?.target?.membershipList?.membershipType ===
-              MEMBERSHIP_TYPE_CLOSED
+      list.map(entry => ({
+        ..._.omit('configuration', entry.node),
+        tilesetId: entry.node.mapboxTilesetId,
+        dataEntry: {
+          ...entry.node.dataEntry,
+          sharedResources: entry.node.dataEntry.sharedResources?.edges.map(
+            edge => edge.node?.target.name
           ),
-          ...JSON.parse(entry.node.configuration),
-        }))
+        },
+        isRestricted: entry.node.dataEntry.sharedResources?.edges.some(
+          edge =>
+            edge.node?.target?.membershipList?.membershipType ===
+            MEMBERSHIP_TYPE_CLOSED
+        ),
+        processing: !entry.node.mapboxTilesetId,
+        ...JSON.parse(entry.node.configuration),
+      }))
     );
 };
