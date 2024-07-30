@@ -50,26 +50,22 @@ import { fetchDataLayers } from 'storyMap/storyMapSlice';
 const List = withProps(BaseList, {
   component: withProps(Stack, { component: 'ul', spacing: 1 }),
 });
-const ListItemLi = withProps(BaseListItem, {
-  component: withProps(Card, { component: 'li' }),
-  sx: theme => ({
-    display: 'grid',
-    justifyContent: 'stretch',
-    rowGap: theme.spacing(1),
-    gridTemplateColumns: '30px auto 180px',
-    gridTemplateRows: '20px 30px',
-  }),
+
+const listItemSx = theme => ({
+  display: 'grid',
+  justifyContent: 'stretch',
+  rowGap: theme.spacing(1),
+  gridTemplateColumns: '30px auto 180px',
+  gridTemplateRows: '20px 30px',
 });
 
+const ListItemLi = withProps(BaseListItem, {
+  component: withProps(Card, { component: 'li' }),
+  sx: listItemSx,
+});
 const ListItem = withProps(BaseListItem, {
   component: Card,
-  sx: theme => ({
-    display: 'grid',
-    justifyContent: 'stretch',
-    rowGap: theme.spacing(1),
-    gridTemplateColumns: '30px auto 180px',
-    gridTemplateRows: '20px 30px',
-  }),
+  sx: listItemSx,
 });
 
 const ListItemContainer = props => {
