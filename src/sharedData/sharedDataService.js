@@ -18,7 +18,11 @@ import _ from 'lodash/fp';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
-import { extractDataEntry, extractSharedResource } from './sharedDataUtils';
+import { TILESET_STATUS_READY } from 'sharedData/sharedDataConstants';
+import {
+  extractDataEntry,
+  extractSharedResource,
+} from 'sharedData/sharedDataUtils';
 
 import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
@@ -259,6 +263,10 @@ export const fetchVisualizationConfig = ({
     )
     .then(visualizationConfig => ({
       ...visualizationConfig,
+      mapboxTilesetId:
+        visualizationConfig.mapboxTilesetStatus === TILESET_STATUS_READY
+          ? visualizationConfig.mapboxTilesetId
+          : null,
       configuration: JSON.parse(visualizationConfig.configuration),
     }));
 };
