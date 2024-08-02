@@ -104,7 +104,9 @@ const ListItemContainer = props => {
           {t('storyMap.form_location_add_data_layer_dialog_processing_message')}
         </span>
       </Paper>
-      <ListItem style={{ gridArea: '1/1/1/1' }}>{children}</ListItem>
+      <ListItem style={{ gridArea: '1/1/1/1', opacity: 0.5 }}>
+        {children}
+      </ListItem>
     </Box>
   );
 };
@@ -112,11 +114,6 @@ const ListItemContainer = props => {
 const DataLayerListItem = props => {
   const { i18n, t } = useTranslation();
   const { dataLayer } = props;
-
-  const getTextColor = useCallback(
-    enableColor => (dataLayer.processing ? 'gray.mid2' : enableColor),
-    [dataLayer.processing]
-  );
 
   return (
     <ListItemContainer dataLayer={dataLayer}>
@@ -135,7 +132,7 @@ const DataLayerListItem = props => {
           gridColumn: '2/4',
           fontWeight: '700',
           fontSize: '16px',
-          color: getTextColor('blue.dark1'),
+          color: 'blue.dark1',
         }}
       >
         {dataLayer.title}
@@ -143,38 +140,29 @@ const DataLayerListItem = props => {
       <Typography
         sx={{
           gridColumn: '2/3',
-          color: getTextColor('blue.dark1'),
+          color: 'blue.dark1',
         }}
       >
         {dataLayer.dataEntry.sharedResources.join(', ')}
       </Typography>
-      <Typography sx={{ gridColumn: '3/4', color: getTextColor('primary') }}>
+      <Typography sx={{ gridColumn: '3/4' }}>
         {t('sharedData.file_date_and_author', {
           date: formatDate(i18n.resolvedLanguage, dataLayer.createdAt),
           user: dataLayer.createdBy,
         })}
       </Typography>
       {dataLayer.description && (
-        <Typography
-          variant="caption"
-          sx={{ gridColumn: '2/4', color: getTextColor('primary') }}
-        >
+        <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
           {dataLayer.description}
         </Typography>
       )}
-      <Typography
-        variant="caption"
-        sx={{ gridColumn: '2/4', color: getTextColor('primary') }}
-      >
+      <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
         {t('storyMap.form_location_add_data_layer_dialog_source_file', {
           filename: `${dataLayer.dataEntry.name}.${dataLayer.dataEntry.resourceType}`,
         })}
       </Typography>
       {dataLayer.isRestricted && (
-        <Typography
-          variant="caption"
-          sx={{ gridColumn: '2/4', color: getTextColor('primary') }}
-        >
+        <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
           {t('storyMap.form_location_add_data_layer_dialog_restricted', {
             user: dataLayer.dataEntry.createdBy,
           })}
