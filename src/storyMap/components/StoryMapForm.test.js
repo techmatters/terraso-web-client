@@ -22,6 +22,10 @@ import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import { useAnalytics } from 'monitoring/analytics';
 import mapboxgl from 'gis/mapbox';
+import {
+  TILESET_STATUS_PENDING,
+  TILESET_STATUS_READY,
+} from 'sharedData/sharedDataConstants';
 
 import StoryMapForm from './StoryMapForm';
 import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigContext';
@@ -99,6 +103,7 @@ const VISUALIZATION_CONFIG = {
     firstName: 'Jose',
   },
   mapboxTilesetId: 'ac0853a299e4479493caaafc89f361b6',
+  mapboxTilesetStatus: TILESET_STATUS_READY,
   configuration: JSON.stringify(VISUALIZATION_CONFIG_JSON),
   dataEntry: {
     name: 'Data Entry Name',
@@ -126,9 +131,18 @@ const VISUALIZATION_CONFIG = {
 
 const VISUALIZATION_CONFIG_PROCESSING = {
   ...VISUALIZATION_CONFIG,
-  mapboxTilesetId: null,
+  mapboxTilesetId: 'a6d0f54afefb4f83ad388f9f6723a1aa',
+  mapboxTilesetStatus: TILESET_STATUS_PENDING,
   id: '0f9cd329-ded8-4984-a8fd-5cb19c465382',
   title: 'Datalayer title 2',
+};
+
+const VISUALIZATION_CONFIG_NO_TILESET = {
+  ...VISUALIZATION_CONFIG,
+  mapboxTilesetId: null,
+  mapboxTilesetStatus: TILESET_STATUS_PENDING,
+  id: '0f9cd329-ded8-4984-a8fd-5cb19c465382',
+  title: 'Datalayer title 3',
 };
 
 const baseMapOptions = () => ({
@@ -234,6 +248,9 @@ beforeEach(() => {
           },
           {
             node: VISUALIZATION_CONFIG_PROCESSING,
+          },
+          {
+            node: VISUALIZATION_CONFIG_NO_TILESET,
           },
         ],
       },
@@ -871,9 +888,11 @@ test('StoryMapForm: Add map layer', async () => {
   const dataLayerItem = within(dataMapDialog).getByRole('listitem', {
     name: 'Datalayer title 1',
   });
-
   const dataLayerItemProcessing = within(dataMapDialog).getByRole('listitem', {
     name: 'Datalayer title 2',
+  });
+  const dataLayerItemNoTileset = within(dataMapDialog).queryByRole('listitem', {
+    name: 'Datalayer title 3',
   });
   expect(
     within(dataLayerItemProcessing).getByText('Map Processing')
@@ -881,6 +900,7 @@ test('StoryMapForm: Add map layer', async () => {
   expect(
     within(dataLayerItemProcessing).getByText('Try in a few minutes')
   ).toBeInTheDocument();
+  expect(dataLayerItemNoTileset).not.toBeInTheDocument();
 
   const radioButton = within(dataLayerItem).getByRole('radio');
   await act(async () => fireEvent.click(radioButton));
