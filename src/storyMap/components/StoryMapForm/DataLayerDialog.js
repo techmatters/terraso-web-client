@@ -197,11 +197,19 @@ const DataLayerDialog = props => {
     [dataLayers]
   );
 
-  const sortedDataLayers = useMemo(() => {
-    return _.sortBy([dataLayer => dataLayer.title?.toLowerCase()], dataLayers);
-  }, [dataLayers]);
+  const validDataLayers = useMemo(
+    () => dataLayers.filter(dataLayer => !!dataLayer.tilesetId),
+    [dataLayers]
+  );
 
-  useFetchData(fetchDataLayers);
+  const sortedDataLayers = useMemo(() => {
+    return _.sortBy(
+      [dataLayer => dataLayer.title?.toLowerCase()],
+      validDataLayers
+    );
+  }, [validDataLayers]);
+
+  useFetchData(useCallback(() => fetchDataLayers(), [open]));
 
   const onConfirmWrapper = useCallback(() => {
     onConfirm(dataLayersById[selected]);

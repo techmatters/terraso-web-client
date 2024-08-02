@@ -24,6 +24,7 @@ import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { graphql } from 'terrasoApi/shared/graphqlSchema';
 
 import { MEMBERSHIP_TYPE_CLOSED } from 'collaboration/collaborationConstants';
+import { TILESET_STATUS_PENDING } from 'sharedData/sharedDataConstants';
 
 import { extractStoryMap } from './storyMapUtils';
 
@@ -317,7 +318,9 @@ export const fetchDataLayers = () => {
             edge.node?.target?.membershipList?.membershipType ===
             MEMBERSHIP_TYPE_CLOSED
         ),
-        processing: !entry.node.mapboxTilesetId,
+        processing:
+          entry.node.mapboxTilesetStatus === TILESET_STATUS_PENDING &&
+          entry.node.mapboxTilesetId,
         ...JSON.parse(entry.node.configuration),
       }))
     );
