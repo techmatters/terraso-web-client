@@ -209,7 +209,7 @@ const DataLayerDialog = props => {
     );
   }, [validDataLayers]);
 
-  useFetchData(useCallback(() => fetchDataLayers(), [open]));
+  useFetchData(useCallback(() => (open ? fetchDataLayers() : null), [open]));
 
   const onConfirmWrapper = useCallback(() => {
     onConfirm(dataLayersById[selected]);
