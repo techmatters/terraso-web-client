@@ -1029,7 +1029,7 @@
         "form_location_add_data_layer_dialog_restricted": "This map has restricted access. Adding it to a story map will make it public. Consulting with $t(user.full_name) is recommended.",
         "form_location_add_data_layer_dialog_cancel": "Cancel",
         "form_location_add_data_layer_dialog_processing_title":"Map Processing",
-        "form_location_add_data_layer_dialog_processing_message":"Try in a few minutes",
+        "form_location_add_data_layer_dialog_processing_message":"Try again in a few minutes",
         "form_location_add_data_layer_confirm": "Add Map Layer",
         "share_dialog_title": "Invite Editors",
         "share_dialog_description": "Invite people to edit your story map. <1>Learn more about collaborating on story maps</1>.",
