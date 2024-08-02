@@ -19,8 +19,8 @@ import React from 'react';
 // import for side effects to ensure config happens before running tests
 import 'config';
 
-import { act } from 'react';
 import {
+  act,
   waitFor as baseWaitFor,
   cleanup,
   render as rtlRender,

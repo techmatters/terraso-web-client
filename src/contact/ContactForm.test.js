@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { render, screen } from 'tests/utils';
-import React, { act } from 'react';
+import { act, render, screen } from 'tests/utils';
+import React from 'react';
 import _ from 'lodash/fp';
 
 import { useScript } from 'custom-hooks';

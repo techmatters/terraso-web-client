@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { fireEvent, render, screen } from 'tests/utils';
-import React, { act } from 'react';
+import { act, fireEvent, render, screen } from 'tests/utils';
+import React from 'react';
 import { useLocation } from 'react-router-dom';
 
 import Navigation from 'navigation/components/Navigation';
