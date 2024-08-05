@@ -1,4 +1,3 @@
-import { useCallback, useMemo, useState } from 'react';
 /*
  * Copyright © 2024 Technology Matters
  *
@@ -16,6 +15,7 @@ import { useCallback, useMemo, useState } from 'react';
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import React, { useCallback, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -28,6 +28,7 @@ import {
   Box,
   Button,
   Card,
+  Chip,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -49,15 +50,94 @@ import { fetchDataLayers } from 'storyMap/storyMapSlice';
 const List = withProps(BaseList, {
   component: withProps(Stack, { component: 'ul', spacing: 1 }),
 });
+
 const ListItem = withProps(BaseListItem, {
-  component: withProps(Card, {
-    component: withProps(Card, { component: 'li' }),
+  component: withProps(Card, { component: 'li' }),
+  sx: ({ spacing }) => ({
+    display: 'grid',
+    justifyContent: 'stretch',
+    rowGap: spacing(1),
+    gridTemplateColumns: '30px auto 180px',
+    gridTemplateRows: '20px 30px',
+    p: 3,
   }),
 });
 
+const DataLayerListItem = props => {
+  const { i18n, t } = useTranslation();
+  const { dataLayer } = props;
+
+  const processing = dataLayer.processing;
+  const opacity = dataLayer.processing ? 0.5 : 1;
+
+  return (
+    <ListItem aria-label={dataLayer.title}>
+      {processing && (
+        <Chip
+          label={t('storyMap.form_location_add_data_layer_dialog_processing')}
+          sx={{ gridColumn: '1/4', justifySelf: 'flex-start', mb: 1 }}
+        />
+      )}
+      <ListItemIcon sx={{ gridColumn: '1/2', opacity }}>
+        <Radio
+          value={dataLayer.id}
+          edge="start"
+          disableRipple
+          inputProps={{ 'aria-label': dataLayer.title }}
+          disabled={processing}
+        />
+      </ListItemIcon>
+      <Typography
+        component="h2"
+        sx={{
+          gridColumn: '2/4',
+          fontWeight: '700',
+          fontSize: '16px',
+          color: 'blue.dark1',
+          opacity,
+        }}
+      >
+        {dataLayer.title}
+      </Typography>
+      <Typography
+        sx={{
+          gridColumn: '2/3',
+          color: 'blue.dark1',
+          opacity,
+        }}
+      >
+        {dataLayer.dataEntry.sharedResources.join(', ')}
+      </Typography>
+      <Typography sx={{ gridColumn: '3/4', opacity }}>
+        {t('sharedData.file_date_and_author', {
+          date: formatDate(i18n.resolvedLanguage, dataLayer.createdAt),
+          user: dataLayer.createdBy,
+        })}
+      </Typography>
+      {dataLayer.description && (
+        <Typography variant="caption" sx={{ gridColumn: '2/4', opacity }}>
+          {dataLayer.description}
+        </Typography>
+      )}
+      <Typography variant="caption" sx={{ gridColumn: '2/4', opacity }}>
+        {t('storyMap.form_location_add_data_layer_dialog_source_file', {
+          filename: `${dataLayer.dataEntry.name}.${dataLayer.dataEntry.resourceType}`,
+        })}
+      </Typography>
+      {dataLayer.isRestricted && (
+        <Typography variant="caption" sx={{ gridColumn: '2/4', opacity }}>
+          {t('storyMap.form_location_add_data_layer_dialog_restricted', {
+            user: dataLayer.dataEntry.createdBy,
+          })}
+        </Typography>
+      )}
+    </ListItem>
+  );
+};
+
 const DataLayerDialog = props => {
   const { open, title, onClose, onConfirm } = props;
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   const { fetching, list: dataLayers } = useSelector(
     state => state.storyMap.dataLayers
   );
@@ -68,11 +148,19 @@ const DataLayerDialog = props => {
     [dataLayers]
   );
 
-  const sortedDataLayers = useMemo(() => {
-    return _.sortBy([dataLayer => dataLayer.title?.toLowerCase()], dataLayers);
-  }, [dataLayers]);
+  const validDataLayers = useMemo(
+    () => dataLayers.filter(dataLayer => !!dataLayer.tilesetId),
+    [dataLayers]
+  );
 
-  useFetchData(fetchDataLayers);
+  const sortedDataLayers = useMemo(() => {
+    return _.sortBy(
+      [dataLayer => dataLayer.title?.toLowerCase()],
+      validDataLayers
+    );
+  }, [validDataLayers]);
+
+  useFetchData(useCallback(() => (open ? fetchDataLayers() : null), [open]));
 
   const onConfirmWrapper = useCallback(() => {
     onConfirm(dataLayersById[selected]);
@@ -139,72 +227,7 @@ const DataLayerDialog = props => {
             >
               <List aria-labelledby="data-layer-dialog-subtitle">
                 {sortedDataLayers.map(dataLayer => (
-                  <ListItem
-                    aria-label={dataLayer.title}
-                    key={dataLayer.id}
-                    sx={theme => ({
-                      display: 'grid',
-                      justifyContent: 'stretch',
-                      rowGap: theme.spacing(1),
-                      gridTemplateColumns: '30px auto 180px',
-                      gridTemplateRows: '20px 30px',
-                    })}
-                  >
-                    <ListItemIcon>
-                      <Radio
-                        value={dataLayer.id}
-                        edge="start"
-                        disableRipple
-                        inputProps={{ 'aria-label': dataLayer.title }}
-                      />
-                    </ListItemIcon>
-                    <Typography
-                      component="h2"
-                      sx={{
-                        gridColumn: '2/4',
-                        fontWeight: '700',
-                        fontSize: '16px',
-                        color: 'blue.dark1',
-                      }}
-                    >
-                      {dataLayer.title}
-                    </Typography>
-                    <Typography sx={{ gridColumn: '2/3', color: 'blue.dark1' }}>
-                      {dataLayer.dataEntry.sharedResources.join(', ')}
-                    </Typography>
-                    <Typography sx={{ gridColumn: '3/4' }}>
-                      {t('sharedData.file_date_and_author', {
-                        date: formatDate(
-                          i18n.resolvedLanguage,
-                          dataLayer.createdAt
-                        ),
-                        user: dataLayer.createdBy,
-                      })}
-                    </Typography>
-                    {dataLayer.description && (
-                      <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
-                        {dataLayer.description}
-                      </Typography>
-                    )}
-                    <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
-                      {t(
-                        'storyMap.form_location_add_data_layer_dialog_source_file',
-                        {
-                          filename: `${dataLayer.dataEntry.name}.${dataLayer.dataEntry.resourceType}`,
-                        }
-                      )}
-                    </Typography>
-                    {dataLayer.isRestricted && (
-                      <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
-                        {t(
-                          'storyMap.form_location_add_data_layer_dialog_restricted',
-                          {
-                            user: dataLayer.dataEntry.createdBy,
-                          }
-                        )}
-                      </Typography>
-                    )}
-                  </ListItem>
+                  <DataLayerListItem key={dataLayer.id} dataLayer={dataLayer} />
                 ))}
               </List>
             </RadioGroup>

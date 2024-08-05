@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { fireEvent, render, screen, waitFor, within } from 'tests/utils';
-import React, { act } from 'react';
+import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
+import React from 'react';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { useParams } from 'react-router-dom';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';

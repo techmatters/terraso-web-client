@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { fireEvent, render, screen, within } from 'tests/utils';
-import React, { act } from 'react';
+import { act, fireEvent, render, screen, within } from 'tests/utils';
+import React from 'react';
 import { when } from 'jest-when';
 import _ from 'lodash/fp';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';

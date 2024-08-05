@@ -1033,6 +1033,7 @@
         "form_location_add_data_layer_dialog_source_file": "Archivo fuente: {{filename}}",
         "form_location_add_data_layer_dialog_restricted": "Este mapa tiene acceso restringido. Agregarlo a un story map lo hará público. Se recomienda consultar con $t(user.full_name).",
         "form_location_add_data_layer_dialog_cancel": "Cancelar",
+        "form_location_add_data_layer_dialog_processing": "Procesando",
         "form_location_add_data_layer_confirm": "Agregar capa de mapa",
         "share_dialog_title": "Invitar a editores",
         "share_dialog_description": "Invita a personas a editar tu story map. <1>Más información sobre cómo colaborar en story maps</1>.",
