@@ -895,10 +895,7 @@ test('StoryMapForm: Add map layer', async () => {
     name: 'Datalayer title 3',
   });
   expect(
-    within(dataLayerItemProcessing).getByText('Map Processing')
-  ).toBeInTheDocument();
-  expect(
-    within(dataLayerItemProcessing).getByText('Try again in a few minutes')
+    within(dataLayerItemProcessing).getByText('Processing')
   ).toBeInTheDocument();
   expect(dataLayerItemNoTileset).not.toBeInTheDocument();
 
