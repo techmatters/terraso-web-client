@@ -28,6 +28,7 @@ import {
   Box,
   Button,
   Card,
+  Chip,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -35,7 +36,6 @@ import {
   DialogTitle,
   IconButton,
   ListItemIcon,
-  Paper,
   Radio,
   RadioGroup,
   Stack,
@@ -51,79 +51,40 @@ const List = withProps(BaseList, {
   component: withProps(Stack, { component: 'ul', spacing: 1 }),
 });
 
-const listItemSx = theme => ({
-  display: 'grid',
-  justifyContent: 'stretch',
-  rowGap: theme.spacing(1),
-  gridTemplateColumns: '30px auto 180px',
-  gridTemplateRows: '20px 30px',
-});
-
-const ListItemLi = withProps(BaseListItem, {
-  component: withProps(Card, { component: 'li' }),
-  sx: listItemSx,
-});
 const ListItem = withProps(BaseListItem, {
-  component: Card,
-  sx: listItemSx,
+  component: withProps(Card, { component: 'li' }),
+  sx: ({ spacing }) => ({
+    display: 'grid',
+    justifyContent: 'stretch',
+    rowGap: spacing(1),
+    gridTemplateColumns: '30px auto 180px',
+    gridTemplateRows: '20px 30px',
+    p: 3,
+  }),
 });
-
-const ListItemContainer = props => {
-  const { t } = useTranslation();
-  const { children, dataLayer } = props;
-  if (!dataLayer.processing) {
-    return <ListItemLi aria-label={dataLayer.title}>{children}</ListItemLi>;
-  }
-  return (
-    <Box
-      component="li"
-      aria-label={dataLayer.title}
-      sx={{
-        display: 'grid',
-        placeItems: 'center',
-        placeContent: 'center',
-        gridTemplateColumns: '1fr',
-        gridTemplateRows: '1fr',
-      }}
-    >
-      <Paper
-        variant="outlined"
-        component={withProps(Stack, { component: 'p' })}
-        alignItems="center"
-        sx={theme => ({
-          gridArea: '1/1/1/1',
-          zIndex: 1,
-          backgroundColor: 'gray.lite2',
-          p: theme.spacing(1, 6),
-        })}
-      >
-        <strong>
-          {t('storyMap.form_location_add_data_layer_dialog_processing_title')}
-        </strong>
-        <span>
-          {t('storyMap.form_location_add_data_layer_dialog_processing_message')}
-        </span>
-      </Paper>
-      <ListItem style={{ gridArea: '1/1/1/1', opacity: 0.5 }}>
-        {children}
-      </ListItem>
-    </Box>
-  );
-};
 
 const DataLayerListItem = props => {
   const { i18n, t } = useTranslation();
   const { dataLayer } = props;
 
+  const processing = dataLayer.processing;
+  const opacity = dataLayer.processing ? 0.5 : 1;
+
   return (
-    <ListItemContainer dataLayer={dataLayer}>
-      <ListItemIcon>
+    <ListItem aria-label={dataLayer.title}>
+      {processing && (
+        <Chip
+          label={t('storyMap.form_location_add_data_layer_dialog_processing')}
+          sx={{ gridColumn: '1/4', justifySelf: 'flex-start', mb: 1 }}
+        />
+      )}
+      <ListItemIcon sx={{ gridColumn: '1/2', opacity }}>
         <Radio
           value={dataLayer.id}
           edge="start"
           disableRipple
           inputProps={{ 'aria-label': dataLayer.title }}
-          disabled={dataLayer.processing}
+          disabled={processing}
         />
       </ListItemIcon>
       <Typography
@@ -133,6 +94,7 @@ const DataLayerListItem = props => {
           fontWeight: '700',
           fontSize: '16px',
           color: 'blue.dark1',
+          opacity,
         }}
       >
         {dataLayer.title}
@@ -141,34 +103,35 @@ const DataLayerListItem = props => {
         sx={{
           gridColumn: '2/3',
           color: 'blue.dark1',
+          opacity,
         }}
       >
         {dataLayer.dataEntry.sharedResources.join(', ')}
       </Typography>
-      <Typography sx={{ gridColumn: '3/4' }}>
+      <Typography sx={{ gridColumn: '3/4', opacity }}>
         {t('sharedData.file_date_and_author', {
           date: formatDate(i18n.resolvedLanguage, dataLayer.createdAt),
           user: dataLayer.createdBy,
         })}
       </Typography>
       {dataLayer.description && (
-        <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
+        <Typography variant="caption" sx={{ gridColumn: '2/4', opacity }}>
           {dataLayer.description}
         </Typography>
       )}
-      <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
+      <Typography variant="caption" sx={{ gridColumn: '2/4', opacity }}>
         {t('storyMap.form_location_add_data_layer_dialog_source_file', {
           filename: `${dataLayer.dataEntry.name}.${dataLayer.dataEntry.resourceType}`,
         })}
       </Typography>
       {dataLayer.isRestricted && (
-        <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
+        <Typography variant="caption" sx={{ gridColumn: '2/4', opacity }}>
           {t('storyMap.form_location_add_data_layer_dialog_restricted', {
             user: dataLayer.dataEntry.createdBy,
           })}
         </Typography>
       )}
-    </ListItemContainer>
+    </ListItem>
   );
 };
 
