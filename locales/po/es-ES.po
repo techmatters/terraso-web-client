@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-03-29T13:46:05.794Z\n"
-"PO-Revision-Date: 2022-03-29T13:46:05.794Z\n"
+"POT-Creation-Date: 2024-08-09T16:28:16.131Z\n"
+"PO-Revision-Date: 2024-08-09T16:28:16.131Z\n"
 
 msgid "home##title"
 msgstr "Inicio"
@@ -14,11 +14,20 @@ msgstr "Inicio"
 msgid "home##error"
 msgstr "Error al cargar datos. {{error}}"
 
-msgid "user##login"
-msgstr "Iniciar sesión"
-
 msgid "group##create"
 msgstr "Crear un grupo"
+
+msgid "group##img##src"
+msgstr "groups.png"
+
+msgid "group##added"
+msgstr "Grupo agregado “{{name}}.”"
+
+msgid "group##updated"
+msgstr "Grupo actualizado “{{name}}.”"
+
+msgid "group##unique"
+msgstr "El grupo “{{body.variables.input.name}}” ya existe."
 
 msgid "tool##avilability"
 msgstr "Disponibilidad"
@@ -26,72 +35,158 @@ msgstr "Disponibilidad"
 msgid "tool##requirements"
 msgstr "Requisitos del sistema"
 
+msgid "tool##description"
+msgstr "Utiliza esta herramienta para"
+
 msgid "tools##kobo##title"
-msgstr "KoBoToolbox"
+msgstr "KoboToolbox"
+
+msgid "tools##kobo##pronunciation"
+msgstr "Kobo Toolbox"
 
 msgid "tools##kobo##url"
 msgstr "https://www.kobotoolbox.org/"
 
 msgid "tools##kobo##img##height"
-msgstr "222"
+msgstr "140"
 
 msgid "tools##kobo##img##width"
-msgstr "377"
+msgstr "250"
 
 msgid "tools##kobo##img##src"
-msgstr "kobo.png"
+msgstr "tools/kobotoolbox-screenshot.png"
+
+msgid "tools##kobo##img##alt"
+msgstr ""
+"Un teléfono, una computadora portátil y una tableta, cada uno de los cuales "
+"muestra un formulario de recopilación de datos. El logotipo de la "
+"herramienta está en primer plano."
 
 msgid "tools##kobo##description"
 msgstr ""
 "Diseñe y cree formularios rápidamente\n"
-"Recopilar datos fuera de línea y en línea'\n"
+"Recopilar datos fuera de línea y en línea\n"
 "Analizar y gestionar datos"
 
 msgid "tools##kobo##requirements"
 msgstr "Navegador web moderno (Chrome, Edge, Firefox, Safari)"
 
-msgid "tools##kobo##availability"
-msgstr ""
-"KoboToolbox se integrará en Terraso en 2022. Usa Kobo de forma "
-"independiente por ahora."
+msgid "tools##kobo##external"
+msgstr "true"
 
-msgid "account##welcome"
-msgstr "Bienvenidos"
+msgid "tools##landscale##title"
+msgstr "LandScale"
+
+msgid "tools##landscale##url"
+msgstr "https://www.landscale.org/"
+
+msgid "tools##landscale##img##height"
+msgstr "140"
+
+msgid "tools##landscale##img##width"
+msgstr "250"
+
+msgid "tools##landscale##img##src"
+msgstr "tools/landscale-screenshot.png"
+
+msgid "tools##landscale##img##alt"
+msgstr ""
+"Un panel que contiene cuadros y gráficos sobre un paisaje. El logotipo de "
+"la herramienta está en primer plano."
+
+msgid "tools##landscale##description"
+msgstr ""
+"Evaluar el desempeño de la sostenibilidad del paisaje\n"
+"Validar resultados mediante validación LandScale y revisión local\n"
+"Publicar resultados en la plataforma LandScale"
+
+msgid "tools##landscale##requirements"
+msgstr "Navegador web moderno (Chrome, Edge, Firefox, Safari)"
+
+msgid "tools##landscale##external"
+msgstr "true"
+
+msgid "tools##storyMap##title"
+msgstr "Terraso Story Maps"
+
+msgid "tools##storyMap##url"
+msgstr "/tools/story-maps"
+
+msgid "tools##storyMap##img##height"
+msgstr "188"
+
+msgid "tools##storyMap##img##width"
+msgstr "250"
+
+msgid "tools##storyMap##img##src"
+msgstr "tools/story-maps.png"
+
+msgid "tools##storyMap##img##alt"
+msgstr ""
+"Un mapa satelital de un recodo de un río, superpuesto por una ventana que "
+"contiene una imagen y un bloque de texto."
+
+msgid "tools##storyMap##img##caption"
+msgstr "Story Map de Rocky Hill"
+
+msgid "tools##storyMap##description"
+msgstr "Crea hermosas historias basadas en mapas"
+
+msgid "tools##storyMap##requirements"
+msgstr "Navegador web moderno (Chrome, Edge, Firefox, Safari)"
+
+msgid "tools##storyMap##external"
+msgstr "false"
+
+msgid "account##profile"
+msgstr "Perfil de cuenta"
 
 msgid "account##disclaimer"
 msgstr ""
 "Si aún no tiene una cuenta de Terraso, al iniciar sesión se creará una de "
-"acuerdo con nuestros <a href='#'>Términos de servicio</a>."
+"acuerdo con nuestros <1>política de privacidad</1>."
 
-msgid "footer##help##text"
+msgid "footer##heading"
+msgstr "Pie de página"
+
+msgid "footer##navigation"
+msgstr "Navegación de pie de página"
+
+msgid "footer##links##help##text"
 msgstr "Ayuda de Terraso"
 
-msgid "footer##help##url"
+msgid "footer##links##help##url"
 msgstr "https://terraso.org/es/ayuda/"
 
-msgid "footer##contact##text"
+msgid "footer##links##contact##text"
 msgstr "Contacto"
 
-msgid "footer##contact##to"
+msgid "footer##links##contact##to"
 msgstr "/contact"
 
-msgid "footer##terms##text"
+msgid "footer##links##terms##text"
 msgstr "Términos de uso"
 
-msgid "footer##terms##url"
+msgid "footer##links##terms##url"
 msgstr "#"
 
-msgid "footer##privacy##text"
+msgid "footer##links##privacy##text"
 msgstr "Política de privacidad"
 
-msgid "footer##privacy##url"
+msgid "footer##links##privacy##url"
 msgstr "https://techmatters.org/privacy-policy/"
 
-msgid "footer##data##text"
+msgid "footer##links##data##text"
 msgstr "Política de datos"
 
-msgid "footer##data##url"
+msgid "footer##links##data##url"
 msgstr "#"
+
+msgid "footer##links##about##text"
+msgstr "Acerca de Terraso"
+
+msgid "footer##links##about##url"
+msgstr "https://terraso.org/es/"
 
 msgid "navigation##home"
 msgstr "Inicio"
@@ -105,6 +200,53 @@ msgstr "Grupos"
 msgid "navigation##tools"
 msgstr "Herramientas"
 
+msgid "landscape##add"
+msgstr "Agregar un paisaje"
+
+msgid "landscape##img##src"
+msgstr "landscape.png"
+
+msgid "landscape##added"
+msgstr "Paisaje añadido “{{name}}.”"
+
+msgid "landscape##updated"
+msgstr "Paisaje actualizado “{{name}}.”"
+
+msgid "sharedData##title"
+msgstr "Archivos y enlaces compartidos"
+
+msgid "sharedData##deleted"
+msgstr "Se eliminó el archivo “{{name}}”."
+
+msgid "sharedData##updated"
+msgstr "Se actualizó el archivo “{{name}}”."
+
+msgid "sharedData##addVisualizationConfig.unique"
+msgstr ""
+"El nombre “{{body.variables.input.title}}“ está siendo utilizado por otro "
+"mapa. Utiliza un nombre diferente."
+
+msgid "share##button"
+msgstr "Comparte"
+
+msgid "share##title"
+msgstr "Comparte {{name}}"
+
+msgid "share##services"
+msgstr "Publicar el enlace en"
+
+msgid "share##copy"
+msgstr "Copia el enlace para compartir"
+
+msgid "share##whatsapp"
+msgstr "WhatsApp"
+
+msgid "share##email"
+msgstr "Email"
+
+msgid "share##facebook"
+msgstr "Facebook"
+
 msgid "terraso##models##Membership"
 msgstr "Afiliación"
 
@@ -113,6 +255,12 @@ msgstr "Groupo"
 
 msgid "terraso##models##Landscape"
 msgstr "Paisaje"
+
+msgid "terraso##models##DataEntry"
+msgstr "Archivo compartido"
+
+msgid "terraso##models##StoryMap"
+msgstr "Story Map"
 
 msgid "terraso##error"
 msgstr ""
@@ -123,10 +271,104 @@ msgstr ""
 msgid "terraso##unique"
 msgstr "$t(terraso_api.models.{{model}}) {{field}} Debe ser único."
 
+msgid "gis##latitude"
+msgstr "latitud"
+
+msgid "gis##longitude"
+msgstr "longitud"
+
+msgid "gis##map##draw##toolbar##actions##title"
+msgstr "Cancelar dibujo"
+
+msgid "gis##map##draw##toolbar##actions##text"
+msgstr "Cancelar"
+
+msgid "gis##map##draw##toolbar##finish##title"
+msgstr "Terminar dibujo"
+
+msgid "gis##map##draw##toolbar##finish##text"
+msgstr "Cerrar forma"
+
+msgid "gis##map##draw##toolbar##undo##title"
+msgstr "Eliminar último punto dibujado"
+
+msgid "gis##map##draw##toolbar##undo##text"
+msgstr "Eliminar último punto"
+
+msgid "gis##map##draw##toolbar##buttons##polygon"
+msgstr "Dibujar un polígono"
+
+msgid "gis##map##draw##toolbar##buttons##marker"
+msgstr "Dibujar un marcador"
+
+msgid "gis##map##draw##handlers##marker##tooltip##start"
+msgstr "Coloque el marcador en el mapa."
+
+msgid "gis##map##draw##handlers##polygon##tooltip##start"
+msgstr ""
+"Dibuja un contorno aproximado de tu paisaje. Comienza en el límite del "
+"paisaje."
+
+msgid "gis##map##draw##handlers##polygon##tooltip##cont"
+msgstr "Continúa seleccionando puntos en el borde de el límite."
+
+msgid "gis##map##draw##handlers##polygon##tooltip##end"
+msgstr "Selecciona el primer punto para cerrar esta forma."
+
+msgid "gis##map##edit##toolbar##actions##save##title"
+msgstr "Guardar cambios"
+
+msgid "gis##map##edit##toolbar##actions##save##text"
+msgstr "Guardar"
+
+msgid "gis##map##edit##toolbar##actions##cancel##title"
+msgstr "Cancelar edición, descartando todos los cambios"
+
+msgid "gis##map##edit##toolbar##actions##cancel##text"
+msgstr "Cancelar"
+
+msgid "gis##map##edit##toolbar##actions##clearAll##title"
+msgstr "Borrar todas las capas"
+
+msgid "gis##map##edit##toolbar##actions##clearAll##text"
+msgstr "Limpiar todo"
+
+msgid "gis##map##edit##toolbar##buttons##edit"
+msgstr "Editar polígono"
+
+msgid "gis##map##edit##toolbar##buttons##editDisabled"
+msgstr "No hay polígono para editar"
+
+msgid "gis##map##edit##toolbar##buttons##remove"
+msgstr "Eliminar polígono"
+
+msgid "gis##map##edit##toolbar##buttons##removeDisabled"
+msgstr "No hay polígono para eliminar"
+
+msgid "gis##map##edit##handlers##edit##tooltip##text"
+msgstr "Arrastra puntos para ajustar la forma."
+
+msgid "gis##map##edit##handlers##edit##tooltip##subtext"
+msgstr "Haga clic en un punto para eliminarlo."
+
+msgid "gis##map##edit##handlers##remove##tooltip##text"
+msgstr "Seleccione una forma para eliminarla."
+
 msgid "contact##success"
 msgstr ""
 "Tu mensaje ha sido enviado. Terraso hará un seguimiento dentro de dos días "
 "hábiles."
+
+msgid "storyMap##unique"
+msgstr "Ya existe un Story Map con el mismo título."
+
+msgid "storyMap##addMemberships.unique"
+msgstr "Uno o más usuarios ya son colaboradores de este story map."
+
+msgid "site##description"
+msgstr ""
+"Terraso es un conjunto de herramientas para gestionar paisajes, proteger el "
+"medio ambiente y fomentar el desarrollo humano."
 
 msgctxt "title"
 msgid "home##page"
@@ -146,7 +388,7 @@ msgstr "Grupo"
 
 msgctxt "title"
 msgid "group##form_edit"
-msgstr "Administrar la información del grupo “{{name}}”"
+msgstr "Actualizar el grupo “{{name}}”"
 
 msgctxt "title"
 msgid "group##form_new"
@@ -167,10 +409,6 @@ msgstr "Acerca de {{name}}"
 msgctxt "title"
 msgid "group##list"
 msgstr "Grupos"
-
-msgctxt "title"
-msgid "group##members_list"
-msgstr "{{name}} Miembros"
 
 msgctxt "title"
 msgid "group##members_remove_confirmation"
@@ -197,6 +435,22 @@ msgid "group##members_document"
 msgstr "Miembros: {{name}}"
 
 msgctxt "title"
+msgid "group##shared_data_upload"
+msgstr "Compartir con {{name}}"
+
+msgctxt "title"
+msgid "group##membership_request_cancel_confirm"
+msgstr "Retirar solicitud de membresía pendiente"
+
+msgctxt "title"
+msgid "group##membership_card_info_closed"
+msgstr "¿Cómo unirse a un grupo cerrado?"
+
+msgctxt "title"
+msgid "group##membership_card_info_open"
+msgstr "¿Cómo unirse a un grupo abierto?"
+
+msgctxt "title"
 msgid "tool##faq"
 msgstr "Preguntas frecuentes sobre herramientas"
 
@@ -206,11 +460,11 @@ msgstr "Herramientas"
 
 msgctxt "title"
 msgid "tool##home_card"
-msgstr "Recopilación de datos"
+msgstr "Recomendaciones de herramientas"
 
 msgctxt "title"
 msgid "tool##home_card_kobo"
-msgstr "KoBoToolbox"
+msgstr "KoboToolbox"
 
 msgctxt "title"
 msgid "tool##list_document"
@@ -225,6 +479,10 @@ msgid "account##profile_document"
 msgstr "Cuenta"
 
 msgctxt "title"
+msgid "account##unsubscribe"
+msgstr "Darse de baja"
+
+msgctxt "title"
 msgid "landscape##home"
 msgstr "Paisajes"
 
@@ -234,11 +492,11 @@ msgstr "Paisaje"
 
 msgctxt "title"
 msgid "landscape##form_edit"
-msgstr "Administrar la información del paisaje de “{{name}}”"
+msgstr "Actualizar el paisaje “{{name}}”"
 
 msgctxt "title"
 msgid "landscape##form_new"
-msgstr "Información del nuevo paisaje"
+msgstr "Nombre y descripción del paisaje"
 
 msgctxt "title"
 msgid "landscape##view_card"
@@ -257,6 +515,10 @@ msgid "landscape##members_remove_confirmation"
 msgstr "Quitar miembro"
 
 msgctxt "title"
+msgid "landscape##profile_image_delete_confirm"
+msgstr "¿Eliminar la foto del paisaje?"
+
+msgctxt "title"
 msgid "landscape##form_edit_document"
 msgstr "Editar: {{name}}"
 
@@ -271,6 +533,10 @@ msgstr "Paisajes"
 msgctxt "title"
 msgid "landscape##view_document"
 msgstr "{{name}}"
+
+msgctxt "title"
+msgid "landscape##profile_document"
+msgstr "{{name}} perfil"
 
 msgctxt "title"
 msgid "landscape##members_document"
@@ -289,16 +555,565 @@ msgid "landscape##boundaries"
 msgstr "Actualiza la información geográfica del {{name}}"
 
 msgctxt "title"
+msgid "landscape##form_boundary_options"
+msgstr "Defina el límite de su paisaje"
+
+msgctxt "title"
+msgid "landscape##form_boundary_pin"
+msgstr "Límite del paisaje"
+
+msgctxt "title"
+msgid "landscape##form_boundary_geojson"
+msgstr "Carga el límite de su paisaje"
+
+msgctxt "title"
+msgid "landscape##shared_data_upload"
+msgstr "Compartir con {{name}}"
+
+msgctxt "title"
+msgid "landscape##form_boundary_draw_polygon"
+msgstr "Dibuja el límite de {{name}}"
+
+msgctxt "title"
+msgid "landscape##form_profile_new"
+msgstr "Gente, tierra y medios de subsistencia"
+
+msgctxt "title"
+msgid "landscape##form_profile_edit"
+msgstr "Actualizar perfil de paisaje"
+
+msgctxt "title"
+msgid "landscape##profile_affiliation_card"
+msgstr "Asociaciones y afiliaciones"
+
+msgctxt "title"
+msgid "landscape##profile_affiliation_card_partnership"
+msgstr "Asociación de paisaje"
+
+msgctxt "title"
+msgid "landscape##profile_affiliation_card_affiliated_groups"
+msgstr "Grupos de Terraso afiliados"
+
+msgctxt "title"
+msgid "landscape##profile_affiliation_card_organizations"
+msgstr "Organizaciones Activas"
+
+msgctxt "title"
+msgid "landscape##form_affiliation_edit"
+msgstr "Actualizar la asociación y las afiliaciones del paisaje"
+
+msgctxt "title"
+msgid "landscape##form_affiliation_new"
+msgstr "Asociación de paisaje y afiliaciones"
+
+msgctxt "title"
+msgid "landscape##form_development_update"
+msgstr "Estrategia de desarrollo del paisaje"
+
+msgctxt "title"
+msgid "landscape##profile_development_card"
+msgstr "Objetivos y estrategia"
+
+msgctxt "title"
+msgid "landscape##profile_development_card_objectives"
+msgstr "Objetivos de desarrollo sostenible"
+
+msgctxt "title"
+msgid "landscape##profile_development_card_opportunities"
+msgstr "Oportunidades"
+
+msgctxt "title"
+msgid "landscape##profile_development_card_problemSitutation"
+msgstr "Retos principales"
+
+msgctxt "title"
+msgid "landscape##profile_development_card_interventionStrategy"
+msgstr "Estrategia de intervención"
+
+msgctxt "title"
+msgid "landscape##profile_development_card_otherInformation"
+msgstr "Información general"
+
+msgctxt "title"
+msgid "landscape##form_profile_profile_image"
+msgstr "Foto de perfil de paisaje"
+
+msgctxt "title"
+msgid "landscape##form_profile_ecosystem_types_helper_text"
+msgstr "Tipos de ecosistemas"
+
+msgctxt "title"
 msgid "common##not_found"
 msgstr "Página no encontrada"
+
+msgctxt "title"
+msgid "common##rich_text_editor_link_add_dialog"
+msgstr "Añadir enlace"
+
+msgctxt "title"
+msgid "sharedData##delete_confirm"
+msgstr "Eliminar “{{name}}”?"
+
+msgctxt "title"
+msgid "sharedData##upload"
+msgstr "Cargar: {{name}}"
+
+msgctxt "title"
+msgid "sharedData##share_file_dialog"
+msgstr "Compartir “{{name}}” archivo"
+
+msgctxt "title"
+msgid "sharedData##form_visualization_preview"
+msgstr "Vista previa"
+
+msgctxt "title"
+msgid "sharedData##form_step_data_file_step"
+msgstr "Seleccione un archivo"
+
+msgctxt "title"
+msgid "sharedData##form_step_set_dataset_step"
+msgstr "Datos de “{{selectedFile.name}}”"
+
+msgctxt "title"
+msgid "sharedData##form_step_visualize_step"
+msgstr "Apariencia"
+
+msgctxt "title"
+msgid "sharedData##form_step_annotate_step"
+msgstr "Anotaciones"
+
+msgctxt "title"
+msgid "sharedData##form_step_preview_step"
+msgstr "Vista previa"
+
+msgctxt "title"
+msgid "sharedData##visualization_delete_confirm"
+msgstr "Eliminar mapa “{{visualization.title}}“?"
+
+msgctxt "title"
+msgid "sharedData##map_create_document"
+msgstr "Crear mapa: {{name}}"
+
+msgctxt "title"
+msgid "sharedData##map_view_document"
+msgstr "Ver el mapa: {{name}}"
+
+msgctxt "title"
+msgid "sharedData##visualization_unsaved_changes"
+msgstr "¿Dejar el mapa?"
+
+msgctxt "title"
+msgid "share##embed"
+msgstr "Terraso Story Map"
 
 msgctxt "title"
 msgid "contact##iframe"
 msgstr "Contacto Terraso"
 
+msgctxt "title"
+msgid "contact##page"
+msgstr "Contacto"
+
+msgctxt "title"
+msgid "storyMap##story_maps"
+msgstr "Story Maps de {{name}}"
+
+msgctxt "title"
+msgid "storyMap##form_preview"
+msgstr "Está viendo una vista previa de <1>{{title}}</1>"
+
+msgctxt "title"
+msgid "storyMap##form_delete_chapter_confirm"
+msgstr "¿Eliminar “{{name}}”?"
+
+msgctxt "title"
+msgid "storyMap##form_location_dialog"
+msgstr "Establecer la ubicación del mapa para <1>{{title}}</1>"
+
+msgctxt "title"
+msgid "storyMap##home"
+msgstr "Story Maps"
+
+msgctxt "title"
+msgid "storyMap##delete_confirm"
+msgstr "Eliminar el story map {{title}}?"
+
+msgctxt "title"
+msgid "storyMap##form_media_delete_confirm"
+msgstr "¿Eliminar el archivo multimedia “{{name}}”?"
+
+msgctxt "title"
+msgid "storyMap##form_media_image_delete_confirm"
+msgstr "¿Eliminar Imagen?"
+
+msgctxt "title"
+msgid "storyMap##form_media_audio_delete_confirm"
+msgstr "¿Eliminar audio?"
+
+msgctxt "title"
+msgid "storyMap##form_media_video_delete_confirm"
+msgstr "Quitar vídeo?"
+
+msgctxt "title"
+msgid "storyMap##form_media_add_dialog"
+msgstr "Agregar multimedia"
+
+msgctxt "title"
+msgid "storyMap##tool_home"
+msgstr "Terraso Story Maps"
+
+msgctxt "title"
+msgid "storyMap##tool_home_examples"
+msgstr "Story Maps de la comunidad"
+
+msgctxt "title"
+msgid "storyMap##form_new_mobile_warning"
+msgstr "Crear un Story Map"
+
+msgctxt "title"
+msgid "storyMap##form_location_dialog_title"
+msgstr "Título"
+
+msgctxt "title"
+msgid "storyMap##form_unsaved_changes"
+msgstr "¿Abandonar el Story Map?"
+
+msgctxt "title"
+msgid "storyMap##outline_no"
+msgstr "Capítulo {{index}}"
+
+msgctxt "title"
+msgid "storyMap##new_document"
+msgstr "Crear Story Map"
+
+msgctxt "title"
+msgid "storyMap##home_document"
+msgstr "Story Maps"
+
+msgctxt "title"
+msgid "storyMap##edit_document"
+msgstr "Editar: {{name}}"
+
+msgctxt "title"
+msgid "storyMap##view_document"
+msgstr "{{name}}"
+
+msgctxt "title"
+msgid "storyMap##iframe"
+msgstr "Mapa Grafico: {{title}}"
+
+msgctxt "title"
+msgid "storyMap##form_location_add_data_layer_dialog"
+msgstr "<0>Agregar una capa de mapa a </0><1>{{title}}</1>"
+
+msgctxt "title"
+msgid "storyMap##share_dialog"
+msgstr "Invitar a editores"
+
+msgctxt "title"
+msgid "storyMap##share_dialog_editors"
+msgstr "Personas con acceso"
+
+msgctxt "title"
+msgid "storyMap##delete_membership_confirm"
+msgstr "¿Eliminar {{name}} de este story map?"
+
+msgctxt "title"
+msgid "storyMap##leave_membership_confirm"
+msgstr "Quitarte de este story map"
+
+msgctxt "title"
+msgid "storyMap##invite_document"
+msgstr "Invitación a Story Map"
+
+msgctxt "title"
+msgid "collaboration##members_list_pending"
+msgstr "Miembros pendientes"
+
+msgctxt "title"
+msgid "collaboration##members_list_pending_confirmation"
+msgstr "¿Rechazar la solicitud de membresía?"
+
+msgctxt "title"
+msgid "collaboration##members_list"
+msgstr "{{name}} Miembros"
+
+msgctxt "description"
+msgid "home##document"
+msgstr ""
+"Terraso es un conjunto de herramientas para gestionar paisajes, proteger el "
+"medio ambiente y fomentar el desarrollo humano."
+
+msgctxt "description"
+msgid "group##form_new"
+msgstr ""
+"Cree un grupo para conectarse con personas que comparten sus intereses y "
+"necesidades. Hay grupos para personas en cada uno de los paisajes."
+
+msgctxt "description"
+msgid "group##list"
+msgstr ""
+"Un grupo puede ser una organización existente (como una asociación de "
+"paisajes o una ONG) o cualquier grupo de personas con un interés común."
+
+msgctxt "description"
+msgid "group##list_new"
+msgstr ""
+"¿No puedes encontrar las organizaciones o los grupos a los que estás "
+"afiliado? Añádelo a Terraso."
+
+msgctxt "description"
+msgid "group##form_edit_document"
+msgstr "Editar las propiedades del grupo “{{name}}”"
+
+msgctxt "description"
+msgid "group##form_new_document"
+msgstr "Crear un grupo nuevo"
+
+msgctxt "description"
+msgid "group##list_document"
+msgstr "Listar los grupos en Terraso"
+
+msgctxt "description"
+msgid "group##view_document"
+msgstr "{{description}}"
+
+msgctxt "description"
+msgid "group##members_document"
+msgstr "Miembros del grupo “{{name}}”"
+
+msgctxt "description"
+msgid "group##list_column_actions"
+msgstr "Acciones"
+
+msgctxt "description"
+msgid "group##membership_open"
+msgstr "Cualquier miembro de Terraso puede unirse"
+
+msgctxt "description"
+msgid "group##membership_close"
+msgstr "La membresía requiere la aprobación de un administrador de grupo"
+
+msgctxt "description"
+msgid "group##membership_card_pending"
+msgstr ""
+"<0>Tu solicitud ha sido enviada al administrador del grupo. <1>Tu membresía "
+"está actualmente pendiente</1>.</0>"
+
+msgctxt "description"
+msgid "group##membership_card_closed"
+msgstr ""
+"<0>{{name}} es un grupo cerrado, por lo que la lista de miembros no es "
+"visible para los que no son miembros.</0><1>Solicita unirte con un solo "
+"clic a continuación. <1>Más información sobre la pertenencia a "
+"grupos</1>.</1>"
+
+msgctxt "description"
+msgid "group##membership_card_info_close"
+msgstr ""
+"<0>1. Has clic en ”Solicitud para unirse”. El estado cambiará a "
+"”Pendiente”.</0><1>2. El administrador del grupo aprobará o denegará la "
+"solicitud.</1>"
+
+msgctxt "description"
+msgid "group##membership_card_info_open"
+msgstr "Has clic en ”Unirse al grupo”. Te convertirás en miembro inmediatamente."
+
+msgctxt "description"
+msgid "tool##home_card"
+msgstr ""
+"Una herramienta gratuita de recopilación de datos que funciona en "
+"dispositivos móviles y no requiere conexión a Internet."
+
+msgctxt "description"
+msgid "tool##list_document"
+msgstr "Lista de herramientas utiles para los usuarios de Terraso"
+
+msgctxt "description"
+msgid "account##login_document"
+msgstr "Iniciar sesión en Terraso"
+
+msgctxt "description"
+msgid "account##profile_document"
+msgstr "Administrar las preferencias de su perfil de Terraso"
+
+msgctxt "description"
+msgid "landscape##form_new"
+msgstr ""
+"Ingresa el nombre, la descripción y la información de contacto de tu "
+"paisaje."
+
+msgctxt "description"
+msgid "landscape##list"
+msgstr "Estos paisajes esta utilizando Terraso."
+
+msgctxt "description"
+msgid "landscape##list_new"
+msgstr "¿No puedes encontrar el paisaje al que estas afiliado? Añádelo a Terraso."
+
+msgctxt "description"
+msgid "landscape##form_edit_document"
+msgstr "Actualiza la propiedades del paisaje “{{name}}”"
+
+msgctxt "description"
+msgid "landscape##form_new_document"
+msgstr "Agregar un nuevo paisaje a Terraso"
+
+msgctxt "description"
+msgid "landscape##view_document"
+msgstr "{{description}}"
+
+msgctxt "description"
+msgid "landscape##profile_document"
+msgstr "Perfeil {{name}}"
+
+msgctxt "description"
+msgid "landscape##members_document"
+msgstr "Miembros del paisaje “{{name}}”"
+
+msgctxt "description"
+msgid "landscape##boundaries_document"
+msgstr "Actualiza la frontera geográfica del paisaje “{{name}}”"
+
+msgctxt "description"
+msgid "landscape##list_column_actions"
+msgstr "Acciones"
+
+msgctxt "description"
+msgid "landscape##form_boundary_options"
+msgstr ""
+"<0><0>Selecciona cómo te gustaría definir dónde está tu "
+"paisaje.</0><1>Recomendamos actualizar el mapa regularmente con el límite "
+"más preciso de tu paisaje.</1><2>No tiened un archivo GeoJSON? Crea "
+"uno.</2></0>"
+
+msgctxt "description"
+msgid "landscape##form_boundary_pin"
+msgstr ""
+"<0>Selecciona el icono de alfiler <1/> y suéltalo en el centro del "
+"paisaje.</0>"
+
+msgctxt "description"
+msgid "landscape##form_boundary_draw_polygon"
+msgstr ""
+"<0>Busca o haz zoom en tu paisaje. Usa <1/> para cambiar el mapa de fondo. "
+"Usa <3/> para empezar a dibujar.</0>"
+
+msgctxt "description"
+msgid "landscape##form_profile"
+msgstr ""
+"Describe a las personas dentro de tu paisaje y sus medios de vida. (Este "
+"paso es opcional)."
+
+msgctxt "description"
+msgid "landscape##profile_affiliation_card_partnership"
+msgstr "desde {{year}}"
+
+msgctxt "description"
+msgid "landscape##form_affiliation"
+msgstr ""
+"Selecciona la asociación de paisaje y otras instituciones u organizaciones "
+"activas en tu paisaje. (Este paso es opcional)."
+
+msgctxt "description"
+msgid "landscape##form_development_goals"
+msgstr ""
+"Describe las metas de tu paisaje, los desafíos y las oportunidades que "
+"enfrentará una asociación de paisaje y la estrategia que seguirá."
+
+msgctxt "description"
+msgid "sharedData##card"
+msgstr ""
+"Carga documentos y comparte enlaces con otros miembros. Crea mapas con "
+"archivos de datos (se requieren latitud y longitud) y archivos de mapas "
+"(GeoJSON, KML, KMZ, Shapefiles de ESRI)."
+
+msgctxt "description"
+msgid "sharedData##upload_files"
+msgstr "Agrega archivos con títulos y descripciones."
+
+msgctxt "description"
+msgid "sharedData##form_step_set_dataset_preview"
+msgstr "Vista previa"
+
+msgctxt "description"
+msgid "sharedData##form_step_annotate_data_points"
+msgstr ""
+"Personaliza los nombres de las etiquetas. Arrastra para reordenar las "
+"columnas."
+
+msgctxt "description"
+msgid "sharedData##form_step_data_file_step"
+msgstr ""
+"<0>Se pueden crear mapas a partir de:</0><1><0>Hojas de cálculo (Excel, "
+"CSV) que contienen columnas con información de latitud y "
+"longitud</0><1>Archivos de datos geoespaciales (ESRI shapefile, GeoJSON, "
+"KML, KMZ)</1></1><2>Lee más sobre cómo <1>preparar tu archivo de datos para "
+"el mapeo</1>.</2>"
+
+msgctxt "description"
+msgid "sharedData##form_step_set_dataset_step"
+msgstr "Columnas"
+
+msgctxt "description"
+msgid "sharedData##form_step_visualize_step"
+msgstr "Elige cómo aparecerán los símbolos y polígonos en el mapa."
+
+msgctxt "description"
+msgid "sharedData##form_step_preview_step"
+msgstr "Has zoom y desplázate por el mapa para establecer cómo lo verán los demás."
+
+msgctxt "description"
+msgid "sharedData##form_step_preview_step_map"
+msgstr ""
+"Después de publicar el mapa, los miembros del {{entityType}} pueden verlo o "
+"descargarlo como una imagen o un archivo de datos."
+
+msgctxt "description"
+msgid "sharedData##visualization_share"
+msgstr ""
+"Haga clic en “Compartir” para enviar un enlace al mapa. Solo los miembros "
+"de {{ownerName}} pueden acceder a él."
+
+msgctxt "description"
+msgid "sharedData##upload_links"
+msgstr "Añade enlaces con títulos y descripciones."
+
+msgctxt "description"
+msgid "storyMap##home_default"
+msgstr ""
+"Usa mapas, fotos, videos, grabaciones de audio y narraciones para crear una "
+"historia impactante."
+
+msgctxt "description"
+msgid "storyMap##tool_home"
+msgstr ""
+"Usa mapas, fotos, videos, grabaciones de audio y narraciones para crear una "
+"historia impactante."
+
+msgctxt "description"
+msgid "storyMap##form_location_add_data_layer_dialog"
+msgstr ""
+"A este capítulo se agregarán polígonos, líneas y puntos del mapa. Este "
+"contenido será visible para el público al publicar este story map."
+
+msgctxt "description"
+msgid "storyMap##share_dialog"
+msgstr ""
+"Invita a personas a editar tu story map. <1>Más información sobre cómo "
+"colaborar en story maps</1>."
+
+msgctxt "description"
+msgid "collaboration##members_list_column_actions"
+msgstr "Acciones"
+
 msgctxt "out"
 msgid "user##sign"
 msgstr "Cerrar sesión"
+
+msgctxt "in"
+msgid "user##sign"
+msgstr "Iniciar sesión"
 
 msgctxt "message"
 msgid "user##account_created"
@@ -315,8 +1130,20 @@ msgid "group##members_remove_confirmation"
 msgstr "Estás a punto de eliminar a “{{userName}}” del grupo “{{name}}”."
 
 msgctxt "message"
+msgid "group##membership_request_cancel_confirm"
+msgstr "¿Deseas retirar tu solicitud para unirte a {{name}}?"
+
+msgctxt "message"
+msgid "group##home_pending"
+msgstr "Esperando la aprobación del administrador del grupo"
+
+msgctxt "message"
 msgid "account##unauthenticated"
 msgstr "Su sesión de Terraso ha caducado. Vuelva a iniciar sesión."
+
+msgctxt "message"
+msgid "account##profile_complete"
+msgstr "Cuentanos cómo llamarte y revisa la configuración de tu perfil."
 
 msgctxt "message"
 msgid "landscape##membership_leave_confirm"
@@ -327,8 +1154,18 @@ msgid "landscape##members_remove_confirmation"
 msgstr "Estás a punto de eliminar a “{{userName}}” del paisaje “{{name}}”."
 
 msgctxt "message"
+msgid "landscape##profile_image_delete_confirm"
+msgstr ""
+"¿Estás seguro de que deseas eliminar la foto del paisaje? Esto no se puede "
+"deshacer."
+
+msgctxt "message"
 msgid "landscape##boundaries_drop"
 msgstr "Soltar el archivo para subirlo"
+
+msgctxt "message"
+msgid "landscape##profile_profile_card_profile_image_placeholder"
+msgstr "Sube una imagen de tu paisaje."
 
 msgctxt "message"
 msgid "common##not_found"
@@ -337,6 +1174,88 @@ msgstr "No pudimos encontrar la página que estabas buscando."
 msgctxt "message"
 msgid "common##not_found_help"
 msgstr "Puedes <1>contarnos qué salió mal</1>."
+
+msgctxt "message"
+msgid "common##drop_zone_drop"
+msgstr "Soltar archivo para subir"
+
+msgctxt "message"
+msgid "sharedData##delete_file_confirm"
+msgstr "¿Estás segura(o) de que deseas eliminar el archivo “{{name}}”?"
+
+msgctxt "message"
+msgid "sharedData##delete_link_confirm"
+msgstr "¿Estás segura(o) de que deseas eliminar el enlace “{{name}}”?"
+
+msgctxt "message"
+msgid "sharedData##add_file_description"
+msgstr "Agregar descripción de archivo"
+
+msgctxt "message"
+msgid "sharedData##add_link_description"
+msgstr "Agregar descripción de enlace"
+
+msgctxt "message"
+msgid "sharedData##visualization_delete_confirm"
+msgstr "¿Estás segura(o) que deseas eliminar el mapa “{{visualization.title}}“?"
+
+msgctxt "message"
+msgid "sharedData##visualization_unsaved_changes"
+msgstr "Tienes cambios no guardados que se perderán si abandonas la página."
+
+msgctxt "message"
+msgid "sharedData##shared_resource_download_optional_auth_top"
+msgstr "<1>Únete a Terraso</1> y comparte archivos con tu comunidad."
+
+msgctxt "message"
+msgid "storyMap##form_delete_chapter_confirm"
+msgstr "¿Está seguro de que desea eliminar el capítulo {{name}}?"
+
+msgctxt "message"
+msgid "storyMap##delete_confirm"
+msgstr ""
+"¿Estás seguro de que deseas eliminar el story map? Esto no se puede "
+"deshacer."
+
+msgctxt "message"
+msgid "storyMap##form_media_image_delete_confirm"
+msgstr ""
+"¿Estás seguro de que desea eliminar esta imagen? Esta acción no se puede "
+"deshacer."
+
+msgctxt "message"
+msgid "storyMap##form_media_audio_delete_confirm"
+msgstr "¿Seguro que quieres eliminar este audio? Esta acción no se puede deshacer."
+
+msgctxt "message"
+msgid "storyMap##form_media_video_delete_confirm"
+msgstr "¿Seguro que quieres eliminar este vídeo? Esta acción no se puede deshacer."
+
+msgctxt "message"
+msgid "storyMap##form_unsaved_changes"
+msgstr ""
+"Tienes cambios sin guardar que se perderán si sales de la página. "
+"Selecciona Guardar borrador antes de salir."
+
+msgctxt "message"
+msgid "storyMap##optional_auth_top"
+msgstr "<1>Únete a Terraso</1> y crea tu propio story map gratis."
+
+msgctxt "message"
+msgid "storyMap##optional_auth_bottom"
+msgstr "¿Te gustó el story map? Crea uno <1>registrándote en Terraso</1>."
+
+msgctxt "message"
+msgid "storyMap##delete_membership_confirm"
+msgstr "{{name}} ya no podrá editar el story map “{{storyMapTitle}}”."
+
+msgctxt "message"
+msgid "storyMap##leave_membership_confirm"
+msgstr "Ya no podrás editar “{{storyMapTitle}}”."
+
+msgctxt "message"
+msgid "collaboration##members_list_pending_confirmation"
+msgstr "¿Quieres denegar la solicitud de membresía de {{userName}} en {{name}}?"
 
 msgctxt "button"
 msgid "user##edit_profile"
@@ -356,7 +1275,7 @@ msgstr "Dejar group"
 
 msgctxt "button"
 msgid "group##view_update"
-msgstr "Actualizar información del grupo"
+msgstr "Actualizar grupo"
 
 msgctxt "button"
 msgid "group##list_join"
@@ -364,7 +1283,7 @@ msgstr "Unirse"
 
 msgctxt "button"
 msgid "group##list_leave"
-msgstr "Miembro"
+msgstr "Dejar"
 
 msgctxt "button"
 msgid "group##list_new"
@@ -373,6 +1292,22 @@ msgstr "Crear un grupo"
 msgctxt "button"
 msgid "group##members_remove_confirmation"
 msgstr "Quitar miembro"
+
+msgctxt "button"
+msgid "group##list_request_join"
+msgstr "Solicitud para unirse"
+
+msgctxt "button"
+msgid "group##list_request_cancel"
+msgstr "Pendiente"
+
+msgctxt "button"
+msgid "group##view_request_join"
+msgstr "Solicitud para unirse"
+
+msgctxt "button"
+msgid "group##membership_request_cancel_confirm"
+msgstr "Retirar Solicitud"
 
 msgctxt "button"
 msgid "landscape##edit_profile"
@@ -384,19 +1319,155 @@ msgstr "Explora paisajes"
 
 msgctxt "button"
 msgid "landscape##list_join"
-msgstr "Conectar"
+msgstr "Unirse"
 
 msgctxt "button"
 msgid "landscape##list_leave"
-msgstr "Miembro"
+msgstr "Dejar"
 
 msgctxt "button"
 msgid "landscape##membership_leave_confirm"
 msgstr "Dejar el paisaje"
 
 msgctxt "button"
+msgid "landscape##list_new"
+msgstr "Agregar paisaje"
+
+msgctxt "button"
 msgid "landscape##members_remove_confirmation"
 msgstr "Quitar miembro"
+
+msgctxt "button"
+msgid "landscape##view_update"
+msgstr "Actualizar descripción"
+
+msgctxt "button"
+msgid "landscape##profile_image_delete_confirm"
+msgstr "Eliminar"
+
+msgctxt "button"
+msgid "landscape##view_boundary_download"
+msgstr "Descargar límite (GeoJSON)"
+
+msgctxt "button"
+msgid "landscape##profile_profile_card_update"
+msgstr "Actualizar detalles"
+
+msgctxt "button"
+msgid "landscape##profile_affiliation_card_update"
+msgstr "Actualizar afiliaciones"
+
+msgctxt "button"
+msgid "landscape##profile_development_update"
+msgstr "Actualizar objetivos y estrategia"
+
+msgctxt "button"
+msgid "landscape##profile_development_add"
+msgstr "Agregar objetivos y estrategia"
+
+msgctxt "button"
+msgid "sharedData##upload"
+msgstr "Compartir archivos y enlaces"
+
+msgctxt "button"
+msgid "sharedData##delete_file_confirm"
+msgstr "Borrar archivo"
+
+msgctxt "button"
+msgid "sharedData##delete_link_confirm"
+msgstr "Eliminar enlace"
+
+msgctxt "button"
+msgid "sharedData##add_visualization"
+msgstr "Hacer mapa"
+
+msgctxt "button"
+msgid "sharedData##shared_resource_download"
+msgstr "Descargar archivo"
+
+msgctxt "button"
+msgid "share##copy"
+msgstr "Copia el enlace"
+
+msgctxt "button"
+msgid "share##copy_embed"
+msgstr "Copiar código"
+
+msgctxt "button"
+msgid "storyMap##form_back"
+msgstr "Story Maps"
+
+msgctxt "button"
+msgid "storyMap##form_share"
+msgstr "Invitar"
+
+msgctxt "button"
+msgid "storyMap##form_preview"
+msgstr "Vista previa"
+
+msgctxt "button"
+msgid "storyMap##form_save_draft"
+msgstr "Guardar borrador"
+
+msgctxt "button"
+msgid "storyMap##form_publish"
+msgstr "Publicar"
+
+msgctxt "button"
+msgid "storyMap##form_republish"
+msgstr "Guardar y volver a publicar"
+
+msgctxt "button"
+msgid "storyMap##form_delete_chapter_confirm"
+msgstr "Eliminar capítulo"
+
+msgctxt "button"
+msgid "storyMap##form_chapter_location"
+msgstr "Editar mapa"
+
+msgctxt "button"
+msgid "storyMap##location_dialog_cancel"
+msgstr "Cancelar"
+
+msgctxt "button"
+msgid "storyMap##location_dialog_confirm"
+msgstr "Guardar mapa"
+
+msgctxt "button"
+msgid "storyMap##delete_confirm"
+msgstr "Eliminar Story Map"
+
+msgctxt "button"
+msgid "storyMap##form_media_image_delete_confirm"
+msgstr "Eliminar Imagen"
+
+msgctxt "button"
+msgid "storyMap##form_media_audio_delete_confirm"
+msgstr "Eliminar audio"
+
+msgctxt "button"
+msgid "storyMap##form_media_video_delete_confirm"
+msgstr "Quitar vídeo"
+
+msgctxt "button"
+msgid "storyMap##tool_home_create"
+msgstr "Crear un Story Map"
+
+msgctxt "button"
+msgid "storyMap##form_title_location"
+msgstr "Establecer ubicación en el mapa"
+
+msgctxt "button"
+msgid "storyMap##form_location_add_data_layer"
+msgstr "Agregar capa de mapa"
+
+msgctxt "button"
+msgid "storyMap##delete_membership_confirm"
+msgstr "Eliminar"
+
+msgctxt "button"
+msgid "collaboration##members_list_pending_confirmation"
+msgstr "¿Rechazar solicitud"
 
 msgctxt "name"
 msgid "user##full"
@@ -407,60 +1478,24 @@ msgid "group##list_column"
 msgstr "Grupo"
 
 msgctxt "name"
-msgid "group##members_list_column"
-msgstr "Nombre"
-
-msgctxt "name"
 msgid "landscape##list_column"
 msgstr "Paisaje"
 
-msgctxt "member"
-msgid "group##role"
-msgstr "Miembro"
+msgctxt "name"
+msgid "sharedData##upload_link_no"
+msgstr "Enlace {{index}}"
 
-msgctxt "member"
-msgid "group##members_title"
-msgstr "Miembros de {{name}}"
+msgctxt "name"
+msgid "collaboration##members_list_column"
+msgstr "Nombre"
 
-msgctxt "member"
-msgid "group##members_description"
-msgstr ""
+msgctxt "label"
+msgid "group##list_join"
+msgstr "Unirse: {{name}}"
 
-msgctxt "member"
-msgid "landscape##role"
-msgstr "Miembro"
-
-msgctxt "member"
-msgid "landscape##members_title"
-msgstr "Miembros de {{name}}"
-
-msgctxt "member"
-msgid "landscape##members_description"
-msgstr ""
-
-msgctxt "manager"
-msgid "group##role"
-msgstr "Administrador"
-
-msgctxt "manager"
-msgid "group##members_title"
-msgstr "Administrar miembros"
-
-msgctxt "manager"
-msgid "group##members_description"
-msgstr "Agrega o elimina miembros del grupo “{{name}}”."
-
-msgctxt "manager"
-msgid "landscape##role"
-msgstr "Administrador"
-
-msgctxt "manager"
-msgid "landscape##members_title"
-msgstr "Administrar miembros"
-
-msgctxt "manager"
-msgid "landscape##members_description"
-msgstr "Agrega o elimina miembros del paisaje “{{name}}”."
+msgctxt "label"
+msgid "group##list_leave"
+msgstr "Dejar: {{name}}"
 
 msgctxt "label"
 msgid "group##home_connect"
@@ -483,6 +1518,10 @@ msgid "group##form_website"
 msgstr "Sitio web"
 
 msgctxt "label"
+msgid "group##form_create"
+msgstr "Crear un grupo"
+
+msgctxt "label"
 msgid "group##form_save"
 msgstr "Guardar cambios"
 
@@ -499,6 +1538,26 @@ msgid "group##view_leave"
 msgstr "Dejar grupo"
 
 msgctxt "label"
+msgid "group##list_request_cancel"
+msgstr "Pendiente: {{name}}"
+
+msgctxt "label"
+msgid "group##list_request_join"
+msgstr "Solicitud para unirse: {{name}}"
+
+msgctxt "label"
+msgid "group##view_request_cancel"
+msgstr "Cancelar Solicitud"
+
+msgctxt "label"
+msgid "group##form_membershipType"
+msgstr "Tipo de membresía"
+
+msgctxt "label"
+msgid "tool##home_explore"
+msgstr "Explora más herramientas"
+
+msgctxt "label"
 msgid "account##form_first_name"
 msgstr "Nombres"
 
@@ -512,7 +1571,7 @@ msgstr "Dirección de correo electrónico"
 
 msgctxt "label"
 msgid "account##form_save"
-msgstr "Confirmar"
+msgstr "Guardar perfil"
 
 msgctxt "label"
 msgid "account##profile_form"
@@ -523,60 +1582,502 @@ msgid "account##form_language"
 msgstr "Idioma"
 
 msgctxt "label"
+msgid "account##form_notifications_section"
+msgstr "Notificaciónes de Correo Electrónico"
+
+msgctxt "label"
+msgid "account##form_notifications_section_when"
+msgstr "Notifícame cuando:"
+
+msgctxt "label"
+msgid "account##form_notifications_group"
+msgstr ""
+"Un grupo que administro tiene solicitudes pendientes o mi solicitud para "
+"unirme a un grupo cerrado está aprobada"
+
+msgctxt "label"
+msgid "account##form_notifications_story_map"
+msgstr "Me invitan a editar un story map."
+
+msgctxt "label"
 msgid "navigation##nav"
 msgstr "Navegación principal"
 
 msgctxt "label"
+msgid "navigation##breadcrumbs"
+msgstr "Árbol de navegación"
+
+msgctxt "label"
+msgid "landscape##list_join"
+msgstr "Conectar: {{name}}"
+
+msgctxt "label"
+msgid "landscape##list_leave"
+msgstr "Dejar: {{name}}"
+
+msgctxt "label"
 msgid "landscape##home_connect"
-msgstr "Conectar con otro paisaje"
+msgstr "Unirse a otro paisaje"
 
 msgctxt "label"
 msgid "landscape##form_name"
-msgstr "Nombre del paisaje"
+msgstr "Nombre"
 
 msgctxt "label"
 msgid "landscape##form_description"
-msgstr "Descripción del paisaje"
+msgstr "Descripción"
 
 msgctxt "label"
 msgid "landscape##form_email"
 msgstr "Dirección de correo electrónico"
 
 msgctxt "label"
+msgid "landscape##form_add_affiliation"
+msgstr "Agregar afiliaciones"
+
+msgctxt "label"
 msgid "landscape##form_website"
-msgstr "Sitio web del paisaje"
+msgstr "Sitio web"
 
 msgctxt "label"
 msgid "landscape##form_location"
-msgstr "Ubicación del paisaje"
+msgstr "País o Región"
+
+msgctxt "label"
+msgid "landscape##form_add_landscape"
+msgstr "Agregar paisaje"
+
+msgctxt "label"
+msgid "landscape##form_add_profile"
+msgstr "Agregar perfil"
 
 msgctxt "label"
 msgid "landscape##form_save"
-msgstr "Enviar información del paisaje"
+msgstr "Guardar cambios"
+
+msgctxt "label"
+msgid "landscape##profile_image_delete"
+msgstr "Eliminar foto del paisaje"
 
 msgctxt "label"
 msgid "landscape##view_join"
-msgstr "Conectar con el paisaje"
+msgstr "Unirse al paisaje"
 
 msgctxt "label"
 msgid "landscape##view_leave"
 msgstr "Abandonar paisaje"
 
 msgctxt "label"
+msgid "landscape##form_step_info"
+msgstr "Descripción"
+
+msgctxt "label"
+msgid "landscape##form_step_boundaries_options"
+msgstr "Límite"
+
+msgctxt "label"
+msgid "landscape##list_map_section"
+msgstr "Mapa de paisajes"
+
+msgctxt "label"
+msgid "landscape##view_boundary_download"
+msgstr "Límite del paisaje"
+
+msgctxt "label"
+msgid "landscape##profile_profile_card"
+msgstr "{{name}} detalles"
+
+msgctxt "label"
+msgid "landscape##profile_profile_card_location"
+msgstr "Ubicación"
+
+msgctxt "label"
+msgid "landscape##profile_profile_card_area_types"
+msgstr "Tipo de área"
+
+msgctxt "label"
+msgid "landscape##profile_profile_card_ecosystem_types"
+msgstr "Tipo de ecosistema"
+
+msgctxt "label"
+msgid "landscape##profile_profile_card_livelihoods"
+msgstr "Medios de subsistencia"
+
+msgctxt "label"
+msgid "landscape##profile_profile_card_commodities"
+msgstr "Materias primas"
+
+msgctxt "label"
+msgid "landscape##profile_profile_card_population"
+msgstr "Población"
+
+msgctxt "label"
+msgid "landscape##profile_profile_card_landscape_size"
+msgstr "Tamaño del paisaje"
+
+msgctxt "label"
+msgid "landscape##form_step_profile"
+msgstr "Detalles"
+
+msgctxt "label"
+msgid "landscape##form_step_affiliation"
+msgstr "Afiliaciones"
+
+msgctxt "label"
+msgid "landscape##form_profile_image_zoom"
+msgstr "Zoom"
+
+msgctxt "label"
+msgid "landscape##form_profile_image_description"
+msgstr "Descripción de la foto"
+
+msgctxt "label"
+msgid "landscape##profile_profile_card_agricultural_production_methods"
+msgstr "Métodos de producción agrícola"
+
+msgctxt "label"
 msgid "common##dialog_cancel"
 msgstr "Cancelar"
+
+msgctxt "label"
+msgid "common##dialog_close"
+msgstr "Cerrar"
 
 msgctxt "label"
 msgid "common##loader"
 msgstr "Cargando"
 
 msgctxt "label"
+msgid "common##editable_text"
+msgstr "Editar"
+
+msgctxt "label"
+msgid "common##refreshing_loader"
+msgstr "Actualizando"
+
+msgctxt "label"
+msgid "common##table_pagination"
+msgstr "Paginación de tablas"
+
+msgctxt "label"
+msgid "common##rich_text_editor_link_add_dialog_input"
+msgstr "Enlace"
+
+msgctxt "label"
+msgid "common##rich_text_editor_toolbar"
+msgstr "Barra de herramientas de cuadro de texto"
+
+msgctxt "label"
+msgid "sharedData##delete_file"
+msgstr "Borrar archivo"
+
+msgctxt "label"
+msgid "sharedData##delete_link"
+msgstr "Eliminar enlace"
+
+msgctxt "label"
+msgid "sharedData##link"
+msgstr "Enlace"
+
+msgctxt "label"
+msgid "sharedData##map"
+msgstr "Mapa"
+
+msgctxt "label"
+msgid "sharedData##upload_filename"
+msgstr "Nombre del archivo"
+
+msgctxt "label"
+msgid "sharedData##upload_description"
+msgstr "Descripción"
+
+msgctxt "label"
+msgid "sharedData##delete"
+msgstr "Elminar “{{name}}”"
+
+msgctxt "label"
+msgid "sharedData##download"
+msgstr "Descargar “{{name}}”"
+
+msgctxt "label"
+msgid "sharedData##share_file"
+msgstr "Compartir archivo “{{name}}”"
+
+msgctxt "label"
+msgid "sharedData##share_file_dialog_share_access"
+msgstr "Nivel de acceso"
+
+msgctxt "label"
+msgid "sharedData##loader"
+msgstr "Cargando…"
+
+msgctxt "label"
+msgid "sharedData##form_stepper"
+msgstr "Pasos"
+
+msgctxt "label"
+msgid "sharedData##form_step_set_dataset_dataColumns_custom"
+msgstr "Columna {{index}}"
+
+msgctxt "label"
+msgid "sharedData##form_step_select_file"
+msgstr "Archivo"
+
+msgctxt "label"
+msgid "sharedData##form_step_set_dataset"
+msgstr "Datos"
+
+msgctxt "label"
+msgid "sharedData##form_step_visualize"
+msgstr "Apariencia"
+
+msgctxt "label"
+msgid "sharedData##form_step_annotate"
+msgstr "Anotar"
+
+msgctxt "label"
+msgid "sharedData##form_step_preview"
+msgstr "Vista previa"
+
+msgctxt "label"
+msgid "sharedData##form_step_set_dataset_latitude"
+msgstr "Latitud"
+
+msgctxt "label"
+msgid "sharedData##form_step_set_dataset_longitude"
+msgstr "Longitud"
+
+msgctxt "label"
+msgid "sharedData##form_step_set_dataset_dataColumns"
+msgstr "Columnas para mostrar en el mapa"
+
+msgctxt "label"
+msgid "sharedData##form_step_annotate_map_title"
+msgstr "Título del mapa"
+
+msgctxt "label"
+msgid "sharedData##form_step_annotate_map_description"
+msgstr "Descripción del mapa"
+
+msgctxt "label"
+msgid "sharedData##form_step_annotate_annotation_title"
+msgstr "Titulo del Pop-up"
+
+msgctxt "label"
+msgid "sharedData##form_step_annotate_data_points"
+msgstr "Datos"
+
+msgctxt "label"
+msgid "sharedData##form_visualization_preview"
+msgstr "Vista previa"
+
+msgctxt "label"
+msgid "sharedData##form_step_annotate_data_points_input"
+msgstr "Etiqueta de punto de datos {{index}}"
+
+msgctxt "label"
+msgid "sharedData##upload_url"
+msgstr "Dirección web"
+
+msgctxt "label"
+msgid "sharedData##upload_name"
+msgstr "Título"
+
+msgctxt "label"
 msgid "form##required"
 msgstr "Obligatorio"
 
 msgctxt "label"
+msgid "form##helper_text_info"
+msgstr "Información sobre $t({{label}})"
+
+msgctxt "label"
 msgid "localization##locale_select"
 msgstr "Idioma seleccionado: {{name}}"
+
+msgctxt "label"
+msgid "gis##default_marker"
+msgstr "Marcador"
+
+msgctxt "label"
+msgid "gis##basemap"
+msgstr "Establecer mapa base"
+
+msgctxt "label"
+msgid "gis##mapbox_style_switcher"
+msgstr "Mapa base"
+
+msgctxt "label"
+msgid "storyMap##form_title_chapter"
+msgstr "Título"
+
+msgctxt "label"
+msgid "storyMap##form_chapter_no_title"
+msgstr "Sin título"
+
+msgctxt "label"
+msgid "storyMap##form_chapter_title"
+msgstr "Título del capítulo"
+
+msgctxt "label"
+msgid "storyMap##form_chapter_description"
+msgstr "Descripción del capítulo"
+
+msgctxt "label"
+msgid "storyMap##form_chapter_media"
+msgstr "Multimedia del capítulo"
+
+msgctxt "label"
+msgid "storyMap##form_title"
+msgstr "Título (Requerido)"
+
+msgctxt "label"
+msgid "storyMap##form_title_aria"
+msgstr "Título del Story Map (Requerido)"
+
+msgctxt "label"
+msgid "storyMap##form_subtitle"
+msgstr "Subtítulo"
+
+msgctxt "label"
+msgid "storyMap##form_subtitle_aria"
+msgstr "Subtítulo del Story Map"
+
+msgctxt "label"
+msgid "storyMap##form_byline"
+msgstr "Línea de autor"
+
+msgctxt "label"
+msgid "storyMap##form_chapter_menu"
+msgstr "{{chapterLabel}} menú"
+
+msgctxt "label"
+msgid "storyMap##form_chapter_dragging"
+msgstr "Arrastrando {{chapterLabel}}"
+
+msgctxt "label"
+msgid "storyMap##home_shared"
+msgstr "Story Map compartido"
+
+msgctxt "label"
+msgid "storyMap##home_draft"
+msgstr "Borrador"
+
+msgctxt "label"
+msgid "storyMap##delete"
+msgstr "Eliminar {{name}}"
+
+msgctxt "label"
+msgid "storyMap##form_media_update"
+msgstr "Actualizar multimedia"
+
+msgctxt "label"
+msgid "storyMap##form_media_add_dialog_dropzone"
+msgstr "Sube una foto o un archivo de audio"
+
+msgctxt "label"
+msgid "storyMap##form_media_delete"
+msgstr "Eliminar multimedia"
+
+msgctxt "label"
+msgid "storyMap##form_no_title"
+msgstr "Sin título"
+
+msgctxt "label"
+msgid "storyMap##form_chapters_sidebar_section"
+msgstr "Barra lateral de capítulos"
+
+msgctxt "label"
+msgid "storyMap##form_header_section"
+msgstr "Encabezado del editor Story Map"
+
+msgctxt "label"
+msgid "storyMap##view_map"
+msgstr "Mapa"
+
+msgctxt "label"
+msgid "storyMap##view_chapters"
+msgstr "Capítulos"
+
+msgctxt "label"
+msgid "storyMap##view_chapter"
+msgstr "Capítulo: {{title}}"
+
+msgctxt "label"
+msgid "storyMap##view_title"
+msgstr "Título para: {{title}}"
+
+msgctxt "label"
+msgid "storyMap##view_chapter_media"
+msgstr "Multimedia del capítulo"
+
+msgctxt "label"
+msgid "storyMap##form_location_dialog_helper_text"
+msgstr "Cómo configurar la ubicación del mapan"
+
+msgctxt "label"
+msgid "storyMap##share_dialog_confirm"
+msgstr "Invitar"
+
+msgctxt "label"
+msgid "storyMap##share_dialog_cancel"
+msgstr "Cancelar"
+
+msgctxt "label"
+msgid "storyMap##share_dialog_autocomplete"
+msgstr "Editores"
+
+msgctxt "label"
+msgid "collaboration##members_list_role_select"
+msgstr "Rol"
+
+msgctxt "member"
+msgid "group##role"
+msgstr "Miembro"
+
+msgctxt "member"
+msgid "landscape##role"
+msgstr "Miembro"
+
+msgctxt "member"
+msgid "collaboration##members_title"
+msgstr "Miembros de {{name}}"
+
+msgctxt "member"
+msgid "collaboration##members_description"
+msgstr ""
+
+msgctxt "manager"
+msgid "group##role"
+msgstr "Administrador"
+
+msgctxt "manager"
+msgid "landscape##role"
+msgstr "Administrador"
+
+msgctxt "manager"
+msgid "collaboration##members_title"
+msgstr "Administrar miembros"
+
+msgctxt "manager"
+msgid "collaboration##members_description"
+msgstr "Cambia los roles de los miembros o elimínalos del {{entityType}} “{{name}}”."
+
+msgctxt "pending"
+msgid "group##role"
+msgstr "Pendiente"
+
+msgctxt "pending"
+msgid "storyMap##delete_membership_confirm_title"
+msgstr "¿Cancelar la invitación de {{name}} a este story map?"
+
+msgctxt "pending"
+msgid "storyMap##delete_membership_confirm_message"
+msgstr "{{name}} no podrá editar “{{storyMapTitle}}”."
+
+msgctxt "pending"
+msgid "collaboration##membership"
+msgstr "Pendiente"
 
 msgctxt "content"
 msgid "group##default"
@@ -594,47 +2095,13 @@ msgstr ""
 "Explore los paisajes de Terraso. Conviértase en miembro de su paisaje para "
 "conectarse con otros en Terraso y compartir información."
 
-msgctxt "description"
-msgid "group##form_new"
-msgstr ""
-"Cree un grupo para conectarse con personas que comparten sus intereses y "
-"necesidades. Hay grupos para personas en cada uno de los paisajes."
-
-msgctxt "description"
-msgid "group##list"
-msgstr ""
-"Un grupo puede ser una organización existente (como una asociación de "
-"paisajes o una ONG) o cualquier grupo de personas con un interés común."
-
-msgctxt "description"
-msgid "group##list_new"
-msgstr ""
-"¿No puede encontrar las organizaciones o los grupos a los que está "
-"afiliado? Cree un grupo para ellos."
-
-msgctxt "description"
-msgid "group##list_column_actions"
-msgstr "Acciones"
-
-msgctxt "description"
-msgid "group##members_list_column_actions"
-msgstr "Acciones"
-
-msgctxt "description"
-msgid "tool##home_card"
-msgstr ""
-"KoBoToolbox es una herramienta gratuita de recopilación de datos de código "
-"abierto."
-
-msgctxt "description"
-msgid "landscape##list_column_actions"
-msgstr "Acciones"
-
 msgctxt "placeholder"
 msgid "group##form_description"
-msgstr ""
-"Introduzca una breve descripción sobre su grupo. (600 caracteres como "
-"máximo)"
+msgstr "Una breve descripción de su grupo (máximo 600 caracteres)"
+
+msgctxt "placeholder"
+msgid "group##form_name"
+msgstr "Nombre del grupo"
 
 msgctxt "placeholder"
 msgid "group##form_email"
@@ -645,36 +2112,224 @@ msgid "group##form_website"
 msgstr "https://www.migroupo.org"
 
 msgctxt "placeholder"
-msgid "landscape##form_description"
-msgstr "Ingrese una breve descripción sobre su paisaje (600 caracteres como máximo)"
+msgid "group##list_search"
+msgstr "Buscar grupos"
 
 msgctxt "placeholder"
 msgid "landscape##form_email"
 msgstr "info@mipaisaje.org"
 
 msgctxt "placeholder"
+msgid "landscape##form_description"
+msgstr "Unas pocas frases que describan tu paisaje (máximo 600 caracteres)"
+
+msgctxt "placeholder"
 msgid "landscape##form_website"
 msgstr "https://www.mipaisaje.org"
 
-msgctxt "success"
-msgid "group##form_message"
-msgstr "Cambios a “{{name}}” han sido salvado."
+msgctxt "placeholder"
+msgid "landscape##form_location"
+msgstr "Ubicación del paisaje"
+
+msgctxt "placeholder"
+msgid "landscape##form_name"
+msgstr "El nombre oficial de tu paisaje"
+
+msgctxt "placeholder"
+msgid "landscape##list_search"
+msgstr "Buscar paisajes"
+
+msgctxt "placeholder"
+msgid "landscape##form_profile_ecosystem_types"
+msgstr "Selecciona una o más descripciones"
+
+msgctxt "placeholder"
+msgid "landscape##form_profile_languages"
+msgstr "Selecciona uno o más idiomas hablados"
+
+msgctxt "placeholder"
+msgid "landscape##form_profile_population"
+msgstr "Ingrese un numero"
+
+msgctxt "placeholder"
+msgid "landscape##form_profile_livelihoods"
+msgstr "Seleccione uno o más medios de subsistencia"
+
+msgctxt "placeholder"
+msgid "landscape##form_profile_commondities"
+msgstr "Selecciona uno o más productos o materias primas"
+
+msgctxt "placeholder"
+msgid "landscape##form_profile_partnership_year"
+msgstr "Seleccione un año"
+
+msgctxt "placeholder"
+msgid "landscape##form_profile_partnership_group"
+msgstr "Seleccionar asociación de paisaje"
+
+msgctxt "placeholder"
+msgid "landscape##form_profile_affiliated_groups"
+msgstr "Seleccione uno o más grupos"
+
+msgctxt "placeholder"
+msgid "landscape##form_profile_organizations"
+msgstr "Introduce un nombre de organización"
+
+msgctxt "placeholder"
+msgid "landscape##form_development_goals"
+msgstr "Describe las metas de desarrollo sostenible de tu paisaje."
+
+msgctxt "placeholder"
+msgid "landscape##form_development_problem_situtation"
+msgstr "Describe los desafíos del paisaje para lograr sus objetivos."
+
+msgctxt "placeholder"
+msgid "landscape##form_development_intervention_strategy"
+msgstr ""
+"Describe lo que está haciendo tu asociación de paisaje para responder a los "
+"desafíos y oportunidades."
+
+msgctxt "placeholder"
+msgid "landscape##form_profile_image_description"
+msgstr "Describe la foto. Esto ayuda a las personas que no pueden ver la imagen."
+
+msgctxt "placeholder"
+msgid "landscape##form_development_opportunities"
+msgstr ""
+"Describe las oportunidades del paisaje que ayudarán a la asociación a "
+"lograr sus objetivos."
+
+msgctxt "placeholder"
+msgid "landscape##form_profile_agricultural_production_methods"
+msgstr "Selecciona uno o más métodos"
+
+msgctxt "placeholder"
+msgid "common##user_email_autocomplete"
+msgstr "Introduce direcciones de correo electrónico"
+
+msgctxt "placeholder"
+msgid "sharedData##upload_description_file"
+msgstr "Datos de la encuesta de salud del suelo"
+
+msgctxt "placeholder"
+msgid "sharedData##upload_description_link"
+msgstr "Encuesta de salud del suelo"
+
+msgctxt "placeholder"
+msgid "sharedData##form_step_set_dataset_latitude"
+msgstr "Latitud"
+
+msgctxt "placeholder"
+msgid "sharedData##form_step_set_dataset_longitude"
+msgstr "Longitud"
+
+msgctxt "placeholder"
+msgid "sharedData##form_step_set_dataset_dataColumns_custom"
+msgstr "seleccionar columna"
+
+msgctxt "placeholder"
+msgid "sharedData##form_step_annotate_annotation_title"
+msgstr "Seleccionar columna"
+
+msgctxt "placeholder"
+msgid "gis##map_search"
+msgstr "Ingresa una ciudad, pueblo o región"
+
+msgctxt "placeholder"
+msgid "storyMap##form_chapter_title"
+msgstr "Título del capítulo"
+
+msgctxt "placeholder"
+msgid "storyMap##form_chapter_description"
+msgstr "escribe tu historia"
+
+msgctxt "placeholder"
+msgid "storyMap##form_title"
+msgstr "El título de tu Story Map"
+
+msgctxt "placeholder"
+msgid "storyMap##form_subtitle"
+msgstr "El subtítulo de tu Story Map"
+
+msgctxt "placeholder"
+msgid "storyMap##form_byline"
+msgstr "Maria Pérez"
+
+msgctxt "placeholder"
+msgid "storyMap##form_media"
+msgstr "Cargue o vincule imágenes, grabaciones de audio o archivos de video."
+
+msgctxt "placeholder"
+msgid "storyMap##form_media_add_dialog_link_media"
+msgstr "https://www.youtube.com/watch?v=54321"
+
+msgctxt "placeholder"
+msgid "storyMap##form_location_dialog_geocoder"
+msgstr "Buscar"
 
 msgctxt "success"
 msgid "group##join"
 msgstr "Se unió {{name}}"
 
 msgctxt "success"
+msgid "group##request"
+msgstr "Solicitaste unirte al grupo “{{name}}”"
+
+msgctxt "success"
 msgid "group##leave"
 msgstr "Se abandonó {{name}}"
+
+msgctxt "success"
+msgid "group##request_cancel"
+msgstr "Has retirado tu solicitud para unirte al grupo “{{name}}”"
 
 msgctxt "success"
 msgid "account##save"
 msgstr "Su perfil se ha guardado."
 
 msgctxt "success"
-msgid "landscape##form_message"
-msgstr "Cambios a “{{name}}” han sido salvado."
+msgid "account##unsubscribe"
+msgstr "Has sido dado de baja de los correos electrónicos de Terraso."
+
+msgctxt "success"
+msgid "landscape##form_profile_profile_image"
+msgstr "Tu foto de perfil de paisaje ha sido actualizada."
+
+msgctxt "success"
+msgid "landscape##key_info"
+msgstr "$t(landscape.view_card_title) fue actualizado"
+
+msgctxt "success"
+msgid "landscape##affiliation"
+msgstr "$t(landscape.profile_affiliation_card_title) fue actualizado"
+
+msgctxt "success"
+msgid "landscape##profile"
+msgstr "Perfil fue actualizado"
+
+msgctxt "success"
+msgid "landscape##development_strategy"
+msgstr "$t(landscape.profile_development_card_title) fue actualizado"
+
+msgctxt "success"
+msgid "landscape##boundary"
+msgstr "Límite fue actualizado"
+
+msgctxt "success"
+msgid "sharedData##upload_file"
+msgstr "Subido con éxito."
+
+msgctxt "success"
+msgid "sharedData##upload_summary"
+msgstr "{{successCounts}} se compartieron con éxito."
+
+msgctxt "success"
+msgid "sharedData##upload_link"
+msgstr "Este enlace ha sido compartido con éxito."
+
+msgctxt "success"
+msgid "storyMap##approve_invite"
+msgstr "Te han agregado a “{{storyMapTitle}}”"
 
 msgctxt "found"
 msgid "group##not"
@@ -688,13 +2343,81 @@ msgctxt "found"
 msgid "landscape##not"
 msgstr "Paisaje no encontrado"
 
+msgctxt "found"
+msgid "sharedData##fetchVisualizationConfig.not"
+msgstr "Mapa no encontrado"
+
+msgctxt "found"
+msgid "storyMap##not"
+msgstr "Story Map no encontrado"
+
 msgctxt "other"
 msgid "group##membership_card_description"
 msgstr "{{count}} miembros de Terraso se unieron a {{name}}."
 
+msgctxt "other"
+msgid "group##members_pending_message"
+msgstr "<0><0>{{count}} miembros pendientes</0> están esperando tu aprobación</0>"
+
+msgctxt "other"
+msgid "landscape##profile_profile_card_languages_label"
+msgstr "Idiomas"
+
+msgctxt "other"
+msgid "common##table_search_filter_results"
+msgstr "{{rows.length}} resultados encontrados para “{{query}}“"
+
+msgctxt "other"
+msgid "form##validation_array_min"
+msgstr "$t({{path}}) debe tener al menos {{min}} elementos."
+
+msgctxt "other"
+msgid "storyMap##form_location_add_data_layer_dialog_layers_count"
+msgstr "{{count}} mapas están disponibles"
+
 msgctxt "one"
 msgid "group##membership_card_description"
 msgstr "{{count}} miembro de Terraso se unió a {{name}}."
+
+msgctxt "one"
+msgid "group##members_pending_message"
+msgstr "<0><0>{{count}} miembro pendiente</0> está esperando su aprobación</0>"
+
+msgctxt "one"
+msgid "landscape##profile_profile_card_languages_label"
+msgstr "Idioma"
+
+msgctxt "one"
+msgid "common##table_search_filter_results"
+msgstr "{{rows.length}} resulatdo encontrado para “{{query}}“"
+
+msgctxt "one"
+msgid "sharedData##upload_summary_files"
+msgstr "1 archivo"
+
+msgctxt "one"
+msgid "sharedData##upload_summary_links"
+msgstr "1 enlace"
+
+msgctxt "one"
+msgid "sharedData##upload_summary_success"
+msgstr "{{successCounts}} se compartió con éxito."
+
+msgctxt "one"
+msgid "sharedData##upload_summary_error"
+msgstr "{{errorCounts}} no fue compartida. Corrige los errores y vuelve a compartir."
+
+msgctxt "one"
+msgid "form##validation_array_min"
+msgstr "$t({{path}}) debe tener al menos {{min}} elemento."
+
+msgctxt "one"
+msgid "storyMap##form_location_add_data_layer_dialog_layers_count"
+msgstr "{{count}} mapa está disponible"
+
+msgctxt "one"
+msgid "storyMap##added_memberships"
+msgstr "{{names, list}} ha sido invitado a editar."
 
 msgctxt "website"
 msgid "group##list_column"
@@ -713,50 +2436,222 @@ msgid "group##list_column"
 msgstr "Miembros"
 
 msgctxt "members"
+msgid "group##membership_card_manage"
+msgstr "Administrar miembros"
+
+msgctxt "members"
+msgid "group##breadcrumbs"
+msgstr "Miembros"
+
+msgctxt "members"
 msgid "landscape##list_column"
+msgstr "Miembros"
+
+msgctxt "members"
+msgid "landscape##breadcrumbs"
 msgstr "Miembros"
 
 msgctxt "empty"
 msgid "group##list"
-msgstr "No hay grupos"
-
-msgctxt "empty"
-msgid "group##members_list"
-msgstr "No existen miembros"
+msgstr ""
+"<0><0>Verifica la ortografía del nombre del grupo.</0><1>Si tu grupo no "
+"está en Terraso, puedes <1>crear un grupo</1>.</1></0>"
 
 msgctxt "empty"
 msgid "landscape##list"
-msgstr "No hay paisajes"
+msgstr ""
+"<0><0>Primero, verifica dos veces la ortografía del nombre del "
+"paisaje.</0><1>Si tu paisaje no se encuentra en Terraso, puedes <1>crear un "
+"paisaje</1>.</1></0>"
+
+msgctxt "empty"
+msgid "landscape##profile_profile_card"
+msgstr ""
+"No hay información disponible sobre las personas y los medios de "
+"subsistencia de este paisaje."
+
+msgctxt "empty"
+msgid "landscape##profile_affiliation_card"
+msgstr "No se han establecido sociedades ni afiliaciones."
+
+msgctxt "empty"
+msgid "landscape##profile_development_card"
+msgstr ""
+"Desarrolla los objetivos de tu paisaje en colaboración y agrégalos a tu "
+"paisaje. <1>Obtén más información sobre la visión y la estrategia "
+"compartidas</1>."
+
+msgctxt "empty"
+msgid "gis##boundaries_file"
+msgstr "El archivo {{name}} está vacío."
+
+msgctxt "empty"
+msgid "collaboration##members_list"
+msgstr "No existen miembros"
+
+msgctxt "leave"
+msgid "group##members_list"
+msgstr "Abandonar"
+
+msgctxt "leave"
+msgid "landscape##members_list"
+msgstr "Abandonar"
+
+msgctxt "remove"
+msgid "group##members_list"
+msgstr "Eliminar"
+
+msgctxt "remove"
+msgid "landscape##members_list"
+msgstr "Eliminar"
+
+msgctxt "remove"
+msgid "common##rich_text_editor_toolbar_link"
+msgstr "Desvincular enlace"
 
 msgctxt "all"
 msgid "group##membership_view"
 msgstr "Ver toda(o)s los miembros"
 
-msgctxt "leave"
-msgid "group##members_list"
-msgstr "Abandonar"
-
-msgctxt "leave"
-msgid "landscape##members_list"
-msgstr "Abandonar"
-
-msgctxt "remove"
-msgid "group##members_list"
-msgstr "Eliminar"
-
-msgctxt "remove"
-msgid "landscape##members_list"
-msgstr "Eliminar"
-
-msgctxt "role"
-msgid "group##members_list_column"
-msgstr "Rol"
+msgctxt "all"
+msgid "sharedData##form_step_set_dataset_dataColumns"
+msgstr "Todas las columnas"
 
 msgctxt "count"
 msgid "group##delete_not_allowed_manager"
 msgstr ""
 "$t(terraso_api.delete_not_allowed_base). Debe existir al menos un "
 "administrador."
+
+msgctxt "option"
+msgid "group##membership_open"
+msgstr "Abierto"
+
+msgctxt "option"
+msgid "group##membership_close"
+msgstr "Cerrado"
+
+msgctxt "option"
+msgid "sharedData##form_step_annotate_annotation_title_empty"
+msgstr "Sin título"
+
+msgctxt "option"
+msgid "taxonomies##add"
+msgstr "Agregar “{{value}}“"
+
+msgctxt "url"
+msgid "group##membership_card_closed_help"
+msgstr "https://terraso.org/es/ayuda/groupos/"
+
+msgctxt "url"
+msgid "tools##kobo##learn_more"
+msgstr "https://www.kobotoolbox.org/features/"
+
+msgctxt "url"
+msgid "tools##landscale##learn_more"
+msgstr "https://www.landscale.org/initiative/"
+
+msgctxt "url"
+msgid "account##disclaimer"
+msgstr "https://techmatters.org/privacy-policy/"
+
+msgctxt "url"
+msgid "landscape##boundaries_help_geojson"
+msgstr "https://terraso.org/es/ayuda/dibujar-limites-del-paisaje/"
+
+msgctxt "url"
+msgid "landscape##view_map_boundaries_help"
+msgstr "/contact"
+
+msgctxt "url"
+msgid "landscape##list_map_help"
+msgstr "https://terraso.org/es/ayuda/anade-un-nuevo-paisaje-a-terraso/"
+
+msgctxt "url"
+msgid "landscape##form_boundary_draw_polygon_help"
+msgstr "https://terraso.org/es/ayuda/como-dibujar-el-limite-de-tu-paisaje/"
+
+msgctxt "url"
+msgid "landscape##profile_development_card_empty"
+msgstr "https://terraso.org/guide/vision-and-planning/"
+
+msgctxt "url"
+msgid "landscape##form_development_problem_situtation_helper_text"
+msgstr ""
+"https://landscapes.global/guide/shared-understanding/assessment-of-"
+"landscape-challenges-and-opportunities/"
+
+msgctxt "url"
+msgid "landscape##form_development_goals_helper_text"
+msgstr "https://landscapes.global/guide/vision-and-planning/"
+
+msgctxt "url"
+msgid "landscape##form_development_opportunities_helper_text"
+msgstr ""
+"https://landscapes.global/guide/shared-understanding/assessment-of-"
+"landscape-challenges-and-opportunities/"
+
+msgctxt "url"
+msgid "sharedData##form_step_data_file_step_description_help"
+msgstr "https://terraso.org/es/ayuda/prepare-su-archivo-de-datos-para-el-mapeo/"
+
+msgctxt "url"
+msgid "storyMap##tool_home_help_document"
+msgstr "https://terraso.org/es/help/como-hacer-un-mapa-de-la-historia/"
+
+msgctxt "url"
+msgid "storyMap##share_dialog_help"
+msgstr ""
+"https://terraso.org/es/ayuda/como-gestionar-los-editores-de-tu-mapa-de-la-"
+"historia/"
+
+msgctxt "view"
+msgid "group##breadcrumbs"
+msgstr "{{groupName}}"
+
+msgctxt "view"
+msgid "landscape##breadcrumbs"
+msgstr "{{landscapeName}}"
+
+msgctxt "view"
+msgid "storyMap##breadcrumbs"
+msgstr "{{title}}"
+
+msgctxt "visualization"
+msgid "group##breadcrumbs"
+msgstr "{{mapTitle}}"
+
+msgctxt "visualization"
+msgid "landscape##breadcrumbs"
+msgstr "{{mapTitle}}"
+
+msgctxt "new"
+msgid "group##breadcrumbs_visualization"
+msgstr "Nuevo mapa"
+
+msgctxt "new"
+msgid "landscape##breadcrumbs_visualization"
+msgstr "Nuevo mapa"
+
+msgctxt "upload"
+msgid "group##breadcrumbs"
+msgstr "Compartir archivos y enlaces"
+
+msgctxt "upload"
+msgid "landscape##breadcrumbs"
+msgstr "Compartir archivos y enlaces"
+
+msgctxt "upload"
+msgid "storyMap##form_media"
+msgstr "Agregar multimedia"
+
+msgctxt "options"
+msgid "group##autocomplete_no"
+msgstr "No existen opciones"
+
+msgctxt "options"
+msgid "taxonomies##no"
+msgstr "No existen opciones"
 
 msgctxt "to"
 msgid "tool##go"
@@ -766,9 +2661,13 @@ msgctxt "to"
 msgid "account##welcome"
 msgstr "Bienvenido a"
 
-msgctxt "for"
-msgid "tool##is"
-msgstr "Esta herramienta es para"
+msgctxt "more"
+msgid "tool##learn"
+msgstr "Más información sobre {{tool}}"
+
+msgctxt "more"
+msgid "sharedData##form_step_set_dataset_dataColumns_add"
+msgstr "+ Añadir columna"
 
 msgctxt "bookmark"
 msgid "tool##actions"
@@ -778,23 +2677,13 @@ msgctxt "recommend"
 msgid "tool##actions"
 msgstr "Recomendar esto a mi equipo"
 
-msgctxt "alt"
-msgid "tool##home_card_img"
-msgstr "Imagen de KoBoToolbox"
+msgctxt "list"
+msgid "tools##breadcrumbs"
+msgstr "Herramientas"
 
-msgctxt "info"
-msgid "account##form_first_name"
-msgstr "Este nombre se utilizará para saludarlo en Terraso."
-
-msgctxt "info"
-msgid "landscape##form_email"
-msgstr ""
-"Esta dirección de correo electrónico será utilizada por personas "
-"interesadas en conectarse con usted y su paisaje."
-
-msgctxt "info"
-msgid "landscape##form_website"
-msgstr "Se mostrará públicamente a todos los usuarios de Terraso."
+msgctxt "singular"
+msgid "account##form_first_name_label"
+msgstr "Nombre"
 
 msgctxt "picture"
 msgid "account##profile"
@@ -802,62 +2691,19 @@ msgstr "Fotografía de perfil"
 
 msgctxt "login"
 msgid "account##apple"
-msgstr "Continuar con Apple"
+msgstr "Acceder con Apple"
 
 msgctxt "login"
 msgid "account##google"
-msgstr "Continuar con Google"
+msgstr "Acceder con Google"
 
-msgctxt "profile"
-msgid "account##name_and"
-msgstr ""
-"Aquí está el nombre y la fotografía de perfil de su cuenta de Google. Si "
-"desea usar un nombre o una fotografía diferente para Terraso, puede "
-"cambiarlos."
-
-msgctxt "navigation"
-msgid "navigation##skip_to_main"
-msgstr "Saltar a la navegación principal"
-
-msgctxt "location"
-msgid "landscape##list_column"
-msgstr "Ubicación"
-
-msgctxt "geojson"
-msgid "landscape##boundaries_help"
-msgstr "¿No tienes un archivo GeoJSON?"
-
-msgctxt "detail"
-msgid "landscape##boundaries_help_geojson"
-msgstr "<1>Aprende a crear uno</1>."
-
-msgctxt "url"
-msgid "landscape##boundaries_help_geojson"
-msgstr "https://terraso.org/es/ayuda/dibujar-limites-del-paisaje/"
-
-msgctxt "file"
-msgid "landscape##boundaries_select"
-msgstr "Selecciona Archivo"
-
-msgctxt "size"
-msgid "landscape##boundaries"
-msgstr "Tamaño máximo de archivo: {{size}}MB"
-
-msgctxt "format"
-msgid "landscape##boundaries"
-msgstr "Formatos de archivo aceptados: *.json, *.geojson"
-
-msgctxt "save"
-msgid "landscape##boundaries"
-msgstr "Actualizar información geográfica"
-
-msgctxt "cancel"
-msgid "landscape##boundaries"
-msgstr "Cancelar"
+msgctxt "login"
+msgid "account##microsoft"
+msgstr "Acceder con Microsoft"
 
 msgctxt "error"
-msgid "landscape##boundaries_format"
-msgstr "Formato de archivo incorrecto. Cargue un archivo GeoJSON."
+msgid "account##unsubscribe"
+msgstr "Error al darse de baja de los correos electrónicos de Terraso"
 
 msgctxt "error"
 msgid "common##unexpected"
@@ -866,50 +2712,1047 @@ msgstr ""
 "errorParam(label: Error)}}"
 
 msgctxt "error"
+msgid "sharedData##visualization_file_load"
+msgstr ""
+"No se pudo cargar el archivo “{{name}}”. Vuelve a intentarlo o selecciona "
+"otro archivo."
+
+msgctxt "error"
+msgid "sharedData##upload_summary"
+msgstr ""
+"{{errorCounts}} no fueron compartidos. Corrige los errores y vuelve a "
+"compartir."
+
+msgctxt "error"
 msgid "gis##openstreetmap_api"
 msgstr "Error al solicitar datos de la API nominatim.openstreetmap.org"
+
+msgctxt "error"
+msgid "storyMap##form_media_add_dialog_embedded"
+msgstr "Introduce una URL válida de YouTube o Vimeo."
+
+msgctxt "short"
+msgid "navigation##nav_label"
+msgstr "Principal"
+
+msgctxt "navigation"
+msgid "navigation##skip_to_main"
+msgstr "Saltar a la navegación principal"
+
+msgctxt "cancel"
+msgid "navigation##blocked_dialog"
+msgstr "Cancelar"
+
+msgctxt "cancel"
+msgid "landscape##boundaries"
+msgstr "Cancelar"
+
+msgctxt "cancel"
+msgid "landscape##form_info"
+msgstr "Cancelar"
+
+msgctxt "cancel"
+msgid "landscape##form"
+msgstr "Cancelar"
+
+msgctxt "cancel"
+msgid "common##editable_text"
+msgstr "Cancelar"
+
+msgctxt "cancel"
+msgid "common##rich_text_editor_link_add_dialog"
+msgstr "Cancelar"
+
+msgctxt "cancel"
+msgid "sharedData##upload"
+msgstr "Cancelar"
+
+msgctxt "cancel"
+msgid "storyMap##form_location_add_data_layer_dialog"
+msgstr "Cancelar"
+
+msgctxt "confirm"
+msgid "navigation##blocked_dialog"
+msgstr "Continuar"
+
+msgctxt "confirm"
+msgid "storyMap##form_location_add_data_layer"
+msgstr "Agregar capa de mapa"
+
+msgctxt "popover"
+msgid "landscape##home"
+msgstr ""
+"Un paisaje es un territorio definido por límites naturales o "
+"administrativos, en el que las personas y la naturaleza conviven. Está "
+"influenciado por procesos y actividades ecológicas, históricas, económicas "
+"y socioculturales que tienen lugar dentro y adyacentes a la región."
+
+msgctxt "link"
+msgid "landscape##view_card_title_profile"
+msgstr "Ver detalles del paisaje"
+
+msgctxt "link"
+msgid "landscape##list_map_popup"
+msgstr "Ver detalles sobre {{name}}"
+
+msgctxt "link"
+msgid "common##external"
+msgstr "Abrir en Nueva ventana"
+
+msgctxt "link"
+msgid "storyMap##home_tools"
+msgstr "Story Maps de Terraso"
+
+msgctxt "deleted"
+msgid "landscape##profile_image"
+msgstr "Se ha eliminado la foto de perfil del paisaje."
+
+msgctxt "info"
+msgid "landscape##form_email"
+msgstr ""
+"Esta dirección de correo electrónico será utilizada por personas "
+"interesadas en conectarse con usted y su paisaje."
+
+msgctxt "info"
+msgid "form##helper_text"
+msgstr "Información"
+
+msgctxt "location"
+msgid "landscape##list_column"
+msgstr "Ubicación"
+
+msgctxt "text"
+msgid "landscape##map_profile_link"
+msgstr "Ver el perfil de {{name}}"
+
+msgctxt "text"
+msgid "landscape##form_development_problem_situtation_helper"
+msgstr ""
+"Ejemplos de desafíos incluyen la deforestación, la pobreza, la falta de "
+"oportunidades económicas y financiamiento. <1>Obtenga más información sobre "
+"la evaluación de los desafíos del paisaje</1>."
+
+msgctxt "text"
+msgid "landscape##form_development_intervention_strategy_helper"
+msgstr ""
+"<0>Los ejemplos incluyen convocar a socios del paisaje para identificar "
+"soluciones, realizar campañas de políticas y desarrollar la capacidad de "
+"las partes interesadas.</0> <1>Obtenga más información sobre el <0>plan de "
+"acción paisajístico</0> y la <1>estrategia financiera</1>.</1>"
+
+msgctxt "text"
+msgid "landscape##form_development_goals_helper"
+msgstr ""
+"Los ejemplos de metas de desarrollo sostenible incluyen: <1><0>Conservar y "
+"restaurar la biodiversidad</0><1>Mejorar el rendimiento agrícola y ganadero "
+"de forma sostenible</1><2>Lograr seguridad alimentaria y de medios de "
+"vida</2><3>Fortalecer acceso a salud, educación y otros servicios "
+"humanos</3><4>Mejorar el capital social y la equidad social</4></1> <2>Más "
+"información sobre visión y planificación.</2>"
+
+msgctxt "text"
+msgid "landscape##form_development_opportunities_helper"
+msgstr ""
+"Los ejemplos de oportunidades incluyen una rica biodiversidad, miembros de "
+"la comunidad comprometidos y ubicación geográfica. <1>Obtenga más "
+"información sobre la evaluación de oportunidades de paisajes</1>."
+
+msgctxt "text"
+msgid "landscape##form_development_objectives_helper"
+msgstr ""
+"Los ejemplos de objetivos de desarrollo sostenible incluyen: "
+"<1><0>Conservar y restaurar la biodiversidad</0><1>Mejorar el rendimiento "
+"agrícola y ganadero de forma sostenible</1><2>Lograr seguridad alimentaria "
+"y de medios de vida</2><3>Fortalecer acceso a salud, educación y otros "
+"servicios humanos</3><4>Mejorar el capital social y la equidad "
+"social</4></1> <2>Más información sobre visión y planificación.</2>"
+
+msgctxt "text"
+msgid "landscape##form_profile_commondities_helper"
+msgstr ""
+"¿Cuáles son los principales productos agrícolas y materias primas "
+"producidos en tu paisaje?"
+
+msgctxt "text"
+msgid "landscape##form_profile_livelihoods_helper"
+msgstr "¿Cuáles son las principales ocupaciones y fuentes de empleo en tu paisaje?"
+
+msgctxt "text"
+msgid "landscape##form_profile_population_helper"
+msgstr "Aproximadamente, ¿cuántas personas viven en este paisaje?"
+
+msgctxt "text"
+msgid "landscape##form_profile_languages_helper"
+msgstr "¿Qué idiomas se hablan en su paisaje? Incluir lenguas minoritarias."
+
+msgctxt "text"
+msgid "landscape##form_profile_organizations_helper"
+msgstr ""
+"Enumera las instituciones que contribuyen al desarrollo de tu paisaje. "
+"Estas pueden incluir agencias gubernamentales, organizaciones no "
+"gubernamentales, instituciones educativas, organizaciones religiosas y "
+"empresas."
+
+msgctxt "text"
+msgid "landscape##form_profile_affiliated_groups_helper"
+msgstr "¿Qué grupos de Terraso operan en tu paisaje?"
+
+msgctxt "text"
+msgid "landscape##form_profile_partnership_group_helper"
+msgstr "Selecciona un grupo de Terraso que represente tu asociación de paisaje"
+
+msgctxt "text"
+msgid "landscape##form_profile_partnership_year_helper"
+msgstr "¿Aproximadamente cuándo comenzaron a colaborar las partes interesadas?"
+
+msgctxt "text"
+msgid "landscape##form_profile_partnership_status_helper"
+msgstr ""
+"Una asociación de paisajes es un grupo de organizaciones que trabajan "
+"juntas por el futuro del paisaje."
+
+msgctxt "text"
+msgid "landscape##form_email_helper"
+msgstr "Esto se mostrará como un contacto principal."
+
+msgctxt "text"
+msgid "landscape##form_name_helper"
+msgstr "El nombre formal o común de su paisaje."
+
+msgctxt "text"
+msgid "landscape##form_profile_image_description_helper"
+msgstr "Describe tu imagen de perfil de paisaje en un par de oraciones"
+
+msgctxt "text"
+msgid "landscape##form_profile_profile_image_helper"
+msgstr "Cargue una imagen de alta resolución para representar tu paisaje"
+
+msgctxt "text"
+msgid "landscape##form_profile_ecosystem_types_helper"
+msgstr ""
+"<p><strong>Desiertos:</strong> Temperatura excesiva y sol extremo, tierra "
+"árida con poca precipitación, condiciones de vida hostiles para la vida "
+"animal y vegetal</p><p><strong>Bosque Templado:</strong> Encontrado cerca "
+"de las áreas costeras más frías más al norte o al sur del "
+"ecuador</p><p><strong>Bosque tropical:</strong> se encuentra más cerca del "
+"ecuador donde hace calor. Bioma cálido y húmedo, lluvias todo el "
+"año</p><p><strong>Marino/costero:</strong> Área en la costa, puede estar "
+"compuesta por costa, rocas, acantilados marinos, islas en alta mar, dunas, "
+"mar o lagos de agua dulce</p><p><strong>Polar/alpino:</strong> acantilados, "
+"campos de talud, campos de rocas y glaciares de roca; campos de hielo y "
+"nieve permanentes y persistentes, incluidos los glaciares; y varios cuerpos "
+"de agua</p><p><strong>Savanas:</strong> Pastizales con árboles "
+"dispersos</p><p><strong>Matorrales:</strong> Arbustos y árboles leñosos o "
+"herbáceos</p> <p><strong>Humedales:</strong> cubiertos o saturados de agua, "
+"a menudo aguas subterráneas, que se filtran de un acuífero o manantial. "
+"Incluye turberas, pantanos y ciénagas. El agua puede ser temporal o "
+"permanente.</p>"
+
+msgctxt "text"
+msgid "landscape##form_profile_agricultural_production_methods_helper"
+msgstr "¿Qué métodos de producción agrícola utilizan en tu paisaje?"
+
+msgctxt "text"
+msgid "share##invite"
+msgstr "Echa un vistazo a {{name}} en Terraso y únete: {{url}}"
+
+msgctxt "text"
+msgid "storyMap##share_dialog_autocomplete_helper"
+msgstr ""
+"Ella(o)s recibirán una invitación por correo electrónico para unirse a este "
+"story map."
+
+msgctxt "geojson"
+msgid "landscape##boundaries_help"
+msgstr "¿No tienes un archivo GeoJSON?"
+
+msgctxt "geojson"
+msgid "landscape##form_boundary_options"
+msgstr "Cargar un archivo de mapa. <1>Formatos de archivo aceptados: {{formats}}</1>"
+
+msgctxt "geojson"
+msgid "gis##boundaries_file_invalid"
+msgstr "El archivo {{name}} es JSON, pero no es un archivo GeoJSON válido."
+
+msgctxt "detail"
+msgid "landscape##boundaries_help_geojson"
+msgstr "<1>Aprende a crear uno</1>."
+
+msgctxt "file"
+msgid "landscape##boundaries_select"
+msgstr "Selecciona Archivo"
+
+msgctxt "file"
+msgid "common##drop_zone_select"
+msgstr "Seleccione Archivo"
+
+msgctxt "file"
+msgid "gis##invalid_kml"
+msgstr "El archivo {{name}} no es un archivo KML válido"
+
+msgctxt "file"
+msgid "gis##invalid_kmz"
+msgstr "El archivo {{name}} no es un archivo KMZ válido"
+
+msgctxt "file"
+msgid "storyMap##form_location_add_data_layer_dialog_source"
+msgstr "Archivo fuente: {{filename}}"
+
+msgctxt "save"
+msgid "landscape##boundaries"
+msgstr "Guardar cambios"
+
+msgctxt "save"
+msgid "landscape##boundaries_update"
+msgstr "Actualizar mapa"
+
+msgctxt "save"
+msgid "common##editable_text"
+msgstr "Guardar"
+
+msgctxt "save"
+msgid "sharedData##upload"
+msgstr "Compartir archivos y enlaces"
+
+msgctxt "save"
+msgid "sharedData##form_step_preview_step"
+msgstr "Publicar"
 
 msgctxt "help"
 msgid "landscape##view_map_boundaries"
 msgstr "¿Algo mal con el mapa?"
 
+msgctxt "help"
+msgid "landscape##list_map"
+msgstr ""
+"<0>¿No puedes encontrar tu paisaje en este mapa? <1>Añádelo a Terraso</1> o "
+"<3>aprende más sobre paisajes</3>.</0>"
+
+msgctxt "help"
+msgid "landscape##form_boundary_draw_polygon"
+msgstr "¿Necesitas ayuda?"
+
+msgctxt "help"
+msgid "landscape##form_boundary_draw_polygon_edit"
+msgstr ""
+"<strong>Cómo editar:</strong> selecciona un punto y arrástralo para ajustar "
+"la forma. Selecciona y arrastra un punto amarillo más pequeño para agregar "
+"más puntos. Elimina puntos usando el botón Eliminar. Cuando hayas "
+"terminado, selecciona {{saveLabel}}."
+
+msgctxt "help"
+msgid "storyMap##tool_home"
+msgstr "<0>¿Quieres aprender a crear un story map? <1>Lee un tutorial</1>.</0>"
+
 msgctxt "details"
 msgid "landscape##view_map_boundaries_help"
-msgstr ""
-"Comunícate con el administrador de su paisaje o <1>envíanos un mensaje <1 "
-"/></1>."
+msgstr "Comunícate con el administrador de su paisaje o <1>envíanos un mensaje</1>."
 
 msgctxt "update"
 msgid "landscape##view_map_boundaries"
 msgstr "Actualizar información geográfica"
 
+msgctxt "update"
+msgid "landscape##form"
+msgstr "Actualizar"
+
+msgctxt "update"
+msgid "landscape##profile_profile_card_profile_image"
+msgstr "Actualizar imagen de paisaje"
+
+msgctxt "update"
+msgid "sharedData##name"
+msgstr "Actualizar nombre"
+
+msgctxt "update"
+msgid "sharedData##description"
+msgstr "Actualizar descripción"
+
+msgctxt "pin"
+msgid "landscape##form_boundary_options"
+msgstr "Coloque un pin en un mapa"
+
+msgctxt "skip"
+msgid "landscape##form_boundary_options"
+msgstr "Omite este paso por ahora"
+
+msgctxt "back"
+msgid "landscape##form_boundary_options"
+msgstr "Atrás"
+
+msgctxt "back"
+msgid "landscape##form"
+msgstr "Regresar"
+
+msgctxt "back"
+msgid "sharedData##form"
+msgstr "Regresar"
+
+msgctxt "next"
+msgid "landscape##form_info"
+msgstr "Siguiente"
+
+msgctxt "next"
+msgid "landscape##form"
+msgstr "Siguiente"
+
+msgctxt "next"
+msgid "sharedData##form"
+msgstr "Siguiente"
+
+msgctxt "select"
+msgid "landscape##form_location"
+msgstr "Selecciona una ubicación"
+
+msgctxt "lanel"
+msgid "landscape##form_map_section"
+msgstr "Mapa del paisaje"
+
+msgctxt "accepted"
+msgid "landscape##boundaries_file_no"
+msgstr "No se pueden agregar los archivos."
+
+msgctxt "accepted"
+msgid "landscape##form_profile_image_file_no"
+msgstr "Sube imágenes con una de las siguientes extensiones: {{extensions}}"
+
+msgctxt "selected"
+msgid "landscape##boundaries_file"
+msgstr "El mapa ha sido actualizado con {{name}}"
+
+msgctxt "polygon"
+msgid "landscape##form_boundary_options_draw"
+msgstr "Dibujar el límite del paisaje en un mapa"
+
+msgctxt "polygon"
+msgid "landscape##form_boundary_draw_edit_help_draw_polygon"
+msgstr ""
+"<strong>Cómo agregar su límite:</strong> selecciona un punto en el mapa en "
+"el borde de tu paisaje. Repite para hacer un contorno aproximado de tu "
+"límite. Cuando hayas terminado, selecciona el primer punto."
+
+msgctxt "profile"
+msgid "landscape##breadcrumbs"
+msgstr "Perfil"
+
+msgctxt "now"
+msgid "landscape##form_save"
+msgstr "Guardar"
+
+msgctxt "peri-urban"
+msgid "landscape##profile_profile_card_area_types"
+msgstr "Periurbano"
+
+msgctxt "peri-urban"
+msgid "landscape##form_profile_area_types_helper_text"
+msgstr ""
+"<p><strong>Periurbano</strong> son áreas de transición entre el suelo rural "
+"y el urbano, generalmente ubicadas en el perímetro, o límites exteriores, "
+"de los centros urbanos. Incluyen una mezcla de características de áreas "
+"urbanas y rurales.</p>"
+
+msgctxt "urban"
+msgid "landscape##profile_profile_card_area_types"
+msgstr "Urbano"
+
+msgctxt "urban"
+msgid "landscape##form_profile_area_types_helper_text"
+msgstr ""
+"<p>Las áreas <strong>Urbanas</strong> generalmente se refieren a ciudades, "
+"suburbios y pueblos. Tienen una alta densidad de población, infraestructura "
+"(por ejemplo, agua y alcantarillado) y conectividad (como aeropuertos, "
+"puertos, ferrocarriles, grandes edificios, viviendas y carreteras). El uso "
+"del suelo es principalmente residencial, con algunos usos comerciales e "
+"industriales.</p>"
+
+msgctxt "rural"
+msgid "landscape##profile_profile_card_area_types"
+msgstr "Rural"
+
+msgctxt "rural"
+msgid "landscape##form_profile_area_types_helper_text"
+msgstr ""
+"<p>Las áreas <strong>rurales</strong> suelen estar ubicadas lejos de las "
+"ciudades y áreas urbanas y generalmente tienen servicios e infraestructura "
+"limitados. La mayoría de la gente vive o trabaja en granjas en pueblos, "
+"ciudades y otros asentamientos más grandes. La tierra se utiliza "
+"principalmente para agricultura, pastoreo, silvicultura y conservación de "
+"áreas naturales.</p>"
+
+msgctxt "enter"
+msgid "landscape##profile_profile_card"
+msgstr ""
+"Proporcione detalles sobre las personas dentro de su paisaje y sus medios "
+"de vida."
+
+msgctxt "types"
+msgid "landscape##form_profile_area"
+msgstr "Descripción del área del paisaje"
+
+msgctxt "types"
+msgid "landscape##form_profile_ecosystem"
+msgstr "Tipos de ecosistemas"
+
+msgctxt "languages"
+msgid "landscape##form_profile"
+msgstr "Idiomas"
+
+msgctxt "population"
+msgid "landscape##form_profile"
+msgstr "Población aproximada del paisaje"
+
+msgctxt "profile.population"
+msgid "landscape##form"
+msgstr "Población"
+
+msgctxt "livelihoods"
+msgid "landscape##form_profile"
+msgstr "Medios de subsistencia"
+
+msgctxt "commondities"
+msgid "landscape##form_profile"
+msgstr "Productos agrícolas y materias primas"
+
+msgctxt "status"
+msgid "landscape##form_profile_partnership"
+msgstr "¿Está una asociación de paisaje gestionando este paisaje?"
+
+msgctxt "yes"
+msgid "landscape##profile_profile_card_partnership_status"
+msgstr "Asociación formal establecida"
+
+msgctxt "progress"
+msgid "landscape##profile_profile_card_partnership_status_in"
+msgstr "En progreso"
+
+msgctxt "no"
+msgid "landscape##profile_profile_card_partnership_status"
+msgstr "Sin asociación"
+
+msgctxt "year"
+msgid "landscape##form_profile_partnership"
+msgstr "Año de inicio de la asociación del paisaje"
+
+msgctxt "group"
+msgid "landscape##form_profile_partnership"
+msgstr "Asociacion de paisaje"
+
+msgctxt "group"
+msgid "collaboration##entity_type"
+msgstr "grupo"
+
+msgctxt "groups"
+msgid "landscape##form_profile_affiliated"
+msgstr "Grupos de Terraso afiliados"
+
+msgctxt "organizations"
+msgid "landscape##form_profile"
+msgstr "Otras organizaciones activas en el paisaje"
+
+msgctxt "goals"
+msgid "landscape##form_development"
+msgstr "Metas de desarrollo sostenible"
+
+msgctxt "situtation"
+msgid "landscape##form_development_problem"
+msgstr "Retos principales"
+
+msgctxt "strategy"
+msgid "landscape##form_development_intervention"
+msgstr "Estrategia de intervención del paisaje"
+
+msgctxt "info.name"
+msgid "landscape##form_key"
+msgstr "nombre"
+
+msgctxt "info.description"
+msgid "landscape##form_key"
+msgstr "descripción"
+
+msgctxt "info.location"
+msgid "landscape##form_key"
+msgstr "País o Región"
+
+msgctxt "alt"
+msgid "landscape##profile_profile_card_profile_image"
+msgstr "Foto del paisaje {{name}}"
+
+msgctxt "alt"
+msgid "storyMap##form_location_helper_text_step_1_image"
+msgstr ""
+"Una captura de pantalla del mapa de Guyana en la pantalla Establecer "
+"ubicación del mapa. El campo de búsqueda de ubicación se completa con la "
+"palabra clave “Guyana”."
+
+msgctxt "alt"
+msgid "storyMap##form_location_helper_text_step_2_1_image"
+msgstr "Un mapa con el botón de rotación apuntando al norte y al sur."
+
+msgctxt "alt"
+msgid "storyMap##form_location_helper_text_step_2_2_image"
+msgstr ""
+"Un mapa muestra la misma ubicación que el mapa anterior con la vista girada "
+"90 grados. El botón de rotación apunta al este y al oeste."
+
+msgctxt "alt"
+msgid "storyMap##form_location_helper_text_step_3_image"
+msgstr ""
+"Una captura de pantalla de la pantalla Establecer ubicación en el mapa. El "
+"botón “Establecer ubicación” en la parte superior derecha tiene un círculo."
+
+msgctxt "alt"
+msgid "storyMap##form_location_helper_text_bearing_icon"
+msgstr "Rumbo"
+
+msgctxt "landscape"
+msgid "landscape##form_development_intervention_strategy_helper_text_url"
+msgstr ""
+"https://landscapes.global/guide/vision-and-planning/landscape-action-plan-"
+"short-term/"
+
+msgctxt "landscape"
+msgid "collaboration##entity_type"
+msgstr "paisaje"
+
+msgctxt "finance"
+msgid "landscape##form_development_intervention_strategy_helper_text_url"
+msgstr ""
+"https://landscapes.global/guide/vision-and-planning/landscape-finance-"
+"strategy/"
+
+msgctxt "opportunities"
+msgid "landscape##form_development"
+msgstr "Oportunidades"
+
+msgctxt "methods"
+msgid "landscape##form_profile_agricultural_production"
+msgstr "Método de producción agrícola"
+
 msgctxt "projectName"
 msgid "common##terraso"
 msgstr "Terraso"
+
+msgctxt "logoText"
+msgid "common##terraso"
+msgstr "Logo: Terraso"
 
 msgctxt "code"
 msgid "common##not_found_error"
 msgstr "Código de error: 404"
 
+msgctxt "code"
+msgid "share##copy_embed"
+msgstr "Código para incrustar el {{item}}:"
+
+msgctxt "format"
+msgid "common##drop_zone"
+msgstr "Formatos de archivo aceptados: {{extensions}}"
+
+msgctxt "size"
+msgid "common##drop_zone"
+msgstr "Tamaño máximo de archivo: {{size}}"
+
+msgctxt "size"
+msgid "sharedData##form_step_visualize"
+msgstr "Tamaño del símbolo"
+
+msgctxt "clear"
+msgid "common##table_search_filter"
+msgstr "Borrar búsqueda"
+
+msgctxt "clear"
+msgid "gis##map_search"
+msgstr "Borrar búsqueda"
+
+msgctxt "page"
+msgid "common##table_pagination_previous"
+msgstr "Regresar a la pagina anterior"
+
+msgctxt "page"
+msgid "common##table_pagination_next"
+msgstr "Ir a la página siguiente"
+
+msgctxt "displayed"
+msgid "common##table_pagination"
+msgstr "{{from}} - {{to}} de {{count}}"
+
+msgctxt "desc"
+msgid "common##table_sort"
+msgstr "Orden descendiente"
+
+msgctxt "asc"
+msgid "common##table_sort"
+msgstr "Orden ascendente"
+
+msgctxt "unsort"
+msgid "common##table_sort"
+msgstr "Desordenar"
+
+msgctxt "add"
+msgid "common##rich_text_editor_link_dialog_add"
+msgstr "Añadir enlace"
+
+msgctxt "add"
+msgid "common##rich_text_editor_toolbar_link"
+msgstr "Enlace"
+
+msgctxt "add"
+msgid "sharedData##upload_links"
+msgstr "Agregar otro enlace"
+
+msgctxt "add"
+msgid "storyMap##form_chapter"
+msgstr "Añadir nuevo capítulo"
+
+msgctxt "add"
+msgid "storyMap##form_media_dialog_add"
+msgstr "Agregar multimedia"
+
+msgctxt "bold"
+msgid "common##rich_text_editor_toolbar"
+msgstr "Negrita"
+
+msgctxt "italic"
+msgid "common##rich_text_editor_toolbar"
+msgstr "Itálica"
+
+msgctxt "menu"
+msgid "common##vertical"
+msgstr "Mas opciones"
+
+msgctxt "files"
+msgid "sharedData##description_with"
+msgstr ""
+"Solo los miembros de tu {{entityType}} pueden descargar estos archivos o "
+"crear un mapa con ellos."
+
+msgctxt "files"
+msgid "sharedData##upload_no"
+msgstr "No se agregaron archivos"
+
+msgctxt "files"
+msgid "sharedData##tab"
+msgstr "Subir archivos ({{count}})"
+
+msgctxt "files"
+msgid "sharedData##upload_summary"
+msgstr "{{count}} archivos"
+
+msgctxt "author"
+msgid "sharedData##file_date_and"
+msgstr "{{date}}, por $t(user.full_name)"
+
+msgctxt "too-many-files"
+msgid "sharedData##upload_rejected"
+msgstr "No se pueden agregar más de {{maxFiles}} archivos."
+
+msgctxt "file-invalid-type"
+msgid "sharedData##upload_rejected"
+msgstr ""
+"{{rejectedFiles}} no se pueden agregar porque los tipos de archivo no son "
+"compatibles."
+
+msgctxt "file-too-large"
+msgid "sharedData##upload_rejected"
+msgstr ""
+"{{rejectedFiles}} no se pueden agregar porque uno o más archivos son "
+"demasiado grandes."
+
+msgctxt "file-too-large"
+msgid "storyMap##upload_rejected"
+msgstr "{{rejectedFiles}} no se puede agregar porque el archivo es demasiado grande."
+
+msgctxt "ALL"
+msgid "sharedData##share_file_dialog_share_access_type"
+msgstr "Cualquier persona con el enlace"
+
+msgctxt "MEMBERS"
+msgid "sharedData##share_file_dialog_share_access_type"
+msgstr "Miembros"
+
+msgctxt "suffix"
+msgid "sharedData##share_file_dialog_share_access"
+msgstr "pueden ver y descargar este archivo"
+
+msgctxt "warning"
+msgid "sharedData##share_file_dialog_share_access_all"
+msgstr "Cualquier persona en el internet con el enlace puede acceder a este archivo"
+
+msgctxt "warning"
+msgid "storyMap##form_new_mobile"
+msgstr ""
+"Lo sentimos, la creación de un Story Map no es compatible con teléfonos "
+"móviles pequeños. Vea qué y cómo prepararse para un Story Map convincente."
+
+msgctxt "allowed"
+msgid "sharedData##share_file_dialog_share_access_not"
+msgstr ""
+"Sólo los administradores de grupos y propietarios de archivos pueden "
+"cambiar esta configuración."
+
+msgctxt "allowed"
+msgid "terraso##delete_not"
+msgstr "$t(terraso_api.delete_not_allowed_base)"
+
+msgctxt "allowed"
+msgid "terraso##create_not"
+msgstr "$t(terraso_api.create_not_allowed_base)"
+
+msgctxt "allowed"
+msgid "terraso##update_not"
+msgstr "$t(terraso_api.update_not_allowed_base)"
+
+msgctxt "allowed"
+msgid "storyMap##approveMembership.update_not"
+msgstr "No se puede aceptar la invitación de Story Map"
+
+msgctxt "updated"
+msgid "sharedData##share_file_dialog_share_access"
+msgstr "Acceso actualizado"
+
+msgctxt "done"
+msgid "sharedData##share_file_dialog_share_access"
+msgstr "Hecho"
+
+msgctxt "done"
+msgid "share##copy_button"
+msgstr "Copiada"
+
+msgctxt "done"
+msgid "share##copy_embed_button"
+msgstr "Código copiado"
+
+msgctxt "extension"
+msgid "sharedData##invalid"
+msgstr ""
+"La extensión del archivo ({{file.resourceType}}) no coincide con el "
+"contenido del archivo"
+
+msgctxt "zip"
+msgid "sharedData##invalid_extension"
+msgstr "El archivo {{file.name}}{{file.resourceType}} no es un zip válido."
+
+msgctxt "shapefile"
+msgid "sharedData##invalid"
+msgstr ""
+"El archivo {{file.name}}{{file.resourceType}} es un zip válido, pero no es "
+"un archivo de ESRI shapefile válido."
+
+msgctxt "shapefile"
+msgid "gis##invalid"
+msgstr "El archivo {{name}} no es un archivo de shapefile válido"
+
+msgctxt "delete"
+msgid "sharedData##form_step_set_dataset_dataColumns_custom"
+msgstr "Eliminar columna {{index}}"
+
+msgctxt "delete"
+msgid "sharedData##visualization"
+msgstr "Eliminar"
+
+msgctxt "delete"
+msgid "sharedData##visualization_confirm"
+msgstr "Eliminar mapa"
+
+msgctxt "dataset.dataColumns.option"
+msgid "sharedData##form_step_set"
+msgstr "Selección de visualización de columnas"
+
+msgctxt "dataset.dataColumns.selectedColumns"
+msgid "sharedData##form_step_set"
+msgstr "Columna seleccionada"
+
+msgctxt "coordinate"
+msgid "sharedData##form_step_set_dataset.invalid"
+msgstr ""
+"Parece que la columna que has seleccionado tiene al menos una coordenada "
+"$t(gis.{{coordinate}}) no válida. Revisa y vuelve a intentarlo."
+
+msgctxt "dataset.latitude"
+msgid "sharedData##form_step_set"
+msgstr "latitud"
+
+msgctxt "dataset.longitude"
+msgid "sharedData##form_step_set"
+msgstr "longitud"
+
+msgctxt "shape"
+msgid "sharedData##form_step_visualize"
+msgstr "Forma del símbolo"
+
+msgctxt "color"
+msgid "sharedData##form_step_visualize"
+msgstr "Color"
+
+msgctxt "opacity"
+msgid "sharedData##form_step_visualize"
+msgstr "Opacidad del polígono"
+
+msgctxt "custom"
+msgid "sharedData##form_step_set_dataset_dataColumns"
+msgstr "Solo las columnas de abajo"
+
+msgctxt "at"
+msgid "sharedData##form_step_data_file_step_created"
+msgstr "{{date}}, por $t(user.full_name)"
+
+msgctxt "at"
+msgid "storyMap##tool_home_examples_published"
+msgstr "Publicado {{date}}"
+
+msgctxt "descriptionn"
+msgid "sharedData##form_step_set_dataset_step_lat_lng"
+msgstr "Selecciona las columnas de latitud y longitud de tu conjunto de datos."
+
+msgctxt "config"
+msgid "sharedData##added_visualization"
+msgstr "Se ha publicado el mapa del archivo {{name}}."
+
+msgctxt "config"
+msgid "sharedData##deleted_visualization"
+msgstr "{{mapTitle}} ha sido eliminado."
+
+msgctxt "data"
+msgid "sharedData##visualization_source"
+msgstr ""
+"<0>Creado por {{user}} el {{date}} | DATOS DE ORIGEN: "
+"<1>{{file.name}}.{{file.resourceType}}</1></0>"
+
+msgctxt "fields.mapTitle"
+msgid "sharedData##form_step_annotate"
+msgstr "Título del mapa"
+
+msgctxt "png"
+msgid "sharedData##visualization_download"
+msgstr "Descargar PNG"
+
+msgctxt "circle"
+msgid "sharedData##form_step_visualize_shape"
+msgstr "Circulo"
+
+msgctxt "square"
+msgid "sharedData##form_step_visualize_shape"
+msgstr "Cuadrado"
+
+msgctxt "hexagon"
+msgid "sharedData##form_step_visualize_shape"
+msgstr "Hexágono"
+
+msgctxt "triangle"
+msgid "sharedData##form_step_visualize_shape"
+msgstr "Triángulo"
+
+msgctxt "min"
+msgid "sharedData##form_step_set_dataset.form.validation_array"
+msgstr "Selecciona al menos una columna de datos para mostrar."
+
+msgctxt "zero"
+msgid "sharedData##tab_files"
+msgstr "Subir archivos"
+
+msgctxt "zero"
+msgid "sharedData##tab_links"
+msgstr "Compartir enlaces"
+
+msgctxt "zero"
+msgid "storyMap##form_location_add_data_layer_dialog_layers_count"
+msgstr "No has creado ningún mapa en Terraso. Haz un mapa en un grupo o paisaje."
+
+msgctxt "links"
+msgid "sharedData##tab"
+msgstr "Compartir enlaces ({{count}})"
+
+msgctxt "links"
+msgid "sharedData##upload_summary"
+msgstr "{{count}} enlaces"
+
+msgctxt "separator"
+msgid "sharedData##upload_summary"
+msgstr " y "
+
+msgctxt "form.url"
+msgid "sharedData##upload_link"
+msgstr "$t(sharedData.upload_url_label)"
+
+msgctxt "form.name"
+msgid "sharedData##upload_link"
+msgstr "$t(sharedData.upload_name_label)"
+
+msgctxt "form.description"
+msgid "sharedData##upload_link"
+msgstr "$t(sharedData.upload_description_label)"
+
+msgctxt "api.invalid"
+msgid "sharedData##addSharedDataLink.terraso"
+msgstr "$t(sharedData.upload_{{field}}_label) inválido"
+
+msgctxt "tooltip"
+msgid "sharedData##link_delete"
+msgstr "Eliminar enlace “{{name}}”."
+
+msgctxt "tooltip"
+msgid "sharedData##file_delete"
+msgstr "Eliminar archivo “{{name}}”."
+
+msgctxt "tooltip"
+msgid "storyMap##form_delete_chapter_confirm_button"
+msgstr "Eliminar el capítulo “{{name}}”"
+
+msgctxt "preview"
+msgid "sharedData##shared_resource_download_no"
+msgstr "No hay vista previa de archivos disponible"
+
+msgctxt "subject"
+msgid "share##invite"
+msgstr "Únete a {{name}} en Terraso"
+
 msgctxt "invalid"
 msgid "form##validation_field"
-msgstr "{{path}} debe ser válido"
+msgstr "$t({{path}}) debe ser válido"
 
 msgctxt "invalid"
 msgid "form##validation_email"
-msgstr "{{path}} debe ser un correo electrónico válido"
+msgstr "Introduce una dirección de correo electrónico válida."
 
 msgctxt "invalid"
 msgid "form##validation_url"
-msgstr "{{path}} debe ser una URL válida"
+msgstr "Introduce una dirección web válida."
+
+msgctxt "unexpected"
+msgid "form##validation_field_invalid"
+msgstr "El campo debe ser válido"
+
+msgctxt "unexpected"
+msgid "terraso##error"
+msgstr "Error inesperado"
 
 msgctxt "required"
 msgid "form##validation_field"
-msgstr "{{path}} es un campo obligatorio"
+msgstr "Introduce un(a) {{path, lowercase}}."
+
+msgctxt "required"
+msgid "form##validation_select_field"
+msgstr "Seleccione un(a) {{path, lowercase}}."
+
+msgctxt "required"
+msgid "form##validation_url"
+msgstr "Introduce una dirección web."
+
+msgctxt "array"
+msgid "form##validation_field_required"
+msgstr "$t({{path}}) {{arrayIndex}} es obligatorio"
 
 msgctxt "length"
 msgid "form##validation_field_max"
-msgstr "{{path}} debe tener {{max}} caracteres como máximo."
+msgstr "$t({{path}}) debe tener menos de {{max}} caracteres."
+
+msgctxt "integer"
+msgid "form##validation_number"
+msgstr "$t({{path}}) debe ser un número entero."
+
+msgctxt "max"
+msgid "form##validation_number"
+msgstr "$t({{path}}) debe ser menor que {{max, number()}}."
 
 msgctxt "en-US"
 msgid "localization##locale"
@@ -927,10 +3770,6 @@ msgctxt "es-ES"
 msgid "localization##locale"
 msgstr "Español"
 
-msgctxt "unexpected"
-msgid "terraso##error"
-msgstr "Error inesperado"
-
 msgctxt "response"
 msgid "terraso##error_request"
 msgstr "No se pudo conectar con la API de Terraso"
@@ -947,14 +3786,240 @@ msgctxt "base"
 msgid "terraso##update_not_allowed"
 msgstr "No puedes actualizar $t(terraso_api.models.{{model}})"
 
-msgctxt "allowed"
-msgid "terraso##delete_not"
-msgstr "$t(terraso_api.delete_not_allowed_base)"
+msgctxt "json"
+msgid "gis##boundaries_file_invalid"
+msgstr "El archivo {{name}} es un archivo JSON no válido."
 
-msgctxt "allowed"
-msgid "terraso##create_not"
-msgstr "$t(terraso_api.create_not_allowed_base)"
+msgctxt "satellite"
+msgid "gis##mapbox_style"
+msgstr "Satélite"
 
-msgctxt "allowed"
-msgid "terraso##update_not"
-msgstr "$t(terraso_api.update_not_allowed_base)"
+msgctxt "combined"
+msgid "gis##mapbox_style"
+msgstr "Satélite y calles"
+
+msgctxt "streets"
+msgid "gis##mapbox_style"
+msgstr "Calles y topografía"
+
+msgctxt "type"
+msgid "storyMap##item"
+msgstr "Story Map"
+
+msgctxt "byline"
+msgid "storyMap##form"
+msgstr "Por $t(user.full_name)"
+
+msgctxt "close"
+msgid "storyMap##form_preview"
+msgstr "Salir de vista previa"
+
+msgctxt "close"
+msgid "storyMap##form_media_add_dialog"
+msgstr "Cancelar"
+
+msgctxt "blank"
+msgid "storyMap##form_preview_title"
+msgstr "Usted está viendo una vista previa"
+
+msgctxt "blank"
+msgid "storyMap##form_location_dialog_title"
+msgstr "Establecer ubicación en el mapa"
+
+msgctxt "blank"
+msgid "storyMap##form_location_add_data_layer_dialog_title"
+msgstr "Agregar una capa de mapa al capítulo"
+
+msgctxt "buttons"
+msgid "storyMap##form_chapter_alignment"
+msgstr "Establecer alineación"
+
+msgctxt "left"
+msgid "storyMap##form_chapter_alignment"
+msgstr "alinear a la izquierda"
+
+msgctxt "center"
+msgid "storyMap##form_chapter_alignment"
+msgstr "Alinear al centro"
+
+msgctxt "right"
+msgid "storyMap##form_chapter_alignment"
+msgstr "Alinear a la derecha"
+
+msgctxt "up"
+msgid "storyMap##form_chapter_move"
+msgstr "Mover capítulo hacia arriba"
+
+msgctxt "down"
+msgid "storyMap##form_chapter_move"
+msgstr "Mover capítulo hacia abajo"
+
+msgctxt "outline"
+msgid "storyMap##view_title"
+msgstr "Esquema"
+
+msgctxt "home"
+msgid "storyMap##breadcrumbs_tool"
+msgstr "Story Maps de Terraso"
+
+msgctxt "create"
+msgid "storyMap##home"
+msgstr "Crear nuevo Story Map"
+
+msgctxt "edited"
+msgid "storyMap##home_last"
+msgstr "Última edición el {{date}}"
+
+msgctxt "on"
+msgid "storyMap##home_published"
+msgstr "Publicado en {{date}}"
+
+msgctxt "edit"
+msgid "storyMap##home"
+msgstr "Editar"
+
+msgctxt "edit"
+msgid "storyMap##view"
+msgstr "Editar Story Map"
+
+msgctxt "accept"
+msgid "storyMap##home"
+msgstr "Aceptar"
+
+msgctxt "map"
+msgid "storyMap##deleted_story"
+msgstr "<strong>{{title}}</strong> fue eliminado"
+
+msgctxt "map"
+msgid "storyMap##update_story"
+msgstr "Se ha actualizado el Story Map <strong>{{title}}</strong>."
+
+msgctxt "map"
+msgid "storyMap##added_story"
+msgstr "Se ha guardado el Story Map <strong>{{title}}</strong>."
+
+msgctxt "media"
+msgid "storyMap##form_add_dialog_link_media"
+msgstr "Enlace a un video de YouTube o Vimeo"
+
+msgctxt "by"
+msgid "storyMap##tool_home_examples"
+msgstr "Por $t(user.full_name)"
+
+msgctxt "published"
+msgid "storyMap##update_story_map"
+msgstr "Se ha publicado el Story Map <strong>{{title}}</strong>."
+
+msgctxt "published"
+msgid "storyMap##added_story_map"
+msgstr "Se ha guardado y publicado el Story Map <strong>{{title}}</strong>."
+
+msgctxt "published"
+msgid "storyMap##terraso_api.title.required"
+msgstr ""
+"No se pudo publicar tu story map sin un título. Introduce un título y "
+"vuelva a intentarlo."
+
+msgctxt "draft"
+msgid "storyMap##terraso_api.title.required"
+msgstr ""
+"No se pudo guardar el borrador sin un título. Introduce un título y vuelve "
+"a intentarlo."
+
+msgctxt "header"
+msgid "storyMap##embed"
+msgstr "Ver Story Map en"
+
+msgctxt "rejected"
+msgid "storyMap##upload"
+msgstr "No se puede agregar el archivo."
+
+msgctxt "step"
+msgid "storyMap##form_location_helper_text"
+msgid_plural "storyMap##form_location_helper_text"
+msgstr[0] ""
+"<0>Paso 3. Establece la ubicación con el mapa de fondo deseado</0><1>Una "
+"vez que estés satisfecho con el mapa de fondo, selecciona Establecer "
+"ubicación. Cada capítulo puede tener un mapa de fondo diferente.</1><2 />"
+msgstr[1] ""
+"<0>Paso 1. Encuentra una ubicación</0><1>Busca una ubicación o encuentra "
+"una desplazándote o haciendo zoom en el mapa.</1><2/>"
+msgstr[2] ""
+"<0>Paso 2. Ajusta el mapa de fondo</0><1>Elige una ubicación y luego ajusta "
+"la vista del mapa desplazándote o haciendo zoom.</1><2>Selecciona el botón "
+"<1 /> para rotar el mapa. Utilice el botón <3 /> para restablecer el mapa. "
+"También puedes hacer clic derecho en el mouse y arrastrar hacia la "
+"izquierda y hacia la derecha para rotar la vista.</2><3 /><4 />"
+
+msgctxt "src"
+msgid "storyMap##form_location_helper_text_step_3_image"
+msgstr "/storyMap/set-map-step-3-es.png"
+
+msgctxt "current"
+msgid "storyMap##form_location_add_data_layer"
+msgstr "Capa de mapa: <1>{{title}}</1>"
+
+msgctxt "subtitle"
+msgid "storyMap##form_location_add_data_layer_dialog"
+msgstr "Selecciona un mapa de tu paisaje o grupo"
+
+msgctxt "restricted"
+msgid "storyMap##form_location_add_data_layer_dialog"
+msgstr ""
+"Este mapa tiene acceso restringido. Agregarlo a un story map lo hará "
+"público. Se recomienda consultar con $t(user.full_name)."
+
+msgctxt "processing"
+msgid "storyMap##form_location_add_data_layer_dialog"
+msgstr "Procesando"
+
+msgctxt "membership"
+msgid "storyMap##delete"
+msgstr "Eliminar"
+
+msgctxt "membership"
+msgid "storyMap##deleted"
+msgstr "{{name}} ha sido eliminado de “{{storyMapTitle}}”"
+
+msgctxt "membership"
+msgid "storyMap##left"
+msgstr "Has sido eliminado de “{{storyMapTitle}}”"
+
+msgctxt "membership"
+msgid "storyMap##approved"
+msgstr "Te han agregado a “{{storyMapTitle}}”"
+
+msgctxt "editor"
+msgid "storyMap##role"
+msgstr "Editor"
+
+msgctxt "owner"
+msgid "storyMap##role"
+msgstr "Dueña(o)"
+
+msgctxt "memberships"
+msgid "storyMap##added"
+msgstr "{{names, list}} han sido invitados a editar."
+
+msgctxt "validation"
+msgid "storyMap##approveMembership.update_not_allowed_permissions"
+msgstr ""
+"No puedes aceptar la invitación para editar “{{storyMapTitle}}”. Debes "
+"iniciar sesión utilizando la dirección de correo electrónico que se muestra "
+"en la invitación."
+
+msgctxt "image"
+msgid "site##default"
+msgstr "/favicon.png"
+
+msgctxt "role"
+msgid "collaboration##members_list_column"
+msgstr "Rol"
+
+msgctxt "approve"
+msgid "collaboration##members_list_pending"
+msgstr "Aprobar"
+
+msgctxt "reject"
+msgid "collaboration##members_list_pending"
+msgstr "¿Rechazar"
