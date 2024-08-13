@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
 import React from 'react';
 import { Trans } from 'react-i18next';
 import NotificationImportantIcon from '@mui/icons-material/NotificationImportant';

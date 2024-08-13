@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
 import { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { useLocation, useNavigate } from 'react-router-dom';

@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
 import Cookies from 'js-cookie';
 import _ from 'lodash/fp';
 import { setAPIConfig } from 'terraso-client-shared/config';
