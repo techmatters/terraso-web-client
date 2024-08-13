@@ -16,7 +16,7 @@
     "@reduxjs/toolkit": "^1.9.7",
     "@sentry/cli": "^2.33.1",
     "@sentry/react": "^8.25.0",
-    "@turf/bbox": "^7.0.0",
+    "@turf/bbox": "^7.1.0",
     "@turf/center": "^7.0.0",
     "@turf/helpers": "^7.0.0",
     "canvg": "^4.0.2",
