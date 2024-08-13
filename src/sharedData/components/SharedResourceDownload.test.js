@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
 import { act, fireEvent, render, screen } from 'tests/utils';
 import { when } from 'jest-when';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';

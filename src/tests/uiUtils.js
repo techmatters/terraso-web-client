@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
 import { fireEvent, within } from 'tests/utils';
 
 export const changeCombobox = async (parent, name, newValue, isNew = true) => {
