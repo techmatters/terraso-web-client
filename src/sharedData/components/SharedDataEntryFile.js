@@ -108,7 +108,7 @@ const Visualizations = props => {
               <MapIcon alt={t('sharedData.map_label')} role="img" />
               <Link
                 component={RouterLink}
-                to={`${baseOwnerUrl}/map/${visualization.slug}`}
+                to={`${baseOwnerUrl}/map/${visualization.readableId}/${visualization.slug}`}
               >
                 {_.get('title', visualization)}
               </Link>

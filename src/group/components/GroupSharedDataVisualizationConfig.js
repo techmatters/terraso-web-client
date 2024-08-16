@@ -56,8 +56,11 @@ const GroupSharedDataVisualizationConfig = () => {
   }, [dispatch, slug]);
 
   const onCompleteSuccess = useCallback(
-    configSlug => {
-      navigate(`/groups/${slug}/map/${configSlug}`, { replace: true });
+    visualizationConfig => {
+      navigate(
+        `/groups/${slug}/map/${visualizationConfig.readableId}/${visualizationConfig.slug}`,
+        { replace: true }
+      );
     },
     [navigate, slug]
   );

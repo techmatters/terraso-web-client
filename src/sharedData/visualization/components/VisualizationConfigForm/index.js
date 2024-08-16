@@ -173,10 +173,10 @@ const VisualizationConfigForm = props => {
   }, []);
 
   const onCompleteSuccessWrapper = useCallback(
-    mapSlug => {
+    visualizationConfig => {
       setIsDirty(false);
       disable();
-      onCompleteSuccess(mapSlug);
+      onCompleteSuccess(visualizationConfig);
     },
     [onCompleteSuccess, disable]
   );
