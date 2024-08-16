@@ -95,7 +95,7 @@ export const leaveGroup = createAsyncThunk(
 );
 export const joinGroup = createAsyncThunk(
   'group/joinGroup',
-  async ({ groupSlug }: any, user, { dispatch }) => {
+  async ({ groupSlug }: { groupSlug: string }, user, { dispatch }) => {
     const group = await groupService.joinGroup({ groupSlug }, user);
     dispatch(setSharedResourcesList(group.sharedResources));
     return group;
