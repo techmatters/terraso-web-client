@@ -126,7 +126,14 @@ export const leaveLandscape = createAsyncThunk(
 );
 export const joinLandscape = createAsyncThunk(
   'landscape/joinLandscape',
-  landscapeService.joinLandscape
+  async ({ landscapeSlug }, user, { dispatch }) => {
+    const landscape = await landscapeService.joinLandscape(
+      { landscapeSlug },
+      user
+    );
+    dispatch(setSharedResourcesList(landscape.sharedResources));
+    return landscape;
+  }
 );
 export const leaveLandscapeFromList = createAsyncThunk(
   'landscape/leaveLandscapeFromList',
