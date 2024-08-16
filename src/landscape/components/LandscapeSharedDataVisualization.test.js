@@ -118,7 +118,7 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
   useParams.mockReturnValue({
     groupSlug: 'slug-1',
     configSlug: 'config-slug',
-    readableId: 'readable-id'
+    readableId: 'readable-id',
   });
   terrasoApi.requestGraphQL.mockImplementation(query => {
     const trimmedQuery = query.trim();
