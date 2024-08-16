@@ -461,6 +461,28 @@ test('LandscapeView: Refresh profile on leave', async () => {
 test('LandscapeView: Refresh profile on join', async () => {
   await baseViewTest({});
 
+  const sharedResources = {
+    edges: Array(6)
+      .fill(0)
+      .map((item, index) => ({
+        node: {
+          id: `shared-resource-id-${index}`,
+          shareAccess: 'MEMBERS',
+          shareUrl: 'https://example.com',
+          source: {
+            id: `de-${index}`,
+            createdAt: '2022-05-20T16:25:21.536679+00:00',
+            name: `Data Entry ${index}`,
+            createdBy: { id: 'user-id', firstName: 'First', lastName: 'Last' },
+            description: `Description ${index}`,
+            size: 3456,
+            entryType: 'FILE',
+            visualizations: { edges: [] },
+          },
+        },
+      })),
+  };
+
   terrasoApi.requestGraphQL.mockResolvedValueOnce({
     saveLandscapeMembership: {
       landscape: {
@@ -472,6 +494,7 @@ test('LandscapeView: Refresh profile on join', async () => {
           },
           membershipsCount: 6,
         },
+        sharedResources,
       },
     },
   });
@@ -491,7 +514,14 @@ test('LandscapeView: Refresh profile on join', async () => {
     userRole: 'member',
   });
 
-  expect(
+  // Shared Data
+  const sharedDataRegion = within(
     screen.getByRole('region', { name: 'Shared files and Links' })
+  );
+  expect(
+    sharedDataRegion.getByRole('heading', { name: 'Shared files and Links' })
   ).toBeInTheDocument();
+  const entriesList = within(sharedDataRegion.getByRole('list'));
+  const items = entriesList.getAllByRole('listitem');
+  expect(items.length).toBe(6);
 });
