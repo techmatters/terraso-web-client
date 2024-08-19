@@ -138,6 +138,17 @@ const groupViewMemberBase = async (
         },
       })),
   };
+  const group = {
+    name: 'Group name',
+    description: 'Group description',
+    website: 'https://www.group.org',
+    email: 'email@email.com',
+    membershipList: {
+      memberships,
+      accountMembership,
+    },
+    sharedResources,
+  };
   when(terrasoApi.requestGraphQL)
     .calledWith(expect.stringContaining('query groupToView'), expect.anything())
     .mockReturnValue(
@@ -145,22 +156,36 @@ const groupViewMemberBase = async (
         groups: {
           edges: [
             {
-              node: {
-                name: 'Group name',
-                description: 'Group description',
-                website: 'https://www.group.org',
-                email: 'email@email.com',
-                membershipList: {
-                  memberships,
-                  accountMembership,
-                },
-                sharedResources,
-              },
+              node: group,
             },
           ],
         },
       })
     );
+  when(terrasoApi.requestGraphQL)
+    .calledWith(
+      expect.stringContaining('mutation joinGroup'),
+      expect.anything()
+    )
+    .mockResolvedValue({
+      saveGroupMembership: {
+        group: {
+          ...group,
+          membershipList: {
+            ...group.membershipList,
+            accountMembership: {
+              id: 'user-id',
+              userRole: 'member',
+              membershipStatus: 'APPROVED',
+              user: {
+                firstName: 'Member First Name',
+                lastName: 'Member Last Name',
+              },
+            },
+          },
+        },
+      },
+    });
   await setup();
 };
 
@@ -314,4 +339,38 @@ test('GroupView: Share link member', async () => {
   );
   const copyCall = navigator.clipboard.writeText.mock.calls[0];
   expect(copyCall[0].toString()).toStrictEqual('https://example.com');
+});
+test('GroupView: Display shared data after join', async () => {
+  await groupViewMemberBase({ accountMembership: null });
+
+  // Group info
+  expect(
+    screen.getByRole('heading', { name: 'Group name' })
+  ).toBeInTheDocument();
+  expect(screen.getByText(/Group description/i)).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'email@email.com' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'https://www.group.org' })
+  ).toBeInTheDocument();
+
+  // Members
+  expect(
+    screen.getByText(/6 Terraso members joined Group name./i)
+  ).toBeInTheDocument();
+  expect(screen.getByText(/\+2/i)).toBeInTheDocument();
+  const joinButton = screen.getByRole('button', { name: 'Join Group' });
+  await act(async () => fireEvent.click(joinButton));
+
+  // Shared Data
+  const sharedDataRegion = within(
+    screen.getByRole('region', { name: 'Shared files and Links' })
+  );
+  expect(
+    sharedDataRegion.getByRole('heading', { name: 'Shared files and Links' })
+  ).toBeInTheDocument();
+  const entriesList = within(sharedDataRegion.getByRole('list'));
+  const items = entriesList.getAllByRole('listitem');
+  expect(items.length).toBe(6);
 });
