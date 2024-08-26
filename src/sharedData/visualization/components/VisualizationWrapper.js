@@ -53,7 +53,7 @@ const VisualizationWrapper = props => {
   const dispatch = useDispatch();
   const { i18n, t } = useTranslation();
   const { downloadFile } = useSharedData();
-  const { configSlug, onDeleted } = props;
+  const { configSlug, readableId, onDeleted } = props;
   const { data, fetching, deleting } = useSelector(
     state => state.sharedData.visualizationConfig
   );
@@ -66,9 +66,10 @@ const VisualizationWrapper = props => {
         ownerSlug: owner.slug,
         ownerType: entityType,
         configSlug,
+        readableId,
       })
     );
-  }, [dispatch, owner.slug, entityType, configSlug]);
+  }, [dispatch, owner.slug, entityType, configSlug, readableId]);
 
   const visualizationConfig = useMemo(
     () =>

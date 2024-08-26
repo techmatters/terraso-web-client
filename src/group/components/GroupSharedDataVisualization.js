@@ -31,7 +31,7 @@ const GroupSharedDataVisualization = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { groupSlug, configSlug } = useParams();
+  const { groupSlug, configSlug, readableId } = useParams();
   const { group, fetching } = useSelector(
     state => state.group.sharedDataUpload
   );
@@ -62,6 +62,7 @@ const GroupSharedDataVisualization = () => {
     <CollaborationContextProvider owner={group} entityType="group">
       <VisualizationWrapper
         configSlug={configSlug}
+        readableId={readableId}
         groupSlug={groupSlug}
         onDeleted={() => navigate(`/groups/${groupSlug}`)}
       />

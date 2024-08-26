@@ -107,10 +107,14 @@ const paths = [
     showBreadcrumbs: true,
     breadcrumbsLabel: 'group.breadcrumbs_visualization_new',
   }),
-  path('/groups/:groupSlug/map/:configSlug', GroupSharedDataVisualization, {
-    showBreadcrumbs: true,
-    breadcrumbsLabel: 'group.breadcrumbs_visualization',
-  }),
+  path(
+    '/groups/:groupSlug/map/:readableId/:configSlug',
+    GroupSharedDataVisualization,
+    {
+      showBreadcrumbs: true,
+      breadcrumbsLabel: 'group.breadcrumbs_visualization',
+    }
+  ),
   path(
     '/groups/:groupSlug/download/:shareUuid',
     withProps(SharedResourceDownload, { entityType: 'group' }),
@@ -165,7 +169,7 @@ const paths = [
     breadcrumbsLabel: 'landscape.breadcrumbs_visualization_new',
   }),
   path(
-    '/landscapes/:landscapeSlug/map/:configSlug',
+    '/landscapes/:landscapeSlug/map/:readableId/:configSlug',
     LandscapeSharedDataVisualization,
     {
       showBreadcrumbs: true,

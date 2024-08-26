@@ -48,6 +48,7 @@ export const dataEntryVisualizations = /* GraphQL */ `
 export const visualizationConfig = /* GraphQL */ `
   fragment visualizationConfig on VisualizationConfigNode {
     id
+    readableId
     title
     description
     slug

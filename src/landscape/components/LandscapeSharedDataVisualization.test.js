@@ -118,6 +118,7 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
   useParams.mockReturnValue({
     groupSlug: 'slug-1',
     configSlug: 'config-slug',
+    readableId: 'readable-id',
   });
   terrasoApi.requestGraphQL.mockImplementation(query => {
     const trimmedQuery = query.trim();
@@ -285,5 +286,6 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
     configSlug: 'config-slug',
     ownerSlug: 'jose-landscape-deafult-test-4',
     ownerType: 'landscape',
+    readableId: 'readable-id',
   });
 });

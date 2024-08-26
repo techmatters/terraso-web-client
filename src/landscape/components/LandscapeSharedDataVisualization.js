@@ -31,7 +31,7 @@ import VisualizationWrapper from 'sharedData/visualization/components/Visualizat
 const LandscapeSharedDataVisualization = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { landscapeSlug, configSlug } = useParams();
+  const { landscapeSlug, configSlug, readableId } = useParams();
   const { landscape, fetching } = useSelector(
     state => state.landscape.sharedDataUpload
   );
@@ -62,6 +62,7 @@ const LandscapeSharedDataVisualization = () => {
     <CollaborationContextProvider owner={landscape} entityType="landscape">
       <VisualizationWrapper
         configSlug={configSlug}
+        readableId={readableId}
         onDeleted={() => navigate(`/landscapes/${landscapeSlug}`)}
       />
     </CollaborationContextProvider>

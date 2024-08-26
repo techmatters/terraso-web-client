@@ -189,6 +189,7 @@ export const addVisualizationConfig = ({
       addVisualizationConfig(input: $input) {
         visualizationConfig {
           slug
+          readableId
         }
         errors
       }
@@ -208,9 +209,7 @@ export const addVisualizationConfig = ({
         ownerType,
       },
     })
-    .then(response => ({
-      slug: _.get('addVisualizationConfig.visualizationConfig.slug', response),
-    }));
+    .then(_.get('addVisualizationConfig.visualizationConfig'));
 };
 
 export const deleteVisualizationConfig = config => {
@@ -233,17 +232,20 @@ export const fetchVisualizationConfig = ({
   ownerSlug,
   ownerType,
   configSlug,
+  readableId,
 }) => {
   const query = graphql(`
     query fetchVisualizationConfig(
       $ownerSlug: String!
       $ownerType: String!
       $configSlug: String!
+      $readableId: String!
     ) {
       visualizationConfigs(
         dataEntry_SharedResources_Target_Slug: $ownerSlug
         dataEntry_SharedResources_TargetContentType: $ownerType
         slug: $configSlug
+        readableId: $readableId
       ) {
         edges {
           node {
@@ -257,7 +259,7 @@ export const fetchVisualizationConfig = ({
     }
   `);
   return terrasoApi
-    .requestGraphQL(query, { ownerSlug, ownerType, configSlug })
+    .requestGraphQL(query, { ownerSlug, ownerType, configSlug, readableId })
     .then(_.get('visualizationConfigs.edges[0].node'))
     .then(
       visualizationConfig => visualizationConfig || Promise.reject('not_found')

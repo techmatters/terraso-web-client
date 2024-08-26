@@ -104,7 +104,7 @@ const PreviewStep = props => {
             [ILM_OUTPUT_PROP]: RESULTS_ANALYSIS_IMPACT,
           },
         });
-        onSaved(data.payload.slug);
+        onSaved(data.payload);
       }
     });
   }, [
