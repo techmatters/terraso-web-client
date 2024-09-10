@@ -22,8 +22,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { DragDropContext, Draggable } from '@hello-pangea/dnd';
 import _ from 'lodash/fp';
-import { DragDropContext, Draggable } from 'react-beautiful-dnd';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';

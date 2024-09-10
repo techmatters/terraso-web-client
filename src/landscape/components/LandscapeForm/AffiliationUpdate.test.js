@@ -41,17 +41,19 @@ const setup = async () => {
     const combobox = screen.getByRole('combobox', {
       name,
     });
-    fireEvent.change(combobox, { target: { value: newValue } });
+    await act(async () =>
+      fireEvent.change(combobox, { target: { value: newValue } })
+    );
 
     const optionsList = screen.getByRole('listbox', { name });
 
     if (isNew) {
-      fireEvent.keyDown(combobox, { key: 'Enter' });
+      await act(async () => fireEvent.keyDown(combobox, { key: 'Enter' }));
     } else {
       const option = within(optionsList).getByRole('option', {
         name: newValue,
       });
-      fireEvent.click(option);
+      await act(async () => fireEvent.click(option));
     }
   };
 

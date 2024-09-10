@@ -84,7 +84,7 @@ const DataLayerListItem = props => {
           edge="start"
           disableRipple
           inputProps={{ 'aria-label': dataLayer.title }}
-          disabled={processing}
+          disabled={Boolean(processing)}
         />
       </ListItemIcon>
       <Typography
