@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Droppable } from 'react-beautiful-dnd';
+import { Droppable } from '@hello-pangea/dnd';
 
 // Work around for react-beautiful-dnd issue. The issues is that the
 // Droppable component is not compatible with React.StrictMode.
