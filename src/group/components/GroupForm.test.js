@@ -161,23 +161,31 @@ test('GroupForm: Input change', async () => {
   const { inputs } = await setup();
 
   expect(inputs.name).toHaveValue('Group name');
-  fireEvent.change(inputs.name, { target: { value: 'New name' } });
+  await act(async () =>
+    fireEvent.change(inputs.name, { target: { value: 'New name' } })
+  );
   expect(inputs.name).toHaveValue('New name');
 
   expect(inputs.description).toHaveValue('Group description');
-  fireEvent.change(inputs.description, {
-    target: { value: 'New description' },
-  });
+  await act(async () =>
+    fireEvent.change(inputs.description, {
+      target: { value: 'New description' },
+    })
+  );
   expect(inputs.description).toHaveValue('New description');
 
   expect(inputs.email).toHaveValue('group@group.org');
-  fireEvent.change(inputs.email, { target: { value: 'new.email@group.org' } });
+  await act(async () =>
+    fireEvent.change(inputs.email, { target: { value: 'new.email@group.org' } })
+  );
   expect(inputs.email).toHaveValue('new.email@group.org');
 
   expect(inputs.website).toHaveValue('https://www.group.org');
-  fireEvent.change(inputs.website, {
-    target: { value: 'https://www.other.org' },
-  });
+  await act(async () =>
+    fireEvent.change(inputs.website, {
+      target: { value: 'https://www.other.org' },
+    })
+  );
   expect(inputs.website).toHaveValue('https://www.other.org');
 });
 test('GroupForm: Input validation', async () => {
