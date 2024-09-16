@@ -25,6 +25,8 @@ import Routes, { useOptionalAuth } from 'navigation/components/Routes';
 
 import 'index.css';
 
+import WebSocket from 'webSockets/WebSocket';
+
 import BreadcrumbsShareContainer from 'layout/BreadcrumbsShareContainer';
 import OptionalAuthBottomMessage from 'account/components/OptionalAuthBottomMessage';
 import OptionalAuthTopMessage from 'account/components/OptionalAuthTopMessage';
@@ -40,6 +42,7 @@ const App = () => {
 
   return (
     <>
+      <WebSocket />
       <Box
         sx={{
           bgcolor: 'white',
