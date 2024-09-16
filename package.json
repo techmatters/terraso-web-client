@@ -6,7 +6,7 @@
     "src/config.ts"
   ],
   "dependencies": {
-    "@hello-pangea/dnd": "^16.6.0",
+    "@hello-pangea/dnd": "^17.0.0",
     "@hookform/resolvers": "^3.9.0",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
     "@mapbox/mapbox-gl-geocoder": "^5.0.2",
