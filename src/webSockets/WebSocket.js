@@ -4,7 +4,7 @@ const WebSocketComponent = props => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const socket = new WebSocket('ws://127.0.0.1:8000/ws/shared-data/');
+    const socket = new WebSocket('ws://127.0.0.1:8000/ws/notifications/');
 
     socket.onopen = () => {
       console.log('WebSocket connection opened');
