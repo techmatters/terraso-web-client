@@ -201,7 +201,7 @@ const Title = props => {
   );
 };
 
-const getTransition = (config, id) => {
+const getTransition = ({ config, id, direction }) => {
   const isTitle = id === 'story-map-title';
   if (isTitle) {
     return {
@@ -211,8 +211,13 @@ const getTransition = (config, id) => {
   }
   const chapterIndex = config.chapters.findIndex(chapter => chapter.id === id);
   const chapter = config.chapters[chapterIndex];
+  const next =
+    direction === 'up'
+      ? _.get(`chapters[${chapterIndex - 1}]`, config)
+      : _.get(`chapters[${chapterIndex + 1}]`, config);
   return {
     transition: chapter,
+    nextTransition: next,
     index: chapterIndex,
   };
 };
@@ -427,14 +432,14 @@ const Scroller = props => {
         offset: 0.5,
       })
       .onStepEnter(async response => {
-        const { index, transition } = getTransition(
-          {
+        const { index, transition } = getTransition({
+          config: {
             titleTransition: config.titleTransition,
             chapters: config.chapters,
           },
-          response.element.id
-        );
-
+          id: response.element.id,
+          direction: response.direction,
+        });
         response.element.classList.add('active');
         startTransition(transition);
         onStepChange?.(response.element.id);
@@ -451,16 +456,23 @@ const Scroller = props => {
         }
       })
       .onStepExit(response => {
-        const { transition } = getTransition(
-          {
+        const { transition, nextTransition } = getTransition({
+          config: {
             titleTransition: config.titleTransition,
             chapters: config.chapters,
           },
-          response.element.id
-        );
+          id: response.element.id,
+          direction: response.direction,
+        });
         response.element.classList.remove('active');
         if (transition?.onChapterExit && transition.onChapterExit.length > 0) {
-          transition.onChapterExit.forEach(setLayerOpacity);
+          const onEnterLayers = nextTransition?.onChapterEnter?.map(
+            _.get('layer')
+          );
+          const filtered = transition.onChapterExit.filter(
+            transition => !_.includes(transition.layer, onEnterLayers)
+          );
+          filtered.forEach(setLayerOpacity);
         }
       });
 
