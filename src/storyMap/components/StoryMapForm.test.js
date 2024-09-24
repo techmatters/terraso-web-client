@@ -182,6 +182,20 @@ const BASE_CONFIG = {
       title: 'Chapter 1',
       description: 'Chapter 1 description',
       media: { type: 'image/png', signedUrl: 'https://test.com/image.png' },
+      onChapterEnter: [
+        {
+          layer: 'layer1',
+          opacity: 1,
+          duration: 0,
+        },
+      ],
+      onChapterExit: [
+        {
+          layer: 'layer1',
+          opacity: 0,
+          duration: 0,
+        },
+      ],
     },
     {
       id: 'chapter-2',
@@ -191,11 +205,41 @@ const BASE_CONFIG = {
         center: { lng: -79.89928261750599, lat: -2.423124847733348 },
         zoom: 5,
       },
+      dataLayerConfigId: 'ac0853a2-99e4-4794-93ca-aafc89f361b6',
+      onChapterEnter: [
+        {
+          layer: 'layer1',
+          opacity: 1,
+          duration: 0,
+        },
+      ],
+      onChapterExit: [
+        {
+          layer: 'layer1',
+          opacity: 0,
+          duration: 0,
+        },
+      ],
     },
     {
       id: 'chapter-3',
       title: 'Chapter 3',
       description: 'Chapter 3 description',
+      dataLayerConfigId: 'ac0853a2-99e4-4794-93ca-aafc89f361b6',
+      onChapterEnter: [
+        {
+          layer: 'layer1',
+          opacity: 1,
+          duration: 0,
+        },
+      ],
+      onChapterExit: [
+        {
+          layer: 'layer1',
+          opacity: 0,
+          duration: 0,
+        },
+      ],
     },
   ],
 };
@@ -1187,5 +1231,96 @@ test('StoryMapForm: Delete chapter', async () => {
       title: 'Chapter 3',
       description: 'Chapter 3 description',
     })
+  );
+});
+
+test('StoryMapForm: Keep map on chapter change', async () => {
+  const map = {
+    ...baseMapOptions(),
+    getCenter: () => ({ lng: -99.91122777353772, lat: 21.64458705609789 }),
+    getStyle: () => 'has style',
+    getLayer: () => ({ type: 'fill' }),
+    setLayoutProperty: jest.fn(),
+    setPaintProperty: jest.fn(),
+  };
+  mapboxgl.Map.mockReturnValue(map);
+  const scroller = {
+    setup: function () {
+      return this;
+    },
+    onStepEnter: function (cb) {
+      this.stepEnter = cb;
+      return this;
+    },
+    onStepExit: function (cb) {
+      this.stepExit = cb;
+      return this;
+    },
+    resize: jest.fn(),
+    destroy: jest.fn(),
+  };
+  scrollama.mockImplementation(() => scroller);
+
+  await setup(BASE_CONFIG);
+
+  await waitFor(() => expect(scrollama).toHaveBeenCalled());
+
+  // Go to chapter 1
+  await act(async () =>
+    scroller.stepEnter({
+      element: document.querySelector('#chapter-1'),
+    })
+  );
+
+  // Go to chapter 2
+  await act(async () =>
+    scroller.stepEnter({
+      element: document.querySelector('#chapter-2'),
+      direction: 'down',
+    })
+  );
+  await act(async () =>
+    scroller.stepExit({
+      element: document.querySelector('#chapter-1'),
+      direction: 'down',
+    })
+  );
+  await expect(map.setPaintProperty).toHaveBeenCalledWith(
+    'layer1',
+    'fill-opacity',
+    1,
+    {}
+  );
+  await expect(map.setPaintProperty).not.toHaveBeenCalledWith(
+    'layer1',
+    'fill-opacity',
+    0,
+    {}
+  );
+
+  // Go to chapter 1
+  await act(async () =>
+    scroller.stepEnter({
+      element: document.querySelector('#chapter-1'),
+      direction: 'up',
+    })
+  );
+  await act(async () =>
+    scroller.stepExit({
+      element: document.querySelector('#chapter-2'),
+      direction: 'up',
+    })
+  );
+  await expect(map.setPaintProperty).toHaveBeenCalledWith(
+    'layer1',
+    'fill-opacity',
+    1,
+    {}
+  );
+  await expect(map.setPaintProperty).not.toHaveBeenCalledWith(
+    'layer1',
+    'fill-opacity',
+    0,
+    {}
   );
 });
