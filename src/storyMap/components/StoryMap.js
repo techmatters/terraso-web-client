@@ -207,14 +207,16 @@ const getTransition = ({ config, id, direction }) => {
     return {
       transition: config.titleTransition,
       index: -1,
+      nextTransition: _.get('chapters[0]', config),
     };
   }
   const chapterIndex = config.chapters.findIndex(chapter => chapter.id === id);
   const chapter = config.chapters[chapterIndex];
-  const next =
-    direction === 'up'
-      ? _.get(`chapters[${chapterIndex - 1}]`, config)
-      : _.get(`chapters[${chapterIndex + 1}]`, config);
+  const nextIndex = direction === 'up' ? chapterIndex - 1 : chapterIndex + 1;
+  const nextIsTitle = nextIndex === -1;
+  const next = nextIsTitle
+    ? config.titleTransition
+    : _.get(`chapters[${nextIndex}]`, config);
   return {
     transition: chapter,
     nextTransition: next,
