@@ -18,7 +18,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Button, Divider, Grid, Typography } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
+import SyncIcon from '@mui/icons-material/Sync';
+import SyncProblemIcon from '@mui/icons-material/SyncProblem';
+import { Button, Divider, Grid, Stack, Typography } from '@mui/material';
 
 import RouterLink from 'common/components/RouterLink';
 
@@ -26,10 +29,46 @@ import ShareDialog from './ShareDialog';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 import TopBarContainer from './TopBarContainer';
 
+const SAVE_STATUS = {
+  saving: {
+    message: 'Saving...',
+    Icon: SyncIcon,
+  },
+  saved: {
+    message: 'Saved to Terraso',
+    Icon: CheckIcon,
+  },
+  error: {
+    message: 'Trying to connect...',
+    Icon: SyncProblemIcon,
+  },
+};
+
+const SaveStatus = props => {
+  const { requestStatus } = props;
+  const { saving, error } = requestStatus;
+
+  const status = saving ? 'saving' : error ? 'error' : 'saved';
+  const Icon = SAVE_STATUS[status].Icon;
+  const message = SAVE_STATUS[status].message;
+
+  return (
+    <Stack
+      direction="row"
+      spacing={0.5}
+      alignItems="center"
+      sx={{ color: 'gray.dark1' }}
+    >
+      <Icon sx={{ fontSize: 20 }} />
+      <Typography variant="caption">{message}</Typography>
+    </Stack>
+  );
+};
+
 const TopBar = props => {
   const { t } = useTranslation();
   const { storyMap, config, setPreview } = useStoryMapConfigContext();
-  const { onPublish, onSaveDraft } = props;
+  const { onPublish, onSaveDraft, isDirty, requestStatus } = props;
   const [openShareDialog, setOpenShareDialog] = React.useState(false);
 
   const isPublished = storyMap?.isPublished;
@@ -69,8 +108,14 @@ const TopBar = props => {
         <Grid
           item
           xs={4}
-          sx={{ display: 'flex', justifyContent: 'flex-end', pr: 2 }}
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            pr: 2,
+            alignItems: 'center',
+          }}
         >
+          <SaveStatus requestStatus={requestStatus} />
           {storyMap && (
             <>
               <Button
@@ -104,6 +149,7 @@ const TopBar = props => {
           </Button>
           {!isPublished && (
             <Button
+              disabled={!isDirty}
               variant="outlined"
               color="primary"
               onClick={onSaveDraft}
@@ -112,7 +158,6 @@ const TopBar = props => {
               {t('storyMap.form_save_draft_button')}
             </Button>
           )}
-
           <Button
             variant="contained"
             color="primary"

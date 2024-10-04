@@ -26,6 +26,7 @@ const initialState = {
   form: {
     fetching: true,
     saving: false,
+    error: false,
     data: null,
   },
   view: {
@@ -89,21 +90,8 @@ export const addStoryMap = createAsyncThunk(
 export const updateStoryMap = createAsyncThunk(
   'storyMap/updateStoryMap',
   storyMapService.updateStoryMap,
-  (storyMap, { storyMap: { config, published } }) => ({
-    severity: 'success',
-    content: 'storyMap.update_story_map',
-    params: {
-      title: config.title,
-      context: published ? 'published' : 'draft',
-    },
-  }),
-  true,
-  ({ message, input }) =>
-    _.set(
-      'params.context',
-      _.get('storyMap.published', input) ? 'published' : 'draft',
-      message
-    )
+  null,
+  false
 );
 export const deleteStoryMap = createAsyncThunk(
   'storyMap/deleteStoryMap',
@@ -273,7 +261,10 @@ const storyMapSlice = createSlice({
     builder.addCase(addStoryMap.fulfilled, _.set('form.saving', false));
 
     builder.addCase(updateStoryMap.pending, _.set('form.saving', true));
-    builder.addCase(updateStoryMap.rejected, _.set('form.saving', false));
+    builder.addCase(
+      updateStoryMap.rejected,
+      _.flow(_.set('form.saving', false), _.set('form.error', true))
+    );
     builder.addCase(updateStoryMap.fulfilled, _.set('form.saving', false));
 
     builder.addCase(deleteStoryMap.pending, (state, action) =>
