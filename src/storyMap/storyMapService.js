@@ -70,36 +70,6 @@ export const fetchStoryMap = ({ slug, storyMapId }) => {
       storyMaps(slug: $slug, storyMapId: $storyMapId) {
         edges {
           node {
-            ...storyMapPublishedFields
-            membershipList {
-              ...collaborationMemberships
-              ...accountCollaborationMembership
-            }
-          }
-        }
-      }
-    }
-  `);
-  return terrasoApi
-    .requestGraphQL(query, { slug, storyMapId })
-    .then(_.get('storyMaps.edges[0].node'))
-    .then(storyMap => storyMap || Promise.reject('not_found'))
-    .then(storyMap => ({
-      ..._.omit(['membershipList', 'configuration'], storyMap),
-      config: storyMap.publishedConfiguration
-        ? JSON.parse(storyMap.publishedConfiguration)
-        : JSON.parse(storyMap.configuration),
-      memberships: extractMemberships(storyMap.membershipList),
-      accountMembership: extractAccountMembership(storyMap.membershipList),
-    }));
-};
-
-export const fetchStoryMapForm = ({ slug, storyMapId }) => {
-  const query = graphql(`
-    query fetchStoryMapForm($slug: String!, $storyMapId: String!) {
-      storyMaps(slug: $slug, storyMapId: $storyMapId) {
-        edges {
-          node {
             ...storyMapFields
             membershipList {
               ...collaborationMemberships
@@ -128,7 +98,7 @@ export const addStoryMap = async ({ storyMap, files }) => {
   const storyMapForm = new FormData();
   const title = _.get('config.title', storyMap);
   storyMapForm.append('title', _.isEmpty(title) ? 'Untitled' : title.trim()); // TODO translate
-  storyMapForm.append('publish', storyMap.publish);
+  storyMapForm.append('is_published', storyMap.published);
   storyMapForm.append('configuration', JSON.stringify(storyMap.config));
   Object.keys(files).forEach((fileId, index) => {
     const file = files[fileId].file;
@@ -149,7 +119,7 @@ export const updateStoryMap = async ({ storyMap, files }) => {
   const storyMapForm = new FormData();
   storyMapForm.append('id', storyMap.id);
   storyMapForm.append('title', _.getOr('', 'config.title', storyMap).trim());
-  storyMapForm.append('publish', storyMap.publish);
+  storyMapForm.append('is_published', storyMap.published);
   storyMapForm.append('configuration', JSON.stringify(storyMap.config));
   Object.keys(files).forEach((fileId, index) => {
     const file = files[fileId].file;
