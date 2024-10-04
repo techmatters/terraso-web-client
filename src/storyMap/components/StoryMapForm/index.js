@@ -19,6 +19,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import logger from 'terraso-client-shared/monitoring/logger';
 import { useDebounce } from 'use-debounce';
 import { v4 as uuidv4 } from 'uuid';
 import { Grid, useMediaQuery } from '@mui/material';
@@ -93,7 +94,7 @@ const StoryMapForm = props => {
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
   const { onPublish, onSaveDraft } = props;
   const requestStatus = useSelector(_.get('storyMap.form'));
-  const { error: saveError } = requestStatus;
+  const { error: saveError, saving } = requestStatus;
   const {
     storyMap,
     config,
@@ -120,14 +121,21 @@ const StoryMapForm = props => {
       config,
       mediaFiles,
       isDirty,
+      saving,
+      saveError,
     });
-  }, [config, mediaFiles, isDirty, saveError]);
+  }, [config, mediaFiles, isDirty, saving, saveError]);
+
   useEffect(() => {
     const { config, mediaFiles, isDirty } = autoSaveDataDebounced;
     if (!isDirty) {
       return;
     }
-    onSaveDraft(config, mediaFiles).then(saved);
+    onSaveDraft(config, mediaFiles)
+      .then(saved)
+      .catch(error => {
+        logger.error('Error auto saving story map', error);
+      });
   }, [autoSaveDataDebounced, onSaveDraft, saved]);
 
   const isFirefox = useMemo(
@@ -247,7 +255,7 @@ const StoryMapForm = props => {
   }, [config, mediaFiles, onPublish, saved]);
 
   const onSaveDraftWrapper = useCallback(() => {
-    onSaveDraft(config, mediaFiles).then(saved);
+    return onSaveDraft(config, mediaFiles).then(saved);
   }, [config, mediaFiles, onSaveDraft, saved]);
 
   if (preview || isSmall) {
