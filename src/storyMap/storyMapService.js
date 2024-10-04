@@ -96,7 +96,8 @@ export const addStoryMap = async ({ storyMap, files }) => {
   const path = '/story-map/add/';
 
   const storyMapForm = new FormData();
-  storyMapForm.append('title', _.getOr('', 'config.title', storyMap).trim());
+  const title = _.get('config.title', storyMap);
+  storyMapForm.append('title', _.isEmpty(title) ? 'Untitled' : title.trim()); // TODO translate
   storyMapForm.append('is_published', storyMap.published);
   storyMapForm.append('configuration', JSON.stringify(storyMap.config));
   Object.keys(files).forEach((fileId, index) => {
