@@ -477,7 +477,7 @@ const Scroller = props => {
           filtered.forEach(setLayerOpacity);
         }
       });
-
+    scroller.disable();
     setIsReady(true);
 
     window.addEventListener('resize', scroller.resize);
