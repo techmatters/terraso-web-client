@@ -45,10 +45,10 @@ const SAVE_STATUS = {
 };
 
 const SaveStatus = props => {
-  const { requestStatus } = props;
-  const { saving, error } = requestStatus;
+  const { requestStatus, isDirty } = props;
+  const { error } = requestStatus;
 
-  const status = saving ? 'saving' : error ? 'error' : 'saved';
+  const status = error ? 'error' : isDirty ? 'saving' : 'saved';
   const Icon = SAVE_STATUS[status].Icon;
   const message = SAVE_STATUS[status].message;
 
@@ -115,7 +115,7 @@ const TopBar = props => {
             alignItems: 'center',
           }}
         >
-          <SaveStatus requestStatus={requestStatus} />
+          <SaveStatus isDirty={isDirty} requestStatus={requestStatus} />
           {storyMap && (
             <>
               <Button
