@@ -19,8 +19,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CheckIcon from '@mui/icons-material/Check';
+import ErrorIcon from '@mui/icons-material/Error';
 import SyncIcon from '@mui/icons-material/Sync';
-import SyncProblemIcon from '@mui/icons-material/SyncProblem';
 import { Button, Divider, Grid, Stack, Typography } from '@mui/material';
 
 import RouterLink from 'common/components/RouterLink';
@@ -31,36 +31,39 @@ import TopBarContainer from './TopBarContainer';
 
 const SAVE_STATUS = {
   saving: {
-    message: 'Saving...',
+    message: 'storyMap.form_save_status_saving',
     Icon: SyncIcon,
   },
   saved: {
-    message: 'Saved to Terraso',
+    message: 'storyMap.form_save_status_saved',
     Icon: CheckIcon,
   },
   error: {
-    message: 'Trying to connect...',
-    Icon: SyncProblemIcon,
+    message: 'storyMap.form_save_status_error',
+    Icon: ErrorIcon,
+    color: 'error.main',
   },
 };
 
 const SaveStatus = props => {
+  const { t } = useTranslation();
   const { requestStatus, isDirty } = props;
   const { error } = requestStatus;
 
   const status = error ? 'error' : isDirty ? 'saving' : 'saved';
   const Icon = SAVE_STATUS[status].Icon;
   const message = SAVE_STATUS[status].message;
+  const color = SAVE_STATUS[status].color;
 
   return (
     <Stack
       direction="row"
       spacing={0.5}
       alignItems="center"
-      sx={{ color: 'gray.dark1' }}
+      sx={{ color: color || 'gray.dark1' }}
     >
       <Icon sx={{ fontSize: 20 }} />
-      <Typography variant="caption">{message}</Typography>
+      <Typography variant="caption">{t(message)}</Typography>
     </Stack>
   );
 };
