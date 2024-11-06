@@ -197,7 +197,7 @@
     },
     "account": {
         "profile": "Account Profile",
-        "disclaimer": "If you don’t already have a Terraso account, signing in will create one in accordance with our <1>privacy policy</1> and <2>terms of service</2>.",
+        "disclaimer": "If you don’t already have a Terraso account, signing in will create one in accordance with our <1>privacy policy</1>.",
         "disclaimer_url": "https://techmatters.org/privacy-policy/",
         "unauthenticated_message": "Your Terraso session has expired. Please log in again.",
         "form_first_name_label_singular": "Given name",
@@ -240,10 +240,6 @@
             "privacy": {
                 "text": "Privacy Policy",
                 "url": "https://techmatters.org/privacy-policy/"
-            },
-            "tos": {
-                "text": "Terms of Service",
-                "url": "https://terraso.org/terms-of-service/"
             },
             "data": { "text": "Data Policy", "url": "#" },
             "about": { "text": "About Terraso", "url": "https://terraso.org/" }
@@ -891,13 +887,12 @@
         "form_chapter_no_title_label": "Untitled",
         "form_back_button": "Story Maps",
         "form_byline": "By $t(user.full_name)",
-        "form_share_button": "Invite editors",
+        "form_share_button": "Invite",
         "form_actions_button": "Actions",
-        "form_preview_button": "Preview draft",
-        "form_view_published_button": "View published Story Map",
+        "form_preview_button": "Preview",
         "form_save_draft_button": "Save draft",
         "form_publish_button": "Publish",
-        "form_republish_button": "Publish Changes",
+        "form_republish_button": "Save & Republish",
         "form_preview_close": "Exit Preview",
         "form_preview_title": "You are previewing <1>{{title}}</1>",
         "form_preview_title_blank": "You are previewing",
