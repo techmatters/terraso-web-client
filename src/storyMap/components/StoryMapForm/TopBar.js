@@ -15,13 +15,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckIcon from '@mui/icons-material/Check';
 import ErrorIcon from '@mui/icons-material/Error';
 import SyncIcon from '@mui/icons-material/Sync';
-import { Button, Divider, Grid, Stack, Typography } from '@mui/material';
+import { Button, Grid, Menu, MenuItem, Stack, Typography } from '@mui/material';
 
 import RouterLink from 'common/components/RouterLink';
 
@@ -68,13 +69,20 @@ const SaveStatus = props => {
   );
 };
 
-const TopBar = props => {
+const ActionsMenu = () => {
   const { t } = useTranslation();
-  const { storyMap, config, setPreview } = useStoryMapConfigContext();
-  const { onPublish, onSaveDraft, isDirty, requestStatus } = props;
-  const [openShareDialog, setOpenShareDialog] = React.useState(false);
+  const { storyMap, setPreview } = useStoryMapConfigContext();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openShareDialog, setOpenShareDialog] = useState(false);
 
-  const isPublished = storyMap?.isPublished;
+  const open = Boolean(anchorEl);
+
+  const handleClick = event => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <>
@@ -84,83 +92,89 @@ const TopBar = props => {
           onClose={() => setOpenShareDialog(false)}
         />
       )}
-      <TopBarContainer>
-        <Grid
-          item
-          xs={2}
-          sx={{
-            width: '100%',
-            pl: 2,
-          }}
+      <Button
+        id="actions-menu-button"
+        aria-controls={open ? 'actions-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
+        variant="outlined"
+        disableElevation
+        onClick={handleClick}
+        endIcon={<ArrowDropDownIcon />}
+      >
+        {t('storyMap.form_actions_button')}
+      </Button>
+      <Menu
+        id="actions-menu"
+        MenuListProps={{
+          'aria-labelledby': 'actions-menu-button',
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+      >
+        {storyMap && (
+          <MenuItem onClick={() => setOpenShareDialog(true)}>
+            {t('storyMap.form_share_button')}
+          </MenuItem>
+        )}
+        <MenuItem onClick={() => setPreview(true)}>
+          {t('storyMap.form_preview_button')}
+        </MenuItem>
+      </Menu>
+    </>
+  );
+};
+
+const TopBar = props => {
+  const { t } = useTranslation();
+  const { storyMap, config } = useStoryMapConfigContext();
+  const { onPublish, isDirty, requestStatus } = props;
+
+  const isPublished = storyMap?.isPublished;
+
+  return (
+    <TopBarContainer>
+      <Grid
+        item
+        xs={2}
+        sx={{
+          width: '100%',
+          pl: 2,
+        }}
+      >
+        <RouterLink
+          to="/tools/story-maps"
+          sx={{ display: 'flex', alignItems: 'center' }}
         >
-          <RouterLink
-            to="/tools/story-maps"
-            sx={{ display: 'flex', alignItems: 'center' }}
-          >
-            <ArrowBackIcon />
-            <Typography sx={{ ml: 1 }}>
-              {t('storyMap.form_back_button')}
-            </Typography>
-          </RouterLink>
-        </Grid>
-        <Grid item xs={6}>
-          <Typography variant="h3" component="h1" sx={{ pt: 0 }}>
-            {config.title || t('storyMap.form_no_title_label')}
+          <ArrowBackIcon />
+          <Typography sx={{ ml: 1 }}>
+            {t('storyMap.form_back_button')}
           </Typography>
-        </Grid>
-        <Grid
-          item
-          xs={4}
+        </RouterLink>
+      </Grid>
+      <Grid item xs={6}>
+        <Typography variant="h3" component="h1" sx={{ pt: 0 }}>
+          {config.title || t('storyMap.form_no_title_label')}
+        </Typography>
+      </Grid>
+      <Grid
+        item
+        xs={4}
+        sx={{
+          pr: 2,
+        }}
+      >
+        <Stack
+          direction="row"
+          spacing={2}
           sx={{
-            display: 'flex',
             justifyContent: 'flex-end',
-            pr: 2,
             alignItems: 'center',
           }}
         >
           <SaveStatus isDirty={isDirty} requestStatus={requestStatus} />
-          {storyMap && (
-            <>
-              <Button
-                variant="text"
-                color="primary"
-                onClick={() => setOpenShareDialog(true)}
-                sx={{
-                  '&:hover': {
-                    backgroundColor: 'transparent',
-                    textDecoration: 'underline',
-                  },
-                }}
-              >
-                {t('storyMap.form_share_button')}
-              </Button>
-              <Divider flexItem orientation="vertical" />
-            </>
-          )}
-          <Button
-            variant="text"
-            color="primary"
-            onClick={() => setPreview(true)}
-            sx={{
-              '&:hover': {
-                backgroundColor: 'transparent',
-                textDecoration: 'underline',
-              },
-            }}
-          >
-            {t('storyMap.form_preview_button')}
-          </Button>
-          {!isPublished && (
-            <Button
-              disabled={!isDirty}
-              variant="outlined"
-              color="primary"
-              onClick={onSaveDraft}
-              sx={{ ml: 2 }}
-            >
-              {t('storyMap.form_save_draft_button')}
-            </Button>
-          )}
+          <ActionsMenu />
           <Button
             variant="contained"
             color="primary"
@@ -171,9 +185,9 @@ const TopBar = props => {
               ? t('storyMap.form_republish_button')
               : t('storyMap.form_publish_button')}
           </Button>
-        </Grid>
-      </TopBarContainer>
-    </>
+        </Stack>
+      </Grid>
+    </TopBarContainer>
   );
 };
 

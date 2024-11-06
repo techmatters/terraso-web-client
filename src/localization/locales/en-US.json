@@ -892,6 +892,7 @@
         "form_back_button": "Story Maps",
         "form_byline": "By $t(user.full_name)",
         "form_share_button": "Invite",
+        "form_actions_button": "Actions",
         "form_preview_button": "Preview",
         "form_save_draft_button": "Save draft",
         "form_publish_button": "Publish",
