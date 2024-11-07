@@ -88,13 +88,13 @@ const StoryMapUpdate = props => {
   }, [storyMap, navigate, trackEvent, saved]);
 
   const save = useCallback(
-    (config, mediaFiles, published) =>
+    (config, mediaFiles, publish) =>
       dispatch(
         updateStoryMap({
           storyMap: {
             id: storyMap?.id,
             config,
-            published,
+            publish,
           },
           files: mediaFiles,
         })
@@ -111,7 +111,7 @@ const StoryMapUpdate = props => {
             title,
             slug,
             storyMapId,
-            published,
+            published: publish,
           });
           return;
         }

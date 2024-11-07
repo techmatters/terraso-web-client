@@ -66,7 +66,7 @@ export const fetchStoryMap = createAsyncThunk(
 );
 export const fetchStoryMapForm = createAsyncThunk(
   'storyMap/fetchStoryMapForm',
-  storyMapService.fetchStoryMap
+  storyMapService.fetchStoryMapForm
 );
 export const addStoryMap = createAsyncThunk(
   'storyMap/addStoryMap',
