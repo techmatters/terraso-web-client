@@ -35,6 +35,13 @@ export const storyMapFields = /* GraphQL */ `
   }
 `;
 
+export const storyMapPublishedFields = /* GraphQL */ `
+  fragment storyMapPublishedFields on StoryMapNode {
+    ...storyMapFields
+    publishedConfiguration
+  }
+`;
+
 export const storyMapMetadataFields = /* GraphQL */ `
   fragment storyMapMetadataFields on StoryMapNode {
     id
