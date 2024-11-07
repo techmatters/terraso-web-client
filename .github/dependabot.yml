@@ -5,17 +5,46 @@
 
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
+      day: 'sunday'
     open-pull-requests-limit: 31
     allow:
       - dependency-type: all
+    groups:
+      mui:
+        patterns:
+          - '@mui/*'
+      react:
+        patterns:
+          - 'react'
+          - 'react-*'
+      types:
+        patterns:
+          - '@types/*'
+      slate:
+        patterns:
+          - 'slate-*'
+      mapbox:
+        patterns:
+          - '@mapbox/*'
+          - 'mapbox-gl'
+      turf:
+        patterns:
+          - '@turf/*'
+      sentry:
+        patterns:
+          - '@sentry/*'
+      i18n:
+        patterns:
+          - 'i18next'
+          - 'i18next-*'
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     allow:
       - dependency-type: all
