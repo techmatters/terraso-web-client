@@ -48,7 +48,7 @@
     "slate-hyperscript": "^0.100.0",
     "slate-react": "^0.112.0",
     "source-map-explorer": "^2.5.3",
-    "terraso-client-shared": "github:techmatters/terraso-client-shared#8cd860e",
+    "terraso-client-shared": "github:techmatters/terraso-client-shared#bec5d03dcaf0c47bc2e48661d35a4b73ed2b70fd",
     "use-debounce": "^10.0.4",
     "uuid": "^11.0.5",
     "web-vitals": "^4.2.4",
