@@ -133,12 +133,12 @@ const StoryMapNew = () => {
   }, [dispatch, navigate, trackEvent, saved]);
 
   const save = useCallback(
-    (config, mediaFiles, published) =>
+    (config, mediaFiles, publish) =>
       dispatch(
         addStoryMap({
           storyMap: {
             config,
-            published,
+            publish,
           },
           files: mediaFiles,
         })
@@ -149,7 +149,7 @@ const StoryMapNew = () => {
           const storyMapId = _.get('payload.story_map_id', data);
           const id = _.get('payload.id', data);
 
-          setSaved({ id, slug, storyMapId, published });
+          setSaved({ id, slug, storyMapId, published: publish });
           return;
         }
         return Promise.reject(data);
