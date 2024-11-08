@@ -39,15 +39,18 @@ import {
 } from 'storyMap/storyMapUtils';
 
 import StoryMapForm from './StoryMapForm';
-import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigContext';
+import {
+  StoryMapConfigContextProvider,
+  useStoryMapConfigContext,
+} from './StoryMapForm/storyMapConfigContext';
 
 const StoryMapUpdate = props => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
-  const { storyMap } = props;
   const [saved, setSaved] = useState();
+  const { storyMap, setSlug } = useStoryMapConfigContext();
 
   useDocumentTitle(
     t('storyMap.edit_document_title', {
@@ -92,10 +95,11 @@ const StoryMapUpdate = props => {
         }),
         generateStoryMapEditUrl({ slug, storyMapId })
       );
+      setSlug(slug);
       // TODO data is not pudated after save
       // dispatch(fetchStoryMapForm({ slug, storyMapId }));
     }
-  }, [storyMap, navigate, trackEvent, saved, t, dispatch]);
+  }, [storyMap, navigate, trackEvent, saved, t, dispatch, setSlug]);
 
   const save = useCallback(
     (config, mediaFiles, publish) =>
@@ -174,7 +178,7 @@ const ContextWrapper = props => {
       baseConfig={storyMap.config}
       storyMap={storyMap}
     >
-      <StoryMapUpdate {...props} storyMap={storyMap} />
+      <StoryMapUpdate {...props} />
     </StoryMapConfigContextProvider>
   );
 };
