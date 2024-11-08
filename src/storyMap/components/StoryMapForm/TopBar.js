@@ -81,7 +81,7 @@ const SaveStatus = props => {
 
 const ActionsMenu = () => {
   const { t } = useTranslation();
-  const { storyMap, setPreview } = useStoryMapConfigContext();
+  const { storyMap, setPreview, slug } = useStoryMapConfigContext();
   const [anchorEl, setAnchorEl] = useState(null);
   const [openShareDialog, setOpenShareDialog] = useState(false);
 
@@ -130,7 +130,7 @@ const ActionsMenu = () => {
         <MenuItem
           dense
           component={Link}
-          href={generateStoryMapUrl(storyMap)}
+          href={generateStoryMapUrl({ ...storyMap, slug })}
           target="_blank"
         >
           {t('storyMap.form_view_published_button')}
