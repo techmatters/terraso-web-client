@@ -34,6 +34,7 @@ export const StoryMapConfigContextProvider = props => {
   const [preview, setPreview] = useState(false);
   const [mediaFiles, setMediaFiles] = useState({});
   const [isDirty, setIsDirty] = useState(false);
+  const [slug, setSlug] = useState(storyMap.slug);
   const init = useRef(false);
 
   const addMediaFile = useCallback((content, file) => {
@@ -89,6 +90,8 @@ export const StoryMapConfigContextProvider = props => {
       init,
       saved,
       isDirty,
+      slug,
+      setSlug,
     }),
     [
       storyMap,
@@ -102,6 +105,7 @@ export const StoryMapConfigContextProvider = props => {
       setConfigWrapper,
       isDirty,
       saved,
+      slug,
     ]
   );
 
