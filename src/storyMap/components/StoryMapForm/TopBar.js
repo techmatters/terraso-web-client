@@ -22,9 +22,19 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckIcon from '@mui/icons-material/Check';
 import ErrorIcon from '@mui/icons-material/Error';
 import SyncIcon from '@mui/icons-material/Sync';
-import { Button, Grid, Menu, MenuItem, Stack, Typography } from '@mui/material';
+import {
+  Button,
+  Divider,
+  Grid,
+  Link,
+  Menu,
+  MenuItem,
+  Stack,
+  Typography,
+} from '@mui/material';
 
 import RouterLink from 'common/components/RouterLink';
+import { generateStoryMapUrl } from 'storyMap/storyMapUtils';
 
 import ShareDialog from './ShareDialog';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
@@ -113,14 +123,24 @@ const ActionsMenu = () => {
         open={open}
         onClose={handleClose}
       >
+        <MenuItem dense onClick={() => setPreview(true)}>
+          {t('storyMap.form_preview_button')}
+        </MenuItem>
+        <Divider />
+        <MenuItem
+          dense
+          component={Link}
+          href={generateStoryMapUrl(storyMap)}
+          target="_blank"
+        >
+          {t('storyMap.form_view_published_button')}
+        </MenuItem>
+        <Divider />
         {storyMap && (
-          <MenuItem onClick={() => setOpenShareDialog(true)}>
+          <MenuItem dense onClick={() => setOpenShareDialog(true)}>
             {t('storyMap.form_share_button')}
           </MenuItem>
         )}
-        <MenuItem onClick={() => setPreview(true)}>
-          {t('storyMap.form_preview_button')}
-        </MenuItem>
       </Menu>
     </>
   );

@@ -83,9 +83,19 @@ const StoryMapUpdate = props => {
     }
 
     if (title !== storyMap?.title) {
-      navigate(generateStoryMapEditUrl({ slug, storyMapId }));
+      // window.location.replace(generateStoryMapEditUrl({ slug, storyMapId }));
+      //   navigate(generateStoryMapEditUrl({ slug, storyMapId }));
+      window.history.pushState(
+        null,
+        t('storyMap.edit_document_title', {
+          name: _.get('title', storyMap),
+        }),
+        generateStoryMapEditUrl({ slug, storyMapId })
+      );
+      // TODO data is not pudated after save
+      // dispatch(fetchStoryMapForm({ slug, storyMapId }));
     }
-  }, [storyMap, navigate, trackEvent, saved]);
+  }, [storyMap, navigate, trackEvent, saved, t, dispatch]);
 
   const save = useCallback(
     (config, mediaFiles, publish) =>
