@@ -477,7 +477,9 @@ const Scroller = props => {
           filtered.forEach(setLayerOpacity);
         }
       });
-    scroller.disable();
+    // This is needed for development due to resize observer issue
+    // should not be here on production
+    // scroller.disable();
     setIsReady(true);
 
     window.addEventListener('resize', scroller.resize);
