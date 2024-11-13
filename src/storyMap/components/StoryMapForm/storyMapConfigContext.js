@@ -34,7 +34,6 @@ export const StoryMapConfigContextProvider = props => {
   const [preview, setPreview] = useState(false);
   const [mediaFiles, setMediaFiles] = useState({});
   const [isDirty, setIsDirty] = useState(false);
-  const [slug, setSlug] = useState(storyMap.slug);
   const init = useRef(false);
 
   const addMediaFile = useCallback((content, file) => {
@@ -43,12 +42,16 @@ export const StoryMapConfigContextProvider = props => {
     return id;
   }, []);
 
+  const clearMediaFiles = useCallback(() => {
+    setMediaFiles({});
+  }, []);
+
   const getMediaFile = useCallback(id => mediaFiles[id]?.content, [mediaFiles]);
 
   const saved = useCallback(() => setIsDirty(false), []);
 
   const setConfigWrapper = useCallback(
-    newConfigSetter => {
+    (newConfigSetter, dirty = true) => {
       setConfig(currentConfig => {
         const newConfig =
           typeof newConfigSetter === 'function'
@@ -67,7 +70,7 @@ export const StoryMapConfigContextProvider = props => {
           dataLayers: _.pick(usedDataLayersIds, newConfig.dataLayers),
         };
       });
-      setIsDirty(true);
+      setIsDirty(dirty);
     },
     [setConfig]
   );
@@ -82,11 +85,10 @@ export const StoryMapConfigContextProvider = props => {
       mediaFiles,
       addMediaFile,
       getMediaFile,
+      clearMediaFiles,
       init,
       saved,
       isDirty,
-      slug,
-      setSlug,
     }),
     [
       storyMap,
@@ -95,11 +97,11 @@ export const StoryMapConfigContextProvider = props => {
       mediaFiles,
       addMediaFile,
       getMediaFile,
+      clearMediaFiles,
       init,
       setConfigWrapper,
       isDirty,
       saved,
-      slug,
     ]
   );
 
