@@ -50,7 +50,7 @@ const StoryMapUpdate = props => {
   const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
   const [saved, setSaved] = useState();
-  const { storyMap, setSlug } = useStoryMapConfigContext();
+  const { storyMap, setConfig, clearMediaFiles } = useStoryMapConfigContext();
 
   useDocumentTitle(
     t('storyMap.edit_document_title', {
@@ -86,8 +86,6 @@ const StoryMapUpdate = props => {
     }
 
     if (title !== storyMap?.title) {
-      // window.location.replace(generateStoryMapEditUrl({ slug, storyMapId }));
-      //   navigate(generateStoryMapEditUrl({ slug, storyMapId }));
       window.history.pushState(
         null,
         t('storyMap.edit_document_title', {
@@ -95,11 +93,8 @@ const StoryMapUpdate = props => {
         }),
         generateStoryMapEditUrl({ slug, storyMapId })
       );
-      setSlug(slug);
-      // TODO data is not pudated after save
-      // dispatch(fetchStoryMapForm({ slug, storyMapId }));
     }
-  }, [storyMap, navigate, trackEvent, saved, t, dispatch, setSlug]);
+  }, [storyMap, navigate, trackEvent, saved, t, dispatch]);
 
   const save = useCallback(
     (config, mediaFiles, publish) =>
@@ -119,6 +114,7 @@ const StoryMapUpdate = props => {
           const storyMapId = _.get('payload.story_map_id', data);
           const title = _.get('payload.title', data);
           const id = _.get('payload.id', data);
+          const config = _.get('payload.configuration', data);
 
           setSaved({
             id,
@@ -127,11 +123,13 @@ const StoryMapUpdate = props => {
             storyMapId,
             published: publish,
           });
+          clearMediaFiles();
+          setConfig(config, false);
           return;
         }
         return Promise.reject(data);
       }),
-    [storyMap?.id, dispatch]
+    [storyMap?.id, dispatch, clearMediaFiles, setConfig]
   );
   const onPublish = useCallback(
     (config, mediaFiles) => save(config, mediaFiles, true),
