@@ -39,7 +39,7 @@ import TopBarPreview from './TopBarPreview';
 
 import theme from 'theme';
 
-const AUTO_SAVE_DEBOUNCE = 1000;
+const AUTO_SAVE_DEBOUNCE = 3000;
 
 const BASE_CHAPTER = {
   alignment: 'left',
