@@ -18,7 +18,7 @@
 import { useCallback, useMemo } from 'react';
 import _ from 'lodash/fp';
 import queryString from 'query-string';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router';
 
 export const generateReferrerPath = location => {
   const path = _.getOr('', 'pathname', location);

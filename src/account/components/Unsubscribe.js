@@ -19,7 +19,7 @@ import { useCallback, useEffect } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router';
 import { unsubscribeFromNotifications } from 'terraso-client-shared/account/accountSlice';
 import { addMessage } from 'terraso-client-shared/notifications/notificationsSlice';
 import { useFetchData } from 'terraso-client-shared/store/utils';

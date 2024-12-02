@@ -17,7 +17,7 @@
 
 import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import { getPlaceInfoByName } from 'gis/gisService';
@@ -27,8 +27,8 @@ jest.mock('terraso-client-shared/terrasoApi/api');
 
 jest.mock('gis/gisService');
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useParams: jest.fn(),
 }));
 

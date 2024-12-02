@@ -19,7 +19,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';

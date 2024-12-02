@@ -17,13 +17,13 @@
 
 import { render, screen } from 'tests/utils';
 import React, { useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 import { useBreadcrumbsParams } from '../breadcrumbsContext';
 import Breadcrumbs from './Breadcrumbs';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useLocation: jest.fn(),
 }));
 

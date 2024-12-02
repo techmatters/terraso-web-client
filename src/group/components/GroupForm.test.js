@@ -17,15 +17,15 @@
 
 import { act, fireEvent, render, screen, within } from 'tests/utils';
 import React from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import GroupForm from 'group/components/GroupForm';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useParams: jest.fn(),
   useNavigate: jest.fn(),
 }));

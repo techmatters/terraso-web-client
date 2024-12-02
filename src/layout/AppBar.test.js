@@ -18,7 +18,7 @@
 import { act, fireEvent, render, screen } from 'tests/utils';
 import React from 'react';
 import Cookies from 'js-cookie';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import AppBar from 'layout/AppBar';
@@ -27,8 +27,8 @@ import { useOptionalAuth } from 'navigation/components/Routes';
 jest.mock('@mui/material/useMediaQuery');
 jest.mock('js-cookie');
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useNavigate: jest.fn(),
   useLocation: jest.fn(),
 }));

@@ -19,7 +19,7 @@ import React, { useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import * as yup from 'yup';
 import { MenuItem, Select, TextareaAutosize, Typography } from '@mui/material';
 

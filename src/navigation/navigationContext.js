@@ -19,7 +19,7 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import {
   UNSAFE_NavigationContext as NavigationContext,
   useNavigate,
-} from 'react-router-dom';
+} from 'react-router';
 
 let originalPush;
 

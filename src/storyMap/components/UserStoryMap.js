@@ -19,7 +19,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 
 import { serialize } from 'common/components/RichTextEditor/utils';

@@ -18,7 +18,7 @@
 import React, { useCallback, useEffect } from 'react';
 import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { useSelector } from 'terrasoApi/store';
 import { Button, Paper, Stack, Typography } from '@mui/material';

@@ -19,8 +19,8 @@ import { render } from 'tests/utils';
 
 import { useNavigationBlocker } from './navigationContext';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useParams: jest.fn(),
   useNavigate: jest.fn(),
   useLocation: jest.fn(),

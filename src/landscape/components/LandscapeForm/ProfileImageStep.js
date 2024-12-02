@@ -21,7 +21,7 @@ import { dataURItoBlob, openFile } from 'media/fileUtils';
 import { openImageUrl } from 'media/imageUtils';
 import AvatarEditor from 'react-avatar-editor';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import * as yup from 'yup';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
