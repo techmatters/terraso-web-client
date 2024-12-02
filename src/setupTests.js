@@ -19,3 +19,15 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+
+// TODO: 2024-12-02
+// Work around https://github.com/remix-run/react-router/issues/12363
+// Remove this once https://github.com/jsdom/jsdom/pull/3791 is fixed
+
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+
+if (!globalThis.TextEncoder || !globalThis.TextDecoder) {
+  const { TextDecoder, TextEncoder } = require('node:util');
+  globalThis.TextEncoder = TextEncoder;
+  globalThis.TextDecoder = TextDecoder;
+}
