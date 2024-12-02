@@ -128,18 +128,16 @@ const ActionsMenu = () => {
         </MenuItem>
         <Divider />
         {storyMap && (
-          <>
-            <MenuItem
-              dense
-              component={Link}
-              href={generateStoryMapUrl(storyMap)}
-              target="_blank"
-            >
-              {t('storyMap.form_view_published_button')}
-            </MenuItem>
-            <Divider />
-          </>
+          <MenuItem
+            dense
+            component={Link}
+            href={generateStoryMapUrl(storyMap)}
+            target="_blank"
+          >
+            {t('storyMap.form_view_published_button')}
+          </MenuItem>
         )}
+        {storyMap && <Divider />}
         {storyMap && (
           <MenuItem dense onClick={() => setOpenShareDialog(true)}>
             {t('storyMap.form_share_button')}
