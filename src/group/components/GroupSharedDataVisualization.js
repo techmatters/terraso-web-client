@@ -18,7 +18,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 
 import { CollaborationContextProvider } from 'collaboration/collaborationContext';
 import { useDocumentTitle } from 'common/document';

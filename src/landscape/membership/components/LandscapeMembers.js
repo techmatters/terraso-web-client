@@ -20,7 +20,7 @@ import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { useDispatch } from 'terrasoApi/store';
 

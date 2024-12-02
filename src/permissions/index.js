@@ -18,7 +18,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 const defaultBehaviour = {
   isAllowedTo: () => Promise.resolve(false),

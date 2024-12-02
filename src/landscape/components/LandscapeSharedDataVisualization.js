@@ -18,7 +18,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 
 import { CollaborationContextProvider } from 'collaboration/collaborationContext';

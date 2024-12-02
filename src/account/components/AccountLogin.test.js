@@ -17,15 +17,15 @@
 
 import { render, screen } from 'tests/utils';
 import React from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router';
 import * as accountService from 'terraso-client-shared/account/accountService';
 
 import AccountLogin from 'account/components/AccountLogin';
 
 jest.mock('terraso-client-shared/account/accountService');
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useSearchParams: jest.fn(),
   useNavigate: jest.fn(),
 }));

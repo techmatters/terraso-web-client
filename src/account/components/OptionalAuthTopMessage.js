@@ -19,7 +19,7 @@ import React from 'react';
 import _ from 'lodash/fp';
 import { Trans, withTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import { Typography } from '@mui/material';
 
 import RouterLink from 'common/components/RouterLink';

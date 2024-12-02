@@ -20,7 +20,7 @@ import { PermissionsProvider } from 'permissions';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 import { ThemeProvider } from '@mui/material';
 
 import ErrorMonitoringProvider from 'monitoring/error';

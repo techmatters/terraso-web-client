@@ -17,15 +17,15 @@
 
 import { act, fireEvent, render, screen } from 'tests/utils';
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import DevelopmentStrategyUpdate from 'landscape/components/LandscapeForm/DevelopmentStrategyUpdate';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useParams: jest.fn(),
 }));
 

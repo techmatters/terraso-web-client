@@ -19,7 +19,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router';
 import { addMessage } from 'terraso-client-shared/notifications/notificationsSlice';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Alert } from '@mui/material';

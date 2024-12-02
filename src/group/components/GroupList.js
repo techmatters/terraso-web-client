@@ -19,7 +19,7 @@ import React, { useMemo } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { Link as RouterLink, useSearchParams } from 'react-router-dom';
+import { Link as RouterLink, useSearchParams } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { useDispatch } from 'terrasoApi/store';
 import { Button, Card, Link, Stack, Typography } from '@mui/material';

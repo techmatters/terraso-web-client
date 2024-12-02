@@ -17,7 +17,7 @@
 
 import { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import { getToken } from 'terraso-client-shared/account/auth';
 import { useSelector } from 'terrasoApi/store';
 

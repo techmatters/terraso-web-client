@@ -17,7 +17,7 @@
 
 import { act, fireEvent, render, screen, within } from 'tests/utils';
 import React from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
@@ -30,8 +30,8 @@ jest.mock('terraso-client-shared/terrasoApi/api');
 
 jest.mock('@mui/material/useMediaQuery');
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useSearchParams: jest.fn(),
 }));
 

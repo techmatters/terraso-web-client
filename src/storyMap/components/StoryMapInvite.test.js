@@ -16,7 +16,7 @@
  */
 
 import { render, screen, waitFor, within } from 'tests/utils';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router';
 import { mockTerrasoAPIrequestGraphQL } from 'tests/apiUtils';
 
 import { useAnalytics } from 'monitoring/analytics';
@@ -35,8 +35,8 @@ const TOKEN =
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useNavigate: jest.fn(),
   useSearchParams: jest.fn(),
 }));

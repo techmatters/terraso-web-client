@@ -19,7 +19,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { usePermission } from 'permissions';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { useDispatch, useSelector } from 'terrasoApi/store';
 import EmailIcon from '@mui/icons-material/Email';

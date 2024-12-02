@@ -19,7 +19,7 @@ import React, { useCallback, useEffect } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import {
   fetchProfile,
   savePreference,

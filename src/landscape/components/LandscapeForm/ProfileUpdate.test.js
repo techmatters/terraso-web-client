@@ -17,7 +17,7 @@
 
 import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import { iso639en, iso639es } from 'localization/iso639';
@@ -25,8 +25,8 @@ import ProfileUpdate from 'landscape/components/LandscapeForm/ProfileUpdate';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useParams: jest.fn(),
 }));
 

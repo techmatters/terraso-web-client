@@ -17,10 +17,10 @@
 
 import { render, screen } from 'tests/utils';
 import App from 'App';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useLocation: jest.fn(),
 }));
 

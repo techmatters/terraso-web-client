@@ -18,7 +18,7 @@
 import React from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router';
 import {
   ListItem as BaseListItem,
   Link,

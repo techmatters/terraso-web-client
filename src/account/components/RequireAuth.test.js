@@ -23,7 +23,7 @@ import {
   useNavigate,
   useParams,
   useSearchParams,
-} from 'react-router-dom';
+} from 'react-router';
 import { getToken, getUserEmail } from 'terraso-client-shared/account/auth';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
@@ -38,8 +38,8 @@ jest.mock('terraso-client-shared/account/auth', () => ({
   getToken: jest.fn(),
 }));
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useParams: jest.fn(),
   useLocation: jest.fn(),
   useNavigate: jest.fn(),

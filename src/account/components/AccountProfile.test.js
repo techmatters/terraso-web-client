@@ -19,15 +19,15 @@ import { act, fireEvent, render, screen, within } from 'tests/utils';
 import React from 'react';
 import { when } from 'jest-when';
 import _ from 'lodash/fp';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import AccountProfile from 'account/components/AccountProfile';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useParams: jest.fn(),
   useNavigate: jest.fn(),
   useSearchParams: jest.fn(),

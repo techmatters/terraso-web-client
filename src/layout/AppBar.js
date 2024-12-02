@@ -18,7 +18,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { signOut } from 'terraso-client-shared/account/accountSlice';
 import { AppBar, Box, Button, Divider, Toolbar } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';

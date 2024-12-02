@@ -17,7 +17,7 @@
 
 import { act, fireEvent, render, screen } from 'tests/utils';
 import { when } from 'jest-when';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import { useDownloadEvent } from 'monitoring/events';
@@ -30,8 +30,8 @@ jest.mock('monitoring/events', () => ({
   useDownloadEvent: jest.fn(),
 }));
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useParams: jest.fn(),
   useNavigate: jest.fn(),
   useLocation: jest.fn(),

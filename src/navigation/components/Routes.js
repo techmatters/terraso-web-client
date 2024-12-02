@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { matchPath, Route, Routes, useLocation } from 'react-router-dom';
+import { matchPath, Route, Routes, useLocation } from 'react-router';
 
 import { withProps } from 'react-hoc';
 
