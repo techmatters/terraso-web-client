@@ -24,6 +24,8 @@ import '@testing-library/jest-dom';
 // Work around https://github.com/remix-run/react-router/issues/12363
 // Remove this once https://github.com/jsdom/jsdom/pull/3791 is fixed
 
+/* eslint-disable no-undef */
+
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 if (!globalThis.TextEncoder || !globalThis.TextDecoder) {
@@ -31,3 +33,5 @@ if (!globalThis.TextEncoder || !globalThis.TextDecoder) {
   globalThis.TextEncoder = TextEncoder;
   globalThis.TextDecoder = TextDecoder;
 }
+
+/* eslint-enable no-undef */
