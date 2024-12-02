@@ -39,15 +39,18 @@ import {
 } from 'storyMap/storyMapUtils';
 
 import StoryMapForm from './StoryMapForm';
-import { StoryMapConfigContextProvider } from './StoryMapForm/storyMapConfigContext';
+import {
+  StoryMapConfigContextProvider,
+  useStoryMapConfigContext,
+} from './StoryMapForm/storyMapConfigContext';
 
 const StoryMapUpdate = props => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
-  const { storyMap } = props;
   const [saved, setSaved] = useState();
+  const { storyMap, setConfig, clearMediaFiles } = useStoryMapConfigContext();
 
   useDocumentTitle(
     t('storyMap.edit_document_title', {
@@ -83,18 +86,24 @@ const StoryMapUpdate = props => {
     }
 
     if (title !== storyMap?.title) {
-      navigate(generateStoryMapEditUrl({ slug, storyMapId }));
+      window.history.pushState(
+        null,
+        t('storyMap.edit_document_title', {
+          name: _.get('title', storyMap),
+        }),
+        generateStoryMapEditUrl({ slug, storyMapId })
+      );
     }
-  }, [storyMap, navigate, trackEvent, saved]);
+  }, [storyMap, navigate, trackEvent, saved, t, dispatch]);
 
   const save = useCallback(
-    (config, mediaFiles, published) =>
+    (config, mediaFiles, publish) =>
       dispatch(
         updateStoryMap({
           storyMap: {
             id: storyMap?.id,
             config,
-            published,
+            publish,
           },
           files: mediaFiles,
         })
@@ -105,19 +114,22 @@ const StoryMapUpdate = props => {
           const storyMapId = _.get('payload.story_map_id', data);
           const title = _.get('payload.title', data);
           const id = _.get('payload.id', data);
+          const config = _.get('payload.configuration', data);
 
           setSaved({
             id,
             title,
             slug,
             storyMapId,
-            published,
+            published: publish,
           });
+          clearMediaFiles();
+          setConfig(config, false);
           return;
         }
         return Promise.reject(data);
       }),
-    [storyMap?.id, dispatch]
+    [storyMap?.id, dispatch, clearMediaFiles, setConfig]
   );
   const onPublish = useCallback(
     (config, mediaFiles) => save(config, mediaFiles, true),
@@ -164,7 +176,7 @@ const ContextWrapper = props => {
       baseConfig={storyMap.config}
       storyMap={storyMap}
     >
-      <StoryMapUpdate {...props} storyMap={storyMap} />
+      <StoryMapUpdate {...props} />
     </StoryMapConfigContextProvider>
   );
 };
