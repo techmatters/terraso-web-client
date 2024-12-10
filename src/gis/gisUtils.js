@@ -16,6 +16,7 @@
  */
 
 import bbox from '@turf/bbox';
+import { flattenReduce } from '@turf/meta';
 import _ from 'lodash/fp';
 import { isValidLatitude, isValidLongitude } from 'terraso-client-shared/utils';
 
@@ -88,5 +89,22 @@ export const isValidBounds = bounds => {
     isValidLatitude(neLat) &&
     isValidLongitude(swLng) &&
     isValidLongitude(neLng)
+  );
+};
+
+export const hasPoints = geojson => {
+  if (!geojson) {
+    return false;
+  }
+  return flattenReduce(
+    geojson,
+    (containsPoint, currentFeature) => {
+      if (containsPoint) {
+        return true;
+      }
+      const geomType = currentFeature.geometry.type;
+      return geomType === 'Point' || geomType === 'MultiPoint';
+    },
+    false
   );
 };
