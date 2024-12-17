@@ -241,6 +241,10 @@
                 "text": "Política de privacidad",
                 "url": "https://techmatters.org/privacy-policy/"
             },
+            "tos": {
+                "text": "Termos de Serviço",
+                "url": "https://terraso.org/terms-of-service/"
+            },
             "data": { "text": "Política de datos", "url": "#" },
             "about": {
                 "text": "Acerca de Terraso",
