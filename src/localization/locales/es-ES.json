@@ -197,7 +197,7 @@
     },
     "account": {
         "profile": "Perfil de cuenta",
-        "disclaimer": "Si aún no tiene una cuenta de Terraso, al iniciar sesión se creará una de acuerdo con nuestros <1>política de privacidad</1>.",
+        "disclaimer": "Si aún no tiene una cuenta de Terraso, al iniciar sesión se creará una de acuerdo con nuestros <1>política de privacidad</1> y <2>termos de serviço</2>.",
         "disclaimer_url": "https://techmatters.org/privacy-policy/",
         "unauthenticated_message": "Su sesión de Terraso ha caducado. Vuelva a iniciar sesión.",
         "form_first_name_label_singular": "Nombre",
