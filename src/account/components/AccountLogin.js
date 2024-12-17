@@ -143,6 +143,7 @@ const AccountForm = () => {
           <Trans i18nKey="account.disclaimer">
             prefix
             <ExternalLink href={t('account.disclaimer_url')}>text</ExternalLink>
+            <ExternalLink href={t('footer.links.tos.url')}>text</ExternalLink>
           </Trans>
         </Typography>
 
