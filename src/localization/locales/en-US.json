@@ -197,7 +197,7 @@
     },
     "account": {
         "profile": "Account Profile",
-        "disclaimer": "If you don’t already have a Terraso account, signing in will create one in accordance with our <1>privacy policy</1>.",
+        "disclaimer": "If you don’t already have a Terraso account, signing in will create one in accordance with our <1>privacy policy</1> and <2>terms of service</2>.",
         "disclaimer_url": "https://techmatters.org/privacy-policy/",
         "unauthenticated_message": "Your Terraso session has expired. Please log in again.",
         "form_first_name_label_singular": "Given name",
@@ -240,6 +240,10 @@
             "privacy": {
                 "text": "Privacy Policy",
                 "url": "https://techmatters.org/privacy-policy/"
+            },
+            "tos": {
+                "text": "Terms of Service",
+                "url": "https://terraso.org/terms-of-service/"
             },
             "data": { "text": "Data Policy", "url": "#" },
             "about": { "text": "About Terraso", "url": "https://terraso.org/" }
