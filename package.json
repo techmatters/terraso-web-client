@@ -54,7 +54,7 @@
     "web-vitals": "^4.2.4",
     "world-countries": "4.0.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.18.10/xlsx-0.18.10.tgz",
-    "yup": "^1.4.0"
+    "yup": "^1.6.1"
   },
   "overrides": {
     "fork-ts-checker-webpack-plugin": "^6.5.3",
