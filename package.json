@@ -94,7 +94,7 @@
     "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
     "@parcel/watcher": "^2.5.0",
     "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.0.1",
+    "@testing-library/react": "^16.1.0",
     "@types/jest": "^29.5.14",
     "@types/js-cookie": "^3.0.6",
     "@types/lodash": "^4.17.13",
