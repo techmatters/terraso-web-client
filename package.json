@@ -14,7 +14,7 @@
     "@mui/lab": "^6.0.0-beta.22",
     "@mui/material": "^6.3.0",
     "@mui/x-data-grid": "^7.23.6",
-    "@reduxjs/toolkit": "^1.9.7",
+    "@reduxjs/toolkit": "^2.5.0",
     "@sentry/cli": "^2.40.0",
     "@sentry/react": "^8.47.0",
     "@turf/bbox": "^7.2.0",
