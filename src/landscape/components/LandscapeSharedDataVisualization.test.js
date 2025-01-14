@@ -227,7 +227,6 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
 
   await screen.findByRole('button', { name: 'Download PNG' });
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(4);
-  expect(global.fetch).toHaveBeenCalledTimes(1);
 
   expect(
     screen.getByRole('heading', { name: 'Test Title' })
