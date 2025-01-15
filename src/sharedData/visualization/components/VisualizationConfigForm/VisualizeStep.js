@@ -34,6 +34,7 @@ import {
 } from '@mui/material';
 
 import StepperStep from 'common/components/StepperStep';
+import { hasPoints } from 'gis/gisUtils';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 
 import VisualizationPreview from './VisualizationPreview';
@@ -213,7 +214,8 @@ const Opacity = props => {
 const VisualizeStep = props => {
   const { t } = useTranslation();
   const { onNext, onBack } = props;
-  const { visualizationConfig, fileContext } = useVisualizationContext();
+  const { visualizationConfig, fileContext, isMapFile } =
+    useVisualizationContext();
   const [visualizeConfig, setVisualizeConfig] = useState(
     visualizationConfig.visualizeConfig
   );
@@ -225,6 +227,11 @@ const VisualizeStep = props => {
   );
 
   const showPolygonFields = useMemo(() => fileContext?.geojson, [fileContext]);
+
+  const showPointsFields = useMemo(
+    () => !isMapFile || hasPoints(fileContext?.geojson),
+    [isMapFile, fileContext?.geojson]
+  );
 
   useEffect(() => {
     setVisualizeConfig(visualizationConfig.visualizeConfig);
@@ -260,8 +267,12 @@ const VisualizeStep = props => {
             md={5}
           >
             <Grid container alignItems="center" spacing={2}>
-              <Shape shape={shape} setShape={setShape} />
-              <Size size={size} setSize={setSize} />
+              {showPointsFields && (
+                <>
+                  <Shape shape={shape} setShape={setShape} />
+                  <Size size={size} setSize={setSize} />
+                </>
+              )}
               <Color color={color} setColor={setColor} />
               {showPolygonFields && (
                 <Opacity opacity={opacity} setOpacity={setOpacity} />
