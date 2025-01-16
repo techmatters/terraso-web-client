@@ -19,10 +19,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import logger from 'terraso-client-shared/monitoring/logger';
+import { useDebounce } from 'use-debounce';
 import { v4 as uuidv4 } from 'uuid';
 import { Grid, useMediaQuery } from '@mui/material';
 
-import PageLoader from 'layout/PageLoader';
 import { useAnalytics } from 'monitoring/analytics';
 import NavigationBlockedDialog from 'navigation/components/NavigationBlockedDialog';
 import { useNavigationBlocker } from 'navigation/navigationContext';
@@ -37,6 +38,8 @@ import TopBar from './TopBar';
 import TopBarPreview from './TopBarPreview';
 
 import theme from 'theme';
+
+const AUTO_SAVE_DEBOUNCE = 3000;
 
 const BASE_CHAPTER = {
   alignment: 'left',
@@ -90,7 +93,8 @@ const StoryMapForm = props => {
   const { trackEvent } = useAnalytics();
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
   const { onPublish, onSaveDraft } = props;
-  const { saving } = useSelector(_.get('storyMap.form'));
+  const requestStatus = useSelector(_.get('storyMap.form'));
+  const { error: saveError, saving } = requestStatus;
   const {
     storyMap,
     config,
@@ -105,6 +109,34 @@ const StoryMapForm = props => {
   const [mapWidth, setMapWidth] = useState();
   const [currentStepId, setCurrentStepId] = useState();
   const [scrollToChapter, setScrollToChapter] = useState();
+
+  const [autoSaveData, setAutoSaveData] = useState({
+    config,
+    mediaFiles,
+    isDirty,
+  });
+  const [autoSaveDataDebounced] = useDebounce(autoSaveData, AUTO_SAVE_DEBOUNCE);
+  useEffect(() => {
+    setAutoSaveData({
+      config,
+      mediaFiles,
+      isDirty,
+      saving,
+      saveError,
+    });
+  }, [config, mediaFiles, isDirty, saving, saveError]);
+
+  useEffect(() => {
+    const { config, mediaFiles, isDirty } = autoSaveDataDebounced;
+    if (!isDirty) {
+      return;
+    }
+    onSaveDraft(config, mediaFiles)
+      .then(saved)
+      .catch(error => {
+        logger.error('Error auto saving story map', error);
+      });
+  }, [autoSaveDataDebounced, onSaveDraft, saved]);
 
   const isFirefox = useMemo(
     () => navigator.userAgent.toLowerCase().indexOf('firefox') > -1,
@@ -223,7 +255,7 @@ const StoryMapForm = props => {
   }, [config, mediaFiles, onPublish, saved]);
 
   const onSaveDraftWrapper = useCallback(() => {
-    onSaveDraft(config, mediaFiles).then(saved);
+    return onSaveDraft(config, mediaFiles).then(saved);
   }, [config, mediaFiles, onSaveDraft, saved]);
 
   if (preview || isSmall) {
@@ -240,8 +272,12 @@ const StoryMapForm = props => {
           onCancel={cancel}
         />
       )}
-      {saving && <PageLoader />}
-      <TopBar onPublish={onPublishWrapper} onSaveDraft={onSaveDraftWrapper} />
+      <TopBar
+        onPublish={onPublishWrapper}
+        onSaveDraft={onSaveDraftWrapper}
+        requestStatus={requestStatus}
+        isDirty={isDirty}
+      />
       <Grid
         container
         justifyContent="flex-start"
