@@ -122,12 +122,15 @@ export const fetchStoryMapForm = ({ slug, storyMapId }) => {
     }));
 };
 
+const generateValidTitle = inputTitle =>
+  _.isEmpty(inputTitle) ? 'Untitled' : inputTitle.trim(); // TODO translate
+
 export const addStoryMap = async ({ storyMap, files }) => {
   const path = '/story-map/add/';
 
   const storyMapForm = new FormData();
   const title = _.get('config.title', storyMap);
-  storyMapForm.append('title', _.isEmpty(title) ? 'Untitled' : title.trim()); // TODO translate
+  storyMapForm.append('title', generateValidTitle(title));
   storyMapForm.append('publish', storyMap.publish);
   storyMapForm.append('configuration', JSON.stringify(storyMap.config));
   Object.keys(files).forEach((fileId, index) => {
@@ -148,7 +151,10 @@ export const updateStoryMap = async ({ storyMap, files }) => {
 
   const storyMapForm = new FormData();
   storyMapForm.append('id', storyMap.id);
-  storyMapForm.append('title', _.getOr('', 'config.title', storyMap).trim());
+  storyMapForm.append(
+    'title',
+    generateValidTitle(_.getOr('', 'config.title', storyMap))
+  );
   storyMapForm.append('publish', storyMap.publish);
   storyMapForm.append('configuration', JSON.stringify(storyMap.config));
   Object.keys(files).forEach((fileId, index) => {

@@ -127,7 +127,7 @@ const ActionsMenu = () => {
           {t('storyMap.form_preview_button')}
         </MenuItem>
         <Divider />
-        {storyMap && (
+        {storyMap?.publishedAt && (
           <MenuItem
             dense
             component={Link}
@@ -137,7 +137,7 @@ const ActionsMenu = () => {
             {t('storyMap.form_view_published_button')}
           </MenuItem>
         )}
-        {storyMap && <Divider />}
+        {storyMap?.publishedAt && <Divider />}
         {storyMap && (
           <MenuItem dense onClick={() => setOpenShareDialog(true)}>
             {t('storyMap.form_share_button')}
