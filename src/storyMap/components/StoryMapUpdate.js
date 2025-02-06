@@ -86,7 +86,7 @@ const StoryMapUpdate = props => {
     }
 
     if (title !== storyMap?.title) {
-      window.history.pushState(
+      window.history.replaceState(
         null,
         t('storyMap.edit_document_title', {
           name: _.get('title', storyMap),
