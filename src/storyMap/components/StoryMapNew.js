@@ -129,7 +129,9 @@ const StoryMapNew = () => {
       return;
     }
 
-    navigate(generateStoryMapEditUrl({ slug, storyMapId }));
+    navigate(generateStoryMapEditUrl({ slug, storyMapId }), {
+      replace: 'true',
+    });
   }, [dispatch, navigate, trackEvent, saved]);
 
   const save = useCallback(
