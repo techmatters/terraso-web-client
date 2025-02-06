@@ -244,8 +244,14 @@ const storyMapSlice = createSlice({
     }));
 
     builder.addCase(addStoryMap.pending, _.set('form.saving', true));
-    builder.addCase(addStoryMap.rejected, _.set('form.saving', false));
-    builder.addCase(addStoryMap.fulfilled, _.set('form.saving', false));
+    builder.addCase(
+      addStoryMap.rejected,
+      _.flow(_.set('form.saving', false), _.set('form.error', true))
+    );
+    builder.addCase(
+      addStoryMap.fulfilled,
+      _.flow(_.set('form.saving', false), _.set('form.error', false))
+    );
 
     builder.addCase(updateStoryMap.pending, _.set('form.saving', true));
     builder.addCase(
