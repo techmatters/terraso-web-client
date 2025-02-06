@@ -39,7 +39,7 @@ import TopBarPreview from './TopBarPreview';
 
 import theme from 'theme';
 
-const AUTO_SAVE_DEBOUNCE = 3000;
+const AUTO_SAVE_DEBOUNCE = 1500;
 
 const BASE_CHAPTER = {
   alignment: 'left',
@@ -92,7 +92,11 @@ const StoryMapForm = props => {
   const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
-  const { onPublish, onSaveDraft } = props;
+  const {
+    onPublish,
+    onSaveDraft,
+    autoSaveDebounce = AUTO_SAVE_DEBOUNCE,
+  } = props;
   const requestStatus = useSelector(_.get('storyMap.form'));
   const { error: saveError, saving } = requestStatus;
   const {
@@ -115,7 +119,7 @@ const StoryMapForm = props => {
     mediaFiles,
     isDirty,
   });
-  const [autoSaveDataDebounced] = useDebounce(autoSaveData, AUTO_SAVE_DEBOUNCE);
+  const [autoSaveDataDebounced] = useDebounce(autoSaveData, autoSaveDebounce);
   useEffect(() => {
     setAutoSaveData({
       config,
