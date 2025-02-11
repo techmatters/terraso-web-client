@@ -933,6 +933,7 @@
         "form_chapter_dragging_label": "Arrastrando {{chapterLabel}}",
         "form_location_dialog_title": "Establecer la ubicación del mapa para <1>{{title}}</1>",
         "form_location_dialog_title_blank": "Establecer ubicación en el mapa",
+        "form_untitled": "Sin título",
         "location_dialog_cancel_button": "Cancelar",
         "location_dialog_confirm_button": "Guardar mapa",
         "view_title_outline": "Esquema",

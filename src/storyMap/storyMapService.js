@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import i18n from 'i18next';
 import _ from 'lodash/fp';
 import {
   extractAccountMembership,
@@ -123,7 +124,7 @@ export const fetchStoryMapForm = ({ slug, storyMapId }) => {
 };
 
 const generateValidTitle = inputTitle =>
-  _.isEmpty(inputTitle) ? 'Untitled' : inputTitle.trim(); // TODO translate
+  _.isEmpty(inputTitle) ? i18n.t('storyMap.form_untitled') : inputTitle.trim(); // TODO translate
 
 export const addStoryMap = async ({ storyMap, files }) => {
   const path = '/story-map/add/';

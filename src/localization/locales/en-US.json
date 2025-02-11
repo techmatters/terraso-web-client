@@ -928,6 +928,7 @@
         "form_chapter_dragging_label": "Dragging {{chapterLabel}}",
         "form_location_dialog_title": "Set map location for <1>{{title}}</1>",
         "form_location_dialog_title_blank": "Set map location",
+        "form_untitled": "Untitled",
         "location_dialog_cancel_button": "Cancel",
         "location_dialog_confirm_button": "Save Map",
         "view_title_outline": "Outline",
