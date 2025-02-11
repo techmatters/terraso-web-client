@@ -987,7 +987,7 @@
         "form_no_title_label": "Sin título",
         "form_title_location_button": "Establecer ubicación en el mapa",
         "form_title_location_dialog_title": "Título",
-        "form_save_status_saving": "Guardando...",
+        "form_save_status_saving": "Guardando…",
         "form_save_status_saved": "Borrador guardado",
         "form_save_status_error": "Error al guardar, intentando conectar",
         "update_story_map": "Se ha actualizado el Story Map <strong>{{title}}</strong>.",
