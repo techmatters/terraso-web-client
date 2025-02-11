@@ -989,7 +989,7 @@
         "form_title_location_dialog_title": "Título",
         "form_save_status_saving": "Guardando…",
         "form_save_status_saved": "Borrador guardado",
-        "form_save_status_error": "Error al guardar, intentando conectar",
+        "form_save_status_error": "Error al guardar. Intentando conectar…",
         "update_story_map": "Se ha actualizado el Story Map <strong>{{title}}</strong>.",
         "update_story_map_published": "Se ha publicado el Story Map <strong>{{title}}</strong>.",
         "added_story_map": "Se ha guardado el Story Map <strong>{{title}}</strong>.",
