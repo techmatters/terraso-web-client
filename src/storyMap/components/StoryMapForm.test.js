@@ -148,7 +148,7 @@ const VISUALIZATION_CONFIG_NO_TILESET = {
 
 const expectSave = async () => {
   const header = screen.getByRole('region', { name: 'Story editor Header' });
-  expect(within(header).getByText('Saving...')).toBeInTheDocument();
+  expect(within(header).getByText('Saving…')).toBeInTheDocument();
   await waitFor(() => {
     expect(within(header).getByText('Draft saved')).toBeInTheDocument();
   });
