@@ -984,7 +984,7 @@
         "form_title_location_dialog_title": "Title",
         "form_save_status_saving": "Saving…",
         "form_save_status_saved": "Draft saved",
-        "form_save_status_error": "Save failed, trying to connect",
+        "form_save_status_error": "Save failed. Trying to connect…",
         "update_story_map": "<strong>{{title}}</strong> story map has been updated.",
         "update_story_map_published": "<strong>{{title}}</strong> story map has been published.",
         "added_story_map": "<strong>{{title}}</strong> story map has been saved.",
