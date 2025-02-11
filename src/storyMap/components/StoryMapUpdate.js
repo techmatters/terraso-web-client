@@ -28,6 +28,11 @@ import NotFound from 'layout/NotFound';
 import PageLoader from 'layout/PageLoader';
 import { useAnalytics } from 'monitoring/analytics';
 import { ILM_OUTPUT_PROP, LANDSCAPE_NARRATIVES } from 'monitoring/ilm';
+import StoryMapForm from 'storyMap/components/StoryMapForm';
+import {
+  StoryMapConfigContextProvider,
+  useStoryMapConfigContext,
+} from 'storyMap/components/StoryMapForm/storyMapConfigContext';
 import {
   fetchStoryMapForm,
   resetForm,
@@ -37,12 +42,6 @@ import {
   generateStoryMapEditUrl,
   generateStoryMapUrl,
 } from 'storyMap/storyMapUtils';
-
-import StoryMapForm from './StoryMapForm';
-import {
-  StoryMapConfigContextProvider,
-  useStoryMapConfigContext,
-} from './StoryMapForm/storyMapConfigContext';
 
 const StoryMapUpdate = props => {
   const navigate = useNavigate();

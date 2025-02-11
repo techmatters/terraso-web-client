@@ -37,9 +37,9 @@ import TitleForm from './TitleForm';
 import TopBar from './TopBar';
 import TopBarPreview from './TopBarPreview';
 
-import theme from 'theme';
+import { STORY_MAP_AUTO_SAVE_DEBOUNCE } from 'config';
 
-const AUTO_SAVE_DEBOUNCE = 1500;
+import theme from 'theme';
 
 const BASE_CHAPTER = {
   alignment: 'left',
@@ -95,7 +95,7 @@ const StoryMapForm = props => {
   const {
     onPublish,
     onSaveDraft,
-    autoSaveDebounce = AUTO_SAVE_DEBOUNCE,
+    autoSaveDebounce = STORY_MAP_AUTO_SAVE_DEBOUNCE,
   } = props;
   const requestStatus = useSelector(_.get('storyMap.form'));
   const { error: saveError, saving } = requestStatus;
@@ -258,9 +258,10 @@ const StoryMapForm = props => {
     onPublish(config, mediaFiles).then(saved);
   }, [config, mediaFiles, onPublish, saved]);
 
-  const onSaveDraftWrapper = useCallback(() => {
-    return onSaveDraft(config, mediaFiles).then(saved);
-  }, [config, mediaFiles, onSaveDraft, saved]);
+  const onSaveDraftWrapper = useCallback(
+    () => onSaveDraft(config, mediaFiles).then(saved),
+    [config, mediaFiles, onSaveDraft, saved]
+  );
 
   if (preview || isSmall) {
     return <Preview config={config} onPublish={onPublishWrapper} />;
