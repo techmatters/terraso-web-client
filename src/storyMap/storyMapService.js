@@ -124,7 +124,7 @@ export const fetchStoryMapForm = ({ slug, storyMapId }) => {
 };
 
 const generateValidTitle = inputTitle =>
-  _.isEmpty(inputTitle) ? i18n.t('storyMap.form_untitled') : inputTitle.trim(); // TODO translate
+  _.isEmpty(inputTitle) ? i18n.t('storyMap.form_untitled') : inputTitle.trim();
 
 export const addStoryMap = async ({ storyMap, files }) => {
   const path = '/story-map/add/';
