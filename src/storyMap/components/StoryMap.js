@@ -479,7 +479,7 @@ const Scroller = props => {
       });
     // This is needed for development due to resize observer issue
     // should not be here on production
-    if(process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development') {
       scroller.disable();
     }
     setIsReady(true);
