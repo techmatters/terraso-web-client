@@ -305,7 +305,7 @@ const Map = React.forwardRef((props, ref) => {
     id,
     mapStyle,
     projection,
-    initialLocation,
+    initialLocation: propsInitialLocation,
     interactive = true,
     hash = false,
     attributionControl = true,
@@ -325,6 +325,7 @@ const Map = React.forwardRef((props, ref) => {
   const { map, setMap } = useMap();
   const mapContainer = useRef(null);
   const [bounds] = useState(initialBounds);
+  const [initialLocation] = useState(propsInitialLocation);
 
   useEffect(() => {
     const validBounds = isValidBounds(bounds);

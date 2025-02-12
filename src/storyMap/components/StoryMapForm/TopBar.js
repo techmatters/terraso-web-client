@@ -15,24 +15,84 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Button, Divider, Grid, Typography } from '@mui/material';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import CheckIcon from '@mui/icons-material/Check';
+import ErrorIcon from '@mui/icons-material/Error';
+import SyncIcon from '@mui/icons-material/Sync';
+import {
+  Button,
+  Divider,
+  Grid,
+  Link,
+  Menu,
+  MenuItem,
+  Stack,
+  Typography,
+} from '@mui/material';
 
 import RouterLink from 'common/components/RouterLink';
+import { generateStoryMapUrl } from 'storyMap/storyMapUtils';
 
 import ShareDialog from './ShareDialog';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 import TopBarContainer from './TopBarContainer';
 
-const TopBar = props => {
-  const { t } = useTranslation();
-  const { storyMap, config, setPreview } = useStoryMapConfigContext();
-  const { onPublish, onSaveDraft } = props;
-  const [openShareDialog, setOpenShareDialog] = React.useState(false);
+const SAVE_STATUS = {
+  saving: {
+    message: 'storyMap.form_save_status_saving',
+    Icon: SyncIcon,
+  },
+  saved: {
+    message: 'storyMap.form_save_status_saved',
+    Icon: CheckIcon,
+  },
+  error: {
+    message: 'storyMap.form_save_status_error',
+    Icon: ErrorIcon,
+    color: 'error.main',
+  },
+};
 
-  const isPublished = storyMap?.isPublished;
+const SaveStatus = props => {
+  const { t } = useTranslation();
+  const { requestStatus, isDirty } = props;
+  const { error } = requestStatus;
+
+  const status = error ? 'error' : isDirty ? 'saving' : 'saved';
+  const Icon = SAVE_STATUS[status].Icon;
+  const message = SAVE_STATUS[status].message;
+  const color = SAVE_STATUS[status].color;
+
+  return (
+    <Stack
+      direction="row"
+      spacing={0.5}
+      alignItems="center"
+      sx={{ color: color || 'gray.dark1' }}
+    >
+      <Icon sx={{ fontSize: 20 }} />
+      <Typography variant="caption">{t(message)}</Typography>
+    </Stack>
+  );
+};
+
+const ActionsMenu = () => {
+  const { t } = useTranslation();
+  const { storyMap, setPreview } = useStoryMapConfigContext();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openShareDialog, setOpenShareDialog] = useState(false);
+
+  const open = Boolean(anchorEl);
+
+  const handleClick = event => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <>
@@ -42,77 +102,101 @@ const TopBar = props => {
           onClose={() => setOpenShareDialog(false)}
         />
       )}
-      <TopBarContainer>
-        <Grid
-          item
-          xs={2}
+      <Button
+        id="actions-menu-button"
+        aria-controls={open ? 'actions-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
+        variant="outlined"
+        disableElevation
+        onClick={handleClick}
+        endIcon={<ArrowDropDownIcon />}
+      >
+        {t('storyMap.form_actions_button')}
+      </Button>
+      <Menu
+        id="actions-menu"
+        MenuListProps={{
+          'aria-labelledby': 'actions-menu-button',
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+      >
+        <MenuItem dense onClick={() => setPreview(true)}>
+          {t('storyMap.form_preview_button')}
+        </MenuItem>
+        <Divider />
+        {storyMap?.publishedAt && (
+          <MenuItem
+            dense
+            component={Link}
+            href={generateStoryMapUrl(storyMap)}
+            target="_blank"
+          >
+            {t('storyMap.form_view_published_button')}
+          </MenuItem>
+        )}
+        {storyMap?.publishedAt && <Divider />}
+        {storyMap && (
+          <MenuItem dense onClick={() => setOpenShareDialog(true)}>
+            {t('storyMap.form_share_button')}
+          </MenuItem>
+        )}
+      </Menu>
+    </>
+  );
+};
+
+const TopBar = props => {
+  const { t } = useTranslation();
+  const { storyMap, config } = useStoryMapConfigContext();
+  const { onPublish, isDirty, requestStatus } = props;
+
+  const isPublished = storyMap?.isPublished;
+
+  return (
+    <TopBarContainer>
+      <Grid
+        item
+        xs={2}
+        sx={{
+          width: '100%',
+          pl: 2,
+        }}
+      >
+        <RouterLink
+          to="/tools/story-maps"
+          sx={{ display: 'flex', alignItems: 'center' }}
+        >
+          <ArrowBackIcon />
+          <Typography sx={{ ml: 1 }}>
+            {t('storyMap.form_back_button')}
+          </Typography>
+        </RouterLink>
+      </Grid>
+      <Grid item xs={6}>
+        <Typography variant="h3" component="h1" sx={{ pt: 0 }}>
+          {config.title || t('storyMap.form_no_title_label')}
+        </Typography>
+      </Grid>
+      <Grid
+        item
+        xs={4}
+        sx={{
+          pr: 2,
+        }}
+      >
+        <Stack
+          direction="row"
+          spacing={2}
           sx={{
-            width: '100%',
-            pl: 2,
+            justifyContent: 'flex-end',
+            alignItems: 'center',
           }}
         >
-          <RouterLink
-            to="/tools/story-maps"
-            sx={{ display: 'flex', alignItems: 'center' }}
-          >
-            <ArrowBackIcon />
-            <Typography sx={{ ml: 1 }}>
-              {t('storyMap.form_back_button')}
-            </Typography>
-          </RouterLink>
-        </Grid>
-        <Grid item xs={6}>
-          <Typography variant="h3" component="h1" sx={{ pt: 0 }}>
-            {config.title || t('storyMap.form_no_title_label')}
-          </Typography>
-        </Grid>
-        <Grid
-          item
-          xs={4}
-          sx={{ display: 'flex', justifyContent: 'flex-end', pr: 2 }}
-        >
-          {storyMap && (
-            <>
-              <Button
-                variant="text"
-                color="primary"
-                onClick={() => setOpenShareDialog(true)}
-                sx={{
-                  '&:hover': {
-                    backgroundColor: 'transparent',
-                    textDecoration: 'underline',
-                  },
-                }}
-              >
-                {t('storyMap.form_share_button')}
-              </Button>
-              <Divider flexItem orientation="vertical" />
-            </>
-          )}
-          <Button
-            variant="text"
-            color="primary"
-            onClick={() => setPreview(true)}
-            sx={{
-              '&:hover': {
-                backgroundColor: 'transparent',
-                textDecoration: 'underline',
-              },
-            }}
-          >
-            {t('storyMap.form_preview_button')}
-          </Button>
-          {!isPublished && (
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={onSaveDraft}
-              sx={{ ml: 2 }}
-            >
-              {t('storyMap.form_save_draft_button')}
-            </Button>
-          )}
-
+          <SaveStatus isDirty={isDirty} requestStatus={requestStatus} />
+          <ActionsMenu />
           <Button
             variant="contained"
             color="primary"
@@ -123,9 +207,9 @@ const TopBar = props => {
               ? t('storyMap.form_republish_button')
               : t('storyMap.form_publish_button')}
           </Button>
-        </Grid>
-      </TopBarContainer>
-    </>
+        </Stack>
+      </Grid>
+    </TopBarContainer>
   );
 };
 

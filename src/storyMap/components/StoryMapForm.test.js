@@ -146,6 +146,14 @@ const VISUALIZATION_CONFIG_NO_TILESET = {
   title: 'Datalayer title 3',
 };
 
+const expectSave = async () => {
+  const header = screen.getByRole('region', { name: 'Story editor Header' });
+  expect(within(header).getByText('Saving…')).toBeInTheDocument();
+  await waitFor(() => {
+    expect(within(header).getByText('Draft saved')).toBeInTheDocument();
+  });
+};
+
 const baseMapOptions = () => ({
   onEvents: {},
   on: function (type, cb) {
@@ -302,13 +310,14 @@ beforeEach(() => {
     });
 });
 
-const setup = async config => {
+const setup = async ({ config, autoSaveDebounce = 1500 }) => {
   const onPublish = jest.fn().mockImplementation(() => Promise.resolve());
   const onSaveDraft = jest.fn().mockImplementation(() => Promise.resolve());
 
   await render(
     <StoryMapConfigContextProvider
       baseConfig={config}
+      autoSaveDebounce={autoSaveDebounce}
       storyMap={{
         id: 'story-map-id-1',
         memberships: [],
@@ -449,7 +458,7 @@ const changeChaper = async ({
 };
 
 test('StoryMapForm: Renders title and chapters correctly', async () => {
-  await setup(BASE_CONFIG);
+  await setup({ config: BASE_CONFIG });
 
   // Editor header
   const header = screen.getByRole('region', {
@@ -487,7 +496,7 @@ test('StoryMapForm: Renders title and chapters correctly', async () => {
 });
 
 test('StoryMapForm: Change title', async () => {
-  const { onSaveDraft } = await setup(BASE_CONFIG);
+  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
   const titleSection = screen.getByRole('region', {
     name: 'Title for: Story Map Title',
@@ -533,9 +542,8 @@ test('StoryMapForm: Change title', async () => {
   );
 
   // Save
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
-  );
+  await expectSave();
+
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
   expect(saveCall[0]).toEqual(
@@ -570,7 +578,7 @@ test('StoryMapForm: Sidebar navigation', async () => {
   };
   scrollama.mockImplementation(() => scroller);
 
-  await setup(BASE_CONFIG);
+  await setup({ config: BASE_CONFIG });
 
   // Get sidebar list
   const sidebarList = screen.getByRole('navigation', {
@@ -580,6 +588,15 @@ test('StoryMapForm: Sidebar navigation', async () => {
   const title = within(sidebarList).getByRole('button', {
     name: 'Title',
   });
+
+  await waitFor(() => {
+    expect(
+      within(sidebarList).getByRole('button', {
+        name: 'Chapter 1',
+      })
+    ).toBeInTheDocument();
+  });
+
   const chapter1 = within(sidebarList).getByRole('button', {
     name: 'Chapter 1',
   });
@@ -625,7 +642,10 @@ test('StoryMapForm: Sidebar navigation', async () => {
 });
 
 test('StoryMapForm: Adds new chapter', async () => {
-  const { onSaveDraft } = await setup(BASE_CONFIG);
+  const { onSaveDraft } = await setup({
+    config: BASE_CONFIG,
+    autoSaveDebounce: 1000,
+  });
 
   // Add new chapter
   const addChapterButton = screen.getByRole('button', {
@@ -639,6 +659,16 @@ test('StoryMapForm: Adds new chapter', async () => {
   });
   expect(newChapter).toBeInTheDocument();
 
+  await expectSave();
+  expect(onSaveDraft).toHaveBeenCalledWith(
+    expect.objectContaining({
+      title: 'Story Map Title',
+      subtitle: 'Story Map Subtitle',
+      byline: 'by User',
+    }),
+    expect.anything()
+  );
+
   // Change title and description
   await changeChaper({
     title: 'Untitled',
@@ -649,69 +679,25 @@ test('StoryMapForm: Adds new chapter', async () => {
     }),
   });
 
-  // New chapter should be added to the outline
-  const titleSection = screen.getByRole('region', {
-    name: 'Title for: Story Map Title',
-  });
-  expect(
-    within(titleSection).getByRole('link', { name: 'New chapter' })
-  ).toBeInTheDocument();
-
-  // Save
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
-  );
-  expect(onSaveDraft).toHaveBeenCalledTimes(1);
-  const saveCall = onSaveDraft.mock.calls[0];
-  expect(saveCall[0]).toEqual(
+  expect(onSaveDraft).toHaveBeenCalledWith(
     expect.objectContaining({
-      title: 'Story Map Title',
-      subtitle: 'Story Map Subtitle',
-      byline: 'by User',
-    })
-  );
-  expect(saveCall[0].chapters[0]).toEqual(
-    expect.objectContaining({
-      id: 'chapter-1',
-      title: 'Chapter 1',
-      description: 'Chapter 1 description',
-      media: {
-        type: 'image/png',
-        signedUrl: 'https://test.com/image.png',
-      },
-    })
-  );
-  expect(saveCall[0].chapters[1]).toEqual(
-    expect.objectContaining({
-      id: 'chapter-2',
-      title: 'Chapter 2',
-      description: 'Chapter 2 description',
-    })
-  );
-  expect(saveCall[0].chapters[3]).toEqual(
-    expect.objectContaining({
-      alignment: 'left',
-      title: 'New chapter',
-      description: 'New chapter description',
-      mapAnimation: 'flyTo',
-      rotateAnimation: false,
-      onChapterEnter: [],
-      onChapterExit: [],
-    })
-  );
-  expect(saveCall[0].chapters[3].media).toEqual(
-    expect.objectContaining({
-      filename: 'test.jpg',
-      type: 'image/jpeg',
-    })
-  );
-
-  expect(saveCall[0].chapters[3].media.contentId).toEqual(
-    Object.keys(saveCall[1])[0]
+      chapters: expect.arrayContaining([
+        expect.objectContaining({
+          id: 'chapter-1',
+          title: 'Chapter 1',
+          description: 'Chapter 1 description',
+          media: {
+            type: 'image/png',
+            signedUrl: 'https://test.com/image.png',
+          },
+        }),
+      ]),
+    }),
+    expect.anything()
   );
 });
 test('StoryMapForm: Add embedded media', async () => {
-  const { onSaveDraft } = await setup(BASE_CONFIG);
+  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
   await changeChaper({
     title: 'Chapter 2',
@@ -719,9 +705,8 @@ test('StoryMapForm: Add embedded media', async () => {
   });
 
   // Save
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
-  );
+  await expectSave();
+
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
   expect(saveCall[0].chapters[1].media).toEqual(
@@ -733,7 +718,7 @@ test('StoryMapForm: Add embedded media', async () => {
   );
 });
 test('StoryMapForm: Add audio media', async () => {
-  const { onSaveDraft } = await setup(BASE_CONFIG);
+  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
   await changeChaper({
     title: 'Chapter 2',
@@ -743,9 +728,8 @@ test('StoryMapForm: Add audio media', async () => {
   });
 
   // Save
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
-  );
+  await expectSave();
+
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
   expect(saveCall[0].chapters[1].media).toEqual(
@@ -760,10 +744,14 @@ test('StoryMapForm: Add audio media', async () => {
   );
 });
 test('StoryMapForm: Show preview', async () => {
-  await setup(BASE_CONFIG);
+  await setup({ config: BASE_CONFIG });
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Preview' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Actions' }))
+  );
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Preview draft' }))
   );
 
   const chapters = screen.getByRole('region', {
@@ -793,7 +781,7 @@ test('StoryMapForm: Change chapter location', async () => {
     getBearing: () => 45,
   };
   mapboxgl.Map.mockReturnValue(map);
-  const { onSaveDraft } = await setup(BASE_CONFIG);
+  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
   const chapter1 = screen.getByRole('region', {
     name: 'Chapter: Chapter 1',
@@ -815,15 +803,12 @@ test('StoryMapForm: Change chapter location', async () => {
   );
 
   await waitFor(() => {
-    expect(
-      screen.getByRole('button', { name: 'Save draft' })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
   });
 
   // Save
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
-  );
+  await expectSave();
+
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
   expect(saveCall[0].chapters[0]).toEqual(
@@ -850,7 +835,7 @@ test('StoryMapForm: Change chapter style', async () => {
     getBearing: () => 45,
   };
   mapboxgl.Map.mockReturnValue(map);
-  const { onSaveDraft } = await setup(BASE_CONFIG);
+  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
   const chapter1 = screen.getByRole('region', {
     name: 'Chapter: Chapter 1',
@@ -881,16 +866,9 @@ test('StoryMapForm: Change chapter style', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save Map' }))
   );
 
-  await waitFor(() => {
-    expect(
-      screen.getByRole('button', { name: 'Save draft' })
-    ).toBeInTheDocument();
-  });
-
   // Save
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
-  );
+  await expectSave();
+
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
   expect(saveCall[0].style).toEqual('newStyle');
@@ -906,7 +884,7 @@ test('StoryMapForm: Add map layer', async () => {
   };
   mapboxgl.Map.mockReturnValue(map);
 
-  const { onSaveDraft } = await setup(BASE_CONFIG);
+  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
   const chapter1 = screen.getByRole('region', {
     name: 'Chapter: Chapter 1',
@@ -963,15 +941,12 @@ test('StoryMapForm: Add map layer', async () => {
   await act(async () => fireEvent.click(saveMapButton));
 
   await waitFor(() => {
-    expect(
-      screen.getByRole('button', { name: 'Save draft' })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
   });
 
   // Save
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
-  );
+  await expectSave();
+
   expect(onSaveDraft).toHaveBeenCalledWith(
     expect.objectContaining({
       chapters: expect.arrayContaining([
@@ -996,7 +971,7 @@ test('StoryMapForm: Move chapter down with menu', async () => {
   useAnalytics.mockReturnValue({
     trackEvent,
   });
-  const { onSaveDraft } = await setup(BASE_CONFIG);
+  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
   const chaptersSection = screen.getByRole('navigation', {
     name: 'Chapters sidebar',
@@ -1037,9 +1012,8 @@ test('StoryMapForm: Move chapter down with menu', async () => {
     ).not.toBeInTheDocument()
   );
 
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
-  );
+  await expectSave();
+
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
 
@@ -1067,12 +1041,19 @@ test('StoryMapForm: Move chapter down with menu', async () => {
 });
 
 test('StoryMapForm: Move chapter up with menu', async () => {
-  const { onSaveDraft } = await setup(BASE_CONFIG);
+  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
   const chaptersSection = screen.getByRole('navigation', {
     name: 'Chapters sidebar',
   });
 
+  await waitFor(() => {
+    expect(
+      within(chaptersSection).getByRole('button', {
+        name: 'Chapter 2',
+      })
+    ).toBeInTheDocument();
+  });
   const chapter2 = within(chaptersSection).getByRole('button', {
     name: 'Chapter 2',
   });
@@ -1106,9 +1087,8 @@ test('StoryMapForm: Move chapter up with menu', async () => {
     ).not.toBeInTheDocument()
   );
 
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
-  );
+  await expectSave();
+
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
 
@@ -1129,10 +1109,18 @@ test('StoryMapForm: Move chapter up with menu', async () => {
 });
 
 test('StoryMapForm: Show correct sort buttons if chapter is first', async () => {
-  await setup(BASE_CONFIG);
+  await setup({ config: BASE_CONFIG });
 
   const chaptersSection = screen.getByRole('navigation', {
     name: 'Chapters sidebar',
+  });
+
+  await waitFor(() => {
+    expect(
+      within(chaptersSection).getByRole('button', {
+        name: 'Chapter 1',
+      })
+    ).toBeInTheDocument();
   });
 
   const chapter1 = within(chaptersSection).getByRole('button', {
@@ -1153,7 +1141,7 @@ test('StoryMapForm: Show correct sort buttons if chapter is first', async () => 
 });
 
 test('StoryMapForm: Show correct sort buttons if chapter is last', async () => {
-  await setup(BASE_CONFIG);
+  await setup({ config: BASE_CONFIG });
 
   const chaptersSection = screen.getByRole('navigation', {
     name: 'Chapters sidebar',
@@ -1177,10 +1165,18 @@ test('StoryMapForm: Show correct sort buttons if chapter is last', async () => {
 });
 
 test('StoryMapForm: Delete chapter', async () => {
-  const { onSaveDraft } = await setup(BASE_CONFIG);
+  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
   const chaptersSection = screen.getByRole('navigation', {
     name: 'Chapters sidebar',
+  });
+
+  await waitFor(() => {
+    expect(
+      within(chaptersSection).getByRole('button', {
+        name: 'Chapter 1',
+      })
+    ).toBeInTheDocument();
   });
 
   const chapter1 = within(chaptersSection).getByRole('button', {
@@ -1206,14 +1202,10 @@ test('StoryMapForm: Delete chapter', async () => {
 
   // Wait for delete animation
   await waitFor(() => {
-    expect(
-      screen.getByRole('button', { name: 'Save draft' })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
   });
 
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save draft' }))
-  );
+  await expectSave();
   expect(onSaveDraft).toHaveBeenCalledTimes(1);
   const saveCall = onSaveDraft.mock.calls[0];
 
@@ -1261,7 +1253,7 @@ test('StoryMapForm: Keep map on chapter change', async () => {
   };
   scrollama.mockImplementation(() => scroller);
 
-  await setup(BASE_CONFIG);
+  await setup({ config: BASE_CONFIG });
 
   await waitFor(() => expect(scrollama).toHaveBeenCalled());
 

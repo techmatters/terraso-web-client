@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { act, fireEvent, render, screen } from 'tests/utils';
+import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import { useAnalytics } from 'monitoring/analytics';
@@ -60,8 +60,15 @@ test('StoryMapNew: Save', async () => {
 
   await render(<StoryMapNew />);
 
-  const saveButton = screen.getByRole('button', { name: 'Save draft' });
-  await act(async () => fireEvent.click(saveButton));
+  await act(() => {
+    fireEvent.click(screen.getByRole('button', { name: 'Add new chapter' }));
+  });
+
+  const header = screen.getByRole('region', { name: 'Story editor Header' });
+  expect(within(header).getByText('Saving…')).toBeInTheDocument();
+  await waitFor(() => {
+    expect(within(header).getByText('Draft saved')).toBeInTheDocument();
+  });
 
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
 
