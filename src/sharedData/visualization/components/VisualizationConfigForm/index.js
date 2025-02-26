@@ -34,7 +34,7 @@ import VisualizeStep from './VisualizeStep';
 
 import theme from 'theme';
 
-const INITIAL_CONFIG = {
+export const INITIAL_CONFIG = {
   datasetConfig: {
     dataColumns: {
       option: '',
@@ -51,7 +51,7 @@ const INITIAL_CONFIG = {
 
 const Steps = props => {
   const { t } = useTranslation();
-  const { isMapFile } = useVisualizationContext();
+  const { isMapFile, clear, visualizationConfig } = useVisualizationContext();
   const { onCompleteSuccess, onCancel, onReadFileFails, onStepUpdate } = props;
 
   const selectFileStep = {
@@ -60,7 +60,10 @@ const Steps = props => {
     render: ({ setActiveStepIndex }) => (
       <SelectDataFileStep
         onNext={selectedFile => {
-          onStepUpdate({ selectedFile });
+          if (visualizationConfig.selectedFile !== selectedFile) {
+            clear();
+            onStepUpdate({ selectedFile });
+          }
           setActiveStepIndex(current => current + 1);
         }}
         onBack={onCancel}

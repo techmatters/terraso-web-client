@@ -31,6 +31,8 @@ import {
   readMapFile,
 } from 'sharedData/visualization/visualizationUtils';
 
+import { INITIAL_CONFIG } from './components/VisualizationConfigForm';
+
 import { MAP_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
 export const VisualizationContext = React.createContext();
@@ -38,10 +40,18 @@ export const VisualizationContext = React.createContext();
 export const VisualizationContextProvider = props => {
   const dispatch = useDispatch();
   const { visualizationConfig, setVisualizationConfig, children } = props;
-  const [fileContext, setFileContext] = useState();
+  const [fileContext, setFileContext] = useState({});
   const [loadingFile, setLoadingFile] = useState(true);
   const [loadingFileError, setLoadingFileError] = useState();
   const [useTileset, setUseTileset] = useState(null);
+
+  const clear = useCallback(() => {
+    setVisualizationConfig(INITIAL_CONFIG);
+    setFileContext({});
+    setLoadingFile(true);
+    setLoadingFileError(null);
+    setUseTileset(null);
+  }, [setVisualizationConfig]);
 
   const isMapFile = useMemo(() => {
     if (!visualizationConfig.selectedFile) {
@@ -133,6 +143,7 @@ export const VisualizationContextProvider = props => {
         getDataColumns,
         useTileset,
         isMapFile,
+        clear,
       }}
     >
       {children}

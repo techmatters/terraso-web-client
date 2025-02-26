@@ -102,14 +102,6 @@ const PARSED_KML_TO_GEOJSON = {
     {
       type: 'Feature',
       geometry: {
-        type: 'Point',
-        coordinates: [-122.0822035425683, 37.42228990140251],
-      },
-      properties: {},
-    },
-    {
-      type: 'Feature',
-      geometry: {
         type: 'Polygon',
         coordinates: [
           [
@@ -438,19 +430,21 @@ const testVisualizeStep = async testParams => {
   );
 
   // Marker Shape
-  const shapes = screen.getByRole('group', { name: 'Symbol Shape:' });
-  expect(
-    within(shapes).getByRole('button', { name: 'Circle' })
-  ).toHaveAttribute('aria-pressed', 'true');
-  await act(async () =>
-    fireEvent.click(within(shapes).getByRole('button', { name: 'Triangle' }))
-  );
+  if (testParams.hasMarkers) {
+    const shapes = screen.getByRole('group', { name: 'Symbol Shape:' });
+    expect(
+      within(shapes).getByRole('button', { name: 'Circle' })
+    ).toHaveAttribute('aria-pressed', 'true');
+    await act(async () =>
+      fireEvent.click(within(shapes).getByRole('button', { name: 'Triangle' }))
+    );
 
-  // Marker Size
-  const size = screen.getByRole('spinbutton', { name: 'Symbol Size:' });
-  expect(size).toHaveValue(15);
-  fireEvent.change(size, { target: { value: 30 } });
-  expect(size).toHaveValue(30);
+    // Marker Size
+    const size = screen.getByRole('spinbutton', { name: 'Symbol Size:' });
+    expect(size).toHaveValue(15);
+    fireEvent.change(size, { target: { value: 30 } });
+    expect(size).toHaveValue(30);
+  }
 
   // Color
   // TODO Known testing library issue: https://github.com/testing-library/user-event/issues/423#issuecomment-669368863
@@ -462,7 +456,7 @@ const testVisualizeStep = async testParams => {
   );
   expect(colorInput).toHaveValue('#e28979');
 
-  if (isMapFile(testParams.selectFile)) {
+  if (testParams.hasPolygons) {
     // Polygon opacity
     const opacity = screen.getByRole('spinbutton', {
       name: 'Polygon Opacity:',
@@ -547,7 +541,7 @@ const testPreviewStep = async (map, events, testParams) => {
     }),
     undefined
   );
-  if (isMapFile(testParams.selectFile)) {
+  if (testParams.hasPolygons) {
     expect(map.addLayer).toHaveBeenCalledWith(
       expect.objectContaining({
         id: 'visualization-polygons-outline',
@@ -584,6 +578,8 @@ test.each([
       type: 'landscape',
       slug: 'landscape-slug',
       selectFile: 'CSV File',
+      hasPolygons: false,
+      hasMarkers: true,
       file: new File([TEST_CSV], `CSV File`, { type: 'text/csv' }),
       expectedDataEntriesFetchInput: {
         resourceTypes: [
@@ -657,6 +653,8 @@ test.each([
       type: 'group',
       slug: 'group-slug',
       selectFile: 'KML File',
+      hasPolygons: true,
+      hasMarkers: false,
       file: new File([TEST_KML], `KML File`, { type: 'application/xml' }),
       expectedDataEntriesFetchInput: {
         resourceTypes: [
@@ -683,8 +681,8 @@ test.each([
       expectedConfiguration: {
         ...BASE_CONFIGURATION_EXPECTED_INPUT,
         visualizeConfig: {
-          shape: 'triangle',
-          size: '30',
+          shape: 'circle',
+          size: 15,
           color: '#FF580D',
           opacity: 80,
         },
