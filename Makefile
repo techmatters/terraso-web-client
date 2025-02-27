@@ -6,11 +6,8 @@ clean-docker:
 	docker ps --filter name=terraso_web_client* -aq | xargs docker rm
 
 setup-git-hooks:
-	@cp scripts/git/pre-commit.sample .git/hooks/pre-commit
 	@cp scripts/git/commit-msg.sample .git/hooks/commit-msg
 	@echo "git hooks installed"
-
-pre-commit: lint
 
 run:
 	./scripts/docker/run.sh \
