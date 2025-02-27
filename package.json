@@ -108,7 +108,7 @@
     "eslint-plugin-lodash-fp": "^2.2.0-a1",
     "eslint-plugin-prettier": "^5.2.2",
     "flat": "^6.0.1",
-    "husky": "^8.0.0",
+    "husky": "^9.1.7",
     "i18next-conv": "^15.1.1",
     "jest-axe": "^9.0.0",
     "jest-when": "^3.7.0",
