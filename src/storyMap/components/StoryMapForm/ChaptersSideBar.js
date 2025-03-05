@@ -195,10 +195,12 @@ const SideBarItem = props => {
                     anchorEl={menuAnchorEl}
                     open={openMenu}
                     onClose={handleMenuClose}
-                    MenuListProps={{
-                      'aria-label': t('storyMap.form_chapter_menu_label', {
-                        chapterLabel: item.label,
-                      }),
+                    slotProps={{
+                      list: {
+                        'aria-label': t('storyMap.form_chapter_menu_label', {
+                          chapterLabel: item.label,
+                        }),
+                      },
                     }}
                   >
                     {sortActions.map(action => (

@@ -161,8 +161,10 @@ const SelectDataFileStep = props => {
                     edge="start"
                     checked={file?.id === selected?.id}
                     tabIndex={-1}
-                    inputProps={{
-                      'aria-labelledby': `selectable-file-${file.id}`,
+                    slotProps={{
+                      input: {
+                        'aria-labelledby': `selectable-file-${file.id}`,
+                      },
                     }}
                   />
                 </ListItemIcon>

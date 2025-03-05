@@ -303,10 +303,12 @@ const DataColumns = props => {
           value="all"
           control={
             <Radio
-              inputProps={{
-                'aria-label': t(
-                  'sharedData.form_step_set_dataset_dataColumns_all'
-                ),
+              slotProps={{
+                input: {
+                  'aria-label': t(
+                    'sharedData.form_step_set_dataset_dataColumns_all'
+                  ),
+                },
               }}
             />
           }
@@ -316,10 +318,12 @@ const DataColumns = props => {
           value="custom"
           control={
             <Radio
-              inputProps={{
-                'aria-label': t(
-                  'sharedData.form_step_set_dataset_dataColumns_custom'
-                ),
+              slotProps={{
+                input: {
+                  'aria-label': t(
+                    'sharedData.form_step_set_dataset_dataColumns_custom'
+                  ),
+                },
               }}
             />
           }

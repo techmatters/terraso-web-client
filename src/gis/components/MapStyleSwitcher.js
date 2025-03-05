@@ -118,9 +118,11 @@ const MapStyleSwitcher = props => {
           anchorEl={anchorEl}
           open={open}
           onClose={handleClose}
-          MenuListProps={{
-            dense: true,
-            'aria-label': t('gis.mapbox_style_switcher_label'),
+          slotProps={{
+            list: {
+              dense: true,
+              'aria-label': t('gis.mapbox_style_switcher_label'),
+            },
           }}
         >
           {MAPBOX_STYLES.map(style => (

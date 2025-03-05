@@ -77,7 +77,6 @@ const TaxonomyAutocomplete = props => {
       clearOnBlur
       multiple
       openOnFocus
-      PaperComponent={withProps(Paper, { elevation: 3 })}
       value={value || []}
       onChange={onChangeWrapper}
       options={sortedOptions}
@@ -87,9 +86,11 @@ const TaxonomyAutocomplete = props => {
           {...params}
           variant="outlined"
           placeholder={t(placeholder)}
-          inputProps={{
-            ...params.inputProps,
-            'aria-labelledby': `${id}-label`,
+          slotProps={{
+            htmlInput: {
+              ...params.inputProps,
+              'aria-labelledby': `${id}-label`,
+            },
           }}
         />
       )}
@@ -120,6 +121,9 @@ const TaxonomyAutocomplete = props => {
             },
           }
         : {})}
+      slots={{
+        paper: withProps(Paper, { elevation: 3 }),
+      }}
     />
   );
 };
