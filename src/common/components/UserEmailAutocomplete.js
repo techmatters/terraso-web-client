@@ -74,7 +74,6 @@ const UserEmailAutocomplete = props => {
       freeSolo
       multiple
       autoSelect
-      PaperComponent={withProps(Paper, { elevation: 3 })}
       value={value || []}
       onChange={onChangeWrapper}
       options={[]}
@@ -85,10 +84,12 @@ const UserEmailAutocomplete = props => {
           {...params}
           placeholder={t('common.user_email_autocomplete_placeholder')}
           type="email"
-          InputLabelProps={{
-            shrink: true,
-          }}
           helperText={helperText}
+          slotProps={{
+            inputLabel: {
+              shrink: true,
+            },
+          }}
         />
       )}
       isOptionEqualToValue={(option, value) => option === value}
@@ -107,6 +108,9 @@ const UserEmailAutocomplete = props => {
             newTerm: inputValue,
           },
         ];
+      }}
+      slots={{
+        paper: withProps(Paper, { elevation: 3 }),
       }}
     />
   );

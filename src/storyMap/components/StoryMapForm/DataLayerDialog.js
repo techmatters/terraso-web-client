@@ -83,7 +83,11 @@ const DataLayerListItem = props => {
           value={dataLayer.id}
           edge="start"
           disableRipple
-          inputProps={{ 'aria-label': dataLayer.title }}
+          slotProps={{
+            input: {
+              'aria-label': dataLayer.title,
+            },
+          }}
           disabled={Boolean(processing)}
         />
       </ListItemIcon>

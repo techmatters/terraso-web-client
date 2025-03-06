@@ -115,8 +115,10 @@ const MembershipRadioButton = props => {
       control={
         <Radio
           sx={{ pt: 0 }}
-          inputProps={{
-            'aria-label': label,
+          slotProps={{
+            input: {
+              'aria-label': label,
+            },
           }}
         />
       }

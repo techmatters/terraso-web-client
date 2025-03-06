@@ -116,12 +116,14 @@ const ActionsMenu = () => {
       </Button>
       <Menu
         id="actions-menu"
-        MenuListProps={{
-          'aria-labelledby': 'actions-menu-button',
-        }}
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
+        slotProps={{
+          list: {
+            'aria-labelledby': 'actions-menu-button',
+          },
+        }}
       >
         <MenuItem dense onClick={() => setPreview(true)}>
           {t('storyMap.form_preview_button')}

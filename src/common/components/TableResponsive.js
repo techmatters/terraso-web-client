@@ -301,33 +301,35 @@ const SearchBar = props => {
         onChange={handleChange}
         value={query}
         sx={{ flexGrow: 2, width: { xs: '100%' } }}
-        InputProps={{
-          sx: theme => ({
-            borderColor: theme.palette.gray.dark2,
-            backgroundColor: 'white',
-            marginBottom: 2,
-            padding: 0,
-            '& ::placeholder': {
-              opacity: 0.65,
-            },
-          }),
-          endAdornment: (
-            <>
-              {query && (
-                <IconButton
-                  onClick={onClickClear}
-                  sx={{ p: '10px' }}
-                  title={t('common.table_search_filter_clear')}
-                >
-                  <CloseIcon />
+        slotProps={{
+          input: {
+            sx: theme => ({
+              borderColor: theme.palette.gray.dark2,
+              backgroundColor: 'white',
+              marginBottom: 2,
+              padding: 0,
+              '& ::placeholder': {
+                opacity: 0.65,
+              },
+            }),
+            endAdornment: (
+              <>
+                {query && (
+                  <IconButton
+                    onClick={onClickClear}
+                    sx={{ p: '10px' }}
+                    title={t('common.table_search_filter_clear')}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                )}
+                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                <IconButton title={searchPlaceholder}>
+                  <SearchIcon />
                 </IconButton>
-              )}
-              <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-              <IconButton title={searchPlaceholder}>
-                <SearchIcon />
-              </IconButton>
-            </>
-          ),
+              </>
+            ),
+          },
         }}
       />
     </Stack>

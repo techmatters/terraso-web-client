@@ -52,26 +52,28 @@ const CopyLink = props => {
             width: 'auto',
           },
         }}
-        InputProps={{
-          id: 'share-link',
-          sx: {
-            flexDirection: { xs: 'column', sm: 'row' },
-            paddingRight: 0,
+        slotProps={{
+          input: {
+            id: 'share-link',
+            sx: {
+              flexDirection: { xs: 'column', sm: 'row' },
+              paddingRight: 0,
+            },
+            readOnly: true,
+            endAdornment: (
+              <Button
+                variant="contained"
+                onClick={copyToClipboard}
+                sx={{
+                  marginLeft: { xs: 0, sm: 2 },
+                  minWidth: '100px',
+                  width: { xs: '100%', sm: 'auto' },
+                }}
+              >
+                {t('share.copy_button')}
+              </Button>
+            ),
           },
-          readOnly: true,
-          endAdornment: (
-            <Button
-              variant="contained"
-              onClick={copyToClipboard}
-              sx={{
-                marginLeft: { xs: 0, sm: 2 },
-                minWidth: '100px',
-                width: { xs: '100%', sm: 'auto' },
-              }}
-            >
-              {t('share.copy_button')}
-            </Button>
-          ),
         }}
       />
       {copied && (

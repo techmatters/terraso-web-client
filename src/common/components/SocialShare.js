@@ -112,14 +112,16 @@ const CopyEmbededCode = props => {
         fullWidth
         multiline
         rows={3}
-        InputProps={{
-          id: 'share-embed-code',
-          sx: {
-            fontFamily: 'monospace',
-            flexDirection: { xs: 'column', sm: 'row' },
-            paddingRight: 0,
+        slotProps={{
+          input: {
+            id: 'share-embed-code',
+            sx: {
+              fontFamily: 'monospace',
+              flexDirection: { xs: 'column', sm: 'row' },
+              paddingRight: 0,
+            },
+            readOnly: true,
           },
-          readOnly: true,
         }}
       />
       <Button

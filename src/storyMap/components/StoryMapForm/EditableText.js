@@ -84,14 +84,20 @@ const EditableText = props => {
             color: 'gray.lite1',
           },
         }}
-        InputLabelProps={{
-          shrink: true,
-          sx: { color: 'white' },
-        }}
-        InputProps={{
-          ...inputProps,
-          sx: {
-            '& .MuiInputBase-input': { bgcolor: 'transparent', color: 'white' },
+        slotProps={{
+          input: {
+            ...inputProps,
+            sx: {
+              '& .MuiInputBase-input': {
+                bgcolor: 'transparent',
+                color: 'white',
+              },
+            },
+          },
+
+          inputLabel: {
+            shrink: true,
+            sx: { color: 'white' },
           },
         }}
       />
