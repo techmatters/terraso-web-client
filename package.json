@@ -82,7 +82,7 @@
     "localization-check-missing": "node scripts/localization/missing-check.mjs",
     "eject": "react-scripts eject",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org techmatters --project terraso-web-client ./build && sentry-cli sourcemaps upload --org techmatters --project terraso-web-client ./build",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "browserslist": [
     ">0.2%",
