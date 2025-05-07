@@ -91,11 +91,11 @@ const StoryMapsToolsHome = () => {
         <PageHeader header={t('storyMap.tool_home_title')} />
         <Grid container spacing={2}>
           {!_.isEmpty(list) && (
-            <Grid item xs={12} sm={8}>
+            <Grid xs={12} sm={8}>
               <StoryMaps storyMaps={list} fetching={fetchingStoryMaps} />
             </Grid>
           )}
-          <Grid item sm={_.isEmpty(list) ? 12 : 4}>
+          <Grid sm={_.isEmpty(list) ? 12 : 4}>
             <Paper
               variant="outlined"
               sx={{ bgcolor: 'white', p: 2, borderRadius: '8px' }}
@@ -151,7 +151,6 @@ const StoryMapsToolsHome = () => {
             >
               {listSamples.map(sample => (
                 <Grid
-                  item
                   xs={12}
                   sm={6}
                   md={4}

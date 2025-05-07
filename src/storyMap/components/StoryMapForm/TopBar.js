@@ -160,7 +160,6 @@ const TopBar = props => {
   return (
     <TopBarContainer>
       <Grid
-        item
         xs={2}
         sx={{
           width: '100%',
@@ -177,13 +176,12 @@ const TopBar = props => {
           </Typography>
         </RouterLink>
       </Grid>
-      <Grid item xs={6}>
+      <Grid xs={6}>
         <Typography variant="h3" component="h1" sx={{ pt: 0 }}>
           {config.title || t('storyMap.form_no_title_label')}
         </Typography>
       </Grid>
       <Grid
-        item
         xs={4}
         sx={{
           pr: 2,

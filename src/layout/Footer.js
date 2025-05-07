@@ -41,7 +41,6 @@ const FooterLink = ({ link, showBorder }) => {
   return (
     <React.Fragment>
       <Grid
-        item
         component="li"
         xs={12}
         sm="auto"
@@ -126,7 +125,6 @@ const Footer = () => {
         component="nav"
       >
         <Grid
-          item
           xs={12}
           sm={8}
           component={LinksContainer}
@@ -140,7 +138,6 @@ const Footer = () => {
             />
           ))}
           <Grid
-            item
             component="li"
             sx={{
               flexGrow: 1,
@@ -149,7 +146,6 @@ const Footer = () => {
             &nbsp;
           </Grid>
           <Grid
-            item
             xs={12}
             sm="auto"
             component="li"
