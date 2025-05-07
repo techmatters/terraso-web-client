@@ -167,10 +167,10 @@ const SideBarItem = props => {
         <Grid container>
           <Grid
             container
-            xs={4}
             alignItems="flex-start"
             justifyContent="space-between"
             direction="column"
+            size={4}
           >
             <Stack
               direction="row"
@@ -251,7 +251,7 @@ const SideBarItem = props => {
             </Stack>
             {isDragging && <DragIcon sx={{ ml: 1 }} />}
           </Grid>
-          <Grid xs={8}>
+          <Grid size={8}>
             <Paper
               variant="outlined"
               sx={theme => ({

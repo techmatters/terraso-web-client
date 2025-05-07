@@ -121,7 +121,12 @@ const LandscapeProfile = () => {
         />
       </Stack>
       <Grid container spacing={4}>
-        <Grid xs={12} md={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6,
+          }}
+        >
           <Stack spacing={4} direction="column">
             <KeyInfoCard landscape={landscape} />
             {(!isEmptySections.affiliation || allowed) && (
@@ -134,15 +139,22 @@ const LandscapeProfile = () => {
         </Grid>
         {(!isEmptySections.profile || allowed) && (
           <Grid
-            xs={12}
-            md={6}
             style={{ display: 'flex', alignItems: 'flex-start' }}
+            size={{
+              xs: 12,
+              md: 6,
+            }}
           >
             <ProfileCard landscape={landscape} setIsEmpty={setSectionIsEmpty} />
           </Grid>
         )}
         {(!isEmptySections.developmentStrategy || allowed) && (
-          <Grid xs={12} md={12}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 12,
+            }}
+          >
             <DevelopmentStrategyCard
               landscape={landscape}
               setIsEmpty={setSectionIsEmpty}

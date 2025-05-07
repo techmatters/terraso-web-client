@@ -126,13 +126,13 @@ const ProfileField = props => {
     <>
       <Grid
         sx={{ textTransform: 'uppercase' }}
-        xs={5}
         component={Typography}
         variant="caption"
+        size={5}
       >
         {label}
       </Grid>
-      <Grid xs={7} component={Typography}>
+      <Grid component={Typography} size={7}>
         {value}
       </Grid>
     </>
