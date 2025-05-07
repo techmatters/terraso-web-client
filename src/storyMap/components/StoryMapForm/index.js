@@ -80,7 +80,7 @@ const Preview = props => {
     <>
       <TopBarPreview onPublish={onPublish} />
       <Grid container>
-        <Grid item xs={12}>
+        <Grid xs={12}>
           <StoryMap config={previewConfig} chaptersFilter={chaptersFilter} />
         </Grid>
       </Grid>
@@ -298,7 +298,6 @@ const StoryMapForm = props => {
           height={mapHeight}
         />
         <Grid
-          item
           xs
           sx={{
             height: mapHeight,

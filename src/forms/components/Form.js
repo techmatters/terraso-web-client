@@ -193,7 +193,6 @@ const Form = props => {
             ) : (
               <Grid
                 key={field.name}
-                item
                 xs={12}
                 {..._.get('props.gridItemProps', field)}
                 sx={{
@@ -229,7 +228,6 @@ const Form = props => {
         {children}
         {!_.isEmpty(actions) && (
           <Grid
-            item
             container
             xs={12}
             direction="row"
