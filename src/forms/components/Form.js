@@ -193,13 +193,12 @@ const Form = props => {
             ) : (
               <Grid
                 key={field.name}
-                item
-                xs={12}
                 {..._.get('props.gridItemProps', field)}
                 sx={{
                   pb: 3,
                   ..._.getOr({}, 'props.gridItemProps.sx', field),
                 }}
+                size={12}
               >
                 <Controller
                   name={field.name}
@@ -229,12 +228,11 @@ const Form = props => {
         {children}
         {!_.isEmpty(actions) && (
           <Grid
-            item
             container
-            xs={12}
             direction="row"
             justifyContent={isMultiStep ? 'space-between' : 'start'}
             sx={{ marginTop: 2 }}
+            size={12}
           >
             {isMultiStep ? actions.reverse() : actions}
           </Grid>
