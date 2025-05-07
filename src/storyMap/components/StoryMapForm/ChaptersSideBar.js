@@ -166,7 +166,6 @@ const SideBarItem = props => {
       >
         <Grid container>
           <Grid
-            item
             container
             xs={4}
             alignItems="flex-start"
@@ -252,7 +251,7 @@ const SideBarItem = props => {
             </Stack>
             {isDragging && <DragIcon sx={{ ml: 1 }} />}
           </Grid>
-          <Grid item xs={8}>
+          <Grid xs={8}>
             <Paper
               variant="outlined"
               sx={theme => ({
@@ -348,7 +347,6 @@ const ChaptersSidebar = props => {
   return (
     <Grid
       id="chapters-sidebar"
-      item
       component="nav"
       aria-label={t('storyMap.form_chapters_sidebar_section_label')}
       sx={{
