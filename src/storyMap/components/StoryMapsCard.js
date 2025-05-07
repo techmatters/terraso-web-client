@@ -202,12 +202,12 @@ const StoryMapListItem = props => {
       </Stack>
       <Grid
         container
-        xs={4}
         justifyContent="flex-end"
         direction="row"
         spacing={2}
+        size={4}
       >
-        <Grid xs={6}>
+        <Grid size={6}>
           {isStoryMapMembershipPending ? (
             <LoadingButton
               size="small"
@@ -229,7 +229,7 @@ const StoryMapListItem = props => {
             </RouterButton>
           )}
         </Grid>
-        <Grid xs={6}>
+        <Grid size={6}>
           <Restricted
             permission="storyMap.delete"
             resource={storyMap}
