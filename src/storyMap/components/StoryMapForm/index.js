@@ -80,7 +80,7 @@ const Preview = props => {
     <>
       <TopBarPreview onPublish={onPublish} />
       <Grid container>
-        <Grid xs={12}>
+        <Grid size={12}>
           <StoryMap config={previewConfig} chaptersFilter={chaptersFilter} />
         </Grid>
       </Grid>
@@ -298,12 +298,12 @@ const StoryMapForm = props => {
           height={mapHeight}
         />
         <Grid
-          xs
           sx={{
             height: mapHeight,
             // There is no overlay support for Firefox, see: https://developer.mozilla.org/en-US/docs/Web/CSS/overflow
             overflowY: isFirefox ? 'scroll' : 'overlay',
           }}
+          size="grow"
         >
           {mapHeight && mapWidth && (
             <StoryMap

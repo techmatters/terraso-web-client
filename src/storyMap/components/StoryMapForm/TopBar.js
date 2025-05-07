@@ -160,11 +160,11 @@ const TopBar = props => {
   return (
     <TopBarContainer>
       <Grid
-        xs={2}
         sx={{
           width: '100%',
           pl: 2,
         }}
+        size={2}
       >
         <RouterLink
           to="/tools/story-maps"
@@ -176,16 +176,16 @@ const TopBar = props => {
           </Typography>
         </RouterLink>
       </Grid>
-      <Grid xs={6}>
+      <Grid size={6}>
         <Typography variant="h3" component="h1" sx={{ pt: 0 }}>
           {config.title || t('storyMap.form_no_title_label')}
         </Typography>
       </Grid>
       <Grid
-        xs={4}
         sx={{
           pr: 2,
         }}
+        size={4}
       >
         <Stack
           direction="row"

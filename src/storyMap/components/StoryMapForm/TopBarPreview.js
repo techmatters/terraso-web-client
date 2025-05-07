@@ -31,7 +31,12 @@ const TopBarPreview = props => {
 
   return (
     <TopBarContainer>
-      <Grid xs={12} sm={8}>
+      <Grid
+        size={{
+          xs: 12,
+          sm: 8,
+        }}
+      >
         <Typography variant="h3" sx={{ pt: 0, pl: 2, fontWeight: 700 }}>
           {t ? (
             <Trans
@@ -47,9 +52,11 @@ const TopBarPreview = props => {
         </Typography>
       </Grid>
       <Grid
-        xs={12}
-        sm={4}
         sx={{ display: 'flex', justifyContent: 'flex-end', pr: 2 }}
+        size={{
+          xs: 12,
+          sm: 4,
+        }}
       >
         <Button
           variant="text"
