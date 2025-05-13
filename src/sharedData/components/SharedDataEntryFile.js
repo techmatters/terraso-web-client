@@ -114,8 +114,8 @@ const Visualizations = props => {
             <Grid
               component={StackRow}
               size={{
-                sm: 7,
                 xs: 12,
+                sm: 7,
               }}
             >
               <MapIcon alt={t('sharedData.map_label')} role="img" />
@@ -128,8 +128,8 @@ const Visualizations = props => {
             </Grid>
             <Grid
               size={{
-                sm: 5,
                 xs: 12,
+                sm: 5,
               }}
             >
               {formatDate(i18n.resolvedLanguage, visualization.createdAt)}, by{' '}
