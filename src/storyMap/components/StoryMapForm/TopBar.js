@@ -161,7 +161,7 @@ const TopBar = props => {
     <TopBarContainer>
       <Grid
         sx={{
-          width: '100%',
+          flexGrow: 1,
           pl: 2,
         }}
         size={2}
