@@ -84,7 +84,6 @@ const CardField = props => {
       wrap="nowrap"
       direction="column"
       container
-      item
       {...(column.cardFieldSizes || { xs: 12 })}
     >
       {!isActions && (

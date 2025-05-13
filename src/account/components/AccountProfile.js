@@ -96,7 +96,7 @@ const FIELDS = [
   {
     name: 'notifications',
     renderStaticElement: ({ t }) => (
-      <Grid item>
+      <Grid>
         <Typography
           variant="caption"
           component="p"
