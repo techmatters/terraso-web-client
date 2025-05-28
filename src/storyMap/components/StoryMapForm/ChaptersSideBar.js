@@ -169,7 +169,6 @@ const SideBarItem = props => {
             container
             alignItems="flex-start"
             justifyContent="space-between"
-            direction="column"
             size={4}
           >
             <Stack
