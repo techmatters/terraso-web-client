@@ -342,7 +342,12 @@ const LandscapeView = () => {
           </div>
         </Stack>
         <Grid container spacing={4}>
-          <Grid item xs={12} md={12}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 12,
+            }}
+          >
             <Card variant="outlined">
               <CardContent>
                 <Paper variant="outlined" sx={{ mb: 2 }}>
@@ -396,14 +401,21 @@ const LandscapeView = () => {
               </Restricted>
             </Card>
           </Grid>
-          <Grid item xs={12} md={6} style={{ display: 'flex' }}>
+          <Grid
+            style={{ display: 'flex' }}
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+          >
             <LandscapeAboutCard landscape={landscape} />
           </Grid>
           <Grid
-            item
-            xs={12}
-            md={6}
             style={{ display: 'flex', alignItems: 'flex-start' }}
+            size={{
+              xs: 12,
+              md: 6,
+            }}
           >
             <MembershipCard
               allowedToManageMembers={allowedToManageMembers}
@@ -412,7 +424,12 @@ const LandscapeView = () => {
               }
             />
           </Grid>
-          <Grid item xs={12} md={12}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 12,
+            }}
+          >
             <SharedDataCard
               onUploadClick={() =>
                 navigate(`/landscapes/${landscape.slug}/upload`)

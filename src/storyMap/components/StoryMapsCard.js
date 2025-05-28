@@ -144,6 +144,7 @@ const StoryMapListItem = props => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'flex-start',
+          flexGrow: 1,
         }}
       >
         <Stack direction="row" spacing={1}>
@@ -202,13 +203,12 @@ const StoryMapListItem = props => {
       </Stack>
       <Grid
         container
-        item
-        xs={4}
         justifyContent="flex-end"
         direction="row"
         spacing={2}
+        size={4}
       >
-        <Grid item xs={6}>
+        <Grid size={6}>
           {isStoryMapMembershipPending ? (
             <LoadingButton
               size="small"
@@ -230,7 +230,7 @@ const StoryMapListItem = props => {
             </RouterButton>
           )}
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={6}>
           <Restricted
             permission="storyMap.delete"
             resource={storyMap}

@@ -41,15 +41,16 @@ const FooterLink = ({ link, showBorder }) => {
   return (
     <React.Fragment>
       <Grid
-        item
         component="li"
-        xs={12}
-        sm="auto"
         sx={{
           paddingBottom: {
             xs: spacing(1),
             sm: 0,
           },
+        }}
+        size={{
+          xs: 12,
+          sm: 'auto',
         }}
       >
         <Link
@@ -126,11 +127,12 @@ const Footer = () => {
         component="nav"
       >
         <Grid
-          item
-          xs={12}
-          sm={8}
           component={LinksContainer}
           aria-label={t('footer.navigation')}
+          size={{
+            xs: 12,
+            sm: 8,
+          }}
         >
           {footerLinks.map((link, index) => (
             <FooterLink
@@ -140,7 +142,6 @@ const Footer = () => {
             />
           ))}
           <Grid
-            item
             component="li"
             sx={{
               flexGrow: 1,
@@ -149,9 +150,6 @@ const Footer = () => {
             &nbsp;
           </Grid>
           <Grid
-            item
-            xs={12}
-            sm="auto"
             component="li"
             variant="body2"
             sx={{
@@ -160,6 +158,10 @@ const Footer = () => {
                 xs: spacing(1),
                 sm: 0,
               },
+            }}
+            size={{
+              xs: 12,
+              sm: 'auto',
             }}
           >
             <Typography variant="body2">© {year} Tech Matters</Typography>
