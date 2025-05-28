@@ -164,7 +164,7 @@ const SideBarItem = props => {
           cursor: 'pointer',
         }}
       >
-        <Grid container sx={{ width: '100%' }}>
+        <Grid container sx={{ flexGrow: 1 }}>
           <Grid
             container
             size={4}
