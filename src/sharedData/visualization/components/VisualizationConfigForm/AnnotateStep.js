@@ -297,7 +297,6 @@ const AnnotateStep = props => {
         <Grid container>
           <Grid
             container
-            direction="column"
             size={{
               xs: 12,
               md: 5,
