@@ -295,7 +295,7 @@ const AnnotateStep = props => {
     >
       <Paper variant="outlined" sx={{ p: 2 }}>
         <Grid container>
-          <Grid size={{ xs: 12, md: 5 }} container direction="column">
+          <Grid size={{ xs: 12, md: 5 }} container>
             <Form
               aria-labelledby="main-heading"
               aria-describedby="visualization-annotate-step-description"

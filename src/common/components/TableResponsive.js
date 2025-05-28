@@ -80,12 +80,7 @@ const CardField = props => {
   }
 
   return (
-    <Grid
-      wrap="nowrap"
-      direction="column"
-      container
-      size={column.cardFieldSizes || { xs: 12 }}
-    >
+    <Grid wrap="nowrap" container {...(column.cardFieldSizes || { xs: 12 })}>
       {!isActions && (
         <Typography variant="caption">{column.headerName}</Typography>
       )}
