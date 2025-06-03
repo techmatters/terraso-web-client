@@ -172,16 +172,18 @@ const SharedDataEntryBase = props => {
           fontSize: 14,
           color: 'gray.dark1',
           p: 1,
+          width: '100%',
         }}
       >
         <Grid
-          item
-          xs={isEditingName ? 12 : 7}
-          md={5}
           order={{ xs: 2, md: 2 }}
           component={StackRow}
           sx={{
             alignItems: 'flex-start',
+          }}
+          size={{
+            xs: isEditingName ? 12 : 7,
+            md: 5,
           }}
         >
           <EntryTypeIcon resourceType={dataEntry.resourceType} />
@@ -211,21 +213,28 @@ const SharedDataEntryBase = props => {
           </Restricted>
         </Grid>
 
-        <Grid item xs={1} order={{ xs: 4 }} display={{ md: 'none' }} />
+        <Grid order={{ xs: 4 }} display={{ md: 'none' }} size={1} />
         <Grid
-          item
-          xs={9}
-          md={2}
           order={{ xs: 5, md: 4 }}
           component={StackRow}
           justifyContent="space-between"
+          size={{
+            xs: 9,
+            md: 2,
+          }}
         >
           {InfoComponent && <InfoComponent sharedResource={sharedResource} />}
         </Grid>
-        <Grid item xs={2} order={{ xs: 6 }} display={{ md: 'none' }} />
+        <Grid order={{ xs: 6 }} display={{ md: 'none' }} size={2} />
 
-        <Grid item xs={1} order={{ xs: 7 }} display={{ md: 'none' }} />
-        <Grid item xs={11} md={3} order={{ xs: 8, md: 6 }}>
+        <Grid order={{ xs: 7 }} display={{ md: 'none' }} size={1} />
+        <Grid
+          order={{ xs: 8, md: 6 }}
+          size={{
+            xs: 11,
+            md: 3,
+          }}
+        >
           {t('sharedData.file_date_and_author', {
             date: formatDate(i18n.resolvedLanguage, dataEntry.createdAt),
             user: dataEntry.createdBy,
@@ -233,13 +242,14 @@ const SharedDataEntryBase = props => {
         </Grid>
 
         <Grid
-          item
-          xs={5}
-          md={2}
           order={{ xs: 3, md: 6 }}
           component={StackRow}
           justifyContent="flex-end"
           display={isEditingName ? 'none' : 'inherit'}
+          size={{
+            xs: 5,
+            md: 2,
+          }}
         >
           {ShareComponent && (
             <ShareComponent
@@ -294,12 +304,13 @@ const SharedDataEntryBase = props => {
             <DownloadComponent sharedResource={sharedResource} />
           </Restricted>
         </Grid>
-        <Grid item xs={1} order={{ xs: 9 }} display={{ md: 'none' }} />
+        <Grid order={{ xs: 9 }} display={{ md: 'none' }} size={1} />
         <Grid
-          item
-          xs={isEditingDescription ? 12 : 9}
-          md={10}
           order={{ xs: 10, md: 7 }}
+          size={{
+            xs: isEditingDescription ? 12 : 9,
+            md: 10,
+          }}
         >
           <Restricted
             permission="sharedData.edit"
