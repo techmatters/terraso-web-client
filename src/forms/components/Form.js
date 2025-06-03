@@ -162,6 +162,7 @@ const Form = props => {
         spacing={2}
         onSubmit={handleSubmit(onSubmit)}
         sx={{
+          rowGap: 0,
           width: '100%',
           pr: 6,
           pb: 6,
@@ -193,12 +194,13 @@ const Form = props => {
             ) : (
               <Grid
                 key={field.name}
-                {..._.get('props.gridItemProps', field)}
+                size={{
+                  ..._.getOr({ xs: 12 }, 'props.gridItemProps.size', field),
+                }}
                 sx={{
                   pb: 3,
                   ..._.getOr({}, 'props.gridItemProps.sx', field),
                 }}
-                size={12}
               >
                 <Controller
                   name={field.name}
