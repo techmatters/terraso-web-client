@@ -294,7 +294,7 @@ const AnnotateStep = props => {
       onNext={onNextWrapper}
     >
       <Paper variant="outlined" sx={{ p: 2 }}>
-        <Grid container>
+        <Grid container spacing={2}>
           <Grid
             container
             size={{
