@@ -164,7 +164,8 @@ const StoryMapsToolsHome = () => {
                   component="li"
                   aria-labelledby={`story-map-example-${sample.id}`}
                   style={{
-                    maxWidth: '100%',
+                    flexGrow: 1,
+                    width: '100%',
                   }}
                   size={{
                     xs: 12,

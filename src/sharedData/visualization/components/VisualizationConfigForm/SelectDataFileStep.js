@@ -170,7 +170,11 @@ const SelectDataFileStep = props => {
                 </ListItemIcon>
                 <Grid
                   container
-                  sx={{ fontSize: 14, color: 'gray.dark1' }}
+                  sx={{
+                    fontSize: 14,
+                    color: 'gray.dark1',
+                    flexGrow: 1,
+                  }}
                   spacing={1}
                 >
                   <Grid
