@@ -162,6 +162,7 @@ const Form = props => {
         spacing={2}
         onSubmit={handleSubmit(onSubmit)}
         sx={{
+          rowGap: 0,
           width: '100%',
           pr: 6,
           pb: 6,
