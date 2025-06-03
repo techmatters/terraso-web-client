@@ -163,10 +163,10 @@ const Form = props => {
         onSubmit={handleSubmit(onSubmit)}
         sx={{
           width: '100%',
-          pr: 3,
-          pb: 3,
-          pl: 1,
-          pt: 2,
+          pr: 6,
+          pb: 6,
+          pl: 2,
+          pt: 4,
           ml: 0,
           mt: '-8px',
           ...(outlined
