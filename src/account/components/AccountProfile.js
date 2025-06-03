@@ -66,7 +66,14 @@ const FIELDS = [
     label: 'account.form_first_name_label',
     props: {
       gridItemProps: {
+<<<<<<< HEAD
         size: { xs: 12, sm: 6 },
+=======
+        size: {
+          xs: 12,
+          sm: 6,
+        },
+>>>>>>> 18f2f08e (fix: update gridItemProps to use size prop)
       },
     },
   },
