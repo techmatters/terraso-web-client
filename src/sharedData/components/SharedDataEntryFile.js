@@ -101,7 +101,7 @@ const Visualizations = props => {
           key={visualization.id}
           sx={{ bgcolor: 'gray.lite2', fontSize: 14, color: 'gray.dark1' }}
         >
-          <Grid container spacing={1}>
+          <Grid container spacing={1} sx={{ width: '100%' }}>
             <Grid size={{ sm: 7, xs: 12 }} component={StackRow}>
               <MapIcon alt={t('sharedData.map_label')} role="img" />
               <Link
