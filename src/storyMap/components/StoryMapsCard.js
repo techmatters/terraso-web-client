@@ -133,11 +133,11 @@ const StoryMapListItem = props => {
       component={GridListItem}
       container
       aria-labelledby={`story-map-${storyMap.slug}-link`}
-      sx={{ pr: 0, pl: 0 }}
+      sx={{ pr: 0, pl: 0, width: '100%' }}
     >
       <Stack
         component={Grid}
-        size={{ xs: 8 }}
+        size={{ xs: 12, md: 8 }}
         spacing={1}
         sx={{
           display: 'flex',
@@ -201,13 +201,13 @@ const StoryMapListItem = props => {
       </Stack>
       <Grid
         container
-        size={4}
+        size={{ xs: 12, md: 4 }}
         justifyContent="flex-end"
         direction="row"
         spacing={2}
         sx={{ width: '100%' }}
       >
-        <Grid size={6}>
+        <Grid size={{ xs: 6 }}>
           {isStoryMapMembershipPending ? (
             <LoadingButton
               size="small"
@@ -229,7 +229,7 @@ const StoryMapListItem = props => {
             </RouterButton>
           )}
         </Grid>
-        <Grid size={6}>
+        <Grid size={{ xs: 6 }}>
           <Restricted
             permission="storyMap.delete"
             resource={storyMap}
