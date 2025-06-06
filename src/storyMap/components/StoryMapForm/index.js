@@ -22,7 +22,7 @@ import { useSelector } from 'react-redux';
 import logger from 'terraso-client-shared/monitoring/logger';
 import { useDebounce } from 'use-debounce';
 import { v4 as uuidv4 } from 'uuid';
-import { Grid, useMediaQuery } from '@mui/material';
+import { GridLegacy as Grid, useMediaQuery } from '@mui/material';
 
 import { useAnalytics } from 'monitoring/analytics';
 import NavigationBlockedDialog from 'navigation/components/NavigationBlockedDialog';

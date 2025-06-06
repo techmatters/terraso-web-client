@@ -340,8 +340,7 @@ const DataColumns = props => {
         {selectedColumns.map((column, index) => (
           <React.Fragment key={index}>
             <Grid
-              item
-              xs={2}
+              size={{ xs: 2 }}
               component={Typography}
               id={`data-column-${index}-label`}
             >
@@ -349,7 +348,7 @@ const DataColumns = props => {
                 index: index + 1,
               })}
             </Grid>
-            <Grid item xs={7}>
+            <Grid size={{ xs: 7 }}>
               <ColumnSelect
                 id={`data-column-${index}`}
                 field={{
@@ -361,7 +360,7 @@ const DataColumns = props => {
                 )}
               />
             </Grid>
-            <Grid item xs={3}>
+            <Grid size={{ xs: 3 }}>
               <IconButton
                 aria-label={t(
                   'sharedData.form_step_set_dataset_dataColumns_custom_delete',

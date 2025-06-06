@@ -24,7 +24,7 @@ import {
   Box,
   Button,
   Divider,
-  Grid,
+  GridLegacy as Grid,
   IconButton,
   List,
   ListItem,

@@ -173,19 +173,19 @@ const SelectDataFileStep = props => {
                   sx={{ fontSize: 14, color: 'gray.dark1' }}
                   spacing={1}
                 >
-                  <Grid item component={StackRow} xs={12} md={6}>
+                  <Grid size={{ xs: 12, md: 6 }} component={StackRow}>
                     <SharedFileIcon resourceType={file.resourceType} />
                     <Typography id={`selectable-file-${file.id}`}>
                       {file.name}
                     </Typography>
                   </Grid>
-                  <Grid item xs={3} md={1}>
+                  <Grid size={{ xs: 3, md: 1 }}>
                     {TYPE_LABEL[file.resourceType]}
                   </Grid>
-                  <Grid item xs={2} md={1}>
+                  <Grid size={{ xs: 2, md: 1 }}>
                     {filesize(file.size, { round: 0 })}
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid size={{ xs: 12, md: 4 }}>
                     {t('sharedData.form_step_data_file_step_created_at', {
                       date: formatDate(i18n.resolvedLanguage, file.createdAt),
                       user: file.createdBy,

@@ -66,8 +66,7 @@ const FIELDS = [
     label: 'account.form_first_name_label',
     props: {
       gridItemProps: {
-        xs: 12,
-        sm: 6,
+        size: { xs: 12, sm: 6 },
       },
     },
   },
@@ -76,8 +75,7 @@ const FIELDS = [
     label: 'account.form_last_name_label',
     props: {
       gridItemProps: {
-        xs: 12,
-        sm: 6,
+        size: { xs: 12, sm: 6 },
       },
     },
   },
@@ -96,7 +94,7 @@ const FIELDS = [
   {
     name: 'notifications',
     renderStaticElement: ({ t }) => (
-      <Grid item>
+      <Grid size="grow">
         <Typography
           variant="caption"
           component="p"

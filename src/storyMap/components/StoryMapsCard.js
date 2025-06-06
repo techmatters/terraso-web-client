@@ -28,7 +28,7 @@ import {
   Box,
   Chip,
   Divider,
-  Grid,
+  GridLegacy as Grid,
   ListItem,
   Stack,
   Typography,

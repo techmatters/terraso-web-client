@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Grid, Typography } from '@mui/material';
+import { Button, GridLegacy as Grid, Typography } from '@mui/material';
 
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 import TopBarContainer from './TopBarContainer';

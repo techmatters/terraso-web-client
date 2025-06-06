@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Grid } from '@mui/material';
+import { GridLegacy as Grid } from '@mui/material';
 
 const TopBarContainer = ({ children }) => {
   const { t } = useTranslation();

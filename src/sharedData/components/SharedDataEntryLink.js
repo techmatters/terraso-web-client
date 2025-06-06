@@ -73,7 +73,7 @@ const InfoComponent = ({ sharedResource }) => {
   }, [dataEntry.url]);
 
   return (
-    <Grid item xs={12} md={12} sx={{ wordWrap: 'break-word' }}>
+    <Grid size={{ xs: 12, md: 12 }} sx={{ wordWrap: 'break-word' }}>
       {domain}
     </Grid>
   );

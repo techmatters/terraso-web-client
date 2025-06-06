@@ -255,17 +255,17 @@ const GroupView = () => {
           <PageHeader header={group.name} />
         </Stack>
         <Grid container spacing={4}>
-          <Grid item xs={12} md={6} style={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, md: 6 }} style={{ display: 'flex' }}>
             <GroupCard group={group} />
           </Grid>
-          <Grid item xs={12} md={6} style={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, md: 6 }} style={{ display: 'flex' }}>
             <MembershipCard
               allowedToManageMembers={allowedToManageMembers}
               onViewMembers={() => navigate(`/groups/${group.slug}/members`)}
               InfoComponent={GroupMembershipInfo}
             />
           </Grid>
-          <Grid item xs={12} md={12}>
+          <Grid size={{ xs: 12, md: 12 }}>
             <SharedDataCard
               onUploadClick={() => navigate(`/groups/${group.slug}/upload`)}
               onAddVisualizationClick={() =>

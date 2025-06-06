@@ -175,9 +175,7 @@ const SharedDataEntryBase = props => {
         }}
       >
         <Grid
-          item
-          xs={isEditingName ? 12 : 7}
-          md={5}
+          size={{ xs: isEditingName ? 12 : 7, md: 5 }}
           order={{ xs: 2, md: 2 }}
           component={StackRow}
           sx={{
@@ -211,21 +209,19 @@ const SharedDataEntryBase = props => {
           </Restricted>
         </Grid>
 
-        <Grid item xs={1} order={{ xs: 4 }} display={{ md: 'none' }} />
+        <Grid size={{ xs: 1 }} order={{ xs: 4 }} display={{ md: 'none' }} />
         <Grid
-          item
-          xs={9}
-          md={2}
+          size={{ xs: 9, md: 2 }}
           order={{ xs: 5, md: 4 }}
           component={StackRow}
           justifyContent="space-between"
         >
           {InfoComponent && <InfoComponent sharedResource={sharedResource} />}
         </Grid>
-        <Grid item xs={2} order={{ xs: 6 }} display={{ md: 'none' }} />
+        <Grid size={{ xs: 2 }} order={{ xs: 6 }} display={{ md: 'none' }} />
 
-        <Grid item xs={1} order={{ xs: 7 }} display={{ md: 'none' }} />
-        <Grid item xs={11} md={3} order={{ xs: 8, md: 6 }}>
+        <Grid size={{ xs: 1 }} order={{ xs: 7 }} display={{ md: 'none' }} />
+        <Grid size={{ xs: 11, md: 3 }} order={{ xs: 8, md: 6 }}>
           {t('sharedData.file_date_and_author', {
             date: formatDate(i18n.resolvedLanguage, dataEntry.createdAt),
             user: dataEntry.createdBy,
@@ -233,9 +229,7 @@ const SharedDataEntryBase = props => {
         </Grid>
 
         <Grid
-          item
-          xs={5}
-          md={2}
+          size={{ xs: 5, md: 2 }}
           order={{ xs: 3, md: 6 }}
           component={StackRow}
           justifyContent="flex-end"
@@ -294,11 +288,9 @@ const SharedDataEntryBase = props => {
             <DownloadComponent sharedResource={sharedResource} />
           </Restricted>
         </Grid>
-        <Grid item xs={1} order={{ xs: 9 }} display={{ md: 'none' }} />
+        <Grid size={{ xs: 1 }} order={{ xs: 9 }} display={{ md: 'none' }} />
         <Grid
-          item
-          xs={isEditingDescription ? 12 : 9}
-          md={10}
+          size={{ xs: isEditingDescription ? 12 : 9, md: 10 }}
           order={{ xs: 10, md: 7 }}
         >
           <Restricted

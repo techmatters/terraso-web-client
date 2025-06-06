@@ -163,10 +163,7 @@ const Form = props => {
         onSubmit={handleSubmit(onSubmit)}
         sx={{
           width: '100%',
-          pr: 3,
-          pb: 3,
-          pl: 1,
-          pt: 2,
+          p: 3,
           ml: 0,
           mt: '-8px',
           ...(outlined
@@ -193,9 +190,8 @@ const Form = props => {
             ) : (
               <Grid
                 key={field.name}
-                item
-                xs={12}
-                {..._.get('props.gridItemProps', field)}
+                size={{ xs: 12, ..._.get('props.gridItemProps.size', field) }}
+                {..._.omit(['size'], _.get('props.gridItemProps', field))}
                 sx={{
                   pb: 3,
                   ..._.getOr({}, 'props.gridItemProps.sx', field),
@@ -229,9 +225,8 @@ const Form = props => {
         {children}
         {!_.isEmpty(actions) && (
           <Grid
-            item
             container
-            xs={12}
+            size={{ xs: 12 }}
             direction="row"
             justifyContent={isMultiStep ? 'space-between' : 'start'}
             sx={{ marginTop: 2 }}

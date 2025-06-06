@@ -26,7 +26,7 @@ import {
   Box,
   Button,
   ButtonGroup,
-  Grid,
+  GridLegacy as Grid,
   IconButton,
   Stack,
 } from '@mui/material';

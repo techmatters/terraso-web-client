@@ -25,7 +25,7 @@ import SyncIcon from '@mui/icons-material/Sync';
 import {
   Button,
   Divider,
-  Grid,
+  GridLegacy as Grid,
   Link,
   Menu,
   MenuItem,
