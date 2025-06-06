@@ -201,7 +201,7 @@ const StoryMapListItem = props => {
       </Stack>
       <Grid
         container
-        size={{ md: 4 }}
+        size={{ xs: 12, md: 4 }}
         justifyContent="flex-end"
         direction="row"
         spacing={2}
