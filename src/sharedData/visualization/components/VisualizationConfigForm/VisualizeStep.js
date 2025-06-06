@@ -232,6 +232,16 @@ const VisualizeStep = props => {
     [isMapFile, fileContext?.geojson]
   );
 
+  const getDescriptionKey = () => {
+    if (showPointsFields && !showPolygonFields) {
+      return 'sharedData.form_step_visualize_step_description_symbols_only';
+    }
+    if (!showPointsFields && showPolygonFields) {
+      return 'sharedData.form_step_visualize_step_description_polygons_only';
+    }
+    return 'sharedData.form_step_visualize_step_description';
+  };
+
   useEffect(() => {
     setVisualizeConfig(visualizationConfig.visualizeConfig);
   }, [visualizationConfig.visualizeConfig]);
@@ -255,7 +265,7 @@ const VisualizeStep = props => {
     >
       <Paper variant="outlined" sx={{ p: 2 }}>
         <Typography sx={{ mb: 4 }} id="visualize-settings-label">
-          {t('sharedData.form_step_visualize_step_description')}
+          {t(getDescriptionKey())}
         </Typography>
         <Grid container spacing={2}>
           <Grid

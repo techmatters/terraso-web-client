@@ -666,6 +666,8 @@
         "form_step_set_dataset_step_lat_lng_descriptionn": "Selecciona las columnas de latitud y longitud de tu conjunto de datos.",
         "form_step_visualize_step_title": "Apariencia",
         "form_step_visualize_step_description": "Elige cómo aparecerán los símbolos y polígonos en el mapa.",
+        "form_step_visualize_step_description_symbols_only": "Elige cómo aparecerán los símbolos en el mapa.",
+        "form_step_visualize_step_description_polygons_only": "Elige cómo aparecerán los polígonos en el mapa.",
         "form_step_annotate_step_title": "Anotaciones",
         "form_step_preview_step_title": "Vista previa",
         "form_step_preview_step_description": "Has zoom y desplázate por el mapa para establecer cómo lo verán los demás.",

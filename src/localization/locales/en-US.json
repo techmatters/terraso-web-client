@@ -619,6 +619,8 @@
         "form_step_set_dataset_step_lat_lng_descriptionn": "Select the latitude and longitude columns from your dataset.",
         "form_step_visualize_step_title": "Appearance",
         "form_step_visualize_step_description": "Choose how symbols and polygons will appear on the map.",
+        "form_step_visualize_step_description_symbols_only": "Choose how symbols will appear on the map.",
+        "form_step_visualize_step_description_polygons_only": "Choose how polygons will appear on the map.",
         "form_step_annotate_step_title": "Annotations",
         "form_step_preview_step_title": "Preview",
         "form_step_preview_step_description": "Zoom and pan the map to set how others will see it.",
