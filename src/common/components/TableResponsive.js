@@ -84,8 +84,7 @@ const CardField = props => {
       wrap="nowrap"
       direction="column"
       container
-      item
-      {...(column.cardFieldSizes || { xs: 12 })}
+      size={column.cardFieldSizes || { xs: 12 }}
     >
       {!isActions && (
         <Typography variant="caption">{column.headerName}</Typography>
