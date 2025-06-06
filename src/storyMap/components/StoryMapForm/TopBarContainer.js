@@ -37,6 +37,7 @@ const TopBarContainer = ({ children }) => {
         bgcolor: 'white',
         minHeight: 70,
         position: 'relative',
+        width: '100%',
       })}
     >
       {children}

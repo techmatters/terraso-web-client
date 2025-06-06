@@ -51,13 +51,12 @@ const Shape = props => {
   const { shape, setShape } = props;
   return (
     <>
-      <Grid item xs={4} component={Typography} id="shape-label">
+      <Grid size={{ xs: 4 }} component={Typography} id="shape-label">
         {t('sharedData.form_step_visualize_shape')}:
       </Grid>
 
       <Grid
-        item
-        xs={8}
+        size={{ xs: 8 }}
         component={ToggleButtonGroup}
         value={shape}
         exclusive
@@ -91,10 +90,10 @@ const Size = props => {
 
   return (
     <>
-      <Grid item xs={4} component={Typography} id="size-label">
+      <Grid size={{ xs: 4 }} component={Typography} id="size-label">
         {t('sharedData.form_step_visualize_size')}:
       </Grid>
-      <Grid item xs={4}>
+      <Grid size={{ xs: 4 }}>
         <Slider
           size="small"
           aria-hidden="true"
@@ -105,7 +104,7 @@ const Size = props => {
           max={30}
         />
       </Grid>
-      <Grid item xs={2}>
+      <Grid size={{ xs: 2 }}>
         <OutlinedInput
           value={size}
           size="small"
@@ -121,7 +120,7 @@ const Size = props => {
           sx={{ width: '100%' }}
         />
       </Grid>
-      <Grid item xs={1} component={Typography} variant="caption">
+      <Grid size={{ xs: 1 }} component={Typography} variant="caption">
         px
       </Grid>
     </>
@@ -140,10 +139,10 @@ const Color = props => {
 
   return (
     <>
-      <Grid item xs={4} component={Typography} id="color-label">
+      <Grid size={{ xs: 4 }} component={Typography} id="color-label">
         {t('sharedData.form_step_visualize_color')}:
       </Grid>
-      <Grid item xs={7}>
+      <Grid size={{ xs: 7 }}>
         <OutlinedInput
           value={value}
           size="small"
@@ -174,10 +173,10 @@ const Opacity = props => {
 
   return (
     <>
-      <Grid item xs={4} component={Typography} id="opacity-label">
+      <Grid size={{ xs: 4 }} component={Typography} id="opacity-label">
         {t('sharedData.form_step_visualize_opacity')}:
       </Grid>
-      <Grid item xs={4}>
+      <Grid size={{ xs: 4 }}>
         <Slider
           size="small"
           aria-hidden="true"
@@ -188,7 +187,7 @@ const Opacity = props => {
           max={100}
         />
       </Grid>
-      <Grid item xs={2}>
+      <Grid size={{ xs: 2 }}>
         <OutlinedInput
           value={opacity}
           size="small"
@@ -204,7 +203,7 @@ const Opacity = props => {
           sx={{ width: '100%' }}
         />
       </Grid>
-      <Grid item xs={1} component={Typography} variant="caption">
+      <Grid size={{ xs: 1 }} component={Typography} variant="caption">
         %
       </Grid>
     </>
@@ -260,11 +259,9 @@ const VisualizeStep = props => {
         </Typography>
         <Grid container spacing={2}>
           <Grid
-            item
             component="section"
             aria-labelledby="visualize-settings-label"
-            xs={12}
-            md={5}
+            size={{ xs: 12, md: 5 }}
           >
             <Grid container alignItems="center" spacing={2}>
               {showPointsFields && (
@@ -279,7 +276,7 @@ const VisualizeStep = props => {
               )}
             </Grid>
           </Grid>
-          <Grid item xs={12} md={7}>
+          <Grid size={{ xs: 12, md: 7 }}>
             <VisualizationPreview
               useConfigBounds
               title={t('sharedData.form_visualization_preview_title')}

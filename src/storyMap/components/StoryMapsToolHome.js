@@ -89,13 +89,13 @@ const StoryMapsToolsHome = () => {
       {(fetchingStoryMaps || fetchingSamples) && <PageLoader />}
       <PageContainer maxWidth="lg">
         <PageHeader header={t('storyMap.tool_home_title')} />
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{ width: '100%' }}>
           {!_.isEmpty(list) && (
-            <Grid item xs={12} sm={8}>
+            <Grid size={{ xs: 12, sm: 8 }}>
               <StoryMaps storyMaps={list} fetching={fetchingStoryMaps} />
             </Grid>
           )}
-          <Grid item sm={_.isEmpty(list) ? 12 : 4}>
+          <Grid size={{ sm: _.isEmpty(list) ? 12 : 4 }}>
             <Paper
               variant="outlined"
               sx={{ bgcolor: 'white', p: 2, borderRadius: '8px' }}
@@ -147,14 +147,12 @@ const StoryMapsToolsHome = () => {
                   sm: 'repeat(2, 1fr)',
                   xs: '1fr',
                 },
+                width: '100%',
               }}
             >
               {listSamples.map(sample => (
                 <Grid
-                  item
-                  xs={12}
-                  sm={6}
-                  md={4}
+                  size={{ xs: 12, sm: 6, md: 4 }}
                   key={sample.id}
                   component="li"
                   aria-labelledby={`story-map-example-${sample.id}`}

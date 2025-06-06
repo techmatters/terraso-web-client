@@ -79,8 +79,8 @@ const Preview = props => {
   return (
     <>
       <TopBarPreview onPublish={onPublish} />
-      <Grid container>
-        <Grid item xs={12}>
+      <Grid container sx={{ width: '100%' }}>
+        <Grid size={12}>
           <StoryMap config={previewConfig} chaptersFilter={chaptersFilter} />
         </Grid>
       </Grid>
@@ -287,7 +287,7 @@ const StoryMapForm = props => {
         container
         justifyContent="flex-start"
         alignItems="flex-start"
-        sx={{ height: mapHeight }}
+        sx={{ height: mapHeight, width: '100%' }}
       >
         <ChaptersSidebar
           config={config}
@@ -298,8 +298,7 @@ const StoryMapForm = props => {
           height={mapHeight}
         />
         <Grid
-          item
-          xs
+          size="grow"
           sx={{
             height: mapHeight,
             // There is no overlay support for Firefox, see: https://developer.mozilla.org/en-US/docs/Web/CSS/overflow

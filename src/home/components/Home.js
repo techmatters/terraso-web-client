@@ -102,13 +102,13 @@ const Home = () => {
         }
       />
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Stack spacing={3}>
             <Landscapes landscapes={landscapes} fetching={fetching} />
             <StoryMaps storyMaps={storyMaps} fetching={fetching} />
           </Stack>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Stack spacing={3}>
             <Groups groups={groups} fetching={fetching} />
             <ToolHomeCard />

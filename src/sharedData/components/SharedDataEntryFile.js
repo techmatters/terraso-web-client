@@ -69,17 +69,15 @@ const InfoComponent = ({ sharedResource }) => {
   return (
     <>
       <Grid
-        item
-        xs={3}
-        md={6}
+        size={{ xs: 3, md: 6 }}
         sx={{ wordWrap: 'break-word', textTransform: 'uppercase' }}
       >
         {fileType}
       </Grid>
-      <Grid item xs={8} md={6} sx={{ wordWrap: 'break-word' }}>
+      <Grid size={{ xs: 8, md: 6 }} sx={{ wordWrap: 'break-word' }}>
         {fileSize}
       </Grid>
-      <Grid item xs={1} display={{ md: 'none' }} />
+      <Grid size={{ xs: 1 }} display={{ md: 'none' }} />
     </>
   );
 };
@@ -104,7 +102,7 @@ const Visualizations = props => {
           sx={{ bgcolor: 'gray.lite2', fontSize: 14, color: 'gray.dark1' }}
         >
           <Grid container spacing={1}>
-            <Grid item sm={7} xs={12} component={StackRow}>
+            <Grid size={{ sm: 7, xs: 12 }} component={StackRow}>
               <MapIcon alt={t('sharedData.map_label')} role="img" />
               <Link
                 component={RouterLink}
@@ -113,7 +111,7 @@ const Visualizations = props => {
                 {_.get('title', visualization)}
               </Link>
             </Grid>
-            <Grid item sm={5} xs={12}>
+            <Grid size={{ sm: 5, xs: 12 }}>
               {formatDate(i18n.resolvedLanguage, visualization.createdAt)}, by{' '}
               {t('user.full_name', { user: visualization.createdBy })}
             </Grid>

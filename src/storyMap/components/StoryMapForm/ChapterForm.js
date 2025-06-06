@@ -126,7 +126,7 @@ const ChapterConfig = props => {
       )}
 
       <Grid container sx={{ width: hasVisualMedia ? '50vw' : '35vw' }}>
-        <Grid item xs={11}>
+        <Grid size={11}>
           <Button
             variant="contained"
             onClick={onLocationClick}
@@ -136,10 +136,8 @@ const ChapterConfig = props => {
             {t('storyMap.form_chapter_location_button')}
           </Button>
         </Grid>
-        <Grid item xs={11}>
-          {children}
-        </Grid>
-        <Grid item xs={1}>
+        <Grid size={11}>{children}</Grid>
+        <Grid size={1}>
           <ButtonGroup
             orientation="vertical"
             aria-label={t('storyMap.form_chapter_alignment_buttons')}
