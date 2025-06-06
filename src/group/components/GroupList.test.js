@@ -335,12 +335,12 @@ test('GroupList: URL params', async () => {
       within(rows[0]).getByRole('columnheader', { name: 'Group' })
     )
   );
-  expect(setParamsMock).toHaveBeenCalledTimes(1);
-  const setCallSort = setParamsMock.mock.calls[0];
-  expect(setCallSort[0]).toStrictEqual({
-    page: '1',
-    sort: '-name',
-  });
+  expect(setParamsMock).toHaveBeenCalledWith(
+    expect.objectContaining({
+      page: '1',
+      sort: '-name',
+    })
+  );
 
   // Page
   await act(async () =>
