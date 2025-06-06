@@ -137,7 +137,7 @@ const StoryMapListItem = props => {
     >
       <Stack
         component={Grid}
-        size={{ md: 8 }}
+        size={{ xs: 12, md: 8 }}
         spacing={1}
         sx={{
           display: 'flex',
