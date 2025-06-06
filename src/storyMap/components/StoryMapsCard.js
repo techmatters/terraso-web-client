@@ -28,7 +28,7 @@ import {
   Box,
   Chip,
   Divider,
-  GridLegacy as Grid,
+  Grid,
   ListItem,
   Stack,
   Typography,
@@ -137,9 +137,8 @@ const StoryMapListItem = props => {
     >
       <Stack
         component={Grid}
-        item
+        size={{ xs: 8 }}
         spacing={1}
-        xs={8}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -202,13 +201,13 @@ const StoryMapListItem = props => {
       </Stack>
       <Grid
         container
-        item
-        xs={4}
+        size={4}
         justifyContent="flex-end"
         direction="row"
         spacing={2}
+        sx={{ width: '100%' }}
       >
-        <Grid item xs={6}>
+        <Grid size={6}>
           {isStoryMapMembershipPending ? (
             <LoadingButton
               size="small"
@@ -230,7 +229,7 @@ const StoryMapListItem = props => {
             </RouterButton>
           )}
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={6}>
           <Restricted
             permission="storyMap.delete"
             resource={storyMap}

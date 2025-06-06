@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { GridLegacy as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 
 const TopBarContainer = ({ children }) => {
   const { t } = useTranslation();
@@ -37,6 +37,7 @@ const TopBarContainer = ({ children }) => {
         bgcolor: 'white',
         minHeight: 70,
         position: 'relative',
+        width: '100%',
       })}
     >
       {children}

@@ -24,7 +24,7 @@ import {
   Box,
   Button,
   Divider,
-  GridLegacy as Grid,
+  Grid,
   IconButton,
   List,
   ListItem,
@@ -164,11 +164,10 @@ const SideBarItem = props => {
           cursor: 'pointer',
         }}
       >
-        <Grid container>
+        <Grid container sx={{ width: '100%' }}>
           <Grid
-            item
             container
-            xs={4}
+            size={4}
             alignItems="flex-start"
             justifyContent="space-between"
             direction="column"
@@ -252,7 +251,7 @@ const SideBarItem = props => {
             </Stack>
             {isDragging && <DragIcon sx={{ ml: 1 }} />}
           </Grid>
-          <Grid item xs={8}>
+          <Grid size={8}>
             <Paper
               variant="outlined"
               sx={theme => ({
@@ -348,7 +347,6 @@ const ChaptersSidebar = props => {
   return (
     <Grid
       id="chapters-sidebar"
-      item
       component="nav"
       aria-label={t('storyMap.form_chapters_sidebar_section_label')}
       sx={{

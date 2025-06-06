@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, GridLegacy as Grid, Typography } from '@mui/material';
+import { Button, Grid, Typography } from '@mui/material';
 
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 import TopBarContainer from './TopBarContainer';
@@ -31,7 +31,7 @@ const TopBarPreview = props => {
 
   return (
     <TopBarContainer>
-      <Grid item xs={12} sm={8}>
+      <Grid size={{ xs: 12, sm: 8 }}>
         <Typography variant="h3" sx={{ pt: 0, pl: 2, fontWeight: 700 }}>
           {t ? (
             <Trans
@@ -47,9 +47,7 @@ const TopBarPreview = props => {
         </Typography>
       </Grid>
       <Grid
-        item
-        xs={12}
-        sm={4}
+        size={{ xs: 12, sm: 4 }}
         sx={{ display: 'flex', justifyContent: 'flex-end', pr: 2 }}
       >
         <Button
