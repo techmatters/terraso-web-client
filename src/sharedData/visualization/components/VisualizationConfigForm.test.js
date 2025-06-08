@@ -26,6 +26,15 @@ import GroupSharedDataVisualizationConfig from 'group/components/GroupSharedData
 import LandscapeSharedDataVisualizationConfig from 'landscape/components/LandscapeSharedDataVisualizationConfig';
 import * as visualizationMarkers from 'sharedData/visualization/visualizationMarkers';
 
+// Import test data and utilities
+import {
+  createTestParams,
+  isDataSetFile,
+  isMapFile,
+  PARSED_GEOJSON_DATA,
+  PARSED_KML_TO_GEOJSON,
+} from './VisualizationConfigForm.testData';
+
 import {
   DATA_SET_ACCPETED_EXTENSIONS,
   MAP_DATA_ACCEPTED_EXTENSIONS,
@@ -48,87 +57,6 @@ jest.mock('gis/mapbox', () => ({}));
 
 const DATA_SET_STEPS = ['File', 'Data', 'Appearance', 'Annotate', 'Preview'];
 const MAP_STEPS = ['File', 'Appearance', 'Annotate', 'Preview'];
-
-const TEST_CSV = `
-col1,col2,col_longitude,col3,col4
-val1,val2,-0.1791468188936136,-78.4800216447845,val4
-`.trim();
-
-const TEST_KML = `
-<?xml version="1.0" encoding="UTF-8"?>
-<kml xmlns="http://www.opengis.net/kml/2.2">
-  <Placemark>
-    <name>Simple placemark</name>
-    <description>Attached to the ground. Intelligently places itself
-       at the height of the underlying terrain.</description>
-    <Point>
-      <coordinates>-122.0822035425683,37.42228990140251,0</coordinates>
-    </Point>
-    <Polygon>
-      <extrude>1</extrude>
-      <altitudeMode>relativeToGround</altitudeMode>
-      <outerBoundaryIs>
-        <LinearRing>
-          <coordinates>
-            -77.05788457660967,38.87253259892824,100
-            -77.05465973756702,38.87291016281703,100
-            -77.05315536854791,38.87053267794386,100
-            -77.05552622493516,38.868757801256,100
-            -77.05844056290393,38.86996206506943,100
-            -77.05788457660967,38.87253259892824,100
-          </coordinates>
-        </LinearRing>
-      </outerBoundaryIs>
-      <innerBoundaryIs>
-        <LinearRing>
-          <coordinates>
-            -77.05668055019126,38.87154239798456,100
-            -77.05542625960818,38.87167890344077,100
-            -77.05485125901024,38.87076535397792,100
-            -77.05577677433152,38.87008686581446,100
-            -77.05691162017543,38.87054446963351,100
-            -77.05668055019126,38.87154239798456,100
-          </coordinates>
-        </LinearRing>
-      </innerBoundaryIs>
-    </Polygon>
-  </Placemark>
-</kml>
-`.trim();
-
-const PARSED_KML_TO_GEOJSON = {
-  type: 'FeatureCollection',
-  features: [
-    {
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [-77.05788457660967, 38.87253259892824],
-            [-77.05465973756702, 38.87291016281703],
-            [-77.05315536854791, 38.87053267794386],
-            [-77.05552622493516, 38.868757801256],
-            [-77.05844056290393, 38.86996206506943],
-            [-77.05788457660967, 38.87253259892824],
-          ],
-          [
-            [-77.05668055019126, 38.87154239798456],
-            [-77.05542625960818, 38.87167890344077],
-            [-77.05577677433152, 38.87008686581446],
-            [-77.05691162017543, 38.87054446963351],
-            [-77.05668055019126, 38.87154239798456],
-          ],
-        ],
-      },
-      properties: {},
-    },
-  ],
-};
-
-const isMapFile = selectFile => selectFile.includes('KML');
-const isDataSetFile = selectFile => selectFile.includes('CSV');
-
 const setup = async testParams => {
   const events = {};
   const map = {
@@ -240,6 +168,23 @@ const setup = async testParams => {
               visualizations: { edges: [] },
             },
           },
+          {
+            node: {
+              createdAt: '2022-05-17T23:32:50.606587+00:00',
+              createdBy: {
+                id: 'dc695d00-d6b4-45b2-ab8d-f48206d998da',
+                lastName: 'Buitrón',
+                firstName: 'José',
+              },
+              description: '',
+              id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+              name: 'GEOJSON File',
+              resourceType: 'geojson',
+              size: 4120,
+              url: 'https://file-url',
+              visualizations: { edges: [] },
+            },
+          },
         ],
       },
     }),
@@ -250,7 +195,13 @@ const setup = async testParams => {
     }),
     'query dataEntryWithGeojson': Promise.resolve({
       dataEntry: {
-        geojson: JSON.stringify(PARSED_KML_TO_GEOJSON),
+        geojson: JSON.stringify(
+          testParams.selectFile.includes('KML')
+            ? PARSED_KML_TO_GEOJSON
+            : testParams.selectFile.includes('GEOJSON')
+              ? PARSED_GEOJSON_DATA
+              : PARSED_KML_TO_GEOJSON
+        ),
       },
     }),
   });
@@ -563,145 +514,10 @@ const testPreviewStep = async (map, events, testParams) => {
   }
 };
 
-const BASE_CONFIGURATION_EXPECTED_INPUT = {
-  viewportConfig: {
-    bounds: {
-      northEast: { lng: -67.62077603784013, lat: 11.325606896067784 },
-      southWest: { lng: -76.29042998100137, lat: 8.263885173441716 },
-    },
-  },
-};
 test.each([
-  [
-    'landscape csv',
-    {
-      type: 'landscape',
-      slug: 'landscape-slug',
-      selectFile: 'CSV File',
-      hasPolygons: false,
-      hasMarkers: true,
-      file: new File([TEST_CSV], `CSV File`, { type: 'text/csv' }),
-      expectedDataEntriesFetchInput: {
-        resourceTypes: [
-          'geojson',
-          'gpx',
-          'json',
-          'kml',
-          'kmz',
-          'zip',
-          'csv',
-          'xls',
-          'xlsx',
-        ],
-        slug: 'landscape-slug',
-        type: 'landscape',
-      },
-      expectedApiInput: {
-        title: 'Test Title',
-        description: 'Test Description',
-        ownerId: 'e9a65bef-4ef1-4058-bba3-fc73b53eb779',
-        ownerType: 'landscape',
-        dataEntryId: 'f00c5564-cf93-471a-94c2-b930cbb0a4f8',
-      },
-      expectedConfiguration: {
-        ...BASE_CONFIGURATION_EXPECTED_INPUT,
-        visualizeConfig: {
-          shape: 'triangle',
-          size: '30',
-          color: '#FF580D',
-          opacity: 50,
-        },
-        datasetConfig: {
-          dataColumns: {
-            option: 'custom',
-            selectedColumns: ['col1', 'col4'],
-          },
-          longitude: 'col_longitude',
-          latitude: 'col3',
-        },
-        annotateConfig: {
-          annotationTitle: 'col4',
-          dataPoints: [{ column: 'col1', label: 'Custom Label' }],
-        },
-      },
-      expectedGeojsonSource: {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              geometry: {
-                type: 'Point',
-                coordinates: [-0.17914681889362782, -78.4800216447845],
-              },
-              properties: {
-                fields: '[]',
-                index: 0,
-                position: [-0.17914681889362782, -78.4800216447845],
-                title: undefined,
-              },
-            },
-          ],
-        },
-      },
-    },
-  ],
-  [
-    'group kml',
-    {
-      type: 'group',
-      slug: 'group-slug',
-      selectFile: 'KML File',
-      hasPolygons: true,
-      hasMarkers: false,
-      file: new File([TEST_KML], `KML File`, { type: 'application/xml' }),
-      expectedDataEntriesFetchInput: {
-        resourceTypes: [
-          'geojson',
-          'gpx',
-          'json',
-          'kml',
-          'kmz',
-          'zip',
-          'csv',
-          'xls',
-          'xlsx',
-        ],
-        slug: 'group-slug',
-        type: 'group',
-      },
-      expectedApiInput: {
-        title: 'Test Title',
-        description: 'Test Description',
-        ownerId: 'b3e54b43-d437-4612-95f1-2e0585ab7806',
-        ownerType: 'group',
-        dataEntryId: '0968419c-64ab-4561-ac72-671eedcde3ad',
-      },
-      expectedConfiguration: {
-        ...BASE_CONFIGURATION_EXPECTED_INPUT,
-        visualizeConfig: {
-          shape: 'circle',
-          size: 15,
-          color: '#FF580D',
-          opacity: 80,
-        },
-        datasetConfig: {
-          dataColumns: {
-            option: '',
-            selectedColumns: ['', '', ''],
-          },
-        },
-        annotateConfig: {
-          dataPoints: [],
-        },
-      },
-      expectedGeojsonSource: {
-        type: 'geojson',
-        data: PARSED_KML_TO_GEOJSON,
-      },
-    },
-  ],
+  ['landscape csv', createTestParams('landscape', 'CSV')],
+  ['group kml', createTestParams('group', 'KML')],
+  ['landscape geojson', createTestParams('landscape', 'GEOJSON')],
 ])(
   'VisualizationConfigForm: Create %s visualization',
   async (caseDescription, testParams) => {
