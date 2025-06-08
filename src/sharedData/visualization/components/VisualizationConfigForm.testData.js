@@ -275,6 +275,16 @@ export const createGeoJSONTestConfig = () => ({
   annotateConfig: createEmptyAnnotateConfig(),
 });
 
+export const getGeojsonDataForFileType = selectFile => {
+  if (selectFile.includes('KML')) {
+    return PARSED_KML_TO_GEOJSON;
+  }
+  if (selectFile.includes('GEOJSON')) {
+    return PARSED_GEOJSON_DATA;
+  }
+  return PARSED_KML_TO_GEOJSON;
+};
+
 export const createExpectedGeojsonSource = fileType => {
   switch (fileType) {
     case 'CSV':

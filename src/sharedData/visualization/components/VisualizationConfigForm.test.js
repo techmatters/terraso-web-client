@@ -26,13 +26,11 @@ import GroupSharedDataVisualizationConfig from 'group/components/GroupSharedData
 import LandscapeSharedDataVisualizationConfig from 'landscape/components/LandscapeSharedDataVisualizationConfig';
 import * as visualizationMarkers from 'sharedData/visualization/visualizationMarkers';
 
-// Import test data and utilities
 import {
   createTestParams,
+  getGeojsonDataForFileType,
   isDataSetFile,
   isMapFile,
-  PARSED_GEOJSON_DATA,
-  PARSED_KML_TO_GEOJSON,
 } from './VisualizationConfigForm.testData';
 
 import {
@@ -196,11 +194,7 @@ const setup = async testParams => {
     'query dataEntryWithGeojson': Promise.resolve({
       dataEntry: {
         geojson: JSON.stringify(
-          testParams.selectFile.includes('KML')
-            ? PARSED_KML_TO_GEOJSON
-            : testParams.selectFile.includes('GEOJSON')
-              ? PARSED_GEOJSON_DATA
-              : PARSED_KML_TO_GEOJSON
+          getGeojsonDataForFileType(testParams.selectFile)
         ),
       },
     }),
