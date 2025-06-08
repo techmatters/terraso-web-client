@@ -104,19 +104,12 @@ export const hasPoints = geojson => {
       : [],
   };
 
-  // if (!validGeojson.features.length) {
-  //   return false;
-  // }
-
   return flattenReduce(
     validGeojson,
     (containsPoint, currentFeature) => {
       if (containsPoint) {
         return true;
       }
-      // if (!currentFeature.geometry) {
-      //   return false;
-      // }
       const geomType = currentFeature.geometry.type;
       return geomType === 'Point' || geomType === 'MultiPoint';
     },
