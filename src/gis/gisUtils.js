@@ -96,8 +96,16 @@ export const hasPoints = geojson => {
   if (!geojson) {
     return false;
   }
+
+  const validGeojson = {
+    ...geojson,
+    features: geojson.features
+      ? geojson.features.filter(feature => feature.geometry)
+      : [],
+  };
+
   return flattenReduce(
-    geojson,
+    validGeojson,
     (containsPoint, currentFeature) => {
       if (containsPoint) {
         return true;
