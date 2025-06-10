@@ -172,6 +172,7 @@ const SharedDataEntryBase = props => {
           fontSize: 14,
           color: 'gray.dark1',
           p: 1,
+          width: '100%',
         }}
       >
         <Grid
