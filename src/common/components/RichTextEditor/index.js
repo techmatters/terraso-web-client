@@ -177,25 +177,27 @@ const InlineChromiumBugfix = () => (
   </span>
 );
 
-const LinkComponent = ({ attributes, children, element }) => {
+const LinkComponent = React.memo(({ attributes, children, element }) => {
   const selected = useSelected();
+  const linkProps = useMemo(
+    () => ({
+      ...attributes,
+      style: selected ? { boxShadow: '0 0 0 3px #ddd' } : null,
+      sx: { textDecoration: 'underline', color: 'richText.link' },
+    }),
+    [attributes, selected]
+  );
+
   return (
-    <ExternalLink
-      href={element.url}
-      linkProps={{
-        ...attributes,
-        style: selected ? { boxShadow: '0 0 0 3px #ddd' } : null,
-        sx: { textDecoration: 'underline', color: 'richText.link' },
-      }}
-    >
+    <ExternalLink href={element.url} linkProps={linkProps}>
       <InlineChromiumBugfix />
       {children}
       <InlineChromiumBugfix />
     </ExternalLink>
   );
-};
+});
 
-const Element = props => {
+const Element = React.memo(props => {
   const { attributes, children, element } = props;
   switch (element.type) {
     case 'link':
@@ -221,9 +223,9 @@ const Element = props => {
     default:
       return <p {...attributes}>{children}</p>;
   }
-};
+});
 
-const Leaf = ({ attributes, children, leaf }) => {
+const Leaf = React.memo(({ attributes, children, leaf }) => {
   const Wrapper = useMemo(
     () =>
       Object.keys(FORMAT_WRAPPERS).reduce(
@@ -243,6 +245,11 @@ const Leaf = ({ attributes, children, leaf }) => {
     [leaf]
   );
 
+  const spanStyle = useMemo(
+    () => (leaf.text === '' ? { paddingLeft: '0.1px' } : null),
+    [leaf.text]
+  );
+
   return (
     <span
       // The following is a workaround for a Chromium bug where,
@@ -250,13 +257,13 @@ const Leaf = ({ attributes, children, leaf }) => {
       // clicking the end of a block puts the cursor inside the inline
       // instead of inside the final {text: ''} node
       // https://github.com/ianstormtaylor/slate/issues/4704#issuecomment-1006696364
-      style={leaf.text === '' ? { paddingLeft: '0.1px' } : null}
+      style={spanStyle}
       {...attributes}
     >
       <Wrapper>{children}</Wrapper>
     </span>
   );
-};
+});
 
 const Tooltip = withProps(BaseTooltip, {
   placement: 'top',
@@ -272,7 +279,7 @@ const Tooltip = withProps(BaseTooltip, {
   },
 });
 
-const AddLinkButton = props => {
+const AddLinkButton = React.memo(props => {
   const { t } = useTranslation();
   const { disabled } = props;
   const editor = useSlate();
@@ -357,9 +364,9 @@ const AddLinkButton = props => {
       </ToolbarButtonContainer>
     </>
   );
-};
+});
 
-const RemoveLinkButton = props => {
+const RemoveLinkButton = React.memo(props => {
   const { t } = useTranslation();
   const { disabled } = props;
   const editor = useSlate();
@@ -374,22 +381,27 @@ const RemoveLinkButton = props => {
     [disabled, editor]
   );
 
+  const handleMouseDown = useCallback(
+    event => {
+      if (isLinkActive(editor)) {
+        unwrapLink(editor);
+      }
+    },
+    [editor]
+  );
+
   return (
     <ToolbarButtonContainer tooltip={label} disabled={buttonDisabled}>
       <Button
         aria-label={label}
         disabled={buttonDisabled}
-        onMouseDown={event => {
-          if (isLinkActive(editor)) {
-            unwrapLink(editor);
-          }
-        }}
+        onMouseDown={handleMouseDown}
       >
         <LinkOffIcon />
       </Button>
     </ToolbarButtonContainer>
   );
-};
+});
 
 const isMarkActive = (editor, format) => {
   const marks = Editor.marks(editor);
@@ -406,7 +418,7 @@ const toggleMark = (editor, format) => {
   }
 };
 
-const ToolbarButtonContainer = props => {
+const ToolbarButtonContainer = React.memo(props => {
   const { tooltip, disabled, children } = props;
 
   const Container = useMemo(
@@ -415,29 +427,34 @@ const ToolbarButtonContainer = props => {
   );
 
   return <Container>{children}</Container>;
-};
+});
 
-const MarkButton = props => {
+const MarkButton = React.memo(props => {
   const editor = useSlate();
   const { format, Icon, label, disabled } = props;
+
+  const handleMouseDown = useCallback(
+    event => {
+      event.preventDefault();
+      toggleMark(editor, format);
+    },
+    [editor, format]
+  );
 
   return (
     <ToolbarButtonContainer tooltip={label} disabled={disabled}>
       <Button
         disabled={disabled}
         aria-label={label}
-        onMouseDown={event => {
-          event.preventDefault();
-          toggleMark(editor, format);
-        }}
+        onMouseDown={handleMouseDown}
       >
         <Icon />
       </Button>
     </ToolbarButtonContainer>
   );
-};
+});
 
-const RichTextEditor = props => {
+const RichTextEditor = React.memo(props => {
   const { t } = useTranslation();
   const {
     id,
@@ -454,6 +471,23 @@ const RichTextEditor = props => {
 
   const editor = useMemo(
     () => withInlines(withHistory(withReact(createEditor()))),
+    []
+  );
+
+  const handleFocus = useCallback(() => setFocused(true), []);
+  const handleBlur = useCallback(() => setFocused(false), []);
+
+  const renderElement = useCallback(props => <Element {...props} />, []);
+  const renderLeaf = useCallback(props => <Leaf {...props} />, []);
+
+  const renderPlaceholder = useCallback(
+    ({ children, attributes }) => (
+      <Box component="span" {...attributes}>
+        <Typography component="span" variant="subtitle1" sx={{ lineHeight: 3 }}>
+          {children}
+        </Typography>
+      </Box>
+    ),
     []
   );
 
@@ -488,33 +522,34 @@ const RichTextEditor = props => {
     [addContainer]
   );
 
+  const toolbarGroups = useMemo(
+    () => [
+      <>
+        <MarkButton
+          disabled={!focused}
+          format="bold"
+          Icon={FormatBoldIcon}
+          label={t('common.rich_text_editor_toolbar_bold')}
+        />
+        <MarkButton
+          disabled={!focused}
+          format="italic"
+          Icon={FormatItalicIcon}
+          label={t('common.rich_text_editor_toolbar_italic')}
+        />
+      </>,
+      <>
+        <AddLinkButton disabled={!focused} />
+        <RemoveLinkButton disabled={!focused} />
+      </>,
+    ],
+    [focused, t]
+  );
+
   return (
     <Container>
       <Slate editor={editor} initialValue={parsedValue} onChange={onChange}>
-        {editable && (
-          <Toolbar
-            groups={[
-              <>
-                <MarkButton
-                  disabled={!focused}
-                  format="bold"
-                  Icon={FormatBoldIcon}
-                  label={t('common.rich_text_editor_toolbar_bold')}
-                />
-                <MarkButton
-                  disabled={!focused}
-                  format="italic"
-                  Icon={FormatItalicIcon}
-                  label={t('common.rich_text_editor_toolbar_italic')}
-                />
-              </>,
-              <>
-                <AddLinkButton disabled={!focused} />
-                <RemoveLinkButton disabled={!focused} />
-              </>,
-            ]}
-          />
-        )}
+        {editable && <Toolbar groups={toolbarGroups} />}
         <Box
           component={Editable}
           id={id}
@@ -531,26 +566,16 @@ const RichTextEditor = props => {
               : null
           }
           readOnly={!editable}
-          renderElement={Element}
-          renderLeaf={Leaf}
+          renderElement={renderElement}
+          renderLeaf={renderLeaf}
           placeholder={placeholder}
-          renderPlaceholder={({ children, attributes }) => (
-            <Box component="span" {...attributes}>
-              <Typography
-                component="span"
-                variant="subtitle1"
-                sx={{ lineHeight: 3 }}
-              >
-                {children}
-              </Typography>
-            </Box>
-          )}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
+          renderPlaceholder={renderPlaceholder}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
         />
       </Slate>
     </Container>
   );
-};
+});
 
 export default RichTextEditor;

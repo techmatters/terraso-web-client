@@ -19,7 +19,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ButtonGroup, Divider, Stack } from '@mui/material';
 
-const Toolbar = props => {
+const Toolbar = React.memo(props => {
   const { t } = useTranslation();
   const { groups } = props;
 
@@ -63,6 +63,6 @@ const Toolbar = props => {
       ))}
     </Stack>
   );
-};
+});
 
 export default Toolbar;
