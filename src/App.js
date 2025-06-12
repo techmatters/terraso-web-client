@@ -21,7 +21,7 @@ import { Box } from '@mui/material';
 import AppBar from 'layout/AppBar';
 import Footer from 'layout/Footer';
 import Navigation from 'navigation/components/Navigation';
-import Routes, { useOptionalAuth } from 'navigation/components/Routes';
+import Routes, { usePathParams } from 'navigation/components/Routes';
 
 import 'index.css';
 
@@ -32,9 +32,9 @@ import OptionalAuthTopMessage from 'account/components/OptionalAuthTopMessage';
 const App = () => {
   const contentRef = useRef();
   const navigationRef = useRef();
-  const { isEmbedded } = useOptionalAuth();
+  const { isEmbedded, optionalAuth } = usePathParams();
 
-  if (isEmbedded) {
+  if (isEmbedded || optionalAuth.isEmbedded) {
     return <Routes />;
   }
 
