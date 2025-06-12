@@ -295,7 +295,7 @@ const AnnotateStep = props => {
     >
       <Paper variant="outlined" sx={{ p: 2 }}>
         <Grid container>
-          <Grid size={{ xs: 12, md: 5 }} container spacing={2}>
+          <Grid size={{ xs: 12, md: 5 }} container direction="column">
             <Form
               aria-labelledby="main-heading"
               aria-describedby="visualization-annotate-step-description"
@@ -307,7 +307,7 @@ const AnnotateStep = props => {
               isMultiStep
               onChange={setUpdatedValues}
               gridContainerProps={{
-                sx: { width: '100%' },
+                sx: { pr: 2 },
               }}
             />
           </Grid>

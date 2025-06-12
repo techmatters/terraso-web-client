@@ -164,10 +164,7 @@ const Form = props => {
         sx={{
           rowGap: 0,
           width: '100%',
-          pr: 6,
-          pb: 6,
-          pl: 2,
-          pt: 4,
+          p: 2,
           ml: 0,
           mt: '-8px',
           ...(outlined

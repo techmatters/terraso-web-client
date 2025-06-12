@@ -80,7 +80,12 @@ const CardField = props => {
   }
 
   return (
-    <Grid wrap="nowrap" container {...(column.cardFieldSizes || { xs: 12 })}>
+    <Grid
+      wrap="nowrap"
+      direction="column"
+      container
+      size={column.cardFieldSizes || { xs: 3 }}
+    >
       {!isActions && (
         <Typography variant="caption">{column.headerName}</Typography>
       )}
@@ -148,6 +153,10 @@ const Cards = props => {
               rowSpacing={{
                 xs: 1,
                 sm: 0,
+              }}
+              sx={{
+                width: '100%',
+                justifyContent: 'space-between',
               }}
             >
               {columns.map(column => (
