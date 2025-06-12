@@ -147,9 +147,6 @@ const LandscapeList = () => {
       field: 'members',
       headerName: t('landscape.list_column_members'),
       align: 'center',
-      cardFieldSizes: {
-        xs: 6,
-      },
       valueGetter: (value, row, column, apiRef) =>
         _.getOr(0, 'membershipInfo.totalCount', row),
       renderCell: ({ row: landscape }) => (
@@ -164,7 +161,7 @@ const LandscapeList = () => {
       align: 'center',
       flex: 1,
       cardFieldSizes: {
-        xs: 6,
+        xs: 3,
       },
       getActions: ({ row: landscape, tabIndex }) => [
         <MembershipButton landscape={landscape} tabIndex={tabIndex} />,

@@ -307,7 +307,7 @@ const AnnotateStep = props => {
               isMultiStep
               onChange={setUpdatedValues}
               gridContainerProps={{
-                sx: { width: '100%' },
+                sx: { pr: 2 },
               }}
             />
           </Grid>

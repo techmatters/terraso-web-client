@@ -187,7 +187,7 @@ const GroupList = () => {
       align: 'center',
       flex: 0.7,
       cardFieldSizes: {
-        xs: 6,
+        xs: 3,
       },
       getActions: ({ row: group, tabIndex }) => [
         <MembershipButton group={group} tabIndex={tabIndex} />,

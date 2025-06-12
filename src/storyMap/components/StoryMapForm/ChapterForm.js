@@ -124,7 +124,6 @@ const ChapterConfig = props => {
           onConfirm={onLocationChangeWrapper}
         />
       )}
-
       <Grid container sx={{ width: hasVisualMedia ? '50vw' : '35vw' }}>
         <Grid size={11}>
           <Button

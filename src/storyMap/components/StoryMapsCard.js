@@ -143,6 +143,7 @@ const StoryMapListItem = props => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'flex-start',
+          flexGrow: 1,
         }}
       >
         <Stack direction="row" spacing={1}>
