@@ -205,6 +205,9 @@ const paths = [
   }),
   path('/tools/story-maps/new', StoryMapNew),
   path('/tools/story-maps/:storyMapId/:slug/edit', StoryMapUpdate),
+  path('/tools/story-maps/:storyMapId/:slug/edit/embed', StoryMapUpdate, {
+    isEmbedded: true,
+  }),
   path('/tools/story-maps/:storyMapId/:slug', UserStoryMap, {
     showBreadcrumbs: true,
     breadcrumbsLabel: 'storyMap.breadcrumbs_view',
