@@ -157,11 +157,11 @@ const StoryMapForm = props => {
       return;
     }
     const headerHeight =
-      document.getElementById('header-container')?.clientHeight;
+      document.getElementById('header-container')?.clientHeight ?? 0;
     const footerHeight =
-      document.getElementsByClassName('footer')?.[0]?.clientHeight;
+      document.getElementsByClassName('footer')?.[0]?.clientHeight ?? 0;
     const formHeaderHeight =
-      document.getElementById('form-header')?.clientHeight + 1;
+      (document.getElementById('form-header')?.clientHeight ?? 0) + 1;
 
     setMapHeight(
       `calc(100vh - (${headerHeight}px + ${footerHeight}px + ${formHeaderHeight}px))`
