@@ -69,6 +69,7 @@ const SideBarItem = props => {
   const scrollTo = id => {
     const element = document.getElementById(id);
     element?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    document.activeElement?.blur();
   };
 
   const handleOpenMenuClick = useCallback(event => {
