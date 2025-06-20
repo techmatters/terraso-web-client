@@ -15,7 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   createEditor,
@@ -451,10 +457,40 @@ const RichTextEditor = props => {
   } = props;
 
   const [focused, setFocused] = useState(initialFocused);
+  const editableRef = useRef(null);
 
   const editor = useMemo(
     () => withInlines(withHistory(withReact(createEditor()))),
     []
+  );
+
+  const [isEditorVisible, setIsEditorVisible] = useState(true);
+
+  useEffect(() => {
+    const element = editableRef.current;
+    if (!element) {
+      return;
+    }
+
+    // Intersection Observer for scroll jump prevention
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsEditorVisible(entry.isIntersecting),
+      {
+        threshold: 0,
+        rootMargin: '10px',
+      }
+    );
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  const checkEditorVisibility = useCallback(
+    () => isEditorVisible,
+    [isEditorVisible]
   );
 
   const parsedValue = useMemo(() => {
@@ -517,6 +553,7 @@ const RichTextEditor = props => {
         )}
         <Box
           component={Editable}
+          ref={editableRef}
           id={id}
           aria-label={label}
           sx={
@@ -534,6 +571,18 @@ const RichTextEditor = props => {
           renderElement={Element}
           renderLeaf={Leaf}
           placeholder={placeholder}
+          scrollIntoView={domRange => {
+            const isVisible = checkEditorVisibility();
+            if (!isVisible && focused) {
+              return;
+            }
+          }}
+          scrollSelectionIntoView={(editor, domRange) => {
+            const isVisible = checkEditorVisibility();
+            if (!isVisible && focused) {
+              return;
+            }
+          }}
           renderPlaceholder={({ children, attributes }) => (
             <Box component="span" {...attributes}>
               <Typography
