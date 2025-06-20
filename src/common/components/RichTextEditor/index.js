@@ -472,6 +472,11 @@ const RichTextEditor = props => {
       return;
     }
 
+    // Check if IntersectionObserver is available (not available in test environment)
+    if (typeof IntersectionObserver === 'undefined') {
+      return;
+    }
+
     // Intersection Observer for scroll jump prevention
     const observer = new IntersectionObserver(
       ([entry]) => setIsEditorVisible(entry.isIntersecting),

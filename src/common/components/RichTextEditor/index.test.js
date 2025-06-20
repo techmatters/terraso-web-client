@@ -96,3 +96,35 @@ test('RichTextEditor: Link dialog input should be empty', async () => {
   await addLink();
   await addLink();
 });
+
+test('RichTextEditor: Should setup observer to prevent scroll when focused but not visible', async () => {
+  Editor.nodes.mockReturnValue([null]);
+
+  const observeMock = jest.fn();
+  global.IntersectionObserver = jest
+    .fn()
+    .mockImplementation((callback, options) => {
+      return {
+        observe: observeMock,
+        disconnect: jest.fn(),
+        unobserve: jest.fn(),
+      };
+    });
+
+  await setup();
+
+  // Verify IntersectionObserver was set up correctly
+  expect(global.IntersectionObserver).toHaveBeenCalledWith(
+    expect.any(Function),
+    expect.objectContaining({
+      threshold: 0,
+      rootMargin: '10px',
+    })
+  );
+
+  // Verify that the observed element is specifically the Slate editor
+  const slateEditorCall = observeMock.mock.calls.find(
+    ([element]) => element?.getAttribute?.('data-slate-editor') === 'true'
+  );
+  expect(slateEditorCall).toBeDefined();
+});
