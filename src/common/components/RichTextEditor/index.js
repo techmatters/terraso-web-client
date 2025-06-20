@@ -488,11 +488,6 @@ const RichTextEditor = props => {
     };
   }, []);
 
-  const checkEditorVisibility = useCallback(
-    () => isEditorVisible,
-    [isEditorVisible]
-  );
-
   const parsedValue = useMemo(() => {
     if (!value) {
       return [
@@ -572,14 +567,12 @@ const RichTextEditor = props => {
           renderLeaf={Leaf}
           placeholder={placeholder}
           scrollIntoView={domRange => {
-            const isVisible = checkEditorVisibility();
-            if (!isVisible && focused) {
+            if (!isEditorVisible && focused) {
               return;
             }
           }}
           scrollSelectionIntoView={(editor, domRange) => {
-            const isVisible = checkEditorVisibility();
-            if (!isVisible && focused) {
+            if (!isEditorVisible && focused) {
               return;
             }
           }}
