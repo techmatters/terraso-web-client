@@ -566,11 +566,6 @@ const RichTextEditor = props => {
           renderElement={Element}
           renderLeaf={Leaf}
           placeholder={placeholder}
-          scrollIntoView={domRange => {
-            if (!isEditorVisible && focused) {
-              return;
-            }
-          }}
           scrollSelectionIntoView={(editor, domRange) => {
             if (!isEditorVisible && focused) {
               return;
