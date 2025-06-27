@@ -15,7 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 // Component for editing and uploading a pictures or a audio file
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import getVideoId from 'get-video-id';
 import _ from 'lodash/fp';
 import { openFile } from 'media/fileUtils';
@@ -49,6 +55,145 @@ import {
 
 import theme from 'theme';
 
+const MEDIA_TYPES = {
+  IMAGE: 'image',
+  AUDIO: 'audio',
+  VIDEO: 'video',
+  EMBEDDED: 'embedded',
+};
+
+const DEFAULT_HEIGHTS = {
+  [MEDIA_TYPES.IMAGE]: 250,
+  [MEDIA_TYPES.AUDIO]: 130,
+  [MEDIA_TYPES.VIDEO]: 370,
+};
+
+const HEIGHT_CONSTRAINTS = {
+  IMAGE: { min: 200, max: 400 },
+  VIDEO: { min: 270, max: 500, controlsOffset: 70 },
+};
+
+const LOADING_STATES = {
+  IDLE: 'idle',
+  LOADING: 'loading',
+  LOADED: 'loaded',
+  ERROR: 'error',
+};
+
+const useMediaLoad = (defaultHeight, elementRef, onLoadCallback) => {
+  const [containerHeight, setContainerHeight] = useState(defaultHeight);
+  const [loadingState, setLoadingState] = useState(LOADING_STATES.IDLE);
+
+  const handleLoad = useCallback(() => {
+    if (elementRef.current && onLoadCallback) {
+      try {
+        setLoadingState(LOADING_STATES.LOADING);
+        const newHeight = onLoadCallback(elementRef.current);
+        if (newHeight && newHeight !== containerHeight) {
+          setContainerHeight(newHeight);
+        }
+        setLoadingState(LOADING_STATES.LOADED);
+      } catch (error) {
+        console.error('Error calculating media height:', error);
+        setLoadingState(LOADING_STATES.ERROR);
+      }
+    }
+  }, [elementRef, onLoadCallback, containerHeight]);
+
+  const handleError = useCallback(() => {
+    setLoadingState(LOADING_STATES.ERROR);
+  }, []);
+
+  return [containerHeight, handleLoad, handleError, loadingState];
+};
+
+const getMediaSrc = (media, getMediaFile) => {
+  if (media.signedUrl) {
+    return media.signedUrl;
+  }
+  if (media.contentId) {
+    return getMediaFile(media.contentId);
+  }
+  return null;
+};
+
+const calculateImageHeight = imgElement => {
+  const aspectRatio = imgElement.naturalHeight / imgElement.naturalWidth;
+  return Math.max(
+    HEIGHT_CONSTRAINTS.IMAGE.min,
+    Math.min(HEIGHT_CONSTRAINTS.IMAGE.max, imgElement.offsetWidth * aspectRatio)
+  );
+};
+
+const calculateVideoHeight = videoElement => {
+  const aspectRatio = videoElement.videoHeight / videoElement.videoWidth;
+  const videoDisplayHeight = videoElement.offsetWidth * aspectRatio;
+  return Math.max(
+    HEIGHT_CONSTRAINTS.VIDEO.min,
+    Math.min(
+      HEIGHT_CONSTRAINTS.VIDEO.max,
+      videoDisplayHeight + HEIGHT_CONSTRAINTS.VIDEO.controlsOffset
+    )
+  );
+};
+
+const calculateAudioHeight = () => DEFAULT_HEIGHTS[MEDIA_TYPES.AUDIO];
+
+const MediaActionBar = React.memo(
+  ({ onUpdate, onDelete, processing, deleteConfirmProps }) => {
+    const { t } = useTranslation();
+
+    return (
+      <Stack
+        justifyContent="center"
+        alignItems="center"
+        direction="row"
+        sx={{
+          color: 'white',
+          background: 'rgba(0,0,0,0.5)',
+          width: '100%',
+          pt: 2,
+          pb: 2,
+        }}
+        spacing={1}
+        role="toolbar"
+        aria-label="Media actions"
+      >
+        <Button
+          variant="outlined"
+          onClick={onUpdate}
+          sx={({ palette }) => ({
+            backgroundColor: 'white',
+            '&:hover': {
+              backgroundColor: palette.blue.dark3,
+            },
+          })}
+          aria-label={t('storyMap.form_media_update_label')}
+        >
+          {t('storyMap.form_media_update_label')}
+        </Button>
+        <ConfirmButton
+          onConfirm={onDelete}
+          loading={processing}
+          variant="text"
+          buttonProps={{
+            title: t('storyMap.form_media_delete'),
+            sx: {
+              minWidth: 'auto',
+            },
+            'aria-label': t('storyMap.form_media_delete'),
+          }}
+          confirmTitle={t(deleteConfirmProps.confirmTitle)}
+          confirmMessage={t(deleteConfirmProps.confirmMessage)}
+          confirmButton={t(deleteConfirmProps.confirmButton)}
+        >
+          <DeleteIcon sx={{ color: 'white' }} />
+        </ConfirmButton>
+      </Stack>
+    );
+  }
+);
+
 const getYouTubeUrl = id => `https://www.youtube.com/embed/${id}`;
 const getVimeoUrl = id => `https://player.vimeo.com/video/${id}`;
 
@@ -79,9 +224,8 @@ const getDataFromEmbedded = value => {
   };
 };
 
-const AddSectionTitle = props => {
-  const { checked, value, onChange, label, labelId } = props;
-  return (
+const AddSectionTitle = React.memo(
+  ({ checked, value, onChange, label, labelId }) => (
     <FormControlLabel
       sx={{ width: '100%', ml: 0, mr: 0 }}
       onClick={event => event.stopPropagation()}
@@ -107,12 +251,12 @@ const AddSectionTitle = props => {
         </Typography>
       }
     />
-  );
-};
+  )
+);
 
-const AddDialog = props => {
+const AddDialog = React.memo(({ open, onClose, onAdd }) => {
   const { t } = useTranslation();
-  const { open, onClose, onAdd } = props;
+  const { addMediaFile } = useStoryMapConfigContext();
 
   const [currentFile, setCurrentFile] = useState();
   const [dropErrors, setDropErrors] = useState();
@@ -123,7 +267,18 @@ const AddDialog = props => {
   const [embeddedError, setEmbeddedError] = useState();
 
   const [selected, setSelected] = useState(0);
-  const { addMediaFile } = useStoryMapConfigContext();
+
+  useEffect(() => {
+    if (!open) {
+      setCurrentFile();
+      setDropErrors();
+      setDroppedMedia();
+      setEmbeddedInputValue('');
+      setEmbeddedMedia();
+      setEmbeddedError();
+      setSelected(0);
+    }
+  }, [open]);
 
   const onDropRejected = useCallback(
     rejections => {
@@ -320,273 +475,260 @@ const AddDialog = props => {
       </DialogActions>
     </Dialog>
   );
-};
-
-const EditableImage = props => {
-  const { t } = useTranslation();
-  const { getMediaFile } = useStoryMapConfigContext();
-  const { label, image, onUpdate, onDelete, processing } = props;
-
-  const imageSrc = useMemo(() => {
-    if (image.signedUrl) {
-      return image.signedUrl;
-    }
-    if (image.contentId) {
-      return getMediaFile(image.contentId);
-    }
-    return null;
-  }, [image, getMediaFile]);
-
-  return (
-    <Stack sx={{ position: 'relative' }}>
-      <img src={imageSrc} alt={label} style={{ width: '100%' }} />
-      <Stack
-        justifyContent="center"
-        alignItems="center"
-        direction="row"
-        sx={{
-          color: 'white',
-          background: 'rgba(0,0,0,0.5)',
-          position: 'absolute',
-          bottom: 0,
-          width: '100%',
-          pt: 2,
-          pb: 2,
-        }}
-        spacing={1}
-      >
-        <Button
-          variant="outlined"
-          onClick={onUpdate}
-          sx={({ palette }) => ({
-            backgroundColor: 'white',
-            '&:hover': {
-              backgroundColor: palette.blue.dark3,
-            },
-          })}
-        >
-          {t('storyMap.form_media_update_label')}
-        </Button>
-        <ConfirmButton
-          onConfirm={onDelete}
-          loading={processing}
-          variant="text"
-          buttonProps={{
-            title: t('storyMap.form_media_delete_label'),
-            sx: {
-              minWidth: 'auto',
-            },
-          }}
-          confirmTitle={t('storyMap.form_media_image_delete_confirm_title')}
-          confirmMessage={t('storyMap.form_media_image_delete_confirm_message')}
-          confirmButton={t('storyMap.form_media_image_delete_confirm_button')}
-        >
-          <DeleteIcon sx={{ color: 'white' }} />
-        </ConfirmButton>
-      </Stack>
-    </Stack>
-  );
-};
-
-const EditableAudio = React.memo(props => {
-  const { t } = useTranslation();
-  const { getMediaFile } = useStoryMapConfigContext();
-  const { audio, onUpdate, onDelete, processing } = props;
-
-  const audioSrc = useMemo(() => {
-    if (audio.signedUrl) {
-      return audio.signedUrl;
-    }
-    if (audio.contentId) {
-      return getMediaFile(audio.contentId);
-    }
-    return null;
-  }, [audio, getMediaFile]);
-
-  return (
-    <Stack spacing={1}>
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio style={{ width: '100%' }} controls>
-        <source src={audioSrc} type={audio.type} />
-        {t('storyMap.form_media_audio_not_supported')}
-      </audio>
-      <Stack
-        justifyContent="center"
-        alignItems="center"
-        direction="row"
-        sx={{
-          color: 'white',
-          background: 'rgba(0,0,0,0.5)',
-          width: '100%',
-          pt: 2,
-          pb: 2,
-        }}
-        spacing={1}
-      >
-        <Button
-          variant="outlined"
-          onClick={onUpdate}
-          sx={({ palette }) => ({
-            backgroundColor: 'white',
-            '&:hover': {
-              backgroundColor: palette.blue.dark3,
-            },
-          })}
-        >
-          {t('storyMap.form_media_update_label')}
-        </Button>
-        <ConfirmButton
-          onConfirm={onDelete}
-          loading={processing}
-          variant="text"
-          buttonProps={{
-            title: t('storyMap.form_media_delete_label'),
-            sx: {
-              minWidth: 'auto',
-            },
-          }}
-          confirmTitle={t('storyMap.form_media_audio_delete_confirm_title')}
-          confirmMessage={t('storyMap.form_media_audio_delete_confirm_message')}
-          confirmButton={t('storyMap.form_media_audio_delete_confirm_button')}
-        >
-          <DeleteIcon sx={{ color: 'white' }} />
-        </ConfirmButton>
-      </Stack>
-    </Stack>
-  );
 });
 
-const EditableVideo = React.memo(props => {
-  const { t } = useTranslation();
-  const { getMediaFile } = useStoryMapConfigContext();
-  const { video, onUpdate, onDelete, processing } = props;
+const EditableImage = React.memo(
+  ({ label, image, onUpdate, onDelete, processing }) => {
+    const { getMediaFile } = useStoryMapConfigContext();
+    const imageRef = useRef(null);
 
-  const videoSrc = useMemo(() => {
-    if (video.signedUrl) {
-      return video.signedUrl;
-    }
-    if (video.contentId) {
-      return getMediaFile(video.contentId);
-    }
-    return null;
-  }, [video, getMediaFile]);
+    const imageSrc = useMemo(
+      () => getMediaSrc(image, getMediaFile),
+      [image, getMediaFile]
+    );
 
-  return (
-    <Stack>
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <video style={{ width: '100%' }} controls>
-        <source src={videoSrc} type={video.type} />
-        {t('storyMap.form_media_video_not_supported')}
-      </video>
-      <Stack
-        justifyContent="center"
-        alignItems="center"
-        direction="row"
-        sx={{
-          color: 'white',
-          background: 'rgba(0,0,0,0.5)',
-          bottom: 0,
-          width: '100%',
-          pt: 2,
-          pb: 2,
-        }}
-        spacing={1}
-      >
-        <Button
-          variant="outlined"
-          onClick={onUpdate}
-          sx={({ palette }) => ({
-            backgroundColor: 'white',
-            '&:hover': {
-              backgroundColor: palette.blue.dark3,
-            },
-          })}
-        >
-          {t('storyMap.form_media_update_label')}
-        </Button>
-        <ConfirmButton
-          onConfirm={onDelete}
-          loading={processing}
-          variant="text"
-          buttonProps={{
-            title: t('storyMap.form_media_delete_label'),
-            sx: {
-              minWidth: 'auto',
-            },
+    const [containerHeight, handleImageLoad, handleError, loadingState] =
+      useMediaLoad(
+        DEFAULT_HEIGHTS[MEDIA_TYPES.IMAGE],
+        imageRef,
+        calculateImageHeight
+      );
+
+    const deleteConfirmProps = useMemo(
+      () => ({
+        confirmTitle: 'storyMap.form_media_image_delete_confirm_title',
+        confirmMessage: 'storyMap.form_media_image_delete_confirm_message',
+        confirmButton: 'storyMap.form_media_image_delete_confirm_button',
+      }),
+      []
+    );
+
+    return (
+      <Stack sx={{ position: 'relative', height: `${containerHeight}px` }}>
+        <img
+          ref={imageRef}
+          src={imageSrc}
+          alt={label}
+          onLoad={handleImageLoad}
+          onError={handleError}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: loadingState === LOADING_STATES.ERROR ? 0.5 : 1,
           }}
-          confirmTitle={t('storyMap.form_media_video_delete_confirm_title')}
-          confirmMessage={t('storyMap.form_media_video_delete_confirm_message')}
-          confirmButton={t('storyMap.form_media_video_delete_confirm_button')}
-        >
-          <DeleteIcon sx={{ color: 'white' }} />
-        </ConfirmButton>
-      </Stack>
-    </Stack>
-  );
-});
-
-const EditableEmbedded = props => {
-  const { t } = useTranslation();
-  const { onUpdate, onDelete, embedded, processing } = props;
-
-  return (
-    <Stack spacing={1}>
-      <iframe
-        allowFullScreen
-        title={embedded.title}
-        src={embedded.url}
-        style={{ height: '300px', width: '100%' }}
-      />
-      <Stack
-        justifyContent="center"
-        alignItems="center"
-        direction="row"
-        sx={{
-          color: 'white',
-          background: 'rgba(0,0,0,0.5)',
-          width: '100%',
-          pt: 2,
-          pb: 2,
-        }}
-        spacing={1}
-      >
-        <Button
-          variant="outlined"
-          onClick={onUpdate}
-          sx={({ palette }) => ({
-            backgroundColor: 'white',
-            '&:hover': {
-              backgroundColor: palette.blue.dark3,
-            },
-          })}
-        >
-          {t('storyMap.form_media_update_label')}
-        </Button>
-        <ConfirmButton
-          onConfirm={onDelete}
-          loading={processing}
-          variant="text"
-          buttonProps={{
-            title: t('storyMap.form_media_delete_label'),
-            sx: {
-              minWidth: 'auto',
-            },
+          loading="lazy"
+        />
+        {loadingState === LOADING_STATES.ERROR && (
+          <Stack
+            justifyContent="center"
+            alignItems="center"
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              color: 'white',
+            }}
+          >
+            <Typography variant="body2">Failed to load image</Typography>
+          </Stack>
+        )}
+        <Stack
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            width: '100%',
           }}
-          confirmTitle={t('storyMap.form_media_video_delete_confirm_title')}
-          confirmMessage={t('storyMap.form_media_video_delete_confirm_message')}
-          confirmButton={t('storyMap.form_media_video_delete_confirm_button')}
         >
-          <DeleteIcon sx={{ color: 'white' }} />
-        </ConfirmButton>
+          <MediaActionBar
+            onUpdate={onUpdate}
+            onDelete={onDelete}
+            processing={processing}
+            deleteConfirmProps={deleteConfirmProps}
+          />
+        </Stack>
       </Stack>
-    </Stack>
-  );
-};
+    );
+  }
+);
 
-const EditableMedia = React.memo(props => {
+const EditableAudio = React.memo(
+  ({ audio, onUpdate, onDelete, processing }) => {
+    const { t } = useTranslation();
+    const { getMediaFile } = useStoryMapConfigContext();
+    const audioRef = useRef(null);
+
+    const audioSrc = useMemo(
+      () => getMediaSrc(audio, getMediaFile),
+      [audio, getMediaFile]
+    );
+
+    const [containerHeight, handleAudioLoad, handleError, loadingState] =
+      useMediaLoad(
+        DEFAULT_HEIGHTS[MEDIA_TYPES.AUDIO],
+        audioRef,
+        calculateAudioHeight
+      );
+
+    const deleteConfirmProps = useMemo(
+      () => ({
+        confirmTitle: 'storyMap.form_media_audio_delete_confirm_title',
+        confirmMessage: 'storyMap.form_media_audio_delete_confirm_message',
+        confirmButton: 'storyMap.form_media_audio_delete_confirm_button',
+      }),
+      []
+    );
+
+    useEffect(() => {
+      if (audioRef.current && audioSrc) {
+        audioRef.current.load();
+      }
+    }, [audioSrc]);
+
+    return (
+      <Stack spacing={1} sx={{ height: `${containerHeight}px` }}>
+        <audio
+          ref={audioRef}
+          style={{
+            width: '100%',
+            height: '54px',
+            opacity: loadingState === LOADING_STATES.ERROR ? 0.5 : 1,
+          }}
+          controls
+          onLoadedMetadata={handleAudioLoad}
+          onError={handleError}
+          aria-label={`Audio: ${audio.filename || 'Media file'}`}
+        >
+          <source src={audioSrc} type={audio.type} />
+          {t('storyMap.form_media_audio_not_supported')}
+        </audio>
+        {loadingState === LOADING_STATES.ERROR && (
+          <Typography
+            variant="caption"
+            color="error"
+            sx={{ textAlign: 'center' }}
+          >
+            Failed to load audio file
+          </Typography>
+        )}
+        <MediaActionBar
+          onUpdate={onUpdate}
+          onDelete={onDelete}
+          processing={processing}
+          deleteConfirmProps={deleteConfirmProps}
+        />
+      </Stack>
+    );
+  }
+);
+
+const EditableVideo = React.memo(
+  ({ video, onUpdate, onDelete, processing }) => {
+    const { t } = useTranslation();
+    const { getMediaFile } = useStoryMapConfigContext();
+    const videoRef = useRef(null);
+
+    const videoSrc = useMemo(
+      () => getMediaSrc(video, getMediaFile),
+      [video, getMediaFile]
+    );
+
+    const [containerHeight, handleVideoLoad, handleError, loadingState] =
+      useMediaLoad(
+        DEFAULT_HEIGHTS[MEDIA_TYPES.VIDEO],
+        videoRef,
+        calculateVideoHeight
+      );
+
+    const deleteConfirmProps = useMemo(
+      () => ({
+        confirmTitle: 'storyMap.form_media_video_delete_confirm_title',
+        confirmMessage: 'storyMap.form_media_video_delete_confirm_message',
+        confirmButton: 'storyMap.form_media_video_delete_confirm_button',
+      }),
+      []
+    );
+
+    useEffect(() => {
+      if (videoRef.current && videoSrc) {
+        videoRef.current.load();
+      }
+    }, [videoSrc]);
+
+    return (
+      <Stack sx={{ height: `${containerHeight}px` }}>
+        <video
+          ref={videoRef}
+          style={{
+            width: '100%',
+            height: `${containerHeight - HEIGHT_CONSTRAINTS.VIDEO.controlsOffset}px`,
+            opacity: loadingState === LOADING_STATES.ERROR ? 0.5 : 1,
+          }}
+          controls
+          onLoadedMetadata={handleVideoLoad}
+          onError={handleError}
+          aria-label={`Video: ${video.filename || 'Media file'}`}
+        >
+          <source src={videoSrc} type={video.type} />
+          {t('storyMap.form_media_video_not_supported')}
+        </video>
+        {loadingState === LOADING_STATES.ERROR && (
+          <Typography
+            variant="caption"
+            color="error"
+            sx={{ textAlign: 'center', py: 1 }}
+          >
+            Failed to load video file
+          </Typography>
+        )}
+        <MediaActionBar
+          onUpdate={onUpdate}
+          onDelete={onDelete}
+          processing={processing}
+          deleteConfirmProps={deleteConfirmProps}
+        />
+      </Stack>
+    );
+  }
+);
+
+const EditableEmbedded = React.memo(
+  ({ label, embedded, onUpdate, onDelete, processing }) => {
+    const deleteConfirmProps = useMemo(
+      () => ({
+        confirmTitle: 'storyMap.form_media_video_delete_confirm_title',
+        confirmMessage: 'storyMap.form_media_video_delete_confirm_message',
+        confirmButton: 'storyMap.form_media_video_delete_confirm_button',
+      }),
+      []
+    );
+
+    return (
+      <Stack spacing={1}>
+        <iframe
+          allowFullScreen
+          title={embedded.title || label}
+          src={embedded.url}
+          style={{ height: '300px', width: '100%' }}
+          loading="lazy"
+        />
+        <MediaActionBar
+          onUpdate={onUpdate}
+          onDelete={onDelete}
+          processing={processing}
+          deleteConfirmProps={deleteConfirmProps}
+        />
+      </Stack>
+    );
+  }
+);
+
+const EditableMedia = React.memo(({ label, value, onChange }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const { label, value, onChange } = props;
 
   const onAdd = useCallback(
     media => {
@@ -603,34 +745,36 @@ const EditableMedia = React.memo(props => {
   const onClose = useCallback(() => setOpen(false), []);
   const onOpen = useCallback(() => setOpen(true), []);
 
+  const renderMediaComponent = useMemo(() => {
+    if (!value) {
+      return null;
+    }
+
+    const commonProps = {
+      label,
+      onUpdate: onOpen,
+      onDelete,
+    };
+
+    if (value.type.startsWith(MEDIA_TYPES.IMAGE)) {
+      return <EditableImage image={value} {...commonProps} />;
+    }
+    if (value.type.startsWith(MEDIA_TYPES.AUDIO)) {
+      return <EditableAudio audio={value} {...commonProps} />;
+    }
+    if (value.type.startsWith(MEDIA_TYPES.VIDEO)) {
+      return <EditableVideo video={value} {...commonProps} />;
+    }
+    if (value.type.startsWith(MEDIA_TYPES.EMBEDDED)) {
+      return <EditableEmbedded embedded={value} {...commonProps} />;
+    }
+    return null;
+  }, [value, label, onOpen, onDelete]);
+
   return (
     <>
       {open && <AddDialog open={open} onClose={onClose} onAdd={onAdd} />}
-      {value &&
-        (value.type.startsWith('image') ? (
-          <EditableImage
-            label={label}
-            image={value}
-            onUpdate={onOpen}
-            onDelete={onDelete}
-          />
-        ) : value.type.startsWith('audio') ? (
-          <EditableAudio
-            label={label}
-            audio={value}
-            onUpdate={onOpen}
-            onDelete={onDelete}
-          />
-        ) : value.type.startsWith('video') ? (
-          <EditableVideo video={value} onUpdate={onOpen} onDelete={onDelete} />
-        ) : value.type.startsWith('embedded') ? (
-          <EditableEmbedded
-            label={label}
-            embedded={value}
-            onUpdate={onOpen}
-            onDelete={onDelete}
-          />
-        ) : null)}
+      {renderMediaComponent}
       {!value && (
         <Stack
           alignItems="center"
