@@ -95,18 +95,20 @@ const useMediaLoad = (defaultHeight, elementRef, onLoadCallback) => {
   const [loadingState, setLoadingState] = useState(LOADING_STATES.IDLE);
 
   const handleLoad = useCallback(() => {
-    if (elementRef.current && onLoadCallback) {
-      try {
-        setLoadingState(LOADING_STATES.LOADING);
-        const newHeight = onLoadCallback(elementRef.current);
-        if (newHeight && newHeight !== containerHeight) {
-          setContainerHeight(newHeight);
-        }
-        setLoadingState(LOADING_STATES.LOADED);
-      } catch (error) {
-        console.error('Error calculating media height:', error);
-        setLoadingState(LOADING_STATES.ERROR);
+    if (!elementRef.current || !onLoadCallback) {
+      return;
+    }
+
+    try {
+      setLoadingState(LOADING_STATES.LOADING);
+      const newHeight = onLoadCallback(elementRef.current);
+      if (newHeight && newHeight !== containerHeight) {
+        setContainerHeight(newHeight);
       }
+      setLoadingState(LOADING_STATES.LOADED);
+    } catch (error) {
+      console.error('Error calculating media height:', error);
+      setLoadingState(LOADING_STATES.ERROR);
     }
   }, [elementRef, onLoadCallback, containerHeight]);
 
@@ -128,6 +130,10 @@ const getMediaSrc = (media, getMediaFile) => {
 };
 
 const calculateImageHeight = imgElement => {
+  if (!imgElement || !imgElement.naturalWidth || !imgElement.naturalHeight) {
+    return MEDIA_CONFIG[MEDIA_TYPES.IMAGE].defaultHeight;
+  }
+
   const aspectRatio = imgElement.naturalHeight / imgElement.naturalWidth;
   const config = MEDIA_CONFIG[MEDIA_TYPES.IMAGE];
   return Math.max(
@@ -137,6 +143,10 @@ const calculateImageHeight = imgElement => {
 };
 
 const calculateVideoHeight = videoElement => {
+  if (!videoElement || !videoElement.videoWidth || !videoElement.videoHeight) {
+    return MEDIA_CONFIG[MEDIA_TYPES.VIDEO].defaultHeight;
+  }
+
   const aspectRatio = videoElement.videoHeight / videoElement.videoWidth;
   const videoDisplayHeight = videoElement.offsetWidth * aspectRatio;
   const config = MEDIA_CONFIG[MEDIA_TYPES.VIDEO];
@@ -279,15 +289,17 @@ const AddDialog = React.memo(({ open, onClose, onAdd }) => {
   const [selected, setSelected] = useState(0);
 
   useEffect(() => {
-    if (!open) {
-      setCurrentFile();
-      setDropErrors();
-      setDroppedMedia();
-      setEmbeddedInputValue('');
-      setEmbeddedMedia();
-      setEmbeddedError();
-      setSelected(0);
+    if (open) {
+      return;
     }
+
+    setCurrentFile();
+    setDropErrors();
+    setDroppedMedia();
+    setEmbeddedInputValue('');
+    setEmbeddedMedia();
+    setEmbeddedError();
+    setSelected(0);
   }, [open]);
 
   const onDropRejected = useCallback(
@@ -596,9 +608,11 @@ const EditableAudio = React.memo(
     );
 
     useEffect(() => {
-      if (audioRef.current && audioSrc) {
-        audioRef.current.load();
+      if (!audioRef.current || !audioSrc) {
+        return;
       }
+
+      audioRef.current.load();
     }, [audioSrc]);
 
     return (
@@ -666,9 +680,11 @@ const EditableVideo = React.memo(
     );
 
     useEffect(() => {
-      if (videoRef.current && videoSrc) {
-        videoRef.current.load();
+      if (!videoRef.current || !videoSrc) {
+        return;
       }
+
+      videoRef.current.load();
     }, [videoSrc]);
 
     return (
