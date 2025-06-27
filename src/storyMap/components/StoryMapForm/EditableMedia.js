@@ -62,15 +62,25 @@ const MEDIA_TYPES = {
   EMBEDDED: 'embedded',
 };
 
-const DEFAULT_HEIGHTS = {
-  [MEDIA_TYPES.IMAGE]: 250,
-  [MEDIA_TYPES.AUDIO]: 130,
-  [MEDIA_TYPES.VIDEO]: 370,
-};
-
-const HEIGHT_CONSTRAINTS = {
-  IMAGE: { min: 200, max: 400 },
-  VIDEO: { min: 270, max: 500, controlsOffset: 70 },
+const MEDIA_CONFIG = {
+  [MEDIA_TYPES.IMAGE]: {
+    defaultHeight: 250,
+    minHeight: 200,
+    maxHeight: 400,
+  },
+  [MEDIA_TYPES.AUDIO]: {
+    defaultHeight: 130,
+    controlsHeight: 54,
+  },
+  [MEDIA_TYPES.VIDEO]: {
+    defaultHeight: 370,
+    minHeight: 270,
+    maxHeight: 500,
+    controlsOffset: 70,
+  },
+  [MEDIA_TYPES.EMBEDDED]: {
+    defaultHeight: 300,
+  },
 };
 
 const LOADING_STATES = {
@@ -119,25 +129,25 @@ const getMediaSrc = (media, getMediaFile) => {
 
 const calculateImageHeight = imgElement => {
   const aspectRatio = imgElement.naturalHeight / imgElement.naturalWidth;
+  const config = MEDIA_CONFIG[MEDIA_TYPES.IMAGE];
   return Math.max(
-    HEIGHT_CONSTRAINTS.IMAGE.min,
-    Math.min(HEIGHT_CONSTRAINTS.IMAGE.max, imgElement.offsetWidth * aspectRatio)
+    config.minHeight,
+    Math.min(config.maxHeight, imgElement.offsetWidth * aspectRatio)
   );
 };
 
 const calculateVideoHeight = videoElement => {
   const aspectRatio = videoElement.videoHeight / videoElement.videoWidth;
   const videoDisplayHeight = videoElement.offsetWidth * aspectRatio;
+  const config = MEDIA_CONFIG[MEDIA_TYPES.VIDEO];
   return Math.max(
-    HEIGHT_CONSTRAINTS.VIDEO.min,
-    Math.min(
-      HEIGHT_CONSTRAINTS.VIDEO.max,
-      videoDisplayHeight + HEIGHT_CONSTRAINTS.VIDEO.controlsOffset
-    )
+    config.minHeight,
+    Math.min(config.maxHeight, videoDisplayHeight + config.controlsOffset)
   );
 };
 
-const calculateAudioHeight = () => DEFAULT_HEIGHTS[MEDIA_TYPES.AUDIO];
+const calculateAudioHeight = () =>
+  MEDIA_CONFIG[MEDIA_TYPES.AUDIO].defaultHeight;
 
 const MediaActionBar = React.memo(
   ({ onUpdate, onDelete, processing, deleteConfirmProps }) => {
@@ -490,7 +500,7 @@ const EditableImage = React.memo(
 
     const [containerHeight, handleImageLoad, handleError, loadingState] =
       useMediaLoad(
-        DEFAULT_HEIGHTS[MEDIA_TYPES.IMAGE],
+        MEDIA_CONFIG[MEDIA_TYPES.IMAGE].defaultHeight,
         imageRef,
         calculateImageHeight
       );
@@ -571,7 +581,7 @@ const EditableAudio = React.memo(
 
     const [containerHeight, handleAudioLoad, handleError, loadingState] =
       useMediaLoad(
-        DEFAULT_HEIGHTS[MEDIA_TYPES.AUDIO],
+        MEDIA_CONFIG[MEDIA_TYPES.AUDIO].defaultHeight,
         audioRef,
         calculateAudioHeight
       );
@@ -597,7 +607,7 @@ const EditableAudio = React.memo(
           ref={audioRef}
           style={{
             width: '100%',
-            height: '54px',
+            height: `${MEDIA_CONFIG[MEDIA_TYPES.AUDIO].controlsHeight}px`,
             opacity: loadingState === LOADING_STATES.ERROR ? 0.5 : 1,
           }}
           controls
@@ -641,7 +651,7 @@ const EditableVideo = React.memo(
 
     const [containerHeight, handleVideoLoad, handleError, loadingState] =
       useMediaLoad(
-        DEFAULT_HEIGHTS[MEDIA_TYPES.VIDEO],
+        MEDIA_CONFIG[MEDIA_TYPES.VIDEO].defaultHeight,
         videoRef,
         calculateVideoHeight
       );
@@ -667,7 +677,7 @@ const EditableVideo = React.memo(
           ref={videoRef}
           style={{
             width: '100%',
-            height: `${containerHeight - HEIGHT_CONSTRAINTS.VIDEO.controlsOffset}px`,
+            height: `${containerHeight - MEDIA_CONFIG[MEDIA_TYPES.VIDEO].controlsOffset}px`,
             opacity: loadingState === LOADING_STATES.ERROR ? 0.5 : 1,
           }}
           controls
@@ -715,7 +725,10 @@ const EditableEmbedded = React.memo(
           allowFullScreen
           title={embedded.title || label}
           src={embedded.url}
-          style={{ height: '300px', width: '100%' }}
+          style={{
+            height: `${MEDIA_CONFIG[MEDIA_TYPES.EMBEDDED].defaultHeight}px`,
+            width: '100%',
+          }}
           loading="lazy"
         />
         <MediaActionBar
