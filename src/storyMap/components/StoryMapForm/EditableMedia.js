@@ -156,8 +156,10 @@ const calculateVideoHeight = videoElement => {
   );
 };
 
-const calculateAudioHeight = () =>
-  MEDIA_CONFIG[MEDIA_TYPES.AUDIO].defaultHeight;
+const calculateAudioHeight = () => {
+  const config = MEDIA_CONFIG[MEDIA_TYPES.AUDIO];
+  return config.controlsHeight + 92;
+};
 
 const MediaActionBar = React.memo(
   ({ onUpdate, onDelete, processing, deleteConfirmProps }) => {
