@@ -157,7 +157,7 @@ const MediaActionBar = React.memo(
         }}
         spacing={1}
         role="toolbar"
-        aria-label="Media actions"
+        aria-label={t('storyMap.form_media_actions')}
       >
         <Button
           variant="outlined"
@@ -479,6 +479,7 @@ const AddDialog = React.memo(({ open, onClose, onAdd }) => {
 
 const EditableImage = React.memo(
   ({ label, image, onUpdate, onDelete, processing }) => {
+    const { t } = useTranslation();
     const { getMediaFile } = useStoryMapConfigContext();
     const imageRef = useRef(null);
 
@@ -533,7 +534,9 @@ const EditableImage = React.memo(
               color: 'white',
             }}
           >
-            <Typography variant="body2">Failed to load image</Typography>
+            <Typography variant="body2">
+              {t('storyMap.form_media_image_error')}
+            </Typography>
           </Stack>
         )}
         <Stack
@@ -600,7 +603,7 @@ const EditableAudio = React.memo(
           controls
           onLoadedMetadata={handleAudioLoad}
           onError={handleError}
-          aria-label={`Audio: ${audio.filename || 'Media file'}`}
+          aria-label={`${t('storyMap.form_media_audio_label')}: ${audio.filename || t('storyMap.form_media_file_default')}`}
         >
           <source src={audioSrc} type={audio.type} />
           {t('storyMap.form_media_audio_not_supported')}
@@ -611,7 +614,7 @@ const EditableAudio = React.memo(
             color="error"
             sx={{ textAlign: 'center' }}
           >
-            Failed to load audio file
+            {t('storyMap.form_media_audio_error')}
           </Typography>
         )}
         <MediaActionBar
@@ -670,7 +673,7 @@ const EditableVideo = React.memo(
           controls
           onLoadedMetadata={handleVideoLoad}
           onError={handleError}
-          aria-label={`Video: ${video.filename || 'Media file'}`}
+          aria-label={`${t('storyMap.form_media_video_label')}: ${video.filename || t('storyMap.form_media_file_default')}`}
         >
           <source src={videoSrc} type={video.type} />
           {t('storyMap.form_media_video_not_supported')}
@@ -681,7 +684,7 @@ const EditableVideo = React.memo(
             color="error"
             sx={{ textAlign: 'center', py: 1 }}
           >
-            Failed to load video file
+            {t('storyMap.form_media_video_error')}
           </Typography>
         )}
         <MediaActionBar
