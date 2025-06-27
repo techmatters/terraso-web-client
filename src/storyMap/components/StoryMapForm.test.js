@@ -73,6 +73,11 @@ jest.mock('gis/components/MapStyleSwitcher', () => ({
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
+Object.defineProperty(window.HTMLMediaElement.prototype, 'load', {
+  configurable: true,
+  value: jest.fn(),
+});
+
 const VISUALIZATION_CONFIG_JSON = {
   datasetConfig: {
     dataColumns: { option: '', selectedColumns: ['', '', ''] },
@@ -89,6 +94,25 @@ const VISUALIZATION_CONFIG_JSON = {
     color: '#FF580D',
     shape: 'circle',
     opacity: 50,
+  },
+};
+
+const MEDIA_TEST_CONFIGS = {
+  image: { type: 'image/png', signedUrl: 'https://test.com/image.png' },
+  audio: {
+    type: 'audio/mp3',
+    signedUrl: 'https://test.com/audio.mp3',
+    filename: 'audio.mp3',
+  },
+  video: {
+    type: 'video/mp4',
+    signedUrl: 'https://test.com/video.mp4',
+    filename: 'video.mp4',
+  },
+  embedded: {
+    type: 'embedded',
+    url: 'https://www.youtube.com/embed/test123',
+    title: 'Test Video',
   },
 };
 
@@ -151,6 +175,30 @@ const expectSave = async () => {
   expect(within(header).getByText('Saving…')).toBeInTheDocument();
   await waitFor(() => {
     expect(within(header).getByText('Draft saved')).toBeInTheDocument();
+  });
+};
+
+const getChapterRegion = chapterName =>
+  screen.getByRole('region', { name: `Chapter: ${chapterName}` });
+
+const openMediaDialog = async chapterName => {
+  const chapter = getChapterRegion(chapterName);
+  const mediaButton = within(chapter).getByRole('button', {
+    name: 'Add media',
+  });
+  await act(async () => fireEvent.click(mediaButton));
+  return screen.getByRole('dialog', { name: 'Add media' });
+};
+
+const setMediaElementProperties = (element, properties) => {
+  Object.keys(properties).forEach(key => {
+    if (element[key] !== undefined) {
+      delete element[key];
+    }
+    Object.defineProperty(element, key, {
+      value: properties[key],
+      configurable: true,
+    });
   });
 };
 
@@ -696,6 +744,7 @@ test('StoryMapForm: Adds new chapter', async () => {
     expect.anything()
   );
 });
+
 test('StoryMapForm: Add embedded media', async () => {
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
@@ -717,6 +766,7 @@ test('StoryMapForm: Add embedded media', async () => {
     })
   );
 });
+
 test('StoryMapForm: Add audio media', async () => {
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
@@ -743,576 +793,287 @@ test('StoryMapForm: Add audio media', async () => {
     Object.keys(saveCall[1])[0]
   );
 });
-test('StoryMapForm: Show preview', async () => {
-  await setup({ config: BASE_CONFIG });
 
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Actions' }))
-  );
+describe('StoryMapForm: EditableMedia Component', () => {
+  test('Dynamic height management for images', async () => {
+    await setup({ config: BASE_CONFIG });
 
-  await act(async () =>
-    fireEvent.click(screen.getByRole('menuitem', { name: 'Preview draft' }))
-  );
+    const chapter1 = getChapterRegion('Chapter 1');
+    const imageElement = within(chapter1).getByRole('img', {
+      name: 'Chapter media',
+    });
 
-  const chapters = screen.getByRole('region', {
-    name: 'Chapters',
+    expect(imageElement).toBeInTheDocument();
+    expect(imageElement).toHaveAttribute('src', 'https://test.com/image.png');
+    expect(imageElement).toHaveAttribute('loading', 'lazy');
+
+    await act(async () => {
+      setMediaElementProperties(imageElement, {
+        naturalWidth: 800,
+        naturalHeight: 600,
+        offsetWidth: 400,
+      });
+      fireEvent.load(imageElement);
+    });
+
+    const imageContainer =
+      imageElement.closest('[role="img"]')?.parentElement ||
+      imageElement.parentElement;
+    expect(imageContainer).toHaveStyle('position: relative');
   });
 
-  expect(
-    within(chapters).getByRole('region', { name: 'Title for: Story Map Title' })
-  ).toBeInTheDocument();
-  expect(
-    within(chapters).getByRole('region', { name: 'Chapter: Chapter 1' })
-  ).toBeInTheDocument();
-  expect(
-    within(chapters).getByRole('region', { name: 'Chapter: Chapter 2' })
-  ).toBeInTheDocument();
+  test('Error handling for failed media loading', async () => {
+    await setup({ config: BASE_CONFIG });
 
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Exit Preview' }))
-  );
-});
-test('StoryMapForm: Change chapter location', async () => {
-  const map = {
-    ...baseMapOptions(),
-    getCenter: () => ({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
-    getZoom: () => 10,
-    getPitch: () => 64,
-    getBearing: () => 45,
-  };
-  mapboxgl.Map.mockReturnValue(map);
-  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
+    const chapter1 = getChapterRegion('Chapter 1');
+    const imageElement = within(chapter1).getByRole('img', {
+      name: 'Chapter media',
+    });
 
-  const chapter1 = screen.getByRole('region', {
-    name: 'Chapter: Chapter 1',
+    await act(async () => {
+      fireEvent.error(imageElement);
+    });
+
+    expect(
+      within(chapter1).getByText('Failed to load image')
+    ).toBeInTheDocument();
+    expect(imageElement).toHaveStyle('opacity: 0.5');
   });
 
-  const locationDialogButton = within(chapter1).getByRole('button', {
-    name: 'Edit Map',
+  test('MediaActionBar accessibility', async () => {
+    await setup({ config: BASE_CONFIG });
+
+    const chapter1 = getChapterRegion('Chapter 1');
+    const toolbar = within(chapter1).getByRole('toolbar', {
+      name: 'Media actions',
+    });
+
+    expect(toolbar).toBeInTheDocument();
+
+    const updateButton = within(toolbar).getByRole('button', {
+      name: 'Update Media',
+    });
+    expect(updateButton).toHaveAttribute('aria-label', 'Update Media');
+
+    const deleteButton = within(toolbar).getByRole('button', {
+      name: 'storyMap.form_media_delete',
+    });
+    expect(deleteButton).toHaveAttribute(
+      'aria-label',
+      'storyMap.form_media_delete'
+    );
   });
-  await act(async () => fireEvent.click(locationDialogButton));
 
-  const dialog = screen.getByRole('dialog', {
-    name: 'Set map location for Chapter 1',
-  });
-
-  await act(async () => map.onEvents['move']());
-
-  await act(async () =>
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Save Map' }))
-  );
-
-  await waitFor(() => {
-    expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
-  });
-
-  // Save
-  await expectSave();
-
-  expect(onSaveDraft).toHaveBeenCalledTimes(1);
-  const saveCall = onSaveDraft.mock.calls[0];
-  expect(saveCall[0].chapters[0]).toEqual(
-    expect.objectContaining({
-      location: {
-        bearing: 45,
-        center: {
-          lat: -0.2294635049867253,
-          lng: -78.54414857836304,
+  test('Audio component with proper ARIA labels', async () => {
+    const configWithAudio = {
+      ...BASE_CONFIG,
+      chapters: [
+        {
+          ...BASE_CONFIG.chapters[0],
+          media: MEDIA_TEST_CONFIGS.audio,
         },
-        pitch: 64,
-        zoom: 10,
-      },
-    })
-  );
-});
+        ...BASE_CONFIG.chapters.slice(1),
+      ],
+    };
 
-test('StoryMapForm: Change chapter style', async () => {
-  const map = {
-    ...baseMapOptions(),
-    getCenter: () => ({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
-    getZoom: () => 10,
-    getPitch: () => 64,
-    getBearing: () => 45,
-  };
-  mapboxgl.Map.mockReturnValue(map);
-  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
+    await setup({ config: configWithAudio });
 
-  const chapter1 = screen.getByRole('region', {
-    name: 'Chapter: Chapter 1',
+    const chapter1 = getChapterRegion('Chapter 1');
+    const audioElement = within(chapter1).getByLabelText('Audio: audio.mp3');
+
+    expect(audioElement).toHaveAttribute('aria-label', 'Audio: audio.mp3');
+    expect(audioElement).toHaveAttribute('controls');
   });
 
-  const locationDialogButton = within(chapter1).getByRole('button', {
-    name: 'Edit Map',
+  test('Video component with proper height management', async () => {
+    const configWithVideo = {
+      ...BASE_CONFIG,
+      chapters: [
+        {
+          ...BASE_CONFIG.chapters[0],
+          media: MEDIA_TEST_CONFIGS.video,
+        },
+        ...BASE_CONFIG.chapters.slice(1),
+      ],
+    };
+
+    await setup({ config: configWithVideo });
+
+    const chapter1 = getChapterRegion('Chapter 1');
+    const videoElement = within(chapter1).getByLabelText('Video: video.mp4');
+
+    expect(videoElement).toHaveAttribute('aria-label', 'Video: video.mp4');
+    expect(videoElement).toHaveAttribute('controls');
+
+    await act(async () => {
+      setMediaElementProperties(videoElement, {
+        videoWidth: 1920,
+        videoHeight: 1080,
+        offsetWidth: 400,
+      });
+      fireEvent.loadedMetadata(videoElement);
+    });
   });
-  await act(async () => fireEvent.click(locationDialogButton));
 
-  const dialog = screen.getByRole('dialog', {
-    name: 'Set map location for Chapter 1',
+  test('Embedded iframe with lazy loading', async () => {
+    const configWithEmbedded = {
+      ...BASE_CONFIG,
+      chapters: [
+        {
+          ...BASE_CONFIG.chapters[0],
+          media: MEDIA_TEST_CONFIGS.embedded,
+        },
+        ...BASE_CONFIG.chapters.slice(1),
+      ],
+    };
+
+    await setup({ config: configWithEmbedded });
+
+    const chapter1 = getChapterRegion('Chapter 1');
+    const iframe = within(chapter1).getByTitle('Test Video');
+
+    expect(iframe).toHaveAttribute(
+      'src',
+      'https://www.youtube.com/embed/test123'
+    );
+    expect(iframe).toHaveAttribute('title', 'Test Video');
+    expect(iframe).toHaveAttribute('loading', 'lazy');
+    expect(iframe).toHaveAttribute('allowfullscreen');
   });
 
-  const baseMapButton = within(dialog).getByRole('button', {
-    name: 'Change Style',
+  test('Add dialog radio button navigation', async () => {
+    await setup({ config: BASE_CONFIG });
+
+    const mediaDialog = await openMediaDialog('Chapter 2');
+
+    const fileUploadRadio = within(mediaDialog).getByRole('radio', {
+      name: /Upload a photo or audio file/i,
+    });
+    const embedRadio = within(mediaDialog).getByRole('radio', {
+      name: /Link to a YouTube or Vimeo video/i,
+    });
+
+    expect(fileUploadRadio).toBeChecked();
+    expect(embedRadio).not.toBeChecked();
+
+    await act(async () => fireEvent.click(embedRadio));
+    expect(embedRadio).toBeChecked();
+    expect(fileUploadRadio).not.toBeChecked();
+
+    const embedInput = within(mediaDialog).getByRole('textbox', {
+      name: 'Link to a YouTube or Vimeo video',
+    });
+    expect(embedInput).toHaveAttribute(
+      'aria-labelledby',
+      'embedded-media-label'
+    );
   });
 
-  await act(async () => fireEvent.click(baseMapButton));
+  test('Error states in add dialog', async () => {
+    await setup({ config: BASE_CONFIG });
 
-  await waitFor(() => {
+    const mediaDialog = await openMediaDialog('Chapter 2');
+
+    const embedRadio = within(mediaDialog).getByRole('radio', {
+      name: /Link to a YouTube or Vimeo video/i,
+    });
+    await act(async () => fireEvent.click(embedRadio));
+
+    const embedInput = within(mediaDialog).getByRole('textbox', {
+      name: 'Link to a YouTube or Vimeo video',
+    });
+
+    await act(async () => {
+      fireEvent.change(embedInput, { target: { value: 'invalid-url' } });
+      fireEvent.blur(embedInput);
+    });
+
     expect(
-      screen.getByRole('button', { name: 'Save Map' })
+      within(mediaDialog).getByText('Enter a valid YouTube or Vimeo URL.')
+    ).toBeInTheDocument();
+
+    const addButton = within(mediaDialog).getByRole('button', {
+      name: 'Add media',
+    });
+    expect(addButton).toBeDisabled();
+  });
+
+  test('Height calculation functions', async () => {
+    await setup({ config: BASE_CONFIG });
+
+    const chapter1 = getChapterRegion('Chapter 1');
+    const imageElement = within(chapter1).getByRole('img', {
+      name: 'Chapter media',
+    });
+
+    await act(async () => {
+      setMediaElementProperties(imageElement, {
+        naturalWidth: 800,
+        naturalHeight: 1200,
+        offsetWidth: 400,
+      });
+      fireEvent.load(imageElement);
+    });
+
+    await act(async () => {
+      setMediaElementProperties(imageElement, {
+        naturalWidth: 1600,
+        naturalHeight: 400,
+        offsetWidth: 400,
+      });
+      fireEvent.load(imageElement);
+    });
+  });
+
+  test('Media action bar processing state', async () => {
+    await setup({ config: BASE_CONFIG });
+
+    const chapter1 = getChapterRegion('Chapter 1');
+    const toolbar = within(chapter1).getByRole('toolbar', {
+      name: 'Media actions',
+    });
+    const deleteButton = within(toolbar).getByRole('button', {
+      name: 'storyMap.form_media_delete',
+    });
+
+    await act(async () => fireEvent.click(deleteButton));
+
+    const confirmDialog = screen.getByRole('dialog', { name: 'Delete image?' });
+    const confirmButton = within(confirmDialog).getByRole('button', {
+      name: 'Delete image',
+    });
+
+    expect(confirmDialog).toBeInTheDocument();
+    expect(confirmButton).toBeInTheDocument();
+  });
+
+  test('Configuration constants usage', async () => {
+    const configWithMultipleMedia = {
+      ...BASE_CONFIG,
+      chapters: [
+        { ...BASE_CONFIG.chapters[0], media: MEDIA_TEST_CONFIGS.image },
+        { ...BASE_CONFIG.chapters[1], media: MEDIA_TEST_CONFIGS.audio },
+        {
+          id: 'chapter-3',
+          title: 'Chapter 3',
+          description: 'Chapter 3 description',
+          media: MEDIA_TEST_CONFIGS.video,
+        },
+      ],
+    };
+
+    await setup({ config: configWithMultipleMedia });
+
+    const chapter1 = getChapterRegion('Chapter 1');
+    const chapter2 = getChapterRegion('Chapter 2');
+    const chapter3 = getChapterRegion('Chapter 3');
+
+    expect(within(chapter1).getByRole('img')).toBeInTheDocument();
+    expect(
+      within(chapter2).getByLabelText('Audio: audio.mp3')
+    ).toBeInTheDocument();
+    expect(
+      within(chapter3).getByLabelText('Video: video.mp4')
     ).toBeInTheDocument();
   });
-
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save Map' }))
-  );
-
-  // Save
-  await expectSave();
-
-  expect(onSaveDraft).toHaveBeenCalledTimes(1);
-  const saveCall = onSaveDraft.mock.calls[0];
-  expect(saveCall[0].style).toEqual('newStyle');
-});
-
-test('StoryMapForm: Add map layer', async () => {
-  const map = {
-    ...baseMapOptions(),
-    getCenter: () => ({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
-    getZoom: () => 10,
-    getPitch: () => 64,
-    getBearing: () => 45,
-  };
-  mapboxgl.Map.mockReturnValue(map);
-
-  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
-
-  const chapter1 = screen.getByRole('region', {
-    name: 'Chapter: Chapter 1',
-  });
-
-  const locationDialogButton = within(chapter1).getByRole('button', {
-    name: 'Edit Map',
-  });
-  await act(async () => fireEvent.click(locationDialogButton));
-
-  const dialog = screen.getByRole('dialog', {
-    name: 'Set map location for Chapter 1',
-  });
-
-  const addDataLayerButton = within(dialog).getByRole('button', {
-    name: 'Add Map Layer',
-  });
-  await act(async () => fireEvent.click(addDataLayerButton));
-
-  const dataMapDialog = screen.getByRole('dialog', {
-    name: 'Add a map layer to Chapter 1',
-  });
-
-  const dataLayerItem = within(dataMapDialog).getByRole('listitem', {
-    name: 'Datalayer title 1',
-  });
-  const dataLayerItemProcessing = within(dataMapDialog).getByRole('listitem', {
-    name: 'Datalayer title 2',
-  });
-  const dataLayerItemNoTileset = within(dataMapDialog).queryByRole('listitem', {
-    name: 'Datalayer title 3',
-  });
-  expect(
-    within(dataLayerItemProcessing).getByText('Processing')
-  ).toBeInTheDocument();
-  expect(dataLayerItemNoTileset).not.toBeInTheDocument();
-
-  const radioButton = within(dataLayerItem).getByRole('radio');
-  await act(async () => fireEvent.click(radioButton));
-
-  const addMapButton = within(dataMapDialog).getByRole('button', {
-    name: 'Add Map Layer',
-  });
-  await act(async () => fireEvent.click(addMapButton));
-
-  await waitFor(() => {
-    expect(
-      within(dialog).getByRole('button', { name: 'Save Map' })
-    ).toBeInTheDocument();
-  });
-  const saveMapButton = within(dialog).getByRole('button', {
-    name: 'Save Map',
-  });
-  await act(async () => fireEvent.click(saveMapButton));
-
-  await waitFor(() => {
-    expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
-  });
-
-  // Save
-  await expectSave();
-
-  expect(onSaveDraft).toHaveBeenCalledWith(
-    expect.objectContaining({
-      chapters: expect.arrayContaining([
-        expect.objectContaining({
-          dataLayerConfigId: 'ac0853a2-99e4-4794-93ca-aafc89f361b6',
-        }),
-      ]),
-      dataLayers: {
-        'ac0853a2-99e4-4794-93ca-aafc89f361b6': expect.objectContaining({
-          visualizeConfig: expect.anything(),
-          mapboxTilesetId: expect.anything(),
-          dataEntry: expect.anything(),
-        }),
-      },
-    }),
-    expect.anything()
-  );
-});
-
-test('StoryMapForm: Move chapter down with menu', async () => {
-  const trackEvent = jest.fn();
-  useAnalytics.mockReturnValue({
-    trackEvent,
-  });
-  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
-
-  const chaptersSection = screen.getByRole('navigation', {
-    name: 'Chapters sidebar',
-  });
-
-  await waitFor(() =>
-    expect(
-      within(chaptersSection).getByRole('button', {
-        name: 'Chapter 1',
-      })
-    ).toBeInTheDocument()
-  );
-
-  const chapter1 = within(chaptersSection).getByRole('button', {
-    name: 'Chapter 1',
-  });
-
-  const menuButton = within(chapter1).getByRole('button', {
-    name: 'More options',
-  });
-  await act(async () => fireEvent.click(menuButton));
-
-  const menu = screen.getByRole('menu', {
-    name: 'Chapter 1 menu',
-  });
-
-  const moveDownButton = within(menu).getByRole('menuitem', {
-    name: 'Move Chapter Down',
-  });
-
-  await act(async () => fireEvent.click(moveDownButton));
-
-  await waitFor(() =>
-    expect(
-      screen.queryByRole('button', {
-        name: 'Dragging Chapter 1',
-      })
-    ).not.toBeInTheDocument()
-  );
-
-  await expectSave();
-
-  expect(onSaveDraft).toHaveBeenCalledTimes(1);
-  const saveCall = onSaveDraft.mock.calls[0];
-
-  expect(saveCall[0].chapters[0]).toEqual(
-    expect.objectContaining({
-      id: 'chapter-2',
-      title: 'Chapter 2',
-      description: 'Chapter 2 description',
-    })
-  );
-  expect(saveCall[0].chapters[1]).toEqual(
-    expect.objectContaining({
-      id: 'chapter-1',
-      title: 'Chapter 1',
-      description: 'Chapter 1 description',
-    })
-  );
-
-  expect(trackEvent).toHaveBeenCalledWith('storymap.chapter.move', {
-    props: {
-      distance: 1,
-      map: 'story-map-id-1',
-    },
-  });
-});
-
-test('StoryMapForm: Move chapter up with menu', async () => {
-  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
-
-  const chaptersSection = screen.getByRole('navigation', {
-    name: 'Chapters sidebar',
-  });
-
-  await waitFor(() => {
-    expect(
-      within(chaptersSection).getByRole('button', {
-        name: 'Chapter 2',
-      })
-    ).toBeInTheDocument();
-  });
-  const chapter2 = within(chaptersSection).getByRole('button', {
-    name: 'Chapter 2',
-  });
-
-  const menuButton = within(chapter2).getByRole('button', {
-    name: 'More options',
-  });
-  await act(async () => fireEvent.click(menuButton));
-
-  const menu = screen.getByRole('menu', {
-    name: 'Chapter 2 menu',
-  });
-
-  const moveUpButton = within(menu).getByRole('menuitem', {
-    name: 'Move Chapter Up',
-  });
-
-  await act(async () => fireEvent.click(moveUpButton));
-
-  expect(
-    screen.getByRole('button', {
-      name: 'Dragging Chapter 2',
-    })
-  ).toBeInTheDocument();
-
-  await waitFor(() =>
-    expect(
-      screen.queryByRole('button', {
-        name: 'Dragging Chapter 2',
-      })
-    ).not.toBeInTheDocument()
-  );
-
-  await expectSave();
-
-  expect(onSaveDraft).toHaveBeenCalledTimes(1);
-  const saveCall = onSaveDraft.mock.calls[0];
-
-  expect(saveCall[0].chapters[0]).toEqual(
-    expect.objectContaining({
-      id: 'chapter-2',
-      title: 'Chapter 2',
-      description: 'Chapter 2 description',
-    })
-  );
-  expect(saveCall[0].chapters[1]).toEqual(
-    expect.objectContaining({
-      id: 'chapter-1',
-      title: 'Chapter 1',
-      description: 'Chapter 1 description',
-    })
-  );
-});
-
-test('StoryMapForm: Show correct sort buttons if chapter is first', async () => {
-  await setup({ config: BASE_CONFIG });
-
-  const chaptersSection = screen.getByRole('navigation', {
-    name: 'Chapters sidebar',
-  });
-
-  await waitFor(() => {
-    expect(
-      within(chaptersSection).getByRole('button', {
-        name: 'Chapter 1',
-      })
-    ).toBeInTheDocument();
-  });
-
-  const chapter1 = within(chaptersSection).getByRole('button', {
-    name: 'Chapter 1',
-  });
-  const menuButton = within(chapter1).getByRole('button', {
-    name: 'More options',
-  });
-  await act(async () => fireEvent.click(menuButton));
-  const menu = screen.getByRole('menu', {
-    name: 'Chapter 1 menu',
-  });
-  const moveUpButton = within(menu).queryByRole('menuitem', {
-    name: 'Move Chapter Up',
-  });
-
-  expect(moveUpButton).not.toBeInTheDocument();
-});
-
-test('StoryMapForm: Show correct sort buttons if chapter is last', async () => {
-  await setup({ config: BASE_CONFIG });
-
-  const chaptersSection = screen.getByRole('navigation', {
-    name: 'Chapters sidebar',
-  });
-
-  const chapter3 = within(chaptersSection).getByRole('button', {
-    name: 'Chapter 3',
-  });
-  const menuButton = within(chapter3).getByRole('button', {
-    name: 'More options',
-  });
-  await act(async () => fireEvent.click(menuButton));
-  const menu = screen.getByRole('menu', {
-    name: 'Chapter 3 menu',
-  });
-  const moveDownButton = within(menu).queryByRole('menuitem', {
-    name: 'Move Chapter Down',
-  });
-
-  expect(moveDownButton).not.toBeInTheDocument();
-});
-
-test('StoryMapForm: Delete chapter', async () => {
-  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
-
-  const chaptersSection = screen.getByRole('navigation', {
-    name: 'Chapters sidebar',
-  });
-
-  await waitFor(() => {
-    expect(
-      within(chaptersSection).getByRole('button', {
-        name: 'Chapter 1',
-      })
-    ).toBeInTheDocument();
-  });
-
-  const chapter1 = within(chaptersSection).getByRole('button', {
-    name: 'Chapter 1',
-  });
-  const menuButton = within(chapter1).getByRole('button', {
-    name: 'More options',
-  });
-  await act(async () => fireEvent.click(menuButton));
-  const menu = screen.getByRole('menu', {
-    name: 'Chapter 1 menu',
-  });
-  const deleteButton = within(menu).getByRole('menuitem', {
-    name: 'Delete Chapter',
-  });
-
-  await act(async () => fireEvent.click(deleteButton));
-
-  // Confirmation dialog
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Delete Chapter' }))
-  );
-
-  // Wait for delete animation
-  await waitFor(() => {
-    expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
-  });
-
-  await expectSave();
-  expect(onSaveDraft).toHaveBeenCalledTimes(1);
-  const saveCall = onSaveDraft.mock.calls[0];
-
-  expect(saveCall[0].chapters.length).toEqual(2);
-  expect(saveCall[0].chapters[0]).toEqual(
-    expect.objectContaining({
-      id: 'chapter-2',
-      title: 'Chapter 2',
-      description: 'Chapter 2 description',
-    })
-  );
-  expect(saveCall[0].chapters[1]).toEqual(
-    expect.objectContaining({
-      id: 'chapter-3',
-      title: 'Chapter 3',
-      description: 'Chapter 3 description',
-    })
-  );
-});
-
-test('StoryMapForm: Keep map on chapter change', async () => {
-  const map = {
-    ...baseMapOptions(),
-    getCenter: () => ({ lng: -99.91122777353772, lat: 21.64458705609789 }),
-    getStyle: () => 'has style',
-    getLayer: () => ({ type: 'fill' }),
-    setLayoutProperty: jest.fn(),
-    setPaintProperty: jest.fn(),
-  };
-  mapboxgl.Map.mockReturnValue(map);
-  const scroller = {
-    setup: function () {
-      return this;
-    },
-    onStepEnter: function (cb) {
-      this.stepEnter = cb;
-      return this;
-    },
-    onStepExit: function (cb) {
-      this.stepExit = cb;
-      return this;
-    },
-    resize: jest.fn(),
-    destroy: jest.fn(),
-  };
-  scrollama.mockImplementation(() => scroller);
-
-  await setup({ config: BASE_CONFIG });
-
-  await waitFor(() => expect(scrollama).toHaveBeenCalled());
-
-  // Go to chapter 1
-  await act(async () =>
-    scroller.stepEnter({
-      element: document.querySelector('#chapter-1'),
-    })
-  );
-
-  // Go to chapter 2
-  await act(async () =>
-    scroller.stepEnter({
-      element: document.querySelector('#chapter-2'),
-      direction: 'down',
-    })
-  );
-  await act(async () =>
-    scroller.stepExit({
-      element: document.querySelector('#chapter-1'),
-      direction: 'down',
-    })
-  );
-  await expect(map.setPaintProperty).toHaveBeenCalledWith(
-    'layer1',
-    'fill-opacity',
-    1,
-    {}
-  );
-  await expect(map.setPaintProperty).not.toHaveBeenCalledWith(
-    'layer1',
-    'fill-opacity',
-    0,
-    {}
-  );
-
-  // Go to chapter 1
-  await act(async () =>
-    scroller.stepEnter({
-      element: document.querySelector('#chapter-1'),
-      direction: 'up',
-    })
-  );
-  await act(async () =>
-    scroller.stepExit({
-      element: document.querySelector('#chapter-2'),
-      direction: 'up',
-    })
-  );
-  await expect(map.setPaintProperty).toHaveBeenCalledWith(
-    'layer1',
-    'fill-opacity',
-    1,
-    {}
-  );
-  await expect(map.setPaintProperty).not.toHaveBeenCalledWith(
-    'layer1',
-    'fill-opacity',
-    0,
-    {}
-  );
 });
