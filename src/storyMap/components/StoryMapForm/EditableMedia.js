@@ -15,12 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 // Component for editing and uploading a pictures or a audio file
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import getVideoId from 'get-video-id';
 import _ from 'lodash/fp';
 import { openFile } from 'media/fileUtils';
 import { useTranslation } from 'react-i18next';
-import { v4 as uuidv4 } from 'uuid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Button,
@@ -339,11 +338,7 @@ const EditableImage = props => {
   }, [image, getMediaFile]);
 
   return (
-    <Stack
-      sx={{
-        position: 'relative',
-      }}
-    >
+    <Stack sx={{ position: 'relative' }}>
       <img src={imageSrc} alt={label} style={{ width: '100%' }} />
       <Stack
         justifyContent="center"
@@ -393,15 +388,10 @@ const EditableImage = props => {
   );
 };
 
-const EditableAudio = props => {
+const EditableAudio = React.memo(props => {
   const { t } = useTranslation();
-  const [id, setId] = useState(0);
   const { getMediaFile } = useStoryMapConfigContext();
   const { audio, onUpdate, onDelete, processing } = props;
-
-  useEffect(() => {
-    setId(uuidv4());
-  }, [audio]);
 
   const audioSrc = useMemo(() => {
     if (audio.signedUrl) {
@@ -412,10 +402,11 @@ const EditableAudio = props => {
     }
     return null;
   }, [audio, getMediaFile]);
+
   return (
     <Stack spacing={1}>
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio key={id} style={{ width: '100%' }} controls>
+      <audio style={{ width: '100%' }} controls>
         <source src={audioSrc} type={audio.type} />
         {t('storyMap.form_media_audio_not_supported')}
       </audio>
@@ -463,17 +454,12 @@ const EditableAudio = props => {
       </Stack>
     </Stack>
   );
-};
+});
 
-const EditableVideo = props => {
+const EditableVideo = React.memo(props => {
   const { t } = useTranslation();
-  const [id, setId] = useState(0);
   const { getMediaFile } = useStoryMapConfigContext();
   const { video, onUpdate, onDelete, processing } = props;
-
-  useEffect(() => {
-    setId(uuidv4());
-  }, [video]);
 
   const videoSrc = useMemo(() => {
     if (video.signedUrl) {
@@ -488,7 +474,7 @@ const EditableVideo = props => {
   return (
     <Stack>
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <video key={id} style={{ width: '100%' }} controls>
+      <video style={{ width: '100%' }} controls>
         <source src={videoSrc} type={video.type} />
         {t('storyMap.form_media_video_not_supported')}
       </video>
@@ -537,7 +523,7 @@ const EditableVideo = props => {
       </Stack>
     </Stack>
   );
-};
+});
 
 const EditableEmbedded = props => {
   const { t } = useTranslation();
@@ -597,7 +583,7 @@ const EditableEmbedded = props => {
   );
 };
 
-const EditableMedia = props => {
+const EditableMedia = React.memo(props => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const { label, value, onChange } = props;
@@ -663,6 +649,6 @@ const EditableMedia = props => {
       )}
     </>
   );
-};
+});
 
 export default EditableMedia;
