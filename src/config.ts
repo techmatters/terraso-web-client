@@ -33,7 +33,7 @@ export const GRAPHQL_ENDPOINT = 'graphql/';
 export const COOKIES_DOMAIN =
   process.env.REACT_APP_COOKIES_DOMAIN || '127.0.0.1';
 
-const COOKIES_PARAMS = { path: '/', domain: COOKIES_DOMAIN };
+const COOKIES_PARAMS = { path: '/' };
 
 export const SENTRY_DSN = process.env.REACT_APP_SENTRY_DSN || '';
 
@@ -45,7 +45,11 @@ setAPIConfig({
   graphQLEndpoint: GRAPHQL_ENDPOINT,
   tokenStorage: {
     getToken: Cookies.get,
-    removeToken: name => Cookies.remove(name, COOKIES_PARAMS),
+    removeToken: name => {
+      // make sure we remove cookie regardless of whether we set it on frontend or backend
+      Cookies.remove(name, COOKIES_PARAMS);
+      Cookies.remove(name, { domain: COOKIES_DOMAIN, ...COOKIES_PARAMS });
+    },
     setToken: (name, token) => {
       Cookies.set(name, token, COOKIES_PARAMS);
     },
