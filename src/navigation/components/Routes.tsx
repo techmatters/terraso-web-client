@@ -34,7 +34,6 @@ import GroupSharedDataVisualization from 'group/components/GroupSharedDataVisual
 import GroupSharedDataVisualizationConfig from 'group/components/GroupSharedDataVisualizationConfig';
 import GroupView from 'group/components/GroupView';
 import GroupMembers from 'group/membership/components/GroupMembers';
-import Home from 'home/components/Home';
 import LandscapeAffiliationUpdate from 'landscape/components/LandscapeForm/AffiliationUpdate';
 import LandscapeBoundariesUpdate from 'landscape/components/LandscapeForm/BoundaryStepUpdate';
 import LandscapeDevelopmentStrategyUpdate from 'landscape/components/LandscapeForm/DevelopmentStrategyUpdate';
@@ -59,30 +58,69 @@ import UserStoryMap from 'storyMap/components/UserStoryMap';
 import UserStoryMapEmbed from 'storyMap/components/UserStoryMapEmbed';
 import ToolsList from 'tool/components/ToolList';
 
+type PathOptions = {
+  auth?: boolean;
+  isEmbedded?: boolean;
+  hasNavigation?: boolean;
+  optionalAuth?: {
+    enabled: boolean;
+    message?: string | null;
+    isEmbedded?: boolean;
+    topMessage?: string;
+    bottomMessage?: string;
+  };
+  showBreadcrumbs?: boolean;
+  breadcrumbsLabel?: string;
+  breadcrumbsShareProps?: {
+    marginTop?: React.CSSProperties['marginTop'];
+    bgColor?: React.CSSProperties['backgroundColor'];
+  };
+};
+
+type PathConfig = {
+  path: string;
+  Component: React.FC;
+  auth: boolean;
+  isEmbedded: boolean;
+  hasNavigation: boolean;
+  optionalAuth: {
+    enabled: boolean;
+    message: string | null;
+    isEmbedded: boolean;
+    topMessage?: string;
+    bottomMessage?: string;
+  };
+  showBreadcrumbs: boolean;
+  breadcrumbsLabel?: string;
+};
+
 const path = (
+  path: string,
+  Component: React.FC,
+  { optionalAuth, ...otherParams }: PathOptions = {}
+): PathConfig => ({
   path,
   Component,
-  {
-    auth = true,
-    optionalAuth = {
-      enabled: false,
-      message: null,
-      isEmbedded: false,
-    },
-    showBreadcrumbs = false,
-    ...otherParams
-  } = {}
-) => ({
-  path,
-  Component,
-  auth,
-  optionalAuth,
-  showBreadcrumbs,
+  auth: true,
+  isEmbedded: false,
+  hasNavigation: true,
+  optionalAuth: {
+    enabled: false,
+    message: null,
+    isEmbedded: false,
+    ...optionalAuth,
+  },
+  showBreadcrumbs: false,
   ...otherParams,
 });
 
 const paths = [
-  path('/', Home),
+  path('/', StoryMapsToolsHome, {
+    hasNavigation: false,
+    optionalAuth: {
+      enabled: true,
+    },
+  }),
   path('/groups', GroupList, {
     breadcrumbsLabel: 'group.home_title',
   }),
@@ -193,6 +231,9 @@ const paths = [
     },
   }),
   path('/tools', ToolsList, {
+    optionalAuth: {
+      enabled: true,
+    },
     breadcrumbsLabel: 'tools.breadcrumbs_list',
   }),
   path('/account', AccountLogin, { auth: false }),
@@ -202,13 +243,16 @@ const paths = [
   path('/tools/story-maps', StoryMapsToolsHome, {
     showBreadcrumbs: true,
     breadcrumbsLabel: 'storyMap.breadcrumbs_tool_home',
+    optionalAuth: {
+      enabled: true,
+    },
   }),
   path('/tools/story-maps/new', StoryMapNew),
   path('/tools/story-maps/:storyMapId/:slug/edit', StoryMapUpdate, {
     isEmbedded: true,
   }),
   path('/tools/story-maps/:storyMapId/:slug', UserStoryMap, {
-    showBreadcrumbs: true,
+    showBreadcrumbs: false,
     breadcrumbsLabel: 'storyMap.breadcrumbs_view',
     breadcrumbsShareProps: {
       bgColor: 'white',
@@ -216,6 +260,7 @@ const paths = [
     },
     optionalAuth: {
       enabled: true,
+      isEmbedded: true,
       topMessage: 'storyMap.optional_auth_top_message',
       bottomMessage: 'storyMap.optional_auth_bottom_message',
     },
@@ -230,7 +275,15 @@ const paths = [
   path('*', NotFound),
 ];
 
-const getPath = to => paths.find(path => matchPath({ path: path.path }, to));
+const getPath = (to: string) => {
+  const path = paths.find(path => matchPath({ path: path.path }, to));
+  if (path === undefined) {
+    throw new Error(
+      'Developer error: getPath should always return a value because the last path is a wildcard match.'
+    );
+  }
+  return path;
+};
 
 export const usePathParams = () => {
   const { pathname: currentPathname } = useLocation();
@@ -249,7 +302,7 @@ export const useBreadcrumbs = () => {
     [currentPathname]
   );
   const currentPath = useMemo(
-    () => getPath(currentPathname),
+    () => getPath(currentPathname)!,
     [currentPathname]
   );
   const items = useMemo(() => {
@@ -285,7 +338,7 @@ export const useBreadcrumbs = () => {
 export const useOptionalAuth = () => {
   const { pathname: currentPathname } = useLocation();
   const currentPath = useMemo(
-    () => getPath(currentPathname),
+    () => getPath(currentPathname)!,
     [currentPathname]
   );
 

@@ -30,9 +30,32 @@ import { TILESET_STATUS_PENDING } from 'sharedData/sharedDataConstants';
 
 import { extractStoryMap } from './storyMapUtils';
 
-export const fetchSamples = (params, currentUser) => {
+const fetchSamplesNoEmail = () => {
   const query = graphql(`
-    query storyMapsHome($accountEmail: String!) {
+    query storyMapsHomeNoEmail {
+      samples: storyMaps {
+        edges {
+          node {
+            ...storyMapMetadataFieldsNoEmail
+          }
+        }
+      }
+    }
+  `);
+
+  return terrasoApi.requestGraphQL(query).then(response => ({
+    samples: _.getOr([], 'samples.edges', response)
+      .map(_.get('node'))
+      .sort(_.get('publishedAt'))
+      .reverse()
+      .map(extractStoryMap),
+    userStoryMaps: [],
+  }));
+};
+
+const fetchSamplesWithEmail = email => {
+  const query = graphql(`
+    query storyMapsHomeWithEmail($accountEmail: String!) {
       samples: storyMaps(memberships_User_Email_Not: $accountEmail) {
         edges {
           node {
@@ -49,8 +72,9 @@ export const fetchSamples = (params, currentUser) => {
       }
     }
   `);
+
   return terrasoApi
-    .requestGraphQL(query, { accountEmail: currentUser.email })
+    .requestGraphQL(query, { accountEmail: email })
     .then(response => ({
       samples: _.getOr([], 'samples.edges', response)
         .map(_.get('node'))
@@ -63,6 +87,12 @@ export const fetchSamples = (params, currentUser) => {
         .reverse()
         .map(extractStoryMap),
     }));
+};
+
+export const fetchSamples = (params, currentUser) => {
+  return currentUser
+    ? fetchSamplesWithEmail(currentUser.email)
+    : fetchSamplesNoEmail();
 };
 
 export const fetchStoryMap = ({ slug, storyMapId }) => {

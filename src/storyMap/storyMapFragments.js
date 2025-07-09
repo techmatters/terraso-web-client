@@ -70,3 +70,21 @@ export const storyMapMetadataFields = /* GraphQL */ `
     }
   }
 `;
+
+export const storyMapMetadataFieldsNoEmail = /* GraphQL */ `
+  fragment storyMapMetadataFieldsNoEmail on StoryMapNode {
+    id
+    slug
+    storyMapId
+    title
+    isPublished
+    createdAt
+    updatedAt
+    publishedAt
+    createdBy {
+      id
+      lastName
+      firstName
+    }
+  }
+`;
