@@ -62,28 +62,5 @@ export const useReferrer = () => {
     [navigate, url]
   );
 
-  const appendReferrerBase64 = useCallback(
-    url => {
-      if (!referrer) {
-        return url;
-      }
-      const parsedUrl = queryString.parseUrl(url);
-      const redirectUrl = queryString.stringifyUrl({
-        url: 'account',
-        query: {
-          referrerBase64: btoa(referrer),
-        },
-      });
-      return queryString.stringifyUrl({
-        ...parsedUrl,
-        query: {
-          ...parsedUrl.query,
-          state: redirectUrl,
-        },
-      });
-    },
-    [referrer]
-  );
-
-  return { goToReferrer, appendReferrerBase64 };
+  return { referrer: url ?? '/', goToReferrer };
 };

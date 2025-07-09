@@ -30,10 +30,7 @@ export const REACT_APP_BASE_URL =
 
 export const GRAPHQL_ENDPOINT = 'graphql/';
 
-export const COOKIES_DOMAIN =
-  process.env.REACT_APP_COOKIES_DOMAIN || '127.0.0.1';
-
-const COOKIES_PARAMS = { path: '/', domain: COOKIES_DOMAIN };
+const COOKIES_PARAMS = { path: '/' };
 
 export const SENTRY_DSN = process.env.REACT_APP_SENTRY_DSN || '';
 
