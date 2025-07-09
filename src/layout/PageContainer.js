@@ -28,7 +28,7 @@ const PageContainer = props => {
   return (
     <Container
       sx={{
-        paddingTop: showBreadcrumbs ? 0 : 10,
+        paddingTop: showBreadcrumbs ? 0 : 6,
         paddingBottom: 6,
         ...props.sx,
       }}
