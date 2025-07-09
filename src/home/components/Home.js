@@ -86,7 +86,12 @@ const Home = () => {
   useDocumentTitle(t('home.document_title'), false, true);
   useDocumentDescription(t('home.document_description'));
 
-  useFetchData(useCallback(() => fetchHomeData(user.email), [user.email]));
+  useFetchData(
+    useCallback(
+      () => (user?.email ? fetchHomeData(user?.email) : null),
+      [user?.email]
+    )
+  );
 
   if (error) {
     return <Alert severity="error">{t('home.error', { error })}</Alert>;
@@ -96,8 +101,8 @@ const Home = () => {
     <PageContainer>
       <PageHeader
         header={
-          user.firstName
-            ? t('home.page_title', { name: user.firstName })
+          user?.firstName
+            ? t('home.page_title', { name: user?.firstName })
             : t('home.document_title')
         }
       />

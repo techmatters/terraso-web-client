@@ -32,7 +32,7 @@ import OptionalAuthTopMessage from 'account/components/OptionalAuthTopMessage';
 const App = () => {
   const contentRef = useRef();
   const navigationRef = useRef();
-  const { isEmbedded, optionalAuth } = usePathParams();
+  const { isEmbedded, optionalAuth, hasNavigation } = usePathParams();
 
   if (isEmbedded || optionalAuth.isEmbedded) {
     return <Routes />;
@@ -50,7 +50,7 @@ const App = () => {
       >
         <Box id="header-container">
           <AppBar />
-          <Navigation ref={navigationRef} />
+          {hasNavigation && <Navigation ref={navigationRef} />}
         </Box>
         <Box
           component="main"
