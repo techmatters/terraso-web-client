@@ -205,9 +205,10 @@ const paths = [
     showBreadcrumbs: true,
     breadcrumbsLabel: 'storyMap.breadcrumbs_tool_home',
   }),
-  path('/tools/story-maps/new', StoryMapNew),
-  path('/tools/story-maps/:storyMapId/:slug/edit', StoryMapUpdate),
-  path('/tools/story-maps/:storyMapId/:slug/edit/embed', StoryMapUpdate, {
+  path('/tools/story-maps/new', StoryMapNew, {
+    isEmbedded: true,
+  }),
+  path('/tools/story-maps/:storyMapId/:slug/edit', StoryMapUpdate, {
     isEmbedded: true,
   }),
   path('/tools/story-maps/:storyMapId/:slug', UserStoryMap, {
