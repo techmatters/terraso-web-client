@@ -8,7 +8,7 @@
     },
     "user": {
         "sign_out": "Sign Out",
-        "sign_in": "Log In",
+        "sign_in": "Sign In",
         "account_created_message": "Your Terraso account has been created successfully with the following information. You can edit them any time.",
         "edit_profile_button": "Edit Profile Info",
         "full_name": "{{user.firstName}} {{user.lastName}}"
@@ -212,8 +212,8 @@
         "apple_login": "Sign in with Apple",
         "google_login": "Sign in with Google",
         "microsoft_login": "Sign in with Microsoft",
-        "login_document_title": "Log in",
-        "login_document_description": "Log in to Terraso",
+        "login_document_title": "Sign in",
+        "login_document_description": "Sign in to Terraso",
         "profile_document_title": "Account",
         "profile_document_description": "View and edit your Terraso profile and preferences",
         "profile_form_label": "Manage profile",
