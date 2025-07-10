@@ -8,7 +8,7 @@
     },
     "user": {
         "sign_out": "Sign Out",
-        "sign_in": "Log In",
+        "sign_in": "Sign In",
         "account_created_message": "Your Terraso account has been created successfully with the following information. You can edit them any time.",
         "edit_profile_button": "Edit Profile Info",
         "full_name": "{{user.firstName}} {{user.lastName}}"
@@ -199,7 +199,7 @@
         "profile": "Account Profile",
         "disclaimer": "If you don’t already have a Terraso account, signing in will create one in accordance with our <1>terms of service</1> and <2>privacy policy</2>.",
         "disclaimer_url": "https://techmatters.org/privacy-policy/",
-        "unauthenticated_message": "Your Terraso session has expired. Please log in again.",
+        "unauthenticated_message": "Your Terraso session has expired. Please sign in again.",
         "form_first_name_label_singular": "Given name",
         "form_first_name_label": "Given names",
         "form_last_name_label": "Family names",
@@ -212,8 +212,8 @@
         "apple_login": "Sign in with Apple",
         "google_login": "Sign in with Google",
         "microsoft_login": "Sign in with Microsoft",
-        "login_document_title": "Log in",
-        "login_document_description": "Log in to Terraso",
+        "login_document_title": "Sign in",
+        "login_document_description": "Sign in to Terraso",
         "profile_document_title": "Account",
         "profile_document_description": "View and edit your Terraso profile and preferences",
         "profile_form_label": "Manage profile",
@@ -1076,7 +1076,7 @@
         "approved_membership": "You have been added to “{{storyMapTitle}}”",
         "approve_invite_success": "You have been added to “{{storyMapTitle}}”",
         "approveMembership.update_not_allowed": "Unable to accept Story Map invitation",
-        "approveMembership.update_not_allowed_permissions_validation": "You can't accept the invitation to edit “{{storyMapTitle}}.” You must log in using the email address shown in the invitation.",
+        "approveMembership.update_not_allowed_permissions_validation": "You can't accept the invitation to edit “{{storyMapTitle}}.” You must sign in using the email address shown in the invitation.",
         "invite_document_title": "Story Map Invite"
     },
     "site": {

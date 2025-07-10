@@ -123,7 +123,7 @@ test('AppBar: Sign out', async () => {
   });
 });
 
-test('AppBar: Add log in referrer', async () => {
+test('AppBar: Add sign in referrer', async () => {
   const navigate = jest.fn();
   useNavigate.mockReturnValue(navigate);
 
@@ -146,7 +146,7 @@ test('AppBar: Add log in referrer', async () => {
   });
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Log In' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Sign In' }))
   );
 
   expect(navigate).toHaveBeenCalledWith(
