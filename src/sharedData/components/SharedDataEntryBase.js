@@ -98,7 +98,6 @@ const NameSection = ({
       }
       order={{ xs: 2, md: 2 }}
       component={StackRow}
-      sx={{ alignItems: 'center' }}
     >
       <EntryTypeIcon resourceType={dataEntry.resourceType} />
       <Restricted
