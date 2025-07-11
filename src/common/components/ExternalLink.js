@@ -31,6 +31,7 @@ const ExternalLink = ({
   linkProps,
   customTrackEvent,
   underlined = false,
+  sx,
 }) => {
   const { trackEvent } = useAnalytics();
 
@@ -58,6 +59,7 @@ const ExternalLink = ({
       {...(linkProps || {})}
       sx={{
         ...(underlined && { textDecoration: 'underline' }),
+        ...sx,
       }}
     >
       {children}
