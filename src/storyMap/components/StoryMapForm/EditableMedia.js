@@ -129,6 +129,8 @@ const getMediaSrc = (media, getMediaFile) => {
   return null;
 };
 
+// Calculate media height to avoid scroller jumps in story map editor
+// This is needed because media elements are loaded asynchronously
 const calculateImageHeight = imgElement => {
   if (!imgElement || !imgElement.naturalWidth || !imgElement.naturalHeight) {
     return MEDIA_CONFIG[MEDIA_TYPES.IMAGE].defaultHeight;
