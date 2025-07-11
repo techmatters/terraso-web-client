@@ -91,7 +91,6 @@ const SharedDataEntryLink = props => {
           alt={t('sharedData.link_label')}
           role="img"
           sx={{
-            marginTop: '0.6em',
             marginLeft: '-3px',
             paddingRight: '3px',
           }}
