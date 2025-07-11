@@ -251,7 +251,7 @@ const SharedDataEntryBase = props => {
     [sharedResource.dataEntry]
   );
   const processing = useSelector(
-    state => state.sharedData.processing[sharedResource.id]
+    _.get(`sharedData.processing.${sharedResource.id}`)
   );
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
