@@ -28,7 +28,7 @@ const ExternalLink = ({
   href,
   component,
   children,
-  linkProps,
+  linkProps: { sx, ...linkProps } = {},
   customTrackEvent,
   underlined = false,
 }) => {
@@ -58,6 +58,7 @@ const ExternalLink = ({
       {...(linkProps || {})}
       sx={{
         ...(underlined && { textDecoration: 'underline' }),
+        ...sx,
       }}
     >
       {children}
