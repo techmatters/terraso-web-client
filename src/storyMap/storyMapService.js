@@ -358,8 +358,8 @@ export const fetchDataLayers = () => {
             MEMBERSHIP_TYPE_CLOSED
         ),
         processing:
-          entry.node.mapboxTilesetStatus === TILESET_STATUS_PENDING &&
-          entry.node.mapboxTilesetId,
+          entry.node.mapboxTilesetStatus === TILESET_STATUS_PENDING ||
+          !entry.node.mapboxTilesetId,
         ...JSON.parse(entry.node.configuration),
       }))
     );
