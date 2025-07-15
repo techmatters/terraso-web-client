@@ -154,7 +154,7 @@ test('StoryMapInvite: Different user token', async () => {
 
   expect(
     within(screen.getByRole('alert')).getByText(
-      /You can't accept the invitation to edit “Story Map title.” You must log in using the email address shown in the invitation./i
+      /You can't accept the invitation to edit “Story Map title.” You must sign in using the email address shown in the invitation./i
     )
   ).toBeInTheDocument();
 
