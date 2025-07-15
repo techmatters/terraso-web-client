@@ -21,6 +21,7 @@ import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  Button,
   Grid,
   ListItem,
   ListItemButton,
@@ -38,8 +39,12 @@ import StepperStep from 'common/components/StepperStep';
 import PageLoader from 'layout/PageLoader';
 import { formatDate } from 'localization/utils';
 import SharedFileIcon from 'sharedData/components/SharedFileIcon';
-import { fetchDataEntries } from 'sharedData/sharedDataSlice';
+import {
+  fetchAllDataEntries,
+  fetchDataEntries,
+} from 'sharedData/sharedDataSlice';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
+import UploadFileDialog from 'storyMap/components/StoryMapForm/UploadFileDialog';
 
 import {
   DATA_SET_ACCPETED_EXTENSIONS,
@@ -75,13 +80,15 @@ const StackRow = props => (
 const SelectDataFileStep = props => {
   const dispatch = useDispatch();
   const { i18n, t } = useTranslation();
-  const { visualizationConfig } = useVisualizationContext();
+  const { visualizationConfig, restrictSourceToOwner } =
+    useVisualizationContext();
   const { onNext, onBack } = props;
   const { owner, entityType } = useCollaborationContext();
   const { data: sharedFiles, fetching } = useSelector(
     _.get('sharedData.dataEntries')
   );
   const [selected, setSelected] = useState();
+  const [uploadFileOpen, setFileUploadOpen] = useState(false);
 
   useEffect(() => {
     if (visualizationConfig?.selectedFile) {
@@ -90,21 +97,18 @@ const SelectDataFileStep = props => {
   }, [visualizationConfig?.selectedFile]);
 
   useEffect(() => {
-    dispatch(
-      fetchDataEntries({
-        targetSlug: owner.slug,
-        targetType: entityType,
-        resourceTypes: ACCEPTED_RESOURCE_TYPES,
-      })
-    );
-  }, [dispatch, owner.slug, entityType]);
-
-  // If there are no files to map, go back to the landscape/group index page.
-  useEffect(() => {
-    if (!fetching && _.isEmpty(sharedFiles)) {
-      onBack();
+    if (!uploadFileOpen) {
+      dispatch(
+        restrictSourceToOwner
+          ? fetchDataEntries({
+              targetSlug: owner.slug,
+              targetType: entityType,
+              resourceTypes: ACCEPTED_RESOURCE_TYPES,
+            })
+          : fetchAllDataEntries({ resourceTypes: ACCEPTED_RESOURCE_TYPES })
+      );
     }
-  }, [fetching, sharedFiles, onBack]);
+  }, [dispatch, owner.slug, entityType, restrictSourceToOwner, uploadFileOpen]);
 
   const onNextWrapper = () => {
     onNext(selected);
@@ -119,6 +123,15 @@ const SelectDataFileStep = props => {
       nextDisabled={!selected}
       onNext={onNextWrapper}
     >
+      <Button variant="contained" onClick={() => setFileUploadOpen(true)}>
+        Add a new file
+      </Button>
+      <UploadFileDialog
+        open={uploadFileOpen}
+        onClose={() => setFileUploadOpen(false)}
+        targetSlug={owner.slug}
+        targetType={entityType}
+      />
       <Paper variant="outlined" sx={{ p: 2 }}>
         <Trans i18nKey="sharedData.form_step_data_file_step_description">
           <Typography sx={{ mb: 2 }} id="visualization-file-requirements">

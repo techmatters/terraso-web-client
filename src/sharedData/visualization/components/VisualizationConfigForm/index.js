@@ -150,7 +150,7 @@ const Steps = props => {
 
 const VisualizationConfigForm = props => {
   const { t } = useTranslation();
-  const { onCompleteSuccess, onCancel } = props;
+  const { onCompleteSuccess, onCancel, restrictSourceToOwner = true } = props;
   const [visualizationConfig, setVisualizationConfig] =
     useState(INITIAL_CONFIG);
   const [isDirty, setIsDirty] = useState(false);
@@ -197,6 +197,7 @@ const VisualizationConfigForm = props => {
       <VisualizationContextProvider
         visualizationConfig={visualizationConfig}
         setVisualizationConfig={setVisualizationConfig}
+        restrictSourceToOwner={restrictSourceToOwner}
       >
         <Steps
           onReadFileFails={onReadFileFails}
