@@ -85,7 +85,7 @@ const colorTheme = createTheme({
       markerDefaultColor: '#FF580D',
     },
     richText: {
-      link: '#71B8D2',
+      link: '#32B4F4',
     },
   },
 });
