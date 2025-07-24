@@ -22,7 +22,6 @@ import { useSelector } from 'react-redux';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
-  Alert,
   List as BaseList,
   ListItem as BaseListItem,
   Box,
@@ -46,6 +45,8 @@ import { withProps } from 'react-hoc';
 
 import { formatDate } from 'localization/utils';
 import { fetchDataLayers } from 'storyMap/storyMapSlice';
+
+import CreateDataLayerDialog from './CreateDataLayerDialog';
 
 const List = withProps(BaseList, {
   component: withProps(Stack, { component: 'ul', spacing: 1 }),
@@ -139,6 +140,83 @@ const DataLayerListItem = props => {
   );
 };
 
+const SelectDataLayerSection = props => {
+  const { fetching, dataLayers, selected, setSelected } = props;
+  const { t } = useTranslation();
+
+  const validDataLayers = useMemo(
+    () => dataLayers, //.filter(dataLayer => !!dataLayer.tilesetId),
+    [dataLayers]
+  );
+
+  const sortedDataLayers = useMemo(() => {
+    return _.sortBy(
+      [dataLayer => dataLayer.title?.toLowerCase()],
+      validDataLayers
+    );
+  }, [validDataLayers]);
+
+  return (
+    <>
+      {fetching ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+          <CircularProgress aria-label={t('common.loader_label')} />
+        </Box>
+      ) : _.isEmpty(dataLayers) ? (
+        <></>
+      ) : (
+        <>
+          <Typography
+            id="data-layer-dialog-subtitle"
+            sx={{ fontWeight: 700, mt: 2 }}
+          >
+            {t(
+              'storyMap.form_location_add_data_layer_dialog_select_section_title'
+            )}
+          </Typography>
+          <Typography variant="caption" component="p" sx={{ mt: 1 }}>
+            {t('storyMap.form_location_add_data_layer_dialog_description')}
+          </Typography>
+          <Typography variant="caption" component="p" sx={{ mt: 3 }}>
+            {t('storyMap.form_location_add_data_layer_dialog_layers_count', {
+              count: dataLayers.length,
+            })}
+          </Typography>
+          <RadioGroup
+            value={selected}
+            onChange={event => setSelected(event.target.value)}
+          >
+            <List aria-labelledby="data-layer-dialog-subtitle">
+              {sortedDataLayers.map(dataLayer => (
+                <DataLayerListItem key={dataLayer.id} dataLayer={dataLayer} />
+              ))}
+            </List>
+          </RadioGroup>
+        </>
+      )}
+    </>
+  );
+};
+
+const CreateDataLayerSection = props => {
+  const { t } = useTranslation();
+  const { onCreate, title, open, setOpen } = props;
+
+  return (
+    <>
+      <Button variant="contained" onClick={() => setOpen(true)} autoFocus>
+        {t('storyMap.form_location_add_data_layer_dialog_create_new_layer')}
+      </Button>
+      <CreateDataLayerDialog
+        open={open}
+        onCreate={onCreate}
+        onClose={() => setOpen(false)}
+        title={title}
+      />
+    </>
+  );
+};
+
 const DataLayerDialog = props => {
   const { open, title, onClose, onConfirm } = props;
   const { t } = useTranslation();
@@ -152,19 +230,18 @@ const DataLayerDialog = props => {
     [dataLayers]
   );
 
-  const validDataLayers = useMemo(
-    () => dataLayers.filter(dataLayer => !!dataLayer.tilesetId),
-    [dataLayers]
+  const [createLayerOpen, setCreateLayerOpen] = useState(false);
+
+  useFetchData(
+    useCallback(() => {
+      if (open && !createLayerOpen) {
+        console.log('fetching!');
+        return fetchDataLayers();
+      } else {
+        return null;
+      }
+    }, [open, createLayerOpen])
   );
-
-  const sortedDataLayers = useMemo(() => {
-    return _.sortBy(
-      [dataLayer => dataLayer.title?.toLowerCase()],
-      validDataLayers
-    );
-  }, [validDataLayers]);
-
-  useFetchData(useCallback(() => (open ? fetchDataLayers() : null), [open]));
 
   const onConfirmWrapper = useCallback(() => {
     onConfirm(dataLayersById[selected]);
@@ -193,50 +270,17 @@ const DataLayerDialog = props => {
         )}
       </DialogTitle>
       <DialogContent>
-        <Typography
-          id="data-layer-dialog-subtitle"
-          sx={{ fontWeight: 700, mt: 2 }}
-        >
-          {t('storyMap.form_location_add_data_layer_dialog_subtitle')}
-        </Typography>
-        <Typography variant="caption" component="p" sx={{ mt: 1 }}>
-          {t('storyMap.form_location_add_data_layer_dialog_description')}
-        </Typography>
-        {fetching ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-            <CircularProgress aria-label={t('common.loader_label')} />
-          </Box>
-        ) : (
-          <>
-            {_.isEmpty(dataLayers) ? (
-              <Alert severity="info" sx={{ mt: 2 }}>
-                {t(
-                  'storyMap.form_location_add_data_layer_dialog_layers_count_zero'
-                )}
-              </Alert>
-            ) : (
-              <Typography variant="caption" component="p" sx={{ mt: 3 }}>
-                {t(
-                  'storyMap.form_location_add_data_layer_dialog_layers_count',
-                  {
-                    count: dataLayers.length,
-                  }
-                )}
-              </Typography>
-            )}
-
-            <RadioGroup
-              value={selected}
-              onChange={event => setSelected(event.target.value)}
-            >
-              <List aria-labelledby="data-layer-dialog-subtitle">
-                {sortedDataLayers.map(dataLayer => (
-                  <DataLayerListItem key={dataLayer.id} dataLayer={dataLayer} />
-                ))}
-              </List>
-            </RadioGroup>
-          </>
-        )}
+        <CreateDataLayerSection
+          open={createLayerOpen}
+          setOpen={setCreateLayerOpen}
+          title={title}
+        />
+        <SelectDataLayerSection
+          fetching={fetching}
+          selected={selected}
+          setSelected={setSelected}
+          dataLayers={dataLayers}
+        />
       </DialogContent>
       <DialogActions
         sx={{
@@ -250,7 +294,6 @@ const DataLayerDialog = props => {
         <Button
           variant="contained"
           onClick={onConfirmWrapper}
-          autoFocus
           disabled={fetching || _.isEmpty(selected)}
         >
           {t('storyMap.form_location_add_data_layer_confirm')}

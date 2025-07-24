@@ -39,7 +39,12 @@ export const VisualizationContext = React.createContext();
 
 export const VisualizationContextProvider = props => {
   const dispatch = useDispatch();
-  const { visualizationConfig, setVisualizationConfig, children } = props;
+  const {
+    visualizationConfig,
+    setVisualizationConfig,
+    restrictSourceToOwner = true,
+    children,
+  } = props;
   const [fileContext, setFileContext] = useState({});
   const [loadingFile, setLoadingFile] = useState(true);
   const [loadingFileError, setLoadingFileError] = useState();
@@ -137,6 +142,7 @@ export const VisualizationContextProvider = props => {
       value={{
         visualizationConfig,
         setVisualizationConfig,
+        restrictSourceToOwner,
         fileContext,
         loadingFile,
         loadingFileError,

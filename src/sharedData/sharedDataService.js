@@ -158,6 +158,27 @@ export const fetchDataEntries = ({
     .then(edges => edges.map(edge => extractDataEntry(edge.node)));
 };
 
+export const fetchAllDataEntries = ({ resourceTypes = ALL_RESOURCE_TYPES }) => {
+  const query = graphql(`
+    query allDataEntries($resourceTypes: [String]!) {
+      dataEntries(resourceType_In: $resourceTypes) {
+        edges {
+          node {
+            ...dataEntry
+            ...dataEntryVisualizations
+          }
+        }
+      }
+    }
+  `);
+  return terrasoApi
+    .requestGraphQL(query, {
+      resourceTypes,
+    })
+    .then(_.get('dataEntries.edges'))
+    .then(edges => edges.map(edge => extractDataEntry(edge.node)));
+};
+
 export const fetchDataEntriesWithGeojson = ({ id }) => {
   const query = graphql(`
     query dataEntryWithGeojson($id: ID!) {

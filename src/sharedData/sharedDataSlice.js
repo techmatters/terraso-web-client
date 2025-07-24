@@ -88,6 +88,11 @@ export const fetchDataEntries = createAsyncThunk(
   sharedDataService.fetchDataEntries
 );
 
+export const fetchAllDataEntries = createAsyncThunk(
+  'sharedData/fetchAllDataEntries',
+  sharedDataService.fetchAllDataEntries
+);
+
 export const addVisualizationConfig = createAsyncThunk(
   'sharedData/addVisualizationConfig',
   sharedDataService.addVisualizationConfig,
@@ -306,6 +311,22 @@ const sharedDataSlice = createSlice({
     }));
 
     builder.addCase(fetchDataEntries.fulfilled, (state, action) => ({
+      ...state,
+      dataEntries: {
+        fetching: false,
+        data: action.payload,
+      },
+    }));
+
+    builder.addCase(fetchAllDataEntries.pending, (state, action) => ({
+      ...state,
+      dataEntries: {
+        fetching: true,
+        data: null,
+      },
+    }));
+
+    builder.addCase(fetchAllDataEntries.fulfilled, (state, action) => ({
       ...state,
       dataEntries: {
         fetching: false,
