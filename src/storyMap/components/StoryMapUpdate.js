@@ -63,7 +63,7 @@ const StoryMapUpdate = props => {
       return;
     }
 
-    const { title, slug, storyMapId, published } = saved;
+    const { slug, storyMapId, published } = saved;
     setSaved(null);
     const url = generateStoryMapUrl({ slug, storyMapId });
 
@@ -84,15 +84,13 @@ const StoryMapUpdate = props => {
       return;
     }
 
-    if (title !== storyMap?.title) {
-      window.history.replaceState(
-        null,
-        t('storyMap.edit_document_title', {
-          name: _.get('title', storyMap),
-        }),
-        generateStoryMapEditUrl({ slug, storyMapId })
-      );
-    }
+    window.history.replaceState(
+      null,
+      t('storyMap.edit_document_title', {
+        name: _.get('title', storyMap),
+      }),
+      generateStoryMapEditUrl({ slug, storyMapId })
+    );
   }, [storyMap, navigate, trackEvent, saved, t, dispatch]);
 
   const save = useCallback(
