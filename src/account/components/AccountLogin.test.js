@@ -17,6 +17,7 @@
 
 import { render, screen } from 'tests/utils';
 import React from 'react';
+import queryString from 'query-string';
 import { useNavigate, useSearchParams } from 'react-router';
 import * as accountService from 'terraso-client-shared/account/accountService';
 
@@ -59,9 +60,32 @@ test('AccountLogin: Display buttons', async () => {
   );
   await render(<AccountLogin />);
   expect(screen.getByText('Sign in with Google')).toBeInTheDocument();
+
+  // Replicate the logic from AccountLogin to get expected URL
+  const referrer = '/'; // Default referrer when none is set
+  const redirectUrl = queryString.stringifyUrl({
+    url: 'account',
+    query: {
+      referrerBase64: btoa(referrer),
+    },
+  });
+  const stateObj = {
+    redirectUrl,
+    origin: window.location.origin,
+  };
+  const state = btoa(JSON.stringify(stateObj));
+
+  const expectedUrl = queryString.stringifyUrl({
+    url: 'google.url',
+    query: {
+      param: 'value',
+      state,
+    },
+  });
+
   expect(screen.getByText('Sign in with Google')).toHaveAttribute(
     'href',
-    `google.url?param=value`
+    expectedUrl
   );
   expect(screen.getByText('Sign in with Apple')).toBeInTheDocument();
 });
@@ -79,15 +103,44 @@ test('AccountLogin: Add referrer', async () => {
   );
   await render(<AccountLogin />);
   expect(screen.getByText('Sign in with Google')).toBeInTheDocument();
-  const state = `account%3FreferrerBase64%3D${btoa(referrer)}`;
+
+  // Replicate the logic from AccountLogin to get expected URL
+  const redirectUrl = queryString.stringifyUrl({
+    url: 'account',
+    query: {
+      referrerBase64: btoa(referrer),
+    },
+  });
+  const stateObj = {
+    redirectUrl,
+    origin: window.location.origin,
+  };
+  const state = btoa(JSON.stringify(stateObj));
+
+  const expectedGoogleUrl = queryString.stringifyUrl({
+    url: 'google.url',
+    query: {
+      param: 'value',
+      state,
+    },
+  });
+
+  const expectedAppleUrl = queryString.stringifyUrl({
+    url: 'apple.url',
+    query: {
+      param: 'value',
+      state,
+    },
+  });
+
   expect(screen.getByText('Sign in with Google')).toHaveAttribute(
     'href',
-    `google.url?param=value&state=${state}`
+    expectedGoogleUrl
   );
   expect(screen.getByText('Sign in with Apple')).toBeInTheDocument();
   expect(screen.getByText('Sign in with Apple')).toHaveAttribute(
     'href',
-    `apple.url?param=value&state=${state}`
+    expectedAppleUrl
   );
 });
 
