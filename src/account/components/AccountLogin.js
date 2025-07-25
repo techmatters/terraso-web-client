@@ -15,7 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
+import queryString from 'query-string';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { fetchAuthURLs } from 'terraso-client-shared/account/accountSlice';
@@ -53,7 +54,35 @@ const AccountForm = () => {
 
   useFetchData(fetchAuthURLs);
 
-  const { goToReferrer, appendReferrerBase64 } = useReferrer();
+  const { referrer, goToReferrer } = useReferrer();
+
+  const appendNavigationState = useCallback(
+    url => {
+      const parsedUrl = queryString.parseUrl(url);
+      const redirectUrl = queryString.stringifyUrl({
+        url: 'account',
+        query: {
+          referrerBase64: btoa(referrer),
+        },
+      });
+
+      const state = btoa(
+        JSON.stringify({
+          redirectUrl,
+          origin: window.location.origin,
+        })
+      );
+
+      return queryString.stringifyUrl({
+        ...parsedUrl,
+        query: {
+          ...parsedUrl.query,
+          state,
+        },
+      });
+    },
+    [referrer]
+  );
 
   useEffect(() => {
     if (!hasToken) {
@@ -99,7 +128,7 @@ const AccountForm = () => {
               startIcon={
                 <GoogleIcon sx={{ paddingLeft: '3px', paddingRight: '5px' }} />
               }
-              href={appendReferrerBase64(urls.google)}
+              href={appendNavigationState(urls.google)}
               onClick={() =>
                 trackEvent('user.login', { props: { source: 'google' } })
               }
@@ -116,7 +145,7 @@ const AccountForm = () => {
                   sx={{ paddingLeft: '24px', paddingRight: '5px' }}
                 />
               }
-              href={appendReferrerBase64(urls.microsoft)}
+              href={appendNavigationState(urls.microsoft)}
               onClick={() =>
                 trackEvent('user.login', { props: { source: 'microsoft' } })
               }
@@ -129,7 +158,7 @@ const AccountForm = () => {
             <Button
               variant="outlined"
               startIcon={<AppleIcon sx={{ paddingRight: '5px' }} />}
-              href={appendReferrerBase64(urls.apple)}
+              href={appendNavigationState(urls.apple)}
               onClick={() =>
                 trackEvent('user.login', { props: { source: 'apple' } })
               }

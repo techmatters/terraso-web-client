@@ -21,6 +21,7 @@ import { matchPath, Route, Routes, useLocation } from 'react-router';
 import { withProps } from 'react-hoc';
 
 import NotFound from 'layout/NotFound';
+import AccountAuthCallback from 'account/components/AccountAuthCallback';
 import AccountLogin from 'account/components/AccountLogin';
 import AccountProfile from 'account/components/AccountProfile';
 import OptionalAuth from 'account/components/OptionalAuth';
@@ -196,6 +197,7 @@ const paths = [
     breadcrumbsLabel: 'tools.breadcrumbs_list',
   }),
   path('/account', AccountLogin, { auth: false }),
+  path('/account/auth-callback', AccountAuthCallback, { auth: false }),
   path('/account/profile/:completeProfile', AccountProfile),
   path('/account/profile', AccountProfile),
   path('/contact', ContactForm),
