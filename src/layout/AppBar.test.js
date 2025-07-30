@@ -115,9 +115,13 @@ test('AppBar: Sign out', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Sign Out' }))
   );
-  expect(Cookies.remove).toHaveBeenCalledTimes(2);
-  const saveCall = Cookies.remove.mock.calls[1];
+  expect(Cookies.remove).toHaveBeenCalledTimes(4);
+  const saveCall = Cookies.remove.mock.calls[0];
   expect(saveCall[1]).toStrictEqual({
+    path: '/',
+  });
+  const saveCall2 = Cookies.remove.mock.calls[1];
+  expect(saveCall2[1]).toStrictEqual({
     domain: '127.0.0.1',
     path: '/',
   });
