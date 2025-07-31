@@ -166,17 +166,6 @@ const SelectDataLayerSection = props => {
         <></>
       ) : (
         <>
-          <Typography
-            id="data-layer-dialog-subtitle"
-            sx={{ fontWeight: 700, mt: 2 }}
-          >
-            {t(
-              'storyMap.form_location_add_data_layer_dialog_select_section_title'
-            )}
-          </Typography>
-          <Typography variant="caption" component="p" sx={{ mt: 1 }}>
-            {t('storyMap.form_location_add_data_layer_dialog_description')}
-          </Typography>
           <Typography variant="caption" component="p" sx={{ mt: 3 }}>
             {t('storyMap.form_location_add_data_layer_dialog_layers_count', {
               count: dataLayers.length,
@@ -269,7 +258,7 @@ const DataLayerDialog = props => {
           <>{t('storyMap.form_location_add_data_layer_dialog_title_blank')}</>
         )}
       </DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{ paddingTop: 2 }}>
         <CreateDataLayerSection
           open={createLayerOpen}
           setOpen={setCreateLayerOpen}

@@ -18,7 +18,7 @@
 import React, { useEffect, useState } from 'react';
 import { filesize } from 'filesize';
 import _ from 'lodash/fp';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
@@ -26,14 +26,12 @@ import {
   ListItem,
   ListItemButton,
   ListItemIcon,
-  Paper,
   Radio,
   Stack,
   Typography,
 } from '@mui/material';
 
 import { useCollaborationContext } from 'collaboration/collaborationContext';
-import ExternalLink from 'common/components/ExternalLink';
 import List from 'common/components/List';
 import StepperStep from 'common/components/StepperStep';
 import PageLoader from 'layout/PageLoader';
@@ -46,15 +44,7 @@ import {
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 import UploadFileDialog from 'storyMap/components/StoryMapForm/UploadFileDialog';
 
-import {
-  DATA_SET_ACCPETED_EXTENSIONS,
-  MAP_DATA_ACCEPTED_EXTENSIONS,
-} from 'config';
-
-const ACCEPTED_RESOURCE_TYPES = [
-  ...MAP_DATA_ACCEPTED_EXTENSIONS,
-  ...DATA_SET_ACCPETED_EXTENSIONS,
-];
+import { MAP_LAYER_ACCEPTED_EXTENSIONS } from 'config';
 
 const TYPE_LABEL = {
   csv: 'CSV',
@@ -103,9 +93,11 @@ const SelectDataFileStep = props => {
           ? fetchDataEntries({
               targetSlug: owner.slug,
               targetType: entityType,
-              resourceTypes: ACCEPTED_RESOURCE_TYPES,
+              resourceTypes: MAP_LAYER_ACCEPTED_EXTENSIONS,
             })
-          : fetchAllDataEntries({ resourceTypes: ACCEPTED_RESOURCE_TYPES })
+          : fetchAllDataEntries({
+              resourceTypes: MAP_LAYER_ACCEPTED_EXTENSIONS,
+            })
       );
     }
   }, [dispatch, owner.slug, entityType, restrictSourceToOwner, uploadFileOpen]);
@@ -132,84 +124,58 @@ const SelectDataFileStep = props => {
         targetSlug={owner.slug}
         targetType={entityType}
       />
-      <Paper variant="outlined" sx={{ p: 2 }}>
-        <Trans i18nKey="sharedData.form_step_data_file_step_description">
-          <Typography sx={{ mb: 2 }} id="visualization-file-requirements">
-            first
-          </Typography>
-          <Stack
-            component="ul"
-            spacing={1}
-            sx={{ mb: 2 }}
-            aria-labelledby="visualization-file-requirements"
+      <List aria-labelledby="main-heading">
+        {fetching && <PageLoader />}
+        {sharedFiles?.map(file => (
+          <ListItem
+            key={file.id}
+            aria-labelledby={`selectable-file-${file.id}`}
           >
-            <li>Requirement 1</li>
-            <li>Requirement 2</li>
-          </Stack>
-          <Typography sx={{ mb: 2 }}>
-            Recommendation
-            <ExternalLink
-              href={t(
-                'sharedData.form_step_data_file_step_description_help_url'
-              )}
+            <ListItemButton
+              role={undefined}
+              onClick={() => setSelected(file)}
+              dense
             >
-              help link
-            </ExternalLink>
-          </Typography>
-        </Trans>
-        <List aria-labelledby="main-heading">
-          {fetching && <PageLoader />}
-          {sharedFiles?.map(file => (
-            <ListItem
-              key={file.id}
-              aria-labelledby={`selectable-file-${file.id}`}
-            >
-              <ListItemButton
-                role={undefined}
-                onClick={() => setSelected(file)}
-                dense
+              <ListItemIcon>
+                <Radio
+                  edge="start"
+                  checked={file?.id === selected?.id}
+                  tabIndex={-1}
+                  slotProps={{
+                    input: {
+                      'aria-labelledby': `selectable-file-${file.id}`,
+                    },
+                  }}
+                />
+              </ListItemIcon>
+              <Grid
+                container
+                sx={{ fontSize: 14, color: 'gray.dark1', flexGrow: 1 }}
+                spacing={1}
               >
-                <ListItemIcon>
-                  <Radio
-                    edge="start"
-                    checked={file?.id === selected?.id}
-                    tabIndex={-1}
-                    slotProps={{
-                      input: {
-                        'aria-labelledby': `selectable-file-${file.id}`,
-                      },
-                    }}
-                  />
-                </ListItemIcon>
-                <Grid
-                  container
-                  sx={{ fontSize: 14, color: 'gray.dark1', flexGrow: 1 }}
-                  spacing={1}
-                >
-                  <Grid size={{ xs: 12, md: 6 }} component={StackRow}>
-                    <SharedFileIcon resourceType={file.resourceType} />
-                    <Typography id={`selectable-file-${file.id}`}>
-                      {file.name}
-                    </Typography>
-                  </Grid>
-                  <Grid size={{ xs: 3, md: 1 }}>
-                    {TYPE_LABEL[file.resourceType]}
-                  </Grid>
-                  <Grid size={{ xs: 2, md: 1 }}>
-                    {filesize(file.size, { round: 0 })}
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    {t('sharedData.form_step_data_file_step_created_at', {
-                      date: formatDate(i18n.resolvedLanguage, file.createdAt),
-                      user: file.createdBy,
-                    })}
-                  </Grid>
+                <Grid size={{ xs: 12, md: 6 }} component={StackRow}>
+                  <SharedFileIcon resourceType={file.resourceType} />
+                  <Typography id={`selectable-file-${file.id}`}>
+                    {file.name}
+                  </Typography>
                 </Grid>
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Paper>
+                <Grid size={{ xs: 3, md: 1 }}>
+                  {TYPE_LABEL[file.resourceType]}
+                </Grid>
+                <Grid size={{ xs: 2, md: 1 }}>
+                  {filesize(file.size, { round: 0 })}
+                </Grid>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  {t('sharedData.form_step_data_file_step_created_at', {
+                    date: formatDate(i18n.resolvedLanguage, file.createdAt),
+                    user: file.createdBy,
+                  })}
+                </Grid>
+              </Grid>
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
     </StepperStep>
   );
 };
