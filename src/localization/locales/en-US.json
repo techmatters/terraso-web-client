@@ -159,7 +159,6 @@
                 "Collect data offline and online",
                 "Analyze and manage data"
             ],
-            "requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
             "external": "true"
         },
         "landscale": {
@@ -177,7 +176,22 @@
                 "Validate results through LandScale validation and local review",
                 "Publish results on the LandScale platform"
             ],
-            "requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
+            "external": "true"
+        },
+        "learning_landscapes": {
+            "title": "Learning Landscapes",
+            "url": "https://learn.landscapes.global/",
+            "learn_more_url": "https://landscapes.global/",
+            "img": {
+                "height": "140",
+                "width": "250",
+                "src": "tools/learning-landscapes-screenshot.png",
+                "alt": "A list of chapters in a course, with one chapter selected."
+            },
+            "description": [
+                "Learn how to practice Integrated Landscape Management",
+                "Develop your skills to achieve ILM outputs"
+            ],
             "external": "true"
         },
         "storyMap": {
@@ -191,7 +205,7 @@
                 "caption": "Rocky Hill’s Story Map"
             },
             "description": ["Create beautiful map-based stories"],
-            "requirements": "Modern web browser (Chrome, Edge, Firefox, Safari)",
+            "": "Modern web browser (Chrome, Edge, Firefox, Safari)",
             "external": "false"
         }
     },
