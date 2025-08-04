@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
 
       - name: Check for Conventional Commits
-        uses: agenthunt/conventional-commit-checker-action@v2.0.0
+        uses: agenthunt/conventional-commit-checker-action@9e552d650d0e205553ec7792d447929fc78e012b # v2.0.0
