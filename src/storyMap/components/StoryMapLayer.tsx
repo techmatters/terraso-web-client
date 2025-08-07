@@ -18,7 +18,7 @@ type Props = {
 export const StoryMapLayer = ({
   config,
   changeBounds,
-  opacity = 1.0,
+  opacity,
   useConfigBounds = false,
 }: Props) => {
   const useTileset =
