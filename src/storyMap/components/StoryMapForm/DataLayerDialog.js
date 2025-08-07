@@ -27,7 +27,6 @@ import {
   Box,
   Button,
   Card,
-  Chip,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -68,18 +67,9 @@ const DataLayerListItem = props => {
   const { i18n, t } = useTranslation();
   const { dataLayer } = props;
 
-  const processing = dataLayer.processing;
-  const opacity = dataLayer.processing ? 0.5 : 1;
-
   return (
     <ListItem aria-label={dataLayer.title}>
-      {processing && (
-        <Chip
-          label={t('storyMap.form_location_add_data_layer_dialog_processing')}
-          sx={{ gridColumn: '1/4', justifySelf: 'flex-start', mb: 1 }}
-        />
-      )}
-      <ListItemIcon sx={{ gridColumn: '1/2', opacity }}>
+      <ListItemIcon sx={{ gridColumn: '1/2' }}>
         <Radio
           value={dataLayer.id}
           edge="start"
@@ -89,7 +79,6 @@ const DataLayerListItem = props => {
               'aria-label': dataLayer.title,
             },
           }}
-          disabled={Boolean(processing)}
         />
       </ListItemIcon>
       <Typography
@@ -99,7 +88,6 @@ const DataLayerListItem = props => {
           fontWeight: '700',
           fontSize: '16px',
           color: 'blue.dark1',
-          opacity,
         }}
       >
         {dataLayer.title}
@@ -108,29 +96,28 @@ const DataLayerListItem = props => {
         sx={{
           gridColumn: '2/3',
           color: 'blue.dark1',
-          opacity,
         }}
       >
         {dataLayer.dataEntry.sharedResources.join(', ')}
       </Typography>
-      <Typography sx={{ gridColumn: '3/4', opacity }}>
+      <Typography sx={{ gridColumn: '3/4' }}>
         {t('sharedData.file_date_and_author', {
           date: formatDate(i18n.resolvedLanguage, dataLayer.createdAt),
           user: dataLayer.createdBy,
         })}
       </Typography>
       {dataLayer.description && (
-        <Typography variant="caption" sx={{ gridColumn: '2/4', opacity }}>
+        <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
           {dataLayer.description}
         </Typography>
       )}
-      <Typography variant="caption" sx={{ gridColumn: '2/4', opacity }}>
+      <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
         {t('storyMap.form_location_add_data_layer_dialog_source_file', {
           filename: `${dataLayer.dataEntry.name}.${dataLayer.dataEntry.resourceType}`,
         })}
       </Typography>
       {dataLayer.isRestricted && (
-        <Typography variant="caption" sx={{ gridColumn: '2/4', opacity }}>
+        <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
           {t('storyMap.form_location_add_data_layer_dialog_restricted', {
             user: dataLayer.dataEntry.createdBy,
           })}
@@ -224,7 +211,6 @@ const DataLayerDialog = props => {
   useFetchData(
     useCallback(() => {
       if (open && !createLayerOpen) {
-        console.log('fetching!');
         return fetchDataLayers();
       } else {
         return null;
@@ -235,6 +221,14 @@ const DataLayerDialog = props => {
   const onConfirmWrapper = useCallback(() => {
     onConfirm(dataLayersById[selected]);
   }, [onConfirm, selected, dataLayersById]);
+
+  const onCreate = useCallback(
+    dataLayer => {
+      onConfirm(dataLayer);
+      setCreateLayerOpen(false);
+    },
+    [onConfirm]
+  );
 
   return (
     <Dialog
@@ -263,6 +257,7 @@ const DataLayerDialog = props => {
           open={createLayerOpen}
           setOpen={setCreateLayerOpen}
           title={title}
+          onCreate={onCreate}
         />
         <SelectDataLayerSection
           fetching={fetching}

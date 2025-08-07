@@ -43,8 +43,7 @@ import Map, { useMap } from 'gis/components/Map';
 import MapControls from 'gis/components/MapControls';
 import MapGeocoder from 'gis/components/MapGeocoder';
 import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
-import VisualizationMapLayer from 'sharedData/visualization/components/VisualizationMapLayer';
-import VisualizationMapRemoteSource from 'sharedData/visualization/components/VisualizationMapRemoteSource';
+import { StoryMapLayer } from 'storyMap/components/StoryMapLayer';
 
 import DataLayerDialog from './DataLayerDialog';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
@@ -376,20 +375,11 @@ const MapLocationDialog = props => {
           />
           <MapLocationChange onPositionChange={handlePositionChange} />
           {dataLayerConfig && (
-            <>
-              <VisualizationMapRemoteSource
-                sourceName={dataLayerConfig.id}
-                visualizationConfig={dataLayerConfig}
-              />
-              <VisualizationMapLayer
-                sourceName={dataLayerConfig.id}
-                visualizationConfig={dataLayerConfig}
-                showPopup={false}
-                useTileset={true}
-                useConfigBounds={true}
-                changeBounds={changeBounds}
-              />
-            </>
+            <StoryMapLayer
+              config={dataLayerConfig}
+              useConfigBounds={true}
+              changeBounds={changeBounds}
+            />
           )}
         </Map>
       </DialogContent>

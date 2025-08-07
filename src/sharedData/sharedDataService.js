@@ -209,6 +209,33 @@ export const addVisualizationConfig = ({
     ) {
       addVisualizationConfig(input: $input) {
         visualizationConfig {
+          ...visualizationConfigWithConfiguration
+          geojson
+          dataEntry {
+            name
+            resourceType
+            createdBy {
+              lastName
+              firstName
+            }
+            sharedResources {
+              edges {
+                node {
+                  target {
+                    ... on GroupNode {
+                      name
+                      membershipList {
+                        membershipType
+                      }
+                    }
+                    ... on LandscapeNode {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          }
           slug
           readableId
         }
@@ -230,7 +257,12 @@ export const addVisualizationConfig = ({
         ownerType,
       },
     })
-    .then(_.get('addVisualizationConfig.visualizationConfig'));
+    .then(_.get('addVisualizationConfig.visualizationConfig'))
+    .then(({ geojson, configuration, ...rest }) => ({
+      ...rest,
+      ...JSON.parse(configuration),
+      geojson: JSON.parse(geojson),
+    }));
 };
 
 export const deleteVisualizationConfig = config => {

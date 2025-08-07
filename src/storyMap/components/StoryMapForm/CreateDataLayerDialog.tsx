@@ -16,11 +16,13 @@ import { useStoryMapConfigContext } from './storyMapConfigContext';
 type CreateDataLayerDialogProps = {
   open: boolean;
   onClose: () => void;
+  onCreate: (dataLayerConfig: any) => void;
   title?: string;
 };
 const CreateDataLayerDialog = ({
   open,
   onClose,
+  onCreate,
   title,
 }: CreateDataLayerDialogProps) => {
   const { t } = useTranslation();
@@ -64,7 +66,7 @@ const CreateDataLayerDialog = ({
       <DialogContent>
         <CollaborationContextProvider owner={storyMap} entityType="story_map">
           <VisualizationConfigForm
-            onCompleteSuccess={onClose}
+            onCompleteSuccess={onCreate}
             onCancel={onClose}
             restrictSourceToOwner={false}
           />

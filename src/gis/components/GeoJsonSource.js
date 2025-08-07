@@ -33,6 +33,8 @@ const GeoJsonSource = props => {
       data: geoJson ? geoJson : { type: 'FeatureCollection', features: [] },
     });
   }, [id, map, addSource, geoJson]);
+
+  return null;
 };
 
 export default GeoJsonSource;
