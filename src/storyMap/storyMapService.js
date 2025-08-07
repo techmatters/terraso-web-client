@@ -301,10 +301,10 @@ export const approveMembershipToken = ({ membership, token, accountEmail }) => {
     }));
 };
 
-export const fetchDataLayers = () => {
+export const fetchDataLayers = ({ ownerId }) => {
   const query = graphql(`
-    query visualizationConfigs {
-      visualizationConfigs {
+    query visualizationConfigs($ownerId: UUID!) {
+      visualizationConfigs(ownerObjectId: $ownerId) {
         edges {
           node {
             ...visualizationConfigWithConfiguration
@@ -340,7 +340,7 @@ export const fetchDataLayers = () => {
     }
   `);
   return terrasoApi
-    .requestGraphQL(query)
+    .requestGraphQL(query, { ownerId })
     .then(_.get('visualizationConfigs.edges'))
     .then(list => list || Promise.reject('not_found'))
     .then(list =>

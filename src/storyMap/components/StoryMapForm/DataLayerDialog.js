@@ -43,6 +43,7 @@ import {
 import { withProps } from 'react-hoc';
 
 import { formatDate } from 'localization/utils';
+import { useStoryMapConfigContext } from 'storyMap/components/StoryMapForm/storyMapConfigContext';
 import { fetchDataLayers } from 'storyMap/storyMapSlice';
 
 import CreateDataLayerDialog from './CreateDataLayerDialog';
@@ -200,6 +201,7 @@ const DataLayerDialog = props => {
     state => state.storyMap.dataLayers
   );
   const [selected, setSelected] = useState('');
+  const { storyMap } = useStoryMapConfigContext();
 
   const dataLayersById = useMemo(
     () => (_.isEmpty(dataLayers) ? {} : _.keyBy('id', dataLayers)),
@@ -211,11 +213,11 @@ const DataLayerDialog = props => {
   useFetchData(
     useCallback(() => {
       if (open && !createLayerOpen) {
-        return fetchDataLayers();
+        return fetchDataLayers({ ownerId: storyMap.id });
       } else {
         return null;
       }
-    }, [open, createLayerOpen])
+    }, [open, createLayerOpen, storyMap.id])
   );
 
   const onConfirmWrapper = useCallback(() => {
