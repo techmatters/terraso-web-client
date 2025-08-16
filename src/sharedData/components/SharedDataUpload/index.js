@@ -175,37 +175,41 @@ const SharedDataUpload = props => {
 
   return (
     <>
-      <Paper component={Stack} spacing={2} variant="outlined" sx={{ p: 1 }}>
-        <TabContext value={section}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <TabList
-              onChange={(event, newValue) => setSection(newValue)}
-              aria-label="lab API tabs example"
-            >
-              <Tab
-                label={t('sharedData.tab_files', {
-                  count: showSummary ? 0 : filesPending.length,
-                })}
-                value="files"
-              />
-              <Tab
-                label={t('sharedData.tab_links', {
-                  count: showSummary ? 0 : linksPending.length,
-                })}
-                value="links"
-              />
-            </TabList>
-          </Box>
-          <ShareDataUploadContextProvider showSummary={showSummary}>
-            <TabPanel value="files">
-              <ShareDataFiles filesState={filesState} />
-            </TabPanel>
-            <TabPanel value="links">
-              <ShareDataLinks linksState={linksState} />
-            </TabPanel>
-          </ShareDataUploadContextProvider>
-        </TabContext>
-      </Paper>
+      {entityType === 'story_map' ? (
+        <ShareDataFiles filesState={filesState} />
+      ) : (
+        <Paper component={Stack} spacing={2} variant="outlined" sx={{ p: 1 }}>
+          <TabContext value={section}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <TabList
+                onChange={(event, newValue) => setSection(newValue)}
+                aria-label="lab API tabs example"
+              >
+                <Tab
+                  label={t('sharedData.tab_files', {
+                    count: showSummary ? 0 : filesPending.length,
+                  })}
+                  value="files"
+                />
+                <Tab
+                  label={t('sharedData.tab_links', {
+                    count: showSummary ? 0 : linksPending.length,
+                  })}
+                  value="links"
+                />
+              </TabList>
+            </Box>
+            <ShareDataUploadContextProvider showSummary={showSummary}>
+              <TabPanel value="files">
+                <ShareDataFiles filesState={filesState} />
+              </TabPanel>
+              <TabPanel value="links">
+                <ShareDataLinks linksState={linksState} />
+              </TabPanel>
+            </ShareDataUploadContextProvider>
+          </TabContext>
+        </Paper>
+      )}
       {showSummary && errorCount > 0 && (
         <Stack
           direction="row"

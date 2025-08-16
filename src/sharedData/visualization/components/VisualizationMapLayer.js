@@ -67,6 +67,14 @@ const getSourceBounds = async (map, sourceId) => {
   }
 
   const calculatedBbox = bbox(loadedSource._data);
+  if (
+    calculatedBbox.some(
+      value => !value || value === Infinity || value === -Infinity
+    )
+  ) {
+    return;
+  }
+
   return new mapboxgl.LngLatBounds(
     [calculatedBbox[0], calculatedBbox[1]],
     [calculatedBbox[2], calculatedBbox[3]]

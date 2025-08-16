@@ -301,13 +301,14 @@ export const approveMembershipToken = ({ membership, token, accountEmail }) => {
     }));
 };
 
-export const fetchDataLayers = () => {
+export const fetchDataLayers = ({ ownerId }) => {
   const query = graphql(`
-    query visualizationConfigs {
-      visualizationConfigs {
+    query visualizationConfigs($ownerId: UUID!) {
+      visualizationConfigs(ownerObjectId: $ownerId) {
         edges {
           node {
             ...visualizationConfigWithConfiguration
+            geojson
             dataEntry {
               name
               resourceType
@@ -339,12 +340,12 @@ export const fetchDataLayers = () => {
     }
   `);
   return terrasoApi
-    .requestGraphQL(query)
+    .requestGraphQL(query, { ownerId })
     .then(_.get('visualizationConfigs.edges'))
     .then(list => list || Promise.reject('not_found'))
     .then(list =>
       list.map(entry => ({
-        ..._.omit('configuration', entry.node),
+        ..._.omit(['configuration', 'geojson'], entry.node),
         tilesetId: entry.node.mapboxTilesetId,
         dataEntry: {
           ...entry.node.dataEntry,
@@ -358,9 +359,10 @@ export const fetchDataLayers = () => {
             MEMBERSHIP_TYPE_CLOSED
         ),
         processing:
-          entry.node.mapboxTilesetStatus === TILESET_STATUS_PENDING &&
-          entry.node.mapboxTilesetId,
+          entry.node.mapboxTilesetStatus === TILESET_STATUS_PENDING ||
+          !entry.node.mapboxTilesetId,
         ...JSON.parse(entry.node.configuration),
+        geojson: JSON.parse(entry.node.geojson),
       }))
     );
 };

@@ -41,6 +41,7 @@ import {
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { styled } from '@mui/system';
 
+import { useCollaborationContext } from 'collaboration/collaborationContext';
 import BaseDropZone from 'common/components/DropZone';
 import FormField from 'forms/components/FormField';
 import { MAX_DESCRIPTION_CHARACTERS } from 'sharedData/sharedDataConstants';
@@ -49,6 +50,8 @@ import SuccessContainer from './SuccessContainer';
 import { groupDataEntryUploadsByStatus } from './utils';
 
 import {
+  MAP_LAYER_ACCEPTED_EXTENSIONS,
+  MAP_LAYER_ACCEPTED_TYPES,
   SHARED_DATA_ACCEPTED_EXTENSIONS,
   SHARED_DATA_ACCEPTED_TYPES,
   SHARED_DATA_MAX_FILES,
@@ -256,6 +259,7 @@ const ShareDataFiles = props => {
     setFiles,
   } = filesState;
   const [dropErrors, setDropErrors] = useState();
+  const { entityType } = useCollaborationContext();
 
   const onDrop = useCallback(
     acceptedFiles => {
@@ -282,13 +286,16 @@ const ShareDataFiles = props => {
             rejectedFiles,
             maxSize: SHARED_DATA_MAX_SIZE / 1000000.0,
             maxFiles: SHARED_DATA_MAX_FILES,
-            fileExtensions: SHARED_DATA_ACCEPTED_EXTENSIONS,
+            fileExtensions:
+              entityType === 'story_map'
+                ? MAP_LAYER_ACCEPTED_EXTENSIONS
+                : SHARED_DATA_ACCEPTED_EXTENSIONS,
           })
         )
       )(rejections);
       setDropErrors(() => messages);
     },
-    [t, setDropErrors]
+    [t, setDropErrors, entityType]
   );
 
   const onFileChange = (id, newFile) => {
@@ -313,9 +320,6 @@ const ShareDataFiles = props => {
 
   return (
     <>
-      <Typography sx={{ fontWeight: 700, mb: 2 }}>
-        {t('sharedData.upload_files_description')}
-      </Typography>
       <Stack direction={{ xs: 'column', md: 'row' }}>
         <DropZone
           multiple
@@ -324,8 +328,16 @@ const ShareDataFiles = props => {
           onDropRejected={onDropRejected}
           maxSize={SHARED_DATA_MAX_SIZE}
           maxFiles={SHARED_DATA_MAX_FILES}
-          fileTypes={SHARED_DATA_ACCEPTED_TYPES}
-          fileExtensions={SHARED_DATA_ACCEPTED_EXTENSIONS}
+          fileTypes={
+            entityType === 'story_map'
+              ? MAP_LAYER_ACCEPTED_TYPES
+              : SHARED_DATA_ACCEPTED_TYPES
+          }
+          fileExtensions={
+            entityType === 'story_map'
+              ? MAP_LAYER_ACCEPTED_EXTENSIONS
+              : SHARED_DATA_ACCEPTED_EXTENSIONS
+          }
         />
         <FilesContext.Provider
           value={{
