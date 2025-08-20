@@ -96,7 +96,7 @@
     "@graphql-codegen/client-preset": "^4.8.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.4.2",
     "@parcel/watcher": "^2.5.1",
-    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
     "@types/jest": "^29.5.14",
     "@types/js-cookie": "^3.0.6",
