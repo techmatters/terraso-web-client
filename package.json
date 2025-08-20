@@ -6,6 +6,7 @@
     "src/config.ts"
   ],
   "dependencies": {
+    "@emotion/styled": "^11.14.1",
     "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^4.1.3",
     "@mapbox/mapbox-gl-draw": "^1.5.0",
@@ -117,7 +118,7 @@
     "prettier": "^3.5.3",
     "react-scripts": "^5.0.1",
     "serve": "^14.2.4",
-    "stylelint": "^16.19.1",
+    "stylelint": "^16.23.1",
     "stylelint-prettier": "^5.0.3"
   },
   "jest": {
