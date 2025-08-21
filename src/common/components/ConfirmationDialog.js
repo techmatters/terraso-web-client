@@ -17,7 +17,6 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { LoadingButton } from '@mui/lab';
 import {
   Button,
   Dialog,
@@ -80,13 +79,9 @@ const ConfirmationDialog = props => {
           {t('common.dialog_cancel_label')}
         </Button>
 
-        <LoadingButton
-          variant="contained"
-          onClick={onConfirm}
-          loading={loading}
-        >
+        <Button variant="contained" onClick={onConfirm} loading={loading}>
           {confirmButtonLabel}
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );
