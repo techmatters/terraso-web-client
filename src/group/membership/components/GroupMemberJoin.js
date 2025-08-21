@@ -18,7 +18,7 @@
 import React from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { LoadingButton } from '@mui/lab';
+import { Button } from '@mui/material';
 
 import { useCollaborationContext } from 'collaboration/collaborationContext';
 
@@ -28,7 +28,7 @@ const GroupMemberJoin = props => {
   const { ariaLabel, onJoin, buttonProps, loading } = props;
 
   return (
-    <LoadingButton
+    <Button
       variant="outlined"
       aria-label={t(ariaLabel, {
         name: _.get('name', owner),
@@ -39,7 +39,7 @@ const GroupMemberJoin = props => {
       {...buttonProps}
     >
       {t(props.label)}
-    </LoadingButton>
+    </Button>
   );
 };
 

@@ -22,10 +22,10 @@ import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'terrasoApi/store';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PeopleIcon from '@mui/icons-material/People';
-import { LoadingButton } from '@mui/lab';
 import {
   List as BaseList,
   Box,
+  Button,
   Chip,
   Divider,
   Grid,
@@ -210,7 +210,7 @@ const StoryMapListItem = props => {
       >
         <Grid size={{ xs: 6 }}>
           {isStoryMapMembershipPending ? (
-            <LoadingButton
+            <Button
               size="small"
               variant="outlined"
               sx={{ pr: 3, pl: 3 }}
@@ -218,7 +218,7 @@ const StoryMapListItem = props => {
               loading={processing}
             >
               {t('storyMap.home_accept')}
-            </LoadingButton>
+            </Button>
           ) : (
             <RouterButton
               to={generateStoryMapEditUrl(storyMap)}

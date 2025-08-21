@@ -18,7 +18,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import EditIcon from '@mui/icons-material/Edit';
-import { LoadingButton } from '@mui/lab';
 import {
   Button,
   InputLabel,
@@ -123,13 +122,9 @@ const EditableText = props => {
           onKeyDown={onInputKeyDown}
           sx={{ flexGrow: 1 }}
         />
-        <LoadingButton
-          variant="contained"
-          loading={processing}
-          onClick={handleSave}
-        >
+        <Button variant="contained" loading={processing} onClick={handleSave}>
           {t('common.editable_text_save')}
-        </LoadingButton>
+        </Button>
         <Button disabled={processing} onClick={reset}>
           {t('common.editable_text_cancel')}
         </Button>

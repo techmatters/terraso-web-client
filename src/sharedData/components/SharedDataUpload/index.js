@@ -20,7 +20,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import ErrorIcon from '@mui/icons-material/Report';
-import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Button, Paper, Stack, Tab, Typography } from '@mui/material';
 
 import { useCollaborationContext } from 'collaboration/collaborationContext';
@@ -237,7 +237,7 @@ const SharedDataUpload = props => {
         </Typography>
       )}
       <Stack direction="row" spacing={2} sx={{ marginTop: 3 }}>
-        <LoadingButton
+        <Button
           variant="contained"
           disabled={isSaveDisabled}
           loading={isUploading}
@@ -245,7 +245,7 @@ const SharedDataUpload = props => {
           sx={{ paddingLeft: 5, paddingRight: 5 }}
         >
           {t('sharedData.upload_save')}
-        </LoadingButton>
+        </Button>
         <Button variant="text" onClick={onCancel}>
           {t('sharedData.upload_cancel')}
         </Button>

@@ -21,7 +21,6 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'terrasoApi/store';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { LoadingButton } from '@mui/lab';
 import {
   Accordion,
   AccordionDetails,
@@ -309,14 +308,14 @@ const ShareDialog = props => {
           {t('storyMap.share_dialog_cancel_label')}
         </Button>
 
-        <LoadingButton
+        <Button
           variant="contained"
           onClick={onConfirm}
           loading={processing}
           disabled={_.isEmpty(newEditors)}
         >
           {t('storyMap.share_dialog_confirm_label')}
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

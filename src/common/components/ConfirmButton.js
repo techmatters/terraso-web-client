@@ -16,8 +16,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { LoadingButton } from '@mui/lab';
-import { Tooltip } from '@mui/material';
+import { Button, Tooltip } from '@mui/material';
 
 import ConfirmationDialog from 'common/components/ConfirmationDialog';
 
@@ -65,7 +64,7 @@ const ConfirmButton = props => {
         loading={loading}
       />
       <TooltipWrapper>
-        <LoadingButton
+        <Button
           onClick={onClick}
           loading={loading}
           variant={variant || 'outlined'}
@@ -73,7 +72,7 @@ const ConfirmButton = props => {
           {...(buttonProps || {})}
         >
           {buttonLabel || props.children}
-        </LoadingButton>
+        </Button>
       </TooltipWrapper>
     </>
   );

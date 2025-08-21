@@ -19,8 +19,7 @@ import React, { useMemo } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { LoadingButton } from '@mui/lab';
-import { ListItem, Stack, Typography } from '@mui/material';
+import { Button, ListItem, Stack, Typography } from '@mui/material';
 
 import { withProps } from 'react-hoc';
 
@@ -137,13 +136,13 @@ const PendingApprovals = props => {
             aria-label={t('user.full_name', { user: membership.user })}
             secondaryAction={
               <Stack spacing={2} direction="row">
-                <LoadingButton
+                <Button
                   variant="contained"
                   loading={membership.fetching}
                   onClick={() => onMemberApprove(membership)}
                 >
                   {t('collaboration.members_list_pending_approve')}
-                </LoadingButton>
+                </Button>
                 <ConfirmButton
                   onConfirm={() => onMemberRemove(membership)}
                   confirmTitle={t(
