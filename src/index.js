@@ -39,6 +39,12 @@ import theme from 'theme';
 import 'index.css';
 
 import App from 'App';
+import {
+  createRoutesFromChildren,
+  matchRoutes,
+  useLocation,
+  useNavigationType,
+} from 'react-router';
 
 import { escapeStringRegex } from 'utils';
 
@@ -49,8 +55,12 @@ if (SENTRY_ENABLED) {
     integrations: [
       // See docs for support of different versions of variation of react router
       // https://docs.sentry.io/platforms/javascript/guides/react/configuration/integrations/react-router/
-      Sentry.reactRouterV6BrowserTracingIntegration({
+      Sentry.reactRouterV7BrowserTracingIntegration({
         useEffect: React.useEffect,
+        useLocation,
+        useNavigationType,
+        createRoutesFromChildren,
+        matchRoutes,
       }),
       Sentry.replayIntegration(),
     ],
