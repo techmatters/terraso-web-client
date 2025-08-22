@@ -207,9 +207,9 @@ const paths = [
   }),
   path('/tools/story-maps/new', StoryMapNew),
   ...[
-    '/tools/story-maps/:storyMapId/:slug',
-    '/tools/story-maps/:storyMapId/',
     '/tools/story-maps/:storyMapId',
+    '/tools/story-maps/:storyMapId/',
+    '/tools/story-maps/:storyMapId/:slug',
   ].flatMap(basePath => [
     path(`${basePath}/edit`, StoryMapUpdate),
     path(`${basePath}/`, UserStoryMap, {
