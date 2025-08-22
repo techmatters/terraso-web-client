@@ -74,7 +74,6 @@ const TRANSLATABLE_LAYERS = [
   'natural-point-label',
   'natural-line-label',
   'waterway-label',
-  'road-label',
 ];
 
 const MapContext = React.createContext();
