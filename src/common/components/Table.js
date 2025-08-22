@@ -213,7 +213,11 @@ const Table = props => {
       hideFooterSelectedRowCount
       onPaginationModelChange={onPageChange}
       getRowHeight={() => 'auto'}
-      aria-labelledby={ariaLabel}
+      slotProps={{
+        main: {
+          'aria-labelledby': ariaLabel,
+        },
+      }}
       localeText={{
         columnMenuSortAsc: t('common.table_sort_asc'),
         columnMenuSortDesc: t('common.table_sort_desc'),
