@@ -206,26 +206,32 @@ const paths = [
     breadcrumbsLabel: 'storyMap.breadcrumbs_tool_home',
   }),
   path('/tools/story-maps/new', StoryMapNew),
-  path('/tools/story-maps/:storyMapId/:slug/edit', StoryMapUpdate),
-  path('/tools/story-maps/:storyMapId/:slug', UserStoryMap, {
-    showBreadcrumbs: true,
-    breadcrumbsLabel: 'storyMap.breadcrumbs_view',
-    breadcrumbsShareProps: {
-      bgColor: 'white',
-      marginTop: 0,
-    },
-    optionalAuth: {
-      enabled: true,
-      topMessage: 'storyMap.optional_auth_top_message',
-      bottomMessage: 'storyMap.optional_auth_bottom_message',
-    },
-  }),
-  path('/tools/story-maps/:storyMapId/:slug/embed', UserStoryMapEmbed, {
-    optionalAuth: {
-      enabled: true,
-      isEmbedded: true,
-    },
-  }),
+  ...[
+    '/tools/story-maps/:storyMapId',
+    '/tools/story-maps/:storyMapId/',
+    '/tools/story-maps/:storyMapId/:slug',
+  ].flatMap(basePath => [
+    path(`${basePath}/edit`, StoryMapUpdate),
+    path(`${basePath}/`, UserStoryMap, {
+      showBreadcrumbs: true,
+      breadcrumbsLabel: 'storyMap.breadcrumbs_view',
+      breadcrumbsShareProps: {
+        bgColor: 'white',
+        marginTop: 0,
+      },
+      optionalAuth: {
+        enabled: true,
+        topMessage: 'storyMap.optional_auth_top_message',
+        bottomMessage: 'storyMap.optional_auth_bottom_message',
+      },
+    }),
+    path(`${basePath}/embed`, UserStoryMapEmbed, {
+      optionalAuth: {
+        enabled: true,
+        isEmbedded: true,
+      },
+    }),
+  ]),
   path('/tools/story-maps/accept', StoryMapInvite),
   path('*', NotFound),
 ];
