@@ -67,7 +67,7 @@ export const fetchSamples = (params, currentUser) => {
 
 export const fetchStoryMap = ({ slug, storyMapId }) => {
   const query = graphql(`
-    query fetchStoryMap($slug: String!, $storyMapId: String!) {
+    query fetchStoryMap($slug: String, $storyMapId: String!) {
       storyMaps(slug: $slug, storyMapId: $storyMapId) {
         edges {
           node {
@@ -97,7 +97,7 @@ export const fetchStoryMap = ({ slug, storyMapId }) => {
 
 export const fetchStoryMapForm = ({ slug, storyMapId }) => {
   const query = graphql(`
-    query fetchStoryMapForm($slug: String!, $storyMapId: String!) {
+    query fetchStoryMapForm($slug: String, $storyMapId: String!) {
       storyMaps(slug: $slug, storyMapId: $storyMapId) {
         edges {
           node {
