@@ -16,9 +16,9 @@ style and commit message structure before each commit.
 
 ## Requirements
 
-- Docker: Version 25.0.3
-- Node: Version 20.11.1
-- NPM: Version 10.2.4
+- Docker: Version 28.3.2
+- Node: Version 22.18.0
+- NPM: Version 11.5.2
 
 ## Running locally
 
