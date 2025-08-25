@@ -148,9 +148,15 @@ const Table = props => {
   } = props;
 
   useEffect(() => {
-    const sort = searchParams?.sort;
-    setSortModel(sort ? parseSortQuery(sort) : props.initialSort);
-  }, [props.initialSort, searchParams]);
+    const sort = searchParams?.sort
+      ? parseSortQuery(searchParams?.sort)
+      : props.initialSort;
+
+    if (_.isEqual(sortModel, sort)) {
+      return;
+    }
+    setSortModel(sort);
+  }, [props.initialSort, searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const pageValue = searchParams?.page;
@@ -173,6 +179,10 @@ const Table = props => {
       const sort = model
         .map(column => `${SORT_DIRECTION_BY_WORD[column.sort]}${column.field}`)
         .join(',');
+
+      if (_.isEqual(sort, searchParams?.sort)) {
+        return;
+      }
       onSearchParamsChange?.({
         ...searchParams,
         sort,
