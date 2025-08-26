@@ -282,3 +282,22 @@ test('Auth: Avoid redirect if profile complete already displayed for user', asyn
 
   expect(navigate).not.toHaveBeenCalled();
 });
+
+test('Auth: Test redirect when fetching is false and no user', async () => {
+  await render(
+    <RequireAuth>
+      <div />
+    </RequireAuth>,
+    {
+      account: {
+        hasToken: true,
+        currentUser: {
+          fetching: false,
+          data: null,
+        },
+      },
+    }
+  );
+
+  expect(screen.getByText('To: /account')).toBeInTheDocument();
+});
