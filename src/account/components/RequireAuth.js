@@ -15,17 +15,22 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router';
-import { fetchUser } from 'terraso-client-shared/account/accountSlice';
+import {
+  fetchUser,
+  setHasToken,
+} from 'terraso-client-shared/account/accountSlice';
 import { useFetchData } from 'terraso-client-shared/store/utils';
+import { useDispatch } from 'terrasoApi/store';
 
 import PageLoader from 'layout/PageLoader';
 import { generateReferrerUrl } from 'navigation/navigationUtils';
 import { useCompleteProfile } from 'account/accountProfileUtils';
 
 const RequireAuth = ({ children }) => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const { data: user, fetching } = useSelector(
     state => state.account.currentUser
@@ -40,6 +45,12 @@ const RequireAuth = ({ children }) => {
       [hasToken, user]
     )
   );
+
+  useEffect(() => {
+    if (fetching === false && !user) {
+      dispatch(setHasToken(false));
+    }
+  }, [fetching, user, dispatch]);
 
   if (hasToken && fetching) {
     return <PageLoader />;
