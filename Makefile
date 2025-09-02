@@ -5,10 +5,6 @@ clean-docker:
 	docker ps --filter name=terraso_web_client* -aq | xargs docker stop
 	docker ps --filter name=terraso_web_client* -aq | xargs docker rm
 
-setup-git-hooks:
-	@cp scripts/git/commit-msg.sample .git/hooks/commit-msg
-	@echo "git hooks installed"
-
 run:
 	./scripts/docker/run.sh \
 		"--name terraso_web_client -p 3000:3000" \
