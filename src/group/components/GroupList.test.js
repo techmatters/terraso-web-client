@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { act, fireEvent, render, screen, within } from 'tests/utils';
+import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
 import { useSearchParams } from 'react-router';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
@@ -150,12 +150,12 @@ test('GroupList: Display list', async () => {
   expect(
     within(rows[2])
       .getByRole('button', { name: 'Join: Group name 1' })
-      .closest('[role="gridcell"]')
+      .closest('[role="gridcell"]') // eslint-disable-line testing-library/no-node-access
   ).toHaveAttribute('data-field', 'actions');
   expect(
     screen
       .getByRole('button', { name: 'Leave: Group name 3' })
-      .closest('[role="gridcell"]')
+      .closest('[role="gridcell"]') // eslint-disable-line testing-library/no-node-access
   ).toHaveAttribute('data-field', 'actions');
 });
 test('GroupList: List sort', async () => {
@@ -335,11 +335,13 @@ test('GroupList: URL params', async () => {
       within(rows[0]).getByRole('columnheader', { name: 'Group' })
     )
   );
-  expect(setParamsMock).toHaveBeenCalledWith(
-    expect.objectContaining({
-      page: '1',
-      sort: '-name',
-    })
+  await waitFor(() =>
+    expect(setParamsMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        page: '1',
+        sort: '-name',
+      })
+    )
   );
 
   // Page
