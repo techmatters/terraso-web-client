@@ -60,7 +60,7 @@ import {
 
 import theme from 'theme';
 
-const VALIDATION_SCHEMA = yup
+export const VALIDATION_SCHEMA = yup
   .object({
     name: yup.string().trim().required(),
     description: yup.string().max(MAX_DESCRIPTION_CHARACTERS).trim(),
@@ -236,7 +236,7 @@ const SelectedFiles = () => {
   );
 };
 
-const fileWrapper = file => {
+export const fileWrapper = file => {
   const filePath = path.parse(file.name);
   return {
     id: uuidv4(),

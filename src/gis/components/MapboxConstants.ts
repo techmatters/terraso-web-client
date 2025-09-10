@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2023 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -14,24 +14,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+export type MapboxStyle = {
+  titleKey: string;
+  data: string;
+};
 
-import React from 'react';
-
-// Component with custom partial prop values
-export const withProps = (Component, customProps) =>
-  React.forwardRef((props, ref) => {
-    const componentProps = {
-      ...customProps,
-      ...props,
-    };
-    return <Component ref={ref} {...componentProps} />;
-  });
-
-export const withWrapper = (Component, Wrapper) =>
-  React.forwardRef((props, ref) => {
-    return (
-      <Wrapper {...props}>
-        <Component ref={ref} {...props} />
-      </Wrapper>
-    );
-  });
+export const MAPBOX_STYLES: MapboxStyle[] = [
+  {
+    titleKey: 'gis.mapbox_style_satellite',
+    data: 'mapbox://styles/terraso/clux9zsa500k401p6grzm1xb8',
+  },
+  {
+    titleKey: 'gis.mapbox_style_combined',
+    data: 'mapbox://styles/terraso/cltsvsgyk00gj01qeavbd6rnw',
+  },
+  {
+    titleKey: 'gis.mapbox_style_streets',
+    data: 'mapbox://styles/terraso/cltt1087x00jm01pbfwqagsw8',
+  },
+];

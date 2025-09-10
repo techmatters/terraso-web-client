@@ -48,6 +48,7 @@ const DropZone = props => {
     fileTypes,
     multiple,
     onDrop,
+    onDropAccepted,
     onDropRejected,
     currentFile,
     errors,
@@ -57,6 +58,7 @@ const DropZone = props => {
   } = props;
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    onDropAccepted,
     onDropRejected,
     accept: fileTypes,
     useFsAccessApi: false,

@@ -25,10 +25,10 @@ import {
   getLayerOpacity,
   LAYER_TYPES,
 } from 'sharedData/visualization/components/VisualizationMapLayer';
+import { MapConfigurationDialog } from 'storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
 
 import StoryMapOutline from '../StoryMapOutline';
 import EditableText from './EditableText';
-import MapLocationDialog from './MapLocationDialog';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 const TitleForm = props => {
@@ -126,10 +126,10 @@ const TitleForm = props => {
       sx={{ opacity: 0.99, pb: '35vh' }}
     >
       {locationOpen && (
-        <MapLocationDialog
+        <MapConfigurationDialog
           open={locationOpen}
           location={config.titleTransition?.location}
-          dataLayerConfig={_.get(
+          mapLayerConfig={_.get(
             `dataLayers.${_.get('titleTransition.dataLayerConfigId', config)}`,
             config
           )}
