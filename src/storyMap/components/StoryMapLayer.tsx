@@ -1,13 +1,7 @@
-import type { GeoJSON } from 'geojson';
-import { VisualizationConfigNode } from 'terrasoApi/shared/graphqlSchema/graphql';
-
 import GeoJsonSource from 'gis/components/GeoJsonSource';
 import VisualizationMapLayer from 'sharedData/visualization/components/VisualizationMapLayer';
 import VisualizationMapRemoteSource from 'sharedData/visualization/components/VisualizationMapRemoteSource';
-
-type MapLayerConfig = VisualizationConfigNode & {
-  geojson?: GeoJSON;
-};
+import type { MapLayerConfig } from 'storyMap/storyMapTypes';
 
 type Props = {
   config: MapLayerConfig;

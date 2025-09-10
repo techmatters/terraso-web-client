@@ -8,10 +8,7 @@ import {
   Stack,
 } from '@mui/material';
 
-import { CollaborationContextProvider } from 'collaboration/collaborationContext';
 import SharedDataUpload from 'sharedData/components/SharedDataUpload';
-
-import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 type UploadFileDialogProps = {
   open: boolean;
@@ -28,7 +25,6 @@ const UploadFileDialog = ({
   targetSlug,
 }: UploadFileDialogProps) => {
   const { t } = useTranslation();
-  const { storyMap } = useStoryMapConfigContext();
 
   return (
     <Dialog
@@ -66,16 +62,14 @@ const UploadFileDialog = ({
       </Stack>
 
       <DialogContent>
-        <CollaborationContextProvider owner={storyMap} entityType="story_map">
-          <SharedDataUpload
-            onCompleteSuccess={onClose}
-            onCancel={onClose}
-            targetInput={{
-              targetType,
-              targetSlug,
-            }}
-          />
-        </CollaborationContextProvider>
+        <SharedDataUpload
+          onCompleteSuccess={onClose}
+          onCancel={onClose}
+          targetInput={{
+            targetType,
+            targetSlug,
+          }}
+        />
       </DialogContent>
     </Dialog>
   );

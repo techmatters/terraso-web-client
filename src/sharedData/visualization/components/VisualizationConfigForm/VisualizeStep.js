@@ -210,14 +210,10 @@ const Opacity = props => {
   );
 };
 
-const VisualizeStep = props => {
+export const VisualizeForm = ({ visualizeConfig, setVisualizeConfig }) => {
   const { t } = useTranslation();
-  const { onNext, onBack } = props;
   const { visualizationConfig, fileContext, isMapFile } =
     useVisualizationContext();
-  const [visualizeConfig, setVisualizeConfig] = useState(
-    visualizationConfig.visualizeConfig
-  );
   const [shape, setShape] = useState(visualizationConfig.visualizeConfig.shape);
   const [size, setSize] = useState(visualizationConfig.visualizeConfig.size);
   const [color, setColor] = useState(visualizationConfig.visualizeConfig.color);
@@ -244,7 +240,7 @@ const VisualizeStep = props => {
 
   useEffect(() => {
     setVisualizeConfig(visualizationConfig.visualizeConfig);
-  }, [visualizationConfig.visualizeConfig]);
+  }, [visualizationConfig.visualizeConfig, setVisualizeConfig]);
 
   useEffect(() => {
     setVisualizeConfig({
@@ -253,7 +249,51 @@ const VisualizeStep = props => {
       color,
       opacity,
     });
-  }, [shape, size, color, opacity]);
+  }, [shape, size, color, opacity, setVisualizeConfig]);
+
+  return (
+    <Paper variant="outlined" sx={{ p: 2 }}>
+      <Typography sx={{ mb: 4 }} id="visualize-settings-label">
+        {t(getDescriptionKey())}
+      </Typography>
+      <Grid container spacing={2}>
+        <Grid
+          component="section"
+          aria-labelledby="visualize-settings-label"
+          size={{ xs: 12, md: 5 }}
+        >
+          <Grid container alignItems="center" spacing={2}>
+            {showPointsFields && (
+              <>
+                <Shape shape={shape} setShape={setShape} />
+                <Size size={size} setSize={setSize} />
+              </>
+            )}
+            <Color color={color} setColor={setColor} />
+            {showPolygonFields && (
+              <Opacity opacity={opacity} setOpacity={setOpacity} />
+            )}
+          </Grid>
+        </Grid>
+        <Grid size={{ xs: 12, md: 7 }}>
+          <VisualizationPreview
+            useConfigBounds
+            title={t('sharedData.form_visualization_preview_title')}
+            customConfig={{ visualizeConfig }}
+          />
+        </Grid>
+      </Grid>
+    </Paper>
+  );
+};
+
+const VisualizeStep = props => {
+  const { t } = useTranslation();
+  const { onNext, onBack } = props;
+  const { visualizationConfig } = useVisualizationContext();
+  const [visualizeConfig, setVisualizeConfig] = useState(
+    visualizationConfig.visualizeConfig
+  );
 
   return (
     <StepperStep
@@ -263,38 +303,10 @@ const VisualizeStep = props => {
       nextLabel={t('sharedData.form_next')}
       onNext={() => onNext(visualizeConfig)}
     >
-      <Paper variant="outlined" sx={{ p: 2 }}>
-        <Typography sx={{ mb: 4 }} id="visualize-settings-label">
-          {t(getDescriptionKey())}
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid
-            component="section"
-            aria-labelledby="visualize-settings-label"
-            size={{ xs: 12, md: 5 }}
-          >
-            <Grid container alignItems="center" spacing={2}>
-              {showPointsFields && (
-                <>
-                  <Shape shape={shape} setShape={setShape} />
-                  <Size size={size} setSize={setSize} />
-                </>
-              )}
-              <Color color={color} setColor={setColor} />
-              {showPolygonFields && (
-                <Opacity opacity={opacity} setOpacity={setOpacity} />
-              )}
-            </Grid>
-          </Grid>
-          <Grid size={{ xs: 12, md: 7 }}>
-            <VisualizationPreview
-              useConfigBounds
-              title={t('sharedData.form_visualization_preview_title')}
-              customConfig={{ visualizeConfig }}
-            />
-          </Grid>
-        </Grid>
-      </Paper>
+      <VisualizeForm
+        visualizeConfig={visualizationConfig}
+        setVisualizeConfig={setVisualizeConfig}
+      />
     </StepperStep>
   );
 };

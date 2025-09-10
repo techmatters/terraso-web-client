@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 Technology Matters
+ * Copyright © 2025 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -18,8 +18,9 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import { useFetchData } from 'terraso-client-shared/store/utils';
+import { DataEntryNode } from 'terrasoApi/shared/graphqlSchema/graphql';
+import { useSelector } from 'terrasoApi/store';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
   List as BaseList,
@@ -45,13 +46,17 @@ import { withProps } from 'react-hoc';
 import CreateMapLayerDialog from 'storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog';
 import { useStoryMapConfigContext } from 'storyMap/components/StoryMapForm/storyMapConfigContext';
 import { fetchDataLayers } from 'storyMap/storyMapSlice';
+import { MapLayerConfig } from 'storyMap/storyMapTypes';
 
+import { FileUpload } from './FileUpload';
+
+// Type assertion to work around complex withProps typing
 const List = withProps(BaseList, {
-  component: withProps(Stack, { component: 'ul', spacing: 1 }),
-});
+  component: withProps(Stack, { component: 'ul', spacing: 1 } as any),
+} as any) as typeof BaseList;
 
 const ListItem = withProps(BaseListItem, {
-  sx: ({ spacing }) => ({
+  sx: ({ spacing }: any) => ({
     display: 'grid',
     justifyContent: 'stretch',
     rowGap: spacing(1),
@@ -60,19 +65,21 @@ const ListItem = withProps(BaseListItem, {
   }),
 });
 
-const DataLayerListItem = props => {
-  const { dataLayer } = props;
+interface MapLayerListItemProps {
+  mapLayer: MapLayerConfig;
+}
 
+const MapLayerListItem = ({ mapLayer }: MapLayerListItemProps) => {
   return (
-    <ListItem aria-label={dataLayer.title}>
+    <ListItem aria-label={mapLayer.title}>
       <ListItemIcon sx={{ gridColumn: '1/2' }}>
         <Radio
-          value={dataLayer.id}
+          value={mapLayer.id}
           edge="start"
           disableRipple
           slotProps={{
             input: {
-              'aria-label': dataLayer.title,
+              'aria-label': mapLayer.title,
             },
           }}
         />
@@ -86,27 +93,33 @@ const DataLayerListItem = props => {
           color: 'blue.dark1',
         }}
       >
-        {dataLayer.title}
+        {mapLayer.title}
       </Typography>
     </ListItem>
   );
 };
 
-const SelectDataLayerSection = props => {
-  const { fetching, dataLayers, selected, setSelected } = props;
+interface SelectMapLayerSectionProps {
+  fetching: boolean;
+  mapLayers: MapLayerConfig[];
+  selected: string;
+  setSelected: (value: string) => void;
+}
+
+const SelectMapLayerSection = ({
+  fetching,
+  mapLayers,
+  selected,
+  setSelected,
+}: SelectMapLayerSectionProps) => {
   const { t } = useTranslation();
 
-  const validDataLayers = useMemo(
-    () => dataLayers, //.filter(dataLayer => !!dataLayer.tilesetId),
-    [dataLayers]
-  );
-
-  const sortedDataLayers = useMemo(() => {
+  const sortedMapLayers = useMemo(() => {
     return _.sortBy(
-      [dataLayer => dataLayer.title?.toLowerCase()],
-      validDataLayers
+      [(mapLayer: MapLayerConfig) => mapLayer.title?.toLowerCase()],
+      mapLayers
     );
-  }, [validDataLayers]);
+  }, [mapLayers]);
 
   return (
     <>
@@ -114,13 +127,13 @@ const SelectDataLayerSection = props => {
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
           <CircularProgress aria-label={t('common.loader_label')} />
         </Box>
-      ) : _.isEmpty(dataLayers) ? (
+      ) : _.isEmpty(mapLayers) ? (
         <></>
       ) : (
         <>
           <Typography variant="caption" component="p" sx={{ mt: 3 }}>
             {t('storyMap.form_location_add_data_layer_dialog_layers_count', {
-              count: dataLayers.length,
+              count: mapLayers.length,
             })}
           </Typography>
           <RadioGroup
@@ -128,8 +141,8 @@ const SelectDataLayerSection = props => {
             onChange={event => setSelected(event.target.value)}
           >
             <List aria-labelledby="data-layer-dialog-subtitle">
-              {sortedDataLayers.map(dataLayer => (
-                <DataLayerListItem key={dataLayer.id} dataLayer={dataLayer} />
+              {sortedMapLayers.map(mapLayer => (
+                <MapLayerListItem key={mapLayer.id} mapLayer={mapLayer} />
               ))}
             </List>
           </RadioGroup>
@@ -139,19 +152,35 @@ const SelectDataLayerSection = props => {
   );
 };
 
-const CreateDataLayerSection = props => {
-  const { t } = useTranslation();
-  const { onCreate, title, open, setOpen } = props;
+interface CreateMapLayerSectionProps {
+  onCreate: (mapLayer: MapLayerConfig) => void;
+  title?: string;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}
+
+const CreateMapLayerSection = ({
+  onCreate,
+  title,
+  open,
+  setOpen,
+}: CreateMapLayerSectionProps) => {
+  // const { t } = useTranslation();
+  const [dataEntry, setDataEntry] = useState<DataEntryNode | undefined>(
+    undefined
+  );
 
   return (
     <>
-      <Button variant="contained" onClick={() => setOpen(true)} autoFocus>
+      <FileUpload onCompleteSuccess={setDataEntry} />
+      {/* <Button variant="contained" onClick={() => setOpen(true)} autoFocus>
         {t('storyMap.form_location_add_data_layer_dialog_create_new_layer')}
-      </Button>
+      </Button> */}
       <CreateMapLayerDialog
-        open={open}
+        dataEntry={dataEntry}
+        open={Boolean(dataEntry)}
         onCreate={onCreate}
-        onClose={() => setOpen(false)}
+        onClose={() => setDataEntry(undefined)}
         title={title}
       />
     </>
@@ -175,18 +204,35 @@ const CreateDataLayerSection = props => {
 //   );
 // };
 
-const DataLayerDialog = props => {
-  const { open, title, onClose, onConfirm } = props;
-  const { t } = useTranslation();
-  const { fetching, list: dataLayers } = useSelector(
-    state => state.storyMap.dataLayers
-  );
-  const [selected, setSelected] = useState('');
-  const { storyMap } = useStoryMapConfigContext();
+interface MapLayerDialogProps {
+  open: boolean;
+  title?: string;
+  onClose: () => void;
+  onConfirm: (mapLayer: MapLayerConfig) => void;
+}
 
-  const dataLayersById = useMemo(
-    () => (_.isEmpty(dataLayers) ? {} : _.keyBy('id', dataLayers)),
-    [dataLayers]
+export const MapLayerDialog = ({
+  open,
+  title,
+  onClose,
+  onConfirm,
+}: MapLayerDialogProps) => {
+  const { t } = useTranslation();
+  const { fetching, list: mapLayers } = useSelector(
+    (state: any) => state.storyMap.dataLayers
+  ) as { fetching: boolean; list: MapLayerConfig[] };
+  const [selected, setSelected] = useState('');
+  const { storyMap } = useStoryMapConfigContext() as {
+    storyMap: { id: string };
+  };
+
+  const mapLayersById = useMemo(
+    () =>
+      (_.isEmpty(mapLayers) ? {} : _.keyBy('id', mapLayers)) as Record<
+        string,
+        MapLayerConfig
+      >,
+    [mapLayers]
   );
 
   const [createLayerOpen, setCreateLayerOpen] = useState(false);
@@ -202,12 +248,12 @@ const DataLayerDialog = props => {
   );
 
   const onConfirmWrapper = useCallback(() => {
-    onConfirm(dataLayersById[selected]);
-  }, [onConfirm, selected, dataLayersById]);
+    onConfirm(mapLayersById[selected]);
+  }, [onConfirm, selected, mapLayersById]);
 
   const onCreate = useCallback(
-    dataLayer => {
-      onConfirm(dataLayer);
+    (mapLayer: MapLayerConfig) => {
+      onConfirm(mapLayer);
       setCreateLayerOpen(false);
     },
     [onConfirm]
@@ -236,7 +282,7 @@ const DataLayerDialog = props => {
         )}
       </DialogTitle>
       <DialogContent sx={{ paddingTop: 2 }}>
-        <CreateDataLayerSection
+        <CreateMapLayerSection
           open={createLayerOpen}
           setOpen={setCreateLayerOpen}
           title={title}
@@ -248,11 +294,11 @@ const DataLayerDialog = props => {
           title={title}
           onCreate={onCreate}
         /> */}
-        <SelectDataLayerSection
+        <SelectMapLayerSection
           fetching={fetching}
           selected={selected}
           setSelected={setSelected}
-          dataLayers={dataLayers}
+          mapLayers={mapLayers}
         />
       </DialogContent>
       <DialogActions
@@ -275,5 +321,3 @@ const DataLayerDialog = props => {
     </Dialog>
   );
 };
-
-export default DataLayerDialog;
