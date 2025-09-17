@@ -205,13 +205,17 @@ const paths = [
     showBreadcrumbs: true,
     breadcrumbsLabel: 'storyMap.breadcrumbs_tool_home',
   }),
-  path('/tools/story-maps/new', StoryMapNew),
+  path('/tools/story-maps/new', StoryMapNew, {
+    isEmbedded: true,
+  }),
   ...[
     '/tools/story-maps/:storyMapId',
     '/tools/story-maps/:storyMapId/',
     '/tools/story-maps/:storyMapId/:slug',
   ].flatMap(basePath => [
-    path(`${basePath}/edit`, StoryMapUpdate),
+    path(`${basePath}/edit`, StoryMapUpdate, {
+      isEmbedded: true,
+    }),
     path(`${basePath}/`, UserStoryMap, {
       showBreadcrumbs: true,
       breadcrumbsLabel: 'storyMap.breadcrumbs_view',
