@@ -181,10 +181,12 @@ const Form = props => {
           spacing={2}
           onSubmit={handleSubmit(onSubmit)}
           size={Preview ? 6 : 12}
+          {...gridContainerProps}
           sx={{
             rowGap: 0,
+            flexDirection: 'column',
+            ...gridContainerProps.sx,
           }}
-          {...gridContainerProps}
         >
           {fields
             .filter(field =>
