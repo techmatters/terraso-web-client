@@ -18,7 +18,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { DataEntryNode } from 'terrasoApi/shared/graphqlSchema/graphql';
 
 // import ErrorIcon from '@mui/icons-material/Report';
@@ -30,7 +30,13 @@ import DropZone from 'common/components/DropZone';
 import { useAnalytics } from 'monitoring/analytics';
 import { ILM_OUTPUT_PROP, RESULTS_ANALYSIS_IMPACT } from 'monitoring/ilm';
 import { fileWrapper } from 'sharedData/components/SharedDataUpload/ShareDataFiles';
-import { resetUploads, uploadSharedDataFile } from 'sharedData/sharedDataSlice';
+import {
+  resetUploads,
+  UPLOAD_STATUS_SUCCESS,
+  UPLOAD_STATUS_UPLOADING,
+  uploadSharedDataFile,
+} from 'sharedData/sharedDataSlice';
+import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 
 import { useStoryMapConfigContext } from '../storyMapConfigContext';
 
@@ -60,7 +66,10 @@ export const FileUpload = (props: FileUploadProps) => {
 
   const { entityType } = useCollaborationContext();
 
-  const [, setFile] = useState();
+  const [file, setFile] = useState<{ id: string } | undefined>();
+  const uploadingStatus = useSelector((state: any) =>
+    file ? state.sharedData.uploads.files[file.id].status : undefined
+  );
 
   const onDropAccepted = useCallback(
     ([bareFile]: any) => {
@@ -114,8 +123,19 @@ export const FileUpload = (props: FileUploadProps) => {
     [t, setErrors]
   );
 
+  const { doneLoadingFile, loadingFileError } = useVisualizationContext();
+
+  if (loadingFileError) {
+    console.log(loadingFileError);
+    return loadingFileError;
+  }
+
   return (
     <DropZone
+      loading={
+        uploadingStatus === UPLOAD_STATUS_UPLOADING ||
+        (uploadingStatus === UPLOAD_STATUS_SUCCESS && !doneLoadingFile)
+      }
       errors={errors}
       onDropAccepted={onDropAccepted}
       onDropRejected={onDropRejected}

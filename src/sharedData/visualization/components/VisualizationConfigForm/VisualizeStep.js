@@ -15,10 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { useDebounce } from 'use-debounce';
+import { useDebouncedCallback } from 'use-debounce';
 import TriangleIcon from '@mui/icons-material/ChangeHistoryTwoTone';
 import CircleIcon from '@mui/icons-material/CircleTwoTone';
 import HexagonIcon from '@mui/icons-material/HexagonTwoTone';
@@ -46,7 +46,7 @@ const visualizeIcons = {
   triangle: TriangleIcon,
 };
 
-const Shape = props => {
+export const Shape = props => {
   const { t } = useTranslation();
   const { shape, setShape } = props;
   return (
@@ -78,15 +78,19 @@ const Shape = props => {
   );
 };
 
-const Size = props => {
+export const Size = props => {
   const { t } = useTranslation();
   const { size, setSize } = props;
   const [value, setValue] = useState(size);
-  const [debouncedValue] = useDebounce(value, 100);
+  const debouncedSetSize = useDebouncedCallback(setSize, 100);
 
-  useEffect(() => {
-    setSize(debouncedValue);
-  }, [debouncedValue, setSize]);
+  const onChange = useCallback(
+    newValue => {
+      setValue(newValue);
+      debouncedSetSize(newValue);
+    },
+    [setValue, debouncedSetSize]
+  );
 
   return (
     <>
@@ -98,7 +102,7 @@ const Size = props => {
           size="small"
           aria-hidden="true"
           value={value}
-          onChange={(event, newValue) => setValue(newValue)}
+          onChange={(event, newValue) => onChange(newValue)}
           step={1}
           min={5}
           max={30}
@@ -106,9 +110,9 @@ const Size = props => {
       </Grid>
       <Grid size={{ xs: 2 }}>
         <OutlinedInput
-          value={size}
+          value={value}
           size="small"
-          onChange={event => setSize(event.target.value)}
+          onChange={event => onChange(event.target.value)}
           inputProps={{
             step: 1,
             min: 5,
@@ -127,15 +131,19 @@ const Size = props => {
   );
 };
 
-const Color = props => {
+export const Color = props => {
   const { t } = useTranslation();
   const { color, setColor } = props;
   const [value, setValue] = useState(color);
-  const [debouncedValue] = useDebounce(value, 100);
+  const debouncedSetColor = useDebouncedCallback(setColor, 100);
 
-  useEffect(() => {
-    setColor(debouncedValue);
-  }, [debouncedValue, setColor]);
+  const onChange = useCallback(
+    newValue => {
+      setValue(newValue);
+      debouncedSetColor(newValue);
+    },
+    [setValue, debouncedSetColor]
+  );
 
   return (
     <>
@@ -146,7 +154,7 @@ const Color = props => {
         <OutlinedInput
           value={value}
           size="small"
-          onChange={event => setValue(event.target.value)}
+          onChange={event => onChange(event.target.value)}
           inputProps={{
             step: 1,
             min: 5,
@@ -161,15 +169,19 @@ const Color = props => {
   );
 };
 
-const Opacity = props => {
+export const Opacity = props => {
   const { t } = useTranslation();
   const { opacity, setOpacity } = props;
   const [value, setValue] = useState(opacity);
-  const [debouncedValue] = useDebounce(value, 100);
+  const debouncedSetOpacity = useDebouncedCallback(setOpacity, 100);
 
-  useEffect(() => {
-    setOpacity(Number(debouncedValue));
-  }, [debouncedValue, setOpacity]);
+  const onChange = useCallback(
+    newValue => {
+      setValue(newValue);
+      debouncedSetOpacity(newValue);
+    },
+    [setValue, debouncedSetOpacity]
+  );
 
   return (
     <>
@@ -181,7 +193,7 @@ const Opacity = props => {
           size="small"
           aria-hidden="true"
           value={value}
-          onChange={(event, newValue) => setValue(newValue)}
+          onChange={(event, newValue) => onChange(newValue)}
           step={10}
           min={0}
           max={100}
@@ -191,7 +203,7 @@ const Opacity = props => {
         <OutlinedInput
           value={opacity}
           size="small"
-          onChange={event => setOpacity(Number(event.target.value))}
+          onChange={event => onChange(Number(event.target.value))}
           inputProps={{
             step: 10,
             min: 0,
@@ -210,16 +222,8 @@ const Opacity = props => {
   );
 };
 
-export const VisualizeForm = ({ visualizeConfig, setVisualizeConfig }) => {
-  const { t } = useTranslation();
-  const { visualizationConfig, fileContext, isMapFile } =
-    useVisualizationContext();
-  const [shape, setShape] = useState(visualizationConfig.visualizeConfig.shape);
-  const [size, setSize] = useState(visualizationConfig.visualizeConfig.size);
-  const [color, setColor] = useState(visualizationConfig.visualizeConfig.color);
-  const [opacity, setOpacity] = useState(
-    visualizationConfig.visualizeConfig.opacity
-  );
+export const useVisualizeForm = ({ visualizeConfig, setVisualizeConfig }) => {
+  const { fileContext, isMapFile } = useVisualizationContext();
 
   const showPolygonFields = useMemo(() => fileContext?.geojson, [fileContext]);
 
@@ -227,6 +231,52 @@ export const VisualizeForm = ({ visualizeConfig, setVisualizeConfig }) => {
     () => !isMapFile || hasPoints(fileContext?.geojson),
     [isMapFile, fileContext?.geojson]
   );
+
+  const setShape = useCallback(
+    shape => setVisualizeConfig({ ...visualizeConfig, shape }),
+    [visualizeConfig, setVisualizeConfig]
+  );
+
+  const setSize = useCallback(
+    size => setVisualizeConfig({ ...visualizeConfig, size }),
+    [visualizeConfig, setVisualizeConfig]
+  );
+
+  const setColor = useCallback(
+    color => setVisualizeConfig({ ...visualizeConfig, color }),
+    [visualizeConfig, setVisualizeConfig]
+  );
+
+  const setOpacity = useCallback(
+    opacity => setVisualizeConfig({ ...visualizeConfig, opacity }),
+    [visualizeConfig, setVisualizeConfig]
+  );
+
+  return {
+    ...visualizeConfig,
+    setShape,
+    setSize,
+    setColor,
+    setOpacity,
+    showPolygonFields,
+    showPointsFields,
+  };
+};
+
+export const VisualizeForm = ({ visualizeConfig, setVisualizeConfig }) => {
+  const { t } = useTranslation();
+  const {
+    shape,
+    setShape,
+    size,
+    setSize,
+    color,
+    setColor,
+    opacity,
+    setOpacity,
+    showPolygonFields,
+    showPointsFields,
+  } = useVisualizeForm({ visualizeConfig, setVisualizeConfig });
 
   const getDescriptionKey = () => {
     if (showPointsFields && !showPolygonFields) {
@@ -237,19 +287,6 @@ export const VisualizeForm = ({ visualizeConfig, setVisualizeConfig }) => {
     }
     return 'sharedData.form_step_visualize_step_description';
   };
-
-  useEffect(() => {
-    setVisualizeConfig(visualizationConfig.visualizeConfig);
-  }, [visualizationConfig.visualizeConfig, setVisualizeConfig]);
-
-  useEffect(() => {
-    setVisualizeConfig({
-      shape,
-      size,
-      color,
-      opacity,
-    });
-  }, [shape, size, color, opacity, setVisualizeConfig]);
 
   return (
     <Paper variant="outlined" sx={{ p: 2 }}>
@@ -304,7 +341,7 @@ const VisualizeStep = props => {
       onNext={() => onNext(visualizeConfig)}
     >
       <VisualizeForm
-        visualizeConfig={visualizationConfig}
+        visualizeConfig={visualizeConfig}
         setVisualizeConfig={setVisualizeConfig}
       />
     </StepperStep>

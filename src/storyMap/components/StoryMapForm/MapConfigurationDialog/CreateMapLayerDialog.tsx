@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -10,46 +10,36 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Grid,
   Stack,
 } from '@mui/material';
 
 import { useCollaborationContext } from 'collaboration/collaborationContext';
 import Form from 'forms/components/Form';
-import { FormContextProvider } from 'forms/formContext';
 import { addVisualizationConfig } from 'sharedData/sharedDataSlice';
 import ColumnSelect from 'sharedData/visualization/components/VisualizationConfigForm/ColumnSelect';
+import VisualizationPreview from 'sharedData/visualization/components/VisualizationConfigForm/VisualizationPreview';
 // import VisualizationPreview from 'sharedData/visualization/components/VisualizationConfigForm/VisualizationPreview';
-import { VisualizeForm } from 'sharedData/visualization/components/VisualizationConfigForm/VisualizeStep';
+import {
+  Color,
+  Opacity,
+  Shape,
+  Size,
+  useVisualizeForm,
+} from 'sharedData/visualization/components/VisualizationConfigForm/VisualizeStep';
 import {
   useVisualizationContext,
   VisualizationContextProvider,
 } from 'sharedData/visualization/visualizationContext';
-import { validateCoordinateColumn } from 'sharedData/visualization/visualizationUtils';
+import {
+  identifyLatLngColumns,
+  validateCoordinateField,
+} from 'sharedData/visualization/visualizationUtils';
+import { MapLayerConfig } from 'storyMap/storyMapTypes';
+
+import { FileUpload } from './FileUpload';
 
 import theme from 'theme';
-
-const validateCoordinateField = (coordinate: any) => ({
-  name: 'invalidCoordinate',
-  message: {
-    key: 'invalid_coordinate',
-    params: { coordinate },
-  },
-  test: (value: any, ctx: any) => {
-    const {
-      parent: {
-        context: { fileContext },
-      },
-    } = ctx;
-    if (_.isEmpty(value)) {
-      return;
-    }
-    const error = validateCoordinateColumn(fileContext, value);
-    if (!error) {
-      return true;
-    }
-    return false;
-  },
-});
 
 const VALIDATION_SCHEMA = yup
   .object({
@@ -65,6 +55,36 @@ const VALIDATION_SCHEMA = yup
       .test(validateCoordinateField('longitude')),
   })
   .required();
+
+const VisualizeForm = ({ visualizeConfig, setVisualizeConfig }: any) => {
+  const {
+    shape,
+    setShape,
+    size,
+    setSize,
+    color,
+    setColor,
+    opacity,
+    setOpacity,
+    showPolygonFields,
+    showPointsFields,
+  } = useVisualizeForm({ visualizeConfig, setVisualizeConfig });
+
+  return (
+    <Grid container alignItems="center" spacing={2}>
+      {showPointsFields && (
+        <>
+          <Shape shape={shape} setShape={setShape} />
+          <Size size={size} setSize={setSize} />
+        </>
+      )}
+      <Color color={color} setColor={setColor} />
+      {showPolygonFields && (
+        <Opacity opacity={opacity} setOpacity={setOpacity} />
+      )}
+    </Grid>
+  );
+};
 
 const useMapLayerFormFields = (isMapFile: boolean) => {
   return useMemo(() => {
@@ -119,82 +139,81 @@ const useMapLayerFormFields = (isMapFile: boolean) => {
   }, [isMapFile]);
 };
 
+const Preview = ({ getValues }: any) => {
+  const { t } = useTranslation();
+  return (
+    <VisualizationPreview
+      useConfigBounds
+      title={t('sharedData.form_visualization_preview_title')}
+      customConfig={{ visualizeConfig: getValues().visualizeConfig }}
+    />
+  );
+};
+
 const CreateMapLayerForm = () => {
   const {
     isMapFile,
+    visualizationConfig,
     setVisualizationConfig,
     fileContext,
-    loadingFile,
-    loadingFileError,
   } = useVisualizationContext();
 
-  const initialValues = useMemo(
-    () => ({
-      context: { fileContext },
-      mapTitle: fileContext?.selectedFile?.name,
-    }),
-    [fileContext]
-  );
+  const { selectedFile, headers } = fileContext ?? {};
+
+  const { latColumn: latitude, lngColumn: longitude } = headers
+    ? identifyLatLngColumns(headers)
+    : {};
+  const initialValues = useRef({
+    context: { fileContext },
+    mapTitle: selectedFile?.name,
+    latitude,
+    longitude,
+    visualizeConfig: visualizationConfig.visualizeConfig,
+  }).current;
 
   const formFields = useMapLayerFormFields(isMapFile);
-  const [updatedValues, setUpdatedValues] = useState();
-  // const { trigger } = useFormGetContext();
 
-  useEffect(() => {
-    if (!updatedValues) {
-      return;
-    }
-    setVisualizationConfig((config: any) => {
-      const newConfig = { ...config };
-      const { mapTitle, visualizeConfig } = updatedValues as any;
-      if (mapTitle) {
-        newConfig.annotateConfig = { ...newConfig.annotateConfig, mapTitle };
-      }
-      if (visualizeConfig) {
-        newConfig.visualizeConfig = visualizeConfig;
-      }
-      if (!isMapFile) {
-        const { latitude, longitude } = updatedValues as any;
-        newConfig.datasetConfig = { latitude, longitude };
-      }
-      return newConfig;
-    });
-  }, [setVisualizationConfig, updatedValues, isMapFile]);
-
-  if (loadingFile) {
-    return null;
-  }
-
-  if (loadingFileError) {
-    console.log(loadingFileError);
-    return loadingFileError;
-  }
+  const onChange = useCallback(
+    (updatedValues: any) => {
+      setVisualizationConfig((config: any) => {
+        const newConfig = { ...config };
+        const { mapTitle, visualizeConfig } = updatedValues as any;
+        if (mapTitle) {
+          newConfig.annotateConfig = { ...newConfig.annotateConfig, mapTitle };
+        }
+        if (visualizeConfig) {
+          newConfig.visualizeConfig = visualizeConfig;
+        }
+        if (!isMapFile) {
+          const { latitude, longitude } = updatedValues as any;
+          newConfig.datasetConfig = { latitude, longitude };
+        }
+        return newConfig;
+      });
+    },
+    [setVisualizationConfig, isMapFile]
+  );
 
   return (
-    <Stack direction="column">
-      <Form
-        aria-labelledby="main-heading"
-        prefix="map-layer"
-        localizationPrefix="sharedData.form_step_set_dataset"
-        fields={formFields}
-        values={initialValues}
-        validationSchema={VALIDATION_SCHEMA}
-        onChange={setUpdatedValues}
-      />
-    </Stack>
+    <Form
+      aria-labelledby="main-heading"
+      prefix="map-layer"
+      localizationPrefix="sharedData.form_step_set_dataset"
+      fields={formFields}
+      values={initialValues}
+      validationSchema={VALIDATION_SCHEMA}
+      onChange={onChange}
+      Preview={Preview}
+    />
   );
 };
 
 type CreateMapLayerDialogProps = {
-  dataEntry?: DataEntryNode;
-  open: boolean;
   onClose: () => void;
   onCreate: (dataLayerConfig: any) => void;
   title?: string;
 };
 const CreateMapLayerDialog = ({
-  dataEntry,
-  open,
   onClose,
   onCreate,
   title,
@@ -202,23 +221,9 @@ const CreateMapLayerDialog = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { owner, entityType } = useCollaborationContext();
-
-  const [visualizationConfig, setVisualizationConfig] = useState({
-    selectedFile: dataEntry,
-    visualizeConfig: {
-      shape: 'circle',
-      size: 15,
-      color: (theme.palette as any).visualization.markerDefaultColor,
-      opacity: 50,
-    },
-    annotateConfig: {
-      dataPoints: [],
-    },
-  });
-
-  useEffect(() => {
-    setVisualizationConfig(config => ({ ...config, selectedFile: dataEntry }));
-  }, [dataEntry]);
+  const { visualizationConfig, doneLoadingFile, loadingFileError } =
+    useVisualizationContext();
+  const { selectedFile: dataEntry } = visualizationConfig;
 
   const onPublish = useCallback(() => {
     const completeConfig = {
@@ -249,6 +254,8 @@ const CreateMapLayerDialog = ({
       }
     });
   }, [dispatch, onCreate, owner.id, entityType, visualizationConfig]);
+
+  const open = Boolean(dataEntry) && doneLoadingFile && !loadingFileError;
 
   return (
     <Dialog
@@ -285,25 +292,60 @@ const CreateMapLayerDialog = ({
         </DialogActions>
       </Stack>
 
-      <DialogContent>
-        <VisualizationContextProvider
-          visualizationConfig={visualizationConfig}
-          setVisualizationConfig={setVisualizationConfig}
-        >
-          {/* <Stack direction="row"> */}
-          <FormContextProvider>
-            <CreateMapLayerForm />
-          </FormContextProvider>
-          {/* <VisualizationPreview useConfigBounds /> */}
-          {/* </Stack> */}
-        </VisualizationContextProvider>
-      </DialogContent>
+      <DialogContent>{open && <CreateMapLayerForm />}</DialogContent>
       <DialogActions>
         <Button size="small" onClick={onPublish} variant="contained">
           {t('storyMap.location_dialog_confirm_button')}
         </Button>
       </DialogActions>
     </Dialog>
+  );
+};
+
+interface CreateMapLayerFileUploadProps {
+  onCreate: (mapLayer: MapLayerConfig) => void;
+  title?: string;
+}
+export const CreateMapLayerFileUpload = ({
+  onCreate,
+  title,
+}: CreateMapLayerFileUploadProps) => {
+  const [visualizationConfig, setVisualizationConfig] = useState({
+    selectedFile: undefined as DataEntryNode | undefined,
+    visualizeConfig: {
+      shape: 'circle',
+      size: 15,
+      color: (theme.palette as any).visualization.markerDefaultColor,
+      opacity: 50,
+    },
+    annotateConfig: {
+      dataPoints: [],
+    },
+  });
+
+  const setDataEntry = useCallback(
+    (dataEntry?: DataEntryNode) => {
+      setVisualizationConfig(config => ({
+        ...config,
+        selectedFile: dataEntry,
+      }));
+    },
+    [setVisualizationConfig]
+  );
+  useEffect(() => {}, [setVisualizationConfig]);
+
+  return (
+    <VisualizationContextProvider
+      visualizationConfig={visualizationConfig}
+      setVisualizationConfig={setVisualizationConfig}
+    >
+      <FileUpload onCompleteSuccess={setDataEntry} />
+      <CreateMapLayerDialog
+        onCreate={onCreate}
+        onClose={() => setDataEntry(undefined)}
+        title={title}
+      />
+    </VisualizationContextProvider>
   );
 };
 

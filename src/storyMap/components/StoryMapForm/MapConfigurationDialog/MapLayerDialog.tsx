@@ -19,7 +19,6 @@ import React, { useCallback, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useFetchData } from 'terraso-client-shared/store/utils';
-import { DataEntryNode } from 'terrasoApi/shared/graphqlSchema/graphql';
 import { useSelector } from 'terrasoApi/store';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
@@ -43,12 +42,10 @@ import {
 import { withProps } from 'react-hoc';
 
 // import SharedDataUpload from 'sharedData/components/SharedDataUpload';
-import CreateMapLayerDialog from 'storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog';
+import { CreateMapLayerFileUpload } from 'storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog';
 import { useStoryMapConfigContext } from 'storyMap/components/StoryMapForm/storyMapConfigContext';
 import { fetchDataLayers } from 'storyMap/storyMapSlice';
 import { MapLayerConfig } from 'storyMap/storyMapTypes';
-
-import { FileUpload } from './FileUpload';
 
 // Type assertion to work around complex withProps typing
 const List = withProps(BaseList, {
@@ -130,23 +127,30 @@ const SelectMapLayerSection = ({
       ) : _.isEmpty(mapLayers) ? (
         <></>
       ) : (
-        <>
-          <Typography variant="caption" component="p" sx={{ mt: 3 }}>
-            {t('storyMap.form_location_add_data_layer_dialog_layers_count', {
-              count: mapLayers.length,
-            })}
+        <Stack>
+          <Typography component="h2">
+            {t(
+              'storyMap.form_location_add_data_layer_dialog_select_section_title'
+            )}
           </Typography>
-          <RadioGroup
-            value={selected}
-            onChange={event => setSelected(event.target.value)}
-          >
-            <List aria-labelledby="data-layer-dialog-subtitle">
-              {sortedMapLayers.map(mapLayer => (
-                <MapLayerListItem key={mapLayer.id} mapLayer={mapLayer} />
-              ))}
-            </List>
-          </RadioGroup>
-        </>
+          <Stack>
+            <Typography variant="caption" component="p">
+              {t('storyMap.form_location_add_data_layer_dialog_layers_count', {
+                count: mapLayers.length,
+              })}
+            </Typography>
+            <RadioGroup
+              value={selected}
+              onChange={event => setSelected(event.target.value)}
+            >
+              <List aria-labelledby="data-layer-dialog-subtitle">
+                {sortedMapLayers.map(mapLayer => (
+                  <MapLayerListItem key={mapLayer.id} mapLayer={mapLayer} />
+                ))}
+              </List>
+            </RadioGroup>
+          </Stack>
+        </Stack>
       )}
     </>
   );
@@ -155,54 +159,23 @@ const SelectMapLayerSection = ({
 interface CreateMapLayerSectionProps {
   onCreate: (mapLayer: MapLayerConfig) => void;
   title?: string;
-  open: boolean;
-  setOpen: (open: boolean) => void;
 }
 
 const CreateMapLayerSection = ({
   onCreate,
   title,
-  open,
-  setOpen,
 }: CreateMapLayerSectionProps) => {
-  // const { t } = useTranslation();
-  const [dataEntry, setDataEntry] = useState<DataEntryNode | undefined>(
-    undefined
-  );
+  const { t } = useTranslation();
 
   return (
-    <>
-      <FileUpload onCompleteSuccess={setDataEntry} />
-      {/* <Button variant="contained" onClick={() => setOpen(true)} autoFocus>
+    <Stack sx={{ rowGap: 1 }}>
+      <Typography component="h2">
         {t('storyMap.form_location_add_data_layer_dialog_create_new_layer')}
-      </Button> */}
-      <CreateMapLayerDialog
-        dataEntry={dataEntry}
-        open={Boolean(dataEntry)}
-        onCreate={onCreate}
-        onClose={() => setDataEntry(undefined)}
-        title={title}
-      />
-    </>
+      </Typography>
+      <CreateMapLayerFileUpload onCreate={onCreate} title={title} />
+    </Stack>
   );
 };
-
-// const UploadFileSection = props => {
-//   // const { t } = useTranslation();
-//   // const { onCreate, title, open, setOpen } = props;
-//   const { storyMap } = useStoryMapConfigContext();
-
-//   return (
-//     <SharedDataUpload
-//       onCompleteSuccess={onClose}
-//       onCancel={onClose}
-//       targetInput={{
-//         targetType: 'story_map',
-//         targetSlug: storyMap.slug,
-//       }}
-//     />
-//   );
-// };
 
 interface MapLayerDialogProps {
   open: boolean;
@@ -235,16 +208,14 @@ export const MapLayerDialog = ({
     [mapLayers]
   );
 
-  const [createLayerOpen, setCreateLayerOpen] = useState(false);
-
   useFetchData(
     useCallback(() => {
-      if (open && !createLayerOpen) {
+      if (open) {
         return fetchDataLayers({ ownerId: storyMap.id });
       } else {
         return null;
       }
-    }, [open, createLayerOpen, storyMap.id])
+    }, [open, storyMap.id])
   );
 
   const onConfirmWrapper = useCallback(() => {
@@ -254,7 +225,6 @@ export const MapLayerDialog = ({
   const onCreate = useCallback(
     (mapLayer: MapLayerConfig) => {
       onConfirm(mapLayer);
-      setCreateLayerOpen(false);
     },
     [onConfirm]
   );
@@ -263,6 +233,8 @@ export const MapLayerDialog = ({
     <Dialog
       open={open}
       onClose={onClose}
+      fullWidth={true}
+      maxWidth="sm"
       sx={{ '& .MuiDialog-paper': { backgroundColor: 'gray.lite2' } }}
     >
       <DialogTitle component="h1" sx={{ pb: 0 }}>
@@ -281,25 +253,16 @@ export const MapLayerDialog = ({
           <>{t('storyMap.form_location_add_data_layer_dialog_title_blank')}</>
         )}
       </DialogTitle>
-      <DialogContent sx={{ paddingTop: 2 }}>
-        <CreateMapLayerSection
-          open={createLayerOpen}
-          setOpen={setCreateLayerOpen}
-          title={title}
-          onCreate={onCreate}
-        />
-        {/* <UploadFileSection
-          open={createLayerOpen}
-          setOpen={setCreateLayerOpen}
-          title={title}
-          onCreate={onCreate}
-        /> */}
-        <SelectMapLayerSection
-          fetching={fetching}
-          selected={selected}
-          setSelected={setSelected}
-          mapLayers={mapLayers}
-        />
+      <DialogContent sx={{ marginTop: 1 }}>
+        <Stack sx={{ rowGap: 3 }}>
+          <CreateMapLayerSection title={title} onCreate={onCreate} />
+          <SelectMapLayerSection
+            fetching={fetching}
+            selected={selected}
+            setSelected={setSelected}
+            mapLayers={mapLayers}
+          />
+        </Stack>
       </DialogContent>
       <DialogActions
         sx={{

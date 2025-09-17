@@ -48,12 +48,14 @@ export const VisualizationContextProvider = props => {
   const [fileContext, setFileContext] = useState({});
   const [loadingFile, setLoadingFile] = useState(true);
   const [loadingFileError, setLoadingFileError] = useState();
+  const [doneLoadingFile, setDoneLoadingFile] = useState(false);
   const [useTileset, setUseTileset] = useState(null);
 
   const clear = useCallback(() => {
     setVisualizationConfig(INITIAL_CONFIG);
     setFileContext({});
     setLoadingFile(true);
+    setDoneLoadingFile(false);
     setLoadingFileError(null);
     setUseTileset(null);
   }, [setVisualizationConfig]);
@@ -75,6 +77,7 @@ export const VisualizationContextProvider = props => {
 
     setUseTileset(true);
     setLoadingFile(false);
+    setDoneLoadingFile(true);
   }, [visualizationConfig.tilesetId]);
 
   useEffect(() => {
@@ -87,6 +90,7 @@ export const VisualizationContextProvider = props => {
       return;
     }
     setLoadingFile(true);
+    setDoneLoadingFile(false);
     setFileContext(undefined);
     const readFileRequest = {
       promise: isMapFile
@@ -105,6 +109,7 @@ export const VisualizationContextProvider = props => {
         });
 
         setLoadingFile(false);
+        setDoneLoadingFile(true);
       })
       .catch(error => {
         setLoadingFileError(error);
@@ -146,6 +151,7 @@ export const VisualizationContextProvider = props => {
         fileContext,
         loadingFile,
         loadingFileError,
+        doneLoadingFile,
         getDataColumns,
         useTileset,
         isMapFile,
