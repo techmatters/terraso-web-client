@@ -91,7 +91,7 @@ const useMapLayerFormFields = (isMapFile: boolean) => {
     const fields: any[] = [
       {
         name: 'mapTitle',
-        label: 'sharedData.form_step_annotate_map_title_label',
+        label: 'storyMap.form_create_map_layer_title_input_label',
       },
     ];
     if (!isMapFile) {
@@ -295,7 +295,7 @@ const CreateMapLayerDialog = ({
       <DialogContent>{open && <CreateMapLayerForm />}</DialogContent>
       <DialogActions>
         <Button size="small" onClick={onPublish} variant="contained">
-          {t('storyMap.location_dialog_confirm_button')}
+          {t('storyMap.form_location_add_data_layer_confirm')}
         </Button>
       </DialogActions>
     </Dialog>

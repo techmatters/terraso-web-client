@@ -133,23 +133,16 @@ const SelectMapLayerSection = ({
               'storyMap.form_location_add_data_layer_dialog_select_section_title'
             )}
           </Typography>
-          <Stack>
-            <Typography variant="caption" component="p">
-              {t('storyMap.form_location_add_data_layer_dialog_layers_count', {
-                count: mapLayers.length,
-              })}
-            </Typography>
-            <RadioGroup
-              value={selected}
-              onChange={event => setSelected(event.target.value)}
-            >
-              <List aria-labelledby="data-layer-dialog-subtitle">
-                {sortedMapLayers.map(mapLayer => (
-                  <MapLayerListItem key={mapLayer.id} mapLayer={mapLayer} />
-                ))}
-              </List>
-            </RadioGroup>
-          </Stack>
+          <RadioGroup
+            value={selected}
+            onChange={event => setSelected(event.target.value)}
+          >
+            <List aria-labelledby="data-layer-dialog-subtitle">
+              {sortedMapLayers.map(mapLayer => (
+                <MapLayerListItem key={mapLayer.id} mapLayer={mapLayer} />
+              ))}
+            </List>
+          </RadioGroup>
         </Stack>
       )}
     </>
@@ -165,16 +158,7 @@ const CreateMapLayerSection = ({
   onCreate,
   title,
 }: CreateMapLayerSectionProps) => {
-  const { t } = useTranslation();
-
-  return (
-    <Stack sx={{ rowGap: 1 }}>
-      <Typography component="h2">
-        {t('storyMap.form_location_add_data_layer_dialog_create_new_layer')}
-      </Typography>
-      <CreateMapLayerFileUpload onCreate={onCreate} title={title} />
-    </Stack>
-  );
+  return <CreateMapLayerFileUpload onCreate={onCreate} title={title} />;
 };
 
 interface MapLayerDialogProps {

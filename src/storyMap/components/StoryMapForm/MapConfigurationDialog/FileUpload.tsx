@@ -142,6 +142,7 @@ export const FileUpload = (props: FileUploadProps) => {
       maxSize={SHARED_DATA_MAX_SIZE}
       fileTypes={MAP_LAYER_ACCEPTED_TYPES}
       fileExtensions={MAP_LAYER_ACCEPTED_EXTENSIONS}
+      buttonLabel={t('storyMap.form_upload_file_button_label')}
     />
   );
 };

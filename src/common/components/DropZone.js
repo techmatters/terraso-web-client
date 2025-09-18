@@ -42,6 +42,7 @@ const DropZone = props => {
   const { t } = useTranslation();
   const {
     label,
+    buttonLabel,
     maxSize,
     maxFiles,
     fileExtensions,
@@ -122,7 +123,7 @@ const DropZone = props => {
                 borderColor: palette.black,
               })}
             >
-              {t('common.drop_zone_select_file')}
+              {buttonLabel ?? t('common.drop_zone_select_file')}
             </Paper>
             <Box sx={{ padding: 2, textAlign: 'center' }}>
               <Typography
