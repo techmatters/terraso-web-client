@@ -333,12 +333,14 @@ const testNotificationsSetting = async (key, checkboxLabel) => {
   });
 };
 
+// eslint-disable-next-line jest/expect-expect
 test('AccountProfile: Save group notifications', async () =>
   testNotificationsSetting(
     'group_notifications',
     'A group I manage has pending requests or my request to join a closed group is approved'
   ));
 
+// eslint-disable-next-line jest/expect-expect
 test('AccountProfile: Save story map notifications', async () =>
   testNotificationsSetting(
     'story_map_notifications',

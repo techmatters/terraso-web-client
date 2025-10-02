@@ -9,20 +9,71 @@
   },
   "plugins": [
     "prettier",
-    "lodash-fp"
+    "lodash-fp",
+    "jest",
+    "jsx-a11y"
   ],
   "extends": [
-    "react-app",
-    "react-app/jest",
     "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:react-hooks/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:testing-library/react",
+    "plugin:jest/recommended",
     "prettier",
     "plugin:lodash-fp/recommended"
   ],
+  "ignorePatterns": ["/*", "!/src"],
+  "globals": {
+    "global": "readonly"
+  },
   "rules": {
     "prettier/prettier": "error",
+    "curly": "error",
+    "react/jsx-curly-brace-presence": "error",
+
+    // we prefer documenting component types with TypeScript
+    "react/prop-types": "off",
+
+    // these are all lints we'd prefer to have on, but which
+    // existing code doesn't comply with and we haven't had
+    // time to fix this
+    "react/display-name": "off",
+    "react-hooks/set-state-in-effect": "off",
+    "react-hooks/static-components": "off",
+    "react-hooks/refs": "off",
+    "react-hooks/incompatible-library": "off",
+    "react-hooks/preserve-manual-memoization": "off",
+    "react-hooks/immutability": "off",
+    "react-hooks/globals": "off",
+    "react/jsx-key": "off",
+    "react/no-children-prop": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-explicit-any": "off",
     "testing-library/no-unnecessary-act": "off",
     "testing-library/prefer-find-by": "off",
-    "curly": "error",
-    "react/jsx-curly-brace-presence": "error"
+    "testing-library/prefer-screen-queries": "off",
+    "testing-library/no-await-sync-events": "off",
+    "jest/valid-expect": "off",
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["./*", "../*"],
+            "message": "Please do not use relative imports. Instead use absolute imports starting with terraso-web-client/*."
+          }
+        ]
+      }
+    ]
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "env": {
+    "browser": true
   }
 }
