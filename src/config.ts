@@ -20,25 +20,25 @@ import _ from 'lodash/fp';
 import { setAPIConfig } from 'terraso-client-shared/config';
 import type { Severity } from 'terraso-client-shared/monitoring/logger';
 
-export const TERRASO_ENV = process.env.ENV || 'development';
+export const TERRASO_ENV = import.meta.env.ENV || 'development';
 
 export const TERRASO_API_URL =
-  process.env.REACT_APP_TERRASO_API_URL || 'http://127.0.0.1:8000';
+  import.meta.env.REACT_APP_TERRASO_API_URL || 'http://127.0.0.1:8000';
 
 export const REACT_APP_BASE_URL =
-  process.env.REACT_APP_BASE_URL || 'http://127.0.0.1:3000';
+  import.meta.env.REACT_APP_BASE_URL || 'http://127.0.0.1:3000';
 
 export const GRAPHQL_ENDPOINT = 'graphql/';
 
 export const COOKIES_DOMAIN =
-  process.env.REACT_APP_COOKIES_DOMAIN || '127.0.0.1';
+  import.meta.env.REACT_APP_COOKIES_DOMAIN || '127.0.0.1';
 
 const COOKIES_PARAMS = { path: '/' };
 
-export const SENTRY_DSN = process.env.REACT_APP_SENTRY_DSN || '';
+export const SENTRY_DSN = import.meta.env.REACT_APP_SENTRY_DSN || '';
 
 export const SENTRY_ENABLED =
-  process.env.REACT_APP_SENTRY_ENABLED === 'true' || false;
+  import.meta.env.REACT_APP_SENTRY_ENABLED === 'true' || false;
 
 setAPIConfig({
   terrasoAPIURL: TERRASO_API_URL,
@@ -57,21 +57,23 @@ setAPIConfig({
   logger: (severity: Severity, ...args) => console.log(...args),
 });
 
-export const WAIT_FOR_TIMEOUT = process.env.REACT_APP_WAIT_FOR_TIMEOUT || 3000;
+export const WAIT_FOR_TIMEOUT =
+  import.meta.env.REACT_APP_WAIT_FOR_TIMEOUT || 3000;
 
 export const JEST_TEST_TIMEOUT =
-  process.env.REACT_APP_JEST_TEST_TIMEOUT || 15000;
+  import.meta.env.REACT_APP_JEST_TEST_TIMEOUT || 15000;
 
-export const AXE_TEST_TIMEOUT = process.env.REACT_APP_AXE_TEST_TIMEOUT || 20000;
+export const AXE_TEST_TIMEOUT =
+  import.meta.env.REACT_APP_AXE_TEST_TIMEOUT || 20000;
 
 export const GEOJSON_MAX_SIZE =
-  process.env.REACT_APP_GEOJSON_MAX_SIZE || 10000000; // 10 MB
+  import.meta.env.REACT_APP_GEOJSON_MAX_SIZE || 10000000; // 10 MB
 
 export const SHARED_DATA_MAX_SIZE =
-  process.env.REACT_APP_SHARED_DATA_MAX_SIZE || 50000000; // 50 MB
+  import.meta.env.REACT_APP_SHARED_DATA_MAX_SIZE || 50000000; // 50 MB
 
 export const SHARED_DATA_MAX_FILES =
-  process.env.REACT_APP_SHARED_DATA_MAX_FILES || 20;
+  import.meta.env.REACT_APP_SHARED_DATA_MAX_FILES || 20;
 
 export const MAX_DESCRIPTION_LENGTH = 600;
 
@@ -175,34 +177,35 @@ export const PROFILE_IMAGE_ACCEPTED_EXTENSIONS = getTypesExtensions(
 );
 
 export const HUBSPOT_FORMS = {
-  region: process.env.REACT_APP_HUBSPOT_FORMS_REGION || 'na1',
-  portalId: process.env.REACT_APP_HUBSPOT_FORMS_PORTAL_ID,
+  region: import.meta.env.REACT_APP_HUBSPOT_FORMS_REGION || 'na1',
+  portalId: import.meta.env.REACT_APP_HUBSPOT_FORMS_PORTAL_ID,
   contactForm: {
-    'en-US': process.env.REACT_APP_HUBSPOT_FORMS_CONTACT_FORM_EN,
-    'es-ES': process.env.REACT_APP_HUBSPOT_FORMS_CONTACT_FORM_ES,
+    'en-US': import.meta.env.REACT_APP_HUBSPOT_FORMS_CONTACT_FORM_EN,
+    'es-ES': import.meta.env.REACT_APP_HUBSPOT_FORMS_CONTACT_FORM_ES,
   },
 };
 
-export const PLAUSIBLE_DOMAIN = process.env.REACT_APP_PLAUSIBLE_DOMAIN;
+export const PLAUSIBLE_DOMAIN = import.meta.env.REACT_APP_PLAUSIBLE_DOMAIN;
 
 export const LANDSCAPE_PROFILE_IMAGE_MAX_SIZE =
-  process.env.REACT_APP_LANDSCAPE_PROFILE_IMAGE_MAX_SIZE || 10000000; // 10 MB
+  import.meta.env.REACT_APP_LANDSCAPE_PROFILE_IMAGE_MAX_SIZE || 10000000; // 10 MB
 
 // List of livelihoods that, if selected, will show the agricultural production method field
-export const AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS = process.env
+export const AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS = import.meta.env
   .REACT_APP_AGRICULTURAL_PRODUCTION_METHOD_LIVELIHOODS || [
   'Cattle and livestock farming',
   'Crop farming',
 ];
 
-export const MAPBOX_ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
+export const MAPBOX_ACCESS_TOKEN = import.meta.env
+  .REACT_APP_MAPBOX_ACCESS_TOKEN;
 export const MAPBOX_STYLE_DEFAULT =
-  process.env.REACT_APP_MAPBOX_STYLE_DEFAULT ||
+  import.meta.env.REACT_APP_MAPBOX_STYLE_DEFAULT ||
   'mapbox://styles/mapbox/satellite-v9';
 export const MAPBOX_PROJECTION_DEFAULT =
-  process.env.REACT_APP_MAPBOX_PROJECTION_DEFAULT || 'globe';
+  import.meta.env.REACT_APP_MAPBOX_PROJECTION_DEFAULT || 'globe';
 export const MAPBOX_LANDSCAPE_DIRECTORY_STYLE =
-  process.env.REACT_APP_MAPBOX_LANDSCAPE_DIRECTORY_STYLE ||
+  import.meta.env.REACT_APP_MAPBOX_LANDSCAPE_DIRECTORY_STYLE ||
   MAPBOX_STYLE_DEFAULT;
 
 export const STORY_MAP_INSET_STYLE = 'mapbox://styles/mapbox/dark-v10';

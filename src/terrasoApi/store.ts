@@ -46,9 +46,6 @@ import taxonomiesReducer from 'taxonomies/taxonomiesSlice';
 
 import { DataEntryNode } from './shared/graphqlSchema/graphql';
 
-export type AppState = StateFromReducersMapObject<typeof sliceReducers>;
-export type AppDispatch = DispatchFromStoreFactory<typeof createStore>;
-
 type SharedDataState = {
   uploads: {
     files: Record<
@@ -76,6 +73,9 @@ const sliceReducers = {
 };
 
 const rootReducer = combineReducers(sliceReducers);
+
+export type AppState = StateFromReducersMapObject<typeof sliceReducers>;
+export type AppDispatch = DispatchFromStoreFactory<typeof createStore>;
 
 export const createStore = (initialState?: Partial<AppState>) =>
   configureStore({

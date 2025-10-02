@@ -23,20 +23,16 @@ import 'config';
 import {
   act,
   waitFor as baseWaitFor,
-  cleanup,
   render as rtlRender,
 } from '@testing-library/react';
+import { AXE_TEST_TIMEOUT, JEST_TEST_TIMEOUT, WAIT_FOR_TIMEOUT } from 'config';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import createStore from 'terrasoApi/store';
-
 import AppWrappers from 'layout/AppWrappers';
 import rules from 'permissions/rules';
-
-import { AXE_TEST_TIMEOUT, JEST_TEST_TIMEOUT, WAIT_FOR_TIMEOUT } from 'config';
-
+import createStore from 'terrasoApi/store';
 import theme from 'theme';
 
-const executeAxe = process.env['TEST_A11Y'] === 'true';
+const executeAxe = import.meta.env['TEST_A11Y'] === 'true';
 
 jest.setTimeout(JEST_TEST_TIMEOUT);
 
@@ -52,27 +48,11 @@ jest.mock('plausible-tracker', () => ({
   }),
 }));
 
-// Work around to avoid tests trying to render SVGs
-const createElementNSOrig = global.document.createElementNS;
-global.document.createElementNS = function (namespaceURI, qualifiedName) {
-  if (
-    namespaceURI === 'http://www.w3.org/2000/svg' &&
-    qualifiedName === 'svg'
-  ) {
-    const element = createElementNSOrig.apply(this, arguments);
-    element.createSVGRect = function () {};
-    return element;
-  }
-  return createElementNSOrig.apply(this, arguments);
-};
-
 if (executeAxe) {
   expect.extend(toHaveNoViolations);
   // Added longer timeout to work with the axe expensive tests
   jest.setTimeout(AXE_TEST_TIMEOUT);
 }
-
-afterEach(cleanup);
 
 const baseRender = (component, initialState, permissionsRules) => {
   const Wrapper = ({ children }) => (
