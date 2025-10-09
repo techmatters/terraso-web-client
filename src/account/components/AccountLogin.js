@@ -20,14 +20,11 @@ import queryString from 'query-string';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { fetchAuthURLs } from 'terraso-client-shared/account/accountSlice';
-import { ReactComponent as GoogleLogo } from 'terraso-client-shared/assets/google.svg';
-import { ReactComponent as MicrosoftLogo } from 'terraso-client-shared/assets/microsoft.svg';
+import googleLogo from 'terraso-client-shared/assets/google.svg';
+import microsoftLogo from 'terraso-client-shared/assets/microsoft.svg';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import AppleIcon from '@mui/icons-material/Apple';
 import { Box, Button, Stack, Typography } from '@mui/material';
-import SvgIcon from '@mui/material/SvgIcon';
-
-import { withProps } from 'react-hoc';
 
 import ExternalLink from 'common/components/ExternalLink';
 import { useDocumentDescription, useDocumentTitle } from 'common/document';
@@ -38,10 +35,6 @@ import { useAnalytics } from 'monitoring/analytics';
 import { useReferrer } from 'navigation/navigationUtils';
 
 import logo from 'assets/logo.svg';
-
-// ref: https://mui.com/material-ui/icons/#component-prop
-const MicrosoftIcon = withProps(SvgIcon, { component: MicrosoftLogo });
-const GoogleIcon = withProps(SvgIcon, { component: GoogleLogo });
 
 const AccountForm = () => {
   const { t } = useTranslation();
@@ -126,7 +119,17 @@ const AccountForm = () => {
             <Button
               variant="outlined"
               startIcon={
-                <GoogleIcon sx={{ paddingLeft: '3px', paddingRight: '5px' }} />
+                <Box
+                  component="img"
+                  src={googleLogo}
+                  alt="Google"
+                  sx={{
+                    width: 20,
+                    height: 20,
+                    marginLeft: '3px',
+                    marginRight: '5px',
+                  }}
+                />
               }
               href={appendNavigationState(urls.google)}
               onClick={() =>
@@ -141,8 +144,16 @@ const AccountForm = () => {
             <Button
               variant="outlined"
               startIcon={
-                <MicrosoftIcon
-                  sx={{ paddingLeft: '24px', paddingRight: '5px' }}
+                <Box
+                  component="img"
+                  src={microsoftLogo}
+                  alt="Microsoft"
+                  sx={{
+                    width: 20,
+                    height: 20,
+                    marginLeft: '24px',
+                    marginRight: '5px',
+                  }}
                 />
               }
               href={appendNavigationState(urls.microsoft)}
