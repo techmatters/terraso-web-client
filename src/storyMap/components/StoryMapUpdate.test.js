@@ -249,7 +249,7 @@ test('StoryMapUpdate: Share Dialog invite members', async () => {
   });
 
   await setup({ id: API_STORY_MAP.createdBy.id });
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
   await act(() => {
     fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
@@ -266,9 +266,9 @@ test('StoryMapUpdate: Share Dialog invite members', async () => {
 
   await act(async () => fireEvent.click(inviteButton));
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
 
-  const inviteCall = terrasoApi.requestGraphQL.mock.calls[2][1];
+  const inviteCall = terrasoApi.requestGraphQL.mock.calls[1][1];
 
   expect(inviteCall).toMatchObject({
     input: {
@@ -314,7 +314,7 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
   });
 
   await setup({ id: API_STORY_MAP.createdBy.id });
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
   await act(() => {
     fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
@@ -335,9 +335,9 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
 
   await act(async () => fireEvent.click(confirmationButton));
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
 
-  const removeCall = terrasoApi.requestGraphQL.mock.calls[2][1];
+  const removeCall = terrasoApi.requestGraphQL.mock.calls[1][1];
 
   expect(removeCall).toMatchObject({
     input: {
@@ -377,7 +377,7 @@ test('StoryMapUpdate: See story map as editor', async () => {
 
   await setup(API_STORY_MAP.membershipList.memberships.edges[1].node.user);
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
   expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
 

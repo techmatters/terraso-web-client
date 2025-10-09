@@ -86,7 +86,7 @@ const testGeoJsonParsing = (file, errorMessage) => async () => {
   );
   await setup();
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
   await act(async () =>
     fireEvent.click(
@@ -243,7 +243,7 @@ test('LandscapeBoundaries: Select file', async () => {
   );
   await setup();
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
   await act(async () =>
     fireEvent.click(
@@ -352,7 +352,7 @@ test('LandscapeBoundaries: Save GeoJSON', async () => {
   });
   await setup();
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
   await act(async () =>
     fireEvent.click(
@@ -393,8 +393,8 @@ test('LandscapeBoundaries: Save GeoJSON', async () => {
   expect(saveButton).toBeInTheDocument();
   expect(saveButton).not.toHaveAttribute('disabled');
   await act(async () => fireEvent.click(saveButton));
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[1];
   expect(saveCall[1]).toStrictEqual({
     input: {
       id: '1',
@@ -468,7 +468,7 @@ test('LandscapeBoundaries: Save KML', async () => {
   });
   await setup();
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
   await act(async () =>
     fireEvent.click(
@@ -510,8 +510,8 @@ test('LandscapeBoundaries: Save KML', async () => {
   expect(saveButton).toBeInTheDocument();
   expect(saveButton).not.toHaveAttribute('disabled');
   await act(async () => fireEvent.click(saveButton));
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[1];
   expect(saveCall[1]).toStrictEqual({
     input: {
       id: '1',
