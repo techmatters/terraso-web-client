@@ -49,7 +49,6 @@ const setup = async (userRole = 'member') => {
     {}
   );
   terrasoApi.requestGraphQL.mockResolvedValueOnce(landscape);
-  terrasoApi.requestGraphQL.mockResolvedValueOnce(landscape);
   await render(<LandscapeSharedDataUpload />, {
     account: {
       currentUser: {
@@ -256,8 +255,8 @@ test('LandscapeSharedDataUpload: Complete Success', async () => {
       search: 'scrollTo=shared-data-card-title',
     },
   ]);
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[1];
   expect(saveCall[1]).toStrictEqual({
     input: {
       description: '',

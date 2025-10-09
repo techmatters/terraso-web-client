@@ -96,8 +96,8 @@ test('Auth: test redirect', async () => {
     }
   );
 
-  expect(global.fetch).toHaveBeenCalledTimes(4);
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(global.fetch).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(screen.getByText('To: /account')).toBeInTheDocument();
 });
 
@@ -165,7 +165,7 @@ test('Auth: test refresh tokens', async () => {
       },
     }
   );
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
 
   expect(screen.getByText('Group not found')).toBeInTheDocument();
 });
@@ -199,7 +199,7 @@ test('Auth: test fetch user', async () => {
     }
   );
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 });
 
 test('Auth: Test redirect complete profile', async () => {
