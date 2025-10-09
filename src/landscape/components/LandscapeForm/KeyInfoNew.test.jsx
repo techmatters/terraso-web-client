@@ -205,8 +205,8 @@ test('LandscapeNew: Save form', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Add Landscape' }))
   );
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(5);
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[4];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
   expect(saveCall[1]).toStrictEqual({
     input: {
       description: 'New description',
@@ -324,8 +324,8 @@ test('LandscapeNew: Save form (add)', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
   );
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(6);
-  const initialSaveCall = terrasoApi.requestGraphQL.mock.calls[4];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(4);
+  const initialSaveCall = terrasoApi.requestGraphQL.mock.calls[2];
   expect(initialSaveCall[1]).toStrictEqual({
     input: {
       description: 'New description',
@@ -336,7 +336,7 @@ test('LandscapeNew: Save form (add)', async () => {
     },
   });
 
-  const lastSaveCall = terrasoApi.requestGraphQL.mock.calls[5];
+  const lastSaveCall = terrasoApi.requestGraphQL.mock.calls[3];
   expect(lastSaveCall[1].input.areaPolygon).toBeNull();
 });
 

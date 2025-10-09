@@ -219,8 +219,8 @@ test('LandscapeNew: Save form Pin boundary', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
   );
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(6);
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[5];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(4);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[3];
   expect(saveCall[1]).toStrictEqual({
     input: {
       description: 'New description',
