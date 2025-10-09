@@ -68,8 +68,8 @@ test('Unsubscribe: success', async () => {
     },
   });
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
-  expect(terrasoApi.requestGraphQL.mock.calls[1][1]).toStrictEqual({
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL.mock.calls[0][1]).toStrictEqual({
     input: {
       token: '123456',
     },
@@ -108,8 +108,8 @@ test('Unsubscribe: error', async () => {
     },
   });
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
-  expect(terrasoApi.requestGraphQL.mock.calls[1][1]).toStrictEqual({
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  expect(terrasoApi.requestGraphQL.mock.calls[0][1]).toStrictEqual({
     input: {
       token: '123456',
     },

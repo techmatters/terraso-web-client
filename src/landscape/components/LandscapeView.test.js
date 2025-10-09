@@ -447,7 +447,7 @@ test('LandscapeView: Refresh profile on leave', async () => {
     )
   );
 
-  const leaveCall = terrasoApi.requestGraphQL.mock.calls[2];
+  const leaveCall = terrasoApi.requestGraphQL.mock.calls[1];
   expect(leaveCall[1].input).toEqual({
     id: 'account-membership-id',
     landscapeSlug: 'slug-1',
@@ -507,7 +507,7 @@ test('LandscapeView: Refresh profile on join', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Join Landscape' }))
   );
 
-  const joinCall = terrasoApi.requestGraphQL.mock.calls[2];
+  const joinCall = terrasoApi.requestGraphQL.mock.calls[1];
   expect(joinCall[1].input).toEqual({
     landscapeSlug: 'slug-1',
     userEmails: ['email@email.com'],

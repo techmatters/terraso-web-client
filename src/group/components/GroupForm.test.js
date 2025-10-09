@@ -105,7 +105,7 @@ test('GroupForm: Fill form', async () => {
   );
   const { inputs } = await setup();
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(inputs.name).toHaveValue('Group name');
   expect(inputs.description).toHaveValue('Group description');
   expect(inputs.email).toHaveValue('group@group.org');
@@ -132,7 +132,7 @@ test('GroupForm: Show cancel', async () => {
   );
   const { inputs } = await setup();
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(inputs.name).toHaveValue('Group name');
   expect(inputs.description).toHaveValue('Group description');
   expect(inputs.email).toHaveValue('group@group.org');
@@ -279,7 +279,7 @@ test('GroupForm: website accepts address without protocol', async () => {
   fireEvent.change(inputs.website, { target: { value: 'example.org' } });
 
   await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[1];
 
   expect(saveCall[1].input.website).toEqual('https://example.org');
 });
@@ -343,8 +343,8 @@ test('GroupForm: Save form', async () => {
   fireEvent.click(inputs.membershipTypeClose);
 
   await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[1];
   expect(saveCall[1]).toStrictEqual({
     input: {
       id: '1',
@@ -376,23 +376,6 @@ test('GroupForm: Save form error', async () => {
         },
       })
     )
-    .mockReturnValueOnce(
-      Promise.resolve({
-        groups: {
-          edges: [
-            {
-              node: {
-                slug: 'group-1',
-                name: 'Group name',
-                description: 'Group description',
-                email: 'group@group.org',
-                website: 'https://www.group.org',
-              },
-            },
-          ],
-        },
-      })
-    )
     .mockRejectedValueOnce('Save Error');
 
   const { inputs } = await setup();
@@ -407,7 +390,7 @@ test('GroupForm: Save form error', async () => {
   });
 
   await act(async () => fireEvent.click(screen.getByText(/Save Changes/i)));
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
 
   // Test error display
   expect(screen.getByText(/Save Error/i)).toBeInTheDocument();
@@ -418,7 +401,7 @@ test('GroupForm: Save form error', async () => {
   expect(inputs.email).toHaveValue('new.email@group.org');
   expect(inputs.website).toHaveValue('https://www.other.org');
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
 });
 test('GroupForm: Avoid fetch', async () => {
   useParams.mockReturnValue({ id: 'new' });

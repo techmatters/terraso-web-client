@@ -168,7 +168,7 @@ test('ProfileImageUpdate: Save form', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Update' }))
   );
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(terrasoApi.request).toHaveBeenCalledTimes(1);
   const saveCall = terrasoApi.request.mock.calls[0];
   expect(saveCall[0].body.get('description')).toEqual('Test Description');

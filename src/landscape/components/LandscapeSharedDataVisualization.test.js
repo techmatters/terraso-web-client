@@ -226,7 +226,7 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
   await setup();
 
   await screen.findByRole('button', { name: 'Download PNG' });
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(4);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
 
   expect(
     screen.getByRole('heading', { name: 'Test Title' })
@@ -280,7 +280,7 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
 
   // Validate api call input to fetch visualization config
   // It should contain the owner slug and type
-  const fetchCall = terrasoApi.requestGraphQL.mock.calls[3];
+  const fetchCall = terrasoApi.requestGraphQL.mock.calls[1];
   expect(fetchCall[1]).toStrictEqual({
     configSlug: 'config-slug',
     ownerSlug: 'jose-landscape-deafult-test-4',

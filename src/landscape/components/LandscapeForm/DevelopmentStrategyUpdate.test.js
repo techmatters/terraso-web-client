@@ -125,8 +125,8 @@ test('DevelopmentStrategyUpdate: Save form', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Update' }))
   );
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[1];
   expect(saveCall[1]).toStrictEqual({
     input: {
       id: '1',

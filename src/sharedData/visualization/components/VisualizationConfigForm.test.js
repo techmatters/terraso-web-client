@@ -279,7 +279,7 @@ afterEach(() => {
 
 const testSelectDataFileStep = async testParams => {
   // Validate accepted file types
-  const fetchFilesCall = terrasoApi.requestGraphQL.mock.calls[3];
+  const fetchFilesCall = terrasoApi.requestGraphQL.mock.calls[2];
   expect(fetchFilesCall[1].resourceTypes).toStrictEqual([
     ...MAP_DATA_ACCEPTED_EXTENSIONS,
     ...DATA_SET_ACCEPTED_EXTENSIONS,
@@ -547,7 +547,7 @@ test.each([
     await testPreviewStep(map, events, testParams);
 
     // Fetch data entries validation
-    const fetchCall = terrasoApi.requestGraphQL.mock.calls[3];
+    const fetchCall = terrasoApi.requestGraphQL.mock.calls[2];
     expect(fetchCall[1]).toStrictEqual(
       testParams.expectedDataEntriesFetchInput
     );

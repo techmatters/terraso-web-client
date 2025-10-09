@@ -98,7 +98,7 @@ Object.keys(GROUP_TYPES_WITH_REDIRECTS).forEach(currentGroup =>
 test('GroupMembers: Display error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValue('Load error');
   await setup();
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(screen.getByText(/Load error/i)).toBeInTheDocument();
 });
 test('GroupMembers: Display loader', async () => {

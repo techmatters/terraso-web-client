@@ -118,7 +118,7 @@ test('KeyInfoUpdate: Fill form', async () => {
   );
   const { inputs } = await setup('Ecuador');
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(inputs.name).toHaveValue('Landscape Name');
   expect(inputs.description).toHaveValue('Landscape Description');
   expect(inputs.website).toHaveValue('https://www.landscape.org');
@@ -295,8 +295,8 @@ test('KeyInfoUpdate: Save form', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
   );
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
-  const saveCall = terrasoApi.requestGraphQL.mock.calls[2];
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  const saveCall = terrasoApi.requestGraphQL.mock.calls[1];
   expect(saveCall[1]).toStrictEqual({
     input: {
       id: '1',
@@ -310,22 +310,6 @@ test('KeyInfoUpdate: Save form', async () => {
 });
 test('KeyInfoUpdate: Save form error', async () => {
   terrasoApi.requestGraphQL
-    .mockReturnValueOnce(
-      Promise.resolve({
-        landscapes: {
-          edges: [
-            {
-              node: {
-                name: 'Landscape Name',
-                description: 'Landscape Description',
-                website: 'https://www.landscape.org',
-                location: 'EC',
-              },
-            },
-          ],
-        },
-      })
-    )
     .mockReturnValueOnce(
       Promise.resolve({
         landscapes: {
@@ -368,5 +352,5 @@ test('KeyInfoUpdate: Save form error', async () => {
   expect(inputs.website).toHaveValue('https://www.other.org');
   expect(inputs.location).toHaveTextContent('Argentina');
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
 });

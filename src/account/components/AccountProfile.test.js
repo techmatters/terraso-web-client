@@ -102,7 +102,7 @@ test('AccountProfile: Avatar with missing image', async () => {
     )
   );
   await setup();
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(
     screen.queryByRole('img', { name: 'John Doe' })
   ).not.toBeInTheDocument();
@@ -166,8 +166,8 @@ test('AccountProfile: Save', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
   );
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
-  expect(terrasoApi.requestGraphQL.mock.calls[2][1]).toStrictEqual({
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL.mock.calls[1][1]).toStrictEqual({
     input: {
       id: 'user-id',
       firstName: 'Pablo',
@@ -245,15 +245,15 @@ test('AccountProfile: Save language', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
   );
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(4);
-  expect(terrasoApi.requestGraphQL.mock.calls[2][1]).toStrictEqual({
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
+  expect(terrasoApi.requestGraphQL.mock.calls[1][1]).toStrictEqual({
     input: {
       id: 'user-id',
       firstName: 'Pablo',
       lastName: 'Perez',
     },
   });
-  expect(terrasoApi.requestGraphQL.mock.calls[3][1]).toStrictEqual({
+  expect(terrasoApi.requestGraphQL.mock.calls[2][1]).toStrictEqual({
     input: {
       key: 'language',
       userEmail: 'group@group.org',
@@ -323,8 +323,8 @@ const testNotificationsSetting = async (key, checkboxLabel) => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
   );
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(4);
-  expect(terrasoApi.requestGraphQL.mock.calls[3][1]).toStrictEqual({
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
+  expect(terrasoApi.requestGraphQL.mock.calls[2][1]).toStrictEqual({
     input: {
       key,
       userEmail: 'group@group.org',
@@ -380,7 +380,7 @@ test('AccountProfile: Save error', async () => {
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
   );
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
 
   // Test error display
   expect(screen.getByText(/Save Error/i)).toBeInTheDocument();

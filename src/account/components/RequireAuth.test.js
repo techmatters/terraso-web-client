@@ -15,8 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { render, screen } from 'tests/utils';
 import React from 'react';
+import RequireAuth from 'account/components/RequireAuth';
+import GroupView from 'group/components/GroupView';
 import _ from 'lodash/fp';
 import {
   useLocation,
@@ -26,9 +27,7 @@ import {
 } from 'react-router';
 import { getUserEmail } from 'terraso-client-shared/account/auth';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
-
-import RequireAuth from 'account/components/RequireAuth';
-import GroupView from 'group/components/GroupView';
+import { render, screen } from 'tests/utils';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
@@ -94,8 +93,8 @@ test('Auth: test redirect', async () => {
     }
   );
 
-  expect(global.fetch).toHaveBeenCalledTimes(4);
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(global.fetch).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
   expect(
     screen.getByText('To: /account?referrer=%2Fgroups%2Fslug-1')
   ).toBeInTheDocument();
@@ -168,7 +167,7 @@ test('Auth: test refresh tokens', async () => {
       },
     }
   );
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
 
   expect(screen.getByText('Group not found')).toBeInTheDocument();
 });
@@ -202,7 +201,7 @@ test('Auth: test fetch user', async () => {
     }
   );
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 });
 
 test('Auth: Redirects to complete profile when firstName missing', async () => {
