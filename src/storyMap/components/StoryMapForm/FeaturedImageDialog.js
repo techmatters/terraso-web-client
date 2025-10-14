@@ -106,9 +106,9 @@ const FeaturedImageDialog = props => {
           setImagePreview(mediaUrl);
           setImageFile({ existing: true, contentId: existingImage.contentId });
         }
-      } else if (existingImage?.url) {
-        setImagePreview(existingImage.url);
-        setImageFile({ existing: true, url: existingImage.url });
+      } else if (existingImage?.signedUrl) {
+        setImagePreview(existingImage.signedUrl);
+        setImageFile({ existing: true, signedUrl: existingImage.signedUrl });
       } else {
         setImagePreview(null);
         setImageFile(null);
