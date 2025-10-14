@@ -40,6 +40,8 @@ import { withProps } from 'react-hoc';
 import ConfirmMenuItem from 'common/components/ConfirmMenuItem';
 import StrictModeDroppable from 'common/components/StrictModeDroppable';
 
+import FeaturedImage from './FeaturedImage';
+
 import dragIcon from 'assets/drag-icon.svg';
 
 const DRAG_ANIMATION_DELAY = 300;
@@ -358,6 +360,7 @@ const ChaptersSidebar = props => {
         flexDirection: 'column',
       }}
     >
+      <FeaturedImage />
       <SideBarItem item={titleItem} />
       <DragDropContext
         onDragEnd={onDragEnd}
