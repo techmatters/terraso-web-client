@@ -196,15 +196,26 @@ export const MAPBOX_LANDSCAPE_DIRECTORY_STYLE =
 
 export const STORY_MAP_INSET_STYLE = 'mapbox://styles/mapbox/dark-v10';
 export const STORY_MAP_MEDIA_MAX_SIZE = 10000000; // 10 MB
-export const STORY_MAP_MEDIA_ACCEPTED_TYPES = {
+
+export const STORY_MAP_IMAGE_ACCEPTED_TYPES = {
   'image/jpeg': ['.jpg', '.jpeg'],
   'image/png': ['.png'],
   'image/gif': ['.gif'],
+  'image/webp': ['.webp'],
+};
+
+export const STORY_MAP_IMAGE_ACCEPTED_EXTENSIONS = getTypesExtensions(
+  STORY_MAP_IMAGE_ACCEPTED_TYPES
+);
+
+export const STORY_MAP_MEDIA_ACCEPTED_TYPES = {
+  ...STORY_MAP_IMAGE_ACCEPTED_TYPES,
   'audio/mpeg': ['.mp3'],
   'audio/wav': ['.wav'],
   'audio/aac': ['.aac'],
   'video/mpeg': ['.mp4'],
 };
+
 export const STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS = getTypesExtensions(
   STORY_MAP_MEDIA_ACCEPTED_TYPES
 );

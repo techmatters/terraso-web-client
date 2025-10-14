@@ -30,7 +30,6 @@ const BUTTON_SX = {
 };
 
 const THUMBNAIL_CONTAINER_SX = {
-  width: '100%',
   cursor: 'pointer',
   m: 1,
   '&:hover': {
@@ -56,10 +55,13 @@ const FeaturedImage = () => {
     if (!image) {
       return null;
     }
+    if (image.signedUrl) {
+      return image.signedUrl;
+    }
     if (image.contentId) {
       return getMediaFile(image.contentId);
     }
-    return image.url;
+    return null;
   }, [config.featuredImage, getMediaFile]);
 
   const handleOpenDialog = useCallback(() => {
@@ -76,7 +78,6 @@ const FeaturedImage = () => {
         setConfig(config => ({
           ...config,
           featuredImage: null,
-          featuredImageDescription: null,
         }));
         handleCloseDialog();
         return;
@@ -85,7 +86,10 @@ const FeaturedImage = () => {
       if (imageFile.existing) {
         setConfig(config => ({
           ...config,
-          featuredImageDescription: description,
+          featuredImage: {
+            ...config.featuredImage,
+            description,
+          },
         }));
       } else {
         const contentId = addMediaFile(
@@ -95,8 +99,10 @@ const FeaturedImage = () => {
 
         setConfig(config => ({
           ...config,
-          featuredImage: { contentId },
-          featuredImageDescription: description,
+          featuredImage: {
+            contentId,
+            description,
+          },
         }));
       }
 
@@ -126,7 +132,7 @@ const FeaturedImage = () => {
         onClose={handleCloseDialog}
         onSave={handleSaveImage}
         existingImage={config.featuredImage}
-        existingDescription={config.featuredImageDescription}
+        existingDescription={config.featuredImage?.description}
         getMediaFile={getMediaFile}
       />
     </>
