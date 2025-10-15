@@ -34,8 +34,7 @@ import './StoryMap.css';
 import logger from 'terraso-client-shared/monitoring/logger';
 
 import Map, { MapContextConsumer } from 'gis/components/Map';
-import VisualizationMapLayer from 'sharedData/visualization/components/VisualizationMapLayer';
-import VisualizationMapRemoteSource from 'sharedData/visualization/components/VisualizationMapRemoteSource';
+import { StoryMapLayer } from 'storyMap/components/StoryMapLayer';
 
 import StoryMapOutline from './StoryMapOutline';
 
@@ -572,20 +571,12 @@ const StoryMap = props => {
 
           {!_.isEmpty(config.dataLayers) &&
             Object.values(config.dataLayers).map(dataLayerConfig => (
-              <React.Fragment key={dataLayerConfig.id}>
-                <VisualizationMapRemoteSource
-                  sourceName={dataLayerConfig.id}
-                  visualizationConfig={dataLayerConfig}
-                />
-                <VisualizationMapLayer
-                  sourceName={dataLayerConfig.id}
-                  visualizationConfig={dataLayerConfig}
-                  showPopup={false}
-                  useTileset={true}
-                  changeBounds={false}
-                  opacity={0}
-                />
-              </React.Fragment>
+              <StoryMapLayer
+                key={dataLayerConfig.id}
+                config={dataLayerConfig}
+                changeBounds={false}
+                opacity={0}
+              />
             ))}
         </Map>
       </section>
