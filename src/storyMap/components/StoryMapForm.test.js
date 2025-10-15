@@ -793,7 +793,7 @@ test('StoryMapForm: Change chapter location', async () => {
   await act(async () => fireEvent.click(locationDialogButton));
 
   const dialog = screen.getByRole('dialog', {
-    name: 'Set map location for Chapter 1',
+    name: 'Edit map for Chapter 1',
   });
 
   await act(async () => map.onEvents['move']());
@@ -847,7 +847,7 @@ test('StoryMapForm: Change chapter style', async () => {
   await act(async () => fireEvent.click(locationDialogButton));
 
   const dialog = screen.getByRole('dialog', {
-    name: 'Set map location for Chapter 1',
+    name: 'Edit map for Chapter 1',
   });
 
   const baseMapButton = within(dialog).getByRole('button', {
@@ -896,7 +896,7 @@ test('StoryMapForm: Add map layer', async () => {
   await act(async () => fireEvent.click(locationDialogButton));
 
   const dialog = screen.getByRole('dialog', {
-    name: 'Set map location for Chapter 1',
+    name: 'Edit map for Chapter 1',
   });
 
   const addDataLayerButton = within(dialog).getByRole('button', {
