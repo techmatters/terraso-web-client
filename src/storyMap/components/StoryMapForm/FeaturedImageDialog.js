@@ -17,7 +17,6 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import _ from 'lodash/fp';
-import { openFile } from 'media/fileUtils';
 import { Trans, useTranslation } from 'react-i18next';
 import {
   Box,
@@ -31,6 +30,7 @@ import {
 } from '@mui/material';
 
 import DropZone from 'common/components/DropZone';
+import { openFile } from 'common/fileUtils';
 
 import {
   STORY_MAP_IMAGE_ACCEPTED_EXTENSIONS,

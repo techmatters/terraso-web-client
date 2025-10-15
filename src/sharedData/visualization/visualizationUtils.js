@@ -178,32 +178,37 @@ export const sheetToGeoJSON = (
   });
   const dataPoints = annotateConfig?.dataPoints || [];
   const titleColumn = annotateConfig?.annotationTitle;
-  const points = rows
-    .map((row, index) => {
-      const lat = parseFloat(row[datasetConfig.latitude]);
-      const lng = normalizeLongitude(parseFloat(row[datasetConfig.longitude]));
+  let points = [];
+  if (datasetConfig) {
+    points = rows
+      .map((row, index) => {
+        const lat = parseFloat(row[datasetConfig.latitude]);
+        const lng = normalizeLongitude(
+          parseFloat(row[datasetConfig.longitude])
+        );
 
-      const fields = dataPoints.map(dataPoint => ({
-        label: dataPoint.label || dataPoint.column,
-        value: row[dataPoint.column],
-      }));
+        const fields = dataPoints.map(dataPoint => ({
+          label: dataPoint.label || dataPoint.column,
+          value: row[dataPoint.column],
+        }));
 
-      return {
-        index,
-        position: [lng, lat],
-        title: titleColumn && row[titleColumn],
-        fields: JSON.stringify(fields),
-      };
-    })
-    .filter(point => {
-      try {
-        new mapboxgl.LngLat(...point.position);
-        return true;
-      } catch (error) {
-        return false;
-      }
-    })
-    .slice(0, sampleSize);
+        return {
+          index,
+          position: [lng, lat],
+          title: titleColumn && row[titleColumn],
+          fields: JSON.stringify(fields),
+        };
+      })
+      .filter(point => {
+        try {
+          new mapboxgl.LngLat(...point.position);
+          return true;
+        } catch (error) {
+          return false;
+        }
+      })
+      .slice(0, sampleSize);
+  }
 
   const geoJson = {
     type: 'FeatureCollection',

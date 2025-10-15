@@ -397,7 +397,7 @@ const changeChaper = async ({
       name: 'Add media',
     });
     const dropZone = within(mediaDialog).getByRole('button', {
-      name: 'Upload a photo or audio file Select File Accepted file formats: *.aac, *.gif, *.jpeg, *.jpg, *.mp3, *.mp4, *.png, *.wav, *.webp Maximum file size: 10 MB',
+      name: 'Upload a photo or audio file Select File Accepted formats: .aac, .gif, .jpeg, .jpg, .mp3, .mp4, .png, .wav, .webp Maximum file size: 10 MB',
     });
     const data = {
       dataTransfer: {
@@ -1335,7 +1335,7 @@ test('StoryMapForm: Add featured image', async () => {
   });
 
   const dropZone = within(dialog).getByRole('button', {
-    name: 'Select File Accepted file formats: *.gif, *.jpeg, *.jpg, *.png, *.webp Maximum file size: 10 MB',
+    name: 'Select File Accepted formats: .gif, .jpeg, .jpg, .png, .webp Maximum file size: 10 MB',
   });
   const imageFile = new File(['featured-image-content'], 'featured.jpg', {
     type: 'image/jpeg',
