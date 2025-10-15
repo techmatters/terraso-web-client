@@ -37,13 +37,13 @@ import {
   getLayerOpacity,
   LAYER_TYPES,
 } from 'sharedData/visualization/components/VisualizationMapLayer';
+import { MapConfigurationDialog } from 'storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
 import { chapterHasVisualMedia } from 'storyMap/storyMapUtils';
 
 import { ALIGNMENTS } from '../../storyMapConstants';
 import EditableMedia from './EditableMedia';
 import EditableRichText from './EditableRichText';
 import EditableText from './EditableText';
-import MapLocationDialog from './MapLocationDialog';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 
 const ConfigButton = withProps(IconButton, {
@@ -111,10 +111,10 @@ const ChapterConfig = props => {
   return (
     <>
       {locationOpen && (
-        <MapLocationDialog
+        <MapConfigurationDialog
           open={locationOpen}
           location={chapter.location}
-          dataLayerConfig={_.get(
+          mapLayerConfig={_.get(
             `dataLayers.${chapter.dataLayerConfigId}`,
             config
           )}
