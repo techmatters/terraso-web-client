@@ -396,7 +396,7 @@ const changeChaper = async ({
       name: 'Add media',
     });
     const dropZone = within(mediaDialog).getByRole('button', {
-      name: 'Upload a photo or audio file Select File Accepted file formats: *.aac, *.gif, *.jpeg, *.jpg, *.mp3, *.mp4, *.png, *.wav Maximum file size: 10 MB',
+      name: 'Upload a photo or audio file Select File Accepted formats: .aac, .gif, .jpeg, .jpg, .mp3, .mp4, .png, .wav Maximum file size: 10 MB',
     });
     const data = {
       dataTransfer: {

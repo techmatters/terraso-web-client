@@ -72,7 +72,7 @@ beforeEach(() => {
 const dropFiles = async files => {
   await setup();
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.csv, *.doc, *.docx, *.geojson, *.gpx, *.jpeg, *.jpg, *.json, *.kml, *.kmz, *.pdf, *.png, *.ppt, *.pptx, *.xls, *.xlsx, *.zip Maximum file size: 50 MB',
+    name: 'Select File Accepted formats: .csv, .doc, .docx, .geojson, .gpx, .jpeg, .jpg, .json, .kml, .kmz, .pdf, .png, .ppt, .pptx, .xls, .xlsx, .zip Maximum file size: 50 MB',
   });
 
   const data = {
