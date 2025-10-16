@@ -149,6 +149,11 @@ export const fetchDataLayers = createAsyncThunk(
   storyMapService.fetchDataLayers
 );
 
+export const addMapLayer = createAsyncThunk(
+  'storyMap/addMapLayer',
+  storyMapService.addMapLayer
+);
+
 const storyMapSlice = createSlice({
   name: 'storyMap',
   initialState,
@@ -258,10 +263,18 @@ const storyMapSlice = createSlice({
       updateStoryMap.rejected,
       _.flow(_.set('form.saving', false), _.set('form.error', true))
     );
-    builder.addCase(
-      updateStoryMap.fulfilled,
-      _.flow(_.set('form.saving', false), _.set('form.error', false))
-    );
+    builder.addCase(updateStoryMap.fulfilled, (state, action) => ({
+      ...state,
+      form: {
+        fetching: false,
+        saving: false,
+        error: false,
+        data: {
+          ...state.form.data,
+          ...action.payload,
+        },
+      },
+    }));
 
     builder.addCase(deleteStoryMap.pending, (state, action) =>
       _.set(`delete.${action.meta.arg.storyMap.id}.deleting`, true, state)
