@@ -121,7 +121,10 @@ const FeaturedImage = () => {
         <Box onClick={handleOpenDialog} sx={THUMBNAIL_CONTAINER_SX}>
           <img
             src={imageUrl}
-            alt={t('storyMap.form_featured_image_button')}
+            alt={
+              config.featuredImage?.description ||
+              t('storyMap.form_featured_image_button')
+            }
             style={THUMBNAIL_IMAGE_STYLE}
           />
         </Box>

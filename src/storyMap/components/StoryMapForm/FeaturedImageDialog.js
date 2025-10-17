@@ -18,16 +18,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import _ from 'lodash/fp';
 import { openFile } from 'media/fileUtils';
-import { useTranslation } from 'react-i18next';
-import CloseIcon from '@mui/icons-material/Close';
+import { Trans, useTranslation } from 'react-i18next';
 import {
   Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
-  IconButton,
   Stack,
   TextField,
   Typography,
@@ -65,14 +62,6 @@ const HOVER_OVERLAY_SX = {
   alignItems: 'center',
   justifyContent: 'center',
   backgroundColor: 'rgba(0, 0, 0, 0.5)',
-};
-
-const DIALOG_TITLE_SX = {
-  padding: 0,
-};
-
-const CLOSE_BUTTON_SX = {
-  marginLeft: 3,
 };
 
 const DIALOG_ACTIONS_SX = {
@@ -168,29 +157,17 @@ const FeaturedImageDialog = props => {
       onClose={handleClose}
       fullWidth
       maxWidth="sm"
-      aria-labelledby="featured-image-dialog-title"
+      slotProps={{
+        paper: {
+          'aria-label': t('storyMap.form_featured_image_dialog_title'),
+        },
+      }}
     >
-      <DialogTitle
-        id="featured-image-dialog-title"
-        component={Stack}
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Typography component="h2" variant="h2" sx={DIALOG_TITLE_SX}>
-          {t('storyMap.form_featured_image_dialog_title')}
-        </Typography>
-        <IconButton
-          onClick={handleClose}
-          sx={CLOSE_BUTTON_SX}
-          title={t('common.dialog_close_label')}
-          aria-label={t('common.dialog_close_label')}
-        >
-          <CloseIcon fontSize="small" />
-        </IconButton>
-      </DialogTitle>
       <DialogContent>
         <Stack spacing={2}>
+          <Typography>
+            <Trans i18nKey="storyMap.form_featured_image_dialog_description" />
+          </Typography>
           {imagePreview ? (
             <Box
               sx={IMAGE_CONTAINER_SX}
