@@ -999,6 +999,7 @@
         "form_save_status_error": "Save failed. Trying to connect…",
         "form_featured_image_button": "Featured Image",
         "form_featured_image_dialog_title": "Featured Image",
+        "form_featured_image_dialog_description": "The <strong>featured image</strong> will display as the preview thumbnail when this story map is shared on social media or other platforms.",
         "form_featured_image_description_label": "Featured image description (alt text)",
         "form_featured_image_description_placeholder": "Describe this image for accessibility",
         "form_featured_image_save": "Save",

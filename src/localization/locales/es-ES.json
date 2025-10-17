@@ -1004,6 +1004,7 @@
         "form_save_status_error": "Error al guardar. Intentando conectar…",
         "form_featured_image_button": "Imagen destacada",
         "form_featured_image_dialog_title": "Imagen destacada",
+        "form_featured_image_dialog_description": "La <strong>imagen destacada</strong> se mostrará como la miniatura de vista previa cuando este Story Map se comparta en redes sociales u otras plataformas.",
         "form_featured_image_description_label": "Descripción de la imagen destacada (texto alternativo)",
         "form_featured_image_description_placeholder": "Describe esta imagen para accesibilidad",
         "form_featured_image_save": "Guardar",
