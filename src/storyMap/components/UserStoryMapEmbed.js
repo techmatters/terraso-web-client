@@ -25,7 +25,11 @@ import { Box, Link, Stack } from '@mui/material';
 
 import { serialize } from 'common/components/RichTextEditor/utils';
 import { useSocialShareContext } from 'common/components/SocialShare';
-import { useDocumentDescription, useDocumentTitle } from 'common/document';
+import {
+  useDocumentDescription,
+  useDocumentImage,
+  useDocumentTitle,
+} from 'common/document';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import StoryMap from 'storyMap/components/StoryMap';
@@ -90,6 +94,14 @@ const UserStoryMapEmbed = () => {
       }
       return storyMap?.title;
     }, [storyMap?.config?.chapters, storyMap?.title]),
+    fetching
+  );
+
+  useDocumentImage(
+    useMemo(
+      () => storyMap?.config?.featuredImage?.signedUrl,
+      [storyMap?.config?.featuredImage]
+    ),
     fetching
   );
 
