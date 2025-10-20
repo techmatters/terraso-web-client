@@ -1384,3 +1384,47 @@ test('StoryMapForm: Add featured image', async () => {
     })
   );
 });
+
+test('StoryMapForm: Add short description', async () => {
+  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
+
+  const sidebar = screen.getByRole('navigation', {
+    name: 'Chapters sidebar',
+  });
+
+  const shortDescriptionButton = within(sidebar).getByRole('button', {
+    name: 'Add short description',
+  });
+  await act(async () => fireEvent.click(shortDescriptionButton));
+
+  const dialog = screen.getByRole('dialog', {
+    name: 'Short Description',
+  });
+
+  const descriptionInput = within(dialog).getByRole('textbox');
+  await act(async () =>
+    fireEvent.change(descriptionInput, {
+      target: {
+        value:
+          'A monarch pupa sews its butterfly wings inside the chrysalis for Sunday Crafternoon!',
+      },
+    })
+  );
+
+  const saveButton = within(dialog).getByRole('button', { name: 'Save' });
+  await act(async () => fireEvent.click(saveButton));
+
+  await waitFor(() => {
+    expect(
+      screen.queryByRole('dialog', { name: 'Short Description' })
+    ).not.toBeInTheDocument();
+  });
+
+  await expectSave();
+
+  expect(onSaveDraft).toHaveBeenCalledTimes(1);
+  const saveCall = onSaveDraft.mock.calls[0];
+  expect(saveCall[0].description).toBe(
+    'A monarch pupa sews its butterfly wings inside the chrysalis for Sunday Crafternoon!'
+  );
+});
