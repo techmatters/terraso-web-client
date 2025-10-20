@@ -1008,7 +1008,7 @@
         "form_featured_image_invalid": "Upload images with one of the following extensions: {{extensions}}",
         "form_short_description_button": "Add short description",
         "form_short_description_dialog_title": "Short Description",
-        "form_short_description_dialog_help": "The <strong>short description</strong> will display in search engine listings and when this Story Map is shared on other platforms.",
+        "form_short_description_dialog_help": "The <strong>short description</strong> will display in search engine listings and when this Story Map is shared on other platforms.<0/><1>150-160 characters recommended.</1>",
         "form_short_description_placeholder": "Enter a short description...",
         "form_short_description_input_label": "Story map short description",
         "form_short_description_character_count": "{{count}} / {{maxLength}} characters",

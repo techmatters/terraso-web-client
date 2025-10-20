@@ -27,12 +27,6 @@ import {
   Typography,
 } from '@mui/material';
 
-// Style constants
-const DIALOG_ACTIONS_SX = {
-  padding: '20px',
-  justifyContent: 'space-between',
-};
-
 const MAX_DESCRIPTION_LENGTH = 500;
 
 const ShortDescriptionDialog = props => {
@@ -98,7 +92,10 @@ const ShortDescriptionDialog = props => {
       <DialogContent>
         <Stack spacing={2} sx={{ pt: 1 }}>
           <Typography variant="body2">
-            <Trans i18nKey="storyMap.form_short_description_dialog_help" />
+            <Trans
+              i18nKey="storyMap.form_short_description_dialog_help"
+              components={[<br />, <em />]}
+            />
           </Typography>
           <TextField
             fullWidth
@@ -109,7 +106,13 @@ const ShortDescriptionDialog = props => {
             onKeyDown={handleKeyDown}
             placeholder={t('storyMap.form_short_description_placeholder')}
             error={!!error}
-            helperText={error}
+            helperText={
+              error ||
+              t('storyMap.form_short_description_character_count', {
+                count: description.length,
+                maxLength: MAX_DESCRIPTION_LENGTH,
+              })
+            }
             slotProps={{
               input: {
                 'aria-label': t('storyMap.form_short_description_input_label'),
@@ -118,7 +121,11 @@ const ShortDescriptionDialog = props => {
           />
         </Stack>
       </DialogContent>
-      <DialogActions sx={DIALOG_ACTIONS_SX}>
+      <DialogActions
+        sx={{
+          justifyContent: 'space-between',
+        }}
+      >
         <Button onClick={onClose}>{t('common.dialog_cancel_label')}</Button>
         <Button
           onClick={handleSave}
