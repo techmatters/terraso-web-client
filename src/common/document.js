@@ -70,7 +70,7 @@ export const useDocumentImage = (image, fetching) => {
     if (!fetching && imageUrl) {
       document
         .querySelector('meta[property="og:image"]')
-        .setAttribute('content', imageUrl);
+        ?.setAttribute('content', imageUrl);
     }
   }, [fetching, imageUrl]);
 };
