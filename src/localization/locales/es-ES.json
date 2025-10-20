@@ -1013,7 +1013,7 @@
         "form_featured_image_invalid": "Sube imágenes con una de las siguientes extensiones: {{extensions}}",
         "form_short_description_button": "Agregar descripción corta",
         "form_short_description_dialog_title": "Descripción corta",
-        "form_short_description_dialog_help": "La <strong>descripción corta</strong> se mostrará en los listados de motores de búsqueda y cuando este Story Map se comparta en otras plataformas.",
+        "form_short_description_dialog_help": "La <strong>descripción corta</strong> se mostrará en los listados de motores de búsqueda y cuando este Story Map se comparta en otras plataformas.<0/><1>Se recomiendan 150-160 caracteres.</1>",
         "form_short_description_placeholder": "Introduce una descripción corta...",
         "form_short_description_input_label": "Descripción corta del Story Map",
         "form_short_description_character_count": "{{count}} / {{maxLength}} caracteres",
