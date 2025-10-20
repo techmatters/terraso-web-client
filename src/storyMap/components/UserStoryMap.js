@@ -61,6 +61,9 @@ const UserStoryMap = () => {
 
   useDocumentDescription(
     useMemo(() => {
+      if (storyMap?.config?.description) {
+        return storyMap.config.description;
+      }
       const description = serialize(
         storyMap?.config?.chapters?.[0]?.description
       );
@@ -68,7 +71,11 @@ const UserStoryMap = () => {
         return description;
       }
       return storyMap?.title;
-    }, [storyMap?.config?.chapters, storyMap?.title]),
+    }, [
+      storyMap?.config?.description,
+      storyMap?.config?.chapters,
+      storyMap?.title,
+    ]),
     fetching
   );
 
