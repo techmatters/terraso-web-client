@@ -33,6 +33,8 @@ const MapboxRemoteSource = props => {
       url: `mapbox://terraso.${tilesetId}`,
     });
   }, [map, addSource, removeSource, tilesetId, sourceName]);
+
+  return null;
 };
 
 export default MapboxRemoteSource;

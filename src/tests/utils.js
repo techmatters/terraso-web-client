@@ -74,10 +74,10 @@ if (executeAxe) {
 
 afterEach(cleanup);
 
-const baseRender = (component, intialState, permissionsRules) => {
+const baseRender = (component, initialState, permissionsRules) => {
   const Wrapper = ({ children }) => (
     <AppWrappers
-      store={createStore(intialState)}
+      store={createStore(initialState)}
       theme={theme}
       permissionsRules={permissionsRules || rules}
     >
@@ -87,10 +87,10 @@ const baseRender = (component, intialState, permissionsRules) => {
   return rtlRender(component, { wrapper: Wrapper });
 };
 
-const render = async (component, intialState, permissionsRules) => {
+const render = async (component, initialState, permissionsRules) => {
   let renderResult;
   await act(async () => {
-    renderResult = baseRender(component, intialState, permissionsRules);
+    renderResult = baseRender(component, initialState, permissionsRules);
   });
   if (executeAxe) {
     const { container } = renderResult;

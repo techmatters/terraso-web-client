@@ -109,6 +109,10 @@ export const DATA_SET_ACCEPTED_TYPES = {
   ],
 };
 
+export const DATA_SET_ACCEPTED_EXTENSIONS = getTypesExtensions(
+  DATA_SET_ACCEPTED_TYPES
+);
+
 export const DOCUMENT_ACCEPTED_TYPES = {
   'application/msword': ['.doc'],
   'application/pdf': ['.pdf'],
@@ -139,10 +143,6 @@ export const MAP_CONTENT_TYPE_BY_EXTENSION = _.flow(
   ),
   _.fromPairs
 )(MAP_DATA_ACCEPTED_TYPES);
-
-export const DATA_SET_ACCPETED_EXTENSIONS = getTypesExtensions(
-  DATA_SET_ACCEPTED_TYPES
-);
 
 export const SHARED_DATA_ACCEPTED_TYPES = _.flow(
   _.flatMap(_.toPairs),

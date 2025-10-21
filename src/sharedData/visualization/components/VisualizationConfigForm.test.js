@@ -34,7 +34,7 @@ import {
 } from './VisualizationConfigForm.testData';
 
 import {
-  DATA_SET_ACCPETED_EXTENSIONS,
+  DATA_SET_ACCEPTED_EXTENSIONS,
   MAP_DATA_ACCEPTED_EXTENSIONS,
 } from 'config';
 
@@ -277,7 +277,7 @@ const testSelectDataFileStep = async testParams => {
   const fetchFilesCall = terrasoApi.requestGraphQL.mock.calls[3];
   expect(fetchFilesCall[1].resourceTypes).toStrictEqual([
     ...MAP_DATA_ACCEPTED_EXTENSIONS,
-    ...DATA_SET_ACCPETED_EXTENSIONS,
+    ...DATA_SET_ACCEPTED_EXTENSIONS,
   ]);
 
   // Validate stepper not present in first step
