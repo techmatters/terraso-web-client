@@ -313,7 +313,7 @@ const AnnotateStep = props => {
           </Grid>
           <Grid size={{ xs: 12, md: 7 }}>
             <VisualizationPreview
-              showPopup
+              showInitialPopup
               customConfig={{
                 annotateConfig: updatedValues,
               }}

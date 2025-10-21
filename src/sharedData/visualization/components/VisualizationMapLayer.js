@@ -116,7 +116,7 @@ const MapboxLayer = props => {
   const {
     sourceName,
     visualizationConfig,
-    showPopup,
+    showInitialPopup,
     useConfigBounds,
     changeBounds = true,
     useTileset,
@@ -195,7 +195,7 @@ const MapboxLayer = props => {
   }, [popup, popupData?.coordinates, map, isMapFile]);
 
   useEffect(() => {
-    if (!showPopup || !map) {
+    if (!showInitialPopup || !map) {
       return;
     }
     const source = map.getSource(sourceName);
@@ -208,7 +208,7 @@ const MapboxLayer = props => {
     }
     openPopup(features[0]);
   }, [
-    showPopup,
+    showInitialPopup,
     openPopup,
     map,
     visualizationConfig?.annotateConfig?.annotationTitle,
