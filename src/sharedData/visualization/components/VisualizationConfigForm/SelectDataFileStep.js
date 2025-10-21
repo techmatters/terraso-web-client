@@ -42,13 +42,13 @@ import { fetchDataEntries } from 'sharedData/sharedDataSlice';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
 
 import {
-  DATA_SET_ACCPETED_EXTENSIONS,
+  DATA_SET_ACCEPTED_EXTENSIONS,
   MAP_DATA_ACCEPTED_EXTENSIONS,
 } from 'config';
 
 const ACCEPTED_RESOURCE_TYPES = [
   ...MAP_DATA_ACCEPTED_EXTENSIONS,
-  ...DATA_SET_ACCPETED_EXTENSIONS,
+  ...DATA_SET_ACCEPTED_EXTENSIONS,
 ];
 
 const TYPE_LABEL = {
