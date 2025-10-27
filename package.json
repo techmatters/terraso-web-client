@@ -23,6 +23,8 @@
     "@turf/helpers": "^7.2.0",
     "@turf/meta": "^7.2.0",
     "canvg": "^4.0.3",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
     "filesize": "^11.0.13",
     "get-video-id": "^4.1.7",
     "i18next": "^25.4.0",
@@ -64,6 +66,7 @@
   },
   "scripts": {
     "start": "npm run generate-types -- -w -s & react-scripts start",
+    "start:prod": "node server.js",
     "generate-types": "npx graphql-code-generator",
     "lint-js": "eslint ./ --ext .js --ext .ts --ext .tsx --max-warnings 0 --ignore-path .gitignore",
     "format-js": "npm run lint-js -- --fix",

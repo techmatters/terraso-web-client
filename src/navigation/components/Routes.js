@@ -71,6 +71,7 @@ const path = (
       isEmbedded: false,
     },
     showBreadcrumbs = false,
+    hasServerSideMetaTags = false,
     ...otherParams
   } = {}
 ) => ({
@@ -79,6 +80,7 @@ const path = (
   auth,
   optionalAuth,
   showBreadcrumbs,
+  hasServerSideMetaTags,
   ...otherParams,
 });
 
@@ -228,6 +230,7 @@ const paths = [
         topMessage: 'storyMap.optional_auth_top_message',
         bottomMessage: 'storyMap.optional_auth_bottom_message',
       },
+      hasServerSideMetaTags: true, // Server-side rendering handles meta tags
     }),
     path(`${basePath}/embed`, UserStoryMapEmbed, {
       optionalAuth: {
@@ -300,6 +303,16 @@ export const useOptionalAuth = () => {
   );
 
   return currentPath.optionalAuth;
+};
+
+export const useHasServerSideMetaTags = () => {
+  const { pathname: currentPathname } = useLocation();
+  const currentPath = useMemo(
+    () => getPath(currentPathname),
+    [currentPathname]
+  );
+
+  return currentPath?.hasServerSideMetaTags || false;
 };
 
 const RoutesComponent = () => (
