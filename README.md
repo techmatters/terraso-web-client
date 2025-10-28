@@ -62,6 +62,19 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
+### `npm run server`
+
+Runs the production Express server that serves the built React app with server-side rendering for meta tags (enables social media sharing previews).
+
+```sh
+npm run build
+npm run server
+```
+
+Open [http://127.0.0.1:10000](http://127.0.0.1:10000) to view it in the browser.
+
+**Note**: This is used for production deployment on Render.com. In development, use `npm start` instead.
+
 ### `make run-build`
 
 Builds and runs the app
