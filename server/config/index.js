@@ -15,7 +15,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-require('dotenv').config({ path: '.env.local' });
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: '.env.local' });
+}
 
 const config = {
   apiUrl: process.env.REACT_APP_TERRASO_API_URL || 'https://api.terraso.org',
