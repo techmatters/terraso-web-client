@@ -16,13 +16,19 @@
  */
 
 import {
+  combineReducers,
+  configureStore,
+  StateFromReducersMapObject,
+} from '@reduxjs/toolkit';
+import {
   useDispatch as reduxUseDispatch,
   useSelector as reduxUseSelector,
   TypedUseSelectorHook,
 } from 'react-redux';
-import createStoreFactory, {
+import {
   DispatchFromStoreFactory,
-  StateFromStoreFactory,
+  handleAbortMiddleware,
+  sharedReducers,
 } from 'terraso-client-shared/store/store';
 
 import gisReducer from 'gis/gisSlice';
@@ -33,10 +39,11 @@ import sharedDataReducer from 'sharedData/sharedDataSlice';
 import storyMapReducer from 'storyMap/storyMapSlice';
 import taxonomiesReducer from 'taxonomies/taxonomiesSlice';
 
-export type AppState = StateFromStoreFactory<typeof createStore>;
+export type AppState = StateFromReducersMapObject<typeof sliceReducers>;
 export type AppDispatch = DispatchFromStoreFactory<typeof createStore>;
 
-const createStore = createStoreFactory({
+const sliceReducers = {
+  ...sharedReducers,
   group: groupReducer,
   userHome: userHomeReducer,
   landscape: landscapeReducer,
@@ -44,7 +51,17 @@ const createStore = createStoreFactory({
   taxonomies: taxonomiesReducer,
   gis: gisReducer,
   storyMap: storyMapReducer,
-});
+};
+
+const rootReducer = combineReducers(sliceReducers);
+
+export const createStore = (initialState?: Partial<AppState>) =>
+  configureStore({
+    middleware: getDefaultMiddleware =>
+      getDefaultMiddleware().concat(handleAbortMiddleware),
+    reducer: rootReducer,
+    preloadedState: initialState,
+  });
 
 export const useSelector: TypedUseSelectorHook<AppState> = reduxUseSelector;
 export const useDispatch: () => AppDispatch = reduxUseDispatch;

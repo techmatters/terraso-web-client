@@ -14,16 +14,37 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-export const dataURItoBlob = dataURI => fetch(dataURI).then(res => res.blob());
+import path from 'path-browserify';
+import { v4 as uuidv4 } from 'uuid';
 
-export const readAsDataURL = data =>
+export const dataURItoBlob = (dataURI: string): Promise<Blob> =>
+  fetch(dataURI).then(res => res.blob());
+
+export const readAsDataURL = (data: Blob): Promise<string> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onloadend = () => {
-      resolve(reader.result);
+      resolve(reader.result as string);
     };
     reader.onerror = () => reject(reader.error);
     reader.readAsDataURL(data);
   });
 
-export const openFile = file => readAsDataURL(file);
+export const openFile = (file: File): Promise<string> => readAsDataURL(file);
+
+export type FileWrapper = {
+  id: string;
+  name: string;
+  resourceType: string;
+  file: File;
+};
+
+export const fileWrapper = (file: File): FileWrapper => {
+  const filePath = path.parse(file.name);
+  return {
+    id: uuidv4(),
+    name: filePath.name,
+    resourceType: filePath.ext,
+    file,
+  };
+};

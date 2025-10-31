@@ -20,7 +20,6 @@ const DEFAULT_OPACITY = 80;
 const SUPPORTED_RESOURCE_TYPES = [
   'geojson',
   'gpx',
-  'json',
   'kml',
   'kmz',
   'zip',

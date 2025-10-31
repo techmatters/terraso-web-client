@@ -301,13 +301,82 @@ export const approveMembershipToken = ({ membership, token, accountEmail }) => {
     }));
 };
 
-export const fetchDataLayers = () => {
+export const addMapLayer = ({
+  title,
+  description,
+  ownerId,
+  ownerType,
+  selectedFile,
+  visualizationConfig,
+}) => {
   const query = graphql(`
-    query visualizationConfigs {
-      visualizationConfigs {
+    mutation addMapLayer($input: VisualizationConfigAddMutationInput!) {
+      addVisualizationConfig(input: $input) {
+        visualizationConfig {
+          ...visualizationConfigWithConfiguration
+          geojson
+          dataEntry {
+            name
+            resourceType
+            createdBy {
+              lastName
+              firstName
+            }
+            sharedResources {
+              edges {
+                node {
+                  target {
+                    ... on GroupNode {
+                      name
+                      membershipList {
+                        membershipType
+                      }
+                    }
+                    ... on LandscapeNode {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          }
+          slug
+          readableId
+        }
+        errors
+      }
+    }
+  `);
+  const configuration = JSON.stringify(
+    _.omit('selectedFile', visualizationConfig)
+  );
+  return terrasoApi
+    .requestGraphQL(query, {
+      input: {
+        title,
+        description,
+        configuration,
+        dataEntryId: selectedFile.id,
+        ownerId,
+        ownerType,
+      },
+    })
+    .then(_.get('addVisualizationConfig.visualizationConfig'))
+    .then(({ geojson, configuration, ...rest }) => ({
+      ...rest,
+      ...JSON.parse(configuration),
+      geojson: JSON.parse(geojson),
+    }));
+};
+
+export const fetchDataLayers = ({ ownerId }) => {
+  const query = graphql(`
+    query visualizationConfigs($ownerId: UUID!) {
+      visualizationConfigs(ownerObjectId: $ownerId) {
         edges {
           node {
             ...visualizationConfigWithConfiguration
+            geojson
             dataEntry {
               name
               resourceType
@@ -339,12 +408,12 @@ export const fetchDataLayers = () => {
     }
   `);
   return terrasoApi
-    .requestGraphQL(query)
+    .requestGraphQL(query, { ownerId })
     .then(_.get('visualizationConfigs.edges'))
     .then(list => list || Promise.reject('not_found'))
     .then(list =>
       list.map(entry => ({
-        ..._.omit('configuration', entry.node),
+        ..._.omit(['configuration', 'geojson'], entry.node),
         tilesetId: entry.node.mapboxTilesetId,
         dataEntry: {
           ...entry.node.dataEntry,
@@ -358,9 +427,10 @@ export const fetchDataLayers = () => {
             MEMBERSHIP_TYPE_CLOSED
         ),
         processing:
-          entry.node.mapboxTilesetStatus === TILESET_STATUS_PENDING &&
-          entry.node.mapboxTilesetId,
+          entry.node.mapboxTilesetStatus === TILESET_STATUS_PENDING ||
+          !entry.node.mapboxTilesetId,
         ...JSON.parse(entry.node.configuration),
+        geojson: JSON.parse(entry.node.geojson),
       }))
     );
 };

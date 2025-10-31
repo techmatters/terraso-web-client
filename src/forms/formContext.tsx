@@ -15,14 +15,22 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import React, { useContext, useState } from 'react';
+import React, { Dispatch, SetStateAction, useContext, useState } from 'react';
+import { UseFormTrigger } from 'react-hook-form';
 
-const FormPropsSetContext = React.createContext();
-const FormPropsGetContext = React.createContext();
+// incomplete, just typing what we need to for now
+type FormContext = {
+  trigger: UseFormTrigger<Record<string, unknown>>;
+  isValid: boolean;
+};
 
-export const FormContextProvider = props => {
-  const { children } = props;
-  const [formContext, setFormContext] = useState({});
+const FormPropsSetContext = React.createContext<
+  Dispatch<SetStateAction<FormContext | {}>> | undefined
+>(undefined);
+const FormPropsGetContext = React.createContext<FormContext | {}>({});
+
+export const FormContextProvider = ({ children }: React.PropsWithChildren) => {
+  const [formContext, setFormContext] = useState<FormContext | {}>({});
 
   return (
     <FormPropsSetContext.Provider value={setFormContext}>
