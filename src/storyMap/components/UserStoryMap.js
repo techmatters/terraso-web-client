@@ -61,7 +61,7 @@ const UserStoryMap = () => {
 
   useDocumentDescription(
     useMemo(() => {
-      if (storyMap?.config?.description) {
+      if (storyMap?.config?.description?.trim()) {
         return storyMap.config.description;
       }
       const description = serialize(
