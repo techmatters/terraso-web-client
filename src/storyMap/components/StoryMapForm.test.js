@@ -253,6 +253,7 @@ const BASE_CONFIG = {
 };
 
 beforeEach(() => {
+  global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
   mapboxgl.LngLatBounds = jest.fn();
   mapboxgl.LngLatBounds.prototype = {
     isEmpty: jest.fn().mockReturnValue(false),
@@ -396,7 +397,7 @@ const changeChaper = async ({
       name: 'Add media',
     });
     const dropZone = within(mediaDialog).getByRole('button', {
-      name: 'Upload a photo or audio file Select File Accepted file formats: *.aac, *.gif, *.jpeg, *.jpg, *.mp3, *.mp4, *.png, *.wav Maximum file size: 10 MB',
+      name: 'Upload a photo or audio file Select File Accepted file formats: *.aac, *.gif, *.jpeg, *.jpg, *.mp3, *.mp4, *.png, *.wav, *.webp Maximum file size: 10 MB',
     });
     const data = {
       dataTransfer: {
@@ -1314,5 +1315,116 @@ test('StoryMapForm: Keep map on chapter change', async () => {
     'fill-opacity',
     0,
     {}
+  );
+});
+
+test('StoryMapForm: Add featured image', async () => {
+  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
+
+  const sidebar = screen.getByRole('navigation', {
+    name: 'Chapters sidebar',
+  });
+
+  const featuredImageButton = within(sidebar).getByRole('button', {
+    name: 'Featured Image',
+  });
+  await act(async () => fireEvent.click(featuredImageButton));
+
+  const dialog = screen.getByRole('dialog', {
+    name: 'Featured Image',
+  });
+
+  const dropZone = within(dialog).getByRole('button', {
+    name: 'Select File Accepted file formats: *.gif, *.jpeg, *.jpg, *.png, *.webp Maximum file size: 10 MB',
+  });
+  const imageFile = new File(['featured-image-content'], 'featured.jpg', {
+    type: 'image/jpeg',
+  });
+  const data = {
+    dataTransfer: {
+      files: [imageFile],
+      items: [
+        {
+          kind: 'file',
+          type: imageFile.type,
+          getAsFile: () => imageFile,
+        },
+      ],
+      types: ['Files'],
+    },
+  };
+  await act(async () => fireEvent.drop(dropZone, data));
+
+  const descriptionInput = within(dialog).getByRole('textbox', {
+    name: 'Featured image description (alt text)',
+  });
+  await act(async () =>
+    fireEvent.change(descriptionInput, {
+      target: { value: 'A beautiful featured image' },
+    })
+  );
+
+  const saveButton = within(dialog).getByRole('button', { name: 'Save' });
+  await act(async () => fireEvent.click(saveButton));
+
+  await waitFor(() => {
+    expect(
+      screen.queryByRole('dialog', { name: 'Featured Image' })
+    ).not.toBeInTheDocument();
+  });
+
+  await expectSave();
+
+  expect(onSaveDraft).toHaveBeenCalledTimes(1);
+  const saveCall = onSaveDraft.mock.calls[0];
+  expect(saveCall[0].featuredImage).toEqual(
+    expect.objectContaining({
+      description: 'A beautiful featured image',
+      contentId: expect.any(String),
+    })
+  );
+});
+
+test('StoryMapForm: Add short description', async () => {
+  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
+
+  const sidebar = screen.getByRole('navigation', {
+    name: 'Chapters sidebar',
+  });
+
+  const shortDescriptionButton = within(sidebar).getByRole('button', {
+    name: 'Add short description',
+  });
+  await act(async () => fireEvent.click(shortDescriptionButton));
+
+  const dialog = screen.getByRole('dialog', {
+    name: 'Short Description',
+  });
+
+  const descriptionInput = within(dialog).getByRole('textbox');
+  await act(async () =>
+    fireEvent.change(descriptionInput, {
+      target: {
+        value:
+          'A monarch pupa sews its butterfly wings inside the chrysalis for Sunday Crafternoon!',
+      },
+    })
+  );
+
+  const saveButton = within(dialog).getByRole('button', { name: 'Save' });
+  await act(async () => fireEvent.click(saveButton));
+
+  await waitFor(() => {
+    expect(
+      screen.queryByRole('dialog', { name: 'Short Description' })
+    ).not.toBeInTheDocument();
+  });
+
+  await expectSave();
+
+  expect(onSaveDraft).toHaveBeenCalledTimes(1);
+  const saveCall = onSaveDraft.mock.calls[0];
+  expect(saveCall[0].description).toBe(
+    'A monarch pupa sews its butterfly wings inside the chrysalis for Sunday Crafternoon!'
   );
 });

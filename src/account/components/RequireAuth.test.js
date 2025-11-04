@@ -61,6 +61,9 @@ test('Auth: test redirect', async () => {
   useParams.mockReturnValue({
     slug: 'slug-1',
   });
+  useLocation.mockReturnValue({
+    pathname: '/groups/slug-1',
+  });
   terrasoApi.requestGraphQL
     .mockRejectedValueOnce('UNAUTHENTICATED')
     .mockRejectedValueOnce('UNAUTHENTICATED');
@@ -98,7 +101,9 @@ test('Auth: test redirect', async () => {
 
   expect(global.fetch).toHaveBeenCalledTimes(4);
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
-  expect(screen.getByText('To: /account')).toBeInTheDocument();
+  expect(
+    screen.getByText('To: /account?referrer=%2Fgroups%2Fslug-1')
+  ).toBeInTheDocument();
 });
 
 const REDIRECT_PATHNAME = '/groups';
@@ -135,6 +140,9 @@ test('Auth: Test redirect referrer', async () => {
 test('Auth: test refresh tokens', async () => {
   useParams.mockReturnValue({
     slug: 'slug-1',
+  });
+  useLocation.mockReturnValue({
+    pathname: '/groups/slug-1',
   });
   terrasoApi.requestGraphQL
     .mockRejectedValueOnce('UNAUTHENTICATED')

@@ -19,8 +19,11 @@ import { useEffect, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 
+import { useHasServerSideMetaTags } from 'navigation/components/Routes';
+
 export const useDocumentTitle = (title, fetching, omitSuffix = false) => {
   const { t } = useTranslation();
+  const hasServerSideMetaTags = useHasServerSideMetaTags();
 
   const titleParts = [
     title,
@@ -30,17 +33,22 @@ export const useDocumentTitle = (title, fetching, omitSuffix = false) => {
   const fullTitle = _.compact(titleParts).join(' | ');
 
   useEffect(() => {
+    if (hasServerSideMetaTags) {
+      return;
+    }
+
     if (!fetching && fullTitle) {
       document.title = fullTitle;
       document
         .querySelector('meta[property="og:title"]')
         ?.setAttribute('content', fullTitle);
     }
-  }, [fetching, fullTitle]);
+  }, [fetching, fullTitle, hasServerSideMetaTags]);
 };
 
 export const useDocumentDescription = (description, fetching) => {
   const { t } = useTranslation();
+  const hasServerSideMetaTags = useHasServerSideMetaTags();
 
   const fullDescription = useMemo(() => {
     if (!description) {
@@ -50,6 +58,10 @@ export const useDocumentDescription = (description, fetching) => {
   }, [description, t]);
 
   useEffect(() => {
+    if (hasServerSideMetaTags) {
+      return;
+    }
+
     if (!fetching && fullDescription) {
       document
         .querySelector('meta[name="description"]')
@@ -58,19 +70,24 @@ export const useDocumentDescription = (description, fetching) => {
         .querySelector('meta[property="og:description"]')
         ?.setAttribute('content', fullDescription);
     }
-  }, [fetching, fullDescription]);
+  }, [fetching, fullDescription, hasServerSideMetaTags]);
 };
 
 export const useDocumentImage = (image, fetching) => {
   const { t } = useTranslation();
+  const hasServerSideMetaTags = useHasServerSideMetaTags();
 
   const imageUrl = image || t('site.default_image');
 
   useEffect(() => {
+    if (hasServerSideMetaTags) {
+      return;
+    }
+
     if (!fetching && imageUrl) {
       document
         .querySelector('meta[property="og:image"]')
-        .setAttribute('content', imageUrl);
+        ?.setAttribute('content', imageUrl);
     }
-  }, [fetching, imageUrl]);
+  }, [fetching, imageUrl, hasServerSideMetaTags]);
 };
