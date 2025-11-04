@@ -24,7 +24,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Validate required environment variables
 const requiredEnvVars = ['REACT_APP_TERRASO_API_URL', 'REACT_APP_BASE_URL'];
-const missingVars = requiredEnvVars.filter((name) => !process.env[name]);
+const missingVars = requiredEnvVars.filter(name => !process.env[name]);
 if (missingVars.length > 0) {
   console.error(
     `Missing required environment variable(s): ${missingVars.join(', ')}`
