@@ -19,7 +19,11 @@ const parseConfig = node => {
   if (!node.publishedConfiguration) {
     return {};
   }
-  return JSON.parse(node.publishedConfiguration);
+  try {
+    return JSON.parse(node.publishedConfiguration);
+  } catch (e) {
+    return {};
+  }
 };
 
 const buildMetaTags = node => {
