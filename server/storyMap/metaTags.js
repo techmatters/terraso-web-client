@@ -15,51 +15,61 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-const replaceMetaTag = (property, content) => html =>
-  html.replace(
-    new RegExp(
-      `<meta property="${property}" content="[^"]*" data-rh="true"\\s*\\/?>`,
-      'g'
-    ),
-    `<meta property="${property}" content="${content}" data-rh="true"/>`
-  );
+const REGEX = {
+  ogTitle: /<meta property="og:title" content="[^"]*" data-rh="true"\s*\/?>/g,
+  ogDescription:
+    /<meta property="og:description" content="[^"]*" data-rh="true"\s*\/?>/g,
+  ogImage: /<meta property="og:image" content="[^"]*" data-rh="true"\s*\/?>/g,
+  ogUrl: /<meta property="og:url" content="[^"]*" data-rh="true"\s*\/?>/g,
+  description:
+    /<meta name="description" content="[^"]*" data-rh="true"\s*\/?>/g,
+  title: /<title>[^<]*<\/title>/,
+};
 
-const replaceNameTag = (name, content) => html =>
-  html.replace(
-    new RegExp(
-      `<meta name="${name}" content="[^"]*" data-rh="true"\\s*\\/?>`,
-      'g'
-    ),
-    `<meta name="${name}" content="${content}" data-rh="true"/>`
-  );
+const createReplacer = (regex, template) => value => html =>
+  value ? html.replace(regex, template(value)) : html;
 
-const insertMetaTag = (property, content) => html =>
-  html.replace(
-    /(<meta property="og:title" content="[^"]*" data-rh="true"\s*\/?>)/,
-    `$1<meta property="${property}" content="${content}" data-rh="true"/>`
-  );
+const replaceOgTitle = createReplacer(
+  REGEX.ogTitle,
+  title => `<meta property="og:title" content="${title}" data-rh="true"/>`
+);
 
-const replaceTitle = title => html =>
-  html.replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`);
+const replaceTitle = createReplacer(
+  REGEX.title,
+  title => `<title>${title}</title>`
+);
 
-const handleOgUrl = url => html =>
-  html.includes('property="og:url"')
-    ? replaceMetaTag('og:url', url)(html)
-    : insertMetaTag('og:url', url)(html);
+const replaceOgDescription = createReplacer(
+  REGEX.ogDescription,
+  desc => `<meta property="og:description" content="${desc}" data-rh="true"/>`
+);
 
-const isDefined = value => value !== null && value !== undefined;
+const replaceDescription = createReplacer(
+  REGEX.description,
+  desc => `<meta name="description" content="${desc}" data-rh="true"/>`
+);
+
+const replaceOgImage = createReplacer(
+  REGEX.ogImage,
+  img => `<meta property="og:image" content="${img}" data-rh="true"/>`
+);
+
+const replaceOgUrl = createReplacer(
+  REGEX.ogUrl,
+  url => `<meta property="og:url" content="${url}" data-rh="true"/>`
+);
 
 const injectMetaTags = (html, metaTags) => {
   const { title, description, image, url } = metaTags;
 
   const transformations = [
-    isDefined(title) && replaceMetaTag('og:title', title),
-    isDefined(description) && replaceMetaTag('og:description', description),
-    isDefined(image) && replaceMetaTag('og:image', image),
-    isDefined(url) && handleOgUrl(url),
-    isDefined(title) && replaceTitle(title),
-    isDefined(description) && replaceNameTag('description', description),
-  ].filter(Boolean);
+    replaceOgTitle(title),
+    replaceTitle(title),
+    replaceOgDescription(description),
+    replaceDescription(description),
+    replaceOgImage(image),
+    replaceOgUrl(url),
+  ];
 
   return transformations.reduce((acc, fn) => fn(acc), html);
 };
