@@ -15,6 +15,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+const escape = require('lodash/fp/escape');
+
+const escapeAttributeValue = str => {
+  if (!str) {
+    return '';
+  }
+  return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+};
+
 const REGEX = {
   ogTitle: /<meta property="og:title" content="[^"]*" data-rh="true"\s*\/?>/g,
   ogDescription:
@@ -31,32 +40,36 @@ const createReplacer = (regex, template) => value => html =>
 
 const replaceOgTitle = createReplacer(
   REGEX.ogTitle,
-  title => `<meta property="og:title" content="${title}" data-rh="true"/>`
+  title =>
+    `<meta property="og:title" content="${escape(title)}" data-rh="true"/>`
 );
 
 const replaceTitle = createReplacer(
   REGEX.title,
-  title => `<title>${title}</title>`
+  title => `<title>${escape(title)}</title>`
 );
 
 const replaceOgDescription = createReplacer(
   REGEX.ogDescription,
-  desc => `<meta property="og:description" content="${desc}" data-rh="true"/>`
+  desc =>
+    `<meta property="og:description" content="${escape(desc)}" data-rh="true"/>`
 );
 
 const replaceDescription = createReplacer(
   REGEX.description,
-  desc => `<meta name="description" content="${desc}" data-rh="true"/>`
+  desc => `<meta name="description" content="${escape(desc)}" data-rh="true"/>`
 );
 
 const replaceOgImage = createReplacer(
   REGEX.ogImage,
-  img => `<meta property="og:image" content="${img}" data-rh="true"/>`
+  img =>
+    `<meta property="og:image" content="${escapeAttributeValue(img)}" data-rh="true"/>`
 );
 
 const replaceOgUrl = createReplacer(
   REGEX.ogUrl,
-  url => `<meta property="og:url" content="${url}" data-rh="true"/>`
+  url =>
+    `<meta property="og:url" content="${escapeAttributeValue(url)}" data-rh="true"/>`
 );
 
 const injectMetaTags = (html, metaTags) => {

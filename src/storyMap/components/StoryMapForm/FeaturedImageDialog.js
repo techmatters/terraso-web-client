@@ -104,7 +104,13 @@ const FeaturedImageDialog = props => {
       }
       setError(null);
     }
-  }, [open, existingImage, existingDescription, getMediaFile]);
+  }, [
+    open,
+    existingImage?.contentId,
+    existingImage?.signedUrl,
+    existingDescription,
+    getMediaFile,
+  ]);
 
   const onDrop = useCallback(
     acceptedFiles => {
@@ -120,10 +126,15 @@ const FeaturedImageDialog = props => {
       setError(null);
       const file = acceptedFiles[0];
 
-      openFile(file).then(content => {
-        setImagePreview(content);
-        setImageFile(file);
-      });
+      openFile(file)
+        .then(content => {
+          setImagePreview(content);
+          setImageFile(file);
+        })
+        .catch(error => {
+          console.error('Error reading image file:', error);
+          setError(t('storyMap.form_featured_image_read_error'));
+        });
     },
     [t]
   );

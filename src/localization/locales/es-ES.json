@@ -1011,6 +1011,7 @@
         "form_featured_image_remove": "Eliminar",
         "form_featured_image_preview_alt": "Vista previa de imagen destacada",
         "form_featured_image_invalid": "Sube imágenes con una de las siguientes extensiones: {{extensions}}",
+        "form_featured_image_read_error": "No se puede leer el archivo de imagen. Por favor, intente con un archivo diferente.",
         "form_short_description_button": "Agregar descripción corta",
         "form_short_description_dialog_title": "Descripción corta",
         "form_short_description_dialog_help": "La <strong>descripción corta</strong> se mostrará en los listados de motores de búsqueda y cuando este Story Map se comparta en otras plataformas.<0/><1>Se recomiendan 150-160 caracteres.</1>",

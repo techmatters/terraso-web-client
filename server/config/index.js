@@ -16,7 +16,14 @@
  */
 
 if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config({ path: '.env.local' });
+  const result = require('dotenv').config({ path: '.env.local' });
+  if (result.error) {
+    console.error('Error loading .env.local:', result.error.message);
+    console.error(
+      'Please create a .env.local file based on local.env.sample in the project root.'
+    );
+    process.exit(1);
+  }
 }
 
 const config = {
