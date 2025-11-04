@@ -38,7 +38,6 @@ import {
   STORY_MAP_MEDIA_MAX_SIZE,
 } from 'config';
 
-// Style constants
 const IMAGE_PREVIEW_STYLE = {
   width: '100%',
   height: 'auto',
