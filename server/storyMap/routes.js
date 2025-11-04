@@ -30,7 +30,7 @@ router.get('/:storyMapId/:slug', async (req, res) => {
     const { storyMapId, slug } = req.params;
 
     const storyMapNode = await fetchStoryMap(storyMapId, slug);
-    const metaTags = buildMetaTags(storyMapNode, storyMapId, slug);
+    const metaTags = buildMetaTags(storyMapNode);
 
     const html = fs.readFileSync(
       path.join(__dirname, '../../build/index.html'),
