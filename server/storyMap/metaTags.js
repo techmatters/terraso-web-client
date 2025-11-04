@@ -29,7 +29,6 @@ const REGEX = {
   ogDescription:
     /<meta property="og:description" content="[^"]*" data-rh="true"\s*\/?>/g,
   ogImage: /<meta property="og:image" content="[^"]*" data-rh="true"\s*\/?>/g,
-  ogUrl: /<meta property="og:url" content="[^"]*" data-rh="true"\s*\/?>/g,
   description:
     /<meta name="description" content="[^"]*" data-rh="true"\s*\/?>/g,
   title: /<title>[^<]*<\/title>/,
@@ -66,14 +65,8 @@ const replaceOgImage = createReplacer(
     `<meta property="og:image" content="${escapeAttributeValue(img)}" data-rh="true"/>`
 );
 
-const replaceOgUrl = createReplacer(
-  REGEX.ogUrl,
-  url =>
-    `<meta property="og:url" content="${escapeAttributeValue(url)}" data-rh="true"/>`
-);
-
 const injectMetaTags = (html, metaTags) => {
-  const { title, description, image, url } = metaTags;
+  const { title, description, image } = metaTags;
 
   const transformations = [
     replaceOgTitle(title),
@@ -81,7 +74,6 @@ const injectMetaTags = (html, metaTags) => {
     replaceOgDescription(description),
     replaceDescription(description),
     replaceOgImage(image),
-    replaceOgUrl(url),
   ];
 
   return transformations.reduce((acc, fn) => fn(acc), html);
