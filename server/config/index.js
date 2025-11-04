@@ -17,15 +17,20 @@
 
 if (process.env.NODE_ENV !== 'production') {
   const result = require('dotenv').config({ path: '.env.local' });
-  if (result.error) {
-    console.error('Error loading .env.local:', result.error.message);
-    console.error(
-      'Please create a .env.local file based on local.env.sample in the project root.'
-    );
-    process.exit(1);
+  if (result.error && result.error.code !== 'ENOENT') {
+    console.warn('Error loading .env.local:', result.error.message);
   }
 }
 
+// Validate required environment variables
+const requiredEnvVars = ['REACT_APP_TERRASO_API_URL', 'REACT_APP_BASE_URL'];
+const missingVars = requiredEnvVars.filter((name) => !process.env[name]);
+if (missingVars.length > 0) {
+  console.error(
+    `Missing required environment variable(s): ${missingVars.join(', ')}`
+  );
+  process.exit(1);
+}
 const config = {
   apiUrl: process.env.REACT_APP_TERRASO_API_URL,
   baseUrl: process.env.REACT_APP_BASE_URL,
