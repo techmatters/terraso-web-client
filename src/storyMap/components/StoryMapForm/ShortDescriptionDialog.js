@@ -133,7 +133,7 @@ const ShortDescriptionDialog = props => {
           disabled={!!error}
           color="primary"
         >
-          {t('storyMap.form_featured_image_save')}
+          {t('storyMap.form_short_description_save')}
         </Button>
       </DialogActions>
     </Dialog>

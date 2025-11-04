@@ -1017,6 +1017,7 @@
         "form_short_description_clear": "Clear",
         "form_short_description_edit_label": "Edit short description",
         "form_short_description_edit_link": "Edit description",
+        "form_short_description_save": "Save",
         "update_story_map": "<strong>{{title}}</strong> story map has been updated.",
         "update_story_map_published": "<strong>{{title}}</strong> story map has been published.",
         "added_story_map": "<strong>{{title}}</strong> story map has been saved.",
