@@ -20,8 +20,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const config = {
-  apiUrl: process.env.REACT_APP_TERRASO_API_URL || 'https://api.terraso.org',
-  baseUrl: process.env.REACT_APP_BASE_URL || 'https://terraso.org',
+  apiUrl: process.env.REACT_APP_TERRASO_API_URL,
+  baseUrl: process.env.REACT_APP_BASE_URL,
   port: process.env.PORT || 10000,
   nodeEnv: process.env.NODE_ENV || 'development',
 };
