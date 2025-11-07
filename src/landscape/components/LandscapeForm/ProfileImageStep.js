@@ -17,7 +17,6 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import _ from 'lodash/fp';
-import { dataURItoBlob, openFile } from 'media/fileUtils';
 import { openImageUrl } from 'media/imageUtils';
 import AvatarEditor from 'react-avatar-editor';
 import { useTranslation } from 'react-i18next';
@@ -29,6 +28,7 @@ import { Paper, Slider, Stack, Typography } from '@mui/material';
 
 import DropZone from 'common/components/DropZone';
 import HelperText from 'common/components/HelperText';
+import { dataURItoBlob, openFile } from 'common/fileUtils';
 import Form from 'forms/components/Form';
 import { FormContextProvider } from 'forms/formContext';
 import PageHeader from 'layout/PageHeader';

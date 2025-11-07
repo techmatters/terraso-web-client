@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2025 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -15,9 +15,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { readAsDataURL } from 'common/fileUtils';
+import { Theme } from '@mui/material';
 
-export const openImageUrl = url =>
-  fetch(url)
-    .then(res => res.blob())
-    .then(readAsDataURL);
+declare module '@mui/material/styles' {
+  interface Palette {
+    visualization: {
+      markerDefaultColor: string;
+    };
+  }
+}
+
+export const theme: Theme;
+
+export default theme;

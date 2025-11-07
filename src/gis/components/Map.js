@@ -21,8 +21,6 @@ import { useTranslation } from 'react-i18next';
 import logger from 'terraso-client-shared/monitoring/logger';
 import { Box } from '@mui/material';
 
-import { withWrapper } from 'react-hoc';
-
 import { isValidBounds } from 'gis/gisUtils';
 import mapboxgl from 'gis/mapbox';
 
@@ -445,4 +443,15 @@ const Map = React.forwardRef((props, ref) => {
   );
 });
 
-export default withWrapper(Map, MapProvider);
+/**
+ * @type {React.ForwardRefExoticComponent<React.PropsWithChildren<any>>}
+ */
+const WrappedMap = React.forwardRef((props, ref) => {
+  return (
+    <MapProvider {...props}>
+      <Map ref={ref} {...props} />
+    </MapProvider>
+  );
+});
+
+export default WrappedMap;
