@@ -16,35 +16,74 @@
  */
 
 import {
+  combineReducers,
+  configureStore,
+  Reducer,
+  StateFromReducersMapObject,
+} from '@reduxjs/toolkit';
+import {
   useDispatch as reduxUseDispatch,
   useSelector as reduxUseSelector,
   TypedUseSelectorHook,
 } from 'react-redux';
-import createStoreFactory, {
+import {
   DispatchFromStoreFactory,
-  StateFromStoreFactory,
+  handleAbortMiddleware,
+  sharedReducers,
 } from 'terraso-client-shared/store/store';
 
 import gisReducer from 'gis/gisSlice';
 import groupReducer from 'group/groupSlice';
 import userHomeReducer from 'home/homeSlice';
 import landscapeReducer from 'landscape/landscapeSlice';
-import sharedDataReducer from 'sharedData/sharedDataSlice';
+import sharedDataReducer, {
+  UPLOAD_STATUS_ERROR,
+  UPLOAD_STATUS_SUCCESS,
+  UPLOAD_STATUS_UPLOADING,
+} from 'sharedData/sharedDataSlice';
 import storyMapReducer from 'storyMap/storyMapSlice';
 import taxonomiesReducer from 'taxonomies/taxonomiesSlice';
 
-export type AppState = StateFromStoreFactory<typeof createStore>;
+import { DataEntryNode } from './shared/graphqlSchema/graphql';
+
+export type AppState = StateFromReducersMapObject<typeof sliceReducers>;
 export type AppDispatch = DispatchFromStoreFactory<typeof createStore>;
 
-const createStore = createStoreFactory({
+type SharedDataState = {
+  uploads: {
+    files: Record<
+      string,
+      {
+        status:
+          | typeof UPLOAD_STATUS_UPLOADING
+          | typeof UPLOAD_STATUS_SUCCESS
+          | typeof UPLOAD_STATUS_ERROR;
+        data: DataEntryNode | null;
+      }
+    >;
+  };
+};
+
+const sliceReducers = {
+  ...sharedReducers,
   group: groupReducer,
   userHome: userHomeReducer,
   landscape: landscapeReducer,
-  sharedData: sharedDataReducer,
+  sharedData: sharedDataReducer as unknown as Reducer<SharedDataState>,
   taxonomies: taxonomiesReducer,
   gis: gisReducer,
   storyMap: storyMapReducer,
-});
+};
+
+const rootReducer = combineReducers(sliceReducers);
+
+export const createStore = (initialState?: Partial<AppState>) =>
+  configureStore({
+    middleware: getDefaultMiddleware =>
+      getDefaultMiddleware().concat(handleAbortMiddleware),
+    reducer: rootReducer,
+    preloadedState: initialState,
+  });
 
 export const useSelector: TypedUseSelectorHook<AppState> = reduxUseSelector;
 export const useDispatch: () => AppDispatch = reduxUseDispatch;

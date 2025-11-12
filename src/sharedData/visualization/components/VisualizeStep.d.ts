@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Technology Matters
+ * Copyright © 2025 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -14,17 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-export const MAPBOX_STYLES = [
-  {
-    titleKey: 'gis.mapbox_style_satellite',
-    data: 'mapbox://styles/terraso/clux9zsa500k401p6grzm1xb8',
-  },
-  {
-    titleKey: 'gis.mapbox_style_combined',
-    data: 'mapbox://styles/terraso/cltsvsgyk00gj01qeavbd6rnw',
-  },
-  {
-    titleKey: 'gis.mapbox_style_streets',
-    data: 'mapbox://styles/terraso/cltt1087x00jm01pbfwqagsw8',
-  },
-];
+
+import type { VisualizeConfig } from 'storyMap/storyMapTypes';
+
+export type UseVisualizeFormArgs = {
+  visualizeConfig: VisualizeConfig;
+  setVisualizeConfig: (_: VisualizeConfig) => void;
+};
+export function useVisualizeForm(args: UseVisualizeFormArgs): any;

@@ -67,6 +67,14 @@ const getSourceBounds = async (map, sourceId) => {
   }
 
   const calculatedBbox = bbox(loadedSource._data);
+  if (
+    calculatedBbox.some(
+      value => !value || value === Infinity || value === -Infinity
+    )
+  ) {
+    return;
+  }
+
   return new mapboxgl.LngLatBounds(
     [calculatedBbox[0], calculatedBbox[1]],
     [calculatedBbox[2], calculatedBbox[3]]
@@ -116,7 +124,8 @@ const MapboxLayer = props => {
   const {
     sourceName,
     visualizationConfig,
-    showPopup,
+    showInitialPopup,
+    showPopups = true,
     useConfigBounds,
     changeBounds = true,
     useTileset,
@@ -195,7 +204,7 @@ const MapboxLayer = props => {
   }, [popup, popupData?.coordinates, map, isMapFile]);
 
   useEffect(() => {
-    if (!showPopup || !map) {
+    if (!showInitialPopup || !map) {
       return;
     }
     const source = map.getSource(sourceName);
@@ -208,7 +217,7 @@ const MapboxLayer = props => {
     }
     openPopup(features[0]);
   }, [
-    showPopup,
+    showInitialPopup,
     openPopup,
     map,
     visualizationConfig?.annotateConfig?.annotationTitle,
@@ -308,6 +317,9 @@ const MapboxLayer = props => {
   ]);
 
   const layerEvents = useMemo(() => {
+    if (!showPopups) {
+      return [];
+    }
     const pointer = map => () => {
       map.getCanvas().style.cursor = 'pointer';
     };
@@ -324,7 +336,7 @@ const MapboxLayer = props => {
       map => ['mouseenter', `${sourceName}-markers`, pointer(map)],
       map => ['mouseleave', `${sourceName}-markers`, noPointer(map)],
     ];
-  }, [isMapFile, openPopup, sourceName]);
+  }, [isMapFile, openPopup, sourceName, showPopups]);
 
   const layerImages = useMemo(
     () => (useSvg ? [{ name: 'custom-marker', content: imageSvg }] : []),

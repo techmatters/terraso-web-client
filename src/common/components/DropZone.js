@@ -20,6 +20,7 @@ import { filesize } from 'filesize';
 import _ from 'lodash/fp';
 import { useDropzone } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
+import CloudUploadOutlined from '@mui/icons-material/CloudUploadOutlined';
 import {
   Alert,
   Box,
@@ -42,21 +43,26 @@ const DropZone = props => {
   const { t } = useTranslation();
   const {
     label,
+    buttonLabel,
     maxSize,
     maxFiles,
     fileExtensions,
     fileTypes,
     multiple,
     onDrop,
+    onDropAccepted,
     onDropRejected,
     currentFile,
     errors,
     className,
     loading,
     containerProps,
+    instructions,
+    acceptedFormats,
   } = props;
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    onDropAccepted,
     onDropRejected,
     accept: fileTypes,
     useFsAccessApi: false,
@@ -113,6 +119,12 @@ const DropZone = props => {
                   {error}
                 </Alert>
               ))}
+            {instructions && (
+              <>
+                <CloudUploadOutlined fontSize="large" />
+                <Typography>{instructions}</Typography>
+              </>
+            )}
             <Paper
               variant="outlined"
               sx={({ spacing, palette }) => ({
@@ -120,16 +132,17 @@ const DropZone = props => {
                 borderColor: palette.black,
               })}
             >
-              {t('common.drop_zone_select_file')}
+              {buttonLabel ?? t('common.drop_zone_select_file')}
             </Paper>
             <Box sx={{ padding: 2, textAlign: 'center' }}>
               <Typography
                 variant="caption"
                 sx={{ fontWeight: 'bold', paddingTop: 1 }}
               >
-                {t('common.drop_zone_format', {
-                  extensions: fileExtensions.map(ext => `*.${ext}`).join(', '),
-                })}
+                {acceptedFormats ??
+                  t('common.drop_zone_format', {
+                    extensions: fileExtensions.map(ext => `.${ext}`).join(', '),
+                  })}
               </Typography>
               <br />
               <Typography

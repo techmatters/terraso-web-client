@@ -18,7 +18,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import { normalizeText } from 'terraso-client-shared/utils';
 import * as SheetsJs from 'xlsx';
 import * as yup from 'yup';
 import CloseIcon from '@mui/icons-material/Close';
@@ -43,34 +42,15 @@ import Form from 'forms/components/Form';
 import { FormContextProvider, useFormGetContext } from 'forms/formContext';
 import PageLoader from 'layout/PageLoader';
 import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
-import { validateCoordinateColumn } from 'sharedData/visualization/visualizationUtils';
+import {
+  identifyLatLngColumns,
+  validateCoordinateColumn,
+  validateCoordinateField,
+} from 'sharedData/visualization/visualizationUtils';
 
 import ColumnSelect from './ColumnSelect';
 
 const TABLE_SAMPLE_SIZE = 3;
-
-const validateCoordinateField = coordinate => ({
-  name: 'invalidCoordinate',
-  message: {
-    key: 'invalid_coordinate',
-    params: { coordinate },
-  },
-  test: (value, ctx) => {
-    const {
-      parent: {
-        context: { fileContext },
-      },
-    } = ctx;
-    if (_.isEmpty(value)) {
-      return;
-    }
-    const error = validateCoordinateColumn(fileContext, value);
-    if (!error) {
-      return true;
-    }
-    return false;
-  },
-});
 
 const VALIDATION_SCHEMA = yup
   .object({
@@ -200,47 +180,6 @@ export const DatasetPreview = () => {
       </TableContainer>
     </>
   );
-};
-
-const LAT_COLUMN_OPTIONS = ['latitude', 'latitud', 'lat', 'x'];
-const LNG_COLUMN_OPTIONS = ['longitude', 'longitud', 'lng', 'lon', 'long', 'y'];
-
-const getScore = (options, header) => {
-  const score = _.min(
-    options
-      .map((option, index) => (header.indexOf(option) + 1) * (index + 1))
-      .filter(score => score > 0)
-  );
-  return score;
-};
-
-const getColumnMatch = scores => {
-  const winner = _.flow(
-    _.filter(value => value.score && value.score !== -1),
-    _.sortBy(value => value.score),
-    _.first
-  )(scores);
-  const column = winner ? winner.index : -1;
-  return column;
-};
-
-const identifyLatLngColumns = headers => {
-  const cleanedHeaders = headers.map(normalizeText);
-  const latScores = cleanedHeaders.map((header, index) => ({
-    score: getScore(LAT_COLUMN_OPTIONS, header),
-    index,
-  }));
-  const latColumnIndex = getColumnMatch(latScores);
-
-  const lngScores = cleanedHeaders.map((header, index) => ({
-    score: getScore(LNG_COLUMN_OPTIONS, header),
-    index,
-  }));
-  const lngColumnIndex = getColumnMatch(lngScores);
-  return {
-    latColumn: latColumnIndex !== -1 ? headers[latColumnIndex] : null,
-    lngColumn: lngColumnIndex !== -1 ? headers[lngColumnIndex] : null,
-  };
 };
 
 const DataColumns = props => {

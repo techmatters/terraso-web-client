@@ -78,7 +78,6 @@ export const MAX_DESCRIPTION_LENGTH = 600;
 export const MAP_DATA_ACCEPTED_TYPES_NAMES = [
   'GeoJSON',
   'GPX',
-  'JSON',
   'KML',
   'KMZ',
   'ESRI Shapefile',
@@ -91,10 +90,11 @@ const getTypesExtensions = (types: Record<string, string[]>) =>
     .sort();
 
 export const MAP_DATA_ACCEPTED_TYPES = {
-  'application/json': ['.json', '.geojson'],
+  'application/geo+json': ['.geojson'],
   'application/gpx': ['.gpx'],
-  'application/xml': ['.kml'],
-  'application/zip': ['.kmz', '.zip'],
+  'application/vnd.google-earth.kml+xml': ['.kml'],
+  'application/vnd.google-earth.kmz': ['.kmz'],
+  'application/zip': ['.zip'],
 };
 
 export const MAP_DATA_ACCEPTED_EXTENSIONS = getTypesExtensions(
@@ -109,6 +109,20 @@ export const DATA_SET_ACCEPTED_TYPES = {
   ],
 };
 
+export const DATA_SET_ACCEPTED_EXTENSIONS = getTypesExtensions(
+  DATA_SET_ACCEPTED_TYPES
+);
+
+export const MAP_LAYER_ACCEPTED_EXTENSIONS = [
+  ...MAP_DATA_ACCEPTED_EXTENSIONS,
+  ...DATA_SET_ACCEPTED_EXTENSIONS,
+];
+
+export const MAP_LAYER_ACCEPTED_TYPES = {
+  ...MAP_DATA_ACCEPTED_TYPES,
+  ...DATA_SET_ACCEPTED_TYPES,
+};
+
 export const DOCUMENT_ACCEPTED_TYPES = {
   'application/msword': ['.doc'],
   'application/pdf': ['.pdf'],
@@ -119,6 +133,7 @@ export const DOCUMENT_ACCEPTED_TYPES = {
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': [
     '.docx',
   ],
+  'application/json': ['.json'],
 };
 
 export const PROFILE_IMAGE_ACCEPTED_TYPES = {
@@ -139,10 +154,6 @@ export const MAP_CONTENT_TYPE_BY_EXTENSION = _.flow(
   ),
   _.fromPairs
 )(MAP_DATA_ACCEPTED_TYPES);
-
-export const DATA_SET_ACCPETED_EXTENSIONS = getTypesExtensions(
-  DATA_SET_ACCEPTED_TYPES
-);
 
 export const SHARED_DATA_ACCEPTED_TYPES = _.flow(
   _.flatMap(_.toPairs),

@@ -24,7 +24,6 @@ import React, {
 } from 'react';
 import getVideoId from 'get-video-id';
 import _ from 'lodash/fp';
-import { openFile } from 'media/fileUtils';
 import { useTranslation } from 'react-i18next';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
@@ -44,6 +43,7 @@ import {
 
 import ConfirmButton from 'common/components/ConfirmButton';
 import DropZone from 'common/components/DropZone';
+import { openFile } from 'common/fileUtils';
 
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2025 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -24,6 +24,7 @@ import React, {
 } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
+import { StoryMapNode } from 'terrasoApi/shared/graphqlSchema/graphql';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Box,
@@ -38,16 +39,25 @@ import {
   Typography,
 } from '@mui/material';
 
+import {
+  CollaborationContextProvider,
+  useCollaborationContext,
+} from 'collaboration/collaborationContext';
 import HelperText from 'common/components/HelperText';
 import Map, { useMap } from 'gis/components/Map';
+import { MapboxStyle } from 'gis/components/MapboxConstants';
 import MapControls from 'gis/components/MapControls';
 import MapGeocoder from 'gis/components/MapGeocoder';
 import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
-import VisualizationMapLayer from 'sharedData/visualization/components/VisualizationMapLayer';
-import VisualizationMapRemoteSource from 'sharedData/visualization/components/VisualizationMapRemoteSource';
+import { useStoryMapConfigContext } from 'storyMap/components/StoryMapForm/storyMapConfigContext';
+import { StoryMapLayer } from 'storyMap/components/StoryMapLayer';
+import {
+  MapLayerConfig,
+  MapPosition,
+  StoryMapConfig,
+} from 'storyMap/storyMapTypes';
 
-import DataLayerDialog from './DataLayerDialog';
-import { useStoryMapConfigContext } from './storyMapConfigContext';
+import { MapLayerDialog } from './MapLayerDialog';
 
 const BearingIcon = () => {
   const { t } = useTranslation();
@@ -125,14 +135,19 @@ const SetMapHelperText = () => {
   );
 };
 
-const DataLayer = props => {
-  const { title, onConfirm, dataLayerConfig } = props;
+type MapLayerProps = {
+  title: string;
+  onConfirm: (mapLayerConfig: MapLayerConfig | null) => void;
+  mapLayerConfig: MapLayerConfig | null;
+};
+const MapLayer = ({ title, onConfirm, mapLayerConfig }: MapLayerProps) => {
   const { t } = useTranslation();
+  const { owner } = useCollaborationContext();
   const [open, setOpen] = useState(false);
 
   const onConfirmWrapper = useCallback(
-    dataLayerConfig => {
-      onConfirm(dataLayerConfig);
+    (mapLayerConfig: MapLayerConfig) => {
+      onConfirm(mapLayerConfig);
       setOpen(false);
     },
     [onConfirm]
@@ -156,11 +171,11 @@ const DataLayer = props => {
           alignItems: 'center',
         })}
       >
-        {dataLayerConfig ? (
+        {mapLayerConfig ? (
           <>
             <Trans
               i18nKey="storyMap.form_location_add_data_layer_current"
-              values={{ title: dataLayerConfig.title }}
+              values={{ title: mapLayerConfig.title }}
             >
               prefix
               <Typography sx={{ fontWeight: 700, ml: 1 }}>title</Typography>
@@ -175,12 +190,13 @@ const DataLayer = props => {
             size="small"
             sx={{ color: 'blue.dark2', borderColor: 'blue.dark2' }}
             onClick={() => setOpen(true)}
+            disabled={!owner}
           >
             {t('storyMap.form_location_add_data_layer_button')}
           </Button>
         )}
       </Paper>
-      <DataLayerDialog
+      <MapLayerDialog
         title={title}
         open={open}
         onClose={() => setOpen(false)}
@@ -190,8 +206,10 @@ const DataLayer = props => {
   );
 };
 
-const MapLocationChange = props => {
-  const { onPositionChange } = props;
+type MapLocationChangeProps = {
+  onPositionChange: (position: MapPosition) => void;
+};
+const MapLocationChange = ({ onPositionChange }: MapLocationChangeProps) => {
   const { map } = useMap();
 
   useEffect(() => {
@@ -219,18 +237,30 @@ const MapLocationChange = props => {
   return null;
 };
 
-const MapLocationDialog = props => {
+type MapConfigurationDialogProps = {
+  open: boolean;
+  onClose: () => void;
+  onConfirm: (_: unknown) => void;
+  location: MapPosition;
+  title: string;
+  chapterId: string;
+  mapLayerConfig: MapLayerConfig | null;
+};
+export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   const { t } = useTranslation();
-  const { config } = useStoryMapConfigContext();
+  const { config, storyMap } = useStoryMapConfigContext() as {
+    config: StoryMapConfig;
+    storyMap: StoryMapNode;
+  };
   const { open, onClose, onConfirm, location, title, chapterId } = props;
 
   const [mapCenter, setMapCenter] = useState(location?.center);
   const [mapZoom, setMapZoom] = useState(location?.zoom);
   const [mapPitch, setMapPitch] = useState(location?.pitch);
   const [mapBearing, setMapBearing] = useState(location?.bearing);
-  const [mapStyle, setMapStyle] = useState();
+  const [mapStyle, setMapStyle] = useState<string | undefined>();
   const [changeBounds, setChangeBounds] = useState(false);
-  const [dataLayerConfig, setDataLayerConfig] = useState(props.dataLayerConfig);
+  const [mapLayerConfig, setMapLayerConfig] = useState(props.mapLayerConfig);
 
   const mapRef = useRef(null);
 
@@ -241,11 +271,10 @@ const MapLocationDialog = props => {
 
     if (chapterId) {
       const currentIndex = config.chapters.findIndex(c => c.id === chapterId);
-      const chapterWithLocation = _.flow(
-        _.take(currentIndex),
-        _.reverse,
-        _.find(c => c.location)
-      )(config.chapters);
+      const chapterWithLocation = config.chapters
+        .slice(0, currentIndex + 1)
+        .reverse()
+        .find(c => c.location);
 
       if (chapterWithLocation) {
         return chapterWithLocation?.location;
@@ -272,7 +301,7 @@ const MapLocationDialog = props => {
     onConfirm({
       location,
       mapStyle: mapStyle || config.style,
-      dataLayerConfig,
+      dataLayerConfig: mapLayerConfig,
     });
   }, [
     onConfirm,
@@ -282,119 +311,113 @@ const MapLocationDialog = props => {
     mapBearing,
     mapStyle,
     config.style,
-    dataLayerConfig,
+    mapLayerConfig,
   ]);
 
   const handleCancel = useCallback(() => {
     onClose();
   }, [onClose]);
 
-  const handlePositionChange = useCallback(position => {
+  const handlePositionChange = useCallback((position: MapPosition) => {
     setMapCenter(position.center);
     setMapZoom(position.zoom);
     setMapPitch(position.pitch);
     setMapBearing(position.bearing);
   }, []);
 
-  const onStyleChange = useCallback(({ newStyle }) => {
-    setMapStyle(newStyle.data);
-  }, []);
+  const onStyleChange = useCallback(
+    ({ newStyle }: { newStyle: MapboxStyle }) => {
+      setMapStyle(newStyle.data);
+    },
+    []
+  );
 
-  const onAddDataLayer = useCallback(dataLayerConfig => {
+  const onAddMapLayer = useCallback((mapLayerConfig: MapLayerConfig | null) => {
     setChangeBounds(true);
-    setDataLayerConfig(dataLayerConfig);
+    setMapLayerConfig(mapLayerConfig);
   }, []);
 
   return (
-    <Dialog
-      fullScreen
-      open={open}
-      onClose={handleCancel}
-      aria-labelledby="map-location-dialog-title"
-      aria-describedby="map-location-dialog-content-text"
-    >
-      <Stack direction="row" justifyContent="space-between">
-        <Stack>
-          <DialogTitle
-            component="h1"
-            id="map-location-dialog-title"
-            sx={{ pb: 0 }}
-          >
-            {title ? (
-              <Trans
-                i18nKey="storyMap.form_location_dialog_title"
-                values={{ title: title }}
-              >
-                prefix
-                <i>italic</i>
-              </Trans>
-            ) : (
-              <>{t('storyMap.form_location_dialog_title_blank')}</>
-            )}
-          </DialogTitle>
-          <DialogContent sx={{ pb: 0 }}>
-            <HelperText
-              showLabel
-              maxWidth={586}
-              label={t('storyMap.form_location_dialog_helper_text_label')}
-              Component={SetMapHelperText}
-              buttonProps={{
-                sx: { pl: 0, color: 'gray.dark1' },
-              }}
-            />
-          </DialogContent>
-        </Stack>
-        <DialogActions sx={{ pr: 3 }}>
-          <Button size="small" onClick={handleCancel}>
-            {t('storyMap.location_dialog_cancel_button')}
-          </Button>
-          <Button size="small" onClick={handleConfirm} variant="contained">
-            {t('storyMap.location_dialog_confirm_button')}
-          </Button>
-        </DialogActions>
-      </Stack>
-
-      <DialogContent>
-        <DataLayer
-          title={title}
-          dataLayerConfig={dataLayerConfig}
-          onConfirm={onAddDataLayer}
-        />
-        <Map
-          ref={mapRef}
-          use3dTerrain
-          height="100%"
-          initialLocation={initialLocation}
-          projection={config.projection}
-          mapStyle={config.style}
-        >
-          <MapControls showCompass visualizePitch />
-          <MapGeocoder position="top-right" />
-          <MapStyleSwitcher
-            position="top-right"
-            onStyleChange={onStyleChange}
-          />
-          <MapLocationChange onPositionChange={handlePositionChange} />
-          {dataLayerConfig && (
-            <>
-              <VisualizationMapRemoteSource
-                sourceName={dataLayerConfig.id}
-                visualizationConfig={dataLayerConfig}
+    <CollaborationContextProvider owner={storyMap} entityType="story_map">
+      <Dialog
+        fullScreen
+        open={open}
+        onClose={handleCancel}
+        aria-labelledby="map-location-dialog-title"
+        aria-describedby="map-location-dialog-content-text"
+      >
+        <Stack direction="row" justifyContent="space-between">
+          <Stack>
+            <DialogTitle
+              component="h1"
+              id="map-location-dialog-title"
+              sx={{ pb: 0 }}
+            >
+              {title ? (
+                <Trans
+                  i18nKey="storyMap.form_location_dialog_title"
+                  values={{ title: title }}
+                >
+                  prefix
+                  <i>italic</i>
+                </Trans>
+              ) : (
+                <>{t('storyMap.form_location_dialog_title_blank')}</>
+              )}
+            </DialogTitle>
+            <DialogContent sx={{ pb: 0 }}>
+              <HelperText
+                showLabel
+                maxWidth={586}
+                label={t('storyMap.form_location_dialog_helper_text_label')}
+                Component={SetMapHelperText}
+                buttonProps={{
+                  sx: { pl: 0, color: 'gray.dark1' },
+                }}
               />
-              <VisualizationMapLayer
-                sourceName={dataLayerConfig.id}
-                visualizationConfig={dataLayerConfig}
-                showPopup={false}
-                useTileset={true}
+            </DialogContent>
+          </Stack>
+          <DialogActions sx={{ pr: 3 }}>
+            <Button size="small" onClick={handleCancel}>
+              {t('storyMap.location_dialog_cancel_button')}
+            </Button>
+            <Button size="small" onClick={handleConfirm} variant="contained">
+              {t('storyMap.location_dialog_confirm_button')}
+            </Button>
+          </DialogActions>
+        </Stack>
+
+        <DialogContent>
+          <MapLayer
+            title={title}
+            mapLayerConfig={mapLayerConfig}
+            onConfirm={onAddMapLayer}
+          />
+          <Map
+            ref={mapRef}
+            use3dTerrain
+            height="100%"
+            initialLocation={initialLocation}
+            projection={config.projection}
+            mapStyle={config.style}
+          >
+            <MapControls showCompass visualizePitch />
+            <MapGeocoder position="top-right" />
+            <MapStyleSwitcher
+              position="top-right"
+              onStyleChange={onStyleChange}
+            />
+            <MapLocationChange onPositionChange={handlePositionChange} />
+            {mapLayerConfig && (
+              <StoryMapLayer
+                config={mapLayerConfig}
                 useConfigBounds={true}
                 changeBounds={changeBounds}
               />
-            </>
-          )}
-        </Map>
-      </DialogContent>
-    </Dialog>
+            )}
+          </Map>
+        </DialogContent>
+      </Dialog>
+    </CollaborationContextProvider>
   );
 };
-
-export default MapLocationDialog;
