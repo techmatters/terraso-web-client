@@ -51,7 +51,7 @@ export const FileUpload = (props: FileUploadProps) => {
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
   const {
-    storyMap: { slug },
+    storyMap: { id, slug },
   } = useStoryMapConfigContext();
   const [dropzoneErrors, setDropzoneErrors] = useState<string[]>([]);
 
@@ -76,7 +76,7 @@ export const FileUpload = (props: FileUploadProps) => {
       dispatch(
         uploadSharedDataFile({
           targetType: entityType,
-          targetSlug: slug,
+          targetId: id,
           file: file,
         })
       ).then(result => {
@@ -84,7 +84,8 @@ export const FileUpload = (props: FileUploadProps) => {
         const status = result.meta.requestStatus;
         trackEvent('dataEntry.file.upload', {
           props: {
-            story_map: slug,
+            story_map_slug: slug,
+            story_map_id: id,
             [ILM_OUTPUT_PROP]: RESULTS_ANALYSIS_IMPACT,
             size: file.size,
             type: file.type,
@@ -94,9 +95,12 @@ export const FileUpload = (props: FileUploadProps) => {
         if (status === 'fulfilled') {
           onCompleteSuccess(result.payload as DataEntryNode);
         }
+        if (status === 'rejected') {
+          setDropzoneErrors([t('storyMap.upload_rejected')]);
+        }
       });
     },
-    [onCompleteSuccess, trackEvent, dispatch, entityType, slug]
+    [onCompleteSuccess, trackEvent, dispatch, entityType, id, slug, t]
   );
 
   const onDropRejected = useCallback(
