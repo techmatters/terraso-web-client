@@ -17,7 +17,7 @@
 
 import * as terrasoApiToMock from 'terraso-client-shared/terrasoApi/api';
 
-import * as landscapeService from 'landscape/landscapeService';
+import * as landscapeService from 'terraso-web-client/landscape/landscapeService';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 const terrasoApi = jest.mocked(terrasoApiToMock);

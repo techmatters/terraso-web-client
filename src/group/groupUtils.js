@@ -17,7 +17,7 @@
 
 import { extractMembershipInfo } from 'terraso-client-shared/collaboration/membershipsUtils';
 
-import { extractSharedResources } from 'sharedData/sharedDataUtils';
+import { extractSharedResources } from 'terraso-web-client/sharedData/sharedDataUtils';
 
 export const extractGroup = group => ({
   ...group,

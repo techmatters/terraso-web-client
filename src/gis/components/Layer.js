@@ -17,7 +17,7 @@
 
 import { useEffect } from 'react';
 
-import { useMap } from './Map';
+import { useMap } from 'terraso-web-client/gis/components/Map';
 
 const Layer = props => {
   const { id, layer, images, events } = props;

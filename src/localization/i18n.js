@@ -18,6 +18,7 @@
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
+
 import enUS from 'terraso-web-client/localization/locales/en-US.json';
 import esES from 'terraso-web-client/localization/locales/es-ES.json';
 

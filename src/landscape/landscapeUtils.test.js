@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { getLandscapeBoundingBox } from 'landscape/landscapeUtils';
+import { getLandscapeBoundingBox } from 'terraso-web-client/landscape/landscapeUtils';
 
 test('Landscape Utils: get bounding box by area geojson', () => {
   const landscape = {

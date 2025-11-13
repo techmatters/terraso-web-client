@@ -17,8 +17,8 @@
 
 import { useCallback } from 'react';
 
-import { useCollaborationContext } from 'collaboration/collaborationContext';
-import { useDownloadEvent } from 'monitoring/events';
+import { useCollaborationContext } from 'terraso-web-client/collaboration/collaborationContext';
+import { useDownloadEvent } from 'terraso-web-client/monitoring/events';
 
 export const useSharedData = () => {
   const { onDownload } = useDownloadEvent();

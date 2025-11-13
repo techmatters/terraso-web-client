@@ -17,7 +17,7 @@
 
 import { useCallback, useMemo } from 'react';
 
-import { useAnalytics } from 'monitoring/analytics';
+import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
 
 export const useShareEvent = () => {
   const { trackEvent } = useAnalytics();

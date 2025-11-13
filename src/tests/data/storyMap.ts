@@ -20,12 +20,14 @@ import {
   DataEntryNode,
   StoryMapNode,
   VisualizationConfigNode,
-} from 'terrasoApi/shared/graphqlSchema/graphql';
+} from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
+import { createTestGraphQLConnection } from 'terraso-web-client/tests/data/graphql';
+import { createTestUser } from 'terraso-web-client/tests/data/user';
 
-import { MapPosition, StoryMapConfig } from 'storyMap/storyMapTypes';
-
-import { createTestGraphQLConnection } from './graphql';
-import { createTestUser } from './user';
+import {
+  MapPosition,
+  StoryMapConfig,
+} from 'terraso-web-client/storyMap/storyMapTypes';
 
 export const createTestPosition = (): MapPosition => ({
   center: new LngLat(1, 1),

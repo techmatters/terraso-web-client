@@ -21,9 +21,9 @@ import {
   MEMBERSHIP_OPEN,
   MEMBERSHIP_STATUS_APPROVED,
   ROLE_MANAGER,
-} from 'group/membership/components/groupMembershipConstants';
-import { MEMBERSHIP_ROLE_MANAGER } from 'landscape/landscapeConstants';
-import { MEMBERSHIP_ROLE_EDITOR } from 'storyMap/storyMapConstants';
+} from 'terraso-web-client/group/membership/components/groupMembershipConstants';
+import { MEMBERSHIP_ROLE_MANAGER } from 'terraso-web-client/landscape/landscapeConstants';
+import { MEMBERSHIP_ROLE_EDITOR } from 'terraso-web-client/storyMap/storyMapConstants';
 
 const getAccountMembership = owner =>
   _.getOr(

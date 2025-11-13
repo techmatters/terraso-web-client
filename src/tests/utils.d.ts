@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import React from 'react';
+import * as React from 'react';
 import { RenderResult } from '@testing-library/react';
 
 export * from '@testing-library/react';

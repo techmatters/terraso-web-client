@@ -15,12 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import React from 'react';
 import { render } from '@testing-library/react';
 import { NavigateFunction, useNavigate, useSearchParams } from 'react-router';
 import { setHasAccessTokenAsync } from 'terraso-client-shared/account/accountSlice';
 import { getAPIConfig } from 'terraso-client-shared/config';
-import { useDispatch } from 'terrasoApi/store';
+import { useDispatch } from 'terraso-web-client/terrasoApi/store';
 
 // Mock modules
 jest.mock('react-router', () => ({
@@ -38,7 +37,7 @@ jest.mock('terraso-client-shared/config', () => ({
   setAPIConfig: jest.fn(),
 }));
 
-jest.mock('terrasoApi/store', () => ({
+jest.mock('terraso-web-client/terrasoApi/store', () => ({
   useDispatch: jest.fn(),
 }));
 

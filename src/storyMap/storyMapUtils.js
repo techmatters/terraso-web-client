@@ -21,7 +21,7 @@ import {
   extractMembershipInfo,
 } from 'terraso-client-shared/collaboration/membershipsUtils';
 
-import { REACT_APP_BASE_URL } from 'config';
+import { REACT_APP_BASE_URL } from 'terraso-web-client/config';
 
 export const chapterHasVisualMedia = chapter => {
   const { media } = chapter;

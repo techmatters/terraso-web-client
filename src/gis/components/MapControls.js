@@ -17,9 +17,8 @@
 
 import { useEffect } from 'react';
 
-import mapboxgl from 'gis/mapbox';
-
-import { useMap } from './Map';
+import { useMap } from 'terraso-web-client/gis/components/Map';
+import mapboxgl from 'terraso-web-client/gis/mapbox';
 
 const MapControls = props => {
   const { showCompass, showZoom = true, visualizePitch } = props;

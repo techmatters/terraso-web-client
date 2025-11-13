@@ -1,0 +1,119 @@
+/*
+ * Copyright © 2023 Technology Matters
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import { render, screen } from 'terraso-web-client/tests/utils';
+import { waitFor } from '@testing-library/react';
+import { useLocation } from 'react-router';
+import * as accountService from 'terraso-client-shared/account/accountService';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+
+import OptionalAuth from 'terraso-web-client/account/components/OptionalAuth';
+import OptionalAuthBottomMessage from 'terraso-web-client/account/components/OptionalAuthBottomMessage';
+import OptionalAuthTopMessage from 'terraso-web-client/account/components/OptionalAuthTopMessage';
+
+jest.mock('terraso-client-shared/terrasoApi/api');
+
+jest.mock('terraso-client-shared/account/accountService', () => ({
+  ...jest.requireActual('terraso-client-shared/account/accountService'),
+  signOut: jest.fn(),
+}));
+
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
+  useLocation: jest.fn(),
+}));
+
+const setup = async initialState => {
+  await render(
+    <>
+      <OptionalAuthTopMessage />
+      <OptionalAuth>
+        <div>Test</div>
+      </OptionalAuth>
+      <OptionalAuthBottomMessage />
+    </>,
+    initialState
+  );
+};
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  global.fetch = jest.fn();
+});
+
+test('OptionalAuth: Display messages', async () => {
+  useLocation.mockReturnValue({
+    pathname: '/tools/story-maps/jqbb8ss/test-story',
+  });
+  await setup();
+
+  expect(screen.getByRole('link', { name: 'Join Terraso' })).toHaveAttribute(
+    'href',
+    '/account?referrer=%2Ftools%2Fstory-maps%2Fjqbb8ss%2Ftest-story'
+  );
+  expect(
+    screen.getByText(/and create your own story map for free/i)
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText(/Liked the story map\? Create one by/i)
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'signing up for Terraso' })
+  ).toHaveAttribute(
+    'href',
+    '/account?referrer=%2Ftools%2Fstory-maps%2Fjqbb8ss%2Ftest-story'
+  );
+});
+
+test('OptionalAuth: Dont Display messages', async () => {
+  useLocation.mockReturnValue({
+    pathname: '/landscapes',
+  });
+  await setup();
+
+  expect(
+    screen.queryByRole('link', { name: 'Join Terraso' })
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByText(/and create your own story map for free/i)
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByText(/Liked the story map\? Create your own story map by/i)
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('link', { name: 'signing up for Terraso for free' })
+  ).not.toBeInTheDocument();
+});
+
+test('OptionalAuth: Should sign out when fetchUser fails with expired/invalid token', async () => {
+  terrasoApi.requestGraphQL.mockRejectedValue('UNAUTHENTICATED');
+  accountService.signOut.mockReturnValue(Promise.resolve());
+  useLocation.mockReturnValue({
+    pathname: '/tools/story-maps/jqbb8ss/test-story/embed',
+  });
+
+  await setup({
+    account: {
+      hasToken: true,
+      currentUser: { data: undefined, fetching: false },
+    },
+  });
+
+  await waitFor(() => {
+    expect(accountService.signOut).toHaveBeenCalled();
+  });
+});

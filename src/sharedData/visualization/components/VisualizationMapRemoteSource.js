@@ -17,7 +17,7 @@
 
 import { useEffect } from 'react';
 
-import { useMap } from 'gis/components/Map';
+import { useMap } from 'terraso-web-client/gis/components/Map';
 
 const MapboxRemoteSource = props => {
   const { sourceName, visualizationConfig } = props;

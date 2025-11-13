@@ -17,15 +17,15 @@
 
 import _ from 'lodash/fp';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
-import { graphql } from 'terrasoApi/shared/graphqlSchema';
+import { graphql } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/index';
 
-import { TILESET_STATUS_READY } from 'sharedData/sharedDataConstants';
+import { TILESET_STATUS_READY } from 'terraso-web-client/sharedData/sharedDataConstants';
 import {
   extractDataEntry,
   extractSharedResource,
-} from 'sharedData/sharedDataUtils';
+} from 'terraso-web-client/sharedData/sharedDataUtils';
 
-import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
+import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'terraso-web-client/config';
 
 const ALL_RESOURCE_TYPES = [...SHARED_DATA_ACCEPTED_EXTENSIONS, 'link'];
 

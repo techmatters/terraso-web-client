@@ -15,10 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import GeoJsonSource from 'gis/components/GeoJsonSource';
-import VisualizationMapLayer from 'sharedData/visualization/components/VisualizationMapLayer';
-import VisualizationMapRemoteSource from 'sharedData/visualization/components/VisualizationMapRemoteSource';
-import type { MapLayerConfig } from 'storyMap/storyMapTypes';
+import GeoJsonSource from 'terraso-web-client/gis/components/GeoJsonSource';
+import VisualizationMapLayer from 'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer';
+import VisualizationMapRemoteSource from 'terraso-web-client/sharedData/visualization/components/VisualizationMapRemoteSource';
+import type { MapLayerConfig } from 'terraso-web-client/storyMap/storyMapTypes';
 
 type Props = {
   config: MapLayerConfig;

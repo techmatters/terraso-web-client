@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { fireEvent, within } from 'tests/utils';
+import { fireEvent, within } from 'terraso-web-client/tests/utils';
 
 export const changeCombobox = async (parent, name, newValue, isNew = true) => {
   const combobox = parent.getByRole('combobox', {

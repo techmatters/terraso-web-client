@@ -15,11 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import 'tests/utils';
+import 'terraso-web-client/tests/utils';
 
 import * as terrasoApiToMock from 'terraso-client-shared/terrasoApi/api';
 
-import * as groupService from 'group/groupService';
+import * as groupService from 'terraso-web-client/group/groupService';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 const terrasoApi = jest.mocked(terrasoApiToMock);

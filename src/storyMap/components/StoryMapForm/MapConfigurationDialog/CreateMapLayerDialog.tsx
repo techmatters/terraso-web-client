@@ -15,20 +15,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import * as React from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import {
   DataEntryNode,
   VisualizationConfigNode,
-} from 'terrasoApi/shared/graphqlSchema/graphql';
-import { useDispatch, useSelector } from 'terrasoApi/store';
+} from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
+import { useDispatch, useSelector } from 'terraso-web-client/terrasoApi/store';
 import * as yup from 'yup';
 import {
   Button,
@@ -40,37 +35,39 @@ import {
   Stack,
 } from '@mui/material';
 
-import { useCollaborationContext } from 'collaboration/collaborationContext';
-import Form from 'forms/components/Form';
-import { FormContextProvider, useFormGetContext } from 'forms/formContext';
-import ColumnSelect from 'sharedData/visualization/components/VisualizationConfigForm/ColumnSelect';
-import VisualizationPreview from 'sharedData/visualization/components/VisualizationConfigForm/VisualizationPreview';
+import { useCollaborationContext } from 'terraso-web-client/collaboration/collaborationContext';
+import Form from 'terraso-web-client/forms/components/Form';
+import {
+  FormContextProvider,
+  useFormGetContext,
+} from 'terraso-web-client/forms/formContext';
+import ColumnSelect from 'terraso-web-client/sharedData/visualization/components/VisualizationConfigForm/ColumnSelect';
+import VisualizationPreview from 'terraso-web-client/sharedData/visualization/components/VisualizationConfigForm/VisualizationPreview';
 import {
   Color,
   Opacity,
   Shape,
   Size,
   useVisualizeForm,
-} from 'sharedData/visualization/components/VisualizationConfigForm/VisualizeStep';
-import { UseVisualizeFormArgs } from 'sharedData/visualization/components/VisualizeStep';
+} from 'terraso-web-client/sharedData/visualization/components/VisualizationConfigForm/VisualizeStep';
+import { UseVisualizeFormArgs } from 'terraso-web-client/sharedData/visualization/components/VisualizeStep';
 import {
   useVisualizationContext,
   VisualizationContextProvider,
-} from 'sharedData/visualization/visualizationContext';
+} from 'terraso-web-client/sharedData/visualization/visualizationContext';
 import {
   identifyLatLngColumns,
   validateCoordinateField,
-} from 'sharedData/visualization/visualizationUtils';
-import { addMapLayer } from 'storyMap/storyMapSlice';
+} from 'terraso-web-client/sharedData/visualization/visualizationUtils';
+import { FileUpload } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/FileUpload';
+import { addMapLayer } from 'terraso-web-client/storyMap/storyMapSlice';
 import {
   MapLayerConfig,
   VisualizationConfigForm,
   VisualizeConfig,
-} from 'storyMap/storyMapTypes';
+} from 'terraso-web-client/storyMap/storyMapTypes';
 
-import { FileUpload } from './FileUpload';
-
-import theme from 'theme';
+import theme from 'terraso-web-client/theme';
 
 const VisualizeForm = ({
   visualizeConfig,

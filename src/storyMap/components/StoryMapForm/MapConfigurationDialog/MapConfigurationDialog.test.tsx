@@ -22,23 +22,23 @@ import {
   RenderResult,
   screen,
   waitFor,
-} from 'tests/utils';
+} from 'terraso-web-client/tests/utils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import {
   createTestStoryMap,
   createTestStoryMapConfig,
   createTestVisualizationConfigNode,
-} from 'tests/data/storyMap';
+} from 'terraso-web-client/tests/data/storyMap';
 
-import { MapConfigurationDialog } from 'storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
-import { StoryMapConfigContextProvider } from 'storyMap/components/StoryMapForm/storyMapConfigContext';
-import { MapLayerConfig } from 'storyMap/storyMapTypes';
+import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
+import { StoryMapConfigContextProvider } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { MapLayerConfig } from 'terraso-web-client/storyMap/storyMapTypes';
 
 // Mock terrasoApi at the network boundary
 jest.mock('terraso-client-shared/terrasoApi/api');
 
 // Set up mocks BEFORE importing components
-jest.mock('gis/components/Map', () => {
+jest.mock('terraso-web-client/gis/components/Map', () => {
   const { forwardRef } = jest.requireActual('react');
   return forwardRef(function MockMap() {
     return <div data-testid="mock-map">Map</div>;

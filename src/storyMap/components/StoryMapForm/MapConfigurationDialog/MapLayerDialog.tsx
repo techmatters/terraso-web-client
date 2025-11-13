@@ -15,11 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useFetchData } from 'terraso-client-shared/store/utils';
-import { useSelector } from 'terrasoApi/store';
+import { useSelector } from 'terraso-web-client/terrasoApi/store';
 import OpenInNew from '@mui/icons-material/OpenInNew';
 import {
   Box,
@@ -41,10 +41,10 @@ import {
   Typography,
 } from '@mui/material';
 
-import { CreateMapLayerFileUpload } from 'storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog';
-import { useStoryMapConfigContext } from 'storyMap/components/StoryMapForm/storyMapConfigContext';
-import { fetchDataLayers } from 'storyMap/storyMapSlice';
-import { MapLayerConfig } from 'storyMap/storyMapTypes';
+import { CreateMapLayerFileUpload } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog';
+import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { fetchDataLayers } from 'terraso-web-client/storyMap/storyMapSlice';
+import { MapLayerConfig } from 'terraso-web-client/storyMap/storyMapTypes';
 
 const MapLayerStack = (props: StackProps) => (
   <Stack component="ul" spacing={1} {...props} />

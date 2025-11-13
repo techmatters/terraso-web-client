@@ -19,9 +19,9 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { setHasAccessTokenAsync } from 'terraso-client-shared/account/accountSlice';
 import { getAPIConfig } from 'terraso-client-shared/config';
-import { useDispatch } from 'terrasoApi/store';
+import { useDispatch } from 'terraso-web-client/terrasoApi/store';
 
-import { TERRASO_ENV } from 'config';
+import { TERRASO_ENV } from 'terraso-web-client/config';
 
 type AuthState = {
   atoken: string;

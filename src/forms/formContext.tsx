@@ -15,7 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import React, { Dispatch, SetStateAction, useContext, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useState } from 'react';
+import * as React from 'react';
 import { UseFormTrigger } from 'react-hook-form';
 
 type FormContext = {
