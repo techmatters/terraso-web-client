@@ -16,15 +16,15 @@
  */
 
 import React from 'react';
+import landscapeImage from 'assets/landscape.png';
+import RouterLink from 'common/components/RouterLink';
+import HomeCard from 'home/components/HomeCard';
 import { Trans, useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
 
-import RouterLink from 'common/components/RouterLink';
-import HomeCard from 'home/components/HomeCard';
-
 const LandscapeDefaultHomeCard = () => {
   const { t } = useTranslation();
-  const landscapeImage = require(`assets/${t(`landscape.img.src`)}`);
+
   return (
     <HomeCard
       title={t('landscape.home_title')}
