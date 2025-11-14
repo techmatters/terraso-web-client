@@ -16,15 +16,13 @@
  */
 
 import React from 'react';
+import RouterLink from 'common/components/RouterLink';
+import HomeCard from 'home/components/HomeCard';
 import { Trans, useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
 
-import RouterLink from 'common/components/RouterLink';
-import HomeCard from 'home/components/HomeCard';
-
 const GroupDefaultHomeCard = () => {
   const { t } = useTranslation();
-  const groupsImage = require(`assets/${t(`group.img.src`)}`);
 
   return (
     <HomeCard

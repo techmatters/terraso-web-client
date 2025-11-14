@@ -18,6 +18,9 @@
 import React from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
+import koboImage from 'assets/tools/kobotoolbox-screenshot.png';
+import landscaleImage from 'assets/tools/landscale-screenshot.png';
+import storyMapsImage from 'assets/tools/story-maps.png';
 import LaunchIcon from '@mui/icons-material/Launch';
 import {
   Box,
@@ -34,9 +37,15 @@ import ExternalLink from 'common/components/ExternalLink';
 
 import theme from 'theme';
 
+const toolImages = {
+  kobo: koboImage,
+  landscale: landscaleImage,
+  storyMap: storyMapsImage,
+};
+
 const ToolIconAndLink = ({ tool, title, external }) => {
   const { t } = useTranslation();
-  const toolImage = require(`assets/${t(`tools.${tool}.img.src`)}`);
+  const toolImage = toolImages[tool];
   const toolUrl = t(`tools.${tool}.url`);
   const toolText = t('tool.go_to', { tool: title });
   const toolIcon = (

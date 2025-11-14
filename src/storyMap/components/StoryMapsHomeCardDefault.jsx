@@ -16,15 +16,13 @@
  */
 
 import React from 'react';
+import RouterLink from 'common/components/RouterLink';
+import HomeCard from 'home/components/HomeCard';
 import { Trans, useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
 
-import RouterLink from 'common/components/RouterLink';
-import HomeCard from 'home/components/HomeCard';
-
 const StoryMapsHomeCardDefault = () => {
   const { t } = useTranslation();
-  const storyMapImage = require(`assets/${t(`tools.storyMap.img.src`)}`);
 
   return (
     <HomeCard

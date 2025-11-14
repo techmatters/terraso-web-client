@@ -19,12 +19,12 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Stack, Typography } from '@mui/material';
 
+import koboImage from 'assets/tools/kobotoolbox-screenshot.png';
 import RouterLink from 'common/components/RouterLink';
 import HomeCard from 'home/components/HomeCard';
 
 const ToolHomeCard = () => {
   const { t } = useTranslation();
-  const koboImage = require(`assets/${t('tools.kobo.img.src')}`);
 
   return (
     <HomeCard
