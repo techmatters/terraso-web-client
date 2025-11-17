@@ -32,6 +32,9 @@ const BUTTON_SX = {
 const THUMBNAIL_CONTAINER_SX = {
   cursor: 'pointer',
   m: 1,
+  aspectRatio: '1.91 / 1',
+  overflow: 'hidden',
+  borderRadius: '4px',
   '&:hover': {
     opacity: 0.8,
   },
@@ -39,9 +42,10 @@ const THUMBNAIL_CONTAINER_SX = {
 
 const THUMBNAIL_IMAGE_STYLE = {
   width: '100%',
-  height: 'auto',
+  height: '100%',
   display: 'block',
-  borderRadius: '4px',
+  objectFit: 'cover',
+  objectPosition: 'center',
 };
 
 const FeaturedImage = () => {
