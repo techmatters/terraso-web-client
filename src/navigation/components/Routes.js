@@ -230,13 +230,14 @@ const paths = [
         topMessage: 'storyMap.optional_auth_top_message',
         bottomMessage: 'storyMap.optional_auth_bottom_message',
       },
-      hasServerSideMetaTags: true, // Server-side rendering handles meta tags
+      hasServerSideMetaTags: true,
     }),
     path(`${basePath}/embed`, UserStoryMapEmbed, {
       optionalAuth: {
         enabled: true,
         isEmbedded: true,
       },
+      hasServerSideMetaTags: true,
     }),
   ]),
   path('/tools/story-maps/accept', StoryMapInvite),

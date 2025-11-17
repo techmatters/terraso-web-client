@@ -25,7 +25,7 @@ const { injectMetaTags } = require('./metaTags');
 
 const router = express.Router();
 
-router.get('/:storyMapId/:slug', async (req, res) => {
+const handleStoryMapRequest = async (req, res) => {
   try {
     const { storyMapId, slug } = req.params;
 
@@ -44,6 +44,9 @@ router.get('/:storyMapId/:slug', async (req, res) => {
     console.error('Error processing story map:', error.message);
     res.sendFile(path.join(__dirname, '../../build/index.html'));
   }
-});
+};
+
+router.get('/:storyMapId/:slug', handleStoryMapRequest);
+router.get('/:storyMapId/:slug/embed', handleStoryMapRequest);
 
 module.exports = router;

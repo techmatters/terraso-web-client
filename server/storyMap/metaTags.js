@@ -17,6 +17,7 @@
 
 const escape = require('lodash/fp/escape');
 
+// Escapes quotes in URLs (e.g., pre-signed URLs with encoded params) to prevent breaking HTML attributes
 const escapeAttributeValue = str => {
   if (!str) {
     return '';

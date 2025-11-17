@@ -23,13 +23,8 @@ import { useParams } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Box, Link, Stack } from '@mui/material';
 
-import { serialize } from 'common/components/RichTextEditor/utils';
 import { useSocialShareContext } from 'common/components/SocialShare';
-import {
-  useDocumentDescription,
-  useDocumentImage,
-  useDocumentTitle,
-} from 'common/document';
+import { useDocumentTitle } from 'common/document';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
 import StoryMap from 'storyMap/components/StoryMap';
@@ -81,27 +76,6 @@ const UserStoryMapEmbed = () => {
     t('storyMap.view_document_title', {
       name: _.get('title', storyMap),
     }),
-    fetching
-  );
-
-  useDocumentDescription(
-    useMemo(() => {
-      const description = serialize(
-        storyMap?.config?.chapters?.[0]?.description
-      );
-      if (description) {
-        return description;
-      }
-      return storyMap?.title;
-    }, [storyMap?.config?.chapters, storyMap?.title]),
-    fetching
-  );
-
-  useDocumentImage(
-    useMemo(
-      () => storyMap?.config?.featuredImage?.signedUrl,
-      [storyMap?.config?.featuredImage]
-    ),
     fetching
   );
 

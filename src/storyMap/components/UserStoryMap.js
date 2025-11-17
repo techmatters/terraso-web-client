@@ -22,14 +22,9 @@ import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 
-import { serialize } from 'common/components/RichTextEditor/utils';
 import RouterButton from 'common/components/RouterButton';
 import { useSocialShareContext } from 'common/components/SocialShare';
-import {
-  useDocumentDescription,
-  useDocumentImage,
-  useDocumentTitle,
-} from 'common/document';
+import { useDocumentTitle } from 'common/document';
 import Container, { useContainerContext } from 'layout/Container';
 import PageLoader from 'layout/PageLoader';
 import { useBreadcrumbsParams } from 'navigation/breadcrumbsContext';
@@ -56,34 +51,6 @@ const UserStoryMap = () => {
     t('storyMap.view_document_title', {
       name: _.get('title', storyMap),
     }),
-    fetching
-  );
-
-  useDocumentDescription(
-    useMemo(() => {
-      if (storyMap?.config?.description?.trim()) {
-        return storyMap.config.description;
-      }
-      const description = serialize(
-        storyMap?.config?.chapters?.[0]?.description
-      );
-      if (description) {
-        return description;
-      }
-      return storyMap?.title;
-    }, [
-      storyMap?.config?.description,
-      storyMap?.config?.chapters,
-      storyMap?.title,
-    ]),
-    fetching
-  );
-
-  useDocumentImage(
-    useMemo(
-      () => storyMap?.config?.featuredImage?.signedUrl,
-      [storyMap?.config?.featuredImage]
-    ),
     fetching
   );
 
