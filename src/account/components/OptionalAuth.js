@@ -15,16 +15,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
-import { fetchUser } from 'terraso-client-shared/account/accountSlice';
+import { fetchUser, signOut } from 'terraso-client-shared/account/accountSlice';
 import { useFetchData } from 'terraso-client-shared/store/utils';
+import { useDispatch } from 'terrasoApi/store';
 
 import PageLoader from 'layout/PageLoader';
 import { useCompleteProfile } from 'account/accountProfileUtils';
 
 const OptionalAuth = ({ children }) => {
+  const dispatch = useDispatch();
   const { data: user, fetching } = useSelector(_.get('account.currentUser'));
   const hasToken = useSelector(_.get('account.hasToken'));
 
@@ -36,6 +38,12 @@ const OptionalAuth = ({ children }) => {
       [hasToken, user]
     )
   );
+
+  useEffect(() => {
+    if (fetching === false && !user && hasToken) {
+      dispatch(signOut());
+    }
+  }, [fetching, user, hasToken, dispatch]);
 
   if (hasToken && fetching) {
     return <PageLoader />;

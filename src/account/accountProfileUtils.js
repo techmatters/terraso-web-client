@@ -56,12 +56,16 @@ export const useCompleteProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { data: user } = useSelector(state => state.account.currentUser);
-  const [isFirstLogin, setIsFirstLogin] = useState();
+  const [isFirstLogin, setIsFirstLogin] = useState(false);
 
   useEffect(() => {
-    getIsFirstLogin().then(isFirstLogin => {
-      setIsFirstLogin(isFirstLogin);
-    });
+    getIsFirstLogin()
+      .then(isFirstLogin => {
+        setIsFirstLogin(isFirstLogin);
+      })
+      .catch(() => {
+        setIsFirstLogin(false);
+      });
   }, []);
 
   useEffect(() => {

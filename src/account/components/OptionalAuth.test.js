@@ -16,11 +16,21 @@
  */
 
 import { render, screen } from 'tests/utils';
+import { waitFor } from '@testing-library/react';
 import { useLocation } from 'react-router';
+import * as accountService from 'terraso-client-shared/account/accountService';
+import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import OptionalAuth from './OptionalAuth';
 import OptionalAuthBottomMessage from './OptionalAuthBottomMessage';
 import OptionalAuthTopMessage from './OptionalAuthTopMessage';
+
+jest.mock('terraso-client-shared/terrasoApi/api');
+
+jest.mock('terraso-client-shared/account/accountService', () => ({
+  ...jest.requireActual('terraso-client-shared/account/accountService'),
+  signOut: jest.fn(),
+}));
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
@@ -39,6 +49,10 @@ const setup = async initialState => {
     initialState
   );
 };
+
+beforeEach(() => {
+  global.fetch = jest.fn();
+});
 
 test('OptionalAuth: Display messages', async () => {
   useLocation.mockReturnValue({
@@ -64,7 +78,7 @@ test('OptionalAuth: Display messages', async () => {
   );
 });
 
-test('OptionalAuth: Dont Display messages', async () => {
+test('OptionalAuth: Dont Display messages', async () => {
   useLocation.mockReturnValue({
     pathname: '/landscapes',
   });
@@ -82,4 +96,23 @@ test('OptionalAuth: Dont Display messages', async () => {
   expect(
     screen.queryByRole('link', { name: 'signing up for Terraso for free' })
   ).not.toBeInTheDocument();
+});
+
+test.only('OptionalAuth: Should sign out when fetchUser fails with expired/invalid token', async () => {
+  terrasoApi.requestGraphQL.mockRejectedValue('UNAUTHENTICATED');
+  accountService.signOut.mockReturnValue(Promise.resolve());
+  useLocation.mockReturnValue({
+    pathname: '/tools/story-maps/jqbb8ss/test-story/embed',
+  });
+
+  await setup({
+    account: {
+      hasToken: true,
+      currentUser: {},
+    },
+  });
+
+  await waitFor(() => {
+    expect(accountService.signOut).toHaveBeenCalled();
+  });
 });
