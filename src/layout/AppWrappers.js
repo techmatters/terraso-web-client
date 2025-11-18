@@ -37,47 +37,56 @@ import 'monitoring/analytics';
 
 import { SocialShareContextProvider } from 'common/components/SocialShare';
 import { BreadcrumbsContextProvider } from 'navigation/breadcrumbsContext';
+import { useHasServerSideMetaTags } from 'navigation/components/Routes';
 
 import { ContainerContextProvider } from './Container';
 import RefreshProgressProvider from './RefreshProgressProvider';
 
+const DefaultMetaTags = () => {
+  const { t } = useTranslation();
+  const hasServerSideMetaTags = useHasServerSideMetaTags();
+
+  if (hasServerSideMetaTags) {
+    return null;
+  }
+
+  return (
+    <Helmet>
+      <meta name="description" content={t('site.description')} />
+      <meta property="og:title" content={document.title} />
+      <meta property="og:description" content={t('site.description')} />
+      <meta property="og:image" content={`${REACT_APP_BASE_URL}/favicon.png`} />
+    </Helmet>
+  );
+};
+
 // Wrappers
 // Router, Theme, Global State, Permissions, Notifications, Breadcrumbs
 const AppWrappers = ({ children, theme, store, permissionsRules }) => {
-  const { t } = useTranslation();
-
   return (
     <React.StrictMode>
       <BrowserRouter>
-        <ThemeProvider theme={theme}>
-          <ErrorMonitoringProvider>
-            <Provider store={store}>
-              <RefreshProgressProvider>
-                <PermissionsProvider rules={permissionsRules}>
-                  <NotificationsWrapper>
-                    <BreadcrumbsContextProvider>
-                      <SocialShareContextProvider>
-                        <ContainerContextProvider>
-                          {children}
-                        </ContainerContextProvider>
-                      </SocialShareContextProvider>
-                    </BreadcrumbsContextProvider>
-                  </NotificationsWrapper>
-                </PermissionsProvider>
-              </RefreshProgressProvider>
-            </Provider>
-          </ErrorMonitoringProvider>
-        </ThemeProvider>
         <HelmetProvider>
-          <Helmet>
-            <meta name="description" content={t('site.description')} />
-            <meta property="og:title" content={document.title} />
-            <meta property="og:description" content={t('site.description')} />
-            <meta
-              property="og:image"
-              content={`${REACT_APP_BASE_URL}/favicon.png`}
-            />
-          </Helmet>
+          <ThemeProvider theme={theme}>
+            <ErrorMonitoringProvider>
+              <Provider store={store}>
+                <RefreshProgressProvider>
+                  <PermissionsProvider rules={permissionsRules}>
+                    <NotificationsWrapper>
+                      <BreadcrumbsContextProvider>
+                        <SocialShareContextProvider>
+                          <ContainerContextProvider>
+                            <DefaultMetaTags />
+                            {children}
+                          </ContainerContextProvider>
+                        </SocialShareContextProvider>
+                      </BreadcrumbsContextProvider>
+                    </NotificationsWrapper>
+                  </PermissionsProvider>
+                </RefreshProgressProvider>
+              </Provider>
+            </ErrorMonitoringProvider>
+          </ThemeProvider>
         </HelmetProvider>
       </BrowserRouter>
     </React.StrictMode>
