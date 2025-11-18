@@ -98,7 +98,7 @@ test('OptionalAuth: Dont Display messages', async () => {
   ).not.toBeInTheDocument();
 });
 
-test.only('OptionalAuth: Should sign out when fetchUser fails with expired/invalid token', async () => {
+test('OptionalAuth: Should sign out when fetchUser fails with expired/invalid token', async () => {
   terrasoApi.requestGraphQL.mockRejectedValue('UNAUTHENTICATED');
   accountService.signOut.mockReturnValue(Promise.resolve());
   useLocation.mockReturnValue({
@@ -108,7 +108,7 @@ test.only('OptionalAuth: Should sign out when fetchUser fails with expired/inval
   await setup({
     account: {
       hasToken: true,
-      currentUser: {},
+      currentUser: { data: undefined, fetching: false },
     },
   });
 
