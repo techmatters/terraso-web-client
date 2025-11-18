@@ -36,6 +36,7 @@ const config = {
   baseUrl: process.env.REACT_APP_BASE_URL,
   port: process.env.PORT || 10000,
   nodeEnv: process.env.NODE_ENV || 'development',
+  apiTimeout: parseInt(process.env.API_TIMEOUT_MS, 10) || 10000,
 };
 
 module.exports = config;

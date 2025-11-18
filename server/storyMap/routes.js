@@ -16,33 +16,30 @@
  */
 
 const express = require('express');
-const path = require('path');
 const fs = require('fs');
 
 const { fetchStoryMap } = require('./service');
 const { buildMetaTags } = require('./transformer');
 const { injectMetaTags } = require('./metaTags');
+const { getClientBundlePath } = require('../utils/clientBundle');
 
 const router = express.Router();
 
-const handleStoryMapRequest = async (req, res) => {
+const handleStoryMapRequest = async (req, res, next) => {
   try {
     const { storyMapId, slug } = req.params;
 
     const storyMapNode = await fetchStoryMap(storyMapId, slug);
     const metaTags = buildMetaTags(storyMapNode);
 
-    const html = fs.readFileSync(
-      path.join(__dirname, '../../build/index.html'),
-      'utf8'
-    );
+    const html = fs.readFileSync(getClientBundlePath(), 'utf8');
 
     const updatedHtml = injectMetaTags(html, metaTags);
 
     res.send(updatedHtml);
   } catch (error) {
     console.error('Error processing story map:', error.message);
-    res.sendFile(path.join(__dirname, '../../build/index.html'));
+    next(error);
   }
 };
 

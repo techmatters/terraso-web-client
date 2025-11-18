@@ -21,6 +21,7 @@ const path = require('path');
 const config = require('./server/config');
 const { requestLogger } = require('./server/middleware/logger');
 const { rateLimiter } = require('./server/middleware/rateLimiter');
+const { serveClientBundle } = require('./server/utils/clientBundle');
 const storyMapRoutes = require('./server/storyMap/routes');
 
 const app = express();
@@ -29,11 +30,28 @@ app.use(requestLogger);
 app.use(rateLimiter);
 app.use(express.static(path.join(__dirname, 'build')));
 
+app.get('/healthz', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 app.use('/tools/story-maps', storyMapRoutes);
 
-app.use((req, res) => {
-  res.sendFile(path.join(__dirname, 'build/index.html'));
-});
+const handleCatchAllRoute = (req, res, next) => {
+  serveClientBundle(res, next);
+};
+
+const handleGlobalError = (err, req, res, next) => {
+  console.error('Server error:', err);
+
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  serveClientBundle(res);
+};
+
+app.use(handleCatchAllRoute);
+app.use(handleGlobalError);
 
 app.listen(config.port, () => {
   console.log(`Server running on port ${config.port}`);

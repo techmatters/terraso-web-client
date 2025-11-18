@@ -16,6 +16,7 @@
  */
 
 const config = require('../config');
+const { fetchWithTimeout } = require('../utils/fetch');
 
 const STORY_MAP_QUERY = `
   query fetchStoryMapMeta($storyMapId: String!, $slug: String) {
@@ -30,27 +31,38 @@ const STORY_MAP_QUERY = `
 `;
 
 const fetchStoryMap = async (storyMapId, slug) => {
-  const response = await fetch(`${config.apiUrl}/graphql/`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      query: STORY_MAP_QUERY,
-      variables: { storyMapId, slug },
-    }),
-  });
+  try {
+    const response = await fetchWithTimeout(
+      `${config.apiUrl}/graphql/`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: STORY_MAP_QUERY,
+          variables: { storyMapId, slug },
+        }),
+      },
+      config.apiTimeout
+    );
 
-  if (!response.ok) {
-    throw new Error(`GraphQL request failed: ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`GraphQL request failed: ${response.status}`);
+    }
+
+    const result = await response.json();
+    const node = result.data?.storyMaps?.edges?.[0]?.node;
+
+    if (!node) {
+      throw new Error('Story map not found');
+    }
+
+    return node;
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw new Error('Request timeout: API took too long to respond');
+    }
+    throw error;
   }
-
-  const result = await response.json();
-  const node = result.data?.storyMaps?.edges?.[0]?.node;
-
-  if (!node) {
-    throw new Error('Story map not found');
-  }
-
-  return node;
 };
 
 module.exports = { fetchStoryMap };
