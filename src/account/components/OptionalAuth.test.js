@@ -51,6 +51,7 @@ const setup = async initialState => {
 };
 
 beforeEach(() => {
+  jest.clearAllMocks();
   global.fetch = jest.fn();
 });
 
