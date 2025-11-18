@@ -307,9 +307,11 @@ export const useOptionalAuth = () => {
 };
 
 export const useHasServerSideMetaTags = () => {
-  const { pathname: currentPathname } = useLocation();
+  const location = useLocation();
+  const currentPathname = location?.pathname;
+
   const currentPath = useMemo(
-    () => getPath(currentPathname),
+    () => (currentPathname ? getPath(currentPathname) : null),
     [currentPathname]
   );
 

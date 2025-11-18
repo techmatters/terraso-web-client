@@ -107,7 +107,7 @@ const Navigation = React.forwardRef((props, ref) => {
   const location = useLocation();
 
   const value = _.findIndex(
-    path => path.match(location.pathname),
+    path => path.match(location?.pathname),
     Object.values(PAGES)
   );
 
