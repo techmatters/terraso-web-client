@@ -16,12 +16,11 @@
  */
 
 const express = require('express');
-const fs = require('fs');
 
 const { fetchStoryMap } = require('./service');
 const { buildMetaTags } = require('./transformer');
 const { injectMetaTags } = require('./metaTags');
-const { getClientBundlePath } = require('../utils/clientBundle');
+const { getCachedHtml } = require('../utils/clientBundle');
 
 const router = express.Router();
 
@@ -32,9 +31,7 @@ const handleStoryMapRequest = async (req, res, next) => {
     const storyMapNode = await fetchStoryMap(storyMapId, slug);
     const metaTags = buildMetaTags(storyMapNode);
 
-    const html = fs.readFileSync(getClientBundlePath(), 'utf8');
-
-    const updatedHtml = injectMetaTags(html, metaTags);
+    const updatedHtml = injectMetaTags(getCachedHtml(), metaTags);
 
     res.send(updatedHtml);
   } catch (error) {

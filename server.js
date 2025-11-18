@@ -21,10 +21,15 @@ const path = require('path');
 const config = require('./server/config');
 const { requestLogger } = require('./server/middleware/logger');
 const { rateLimiter } = require('./server/middleware/rateLimiter');
-const { serveClientBundle } = require('./server/utils/clientBundle');
+const {
+  serveClientBundle,
+  initializeCache,
+} = require('./server/utils/clientBundle');
 const storyMapRoutes = require('./server/storyMap/routes');
 
 const app = express();
+
+initializeCache();
 
 app.use(requestLogger);
 app.use(rateLimiter);

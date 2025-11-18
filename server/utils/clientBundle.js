@@ -16,23 +16,44 @@
  */
 
 const path = require('path');
+const fs = require('fs');
+
+let cachedHtml = null;
 
 const getClientBundlePath = () => {
   return path.join(__dirname, '../../build/index.html');
 };
 
-const serveClientBundle = (res, next) => {
-  const indexPath = getClientBundlePath();
-  res.status(200).sendFile(indexPath, err => {
-    if (err) {
-      console.error('Error serving index.html:', err);
-      if (next) {
-        next(err);
-      } else {
-        res.status(500).send('Service temporarily unavailable');
-      }
-    }
-  });
+const initializeCache = () => {
+  if (!cachedHtml) {
+    cachedHtml = fs.readFileSync(getClientBundlePath(), 'utf8');
+    console.log('Client bundle HTML cached at startup');
+  }
 };
 
-module.exports = { getClientBundlePath, serveClientBundle };
+const getCachedHtml = () => {
+  if (!cachedHtml) {
+    initializeCache();
+  }
+  return cachedHtml;
+};
+
+const serveClientBundle = (res, next) => {
+  try {
+    res.status(200).send(getCachedHtml());
+  } catch (err) {
+    console.error('Error serving client bundle:', err);
+    if (next) {
+      next(err);
+    } else if (!res.headersSent) {
+      res.status(500).send('Service temporarily unavailable');
+    }
+  }
+};
+
+module.exports = {
+  getClientBundlePath,
+  getCachedHtml,
+  serveClientBundle,
+  initializeCache,
+};
