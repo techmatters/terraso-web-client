@@ -20,7 +20,7 @@ import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { useSelector } from 'terrasoApi/store';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import OpenInNew from '@mui/icons-material/OpenInNew';
 import {
   Box,
   Button,
@@ -29,7 +29,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  IconButton,
+  Link,
   List,
   ListItem,
   ListItemIcon,
@@ -129,7 +129,7 @@ const SelectMapLayerSection = ({
         <></>
       ) : (
         <Stack>
-          <Typography component="h2">
+          <Typography component="h2" sx={{ fontWeight: 'bold' }}>
             {t(
               'storyMap.form_location_add_data_layer_dialog_select_section_title'
             )}
@@ -223,9 +223,6 @@ export const MapLayerDialog = ({
       sx={{ '& .MuiDialog-paper': { backgroundColor: 'gray.lite2' } }}
     >
       <DialogTitle component="h1" sx={{ pb: 0 }}>
-        <IconButton size="small" sx={{ color: 'blue.dark' }} onClick={onClose}>
-          <ArrowBackIcon />
-        </IconButton>
         {title ? (
           <Trans
             i18nKey="storyMap.form_location_add_data_layer_dialog_title"
@@ -238,7 +235,16 @@ export const MapLayerDialog = ({
           <>{t('storyMap.form_location_add_data_layer_dialog_title_blank')}</>
         )}
       </DialogTitle>
-      <DialogContent sx={{ marginTop: 1 }}>
+      <DialogContent>
+        <Link
+          href={t('storyMap.form_create_map_layer_dialog_help_link')}
+          target="_blank"
+        >
+          {t('storyMap.form_create_map_layer_dialog_help_text')}{' '}
+          <OpenInNew fontSize="inherit" sx={{ verticalAlign: 'middle' }} />
+        </Link>
+      </DialogContent>
+      <DialogContent>
         <Stack sx={{ rowGap: 3 }}>
           <CreateMapLayerSection title={title} onCreate={onCreate} />
           <SelectMapLayerSection
