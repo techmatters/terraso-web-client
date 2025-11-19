@@ -23,6 +23,9 @@
     "@turf/helpers": "^7.2.0",
     "@turf/meta": "^7.2.0",
     "canvg": "^4.0.3",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
     "filesize": "^11.0.13",
     "get-video-id": "^4.1.7",
     "i18next": "^25.4.0",
@@ -64,6 +67,7 @@
   },
   "scripts": {
     "start": "npm run generate-types -- -w -s & react-scripts start",
+    "server": "node server.js",
     "generate-types": "npx graphql-code-generator",
     "lint-js": "eslint ./ --ext .js --ext .ts --ext .tsx --max-warnings 0 --ignore-path .gitignore",
     "format-js": "npm run lint-js -- --fix",
@@ -74,7 +78,11 @@
     "build": "npm run generate-types && react-scripts build",
     "build-sentry": "npm run generate-types && react-scripts build && npm run sentry:sourcemaps",
     "build-serve": "serve -s build",
-    "test": "npm run generate-types && react-scripts test",
+    "test": "npm run test:server && npm run test:client",
+    "test:client": "npm run generate-types && react-scripts test",
+    "test:server": "NODE_ENV=test jest --config jest.config.server.js --passWithNoTests",
+    "test:server:watch": "NODE_ENV=test jest --config jest.config.server.js --watch",
+    "test:server:coverage": "NODE_ENV=test jest --config jest.config.server.js --coverage",
     "test-debug": "npm run generate-types && react-scripts --inspect-brk test --runInBand --no-cache",
     "test-coverage": "npm run generate-types && react-scripts test --coverage --changedSince=origin/main --watchAll=falsed",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
@@ -121,7 +129,8 @@
     "react-scripts": "^5.0.1",
     "serve": "^14.2.5",
     "stylelint": "^16.25.0",
-    "stylelint-prettier": "^5.0.3"
+    "stylelint-prettier": "^5.0.3",
+    "supertest": "^7.1.4"
   },
   "jest": {
     "transform": {},

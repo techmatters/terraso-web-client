@@ -96,6 +96,12 @@ test('Navigation: Test navigation', async () => {
       pathname: '/',
     })
     .mockReturnValueOnce({
+      pathname: '/',
+    })
+    .mockReturnValueOnce({
+      pathname: '/landscapes',
+    })
+    .mockReturnValueOnce({
       pathname: '/landscapes',
     });
   await setup();
