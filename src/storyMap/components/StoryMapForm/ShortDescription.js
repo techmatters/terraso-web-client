@@ -22,6 +22,14 @@ import { Link, Stack, Typography } from '@mui/material';
 import ShortDescriptionDialog from './ShortDescriptionDialog';
 import { useStoryMapConfigContext } from './storyMapConfigContext';
 
+const DESCRIPTION_STYLES = {
+  whiteSpace: 'pre-wrap',
+  display: '-webkit-box',
+  WebkitLineClamp: 4,
+  WebkitBoxOrient: 'vertical',
+  overflow: 'hidden',
+};
+
 const ShortDescription = () => {
   const { t } = useTranslation();
   const { config, setConfig } = useStoryMapConfigContext();
@@ -50,7 +58,7 @@ const ShortDescription = () => {
     <>
       <Stack sx={{ m: 1, mb: 2 }} spacing={1}>
         {config.description && (
-          <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+          <Typography variant="body2" sx={DESCRIPTION_STYLES}>
             {config.description}
           </Typography>
         )}
