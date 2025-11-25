@@ -63,8 +63,8 @@ export const useCompleteProfile = () => {
       .then(isFirstLogin => {
         setIsFirstLogin(isFirstLogin);
       })
-      .catch(() => {
-        setIsFirstLogin(false);
+      .catch(error => {
+        console.error('Failed to check first login status:', error);
       });
   }, []);
 
