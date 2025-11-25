@@ -248,7 +248,7 @@
             "data": { "text": "Política de datos", "url": "#" },
             "about": {
                 "text": "Acerca de Terraso",
-                "url": "https://terraso.org/es/"
+                "url": "https://terraso.org"
             }
         }
     },
@@ -998,7 +998,7 @@
         "tool_home_description": "Usa mapas, fotos, videos, grabaciones de audio y narraciones para crear una historia impactante.",
         "tool_home_create_button": "Crear un Story Map",
         "tool_home_help": "<0>¿Quieres aprender a crear un story map? <1>Lee un tutorial</1>.</0>",
-        "tool_home_help_document_url": "https://terraso.org/es/help/como-hacer-un-mapa-de-la-historia/",
+        "tool_home_help_document_url": "https://terraso.org/help/how-to-make-a-story-map/",
         "tool_home_examples_title": "Story Maps de la comunidad",
         "tool_home_examples_published_at": "Publicado {{date}}",
         "tool_home_examples_by": "Por $t(user.full_name)",
