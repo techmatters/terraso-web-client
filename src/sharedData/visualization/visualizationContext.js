@@ -39,7 +39,12 @@ export const VisualizationContext = React.createContext();
 
 export const VisualizationContextProvider = props => {
   const dispatch = useDispatch();
-  const { visualizationConfig, setVisualizationConfig, children } = props;
+  const {
+    visualizationConfig,
+    setVisualizationConfig,
+    dispatchErrors = true,
+    children,
+  } = props;
   const [fileContext, setFileContext] = useState({});
   const [loadingFile, setLoadingFile] = useState(true);
   const [loadingFileError, setLoadingFileError] = useState();
@@ -82,6 +87,7 @@ export const VisualizationContextProvider = props => {
       return;
     }
     setLoadingFile(true);
+    setLoadingFileError(undefined);
     setFileContext(undefined);
     const readFileRequest = {
       promise: isMapFile
@@ -104,13 +110,15 @@ export const VisualizationContextProvider = props => {
       .catch(error => {
         setLoadingFileError(error);
         setLoadingFile(false);
-        dispatch(
-          addMessage({
-            severity: 'error',
-            content: 'sharedData.visualization_file_load_error',
-            params: { name: visualizationConfig.selectedFile.name },
-          })
-        );
+        if (dispatchErrors) {
+          dispatch(
+            addMessage({
+              severity: 'error',
+              content: 'sharedData.visualization_file_load_error',
+              params: { name: visualizationConfig.selectedFile.name },
+            })
+          );
+        }
       });
     return () => {
       readFileRequest.valid = false;
@@ -121,6 +129,7 @@ export const VisualizationContextProvider = props => {
     fileContext,
     dispatch,
     isMapFile,
+    dispatchErrors,
   ]);
 
   const getDataColumns = useCallback(() => {

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2025 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -15,9 +15,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { readAsDataURL } from 'common/fileUtils';
+import { UserNode } from 'terrasoApi/shared/graphqlSchema/graphql';
 
-export const openImageUrl = url =>
-  fetch(url)
-    .then(res => res.blob())
-    .then(readAsDataURL);
+import { createTestGraphQLConnection } from './graphql';
+
+export const createTestUser = (): UserNode => ({
+  id: '0',
+  email: 'email@example.com',
+  firstName: 'first',
+  lastName: 'last',
+  preferences: createTestGraphQLConnection([]),
+  profileImage: 'profileImageURL',
+});

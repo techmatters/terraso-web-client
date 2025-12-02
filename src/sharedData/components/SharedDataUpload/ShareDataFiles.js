@@ -23,10 +23,8 @@ import React, {
   useState,
 } from 'react';
 import _ from 'lodash/fp';
-import path from 'path-browserify';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
@@ -42,6 +40,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { styled } from '@mui/system';
 
 import BaseDropZone from 'common/components/DropZone';
+import { fileWrapper } from 'common/fileUtils';
 import FormField from 'forms/components/FormField';
 import { MAX_DESCRIPTION_CHARACTERS } from 'sharedData/sharedDataConstants';
 
@@ -231,16 +230,6 @@ const SelectedFiles = () => {
       )}
     </Stack>
   );
-};
-
-const fileWrapper = file => {
-  const filePath = path.parse(file.name);
-  return {
-    id: uuidv4(),
-    name: filePath.name,
-    resourceType: filePath.ext,
-    file,
-  };
 };
 
 const ShareDataFiles = props => {

@@ -29,17 +29,34 @@ import { SHARED_DATA_ACCEPTED_EXTENSIONS } from 'config';
 
 const ALL_RESOURCE_TYPES = [...SHARED_DATA_ACCEPTED_EXTENSIONS, 'link'];
 
+/**
+ * @param {{
+ *  targetType: 'group' | 'story_map' | 'landscape',
+ *  file: import('common/fileUtils').FileWrapper,
+ *  targetSlug?: string,
+ *  targetId?: string
+ * }} params
+ */
 export const uploadSharedDataFile = async ({
   targetType,
   targetSlug,
+  targetId,
   file,
 }) => {
+  if ((!targetId && !targetSlug) || (targetSlug && targetId)) {
+    throw new Error('Exactly one of targetId or targetSlug is required.');
+  }
   const path = '/shared-data/upload/';
 
   const body = new FormData();
   const filename = `${file.name}${file.resourceType}`;
   body.append('target_type', targetType);
-  body.append('target_slug', targetSlug);
+  if (targetSlug) {
+    body.append('target_slug', targetSlug);
+  }
+  if (targetId) {
+    body.append('target_id', targetId);
+  }
   body.append('name', file.name);
   if (file.description) {
     body.append('description', file.description);

@@ -34,7 +34,7 @@ import {
 } from './VisualizationConfigForm.testData';
 
 import {
-  DATA_SET_ACCPETED_EXTENSIONS,
+  DATA_SET_ACCEPTED_EXTENSIONS,
   MAP_DATA_ACCEPTED_EXTENSIONS,
 } from 'config';
 
@@ -254,6 +254,7 @@ const setup = async testParams => {
 };
 
 beforeEach(() => {
+  jest.useFakeTimers();
   global.fetch = jest.fn();
   mapboxgl.Popup = jest.fn();
   const Popup = {
@@ -272,12 +273,16 @@ beforeEach(() => {
   mapboxgl.Map = jest.fn();
 });
 
+afterEach(() => {
+  jest.useRealTimers();
+});
+
 const testSelectDataFileStep = async testParams => {
   // Validate accepted file types
   const fetchFilesCall = terrasoApi.requestGraphQL.mock.calls[3];
   expect(fetchFilesCall[1].resourceTypes).toStrictEqual([
     ...MAP_DATA_ACCEPTED_EXTENSIONS,
-    ...DATA_SET_ACCPETED_EXTENSIONS,
+    ...DATA_SET_ACCEPTED_EXTENSIONS,
   ]);
 
   // Validate stepper not present in first step
@@ -387,7 +392,10 @@ const testVisualizeStep = async testParams => {
     // Marker Size
     const size = screen.getByRole('spinbutton', { name: 'Symbol Size:' });
     expect(size).toHaveValue(15);
-    fireEvent.change(size, { target: { value: 30 } });
+    await act(async () => {
+      fireEvent.change(size, { target: { value: 30 } });
+      jest.runOnlyPendingTimers();
+    });
     expect(size).toHaveValue(30);
   }
 
@@ -407,7 +415,11 @@ const testVisualizeStep = async testParams => {
       name: 'Polygon Opacity:',
     });
     expect(opacity).toHaveValue(50);
-    fireEvent.change(opacity, { target: { value: 80 } });
+    await act(async () => {
+      fireEvent.change(opacity, { target: { value: 80 } });
+      jest.runOnlyPendingTimers();
+    });
+
     expect(opacity).toHaveValue(80);
   }
 
@@ -451,7 +463,7 @@ const testAnnotateStep = async testParams => {
     await changeSelectOption('Pop-up Title', 'col4');
 
     // Data points labels
-    const dataPoint = screen.getByRole('textbox', {
+    const dataPoint = await screen.findByRole('textbox', {
       name: 'Data point 1 label',
     });
     await act(async () =>

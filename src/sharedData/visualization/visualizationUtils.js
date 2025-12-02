@@ -16,12 +16,54 @@
  */
 
 import _ from 'lodash/fp';
+import { normalizeText } from 'terraso-client-shared/utils';
 import * as SheetsJs from 'xlsx';
 import * as yup from 'yup';
 
 import { normalizeLongitude } from 'gis/gisUtils';
 import mapboxgl from 'gis/mapbox';
 import { fetchDataEntriesWithGeojson } from 'sharedData/sharedDataService';
+
+const LAT_COLUMN_OPTIONS = ['latitude', 'latitud', 'lat', 'x'];
+const LNG_COLUMN_OPTIONS = ['longitude', 'longitud', 'lng', 'lon', 'long', 'y'];
+
+const getScore = (options, header) => {
+  const score = _.min(
+    options
+      .map((option, index) => (header.indexOf(option) + 1) * (index + 1))
+      .filter(score => score > 0)
+  );
+  return score;
+};
+
+const getColumnMatch = scores => {
+  const winner = _.flow(
+    _.filter(value => value.score && value.score !== -1),
+    _.sortBy(value => value.score),
+    _.first
+  )(scores);
+  const column = winner ? winner.index : -1;
+  return column;
+};
+
+export const identifyLatLngColumns = headers => {
+  const cleanedHeaders = headers.map(normalizeText);
+  const latScores = cleanedHeaders.map((header, index) => ({
+    score: getScore(LAT_COLUMN_OPTIONS, header),
+    index,
+  }));
+  const latColumnIndex = getColumnMatch(latScores);
+
+  const lngScores = cleanedHeaders.map((header, index) => ({
+    score: getScore(LNG_COLUMN_OPTIONS, header),
+    index,
+  }));
+  const lngColumnIndex = getColumnMatch(lngScores);
+  return {
+    latColumn: latColumnIndex !== -1 ? headers[latColumnIndex] : null,
+    lngColumn: lngColumnIndex !== -1 ? headers[lngColumnIndex] : null,
+  };
+};
 
 export const readFile = async file => {
   const response = await fetch(file.url);
@@ -93,6 +135,29 @@ export const validateCoordinateColumn = (sheetContext, column) => {
   }
 };
 
+export const validateCoordinateField = coordinate => ({
+  name: 'invalidCoordinate',
+  message: {
+    key: 'invalid_coordinate',
+    params: { coordinate },
+  },
+  test: (value, ctx) => {
+    const {
+      parent: {
+        context: { fileContext },
+      },
+    } = ctx;
+    if (_.isEmpty(value)) {
+      return;
+    }
+    const error = validateCoordinateColumn(fileContext, value);
+    if (!error) {
+      return true;
+    }
+    return false;
+  },
+});
+
 export const sheetToGeoJSON = (
   sheetContext,
   visualizationConfig,
@@ -113,32 +178,37 @@ export const sheetToGeoJSON = (
   });
   const dataPoints = annotateConfig?.dataPoints || [];
   const titleColumn = annotateConfig?.annotationTitle;
-  const points = rows
-    .map((row, index) => {
-      const lat = parseFloat(row[datasetConfig.latitude]);
-      const lng = normalizeLongitude(parseFloat(row[datasetConfig.longitude]));
+  let points = [];
+  if (datasetConfig) {
+    points = rows
+      .map((row, index) => {
+        const lat = parseFloat(row[datasetConfig.latitude]);
+        const lng = normalizeLongitude(
+          parseFloat(row[datasetConfig.longitude])
+        );
 
-      const fields = dataPoints.map(dataPoint => ({
-        label: dataPoint.label || dataPoint.column,
-        value: row[dataPoint.column],
-      }));
+        const fields = dataPoints.map(dataPoint => ({
+          label: dataPoint.label || dataPoint.column,
+          value: row[dataPoint.column],
+        }));
 
-      return {
-        index,
-        position: [lng, lat],
-        title: titleColumn && row[titleColumn],
-        fields: JSON.stringify(fields),
-      };
-    })
-    .filter(point => {
-      try {
-        new mapboxgl.LngLat(...point.position);
-        return true;
-      } catch (error) {
-        return false;
-      }
-    })
-    .slice(0, sampleSize);
+        return {
+          index,
+          position: [lng, lat],
+          title: titleColumn && row[titleColumn],
+          fields: JSON.stringify(fields),
+        };
+      })
+      .filter(point => {
+        try {
+          new mapboxgl.LngLat(...point.position);
+          return true;
+        } catch (error) {
+          return false;
+        }
+      })
+      .slice(0, sampleSize);
+  }
 
   const geoJson = {
     type: 'FeatureCollection',

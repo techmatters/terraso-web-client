@@ -91,13 +91,13 @@ const testGeoJsonParsing = (file, errorMessage) => async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a map file. Accepted file formats: GeoJSON, GPX, JSON, KML, KMZ, ESRI Shapefile',
+        name: 'Upload a map file. Accepted formats: GeoJSON, GPX, KML, KMZ, ESRI Shapefile',
       })
     )
   );
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.geojson, *.gpx, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB',
+    name: 'Select File Accepted formats: .geojson, .gpx, .kml, .kmz, .zip Maximum file size: 10 MB',
   });
 
   const data = {
@@ -161,14 +161,14 @@ test('LandscapeBoundaries: Display loader', async () => {
   expect(loader).toBeInTheDocument();
 });
 
-const plainTextFile = new File(['hello'], 'test.json', {
-  type: 'application/json',
+const plainTextFile = new File(['hello'], 'test.geojson', {
+  type: 'application/geo+json',
 });
 test(
-  'LandscapeBoundaries: Select file (plain text, not JSON)',
+  'LandscapeBoundaries: Select file (plain text, not GeoJSON)',
   testGeoJsonParsing(
     plainTextFile,
-    'The file test.json is not a valid JSON file.'
+    'The file test.geojson is not a valid JSON file.'
   )
 );
 
@@ -176,27 +176,27 @@ const invalidJsonFile = new File(
   [
     '{"type":"FeatureCollection","features":.61687046392973],[-96.064453125,42.74701217318067]]]}}]}',
   ],
-  'test.json',
+  'test.geojson',
   {
-    type: 'application/json',
+    type: 'application/geo+json',
   }
 );
 test(
   'LandscapeBoundaries: Select file (invalid JSON)',
   testGeoJsonParsing(
     invalidJsonFile,
-    'The file test.json is not a valid JSON file.'
+    'The file test.geojson is not a valid JSON file.'
   )
 );
 
-const invalidGeoJsonFile = new File(['{"key": "value"}'], 'test.json', {
-  type: 'application/json',
+const invalidGeoJsonFile = new File(['{"key": "value"}'], 'test.geojson', {
+  type: 'application/geo+json',
 });
 test(
   'LandscapeBoundaries: Select file (Invalid GeoJSON)',
   testGeoJsonParsing(
     invalidGeoJsonFile,
-    'The file test.json is JSON, but is not a valid GeoJSON file.'
+    'The file test.geojson is JSON, but is not a valid GeoJSON file.'
   )
 );
 
@@ -204,25 +204,25 @@ const invalidGeomtryinGeoJsonFile = new File(
   [
     '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygoff","coordinates":[[[-96.064453125,42.74701217318067],[-104.150390625,38.06539235133249],[-93.515625,35.10193405724606],[-85.95703125,38.61687046392973],[-96.064453125,42.74701217318067]]]}}]}',
   ],
-  'test.json',
+  'test.geojson',
   {
-    type: 'application/json',
+    type: 'application/geo+json',
   }
 );
 test(
   'LandscapeBoundaries: Select file (Invalid GeoJSON Boundary)',
   testGeoJsonParsing(
     invalidGeomtryinGeoJsonFile,
-    'The file test.json is JSON, but is not a valid GeoJSON file.'
+    'The file test.geojson is JSON, but is not a valid GeoJSON file.'
   )
 );
 
-const emptyGeoJsonFile = new File([''], 'test.json', {
-  type: 'application/json',
+const emptyGeoJsonFile = new File([''], 'test.geojson', {
+  type: 'application/geo+json',
 });
 test(
   'LandscapeBoundaries: Select file (empty)',
-  testGeoJsonParsing(emptyGeoJsonFile, 'The file test.json is empty.')
+  testGeoJsonParsing(emptyGeoJsonFile, 'The file test.geojson is empty.')
 );
 
 test('LandscapeBoundaries: Select file', async () => {
@@ -248,16 +248,18 @@ test('LandscapeBoundaries: Select file', async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a map file. Accepted file formats: GeoJSON, GPX, JSON, KML, KMZ, ESRI Shapefile',
+        name: 'Upload a map file. Accepted formats: GeoJSON, GPX, KML, KMZ, ESRI Shapefile',
       })
     )
   );
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.geojson, *.gpx, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB',
+    name: 'Select File Accepted formats: .geojson, .gpx, .kml, .kmz, .zip Maximum file size: 10 MB',
   });
 
-  const file = new File([GEOJSON], 'test.json', { type: 'application/json' });
+  const file = new File([GEOJSON], 'test.geojson', {
+    type: 'application/geo+json',
+  });
   const data = {
     dataTransfer: {
       files: [file],
@@ -274,7 +276,7 @@ test('LandscapeBoundaries: Select file', async () => {
   await act(async () => fireEvent.drop(dropzone, data));
   expect(
     await screen.findByRole('button', {
-      name: 'Select File Accepted file formats: *.geojson, *.gpx, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB test.json 804 B',
+      name: 'Select File Accepted formats: .geojson, .gpx, .kml, .kmz, .zip Maximum file size: 10 MB test.geojson 804 B',
     })
   ).toBeInTheDocument();
 });
@@ -301,7 +303,7 @@ test('LandscapeBoundaries: Show back', async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a map file. Accepted file formats: GeoJSON, GPX, JSON, KML, KMZ, ESRI Shapefile',
+        name: 'Upload a map file. Accepted formats: GeoJSON, GPX, KML, KMZ, ESRI Shapefile',
       })
     )
   );
@@ -357,16 +359,18 @@ test('LandscapeBoundaries: Save GeoJSON', async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a map file. Accepted file formats: GeoJSON, GPX, JSON, KML, KMZ, ESRI Shapefile',
+        name: 'Upload a map file. Accepted formats: GeoJSON, GPX, KML, KMZ, ESRI Shapefile',
       })
     )
   );
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.geojson, *.gpx, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB',
+    name: 'Select File Accepted formats: .geojson, .gpx, .kml, .kmz, .zip Maximum file size: 10 MB',
   });
 
-  const file = new File([GEOJSON], 'test.json', { type: 'application/json' });
+  const file = new File([GEOJSON], 'test.geojson', {
+    type: 'application/geo+json',
+  });
   const data = {
     dataTransfer: {
       files: [file],
@@ -383,7 +387,7 @@ test('LandscapeBoundaries: Save GeoJSON', async () => {
   await act(async () => fireEvent.drop(dropzone, data));
   expect(
     await screen.findByRole('button', {
-      name: 'Select File Accepted file formats: *.geojson, *.gpx, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB test.json 804 B',
+      name: 'Select File Accepted formats: .geojson, .gpx, .kml, .kmz, .zip Maximum file size: 10 MB test.geojson 804 B',
     })
   ).toBeInTheDocument();
 
@@ -473,13 +477,13 @@ test('LandscapeBoundaries: Save KML', async () => {
   await act(async () =>
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Upload a map file. Accepted file formats: GeoJSON, GPX, JSON, KML, KMZ, ESRI Shapefile',
+        name: 'Upload a map file. Accepted formats: GeoJSON, GPX, KML, KMZ, ESRI Shapefile',
       })
     )
   );
 
   const dropzone = screen.getByRole('button', {
-    name: 'Select File Accepted file formats: *.geojson, *.gpx, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB',
+    name: 'Select File Accepted formats: .geojson, .gpx, .kml, .kmz, .zip Maximum file size: 10 MB',
   });
 
   const dataTransfer = {
@@ -499,7 +503,7 @@ test('LandscapeBoundaries: Save KML', async () => {
   await waitFor(async () => {
     expect(
       screen.getByRole('button', {
-        name: 'Select File Accepted file formats: *.geojson, *.gpx, *.json, *.kml, *.kmz, *.zip Maximum file size: 10 MB valid.kml 406 B',
+        name: 'Select File Accepted formats: .geojson, .gpx, .kml, .kmz, .zip Maximum file size: 10 MB valid.kml 406 B',
       })
     ).toBeInTheDocument();
   });

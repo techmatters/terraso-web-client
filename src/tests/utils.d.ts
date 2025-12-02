@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2025 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -14,16 +14,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-export const dataURItoBlob = dataURI => fetch(dataURI).then(res => res.blob());
 
-export const readAsDataURL = data =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      resolve(reader.result);
-    };
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(data);
-  });
+import React from 'react';
+import { RenderResult } from '@testing-library/react';
 
-export const openFile = file => readAsDataURL(file);
+export * from '@testing-library/react';
+
+export function render(
+  component: React.ReactNode,
+  initialState?: any,
+  permissionsRules?: any
+): Promise<RenderResult>;
+
+export function waitFor(callback: () => void, options?: any): Promise<void>;

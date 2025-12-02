@@ -61,13 +61,15 @@ const FileContextSource = props => {
 const Visualization = props => {
   const {
     customConfig,
-    showPopup = false,
+    showInitialPopup = false,
+    showPopups = true,
     sampleSize,
     onBoundsChange,
     onStyleChange,
     useConfigBounds,
     children,
   } = props;
+
   const visualizationContext = useVisualizationContext();
   const { useTileset, isMapFile, loadingFile } = visualizationContext;
 
@@ -118,7 +120,8 @@ const Visualization = props => {
             <MapboxLayer
               sourceName="visualization"
               visualizationConfig={visualizationConfig}
-              showPopup={isMapFile ? false : showPopup}
+              showInitialPopup={isMapFile ? false : showInitialPopup}
+              showPopups={showPopups}
               useConfigBounds={useConfigBounds}
               useTileset={useTileset}
               isMapFile={isMapFile}

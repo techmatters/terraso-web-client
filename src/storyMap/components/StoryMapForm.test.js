@@ -128,6 +128,7 @@ const VISUALIZATION_CONFIG = {
       ],
     },
   },
+  geojson: '{ "type": "FeatureCollection", "features": [] }',
 };
 
 const VISUALIZATION_CONFIG_PROCESSING = {
@@ -293,7 +294,9 @@ beforeEach(() => {
     trackEvent: jest.fn(),
   });
   when(terrasoApi.requestGraphQL)
-    .calledWith(expect.stringContaining('query visualizationConfigs'))
+    .calledWith(expect.stringContaining('query visualizationConfigs'), {
+      ownerId: 'story-map-id-1',
+    })
     .mockResolvedValue({
       visualizationConfigs: {
         edges: [
@@ -397,7 +400,7 @@ const changeChaper = async ({
       name: 'Add media',
     });
     const dropZone = within(mediaDialog).getByRole('button', {
-      name: 'Upload a photo or audio file Select File Accepted file formats: *.aac, *.gif, *.jpeg, *.jpg, *.mp3, *.mp4, *.png, *.wav, *.webp Maximum file size: 10 MB',
+      name: 'Upload a photo or audio file Select File Accepted formats: .aac, .gif, .jpeg, .jpg, .mp3, .mp4, .png, .wav, .webp Maximum file size: 10 MB',
     });
     const data = {
       dataTransfer: {
@@ -794,7 +797,7 @@ test('StoryMapForm: Change chapter location', async () => {
   await act(async () => fireEvent.click(locationDialogButton));
 
   const dialog = screen.getByRole('dialog', {
-    name: 'Set map location for Chapter 1',
+    name: 'Edit map for Chapter 1',
   });
 
   await act(async () => map.onEvents['move']());
@@ -848,7 +851,7 @@ test('StoryMapForm: Change chapter style', async () => {
   await act(async () => fireEvent.click(locationDialogButton));
 
   const dialog = screen.getByRole('dialog', {
-    name: 'Set map location for Chapter 1',
+    name: 'Edit map for Chapter 1',
   });
 
   const baseMapButton = within(dialog).getByRole('button', {
@@ -897,7 +900,7 @@ test('StoryMapForm: Add map layer', async () => {
   await act(async () => fireEvent.click(locationDialogButton));
 
   const dialog = screen.getByRole('dialog', {
-    name: 'Set map location for Chapter 1',
+    name: 'Edit map for Chapter 1',
   });
 
   const addDataLayerButton = within(dialog).getByRole('button', {
@@ -912,24 +915,24 @@ test('StoryMapForm: Add map layer', async () => {
   const dataLayerItem = within(dataMapDialog).getByRole('listitem', {
     name: 'Datalayer title 1',
   });
-  const dataLayerItemProcessing = within(dataMapDialog).getByRole('listitem', {
-    name: 'Datalayer title 2',
-  });
-  const dataLayerItemNoTileset = within(dataMapDialog).queryByRole('listitem', {
-    name: 'Datalayer title 3',
-  });
   expect(
-    within(dataLayerItemProcessing).getByText('Processing')
+    within(dataMapDialog).getByRole('listitem', {
+      name: 'Datalayer title 2',
+    })
   ).toBeInTheDocument();
-  expect(dataLayerItemNoTileset).not.toBeInTheDocument();
+  expect(
+    within(dataMapDialog).getByRole('listitem', {
+      name: 'Datalayer title 3',
+    })
+  ).toBeInTheDocument();
 
   const radioButton = within(dataLayerItem).getByRole('radio');
   await act(async () => fireEvent.click(radioButton));
 
-  const addMapButton = within(dataMapDialog).getByRole('button', {
-    name: 'Add Map Layer',
+  const nextButton = within(dataMapDialog).getByRole('button', {
+    name: 'Next',
   });
-  await act(async () => fireEvent.click(addMapButton));
+  await act(async () => fireEvent.click(nextButton));
 
   await waitFor(() => {
     expect(
@@ -1335,7 +1338,7 @@ test('StoryMapForm: Add featured image', async () => {
   });
 
   const dropZone = within(dialog).getByRole('button', {
-    name: 'Select File Accepted file formats: *.gif, *.jpeg, *.jpg, *.png, *.webp Maximum file size: 10 MB',
+    name: 'Select File Accepted formats: .gif, .jpeg, .jpg, .png, .webp Maximum file size: 10 MB',
   });
   const imageFile = new File(['featured-image-content'], 'featured.jpg', {
     type: 'image/jpeg',

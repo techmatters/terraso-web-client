@@ -54,6 +54,7 @@ const Form = props => {
     filterField,
     gridContainerProps = {},
     outlined = true,
+    Preview,
   } = props;
   const setFormContext = useFormSetContext();
 
@@ -155,15 +156,9 @@ const Form = props => {
   return (
     <FormProvider watch={watch} getValues={getValues}>
       <Grid
-        component="form"
-        {...ariaProps}
-        noValidate
         container
         spacing={2}
-        onSubmit={handleSubmit(onSubmit)}
         sx={{
-          rowGap: 0,
-          width: '100%',
           p: 2,
           ml: 0,
           mt: '-8px',
@@ -177,62 +172,82 @@ const Form = props => {
               }
             : {}),
         }}
-        {...gridContainerProps}
       >
-        {fields
-          .filter(field =>
-            filterField ? filterField(field, { getValues }) : true
-          )
-          .map(field =>
-            field.renderStaticElement ? (
-              <React.Fragment key={field.name}>
-                {field.renderStaticElement({ t })}
-              </React.Fragment>
-            ) : (
-              <Grid
-                key={field.name}
-                size={{ xs: 12, ..._.get('props.gridItemProps.size', field) }}
-                {..._.omit(['size'], _.get('props.gridItemProps', field))}
-                sx={{
-                  pb: 3,
-                  ..._.getOr({}, 'props.gridItemProps.sx', field),
-                }}
-              >
-                <Controller
-                  name={field.name}
-                  control={control}
-                  render={controllerProps => (
-                    <FormField
-                      field={controllerProps.field}
-                      fieldState={controllerProps.fieldState}
-                      required={_.includes(field.name, requiredFields)}
-                      id={`${prefix}-${field.name}`}
-                      label={field.label}
-                      info={field.info}
-                      helperText={field.helperText}
-                      localizationPrefix={localizationPrefix}
-                      {..._.getOr({}, 'props', field)}
-                      inputProps={{
-                        type: field.type || 'text',
-                        placeholder: t(field.placeholder),
-                        ..._.getOr({}, 'props.inputProps', field),
-                      }}
-                    />
-                  )}
-                />
-              </Grid>
+        <Grid
+          component="form"
+          {...ariaProps}
+          noValidate
+          container
+          spacing={2}
+          onSubmit={handleSubmit(onSubmit)}
+          size={Preview ? 6 : 12}
+          {...gridContainerProps}
+          sx={{
+            rowGap: 0,
+            flexDirection: 'column',
+            ...gridContainerProps.sx,
+          }}
+        >
+          {fields
+            .filter(field =>
+              filterField ? filterField(field, { getValues }) : true
             )
+            .map(field =>
+              field.renderStaticElement ? (
+                <React.Fragment key={field.name}>
+                  {field.renderStaticElement({ t })}
+                </React.Fragment>
+              ) : (
+                <Grid
+                  key={field.name}
+                  size={{ xs: 12, ..._.get('props.gridItemProps.size', field) }}
+                  {..._.omit(['size'], _.get('props.gridItemProps', field))}
+                  sx={{
+                    pb: 3,
+                    ..._.getOr({}, 'props.gridItemProps.sx', field),
+                  }}
+                >
+                  <Controller
+                    name={field.name}
+                    control={control}
+                    render={controllerProps => (
+                      <FormField
+                        field={controllerProps.field}
+                        fieldState={controllerProps.fieldState}
+                        required={_.includes(field.name, requiredFields)}
+                        id={`${prefix}-${field.name}`}
+                        label={field.label}
+                        info={field.info}
+                        helperText={field.helperText}
+                        localizationPrefix={localizationPrefix}
+                        {..._.getOr({}, 'props', field)}
+                        inputProps={{
+                          type: field.type || 'text',
+                          placeholder: t(field.placeholder),
+                          ..._.getOr({}, 'props.inputProps', field),
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+              )
+            )}
+          {children}
+          {!_.isEmpty(actions) && (
+            <Grid
+              container
+              size={{ xs: 12 }}
+              direction="row"
+              justifyContent={isMultiStep ? 'space-between' : 'start'}
+              sx={{ marginTop: 2 }}
+            >
+              {isMultiStep ? actions.reverse() : actions}
+            </Grid>
           )}
-        {children}
-        {!_.isEmpty(actions) && (
-          <Grid
-            container
-            size={{ xs: 12 }}
-            direction="row"
-            justifyContent={isMultiStep ? 'space-between' : 'start'}
-            sx={{ marginTop: 2 }}
-          >
-            {isMultiStep ? actions.reverse() : actions}
+        </Grid>
+        {Preview && (
+          <Grid size={6}>
+            <Preview getValues={getValues} />
           </Grid>
         )}
       </Grid>
