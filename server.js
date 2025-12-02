@@ -29,6 +29,9 @@ const storyMapRoutes = require('./server/storyMap/routes');
 
 const app = express();
 
+// Trust proxy to get real client IPs from X-Forwarded-For header (Render.com, Cloudflare, etc.)
+app.set('trust proxy', true);
+
 initializeCache();
 
 app.use(requestLogger);
