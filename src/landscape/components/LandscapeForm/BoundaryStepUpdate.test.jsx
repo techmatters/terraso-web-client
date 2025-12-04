@@ -164,6 +164,7 @@ test('LandscapeBoundaries: Display loader', async () => {
 const plainTextFile = new File(['hello'], 'test.geojson', {
   type: 'application/geo+json',
 });
+// eslint-disable-next-line jest/expect-expect
 test(
   'LandscapeBoundaries: Select file (plain text, not GeoJSON)',
   testGeoJsonParsing(
@@ -181,6 +182,7 @@ const invalidJsonFile = new File(
     type: 'application/geo+json',
   }
 );
+// eslint-disable-next-line jest/expect-expect
 test(
   'LandscapeBoundaries: Select file (invalid JSON)',
   testGeoJsonParsing(
@@ -192,6 +194,7 @@ test(
 const invalidGeoJsonFile = new File(['{"key": "value"}'], 'test.geojson', {
   type: 'application/geo+json',
 });
+// eslint-disable-next-line jest/expect-expect
 test(
   'LandscapeBoundaries: Select file (Invalid GeoJSON)',
   testGeoJsonParsing(
@@ -209,6 +212,7 @@ const invalidGeomtryinGeoJsonFile = new File(
     type: 'application/geo+json',
   }
 );
+// eslint-disable-next-line jest/expect-expect
 test(
   'LandscapeBoundaries: Select file (Invalid GeoJSON Boundary)',
   testGeoJsonParsing(
@@ -220,6 +224,7 @@ test(
 const emptyGeoJsonFile = new File([''], 'test.geojson', {
   type: 'application/geo+json',
 });
+// eslint-disable-next-line jest/expect-expect
 test(
   'LandscapeBoundaries: Select file (empty)',
   testGeoJsonParsing(emptyGeoJsonFile, 'The file test.geojson is empty.')

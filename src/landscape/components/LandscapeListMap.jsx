@@ -140,6 +140,7 @@ const Clusters = props => {
     };
 
     const onClusterClick = e => {
+      // eslint-disable-next-line testing-library/render-result-naming-convention
       const features = map.queryRenderedFeatures(e.point, {
         layers: ['clusters'],
       });
