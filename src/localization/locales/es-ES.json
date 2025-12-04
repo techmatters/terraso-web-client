@@ -17,9 +17,6 @@
         "create": "Crear un grupo",
         "home_title": "Grupos",
         "home_default_title": "Grupo",
-        "img": {
-            "src": "groups.png"
-        },
         "form_edit_title": "Actualizar el grupo “{{name}}”",
         "form_new_title": "Crear nuevo grupo",
         "membership_card_title": "Miembros",
@@ -186,7 +183,6 @@
             "img": {
                 "height": "188",
                 "width": "250",
-                "src": "tools/story-maps.png",
                 "alt": "Un mapa satelital de un recodo de un río, superpuesto por una ventana que contiene una imagen y un bloque de texto.",
                 "caption": "Story Map de Rocky Hill"
             },
@@ -275,9 +271,6 @@
         "form_new_description": "Ingresa el nombre, la descripción y la información de contacto de tu paisaje.",
         "view_card_title": "Acerca de {{name}}",
         "view_card_title_profile_link": "Ver detalles del paisaje",
-        "img": {
-            "src": "landscape.png"
-        },
         "list_title": "Paisajes",
         "list_description": "Estos paisajes esta utilizando Terraso.",
         "membership_leave_confirm_title": "Dejar “{{name}}”",
