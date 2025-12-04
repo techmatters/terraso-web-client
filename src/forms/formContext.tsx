@@ -23,13 +23,18 @@ type FormContext = {
   isValid: boolean;
 };
 
+// existing code used a pattern of providing an empty object (represented here by Record<string, never>)
+// instead of undefined, and changing to undefined breaks things, so let's stick with
+// this for now
+type FormContextState = FormContext | Record<string, never>;
+
 const FormPropsSetContext = React.createContext<
-  Dispatch<SetStateAction<FormContext | {}>> | undefined
+  Dispatch<SetStateAction<FormContextState>> | undefined
 >(undefined);
-const FormPropsGetContext = React.createContext<FormContext | {}>({});
+const FormPropsGetContext = React.createContext<FormContextState>({});
 
 export const FormContextProvider = ({ children }: React.PropsWithChildren) => {
-  const [formContext, setFormContext] = useState<FormContext | {}>({});
+  const [formContext, setFormContext] = useState<FormContextState>({});
 
   return (
     <FormPropsSetContext.Provider value={setFormContext}>
