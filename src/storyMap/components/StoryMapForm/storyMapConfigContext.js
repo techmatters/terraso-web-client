@@ -28,12 +28,22 @@ import { v4 as uuidv4 } from 'uuid';
 
 const StoryMapConfigContext = createContext();
 
+const serializeConfig = config => {
+  try {
+    return JSON.stringify(config);
+  } catch {
+    return '';
+  }
+};
+
 export const StoryMapConfigContextProvider = props => {
   const { children, baseConfig, storyMap } = props;
   const [config, setConfig] = useState(baseConfig || {});
   const [preview, setPreview] = useState(false);
   const [mediaFiles, setMediaFiles] = useState({});
-  const [isDirty, setIsDirty] = useState(false);
+  const [baseSnapshot, setBaseSnapshot] = useState(() =>
+    serializeConfig(baseConfig || {})
+  );
   const init = useRef(false);
 
   const addMediaFile = useCallback((content, file) => {
@@ -48,32 +58,37 @@ export const StoryMapConfigContextProvider = props => {
 
   const getMediaFile = useCallback(id => mediaFiles[id]?.content, [mediaFiles]);
 
-  const saved = useCallback(() => setIsDirty(false), []);
+  const saved = useCallback(() => {
+    setBaseSnapshot(serializeConfig(config));
+    clearMediaFiles();
+  }, [config, clearMediaFiles]);
 
-  const setConfigWrapper = useCallback(
-    (newConfigSetter, dirty = true) => {
-      setConfig(currentConfig => {
-        const newConfig =
-          typeof newConfigSetter === 'function'
-            ? newConfigSetter(currentConfig)
-            : newConfigSetter;
+  const setConfigWrapper = useCallback(newConfigSetter => {
+    setConfig(currentConfig => {
+      const newConfig =
+        typeof newConfigSetter === 'function'
+          ? newConfigSetter(currentConfig)
+          : newConfigSetter;
 
-        const usedDataLayersIds = _.flow(
-          _.flatMap(ids => ids),
-          _.compact
-        )([
-          newConfig.titleTransition?.dataLayerConfigId,
-          newConfig.chapters.map(chapter => chapter.dataLayerConfigId),
-        ]);
-        return {
-          ...newConfig,
-          dataLayers: _.pick(usedDataLayersIds, newConfig.dataLayers),
-        };
-      });
-      setIsDirty(dirty);
-    },
-    [setConfig]
-  );
+      const usedDataLayersIds = _.flow(
+        _.flatMap(ids => ids),
+        _.compact
+      )([
+        newConfig.titleTransition?.dataLayerConfigId,
+        newConfig.chapters.map(chapter => chapter.dataLayerConfigId),
+      ]);
+      return {
+        ...newConfig,
+        dataLayers: _.pick(usedDataLayersIds, newConfig.dataLayers),
+      };
+    });
+  }, []);
+
+  const isDirty = useMemo(() => {
+    const configChanged = serializeConfig(config) !== baseSnapshot;
+    const hasMediaFiles = !_.isEmpty(mediaFiles);
+    return configChanged || hasMediaFiles;
+  }, [config, mediaFiles, baseSnapshot]);
 
   const contextValue = useMemo(
     () => ({

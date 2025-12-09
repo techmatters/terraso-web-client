@@ -49,7 +49,7 @@ const StoryMapUpdate = props => {
   const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
   const [saved, setSaved] = useState();
-  const { storyMap, setConfig, clearMediaFiles } = useStoryMapConfigContext();
+  const { storyMap, clearMediaFiles } = useStoryMapConfigContext();
 
   useDocumentTitle(
     t('storyMap.edit_document_title', {
@@ -111,7 +111,6 @@ const StoryMapUpdate = props => {
           const storyMapId = _.get('payload.story_map_id', data);
           const title = _.get('payload.title', data);
           const id = _.get('payload.id', data);
-          const config = _.get('payload.configuration', data);
 
           setSaved({
             id,
@@ -121,12 +120,11 @@ const StoryMapUpdate = props => {
             published: publish,
           });
           clearMediaFiles();
-          setConfig(config, false);
           return;
         }
         return Promise.reject(data);
       }),
-    [storyMap?.id, dispatch, clearMediaFiles, setConfig]
+    [storyMap?.id, dispatch, clearMediaFiles]
   );
   const onPublish = useCallback(
     (config, mediaFiles) => save(config, mediaFiles, true),
