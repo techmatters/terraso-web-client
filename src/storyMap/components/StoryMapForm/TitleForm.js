@@ -110,10 +110,12 @@ const TitleForm = props => {
     [onFieldChange, onLocationClose, onDataLayerChange]
   );
 
-  const onTitleBlur = useCallback(
-    () => onFieldChange('title')(config.title.trim()),
-    [config.title, onFieldChange]
-  );
+  const onTitleBlur = useCallback(() => {
+    const trimmedTitle = config.title.trim();
+    if (trimmedTitle !== config.title) {
+      onFieldChange('title')(trimmedTitle);
+    }
+  }, [config.title, onFieldChange]);
 
   return (
     <Box

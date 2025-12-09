@@ -559,6 +559,39 @@ test('StoryMapForm: Change title', async () => {
   );
 });
 
+test('StoryMapForm: Title blur without changes should not trigger save', async () => {
+  const { onSaveDraft } = await setup({
+    config: BASE_CONFIG,
+    autoSaveDebounce: 100,
+  });
+
+  const titleSection = screen.getByRole('region', {
+    name: 'Title for: Story Map Title',
+  });
+
+  // Click on title to edit
+  await act(async () =>
+    fireEvent.click(
+      within(titleSection).getByRole('heading', { name: 'Story Map Title' })
+    )
+  );
+
+  const titleInput = within(titleSection).getByRole('textbox', {
+    name: 'Story map title (Required)',
+  });
+
+  // Blur without making any changes
+  await act(async () => fireEvent.blur(titleInput));
+
+  // Wait for potential debounced save
+  await act(async () => {
+    await new Promise(resolve => setTimeout(resolve, 200));
+  });
+
+  // Should not trigger save when no changes were made
+  expect(onSaveDraft).not.toHaveBeenCalled();
+});
+
 test('StoryMapForm: Sidebar navigation', async () => {
   const map = {
     ...baseMapOptions(),
