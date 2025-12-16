@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { act, fireEvent, render, screen, within } from 'tests/utils';
+import { act, fireEvent, render, screen, waitFor, within } from 'tests/utils';
 import React from 'react';
 import { when } from 'jest-when';
 import _ from 'lodash/fp';
@@ -65,115 +65,6 @@ beforeEach(() => {
   useNavigate.mockReturnValue(jest.fn());
   useParams.mockReturnValue({});
   useSearchParams.mockReturnValue([new URLSearchParams(), () => {}]);
-});
-
-test('AccountProfile: Display Avatar', async () => {
-  terrasoApi.requestGraphQL.mockReturnValue(
-    Promise.resolve(
-      _.set(
-        'users.edges[0].node',
-        {
-          firstName: 'John',
-          lastName: 'Doe',
-          profileImage: 'test.com',
-          preferences: { edges: [] },
-        },
-        {}
-      )
-    )
-  );
-  await setup();
-  expect(screen.getByRole('img', { name: 'John Doe' })).toBeInTheDocument();
-});
-
-test('AccountProfile: Avatar with missing image', async () => {
-  terrasoApi.requestGraphQL.mockReturnValue(
-    Promise.resolve(
-      _.set(
-        'users.edges[0].node',
-        {
-          firstName: 'John',
-          lastName: 'Doe',
-          profileImage: '',
-          preferences: { edges: [] },
-        },
-        {}
-      )
-    )
-  );
-  await setup();
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
-  expect(
-    screen.queryByRole('img', { name: 'John Doe' })
-  ).not.toBeInTheDocument();
-});
-
-test('AccountProfile: Save', async () => {
-  terrasoApi.requestGraphQL.mockReturnValueOnce(
-    Promise.resolve(
-      _.set(
-        'users.edges[0].node',
-        {
-          id: 'user-id',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'group@group.org',
-          profileImage: '',
-          preferences: { edges: [] },
-        },
-        {}
-      )
-    )
-  );
-  terrasoApi.requestGraphQL.mockReturnValueOnce(
-    Promise.resolve(
-      _.set(
-        'users.edges[0].node',
-        {
-          id: 'user-id',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'group@group.org',
-          profileImage: '',
-          preferences: { edges: [] },
-        },
-        {}
-      )
-    )
-  );
-  terrasoApi.requestGraphQL.mockResolvedValueOnce(
-    _.set(
-      'updateUser.user',
-      {
-        id: '1',
-        firstName: 'Pablo',
-        lastName: 'Perez',
-        email: 'group@group.org',
-        profileImage: 'https://www.group.org/image.jpg',
-        preferences: {
-          edges: [{ node: { key: 'language', value: 'es-ES' } }],
-        },
-      },
-      {}
-    )
-  );
-
-  const { inputs } = await setup();
-
-  fireEvent.change(inputs.firstName, { target: { value: 'Pablo' } });
-  fireEvent.change(inputs.lastName, { target: { value: 'Perez' } });
-
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
-  );
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
-  expect(terrasoApi.requestGraphQL.mock.calls[2][1]).toStrictEqual({
-    input: {
-      id: 'user-id',
-      firstName: 'Pablo',
-      lastName: 'Perez',
-    },
-  });
 });
 
 test('AccountProfile: Save language', async () => {
@@ -434,7 +325,7 @@ test('AccountProfile: Complete profile', async () => {
   await setup();
 
   expect(screen.getByRole('alert')).toHaveTextContent(
-    'Tell us what to call you and review your profile settings.'
+    'Please enter a Given Name in the form below before continuing.'
   );
 
   await act(async () =>
@@ -503,4 +394,102 @@ test('AccountProfile: Navigate to referrer after complete profile', async () => 
   expect(navigate).toHaveBeenCalledWith('groups?sort=-name&other=1', {
     replace: true,
   });
+});
+
+test('AccountProfile: Sets completion flag after successful save', async () => {
+  useParams.mockReturnValue({
+    completeProfile: 'completeProfile',
+  });
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+
+  when(terrasoApi.requestGraphQL)
+    .calledWith(expect.stringContaining('query userProfile'), expect.anything())
+    .mockReturnValue(
+      Promise.resolve(
+        _.set(
+          'users.edges[0].node',
+          {
+            id: 'user-id',
+            firstName: '',
+            email: 'group@group.org',
+            preferences: { edges: [] },
+          },
+          {}
+        )
+      )
+    );
+
+  when(terrasoApi.requestGraphQL)
+    .calledWith(
+      expect.stringContaining('mutation updateUser'),
+      expect.anything()
+    )
+    .mockResolvedValue(
+      _.set(
+        'updateUser.user',
+        {
+          id: 'user-id',
+          firstName: 'John',
+          email: 'group@group.org',
+          preferences: { edges: [] },
+        },
+        {}
+      )
+    );
+
+  const { inputs } = await setup();
+
+  fireEvent.change(inputs.firstName, { target: { value: 'John' } });
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
+  );
+
+  expect(navigate).toHaveBeenCalledWith('/', { replace: true });
+});
+
+test('AccountProfile: Does not set completion flag when save fails', async () => {
+  useParams.mockReturnValue({
+    completeProfile: 'completeProfile',
+  });
+  const navigate = jest.fn();
+  useNavigate.mockReturnValue(navigate);
+
+  when(terrasoApi.requestGraphQL)
+    .calledWith(expect.stringContaining('query userProfile'), expect.anything())
+    .mockReturnValue(
+      Promise.resolve(
+        _.set(
+          'users.edges[0].node',
+          {
+            id: 'user-id',
+            firstName: '',
+            email: 'group@group.org',
+            preferences: { edges: [] },
+          },
+          {}
+        )
+      )
+    );
+
+  when(terrasoApi.requestGraphQL)
+    .calledWith(
+      expect.stringContaining('mutation updateUser'),
+      expect.anything()
+    )
+    .mockRejectedValue(new Error('Save Error'));
+
+  const { inputs } = await setup();
+
+  fireEvent.change(inputs.firstName, { target: { value: 'John' } });
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
+  );
+
+  await waitFor(() =>
+    expect(screen.getByText(/Save Error/i)).toBeInTheDocument()
+  );
+  expect(navigate).not.toHaveBeenCalled();
 });

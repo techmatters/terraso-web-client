@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -46,7 +46,6 @@ import PageLoader from 'layout/PageLoader';
 import LocalePickerSelect from 'localization/components/LocalePickerSelect';
 import { useAnalytics } from 'monitoring/analytics';
 import { useReferrer } from 'navigation/navigationUtils';
-import { profileCompleted } from 'account/accountProfileUtils';
 
 import AccountAvatar from './AccountAvatar';
 
@@ -188,13 +187,6 @@ const AccountProfile = () => {
 
   const { goToReferrer } = useReferrer();
 
-  useEffect(
-    () => () => {
-      profileCompleted(user?.email);
-    },
-    [user?.email]
-  );
-
   const onSave = updatedProfile => {
     // Save user data
     const saveUserPromise = dispatch(
@@ -258,7 +250,7 @@ const AccountProfile = () => {
       <Paper variant="outlined">
         {completeProfile && (
           <Alert
-            severity="info"
+            severity="warning"
             sx={({ spacing }) => ({ m: spacing(3, 3, 0, 3) })}
           >
             {t('account.profile_complete_message')}

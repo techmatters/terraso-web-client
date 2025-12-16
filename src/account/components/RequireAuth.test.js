@@ -24,7 +24,7 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router';
-import { getToken, getUserEmail } from 'terraso-client-shared/account/auth';
+import { getUserEmail } from 'terraso-client-shared/account/auth';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import RequireAuth from 'account/components/RequireAuth';
@@ -35,7 +35,6 @@ jest.mock('terraso-client-shared/terrasoApi/api');
 jest.mock('terraso-client-shared/account/auth', () => ({
   ...jest.requireActual('terraso-client-shared/account/auth'),
   getUserEmail: jest.fn(),
-  getToken: jest.fn(),
 }));
 
 jest.mock('react-router', () => ({
@@ -46,10 +45,6 @@ jest.mock('react-router', () => ({
   useSearchParams: jest.fn(),
   Navigate: props => <div>To: {props.to}</div>,
 }));
-
-// Payload: { "isFirstLogin": true }
-const IS_FIRST_LOGIN_TOKEN =
-  'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc0ZpcnN0TG9naW4iOnRydWV9.Z5WctUFTDZuFDAr0QiczFKIIx8qWzWJ38kiIHnGSiUQ29z7VQqGz9F5mfFfrt48sRob-fyw5sWxIxm3qbcxrEQ';
 
 beforeEach(() => {
   global.fetch = jest.fn();
@@ -210,10 +205,10 @@ test('Auth: test fetch user', async () => {
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
 });
 
-test('Auth: Test redirect complete profile', async () => {
+test('Auth: Redirects to complete profile when firstName missing', async () => {
   const navigate = jest.fn();
   useNavigate.mockReturnValue(navigate);
-  getToken.mockResolvedValue(IS_FIRST_LOGIN_TOKEN);
+
   await render(
     <RequireAuth>
       <div />
@@ -223,16 +218,19 @@ test('Auth: Test redirect complete profile', async () => {
         currentUser: {
           data: {
             email: 'test@example.com',
+            firstName: '',
           },
         },
       },
     }
   );
 
-  expect(navigate).toHaveBeenCalledWith('/account/profile/completeProfile');
+  expect(navigate).toHaveBeenCalledWith('/account/profile/completeProfile', {
+    replace: true,
+  });
 });
 
-test('Auth: Test redirect to profile with referrer', async () => {
+test('Auth: Includes referrer when firstName missing', async () => {
   useLocation.mockReturnValue({
     pathname: REDIRECT_PATHNAME,
     search: REDIRECT_SEARCH,
@@ -240,7 +238,7 @@ test('Auth: Test redirect to profile with referrer', async () => {
 
   const navigate = jest.fn();
   useNavigate.mockReturnValue(navigate);
-  getToken.mockResolvedValue(IS_FIRST_LOGIN_TOKEN);
+
   await render(
     <RequireAuth>
       <div />
@@ -250,6 +248,7 @@ test('Auth: Test redirect to profile with referrer', async () => {
         currentUser: {
           data: {
             email: 'test@example.com',
+            firstName: null,
           },
         },
       },
@@ -257,38 +256,11 @@ test('Auth: Test redirect to profile with referrer', async () => {
   );
 
   expect(navigate).toHaveBeenCalledWith(
-    '/account/profile/completeProfile?referrer=%2Fgroups%3Fsort%3D-name%26other%3D1'
-  );
-});
-
-test('Auth: Avoid redirect if profile complete already displayed for user', async () => {
-  const navigate = jest.fn();
-  useNavigate.mockReturnValue(navigate);
-  getToken.mockResolvedValue(IS_FIRST_LOGIN_TOKEN);
-
-  localStorage.setItem(
-    'completedProfileDisplayed',
-    JSON.stringify({
-      'test@example.com': true,
-    })
-  );
-
-  await render(
-    <RequireAuth>
-      <div />
-    </RequireAuth>,
+    '/account/profile/completeProfile?referrer=%2Fgroups%3Fsort%3D-name%26other%3D1',
     {
-      account: {
-        currentUser: {
-          data: {
-            email: 'test@example.com',
-          },
-        },
-      },
+      replace: true,
     }
   );
-
-  expect(navigate).not.toHaveBeenCalled();
 });
 
 test('Auth: Test redirect when fetching is false and no user', async () => {
