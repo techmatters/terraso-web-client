@@ -67,6 +67,115 @@ beforeEach(() => {
   useSearchParams.mockReturnValue([new URLSearchParams(), () => {}]);
 });
 
+test('AccountProfile: Display Avatar', async () => {
+  terrasoApi.requestGraphQL.mockReturnValue(
+    Promise.resolve(
+      _.set(
+        'users.edges[0].node',
+        {
+          firstName: 'John',
+          lastName: 'Doe',
+          profileImage: 'test.com',
+          preferences: { edges: [] },
+        },
+        {}
+      )
+    )
+  );
+  await setup();
+  expect(screen.getByRole('img', { name: 'John Doe' })).toBeInTheDocument();
+});
+
+test('AccountProfile: Avatar with missing image', async () => {
+  terrasoApi.requestGraphQL.mockReturnValue(
+    Promise.resolve(
+      _.set(
+        'users.edges[0].node',
+        {
+          firstName: 'John',
+          lastName: 'Doe',
+          profileImage: '',
+          preferences: { edges: [] },
+        },
+        {}
+      )
+    )
+  );
+  await setup();
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  expect(
+    screen.queryByRole('img', { name: 'John Doe' })
+  ).not.toBeInTheDocument();
+});
+
+test('AccountProfile: Save', async () => {
+  terrasoApi.requestGraphQL.mockReturnValueOnce(
+    Promise.resolve(
+      _.set(
+        'users.edges[0].node',
+        {
+          id: 'user-id',
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'group@group.org',
+          profileImage: '',
+          preferences: { edges: [] },
+        },
+        {}
+      )
+    )
+  );
+  terrasoApi.requestGraphQL.mockReturnValueOnce(
+    Promise.resolve(
+      _.set(
+        'users.edges[0].node',
+        {
+          id: 'user-id',
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'group@group.org',
+          profileImage: '',
+          preferences: { edges: [] },
+        },
+        {}
+      )
+    )
+  );
+  terrasoApi.requestGraphQL.mockResolvedValueOnce(
+    _.set(
+      'updateUser.user',
+      {
+        id: '1',
+        firstName: 'Pablo',
+        lastName: 'Perez',
+        email: 'group@group.org',
+        profileImage: 'https://www.group.org/image.jpg',
+        preferences: {
+          edges: [{ node: { key: 'language', value: 'es-ES' } }],
+        },
+      },
+      {}
+    )
+  );
+
+  const { inputs } = await setup();
+
+  fireEvent.change(inputs.firstName, { target: { value: 'Pablo' } });
+  fireEvent.change(inputs.lastName, { target: { value: 'Perez' } });
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Save Profile' }))
+  );
+  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
+  expect(terrasoApi.requestGraphQL.mock.calls[2][1]).toStrictEqual({
+    input: {
+      id: 'user-id',
+      firstName: 'Pablo',
+      lastName: 'Perez',
+    },
+  });
+});
+
 test('AccountProfile: Save language', async () => {
   terrasoApi.requestGraphQL.mockImplementation(query => {
     const trimmedQuery = query.trim();

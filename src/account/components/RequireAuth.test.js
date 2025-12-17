@@ -248,7 +248,6 @@ test('Auth: Includes referrer when firstName missing', async () => {
         currentUser: {
           data: {
             email: 'test@example.com',
-            firstName: null,
           },
         },
       },
