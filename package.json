@@ -14,7 +14,7 @@
     "@mui/icons-material": "^7.3.6",
     "@mui/lab": "^7.0.1-beta.20",
     "@mui/material": "^7.3.4",
-    "@mui/x-data-grid": "^8.22.1",
+    "@mui/x-data-grid": "^8.23.0",
     "@reduxjs/toolkit": "^1.9.7",
     "@sentry/cli": "^2.56.0",
     "@sentry/react": "^10.18.0",
