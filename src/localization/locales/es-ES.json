@@ -217,7 +217,7 @@
         "profile_document_title": "Cuenta",
         "profile_document_description": "Administrar las preferencias de su perfil de Terraso",
         "profile_form_label": "Administrar perfil",
-        "profile_complete_message": "Cuentanos cómo llamarte y revisa la configuración de tu perfil.",
+        "profile_complete_message": "Ingresa un nombre en el formulario a continuación antes de continuar.",
         "form_language_label": "Idioma",
         "form_notifications_section_label": "Notificaciónes de Correo Electrónico",
         "form_notifications_section_when_label": "Notifícame cuando:",

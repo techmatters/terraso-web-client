@@ -15,66 +15,23 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useEffect, useState } from 'react';
-import { jwtDecode } from 'jwt-decode';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import { getToken } from 'terraso-client-shared/account/auth';
-import { useSelector } from 'terrasoApi/store';
+import { addMessage } from 'terraso-client-shared/notifications/notificationsSlice';
+import { useDispatch, useSelector } from 'terrasoApi/store';
 
 import { generateReferrerUrl } from 'navigation/navigationUtils';
-
-const getIsFirstLogin = async () => {
-  const token = await getToken();
-  return token === undefined ? undefined : jwtDecode(token).isFirstLogin;
-};
-
-const getStoredCompletedProfile = email => {
-  const storedCompletedProfile = localStorage.getItem(
-    'completedProfileDisplayed'
-  );
-  try {
-    const parsed = JSON.parse(storedCompletedProfile);
-    return parsed[email];
-  } catch (error) {
-    return false;
-  }
-};
-
-export const profileCompleted = email => {
-  if (!email) {
-    return;
-  }
-  localStorage.setItem(
-    'completedProfileDisplayed',
-    JSON.stringify({
-      [email]: true,
-    })
-  );
-};
 
 export const useCompleteProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { data: user } = useSelector(state => state.account.currentUser);
-  const [isFirstLogin, setIsFirstLogin] = useState(false);
 
   useEffect(() => {
-    getIsFirstLogin()
-      .then(isFirstLogin => {
-        setIsFirstLogin(isFirstLogin);
-      })
-      .catch(error => {
-        console.error('Failed to check first login status:', error);
-      });
-  }, []);
-
-  useEffect(() => {
-    if (!isFirstLogin || !user?.email) {
-      return;
-    }
-
-    const completedProfile = getStoredCompletedProfile(user?.email);
-    if (completedProfile) {
+    const email = user?.email;
+    const needsFirstName = !user?.firstName?.trim();
+    if (!email || !needsFirstName) {
       return;
     }
 
@@ -87,6 +44,12 @@ export const useCompleteProfile = () => {
       location
     );
 
-    navigate(to);
-  }, [isFirstLogin, user?.email, navigate, location]);
+    dispatch(
+      addMessage({
+        severity: 'warning',
+        content: 'account.profile_complete_message',
+      })
+    );
+    navigate(to, { replace: true });
+  }, [user?.email, user?.firstName, dispatch, navigate, location]);
 };
