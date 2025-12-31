@@ -19,8 +19,8 @@ import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
-import * as landscapeService from 'landscape/landscapeService';
-import { setSharedResourcesList } from 'sharedData/sharedDataSlice';
+import * as landscapeService from 'terraso-web-client/landscape/landscapeService';
+import { setSharedResourcesList } from 'terraso-web-client/sharedData/sharedDataSlice';
 
 const initialState = {
   list: {

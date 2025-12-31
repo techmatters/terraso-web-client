@@ -15,14 +15,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import React from 'react';
 import { render } from '@testing-library/react';
 import { NavigateFunction, useNavigate, useSearchParams } from 'react-router';
 import { setHasAccessTokenAsync } from 'terraso-client-shared/account/accountSlice';
 import { getAPIConfig } from 'terraso-client-shared/config';
-import { useDispatch } from 'terrasoApi/store';
-
-import AccountAuthCallback from 'account/components/AccountAuthCallback';
+import { useDispatch } from 'terraso-web-client/terrasoApi/store';
 
 // Mock modules
 jest.mock('react-router', () => ({
@@ -40,13 +37,11 @@ jest.mock('terraso-client-shared/config', () => ({
   setAPIConfig: jest.fn(),
 }));
 
-jest.mock('terrasoApi/store', () => ({
+jest.mock('terraso-web-client/terrasoApi/store', () => ({
   useDispatch: jest.fn(),
 }));
 
-jest.mock('config', () => ({
-  TERRASO_ENV: 'development',
-}));
+const mockConfig = { TERRASO_ENV: 'development' };
 
 // Type the mocked functions
 const mockUseNavigate = useNavigate as jest.MockedFunction<typeof useNavigate>;
@@ -57,15 +52,15 @@ const mockUseDispatch = useDispatch as jest.MockedFunction<typeof useDispatch>;
 const mockGetAPIConfig = getAPIConfig as jest.MockedFunction<
   typeof getAPIConfig
 >;
-const mockSetHasAccessTokenAsync =
-  setHasAccessTokenAsync as jest.MockedFunction<typeof setHasAccessTokenAsync>;
 
 // Create mock functions with proper types
 const mockNavigate = jest.fn() as jest.MockedFunction<NavigateFunction>;
 const mockSetToken = jest.fn() as jest.MockedFunction<
   (name: string, token: string) => void
 >;
-const mockDispatch = jest.fn() as jest.MockedFunction<(...args: any[]) => any>;
+const mockDispatch = jest.fn() as jest.MockedFunction<
+  ReturnType<typeof useDispatch>
+>;
 
 // Mock the config module type
 interface MockConfig {
@@ -80,8 +75,9 @@ type AuthState = {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  jest.doMock('terraso-web-client/config', () => mockConfig);
   mockUseNavigate.mockReturnValue(mockNavigate);
-  mockUseDispatch.mockReturnValue(mockDispatch as any);
+  mockUseDispatch.mockReturnValue(mockDispatch);
   mockGetAPIConfig.mockReturnValue({
     tokenStorage: {
       setToken: mockSetToken,
@@ -92,12 +88,11 @@ beforeEach(() => {
     graphQLEndpoint: 'graphql/',
     logger: jest.fn(),
   });
-  mockSetHasAccessTokenAsync.mockReturnValue(Promise.resolve() as any);
-  mockDispatch.mockReturnValue(Promise.resolve({}));
+  mockDispatch.mockReturnValue({ type: 'type' });
 });
 
-test('AccountAuthCallback: Navigate to /account in production', () => {
-  (require('config') as MockConfig).TERRASO_ENV = 'production';
+test('AccountAuthCallback: Navigate to /account in production', async () => {
+  mockConfig.TERRASO_ENV = 'production';
 
   const searchParams = new URLSearchParams();
   const authState: AuthState = {
@@ -108,25 +103,31 @@ test('AccountAuthCallback: Navigate to /account in production', () => {
   searchParams.set('state', btoa(JSON.stringify(authState)));
   mockUseSearchParams.mockReturnValue([searchParams, jest.fn()]);
 
+  const { default: AccountAuthCallback } =
+    await import('terraso-web-client/account/components/AccountAuthCallback');
+
   render(<AccountAuthCallback />);
 
   expect(mockNavigate).toHaveBeenCalledWith('/account');
   expect(mockSetToken).not.toHaveBeenCalled();
 });
 
-test('AccountAuthCallback: Navigate to /account when no state', () => {
-  (require('config') as MockConfig).TERRASO_ENV = 'development';
+test('AccountAuthCallback: Navigate to /account when no state', async () => {
+  mockConfig.TERRASO_ENV = 'development';
 
   mockUseSearchParams.mockReturnValue([new URLSearchParams(), jest.fn()]);
 
+  const { default: AccountAuthCallback } =
+    await import('terraso-web-client/account/components/AccountAuthCallback');
+
   render(<AccountAuthCallback />);
 
   expect(mockNavigate).toHaveBeenCalledWith('/account');
   expect(mockSetToken).not.toHaveBeenCalled();
 });
 
-test('AccountAuthCallback: Process auth tokens in development', () => {
-  (require('config') as MockConfig).TERRASO_ENV = 'development';
+test('AccountAuthCallback: Process auth tokens in development', async () => {
+  mockConfig.TERRASO_ENV = 'development';
 
   const authState: AuthState = {
     atoken: 'access-token-123',
@@ -138,6 +139,9 @@ test('AccountAuthCallback: Process auth tokens in development', () => {
   searchParams.set('state', btoa(JSON.stringify(authState)));
   mockUseSearchParams.mockReturnValue([searchParams, jest.fn()]);
 
+  const { default: AccountAuthCallback } =
+    await import('terraso-web-client/account/components/AccountAuthCallback');
+
   render(<AccountAuthCallback />);
 
   expect(mockSetToken).toHaveBeenCalledWith('atoken', 'access-token-123');
@@ -146,7 +150,7 @@ test('AccountAuthCallback: Process auth tokens in development', () => {
 });
 
 test('AccountAuthCallback: Navigate to redirect URL after token setup', async () => {
-  (require('config') as MockConfig).TERRASO_ENV = 'development';
+  mockConfig.TERRASO_ENV = 'development';
 
   const authState: AuthState = {
     atoken: 'access-token-123',
@@ -159,7 +163,10 @@ test('AccountAuthCallback: Navigate to redirect URL after token setup', async ()
   mockUseSearchParams.mockReturnValue([searchParams, jest.fn()]);
 
   // Mock the async dispatch to resolve immediately
-  mockDispatch.mockResolvedValue({});
+  mockDispatch.mockResolvedValue({} as never);
+
+  const { default: AccountAuthCallback } =
+    await import('terraso-web-client/account/components/AccountAuthCallback');
 
   render(<AccountAuthCallback />);
 
@@ -171,8 +178,8 @@ test('AccountAuthCallback: Navigate to redirect URL after token setup', async ()
   });
 });
 
-test('AccountAuthCallback: Handle malformed state', () => {
-  (require('config') as MockConfig).TERRASO_ENV = 'development';
+test('AccountAuthCallback: Handle malformed state', async () => {
+  mockConfig.TERRASO_ENV = 'development';
 
   const searchParams = new URLSearchParams();
   searchParams.set('state', 'invalid-base64');
@@ -180,6 +187,9 @@ test('AccountAuthCallback: Handle malformed state', () => {
 
   // Mock console.error to avoid test output pollution
   const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+  const { default: AccountAuthCallback } =
+    await import('terraso-web-client/account/components/AccountAuthCallback');
 
   render(<AccountAuthCallback />);
 
@@ -189,7 +199,7 @@ test('AccountAuthCallback: Handle malformed state', () => {
 });
 
 test('AccountAuthCallback: Handle empty redirect URL', async () => {
-  (require('config') as MockConfig).TERRASO_ENV = 'development';
+  mockConfig.TERRASO_ENV = 'development';
 
   const authState: AuthState = {
     atoken: 'access-token-123',
@@ -201,7 +211,10 @@ test('AccountAuthCallback: Handle empty redirect URL', async () => {
   searchParams.set('state', btoa(JSON.stringify(authState)));
   mockUseSearchParams.mockReturnValue([searchParams, jest.fn()]);
 
-  mockDispatch.mockResolvedValue({});
+  mockDispatch.mockResolvedValue({} as never);
+
+  const { default: AccountAuthCallback } =
+    await import('terraso-web-client/account/components/AccountAuthCallback');
 
   render(<AccountAuthCallback />);
 

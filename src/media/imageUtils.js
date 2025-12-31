@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { readAsDataURL } from 'common/fileUtils';
+import { readAsDataURL } from 'terraso-web-client/common/fileUtils';
 
 export const openImageUrl = url =>
   fetch(url)

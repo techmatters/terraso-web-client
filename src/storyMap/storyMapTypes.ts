@@ -21,7 +21,7 @@ import { Descendant } from 'slate';
 import type {
   DataEntryNode,
   VisualizationConfigNode,
-} from 'terrasoApi/shared/graphqlSchema/graphql';
+} from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
 
 export type VisualizeConfig = {
   shape: 'circle' | 'square' | 'hexagon' | 'triangle';

@@ -19,8 +19,8 @@ import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash/fp';
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
-import i18n from 'localization/i18n';
-import * as storyMapService from 'storyMap/storyMapService';
+import i18n from 'terraso-web-client/localization/i18n';
+import * as storyMapService from 'terraso-web-client/storyMap/storyMapService';
 
 const initialState = {
   form: {

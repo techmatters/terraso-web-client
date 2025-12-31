@@ -17,7 +17,7 @@
 
 import _ from 'lodash/fp';
 
-import { ALL_TYPES } from './taxonomiesConstants';
+import { ALL_TYPES } from 'terraso-web-client/taxonomies/taxonomiesConstants';
 
 const LOCALE_MAPPING = {
   'en-US': 'valueEn',

@@ -19,7 +19,7 @@ import { useEffect, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 
-import { useHasServerSideMetaTags } from 'navigation/components/Routes';
+import { useHasServerSideMetaTags } from 'terraso-web-client/navigation/components/Routes';
 
 export const useDocumentTitle = (title, fetching, omitSuffix = false) => {
   const { t } = useTranslation();

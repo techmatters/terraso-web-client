@@ -22,11 +22,10 @@ import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
 import { useTranslation } from 'react-i18next';
 
-import mapboxgl from 'gis/mapbox';
+import { useMap } from 'terraso-web-client/gis/components/Map';
+import mapboxgl from 'terraso-web-client/gis/mapbox';
 
-import { useMap } from './Map';
-
-import { MAPBOX_ACCESS_TOKEN } from 'config';
+import { MAPBOX_ACCESS_TOKEN } from 'terraso-web-client/config';
 
 const MapGeocoder = props => {
   const { position } = props;

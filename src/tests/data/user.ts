@@ -15,9 +15,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { UserNode } from 'terrasoApi/shared/graphqlSchema/graphql';
-
-import { createTestGraphQLConnection } from './graphql';
+import { UserNode } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
+import { createTestGraphQLConnection } from 'terraso-web-client/tests/data/graphql';
 
 export const createTestUser = (): UserNode => ({
   id: '0',

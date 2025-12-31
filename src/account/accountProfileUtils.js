@@ -18,9 +18,9 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { addMessage } from 'terraso-client-shared/notifications/notificationsSlice';
-import { useDispatch, useSelector } from 'terrasoApi/store';
+import { useDispatch, useSelector } from 'terraso-web-client/terrasoApi/store';
 
-import { generateReferrerUrl } from 'navigation/navigationUtils';
+import { generateReferrerUrl } from 'terraso-web-client/navigation/navigationUtils';
 
 export const useCompleteProfile = () => {
   const location = useLocation();

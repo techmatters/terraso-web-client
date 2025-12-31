@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import type { VisualizeConfig } from 'storyMap/storyMapTypes';
+import type { VisualizeConfig } from 'terraso-web-client/storyMap/storyMapTypes';
 
 export type UseVisualizeFormArgs = {
   visualizeConfig: VisualizeConfig;

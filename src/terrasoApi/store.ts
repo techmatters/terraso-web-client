@@ -31,23 +31,19 @@ import {
   handleAbortMiddleware,
   sharedReducers,
 } from 'terraso-client-shared/store/store';
+import { DataEntryNode } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
 
-import gisReducer from 'gis/gisSlice';
-import groupReducer from 'group/groupSlice';
-import userHomeReducer from 'home/homeSlice';
-import landscapeReducer from 'landscape/landscapeSlice';
+import gisReducer from 'terraso-web-client/gis/gisSlice';
+import groupReducer from 'terraso-web-client/group/groupSlice';
+import userHomeReducer from 'terraso-web-client/home/homeSlice';
+import landscapeReducer from 'terraso-web-client/landscape/landscapeSlice';
 import sharedDataReducer, {
   UPLOAD_STATUS_ERROR,
   UPLOAD_STATUS_SUCCESS,
   UPLOAD_STATUS_UPLOADING,
-} from 'sharedData/sharedDataSlice';
-import storyMapReducer from 'storyMap/storyMapSlice';
-import taxonomiesReducer from 'taxonomies/taxonomiesSlice';
-
-import { DataEntryNode } from './shared/graphqlSchema/graphql';
-
-export type AppState = StateFromReducersMapObject<typeof sliceReducers>;
-export type AppDispatch = DispatchFromStoreFactory<typeof createStore>;
+} from 'terraso-web-client/sharedData/sharedDataSlice';
+import storyMapReducer from 'terraso-web-client/storyMap/storyMapSlice';
+import taxonomiesReducer from 'terraso-web-client/taxonomies/taxonomiesSlice';
 
 type SharedDataState = {
   uploads: {
@@ -76,6 +72,9 @@ const sliceReducers = {
 };
 
 const rootReducer = combineReducers(sliceReducers);
+
+export type AppState = StateFromReducersMapObject<typeof sliceReducers>;
+export type AppDispatch = DispatchFromStoreFactory<typeof createStore>;
 
 export const createStore = (initialState?: Partial<AppState>) =>
   configureStore({

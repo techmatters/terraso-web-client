@@ -18,7 +18,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
-import * as gisService from 'gis/gisService';
+import * as gisService from 'terraso-web-client/gis/gisService';
 
 const initialState = {
   parsing: {

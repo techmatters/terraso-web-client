@@ -18,8 +18,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
-import * as homeService from 'home/homeService';
-import { setUserStoryMaps } from 'storyMap/storyMapSlice';
+import * as homeService from 'terraso-web-client/home/homeService';
+import { setUserStoryMaps } from 'terraso-web-client/storyMap/storyMapSlice';
 
 const initialState = {
   groups: [],

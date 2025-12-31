@@ -23,12 +23,11 @@ import {
   extractMemberships,
 } from 'terraso-client-shared/collaboration/membershipsUtils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
-import { graphql } from 'terrasoApi/shared/graphqlSchema';
+import { graphql } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/index';
 
-import { MEMBERSHIP_TYPE_CLOSED } from 'collaboration/collaborationConstants';
-import { TILESET_STATUS_PENDING } from 'sharedData/sharedDataConstants';
-
-import { extractStoryMap } from './storyMapUtils';
+import { MEMBERSHIP_TYPE_CLOSED } from 'terraso-web-client/collaboration/collaborationConstants';
+import { TILESET_STATUS_PENDING } from 'terraso-web-client/sharedData/sharedDataConstants';
+import { extractStoryMap } from 'terraso-web-client/storyMap/storyMapUtils';
 
 export const fetchSamples = (params, currentUser) => {
   const query = graphql(`

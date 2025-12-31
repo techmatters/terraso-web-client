@@ -25,11 +25,11 @@ import {
 } from 'terraso-client-shared/graphqlSchema/graphql';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { normalizeText } from 'terraso-client-shared/utils';
-import { graphql } from 'terrasoApi/shared/graphqlSchema';
+import { graphql } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/index';
 
-import type { Group } from 'group/groupSlice';
-import { extractGroup } from 'group/groupUtils';
-import { ROLE_MEMBER } from 'group/membership/components/groupMembershipConstants';
+import type { Group } from 'terraso-web-client/group/groupSlice';
+import { extractGroup } from 'terraso-web-client/group/groupUtils';
+import { ROLE_MEMBER } from 'terraso-web-client/group/membership/components/groupMembershipConstants';
 
 export const fetchGroupToUpdate = (slug: string) => {
   const query = graphql(`

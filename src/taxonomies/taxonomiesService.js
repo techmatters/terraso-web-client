@@ -17,9 +17,9 @@
 
 import _ from 'lodash/fp';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
-import { graphql } from 'terrasoApi/shared/graphqlSchema';
+import { graphql } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/index';
 
-import { extractTerms } from './taxonomiesUtils';
+import { extractTerms } from 'terraso-web-client/taxonomies/taxonomiesUtils';
 
 export const fetchTermsForTypes = ({ types }) => {
   const query = graphql(`

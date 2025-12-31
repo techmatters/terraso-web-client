@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "terraso-web-client",
   "version": "0.1.0",
   "private": true,
@@ -8,88 +9,92 @@
   "dependencies": {
     "@emotion/styled": "^11.14.1",
     "@hello-pangea/dnd": "^18.0.1",
-    "@hookform/resolvers": "^4.1.3",
-    "@mapbox/mapbox-gl-draw": "^1.5.0",
+    "@hookform/resolvers": "^5.2.2",
+    "@mapbox/mapbox-gl-draw": "^1.5.1",
     "@mapbox/mapbox-gl-geocoder": "^5.1.2",
     "@mui/icons-material": "^7.3.6",
     "@mui/lab": "^7.0.1-beta.20",
-    "@mui/material": "^7.3.4",
+    "@mui/material": "^7.3.6",
     "@mui/x-data-grid": "^8.23.0",
-    "@reduxjs/toolkit": "^1.9.7",
-    "@sentry/cli": "^2.56.0",
-    "@sentry/react": "^10.18.0",
-    "@turf/bbox": "^7.2.0",
-    "@turf/center": "^7.2.0",
-    "@turf/helpers": "^7.2.0",
-    "@turf/meta": "^7.2.0",
+    "@reduxjs/toolkit": "^2.11.2",
+    "@sentry/cli": "^3.0.1",
+    "@sentry/react": "^10.32.1",
+    "@turf/bbox": "^7.3.1",
+    "@turf/center": "^7.3.1",
+    "@turf/helpers": "^7.3.1",
+    "@turf/meta": "^7.3.1",
+    "@vitejs/plugin-react": "^5.1.2",
     "canvg": "^4.0.3",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "express-rate-limit": "^8.2.1",
     "filesize": "^11.0.13",
     "get-video-id": "^4.1.7",
-    "i18next": "^25.4.0",
+    "i18next": "^25.7.3",
     "i18next-browser-languagedetector": "^8.2.0",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
-    "mapbox-gl": "^3.15.0",
+    "mapbox-gl": "^3.17.0",
     "notistack": "^3.0.2",
     "path-browserify": "^1.0.1",
     "query-string": "^7.1.3",
-    "react": "18.3.1",
-    "react-avatar-editor": "^13.0.2",
-    "react-dom": "18.3.1",
+    "react": "^19.2.3",
+    "react-avatar-editor": "^14.0.0",
+    "react-dom": "19.2.3",
     "react-dropzone": "^14.3.8",
-    "react-error-boundary": "^5.0.0",
+    "react-error-boundary": "^6.0.1",
     "react-helmet-async": "^2.0.5",
     "react-highlight-words": "^0.21.0",
-    "react-hook-form": "^7.64.0",
-    "react-i18next": "^15.7.1",
-    "react-redux": "^8.1.3",
-    "react-router": "^7.9.4",
+    "react-hook-form": "^7.69.0",
+    "react-i18next": "^16.5.0",
+    "react-redux": "^9.2.0",
+    "react-router": "^7.11.0",
     "scrollama": "^3.2.0",
     "slate-history": "^0.113.1",
     "slate-hyperscript": "^0.100.0",
-    "slate-react": "^0.117.4",
+    "slate-react": "^0.120.0",
     "source-map-explorer": "^2.5.3",
-    "terraso-client-shared": "github:techmatters/terraso-client-shared#775808c",
+    "terraso-client-shared": "github:techmatters/terraso-client-shared#34545ce",
     "use-debounce": "^10.0.6",
     "uuid": "^11.1.0",
+    "vite": "^7.3.0",
     "web-vitals": "^5.1.0",
-    "world-countries": "4.0.0",
+    "world-countries": "5.1.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.18.10/xlsx-0.18.10.tgz",
     "yup": "^1.7.1"
   },
   "overrides": {
     "fork-ts-checker-webpack-plugin": "^6.5.3",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "react-helmet-async": {
+      "react": ">=19.2.0"
+    }
   },
   "scripts": {
-    "start": "npm run generate-types -- -w -s & react-scripts start",
+    "start": "npm run generate-types -- -w -s & vite",
     "server": "node server.js",
     "generate-types": "npx graphql-code-generator",
-    "lint-js": "eslint ./ --ext .js --ext .ts --ext .tsx --max-warnings 0 --ignore-path .gitignore",
+    "lint-js": "eslint ./ --ext .js --ext .jsx --ext .ts --ext .tsx --max-warnings 0 --ignore-path .gitignore",
     "format-js": "npm run lint-js -- --fix",
     "check-ts": "npm run generate-types && tsc --noEmit",
     "lint-css": "stylelint --config=.stylelintrc '**/*.css'",
     "format-css": "npm run lint-css -- --fix",
     "check-modules": "depcheck",
-    "build": "npm run generate-types && react-scripts build",
-    "build-sentry": "npm run generate-types && react-scripts build && npm run sentry:sourcemaps",
-    "build-serve": "serve -s build",
+    "build": "npm run generate-types && vite build",
+    "build-sentry": "npm run generate-types && vite build && npm run sentry:sourcemaps",
+    "build-serve": "vite preview",
     "test": "npm run test:server && npm run test:client",
-    "test:client": "npm run generate-types && react-scripts test",
-    "test:server": "NODE_ENV=test jest --config jest.config.server.js --passWithNoTests",
-    "test:server:watch": "NODE_ENV=test jest --config jest.config.server.js --watch",
-    "test:server:coverage": "NODE_ENV=test jest --config jest.config.server.js --coverage",
-    "test-debug": "npm run generate-types && react-scripts --inspect-brk test --runInBand --no-cache",
-    "test-coverage": "npm run generate-types && react-scripts test --coverage --changedSince=origin/main --watchAll=falsed",
+    "test:client": "npm run generate-types && jest",
+    "test:server": "NODE_ENV=test jest --config jest.config.server.cjs --passWithNoTests",
+    "test:server:watch": "NODE_ENV=test jest --config jest.config.server.cjs --watch",
+    "test:server:coverage": "NODE_ENV=test jest --config jest.config.server.cjs --coverage",
+    "test-debug": "npm run generate-types && jest --inspect-brk --runInBand --no-cache",
+    "test-coverage": "npm run generate-types && jest --coverage --changedSince=origin/main --watchAll=falsed",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "localization-to-po": "node scripts/localization/transform-to.mjs po",
     "localization-to-json": "node scripts/localization/transform-to.mjs json",
     "localization-check-missing": "node scripts/localization/missing-check.mjs",
-    "eject": "react-scripts eject",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org techmatters --project terraso-web-client ./build && sentry-cli sourcemaps upload --org techmatters --project terraso-web-client ./build",
     "prepare": "husky"
   },
@@ -100,42 +105,62 @@
   ],
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@commitlint/cli": "^20.1.0",
-    "@commitlint/config-conventional": "^20.0.0",
-    "@graphql-codegen/cli": "^5.0.7",
-    "@graphql-codegen/client-preset": "^4.8.3",
+    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-react": "^7.28.5",
+    "@babel/preset-typescript": "^7.28.5",
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
+    "@graphql-codegen/cli": "^6.1.0",
+    "@graphql-codegen/client-preset": "^5.2.2",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
     "@parcel/watcher": "^2.5.1",
     "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.0",
+    "@testing-library/react": "^16.3.1",
     "@types/geojson": "^7946.0.16",
     "@types/jest": "^30.0.0",
     "@types/js-cookie": "^3.0.6",
-    "@types/lodash": "^4.17.20",
+    "@types/lodash": "^4.17.21",
     "@types/path-browserify": "^1.0.3",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
-    "@typescript-eslint/parser": "^8.46.0",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@typescript-eslint/eslint-plugin": "^8.51.0",
+    "@typescript-eslint/parser": "^8.51.0",
+    "babel-jest": "^30.2.0",
+    "babel-preset-vite": "^1.1.3",
     "depcheck": "^1.4.7",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jest": "^29.12.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-lodash-fp": "^2.2.0-a1",
     "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-testing-library": "^7.15.3",
     "flat": "^6.0.1",
     "husky": "^9.1.7",
-    "i18next-conv": "^15.1.1",
+    "i18next-conv": "^16.0.0",
+    "identity-obj-proxy": "^3.0.0",
     "jest-axe": "^10.0.0",
     "jest-when": "^3.7.0",
-    "lint-staged": "^16.2.3",
+    "lint-staged": "^16.2.7",
     "plausible-tracker": "^0.3.9",
-    "prettier": "^3.6.2",
-    "react-scripts": "^5.0.1",
-    "serve": "^14.2.5",
-    "stylelint": "^16.25.0",
+    "prettier": "^3.7.4",
+    "react-app-polyfill": "^3.0.0",
+    "stylelint": "^16.26.1",
     "stylelint-prettier": "^5.0.3",
     "supertest": "^7.1.4"
   },
   "jest": {
-    "transform": {},
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "testEnvironment": "jsdom",
+    "setupFiles": [
+      "react-app-polyfill/jsdom"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.js"
+    ],
     "collectCoverageFrom": [
       "src/**/*.js",
       "!src/terrasoBackend/*.js"
@@ -147,7 +172,45 @@
         "lines": 80,
         "statements": 80
       }
-    }
+    },
+    "transform": {
+      "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "babel-jest",
+      "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|json)$)": "<rootDir>/src/tests/fileMock.cjs"
+    },
+    "transformIgnorePatterns": [
+      "/node_modules/(?!(terraso-client-shared)/)"
+    ],
+    "moduleNameMapper": {
+      "^terraso-web-client/(.*)": "<rootDir>/src/$1",
+      "\\.(css|less)$": "identity-obj-proxy"
+    },
+    "resetMocks": true
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ],
+      [
+        "@babel/preset-react",
+        {
+          "runtime": "automatic"
+        }
+      ],
+      "@babel/preset-typescript",
+      [
+        "babel-preset-vite",
+        {
+          "env": true,
+          "glob": false
+        }
+      ]
+    ]
   },
   "graphql": {
     "schema": "node_modules/terraso-backend/terraso_backend/apps/graphql/schema/schema.graphql",

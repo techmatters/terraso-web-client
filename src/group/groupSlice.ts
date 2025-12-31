@@ -25,8 +25,8 @@ import type { MembershipInfo } from 'terraso-client-shared/collaboration/members
 import type { Message } from 'terraso-client-shared/notifications/notificationsSlice';
 import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
-import * as groupService from 'group/groupService';
-import { setSharedResourcesList } from 'sharedData/sharedDataSlice';
+import * as groupService from 'terraso-web-client/group/groupService';
+import { setSharedResourcesList } from 'terraso-web-client/sharedData/sharedDataSlice';
 
 export type Group = {
   slug: string;

@@ -17,13 +17,12 @@
 
 import _ from 'lodash/fp';
 
+import { VALIDATION_SCHEMA as LINK_VALIDATION_SCHEMA } from 'terraso-web-client/sharedData/components/SharedDataUpload/ShareDataLinks';
 import {
   UPLOAD_STATUS_ERROR,
   UPLOAD_STATUS_SUCCESS,
   UPLOAD_STATUS_UPLOADING,
-} from 'sharedData/sharedDataSlice';
-
-import { VALIDATION_SCHEMA as LINK_VALIDATION_SCHEMA } from './ShareDataLinks';
+} from 'terraso-web-client/sharedData/sharedDataSlice';
 
 export const groupDataEntryUploadsByStatus = uploads => {
   const byStatus = _.flow(

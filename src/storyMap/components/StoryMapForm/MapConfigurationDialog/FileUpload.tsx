@@ -19,29 +19,31 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { FileRejection } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
-import { DataEntryNode } from 'terrasoApi/shared/graphqlSchema/graphql';
-import { useDispatch, useSelector } from 'terrasoApi/store';
+import { DataEntryNode } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
+import { useDispatch, useSelector } from 'terraso-web-client/terrasoApi/store';
 
-import { useCollaborationContext } from 'collaboration/collaborationContext';
-import DropZone from 'common/components/DropZone';
-import { FileWrapper, fileWrapper } from 'common/fileUtils';
-import { useAnalytics } from 'monitoring/analytics';
-import { ILM_OUTPUT_PROP, RESULTS_ANALYSIS_IMPACT } from 'monitoring/ilm';
+import { useCollaborationContext } from 'terraso-web-client/collaboration/collaborationContext';
+import DropZone from 'terraso-web-client/common/components/DropZone';
+import { FileWrapper, fileWrapper } from 'terraso-web-client/common/fileUtils';
+import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
+import {
+  ILM_OUTPUT_PROP,
+  RESULTS_ANALYSIS_IMPACT,
+} from 'terraso-web-client/monitoring/ilm';
 import {
   resetUploads,
   UPLOAD_STATUS_SUCCESS,
   UPLOAD_STATUS_UPLOADING,
   uploadSharedDataFile,
-} from 'sharedData/sharedDataSlice';
-import { useVisualizationContext } from 'sharedData/visualization/visualizationContext';
-
-import { useStoryMapConfigContext } from '../storyMapConfigContext';
+} from 'terraso-web-client/sharedData/sharedDataSlice';
+import { useVisualizationContext } from 'terraso-web-client/sharedData/visualization/visualizationContext';
+import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 
 import {
   MAP_LAYER_ACCEPTED_EXTENSIONS,
   MAP_LAYER_ACCEPTED_TYPES,
   SHARED_DATA_MAX_SIZE,
-} from 'config';
+} from 'terraso-web-client/config';
 
 type FileUploadProps = {
   onCompleteSuccess: (dataEntry: DataEntryNode) => void;

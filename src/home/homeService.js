@@ -17,11 +17,11 @@
 
 import _ from 'lodash/fp';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
-import { graphql } from 'terrasoApi/shared/graphqlSchema';
+import { graphql } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/index';
 
-import { extractGroup } from 'group/groupUtils';
-import { extractLandscape } from 'landscape/landscapeUtils';
-import { extractStoryMap } from 'storyMap/storyMapUtils';
+import { extractGroup } from 'terraso-web-client/group/groupUtils';
+import { extractLandscape } from 'terraso-web-client/landscape/landscapeUtils';
+import { extractStoryMap } from 'terraso-web-client/storyMap/storyMapUtils';
 
 export const fetchHomeData = email => {
   const query = graphql(`

@@ -24,7 +24,7 @@ import {
   isKmlFile,
   isShapefile,
   openGeoJsonFile,
-} from 'gis/gisUtils';
+} from 'terraso-web-client/gis/gisUtils';
 
 const generateUrl = name =>
   `https://nominatim.openstreetmap.org/search.php?q=${name}&format=jsonv2`;

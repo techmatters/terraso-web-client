@@ -17,9 +17,6 @@
         "create": "Create a Group",
         "home_title": "Groups",
         "home_default_title": "Groups",
-        "img": {
-            "src": "groups.png"
-        },
         "form_edit_title": "Update the “{{name}}” Group",
         "form_new_title": "Create New Group",
         "membership_card_title": "Members",
@@ -151,7 +148,6 @@
             "img": {
                 "height": "140",
                 "width": "250",
-                "src": "tools/kobotoolbox-screenshot.png",
                 "alt": "A phone, a laptop, and a tablet, each displaying a data collection form. The tool’s logo is in the foreground."
             },
             "description": [
@@ -169,7 +165,6 @@
             "img": {
                 "height": "140",
                 "width": "250",
-                "src": "tools/landscale-screenshot.png",
                 "alt": "A dashboard containing charts and graphs about a landscape. The tool’s logo is in the foreground."
             },
             "description": [
@@ -186,7 +181,6 @@
             "img": {
                 "height": "188",
                 "width": "250",
-                "src": "tools/story-maps.png",
                 "alt": "A satellite map of a bend in a river, overlayed by a window containing a picture and a block of text.",
                 "caption": "Rocky Hill’s Story Map"
             },
@@ -273,9 +267,6 @@
         "membership_leave_confirm_title": "Leave “{{name}}”",
         "view_card_title": "About {{name}}",
         "view_card_title_profile_link": "View landscape details",
-        "img": {
-            "src": "landscape.png"
-        },
         "list_title": "Landscapes",
         "list_description": "These landscapes are using Terraso.",
         "members_remove_confirmation_title": "Remove Member",

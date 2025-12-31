@@ -17,7 +17,7 @@
 
 import { useCallback, useEffect } from 'react';
 
-import { useMap } from './Map';
+import { useMap } from 'terraso-web-client/gis/components/Map';
 
 const MapExport = props => {
   const { onImagePrinterChange } = props;

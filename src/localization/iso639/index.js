@@ -15,5 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export const iso639en = () => require('localization/iso639/en.json');
-export const iso639es = () => require('localization/iso639/es.json');
+export const iso639en = () =>
+  import('terraso-web-client/localization/iso639/en.json');
+export const iso639es = () =>
+  import('terraso-web-client/localization/iso639/es.json');

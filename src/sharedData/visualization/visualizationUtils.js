@@ -20,9 +20,9 @@ import { normalizeText } from 'terraso-client-shared/utils';
 import * as SheetsJs from 'xlsx';
 import * as yup from 'yup';
 
-import { normalizeLongitude } from 'gis/gisUtils';
-import mapboxgl from 'gis/mapbox';
-import { fetchDataEntriesWithGeojson } from 'sharedData/sharedDataService';
+import { normalizeLongitude } from 'terraso-web-client/gis/gisUtils';
+import mapboxgl from 'terraso-web-client/gis/mapbox';
+import { fetchDataEntriesWithGeojson } from 'terraso-web-client/sharedData/sharedDataService';
 
 const LAT_COLUMN_OPTIONS = ['latitude', 'latitud', 'lat', 'x'];
 const LNG_COLUMN_OPTIONS = ['longitude', 'longitud', 'lng', 'lon', 'long', 'y'];

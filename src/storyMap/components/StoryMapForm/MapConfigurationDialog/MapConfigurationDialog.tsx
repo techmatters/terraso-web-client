@@ -15,16 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
-import { StoryMapNode } from 'terrasoApi/shared/graphqlSchema/graphql';
+import { StoryMapNode } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Box,
@@ -42,22 +36,21 @@ import {
 import {
   CollaborationContextProvider,
   useCollaborationContext,
-} from 'collaboration/collaborationContext';
-import HelperText from 'common/components/HelperText';
-import Map, { useMap } from 'gis/components/Map';
-import { MapboxStyle } from 'gis/components/MapboxConstants';
-import MapControls from 'gis/components/MapControls';
-import MapGeocoder from 'gis/components/MapGeocoder';
-import MapStyleSwitcher from 'gis/components/MapStyleSwitcher';
-import { useStoryMapConfigContext } from 'storyMap/components/StoryMapForm/storyMapConfigContext';
-import { StoryMapLayer } from 'storyMap/components/StoryMapLayer';
+} from 'terraso-web-client/collaboration/collaborationContext';
+import HelperText from 'terraso-web-client/common/components/HelperText';
+import Map, { useMap } from 'terraso-web-client/gis/components/Map';
+import { MapboxStyle } from 'terraso-web-client/gis/components/MapboxConstants';
+import MapControls from 'terraso-web-client/gis/components/MapControls';
+import MapGeocoder from 'terraso-web-client/gis/components/MapGeocoder';
+import MapStyleSwitcher from 'terraso-web-client/gis/components/MapStyleSwitcher';
+import { MapLayerDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerDialog';
+import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { StoryMapLayer } from 'terraso-web-client/storyMap/components/StoryMapLayer';
 import {
   MapLayerConfig,
   MapPosition,
   StoryMapConfig,
-} from 'storyMap/storyMapTypes';
-
-import { MapLayerDialog } from './MapLayerDialog';
+} from 'terraso-web-client/storyMap/storyMapTypes';
 
 const BearingIcon = () => {
   const { t } = useTranslation();

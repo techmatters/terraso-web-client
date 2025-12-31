@@ -21,7 +21,7 @@ import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
 import { useEffect, useMemo } from 'react';
 
-import { useMap } from './Map';
+import { useMap } from 'terraso-web-client/gis/components/Map';
 
 const DrawControls = props => {
   const {
