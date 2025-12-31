@@ -103,9 +103,8 @@ test('AccountAuthCallback: Navigate to /account in production', async () => {
   searchParams.set('state', btoa(JSON.stringify(authState)));
   mockUseSearchParams.mockReturnValue([searchParams, jest.fn()]);
 
-  const { default: AccountAuthCallback } = await import(
-    'terraso-web-client/account/components/AccountAuthCallback'
-  );
+  const { default: AccountAuthCallback } =
+    await import('terraso-web-client/account/components/AccountAuthCallback');
 
   render(<AccountAuthCallback />);
 
@@ -118,9 +117,8 @@ test('AccountAuthCallback: Navigate to /account when no state', async () => {
 
   mockUseSearchParams.mockReturnValue([new URLSearchParams(), jest.fn()]);
 
-  const { default: AccountAuthCallback } = await import(
-    'terraso-web-client/account/components/AccountAuthCallback'
-  );
+  const { default: AccountAuthCallback } =
+    await import('terraso-web-client/account/components/AccountAuthCallback');
 
   render(<AccountAuthCallback />);
 
@@ -141,9 +139,8 @@ test('AccountAuthCallback: Process auth tokens in development', async () => {
   searchParams.set('state', btoa(JSON.stringify(authState)));
   mockUseSearchParams.mockReturnValue([searchParams, jest.fn()]);
 
-  const { default: AccountAuthCallback } = await import(
-    'terraso-web-client/account/components/AccountAuthCallback'
-  );
+  const { default: AccountAuthCallback } =
+    await import('terraso-web-client/account/components/AccountAuthCallback');
 
   render(<AccountAuthCallback />);
 
@@ -168,9 +165,8 @@ test('AccountAuthCallback: Navigate to redirect URL after token setup', async ()
   // Mock the async dispatch to resolve immediately
   mockDispatch.mockResolvedValue({} as never);
 
-  const { default: AccountAuthCallback } = await import(
-    'terraso-web-client/account/components/AccountAuthCallback'
-  );
+  const { default: AccountAuthCallback } =
+    await import('terraso-web-client/account/components/AccountAuthCallback');
 
   render(<AccountAuthCallback />);
 
@@ -192,9 +188,8 @@ test('AccountAuthCallback: Handle malformed state', async () => {
   // Mock console.error to avoid test output pollution
   const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-  const { default: AccountAuthCallback } = await import(
-    'terraso-web-client/account/components/AccountAuthCallback'
-  );
+  const { default: AccountAuthCallback } =
+    await import('terraso-web-client/account/components/AccountAuthCallback');
 
   render(<AccountAuthCallback />);
 
@@ -218,9 +213,8 @@ test('AccountAuthCallback: Handle empty redirect URL', async () => {
 
   mockDispatch.mockResolvedValue({} as never);
 
-  const { default: AccountAuthCallback } = await import(
-    'terraso-web-client/account/components/AccountAuthCallback'
-  );
+  const { default: AccountAuthCallback } =
+    await import('terraso-web-client/account/components/AccountAuthCallback');
 
   render(<AccountAuthCallback />);
 
