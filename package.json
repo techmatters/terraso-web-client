@@ -73,7 +73,7 @@
   },
   "scripts": {
     "start": "npm run generate-types -- -w -s & vite",
-    "server": "node server.js",
+    "server": "node server.cjs",
     "generate-types": "npx graphql-code-generator",
     "lint-js": "eslint ./ --ext .js --ext .jsx --ext .ts --ext .tsx --max-warnings 0 --ignore-path .gitignore",
     "format-js": "npm run lint-js -- --fix",
