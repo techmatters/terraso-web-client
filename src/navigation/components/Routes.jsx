@@ -221,6 +221,7 @@ const paths = [
     path(`${basePath}/`, UserStoryMap, {
       showBreadcrumbs: true,
       breadcrumbsLabel: 'storyMap.breadcrumbs_view',
+      breadcrumbsOnlyIfCurrentPath: !basePath.endsWith(':slug'),
       breadcrumbsShareProps: {
         bgColor: 'white',
         marginTop: 0,
@@ -281,7 +282,11 @@ export const useBreadcrumbs = () => {
           };
         }
         const path = getPath(to);
-        if (!path || !path.breadcrumbsLabel) {
+        if (
+          !path ||
+          !path.breadcrumbsLabel ||
+          path.breadcrumbsOnlyIfCurrentPath
+        ) {
           return null;
         }
 

@@ -29,7 +29,14 @@ jest.mock('react-router', () => ({
 
 const TestComponent = () => {
   useBreadcrumbsParams(
-    useMemo(() => ({ groupName: 'Group Name', loading: false }), [])
+    useMemo(
+      () => ({
+        groupName: 'Group Name',
+        loading: false,
+        title: 'Story Map Title',
+      }),
+      []
+    )
   );
   return <Breadcrumbs />;
 };
@@ -71,6 +78,35 @@ test('Breadcrumbs: Show items', async () => {
     '/groups/group-1/members'
   );
   expect(screen.getByRole('link', { name: 'Members' })).toHaveAttribute(
+    'aria-current',
+    'page'
+  );
+});
+
+test('Breadcrumbs: Story map only displays once', async () => {
+  useLocation.mockReturnValue({
+    pathname: '/tools/story-maps/5e530dc3/story-map',
+  });
+  await setup();
+  expect(
+    screen.getByRole('navigation', { name: 'Breadcrumbs' })
+  ).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
+    'href',
+    '/'
+  );
+  expect(screen.getByRole('link', { name: 'Tools' })).toHaveAttribute(
+    'href',
+    '/tools'
+  );
+  expect(
+    screen.getByRole('link', { name: 'Terraso Story Maps' })
+  ).toHaveAttribute('href', '/tools/story-maps');
+  expect(screen.getByRole('link', { name: 'Story Map Title' })).toHaveAttribute(
+    'href',
+    '/tools/story-maps/5e530dc3/story-map'
+  );
+  expect(screen.getByRole('link', { name: 'Story Map Title' })).toHaveAttribute(
     'aria-current',
     'page'
   );
