@@ -32,6 +32,8 @@ export type VisualizeConfig = {
 
 export type MapLayerConfig = VisualizationConfigNode & {
   geojson?: GeoJSON;
+  isRestricted: boolean;
+  ownerType: 'StoryMapNode' | 'GroupNode' | 'LandscapeNode';
 };
 
 export type MapPosition = {

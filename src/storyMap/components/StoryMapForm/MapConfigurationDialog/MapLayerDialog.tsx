@@ -65,6 +65,8 @@ interface MapLayerListItemProps {
 }
 
 const MapLayerListItem = ({ mapLayer }: MapLayerListItemProps) => {
+  const { t } = useTranslation();
+
   return (
     <ListItem
       aria-label={mapLayer.title}
@@ -99,6 +101,13 @@ const MapLayerListItem = ({ mapLayer }: MapLayerListItemProps) => {
       >
         {mapLayer.title}
       </Typography>
+      {mapLayer.isRestricted && (
+        <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
+          {t('storyMap.form_location_add_data_layer_dialog_restricted', {
+            user: mapLayer.dataEntry?.createdBy,
+          })}
+        </Typography>
+      )}
     </ListItem>
   );
 };
@@ -161,13 +170,13 @@ const SelectMapLayerSection = ({
   const { storyMapLayers, groupLayers, landscapeLayers } = useMemo(() => {
     return {
       storyMapLayers: sortedMapLayers.filter(
-        layer => layer.owner?.__typename === 'StoryMapNode'
+        layer => layer.ownerType === 'StoryMapNode'
       ),
       landscapeLayers: sortedMapLayers.filter(
-        layer => layer.owner?.__typename === 'LandscapeNode'
+        layer => layer.ownerType === 'LandscapeNode'
       ),
       groupLayers: sortedMapLayers.filter(
-        layer => layer.owner?.__typename === 'GroupNode'
+        layer => layer.ownerType === 'GroupNode'
       ),
     };
   }, [sortedMapLayers]);
