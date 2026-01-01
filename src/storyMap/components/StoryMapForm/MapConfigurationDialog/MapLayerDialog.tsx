@@ -41,6 +41,12 @@ import {
   Typography,
 } from '@mui/material';
 
+import {
+  Tab,
+  TabContext,
+  TabList,
+  TabPanel,
+} from 'terraso-web-client/common/components/Tabs';
 import { CreateMapLayerFileUpload } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog';
 import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { fetchDataLayers } from 'terraso-web-client/storyMap/storyMapSlice';
@@ -59,6 +65,8 @@ interface MapLayerListItemProps {
 }
 
 const MapLayerListItem = ({ mapLayer }: MapLayerListItemProps) => {
+  const { t } = useTranslation();
+
   return (
     <ListItem
       aria-label={mapLayer.title}
@@ -93,7 +101,45 @@ const MapLayerListItem = ({ mapLayer }: MapLayerListItemProps) => {
       >
         {mapLayer.title}
       </Typography>
+      {mapLayer.isRestricted && (
+        <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
+          {t('storyMap.form_location_add_data_layer_dialog_restricted', {
+            user: mapLayer.dataEntry?.createdBy,
+          })}
+        </Typography>
+      )}
     </ListItem>
+  );
+};
+
+type MapLayerTab = 'STORY_MAP' | 'GROUP' | 'LANDSCAPE';
+
+interface SelectMapLayerTabPanelProps {
+  tab: MapLayerTab;
+  mapLayers: MapLayerConfig[];
+  selected: string;
+  setSelected: (value: string) => void;
+}
+
+const SelectMapLayerTabPanel = ({
+  tab,
+  mapLayers,
+  selected,
+  setSelected,
+}: SelectMapLayerTabPanelProps) => {
+  return (
+    <TabPanel<MapLayerTab> value={tab}>
+      <RadioGroup
+        value={selected}
+        onChange={event => setSelected(event.target.value)}
+      >
+        <MapLayerList>
+          {mapLayers.map(mapLayer => (
+            <MapLayerListItem key={mapLayer.id} mapLayer={mapLayer} />
+          ))}
+        </MapLayerList>
+      </RadioGroup>
+    </TabPanel>
   );
 };
 
@@ -112,12 +158,28 @@ const SelectMapLayerSection = ({
 }: SelectMapLayerSectionProps) => {
   const { t } = useTranslation();
 
+  const [tab, setTab] = useState<MapLayerTab>('STORY_MAP');
+
   const sortedMapLayers = useMemo(() => {
     return _.sortBy(
       [(mapLayer: MapLayerConfig) => mapLayer.title?.toLowerCase()],
       mapLayers
     );
   }, [mapLayers]);
+
+  const { storyMapLayers, groupLayers, landscapeLayers } = useMemo(() => {
+    return {
+      storyMapLayers: sortedMapLayers.filter(
+        layer => layer.ownerType === 'StoryMapNode'
+      ),
+      landscapeLayers: sortedMapLayers.filter(
+        layer => layer.ownerType === 'LandscapeNode'
+      ),
+      groupLayers: sortedMapLayers.filter(
+        layer => layer.ownerType === 'GroupNode'
+      ),
+    };
+  }, [sortedMapLayers]);
 
   return (
     <>
@@ -134,16 +196,46 @@ const SelectMapLayerSection = ({
               'storyMap.form_location_add_data_layer_dialog_select_section_title'
             )}
           </Typography>
-          <RadioGroup
-            value={selected}
-            onChange={event => setSelected(event.target.value)}
-          >
-            <MapLayerList aria-labelledby="data-layer-dialog-subtitle">
-              {sortedMapLayers.map(mapLayer => (
-                <MapLayerListItem key={mapLayer.id} mapLayer={mapLayer} />
-              ))}
-            </MapLayerList>
-          </RadioGroup>
+          <TabContext<MapLayerTab> value={tab}>
+            <TabList onChange={(_, newTab) => setTab(newTab)}>
+              <Tab<MapLayerTab>
+                value="STORY_MAP"
+                label={t(
+                  'storyMap.form_location_add_data_layer_dialog_story_map_tab'
+                )}
+              />
+              <Tab<MapLayerTab>
+                value="GROUP"
+                label={t(
+                  'storyMap.form_location_add_data_layer_dialog_group_tab'
+                )}
+              />
+              <Tab<MapLayerTab>
+                value="LANDSCAPE"
+                label={t(
+                  'storyMap.form_location_add_data_layer_dialog_landscape_tab'
+                )}
+              />
+            </TabList>
+            <SelectMapLayerTabPanel
+              tab="STORY_MAP"
+              mapLayers={storyMapLayers}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <SelectMapLayerTabPanel
+              tab="GROUP"
+              mapLayers={groupLayers}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <SelectMapLayerTabPanel
+              tab="LANDSCAPE"
+              mapLayers={landscapeLayers}
+              selected={selected}
+              setSelected={setSelected}
+            />
+          </TabContext>
         </Stack>
       )}
     </>

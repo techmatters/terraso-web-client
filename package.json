@@ -225,7 +225,7 @@
             "preset": "client",
             "config": {
               "documentMode": "string",
-              "skipTypename": true,
+              "skipTypename": false,
               "enumsAsTypes": true,
               "dedupeFragments": true
             },

@@ -371,36 +371,28 @@ export const addMapLayer = ({
 export const fetchDataLayers = ({ ownerId }) => {
   const query = graphql(`
     query visualizationConfigs($ownerId: UUID!) {
-      visualizationConfigs(ownerObjectId: $ownerId) {
+      storyMapConfigs: visualizationConfigs(ownerObjectId: $ownerId) {
         edges {
           node {
-            ...visualizationConfigWithConfiguration
-            geojson
-            dataEntry {
-              name
-              resourceType
-              createdBy {
-                lastName
-                firstName
-              }
-              sharedResources {
-                edges {
-                  node {
-                    target {
-                      ... on GroupNode {
-                        name
-                        membershipList {
-                          membershipType
-                        }
-                      }
-                      ... on LandscapeNode {
-                        name
-                      }
-                    }
-                  }
-                }
-              }
-            }
+            ...visualizationConfigWithStoryMapContext
+          }
+        }
+      }
+      landscapeConfigs: visualizationConfigs(
+        dataEntry_SharedResources_TargetContentType: "landscape"
+      ) {
+        edges {
+          node {
+            ...visualizationConfigWithStoryMapContext
+          }
+        }
+      }
+      groupConfigs: visualizationConfigs(
+        dataEntry_SharedResources_TargetContentType: "group"
+      ) {
+        edges {
+          node {
+            ...visualizationConfigWithStoryMapContext
           }
         }
       }
@@ -408,11 +400,15 @@ export const fetchDataLayers = ({ ownerId }) => {
   `);
   return terrasoApi
     .requestGraphQL(query, { ownerId })
-    .then(_.get('visualizationConfigs.edges'))
+    .then(lists => [
+      ...lists.storyMapConfigs.edges,
+      ...lists.landscapeConfigs.edges,
+      ...lists.groupConfigs.edges,
+    ])
     .then(list => list || Promise.reject('not_found'))
     .then(list =>
       list.map(entry => ({
-        ..._.omit(['configuration', 'geojson'], entry.node),
+        ..._.omit(['configuration', 'geojson', 'owner'], entry.node),
         tilesetId: entry.node.mapboxTilesetId,
         dataEntry: {
           ...entry.node.dataEntry,
@@ -428,6 +424,7 @@ export const fetchDataLayers = ({ ownerId }) => {
         processing:
           entry.node.mapboxTilesetStatus === TILESET_STATUS_PENDING ||
           !entry.node.mapboxTilesetId,
+        ownerType: entry.node.owner.__typename,
         ...JSON.parse(entry.node.configuration),
         geojson: JSON.parse(entry.node.geojson),
       }))
