@@ -517,7 +517,7 @@ const StoryMap = props => {
     onStepChange,
     ChapterComponent = Chapter,
     TitleComponent = Title,
-    mapCss = { height: '100vh', width: '100vw', top: 0 },
+    mapCss,
     animation,
     onReady,
     chaptersFilter,
@@ -542,7 +542,16 @@ const StoryMap = props => {
 
   return (
     <>
-      <section aria-label={t('storyMap.view_map_label')}>
+      <Box
+        component="section"
+        aria-label={t('storyMap.view_map_label')}
+        sx={({ breakpoints }) => ({
+          [breakpoints.only('xs')]: {
+            position: 'absolute',
+            height: '100%',
+          },
+        })}
+      >
         <Map
           id="map"
           interactive={false}
@@ -550,7 +559,18 @@ const StoryMap = props => {
           projection={config.projection}
           zoom={1}
           initialLocation={initialLocation}
-          sx={{ ...mapCss }}
+          sx={({ breakpoints }) => ({
+            position: 'fixed',
+            height: '100vh',
+            width: '100vw',
+            top: 0,
+            [breakpoints.only('xs')]: {
+              position: 'sticky',
+              height: '33vh',
+              zIndex: 1,
+            },
+            ...mapCss,
+          })}
         >
           <MapContextConsumer>
             {({ map }) => (
@@ -583,8 +603,13 @@ const StoryMap = props => {
               />
             ))}
         </Map>
-      </section>
-      <Box id="story">
+      </Box>
+      <Box
+        id="story"
+        sx={({ breakpoints }) => ({
+          [breakpoints.only('xs')]: { paddingTop: '33vh' },
+        })}
+      >
         <Box
           component="section"
           aria-label={t('storyMap.view_chapters_label')}
