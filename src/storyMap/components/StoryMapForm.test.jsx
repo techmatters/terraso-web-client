@@ -187,6 +187,7 @@ const baseMapOptions = () => ({
   getBounds: jest.fn(),
   getStyle: jest.fn(),
   fitBounds: jest.fn(),
+  getContainer: jest.fn().mockReturnValue(document.createElement('div')),
 });
 
 const BASE_CONFIG = {

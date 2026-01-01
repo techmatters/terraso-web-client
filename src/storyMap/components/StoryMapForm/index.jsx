@@ -15,14 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -58,18 +51,6 @@ const BASE_CHAPTER = {
   onChapterExit: [],
 };
 
-const RIGHT_SIDEBAR_Z_INDEX = 3;
-const RIGHT_SIDEBAR_WIDTH = 300;
-
-const computeStoryMapLayout = ({
-  headerHeight,
-  footerHeight,
-  formHeaderHeight,
-}) => ({
-  mapHeight: `calc(100vh - (${headerHeight}px + ${footerHeight}px + ${formHeaderHeight}px))`,
-  topOffset: formHeaderHeight,
-});
-
 const Preview = props => {
   const { getMediaFile } = useStoryMapConfigContext();
   const { config, onPublish } = props;
@@ -98,11 +79,7 @@ const Preview = props => {
   return (
     <>
       <TopBarPreview onPublish={onPublish} />
-      <Grid container sx={{ width: '100%' }}>
-        <Grid size={12}>
-          <StoryMap config={previewConfig} chaptersFilter={chaptersFilter} />
-        </Grid>
-      </Grid>
+      <StoryMap config={previewConfig} chaptersFilter={chaptersFilter} />
     </>
   );
 };
@@ -128,12 +105,9 @@ const StoryMapForm = props => {
     saved,
     isDirty,
   } = useStoryMapConfigContext();
-  const [mapHeight, setMapHeight] = useState();
-  const [formHeaderHeight, setFormHeaderHeight] = useState(0);
   const [currentStepId, setCurrentStepId] = useState();
   const [scrollToChapter, setScrollToChapter] = useState();
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
-  const storyMapBodyRef = useRef(null);
 
   const [autoSaveData, setAutoSaveData] = useState({
     config,
@@ -163,68 +137,10 @@ const StoryMapForm = props => {
       });
   }, [autoSaveDataDebounced, onSaveDraft, saved]);
 
-  const isFirefox = useMemo(
-    () => navigator.userAgent.toLowerCase().indexOf('firefox') > -1,
-    []
-  );
-
   const { isBlocked, proceed, cancel } = useNavigationBlocker(
     isDirty,
     t('storyMap.form_unsaved_changes_message')
   );
-
-  useLayoutEffect(() => {
-    if (isSmall) {
-      setMapHeight(undefined);
-      setFormHeaderHeight(0);
-      return;
-    }
-
-    const recalculateLayout = () => {
-      const headerHeight =
-        document.getElementById('header-container')?.clientHeight ?? 0;
-      const footerHeight =
-        document.getElementsByClassName('footer')?.[0]?.clientHeight ?? 0;
-      const nextFormHeaderHeight =
-        (document.getElementById('form-header')?.clientHeight ?? 0) + 1;
-
-      const { mapHeight: nextMapHeight, topOffset } = computeStoryMapLayout({
-        headerHeight,
-        footerHeight,
-        formHeaderHeight: nextFormHeaderHeight,
-      });
-
-      setMapHeight(nextMapHeight);
-      setFormHeaderHeight(topOffset);
-    };
-
-    recalculateLayout();
-
-    const headerElement = document.getElementById('header-container');
-    const footerElement = document.getElementsByClassName('footer')?.[0];
-    const formHeaderElement = document.getElementById('form-header');
-
-    window.addEventListener('resize', recalculateLayout);
-
-    if (typeof ResizeObserver === 'undefined') {
-      return () => {
-        window.removeEventListener('resize', recalculateLayout);
-      };
-    }
-
-    const observer = new ResizeObserver(recalculateLayout);
-
-    [headerElement, footerElement, formHeaderElement]
-      .filter(Boolean)
-      .forEach(element => {
-        observer.observe(element);
-      });
-
-    return () => {
-      window.removeEventListener('resize', recalculateLayout);
-      observer.disconnect();
-    };
-  }, [isSmall]);
 
   // Focus on the title when the map is ready
   const onMapReady = useCallback(() => {
@@ -324,7 +240,7 @@ const StoryMapForm = props => {
   }
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       {isBlocked && (
         <NavigationBlockedDialog
           title={t('storyMap.form_unsaved_changes_title')}
@@ -341,15 +257,11 @@ const StoryMapForm = props => {
         onToggleRightSidebar={toggleRightSidebar}
         isRightSidebarOpen={isRightSidebarOpen}
       />
-      <Box
-        ref={storyMapBodyRef}
-        sx={{
-          position: 'relative',
-          width: '100%',
-          height: mapHeight,
-          display: 'flex',
-          alignItems: 'stretch',
-        }}
+      <Grid
+        container
+        justifyContent="flex-start"
+        wrap="nowrap"
+        sx={{ width: '100%', flex: 1, overflow: 'hidden' }}
       >
         <ChaptersSidebar
           config={config}
@@ -357,42 +269,19 @@ const StoryMapForm = props => {
           onAdd={onAddChapter}
           onDelete={onDeleteChapter}
           onMoveChapter={onMoveChapter}
-          height={mapHeight}
         />
-        <Box
-          sx={{
-            position: 'relative',
-            height: mapHeight,
-            flexGrow: 1,
-            minWidth: 0,
-            // There is no overlay support for Firefox, see: https://developer.mozilla.org/en-US/docs/Web/CSS/overflow
-            overflowY: isFirefox ? 'scroll' : 'overlay',
-          }}
-        >
-          {mapHeight && (
-            <StoryMap
-              config={config}
-              mapCss={{
-                height: mapHeight,
-                width: isRightSidebarOpen
-                  ? `calc(100% - ${RIGHT_SIDEBAR_WIDTH}px)`
-                  : '100%',
-              }}
-              onStepChange={setCurrentStepId}
-              ChapterComponent={ChapterForm}
-              TitleComponent={TitleForm}
-              onReady={onMapReady}
-            />
-          )}
+        <Box sx={{ flex: 1, overflowY: 'scroll', containerType: 'size' }}>
+          <StoryMap
+            config={config}
+            onStepChange={setCurrentStepId}
+            ChapterComponent={ChapterForm}
+            TitleComponent={TitleForm}
+            onReady={onMapReady}
+          />
         </Box>
-        <RightSidebar
-          open={isRightSidebarOpen}
-          onClose={closeRightSidebar}
-          zIndex={RIGHT_SIDEBAR_Z_INDEX}
-          topOffset={formHeaderHeight}
-        />
-      </Box>
-    </>
+        <RightSidebar open={isRightSidebarOpen} onClose={closeRightSidebar} />
+      </Grid>
+    </Box>
   );
 };
 

@@ -312,12 +312,13 @@ const Map = forwardRef((props, ref) => {
     projection,
     initialLocation: propsInitialLocation,
     interactive = true,
+    disableRotation = false,
+    disablePitch = true,
     hash = false,
     attributionControl = true,
     center,
     initialBounds,
     zoom = 1,
-    disableRotation = false,
     height = '400px',
     width = '100%',
     sx,
@@ -338,7 +339,6 @@ const Map = forwardRef((props, ref) => {
     const map = new mapboxgl.Map({
       container: mapContainer.current,
       style: mapStyle || MAPBOX_STYLE_DEFAULT,
-      interactive,
       projection: projection || MAPBOX_PROJECTION_DEFAULT,
       zoom,
       center,
@@ -384,6 +384,43 @@ const Map = forwardRef((props, ref) => {
       map.setFog(MAPBOX_FOG);
     });
 
+    return () => {
+      map.remove();
+    };
+  }, [
+    mapStyle,
+    initialLocation,
+    projection,
+    hash,
+    center,
+    zoom,
+    attributionControl,
+    setMap,
+    bounds,
+    disableElevation,
+    padding,
+    ref,
+  ]);
+
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+
+    if (!interactive) {
+      map.touchPitch.disable();
+      map.touchZoomRotate.disable();
+      map.dragPan.disable();
+      map.dragRotate.disable();
+      return;
+    }
+
+    map.touchPitch.enable();
+    map.touchZoomRotate.enable();
+    map.touchZoomRotate.enableRotation();
+    map.dragPan.enable();
+    map.dragRotate.enable();
+
     if (disableRotation) {
       // disable map rotation using right click + drag
       map.dragRotate.disable();
@@ -392,25 +429,10 @@ const Map = forwardRef((props, ref) => {
       map.touchZoomRotate.disableRotation();
     }
 
-    return () => {
-      map.remove();
-    };
-  }, [
-    mapStyle,
-    initialLocation,
-    projection,
-    interactive,
-    hash,
-    center,
-    zoom,
-    attributionControl,
-    setMap,
-    disableRotation,
-    bounds,
-    disableElevation,
-    padding,
-    ref,
-  ]);
+    if (disablePitch) {
+      map.touchPitch.disable();
+    }
+  }, [map, interactive, disableRotation, disablePitch]);
 
   useEffect(() => {
     if (!map) {
@@ -460,11 +482,13 @@ const Map = forwardRef((props, ref) => {
     <Box
       id={id}
       ref={mapContainer}
-      sx={{
-        width,
-        height,
-        ...sx,
-      }}
+      sx={[
+        {
+          width,
+          height,
+        },
+        sx,
+      ]}
     >
       {children}
     </Box>
