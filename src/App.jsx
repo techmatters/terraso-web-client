@@ -62,6 +62,7 @@ const App = () => {
           sx={{
             bgcolor: 'primary.background',
             flex: 1,
+            position: 'relative',
           }}
         >
           <OptionalAuthTopMessage />
