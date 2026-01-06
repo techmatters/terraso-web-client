@@ -44,6 +44,8 @@ import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutl
 
 import theme from 'terraso-web-client/theme';
 
+const chapterHasLocation = chapter => !_.isEmpty(chapter.location);
+
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
 const CURRENT_LOCATION_CHECK_PRESSISION = 13; // 13 decimal places
@@ -618,9 +620,13 @@ const StoryMap = props => {
           <TitleComponent config={config} />
           {filteredChapters.map(chapter => (
             <Fragment key={chapter.id}>
-              <TransitionSpacer chapterId={chapter.id} />
+              {chapterHasLocation(chapter) && (
+                <TransitionSpacer chapterId={chapter.id} />
+              )}
               <ChapterComponent theme={config.theme} record={chapter} />
-              <TransitionSpacer chapterId={chapter.id} />
+              {chapterHasLocation(chapter) && (
+                <TransitionSpacer chapterId={chapter.id} />
+              )}
             </Fragment>
           ))}
         </Box>
