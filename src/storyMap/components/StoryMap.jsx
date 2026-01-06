@@ -49,9 +49,6 @@ mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 const CURRENT_LOCATION_CHECK_PRESSISION = 13; // 13 decimal places
 const ROTATION_DURATION = 30000; // 30 seconds
 const TITLE_STEP_ID = 'story-map-title';
-const TRANSITION_SPACER_SUFFIX = '-transition';
-const SPACER_TRANSITION_PROGRESS_THRESHOLD = 0.65;
-const SPACER_TRANSITION_DATA_ATTR = 'spacerTransitionDirection';
 
 const getBoundsJson = bounds => ({
   type: 'FeatureCollection',
@@ -74,33 +71,6 @@ const getBoundsJson = bounds => ({
     },
   ],
 });
-
-const hasReachedSpacerProgressThreshold = ({ direction, progress }) => {
-  if (direction === 'down') {
-    return progress >= SPACER_TRANSITION_PROGRESS_THRESHOLD;
-  }
-  if (direction === 'up') {
-    return progress <= 1 - SPACER_TRANSITION_PROGRESS_THRESHOLD;
-  }
-  return false;
-};
-
-const markSpacerTransition = (element, direction) => {
-  if (!element?.dataset || !direction) {
-    return;
-  }
-  element.dataset[SPACER_TRANSITION_DATA_ATTR] = direction;
-};
-
-const hasSpacerTransitionFired = (element, direction) =>
-  !!direction && element?.dataset?.[SPACER_TRANSITION_DATA_ATTR] === direction;
-
-const resetSpacerTransition = element => {
-  if (!element?.dataset) {
-    return;
-  }
-  delete element.dataset[SPACER_TRANSITION_DATA_ATTR];
-};
 
 const Audio = ({ record }) => {
   return (
@@ -519,10 +489,6 @@ const Scroller = props => {
       })
       .onStepExit(response => {
         const stepMeta = getStepMeta(response.element);
-        if (stepMeta.type === 'spacer') {
-          resetSpacerTransition(response.element);
-          return;
-        }
         const { transition, nextTransition } = getTransition({
           config: {
             titleTransition: config.titleTransition,
