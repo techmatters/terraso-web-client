@@ -156,7 +156,7 @@ const ChapterConfig = props => {
   );
 };
 
-const ChapterForm = ({ theme, record }) => {
+const ChapterForm = ({ theme, record, chapterIndex }) => {
   const { t } = useTranslation();
   const { setConfig, init } = useStoryMapConfigContext();
   const [isNew, setIsNew] = useState(false);
@@ -164,6 +164,7 @@ const ChapterForm = ({ theme, record }) => {
   const classList = useMemo(
     () =>
       [
+        'step',
         'step-container',
         'active',
         ALIGNMENTS[record.alignment] || 'centered',
@@ -238,7 +239,16 @@ const ChapterForm = ({ theme, record }) => {
       })}
     >
       {/* div with ID added because of an Intersection Observer issue with overflow */}
-      <div className="step" id={record.id}></div>
+      <div
+        className="step"
+        id={record.id}
+        data-step-type="chapter"
+        data-chapter-id={record.id}
+        data-chapter-index={
+          typeof chapterIndex === 'number' ? chapterIndex : undefined
+        }
+        aria-hidden="true"
+      ></div>
       <ChapterConfig
         chapter={record}
         onAlignmentChange={onFieldChange('alignment')}

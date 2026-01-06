@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import scrollama from 'scrollama';
@@ -48,6 +48,10 @@ mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
 const CURRENT_LOCATION_CHECK_PRESSISION = 13; // 13 decimal places
 const ROTATION_DURATION = 30000; // 30 seconds
+const TITLE_STEP_ID = 'story-map-title';
+const TRANSITION_SPACER_SUFFIX = '-transition';
+const SPACER_TRANSITION_PROGRESS_THRESHOLD = 0.65;
+const SPACER_TRANSITION_DATA_ATTR = 'spacerTransitionDirection';
 
 const getBoundsJson = bounds => ({
   type: 'FeatureCollection',
@@ -70,6 +74,33 @@ const getBoundsJson = bounds => ({
     },
   ],
 });
+
+const hasReachedSpacerProgressThreshold = ({ direction, progress }) => {
+  if (direction === 'down') {
+    return progress >= SPACER_TRANSITION_PROGRESS_THRESHOLD;
+  }
+  if (direction === 'up') {
+    return progress <= 1 - SPACER_TRANSITION_PROGRESS_THRESHOLD;
+  }
+  return false;
+};
+
+const markSpacerTransition = (element, direction) => {
+  if (!element?.dataset || !direction) {
+    return;
+  }
+  element.dataset[SPACER_TRANSITION_DATA_ATTR] = direction;
+};
+
+const hasSpacerTransitionFired = (element, direction) =>
+  !!direction && element?.dataset?.[SPACER_TRANSITION_DATA_ATTR] === direction;
+
+const resetSpacerTransition = element => {
+  if (!element?.dataset) {
+    return;
+  }
+  delete element.dataset[SPACER_TRANSITION_DATA_ATTR];
+};
 
 const Audio = ({ record }) => {
   return (
@@ -115,7 +146,7 @@ const Embedded = ({ record }) => {
   );
 };
 
-const Chapter = ({ theme, record }) => {
+const Chapter = ({ theme, record, chapterIndex }) => {
   const { t } = useTranslation();
   const classList = [
     'step-container',
@@ -131,6 +162,9 @@ const Chapter = ({ theme, record }) => {
       component="section"
       aria-label={t('storyMap.view_chapter_label', { title: record.title })}
       className={classList}
+      data-step-type="chapter"
+      data-chapter-id={record.id}
+      data-chapter-index={chapterIndex}
     >
       <Box
         className={`${theme} step-content`}
@@ -161,6 +195,26 @@ const Chapter = ({ theme, record }) => {
   );
 };
 
+const TransitionSpacer = ({
+  chapterId,
+  chapterIndex,
+  previousChapterId,
+  spacerRole,
+}) => (
+  <Box
+    id={`${chapterId}${TRANSITION_SPACER_SUFFIX}-${spacerRole}`}
+    className="transition-spacer step"
+    role="presentation"
+    aria-hidden="true"
+    tabIndex={-1}
+    data-step-type="spacer"
+    data-chapter-id={chapterId}
+    data-previous-chapter-id={previousChapterId}
+    data-chapter-index={chapterIndex}
+    data-spacer-role={spacerRole}
+  />
+);
+
 const Title = props => {
   const { t } = useTranslation();
   const { config } = props;
@@ -186,10 +240,11 @@ const Title = props => {
 
   return (
     <Box
-      id="story-map-title"
+      id={TITLE_STEP_ID}
       component="section"
       aria-label={t('storyMap.view_title_label', { title: config.title })}
       className="step step-container fully title"
+      data-step-type="title"
     >
       <Box className={`${config.theme} step-content`}>
         <h1 id="story-view-title-id">{config.title}</h1>
@@ -205,7 +260,7 @@ const Title = props => {
 };
 
 const getTransition = ({ config, id, direction }) => {
-  const isTitle = id === 'story-map-title';
+  const isTitle = id === TITLE_STEP_ID;
   if (isTitle) {
     return {
       transition: config.titleTransition,
@@ -319,6 +374,39 @@ const Scroller = props => {
   const [marker, setMarker] = useState(null);
   const [isReady, setIsReady] = useState(false);
 
+  const getStepMeta = useCallback(element => {
+    const dataset = element.dataset || {};
+    const type =
+      dataset.stepType || (element.id === TITLE_STEP_ID ? 'title' : 'chapter');
+    const chapterId =
+      dataset.chapterId || (type === 'chapter' ? element.id : null);
+    const previousChapterId = dataset.previousChapterId || null;
+    const chapterIndex = dataset.chapterIndex
+      ? Number(dataset.chapterIndex)
+      : null;
+    const spacerRole = dataset.spacerRole || 'enter';
+    return {
+      type,
+      chapterId,
+      previousChapterId,
+      chapterIndex,
+      spacerRole,
+    };
+  }, []);
+
+  const resolveTransitionId = useCallback(stepMeta => {
+    if (stepMeta.type === 'spacer') {
+      if (stepMeta.spacerRole === 'enter') {
+        return stepMeta.chapterId;
+      }
+      return stepMeta.previousChapterId || TITLE_STEP_ID;
+    }
+    if (stepMeta.type === 'title') {
+      return TITLE_STEP_ID;
+    }
+    return stepMeta.chapterId;
+  }, []);
+
   useEffect(() => {
     if (!isReady) {
       return;
@@ -424,6 +512,21 @@ const Scroller = props => {
     [map, config, insetMap, marker, setLayerOpacity, animation]
   );
 
+  const handleSpacerProgress = useCallback(
+    (response, transition) => {
+      if (!hasReachedSpacerProgressThreshold(response) || !transition) {
+        return;
+      }
+      const { element, direction } = response;
+      if (hasSpacerTransitionFired(element, direction)) {
+        return;
+      }
+      markSpacerTransition(element, direction);
+      startTransition(transition);
+    },
+    [startTransition]
+  );
+
   useEffect(() => {
     if (!map || (config.inset && !insetMap)) {
       return;
@@ -435,38 +538,57 @@ const Scroller = props => {
         root: document,
         step: '.step',
         offset: 0.5,
+        progress: true,
       })
       .onStepEnter(async response => {
-        const { index, transition } = getTransition({
+        const stepMeta = getStepMeta(response.element);
+        const transitionId = resolveTransitionId(stepMeta);
+        const { transition } = getTransition({
           config: {
             titleTransition: config.titleTransition,
             chapters: config.chapters,
           },
-          id: response.element.id,
+          id: transitionId,
           direction: response.direction,
         });
-        response.element.classList.add('active');
-        startTransition(transition);
-        onStepChange?.(response.element.id);
-
-        if (config.auto) {
-          const nextChapterIndex = (index + 1) % config.chapters.length;
-          map.once('moveend', () => {
-            document
-              .querySelectorAll(
-                '[data-scrollama-index="' + nextChapterIndex.toString() + '"]'
-              )[0]
-              .scrollIntoView();
-          });
+        if (stepMeta.type !== 'spacer') {
+          response.element.classList.add('active');
+          onStepChange?.(transitionId);
+          // Fire transition immediately for chapter/title steps to validate
+          startTransition(transition);
+        }
+        if (stepMeta.type === 'title') {
+          startTransition(transition);
         }
       })
+      .onStepProgress(response => {
+        const stepMeta = getStepMeta(response.element);
+        if (stepMeta.type !== 'spacer') {
+          return;
+        }
+        const transitionId = resolveTransitionId(stepMeta);
+        const { transition } = getTransition({
+          config: {
+            titleTransition: config.titleTransition,
+            chapters: config.chapters,
+          },
+          id: transitionId,
+          direction: response.direction,
+        });
+        handleSpacerProgress(response, transition);
+      })
       .onStepExit(response => {
+        const stepMeta = getStepMeta(response.element);
+        if (stepMeta.type === 'spacer') {
+          resetSpacerTransition(response.element);
+          return;
+        }
         const { transition, nextTransition } = getTransition({
           config: {
             titleTransition: config.titleTransition,
             chapters: config.chapters,
           },
-          id: response.element.id,
+          id: stepMeta.chapterId || response.element.id,
           direction: response.direction,
         });
         response.element.classList.remove('active');
@@ -482,9 +604,9 @@ const Scroller = props => {
       });
     // This is needed for development due to resize observer issue
     // should not be here on production
-    if (import.meta.env.MODE === 'development') {
-      scroller.disable();
-    }
+    // if (import.meta.env.MODE === 'development') {
+    //   scroller.disable();
+    // }
     setIsReady(true);
 
     window.addEventListener('resize', scroller.resize);
@@ -498,10 +620,11 @@ const Scroller = props => {
     marker,
     setLayerOpacity,
     startTransition,
-    config.title,
+    handleSpacerProgress,
+    getStepMeta,
+    resolveTransitionId,
     config.titleTransition,
     config.chapters,
-    config.auto,
     config.inset,
     config.showMarkers,
     onStepChange,
@@ -539,6 +662,17 @@ const StoryMap = props => {
     }
     return config.chapters.filter(chaptersFilter);
   }, [config.chapters, chaptersFilter]);
+
+  const chapterEntries = useMemo(
+    () =>
+      filteredChapters.map((chapter, index) => ({
+        chapter,
+        index,
+        previousChapterId:
+          index === 0 ? TITLE_STEP_ID : filteredChapters[index - 1].id,
+      })),
+    [filteredChapters]
+  );
 
   return (
     <>
@@ -592,12 +726,26 @@ const StoryMap = props => {
           className={ALIGNMENTS[config.alignment]}
         >
           <TitleComponent config={config} />
-          {filteredChapters.map(chapter => (
-            <ChapterComponent
-              key={chapter.id}
-              theme={config.theme}
-              record={chapter}
-            />
+          {chapterEntries.map(({ chapter, index, previousChapterId }) => (
+            <Fragment key={chapter.id}>
+              <TransitionSpacer
+                chapterId={chapter.id}
+                chapterIndex={index}
+                previousChapterId={previousChapterId}
+                spacerRole="exit"
+              />
+              <TransitionSpacer
+                chapterId={chapter.id}
+                chapterIndex={index}
+                previousChapterId={previousChapterId}
+                spacerRole="enter"
+              />
+              <ChapterComponent
+                theme={config.theme}
+                record={chapter}
+                chapterIndex={index}
+              />
+            </Fragment>
           ))}
         </Box>
         {config.footer && (
