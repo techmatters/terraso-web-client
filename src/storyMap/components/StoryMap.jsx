@@ -604,6 +604,17 @@ const StoryMap = props => {
   } = props;
 
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
+  const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
+
+  // Disable body scroll when map is fullscreen on mobile
+  useEffect(() => {
+    if (isMapFullscreen && isMobile) {
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = '';
+      };
+    }
+  }, [isMapFullscreen, isMobile]);
 
   const initialLocation = useMemo(() => {
     if (config.titleTransition?.location) {
