@@ -75,7 +75,7 @@
     "start": "npm run generate-types -- -w -s & vite",
     "server": "node server.cjs",
     "generate-types": "npx graphql-code-generator",
-    "lint-js": "eslint ./ --ext .js --ext .jsx --ext .ts --ext .tsx --max-warnings 0 --ignore-path .gitignore",
+    "lint-js": "eslint ./ --ext .js --ext .jsx --ext .ts --ext .tsx --max-warnings 0",
     "format-js": "npm run lint-js -- --fix",
     "check-ts": "npm run generate-types && tsc --noEmit",
     "lint-css": "stylelint --config=.stylelintrc '**/*.css'",
@@ -240,7 +240,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --max-warnings 0 --ignore-path .gitignore --fix"
+      "eslint --max-warnings 0 --fix"
     ],
     "*.{json,js,jsx,ts,tsx,html}": [
       "prettier --write --ignore-unknown"
