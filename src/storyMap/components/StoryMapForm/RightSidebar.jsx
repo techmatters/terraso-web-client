@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import {
@@ -182,6 +182,11 @@ const RightSidebar = props => {
   const { storyMap, setPreview } = useStoryMapConfigContext();
   const [openShareDialog, setOpenShareDialog] = useState(false);
 
+  const handlePreview = useCallback(() => {
+    onClose?.();
+    setPreview(true);
+  }, [onClose, setPreview]);
+
   const modalProps = useMemo(
     () => ({
       keepMounted: true,
@@ -230,7 +235,7 @@ const RightSidebar = props => {
               alignItems="center"
             >
               <PreviewAction
-                onPreview={() => setPreview(true)}
+                onPreview={handlePreview}
                 label={t('storyMap.form_preview_button')}
               />
               <CollapseButton
