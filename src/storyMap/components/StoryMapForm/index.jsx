@@ -15,14 +15,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import logger from 'terraso-client-shared/monitoring/logger';
 import { useDebounce } from 'use-debounce';
 import { v4 as uuidv4 } from 'uuid';
-import { Grid, useMediaQuery } from '@mui/material';
+import { Box, Grid, useMediaQuery } from '@mui/material';
 
 import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
 import NavigationBlockedDialog from 'terraso-web-client/navigation/components/NavigationBlockedDialog';
@@ -30,6 +30,8 @@ import { useNavigationBlocker } from 'terraso-web-client/navigation/navigationCo
 import StoryMap from 'terraso-web-client/storyMap/components/StoryMap';
 import ChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/ChapterForm';
 import ChaptersSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/ChaptersSideBar';
+import RightSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/RightSidebar';
+import RightSidebarToggleButton from 'terraso-web-client/storyMap/components/StoryMapForm/RightSidebarToggleButton';
 import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import TitleForm from 'terraso-web-client/storyMap/components/StoryMapForm/TitleForm';
 import TopBar from 'terraso-web-client/storyMap/components/StoryMapForm/TopBar';
@@ -49,6 +51,9 @@ const BASE_CHAPTER = {
   onChapterEnter: [],
   onChapterExit: [],
 };
+
+const RIGHT_SIDEBAR_Z_INDEX = 3;
+const RIGHT_SIDEBAR_TOGGLE_Z_INDEX = 2;
 
 const Preview = props => {
   const { getMediaFile } = useStoryMapConfigContext();
@@ -110,8 +115,13 @@ const StoryMapForm = props => {
   } = useStoryMapConfigContext();
   const [mapHeight, setMapHeight] = useState();
   const [mapWidth, setMapWidth] = useState();
+  const [formHeaderHeight, setFormHeaderHeight] = useState(0);
   const [currentStepId, setCurrentStepId] = useState();
   const [scrollToChapter, setScrollToChapter] = useState();
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
+  const storyMapBodyRef = useRef(null);
+  const rightSidebarToggleRef = useRef(null);
+  const wasRightSidebarOpen = useRef(false);
 
   const [autoSaveData, setAutoSaveData] = useState({
     config,
@@ -165,6 +175,7 @@ const StoryMapForm = props => {
     setMapHeight(
       `calc(100vh - (${headerHeight}px + ${footerHeight}px + ${formHeaderHeight}px))`
     );
+    setFormHeaderHeight(formHeaderHeight);
   }, [isSmall]);
 
   // Focus on the title when the map is ready
@@ -194,6 +205,13 @@ const StoryMapForm = props => {
       .getElementById(scrollToChapter)
       ?.scrollIntoView({ block: 'start' });
   }, [scrollToChapter]);
+
+  useEffect(() => {
+    if (wasRightSidebarOpen.current && !isRightSidebarOpen) {
+      rightSidebarToggleRef.current?.focus();
+    }
+    wasRightSidebarOpen.current = isRightSidebarOpen;
+  }, [isRightSidebarOpen]);
 
   const onAddChapter = useCallback(() => {
     const id = `chapter-${uuidv4()}`;
@@ -262,6 +280,14 @@ const StoryMapForm = props => {
     [config, mediaFiles, onSaveDraft, saved]
   );
 
+  const openRightSidebar = useCallback(() => {
+    setIsRightSidebarOpen(true);
+  }, []);
+
+  const closeRightSidebar = useCallback(() => {
+    setIsRightSidebarOpen(false);
+  }, []);
+
   if (preview || isSmall) {
     return <Preview config={config} onPublish={onPublishWrapper} />;
   }
@@ -282,40 +308,59 @@ const StoryMapForm = props => {
         requestStatus={requestStatus}
         isDirty={isDirty}
       />
-      <Grid
-        container
-        justifyContent="flex-start"
-        alignItems="flex-start"
-        sx={{ height: mapHeight, width: '100%' }}
+      <Box
+        ref={storyMapBodyRef}
+        sx={{ position: 'relative', width: '100%', height: mapHeight }}
       >
-        <ChaptersSidebar
-          config={config}
-          currentStepId={currentStepId}
-          onAdd={onAddChapter}
-          onDelete={onDeleteChapter}
-          onMoveChapter={onMoveChapter}
-          height={mapHeight}
-        />
         <Grid
-          size="grow"
-          sx={{
-            height: mapHeight,
-            // There is no overlay support for Firefox, see: https://developer.mozilla.org/en-US/docs/Web/CSS/overflow
-            overflowY: isFirefox ? 'scroll' : 'overlay',
-          }}
+          container
+          justifyContent="flex-start"
+          alignItems="flex-start"
+          sx={{ height: mapHeight, width: '100%' }}
         >
-          {mapHeight && mapWidth && (
-            <StoryMap
-              config={config}
-              mapCss={{ height: mapHeight, width: mapWidth }}
-              onStepChange={setCurrentStepId}
-              ChapterComponent={ChapterForm}
-              TitleComponent={TitleForm}
-              onReady={onMapReady}
-            />
-          )}
+          <ChaptersSidebar
+            config={config}
+            currentStepId={currentStepId}
+            onAdd={onAddChapter}
+            onDelete={onDeleteChapter}
+            onMoveChapter={onMoveChapter}
+            height={mapHeight}
+          />
+          <Grid
+            size="grow"
+            sx={{
+              position: 'relative',
+              height: mapHeight,
+              // There is no overlay support for Firefox, see: https://developer.mozilla.org/en-US/docs/Web/CSS/overflow
+              overflowY: isFirefox ? 'scroll' : 'overlay',
+            }}
+          >
+            {mapHeight && mapWidth && (
+              <StoryMap
+                config={config}
+                mapCss={{ height: mapHeight, width: mapWidth }}
+                onStepChange={setCurrentStepId}
+                ChapterComponent={ChapterForm}
+                TitleComponent={TitleForm}
+                onReady={onMapReady}
+              />
+            )}
+          </Grid>
         </Grid>
-      </Grid>
+        <RightSidebarToggleButton
+          ref={rightSidebarToggleRef}
+          onClick={openRightSidebar}
+          hidden={isRightSidebarOpen}
+          zIndex={RIGHT_SIDEBAR_TOGGLE_Z_INDEX}
+        />
+        <RightSidebar
+          open={isRightSidebarOpen}
+          onClose={closeRightSidebar}
+          container={storyMapBodyRef.current}
+          zIndex={RIGHT_SIDEBAR_Z_INDEX}
+          topOffset={formHeaderHeight}
+        />
+      </Box>
     </>
   );
 };

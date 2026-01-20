@@ -39,8 +39,6 @@ import { withProps } from 'terraso-web-client/react-hoc';
 
 import ConfirmMenuItem from 'terraso-web-client/common/components/ConfirmMenuItem';
 import StrictModeDroppable from 'terraso-web-client/common/components/StrictModeDroppable';
-import FeaturedImage from 'terraso-web-client/storyMap/components/StoryMapForm/FeaturedImage';
-import ShortDescription from 'terraso-web-client/storyMap/components/StoryMapForm/ShortDescription';
 
 import dragIcon from 'terraso-web-client/assets/drag-icon.svg';
 
@@ -358,10 +356,9 @@ const ChaptersSidebar = props => {
         display: 'flex',
         alignItems: 'stretch',
         flexDirection: 'column',
+        pt: 2,
       }}
     >
-      <FeaturedImage />
-      <ShortDescription />
       <SideBarItem item={titleItem} />
       <DragDropContext
         onDragEnd={onDragEnd}

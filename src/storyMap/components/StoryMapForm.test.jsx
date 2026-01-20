@@ -792,11 +792,11 @@ test('StoryMapForm: Show preview', async () => {
   await setup({ config: BASE_CONFIG });
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Actions' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Open right sidebar' }))
   );
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('menuitem', { name: 'Preview draft' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Preview draft' }))
   );
 
   const chapters = screen.getByRole('region', {
@@ -1365,8 +1365,12 @@ test('StoryMapForm: Keep map on chapter change', async () => {
 test('StoryMapForm: Add featured image', async () => {
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
-  const sidebar = screen.getByRole('navigation', {
-    name: 'Chapters sidebar',
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Open right sidebar' }))
+  );
+
+  const sidebar = screen.getByRole('complementary', {
+    name: 'Right sidebar',
   });
 
   const featuredImageButton = within(sidebar).getByRole('button', {
@@ -1432,8 +1436,12 @@ test('StoryMapForm: Add featured image', async () => {
 test('StoryMapForm: Add short description', async () => {
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
-  const sidebar = screen.getByRole('navigation', {
-    name: 'Chapters sidebar',
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Open right sidebar' }))
+  );
+
+  const sidebar = screen.getByRole('complementary', {
+    name: 'Right sidebar',
   });
 
   const shortDescriptionButton = within(sidebar).getByRole('button', {

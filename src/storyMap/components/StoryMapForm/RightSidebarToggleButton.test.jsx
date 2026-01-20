@@ -15,33 +15,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useTranslation } from 'react-i18next';
-import { Grid } from '@mui/material';
+import { render, screen } from 'terraso-web-client/tests/utils';
 
-const TopBarContainer = ({ children }) => {
-  const { t } = useTranslation();
-  return (
-    <Grid
-      id="form-header"
-      container
-      component="section"
-      aria-label={t('storyMap.form_header_section_label')}
-      sx={theme => ({
-        borderBottom: `1px solid ${theme.palette.gray.lite1}`,
-        display: 'flex',
-        alignItems: 'center',
-        pt: 3,
-        pb: 1,
-        zIndex: 4,
-        bgcolor: 'white',
-        minHeight: 70,
-        position: 'relative',
-        width: '100%',
-      })}
-    >
-      {children}
-    </Grid>
-  );
-};
+import RightSidebarToggleButton from 'terraso-web-client/storyMap/components/StoryMapForm/RightSidebarToggleButton';
 
-export default TopBarContainer;
+describe('RightSidebarToggleButton', () => {
+  it('renders the expand toggle', async () => {
+    await render(<RightSidebarToggleButton onClick={jest.fn()} />);
+
+    expect(screen.getByLabelText(/right sidebar/i)).toBeInTheDocument();
+  });
+
+  it('does not render when hidden', async () => {
+    await render(<RightSidebarToggleButton onClick={jest.fn()} hidden />);
+
+    expect(screen.queryByLabelText(/right sidebar/i)).not.toBeInTheDocument();
+  });
+});
