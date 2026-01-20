@@ -187,10 +187,15 @@ test('StoryMapUpdate: Show Share Dialog', async () => {
   await setup({ id: API_STORY_MAP.createdBy.id });
 
   await act(() => {
-    fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Open right sidebar' }));
   });
 
-  const shareButton = screen.getByRole('menuitem', { name: 'Invite editors' });
+  const rightSidebar = screen.getByRole('complementary', {
+    name: 'Right sidebar',
+  });
+  const shareButton = within(rightSidebar).getByRole('button', {
+    name: 'Invite contributor',
+  });
   await act(async () => fireEvent.click(shareButton));
 
   expect(
@@ -259,9 +264,14 @@ test('StoryMapUpdate: Share Dialog invite members', async () => {
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
   await act(() => {
-    fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Open right sidebar' }));
   });
-  const shareButton = screen.getByRole('menuitem', { name: 'Invite editors' });
+  const rightSidebar = screen.getByRole('complementary', {
+    name: 'Right sidebar',
+  });
+  const shareButton = within(rightSidebar).getByRole('button', {
+    name: 'Invite contributor',
+  });
   await act(async () => fireEvent.click(shareButton));
 
   const inviteButton = within(
@@ -324,9 +334,14 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
   await act(() => {
-    fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Open right sidebar' }));
   });
-  const shareButton = screen.getByRole('menuitem', { name: 'Invite editors' });
+  const rightSidebar = screen.getByRole('complementary', {
+    name: 'Right sidebar',
+  });
+  const shareButton = within(rightSidebar).getByRole('button', {
+    name: 'Invite contributor',
+  });
   await act(async () => fireEvent.click(shareButton));
 
   const removeButton = within(
@@ -389,9 +404,14 @@ test('StoryMapUpdate: See story map as editor', async () => {
   expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
 
   await act(() => {
-    fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Open right sidebar' }));
   });
-  const shareButton = screen.getByRole('menuitem', { name: 'Invite editors' });
+  const rightSidebar = screen.getByRole('complementary', {
+    name: 'Right sidebar',
+  });
+  const shareButton = within(rightSidebar).getByRole('button', {
+    name: 'Invite contributor',
+  });
   await act(async () => fireEvent.click(shareButton));
 
   const membersList = screen.getByRole('list', { name: 'People with access' });
