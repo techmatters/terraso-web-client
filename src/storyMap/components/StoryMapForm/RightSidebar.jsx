@@ -215,7 +215,8 @@ const RightSidebar = props => {
         role="complementary"
         aria-label={t('storyMap.form_right_sidebar_section_label')}
         sx={{
-          p: 1,
+          px: 3,
+          py: 1,
           height: '100%',
           overflowY: 'auto',
           bgcolor: 'white',
