@@ -83,7 +83,12 @@ const compatConfigs = compat.config({
 
 export default [
   {
-    ignores: ['node_modules/**', 'build/**'],
+    ignores: [
+      'node_modules/**',
+      'build/**',
+      'server/**',
+      'src/terrasoApi/shared/graphqlSchema/**',
+    ],
   },
   ...compatConfigs.map(config => ({
     ...config,
