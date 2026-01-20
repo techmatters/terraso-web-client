@@ -110,6 +110,8 @@
     "@babel/preset-typescript": "^7.28.5",
     "@commitlint/cli": "^20.2.0",
     "@commitlint/config-conventional": "^20.2.0",
+    "@eslint/eslintrc": "^3.3.0",
+    "@eslint/js": "^9.39.0",
     "@graphql-codegen/cli": "^6.1.0",
     "@graphql-codegen/client-preset": "^5.2.2",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
