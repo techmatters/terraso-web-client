@@ -18,6 +18,9 @@
 import { useCallback, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
+import CheckIcon from '@mui/icons-material/Check';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import ShareIcon from '@mui/icons-material/Share';
 import {
   Box,
   Button,
@@ -26,14 +29,27 @@ import {
   IconButton,
   Link,
   Stack,
+  Tooltip,
   Typography,
 } from '@mui/material';
 
+import SocialShare, {
+  useSocialShareContext,
+} from 'terraso-web-client/common/components/SocialShare';
+import {
+  createAbsoluteUrl,
+  formatUrlForDisplay,
+} from 'terraso-web-client/common/utils/urlUtils';
 import FeaturedImage from 'terraso-web-client/storyMap/components/StoryMapForm/FeaturedImage';
 import ShareDialog from 'terraso-web-client/storyMap/components/StoryMapForm/ShareDialog';
 import ShortDescription from 'terraso-web-client/storyMap/components/StoryMapForm/ShortDescription';
 import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
-import { generateStoryMapUrl } from 'terraso-web-client/storyMap/storyMapUtils';
+import {
+  generateStoryMapEmbedUrl,
+  generateStoryMapUrl,
+  getStoryMapStatusLabel,
+  isStoryMapPublished,
+} from 'terraso-web-client/storyMap/storyMapUtils';
 
 const SIDEBAR_WIDTH = 300;
 const SIDEBAR_ICON_SRC = '/storyMap/sidebar-right-collapse.svg';
@@ -49,88 +65,152 @@ const SidebarSection = ({ children }) => (
   </Stack>
 );
 
-const CollapseButton = ({ onClick, label, sx }) => (
-  <IconButton
-    onClick={onClick}
-    aria-label={label}
-    size="small"
-    sx={theme => ({
-      position: 'absolute',
-      top: theme.spacing(2),
-      right: theme.spacing(2),
-      bgcolor: 'white',
-      boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)',
-      borderRadius: 2,
-      border: `1px solid ${theme.palette.gray.lite1}`,
-      '&:hover': {
-        bgcolor: 'gray.lite1',
-      },
-      ...sx,
-    })}
-  >
-    <Box
-      component="img"
-      src={SIDEBAR_ICON_SRC}
-      alt={label}
-      sx={{ width: 20, height: 20 }}
-    />
-  </IconButton>
-);
+const CollapseButton = ({ onClick, sx }) => {
+  const { t } = useTranslation();
+  const label = t('storyMap.form_right_sidebar_close');
 
-const PreviewAction = ({ onPreview, label }) => (
-  <Button
-    variant="text"
-    size="small"
-    onClick={onPreview}
-    fullWidth
-    sx={ACTION_BUTTON_SX}
-  >
-    {label}
-  </Button>
-);
+  return (
+    <IconButton
+      onClick={onClick}
+      aria-label={label}
+      size="small"
+      sx={theme => ({
+        position: 'absolute',
+        top: theme.spacing(2),
+        right: theme.spacing(2),
+        bgcolor: 'white',
+        boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)',
+        borderRadius: 2,
+        border: `1px solid ${theme.palette.gray.lite1}`,
+        '&:hover': {
+          bgcolor: 'gray.lite1',
+        },
+        ...sx,
+      })}
+    >
+      <Box
+        component="img"
+        src={SIDEBAR_ICON_SRC}
+        alt={label}
+        sx={{ width: 20, height: 20 }}
+      />
+    </IconButton>
+  );
+};
 
-const StatusRow = ({ storyMap, label, publishedLabel, draftLabel }) => {
+const PreviewAction = ({ onPreview }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Button
+      variant="text"
+      size="small"
+      onClick={onPreview}
+      fullWidth
+      sx={ACTION_BUTTON_SX}
+    >
+      {t('storyMap.form_preview_button')}
+    </Button>
+  );
+};
+
+const PublishedActions = ({ storyMap }) => {
+  const { t } = useTranslation();
+  const [copied, setCopied] = useState(false);
+
+  const published = isStoryMapPublished(storyMap);
+
+  const absoluteUrl = useMemo(
+    () => (published ? createAbsoluteUrl(generateStoryMapUrl(storyMap)) : null),
+    [storyMap, published]
+  );
+
+  const displayUrl = useMemo(
+    () => (absoluteUrl ? formatUrlForDisplay(absoluteUrl) : ''),
+    [absoluteUrl]
+  );
+
+  const handleCopyUrl = useCallback(() => {
+    if (!absoluteUrl) {
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(absoluteUrl)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch(err => {
+        console.error('Failed to copy URL to clipboard:', err);
+      });
+  }, [absoluteUrl]);
+
   if (!storyMap) {
     return null;
   }
-  const statusLabel = storyMap.publishedAt ? publishedLabel : draftLabel;
+
+  const statusLabel = getStoryMapStatusLabel(storyMap, t);
+
   return (
-    <Typography variant="caption">
-      {label}: <strong>{statusLabel}</strong>
-    </Typography>
+    <Stack spacing={1.5}>
+      <Typography variant="body2">
+        {t('storyMap.form_status_label')}: <strong>{statusLabel}</strong>
+      </Typography>
+
+      {published && (
+        <>
+          <Typography variant="body2">
+            {t('storyMap.form_link_label')}:{' '}
+            <Link
+              href={absoluteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ wordBreak: 'break-all' }}
+            >
+              {displayUrl}
+            </Link>{' '}
+            <Tooltip
+              title={
+                copied
+                  ? t('storyMap.form_url_copied')
+                  : t('storyMap.form_copy_url')
+              }
+            >
+              <IconButton
+                size="small"
+                onClick={handleCopyUrl}
+                aria-label={t('storyMap.form_copy_url')}
+                color={copied ? 'success' : 'default'}
+              >
+                {copied ? (
+                  <CheckIcon fontSize="small" />
+                ) : (
+                  <ContentCopyIcon fontSize="small" />
+                )}
+              </IconButton>
+            </Tooltip>
+          </Typography>
+          <Stack alignItems="flex-start">
+            <SocialShare
+              url={absoluteUrl}
+              title={storyMap.title}
+              buttonProps={{
+                variant: 'outlined',
+                size: 'small',
+                startIcon: <ShareIcon />,
+              }}
+            />
+          </Stack>
+        </>
+      )}
+    </Stack>
   );
 };
 
-const ViewPublishedAction = ({ storyMap }) => {
-  if (!storyMap?.publishedAt) {
-    return null;
-  }
-  const url = generateStoryMapUrl(storyMap);
-  return (
-    <Typography variant="caption">
-      Link:
-      <Link
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        sx={{
-          wordBreak: 'break-word',
-          ml: 0.5,
-        }}
-      >
-        {url}
-      </Link>
-    </Typography>
-  );
-};
+const ShareAction = ({ storyMap, onShare }) => {
+  const { t } = useTranslation();
 
-const ShareAction = ({
-  storyMap,
-  onShare,
-  label,
-  contributorsLabel,
-  getContributorLabel,
-}) => {
   if (!storyMap) {
     return null;
   }
@@ -153,11 +233,16 @@ const ShareAction = ({
     )
   )([ownerMembership, ...(storyMap.memberships || [])]);
 
+  const getContributorLabel = membership =>
+    membership.pendingEmail
+      ? membership.pendingEmail
+      : t('user.full_name', { user: membership.user });
+
   const contributors = memberships.map(getContributorLabel).filter(Boolean);
 
   return (
     <Stack spacing={0.5}>
-      <Typography>{contributorsLabel}:</Typography>
+      <Typography>{t('storyMap.form_contributors_label')}:</Typography>
       {contributors.map(name => (
         <Typography key={name} variant="caption">
           {name}
@@ -170,7 +255,7 @@ const ShareAction = ({
         fullWidth
         sx={ACTION_BUTTON_SX}
       >
-        {label}
+        {t('storyMap.form_invite_contributor_button')}
       </Button>
     </Stack>
   );
@@ -181,6 +266,18 @@ const RightSidebar = props => {
   const { open, onClose, container, zIndex = 3, topOffset = 0 } = props;
   const { storyMap, setPreview } = useStoryMapConfigContext();
   const [openShareDialog, setOpenShareDialog] = useState(false);
+
+  useSocialShareContext(
+    useMemo(
+      () => ({
+        name: storyMap?.title,
+        pageUrl: storyMap?.publishedAt ? generateStoryMapUrl(storyMap) : null,
+        embedUrl: storyMap ? generateStoryMapEmbedUrl(storyMap) : null,
+        itemType: 'storyMap.item_type',
+      }),
+      [storyMap]
+    )
+  );
 
   const handlePreview = useCallback(() => {
     onClose?.();
@@ -234,39 +331,18 @@ const RightSidebar = props => {
               justifyContent="space-between"
               alignItems="center"
             >
-              <PreviewAction
-                onPreview={handlePreview}
-                label={t('storyMap.form_preview_button')}
-              />
-              <CollapseButton
-                onClick={onClose}
-                label={t('storyMap.form_right_sidebar_close')}
-              />
+              <PreviewAction onPreview={handlePreview} />
+              <CollapseButton onClick={onClose} />
             </Stack>
             <FeaturedImage />
             <ShortDescription />
           </Stack>
           <Divider />
-          <Stack spacing={1}>
-            <StatusRow
-              storyMap={storyMap}
-              label={t('storyMap.form_status_label')}
-              publishedLabel={t('storyMap.form_status_published')}
-              draftLabel={t('storyMap.form_status_draft')}
-            />
-            <ViewPublishedAction storyMap={storyMap} />
-          </Stack>
+          <PublishedActions storyMap={storyMap} />
           <Divider />
           <ShareAction
             storyMap={storyMap}
             onShare={() => setOpenShareDialog(true)}
-            label={t('storyMap.form_invite_contributor_button')}
-            contributorsLabel={t('storyMap.form_contributors_label')}
-            getContributorLabel={membership =>
-              membership.pendingEmail
-                ? membership.pendingEmail
-                : t('user.full_name', { user: membership.user })
-            }
           />
         </SidebarSection>
       </Box>
