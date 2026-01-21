@@ -46,6 +46,13 @@ export const generateStoryMapEmbedUrl = storyMap => {
 export const generateStoryMapEditUrl = storyMap =>
   `${generateStoryMapUrl(storyMap)}/edit`;
 
+export const isStoryMapPublished = storyMap => Boolean(storyMap?.publishedAt);
+
+export const getStoryMapStatusLabel = (storyMap, t) =>
+  isStoryMapPublished(storyMap)
+    ? t('storyMap.form_status_published')
+    : t('storyMap.form_status_draft');
+
 export const extractStoryMap = storyMap => ({
   ..._.omit(['membershipList'], storyMap),
   accountMembership: extractAccountMembership(storyMap.membershipList),
