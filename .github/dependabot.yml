@@ -1,7 +1,6 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+# Dependabot configuration for automated dependency updates
+# See: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+# See the following for an explanation of our policy: https://docs.google.com/document/d/1IEy2LX1_ZSVYTZkAaL9P0IePm2huslViU7BC89KY_Lw/edit?pli=1&tab=t.0#heading=h.8bk70r4h3u7q
 
 version: 2
 updates:
@@ -9,42 +8,36 @@ updates:
     directory: '/'
     schedule:
       interval: 'weekly'
-      day: 'sunday'
-    open-pull-requests-limit: 31
+      day: 'monday'
     allow:
       - dependency-type: all
+    cooldown:
+      default-days: 30
     groups:
-      mui:
+      security-updates:
+        applies-to: security-updates
         patterns:
-          - '@mui/*'
-      react:
+          - '*'
+      version-updates:
+        applies-to: version-updates
         patterns:
-          - 'react'
-          - 'react-*'
-      types:
-        patterns:
-          - '@types/*'
-      slate:
-        patterns:
-          - 'slate-*'
-      mapbox:
-        patterns:
-          - '@mapbox/*'
-          - 'mapbox-gl'
-      turf:
-        patterns:
-          - '@turf/*'
-      sentry:
-        patterns:
-          - '@sentry/*'
-      i18n:
-        patterns:
-          - 'i18next'
-          - 'i18next-*'
+          - '*'
 
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
       interval: 'weekly'
+      day: 'monday'
     allow:
       - dependency-type: all
+    cooldown:
+      default-days: 30
+    groups:
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - '*'
+      version-updates:
+        applies-to: version-updates
+        patterns:
+          - '*'
