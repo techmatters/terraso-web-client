@@ -74,7 +74,6 @@ const getBoundsJson = bounds => ({
 const Audio = ({ record }) => {
   return (
     <>
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio style={{ width: '100%' }} controls>
         <source src={record.media.signedUrl} type={record.media.type} />
       </audio>
@@ -85,7 +84,6 @@ const Audio = ({ record }) => {
 const Video = ({ record }) => {
   return (
     <>
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <video style={{ width: '100%' }} controls>
         <source src={record.media.signedUrl} type={record.media.type} />
       </video>
@@ -271,7 +269,7 @@ const InsetConfig = props => {
     }
 
     function getInsetBounds() {
-      let bounds = map.getBounds();
+      const bounds = map.getBounds();
       updateInsetLayer(getBoundsJson(bounds));
     }
 

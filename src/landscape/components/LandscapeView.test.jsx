@@ -139,7 +139,7 @@ const baseViewTest = async (
       })),
   };
   // Add a link to the shared resources
-  let index = 6;
+  const index = 6;
   sharedResources.edges.push({
     node: {
       id: `sr-${index}`,

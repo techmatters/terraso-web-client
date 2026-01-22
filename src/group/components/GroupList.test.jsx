@@ -156,12 +156,12 @@ test('GroupList: Display list', async () => {
   expect(
     within(rows[2])
       .getByRole('button', { name: 'Join: Group name 1' })
-      .closest('[role="gridcell"]') // eslint-disable-line testing-library/no-node-access
+      .closest('[role="gridcell"]')
   ).toHaveAttribute('data-field', 'actions');
   expect(
     screen
       .getByRole('button', { name: 'Leave: Group name 3' })
-      .closest('[role="gridcell"]') // eslint-disable-line testing-library/no-node-access
+      .closest('[role="gridcell"]')
   ).toHaveAttribute('data-field', 'actions');
 });
 test('GroupList: List sort', async () => {

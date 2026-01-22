@@ -63,7 +63,7 @@ export const deserialize = el => {
   }
 
   const { nodeName } = el;
-  let parent = el;
+  const parent = el;
 
   let children = Array.from(parent.childNodes).map(deserialize).flat();
 

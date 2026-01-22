@@ -23,18 +23,24 @@ import FeaturedImageDialog from 'terraso-web-client/storyMap/components/StoryMap
 import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 
 // Style constants
-const BUTTON_SX = {
-  m: 1,
+const BUTTON_SX = theme => ({
+  width: '100%',
   py: 1.5,
   justifyContent: 'center',
-};
+  textTransform: 'none',
+  bgcolor: theme.palette.gray.dark2,
+  color: theme.palette.common.white,
+  '&:hover': {
+    bgcolor: theme.palette.gray.dark3 || theme.palette.gray.dark2,
+  },
+});
 
 const THUMBNAIL_CONTAINER_SX = {
   cursor: 'pointer',
-  m: 1,
   aspectRatio: '1.91 / 1',
   overflow: 'hidden',
   borderRadius: '4px',
+  width: '100%',
   '&:hover': {
     opacity: 0.8,
   },

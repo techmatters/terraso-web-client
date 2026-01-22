@@ -17,7 +17,7 @@
 
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, Stack, Typography } from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
 
 import ShortDescriptionDialog from 'terraso-web-client/storyMap/components/StoryMapForm/ShortDescriptionDialog';
 import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
@@ -56,22 +56,25 @@ const ShortDescription = () => {
 
   return (
     <>
-      <Stack sx={{ m: 1, mb: 2 }} spacing={1}>
+      <Stack spacing={1}>
         {config.description && (
           <Typography variant="body2" sx={DESCRIPTION_STYLES}>
             {config.description}
           </Typography>
         )}
-        <Link
-          component="button"
+        <Button
           variant="text"
+          size="small"
           onClick={handleOpenDialog}
-          sx={{ textAlign: 'left' }}
+          sx={{
+            justifyContent: 'flex-start',
+            px: 0,
+          }}
         >
           {config.description
             ? t('storyMap.form_short_description_edit_link')
             : t('storyMap.form_short_description_button')}
-        </Link>
+        </Button>
       </Stack>
 
       <ShortDescriptionDialog
