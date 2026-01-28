@@ -70,3 +70,38 @@ export const storyMapMetadataFields = /* GraphQL */ `
     }
   }
 `;
+
+export const visualizationConfigWithStoryMapContext = /* GraphQL */ `
+  fragment visualizationConfigWithStoryMapContext on VisualizationConfigNode {
+    ...visualizationConfigWithConfiguration
+    geojson
+    owner {
+      __typename
+    }
+    dataEntry {
+      name
+      resourceType
+      createdBy {
+        lastName
+        firstName
+      }
+      sharedResources {
+        edges {
+          node {
+            target {
+              ... on GroupNode {
+                name
+                membershipList {
+                  membershipType
+                }
+              }
+              ... on LandscapeNode {
+                name
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
