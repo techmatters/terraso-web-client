@@ -298,11 +298,9 @@ test('GroupList: Display list (small screen)', async () => {
   expect(within(rows[8]).getByText('Leave')).toBeInTheDocument();
 });
 test('GroupList: URL params', async () => {
-  const entriesSpy = jest.spyOn(URLSearchParams.prototype, 'entries');
-  entriesSpy.mockReturnValue(new Map([['page', '1']]));
-
   const setParamsMock = jest.fn();
-  useSearchParams.mockReturnValue([new URLSearchParams(), setParamsMock]);
+  const mockParams = new URLSearchParams({ page: '1' });
+  useSearchParams.mockReturnValue([mockParams, setParamsMock]);
 
   const groups = Array(21)
     .fill(0)
@@ -328,7 +326,6 @@ test('GroupList: URL params', async () => {
     })
   );
   await setup();
-  expect(entriesSpy).toHaveBeenCalled();
 
   // Group info
   expect(screen.getByRole('heading', { name: 'Groups' })).toBeInTheDocument();
