@@ -440,11 +440,13 @@ const Map = forwardRef((props, ref) => {
     <Box
       id={id}
       ref={mapContainer}
-      sx={{
-        width,
-        height,
-        ...sx,
-      }}
+      sx={[
+        {
+          width,
+          height,
+        },
+        sx,
+      ]}
     >
       {children}
     </Box>

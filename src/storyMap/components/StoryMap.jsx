@@ -19,7 +19,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import scrollama from 'scrollama';
-import { Box } from '@mui/material';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
+import { Box, IconButton, Portal, useMediaQuery } from '@mui/material';
 
 import RichTextEditor from 'terraso-web-client/common/components/RichTextEditor/index';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
@@ -38,7 +40,10 @@ import 'terraso-web-client/storyMap/components/StoryMap.css';
 
 import logger from 'terraso-client-shared/monitoring/logger';
 
-import Map, { MapContextConsumer } from 'terraso-web-client/gis/components/Map';
+import Map, {
+  MapContextConsumer,
+  useMap,
+} from 'terraso-web-client/gis/components/Map';
 import { StoryMapLayer } from 'terraso-web-client/storyMap/components/StoryMapLayer';
 import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutline';
 
@@ -70,6 +75,60 @@ const getBoundsJson = bounds => ({
     },
   ],
 });
+
+class MapControl {
+  constructor(options) {
+    this.onAddContainer = options?.onAddContainer;
+  }
+
+  onAdd() {
+    this._container = document.createElement('div');
+    this.onAddContainer?.(this._container);
+    return this._container;
+  }
+
+  onRemove() {
+    this._container?.parentNode?.removeChild(this._container);
+  }
+}
+
+const FullscreenButton = ({ isFullscreen, onToggle }) => {
+  const { map } = useMap();
+  const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
+  const [container, setContainer] = useState(null);
+
+  useEffect(() => {
+    if (!map || !isMobile) {
+      return;
+    }
+
+    const control = new MapControl({
+      onAddContainer: setContainer,
+    });
+    map.addControl(control, 'top-right');
+
+    return () => {
+      map.removeControl(control);
+    };
+  }, [map, isMobile]);
+
+  if (!container || !isMobile) {
+    return null;
+  }
+
+  return (
+    <Portal container={container}>
+      <IconButton
+        className="mapboxgl-ctrl-group mapboxgl-ctrl"
+        onClick={onToggle}
+        size="small"
+        sx={{ bgcolor: 'white' }}
+      >
+        {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+      </IconButton>
+    </Portal>
+  );
+};
 
 const Audio = ({ record }) => {
   return (
@@ -326,6 +385,27 @@ const Scroller = props => {
     onReady?.();
   }, [isReady, onReady]);
 
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+
+    const mapContainer = map.getContainer();
+    if (!mapContainer) {
+      return;
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      map.resize();
+    });
+
+    resizeObserver.observe(mapContainer);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [map]);
+
   const getLayerPaintType = useCallback(
     layer => {
       if (!map.getStyle()) {
@@ -517,11 +597,24 @@ const StoryMap = props => {
     onStepChange,
     ChapterComponent = Chapter,
     TitleComponent = Title,
-    mapCss = { height: '100vh', width: '100vw', top: 0 },
+    mapCss,
     animation,
     onReady,
     chaptersFilter,
   } = props;
+
+  const [isMapFullscreen, setIsMapFullscreen] = useState(false);
+  const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
+
+  // Disable body scroll when map is fullscreen on mobile
+  useEffect(() => {
+    if (isMapFullscreen && isMobile) {
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = '';
+      };
+    }
+  }, [isMapFullscreen, isMobile]);
 
   const initialLocation = useMemo(() => {
     if (config.titleTransition?.location) {
@@ -542,7 +635,16 @@ const StoryMap = props => {
 
   return (
     <>
-      <section aria-label={t('storyMap.view_map_label')}>
+      <Box
+        component="section"
+        aria-label={t('storyMap.view_map_label')}
+        sx={({ breakpoints }) => ({
+          [breakpoints.only('xs')]: {
+            position: 'absolute',
+            height: '100%',
+          },
+        })}
+      >
         <Map
           id="map"
           interactive={false}
@@ -550,7 +652,27 @@ const StoryMap = props => {
           projection={config.projection}
           zoom={1}
           initialLocation={initialLocation}
-          sx={{ ...mapCss }}
+          sx={({ breakpoints }) => ({
+            position: 'fixed',
+            height: '100vh',
+            width: '100vw',
+            top: 0,
+            [breakpoints.only('xs')]: isMapFullscreen
+              ? {
+                  position: 'fixed',
+                  width: '100vw',
+                  top: 0,
+                  left: 0,
+                  height: '100vh',
+                  zIndex: 3,
+                }
+              : {
+                  position: 'sticky',
+                  height: '33vh',
+                  zIndex: 1,
+                },
+            ...mapCss,
+          })}
         >
           <MapContextConsumer>
             {({ map }) => (
@@ -573,6 +695,11 @@ const StoryMap = props => {
             )}
           </MapContextConsumer>
 
+          <FullscreenButton
+            isFullscreen={isMapFullscreen}
+            onToggle={() => setIsMapFullscreen(prev => !prev)}
+          />
+
           {!_.isEmpty(config.dataLayers) &&
             Object.values(config.dataLayers).map(dataLayerConfig => (
               <StoryMapLayer
@@ -583,8 +710,15 @@ const StoryMap = props => {
               />
             ))}
         </Map>
-      </section>
-      <Box id="story">
+      </Box>
+      <Box
+        id="story"
+        sx={({ breakpoints }) => ({
+          [breakpoints.only('xs')]: {
+            paddingTop: '33vh',
+          },
+        })}
+      >
         <Box
           component="section"
           aria-label={t('storyMap.view_chapters_label')}
