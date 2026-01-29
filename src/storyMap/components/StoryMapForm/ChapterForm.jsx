@@ -238,7 +238,13 @@ const ChapterForm = ({ theme, record }) => {
       })}
     >
       {/* div with ID added because of an Intersection Observer issue with overflow */}
-      <div className="step" id={record.id}></div>
+      <div
+        className="step"
+        id={record.id}
+        data-step-type="chapter"
+        data-chapter-id={record.id}
+        aria-hidden="true"
+      ></div>
       <ChapterConfig
         chapter={record}
         onAlignmentChange={onFieldChange('alignment')}

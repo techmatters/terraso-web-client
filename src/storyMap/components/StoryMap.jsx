@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import scrollama from 'scrollama';
@@ -44,10 +44,13 @@ import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutl
 
 import theme from 'terraso-web-client/theme';
 
+const chapterHasLocation = chapter => !_.isEmpty(chapter.location);
+
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
 const CURRENT_LOCATION_CHECK_PRESSISION = 13; // 13 decimal places
 const ROTATION_DURATION = 30000; // 30 seconds
+const TITLE_STEP_ID = 'story-map-title';
 
 const getBoundsJson = bounds => ({
   type: 'FeatureCollection',
@@ -131,6 +134,8 @@ const Chapter = ({ theme, record }) => {
       component="section"
       aria-label={t('storyMap.view_chapter_label', { title: record.title })}
       className={classList}
+      data-step-type="chapter"
+      data-chapter-id={record.id}
     >
       <Box
         className={`${theme} step-content`}
@@ -161,6 +166,17 @@ const Chapter = ({ theme, record }) => {
   );
 };
 
+const TransitionSpacer = ({ chapterId }) => (
+  <Box
+    className="transition-spacer step"
+    role="presentation"
+    aria-hidden="true"
+    tabIndex={-1}
+    data-step-type="spacer"
+    data-chapter-id={chapterId}
+  />
+);
+
 const Title = props => {
   const { t } = useTranslation();
   const { config } = props;
@@ -186,10 +202,11 @@ const Title = props => {
 
   return (
     <Box
-      id="story-map-title"
+      id={TITLE_STEP_ID}
       component="section"
       aria-label={t('storyMap.view_title_label', { title: config.title })}
       className="step step-container fully title"
+      data-step-type="title"
     >
       <Box className={`${config.theme} step-content`}>
         <h1 id="story-view-title-id">{config.title}</h1>
@@ -205,7 +222,7 @@ const Title = props => {
 };
 
 const getTransition = ({ config, id, direction }) => {
-  const isTitle = id === 'story-map-title';
+  const isTitle = id === TITLE_STEP_ID;
   if (isTitle) {
     return {
       transition: config.titleTransition,
@@ -318,6 +335,25 @@ const Scroller = props => {
   const { config, map, insetMap, animation, onStepChange, onReady } = props;
   const [marker, setMarker] = useState(null);
   const [isReady, setIsReady] = useState(false);
+
+  const getStepMeta = useCallback(element => {
+    const dataset = element.dataset || {};
+    const type =
+      dataset.stepType || (element.id === TITLE_STEP_ID ? 'title' : 'chapter');
+    const chapterId =
+      dataset.chapterId || (type === 'chapter' ? element.id : null);
+    return {
+      type,
+      chapterId,
+    };
+  }, []);
+
+  const resolveTransitionId = useCallback(stepMeta => {
+    if (stepMeta.type === 'title') {
+      return TITLE_STEP_ID;
+    }
+    return stepMeta.chapterId;
+  }, []);
 
   useEffect(() => {
     if (!isReady) {
@@ -435,38 +471,32 @@ const Scroller = props => {
         root: document,
         step: '.step',
         offset: 0.5,
+        progress: true,
       })
       .onStepEnter(async response => {
-        const { index, transition } = getTransition({
+        const stepMeta = getStepMeta(response.element);
+        const transitionId = resolveTransitionId(stepMeta);
+        console.log({ stepMeta, transitionId });
+        const { transition } = getTransition({
           config: {
             titleTransition: config.titleTransition,
             chapters: config.chapters,
           },
-          id: response.element.id,
+          id: transitionId,
           direction: response.direction,
         });
         response.element.classList.add('active');
         startTransition(transition);
         onStepChange?.(response.element.id);
-
-        if (config.auto) {
-          const nextChapterIndex = (index + 1) % config.chapters.length;
-          map.once('moveend', () => {
-            document
-              .querySelectorAll(
-                '[data-scrollama-index="' + nextChapterIndex.toString() + '"]'
-              )[0]
-              .scrollIntoView();
-          });
-        }
       })
       .onStepExit(response => {
+        const stepMeta = getStepMeta(response.element);
         const { transition, nextTransition } = getTransition({
           config: {
             titleTransition: config.titleTransition,
             chapters: config.chapters,
           },
-          id: response.element.id,
+          id: stepMeta.chapterId || response.element.id,
           direction: response.direction,
         });
         response.element.classList.remove('active');
@@ -480,11 +510,7 @@ const Scroller = props => {
           filtered.forEach(setLayerOpacity);
         }
       });
-    // This is needed for development due to resize observer issue
-    // should not be here on production
-    if (import.meta.env.MODE === 'development') {
-      scroller.disable();
-    }
+
     setIsReady(true);
 
     window.addEventListener('resize', scroller.resize);
@@ -498,10 +524,10 @@ const Scroller = props => {
     marker,
     setLayerOpacity,
     startTransition,
-    config.title,
+    getStepMeta,
+    resolveTransitionId,
     config.titleTransition,
     config.chapters,
-    config.auto,
     config.inset,
     config.showMarkers,
     onStepChange,
@@ -593,11 +619,15 @@ const StoryMap = props => {
         >
           <TitleComponent config={config} />
           {filteredChapters.map(chapter => (
-            <ChapterComponent
-              key={chapter.id}
-              theme={config.theme}
-              record={chapter}
-            />
+            <Fragment key={chapter.id}>
+              {chapterHasLocation(chapter) && (
+                <TransitionSpacer chapterId={chapter.id} />
+              )}
+              <ChapterComponent theme={config.theme} record={chapter} />
+              {chapterHasLocation(chapter) && (
+                <TransitionSpacer chapterId={chapter.id} />
+              )}
+            </Fragment>
           ))}
         </Box>
         {config.footer && (

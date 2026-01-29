@@ -133,6 +133,7 @@ const Navigation = forwardRef((props, ref) => {
           maxWidth: {
             md: 1200,
           },
+          overflow: 'auto',
         }}
       >
         <Typography sx={visuallyHidden} variant="h2">
