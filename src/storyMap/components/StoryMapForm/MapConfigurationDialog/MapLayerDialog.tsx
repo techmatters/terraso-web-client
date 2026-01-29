@@ -101,13 +101,13 @@ const MapLayerListItem = ({ mapLayer }: MapLayerListItemProps) => {
       >
         {mapLayer.title}
       </Typography>
-      {mapLayer.isRestricted && (
+      {/* {mapLayer.isRestricted && (
         <Typography variant="caption" sx={{ gridColumn: '2/4' }}>
           {t('storyMap.form_location_add_data_layer_dialog_restricted', {
             user: mapLayer.dataEntry?.createdBy,
           })}
         </Typography>
-      )}
+      )} */}
     </ListItem>
   );
 };
@@ -127,8 +127,16 @@ const SelectMapLayerTabPanel = ({
   selected,
   setSelected,
 }: SelectMapLayerTabPanelProps) => {
+  const { t } = useTranslation();
   return (
-    <TabPanel<MapLayerTab> value={tab}>
+    <TabPanel<MapLayerTab> value={tab} sx={{ padding: 2 }}>
+      {mapLayers.length === 0 && (
+        <Typography>
+          {t(
+            `storyMap.form_location_add_data_layer_dialog_select_tab_empty.${tab}`
+          )}
+        </Typography>
+      )}
       <RadioGroup
         value={selected}
         onChange={event => setSelected(event.target.value)}
@@ -191,11 +199,11 @@ const SelectMapLayerSection = ({
         <></>
       ) : (
         <Stack>
-          <Typography component="h2" sx={{ fontWeight: 'bold' }}>
+          {/* <Typography component="h2" sx={{ fontWeight: 'bold' }}>
             {t(
               'storyMap.form_location_add_data_layer_dialog_select_section_title'
             )}
-          </Typography>
+          </Typography> */}
           <TabContext<MapLayerTab> value={tab}>
             <TabList onChange={(_, newTab) => setTab(newTab)}>
               <Tab<MapLayerTab>

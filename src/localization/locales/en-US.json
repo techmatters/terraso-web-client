@@ -1063,6 +1063,11 @@
         "form_location_add_data_layer_dialog_title": "<0>Add a map layer to </0><1>{{title}}</1>",
         "form_location_add_data_layer_dialog_title_blank": "Add a map layer to chapter",
         "form_location_add_data_layer_dialog_select_section_title": "Or select a layer:",
+        "form_location_add_data_layer_dialog_select_tab_empty": {
+            "STORY_MAP": "This story map doesn't contain any map layers yet. Select a new file above.",
+            "GROUP": "Your groups don't contain any map layers yet.",
+            "LANDSCAPE": "Your landscapes don't contain any map layers yet."
+        },
         "form_location_add_data_layer_dialog_story_map_tab": "This Story Map",
         "form_location_add_data_layer_dialog_group_tab": "My Groups",
         "form_location_add_data_layer_dialog_landscape_tab": "My Landscapes",
