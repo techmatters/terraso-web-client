@@ -17,6 +17,7 @@
 
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { Button, Stack, Typography } from '@mui/material';
 
 import ShortDescriptionDialog from 'terraso-web-client/storyMap/components/StoryMapForm/ShortDescriptionDialog';
@@ -65,6 +66,7 @@ const ShortDescription = () => {
         <Button
           variant="text"
           size="small"
+          startIcon={<EditOutlinedIcon />}
           onClick={handleOpenDialog}
           sx={{
             justifyContent: 'flex-start',

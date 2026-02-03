@@ -353,6 +353,8 @@ const ChaptersSidebar = props => {
         height,
         overflow: 'auto',
         width: '200px',
+        minWidth: '200px',
+        flexShrink: 0,
         display: 'flex',
         alignItems: 'stretch',
         flexDirection: 'column',

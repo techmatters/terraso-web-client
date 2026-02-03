@@ -15,31 +15,27 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import CheckIcon from '@mui/icons-material/Check';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
+import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
 import ShareIcon from '@mui/icons-material/Share';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import {
   Box,
   Button,
   Divider,
   Drawer,
   IconButton,
-  Link,
   Stack,
-  Tooltip,
   Typography,
 } from '@mui/material';
 
 import SocialShare, {
   useSocialShareContext,
 } from 'terraso-web-client/common/components/SocialShare';
-import {
-  createAbsoluteUrl,
-  formatUrlForDisplay,
-} from 'terraso-web-client/common/utils/urlUtils';
+import { createAbsoluteUrl } from 'terraso-web-client/common/utils/urlUtils';
 import FeaturedImage from 'terraso-web-client/storyMap/components/StoryMapForm/FeaturedImage';
 import ShareDialog from 'terraso-web-client/storyMap/components/StoryMapForm/ShareDialog';
 import ShortDescription from 'terraso-web-client/storyMap/components/StoryMapForm/ShortDescription';
@@ -75,9 +71,7 @@ const CollapseButton = ({ onClick, sx }) => {
       aria-label={label}
       size="small"
       sx={theme => ({
-        position: 'absolute',
-        top: theme.spacing(2),
-        right: theme.spacing(2),
+        alignSelf: 'flex-end',
         bgcolor: 'white',
         boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)',
         borderRadius: 2,
@@ -105,6 +99,7 @@ const PreviewAction = ({ onPreview }) => {
     <Button
       variant="text"
       size="small"
+      startIcon={<VisibilityOutlinedIcon />}
       onClick={onPreview}
       fullWidth
       sx={ACTION_BUTTON_SX}
@@ -114,9 +109,8 @@ const PreviewAction = ({ onPreview }) => {
   );
 };
 
-const PublishedActions = ({ storyMap }) => {
+const PublishedActions = ({ storyMap, onPreview }) => {
   const { t } = useTranslation();
-  const [copied, setCopied] = useState(false);
 
   const published = isStoryMapPublished(storyMap);
 
@@ -124,27 +118,6 @@ const PublishedActions = ({ storyMap }) => {
     () => (published ? createAbsoluteUrl(generateStoryMapUrl(storyMap)) : null),
     [storyMap, published]
   );
-
-  const displayUrl = useMemo(
-    () => (absoluteUrl ? formatUrlForDisplay(absoluteUrl) : ''),
-    [absoluteUrl]
-  );
-
-  const handleCopyUrl = useCallback(() => {
-    if (!absoluteUrl) {
-      return;
-    }
-
-    navigator.clipboard
-      .writeText(absoluteUrl)
-      .then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      })
-      .catch(err => {
-        console.error('Failed to copy URL to clipboard:', err);
-      });
-  }, [absoluteUrl]);
 
   if (!storyMap) {
     return null;
@@ -157,40 +130,23 @@ const PublishedActions = ({ storyMap }) => {
       <Typography variant="body2">
         {t('storyMap.form_status_label')}: <strong>{statusLabel}</strong>
       </Typography>
+      <PreviewAction onPreview={onPreview} />
 
       {published && (
         <>
-          <Typography variant="body2">
-            {t('storyMap.form_link_label')}:{' '}
-            <Link
-              href={absoluteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              sx={{ wordBreak: 'break-all' }}
-            >
-              {displayUrl}
-            </Link>{' '}
-            <Tooltip
-              title={
-                copied
-                  ? t('storyMap.form_url_copied')
-                  : t('storyMap.form_copy_url')
-              }
-            >
-              <IconButton
-                size="small"
-                onClick={handleCopyUrl}
-                aria-label={t('storyMap.form_copy_url')}
-                color={copied ? 'success' : 'default'}
-              >
-                {copied ? (
-                  <CheckIcon fontSize="small" />
-                ) : (
-                  <ContentCopyIcon fontSize="small" />
-                )}
-              </IconButton>
-            </Tooltip>
-          </Typography>
+          <Button
+            component="a"
+            href={absoluteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            variant="text"
+            size="small"
+            startIcon={<OpenInNewOutlinedIcon />}
+            fullWidth
+            sx={ACTION_BUTTON_SX}
+          >
+            {t('storyMap.form_view_published_button')}
+          </Button>
           <Stack alignItems="flex-start">
             <SocialShare
               url={absoluteUrl}
@@ -251,6 +207,7 @@ const ShareAction = ({ storyMap, onShare }) => {
       <Button
         variant="text"
         size="small"
+        startIcon={<PersonAddAltOutlinedIcon />}
         onClick={onShare}
         fullWidth
         sx={ACTION_BUTTON_SX}
@@ -263,9 +220,10 @@ const ShareAction = ({ storyMap, onShare }) => {
 
 const RightSidebar = props => {
   const { t } = useTranslation();
-  const { open, onClose, container, zIndex = 3, topOffset = 0 } = props;
+  const { open, onClose, zIndex = 3, topOffset = 0 } = props;
   const { storyMap, setPreview } = useStoryMapConfigContext();
   const [openShareDialog, setOpenShareDialog] = useState(false);
+  const contentRef = useRef(null);
 
   useSocialShareContext(
     useMemo(
@@ -280,26 +238,36 @@ const RightSidebar = props => {
   );
 
   const handlePreview = useCallback(() => {
-    onClose?.();
     setPreview(true);
-  }, [onClose, setPreview]);
+  }, [setPreview]);
 
-  const modalProps = useMemo(
-    () => ({
-      keepMounted: true,
-      ...(container ? { container } : {}),
-    }),
-    [container]
-  );
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+    const container = contentRef.current;
+    if (!container) {
+      return;
+    }
+    const focusable = container.querySelector(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    focusable?.focus();
+  }, [open]);
 
   return (
     <Drawer
       anchor="right"
       open={open}
       onClose={onClose}
-      ModalProps={modalProps}
+      variant="persistent"
+      ModalProps={{ keepMounted: true }}
+      transitionDuration={{ enter: 150, exit: 150 }}
       sx={theme => ({
         zIndex,
+        width: open ? SIDEBAR_WIDTH : 0,
+        flexShrink: 0,
+        overflowX: 'hidden',
         '& .MuiDrawer-paper': {
           width: SIDEBAR_WIDTH,
           height: topOffset ? `calc(100% - ${topOffset}px)` : '100%',
@@ -316,6 +284,7 @@ const RightSidebar = props => {
       <Box
         role="complementary"
         aria-label={t('storyMap.form_right_sidebar_section_label')}
+        ref={contentRef}
         sx={{
           px: 3,
           py: 1,
@@ -326,19 +295,12 @@ const RightSidebar = props => {
       >
         <SidebarSection>
           <Stack spacing={1}>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <PreviewAction onPreview={handlePreview} />
-              <CollapseButton onClick={onClose} />
-            </Stack>
+            <CollapseButton onClick={onClose} />
             <FeaturedImage />
             <ShortDescription />
           </Stack>
           <Divider />
-          <PublishedActions storyMap={storyMap} />
+          <PublishedActions storyMap={storyMap} onPreview={handlePreview} />
           <Divider />
           <ShareAction
             storyMap={storyMap}

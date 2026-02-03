@@ -19,8 +19,9 @@ import { useTranslation } from 'react-i18next';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CheckIcon from '@mui/icons-material/Check';
 import ErrorIcon from '@mui/icons-material/Error';
+import SettingsIcon from '@mui/icons-material/Settings';
 import SyncIcon from '@mui/icons-material/Sync';
-import { Button, Grid, Stack, Typography } from '@mui/material';
+import { Button, Grid, IconButton, Stack, Typography } from '@mui/material';
 
 import RouterLink from 'terraso-web-client/common/components/RouterLink';
 import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
@@ -68,7 +69,13 @@ const SaveStatus = props => {
 const TopBar = props => {
   const { t } = useTranslation();
   const { storyMap, config } = useStoryMapConfigContext();
-  const { onPublish, isDirty, requestStatus } = props;
+  const {
+    onPublish,
+    isDirty,
+    requestStatus,
+    onToggleRightSidebar,
+    isRightSidebarOpen,
+  } = props;
 
   const isPublished = storyMap?.isPublished;
 
@@ -120,6 +127,16 @@ const TopBar = props => {
               ? t('storyMap.form_republish_button')
               : t('storyMap.form_publish_button')}
           </Button>
+          <IconButton
+            aria-label={
+              isRightSidebarOpen
+                ? t('storyMap.form_right_sidebar_close')
+                : t('storyMap.form_right_sidebar_open')
+            }
+            onClick={onToggleRightSidebar}
+          >
+            <SettingsIcon />
+          </IconButton>
         </Stack>
       </Grid>
     </TopBarContainer>

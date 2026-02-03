@@ -54,6 +54,7 @@ const BASE_CHAPTER = {
 
 const RIGHT_SIDEBAR_Z_INDEX = 3;
 const RIGHT_SIDEBAR_TOGGLE_Z_INDEX = 2;
+const RIGHT_SIDEBAR_WIDTH = 300;
 
 const Preview = props => {
   const { getMediaFile } = useStoryMapConfigContext();
@@ -114,11 +115,10 @@ const StoryMapForm = props => {
     isDirty,
   } = useStoryMapConfigContext();
   const [mapHeight, setMapHeight] = useState();
-  const [mapWidth, setMapWidth] = useState();
   const [formHeaderHeight, setFormHeaderHeight] = useState(0);
   const [currentStepId, setCurrentStepId] = useState();
   const [scrollToChapter, setScrollToChapter] = useState();
-  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
   const storyMapBodyRef = useRef(null);
   const rightSidebarToggleRef = useRef(null);
   const wasRightSidebarOpen = useRef(false);
@@ -186,16 +186,6 @@ const StoryMapForm = props => {
     input?.focus();
     init.current = true;
   }, [init]);
-
-  useEffect(() => {
-    if (!mapHeight) {
-      return;
-    }
-    const chaptersWidth =
-      document.getElementById('chapters-sidebar').clientWidth;
-
-    setMapWidth(`calc(100vw - ${chaptersWidth}px)`);
-  }, [mapHeight]);
 
   useEffect(() => {
     if (!scrollToChapter) {
@@ -288,6 +278,10 @@ const StoryMapForm = props => {
     setIsRightSidebarOpen(false);
   }, []);
 
+  const toggleRightSidebar = useCallback(() => {
+    setIsRightSidebarOpen(isOpen => !isOpen);
+  }, []);
+
   if (preview || isSmall) {
     return <Preview config={config} onPublish={onPublishWrapper} />;
   }
@@ -307,46 +301,53 @@ const StoryMapForm = props => {
         onSaveDraft={onSaveDraftWrapper}
         requestStatus={requestStatus}
         isDirty={isDirty}
+        onToggleRightSidebar={toggleRightSidebar}
+        isRightSidebarOpen={isRightSidebarOpen}
       />
       <Box
         ref={storyMapBodyRef}
-        sx={{ position: 'relative', width: '100%', height: mapHeight }}
+        sx={{
+          position: 'relative',
+          width: '100%',
+          height: mapHeight,
+          display: 'flex',
+          alignItems: 'stretch',
+        }}
       >
-        <Grid
-          container
-          justifyContent="flex-start"
-          alignItems="flex-start"
-          sx={{ height: mapHeight, width: '100%' }}
+        <ChaptersSidebar
+          config={config}
+          currentStepId={currentStepId}
+          onAdd={onAddChapter}
+          onDelete={onDeleteChapter}
+          onMoveChapter={onMoveChapter}
+          height={mapHeight}
+        />
+        <Box
+          sx={{
+            position: 'relative',
+            height: mapHeight,
+            flexGrow: 1,
+            minWidth: 0,
+            // There is no overlay support for Firefox, see: https://developer.mozilla.org/en-US/docs/Web/CSS/overflow
+            overflowY: isFirefox ? 'scroll' : 'overlay',
+          }}
         >
-          <ChaptersSidebar
-            config={config}
-            currentStepId={currentStepId}
-            onAdd={onAddChapter}
-            onDelete={onDeleteChapter}
-            onMoveChapter={onMoveChapter}
-            height={mapHeight}
-          />
-          <Grid
-            size="grow"
-            sx={{
-              position: 'relative',
-              height: mapHeight,
-              // There is no overlay support for Firefox, see: https://developer.mozilla.org/en-US/docs/Web/CSS/overflow
-              overflowY: isFirefox ? 'scroll' : 'overlay',
-            }}
-          >
-            {mapHeight && mapWidth && (
-              <StoryMap
-                config={config}
-                mapCss={{ height: mapHeight, width: mapWidth }}
-                onStepChange={setCurrentStepId}
-                ChapterComponent={ChapterForm}
-                TitleComponent={TitleForm}
-                onReady={onMapReady}
-              />
-            )}
-          </Grid>
-        </Grid>
+          {mapHeight && (
+            <StoryMap
+              config={config}
+              mapCss={{
+                height: mapHeight,
+                width: isRightSidebarOpen
+                  ? `calc(100% - ${RIGHT_SIDEBAR_WIDTH}px)`
+                  : '100%',
+              }}
+              onStepChange={setCurrentStepId}
+              ChapterComponent={ChapterForm}
+              TitleComponent={TitleForm}
+              onReady={onMapReady}
+            />
+          )}
+        </Box>
         <RightSidebarToggleButton
           ref={rightSidebarToggleRef}
           onClick={openRightSidebar}
@@ -356,7 +357,6 @@ const StoryMapForm = props => {
         <RightSidebar
           open={isRightSidebarOpen}
           onClose={closeRightSidebar}
-          container={storyMapBodyRef.current}
           zIndex={RIGHT_SIDEBAR_Z_INDEX}
           topOffset={formHeaderHeight}
         />
