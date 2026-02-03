@@ -71,6 +71,8 @@ const ShortDescription = () => {
           sx={{
             justifyContent: 'flex-start',
             px: 0,
+            fontSize: 16,
+            fontWeight: 400,
           }}
         >
           {config.description

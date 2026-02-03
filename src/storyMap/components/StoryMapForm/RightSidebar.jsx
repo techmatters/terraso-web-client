@@ -53,13 +53,9 @@ const SIDEBAR_ICON_SRC = '/storyMap/sidebar-right-collapse.svg';
 const ACTION_BUTTON_SX = {
   justifyContent: 'flex-start',
   px: 0,
+  fontSize: 16,
+  fontWeight: 400,
 };
-
-const SidebarSection = ({ children }) => (
-  <Stack spacing={2} sx={{ my: 1 }}>
-    {children}
-  </Stack>
-);
 
 const CollapseButton = ({ onClick, sx }) => {
   const { t } = useTranslation();
@@ -127,7 +123,7 @@ const PublishedActions = ({ storyMap, onPreview }) => {
 
   return (
     <Stack spacing={1.5}>
-      <Typography variant="body2">
+      <Typography variant="body2" sx={{ fontSize: 16, fontWeight: 400 }}>
         {t('storyMap.form_status_label')}: <strong>{statusLabel}</strong>
       </Typography>
       <PreviewAction onPreview={onPreview} />
@@ -198,9 +194,15 @@ const ShareAction = ({ storyMap, onShare }) => {
 
   return (
     <Stack spacing={0.5}>
-      <Typography>{t('storyMap.form_contributors_label')}:</Typography>
+      <Typography sx={{ fontSize: 16, fontWeight: 400 }}>
+        {t('storyMap.form_contributors_label')}:
+      </Typography>
       {contributors.map(name => (
-        <Typography key={name} variant="caption">
+        <Typography
+          key={name}
+          variant="caption"
+          sx={{ fontSize: 14, fontWeight: 400 }}
+        >
           {name}
         </Typography>
       ))}
@@ -293,12 +295,10 @@ const RightSidebar = props => {
           bgcolor: 'white',
         }}
       >
-        <SidebarSection>
-          <Stack spacing={1}>
-            <CollapseButton onClick={onClose} />
-            <FeaturedImage />
-            <ShortDescription />
-          </Stack>
+        <Stack spacing={2} sx={{ my: 1 }}>
+          <CollapseButton onClick={onClose} />
+          <FeaturedImage />
+          <ShortDescription />
           <Divider />
           <PublishedActions storyMap={storyMap} onPreview={handlePreview} />
           <Divider />
@@ -306,7 +306,7 @@ const RightSidebar = props => {
             storyMap={storyMap}
             onShare={() => setOpenShareDialog(true)}
           />
-        </SidebarSection>
+        </Stack>
       </Box>
     </Drawer>
   );
