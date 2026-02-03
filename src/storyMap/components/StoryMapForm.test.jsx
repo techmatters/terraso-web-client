@@ -151,7 +151,7 @@ const VISUALIZATION_CONFIG_NO_TILESET = {
   ...VISUALIZATION_CONFIG,
   mapboxTilesetId: null,
   mapboxTilesetStatus: TILESET_STATUS_PENDING,
-  id: '0f9cd329-ded8-4984-a8fd-5cb19c465382',
+  id: 'b7b3b6a0-8c16-4dd7-9a52-5a9f5dd7c2f4',
   title: 'Datalayer title 3',
 };
 
@@ -792,10 +792,6 @@ test('StoryMapForm: Show preview', async () => {
   await setup({ config: BASE_CONFIG });
 
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Open right sidebar' }))
-  );
-
-  await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Preview draft' }))
   );
 
@@ -1365,10 +1361,6 @@ test('StoryMapForm: Keep map on chapter change', async () => {
 test('StoryMapForm: Add featured image', async () => {
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Open right sidebar' }))
-  );
-
   const sidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',
   });
@@ -1435,10 +1427,6 @@ test('StoryMapForm: Add featured image', async () => {
 
 test('StoryMapForm: Add short description', async () => {
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
-
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Open right sidebar' }))
-  );
 
   const sidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',

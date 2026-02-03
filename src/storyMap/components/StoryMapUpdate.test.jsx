@@ -186,10 +186,6 @@ test('StoryMapUpdate: Show Share Dialog', async () => {
   });
   await setup({ id: API_STORY_MAP.createdBy.id });
 
-  await act(() => {
-    fireEvent.click(screen.getByRole('button', { name: 'Open right sidebar' }));
-  });
-
   const rightSidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',
   });
@@ -262,10 +258,6 @@ test('StoryMapUpdate: Share Dialog invite members', async () => {
 
   await setup({ id: API_STORY_MAP.createdBy.id });
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
-
-  await act(() => {
-    fireEvent.click(screen.getByRole('button', { name: 'Open right sidebar' }));
-  });
   const rightSidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',
   });
@@ -332,10 +324,6 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
 
   await setup({ id: API_STORY_MAP.createdBy.id });
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
-
-  await act(() => {
-    fireEvent.click(screen.getByRole('button', { name: 'Open right sidebar' }));
-  });
   const rightSidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',
   });
@@ -402,10 +390,6 @@ test('StoryMapUpdate: See story map as editor', async () => {
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
   expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
-
-  await act(() => {
-    fireEvent.click(screen.getByRole('button', { name: 'Open right sidebar' }));
-  });
   const rightSidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',
   });

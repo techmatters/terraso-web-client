@@ -50,3 +50,10 @@ if (!globalThis.TextEncoder || !globalThis.TextDecoder) {
   globalThis.TextEncoder = TextEncoder;
   globalThis.TextDecoder = TextDecoder;
 }
+
+if (typeof HTMLMediaElement !== 'undefined') {
+  Object.defineProperty(HTMLMediaElement.prototype, 'load', {
+    configurable: true,
+    value: jest.fn(),
+  });
+}

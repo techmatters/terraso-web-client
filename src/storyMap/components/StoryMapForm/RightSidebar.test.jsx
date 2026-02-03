@@ -83,12 +83,14 @@ const renderRightSidebar = props =>
   );
 
 describe('RightSidebar', () => {
-  it('renders status, link, contributors, and opens share dialog', async () => {
+  it('renders status, view button, contributors, and opens share dialog', async () => {
     await renderRightSidebar();
 
     expect(screen.getByText(/status:/i)).toBeInTheDocument();
     expect(screen.getByText(/published/i)).toBeInTheDocument();
-    expect(screen.getByText('example.com/story-map')).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: /view story map/i })
+    ).toBeInTheDocument();
 
     expect(screen.getByText(/contributors:/i)).toBeInTheDocument();
     expect(screen.getByText('Jose Buitron')).toBeInTheDocument();
