@@ -190,7 +190,7 @@ test('StoryMapUpdate: Show Share Dialog', async () => {
     name: 'Right sidebar',
   });
   const shareButton = within(rightSidebar).getByRole('button', {
-    name: 'Invite contributor',
+    name: 'Invite editor',
   });
   await act(async () => fireEvent.click(shareButton));
 
@@ -262,7 +262,7 @@ test('StoryMapUpdate: Share Dialog invite members', async () => {
     name: 'Right sidebar',
   });
   const shareButton = within(rightSidebar).getByRole('button', {
-    name: 'Invite contributor',
+    name: 'Invite editor',
   });
   await act(async () => fireEvent.click(shareButton));
 
@@ -328,7 +328,7 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
     name: 'Right sidebar',
   });
   const shareButton = within(rightSidebar).getByRole('button', {
-    name: 'Invite contributor',
+    name: 'Invite editor',
   });
   await act(async () => fireEvent.click(shareButton));
 
@@ -394,7 +394,7 @@ test('StoryMapUpdate: See story map as editor', async () => {
     name: 'Right sidebar',
   });
   const shareButton = within(rightSidebar).getByRole('button', {
-    name: 'Invite contributor',
+    name: 'Invite editor',
   });
   await act(async () => fireEvent.click(shareButton));
 

@@ -22,15 +22,7 @@ import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
 import ShareIcon from '@mui/icons-material/Share';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import {
-  Box,
-  Button,
-  Divider,
-  Drawer,
-  IconButton,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Divider, Drawer, Stack, Typography } from '@mui/material';
 
 import SocialShare, {
   useSocialShareContext,
@@ -48,44 +40,11 @@ import {
 } from 'terraso-web-client/storyMap/storyMapUtils';
 
 const SIDEBAR_WIDTH = 300;
-const SIDEBAR_ICON_SRC = '/storyMap/sidebar-right-collapse.svg';
-
 const ACTION_BUTTON_SX = {
   justifyContent: 'flex-start',
   px: 0,
   fontSize: 16,
   fontWeight: 400,
-};
-
-const CollapseButton = ({ onClick, sx }) => {
-  const { t } = useTranslation();
-  const label = t('storyMap.form_right_sidebar_close');
-
-  return (
-    <IconButton
-      onClick={onClick}
-      aria-label={label}
-      size="small"
-      sx={theme => ({
-        alignSelf: 'flex-end',
-        bgcolor: 'white',
-        boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)',
-        borderRadius: 2,
-        border: `1px solid ${theme.palette.gray.lite1}`,
-        '&:hover': {
-          bgcolor: 'gray.lite1',
-        },
-        ...sx,
-      })}
-    >
-      <Box
-        component="img"
-        src={SIDEBAR_ICON_SRC}
-        alt={label}
-        sx={{ width: 20, height: 20 }}
-      />
-    </IconButton>
-  );
 };
 
 const PreviewAction = ({ onPreview }) => {
@@ -296,7 +255,6 @@ const RightSidebar = props => {
         }}
       >
         <Stack spacing={2} sx={{ my: 1 }}>
-          <CollapseButton onClick={onClose} />
           <FeaturedImage />
           <ShortDescription />
           <Divider />

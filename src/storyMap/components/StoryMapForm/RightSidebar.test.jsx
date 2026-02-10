@@ -92,12 +92,12 @@ describe('RightSidebar', () => {
       screen.getByRole('link', { name: /view story map/i })
     ).toBeInTheDocument();
 
-    expect(screen.getByText(/contributors:/i)).toBeInTheDocument();
+    expect(screen.getByText(/editors:/i)).toBeInTheDocument();
     expect(screen.getByText('Jose Buitron')).toBeInTheDocument();
     expect(screen.getByText('Garo Brik')).toBeInTheDocument();
 
     const inviteButton = screen.getByRole('button', {
-      name: /invite contributor/i,
+      name: /invite editor/i,
     });
     fireEvent.click(inviteButton);
 
