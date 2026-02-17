@@ -15,6 +15,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+const { baseUrl } = require('../config');
+
+const STORY_MAP_FALLBACK_IMAGE_PATH = '/storyMap/terraso-story-maps-img.jpg';
+
+const normalizeBaseUrl = url => (url || '').replace(/\/$/, '');
+
+const getFallbackImageUrl = () =>
+  `${normalizeBaseUrl(baseUrl)}${STORY_MAP_FALLBACK_IMAGE_PATH}`;
+
 const parseConfig = node => {
   if (!node.publishedConfiguration) {
     return {};
@@ -31,7 +40,8 @@ const buildMetaTags = node => {
 
   const title = storyMapConfig.title;
   const description = storyMapConfig.description;
-  const image = storyMapConfig.featuredImage?.signedUrl;
+  const image =
+    storyMapConfig.featuredImage?.signedUrl || getFallbackImageUrl();
 
   return { title, description, image };
 };

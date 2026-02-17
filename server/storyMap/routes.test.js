@@ -145,6 +145,9 @@ describe('Story Map Routes - Integration Tests', () => {
 
       expect(text).toContain('<title>Story Without Image</title>');
       expect(text).toContain('This story has no image');
+      expect(text).toContain(
+        'https://test.terraso.org/storyMap/terraso-story-maps-img.jpg'
+      );
     });
 
     const fallbackScenarios = [
