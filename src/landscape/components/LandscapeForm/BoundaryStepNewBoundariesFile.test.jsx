@@ -25,6 +25,7 @@ import {
 } from 'terraso-web-client/tests/utils';
 import { useParams } from 'react-router';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import { createMapMock } from 'terraso-web-client/tests/mapboxMock';
 
 import mapboxgl from 'terraso-web-client/gis/mapbox';
 import LandscapeNew from 'terraso-web-client/landscape/components/LandscapeForm/New';
@@ -100,39 +101,30 @@ beforeEach(() => {
 
 test('LandscapeNew: Save from GeoJSON', async () => {
   const events = {};
-  mapboxgl.Map.mockImplementation(() => ({
-    on: jest.fn().mockImplementation((...args) => {
-      const event = args[0];
-      const callback = args.length === 2 ? args[1] : args[2];
-      const layer = args.length === 2 ? null : args[1];
-      events[[event, layer].filter(p => p).join(':')] = callback;
+  mapboxgl.Map.mockImplementation(() =>
+    createMapMock({
+      on: jest.fn().mockImplementation((...args) => {
+        const event = args[0];
+        const callback = args.length === 2 ? args[1] : args[2];
+        const layer = args.length === 2 ? null : args[1];
+        events[[event, layer].filter(p => p).join(':')] = callback;
 
-      if (event === 'load') {
-        callback();
-      }
-    }),
-    addSource: jest.fn(),
-    getSource: jest.fn(),
-    setTerrain: jest.fn(),
-    addLayer: jest.fn(),
-    getLayer: jest.fn(),
-    remove: jest.fn(),
-    addControl: jest.fn(),
-    removeControl: jest.fn(),
-    fitBounds: jest.fn(),
-    getStyle: jest.fn(),
-    off: jest.fn(),
-    getBounds: jest.fn().mockReturnValue({
-      getSouthWest: jest.fn().mockReturnValue({
-        lng: -76.29042998100137,
-        lat: 8.263885173441716,
+        if (event === 'load') {
+          callback();
+        }
       }),
-      getNorthEast: jest.fn().mockReturnValue({
-        lng: -67.62077603784013,
-        lat: 11.325606896067784,
+      getBounds: jest.fn().mockReturnValue({
+        getSouthWest: jest.fn().mockReturnValue({
+          lng: -76.29042998100137,
+          lat: 8.263885173441716,
+        }),
+        getNorthEast: jest.fn().mockReturnValue({
+          lng: -67.62077603784013,
+          lat: 11.325606896067784,
+        }),
       }),
-    }),
-  }));
+    })
+  );
   terrasoApi.requestGraphQL.mockImplementation(query => {
     const trimmedQuery = query.trim();
 

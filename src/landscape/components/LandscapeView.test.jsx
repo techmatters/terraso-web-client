@@ -27,6 +27,7 @@ import { when } from 'jest-when';
 import _ from 'lodash/fp';
 import { useParams } from 'react-router';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import { createMapMock } from 'terraso-web-client/tests/mapboxMock';
 
 import mapboxgl from 'terraso-web-client/gis/mapbox';
 import LandscapeView from 'terraso-web-client/landscape/components/LandscapeView';
@@ -69,27 +70,17 @@ beforeEach(() => {
   global.URL.createObjectURL = jest.fn();
   mapboxgl.LngLatBounds = jest.fn();
   mapboxgl.NavigationControl = jest.fn();
-  mapboxgl.Map = jest.fn();
-  mapboxgl.Map.prototype = {
-    on: jest.fn().mockImplementation((...args) => {
-      const event = args[0];
-      const callback = args.length === 2 ? args[1] : args[2];
-      if (event === 'load') {
-        callback();
-      }
-    }),
-    addSource: jest.fn(),
-    getSource: jest.fn(),
-    setTerrain: jest.fn(),
-    addLayer: jest.fn(),
-    getLayer: jest.fn(),
-    remove: jest.fn(),
-    addControl: jest.fn(),
-    removeControl: jest.fn(),
-    fitBounds: jest.fn(),
-    getStyle: jest.fn(),
-    off: jest.fn(),
-  };
+  mapboxgl.Map = jest.fn().mockReturnValue(
+    createMapMock({
+      on: jest.fn().mockImplementation((...args) => {
+        const event = args[0];
+        const callback = args.length === 2 ? args[1] : args[2];
+        if (event === 'load') {
+          callback();
+        }
+      }),
+    })
+  );
 });
 
 const baseViewTest = async (

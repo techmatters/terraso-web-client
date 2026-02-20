@@ -26,6 +26,7 @@ import {
 import { when } from 'jest-when';
 import scrollama from 'scrollama';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import { createMapMock } from 'terraso-web-client/tests/mapboxMock';
 
 import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
@@ -163,32 +164,17 @@ const expectSave = async () => {
   });
 };
 
-const baseMapOptions = () => ({
-  onEvents: {},
-  on: function (type, cb) {
-    if (type === 'load') {
-      cb();
-    }
-    this.onEvents[type] = cb;
-  },
-  remove: jest.fn(),
-  off: jest.fn(),
-  getCanvas: jest.fn(),
-  addControl: jest.fn(),
-  removeControl: jest.fn(),
-  getCenter: jest.fn(),
-  getZoom: jest.fn(),
-  addSource: jest.fn(),
-  getSource: jest.fn(),
-  setTerrain: jest.fn(),
-  addLayer: jest.fn(),
-  getLayer: jest.fn(),
-  flyTo: jest.fn(),
-  getBounds: jest.fn(),
-  getStyle: jest.fn(),
-  fitBounds: jest.fn(),
-  getContainer: jest.fn().mockReturnValue(document.createElement('div')),
-});
+const baseMapOptions = () =>
+  createMapMock({
+    onEvents: {},
+    on: function (type, cb) {
+      if (type === 'load') {
+        cb();
+      }
+      this.onEvents[type] = cb;
+    },
+    getContainer: jest.fn().mockReturnValue(document.createElement('div')),
+  });
 
 const BASE_CONFIG = {
   title: 'Story Map Title',
