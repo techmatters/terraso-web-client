@@ -22,7 +22,7 @@ const generateMarkerSvg = ({ color, size }) =>
 
 export const getImage = ({ svg, size }) =>
   new Promise((resolve, reject) => {
-    let img = new Image(size, size);
+    const img = new Image(size, size);
     img.onload = () => resolve(img);
     const base64 = btoa(svg);
     img.src = `data:image/svg+xml;base64,${base64}`;

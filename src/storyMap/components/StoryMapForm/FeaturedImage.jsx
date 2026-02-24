@@ -22,19 +22,19 @@ import { Box, Button } from '@mui/material';
 import FeaturedImageDialog from 'terraso-web-client/storyMap/components/StoryMapForm/FeaturedImageDialog';
 import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 
-// Style constants
-const BUTTON_SX = {
-  m: 1,
+const BUTTON_SX = theme => ({
+  width: '100%',
   py: 1.5,
   justifyContent: 'center',
-};
+  textTransform: 'none',
+});
 
 const THUMBNAIL_CONTAINER_SX = {
   cursor: 'pointer',
-  m: 1,
   aspectRatio: '1.91 / 1',
   overflow: 'hidden',
   borderRadius: '4px',
+  width: '100%',
   '&:hover': {
     opacity: 0.8,
   },

@@ -20,11 +20,27 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
+jest.mock('@mapbox/mapbox-gl-draw', () => ({
+  __esModule: true,
+  default: jest.fn(() => ({
+    getAll: jest.fn(() => ({})),
+    set: jest.fn(),
+  })),
+}));
+
+jest.mock('@mapbox/mapbox-gl-geocoder', () => ({
+  __esModule: true,
+  default: jest.fn(() => ({
+    on: jest.fn(),
+    addTo: jest.fn(),
+    setInput: jest.fn(),
+    clear: jest.fn(),
+  })),
+}));
+
 // TODO: 2024-12-02
 // Work around https://github.com/remix-run/react-router/issues/12363
 // Remove this once https://github.com/jsdom/jsdom/pull/3791 is fixed
-
-/* eslint-disable no-undef */
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -35,4 +51,9 @@ if (!globalThis.TextEncoder || !globalThis.TextDecoder) {
   globalThis.TextDecoder = TextDecoder;
 }
 
-/* eslint-enable no-undef */
+if (typeof HTMLMediaElement !== 'undefined') {
+  Object.defineProperty(HTMLMediaElement.prototype, 'load', {
+    configurable: true,
+    value: jest.fn(),
+  });
+}

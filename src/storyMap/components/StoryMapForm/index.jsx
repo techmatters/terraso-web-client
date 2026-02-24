@@ -15,14 +15,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import logger from 'terraso-client-shared/monitoring/logger';
 import { useDebounce } from 'use-debounce';
 import { v4 as uuidv4 } from 'uuid';
-import { Grid, useMediaQuery } from '@mui/material';
+import { Box, Grid, useMediaQuery } from '@mui/material';
 
 import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
 import NavigationBlockedDialog from 'terraso-web-client/navigation/components/NavigationBlockedDialog';
@@ -30,6 +37,7 @@ import { useNavigationBlocker } from 'terraso-web-client/navigation/navigationCo
 import StoryMap from 'terraso-web-client/storyMap/components/StoryMap';
 import ChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/ChapterForm';
 import ChaptersSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/ChaptersSideBar';
+import RightSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/RightSidebar';
 import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import TitleForm from 'terraso-web-client/storyMap/components/StoryMapForm/TitleForm';
 import TopBar from 'terraso-web-client/storyMap/components/StoryMapForm/TopBar';
@@ -49,6 +57,18 @@ const BASE_CHAPTER = {
   onChapterEnter: [],
   onChapterExit: [],
 };
+
+const RIGHT_SIDEBAR_Z_INDEX = 3;
+const RIGHT_SIDEBAR_WIDTH = 300;
+
+const computeStoryMapLayout = ({
+  headerHeight,
+  footerHeight,
+  formHeaderHeight,
+}) => ({
+  mapHeight: `calc(100vh - (${headerHeight}px + ${footerHeight}px + ${formHeaderHeight}px))`,
+  topOffset: formHeaderHeight,
+});
 
 const Preview = props => {
   const { getMediaFile } = useStoryMapConfigContext();
@@ -109,9 +129,11 @@ const StoryMapForm = props => {
     isDirty,
   } = useStoryMapConfigContext();
   const [mapHeight, setMapHeight] = useState();
-  const [mapWidth, setMapWidth] = useState();
+  const [formHeaderHeight, setFormHeaderHeight] = useState(0);
   const [currentStepId, setCurrentStepId] = useState();
   const [scrollToChapter, setScrollToChapter] = useState();
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
+  const storyMapBodyRef = useRef(null);
 
   const [autoSaveData, setAutoSaveData] = useState({
     config,
@@ -151,20 +173,57 @@ const StoryMapForm = props => {
     t('storyMap.form_unsaved_changes_message')
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isSmall) {
+      setMapHeight(undefined);
+      setFormHeaderHeight(0);
       return;
     }
-    const headerHeight =
-      document.getElementById('header-container')?.clientHeight ?? 0;
-    const footerHeight =
-      document.getElementsByClassName('footer')?.[0]?.clientHeight ?? 0;
-    const formHeaderHeight =
-      (document.getElementById('form-header')?.clientHeight ?? 0) + 1;
 
-    setMapHeight(
-      `calc(100vh - (${headerHeight}px + ${footerHeight}px + ${formHeaderHeight}px))`
-    );
+    const recalculateLayout = () => {
+      const headerHeight =
+        document.getElementById('header-container')?.clientHeight ?? 0;
+      const footerHeight =
+        document.getElementsByClassName('footer')?.[0]?.clientHeight ?? 0;
+      const nextFormHeaderHeight =
+        (document.getElementById('form-header')?.clientHeight ?? 0) + 1;
+
+      const { mapHeight: nextMapHeight, topOffset } = computeStoryMapLayout({
+        headerHeight,
+        footerHeight,
+        formHeaderHeight: nextFormHeaderHeight,
+      });
+
+      setMapHeight(nextMapHeight);
+      setFormHeaderHeight(topOffset);
+    };
+
+    recalculateLayout();
+
+    const headerElement = document.getElementById('header-container');
+    const footerElement = document.getElementsByClassName('footer')?.[0];
+    const formHeaderElement = document.getElementById('form-header');
+
+    window.addEventListener('resize', recalculateLayout);
+
+    if (typeof ResizeObserver === 'undefined') {
+      return () => {
+        window.removeEventListener('resize', recalculateLayout);
+      };
+    }
+
+    const observer = new ResizeObserver(recalculateLayout);
+
+    [headerElement, footerElement, formHeaderElement]
+      .filter(Boolean)
+      .forEach(element => {
+        observer.observe(element);
+      });
+
+    return () => {
+      window.removeEventListener('resize', recalculateLayout);
+      observer.disconnect();
+    };
   }, [isSmall]);
 
   // Focus on the title when the map is ready
@@ -175,16 +234,6 @@ const StoryMapForm = props => {
     input?.focus();
     init.current = true;
   }, [init]);
-
-  useEffect(() => {
-    if (!mapHeight) {
-      return;
-    }
-    const chaptersWidth =
-      document.getElementById('chapters-sidebar').clientWidth;
-
-    setMapWidth(`calc(100vw - ${chaptersWidth}px)`);
-  }, [mapHeight]);
 
   useEffect(() => {
     if (!scrollToChapter) {
@@ -262,6 +311,14 @@ const StoryMapForm = props => {
     [config, mediaFiles, onSaveDraft, saved]
   );
 
+  const closeRightSidebar = useCallback(() => {
+    setIsRightSidebarOpen(false);
+  }, []);
+
+  const toggleRightSidebar = useCallback(() => {
+    setIsRightSidebarOpen(isOpen => !isOpen);
+  }, []);
+
   if (preview || isSmall) {
     return <Preview config={config} onPublish={onPublishWrapper} />;
   }
@@ -281,12 +338,18 @@ const StoryMapForm = props => {
         onSaveDraft={onSaveDraftWrapper}
         requestStatus={requestStatus}
         isDirty={isDirty}
+        onToggleRightSidebar={toggleRightSidebar}
+        isRightSidebarOpen={isRightSidebarOpen}
       />
-      <Grid
-        container
-        justifyContent="flex-start"
-        alignItems="flex-start"
-        sx={{ height: mapHeight, width: '100%' }}
+      <Box
+        ref={storyMapBodyRef}
+        sx={{
+          position: 'relative',
+          width: '100%',
+          height: mapHeight,
+          display: 'flex',
+          alignItems: 'stretch',
+        }}
       >
         <ChaptersSidebar
           config={config}
@@ -296,26 +359,39 @@ const StoryMapForm = props => {
           onMoveChapter={onMoveChapter}
           height={mapHeight}
         />
-        <Grid
-          size="grow"
+        <Box
           sx={{
+            position: 'relative',
             height: mapHeight,
+            flexGrow: 1,
+            minWidth: 0,
             // There is no overlay support for Firefox, see: https://developer.mozilla.org/en-US/docs/Web/CSS/overflow
             overflowY: isFirefox ? 'scroll' : 'overlay',
           }}
         >
-          {mapHeight && mapWidth && (
+          {mapHeight && (
             <StoryMap
               config={config}
-              mapCss={{ height: mapHeight, width: mapWidth }}
+              mapCss={{
+                height: mapHeight,
+                width: isRightSidebarOpen
+                  ? `calc(100% - ${RIGHT_SIDEBAR_WIDTH}px)`
+                  : '100%',
+              }}
               onStepChange={setCurrentStepId}
               ChapterComponent={ChapterForm}
               TitleComponent={TitleForm}
               onReady={onMapReady}
             />
           )}
-        </Grid>
-      </Grid>
+        </Box>
+        <RightSidebar
+          open={isRightSidebarOpen}
+          onClose={closeRightSidebar}
+          zIndex={RIGHT_SIDEBAR_Z_INDEX}
+          topOffset={formHeaderHeight}
+        />
+      </Box>
     </>
   );
 };

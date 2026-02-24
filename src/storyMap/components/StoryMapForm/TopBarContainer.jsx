@@ -32,7 +32,7 @@ const TopBarContainer = ({ children }) => {
         alignItems: 'center',
         pt: 3,
         pb: 1,
-        zIndex: 2,
+        zIndex: 4,
         bgcolor: 'white',
         minHeight: 70,
         position: 'relative',

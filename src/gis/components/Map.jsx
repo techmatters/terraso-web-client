@@ -428,6 +428,26 @@ const Map = forwardRef((props, ref) => {
   }, [map, onBoundsChange]);
 
   useEffect(() => {
+    if (
+      !map ||
+      !mapContainer.current ||
+      typeof ResizeObserver === 'undefined'
+    ) {
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      map.resize();
+    });
+
+    observer.observe(mapContainer.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [map]);
+
+  useEffect(() => {
     if (!map) {
       return;
     }
