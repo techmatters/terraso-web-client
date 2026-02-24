@@ -104,8 +104,6 @@ const PublishedActions = ({ storyMap, onPreview }) => {
           </Button>
           <Stack alignItems="flex-start">
             <SocialShare
-              url={absoluteUrl}
-              title={storyMap.title}
               buttonProps={{
                 variant: 'outlined',
                 size: 'small',
@@ -149,20 +147,31 @@ const ShareAction = ({ storyMap, onShare }) => {
       ? membership.pendingEmail
       : t('user.full_name', { user: membership.user });
 
-  const contributors = memberships.map(getContributorLabel).filter(Boolean);
+  const getMembershipKey = membership =>
+    membership.user?.id ||
+    membership.pendingEmail ||
+    membership.membershipId ||
+    membership.id;
+
+  const contributors = memberships
+    .map(membership => ({
+      key: getMembershipKey(membership),
+      label: getContributorLabel(membership),
+    }))
+    .filter(({ key, label }) => Boolean(key && label));
 
   return (
     <Stack spacing={0.5}>
       <Typography sx={{ fontSize: 16, fontWeight: 400 }}>
         {t('storyMap.form_contributors_label')}:
       </Typography>
-      {contributors.map(name => (
+      {contributors.map(({ key, label }) => (
         <Typography
-          key={name}
+          key={key}
           variant="caption"
           sx={{ fontSize: 14, fontWeight: 400 }}
         >
-          {name}
+          {label}
         </Typography>
       ))}
       <Button
