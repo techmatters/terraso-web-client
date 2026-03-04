@@ -38,12 +38,6 @@ jest.mock('@mapbox/mapbox-gl-geocoder', () => ({
   })),
 }));
 
-// TODO: 2024-12-02
-// Work around https://github.com/remix-run/react-router/issues/12363
-// Remove this once https://github.com/jsdom/jsdom/pull/3791 is fixed
-
-globalThis.IS_REACT_ACT_ENVIRONMENT = true;
-
 if (!globalThis.TextEncoder || !globalThis.TextDecoder) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { TextDecoder, TextEncoder } = require('node:util');

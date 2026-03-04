@@ -15,15 +15,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
-import { fetchUser, signOut } from 'terraso-client-shared/account/accountSlice';
-import { useFetchData } from 'terraso-client-shared/store/utils';
+import { signOut } from 'terraso-client-shared/account/accountSlice';
 import { useDispatch } from 'terraso-web-client/terrasoApi/store';
 
 import PageLoader from 'terraso-web-client/layout/PageLoader';
 import { useCompleteProfile } from 'terraso-web-client/account/accountProfileUtils';
+import useValidateTokenUser from 'terraso-web-client/account/useValidateTokenUser';
 
 const OptionalAuth = ({ children }) => {
   const dispatch = useDispatch();
@@ -31,13 +31,7 @@ const OptionalAuth = ({ children }) => {
   const hasToken = useSelector(_.get('account.hasToken'));
 
   useCompleteProfile();
-
-  useFetchData(
-    useCallback(
-      () => (hasToken && !user ? fetchUser() : null),
-      [hasToken, user]
-    )
-  );
+  useValidateTokenUser({ hasToken, user });
 
   useEffect(() => {
     if (fetching === false && !user && hasToken) {
@@ -45,7 +39,7 @@ const OptionalAuth = ({ children }) => {
     }
   }, [fetching, user, hasToken, dispatch]);
 
-  if (hasToken && fetching) {
+  if (hasToken && !user && fetching) {
     return <PageLoader />;
   }
 

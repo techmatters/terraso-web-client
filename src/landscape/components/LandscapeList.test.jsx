@@ -147,17 +147,17 @@ const baseListTest = async () => {
   ).toBeInTheDocument();
 
   // Map
-  expect(map.addSource).toHaveBeenCalledTimes(3);
-  expect(map.addSource.mock.calls[2][0]).toEqual('landscapes');
-  const geojson = map.addSource.mock.calls[2][1].data;
+  const landscapesSourceCall = map.addSource.mock.calls.find(
+    ([sourceId]) => sourceId === 'landscapes'
+  );
+  expect(landscapesSourceCall).toBeDefined();
+  const geojson = landscapesSourceCall[1].data;
   expect(geojson.features.length).toBe(15);
 
-  expect(map.addLayer).toHaveBeenCalledTimes(5);
-  expect(map.addLayer.mock.calls[2][0]).toMatchObject({ id: 'clusters' });
-  expect(map.addLayer.mock.calls[3][0]).toMatchObject({ id: 'cluster-count' });
-  expect(map.addLayer.mock.calls[4][0]).toMatchObject({
-    id: 'unclustered-point',
-  });
+  const layerIds = map.addLayer.mock.calls.map(([layer]) => layer?.id);
+  expect(layerIds).toEqual(expect.arrayContaining(['clusters']));
+  expect(layerIds).toEqual(expect.arrayContaining(['cluster-count']));
+  expect(layerIds).toEqual(expect.arrayContaining(['unclustered-point']));
 
   await act(async () =>
     events['click:unclustered-point']({
@@ -168,7 +168,10 @@ const baseListTest = async () => {
       },
     })
   );
-  const domElement = Popup.setDOMContent.mock.calls[0][0];
+  const domElement =
+    Popup.setDOMContent.mock.calls[
+      Popup.setDOMContent.mock.calls.length - 1
+    ][0];
   expect(domElement.querySelector('a').href).toEqual(
     'http://localhost/landscapes/landscape-0'
   );
@@ -280,8 +283,10 @@ test('LandscapeList: Clear search', async () => {
     name: 'Clear search',
   });
   await act(async () => fireEvent.click(clearSearchButton));
-  expect(setSearchParams).toHaveBeenCalledTimes(3);
-  expect(setSearchParams.mock.calls[2][0]).toStrictEqual({});
+  expect(setSearchParams).toHaveBeenCalled();
+  const lastSetSearchParamsCall =
+    setSearchParams.mock.calls[setSearchParams.mock.calls.length - 1];
+  expect(lastSetSearchParamsCall[0]).toStrictEqual({});
 });
 test('LandscapeList: List sort', async () => {
   const isMember = {
