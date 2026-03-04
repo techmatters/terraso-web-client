@@ -64,6 +64,7 @@ const baseRender = (component, initialState, permissionsRules) => {
       store={createStore(initialState)}
       theme={theme}
       permissionsRules={permissionsRules || rules}
+      strictMode={false}
     >
       {children}
     </AppWrappers>

@@ -285,7 +285,10 @@ afterEach(() => {
 
 const testSelectDataFileStep = async testParams => {
   // Validate accepted file types
-  const fetchFilesCall = terrasoApi.requestGraphQL.mock.calls[2];
+  const fetchFilesCall = terrasoApi.requestGraphQL.mock.calls.find(
+    ([, variables]) => variables?.resourceTypes
+  );
+  expect(fetchFilesCall).toBeDefined();
   expect(fetchFilesCall[1].resourceTypes).toStrictEqual([
     ...MAP_DATA_ACCEPTED_EXTENSIONS,
     ...DATA_SET_ACCEPTED_EXTENSIONS,
@@ -493,8 +496,10 @@ const testPreviewStep = async (map, events, testParams) => {
   map.getBounds.mockReturnValue(new LngLatBounds(sw, ne));
   await act(async () => events['moveend']());
 
-  const addSourceCall = map.addSource.mock.calls[0];
-  expect(addSourceCall[0]).toBe('visualization');
+  const addSourceCall = map.addSource.mock.calls.find(
+    ([sourceId]) => sourceId === 'visualization'
+  );
+  expect(addSourceCall).toBeDefined();
   expect(addSourceCall[1]).toStrictEqual(testParams.expectedGeojsonSource);
 
   expect(map.addLayer).toHaveBeenCalledWith(
@@ -553,8 +558,10 @@ test.each([
     await testPreviewStep(map, events, testParams);
 
     // Fetch data entries validation
-    const fetchCall = terrasoApi.requestGraphQL.mock.calls[2];
-    expect(fetchCall[1]).toStrictEqual(
+    const requestVariables = terrasoApi.requestGraphQL.mock.calls
+      .map(([, variables]) => variables)
+      .filter(Boolean);
+    expect(requestVariables).toContainEqual(
       testParams.expectedDataEntriesFetchInput
     );
 

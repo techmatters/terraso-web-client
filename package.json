@@ -160,7 +160,8 @@
     ],
     "testEnvironment": "jsdom",
     "setupFiles": [
-      "react-app-polyfill/jsdom"
+      "react-app-polyfill/jsdom",
+      "<rootDir>/src/tests/reactActEnvironment.js"
     ],
     "setupFilesAfterEnv": [
       "<rootDir>/src/setupTests.js"

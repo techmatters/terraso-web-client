@@ -29,7 +29,7 @@ jest.mock('terraso-client-shared/terrasoApi/api');
 
 jest.mock('terraso-client-shared/account/accountService', () => ({
   ...jest.requireActual('terraso-client-shared/account/accountService'),
-  signOut: jest.fn(),
+  signOut: jest.fn(() => Promise.resolve()),
 }));
 
 jest.mock('react-router', () => ({
@@ -116,4 +116,22 @@ test('OptionalAuth: Should sign out when fetchUser fails with expired/invalid to
   await waitFor(() => {
     expect(accountService.signOut).toHaveBeenCalled();
   });
+});
+
+test('OptionalAuth: Should render children while auth state is fetching', async () => {
+  useLocation.mockReturnValue({
+    pathname: '/landscapes/congo-basin/profile',
+  });
+
+  await setup({
+    account: {
+      hasToken: true,
+      currentUser: {
+        data: { id: 'test-id', email: 'test@example.com' },
+        fetching: true,
+      },
+    },
+  });
+
+  expect(screen.getByText('Test')).toBeInTheDocument();
 });
