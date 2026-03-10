@@ -58,12 +58,18 @@ if (executeAxe) {
   jest.setTimeout(AXE_TEST_TIMEOUT);
 }
 
-const baseRender = (component, initialState, permissionsRules) => {
+const baseRender = (
+  component,
+  initialState,
+  permissionsRules,
+  { strictMode = true } = {}
+) => {
   const Wrapper = ({ children }) => (
     <AppWrappers
       store={createStore(initialState)}
       theme={theme}
       permissionsRules={permissionsRules || rules}
+      strictMode={strictMode}
     >
       {children}
     </AppWrappers>
@@ -71,10 +77,15 @@ const baseRender = (component, initialState, permissionsRules) => {
   return rtlRender(component, { wrapper: Wrapper });
 };
 
-const render = async (component, initialState, permissionsRules) => {
+const render = async (component, initialState, permissionsRules, options) => {
   let renderResult;
   await act(async () => {
-    renderResult = baseRender(component, initialState, permissionsRules);
+    renderResult = baseRender(
+      component,
+      initialState,
+      permissionsRules,
+      options
+    );
   });
   if (executeAxe) {
     const { container } = renderResult;

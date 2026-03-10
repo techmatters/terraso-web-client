@@ -61,35 +61,45 @@ const DefaultMetaTags = () => {
 
 // Wrappers
 // Router, Theme, Global State, Permissions, Notifications, Breadcrumbs
-const AppWrappers = ({ children, theme, store, permissionsRules }) => {
-  return (
-    <StrictMode>
-      <BrowserRouter>
-        <HelmetProvider>
-          <ThemeProvider theme={theme}>
-            <ErrorMonitoringProvider>
-              <Provider store={store}>
-                <RefreshProgressProvider>
-                  <PermissionsProvider rules={permissionsRules}>
-                    <NotificationsWrapper>
-                      <BreadcrumbsContextProvider>
-                        <SocialShareContextProvider>
-                          <ContainerContextProvider>
-                            <DefaultMetaTags />
-                            {children}
-                          </ContainerContextProvider>
-                        </SocialShareContextProvider>
-                      </BreadcrumbsContextProvider>
-                    </NotificationsWrapper>
-                  </PermissionsProvider>
-                </RefreshProgressProvider>
-              </Provider>
-            </ErrorMonitoringProvider>
-          </ThemeProvider>
-        </HelmetProvider>
-      </BrowserRouter>
-    </StrictMode>
+const AppWrappers = ({
+  children,
+  theme,
+  store,
+  permissionsRules,
+  strictMode = true,
+}) => {
+  const appTree = (
+    <BrowserRouter>
+      <HelmetProvider>
+        <ThemeProvider theme={theme}>
+          <ErrorMonitoringProvider>
+            <Provider store={store}>
+              <RefreshProgressProvider>
+                <PermissionsProvider rules={permissionsRules}>
+                  <NotificationsWrapper>
+                    <BreadcrumbsContextProvider>
+                      <SocialShareContextProvider>
+                        <ContainerContextProvider>
+                          <DefaultMetaTags />
+                          {children}
+                        </ContainerContextProvider>
+                      </SocialShareContextProvider>
+                    </BreadcrumbsContextProvider>
+                  </NotificationsWrapper>
+                </PermissionsProvider>
+              </RefreshProgressProvider>
+            </Provider>
+          </ErrorMonitoringProvider>
+        </ThemeProvider>
+      </HelmetProvider>
+    </BrowserRouter>
   );
+
+  if (!strictMode) {
+    return appTree;
+  }
+
+  return <StrictMode>{appTree}</StrictMode>;
 };
 
 export default AppWrappers;

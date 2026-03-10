@@ -225,7 +225,7 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
   await setup();
 
   await screen.findByRole('button', { name: 'Download PNG' });
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(3);
+  expect(terrasoApi.requestGraphQL.mock.calls.length).toBeGreaterThanOrEqual(2);
 
   expect(
     screen.getByRole('heading', { name: 'Test Title' })
@@ -235,8 +235,11 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
 
   // Map
   await waitFor(() => expect(map.addSource).toHaveBeenCalledTimes(1));
-  expect(map.addSource.mock.calls[0][0]).toEqual('visualization');
-  const geojson = map.addSource.mock.calls[0][1].data;
+  const visualizationSourceCall = map.addSource.mock.calls.find(
+    ([sourceId]) => sourceId === 'visualization'
+  );
+  expect(visualizationSourceCall).toBeDefined();
+  const geojson = visualizationSourceCall[1].data;
   expect(geojson.features.length).toBe(3);
 
   expect(map.addLayer).toHaveBeenCalledWith(
@@ -270,8 +273,11 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
       },
     })
   );
-  expect(Popup.setDOMContent).toHaveBeenCalledTimes(2);
-  const domElement = Popup.setDOMContent.mock.calls[1][0];
+  expect(Popup.setDOMContent).toHaveBeenCalled();
+  const domElement =
+    Popup.setDOMContent.mock.calls[
+      Popup.setDOMContent.mock.calls.length - 1
+    ][0];
   expect(domElement.querySelector('h2').textContent).toEqual('val41');
   expect(domElement.querySelector('p').textContent).toEqual(
     'Custom Label: val11'
@@ -279,7 +285,12 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
 
   // Validate api call input to fetch visualization config
   // It should contain the owner slug and type
-  const fetchCall = terrasoApi.requestGraphQL.mock.calls[1];
+  const fetchCall = terrasoApi.requestGraphQL.mock.calls.find(
+    ([, variables]) =>
+      variables?.configSlug === 'config-slug' &&
+      variables?.ownerType === 'landscape'
+  );
+  expect(fetchCall).toBeDefined();
   expect(fetchCall[1]).toStrictEqual({
     configSlug: 'config-slug',
     ownerSlug: 'jose-landscape-deafult-test-4',

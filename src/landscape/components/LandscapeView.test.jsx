@@ -16,11 +16,11 @@
  */
 
 import {
-  act,
   fireEvent,
   render,
   screen,
   waitFor,
+  waitForElementToBeRemoved,
   within,
 } from 'terraso-web-client/tests/utils';
 import { when } from 'jest-when';
@@ -63,9 +63,13 @@ const setup = async () => {
 };
 
 beforeEach(() => {
+  jest.clearAllMocks();
+  terrasoApi.requestGraphQL.mockReset();
+  terrasoApi.requestGraphQL.mockResolvedValue({});
   useParams.mockReturnValue({
     slug: 'slug-1',
   });
+  global.fetch = jest.fn();
   global.URL.createObjectURL = jest.fn();
   mapboxgl.LngLatBounds = jest.fn();
   mapboxgl.NavigationControl = jest.fn();
@@ -89,6 +93,21 @@ beforeEach(() => {
     fitBounds: jest.fn(),
     getStyle: jest.fn(),
     off: jest.fn(),
+  };
+
+  global.Image = class {
+    constructor() {
+      this.onload = null;
+      this.onerror = null;
+    }
+
+    set src(_value) {
+      Promise.resolve().then(() => {
+        if (this.onload) {
+          this.onload();
+        }
+      });
+    }
   };
 });
 
@@ -158,44 +177,41 @@ const baseViewTest = async (
     },
   });
 
-  when(terrasoApi.requestGraphQL)
-    .calledWith(
-      expect.stringContaining('query landscapesToView'),
-      expect.anything()
-    )
-    .mockResolvedValue({
-      landscapes: {
-        edges: [
-          {
-            node: {
-              name: 'Landscape Name',
-              description: 'Landscape Description',
-              website: 'https://www.landscape.org',
-              location: 'EC',
-              areaPolygon: GEOJSON,
-              membershipList: {
-                memberships,
-                accountMembership,
-                membershipsCount: 6,
-              },
-              sharedResources,
+  terrasoApi.requestGraphQL.mockResolvedValue({
+    landscapes: {
+      edges: [
+        {
+          node: {
+            slug: 'slug-1',
+            name: 'Landscape Name',
+            description: 'Landscape Description',
+            website: 'https://www.landscape.org',
+            location: 'EC',
+            areaPolygon: GEOJSON,
+            membershipList: {
+              memberships,
+              accountMembership,
+              membershipsCount: 6,
             },
+            sharedResources,
           },
-        ],
-      },
-    });
+        },
+      ],
+    },
+  });
   await setup();
+  await screen.findByRole('heading', { name: 'Landscape Name' });
 };
 
 test('LandscapeView: Display error', async () => {
   terrasoApi.requestGraphQL.mockRejectedValue(['Load error']);
   await setup();
-  expect(screen.getByText(/Load error/i)).toBeInTheDocument();
+  expect(await screen.findByText(/Load error/i)).toBeInTheDocument();
 });
 test('LandscapeView: Display loader', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
   await setup();
-  const loader = screen.getByRole('progressbar', {
+  const loader = await screen.findByRole('progressbar', {
     name: 'Loading',
   });
   expect(loader).toBeInTheDocument();
@@ -212,7 +228,7 @@ test('LandscapeView: Not found', async () => {
     })
   );
   await setup();
-  expect(screen.getByText(/Landscape not found/i)).toBeInTheDocument();
+  expect(await screen.findByText(/Landscape not found/i)).toBeInTheDocument();
 });
 
 test('LandscapeView: Display data', async () => {
@@ -248,7 +264,7 @@ test('LandscapeView: Display data', async () => {
   const items = entriesList.getAllByRole('listitem');
   expect(items.length).toBe(7);
   const fileEntry = within(items[0]);
-  expect(fileEntry.getByText('Data Entry 0')).toBeInTheDocument();
+  expect(await fileEntry.findByText('Data Entry 0')).toBeInTheDocument();
   expect(fileEntry.getByText('txt')).toBeInTheDocument();
   expect(fileEntry.getByText('3 kB')).toBeInTheDocument();
   expect(
@@ -351,11 +367,11 @@ test('LandscapeView: Update Shared Data', async () => {
   const entriesList = within(sharedDataRegion.getByRole('list'));
   const items = entriesList.getAllByRole('listitem');
 
-  let nameField = within(items[3]).getByRole('button', {
+  let nameField = await within(items[3]).findByRole('button', {
     name: 'Data Entry 3',
   });
   expect(nameField).toBeInTheDocument();
-  await act(async () => fireEvent.click(nameField));
+  fireEvent.click(nameField);
 
   await waitFor(() =>
     expect(
@@ -369,13 +385,19 @@ test('LandscapeView: Update Shared Data', async () => {
     name: 'Update name',
   });
   fireEvent.change(name, { target: { value: 'Data Entry 3 updated' } });
-  await act(async () =>
-    fireEvent.click(
-      within(items[3]).getByRole('button', {
-        name: 'Save',
-      })
-    )
+  fireEvent.click(
+    within(items[3]).getByRole('button', {
+      name: 'Save',
+    })
   );
+
+  await waitFor(() => {
+    expect(
+      within(items[3]).getByRole('button', {
+        name: 'Data Entry 3 updated',
+      })
+    ).toBeInTheDocument();
+  });
 
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledWith(
     expect.stringContaining('mutation updateSharedData'),
@@ -389,11 +411,11 @@ test('LandscapeView: Update Shared Data', async () => {
   );
 
   // Rename a second time to ensure state is reset
-  nameField = within(items[3]).getByRole('button', {
+  nameField = await within(items[3]).findByRole('button', {
     name: 'Data Entry 3 updated',
   });
   expect(nameField).toBeInTheDocument();
-  await act(async () => fireEvent.click(nameField));
+  fireEvent.click(nameField);
 
   await waitFor(() =>
     expect(
@@ -407,13 +429,20 @@ test('LandscapeView: Update Shared Data', async () => {
     name: 'Update name',
   });
   fireEvent.change(name, { target: { value: 'Data Entry 3 revised' } });
-  await act(async () =>
-    fireEvent.click(
-      within(items[3]).getByRole('button', {
-        name: 'Save',
-      })
-    )
+  fireEvent.click(
+    within(items[3]).getByRole('button', {
+      name: 'Save',
+    })
   );
+
+  await waitFor(() => {
+    expect(
+      within(items[3]).getByRole('button', {
+        name: 'Data Entry 3 revised',
+      })
+    ).toBeInTheDocument();
+  });
+
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledWith(
     expect.stringContaining('mutation updateSharedData'),
     {
@@ -429,31 +458,55 @@ test('LandscapeView: Update Shared Data', async () => {
 test('LandscapeView: Refresh profile on leave', async () => {
   await baseViewTest();
 
-  terrasoApi.requestGraphQL.mockResolvedValueOnce({
-    deleteLandscapeMembership: {
-      landscape: {},
-    },
-  });
+  when(terrasoApi.requestGraphQL)
+    .calledWith(
+      expect.stringContaining('mutation deleteLandscapeMembership'),
+      expect.objectContaining({
+        input: {
+          id: 'account-membership-id',
+          landscapeSlug: 'slug-1',
+        },
+      })
+    )
+    .mockResolvedValueOnce({
+      deleteLandscapeMembership: {
+        landscape: {
+          slug: 'slug-1',
+          membershipList: {
+            accountMembership: null,
+          },
+          sharedResources: {
+            edges: [],
+          },
+        },
+      },
+    });
 
   expect(
-    screen.getByRole('region', { name: 'Shared files and Links' })
+    await screen.findByRole('region', { name: 'Shared files and Links' })
   ).toBeInTheDocument();
 
-  await act(async () =>
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Leave: Landscape Name' })
-    )
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Leave: Landscape Name' })
   );
 
   const dialog = screen.getByRole('dialog', { name: 'Leave “Landscape Name”' });
 
-  await act(async () =>
-    fireEvent.click(
-      within(dialog).getByRole('button', { name: 'Leave Landscape' })
-    )
+  fireEvent.click(
+    within(dialog).getByRole('button', { name: 'Leave Landscape' })
   );
 
-  const leaveCall = terrasoApi.requestGraphQL.mock.calls[1];
+  await waitForElementToBeRemoved(() =>
+    screen.queryByRole('dialog', { name: 'Leave “Landscape Name”' })
+  );
+
+  const leaveCall = terrasoApi.requestGraphQL.mock.calls.find(
+    ([, variables]) =>
+      variables?.input?.id === 'account-membership-id' &&
+      variables?.input?.landscapeSlug === 'slug-1'
+  );
+
+  expect(leaveCall).toBeDefined();
   expect(leaveCall[1].input).toEqual({
     id: 'account-membership-id',
     landscapeSlug: 'slug-1',
@@ -489,31 +542,49 @@ test('LandscapeView: Refresh profile on join', async () => {
       })),
   };
 
-  terrasoApi.requestGraphQL.mockResolvedValueOnce({
-    saveLandscapeMembership: {
-      landscape: {
-        membershipList: {
-          accountMembership: {
-            id: 'account-membership-id',
-            userRole: 'member',
-            membershipStatus: 'APPROVED',
-          },
-          membershipsCount: 6,
+  when(terrasoApi.requestGraphQL)
+    .calledWith(
+      expect.stringContaining('mutation joinLandscape'),
+      expect.objectContaining({
+        input: {
+          landscapeSlug: 'slug-1',
+          userEmails: ['email@email.com'],
+          userRole: 'member',
         },
-        sharedResources,
+      })
+    )
+    .mockResolvedValueOnce({
+      saveLandscapeMembership: {
+        landscape: {
+          slug: 'slug-1',
+          membershipList: {
+            accountMembership: {
+              id: 'account-membership-id',
+              userRole: 'member',
+              membershipStatus: 'APPROVED',
+            },
+            membershipsCount: 6,
+          },
+          sharedResources,
+        },
       },
-    },
-  });
+    });
 
   expect(
     screen.queryByRole('region', { name: 'Shared files and Links' })
   ).not.toBeInTheDocument();
 
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Join Landscape' }))
+  fireEvent.click(
+    await screen.findByRole('button', { name: 'Join Landscape' })
   );
 
-  const joinCall = terrasoApi.requestGraphQL.mock.calls[1];
+  const joinCall = terrasoApi.requestGraphQL.mock.calls.find(
+    ([, variables]) =>
+      variables?.input?.landscapeSlug === 'slug-1' &&
+      variables?.input?.userRole === 'member'
+  );
+
+  expect(joinCall).toBeDefined();
   expect(joinCall[1].input).toEqual({
     landscapeSlug: 'slug-1',
     userEmails: ['email@email.com'],
@@ -522,7 +593,7 @@ test('LandscapeView: Refresh profile on join', async () => {
 
   // Shared Data
   const sharedDataRegion = within(
-    screen.getByRole('region', { name: 'Shared files and Links' })
+    await screen.findByRole('region', { name: 'Shared files and Links' })
   );
   expect(
     sharedDataRegion.getByRole('heading', { name: 'Shared files and Links' })

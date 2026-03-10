@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { render, screen } from 'terraso-web-client/tests/utils';
+import { render, screen, waitFor } from 'terraso-web-client/tests/utils';
 import _ from 'lodash/fp';
 import {
   useLocation,
@@ -82,21 +82,19 @@ test('Auth: test redirect', async () => {
       account: {
         hasToken: true,
         currentUser: {
-          fetching: false,
-          data: {
-            email: 'email@email.com',
-            firstName: 'John',
-            lastName: 'Doe',
-          },
+          fetching: true,
+          data: null,
         },
       },
     }
   );
 
-  expect(global.fetch).toHaveBeenCalledTimes(2);
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  await waitFor(() => {
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+    expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  });
   expect(
-    screen.getByText('To: /account?referrer=%2Fgroups%2Fslug-1')
+    await screen.findByText('To: /account?referrer=%2Fgroups%2Fslug-1')
   ).toBeInTheDocument();
 });
 
@@ -138,6 +136,7 @@ test('Auth: test refresh tokens', async () => {
   useLocation.mockReturnValue({
     pathname: '/groups/slug-1',
   });
+  getUserEmail.mockReturnValue(Promise.resolve('email@email.com'));
   terrasoApi.requestGraphQL
     .mockRejectedValueOnce('UNAUTHENTICATED')
     .mockResolvedValueOnce({})
@@ -167,9 +166,10 @@ test('Auth: test refresh tokens', async () => {
       },
     }
   );
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
-
-  expect(screen.getByText('Group not found')).toBeInTheDocument();
+  await waitFor(() => {
+    expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  });
+  expect(await screen.findByText('Group not found')).toBeInTheDocument();
 });
 test('Auth: test fetch user', async () => {
   getUserEmail.mockReturnValue(Promise.resolve('test@email.com'));
@@ -201,7 +201,9 @@ test('Auth: test fetch user', async () => {
     }
   );
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  await waitFor(() => {
+    expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  });
 });
 
 test('Auth: Redirects to complete profile when firstName missing', async () => {
