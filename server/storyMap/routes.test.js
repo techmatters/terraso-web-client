@@ -145,6 +145,51 @@ describe('Story Map Routes - Integration Tests', () => {
 
       expect(text).toContain('<title>Story Without Image</title>');
       expect(text).toContain('This story has no image');
+      expect(text).toContain(
+        'https://test.terraso.org/storyMap/terraso-story-maps-img.jpg'
+      );
+    });
+
+    it('falls back to first chapter content when short description is missing', async () => {
+      mockFetch(
+        mockStoryMapResponse({
+          title: 'Story Without Short Description',
+          chapters: [
+            {
+              title: 'Chapter 1',
+              description:
+                'This first chapter explains the story context with enough detail that it should be truncated for social previews and search listings to keep metadata concise and readable.',
+            },
+          ],
+        })
+      );
+
+      const { text } = await request(app)
+        .get('/tools/story-maps/abc123/no-short-description')
+        .expect(200);
+
+      expect(text).toContain('<title>Story Without Short Description</title>');
+      expect(text).toContain(
+        'This first chapter explains the story context with enough detail that it should be truncated for social previews and search listings to keep metadata concise...'
+      );
+    });
+
+    it('uses default description when short description and chapter content are missing', async () => {
+      mockFetch(
+        mockStoryMapResponse({
+          title: 'Story Without Description Data',
+          chapters: [{ title: 'Chapter 1' }],
+        })
+      );
+
+      const { text } = await request(app)
+        .get('/tools/story-maps/abc123/no-description-data')
+        .expect(200);
+
+      expect(text).toContain('<title>Story Without Description Data</title>');
+      expect(text).toContain(
+        'Inspire your audience with a free, easy to use, and powerful web app for place-based storytelling. Share data, media, and narratives on a map to ground your story in the land.'
+      );
     });
 
     const fallbackScenarios = [
