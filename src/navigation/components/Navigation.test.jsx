@@ -93,12 +93,41 @@ test('Navigation: Test navigation', async () => {
   useLocation.mockReturnValue({
     pathname: '/',
   });
-  await setup();
+  const view = await render(<Navigation />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          firstName: 'First',
+          lastName: 'Last',
+        },
+      },
+    },
+  });
+
   expect(useLocation).toHaveBeenCalled();
+  expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
+    'aria-current',
+    'page'
+  );
+
   const landscapesLink = screen.getByRole('link', { name: 'Landscapes' });
   expect(landscapesLink).toHaveAttribute('href', '/landscapes');
   await act(async () => fireEvent.click(landscapesLink));
-  expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
+
+  useLocation.mockReturnValue({
+    pathname: '/landscapes',
+  });
+  await act(async () => {
+    view.rerender(<Navigation />);
+  });
+
+  expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute(
+    'aria-current',
+    'page'
+  );
+  expect(screen.getByRole('link', { name: 'Landscapes' })).toHaveAttribute(
     'aria-current',
     'page'
   );
