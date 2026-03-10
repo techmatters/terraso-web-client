@@ -48,3 +48,15 @@ test('usePermission: evaluates permission when resource is available', async () 
     expect(screen.getByText('allowed:true')).toBeInTheDocument();
   });
 });
+
+test('usePermission: rejected async permission resolves to denied state', async () => {
+  const rules = {
+    'resource.action': () => Promise.reject(new Error('permission failed')),
+  };
+
+  await render(<PermissionStatus resource={{}} />, undefined, rules);
+
+  await waitFor(() => {
+    expect(screen.getByText('allowed:false')).toBeInTheDocument();
+  });
+});

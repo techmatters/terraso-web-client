@@ -89,7 +89,10 @@ export const usePermission = (permission, resource) => {
     const result = isAllowedTo(permission, user, resource);
 
     if (result && typeof result.then === 'function') {
-      return { type: 'async', result };
+      return {
+        type: 'async',
+        result: Promise.resolve(result).catch(() => false),
+      };
     }
 
     return { type: 'sync', allowed: Boolean(result) };
