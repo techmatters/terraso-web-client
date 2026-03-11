@@ -190,7 +190,7 @@ const ShareAction = ({ storyMap, onShare }) => {
 
 const RightSidebar = props => {
   const { t } = useTranslation();
-  const { open, onClose, zIndex = 3, topOffset = 0 } = props;
+  const { open, onClose, zIndex = 3 } = props;
   const { storyMap, setPreview } = useStoryMapConfigContext();
   const [openShareDialog, setOpenShareDialog] = useState(false);
   const contentRef = useRef(null);
@@ -240,8 +240,10 @@ const RightSidebar = props => {
         overflowX: 'hidden',
         '& .MuiDrawer-paper': {
           width: SIDEBAR_WIDTH,
-          height: topOffset ? `calc(100% - ${topOffset}px)` : '100%',
-          marginTop: topOffset ? `${topOffset}px` : 0,
+          // reset position to static:
+          //   MUI applies 'fixed', which isn't desired here because
+          //   the sidebar will end up behind the top bar
+          position: 'static',
           borderLeft: `1px solid ${theme.palette.gray.lite1}`,
           boxSizing: 'border-box',
         },
