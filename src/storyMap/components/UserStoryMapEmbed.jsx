@@ -49,8 +49,6 @@ const EmbedHeader = props => {
       sx={{
         color: 'white',
         bgcolor: 'blue.dark3',
-        zIndex: 2,
-        position: 'fixed',
         width: '100%',
         fontSize: '12px',
       }}
@@ -116,10 +114,12 @@ const UserStoryMapEmbed = () => {
   }
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <EmbedHeader storyMap={storyMap} />
-      <StoryMap config={storyMap.config} chaptersFilter={chaptersFilter} />
-    </>
+      <Box sx={{ flex: 1, overflowY: 'auto' }}>
+        <StoryMap config={storyMap.config} chaptersFilter={chaptersFilter} />
+      </Box>
+    </Box>
   );
 };
 
