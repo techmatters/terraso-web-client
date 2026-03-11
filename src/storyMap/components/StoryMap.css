@@ -140,6 +140,15 @@ footer {
   opacity: 0.99;
 }
 
+.transition-spacer {
+  height: 50vh;
+  min-height: 320px;
+  width: 100%;
+  display: block;
+  pointer-events: auto;
+  opacity: 0;
+}
+
 .step-container.title {
   padding-top: 5vh;
 }
@@ -178,6 +187,11 @@ footer {
 
   .step-container .step-content {
     max-width: 100%;
+  }
+
+  .transition-spacer {
+    height: 35vh;
+    min-height: 200px;
   }
 }
 

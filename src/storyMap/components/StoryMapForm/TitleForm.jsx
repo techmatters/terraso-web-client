@@ -125,6 +125,7 @@ const TitleForm = props => {
         title: config.title || t('storyMap.form_no_title_label'),
       })}
       sx={{ opacity: 0.99, pb: '35vh' }}
+      data-step-type="title"
     >
       {locationOpen && (
         <MapConfigurationDialog
