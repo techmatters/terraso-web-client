@@ -81,6 +81,9 @@ export const FullscreenButton = ({ isFullscreen, onToggle }: Props) => {
         className="mapboxgl-ctrl-group mapboxgl-ctrl"
         onClick={onToggle}
         size="small"
+        // the ripple doesn't look good over the map
+        // should be resolved more robustly as part of component work
+        disableRipple
         sx={{ bgcolor: 'white' }}
       >
         {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}

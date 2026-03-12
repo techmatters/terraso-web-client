@@ -541,6 +541,7 @@ const StoryMap = props => {
     animation,
     onReady,
     chaptersFilter,
+    isContained = false,
   } = props;
 
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
@@ -563,113 +564,96 @@ const StoryMap = props => {
   }, [config.chapters, chaptersFilter]);
 
   return (
-    <>
-      {isMapFullscreen && isMobile && (
-        <GlobalStyles styles={{ body: { overflow: 'hidden' } }} />
-      )}
-      <Box
-        component="section"
-        aria-label={t('storyMap.view_map_label')}
-        sx={{
-          position: 'relative',
-        }}
-      >
-        <Box
-          sx={({ breakpoints }) => ({
-            position: 'sticky',
-            height: 0,
+    <Box
+      component="section"
+      aria-label={t('storyMap.view_map_label')}
+      // we're using container queries here because of the CSS quirk that
+      // margin-top: -100% refers to the ancestor's _width_, not height
+      sx={
+        isContained
+          ? { height: '100%', overflowY: 'auto', containerType: 'size' }
+          : {}
+      }
+    >
+      <Map
+        id="map"
+        interactive={isMobile && isMapFullscreen}
+        mapStyle={config.style}
+        projection={config.projection}
+        zoom={1}
+        initialLocation={initialLocation}
+        sx={({ breakpoints }) => ({
+          position: 'sticky',
+          height: '100cqh',
+          width: '100%',
+          [breakpoints.not('xs')]: {
             top: 0,
-            [breakpoints.only('xs')]: isMapFullscreen
-              ? { height: '100vh', zIndex: 3 }
-              : { height: '33vh', zIndex: 1 },
-          })}
-        >
-          <Map
-            id="map"
-            interactive={isMobile && isMapFullscreen}
-            mapStyle={config.style}
-            projection={config.projection}
-            zoom={1}
-            initialLocation={initialLocation}
-            sx={({ breakpoints }) => ({
-              position: 'absolute',
-              height: '100cqh',
-              width: '100%',
-              [breakpoints.only('xs')]: isMapFullscreen
-                ? { position: 'fixed', top: 0 }
-                : {
-                    height: '100%',
-                  },
-            })}
-          >
-            <MapContextConsumer>
-              {({ map }) => (
-                <InsetMap
-                  config={config}
+          },
+          [breakpoints.only('xs')]: isMapFullscreen
+            ? { position: 'fixed', bottom: 0, zIndex: 4 }
+            : { top: 0, height: '33vh', zIndex: 4 },
+        })}
+      >
+        <MapContextConsumer>
+          {({ map }) => (
+            <InsetMap
+              config={config}
+              map={map}
+              initialLocation={initialLocation}
+            >
+              {insetMapContext => (
+                <Scroller
                   map={map}
-                  initialLocation={initialLocation}
-                >
-                  {insetMapContext => (
-                    <Scroller
-                      map={map}
-                      insetMap={insetMapContext?.map}
-                      config={config}
-                      animation={animation}
-                      onStepChange={onStepChange}
-                      onReady={onReady}
-                    />
-                  )}
-                </InsetMap>
-              )}
-            </MapContextConsumer>
-
-            <FullscreenButton
-              isFullscreen={isMapFullscreen}
-              onToggle={() => setIsMapFullscreen(prev => !prev)}
-            />
-
-            {!_.isEmpty(config.dataLayers) &&
-              Object.values(config.dataLayers).map(dataLayerConfig => (
-                <StoryMapLayer
-                  key={dataLayerConfig.id}
-                  config={dataLayerConfig}
-                  changeBounds={false}
-                  opacity={0}
+                  insetMap={insetMapContext?.map}
+                  config={config}
+                  animation={animation}
+                  onStepChange={onStepChange}
+                  onReady={onReady}
                 />
-              ))}
-          </Map>
-        </Box>
-        <Box
-          id="story"
-          sx={({ breakpoints }) => ({
-            [breakpoints.not('xs')]: {
-              overflowY: 'scroll',
-            },
-          })}
-        >
-          <Box
-            component="section"
-            aria-label={t('storyMap.view_chapters_label')}
-            id="features"
-            className={ALIGNMENTS[config.alignment]}
-          >
-            <TitleComponent config={config} />
-            {filteredChapters.map(chapter => (
-              <ChapterComponent
-                key={chapter.id}
-                theme={config.theme}
-                record={chapter}
-              />
-            ))}
-          </Box>
-          {config.footer && (
-            <Box id="footer" className={config.theme}>
-              <p>{config.footer}</p>
-            </Box>
+              )}
+            </InsetMap>
           )}
-        </Box>
+        </MapContextConsumer>
+
+        <FullscreenButton
+          isFullscreen={isMapFullscreen}
+          onToggle={() => setIsMapFullscreen(prev => !prev)}
+        />
+
+        {!_.isEmpty(config.dataLayers) &&
+          Object.values(config.dataLayers).map(dataLayerConfig => (
+            <StoryMapLayer
+              key={dataLayerConfig.id}
+              config={dataLayerConfig}
+              changeBounds={false}
+              opacity={0}
+            />
+          ))}
+      </Map>
+      <Box
+        sx={({ breakpoints }) => ({
+          [breakpoints.not('xs')]: { marginTop: '-100cqh' },
+        })}
+        component="section"
+        aria-label={t('storyMap.view_chapters_label')}
+        id="features"
+        className={ALIGNMENTS[config.alignment]}
+      >
+        <TitleComponent config={config} />
+        {filteredChapters.map(chapter => (
+          <ChapterComponent
+            key={chapter.id}
+            theme={config.theme}
+            record={chapter}
+          />
+        ))}
       </Box>
-    </>
+      {config.footer && (
+        <Box id="footer" className={config.theme}>
+          <p>{config.footer}</p>
+        </Box>
+      )}
+    </Box>
   );
 };
 

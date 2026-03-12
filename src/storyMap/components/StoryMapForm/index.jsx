@@ -77,10 +77,16 @@ const Preview = props => {
   const chaptersFilter = useCallback(chapters => !isChapterEmpty(chapters), []);
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <TopBarPreview onPublish={onPublish} />
-      <StoryMap config={previewConfig} chaptersFilter={chaptersFilter} />
-    </>
+      <Box sx={{ flex: 1, overflowY: 'auto', position: 'relative' }}>
+        <StoryMap
+          config={previewConfig}
+          chaptersFilter={chaptersFilter}
+          isContained
+        />
+      </Box>
+    </Box>
   );
 };
 
@@ -270,13 +276,14 @@ const StoryMapForm = props => {
           onDelete={onDeleteChapter}
           onMoveChapter={onMoveChapter}
         />
-        <Box sx={{ flex: 1, overflowY: 'scroll', containerType: 'size' }}>
+        <Box sx={{ flex: 1, overflowY: 'scroll', position: 'relative' }}>
           <StoryMap
             config={config}
             onStepChange={setCurrentStepId}
             ChapterComponent={ChapterForm}
             TitleComponent={TitleForm}
             onReady={onMapReady}
+            isContained
           />
         </Box>
         <RightSidebar open={isRightSidebarOpen} onClose={closeRightSidebar} />

@@ -116,8 +116,12 @@ const UserStoryMapEmbed = () => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <EmbedHeader storyMap={storyMap} />
-      <Box sx={{ flex: 1, overflowY: 'auto' }}>
-        <StoryMap config={storyMap.config} chaptersFilter={chaptersFilter} />
+      <Box sx={{ flex: 1, overflowY: 'auto', position: 'relative' }}>
+        <StoryMap
+          config={storyMap.config}
+          chaptersFilter={chaptersFilter}
+          isContained
+        />
       </Box>
     </Box>
   );
