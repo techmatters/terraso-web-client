@@ -16,24 +16,14 @@
  */
 
 import { render } from 'terraso-web-client/tests/utils';
+import { setupMapboxMock } from 'terraso-web-client/tests/mapboxMock';
 
 import Map from 'terraso-web-client/gis/components/Map';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
 
 jest.mock('terraso-web-client/gis/mapbox', () => ({}));
 
-beforeEach(() => {
-  mapboxgl.Map = jest.fn();
-  mapboxgl.Map.mockReturnValue({
-    on: jest.fn(),
-    remove: jest.fn(),
-    off: jest.fn(),
-    getCanvas: jest.fn(),
-    addControl: jest.fn(),
-    addSource: jest.fn(),
-    addLayer: jest.fn(),
-  });
-});
+setupMapboxMock();
 
 test('Map: Rejects invalid initial bounds', async () => {
   await render(<Map initialBounds={[-181, 0, 0, 0]} />);

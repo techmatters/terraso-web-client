@@ -16,6 +16,7 @@
  */
 
 import { render, screen, within } from 'terraso-web-client/tests/utils';
+import { setupMapboxMock } from 'terraso-web-client/tests/mapboxMock';
 
 import mapboxgl from 'terraso-web-client/gis/mapbox';
 import StoryMap from 'terraso-web-client/storyMap/components/StoryMap';
@@ -23,14 +24,9 @@ import StoryMap from 'terraso-web-client/storyMap/components/StoryMap';
 // Mock mapboxgl
 jest.mock('terraso-web-client/gis/mapbox', () => ({}));
 
+setupMapboxMock();
+
 beforeEach(() => {
-  mapboxgl.Map = jest.fn();
-  mapboxgl.Map.prototype = {
-    on: jest.fn(),
-    remove: jest.fn(),
-    off: jest.fn(),
-    getCanvas: jest.fn(),
-  };
   window.HTMLElement.prototype.scrollIntoView = jest.fn();
 });
 

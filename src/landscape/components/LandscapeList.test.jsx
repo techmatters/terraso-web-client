@@ -26,6 +26,7 @@ import {
 import { useSearchParams } from 'react-router';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { mockTerrasoAPIrequestGraphQL } from 'terraso-web-client/tests/apiUtils';
+import { createMapMock } from 'terraso-web-client/tests/mapboxMock';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import mapboxgl from 'terraso-web-client/gis/mapbox';
@@ -53,16 +54,7 @@ beforeEach(() => {
     extend: jest.fn().mockReturnThis(),
     isEmpty: jest.fn().mockReturnValue(false),
   };
-  mapboxgl.Map = jest.fn();
-  mapboxgl.Map.mockReturnValue({
-    on: jest.fn(),
-    remove: jest.fn(),
-    off: jest.fn(),
-    getCanvas: jest.fn(),
-    addControl: jest.fn(),
-    addSource: jest.fn(),
-    addLayer: jest.fn(),
-  });
+  mapboxgl.Map = jest.fn().mockReturnValue(createMapMock());
   window.HTMLElement.prototype.scrollIntoView = jest.fn();
 });
 
@@ -83,7 +75,7 @@ const setup = async initialState => {
 
 const setupTestMap = async () => {
   const events = {};
-  const map = {
+  const map = createMapMock({
     on: jest.fn().mockImplementation((...args) => {
       const event = args[0];
       const callback = args.length === 2 ? args[1] : args[2];
@@ -94,18 +86,7 @@ const setupTestMap = async () => {
         callback();
       }
     }),
-    remove: jest.fn(),
-    off: jest.fn(),
-    getCanvas: jest.fn(),
-    addControl: jest.fn(),
-    removeControl: jest.fn(),
-    addSource: jest.fn(),
-    getSource: jest.fn(),
-    addLayer: jest.fn(),
-    getLayer: jest.fn(),
-    setTerrain: jest.fn(),
-    fitBounds: jest.fn(),
-  };
+  });
   mapboxgl.Map.mockReturnValue(map);
   const Popup = {
     setLngLat: jest.fn().mockReturnThis(),

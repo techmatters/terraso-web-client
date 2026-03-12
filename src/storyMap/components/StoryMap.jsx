@@ -19,7 +19,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import scrollama from 'scrollama';
-import { Box } from '@mui/material';
+import { Box, GlobalStyles, useMediaQuery } from '@mui/material';
 
 import RichTextEditor from 'terraso-web-client/common/components/RichTextEditor/index';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
@@ -38,6 +38,7 @@ import 'terraso-web-client/storyMap/components/StoryMap.css';
 
 import logger from 'terraso-client-shared/monitoring/logger';
 
+import { FullscreenButton } from 'terraso-web-client/gis/components/FullscreenControl';
 import Map, { MapContextConsumer } from 'terraso-web-client/gis/components/Map';
 import { StoryMapLayer } from 'terraso-web-client/storyMap/components/StoryMapLayer';
 import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutline';
@@ -324,6 +325,28 @@ const Scroller = props => {
     onReady?.();
   }, [isReady, onReady]);
 
+  // this is needed to avoid the map breaking after toggling full screen on/off
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+
+    const mapContainer = map.getContainer();
+    if (!mapContainer) {
+      return;
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      map.resize();
+    });
+
+    resizeObserver.observe(mapContainer);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [map]);
+
   const getLayerPaintType = useCallback(
     layer => {
       if (!map.getStyle()) {
@@ -515,12 +538,14 @@ const StoryMap = props => {
     onStepChange,
     ChapterComponent = Chapter,
     TitleComponent = Title,
-    mapCss = { height: '100vh', width: '100vw', top: 0 },
     animation,
     onReady,
     chaptersFilter,
+    isContained = false,
   } = props;
 
+  const [isMapFullscreen, setIsMapFullscreen] = useState(false);
+  const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
   const initialLocation = useMemo(() => {
     if (config.titleTransition?.location) {
       return config.titleTransition?.location;
@@ -539,72 +564,96 @@ const StoryMap = props => {
   }, [config.chapters, chaptersFilter]);
 
   return (
-    <>
-      <section aria-label={t('storyMap.view_map_label')}>
-        <Map
-          id="map"
-          interactive={false}
-          mapStyle={config.style}
-          projection={config.projection}
-          zoom={1}
-          initialLocation={initialLocation}
-          sx={{ ...mapCss }}
-        >
-          <MapContextConsumer>
-            {({ map }) => (
-              <InsetMap
-                config={config}
-                map={map}
-                initialLocation={initialLocation}
-              >
-                {insetMapContext => (
-                  <Scroller
-                    map={map}
-                    insetMap={insetMapContext?.map}
-                    config={config}
-                    animation={animation}
-                    onStepChange={onStepChange}
-                    onReady={onReady}
-                  />
-                )}
-              </InsetMap>
-            )}
-          </MapContextConsumer>
+    <Box
+      component="section"
+      aria-label={t('storyMap.view_map_label')}
+      // we're using container queries here because of the CSS quirk that
+      // margin-top: -100% refers to the ancestor's _width_, not height
+      sx={
+        isContained
+          ? { height: '100%', overflowY: 'auto', containerType: 'size' }
+          : {}
+      }
+    >
+      <Map
+        id="map"
+        interactive={isMobile && isMapFullscreen}
+        mapStyle={config.style}
+        projection={config.projection}
+        zoom={1}
+        initialLocation={initialLocation}
+        sx={({ breakpoints }) => ({
+          position: 'sticky',
+          height: '100cqh',
+          width: '100%',
+          [breakpoints.not('xs')]: {
+            top: 0,
+          },
+          [breakpoints.only('xs')]: isMapFullscreen
+            ? { position: 'fixed', bottom: 0, zIndex: 4 }
+            : { top: 0, height: '33vh', zIndex: 4 },
+        })}
+      >
+        <MapContextConsumer>
+          {({ map }) => (
+            <InsetMap
+              config={config}
+              map={map}
+              initialLocation={initialLocation}
+            >
+              {insetMapContext => (
+                <Scroller
+                  map={map}
+                  insetMap={insetMapContext?.map}
+                  config={config}
+                  animation={animation}
+                  onStepChange={onStepChange}
+                  onReady={onReady}
+                />
+              )}
+            </InsetMap>
+          )}
+        </MapContextConsumer>
 
-          {!_.isEmpty(config.dataLayers) &&
-            Object.values(config.dataLayers).map(dataLayerConfig => (
-              <StoryMapLayer
-                key={dataLayerConfig.id}
-                config={dataLayerConfig}
-                changeBounds={false}
-                opacity={0}
-              />
-            ))}
-        </Map>
-      </section>
-      <Box id="story">
-        <Box
-          component="section"
-          aria-label={t('storyMap.view_chapters_label')}
-          id="features"
-          className={ALIGNMENTS[config.alignment]}
-        >
-          <TitleComponent config={config} />
-          {filteredChapters.map(chapter => (
-            <ChapterComponent
-              key={chapter.id}
-              theme={config.theme}
-              record={chapter}
+        <FullscreenButton
+          isFullscreen={isMapFullscreen}
+          onToggle={() => setIsMapFullscreen(prev => !prev)}
+        />
+
+        {!_.isEmpty(config.dataLayers) &&
+          Object.values(config.dataLayers).map(dataLayerConfig => (
+            <StoryMapLayer
+              key={dataLayerConfig.id}
+              config={dataLayerConfig}
+              changeBounds={false}
+              opacity={0}
             />
           ))}
-        </Box>
-        {config.footer && (
-          <Box id="footer" className={config.theme}>
-            <p>{config.footer}</p>
-          </Box>
-        )}
+      </Map>
+      <Box
+        sx={({ breakpoints }) => ({
+          [breakpoints.not('xs')]: { marginTop: '-100cqh' },
+        })}
+        component="section"
+        aria-label={t('storyMap.view_chapters_label')}
+        id="features"
+        className={ALIGNMENTS[config.alignment]}
+      >
+        <TitleComponent config={config} />
+        {filteredChapters.map(chapter => (
+          <ChapterComponent
+            key={chapter.id}
+            theme={config.theme}
+            record={chapter}
+          />
+        ))}
       </Box>
-    </>
+      {config.footer && (
+        <Box id="footer" className={config.theme}>
+          <p>{config.footer}</p>
+        </Box>
+      )}
+    </Box>
   );
 };
 
