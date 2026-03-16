@@ -28,39 +28,13 @@ import {
   useDocumentTitle,
 } from 'terraso-web-client/common/document';
 import PageContainer from 'terraso-web-client/layout/PageContainer';
-import PageHeader from 'terraso-web-client/layout/PageHeader';
 import GroupDefaultCard from 'terraso-web-client/group/components/GroupDefaultHomeCard';
-import GroupsCard from 'terraso-web-client/group/components/GroupsHomeCard';
-import { fetchHomeData } from 'terraso-web-client/home/homeSlice';
+import { fetchHomeStoryMaps } from 'terraso-web-client/home/homeSlice';
 import LandscapeDefaultCard from 'terraso-web-client/landscape/components/LandscapeDefaultHomeCard';
-import LandscapesCard from 'terraso-web-client/landscape/components/LandscapesHomeCard';
 import StoryMapsCard from 'terraso-web-client/storyMap/components/StoryMapsCard';
 import StoryMapsHomeCardDefault from 'terraso-web-client/storyMap/components/StoryMapsHomeCardDefault';
-import ToolHomeCard from 'terraso-web-client/tool/components/ToolHomeCard';
 
-const Landscapes = ({ landscapes, fetching }) => {
-  if (fetching) {
-    return <LoaderCard />;
-  }
-
-  if (_.isEmpty(landscapes)) {
-    return <LandscapeDefaultCard />;
-  }
-
-  return <LandscapesCard landscapes={landscapes} />;
-};
-
-const Groups = ({ groups, fetching }) => {
-  if (fetching) {
-    return <LoaderCard />;
-  }
-
-  if (_.isEmpty(groups)) {
-    return <GroupDefaultCard />;
-  }
-
-  return <GroupsCard groups={groups} />;
-};
+const HOME_STORY_MAPS_PREVIEW_LIMIT = 2;
 
 const StoryMaps = ({ storyMaps, fetching }) => {
   const { t } = useTranslation();
@@ -74,7 +48,11 @@ const StoryMaps = ({ storyMaps, fetching }) => {
   }
 
   return (
-    <StoryMapsCard storyMaps={storyMaps} title={t('storyMap.home_title')} />
+    <StoryMapsCard
+      storyMaps={storyMaps}
+      title={t('storyMap.tool_home_title')}
+      maxVisibleStoryMaps={HOME_STORY_MAPS_PREVIEW_LIMIT}
+    />
   );
 };
 
@@ -84,12 +62,12 @@ const Home = () => {
   const { data: user } = useSelector(state => state.account.currentUser);
   const { list: storyMaps } = useSelector(_.get('storyMap.userStoryMaps'));
   const home = useSelector(state => state.userHome);
-  const { groups, landscapes, error, fetching } = home;
+  const { error, fetching } = home;
 
   useDocumentTitle(t('home.document_title'), false, true);
   useDocumentDescription(t('home.document_description'));
 
-  useFetchData(useCallback(() => fetchHomeData(user.email), [user.email]));
+  useFetchData(useCallback(() => fetchHomeStoryMaps(user.email), [user.email]));
 
   if (error) {
     return <Alert severity="error">{t('home.error', { error })}</Alert>;
@@ -97,24 +75,14 @@ const Home = () => {
 
   return (
     <PageContainer>
-      <PageHeader
-        header={
-          user.firstName
-            ? t('home.page_title', { name: user.firstName })
-            : t('home.document_title')
-        }
-      />
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <Stack spacing={3}>
-            <Landscapes landscapes={landscapes} fetching={fetching} />
-            <StoryMaps storyMaps={storyMaps} fetching={fetching} />
-          </Stack>
+          <StoryMaps storyMaps={storyMaps} fetching={fetching} />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
           <Stack spacing={3}>
-            <Groups groups={groups} fetching={fetching} />
-            <ToolHomeCard />
+            <LandscapeDefaultCard />
+            <GroupDefaultCard />
           </Stack>
         </Grid>
       </Grid>

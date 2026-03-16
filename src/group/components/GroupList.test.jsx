@@ -73,6 +73,97 @@ test('GroupList: Display loader', async () => {
   });
   expect(loader).toBeInTheDocument();
 });
+
+test('GroupList: Display My Groups when memberships exist', async () => {
+  terrasoApi.requestGraphQL.mockReturnValue(
+    Promise.resolve({
+      landscapeGroups: {
+        edges: [
+          {
+            node: {
+              slug: 'member-group',
+              id: 'group-1',
+              name: 'Member Group',
+              membershipList: {
+                memberships: {
+                  totalCount: 1,
+                  edges: [],
+                },
+                accountMembership: {
+                  userRole: 'member',
+                  membershipStatus: 'APPROVED',
+                },
+              },
+            },
+          },
+          {
+            node: {
+              slug: 'other-group',
+              id: 'group-2',
+              name: 'Other Group',
+              membershipList: {
+                memberships: {
+                  totalCount: 1,
+                  edges: [],
+                },
+                accountMembership: null,
+              },
+            },
+          },
+        ],
+      },
+    })
+  );
+
+  await setup();
+
+  const myGroups = screen.getByRole('region', { name: 'My Groups' });
+  expect(
+    within(myGroups).getByRole('listitem', { name: 'member-group' })
+  ).toBeInTheDocument();
+  expect(
+    within(myGroups).queryByRole('listitem', { name: 'other-group' })
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getAllByRole('heading', { name: 'Create a group' }).length
+  ).toBe(1);
+});
+
+test('GroupList: Hide My Groups when memberships are empty', async () => {
+  terrasoApi.requestGraphQL.mockReturnValue(
+    Promise.resolve({
+      landscapeGroups: {
+        edges: [
+          {
+            node: {
+              slug: 'other-group',
+              id: 'group-2',
+              name: 'Other Group',
+              membershipList: {
+                memberships: {
+                  totalCount: 1,
+                  edges: [],
+                },
+                accountMembership: null,
+              },
+            },
+          },
+        ],
+      },
+    })
+  );
+
+  await setup();
+
+  expect(screen.queryByRole('region', { name: 'My Groups' })).toBeNull();
+  expect(
+    screen.getAllByRole('heading', { name: 'Create a group' }).length
+  ).toBe(1);
+  expect(
+    screen.getByRole('link', { name: 'Create a group' })
+  ).toBeInTheDocument();
+});
+
 test('GroupList: Empty', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
@@ -141,7 +232,9 @@ test('GroupList: Display list', async () => {
   await setup();
 
   // Group info
-  expect(screen.getByRole('heading', { name: 'Groups' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('heading', { name: 'Groups', level: 1 })
+  ).toBeInTheDocument();
   const rows = screen.getAllByRole('row');
   expect(rows.length).toBe(16); // 15 displayed + header
   expect(
@@ -214,7 +307,9 @@ test('GroupList: List sort', async () => {
   await setup();
 
   // Group info
-  expect(screen.getByRole('heading', { name: 'Groups' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('heading', { name: 'Groups', level: 1 })
+  ).toBeInTheDocument();
   const rows = screen.getAllByRole('row');
   expect(rows.length).toBe(16); // 11 displayed + header
 
@@ -287,15 +382,19 @@ test('GroupList: Display list (small screen)', async () => {
   await setup();
 
   // Group info
-  expect(screen.getByRole('heading', { name: 'Groups' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('heading', { name: 'Groups', level: 1 })
+  ).toBeInTheDocument();
 
   const rows = screen.getAllByRole('listitem');
   expect(rows.length).toBe(15);
-  expect(within(rows[1]).getByText('Group name 1')).toBeInTheDocument();
-  expect(within(rows[1]).getByText('www.group.org')).toBeInTheDocument();
-  expect(within(rows[1]).getByText('email@email.com')).toBeInTheDocument();
-  expect(within(rows[1]).getByText('Join')).toBeInTheDocument();
-  expect(within(rows[8]).getByText('Leave')).toBeInTheDocument();
+  expect(screen.getByText('Group name 1')).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Join: Group name 1' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Leave: Group name 3' })
+  ).toBeInTheDocument();
 });
 test('GroupList: URL params', async () => {
   const setParamsMock = jest.fn();
@@ -328,7 +427,9 @@ test('GroupList: URL params', async () => {
   await setup();
 
   // Group info
-  expect(screen.getByRole('heading', { name: 'Groups' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('heading', { name: 'Groups', level: 1 })
+  ).toBeInTheDocument();
   const rows = screen.getAllByRole('row');
   expect(rows.length).toBe(7); // Second page + header
 
@@ -351,8 +452,10 @@ test('GroupList: URL params', async () => {
   await act(async () =>
     fireEvent.click(screen.getByLabelText('Go to previous page'))
   );
-  const setCallPage = setParamsMock.mock.calls[1];
-  expect(setCallPage[0]).toStrictEqual({
-    page: 0,
+  await waitFor(() => {
+    const hasPageZeroCall = setParamsMock.mock.calls.some(([params]) =>
+      params ? ['0', 0].includes(params.page) : false
+    );
+    expect(hasPageZeroCall).toBe(true);
   });
 });

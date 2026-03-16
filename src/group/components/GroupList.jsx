@@ -22,13 +22,15 @@ import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { useDispatch } from 'terraso-web-client/terrasoApi/store';
-import { Button, Card, Link, Stack, Typography } from '@mui/material';
+import { Link, Stack, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { withProps } from 'terraso-web-client/react-hoc';
 
+import { MEMBERSHIP_STATUS_APPROVED } from 'terraso-web-client/collaboration/collaborationConstants';
 import { CollaborationContextProvider } from 'terraso-web-client/collaboration/collaborationContext';
 import MembershipJoinLeaveButton from 'terraso-web-client/collaboration/components/MembershipJoinLeaveButton';
+import ListSummaryCtaSection from 'terraso-web-client/common/components/ListSummaryCtaSection';
 import TableResponsive from 'terraso-web-client/common/components/TableResponsive';
 import {
   useDocumentDescription,
@@ -37,6 +39,7 @@ import {
 import PageContainer from 'terraso-web-client/layout/PageContainer';
 import PageHeader from 'terraso-web-client/layout/PageHeader';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
+import GroupsHomeCard from 'terraso-web-client/group/components/GroupsHomeCard';
 import {
   fetchGroups,
   joinGroupFromListPage,
@@ -136,6 +139,12 @@ const GroupList = () => {
     return null;
   }
 
+  const myGroups = _.filter(
+    group =>
+      _.get('membershipInfo.accountMembership.membershipStatus', group) ===
+      MEMBERSHIP_STATUS_APPROVED
+  )(groups);
+
   const columns = [
     {
       field: 'name',
@@ -201,16 +210,21 @@ const GroupList = () => {
   return (
     <PageContainer>
       <PageHeader header={t('group.list_title')} />
-      <Typography
-        variant="body2"
-        display="block"
-        sx={{
-          marginBottom: 3,
-          marginTop: 2,
-        }}
-      >
-        {t('group.list_description')}
-      </Typography>
+      <ListSummaryCtaSection
+        summaryCard={
+          !_.isEmpty(myGroups) ? (
+            <GroupsHomeCard
+              groups={myGroups}
+              title={t('group.my_groups_title')}
+              showAction={false}
+            />
+          ) : null
+        }
+        ctaTitle={t('group.list_cta_title')}
+        ctaDescription={t('group.list_cta_description')}
+        ctaButtonLabel={t('group.list_cta_button')}
+        ctaButtonTo="/groups/new"
+      />
       <TableResponsive
         columns={columns}
         rows={groups}
@@ -243,20 +257,6 @@ const GroupList = () => {
           ],
         }}
       />
-
-      <Card sx={{ p: 2, mt: 4 }}>
-        <Typography sx={{ pt: 0 }} variant="h2">
-          {t('group.create')}
-        </Typography>
-
-        <Typography sx={{ mt: 2, mb: 2 }}>
-          {t('group.list_new_description')}
-        </Typography>
-
-        <Button variant="contained" component={RouterLink} to="/groups/new">
-          {t('group.list_new_button')}
-        </Button>
-      </Card>
     </PageContainer>
   );
 };

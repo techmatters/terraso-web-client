@@ -72,19 +72,30 @@ const LandscapeItem = ({ landscape, index }) => {
   );
 };
 
-const LandscapesHomeCard = ({ landscapes }) => {
+const LandscapesHomeCard = ({
+  landscapes,
+  title,
+  showAction = true,
+  actionLabel,
+  actionTo = '/landscapes',
+  showHelperText = true,
+}) => {
   const { t } = useTranslation();
   return (
     <HomeCard
       id="landscapes"
-      title={t('landscape.home_title')}
+      title={title || t('landscape.home_title')}
       titleId="landscapes-list-title"
-      action={{
-        label: t('landscape.home_connect_label'),
-        to: '/landscapes',
-      }}
+      action={
+        showAction
+          ? {
+              label: actionLabel || t('landscape.home_connect_label'),
+              to: actionTo,
+            }
+          : null
+      }
       contentBackgroundColor="white"
-      helperText={t('landscape.home_popover')}
+      helperText={showHelperText ? t('landscape.home_popover') : null}
     >
       <List
         aria-labelledby="landscapes-list-title"
