@@ -209,7 +209,15 @@ test('LandscapeSharedDataVisualization: Display visualization', async () => {
   await setup();
 
   await screen.findByRole('button', { name: 'Download PNG' });
-  expect(terrasoApi.requestGraphQL.mock.calls.length).toBeGreaterThanOrEqual(2);
+  const graphQLQueries = terrasoApi.requestGraphQL.mock.calls.map(
+    ([query]) => query?.trim() ?? ''
+  );
+  expect(graphQLQueries).toEqual(
+    expect.arrayContaining([
+      expect.stringContaining('query landscapes'),
+      expect.stringContaining('query fetchVisualizationConfig'),
+    ])
+  );
 
   expect(
     screen.getByRole('heading', { name: 'Test Title' })
