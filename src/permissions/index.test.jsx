@@ -17,7 +17,17 @@
 
 import { render, screen, waitFor } from 'terraso-web-client/tests/utils';
 
-import { usePermission } from 'terraso-web-client/permissions/index';
+import {
+  usePermission,
+  usePermissionRedirect,
+} from 'terraso-web-client/permissions/index';
+
+const mockNavigate = jest.fn();
+
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
+  useNavigate: () => mockNavigate,
+}));
 
 const PermissionStatus = ({ resource }) => {
   const { loading, allowed } = usePermission('resource.action', resource);
@@ -28,6 +38,20 @@ const PermissionStatus = ({ resource }) => {
 
   return <div>{`allowed:${String(allowed)}`}</div>;
 };
+
+const PermissionRedirectStatus = ({ resource }) => {
+  const { loading } = usePermissionRedirect(
+    'resource.action',
+    resource,
+    '/denied'
+  );
+
+  return <div>{loading ? 'loading' : 'done'}</div>;
+};
+
+beforeEach(() => {
+  mockNavigate.mockReset();
+});
 
 test('usePermission: does not stay loading when resource is unavailable', async () => {
   await render(<PermissionStatus resource={null} />);
@@ -58,5 +82,30 @@ test('usePermission: rejected async permission resolves to denied state', async 
 
   await waitFor(() => {
     expect(screen.getByText('allowed:false')).toBeInTheDocument();
+  });
+});
+
+test('usePermissionRedirect: does not navigate when resource is unavailable', async () => {
+  const rules = {
+    'resource.action': () => false,
+  };
+
+  await render(<PermissionRedirectStatus resource={null} />, undefined, rules);
+
+  await waitFor(() => {
+    expect(screen.getByText('done')).toBeInTheDocument();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+});
+
+test('usePermissionRedirect: navigates when permission resolves to denied', async () => {
+  const rules = {
+    'resource.action': () => Promise.reject(new Error('permission failed')),
+  };
+
+  await render(<PermissionRedirectStatus resource={{}} />, undefined, rules);
+
+  await waitFor(() => {
+    expect(mockNavigate).toHaveBeenCalledWith('/denied');
   });
 });
