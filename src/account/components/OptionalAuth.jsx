@@ -55,7 +55,11 @@ const OptionalAuth = ({ children }) => {
     validationPending,
   ]);
 
-  if (hasToken && !user && fetching) {
+  if (
+    hasToken &&
+    !user &&
+    (fetching || validationPending || !validationAttempted)
+  ) {
     return <PageLoader />;
   }
 
