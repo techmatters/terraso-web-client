@@ -36,30 +36,34 @@ const OptionalAuth = ({ children }) => {
     user,
   });
 
+  const hasStoredToken = hasToken;
+  const hasResolvedNoUser = !user;
+  const validationFinished = validationAttempted && !validationPending;
+  const accountFetchFinished = fetching === false;
+  const accountFetchPending = !accountFetchFinished;
+
+  const tokenValidationFailed =
+    hasStoredToken &&
+    hasResolvedNoUser &&
+    validationFinished &&
+    accountFetchFinished;
+
+  const awaitingTokenValidationResult =
+    validationPending || !validationAttempted;
+
+  const shouldSignOut = tokenValidationFailed;
+  const shouldShowLoader =
+    hasStoredToken &&
+    hasResolvedNoUser &&
+    (accountFetchPending || awaitingTokenValidationResult);
+
   useEffect(() => {
-    if (
-      hasToken &&
-      validationAttempted &&
-      !validationPending &&
-      fetching === false &&
-      !user
-    ) {
+    if (shouldSignOut) {
       dispatch(signOut());
     }
-  }, [
-    dispatch,
-    fetching,
-    hasToken,
-    user,
-    validationAttempted,
-    validationPending,
-  ]);
+  }, [dispatch, shouldSignOut]);
 
-  if (
-    hasToken &&
-    !user &&
-    (fetching || validationPending || !validationAttempted)
-  ) {
+  if (shouldShowLoader) {
     return <PageLoader />;
   }
 
