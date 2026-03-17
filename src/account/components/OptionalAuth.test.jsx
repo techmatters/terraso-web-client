@@ -118,7 +118,7 @@ test('OptionalAuth: Should sign out when fetchUser fails with expired/invalid to
   });
 });
 
-test('OptionalAuth: Should render children while auth state is fetching', async () => {
+test('OptionalAuth: Should render children during auth refresh when user is available', async () => {
   useLocation.mockReturnValue({
     pathname: '/landscapes/congo-basin/profile',
   });
@@ -134,4 +134,26 @@ test('OptionalAuth: Should render children while auth state is fetching', async 
   });
 
   expect(screen.getByText('Test')).toBeInTheDocument();
+});
+
+test('OptionalAuth: Should show loader while validating token without user', async () => {
+  terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
+  useLocation.mockReturnValue({
+    pathname: '/landscapes/congo-basin/profile',
+  });
+
+  await setup({
+    account: {
+      hasToken: true,
+      currentUser: {
+        data: null,
+        fetching: false,
+      },
+    },
+  });
+
+  expect(
+    screen.getByRole('progressbar', { name: 'Loading' })
+  ).toBeInTheDocument();
+  expect(screen.queryByText('Test')).not.toBeInTheDocument();
 });

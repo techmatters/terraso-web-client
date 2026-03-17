@@ -35,15 +35,35 @@ const RequireAuth = ({ children }) => {
   const hasToken = useSelector(state => state.account.hasToken);
 
   useCompleteProfile();
-  useValidateTokenUser({ hasToken, user });
+  const { validationAttempted, validationPending } = useValidateTokenUser({
+    hasToken,
+    user,
+  });
 
   useEffect(() => {
-    if (fetching === false && !user) {
+    if (
+      hasToken &&
+      validationAttempted &&
+      !validationPending &&
+      fetching === false &&
+      !user
+    ) {
       dispatch(setHasToken(false));
     }
-  }, [fetching, user, dispatch]);
+  }, [
+    dispatch,
+    fetching,
+    hasToken,
+    user,
+    validationAttempted,
+    validationPending,
+  ]);
 
-  if (hasToken && fetching) {
+  if (
+    hasToken &&
+    !user &&
+    (fetching || validationPending || !validationAttempted)
+  ) {
     return <PageLoader />;
   }
 

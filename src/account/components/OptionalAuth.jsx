@@ -31,13 +31,29 @@ const OptionalAuth = ({ children }) => {
   const hasToken = useSelector(_.get('account.hasToken'));
 
   useCompleteProfile();
-  useValidateTokenUser({ hasToken, user });
+  const { validationAttempted, validationPending } = useValidateTokenUser({
+    hasToken,
+    user,
+  });
 
   useEffect(() => {
-    if (fetching === false && !user && hasToken) {
+    if (
+      hasToken &&
+      validationAttempted &&
+      !validationPending &&
+      fetching === false &&
+      !user
+    ) {
       dispatch(signOut());
     }
-  }, [fetching, user, hasToken, dispatch]);
+  }, [
+    dispatch,
+    fetching,
+    hasToken,
+    user,
+    validationAttempted,
+    validationPending,
+  ]);
 
   if (hasToken && !user && fetching) {
     return <PageLoader />;

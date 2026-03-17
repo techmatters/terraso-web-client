@@ -263,7 +263,9 @@ test('Auth: Includes referrer when firstName missing', async () => {
   );
 });
 
-test('Auth: Test redirect when fetching is false and no user', async () => {
+test('Auth: Show loader while validating token user on initial render', async () => {
+  terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
+
   await render(
     <RequireAuth>
       <div />
@@ -279,5 +281,8 @@ test('Auth: Test redirect when fetching is false and no user', async () => {
     }
   );
 
-  expect(screen.getByText('To: /account')).toBeInTheDocument();
+  expect(
+    screen.getByRole('progressbar', { name: 'Loading' })
+  ).toBeInTheDocument();
+  expect(screen.queryByText('To: /account')).not.toBeInTheDocument();
 });
