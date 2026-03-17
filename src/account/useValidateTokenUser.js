@@ -21,39 +21,46 @@ import { useDispatch } from 'terraso-web-client/terrasoApi/store';
 
 const useValidateTokenUser = ({ hasToken, user }) => {
   const dispatch = useDispatch();
-  const tokenValidationRequest = useRef(null);
+  const activeValidationRequestRef = useRef(null);
   const [validationAttempted, setValidationAttempted] = useState(false);
   const [validationPending, setValidationPending] = useState(false);
 
   useEffect(() => {
-    if (!hasToken || user) {
+    const shouldValidateTokenUser = hasToken && !user;
+
+    if (!shouldValidateTokenUser) {
       setValidationAttempted(false);
       setValidationPending(false);
       return;
     }
 
-    if (tokenValidationRequest.current) {
+    if (activeValidationRequestRef.current) {
       return;
     }
 
-    const request = dispatch(fetchUser());
-    tokenValidationRequest.current = request;
+    const clearActiveRequest = request => {
+      if (activeValidationRequestRef.current === request) {
+        activeValidationRequestRef.current = null;
+      }
+    };
+
+    const finishValidationRequest = request => {
+      clearActiveRequest(request);
+      setValidationPending(false);
+    };
+
+    const validationRequest = dispatch(fetchUser());
+    activeValidationRequestRef.current = validationRequest;
     setValidationAttempted(true);
     setValidationPending(true);
 
-    request.finally(() => {
-      if (tokenValidationRequest.current === request) {
-        tokenValidationRequest.current = null;
-      }
-      setValidationPending(false);
+    validationRequest.finally(() => {
+      finishValidationRequest(validationRequest);
     });
 
     return () => {
-      request.abort();
-      if (tokenValidationRequest.current === request) {
-        tokenValidationRequest.current = null;
-      }
-      setValidationPending(false);
+      validationRequest.abort();
+      finishValidationRequest(validationRequest);
     };
   }, [dispatch, hasToken, user]);
 
