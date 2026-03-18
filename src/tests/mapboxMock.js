@@ -39,15 +39,24 @@ export const createMapMock = (overrides = {}) => ({
   hasImage: jest.fn(),
   addImage: jest.fn(),
   setPadding: jest.fn(),
-  touchPitch: { enable: jest.fn(), disable: jest.fn() },
+  scrollZoom: { enable: jest.fn(), disable: jest.fn() },
+  boxZoom: { enable: jest.fn(), disable: jest.fn() },
+  dragRotate: { enable: jest.fn(), disable: jest.fn() },
+  dragPan: { enable: jest.fn(), disable: jest.fn() },
+  keyboard: {
+    enable: jest.fn(),
+    disable: jest.fn(),
+    enableRotation: jest.fn(),
+    disableRotation: jest.fn(),
+  },
+  doubleClickZoom: { enable: jest.fn(), disable: jest.fn() },
   touchZoomRotate: {
     enable: jest.fn(),
     disable: jest.fn(),
     enableRotation: jest.fn(),
     disableRotation: jest.fn(),
   },
-  dragPan: { enable: jest.fn(), disable: jest.fn() },
-  dragRotate: { enable: jest.fn(), disable: jest.fn() },
+  touchPitch: { enable: jest.fn(), disable: jest.fn() },
   ...overrides,
 });
 

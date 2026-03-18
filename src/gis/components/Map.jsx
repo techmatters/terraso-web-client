@@ -408,10 +408,16 @@ const Map = forwardRef((props, ref) => {
     }
 
     if (!interactive) {
-      map.touchPitch.disable();
-      map.touchZoomRotate.disable();
-      map.dragPan.disable();
+      map.scrollZoom.disable();
+      map.boxZoom.disable();
       map.dragRotate.disable();
+      map.dragPan.disable();
+      map.keyboard.disable();
+      map.keyboard.disableRotation();
+      map.doubleClickZoom.disable();
+      map.touchZoomRotate.disable();
+      map.touchZoomRotate.disableRotation();
+      map.touchPitch.disable();
       return;
     }
 
@@ -486,6 +492,7 @@ const Map = forwardRef((props, ref) => {
         {
           width,
           height,
+          pointerEvents: interactive ? 'auto' : 'none',
         },
         sx,
       ]}
