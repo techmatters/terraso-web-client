@@ -575,6 +575,16 @@ const StoryMap = props => {
           : {}
       }
     >
+      <Box
+        // this box displays specifically when the map is full screen, to take up
+        // the space the map used to be taking to maintain scroll position
+        sx={({ breakpoints }) => ({
+          display: 'none',
+          [breakpoints.only('xs')]: isMapFullscreen
+            ? { display: 'block', height: '33vh' }
+            : {},
+        })}
+      />
       <Map
         id="map"
         interactive={isMobile && isMapFullscreen}
