@@ -57,3 +57,8 @@ if (typeof HTMLMediaElement !== 'undefined') {
     value: jest.fn(),
   });
 }
+globalThis.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};

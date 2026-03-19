@@ -133,6 +133,7 @@ const Navigation = forwardRef((props, ref) => {
           maxWidth: {
             md: 1200,
           },
+          paddingX: 0,
         }}
       >
         <Typography sx={visuallyHidden} variant="h2">
@@ -143,6 +144,9 @@ const Navigation = forwardRef((props, ref) => {
             display: 'flex',
             flexDirection: 'row',
             padding: 0,
+            overflowX: 'scroll',
+            scrollbarWidth: 'none',
+            paddingLeft: '16px',
           }}
         >
           {Object.keys(PAGES).map((path, index) => (
