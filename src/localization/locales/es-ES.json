@@ -255,6 +255,7 @@
     },
     "navigation": {
         "home": "Inicio",
+        "story_maps": "Story Maps",
         "landscapes": "Paisajes",
         "groups": "Grupos",
         "tools": "Herramientas",
@@ -533,7 +534,7 @@
         "dialog_cancel_label": "Cancelar",
         "dialog_close_label": "Cerrar",
         "terraso_projectName": "Terraso",
-        "terraso_logoText": "Logo: Terraso",
+        "terraso_logoText": "Logo: Terraso Story Maps",
         "unexpected_error": "Ups! Algo salió mal. Vuelve a intentarlo en unos minutos. {{error, errorParam(label: Error)}}",
         "loader_label": "Cargando",
         "not_found_title": "Página no encontrada",

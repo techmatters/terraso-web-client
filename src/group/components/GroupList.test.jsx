@@ -449,13 +449,15 @@ test('GroupList: URL params', async () => {
   );
 
   // Page
+  setParamsMock.mockClear();
   await act(async () =>
     fireEvent.click(screen.getByLabelText('Go to previous page'))
   );
-  await waitFor(() => {
-    const hasPageZeroCall = setParamsMock.mock.calls.some(([params]) =>
-      params ? ['0', 0].includes(params.page) : false
-    );
-    expect(hasPageZeroCall).toBe(true);
-  });
+  await waitFor(() =>
+    expect(setParamsMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        page: 0,
+      })
+    )
+  );
 });
