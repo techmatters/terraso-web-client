@@ -32,6 +32,7 @@ const LandscapeMemberRemove = props => {
         name: _.get('name', owner),
       })}
       confirmButton={t('landscape.members_remove_confirmation_button')}
+      confirmButtonDestructive
       buttonLabel={t('landscape.members_list_remove')}
       buttonProps={buttonProps}
       loading={loading}

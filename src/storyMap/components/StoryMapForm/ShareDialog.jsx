@@ -164,6 +164,7 @@ const RemoveButton = props => {
       <ConfirmButton
         onConfirm={onRemoveWrapper}
         loading={processing}
+        confirmButtonDestructive
         buttonProps={{
           tabIndex,
         }}
