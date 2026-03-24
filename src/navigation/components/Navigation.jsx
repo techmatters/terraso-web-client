@@ -15,7 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { forwardRef } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -31,6 +30,10 @@ const PAGES = {
     label: 'navigation.home',
     match: path => path === '/',
   },
+  '/tools/story-maps': {
+    label: 'navigation.story_maps',
+    match: path => /^\/tools\/story-maps(\/.*)?$/.test(path),
+  },
   '/landscapes': {
     label: 'navigation.landscapes',
     match: path => /^\/landscapes(\/.*)?$/.test(path),
@@ -39,10 +42,6 @@ const PAGES = {
     label: 'navigation.groups',
     match: path => /^\/groups(\/.*)?$/.test(path),
   },
-  '/tools': {
-    label: 'navigation.tools',
-    match: path => /^\/tools(\/.*)?$/.test(path),
-  },
 };
 
 const NavButton = styled(Button)(({ theme }) => ({
@@ -50,10 +49,14 @@ const NavButton = styled(Button)(({ theme }) => ({
   borderRadius: 0,
   padding: 0,
   paddingBottom: 1,
-  textTransform: 'uppercase',
+  textTransform: 'none',
   fontFamily: 'Lato, Helvetica, Arial, sans-serif',
-  fontSize: '1.125rem',
-  lineHeight: '22px',
+  fontSize: '1rem',
+  lineHeight: '20px',
+  [theme.breakpoints.up('md')]: {
+    fontSize: '1.125rem',
+    lineHeight: '22px',
+  },
   marginTop: '-4px', // adjust for bottom border
   color: theme.palette.gray.dark2,
   '&.Mui-selected': {
@@ -68,7 +71,7 @@ const NavButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const NavigationLink = ({ path, selected, index }) => {
+const NavigationLink = ({ path, selected, index, inline }) => {
   const { t } = useTranslation();
   return (
     <ListItem
@@ -76,13 +79,10 @@ const NavigationLink = ({ path, selected, index }) => {
       dense
       sx={{
         width: 'auto',
-        padding: 1.5,
+        padding: inline ? 1 : 1.5,
         paddingBottom: 0,
         ':hover': {
           backgroundColor: theme => theme.backgroundNavColor,
-        },
-        ':first-of-type': {
-          marginLeft: -2,
         },
       }}
     >
@@ -100,7 +100,8 @@ const NavigationLink = ({ path, selected, index }) => {
   );
 };
 
-const Navigation = forwardRef((props, ref) => {
+const Navigation = props => {
+  const { inline = false } = props;
   const { t } = useTranslation();
   const { data: user } = useSelector(state => state.account.currentUser);
   const hasToken = useSelector(state => state.account.hasToken);
@@ -115,6 +116,47 @@ const Navigation = forwardRef((props, ref) => {
     return null;
   }
 
+  if (inline) {
+    return (
+      <Box
+        id="main-navigation"
+        component="nav"
+        tabIndex="-1"
+        aria-label={t('navigation.nav_label_short')}
+        sx={{
+          ml: 2,
+          display: {
+            xs: 'none',
+            md: 'block',
+          },
+        }}
+      >
+        <Typography sx={visuallyHidden} variant="h2">
+          {t('navigation.nav_label')}
+        </Typography>
+        <List
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            padding: 0,
+            gap: 1,
+          }}
+        >
+          {Object.keys(PAGES).map((path, index) => (
+            <NavigationLink
+              key={path}
+              path={path}
+              index={index}
+              inline
+              selected={index === value}
+            />
+          ))}
+        </List>
+      </Box>
+    );
+  }
+
   return (
     <Box
       id="main-navigation"
@@ -126,7 +168,6 @@ const Navigation = forwardRef((props, ref) => {
       <Container
         component="nav"
         tabIndex="-1"
-        ref={ref}
         value={value}
         aria-label={t('navigation.nav_label_short')}
         sx={{
@@ -144,9 +185,19 @@ const Navigation = forwardRef((props, ref) => {
             display: 'flex',
             flexDirection: 'row',
             padding: 0,
-            overflowX: 'scroll',
+            overflowX: 'auto',
             scrollbarWidth: 'none',
-            paddingLeft: '16px',
+            justifyContent: {
+              xs: 'flex-start',
+              md: 'center',
+            },
+            alignItems: 'center',
+            flexWrap: 'nowrap',
+            gap: 0.25,
+            px: 1,
+            '&::-webkit-scrollbar': {
+              display: 'none',
+            },
           }}
         >
           {Object.keys(PAGES).map((path, index) => (
@@ -154,6 +205,7 @@ const Navigation = forwardRef((props, ref) => {
               key={path}
               path={path}
               index={index}
+              inline={false}
               selected={index === value}
             />
           ))}
@@ -161,6 +213,6 @@ const Navigation = forwardRef((props, ref) => {
       </Container>
     </Box>
   );
-});
+};
 
 export default Navigation;

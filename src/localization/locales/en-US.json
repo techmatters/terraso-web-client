@@ -250,6 +250,7 @@
     },
     "navigation": {
         "home": "Home",
+        "story_maps": "Story Maps",
         "landscapes": "Landscapes",
         "groups": "Groups",
         "tools": "Tools",
@@ -685,7 +686,7 @@
         "dialog_cancel_label": "Cancel",
         "dialog_close_label": "Close",
         "terraso_projectName": "Terraso",
-        "terraso_logoText": "Logo: Terraso",
+        "terraso_logoText": "Logo: Terraso Story Maps",
         "unexpected_error": "Oops, something went wrong. Try again in a few minutes. {{error, errorParam(label: Error)}}",
         "loader_label": "Loading",
         "not_found_title": "Page not found",
