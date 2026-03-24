@@ -15,15 +15,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import _ from 'lodash/fp';
 import { useSelector } from 'react-redux';
-import { fetchUser, signOut } from 'terraso-client-shared/account/accountSlice';
-import { useFetchData } from 'terraso-client-shared/store/utils';
+import { signOut } from 'terraso-client-shared/account/accountSlice';
 import { useDispatch } from 'terraso-web-client/terrasoApi/store';
 
 import PageLoader from 'terraso-web-client/layout/PageLoader';
 import { useCompleteProfile } from 'terraso-web-client/account/accountProfileUtils';
+import useValidateTokenUser from 'terraso-web-client/account/useValidateTokenUser';
 
 const OptionalAuth = ({ children }) => {
   const dispatch = useDispatch();
@@ -31,21 +31,39 @@ const OptionalAuth = ({ children }) => {
   const hasToken = useSelector(_.get('account.hasToken'));
 
   useCompleteProfile();
+  const { validationAttempted, validationPending } = useValidateTokenUser({
+    hasToken,
+    user,
+  });
 
-  useFetchData(
-    useCallback(
-      () => (hasToken && !user ? fetchUser() : null),
-      [hasToken, user]
-    )
-  );
+  const hasStoredToken = hasToken;
+  const hasResolvedNoUser = !user;
+  const validationFinished = validationAttempted && !validationPending;
+  const accountFetchFinished = fetching === false;
+  const accountFetchPending = !accountFetchFinished;
+
+  const tokenValidationFailed =
+    hasStoredToken &&
+    hasResolvedNoUser &&
+    validationFinished &&
+    accountFetchFinished;
+
+  const awaitingTokenValidationResult =
+    validationPending || !validationAttempted;
+
+  const shouldSignOut = tokenValidationFailed;
+  const shouldShowLoader =
+    hasStoredToken &&
+    hasResolvedNoUser &&
+    (accountFetchPending || awaitingTokenValidationResult);
 
   useEffect(() => {
-    if (fetching === false && !user && hasToken) {
+    if (shouldSignOut) {
       dispatch(signOut());
     }
-  }, [fetching, user, hasToken, dispatch]);
+  }, [dispatch, shouldSignOut]);
 
-  if (hasToken && fetching) {
+  if (shouldShowLoader) {
     return <PageLoader />;
   }
 

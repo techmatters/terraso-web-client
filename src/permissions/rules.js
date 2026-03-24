@@ -60,7 +60,7 @@ const isAllowedToEditSharedData = ({
 }) => {
   const isManager = hasRole({ owner, role: ROLE_MANAGER });
   const isOwner = _.get('createdBy.id', dataEntry) === _.get('id', user);
-  return Promise.resolve(isManager || isOwner);
+  return isManager || isOwner;
 };
 
 const isAllowedToDeleteSharedData = ({ resource, user }) => {
@@ -74,48 +74,48 @@ const isAllowedToDeleteVisualization = ({
   const isManager = hasRole({ owner, role: ROLE_MANAGER });
   const isOwner =
     _.get('createdBy.id', visualizationConfig) === _.get('id', user);
-  return Promise.resolve(isManager || isOwner);
+  return isManager || isOwner;
 };
 
 const isAllowedToDownloadSharedData = ({ resource: owner }) => {
   const isMember = isApprovedMember(owner);
-  return Promise.resolve(isMember);
+  return isMember;
 };
 
 const isAllowedToAddSharedData = ({ resource: owner }) => {
   const isMember = isApprovedMember(owner);
-  return Promise.resolve(isMember);
+  return isMember;
 };
 
 const isAllowedToChangeGroup = ({ resource: owner }) => {
   const isManager = hasRole({ owner, role: ROLE_MANAGER });
-  return Promise.resolve(isManager);
+  return isManager;
 };
 
 // is open group or closed + you are a member
 const isAllowedToViewGroupMembers = ({ resource: group }) => {
   const isOpenGroup = group.membershipInfo.membershipType === MEMBERSHIP_OPEN;
   if (isOpenGroup) {
-    return Promise.resolve(true);
+    return true;
   }
 
   const isMember = isApprovedMember(group);
-  return Promise.resolve(isMember);
+  return isMember;
 };
 
 const isAllowedToManageGroupMembers = ({ resource: owner }) => {
   const isManager = hasRole({ owner, role: ROLE_MANAGER });
-  return Promise.resolve(isManager);
+  return isManager;
 };
 
 const isAllowedToManageLandscapeMembers = ({ resource: owner }) => {
   const isManager = hasRole({ owner, role: MEMBERSHIP_ROLE_MANAGER });
-  return Promise.resolve(isManager);
+  return isManager;
 };
 
 const isAllowedToViewSharedDataFiles = ({ resource: owner }) => {
   const isMember = isApprovedMember(owner);
-  return Promise.resolve(isMember);
+  return isMember;
 };
 
 const isAllowedToChangeLandscape = ({ resource: landscape }) => {
@@ -123,34 +123,34 @@ const isAllowedToChangeLandscape = ({ resource: landscape }) => {
     owner: landscape,
     role: ROLE_MANAGER,
   });
-  return Promise.resolve(isManager);
+  return isManager;
 };
 
 const isAllowedToChangeStoryMap = ({ resource: storyMap, user }) => {
   const isOwner = _.get('createdBy.id', storyMap) === _.get('id', user);
   if (isOwner) {
-    return Promise.resolve(isOwner);
+    return isOwner;
   }
   const accountMembership = storyMap.accountMembership;
-  return Promise.resolve(
+  return (
     accountMembership &&
-      accountMembership.userRole === MEMBERSHIP_ROLE_EDITOR &&
-      accountMembership.membershipStatus === MEMBERSHIP_STATUS_APPROVED
+    accountMembership.userRole === MEMBERSHIP_ROLE_EDITOR &&
+    accountMembership.membershipStatus === MEMBERSHIP_STATUS_APPROVED
   );
 };
 
 const isAllowedToDeleteStoryMap = ({ resource: storyMap, user }) => {
   const isOwner = storyMap?.createdBy?.id && storyMap.createdBy.id === user?.id;
-  return Promise.resolve(isOwner);
+  return isOwner;
 };
 
 const isAllowedToDeleteStoryMapMembership = ({ resource, user }) => {
   const { storyMap, membership } = resource;
   const isOwner = storyMap?.createdBy?.id && storyMap.createdBy.id === user?.id;
   if (isOwner) {
-    return Promise.resolve(isOwner);
+    return isOwner;
   }
-  return Promise.resolve(membership?.userId && membership.userId === user?.id);
+  return membership?.userId && membership.userId === user?.id;
 };
 
 const rules = {

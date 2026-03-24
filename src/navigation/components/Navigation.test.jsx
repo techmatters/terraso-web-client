@@ -90,24 +90,39 @@ test('Navigation: Test select', async () => {
   );
 });
 test('Navigation: Test navigation', async () => {
-  useLocation
-    .mockReturnValueOnce({
-      pathname: '/',
-    })
-    .mockReturnValueOnce({
-      pathname: '/',
-    })
-    .mockReturnValueOnce({
-      pathname: '/landscapes',
-    })
-    .mockReturnValueOnce({
-      pathname: '/landscapes',
-    });
-  await setup();
+  useLocation.mockReturnValue({
+    pathname: '/',
+  });
+  const view = await render(<Navigation />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          firstName: 'First',
+          lastName: 'Last',
+        },
+      },
+    },
+  });
+
   expect(useLocation).toHaveBeenCalled();
-  await act(async () =>
-    fireEvent.click(screen.getByRole('link', { name: 'Landscapes' }))
+  expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
+    'aria-current',
+    'page'
   );
+
+  const landscapesLink = screen.getByRole('link', { name: 'Landscapes' });
+  expect(landscapesLink).toHaveAttribute('href', '/landscapes');
+  await act(async () => fireEvent.click(landscapesLink));
+
+  useLocation.mockReturnValue({
+    pathname: '/landscapes',
+  });
+  await act(async () => {
+    view.rerender(<Navigation />);
+  });
+
   expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute(
     'aria-current',
     'page'

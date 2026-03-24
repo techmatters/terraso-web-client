@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { render, screen } from 'terraso-web-client/tests/utils';
+import { render, screen, waitFor } from 'terraso-web-client/tests/utils';
 
 import Restricted from 'terraso-web-client/permissions/components/Restricted';
 
@@ -73,7 +73,7 @@ test('Restricted: Display custom loader', async () => {
 });
 test('Restricted: Display allowed component', async () => {
   const rules = {
-    'resource.action': () => Promise.resolve(true),
+    'resource.action': () => true,
   };
   await setup(
     {
@@ -83,11 +83,13 @@ test('Restricted: Display allowed component', async () => {
     },
     rules
   );
-  expect(screen.getByText('Restricted content')).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText('Restricted content')).toBeInTheDocument();
+  });
 });
 test('Restricted: Hide denied component', async () => {
   const rules = {
-    'resource.action': () => Promise.resolve(false),
+    'resource.action': () => false,
   };
   await setup(
     {
@@ -97,12 +99,14 @@ test('Restricted: Hide denied component', async () => {
     },
     rules
   );
-  expect(screen.queryByText('Restricted content')).not.toBeInTheDocument();
-  expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.queryByText('Restricted content')).not.toBeInTheDocument();
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+  });
 });
 test('Restricted: Display component for unallowed users', async () => {
   const rules = {
-    'resource.action': () => Promise.resolve(false),
+    'resource.action': () => false,
   };
   await setup(
     {
@@ -113,11 +117,13 @@ test('Restricted: Display component for unallowed users', async () => {
     },
     rules
   );
-  expect(screen.getByText('Restricted content')).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText('Restricted content')).toBeInTheDocument();
+  });
 });
 test('Restricted: Hide component for allowed users', async () => {
   const rules = {
-    'resource.action': () => Promise.resolve(true),
+    'resource.action': () => true,
   };
   await setup(
     {
@@ -128,8 +134,10 @@ test('Restricted: Hide component for allowed users', async () => {
     },
     rules
   );
-  expect(screen.queryByText('Restricted content')).not.toBeInTheDocument();
-  expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.queryByText('Restricted content')).not.toBeInTheDocument();
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+  });
 });
 test('Restricted: Display fallback component', async () => {
   await setup({
@@ -138,7 +146,9 @@ test('Restricted: Display fallback component', async () => {
     FallbackComponent: () => <div>Fallback content</div>,
     children: <div>Restricted content</div>,
   });
-  expect(screen.queryByText('Restricted content')).not.toBeInTheDocument();
-  expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-  expect(screen.getByText('Fallback content')).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.queryByText('Restricted content')).not.toBeInTheDocument();
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+    expect(screen.getByText('Fallback content')).toBeInTheDocument();
+  });
 });
