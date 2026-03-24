@@ -20,13 +20,13 @@ import _ from 'lodash/fp';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import Home from 'terraso-web-client/home/components/Home';
-import { fetchHomeData } from 'terraso-web-client/home/homeService';
+import { fetchHomeStoryMaps } from 'terraso-web-client/home/homeService';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
 jest.mock('terraso-web-client/home/homeService', () => ({
   ...jest.requireActual('terraso-web-client/home/homeService'),
-  fetchHomeData: jest.fn(),
+  fetchHomeStoryMaps: jest.fn(),
 }));
 
 const setup = async (
@@ -44,8 +44,8 @@ const setup = async (
 };
 
 beforeEach(() => {
-  fetchHomeData.mockImplementation(
-    jest.requireActual('terraso-web-client/home/homeService').fetchHomeData
+  fetchHomeStoryMaps.mockImplementation(
+    jest.requireActual('terraso-web-client/home/homeService').fetchHomeStoryMaps
   );
 });
 
@@ -62,54 +62,13 @@ test('Home: Display loader', async () => {
   const loaders = screen.getAllByRole('progressbar', {
     name: 'Loading',
   });
-  expect(loaders.length).toBe(3);
+  expect(loaders.length).toBe(1);
   loaders.forEach(role => expect(role).toBeInTheDocument());
 });
-test('Home: Display landscapes', async () => {
+test('Home: Display CTA cards for Landscapes and Groups', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
       groups: {
-        edges: [],
-      },
-      landscapes: {
-        edges: [
-          {
-            node: {
-              id: 'id-1',
-              slug: 'landsacpe-1',
-              name: 'Landscape 1',
-              membershipList: _.set('accountMembership.userRole', 'member', {}),
-            },
-          },
-          {
-            node: {
-              id: 'id-2',
-              slug: 'landscape-2',
-              name: 'Landscape 2',
-              membershipList: _.set(
-                'accountMembership.userRole',
-                'manager',
-                {}
-              ),
-            },
-          },
-        ],
-      },
-    })
-  );
-  await setup();
-  const list = within(screen.getByRole('region', { name: 'Landscapes' }));
-  const landscape1 = list.getByRole('listitem', { name: 'Landscape 1' });
-  const landscape2 = list.getByRole('listitem', { name: 'Landscape 2' });
-  expect(landscape1).toBeInTheDocument();
-  expect(landscape2).toBeInTheDocument();
-  expect(within(landscape1).getByText(/Member/i)).toBeInTheDocument();
-  expect(within(landscape2).getByText(/Manager/i)).toBeInTheDocument();
-});
-test('Home: Display groups', async () => {
-  terrasoApi.requestGraphQL.mockReturnValue(
-    Promise.resolve({
-      userIndependentGroups: {
         edges: [
           {
             node: {
@@ -127,36 +86,14 @@ test('Home: Display groups', async () => {
           },
         ],
       },
-      userLandscapeGroups: {
+      landscapes: {
         edges: [
           {
             node: {
-              id: 'id-2',
-              slug: 'id-2',
-              name: 'Group 2',
-              membershipList: {
-                accountMembership: {
-                  id: 'id-2',
-                  userRole: 'manager',
-                  membershipStatus: 'APPROVED',
-                },
-                pending: { totalCount: 1 },
-              },
-            },
-          },
-          {
-            node: {
-              id: 'id-3',
-              slug: 'id-3',
-              name: 'Group 3',
-              membershipList: {
-                accountMembership: {
-                  id: 'id-3',
-                  userRole: 'member',
-                  membershipStatus: 'PENDING',
-                },
-                pending: { totalCount: 1 },
-              },
+              id: 'id-1',
+              slug: 'landsacpe-1',
+              name: 'Landscape 1',
+              membershipList: _.set('accountMembership.userRole', 'member', {}),
             },
           },
         ],
@@ -165,22 +102,15 @@ test('Home: Display groups', async () => {
   );
   await setup();
 
-  const list = within(screen.getByRole('region', { name: 'Groups' }));
-  const items = list.getAllByRole('listitem');
-  expect(items.length).toBe(3);
-
-  expect(within(items[0]).getByText('Group 3')).toBeInTheDocument();
-  expect(within(items[0]).getByText('(Pending)')).toBeInTheDocument();
   expect(
-    within(items[0]).getByText('Waiting for the group manager’s approval')
+    screen.getByText(/Create or join a landscape to work with partners/i)
   ).toBeInTheDocument();
-
-  expect(within(items[1]).getByText('Group 1')).toBeInTheDocument();
-  expect(within(items[1]).getByText('(Member)')).toBeInTheDocument();
-
-  expect(within(items[2]).getByText('Group 2')).toBeInTheDocument();
-  expect(within(items[2]).getByText('(Manager)')).toBeInTheDocument();
-  expect(within(items[2]).getByText('1 pending member')).toBeInTheDocument();
+  expect(
+    screen.getByText(/Collaborate with organizations, interest groups/i)
+  ).toBeInTheDocument();
+  expect(screen.queryByText('Landscape 1')).not.toBeInTheDocument();
+  expect(screen.queryByText('Group 1')).not.toBeInTheDocument();
+  expect(screen.queryByText(/Data Collection/i)).not.toBeInTheDocument();
 });
 test('Home: Display Story Maps', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
@@ -223,7 +153,9 @@ test('Home: Display Story Maps', async () => {
   );
   await setup();
 
-  const list = within(screen.getByRole('region', { name: 'Story Maps' }));
+  const list = within(
+    screen.getByRole('region', { name: 'Terraso Story Maps' })
+  );
   const items = list.getAllByRole('listitem');
   expect(items.length).toBe(2);
 
@@ -231,42 +163,122 @@ test('Home: Display Story Maps', async () => {
   expect(link1).toHaveAttribute('href', '/tools/story-maps/lftawa9/id-2/edit');
   const link2 = within(items[1]).getByRole('link', { name: 'Story 1' });
   expect(link2).toHaveAttribute('href', '/tools/story-maps/46h36we/id-1/edit');
+  expect(
+    screen.getByRole('link', { name: 'Make a Story Map' })
+  ).toHaveAttribute('href', '/tools/story-maps/new');
+  expect(screen.getByRole('link', { name: 'My Story Maps' })).toHaveAttribute(
+    'href',
+    '/tools/story-maps'
+  );
 });
-test('Home: Display defaults', async () => {
-  fetchHomeData.mockReturnValue(
+
+test('Home: Display only two most recent Story Maps and link to My Story Maps', async () => {
+  terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
-      groups: [],
-      landscapes: [],
+      storyMaps: {
+        edges: [
+          {
+            node: {
+              id: 'id-1',
+              slug: 'id-1',
+              storyMapId: '46h36we',
+              title: 'Story 1',
+              isPublished: true,
+              publishedAt: '2023-01-31T22:25:42.916303+00:00',
+              updatedAt: '2023-01-31T22:25:42.916303+00:00',
+              createdBy: {
+                userId: 'user-1',
+                firstName: 'Pablo',
+                lastName: 'Perez',
+              },
+            },
+          },
+          {
+            node: {
+              id: 'id-2',
+              slug: 'id-2',
+              storyMapId: 'lftawa9',
+              title: 'Story 2',
+              isPublished: true,
+              publishedAt: '2024-01-31T22:25:42.916303+00:00',
+              updatedAt: '2024-01-31T22:25:42.916303+00:00',
+              createdBy: {
+                userId: 'user-2',
+                firstName: 'Pedro',
+                lastName: 'Paez',
+              },
+            },
+          },
+          {
+            node: {
+              id: 'id-3',
+              slug: 'id-3',
+              storyMapId: 'abca123',
+              title: 'Story 3',
+              isPublished: true,
+              publishedAt: '2025-01-31T22:25:42.916303+00:00',
+              updatedAt: '2025-01-31T22:25:42.916303+00:00',
+              createdBy: {
+                userId: 'user-3',
+                firstName: 'Maria',
+                lastName: 'Gomez',
+              },
+            },
+          },
+        ],
+      },
     })
   );
   await setup();
-  expect(screen.getByText(/FIND YOUR LANDSCAPE/i)).toBeInTheDocument();
-  expect(screen.getByText(/Groups connect people/i)).toBeInTheDocument();
+
+  const list = within(
+    screen.getByRole('region', { name: 'Terraso Story Maps' })
+  );
+  const items = list.getAllByRole('listitem');
+  expect(items.length).toBe(2);
+
+  expect(
+    within(items[0]).getByRole('link', { name: 'Story 3' })
+  ).toBeInTheDocument();
+  expect(
+    within(items[1]).getByRole('link', { name: 'Story 2' })
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('link', { name: 'Story 1' })
+  ).not.toBeInTheDocument();
+
+  expect(
+    screen.getByRole('link', { name: 'Make a Story Map' })
+  ).toHaveAttribute('href', '/tools/story-maps/new');
+  const myStoryMapsLink = screen.getByRole('link', { name: 'My Story Maps' });
+  expect(myStoryMapsLink).toHaveAttribute('href', '/tools/story-maps');
+});
+
+test('Home: Display defaults', async () => {
+  fetchHomeStoryMaps.mockReturnValue(Promise.resolve([]));
+  await setup();
+  expect(
+    screen.getByText(/Create or join a landscape to work with partners/i)
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText(/Collaborate with organizations, interest groups/i)
+  ).toBeInTheDocument();
   expect(
     screen.getByText(
-      /Create an impactful story using maps, photos, videos, audio recordings and narrative/i
+      /Create and share interactive story maps to visualize your landscape data and community narratives/i
     )
   ).toBeInTheDocument();
+  expect(screen.queryByText(/Data Collection/i)).not.toBeInTheDocument();
 });
 
-test('Home: Display title', async () => {
-  fetchHomeData.mockReturnValue(
-    Promise.resolve({
-      groups: [],
-      landscapes: [],
-    })
-  );
+test('Home: Main heading removed', async () => {
+  fetchHomeStoryMaps.mockReturnValue(Promise.resolve([]));
   await setup();
-  expect(screen.getByText(/First’s Terraso/i)).toBeInTheDocument();
+  expect(screen.queryByText(/^Home$/i)).toBeNull();
 });
 
-test('Home: Display title (default)', async () => {
-  fetchHomeData.mockReturnValue(
-    Promise.resolve({
-      groups: [],
-      landscapes: [],
-    })
-  );
+test('Home: Main heading removed (default user)', async () => {
+  fetchHomeStoryMaps.mockReturnValue(Promise.resolve([]));
   await setup({ firstName: undefined, lastName: undefined });
-  expect(screen.getByText(/Terraso Home/i)).toBeInTheDocument();
+  expect(screen.queryByText(/^Home$/i)).toBeNull();
 });

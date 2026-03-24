@@ -15,42 +15,29 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
 
-import RouterLink from 'terraso-web-client/common/components/RouterLink';
 import HomeCard from 'terraso-web-client/home/components/HomeCard';
-
-import landscapeImage from 'terraso-web-client/assets/landscape.png';
 
 const LandscapeDefaultHomeCard = () => {
   const { t } = useTranslation();
 
   return (
     <HomeCard
-      title={t('landscape.home_title')}
+      title={t('landscape.home_default_card_title')}
       titleId="landscapes-default-title"
       action={{
         label: t('landscape.default_connect_button'),
-        to: '/landscapes',
-      }}
-      image={{
-        src: landscapeImage,
         to: '/landscapes',
       }}
       showActionAsButton
       helperText={t('landscape.home_popover')}
     >
       <Box display="flex" alignItems="center">
-        <Trans i18nKey="landscape.default_content">
-          <Typography variant="body1">
-            Prefix
-            <RouterLink to="/landscapes" sx={{ textDecoration: 'underline' }}>
-              Connect
-            </RouterLink>
-            suffix
-          </Typography>
-        </Trans>
+        <Typography variant="body1">
+          {t('landscape.default_content')}
+        </Typography>
       </Box>
     </HomeCard>
   );

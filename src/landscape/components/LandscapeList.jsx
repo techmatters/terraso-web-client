@@ -21,15 +21,16 @@ import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { useDispatch } from 'terraso-web-client/terrasoApi/store';
-import { Button, Card, Link, Stack, Typography } from '@mui/material';
+import { Link, Stack, Typography } from '@mui/material';
 
 import { withProps } from 'terraso-web-client/react-hoc';
 
+import { MEMBERSHIP_STATUS_APPROVED } from 'terraso-web-client/collaboration/collaborationConstants';
 import { CollaborationContextProvider } from 'terraso-web-client/collaboration/collaborationContext';
 import MemberJoin from 'terraso-web-client/collaboration/components/MemberJoin';
 import MembershipListCount from 'terraso-web-client/collaboration/components/MembershipCount';
 import MembershipJoinLeaveButton from 'terraso-web-client/collaboration/components/MembershipJoinLeaveButton';
-import ExternalLink from 'terraso-web-client/common/components/ExternalLink';
+import ListSummaryCtaSection from 'terraso-web-client/common/components/ListSummaryCtaSection';
 import TableResponsive from 'terraso-web-client/common/components/TableResponsive';
 import { countryNameForCode } from 'terraso-web-client/common/countries';
 import {
@@ -40,6 +41,7 @@ import PageContainer from 'terraso-web-client/layout/PageContainer';
 import PageHeader from 'terraso-web-client/layout/PageHeader';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
 import LandscapeListMap from 'terraso-web-client/landscape/components/LandscapeListMap';
+import LandscapesHomeCard from 'terraso-web-client/landscape/components/LandscapesHomeCard';
 import {
   fetchLandscapes,
   joinLandscapeFromList,
@@ -103,6 +105,12 @@ const LandscapeList = () => {
   if (fetching) {
     return <PageLoader />;
   }
+
+  const myLandscapes = _.filter(
+    landscape =>
+      _.get('membershipInfo.accountMembership.membershipStatus', landscape) ===
+      MEMBERSHIP_STATUS_APPROVED
+  )(landscapes);
 
   const columns = [
     {
@@ -188,20 +196,23 @@ const LandscapeList = () => {
         sx={{ mb: 4 }}
       >
         <LandscapeListMap />
-        <Trans i18nKey="landscape.list_map_help">
-          <Typography>
-            Prefix
-            <Link component={RouterLink} to="/landscapes/new">
-              add link
-            </Link>
-            or
-            <ExternalLink href={t('landscape.list_map_help_url')}>
-              help
-            </ExternalLink>
-            .
-          </Typography>
-        </Trans>
       </Stack>
+      <ListSummaryCtaSection
+        summaryCard={
+          !_.isEmpty(myLandscapes) ? (
+            <LandscapesHomeCard
+              landscapes={myLandscapes}
+              title={t('landscape.my_landscapes_title')}
+              showAction={false}
+              showHelperText={false}
+            />
+          ) : null
+        }
+        ctaTitle={t('landscape.list_cta_title')}
+        ctaDescription={t('landscape.list_cta_description')}
+        ctaButtonLabel={t('landscape.list_cta_button')}
+        ctaButtonTo="/landscapes/new"
+      />
       <TableResponsive
         columns={columns}
         rows={landscapes}
@@ -234,20 +245,6 @@ const LandscapeList = () => {
           ],
         }}
       />
-
-      <Card sx={{ p: 2, mt: 4 }}>
-        <Typography sx={{ pt: 0 }} variant="h2">
-          {t('landscape.add')}
-        </Typography>
-
-        <Typography sx={{ mt: 2, mb: 2 }}>
-          {t('landscape.list_new_description')}
-        </Typography>
-
-        <Button variant="contained" component={RouterLink} to="/landscapes/new">
-          {t('landscape.list_new_button')}
-        </Button>
-      </Card>
     </PageContainer>
   );
 };

@@ -22,18 +22,16 @@ import * as homeService from 'terraso-web-client/home/homeService';
 import { setUserStoryMaps } from 'terraso-web-client/storyMap/storyMapSlice';
 
 const initialState = {
-  groups: [],
-  landscapes: [],
   fetching: true,
   error: null,
 };
 
-export const fetchHomeData = createAsyncThunk(
-  'home/fetchData',
+export const fetchHomeStoryMaps = createAsyncThunk(
+  'home/fetchStoryMaps',
   (email, currentUser, { dispatch }) =>
-    homeService.fetchHomeData(email).then(data => {
-      dispatch(setUserStoryMaps(data.storyMaps));
-      return data;
+    homeService.fetchHomeStoryMaps(email).then(storyMaps => {
+      dispatch(setUserStoryMaps(storyMaps));
+      return storyMaps;
     })
 );
 
@@ -50,20 +48,18 @@ export const homeSlice = createSlice({
   },
 
   extraReducers: builder => {
-    builder.addCase(fetchHomeData.pending, () => initialState);
+    builder.addCase(fetchHomeStoryMaps.pending, () => initialState);
 
-    builder.addCase(fetchHomeData.fulfilled, (state, action) => ({
+    builder.addCase(fetchHomeStoryMaps.fulfilled, state => ({
       ...state,
       fetching: false,
       error: null,
-      groups: action.payload.groups,
-      landscapes: action.payload.landscapes,
     }));
 
-    builder.addCase(fetchHomeData.rejected, (state, action) => ({
+    builder.addCase(fetchHomeStoryMaps.rejected, (state, action) => ({
       ...state,
       fetching: false,
-      error: action.payload.error,
+      error: action.payload?.error || action.payload || action.error,
     }));
   },
 });
