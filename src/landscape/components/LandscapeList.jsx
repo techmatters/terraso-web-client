@@ -30,7 +30,6 @@ import { CollaborationContextProvider } from 'terraso-web-client/collaboration/c
 import MemberJoin from 'terraso-web-client/collaboration/components/MemberJoin';
 import MembershipListCount from 'terraso-web-client/collaboration/components/MembershipCount';
 import MembershipJoinLeaveButton from 'terraso-web-client/collaboration/components/MembershipJoinLeaveButton';
-import ExternalLink from 'terraso-web-client/common/components/ExternalLink';
 import ListSummaryCtaSection from 'terraso-web-client/common/components/ListSummaryCtaSection';
 import TableResponsive from 'terraso-web-client/common/components/TableResponsive';
 import { countryNameForCode } from 'terraso-web-client/common/countries';
@@ -197,19 +196,6 @@ const LandscapeList = () => {
         sx={{ mb: 4 }}
       >
         <LandscapeListMap />
-        <Trans i18nKey="landscape.list_map_help">
-          <Typography>
-            Prefix
-            <Link component={RouterLink} to="/landscapes/new">
-              add link
-            </Link>
-            or
-            <ExternalLink href={t('landscape.list_map_help_url')}>
-              help
-            </ExternalLink>
-            .
-          </Typography>
-        </Trans>
       </Stack>
       <ListSummaryCtaSection
         summaryCard={
