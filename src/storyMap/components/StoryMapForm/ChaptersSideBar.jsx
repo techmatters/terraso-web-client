@@ -229,6 +229,7 @@ const SideBarItem = props => {
                             name: item.label,
                           }
                         )}
+                        confirmButtonDestructive
                         tooltip={t(
                           'storyMap.form_delete_chapter_confirm_button_tooltip',
                           {
