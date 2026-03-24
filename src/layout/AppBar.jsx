@@ -43,7 +43,7 @@ import AccountAvatar from 'terraso-web-client/account/components/AccountAvatar';
 import storyMapsLogo from 'terraso-web-client/assets/logo-story-maps.svg';
 import theme from 'terraso-web-client/theme';
 
-const AppBarComponent = ({ navigationRef, showInlineNavigation = true }) => {
+const AppBarComponent = ({ showInlineNavigation = true }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -127,7 +127,7 @@ const AppBarComponent = ({ navigationRef, showInlineNavigation = true }) => {
             }}
           />
         </ConditionalLink>
-        {showInlineNavigation && <Navigation inline ref={navigationRef} />}
+        {showInlineNavigation && <Navigation inline />}
         <Box sx={{ flexGrow: 1 }} />
         {hasUser ? (
           <>

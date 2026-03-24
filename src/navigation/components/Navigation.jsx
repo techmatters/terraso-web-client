@@ -15,7 +15,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { forwardRef } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -101,7 +100,7 @@ const NavigationLink = ({ path, selected, index, inline }) => {
   );
 };
 
-const Navigation = forwardRef((props, ref) => {
+const Navigation = props => {
   const { inline = false } = props;
   const { t } = useTranslation();
   const { data: user } = useSelector(state => state.account.currentUser);
@@ -123,7 +122,6 @@ const Navigation = forwardRef((props, ref) => {
         id="main-navigation"
         component="nav"
         tabIndex="-1"
-        ref={ref}
         aria-label={t('navigation.nav_label_short')}
         sx={{
           ml: 2,
@@ -170,7 +168,6 @@ const Navigation = forwardRef((props, ref) => {
       <Container
         component="nav"
         tabIndex="-1"
-        ref={ref}
         value={value}
         aria-label={t('navigation.nav_label_short')}
         sx={{
@@ -216,6 +213,6 @@ const Navigation = forwardRef((props, ref) => {
       </Container>
     </Box>
   );
-});
+};
 
 export default Navigation;

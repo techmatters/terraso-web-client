@@ -16,7 +16,6 @@
  */
 
 import { render, screen } from 'terraso-web-client/tests/utils';
-import { useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router';
 
@@ -35,12 +34,9 @@ jest.mock('react-redux', () => ({
 }));
 
 const App = () => {
-  const contentRef = useRef();
-  const navigationRef = useRef();
-
   return (
     <>
-      <SkipLinks contentRef={contentRef} navigationRef={navigationRef} />
+      <SkipLinks />
       <Navigation />
       <PageHeader header="Main heading" />
     </>

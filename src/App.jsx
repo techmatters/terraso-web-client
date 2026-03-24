@@ -36,7 +36,6 @@ import OptionalAuthTopMessage from 'terraso-web-client/account/components/Option
 
 const App = () => {
   const contentRef = useRef();
-  const navigationRef = useRef();
   const { isEmbedded, optionalAuth } = usePathParams();
   const useSecondRowNavigation = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -55,11 +54,8 @@ const App = () => {
         }}
       >
         <Box id="header-container">
-          <AppBar
-            navigationRef={navigationRef}
-            showInlineNavigation={!useSecondRowNavigation}
-          />
-          {useSecondRowNavigation && <Navigation ref={navigationRef} />}
+          <AppBar showInlineNavigation={!useSecondRowNavigation} />
+          {useSecondRowNavigation && <Navigation />}
         </Box>
         <Box
           component="main"

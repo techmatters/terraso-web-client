@@ -41,4 +41,5 @@ test('Routes: /tools redirects to /tools/story-maps', async () => {
   });
 
   expect(await screen.findByText('Story Maps Tool Home')).toBeInTheDocument();
+  expect(window.location.pathname).toBe('/tools/story-maps');
 });
