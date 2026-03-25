@@ -29,10 +29,7 @@ import {
 } from 'terraso-web-client/storyMap/storyMapConstants';
 import { chapterHasVisualMedia } from 'terraso-web-client/storyMap/storyMapUtils';
 
-import {
-  MAPBOX_ACCESS_TOKEN,
-  STORY_MAP_INSET_STYLE,
-} from 'terraso-web-client/config';
+import { MAPBOX_ACCESS_TOKEN } from 'terraso-web-client/config';
 
 import 'terraso-web-client/storyMap/components/StoryMap.css';
 
@@ -49,28 +46,6 @@ mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
 const CURRENT_LOCATION_CHECK_PRESSISION = 13; // 13 decimal places
 const ROTATION_DURATION = 30000; // 30 seconds
-
-const getBoundsJson = bounds => ({
-  type: 'FeatureCollection',
-  features: [
-    {
-      type: 'Feature',
-      properties: {},
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [bounds._sw.lng, bounds._sw.lat],
-            [bounds._ne.lng, bounds._sw.lat],
-            [bounds._ne.lng, bounds._ne.lat],
-            [bounds._sw.lng, bounds._ne.lat],
-            [bounds._sw.lng, bounds._sw.lat],
-          ],
-        ],
-      },
-    },
-  ],
-});
 
 const Audio = ({ record }) => {
   return (
@@ -226,95 +201,8 @@ const getTransition = ({ config, id, direction }) => {
   };
 };
 
-const InsetConfig = props => {
-  const { map, insetContext } = props;
-  const { map: insetMap, addSource, addLayer } = insetContext;
-
-  useEffect(() => {
-    if (!map || !insetMap) {
-      return;
-    }
-
-    function addInsetLayer(bounds) {
-      addSource('boundsSource', {
-        type: 'geojson',
-        data: bounds,
-      });
-
-      addLayer({
-        id: 'boundsLayer',
-        type: 'fill',
-        source: 'boundsSource', // reference the data source
-        layout: {},
-        paint: {
-          'fill-color': theme.palette.white,
-          'fill-opacity': 0.2,
-        },
-      });
-      // Add a black outline around the polygon.
-      addLayer({
-        id: 'outlineLayer',
-        type: 'line',
-        source: 'boundsSource',
-        layout: {},
-        paint: {
-          'line-color': theme.palette.black,
-          'line-width': 1,
-        },
-      });
-    }
-    addInsetLayer(map.getBounds());
-
-    function updateInsetLayer(bounds) {
-      insetMap.getSource('boundsSource').setData(bounds);
-    }
-
-    function getInsetBounds() {
-      const bounds = map.getBounds();
-      updateInsetLayer(getBoundsJson(bounds));
-    }
-
-    // As the map moves, grab and update bounds in inset map.
-    map.on('move', getInsetBounds);
-    return () => {
-      map.off('move', getInsetBounds);
-    };
-  }, [map, insetMap, addSource, addLayer]);
-
-  return null;
-};
-
-const InsetMap = props => {
-  const { config, initialLocation, map, children } = props;
-
-  if (!config.inset) {
-    return props.children(null);
-  }
-
-  return (
-    <Map
-      id="map-inset"
-      projection="mercator"
-      mapStyle={STORY_MAP_INSET_STYLE}
-      center={initialLocation?.center}
-      zoom={3}
-      interactive={false}
-      attributionControl={false}
-    >
-      <MapContextConsumer>
-        {insetContext => (
-          <>
-            <InsetConfig insetContext={insetContext} map={map} />
-            {children(insetContext)}
-          </>
-        )}
-      </MapContextConsumer>
-    </Map>
-  );
-};
-
 const Scroller = props => {
-  const { config, map, insetMap, animation, onStepChange, onReady } = props;
+  const { config, map, animation, onStepChange, onReady } = props;
   const [marker, setMarker] = useState(null);
   const [isReady, setIsReady] = useState(false);
 
@@ -383,7 +271,7 @@ const Scroller = props => {
 
   const startTransition = useCallback(
     transition => {
-      if (!map || (config.inset && !insetMap) || !transition) {
+      if (!map || !transition) {
         return;
       }
 
@@ -404,16 +292,6 @@ const Scroller = props => {
             transition.location
           );
 
-          // If you do not want to have a dynamic inset map,
-          // rather want to keep it a static view but still change the
-          // bbox as main map move: comment out the below if section.
-          if (config.inset) {
-            if (transition.location.zoom < 5) {
-              insetMap.flyTo({ center: transition.location.center, zoom: 0 });
-            } else {
-              insetMap.flyTo({ center: transition.location.center, zoom: 3 });
-            }
-          }
           if (config.showMarkers) {
             if (!marker) {
               const newMarker = new mapboxgl.Marker({
@@ -442,11 +320,11 @@ const Scroller = props => {
         });
       }
     },
-    [map, config, insetMap, marker, setLayerOpacity, animation]
+    [map, config, marker, setLayerOpacity, animation]
   );
 
   useEffect(() => {
-    if (!map || (config.inset && !insetMap)) {
+    if (!map) {
       return;
     }
 
@@ -515,7 +393,6 @@ const Scroller = props => {
     };
   }, [
     map,
-    insetMap,
     marker,
     setLayerOpacity,
     startTransition,
@@ -523,7 +400,6 @@ const Scroller = props => {
     config.titleTransition,
     config.chapters,
     config.auto,
-    config.inset,
     config.showMarkers,
     onStepChange,
   ]);
@@ -606,22 +482,13 @@ const StoryMap = props => {
       >
         <MapContextConsumer>
           {({ map }) => (
-            <InsetMap
-              config={config}
+            <Scroller
               map={map}
-              initialLocation={initialLocation}
-            >
-              {insetMapContext => (
-                <Scroller
-                  map={map}
-                  insetMap={insetMapContext?.map}
-                  config={config}
-                  animation={animation}
-                  onStepChange={onStepChange}
-                  onReady={onReady}
-                />
-              )}
-            </InsetMap>
+              config={config}
+              animation={animation}
+              onStepChange={onStepChange}
+              onReady={onReady}
+            />
           )}
         </MapContextConsumer>
 
