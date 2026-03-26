@@ -172,6 +172,7 @@ export const MapProvider = props => {
   const language = i18n.language.split('-')[0];
   const { children, onStyleChange } = props;
   const [map, setMap] = useState(null);
+  const [mapDimensions, setMapDimensions] = useState(undefined);
   const [images, setImages] = useState({});
   const [sources, setSources] = useState({});
   const [layers, setLayers] = useState({});
@@ -291,6 +292,8 @@ export const MapProvider = props => {
       value={{
         setMap,
         map,
+        setMapDimensions,
+        mapDimensions,
         changeStyle,
         addImage,
         removeImage,
@@ -328,7 +331,7 @@ const Map = forwardRef((props, ref) => {
     children,
   } = props;
   const { i18n } = useTranslation();
-  const { map, setMap } = useMap();
+  const { map, setMap, setMapDimensions } = useMap();
   const mapContainer = useRef(null);
   const [bounds] = useState(initialBounds);
   const [initialLocation] = useState(propsInitialLocation);
@@ -462,8 +465,14 @@ const Map = forwardRef((props, ref) => {
       return;
     }
 
-    const observer = new ResizeObserver(() => {
+    const observer = new ResizeObserver(([entry]) => {
       map.resize();
+      if (entry.contentBoxSize && entry.contentBoxSize[0]) {
+        setMapDimensions({
+          height: entry.contentBoxSize[0].blockSize,
+          width: entry.contentBoxSize[0].inlineSize,
+        });
+      }
     });
 
     observer.observe(map.getContainer());
@@ -471,7 +480,7 @@ const Map = forwardRef((props, ref) => {
     return () => {
       observer.disconnect();
     };
-  }, [map]);
+  }, [map, setMapDimensions]);
 
   useEffect(() => {
     if (!map) {

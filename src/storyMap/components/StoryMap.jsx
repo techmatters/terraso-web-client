@@ -23,9 +23,9 @@ import { Box, useMediaQuery } from '@mui/material';
 
 import RichTextEditor from 'terraso-web-client/common/components/RichTextEditor/index';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
+import { startTransition } from 'terraso-web-client/storyMap/mapUtils';
 import {
   ALIGNMENTS,
-  LAYER_TYPES,
   STORY_MAP_TITLE_ID,
 } from 'terraso-web-client/storyMap/storyMapConstants';
 import { chapterHasVisualMedia } from 'terraso-web-client/storyMap/storyMapUtils';
@@ -34,10 +34,8 @@ import { MAPBOX_ACCESS_TOKEN } from 'terraso-web-client/config';
 
 import 'terraso-web-client/storyMap/components/StoryMap.css';
 
-import logger from 'terraso-client-shared/monitoring/logger';
-
 import { FullscreenButton } from 'terraso-web-client/gis/components/FullscreenControl';
-import Map, { MapContextConsumer } from 'terraso-web-client/gis/components/Map';
+import Map, { useMap } from 'terraso-web-client/gis/components/Map';
 import { StoryMapLayer } from 'terraso-web-client/storyMap/components/StoryMapLayer';
 import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutline';
 
@@ -177,7 +175,7 @@ const Title = props => {
 };
 
 const Scroller = props => {
-  const { config, map, animation, onStepChange, onReady } = props;
+  const { onStepChange, onReady } = props;
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -187,58 +185,7 @@ const Scroller = props => {
     onReady?.();
   }, [isReady, onReady]);
 
-  const getLayerPaintType = useCallback(
-    layer => {
-      if (!map.getStyle()) {
-        return [];
-      }
-
-      const layerType = map.getLayer(layer)?.type;
-      if (!layerType) {
-        logger.warn(`Layer ${layer} not found`);
-        return null;
-      }
-      return LAYER_TYPES[layerType];
-    },
-    [map]
-  );
-
-  const setLayerOpacity = useCallback(
-    layer => {
-      if (!layer.layer) {
-        return;
-      }
-      const paintProps = getLayerPaintType(layer.layer);
-      paintProps?.forEach(function (prop) {
-        map.setPaintProperty(layer.layer, prop, layer.opacity, options);
-      });
-    },
-    [map, getLayerPaintType]
-  );
-
-  const startTransition = useCallback(
-    transition => {
-      if (!map || !transition) {
-        return;
-      }
-
-      if (transition.location && !_.isEmpty(transition.location)) {
-          map[animation || transition.mapAnimation || 'flyTo'](
-            transition.location
-          );
-      }
-      if (transition.onChapterEnter && transition.onChapterEnter.length > 0) {
-        transition.onChapterEnter.forEach(setLayerOpacity);
-      }
-    },
-    [map, config, marker, setLayerOpacity, animation]
-  );
-
   useEffect(() => {
-    if (!map) {
-      return;
-    }
-
     const scroller = scrollama();
     scroller
       .setup({
@@ -247,77 +194,50 @@ const Scroller = props => {
         offset: 0.5,
       })
       .onStepEnter(async response => {
-        const { index, transition } = getTransition({
-          config: {
-            titleTransition: config.titleTransition,
-            chapters: config.chapters,
-          },
-          id: response.element.id,
-          direction: response.direction,
-        });
+        onStepChange(response.element.id);
         response.element.classList.add('active');
-        startTransition(transition);
-        onStepChange?.(response.element.id);
-
-        if (config.auto) {
-          const nextChapterIndex = (index + 1) % config.chapters.length;
-          map.once('moveend', () => {
-            document
-              .querySelectorAll(
-                '[data-scrollama-index="' + nextChapterIndex.toString() + '"]'
-              )[0]
-              .scrollIntoView();
-          });
-        }
       })
       .onStepExit(response => {
-        const { transition, nextTransition } = getTransition({
-          config: {
-            titleTransition: config.titleTransition,
-            chapters: config.chapters,
-          },
-          id: response.element.id,
-          direction: response.direction,
-        });
         response.element.classList.remove('active');
-        if (transition?.onChapterExit && transition.onChapterExit.length > 0) {
-          const onEnterLayers = nextTransition?.onChapterEnter?.map(
-            _.get('layer')
-          );
-          const filtered = transition.onChapterExit.filter(
-            transition => !_.includes(transition.layer, onEnterLayers)
-          );
-          filtered.forEach(setLayerOpacity);
-        }
       });
-    // This is needed for development due to resize observer issue
-    // should not be here on production
-    if (import.meta.env.MODE === 'development') {
-      scroller.disable();
-    }
+
     setIsReady(true);
 
-    window.addEventListener('resize', scroller.resize);
     return () => {
       scroller.destroy();
-      window.removeEventListener('resize', scroller.resize);
     };
-  }, [
-    map,
-    marker,
-    setLayerOpacity,
-    startTransition,
-    config.title,
-    config.titleTransition,
-    config.chapters,
-    config.auto,
-    config.showMarkers,
-    onStepChange,
-  ]);
+  }, [onStepChange]);
 
   return null;
 };
 
+const MapTransitionController = ({ config, currentChapter }) => {
+  const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
+  const { map, mapDimensions } = useMap();
+
+  useEffect(() => {
+    if (!mapDimensions) {
+      return;
+    }
+    startTransition(map, {
+      config,
+      chapterId: currentChapter,
+      mapDimensions,
+      isMobile,
+    });
+  }, [map, config, mapDimensions, currentChapter, isMobile]);
+
+  return null;
+};
+
+// the basic state machine here is:
+// MapTransitionController calls startTransition (which moves the map).
+// this is a cheap and idempotent operation, so we call it liberally.
+// it's called in a useEffect, which depends on:
+//   - the story map's config, to pick up chapter alignment changes
+//   - the current chapter, which is a piece of state updated by Scrollama
+//   - whether we're in a mobile viewport (which forces a centered chapter)
+//   - the map dimensions, so we readjust when the map's size changes
 const StoryMap = props => {
   const { t } = useTranslation();
   const {
@@ -325,14 +245,23 @@ const StoryMap = props => {
     onStepChange,
     ChapterComponent = Chapter,
     TitleComponent = Title,
-    animation,
     onReady,
     chaptersFilter,
     isContained = false,
   } = props;
 
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
+  const [currentChapter, setCurrentChapter] = useState(STORY_MAP_TITLE_ID);
   const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
+
+  const onStepChangeWrapped = useCallback(
+    id => {
+      setCurrentChapter(id);
+      onStepChange?.(id);
+    },
+    [setCurrentChapter, onStepChange]
+  );
+
   const initialLocation = useMemo(() => {
     if (config.titleTransition?.location) {
       return config.titleTransition?.location;
@@ -391,18 +320,6 @@ const StoryMap = props => {
             : { top: 0, height: '33vh', zIndex: 4 },
         })}
       >
-        <MapContextConsumer>
-          {({ map }) => (
-            <Scroller
-              map={map}
-              config={config}
-              animation={animation}
-              onStepChange={onStepChange}
-              onReady={onReady}
-            />
-          )}
-        </MapContextConsumer>
-
         <FullscreenButton
           isFullscreen={isMapFullscreen}
           onToggle={() => setIsMapFullscreen(prev => !prev)}
@@ -417,6 +334,14 @@ const StoryMap = props => {
               opacity={0}
             />
           ))}
+
+        <MapTransitionController
+          // NOTE: the MapTransitionController unfortunately must come AFTER any map layers
+          // due to timing of the react render lifecycle and imperative mapbox events.
+          // hopefully this will be less janky in the future.
+          config={config}
+          currentChapter={currentChapter}
+        />
       </Map>
       <Box
         sx={({ breakpoints }) => ({
@@ -427,6 +352,7 @@ const StoryMap = props => {
         id="features"
         className={ALIGNMENTS[config.alignment]}
       >
+        <Scroller onStepChange={onStepChangeWrapped} onReady={onReady} />
         <TitleComponent config={config} />
         {filteredChapters.map(chapter => (
           <ChapterComponent

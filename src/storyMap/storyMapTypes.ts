@@ -82,7 +82,7 @@ export type StoryMapConfig = {
   chapters: ChapterConfig[];
   titleTransition?: Transition;
   projection?: string;
-  dataLayers: Record<string, MapLayerConfig>;
+  dataLayers?: Record<string, MapLayerConfig>;
 };
 
 export type VisualizationConfigForm = {
