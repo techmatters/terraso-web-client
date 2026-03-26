@@ -19,13 +19,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import scrollama from 'scrollama';
-import { Box, GlobalStyles, useMediaQuery } from '@mui/material';
+import { Box, useMediaQuery } from '@mui/material';
 
 import RichTextEditor from 'terraso-web-client/common/components/RichTextEditor/index';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
 import {
   ALIGNMENTS,
   LAYER_TYPES,
+  STORY_MAP_TITLE_ID,
 } from 'terraso-web-client/storyMap/storyMapConstants';
 import { chapterHasVisualMedia } from 'terraso-web-client/storyMap/storyMapUtils';
 
@@ -43,9 +44,6 @@ import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutl
 import theme from 'terraso-web-client/theme';
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
-
-const CURRENT_LOCATION_CHECK_PRESSISION = 13; // 13 decimal places
-const ROTATION_DURATION = 30000; // 30 seconds
 
 const Audio = ({ record }) => {
   return (
@@ -160,7 +158,7 @@ const Title = props => {
 
   return (
     <Box
-      id="story-map-title"
+      id={STORY_MAP_TITLE_ID}
       component="section"
       aria-label={t('storyMap.view_title_label', { title: config.title })}
       className="step step-container fully title"
@@ -178,32 +176,8 @@ const Title = props => {
   );
 };
 
-const getTransition = ({ config, id, direction }) => {
-  const isTitle = id === 'story-map-title';
-  if (isTitle) {
-    return {
-      transition: config.titleTransition,
-      index: -1,
-      nextTransition: _.get('chapters[0]', config),
-    };
-  }
-  const chapterIndex = config.chapters.findIndex(chapter => chapter.id === id);
-  const chapter = config.chapters[chapterIndex];
-  const nextIndex = direction === 'up' ? chapterIndex - 1 : chapterIndex + 1;
-  const nextIsTitle = nextIndex === -1;
-  const next = nextIsTitle
-    ? config.titleTransition
-    : _.get(`chapters[${nextIndex}]`, config);
-  return {
-    transition: chapter,
-    nextTransition: next,
-    index: chapterIndex,
-  };
-};
-
 const Scroller = props => {
   const { config, map, animation, onStepChange, onReady } = props;
-  const [marker, setMarker] = useState(null);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -212,28 +186,6 @@ const Scroller = props => {
     }
     onReady?.();
   }, [isReady, onReady]);
-
-  // this is needed to avoid the map breaking after toggling full screen on/off
-  useEffect(() => {
-    if (!map) {
-      return;
-    }
-
-    const mapContainer = map.getContainer();
-    if (!mapContainer) {
-      return;
-    }
-
-    const resizeObserver = new ResizeObserver(() => {
-      map.resize();
-    });
-
-    resizeObserver.observe(mapContainer);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [map]);
 
   const getLayerPaintType = useCallback(
     layer => {
@@ -258,11 +210,6 @@ const Scroller = props => {
       }
       const paintProps = getLayerPaintType(layer.layer);
       paintProps?.forEach(function (prop) {
-        const options = layer.duration ? { duration: layer.duration } : {};
-        if (layer.duration) {
-          const transitionProp = prop + '-transition';
-          map.setPaintProperty(layer.layer, transitionProp, options);
-        }
         map.setPaintProperty(layer.layer, prop, layer.opacity, options);
       });
     },
@@ -276,48 +223,12 @@ const Scroller = props => {
       }
 
       if (transition.location && !_.isEmpty(transition.location)) {
-        const mapCenter = map.getCenter();
-        const transitionCenter = transition.location.center;
-
-        // Check if the map is already at the transition center
-        const decimalPlaces = CURRENT_LOCATION_CHECK_PRESSISION;
-        const isInLocation =
-          mapCenter.lng.toFixed(decimalPlaces) ===
-            transitionCenter.lng.toFixed(decimalPlaces) &&
-          mapCenter.lat.toFixed(decimalPlaces) ===
-            transitionCenter.lat.toFixed(decimalPlaces);
-
-        if (!isInLocation) {
           map[animation || transition.mapAnimation || 'flyTo'](
             transition.location
           );
-
-          if (config.showMarkers) {
-            if (!marker) {
-              const newMarker = new mapboxgl.Marker({
-                color: config.markerColor,
-              })
-                .setLngLat(transition.location.center)
-                .addTo(map);
-
-              setMarker(newMarker);
-            } else {
-              marker.setLngLat(transition.location.center);
-            }
-          }
-        }
       }
       if (transition.onChapterEnter && transition.onChapterEnter.length > 0) {
         transition.onChapterEnter.forEach(setLayerOpacity);
-      }
-      if (transition.rotateAnimation) {
-        map.once('moveend', () => {
-          const rotateNumber = map.getBearing();
-          map.rotateTo(rotateNumber + 180, {
-            duration: ROTATION_DURATION,
-            easing: t => t,
-          });
-        });
       }
     },
     [map, config, marker, setLayerOpacity, animation]

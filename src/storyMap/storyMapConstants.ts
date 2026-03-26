@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-export const LAYER_TYPES = {
+export const LAYER_PAINT_TYPES = {
   fill: ['fill-opacity'],
   line: ['line-opacity'],
   circle: ['circle-opacity', 'circle-stroke-opacity'],
@@ -22,7 +22,9 @@ export const LAYER_TYPES = {
   raster: ['raster-opacity'],
   'fill-extrusion': ['fill-extrusion-opacity'],
   heatmap: ['heatmap-opacity'],
-};
+} as const;
+
+export type LayerPaintType = keyof typeof LAYER_PAINT_TYPES;
 
 export const ALIGNMENTS = {
   left: 'lefty',
@@ -33,3 +35,5 @@ export const ALIGNMENTS = {
 
 export const MEMBERSHIP_ROLE_EDITOR = 'editor';
 export const MEMBERSHIP_ROLE_OWNER = 'owner';
+
+export const STORY_MAP_TITLE_ID = 'story-map-title';

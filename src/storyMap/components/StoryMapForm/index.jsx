@@ -35,6 +35,7 @@ import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components
 import TitleForm from 'terraso-web-client/storyMap/components/StoryMapForm/TitleForm';
 import TopBar from 'terraso-web-client/storyMap/components/StoryMapForm/TopBar';
 import TopBarPreview from 'terraso-web-client/storyMap/components/StoryMapForm/TopBarPreview';
+import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 import { isChapterEmpty } from 'terraso-web-client/storyMap/storyMapUtils';
 
 import { STORY_MAP_AUTO_SAVE_DEBOUNCE } from 'terraso-web-client/config';
@@ -45,10 +46,7 @@ const BASE_CHAPTER = {
   alignment: 'left',
   title: '',
   description: '',
-  mapAnimation: 'flyTo',
-  rotateAnimation: false,
   onChapterEnter: [],
-  onChapterExit: [],
 };
 
 const Preview = props => {
@@ -151,7 +149,7 @@ const StoryMapForm = props => {
   // Focus on the title when the map is ready
   const onMapReady = useCallback(() => {
     const input = document
-      .getElementById('story-map-title')
+      .getElementById(STORY_MAP_TITLE_ID)
       .querySelector('input');
     input?.focus();
     init.current = true;

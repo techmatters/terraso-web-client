@@ -36,6 +36,7 @@ import {
 } from 'terraso-web-client/sharedData/sharedDataConstants';
 import StoryMapForm from 'terraso-web-client/storyMap/components/StoryMapForm/index';
 import { StoryMapConfigContextProvider } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 
 // Mock mapboxgl
 jest.mock('terraso-web-client/gis/mapbox', () => ({}));
@@ -665,7 +666,7 @@ test('StoryMapForm: Sidebar navigation', async () => {
   // Trigger on title
   await act(async () => {
     scroller.stepEnter({
-      element: document.querySelector('#story-map-title'),
+      element: document.querySelector(`#${STORY_MAP_TITLE_ID}`),
     });
   });
   expect(title).toHaveAttribute('aria-current', 'step');

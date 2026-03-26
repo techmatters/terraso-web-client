@@ -426,6 +426,8 @@ const Map = forwardRef((props, ref) => {
     map.touchZoomRotate.enableRotation();
     map.dragPan.enable();
     map.dragRotate.enable();
+    map.doubleClickZoom.enable();
+    map.scrollZoom.enable();
 
     if (disableRotation) {
       // disable map rotation using right click + drag
@@ -456,11 +458,7 @@ const Map = forwardRef((props, ref) => {
   }, [map, onBoundsChange]);
 
   useEffect(() => {
-    if (
-      !map ||
-      !mapContainer.current ||
-      typeof ResizeObserver === 'undefined'
-    ) {
+    if (!map || typeof ResizeObserver === 'undefined') {
       return;
     }
 
@@ -468,7 +466,7 @@ const Map = forwardRef((props, ref) => {
       map.resize();
     });
 
-    observer.observe(mapContainer.current);
+    observer.observe(map.getContainer());
 
     return () => {
       observer.disconnect();

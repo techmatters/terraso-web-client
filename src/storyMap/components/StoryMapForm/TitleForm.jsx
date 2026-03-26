@@ -29,6 +29,7 @@ import EditableText from 'terraso-web-client/storyMap/components/StoryMapForm/Ed
 import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
 import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutline';
+import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 
 const TitleForm = props => {
   const { t } = useTranslation();
@@ -66,8 +67,8 @@ const TitleForm = props => {
   const onDataLayerChange = useCallback(
     dataLayerConfig => {
       const baseEvents = dataLayerConfig
-        ? LAYER_TYPES.map(name => ({
-            layer: `${dataLayerConfig.id}-${name}`,
+        ? Object.values(LAYER_TYPES).map(name => ({
+            layer: generateLayerId(dataLayerConfig.id, name),
             opacity: getLayerOpacity(name, dataLayerConfig),
             duration: 0,
           }))
@@ -118,7 +119,7 @@ const TitleForm = props => {
 
   return (
     <Box
-      id="story-map-title"
+      id={STORY_MAP_TITLE_ID}
       className="step active title"
       component="section"
       aria-label={t('storyMap.view_title_label', {
