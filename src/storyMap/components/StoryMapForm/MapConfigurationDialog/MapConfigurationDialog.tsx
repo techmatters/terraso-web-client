@@ -338,11 +338,12 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   return (
     <CollaborationContextProvider owner={storyMap} entityType="story_map">
       <Dialog
-        fullScreen
         open={open}
         onClose={handleCancel}
         aria-labelledby="map-location-dialog-title"
         aria-describedby="map-location-dialog-content-text"
+        maxWidth="sm"
+        fullWidth
       >
         <Stack direction="row" justifyContent="space-between">
           <Stack>
@@ -394,7 +395,6 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
           <Map
             ref={mapRef}
             use3dTerrain
-            height="100%"
             initialLocation={initialLocation}
             projection={config.projection}
             mapStyle={config.style}
