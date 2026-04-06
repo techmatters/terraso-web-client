@@ -33,6 +33,7 @@ import DropZone from 'terraso-web-client/common/components/DropZone';
 import { openFile } from 'terraso-web-client/common/fileUtils';
 
 import {
+  STORY_MAP_FEATURED_IMAGE_RECOMMENDED_DIMENSIONS,
   STORY_MAP_IMAGE_ACCEPTED_EXTENSIONS,
   STORY_MAP_IMAGE_ACCEPTED_TYPES,
   STORY_MAP_MEDIA_MAX_SIZE,
@@ -199,6 +200,10 @@ const FeaturedImageDialog = props => {
             </Box>
           ) : (
             <DropZone
+              caption={t(
+                'storyMap.form_featured_image_recommended_dimensions',
+                STORY_MAP_FEATURED_IMAGE_RECOMMENDED_DIMENSIONS
+              )}
               errors={error ? [error] : null}
               fileTypes={STORY_MAP_IMAGE_ACCEPTED_TYPES}
               fileExtensions={STORY_MAP_IMAGE_ACCEPTED_EXTENSIONS}
