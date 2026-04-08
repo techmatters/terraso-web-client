@@ -57,6 +57,7 @@ export const createMapMock = (overrides = {}) => ({
     disableRotation: jest.fn(),
   },
   touchPitch: { enable: jest.fn(), disable: jest.fn() },
+  resize: jest.fn(),
   ...overrides,
 });
 

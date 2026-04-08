@@ -249,6 +249,23 @@ const BASE_CONFIG = {
   ],
 };
 
+const OriginalResizeObserver = global.ResizeObserver;
+beforeAll(() => {
+  global.ResizeObserver = class {
+    constructor(cb) {
+      this.cb = cb;
+    }
+    observe() {
+      this.cb([{ contentBoxSize: [{ blockSize: 600, inlineSize: 1200 }] }]);
+    }
+    unobserve() {}
+    disconnect() {}
+  };
+});
+afterAll(() => {
+  global.ResizeObserver = OriginalResizeObserver;
+});
+
 beforeEach(() => {
   global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
   mapboxgl.LngLatBounds = jest.fn();
@@ -652,6 +669,9 @@ test('StoryMapForm: Sidebar navigation', async () => {
   expect(map.flyTo).toHaveBeenCalledTimes(0);
 
   // Trigger on chapter 2
+  await waitFor(() =>
+    expect(document.querySelector('#chapter-2')).toBeInTheDocument()
+  );
   await act(async () => {
     scroller.stepEnter({
       element: document.querySelector('#chapter-2'),
@@ -808,6 +828,12 @@ test('StoryMapForm: Change chapter location', async () => {
     getZoom: () => 10,
     getPitch: () => 64,
     getBearing: () => 45,
+    getBounds: jest.fn().mockReturnValue({
+      toArray: () => [
+        [-180, -90],
+        [180, 90],
+      ],
+    }),
   };
   mapboxgl.Map.mockReturnValue(map);
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
@@ -844,6 +870,7 @@ test('StoryMapForm: Change chapter location', async () => {
     expect.objectContaining({
       location: {
         bearing: 45,
+        bounds: [-180, -90, 180, 90],
         center: {
           lat: -0.2294635049867253,
           lng: -78.54414857836304,
@@ -862,6 +889,12 @@ test('StoryMapForm: Change chapter style', async () => {
     getZoom: () => 10,
     getPitch: () => 64,
     getBearing: () => 45,
+    getBounds: jest.fn().mockReturnValue({
+      toArray: () => [
+        [-180, -90],
+        [180, 90],
+      ],
+    }),
   };
   mapboxgl.Map.mockReturnValue(map);
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
@@ -910,6 +943,12 @@ test('StoryMapForm: Add map layer', async () => {
     getZoom: () => 10,
     getPitch: () => 64,
     getBearing: () => 45,
+    getBounds: jest.fn().mockReturnValue({
+      toArray: () => [
+        [-180, -90],
+        [180, 90],
+      ],
+    }),
   };
   mapboxgl.Map.mockReturnValue(map);
 
@@ -1287,6 +1326,9 @@ test('StoryMapForm: Keep map on chapter change', async () => {
   await waitFor(() => expect(scrollama).toHaveBeenCalled());
 
   // Go to chapter 1
+  await waitFor(() =>
+    expect(document.querySelector('#chapter-1')).toBeInTheDocument()
+  );
   await act(async () =>
     scroller.stepEnter({
       element: document.querySelector('#chapter-1'),
@@ -1294,6 +1336,9 @@ test('StoryMapForm: Keep map on chapter change', async () => {
   );
 
   // Go to chapter 2
+  await waitFor(() =>
+    expect(document.querySelector('#chapter-2')).toBeInTheDocument()
+  );
   await act(async () =>
     scroller.stepEnter({
       element: document.querySelector('#chapter-2'),
@@ -1309,14 +1354,12 @@ test('StoryMapForm: Keep map on chapter change', async () => {
   await expect(map.setPaintProperty).toHaveBeenCalledWith(
     'layer1',
     'fill-opacity',
-    1,
-    {}
+    1
   );
   await expect(map.setPaintProperty).not.toHaveBeenCalledWith(
     'layer1',
     'fill-opacity',
-    0,
-    {}
+    0
   );
 
   // Go to chapter 1
@@ -1335,14 +1378,12 @@ test('StoryMapForm: Keep map on chapter change', async () => {
   await expect(map.setPaintProperty).toHaveBeenCalledWith(
     'layer1',
     'fill-opacity',
-    1,
-    {}
+    1
   );
   await expect(map.setPaintProperty).not.toHaveBeenCalledWith(
     'layer1',
     'fill-opacity',
-    0,
-    {}
+    0
   );
 });
 
