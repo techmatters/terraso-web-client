@@ -45,11 +45,15 @@ export type MapPosition = {
 export type LayerConfig = {
   layer: string;
   opacity: number;
+  duration?: number;
 };
 
 export type Transition = {
   location: MapPosition;
+  rotateAnimation?: boolean;
+  mapAnimation?: 'flyTo' | 'easeTo';
   onChapterEnter?: LayerConfig[];
+  onChapterExit?: LayerConfig[];
 };
 
 export type ChapterAlignment = 'left' | 'right' | 'center';
