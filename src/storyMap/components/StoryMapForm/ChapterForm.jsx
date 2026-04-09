@@ -34,7 +34,6 @@ import {
 import { withProps } from 'terraso-web-client/react-hoc';
 
 import {
-  generateLayerId,
   getLayerOpacity,
   LAYER_TYPES,
 } from 'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer';
@@ -201,8 +200,8 @@ const ChapterForm = ({ theme, record }) => {
   const onDataLayerChange = useCallback(
     dataLayerConfig => {
       const baseEvents = dataLayerConfig
-        ? Object.values(LAYER_TYPES).map(name => ({
-            layer: generateLayerId(dataLayerConfig.id, name),
+        ? LAYER_TYPES.map(name => ({
+            layer: `${dataLayerConfig.id}-${name}`,
             opacity: getLayerOpacity(name, dataLayerConfig),
             duration: 0,
           }))

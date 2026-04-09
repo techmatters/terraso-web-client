@@ -15,17 +15,29 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckIcon from '@mui/icons-material/Check';
 import ErrorIcon from '@mui/icons-material/Error';
-import SettingsIcon from '@mui/icons-material/Settings';
 import SyncIcon from '@mui/icons-material/Sync';
-import { Button, Grid, IconButton, Stack, Typography } from '@mui/material';
+import {
+  Button,
+  Divider,
+  Grid,
+  Link,
+  Menu,
+  MenuItem,
+  Stack,
+  Typography,
+} from '@mui/material';
 
 import RouterLink from 'terraso-web-client/common/components/RouterLink';
+import ShareDialog from 'terraso-web-client/storyMap/components/StoryMapForm/ShareDialog';
 import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import TopBarContainer from 'terraso-web-client/storyMap/components/StoryMapForm/TopBarContainer';
+import { generateStoryMapUrl } from 'terraso-web-client/storyMap/storyMapUtils';
 
 const SAVE_STATUS = {
   saving: {
@@ -66,16 +78,81 @@ const SaveStatus = props => {
   );
 };
 
+const ActionsMenu = () => {
+  const { t } = useTranslation();
+  const { storyMap, setPreview } = useStoryMapConfigContext();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openShareDialog, setOpenShareDialog] = useState(false);
+
+  const open = Boolean(anchorEl);
+
+  const handleClick = event => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <>
+      {storyMap && (
+        <ShareDialog
+          open={openShareDialog}
+          onClose={() => setOpenShareDialog(false)}
+        />
+      )}
+      <Button
+        id="actions-menu-button"
+        aria-controls={open ? 'actions-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
+        variant="outlined"
+        disableElevation
+        onClick={handleClick}
+        endIcon={<ArrowDropDownIcon />}
+      >
+        {t('storyMap.form_actions_button')}
+      </Button>
+      <Menu
+        id="actions-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        slotProps={{
+          list: {
+            'aria-labelledby': 'actions-menu-button',
+          },
+        }}
+      >
+        <MenuItem dense onClick={() => setPreview(true)}>
+          {t('storyMap.form_preview_button')}
+        </MenuItem>
+        <Divider />
+        {storyMap?.publishedAt && (
+          <MenuItem
+            dense
+            component={Link}
+            href={generateStoryMapUrl(storyMap)}
+            target="_blank"
+          >
+            {t('storyMap.form_view_published_button')}
+          </MenuItem>
+        )}
+        {storyMap?.publishedAt && <Divider />}
+        {storyMap && (
+          <MenuItem dense onClick={() => setOpenShareDialog(true)}>
+            {t('storyMap.form_share_button')}
+          </MenuItem>
+        )}
+      </Menu>
+    </>
+  );
+};
+
 const TopBar = props => {
   const { t } = useTranslation();
   const { storyMap, config } = useStoryMapConfigContext();
-  const {
-    onPublish,
-    isDirty,
-    requestStatus,
-    onToggleRightSidebar,
-    isRightSidebarOpen,
-  } = props;
+  const { onPublish, isDirty, requestStatus } = props;
 
   const isPublished = storyMap?.isPublished;
 
@@ -117,6 +194,7 @@ const TopBar = props => {
           }}
         >
           <SaveStatus isDirty={isDirty} requestStatus={requestStatus} />
+          <ActionsMenu />
           <Button
             variant="contained"
             color="primary"
@@ -127,16 +205,6 @@ const TopBar = props => {
               ? t('storyMap.form_republish_button')
               : t('storyMap.form_publish_button')}
           </Button>
-          <IconButton
-            aria-label={
-              isRightSidebarOpen
-                ? t('storyMap.form_right_sidebar_close')
-                : t('storyMap.form_right_sidebar_open')
-            }
-            onClick={onToggleRightSidebar}
-          >
-            <SettingsIcon />
-          </IconButton>
         </Stack>
       </Grid>
     </TopBarContainer>

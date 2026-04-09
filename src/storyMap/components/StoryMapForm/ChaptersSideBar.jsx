@@ -39,7 +39,8 @@ import { withProps } from 'terraso-web-client/react-hoc';
 
 import ConfirmMenuItem from 'terraso-web-client/common/components/ConfirmMenuItem';
 import StrictModeDroppable from 'terraso-web-client/common/components/StrictModeDroppable';
-import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
+import FeaturedImage from 'terraso-web-client/storyMap/components/StoryMapForm/FeaturedImage';
+import ShortDescription from 'terraso-web-client/storyMap/components/StoryMapForm/ShortDescription';
 
 import dragIcon from 'terraso-web-client/assets/drag-icon.svg';
 
@@ -230,7 +231,6 @@ const SideBarItem = props => {
                             name: item.label,
                           }
                         )}
-                        confirmButtonDestructive
                         tooltip={t(
                           'storyMap.form_delete_chapter_confirm_button_tooltip',
                           {
@@ -287,8 +287,8 @@ const ChaptersSidebar = props => {
   const titleItem = useMemo(
     () => ({
       label: `${t('storyMap.form_title_chapter_label')}`,
-      id: STORY_MAP_TITLE_ID,
-      active: currentStepId === STORY_MAP_TITLE_ID,
+      id: 'story-map-title',
+      active: currentStepId === 'story-map-title',
       index: 'T',
     }),
     [currentStepId, t]
@@ -355,14 +355,13 @@ const ChaptersSidebar = props => {
         height,
         overflow: 'auto',
         width: '200px',
-        minWidth: '200px',
-        flexShrink: 0,
         display: 'flex',
         alignItems: 'stretch',
         flexDirection: 'column',
-        pt: 2,
       }}
     >
+      <FeaturedImage />
+      <ShortDescription />
       <SideBarItem item={titleItem} />
       <DragDropContext
         onDragEnd={onDragEnd}

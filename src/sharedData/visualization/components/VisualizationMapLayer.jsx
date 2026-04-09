@@ -28,15 +28,7 @@ import { getLayerImage } from 'terraso-web-client/sharedData/visualization/visua
 
 const DEFAULT_MARKER_OPACITY = 1;
 
-export const LAYER_TYPES = {
-  MARKERS: 'markers',
-  POLYGONS_OUTLINE: 'polygons-outline',
-  POLYGONS_FILL: 'polygons-fill',
-};
-
-export const generateLayerId = (layerId, layerType) => {
-  return `${layerId}-${layerType}`;
-};
+export const LAYER_TYPES = ['markers', 'polygons-outline', 'polygons-fill'];
 
 // Opacity range between 0 - 100
 export const getLayerOpacity = (type, visualizationConfig) => {
@@ -396,20 +388,17 @@ const MapboxLayer = props => {
     <>
       {layer && (
         <Layer
-          id={generateLayerId(sourceName, LAYER_TYPES.MARKERS)}
+          id={`${sourceName}-markers`}
           layer={layer}
           images={layerImages}
           events={layerEvents}
         />
       )}
       <Layer
-        id={generateLayerId(sourceName, LAYER_TYPES.POLYGONS_OUTLINE)}
+        id={`${sourceName}-polygons-outline`}
         layer={layerPolygonOutline}
       />
-      <Layer
-        id={generateLayerId(sourceName, LAYER_TYPES.POLYGONS_FILL)}
-        layer={layerPolygonFill}
-      />
+      <Layer id={`${sourceName}-polygons-fill`} layer={layerPolygonFill} />
       <Portal container={popupContainer}>
         {popupData?.data && <MarkerPopupContent data={popupData.data} />}
       </Portal>

@@ -157,7 +157,6 @@ const PendingApprovals = props => {
                   confirmButton={t(
                     'collaboration.members_list_pending_confirmation_button'
                   )}
-                  confirmButtonDestructive
                   buttonLabel={t('collaboration.members_list_pending_reject')}
                   loading={membership.fetching}
                 />

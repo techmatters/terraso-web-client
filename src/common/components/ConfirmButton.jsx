@@ -26,7 +26,6 @@ const ConfirmButton = props => {
     confirmTitle,
     confirmMessage,
     confirmButton,
-    confirmButtonDestructive,
     buttonLabel,
     ariaLabel,
     loading,
@@ -60,7 +59,6 @@ const ConfirmButton = props => {
         title={confirmTitle}
         message={confirmMessage}
         confirmButtonLabel={confirmButton}
-        confirmButtonDestructive={confirmButtonDestructive}
         onCancel={onCancel}
         onConfirm={onConfirm}
         loading={loading}

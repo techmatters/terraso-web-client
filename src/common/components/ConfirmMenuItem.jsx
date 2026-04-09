@@ -22,14 +22,8 @@ import ConfirmationDialog from 'terraso-web-client/common/components/Confirmatio
 
 const ConfirmMenuItem = props => {
   const [openConfirmation, setOpenConfirmation] = useState(false);
-  const {
-    confirmTitle,
-    confirmMessage,
-    confirmButton,
-    confirmButtonDestructive,
-    onConfirm,
-    children,
-  } = props;
+  const { confirmTitle, confirmMessage, confirmButton, onConfirm, children } =
+    props;
 
   const onClick = useCallback(event => {
     setOpenConfirmation(true);
@@ -48,7 +42,6 @@ const ConfirmMenuItem = props => {
         title={confirmTitle}
         message={confirmMessage}
         confirmButtonLabel={confirmButton}
-        confirmButtonDestructive={confirmButtonDestructive}
         onCancel={onCancel}
         onConfirm={onConfirm}
       />

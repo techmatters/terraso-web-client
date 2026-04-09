@@ -38,7 +38,6 @@ const ConfirmationDialog = props => {
     onCancel,
     open,
     loading,
-    confirmButtonDestructive,
   } = props;
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -79,12 +78,7 @@ const ConfirmationDialog = props => {
           {t('common.dialog_cancel_label')}
         </Button>
 
-        <Button
-          variant="contained"
-          color={confirmButtonDestructive ? 'error' : 'primary'}
-          onClick={onConfirm}
-          loading={loading}
-        >
+        <Button variant="contained" onClick={onConfirm} loading={loading}>
           {confirmButtonLabel}
         </Button>
       </DialogActions>

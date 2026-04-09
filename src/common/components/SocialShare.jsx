@@ -38,7 +38,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useCopy } from 'terraso-web-client/custom-hooks';
 
 import CopyLink from 'terraso-web-client/common/components/CopyLink';
-import { createAbsoluteUrl } from 'terraso-web-client/common/utils/urlUtils';
 import { useShareEvent } from 'terraso-web-client/monitoring/events';
 
 import theme from 'terraso-web-client/theme';
@@ -266,13 +265,10 @@ const SocialShare = props => {
   const { t } = useTranslation();
   const { onShare } = useShareEvent();
   const { socialShareProps } = useContext(SocialShareContext);
-  const { name, pageUrl: contextPageUrl } = socialShareProps;
+  const { name } = socialShareProps;
   const [open, setOpen] = useState(false);
 
-  const pageUrl = useMemo(
-    () => createAbsoluteUrl(contextPageUrl),
-    [contextPageUrl]
-  );
+  const pageUrl = useMemo(() => window.location, []);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {

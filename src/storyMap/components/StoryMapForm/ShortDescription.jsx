@@ -17,8 +17,7 @@
 
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import { Button, Stack, Typography } from '@mui/material';
+import { Link, Stack, Typography } from '@mui/material';
 
 import ShortDescriptionDialog from 'terraso-web-client/storyMap/components/StoryMapForm/ShortDescriptionDialog';
 import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
@@ -57,28 +56,22 @@ const ShortDescription = () => {
 
   return (
     <>
-      <Stack spacing={1}>
+      <Stack sx={{ m: 1, mb: 2 }} spacing={1}>
         {config.description && (
           <Typography variant="body2" sx={DESCRIPTION_STYLES}>
             {config.description}
           </Typography>
         )}
-        <Button
+        <Link
+          component="button"
           variant="text"
-          size="small"
-          startIcon={<EditOutlinedIcon />}
           onClick={handleOpenDialog}
-          sx={{
-            justifyContent: 'flex-start',
-            px: 0,
-            fontSize: 16,
-            fontWeight: 400,
-          }}
+          sx={{ textAlign: 'left' }}
         >
           {config.description
             ? t('storyMap.form_short_description_edit_link')
             : t('storyMap.form_short_description_button')}
-        </Button>
+        </Link>
       </Stack>
 
       <ShortDescriptionDialog

@@ -17,7 +17,6 @@
 
 import { useRef } from 'react';
 import { Box } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery';
 
 import AppBar from 'terraso-web-client/layout/AppBar';
 import Footer from 'terraso-web-client/layout/Footer';
@@ -25,8 +24,6 @@ import Navigation from 'terraso-web-client/navigation/components/Navigation';
 import Routes, {
   usePathParams,
 } from 'terraso-web-client/navigation/components/Routes';
-
-import theme from 'terraso-web-client/theme';
 
 import 'terraso-web-client/index.css';
 
@@ -36,8 +33,8 @@ import OptionalAuthTopMessage from 'terraso-web-client/account/components/Option
 
 const App = () => {
   const contentRef = useRef();
+  const navigationRef = useRef();
   const { isEmbedded, optionalAuth } = usePathParams();
-  const useSecondRowNavigation = useMediaQuery(theme.breakpoints.down('md'));
 
   if (isEmbedded || optionalAuth.isEmbedded) {
     return <Routes />;
@@ -54,8 +51,8 @@ const App = () => {
         }}
       >
         <Box id="header-container">
-          <AppBar showInlineNavigation={!useSecondRowNavigation} />
-          {useSecondRowNavigation && <Navigation />}
+          <AppBar />
+          <Navigation ref={navigationRef} />
         </Box>
         <Box
           component="main"

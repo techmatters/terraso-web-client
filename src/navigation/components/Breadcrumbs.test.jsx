@@ -95,6 +95,10 @@ test('Breadcrumbs: Story map only displays once', async () => {
     'href',
     '/'
   );
+  expect(screen.getByRole('link', { name: 'Tools' })).toHaveAttribute(
+    'href',
+    '/tools'
+  );
   expect(
     screen.getByRole('link', { name: 'Terraso Story Maps' })
   ).toHaveAttribute('href', '/tools/story-maps');

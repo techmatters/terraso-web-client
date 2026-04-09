@@ -15,9 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
 
+import RouterLink from 'terraso-web-client/common/components/RouterLink';
 import HomeCard from 'terraso-web-client/home/components/HomeCard';
 
 import storyMapImage from 'terraso-web-client/assets/tools/story-maps.png';
@@ -27,7 +28,7 @@ const StoryMapsHomeCardDefault = () => {
 
   return (
     <HomeCard
-      title={t('storyMap.tool_home_title')}
+      title={t('storyMap.home_title')}
       titleId="story-maps-default-title"
       action={{
         label: t('storyMap.home_create'),
@@ -42,9 +43,18 @@ const StoryMapsHomeCardDefault = () => {
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', pr: 1 }}>
-        <Typography variant="body1">
-          {t('storyMap.home_default_description')}
-        </Typography>
+        <Trans i18nKey="storyMap.home_default_description">
+          <Typography variant="body1">
+            Prefix
+            <RouterLink
+              to="/tools/story-maps"
+              sx={{ textDecoration: 'underline' }}
+            >
+              Inspired
+            </RouterLink>
+            .
+          </Typography>
+        </Trans>
       </Box>
     </HomeCard>
   );

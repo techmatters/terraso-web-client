@@ -164,7 +164,6 @@ const VisualizationWrapper = props => {
                     }
                   )}
                   confirmButton={t('sharedData.visualization_confirm_delete')}
-                  confirmButtonDestructive
                   buttonLabel={t('sharedData.visualization_delete')}
                   buttonProps={{ sx: { mb: 2 } }}
                   loading={deleting}

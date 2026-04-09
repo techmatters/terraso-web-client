@@ -15,28 +15,44 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Box, Typography } from '@mui/material';
 
+import RouterLink from 'terraso-web-client/common/components/RouterLink';
 import HomeCard from 'terraso-web-client/home/components/HomeCard';
+
+import groupsImage from 'terraso-web-client/assets/groups.png';
 
 const GroupDefaultHomeCard = () => {
   const { t } = useTranslation();
 
   return (
     <HomeCard
-      title={t('group.home_default_card_title')}
+      title={t('group.home_default_title')}
       titleId="groups-default-title"
       action={{
         label: t('group.default_connect_button'),
         to: '/groups',
       }}
-      showActionAsButton
+      image={{
+        src: groupsImage,
+        to: '/groups',
+      }}
     >
       <Box display="flex" alignItems="center">
-        <Typography variant="body1" sx={{ mr: 1 }}>
-          {t('group.default_content')}
-        </Typography>
+        <Trans i18nKey="group.default_content">
+          <Typography variant="body1" sx={{ mr: 1 }}>
+            Prefix
+            <RouterLink to="/groups" sx={{ textDecoration: 'underline' }}>
+              Find
+            </RouterLink>
+            or
+            <RouterLink to="/groups/new" sx={{ textDecoration: 'underline' }}>
+              Start
+            </RouterLink>
+            .
+          </Typography>
+        </Trans>
       </Box>
     </HomeCard>
   );

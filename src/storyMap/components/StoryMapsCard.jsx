@@ -256,62 +256,30 @@ const StoryMapListItem = props => {
   );
 };
 
-const StoryMapsCard = ({
-  title,
-  storyMaps,
-  showCreate = true,
-  maxVisibleStoryMaps,
-}) => {
+const StoryMapsCard = ({ title, storyMaps, showCreate = true }) => {
   const { t } = useTranslation();
-  const visibleStoryMaps = useMemo(() => {
-    if (maxVisibleStoryMaps == null) {
-      return storyMaps;
-    }
-
-    return storyMaps.slice(0, maxVisibleStoryMaps);
-  }, [storyMaps, maxVisibleStoryMaps]);
-  const action = useMemo(() => {
-    if (!showCreate) {
-      return null;
-    }
-
-    return {
-      label: t('storyMap.home_my_story_maps'),
-      to: '/tools/story-maps',
-    };
-  }, [t, showCreate]);
+  const action = useMemo(
+    () =>
+      showCreate && {
+        label: t('storyMap.home_create'),
+        to: 'tools/story-maps/new',
+        pathState: { source: 'home_page' },
+      },
+    [t, showCreate]
+  );
 
   return (
     <HomeCard
       title={title}
       titleId="story-maps-list-title"
       action={action}
-      showActionAsButton
       contentBackgroundColor="white"
     >
-      <Stack direction="column" sx={{ width: '100%' }}>
-        <Typography sx={{ pb: 2 }}>
-          {t('storyMap.home_default_description')}
-        </Typography>
-        {showCreate && (
-          <Box sx={{ pb: 2 }}>
-            <RouterButton
-              variant="contained"
-              size="medium"
-              to="/tools/story-maps/new"
-              state={{ source: 'home_page' }}
-              sx={{ color: 'white' }}
-            >
-              {t('storyMap.home_create')}
-            </RouterButton>
-          </Box>
-        )}
-        <List aria-labelledby="story-maps-list-title" sx={{ width: '100%' }}>
-          {visibleStoryMaps.map(storyMap => (
-            <StoryMapListItem key={storyMap.id} storyMap={storyMap} />
-          ))}
-        </List>
-      </Stack>
+      <List aria-labelledby="story-maps-list-title" sx={{ width: '100%' }}>
+        {storyMaps.map(storyMap => (
+          <StoryMapListItem key={storyMap.id} storyMap={storyMap} />
+        ))}
+      </List>
     </HomeCard>
   );
 };

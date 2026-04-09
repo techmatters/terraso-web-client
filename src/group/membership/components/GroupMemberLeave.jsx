@@ -34,7 +34,6 @@ const GroupMemberLeave = props => {
         name: _.get('name', owner),
       })}
       confirmButton={t('group.membership_leave_confirm_button')}
-      confirmButtonDestructive
       buttonLabel={t(label)}
       ariaLabel={t('group.list_leave_label', {
         name: _.get('name', owner),

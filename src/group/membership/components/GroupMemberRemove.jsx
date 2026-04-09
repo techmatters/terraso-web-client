@@ -32,7 +32,6 @@ const GroupMemberRemove = props => {
         name: _.get('name', owner),
       })}
       confirmButton={t('group.members_remove_confirmation_button')}
-      confirmButtonDestructive
       buttonLabel={t('group.members_list_remove')}
       buttonProps={buttonProps}
       loading={loading}

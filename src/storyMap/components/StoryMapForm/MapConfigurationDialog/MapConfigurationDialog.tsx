@@ -47,7 +47,6 @@ import { MapLayerDialog } from 'terraso-web-client/storyMap/components/StoryMapF
 import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { StoryMapLayer } from 'terraso-web-client/storyMap/components/StoryMapLayer';
 import {
-  MapBounds,
   MapLayerConfig,
   MapPosition,
   StoryMapConfig,
@@ -216,7 +215,7 @@ const MapLocationChange = ({ onPositionChange }: MapLocationChangeProps) => {
         zoom: map.getZoom(),
         pitch: map.getPitch(),
         bearing: map.getBearing(),
-        bounds: _.flatten(map.getBounds().toArray()) as MapBounds,
+        bounds: map.getBounds(),
       });
     };
     map.on('load', updatePosition);
@@ -252,7 +251,6 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   const [mapZoom, setMapZoom] = useState(location?.zoom);
   const [mapPitch, setMapPitch] = useState(location?.pitch);
   const [mapBearing, setMapBearing] = useState(location?.bearing);
-  const [mapBounds, setMapBounds] = useState(location?.bounds);
   const [mapStyle, setMapStyle] = useState<string | undefined>();
   const [changeBounds, setChangeBounds] = useState(false);
   const [mapLayerConfig, setMapLayerConfig] = useState(props.mapLayerConfig);
@@ -292,7 +290,6 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
       zoom: mapZoom,
       pitch: mapPitch,
       bearing: mapBearing,
-      bounds: mapBounds,
     });
     onConfirm({
       location,
@@ -305,7 +302,6 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     mapZoom,
     mapPitch,
     mapBearing,
-    mapBounds,
     mapStyle,
     config.style,
     mapLayerConfig,
@@ -320,7 +316,6 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     setMapZoom(position.zoom);
     setMapPitch(position.pitch);
     setMapBearing(position.bearing);
-    setMapBounds(position.bounds);
   }, []);
 
   const onStyleChange = useCallback(
@@ -338,12 +333,11 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   return (
     <CollaborationContextProvider owner={storyMap} entityType="story_map">
       <Dialog
+        fullScreen
         open={open}
         onClose={handleCancel}
         aria-labelledby="map-location-dialog-title"
         aria-describedby="map-location-dialog-content-text"
-        maxWidth="sm"
-        fullWidth
       >
         <Stack direction="row" justifyContent="space-between">
           <Stack>
@@ -395,6 +389,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
           <Map
             ref={mapRef}
             use3dTerrain
+            height="100%"
             initialLocation={initialLocation}
             projection={config.projection}
             mapStyle={config.style}

@@ -245,7 +245,6 @@ const ProfileImage = props => {
                     confirmButton={t(
                       'landscape.profile_image_delete_confirm_button'
                     )}
-                    confirmButtonDestructive
                   >
                     <DeleteIcon sx={{ color: 'white' }} />
                   </ConfirmButton>

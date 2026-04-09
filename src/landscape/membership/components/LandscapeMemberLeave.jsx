@@ -34,7 +34,6 @@ const LandscapeMemberLeave = props => {
         name: _.get('name', owner),
       })}
       confirmButton={t('landscape.membership_leave_confirm_button')}
-      confirmButtonDestructive
       buttonLabel={t(label)}
       ariaLabel={t('landscape.list_leave_label', {
         name: _.get('name', owner),

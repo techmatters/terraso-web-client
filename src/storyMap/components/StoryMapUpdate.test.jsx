@@ -186,12 +186,11 @@ test('StoryMapUpdate: Show Share Dialog', async () => {
   });
   await setup({ id: API_STORY_MAP.createdBy.id });
 
-  const rightSidebar = screen.getByRole('complementary', {
-    name: 'Right sidebar',
+  await act(() => {
+    fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
   });
-  const shareButton = within(rightSidebar).getByRole('button', {
-    name: 'Invite editor',
-  });
+
+  const shareButton = screen.getByRole('menuitem', { name: 'Invite editors' });
   await act(async () => fireEvent.click(shareButton));
 
   expect(
@@ -258,12 +257,11 @@ test('StoryMapUpdate: Share Dialog invite members', async () => {
 
   await setup({ id: API_STORY_MAP.createdBy.id });
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
-  const rightSidebar = screen.getByRole('complementary', {
-    name: 'Right sidebar',
+
+  await act(() => {
+    fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
   });
-  const shareButton = within(rightSidebar).getByRole('button', {
-    name: 'Invite editor',
-  });
+  const shareButton = screen.getByRole('menuitem', { name: 'Invite editors' });
   await act(async () => fireEvent.click(shareButton));
 
   const inviteButton = within(
@@ -324,12 +322,11 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
 
   await setup({ id: API_STORY_MAP.createdBy.id });
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
-  const rightSidebar = screen.getByRole('complementary', {
-    name: 'Right sidebar',
+
+  await act(() => {
+    fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
   });
-  const shareButton = within(rightSidebar).getByRole('button', {
-    name: 'Invite editor',
-  });
+  const shareButton = screen.getByRole('menuitem', { name: 'Invite editors' });
   await act(async () => fireEvent.click(shareButton));
 
   const removeButton = within(
@@ -390,12 +387,11 @@ test('StoryMapUpdate: See story map as editor', async () => {
   expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
 
   expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
-  const rightSidebar = screen.getByRole('complementary', {
-    name: 'Right sidebar',
+
+  await act(() => {
+    fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
   });
-  const shareButton = within(rightSidebar).getByRole('button', {
-    name: 'Invite editor',
-  });
+  const shareButton = screen.getByRole('menuitem', { name: 'Invite editors' });
   await act(async () => fireEvent.click(shareButton));
 
   const membersList = screen.getByRole('list', { name: 'People with access' });

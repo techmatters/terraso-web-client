@@ -164,7 +164,6 @@ const RemoveButton = props => {
       <ConfirmButton
         onConfirm={onRemoveWrapper}
         loading={processing}
-        confirmButtonDestructive
         buttonProps={{
           tabIndex,
         }}
@@ -187,10 +186,8 @@ const ShareDialog = props => {
   const [expanded, setExpanded] = React.useState(false);
 
   useEffect(() => {
-    if (storyMap) {
-      setExpanded(!_.isEmpty(storyMap.memberships));
-    }
-  }, [storyMap]);
+    setExpanded(!_.isEmpty(storyMap.memberships));
+  }, [storyMap.memberships]);
 
   const onChange = useCallback(
     value => {
@@ -200,9 +197,6 @@ const ShareDialog = props => {
   );
 
   const onConfirm = useCallback(() => {
-    if (!storyMap) {
-      return;
-    }
     dispatch(
       addMemberships({
         storyMap,
@@ -225,23 +219,16 @@ const ShareDialog = props => {
   }, [dispatch, trackEvent, onClose, storyMap, newEditors]);
 
   const memberships = useMemo(
-    () =>
-      storyMap
-        ? [
-            {
-              id: 'owner-user-membership',
-              user: storyMap.createdBy,
-              userRole: MEMBERSHIP_ROLE_OWNER,
-            },
-            ...storyMap.memberships,
-          ]
-        : [],
-    [storyMap]
+    () => [
+      {
+        id: 'owner-user-membership',
+        user: storyMap.createdBy,
+        userRole: MEMBERSHIP_ROLE_OWNER,
+      },
+      ...storyMap.memberships,
+    ],
+    [storyMap.memberships, storyMap.createdBy]
   );
-
-  if (!storyMap) {
-    return null;
-  }
 
   return (
     <Dialog fullWidth maxWidth="md" open={open} onClose={onClose}>

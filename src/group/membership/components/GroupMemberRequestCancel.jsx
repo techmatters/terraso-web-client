@@ -34,7 +34,6 @@ const GroupMemberRequestCancel = props => {
         name: _.get('name', owner),
       })}
       confirmButton={t('group.membership_request_cancel_confirm_button')}
-      confirmButtonDestructive
       buttonLabel={t(label)}
       ariaLabel={t('group.list_request_cancel_label', {
         name: _.get('name', owner),

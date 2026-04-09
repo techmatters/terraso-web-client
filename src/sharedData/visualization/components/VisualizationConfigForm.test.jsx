@@ -27,7 +27,6 @@ import {
 import { useParams } from 'react-router';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { mockTerrasoAPIrequestGraphQL } from 'terraso-web-client/tests/apiUtils';
-import { createMapMock } from 'terraso-web-client/tests/mapboxMock';
 
 import mapboxgl from 'terraso-web-client/gis/mapbox';
 import GroupSharedDataVisualizationConfig from 'terraso-web-client/group/components/GroupSharedDataVisualizationConfig';
@@ -64,7 +63,7 @@ const DATA_SET_STEPS = ['File', 'Data', 'Appearance', 'Annotate', 'Preview'];
 const MAP_STEPS = ['File', 'Appearance', 'Annotate', 'Preview'];
 const setup = async testParams => {
   const events = {};
-  const map = createMapMock({
+  const map = {
     on: jest.fn().mockImplementation((...args) => {
       const event = args[0];
       const callback = args.length === 2 ? args[1] : args[2];
@@ -75,10 +74,24 @@ const setup = async testParams => {
         callback();
       }
     }),
+    remove: jest.fn(),
+    off: jest.fn(),
+    addControl: jest.fn(),
+    removeControl: jest.fn(),
+    addSource: jest.fn(),
+    getSource: jest.fn(),
+    addLayer: jest.fn(),
+    getLayer: jest.fn(),
+    setTerrain: jest.fn(),
     hasImage: jest.fn(),
     addImage: jest.fn(),
+    fitBounds: jest.fn(),
+    getStyle: jest.fn(),
+    getBounds: jest.fn(),
     setPadding: jest.fn(),
-  });
+    dragRotate: { disable: jest.fn() },
+    touchZoomRotate: { disableRotation: jest.fn() },
+  };
   map.getSource.mockReturnValueOnce();
   map.getSource.mockReturnValue({
     setData: jest.fn(),

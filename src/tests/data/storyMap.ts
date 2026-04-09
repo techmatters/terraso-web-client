@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { LngLat } from 'mapbox-gl';
+import { LngLat, LngLatBounds } from 'mapbox-gl';
 import {
   DataEntryNode,
   StoryMapNode,
@@ -34,7 +34,7 @@ export const createTestPosition = (): MapPosition => ({
   zoom: 10,
   pitch: 0,
   bearing: 0,
-  bounds: [-1, -1, 1, 1],
+  bounds: new LngLatBounds([-1, -1], [1, 1]),
 });
 
 export const createTestStoryMapConfig = (): StoryMapConfig => ({

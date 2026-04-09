@@ -193,7 +193,6 @@ const MediaActionBar = memo(
           onConfirm={onDelete}
           loading={processing}
           variant="text"
-          confirmButtonDestructive
           buttonProps={{
             title: t('storyMap.form_media_delete'),
             sx: {

@@ -26,7 +26,6 @@ import {
 import { useSearchParams } from 'react-router';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { mockTerrasoAPIrequestGraphQL } from 'terraso-web-client/tests/apiUtils';
-import { createMapMock } from 'terraso-web-client/tests/mapboxMock';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import mapboxgl from 'terraso-web-client/gis/mapbox';
@@ -54,7 +53,16 @@ beforeEach(() => {
     extend: jest.fn().mockReturnThis(),
     isEmpty: jest.fn().mockReturnValue(false),
   };
-  mapboxgl.Map = jest.fn().mockReturnValue(createMapMock());
+  mapboxgl.Map = jest.fn();
+  mapboxgl.Map.mockReturnValue({
+    on: jest.fn(),
+    remove: jest.fn(),
+    off: jest.fn(),
+    getCanvas: jest.fn(),
+    addControl: jest.fn(),
+    addSource: jest.fn(),
+    addLayer: jest.fn(),
+  });
   window.HTMLElement.prototype.scrollIntoView = jest.fn();
 });
 
@@ -75,7 +83,7 @@ const setup = async initialState => {
 
 const setupTestMap = async () => {
   const events = {};
-  const map = createMapMock({
+  const map = {
     on: jest.fn().mockImplementation((...args) => {
       const event = args[0];
       const callback = args.length === 2 ? args[1] : args[2];
@@ -86,7 +94,18 @@ const setupTestMap = async () => {
         callback();
       }
     }),
-  });
+    remove: jest.fn(),
+    off: jest.fn(),
+    getCanvas: jest.fn(),
+    addControl: jest.fn(),
+    removeControl: jest.fn(),
+    addSource: jest.fn(),
+    getSource: jest.fn(),
+    addLayer: jest.fn(),
+    getLayer: jest.fn(),
+    setTerrain: jest.fn(),
+    fitBounds: jest.fn(),
+  };
   mapboxgl.Map.mockReturnValue(map);
   const Popup = {
     setLngLat: jest.fn().mockReturnThis(),
@@ -143,7 +162,7 @@ const baseListTest = async () => {
 
   // Landscape info
   expect(
-    screen.getByRole('heading', { name: 'Landscapes', level: 1 })
+    screen.getByRole('heading', { name: 'Landscapes' })
   ).toBeInTheDocument();
 
   // Map
@@ -191,87 +210,6 @@ test('LandscapeList: Display loader', async () => {
     name: 'Loading',
   });
   expect(loader).toBeInTheDocument();
-});
-
-test('LandscapeList: Display My Landscapes when memberships exist', async () => {
-  terrasoApi.requestGraphQL.mockReturnValue(
-    Promise.resolve({
-      landscapes: {
-        edges: [
-          {
-            node: {
-              slug: 'member-landscape',
-              id: 'landscape-1',
-              name: 'Member Landscape',
-              membershipList: {
-                membershipsCount: 1,
-                accountMembership: {
-                  userRole: 'member',
-                  membershipStatus: 'APPROVED',
-                },
-              },
-            },
-          },
-          {
-            node: {
-              slug: 'other-landscape',
-              id: 'landscape-2',
-              name: 'Other Landscape',
-              membershipList: {
-                membershipsCount: 1,
-                accountMembership: null,
-              },
-            },
-          },
-        ],
-      },
-    })
-  );
-
-  await setup();
-
-  const myLandscapes = screen.getByRole('region', { name: 'My Landscapes' });
-  expect(
-    within(myLandscapes).getByRole('listitem', { name: 'Member Landscape' })
-  ).toBeInTheDocument();
-  expect(
-    within(myLandscapes).queryByRole('listitem', { name: 'Other Landscape' })
-  ).not.toBeInTheDocument();
-  expect(
-    screen.getAllByRole('heading', { name: 'Add your landscape' }).length
-  ).toBe(1);
-});
-
-test('LandscapeList: Hide My Landscapes when memberships are empty', async () => {
-  terrasoApi.requestGraphQL.mockReturnValue(
-    Promise.resolve({
-      landscapes: {
-        edges: [
-          {
-            node: {
-              slug: 'other-landscape',
-              id: 'landscape-2',
-              name: 'Other Landscape',
-              membershipList: {
-                membershipsCount: 1,
-                accountMembership: null,
-              },
-            },
-          },
-        ],
-      },
-    })
-  );
-
-  await setup();
-
-  expect(screen.queryByRole('region', { name: 'My Landscapes' })).toBeNull();
-  expect(
-    screen.getAllByRole('heading', { name: 'Add your landscape' }).length
-  ).toBe(1);
-  expect(
-    screen.getByRole('link', { name: 'Add your landscape' })
-  ).toBeInTheDocument();
 });
 
 test('LandscapeList: Empty', async () => {
@@ -415,7 +353,7 @@ test('LandscapeList: List sort', async () => {
 
   // Landscape info
   expect(
-    screen.getByRole('heading', { name: 'Landscapes', level: 1 })
+    screen.getByRole('heading', { name: 'Landscapes' })
   ).toBeInTheDocument();
   const rows = screen.getAllByRole('row');
   expect(rows.length).toBe(16); // 15 displayed + header
@@ -476,16 +414,16 @@ test('LandscapeList: Display list (small screen)', async () => {
 
   // Landscape info
   expect(
-    screen.getByRole('heading', { name: 'Landscapes', level: 1 })
+    screen.getByRole('heading', { name: 'Landscapes' })
   ).toBeInTheDocument();
 
   const rows = screen.getAllByRole('listitem');
   expect(rows.length).toBe(15);
-  expect(screen.getByText('Landscape Name 1')).toBeInTheDocument();
+  expect(within(rows[1]).getByText('Landscape Name 1')).toBeInTheDocument();
   expect(
-    screen.getByRole('button', { name: 'Join: Landscape Name 1' })
+    within(rows[1]).getByText('https://www.landscape.org')
   ).toBeInTheDocument();
-  expect(
-    screen.getByRole('button', { name: 'Leave: Landscape Name 3' })
-  ).toBeInTheDocument();
+  expect(within(rows[1]).getByText('23')).toBeInTheDocument();
+  expect(within(rows[1]).getByText('Join')).toBeInTheDocument();
+  expect(within(rows[8]).getByText('Leave')).toBeInTheDocument();
 });

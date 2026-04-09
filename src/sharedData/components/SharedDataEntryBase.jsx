@@ -161,7 +161,6 @@ const ActionsSection = ({
           onConfirm={onConfirm}
           loading={processing}
           variant="text"
-          confirmButtonDestructive
           buttonProps={{
             title: t(getEntryTypeTooltipKey(dataEntry), {
               name: dataEntry.name,

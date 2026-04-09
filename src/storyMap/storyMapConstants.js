@@ -1,5 +1,5 @@
 /*
- * Copyright © 2026 Technology Matters
+ * Copyright © 2021-2023 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -14,20 +14,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-
-import _ from 'lodash/fp';
-
-export const createAbsoluteUrl = relativeUrl => {
-  if (!relativeUrl) {
-    return window.location.href;
-  }
-  const rawUrl = relativeUrl.toString();
-  if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) {
-    return rawUrl;
-  }
-  return `${window.location.origin}${rawUrl}`;
+export const LAYER_TYPES = {
+  fill: ['fill-opacity'],
+  line: ['line-opacity'],
+  circle: ['circle-opacity', 'circle-stroke-opacity'],
+  symbol: ['icon-opacity', 'text-opacity'],
+  raster: ['raster-opacity'],
+  'fill-extrusion': ['fill-extrusion-opacity'],
+  heatmap: ['heatmap-opacity'],
 };
 
-export const stripProtocol = _.replace(/^https?:\/\//, '');
+export const ALIGNMENTS = {
+  left: 'lefty',
+  center: 'centered',
+  right: 'righty',
+  full: 'fully',
+};
 
-export const formatUrlForDisplay = _.flow(createAbsoluteUrl, stripProtocol);
+export const MEMBERSHIP_ROLE_EDITOR = 'editor';
+export const MEMBERSHIP_ROLE_OWNER = 'owner';

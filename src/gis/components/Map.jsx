@@ -172,7 +172,6 @@ export const MapProvider = props => {
   const language = i18n.language.split('-')[0];
   const { children, onStyleChange } = props;
   const [map, setMap] = useState(null);
-  const [mapDimensions, setMapDimensions] = useState(undefined);
   const [images, setImages] = useState({});
   const [sources, setSources] = useState({});
   const [layers, setLayers] = useState({});
@@ -292,8 +291,6 @@ export const MapProvider = props => {
       value={{
         setMap,
         map,
-        setMapDimensions,
-        mapDimensions,
         changeStyle,
         addImage,
         removeImage,
@@ -315,13 +312,12 @@ const Map = forwardRef((props, ref) => {
     projection,
     initialLocation: propsInitialLocation,
     interactive = true,
-    disableRotation = false,
-    disablePitch = true,
     hash = false,
     attributionControl = true,
     center,
     initialBounds,
     zoom = 1,
+    disableRotation = false,
     height = '400px',
     width = '100%',
     sx,
@@ -331,7 +327,7 @@ const Map = forwardRef((props, ref) => {
     children,
   } = props;
   const { i18n } = useTranslation();
-  const { map, setMap, setMapDimensions } = useMap();
+  const { map, setMap } = useMap();
   const mapContainer = useRef(null);
   const [bounds] = useState(initialBounds);
   const [initialLocation] = useState(propsInitialLocation);
@@ -342,6 +338,7 @@ const Map = forwardRef((props, ref) => {
     const map = new mapboxgl.Map({
       container: mapContainer.current,
       style: mapStyle || MAPBOX_STYLE_DEFAULT,
+      interactive,
       projection: projection || MAPBOX_PROJECTION_DEFAULT,
       zoom,
       center,
@@ -387,51 +384,6 @@ const Map = forwardRef((props, ref) => {
       map.setFog(MAPBOX_FOG);
     });
 
-    return () => {
-      map.remove();
-    };
-  }, [
-    mapStyle,
-    initialLocation,
-    projection,
-    hash,
-    center,
-    zoom,
-    attributionControl,
-    setMap,
-    bounds,
-    disableElevation,
-    padding,
-    ref,
-  ]);
-
-  useEffect(() => {
-    if (!map) {
-      return;
-    }
-
-    if (!interactive) {
-      map.scrollZoom.disable();
-      map.boxZoom.disable();
-      map.dragRotate.disable();
-      map.dragPan.disable();
-      map.keyboard.disable();
-      map.keyboard.disableRotation();
-      map.doubleClickZoom.disable();
-      map.touchZoomRotate.disable();
-      map.touchZoomRotate.disableRotation();
-      map.touchPitch.disable();
-      return;
-    }
-
-    map.touchPitch.enable();
-    map.touchZoomRotate.enable();
-    map.touchZoomRotate.enableRotation();
-    map.dragPan.enable();
-    map.dragRotate.enable();
-    map.doubleClickZoom.enable();
-    map.scrollZoom.enable();
-
     if (disableRotation) {
       // disable map rotation using right click + drag
       map.dragRotate.disable();
@@ -440,10 +392,25 @@ const Map = forwardRef((props, ref) => {
       map.touchZoomRotate.disableRotation();
     }
 
-    if (disablePitch) {
-      map.touchPitch.disable();
-    }
-  }, [map, interactive, disableRotation, disablePitch]);
+    return () => {
+      map.remove();
+    };
+  }, [
+    mapStyle,
+    initialLocation,
+    projection,
+    interactive,
+    hash,
+    center,
+    zoom,
+    attributionControl,
+    setMap,
+    disableRotation,
+    bounds,
+    disableElevation,
+    padding,
+    ref,
+  ]);
 
   useEffect(() => {
     if (!map) {
@@ -461,28 +428,6 @@ const Map = forwardRef((props, ref) => {
   }, [map, onBoundsChange]);
 
   useEffect(() => {
-    if (!map || typeof ResizeObserver === 'undefined') {
-      return;
-    }
-
-    const observer = new ResizeObserver(([entry]) => {
-      map.resize();
-      if (entry.contentBoxSize && entry.contentBoxSize[0]) {
-        setMapDimensions({
-          height: entry.contentBoxSize[0].blockSize,
-          width: entry.contentBoxSize[0].inlineSize,
-        });
-      }
-    });
-
-    observer.observe(map.getContainer());
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [map, setMapDimensions]);
-
-  useEffect(() => {
     if (!map) {
       return;
     }
@@ -495,14 +440,11 @@ const Map = forwardRef((props, ref) => {
     <Box
       id={id}
       ref={mapContainer}
-      sx={[
-        {
-          width,
-          height,
-          pointerEvents: interactive ? 'auto' : 'none',
-        },
-        sx,
-      ]}
+      sx={{
+        width,
+        height,
+        ...sx,
+      }}
     >
       {children}
     </Box>

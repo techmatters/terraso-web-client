@@ -46,7 +46,6 @@ test('Navigation: Show tabs', async () => {
   });
   await setup();
   expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Story Maps' })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Landscapes' })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Groups' })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
@@ -56,19 +55,16 @@ test('Navigation: Show tabs', async () => {
 });
 test('Navigation: Test initial', async () => {
   useLocation.mockReturnValue({
-    pathname: '/tools/story-maps',
+    pathname: '/landscapes',
   });
   await setup();
   expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute(
     'aria-current',
     'page'
   );
-  expect(screen.getByRole('link', { name: 'Story Maps' })).toHaveAttribute(
+  expect(screen.getByRole('link', { name: 'Landscapes' })).toHaveAttribute(
     'aria-current',
     'page'
-  );
-  expect(screen.getByRole('link', { name: 'Landscapes' })).not.toHaveAttribute(
-    'aria-current'
   );
   expect(screen.getByRole('link', { name: 'Groups' })).not.toHaveAttribute(
     'aria-current',
@@ -81,10 +77,6 @@ test('Navigation: Test select', async () => {
   });
   await setup();
   expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute(
-    'aria-current',
-    'page'
-  );
-  expect(screen.getByRole('link', { name: 'Story Maps' })).not.toHaveAttribute(
     'aria-current',
     'page'
   );
@@ -131,10 +123,6 @@ test('Navigation: none selected', async () => {
   });
   await setup();
   expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute(
-    'aria-current',
-    'page'
-  );
-  expect(screen.getByRole('link', { name: 'Story Maps' })).not.toHaveAttribute(
     'aria-current',
     'page'
   );

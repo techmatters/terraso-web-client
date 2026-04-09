@@ -90,7 +90,7 @@ test('AppBar: Logo display', async () => {
   await setup();
   expect(screen.getByRole('img', { name: /Terraso/i })).toHaveAttribute(
     'src',
-    'logo-story-maps.svg'
+    'logo.svg'
   );
 });
 test('AppBar: Logo display (small)', async () => {
@@ -98,7 +98,7 @@ test('AppBar: Logo display (small)', async () => {
   await setup();
   expect(screen.getByRole('img', { name: /Terraso/i })).toHaveAttribute(
     'src',
-    'logo-story-maps.svg'
+    'logo-square.svg'
   );
 });
 test('AppBar: Sign out', async () => {
@@ -109,7 +109,7 @@ test('AppBar: Sign out', async () => {
   await setup();
   expect(screen.getByRole('img', { name: /Terraso/i })).toHaveAttribute(
     'src',
-    'logo-story-maps.svg'
+    'logo.svg'
   );
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Sign Out' }))
@@ -155,22 +155,4 @@ test('AppBar: Add sign in referrer', async () => {
   expect(navigate).toHaveBeenCalledWith(
     '/account?referrer=%2Fgroups%3Fsort%3D-name%26other%3D1'
   );
-});
-
-test('AppBar: Mobile account menu sign out', async () => {
-  global.fetch.mockResolvedValueOnce({
-    status: 200,
-  });
-  useMediaQuery.mockReturnValue(true);
-  await setup();
-
-  await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Account Profile' }))
-  );
-
-  await act(async () =>
-    fireEvent.click(screen.getByRole('menuitem', { name: 'Sign Out' }))
-  );
-
-  expect(Cookies.remove).toHaveBeenCalledTimes(4);
 });

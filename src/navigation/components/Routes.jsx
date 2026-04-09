@@ -16,7 +16,7 @@
  */
 
 import { useMemo } from 'react';
-import { matchPath, Navigate, Route, Routes, useLocation } from 'react-router';
+import { matchPath, Route, Routes, useLocation } from 'react-router';
 
 import { withProps } from 'terraso-web-client/react-hoc';
 
@@ -58,6 +58,7 @@ import StoryMapsToolsHome from 'terraso-web-client/storyMap/components/StoryMaps
 import StoryMapUpdate from 'terraso-web-client/storyMap/components/StoryMapUpdate';
 import UserStoryMap from 'terraso-web-client/storyMap/components/UserStoryMap';
 import UserStoryMapEmbed from 'terraso-web-client/storyMap/components/UserStoryMapEmbed';
+import ToolsList from 'terraso-web-client/tool/components/ToolList';
 
 const path = (
   path,
@@ -194,10 +195,9 @@ const paths = [
       enabled: true,
     },
   }),
-  path(
-    '/tools',
-    withProps(Navigate, { to: '/tools/story-maps', replace: true })
-  ),
+  path('/tools', ToolsList, {
+    breadcrumbsLabel: 'tools.breadcrumbs_list',
+  }),
   path('/account', AccountLogin, { auth: false }),
   path('/account/auth-callback', AccountAuthCallback, { auth: false }),
   path('/account/profile/:completeProfile', AccountProfile),

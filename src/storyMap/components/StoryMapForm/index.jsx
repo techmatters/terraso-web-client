@@ -22,7 +22,7 @@ import { useSelector } from 'react-redux';
 import logger from 'terraso-client-shared/monitoring/logger';
 import { useDebounce } from 'use-debounce';
 import { v4 as uuidv4 } from 'uuid';
-import { Box, Grid, useMediaQuery } from '@mui/material';
+import { Grid, useMediaQuery } from '@mui/material';
 
 import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
 import NavigationBlockedDialog from 'terraso-web-client/navigation/components/NavigationBlockedDialog';
@@ -30,12 +30,10 @@ import { useNavigationBlocker } from 'terraso-web-client/navigation/navigationCo
 import StoryMap from 'terraso-web-client/storyMap/components/StoryMap';
 import ChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/ChapterForm';
 import ChaptersSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/ChaptersSideBar';
-import RightSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/RightSidebar';
 import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import TitleForm from 'terraso-web-client/storyMap/components/StoryMapForm/TitleForm';
 import TopBar from 'terraso-web-client/storyMap/components/StoryMapForm/TopBar';
 import TopBarPreview from 'terraso-web-client/storyMap/components/StoryMapForm/TopBarPreview';
-import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 import { isChapterEmpty } from 'terraso-web-client/storyMap/storyMapUtils';
 
 import { STORY_MAP_AUTO_SAVE_DEBOUNCE } from 'terraso-web-client/config';
@@ -46,7 +44,10 @@ const BASE_CHAPTER = {
   alignment: 'left',
   title: '',
   description: '',
+  mapAnimation: 'flyTo',
+  rotateAnimation: false,
   onChapterEnter: [],
+  onChapterExit: [],
 };
 
 const Preview = props => {
@@ -75,16 +76,14 @@ const Preview = props => {
   const chaptersFilter = useCallback(chapters => !isChapterEmpty(chapters), []);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <>
       <TopBarPreview onPublish={onPublish} />
-      <Box sx={{ flex: 1, overflowY: 'auto', position: 'relative' }}>
-        <StoryMap
-          config={previewConfig}
-          chaptersFilter={chaptersFilter}
-          isContained
-        />
-      </Box>
-    </Box>
+      <Grid container sx={{ width: '100%' }}>
+        <Grid size={12}>
+          <StoryMap config={previewConfig} chaptersFilter={chaptersFilter} />
+        </Grid>
+      </Grid>
+    </>
   );
 };
 
@@ -109,9 +108,10 @@ const StoryMapForm = props => {
     saved,
     isDirty,
   } = useStoryMapConfigContext();
+  const [mapHeight, setMapHeight] = useState();
+  const [mapWidth, setMapWidth] = useState();
   const [currentStepId, setCurrentStepId] = useState();
   const [scrollToChapter, setScrollToChapter] = useState();
-  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
 
   const [autoSaveData, setAutoSaveData] = useState({
     config,
@@ -141,19 +141,50 @@ const StoryMapForm = props => {
       });
   }, [autoSaveDataDebounced, onSaveDraft, saved]);
 
+  const isFirefox = useMemo(
+    () => navigator.userAgent.toLowerCase().indexOf('firefox') > -1,
+    []
+  );
+
   const { isBlocked, proceed, cancel } = useNavigationBlocker(
     isDirty,
     t('storyMap.form_unsaved_changes_message')
   );
 
+  useEffect(() => {
+    if (isSmall) {
+      return;
+    }
+    const headerHeight =
+      document.getElementById('header-container')?.clientHeight ?? 0;
+    const footerHeight =
+      document.getElementsByClassName('footer')?.[0]?.clientHeight ?? 0;
+    const formHeaderHeight =
+      (document.getElementById('form-header')?.clientHeight ?? 0) + 1;
+
+    setMapHeight(
+      `calc(100vh - (${headerHeight}px + ${footerHeight}px + ${formHeaderHeight}px))`
+    );
+  }, [isSmall]);
+
   // Focus on the title when the map is ready
   const onMapReady = useCallback(() => {
     const input = document
-      .getElementById(STORY_MAP_TITLE_ID)
+      .getElementById('story-map-title')
       .querySelector('input');
     input?.focus();
     init.current = true;
   }, [init]);
+
+  useEffect(() => {
+    if (!mapHeight) {
+      return;
+    }
+    const chaptersWidth =
+      document.getElementById('chapters-sidebar').clientWidth;
+
+    setMapWidth(`calc(100vw - ${chaptersWidth}px)`);
+  }, [mapHeight]);
 
   useEffect(() => {
     if (!scrollToChapter) {
@@ -231,20 +262,12 @@ const StoryMapForm = props => {
     [config, mediaFiles, onSaveDraft, saved]
   );
 
-  const closeRightSidebar = useCallback(() => {
-    setIsRightSidebarOpen(false);
-  }, []);
-
-  const toggleRightSidebar = useCallback(() => {
-    setIsRightSidebarOpen(isOpen => !isOpen);
-  }, []);
-
   if (preview || isSmall) {
     return <Preview config={config} onPublish={onPublishWrapper} />;
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <>
       {isBlocked && (
         <NavigationBlockedDialog
           title={t('storyMap.form_unsaved_changes_title')}
@@ -258,14 +281,12 @@ const StoryMapForm = props => {
         onSaveDraft={onSaveDraftWrapper}
         requestStatus={requestStatus}
         isDirty={isDirty}
-        onToggleRightSidebar={toggleRightSidebar}
-        isRightSidebarOpen={isRightSidebarOpen}
       />
       <Grid
         container
         justifyContent="flex-start"
-        wrap="nowrap"
-        sx={{ width: '100%', flex: 1, overflow: 'hidden' }}
+        alignItems="flex-start"
+        sx={{ height: mapHeight, width: '100%' }}
       >
         <ChaptersSidebar
           config={config}
@@ -273,20 +294,29 @@ const StoryMapForm = props => {
           onAdd={onAddChapter}
           onDelete={onDeleteChapter}
           onMoveChapter={onMoveChapter}
+          height={mapHeight}
         />
-        <Box sx={{ flex: 1, overflowY: 'scroll', position: 'relative' }}>
-          <StoryMap
-            config={config}
-            onStepChange={setCurrentStepId}
-            ChapterComponent={ChapterForm}
-            TitleComponent={TitleForm}
-            onReady={onMapReady}
-            isContained
-          />
-        </Box>
-        <RightSidebar open={isRightSidebarOpen} onClose={closeRightSidebar} />
+        <Grid
+          size="grow"
+          sx={{
+            height: mapHeight,
+            // There is no overlay support for Firefox, see: https://developer.mozilla.org/en-US/docs/Web/CSS/overflow
+            overflowY: isFirefox ? 'scroll' : 'overlay',
+          }}
+        >
+          {mapHeight && mapWidth && (
+            <StoryMap
+              config={config}
+              mapCss={{ height: mapHeight, width: mapWidth }}
+              onStepChange={setCurrentStepId}
+              ChapterComponent={ChapterForm}
+              TitleComponent={TitleForm}
+              onReady={onMapReady}
+            />
+          )}
+        </Grid>
       </Grid>
-    </Box>
+    </>
   );
 };
 

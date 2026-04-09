@@ -91,13 +91,7 @@ const GroupItem = ({ group, index }) => {
   );
 };
 
-const GroupsHomeCard = ({
-  groups,
-  title,
-  showAction = true,
-  actionLabel,
-  actionTo = '/groups',
-}) => {
+const GroupsHomeCard = ({ groups }) => {
   const { t } = useTranslation();
 
   const sortedGroups = _.sortBy(
@@ -109,15 +103,11 @@ const GroupsHomeCard = ({
 
   return (
     <HomeCard
-      title={title || t('group.home_default_title')}
-      action={
-        showAction
-          ? {
-              label: actionLabel || t('group.home_connect_label'),
-              to: actionTo,
-            }
-          : null
-      }
+      title={t('group.home_default_title')}
+      action={{
+        label: t('group.home_connect_label'),
+        to: '/groups',
+      }}
       contentBackgroundColor="white"
       titleId="groups-list-title"
     >
