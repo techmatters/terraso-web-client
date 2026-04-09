@@ -39,6 +39,7 @@ import { withProps } from 'terraso-web-client/react-hoc';
 
 import ConfirmMenuItem from 'terraso-web-client/common/components/ConfirmMenuItem';
 import StrictModeDroppable from 'terraso-web-client/common/components/StrictModeDroppable';
+import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 
 import dragIcon from 'terraso-web-client/assets/drag-icon.svg';
 
@@ -286,8 +287,8 @@ const ChaptersSidebar = props => {
   const titleItem = useMemo(
     () => ({
       label: `${t('storyMap.form_title_chapter_label')}`,
-      id: 'story-map-title',
-      active: currentStepId === 'story-map-title',
+      id: STORY_MAP_TITLE_ID,
+      active: currentStepId === STORY_MAP_TITLE_ID,
       index: 'T',
     }),
     [currentStepId, t]

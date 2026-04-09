@@ -16,7 +16,7 @@
  */
 
 import type { GeoJSON } from 'geojson';
-import { LngLat, LngLatBounds } from 'mapbox-gl';
+import { LngLat } from 'mapbox-gl';
 import { Descendant } from 'slate';
 import type {
   DataEntryNode,
@@ -39,35 +39,37 @@ export type MapPosition = {
   bearing: number;
   pitch: number;
   zoom: number;
-  bounds: LngLatBounds;
+  bounds: MapBounds;
 };
+
+export type LayerConfig = {
+  layer: string;
+  opacity: number;
+};
+
+export type Transition = {
+  location: MapPosition;
+  onChapterEnter?: LayerConfig[];
+};
+
+export type ChapterAlignment = 'left' | 'right' | 'center';
+
+/**
+ * swLng, swLat, neLng, neLat
+ */
+export type MapBounds = [number, number, number, number];
 
 export type ChapterConfig = {
   id: string;
   title: string;
   description: Descendant;
-  alignment: 'left' | 'right' | 'center';
-  rotateAnimation: boolean;
-  mapAnimation: 'flyTo' | 'jumpTo';
+  alignment: ChapterAlignment;
   media: {
     type: 'image' | 'video' | 'embedded';
     url: string;
     signedUrl: string;
   };
-  location: MapPosition;
-  onChapterEnter: [
-    {
-      layer: string;
-      opacity: number;
-    },
-  ];
-  onChapterExit: [
-    {
-      layer: string;
-      opacity: number;
-    },
-  ];
-};
+} & Transition;
 
 export type StoryMapConfig = {
   style: string;
@@ -78,10 +80,9 @@ export type StoryMapConfig = {
   subtitle: string;
   byline: string;
   chapters: ChapterConfig[];
-  titleTransition?: {
-    location: MapPosition;
-  };
+  titleTransition?: Transition;
   projection?: string;
+  dataLayers?: Record<string, MapLayerConfig>;
 };
 
 export type VisualizationConfigForm = {

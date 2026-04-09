@@ -15,11 +15,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+/** @import { ChapterConfig, StoryMapConfig, Transition } from 'terraso-web-client/storyMap/storyMapTypes' */
+
 import _ from 'lodash/fp';
 import {
   extractAccountMembership,
   extractMembershipInfo,
 } from 'terraso-client-shared/collaboration/membershipsUtils';
+
+import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 
 import { REACT_APP_BASE_URL } from 'terraso-web-client/config';
 
@@ -58,3 +62,17 @@ export const extractStoryMap = storyMap => ({
   accountMembership: extractAccountMembership(storyMap.membershipList),
   membershipInfo: extractMembershipInfo(storyMap.membershipList),
 });
+
+/**
+ * @param {{ config: StoryMapConfig, id: string }} options
+ * @returns {ChapterConfig | Transition | undefined}
+ */
+export const getTransition = ({ config, id }) => {
+  const isTitle = id === STORY_MAP_TITLE_ID;
+  if (isTitle) {
+    return config.titleTransition;
+  }
+  const chapterIndex = config.chapters.findIndex(chapter => chapter.id === id);
+  const chapter = config.chapters[chapterIndex];
+  return chapter;
+};

@@ -208,7 +208,6 @@ export const MAPBOX_LANDSCAPE_DIRECTORY_STYLE =
   import.meta.env.REACT_APP_MAPBOX_LANDSCAPE_DIRECTORY_STYLE ||
   MAPBOX_STYLE_DEFAULT;
 
-export const STORY_MAP_INSET_STYLE = 'mapbox://styles/mapbox/dark-v10';
 export const STORY_MAP_MEDIA_MAX_SIZE = 10000000; // 10 MB
 
 export const STORY_MAP_IMAGE_ACCEPTED_TYPES = {
