@@ -27,7 +27,7 @@ test('RichTextEditorUtils: deserialize', () => {
       <span>Nunc non ultrices eros. Sed tincidunt feugiat massa in egestas</span>
       <a href="https://www.terraso.org/">consectetur</a>
       <span></span>
-      <span> tempor turpis a arcu elementum, non <i>luctus</i> nibh suscipit.</span>
+      <span> tempor turpis a arcu elementum, non <i>luctus</i> nibh <mark>suscipit</mark>.</span>
     </p>
     <ul>
       <li>Item 1</li>
@@ -103,7 +103,14 @@ test('RichTextEditorUtils: deserialize', () => {
           italic: true,
         },
         {
-          text: ' nibh suscipit.    ',
+          text: ' nibh ',
+        },
+        {
+          text: 'suscipit',
+          highlight: true,
+        },
+        {
+          text: '.    ',
         },
       ],
     },
