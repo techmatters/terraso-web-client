@@ -29,6 +29,7 @@ const EditableText = props => {
     focus,
     label,
   } = props;
+  const normalizedValue = value || '';
   const [isEditing, setIsEditing] = useState(!value);
   const [shouldFocus, setShouldFocus] = useState(focus);
   const inputRef = useRef(null);
@@ -41,11 +42,11 @@ const EditableText = props => {
 
   const onExit = useCallback(() => {
     onBlur?.();
-    if (!value) {
+    if (!normalizedValue) {
       return;
     }
     setIsEditing(false);
-  }, [value, onBlur]);
+  }, [normalizedValue, onBlur]);
 
   const onClick = useCallback(() => {
     setIsEditing(true);
@@ -75,7 +76,7 @@ const EditableText = props => {
         label={label}
         inputRef={inputRef}
         fullWidth
-        value={value}
+        value={normalizedValue}
         onBlur={onExit}
         onChange={onChangeWrapper}
         placeholder={placeholder}

@@ -38,7 +38,7 @@ import {
 import ConfirmButton from 'terraso-web-client/common/components/ConfirmButton';
 import DropZone from 'terraso-web-client/common/components/DropZone';
 import { openFile } from 'terraso-web-client/common/fileUtils';
-import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 
 import {
   STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS,
@@ -272,7 +272,7 @@ const AddSectionTitle = memo(({ checked, value, onChange, label, labelId }) => (
 
 const AddDialog = memo(({ open, onClose, onAdd }) => {
   const { t } = useTranslation();
-  const { addMediaFile } = useStoryMapConfigContext();
+  const { addMediaFile } = useStoryMapConfigActionsContext();
 
   const [currentFile, setCurrentFile] = useState();
   const [dropErrors, setDropErrors] = useState();
@@ -498,7 +498,7 @@ const AddDialog = memo(({ open, onClose, onAdd }) => {
 const EditableImage = memo(
   ({ label, image, onUpdate, onDelete, processing }) => {
     const { t } = useTranslation();
-    const { getMediaFile } = useStoryMapConfigContext();
+    const { getMediaFile } = useStoryMapConfigActionsContext();
     const imageRef = useRef(null);
 
     const imageSrc = useMemo(
@@ -578,7 +578,7 @@ const EditableImage = memo(
 
 const EditableAudio = memo(({ audio, onUpdate, onDelete, processing }) => {
   const { t } = useTranslation();
-  const { getMediaFile } = useStoryMapConfigContext();
+  const { getMediaFile } = useStoryMapConfigActionsContext();
   const audioRef = useRef(null);
 
   const audioSrc = useMemo(
@@ -648,7 +648,7 @@ const EditableAudio = memo(({ audio, onUpdate, onDelete, processing }) => {
 
 const EditableVideo = memo(({ video, onUpdate, onDelete, processing }) => {
   const { t } = useTranslation();
-  const { getMediaFile } = useStoryMapConfigContext();
+  const { getMediaFile } = useStoryMapConfigActionsContext();
   const videoRef = useRef(null);
 
   const videoSrc = useMemo(
