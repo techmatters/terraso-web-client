@@ -331,6 +331,7 @@ test('RichTextEditor: style select does not trigger blur when opened', async () 
 
   expect(onBlur).not.toHaveBeenCalled();
   expect(screen.getByRole('listbox', { hidden: true })).toBeInTheDocument();
+  expect(styleSelect).toHaveAttribute('aria-expanded', 'true');
 });
 
 test('RichTextEditor: rerendered value replaces the live editor contents', async () => {
@@ -352,7 +353,6 @@ test('RichTextEditor: rerendered value replaces the live editor contents', async
   await act(async () => {
     rerender(
       <RichTextEditor
-        initialFocused
         value={[
           {
             type: 'paragraph',

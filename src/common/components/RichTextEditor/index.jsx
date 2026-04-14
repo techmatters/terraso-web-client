@@ -731,7 +731,6 @@ const RichTextEditor = props => {
     if (focused) {
       return;
     }
-
     if (areValuesEqual(editor.children, parsedValue)) {
       return;
     }

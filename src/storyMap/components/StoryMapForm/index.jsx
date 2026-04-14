@@ -28,7 +28,7 @@ import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
 import NavigationBlockedDialog from 'terraso-web-client/navigation/components/NavigationBlockedDialog';
 import { useNavigationBlocker } from 'terraso-web-client/navigation/navigationContext';
 import StoryMap from 'terraso-web-client/storyMap/components/StoryMap';
-import ChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/ChapterForm';
+import BufferedChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/BufferedChapterForm';
 import ChaptersSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/ChaptersSideBar';
 import RightSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/RightSidebar';
 import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
@@ -102,44 +102,54 @@ const StoryMapForm = props => {
   const {
     storyMap,
     config,
-    setConfig,
+    configRevision,
     preview,
-    init,
     mediaFiles,
-    saved,
+    setConfig,
+    init,
+    flushBufferedChapterChanges,
+    getConfig,
+    isConfigDirty,
     isDirty,
+    saved,
   } = useStoryMapConfigContext();
   const [currentStepId, setCurrentStepId] = useState();
   const [scrollToChapter, setScrollToChapter] = useState();
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
 
   const [autoSaveData, setAutoSaveData] = useState({
-    config,
+    configRevision,
     mediaFiles,
-    isDirty,
+    isConfigDirty,
+    saving,
+    saveError,
   });
   const [autoSaveDataDebounced] = useDebounce(autoSaveData, autoSaveDebounce);
   useEffect(() => {
     setAutoSaveData({
-      config,
+      configRevision,
       mediaFiles,
-      isDirty,
+      isConfigDirty,
       saving,
       saveError,
     });
-  }, [config, mediaFiles, isDirty, saving, saveError]);
+  }, [configRevision, isConfigDirty, mediaFiles, saveError, saving]);
 
   useEffect(() => {
-    const { config, mediaFiles, isDirty } = autoSaveDataDebounced;
-    if (!isDirty) {
+    const {
+      isConfigDirty: isDebouncedConfigDirty,
+      configRevision: revision,
+      mediaFiles: debouncedMediaFiles,
+    } = autoSaveDataDebounced;
+    if (!isDebouncedConfigDirty) {
       return;
     }
-    onSaveDraft(config, mediaFiles)
-      .then(saved)
+    onSaveDraft(getConfig(), debouncedMediaFiles, revision)
+      .then(() => saved(revision))
       .catch(error => {
         logger.error('Error auto saving story map', error);
       });
-  }, [autoSaveDataDebounced, onSaveDraft, saved]);
+  }, [autoSaveDataDebounced, getConfig, onSaveDraft, saved]);
 
   const { isBlocked, proceed, cancel } = useNavigationBlocker(
     isDirty,
@@ -223,13 +233,16 @@ const StoryMapForm = props => {
   );
 
   const onPublishWrapper = useCallback(() => {
-    onPublish(config, mediaFiles).then(saved);
-  }, [config, mediaFiles, onPublish, saved]);
+    const { config: nextConfig, revision } = flushBufferedChapterChanges();
+    onPublish(nextConfig, mediaFiles, revision).then(() => saved(revision));
+  }, [flushBufferedChapterChanges, mediaFiles, onPublish, saved]);
 
-  const onSaveDraftWrapper = useCallback(
-    () => onSaveDraft(config, mediaFiles).then(saved),
-    [config, mediaFiles, onSaveDraft, saved]
-  );
+  const onSaveDraftWrapper = useCallback(() => {
+    const { config: nextConfig, revision } = flushBufferedChapterChanges();
+    return onSaveDraft(nextConfig, mediaFiles, revision).then(() =>
+      saved(revision)
+    );
+  }, [flushBufferedChapterChanges, mediaFiles, onSaveDraft, saved]);
 
   const closeRightSidebar = useCallback(() => {
     setIsRightSidebarOpen(false);
@@ -278,7 +291,7 @@ const StoryMapForm = props => {
           <StoryMap
             config={config}
             onStepChange={setCurrentStepId}
-            ChapterComponent={ChapterForm}
+            ChapterComponent={BufferedChapterForm}
             TitleComponent={TitleForm}
             onReady={onMapReady}
             isContained
