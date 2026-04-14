@@ -315,7 +315,7 @@ test('RichTextEditor: style select does not trigger blur when opened', async () 
   });
 
   expect(onBlur).not.toHaveBeenCalled();
-  expect(screen.getByRole('listbox')).toBeInTheDocument();
+  expect(styleSelect).toHaveAttribute('aria-expanded', 'true');
 });
 
 test('RichTextEditor: rerendered value replaces the live editor contents', async () => {
@@ -323,7 +323,6 @@ test('RichTextEditor: rerendered value replaces the live editor contents', async
 
   const { rerender } = await render(
     <RichTextEditor
-      initialFocused
       value={[
         {
           type: 'paragraph',
@@ -338,7 +337,6 @@ test('RichTextEditor: rerendered value replaces the live editor contents', async
   await act(async () => {
     rerender(
       <RichTextEditor
-        initialFocused
         value={[
           {
             type: 'paragraph',
@@ -347,6 +345,60 @@ test('RichTextEditor: rerendered value replaces the live editor contents', async
         ]}
       />
     );
+  });
+
+  expect(screen.queryByText('Original value')).not.toBeInTheDocument();
+  expect(screen.getByText('Updated value')).toBeInTheDocument();
+});
+
+test('RichTextEditor: focused editor applies external value after blur', async () => {
+  Editor.nodes.mockImplementation(actualSlateEditor.nodes);
+
+  const { rerender } = await render(
+    <>
+      <RichTextEditor
+        initialFocused
+        value={[
+          {
+            type: 'paragraph',
+            children: [{ text: 'Original value' }],
+          },
+        ]}
+      />
+      <button type="button">Outside</button>
+    </>
+  );
+
+  const editable = screen.getByRole('textbox');
+  const outsideButton = screen.getByRole('button', { name: 'Outside' });
+
+  await act(async () => {
+    fireEvent.focus(editable);
+  });
+
+  await act(async () => {
+    rerender(
+      <>
+        <RichTextEditor
+          initialFocused
+          value={[
+            {
+              type: 'paragraph',
+              children: [{ text: 'Updated value' }],
+            },
+          ]}
+        />
+        <button type="button">Outside</button>
+      </>
+    );
+  });
+
+  expect(screen.getByText('Original value')).toBeInTheDocument();
+  expect(screen.queryByText('Updated value')).not.toBeInTheDocument();
+
+  await act(async () => {
+    fireEvent.blur(editable, { relatedTarget: outsideButton });
+    fireEvent.focus(outsideButton);
   });
 
   expect(screen.queryByText('Original value')).not.toBeInTheDocument();
