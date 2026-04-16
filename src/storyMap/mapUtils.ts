@@ -227,15 +227,25 @@ const startLayerTransition = (
   }
 
   const allLayers = new Set<string>();
+  // Track whether each layer's first appearance is in an onChapterExit; if so,
+  // its default opacity before that exit should be 1 (visible, about to fade out)
+  // rather than 0 (not yet shown).
+  const firstAppearanceIsExit: Record<string, boolean> = {};
   for (const step of steps) {
     step.onChapterEnter?.forEach(t => {
       if (t.layer) {
         allLayers.add(t.layer);
+        if (!(t.layer in firstAppearanceIsExit)) {
+          firstAppearanceIsExit[t.layer] = false;
+        }
       }
     });
     step.onChapterExit?.forEach(t => {
       if (t.layer) {
         allLayers.add(t.layer);
+        if (!(t.layer in firstAppearanceIsExit)) {
+          firstAppearanceIsExit[t.layer] = true;
+        }
       }
     });
   }
@@ -258,10 +268,15 @@ const startLayerTransition = (
     }
   }
 
-  // for layers which haven't yet appeared in the story map, set their opacity to 0 (in case the user scrolls back up)
+  // for layers which haven't yet appeared in the story map, set their opacity to
+  // 0 (in case the user scrolls back up), unless the layer's first appearance is
+  // in an onChapterExit, in which case default to 1 so the exit can fade it out.
   for (const layer of allLayers) {
     if (!(layer in mostRecentLayerConfigs)) {
-      setLayerOpacity(map, { layer, opacity: 0 });
+      setLayerOpacity(map, {
+        layer,
+        opacity: firstAppearanceIsExit[layer] ? 1 : 0,
+      });
     }
   }
 
