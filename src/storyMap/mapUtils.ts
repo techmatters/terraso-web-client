@@ -22,10 +22,6 @@ import logger from 'terraso-client-shared/monitoring/logger';
 
 import { isValidBounds } from 'terraso-web-client/gis/gisUtils';
 import {
-  generateLayerId,
-  LAYER_TYPES,
-} from 'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer';
-import {
   LAYER_PAINT_TYPES,
   LayerPaintType,
   STORY_MAP_TITLE_ID,
@@ -157,7 +153,7 @@ const fitBoundsAnimated = (
   map: mapboxgl.Map,
   mapDimensions: { height: number; width: number },
   mapAnimation: 'flyTo' | 'easeTo',
-  { bounds, pitch, bearing }: MapPosition
+  { bounds, pitch, bearing, duration }: MapPosition & { duration?: number }
 ) => {
   const viewport = geoViewport.viewport(
     bounds,
@@ -171,6 +167,7 @@ const fitBoundsAnimated = (
     pitch,
     bearing,
     essential: true,
+    ...(duration === undefined ? {} : { duration }),
   });
 };
 

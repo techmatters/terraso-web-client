@@ -49,7 +49,7 @@ export type LayerConfig = {
 };
 
 export type Transition = {
-  location: MapPosition;
+  location: MapPosition & { duration?: number };
   rotateAnimation?: boolean;
   mapAnimation?: 'flyTo' | 'easeTo';
   onChapterEnter?: LayerConfig[];
