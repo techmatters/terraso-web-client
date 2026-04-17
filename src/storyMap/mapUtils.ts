@@ -22,25 +22,26 @@ import logger from 'terraso-client-shared/monitoring/logger';
 
 import { isValidBounds } from 'terraso-web-client/gis/gisUtils';
 import {
-  generateLayerId,
-  LAYER_TYPES,
-} from 'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer';
-import {
   LAYER_PAINT_TYPES,
   LayerPaintType,
+  STORY_MAP_TITLE_ID,
 } from 'terraso-web-client/storyMap/storyMapConstants';
 import {
   ChapterAlignment,
+  ChapterConfig,
   LayerConfig,
   MapBounds,
   MapPosition,
   StoryMapConfig,
+  Transition,
 } from 'terraso-web-client/storyMap/storyMapTypes';
 import { getTransition } from 'terraso-web-client/storyMap/storyMapUtils';
 
 // Assumed viewport size when center/zoom were originally set in the editor
 const DEFAULT_ASSUMED_CLIENT_WIDTH = 1200;
 const DEFAULT_ASSUMED_CLIENT_HEIGHT = 600;
+
+const ROTATION_DURATION = 30000;
 
 const getLayerPaintType = (map: mapboxgl.Map, layer: string) => {
   if (!map.getStyle()) {
@@ -61,6 +62,12 @@ const setLayerOpacity = (map: mapboxgl.Map, layer: LayerConfig) => {
   }
   const paintProps = getLayerPaintType(map, layer.layer);
   paintProps?.forEach(function (prop) {
+    if (layer.duration) {
+      const transitionProp = `${prop}-transition` as const;
+      map.setPaintProperty(layer.layer, transitionProp, {
+        duration: layer.duration,
+      });
+    }
     map.setPaintProperty(layer.layer, prop, layer.opacity);
   });
 };
@@ -144,40 +151,32 @@ const backfillBounds = (location: MapPosition, alignment: ChapterAlignment) => {
 
 const fitBoundsAnimated = (
   map: mapboxgl.Map,
-  bounds: MapBounds,
-  mapDimensions: { height: number; width: number }
+  mapDimensions: { height: number; width: number },
+  mapAnimation: 'flyTo' | 'easeTo',
+  { bounds, pitch, bearing, duration }: MapPosition & { duration?: number }
 ) => {
   const viewport = geoViewport.viewport(
     bounds,
     [mapDimensions.width, mapDimensions.height],
     { allowAntiMeridian: true, allowFloat: true, tileSize: 512 }
   );
-  map.flyTo({
+  map[mapAnimation]({
     center: viewport.center,
     zoom: viewport.zoom,
     linear: false,
-    pitch: 0,
-    bearing: 0,
+    pitch,
+    bearing,
     essential: true,
+    ...(duration === undefined ? {} : { duration }),
   });
 };
 
-export type StartTransitionOptions = {
-  config: StoryMapConfig;
-  chapterId: string;
-  mapDimensions: { height: number; width: number };
-  isMobile: boolean;
-};
-export const startTransition = (
+const startCameraTransition = (
   map: mapboxgl.Map,
-  { config, chapterId, isMobile, mapDimensions }: StartTransitionOptions
+  isMobile: boolean,
+  mapDimensions: { height: number; width: number },
+  transition: ChapterConfig | Transition
 ) => {
-  const transition = getTransition({ config, id: chapterId });
-
-  if (!map || !transition) {
-    return;
-  }
-
   if (transition.location && !_.isEmpty(transition.location)) {
     const alignment =
       isMobile || !('alignment' in transition)
@@ -195,20 +194,117 @@ export const startTransition = (
 
     const displayBounds = expandBoundsForDisplay(boundsToUse, alignment);
 
-    fitBoundsAnimated(map, displayBounds, mapDimensions);
+    fitBoundsAnimated(map, mapDimensions, transition.mapAnimation ?? 'flyTo', {
+      ...transition.location,
+      bounds: displayBounds,
+    });
   }
-  transition.onChapterEnter?.forEach(layerConfig =>
+
+  if (transition.rotateAnimation) {
+    map.once('moveend', () => {
+      const rotateNumber = map.getBearing();
+      map.rotateTo(rotateNumber + 180, {
+        duration: ROTATION_DURATION,
+        easing: t => t,
+      });
+    });
+  }
+};
+
+const startLayerTransition = (
+  map: mapboxgl.Map,
+  chapterId: string,
+  config: StoryMapConfig
+) => {
+  const steps = [
+    { id: STORY_MAP_TITLE_ID, ...config.titleTransition },
+    ...config.chapters,
+  ];
+
+  const currentIndex = steps.findIndex(s => s.id === chapterId);
+  if (currentIndex === -1) {
+    return;
+  }
+
+  const allLayers = new Set<string>();
+  // Track whether each layer's first appearance is in an onChapterExit; if so,
+  // its default opacity before that exit should be 1 (visible, about to fade out)
+  // rather than 0 (not yet shown).
+  const firstAppearanceIsExit: Record<string, boolean> = {};
+  for (const step of steps) {
+    step.onChapterEnter?.forEach(t => {
+      if (t.layer) {
+        allLayers.add(t.layer);
+        if (!(t.layer in firstAppearanceIsExit)) {
+          firstAppearanceIsExit[t.layer] = false;
+        }
+      }
+    });
+    step.onChapterExit?.forEach(t => {
+      if (t.layer) {
+        allLayers.add(t.layer);
+        if (!(t.layer in firstAppearanceIsExit)) {
+          firstAppearanceIsExit[t.layer] = true;
+        }
+      }
+    });
+  }
+
+  const mostRecentLayerConfigs: Record<string, LayerConfig> = {};
+
+  for (let i = 0; i <= currentIndex; i++) {
+    const step = steps[i];
+    step.onChapterEnter?.forEach(t => {
+      if (t.layer) {
+        mostRecentLayerConfigs[t.layer] = t;
+      }
+    });
+    if (i < currentIndex) {
+      step.onChapterExit?.forEach(t => {
+        if (t.layer) {
+          mostRecentLayerConfigs[t.layer] = t;
+        }
+      });
+    }
+  }
+
+  // for layers which haven't yet appeared in the story map, set their opacity to
+  // 0 (in case the user scrolls back up), unless the layer's first appearance is
+  // in an onChapterExit, in which case default to 1 so the exit can fade it out.
+  for (const layer of allLayers) {
+    if (!(layer in mostRecentLayerConfigs)) {
+      setLayerOpacity(map, {
+        layer,
+        opacity: firstAppearanceIsExit[layer] ? 1 : 0,
+      });
+    }
+  }
+
+  // for layers which have appeared, run their most recent entry in an onChapterEnter or onChapterExit
+  Object.values(mostRecentLayerConfigs).forEach(layerConfig =>
     setLayerOpacity(map, layerConfig)
   );
+};
 
-  Object.values(config.dataLayers ?? {})
-    .flatMap(({ id: layerId }) =>
-      Object.values(LAYER_TYPES).map(layerType =>
-        generateLayerId(layerId, layerType)
-      )
-    )
-    .filter(id => transition.onChapterEnter?.every(({ layer }) => layer !== id))
-    .forEach(id => {
-      setLayerOpacity(map, { layer: id, opacity: 0 });
-    });
+export type StartTransitionOptions = {
+  config: StoryMapConfig;
+  chapterId: string;
+  mapDimensions: { height: number; width: number };
+  isMobile: boolean;
+};
+export const startTransition = (
+  map: mapboxgl.Map,
+  { config, chapterId, isMobile, mapDimensions }: StartTransitionOptions
+) => {
+  const transition = getTransition({
+    config,
+    id: chapterId,
+  });
+
+  if (!map || !transition) {
+    return;
+  }
+
+  startCameraTransition(map, isMobile, mapDimensions, transition);
+  startLayerTransition(map, chapterId, config);
 };
