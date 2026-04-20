@@ -37,10 +37,66 @@ const getBufferedValues = (entity, fields) =>
     {}
   );
 
-const hasBufferedFieldChanges = (bufferedValues, entity, fields) =>
-  fields.some(
-    field => !areFieldValuesEqual(bufferedValues[field], entity[field])
+const getChangedFields = (bufferedValues, entity, fields) =>
+  Object.fromEntries(
+    fields.flatMap(field =>
+      areFieldValuesEqual(bufferedValues[field], entity[field])
+        ? []
+        : [[field, bufferedValues[field]]]
+    )
   );
+
+const filterChangedFields = (nextFields, entity) =>
+  Object.fromEntries(
+    Object.entries(nextFields).filter(
+      ([field, value]) => !areFieldValuesEqual(entity[field], value)
+    )
+  );
+
+const shouldSyncBufferedField = ({
+  currentBufferedValues,
+  previousEntity,
+  nextEntity,
+  field,
+}) =>
+  !areFieldValuesEqual(nextEntity[field], previousEntity[field]) &&
+  areFieldValuesEqual(currentBufferedValues[field], previousEntity[field]);
+
+const reconcileBufferedValues = ({
+  currentBufferedValues,
+  previousEntity,
+  nextEntity,
+  fields,
+}) => {
+  const syncedFields = Object.fromEntries(
+    fields.flatMap(field =>
+      shouldSyncBufferedField({
+        currentBufferedValues,
+        previousEntity,
+        nextEntity,
+        field,
+      })
+        ? [[field, nextEntity[field]]]
+        : []
+    )
+  );
+
+  return _.isEmpty(syncedFields)
+    ? currentBufferedValues
+    : {
+        ...currentBufferedValues,
+        ...syncedFields,
+      };
+};
+
+const removeScheduledCommit = (scheduledCommits, field) => {
+  const nextScheduledCommits = new Map(scheduledCommits);
+  nextScheduledCommits.delete(field);
+  return nextScheduledCommits;
+};
+
+const addScheduledCommit = (scheduledCommits, field, pendingCommit) =>
+  new Map([...scheduledCommits, [field, pendingCommit]]);
 
 const useBufferedConfigFields = props => {
   const {
@@ -54,11 +110,9 @@ const useBufferedConfigFields = props => {
   const [bufferedValues, setBufferedValues] = useState(() =>
     getBufferedValues(entity, fields)
   );
-  const bufferedValuesRef = useRef(bufferedValues);
-  const entityRef = useRef(entity);
+  const latestSnapshotRef = useRef({ bufferedValues, entity });
   const previousEntityRef = useRef(entity);
-  const commitTimeoutsRef = useRef({});
-  const dirtyFieldsRef = useRef(new Set());
+  const commitTimeoutsRef = useRef(new Map());
 
   const effectiveEntity = useMemo(
     () => ({
@@ -68,57 +122,32 @@ const useBufferedConfigFields = props => {
     [bufferedValues, entity]
   );
 
-  useEffect(() => {
-    bufferedValuesRef.current = bufferedValues;
-  }, [bufferedValues]);
+  const bufferedFieldChanges = useMemo(
+    () => getChangedFields(bufferedValues, entity, fields),
+    [bufferedValues, entity, fields]
+  );
 
   useEffect(() => {
-    entityRef.current = entity;
+    latestSnapshotRef.current = {
+      bufferedValues,
+      entity,
+    };
+  }, [bufferedValues, entity]);
+
+  useEffect(() => {
+    const previousEntity = previousEntityRef.current;
 
     setBufferedValues(currentBufferedValues => {
-      if (entity.id !== previousEntityRef.current.id) {
+      if (entity.id !== previousEntity.id) {
         return getBufferedValues(entity, fields);
       }
 
-      const { changed, nextBufferedValues } = fields.reduce(
-        (accumulator, field) => {
-          if (dirtyFieldsRef.current.has(field)) {
-            if (
-              areFieldValuesEqual(entity[field], currentBufferedValues[field])
-            ) {
-              dirtyFieldsRef.current.delete(field);
-            }
-            return accumulator;
-          }
-
-          if (
-            !areFieldValuesEqual(
-              entity[field],
-              previousEntityRef.current[field]
-            ) &&
-            areFieldValuesEqual(
-              currentBufferedValues[field],
-              previousEntityRef.current[field]
-            )
-          ) {
-            return {
-              changed: true,
-              nextBufferedValues: {
-                ...accumulator.nextBufferedValues,
-                [field]: entity[field],
-              },
-            };
-          }
-
-          return accumulator;
-        },
-        {
-          changed: false,
-          nextBufferedValues: currentBufferedValues,
-        }
-      );
-
-      return changed ? nextBufferedValues : currentBufferedValues;
+      return reconcileBufferedValues({
+        currentBufferedValues,
+        previousEntity,
+        nextEntity: entity,
+        fields,
+      });
     });
 
     previousEntityRef.current = entity;
@@ -127,9 +156,9 @@ const useBufferedConfigFields = props => {
   useEffect(() => {
     setBufferedChapterChangesPending(
       entity.id,
-      hasBufferedFieldChanges(bufferedValues, entity, fields)
+      !_.isEmpty(bufferedFieldChanges)
     );
-  }, [bufferedValues, entity, fields, setBufferedChapterChangesPending]);
+  }, [bufferedFieldChanges, entity.id, setBufferedChapterChangesPending]);
 
   useEffect(
     () => () => {
@@ -139,57 +168,38 @@ const useBufferedConfigFields = props => {
   );
 
   const clearScheduledCommit = useCallback(field => {
-    const pendingFieldCommit = commitTimeoutsRef.current[field];
+    const pendingFieldCommit = commitTimeoutsRef.current.get(field);
     if (!pendingFieldCommit) {
       return;
     }
 
     clearTimeout(pendingFieldCommit.timeoutId);
-    delete commitTimeoutsRef.current[field];
+
+    commitTimeoutsRef.current = removeScheduledCommit(
+      commitTimeoutsRef.current,
+      field
+    );
   }, []);
 
   const clearScheduledCommits = useCallback(() => {
-    Object.values(commitTimeoutsRef.current).forEach(pendingFieldCommit => {
+    commitTimeoutsRef.current.forEach(pendingFieldCommit => {
       clearTimeout(pendingFieldCommit.timeoutId);
     });
 
-    commitTimeoutsRef.current = {};
+    commitTimeoutsRef.current = new Map();
   }, []);
 
   const getBufferedFieldChanges = useCallback(() => {
-    const currentBufferedValues = bufferedValuesRef.current;
-    const currentEntity = entityRef.current;
+    const { bufferedValues: currentBufferedValues, entity: currentEntity } =
+      latestSnapshotRef.current;
 
-    return fields.reduce((nextFields, field) => {
-      if (
-        areFieldValuesEqual(currentBufferedValues[field], currentEntity[field])
-      ) {
-        return nextFields;
-      }
-
-      return {
-        ...nextFields,
-        [field]: currentBufferedValues[field],
-      };
-    }, {});
+    return getChangedFields(currentBufferedValues, currentEntity, fields);
   }, [fields]);
 
   const commitBufferedFields = useCallback(
     (nextFields, { defer = true } = {}) => {
-      const currentEntity = entityRef.current;
-      const changedFields = Object.entries(nextFields).reduce(
-        (accumulator, [field, value]) => {
-          if (areFieldValuesEqual(currentEntity[field], value)) {
-            return accumulator;
-          }
-
-          return {
-            ...accumulator,
-            [field]: value,
-          };
-        },
-        {}
-      );
+      const { entity: currentEntity } = latestSnapshotRef.current;
+      const changedFields = filterChangedFields(nextFields, currentEntity);
 
       if (_.isEmpty(changedFields)) {
         return;
@@ -211,16 +221,13 @@ const useBufferedConfigFields = props => {
 
   const flushBufferedChanges = useCallback(() => {
     clearScheduledCommits();
-    dirtyFieldsRef.current.clear();
-
-    const currentEntity = entityRef.current;
     const nextFields = getBufferedFieldChanges();
 
     if (_.isEmpty(nextFields)) {
       return null;
     }
 
-    return buildConfigUpdater(currentEntity, nextFields);
+    return buildConfigUpdater(latestSnapshotRef.current.entity, nextFields);
   }, [buildConfigUpdater, clearScheduledCommits, getBufferedFieldChanges]);
 
   useEffect(
@@ -230,54 +237,42 @@ const useBufferedConfigFields = props => {
 
   useEffect(
     () => () => {
-      const pendingBufferedChanges = flushBufferedChanges();
-      if (!pendingBufferedChanges) {
-        return;
-      }
-
+      clearScheduledCommits();
       commitBufferedFields(getBufferedFieldChanges(), { defer: false });
     },
-    [commitBufferedFields, flushBufferedChanges, getBufferedFieldChanges]
+    [clearScheduledCommits, commitBufferedFields, getBufferedFieldChanges]
   );
 
   const commitBufferedField = useCallback(
-    (field, value, options) => {
+    (field, value, { delayMs = 0, ...options } = {}) => {
       clearScheduledCommit(field);
-      commitBufferedFields({ [field]: value }, options);
-    },
-    [clearScheduledCommit, commitBufferedFields]
-  );
 
-  const scheduleBufferedFieldCommit = useCallback(
-    (field, value, delay) => {
-      clearScheduledCommit(field);
+      if (delayMs <= 0) {
+        commitBufferedFields({ [field]: value }, options);
+        return;
+      }
 
       const timeoutId = setTimeout(() => {
-        delete commitTimeoutsRef.current[field];
-        commitBufferedField(field, value);
-      }, delay);
+        commitTimeoutsRef.current = removeScheduledCommit(
+          commitTimeoutsRef.current,
+          field
+        );
+        commitBufferedFields({ [field]: value }, options);
+      }, delayMs);
 
-      commitTimeoutsRef.current[field] = {
-        timeoutId,
-        value,
-      };
+      commitTimeoutsRef.current = addScheduledCommit(
+        commitTimeoutsRef.current,
+        field,
+        { timeoutId }
+      );
     },
-    [clearScheduledCommit, commitBufferedField]
+    [clearScheduledCommit, commitBufferedFields]
   );
 
   const updateBufferedField = useCallback((field, value) => {
     setBufferedValues(currentBufferedValues => {
       if (areFieldValuesEqual(currentBufferedValues[field], value)) {
-        if (areFieldValuesEqual(value, entityRef.current[field])) {
-          dirtyFieldsRef.current.delete(field);
-        }
         return currentBufferedValues;
-      }
-
-      if (areFieldValuesEqual(value, entityRef.current[field])) {
-        dirtyFieldsRef.current.delete(field);
-      } else {
-        dirtyFieldsRef.current.add(field);
       }
 
       return {
@@ -289,7 +284,10 @@ const useBufferedConfigFields = props => {
 
   const getBufferedFieldBlurHandler = useCallback(
     field => () => {
-      commitBufferedField(field, bufferedValuesRef.current[field]);
+      commitBufferedField(
+        field,
+        latestSnapshotRef.current.bufferedValues[field]
+      );
     },
     [commitBufferedField]
   );
@@ -299,7 +297,6 @@ const useBufferedConfigFields = props => {
     effectiveEntity,
     commitBufferedField,
     getBufferedFieldBlurHandler,
-    scheduleBufferedFieldCommit,
     updateBufferedField,
   };
 };
