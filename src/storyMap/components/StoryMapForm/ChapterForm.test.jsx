@@ -176,6 +176,73 @@ test('ChapterForm flushes pending description changes on unmount', async () => {
   );
 });
 
+test('ChapterForm preserves dirty buffered fields until the record catches up', async () => {
+  const view = await renderChapterForm();
+
+  await act(async () =>
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Chapter description' }),
+      {
+        target: { value: 'Local description' },
+      }
+    )
+  );
+
+  await act(async () => {
+    view.rerender(
+      <BufferedChapterForm
+        theme="dark"
+        record={{
+          ...baseRecord,
+          title: 'Server title',
+          description: 'Server description',
+        }}
+      />
+    );
+  });
+
+  expect(screen.getByRole('textbox', { name: 'Chapter title' })).toHaveValue(
+    'Server title'
+  );
+  expect(
+    screen.getByRole('textbox', { name: 'Chapter description' })
+  ).toHaveValue('Local description');
+
+  await act(async () => {
+    view.rerender(
+      <BufferedChapterForm
+        theme="dark"
+        record={{
+          ...baseRecord,
+          title: 'Server title',
+          description: 'Local description',
+        }}
+      />
+    );
+  });
+
+  await act(async () => {
+    view.rerender(
+      <BufferedChapterForm
+        theme="dark"
+        record={{
+          ...baseRecord,
+          title: 'Server title',
+          description: 'Canonical description',
+        }}
+      />
+    );
+  });
+
+  expect(
+    screen.getByRole('textbox', { name: 'Chapter description' })
+  ).toHaveValue('Canonical description');
+
+  await act(async () => {
+    view.unmount();
+  });
+});
+
 test('ChapterForm updates alignment locally and commits it', async () => {
   await renderChapterForm();
 

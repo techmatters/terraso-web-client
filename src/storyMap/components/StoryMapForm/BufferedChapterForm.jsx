@@ -23,6 +23,10 @@ import useBufferedConfigFields from 'terraso-web-client/storyMap/components/Stor
 
 const TEXT_COMMIT_DEBOUNCE = 500;
 const BUFFERED_CHANGE_FIELDS = ['title', 'description', 'alignment'];
+const BUFFERED_FIELD_COMMIT_OPTIONS = {
+  title: { delayMs: TEXT_COMMIT_DEBOUNCE },
+  description: { delayMs: TEXT_COMMIT_DEBOUNCE },
+};
 
 const buildChapterConfigUpdater = (record, nextFields) => config => ({
   ...config,
@@ -44,7 +48,6 @@ const BufferedChapterForm = ({ theme, record }) => {
     effectiveEntity: effectiveRecord,
     commitBufferedField,
     getBufferedFieldBlurHandler,
-    scheduleBufferedFieldCommit,
     updateBufferedField,
   } = useBufferedConfigFields({
     buildConfigUpdater: buildChapterConfigUpdater,
@@ -57,15 +60,9 @@ const BufferedChapterForm = ({ theme, record }) => {
 
   const onFieldChange = useCallback(
     field => value => {
-      if (field === 'title' || field === 'description') {
+      if (BUFFERED_CHANGE_FIELDS.includes(field)) {
         updateBufferedField(field, value);
-        scheduleBufferedFieldCommit(field, value, TEXT_COMMIT_DEBOUNCE);
-        return;
-      }
-
-      if (field === 'alignment') {
-        updateBufferedField(field, value);
-        commitBufferedField(field, value);
+        commitBufferedField(field, value, BUFFERED_FIELD_COMMIT_OPTIONS[field]);
         return;
       }
 
@@ -76,13 +73,7 @@ const BufferedChapterForm = ({ theme, record }) => {
         ),
       }));
     },
-    [
-      commitBufferedField,
-      record.id,
-      scheduleBufferedFieldCommit,
-      setConfig,
-      updateBufferedField,
-    ]
+    [commitBufferedField, record.id, setConfig, updateBufferedField]
   );
 
   return (
