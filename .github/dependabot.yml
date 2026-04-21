@@ -11,8 +11,6 @@ updates:
       day: 'monday'
     allow:
       - dependency-type: all
-    cooldown:
-      default-days: 30
     groups:
       security-updates:
         applies-to: security-updates
@@ -30,8 +28,6 @@ updates:
       day: 'monday'
     allow:
       - dependency-type: all
-    cooldown:
-      default-days: 30
     groups:
       security-updates:
         applies-to: security-updates
