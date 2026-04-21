@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import AlignHorizontalCenterIcon from '@mui/icons-material/AlignHorizontalCenter';
@@ -42,7 +42,6 @@ import EditableMedia from 'terraso-web-client/storyMap/components/StoryMapForm/E
 import EditableRichText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableRichText';
 import EditableText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableText';
 import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
-import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { ALIGNMENTS } from 'terraso-web-client/storyMap/storyMapConstants';
 import { chapterHasVisualMedia } from 'terraso-web-client/storyMap/storyMapUtils';
 
@@ -62,10 +61,10 @@ const ChapterConfig = props => {
     onLocationChange,
     onMapStyleChange,
     onDataLayerChange,
+    getConfig,
     children,
   } = props;
   const [locationOpen, setLocationOpen] = useState(false);
-  const { config } = useStoryMapConfigContext();
 
   const options = useMemo(
     () => [
@@ -116,7 +115,7 @@ const ChapterConfig = props => {
           location={chapter.location}
           mapLayerConfig={_.get(
             `dataLayers.${chapter.dataLayerConfigId}`,
-            config
+            getConfig()
           )}
           title={chapter.title}
           chapterId={chapter.id}
@@ -157,39 +156,26 @@ const ChapterConfig = props => {
   );
 };
 
-const ChapterForm = ({ theme, record }) => {
+const ChapterForm = props => {
+  const {
+    theme,
+    record,
+    effectiveRecord,
+    bufferedValues,
+    init,
+    setConfig,
+    getConfig,
+    onFieldChange,
+    onFieldBlur,
+  } = props;
   const { t } = useTranslation();
-  const { setConfig, init } = useStoryMapConfigContext();
   const [isNew, setIsNew] = useState(false);
-
-  const classList = useMemo(
-    () =>
-      [
-        'step-container',
-        'active',
-        ALIGNMENTS[record.alignment] || 'centered',
-        ...(record.hidden ? ['hidden'] : []),
-      ].join(' '),
-    [record.alignment, record.hidden]
-  );
 
   useEffect(() => {
     if (init.current) {
       setIsNew(true);
     }
   }, [init, record.id]);
-
-  const onFieldChange = useCallback(
-    field => value => {
-      setConfig(config => ({
-        ...config,
-        chapters: config.chapters.map(chapter =>
-          chapter.id === record.id ? { ...chapter, [field]: value } : chapter
-        ),
-      }));
-    },
-    [record.id, setConfig]
-  );
 
   const onMapStyleChange = useCallback(
     style => {
@@ -229,6 +215,17 @@ const ChapterForm = ({ theme, record }) => {
     [record.id, setConfig]
   );
 
+  const classList = useMemo(
+    () =>
+      [
+        'step-container',
+        'active',
+        ALIGNMENTS[effectiveRecord.alignment] || 'centered',
+        ...(record.hidden ? ['hidden'] : []),
+      ].join(' '),
+    [effectiveRecord.alignment, record.hidden]
+  );
+
   return (
     <Box
       className={classList}
@@ -241,11 +238,12 @@ const ChapterForm = ({ theme, record }) => {
       {/* div with ID added because of an Intersection Observer issue with overflow */}
       <div className="step" id={record.id}></div>
       <ChapterConfig
-        chapter={record}
+        chapter={effectiveRecord}
         onAlignmentChange={onFieldChange('alignment')}
         onLocationChange={onFieldChange('location')}
         onMapStyleChange={onMapStyleChange}
         onDataLayerChange={onDataLayerChange}
+        getConfig={getConfig}
       >
         <Stack
           className={`${theme} step-content`}
@@ -255,8 +253,9 @@ const ChapterForm = ({ theme, record }) => {
           <EditableText
             placeholder={t('storyMap.form_chapter_title_placeholder')}
             Component="h3"
-            value={record.title}
+            value={bufferedValues.title}
             onChange={onFieldChange('title')}
+            onBlur={onFieldBlur('title')}
             focus={isNew}
             inputProps={{
               inputProps: {
@@ -272,8 +271,9 @@ const ChapterForm = ({ theme, record }) => {
           <EditableRichText
             label={t('storyMap.form_chapter_description_label')}
             placeholder={t('storyMap.form_chapter_description_placeholder')}
-            value={record.description}
+            value={bufferedValues.description}
             onChange={onFieldChange('description')}
+            onBlur={onFieldBlur('description')}
           />
         </Stack>
       </ChapterConfig>
@@ -281,4 +281,4 @@ const ChapterForm = ({ theme, record }) => {
   );
 };
 
-export default ChapterForm;
+export default memo(ChapterForm);

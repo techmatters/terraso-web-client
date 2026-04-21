@@ -86,6 +86,8 @@ const colorTheme = createTheme({
     },
     richText: {
       link: '#32B4F4',
+      highlightBackground: '#F7D85D',
+      highlightText: '#1F1A00',
     },
   },
 });

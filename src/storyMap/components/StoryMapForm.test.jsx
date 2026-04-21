@@ -35,7 +35,10 @@ import {
   TILESET_STATUS_READY,
 } from 'terraso-web-client/sharedData/sharedDataConstants';
 import StoryMapForm from 'terraso-web-client/storyMap/components/StoryMapForm/index';
-import { StoryMapConfigContextProvider } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import {
+  StoryMapConfigContextProvider,
+  useStoryMapConfigContext,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 
 // Mock mapboxgl
@@ -605,6 +608,155 @@ test('StoryMapForm: Title blur without changes should not trigger save', async (
   expect(onSaveDraft).not.toHaveBeenCalled();
 });
 
+test('StoryMapForm: Reverting chapter buffered changes to the original value does not autosave', async () => {
+  const { onSaveDraft } = await setup({
+    config: BASE_CONFIG,
+    autoSaveDebounce: 100,
+  });
+
+  const header = screen.getByRole('region', { name: 'Story editor Header' });
+  const chapterSection = screen.getByRole('region', {
+    name: 'Chapter: Chapter 1',
+  });
+  const descriptionInput = within(chapterSection).getByRole('textbox', {
+    name: 'Chapter description',
+  });
+
+  await act(async () =>
+    fireEvent.change(descriptionInput, {
+      target: { value: 'Transient chapter description' },
+    })
+  );
+
+  expect(within(header).getByText('Saving…')).toBeInTheDocument();
+
+  await act(async () =>
+    fireEvent.change(descriptionInput, {
+      target: { value: 'Chapter 1 description' },
+    })
+  );
+
+  await act(async () => {
+    await new Promise(resolve => setTimeout(resolve, 700));
+  });
+
+  expect(onSaveDraft).not.toHaveBeenCalled();
+  expect(within(header).getByText('Draft saved')).toBeInTheDocument();
+});
+
+const StoryMapFormActionsProbe = () => {
+  const { addMediaFile, setConfig } = useStoryMapConfigContext();
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() =>
+          setConfig(config => ({ ...config, title: 'Updated Story Map Title' }))
+        }
+      >
+        mark config dirty
+      </button>
+      <button
+        type="button"
+        onClick={() =>
+          addMediaFile('file-content', {
+            name: 'story-map-image.png',
+            type: 'image/png',
+          })
+        }
+      >
+        add media file
+      </button>
+    </>
+  );
+};
+
+test('StoryMapForm: Media file changes stay debounced while config is dirty', async () => {
+  const pendingSaves = [];
+  const onPublish = jest.fn().mockResolvedValue();
+  const onSaveDraft = jest.fn().mockImplementation(
+    () =>
+      new Promise(resolve => {
+        pendingSaves.push(resolve);
+      })
+  );
+
+  await render(
+    <StoryMapConfigContextProvider
+      baseConfig={BASE_CONFIG}
+      storyMap={{
+        id: 'story-map-id-1',
+        memberships: [],
+      }}
+    >
+      <StoryMapForm
+        onPublish={onPublish}
+        onSaveDraft={onSaveDraft}
+        autoSaveDebounce={100}
+      />
+      <StoryMapFormActionsProbe />
+    </StoryMapConfigContextProvider>
+  );
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'mark config dirty' }));
+  });
+
+  await waitFor(() => {
+    expect(onSaveDraft).toHaveBeenCalledTimes(1);
+  });
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'add media file' }));
+  });
+
+  expect(onSaveDraft).toHaveBeenCalledTimes(1);
+
+  await act(async () => {
+    await new Promise(resolve => setTimeout(resolve, 150));
+  });
+
+  await waitFor(() => {
+    expect(onSaveDraft).toHaveBeenCalledTimes(2);
+  });
+
+  await act(async () => {
+    pendingSaves.forEach(resolve => resolve());
+  });
+});
+
+test('StoryMapForm: Publish flushes pending chapter buffered changes', async () => {
+  const { onPublish, onSaveDraft } = await setup({
+    config: BASE_CONFIG,
+    autoSaveDebounce: 5000,
+  });
+
+  const chapterSection = screen.getByRole('region', {
+    name: 'Chapter: Chapter 1',
+  });
+
+  await act(async () =>
+    fireEvent.change(
+      within(chapterSection).getByRole('textbox', {
+        name: 'Chapter description',
+      }),
+      { target: { value: 'Published chapter description' } }
+    )
+  );
+
+  expect(onSaveDraft).not.toHaveBeenCalled();
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Publish' }))
+  );
+
+  expect(onPublish).toHaveBeenCalledTimes(1);
+  expect(onPublish.mock.calls[0][0].chapters[0].description).toBe(
+    'Published chapter description'
+  );
+});
+
 test('StoryMapForm: Sidebar navigation', async () => {
   const map = {
     ...baseMapOptions(),
@@ -719,7 +871,8 @@ test('StoryMapForm: Adds new chapter', async () => {
       subtitle: 'Story Map Subtitle',
       byline: 'by User',
     }),
-    expect.anything()
+    expect.anything(),
+    expect.any(Number)
   );
 
   // Change title and description
@@ -746,7 +899,8 @@ test('StoryMapForm: Adds new chapter', async () => {
         }),
       ]),
     }),
-    expect.anything()
+    expect.anything(),
+    expect.any(Number)
   );
 });
 test('StoryMapForm: Add embedded media', async () => {
@@ -1030,7 +1184,8 @@ test('StoryMapForm: Add map layer', async () => {
         }),
       },
     }),
-    expect.anything()
+    expect.anything(),
+    expect.any(Number)
   );
 });
 
@@ -1292,6 +1447,67 @@ test('StoryMapForm: Delete chapter', async () => {
       description: 'Chapter 3 description',
     })
   );
+});
+
+test('StoryMapForm: Deleting a chapter with pending buffered changes autosaves once', async () => {
+  const { onSaveDraft } = await setup({
+    config: BASE_CONFIG,
+    autoSaveDebounce: 100,
+  });
+
+  const chapterSection = screen.getByRole('region', {
+    name: 'Chapter: Chapter 1',
+  });
+
+  await act(async () =>
+    fireEvent.change(
+      within(chapterSection).getByRole('textbox', {
+        name: 'Chapter description',
+      }),
+      { target: { value: 'Buffered before delete' } }
+    )
+  );
+
+  const chaptersSection = screen.getByRole('navigation', {
+    name: 'Chapters sidebar',
+  });
+  const chapter1 = within(chaptersSection).getByRole('button', {
+    name: 'Chapter 1',
+  });
+  const menuButton = within(chapter1).getByRole('button', {
+    name: 'More options',
+  });
+
+  await act(async () => fireEvent.click(menuButton));
+
+  const menu = screen.getByRole('menu', {
+    name: 'Chapter 1 menu',
+  });
+  const deleteButton = within(menu).getByRole('menuitem', {
+    name: 'Delete Chapter',
+  });
+
+  await act(async () => fireEvent.click(deleteButton));
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Delete Chapter' }))
+  );
+
+  await waitFor(() => {
+    expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
+  });
+
+  await expectSave();
+
+  await act(async () => {
+    await new Promise(resolve => setTimeout(resolve, 700));
+  });
+
+  expect(onSaveDraft).toHaveBeenCalledTimes(1);
+  expect(onSaveDraft.mock.calls[0][0].chapters).toEqual([
+    expect.objectContaining({ id: 'chapter-2' }),
+    expect.objectContaining({ id: 'chapter-3' }),
+  ]);
 });
 
 test('StoryMapForm: Keep map on chapter change', async () => {

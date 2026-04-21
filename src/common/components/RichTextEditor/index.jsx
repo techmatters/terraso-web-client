@@ -15,7 +15,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Fragment, useCallback, useMemo, useState } from 'react';
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   createEditor,
@@ -25,9 +32,19 @@ import {
   Transforms,
 } from 'slate';
 import { withHistory } from 'slate-history';
-import { Editable, Slate, useSelected, useSlate, withReact } from 'slate-react';
+import {
+  Editable,
+  ReactEditor,
+  Slate,
+  useSelected,
+  useSlate,
+  withReact,
+} from 'slate-react';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
 import {
@@ -39,8 +56,11 @@ import {
   DialogContent,
   DialogTitle,
   FormHelperText,
+  MenuItem,
+  Link as MuiLink,
   OutlinedInput,
   Paper,
+  Select,
   Typography,
 } from '@mui/material';
 
@@ -56,6 +76,57 @@ import {
 } from 'terraso-web-client/common/utils';
 
 import { focusOutline } from 'terraso-web-client/theme';
+
+const BLOCK_OPTIONS = [
+  { value: 'paragraph', labelKey: 'common.rich_text_editor_toolbar_body' },
+  {
+    value: 'heading-one',
+    labelKey: 'common.rich_text_editor_toolbar_heading',
+  },
+];
+const LIST_TYPES = ['bulleted-list', 'numbered-list'];
+
+const EMPTY_VALUE = [
+  {
+    type: 'paragraph',
+    children: [{ text: '' }],
+  },
+];
+
+const normalizeValue = value => {
+  if (!value) {
+    return EMPTY_VALUE;
+  }
+
+  if (typeof value === 'string') {
+    return [
+      {
+        type: 'paragraph',
+        children: [{ text: value }],
+      },
+    ];
+  }
+
+  return value;
+};
+
+const areValuesEqual = (left, right) =>
+  JSON.stringify(left) === JSON.stringify(right);
+
+const HighlightMark = ({ children }) => (
+  <Box
+    component="mark"
+    sx={{
+      backgroundColor: 'richText.highlightBackground',
+      color: 'richText.highlightText',
+      borderRadius: '2px',
+      px: '0.15em',
+      py: '0.05em',
+    }}
+  >
+    {children}
+  </Box>
+);
 
 // Sample value:
 // const initialValue = [
@@ -97,8 +168,86 @@ import { focusOutline } from 'terraso-web-client/theme';
 // ];
 const FORMAT_WRAPPERS = {
   bold: 'strong',
+  highlight: HighlightMark,
   italic: 'em',
 };
+
+const isBlockNode = node =>
+  !Editor.isEditor(node) &&
+  SlateElement.isElement(node) &&
+  [
+    'paragraph',
+    'list-item',
+    ...BLOCK_OPTIONS.map(({ value }) => value),
+  ].includes(node.type);
+
+export const getCurrentBlockType = editor => {
+  const [match] = Editor.nodes(editor, {
+    match: isBlockNode,
+    mode: 'lowest',
+  });
+
+  if (!Array.isArray(match)) {
+    return 'paragraph';
+  }
+
+  const [node] = match;
+  return node.type === 'list-item' ? 'paragraph' : node.type;
+};
+
+export const isBlockActive = (editor, format) => {
+  const [match] = Editor.nodes(editor, {
+    match: node =>
+      !Editor.isEditor(node) &&
+      SlateElement.isElement(node) &&
+      node.type === format,
+  });
+
+  return !!match;
+};
+
+const unwrapLists = editor => {
+  Transforms.unwrapNodes(editor, {
+    match: node =>
+      !Editor.isEditor(node) &&
+      SlateElement.isElement(node) &&
+      LIST_TYPES.includes(node.type),
+    split: true,
+  });
+};
+
+export const setBlockType = (editor, format) => {
+  unwrapLists(editor);
+  Transforms.setNodes(editor, { type: format });
+};
+
+export const toggleBlock = (editor, format) => {
+  const isActive = isBlockActive(editor, format);
+
+  unwrapLists(editor);
+
+  if (LIST_TYPES.includes(format)) {
+    Transforms.setNodes(editor, {
+      type: isActive ? 'paragraph' : 'list-item',
+    });
+
+    if (!isActive) {
+      Transforms.wrapNodes(editor, {
+        type: format,
+        children: [],
+      });
+    }
+
+    return;
+  }
+
+  Transforms.setNodes(editor, {
+    type: isActive ? 'paragraph' : format,
+  });
+};
+
+export const isContentChangeOperation = operation =>
+  operation.type !== 'set_selection';
 
 const withInlines = editor => {
   const { insertData, insertText, isInline } = editor;
@@ -180,8 +329,40 @@ const InlineChromiumBugfix = () => (
   </span>
 );
 
-const LinkComponent = ({ attributes, children, element }) => {
+const LinkComponent = ({ attributes, children, element, editable }) => {
   const selected = useSelected();
+
+  const onEditableClick = useCallback(
+    event => {
+      if (event.metaKey || event.ctrlKey) {
+        window.open(element.url, '_blank', 'noopener,noreferrer');
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    [element.url]
+  );
+
+  if (editable) {
+    return (
+      <MuiLink
+        href={element.url}
+        onClick={onEditableClick}
+        {...attributes}
+        sx={{
+          textDecoration: 'underline',
+          color: 'richText.link',
+          ...(selected ? { boxShadow: '0 0 0 3px #ddd' } : null),
+        }}
+      >
+        <InlineChromiumBugfix />
+        {children}
+        <InlineChromiumBugfix />
+      </MuiLink>
+    );
+  }
+
   return (
     <ExternalLink
       href={element.url}
@@ -199,10 +380,10 @@ const LinkComponent = ({ attributes, children, element }) => {
 };
 
 const Element = props => {
-  const { attributes, children, element } = props;
+  const { attributes, children, element, editable } = props;
   switch (element.type) {
     case 'link':
-      return <LinkComponent {...props} />;
+      return <LinkComponent {...props} editable={editable} />;
     case 'bulleted-list':
       return <ul {...attributes}>{children}</ul>;
     case 'heading-one':
@@ -275,7 +456,7 @@ const Tooltip = withProps(BaseTooltip, {
   },
 });
 
-const AddLinkButton = props => {
+const LinkButton = props => {
   const { t } = useTranslation();
   const { disabled } = props;
   const editor = useSlate();
@@ -283,15 +464,22 @@ const AddLinkButton = props => {
   const [url, setUrl] = useState('');
   const [error, setError] = useState();
   const [insertLink, setInsertLink] = useState();
+  const linkActive = isLinkActive(editor);
 
   const onButtonClick = useCallback(
     event => {
       event.preventDefault();
+
+      if (linkActive) {
+        unwrapLink(editor);
+        return;
+      }
+
       setInsertLink(() => insertLinkPartial(editor));
       setOpen(true);
       setUrl('');
     },
-    [editor]
+    [editor, linkActive]
   );
 
   const handleClose = useCallback(() => {
@@ -312,13 +500,11 @@ const AddLinkButton = props => {
   const onInputChange = useCallback(event => setUrl(event.target.value), []);
 
   const label = useMemo(
-    () => t('common.rich_text_editor_toolbar_link_add'),
-    [t]
-  );
-
-  const buttonDisabled = useMemo(
-    () => isLinkActive(editor) || disabled,
-    [disabled, editor]
+    () =>
+      linkActive
+        ? t('common.rich_text_editor_toolbar_link_remove')
+        : t('common.rich_text_editor_toolbar_link_add'),
+    [linkActive, t]
   );
 
   return (
@@ -349,48 +535,16 @@ const AddLinkButton = props => {
           </Button>
         </DialogActions>
       </Dialog>
-      <ToolbarButtonContainer tooltip={label} disabled={buttonDisabled}>
+      <ToolbarButtonContainer tooltip={label} disabled={disabled}>
         <Button
           aria-label={label}
-          disabled={buttonDisabled}
+          disabled={disabled}
           onMouseDown={onButtonClick}
         >
-          <InsertLinkIcon />
+          {linkActive ? <LinkOffIcon /> : <InsertLinkIcon />}
         </Button>
       </ToolbarButtonContainer>
     </>
-  );
-};
-
-const RemoveLinkButton = props => {
-  const { t } = useTranslation();
-  const { disabled } = props;
-  const editor = useSlate();
-
-  const label = useMemo(
-    () => t('common.rich_text_editor_toolbar_link_remove'),
-    [t]
-  );
-
-  const buttonDisabled = useMemo(
-    () => !isLinkActive(editor) || disabled,
-    [disabled, editor]
-  );
-
-  return (
-    <ToolbarButtonContainer tooltip={label} disabled={buttonDisabled}>
-      <Button
-        aria-label={label}
-        disabled={buttonDisabled}
-        onMouseDown={event => {
-          if (isLinkActive(editor)) {
-            unwrapLink(editor);
-          }
-        }}
-      >
-        <LinkOffIcon />
-      </Button>
-    </ToolbarButtonContainer>
   );
 };
 
@@ -423,12 +577,15 @@ const ToolbarButtonContainer = props => {
 const MarkButton = props => {
   const editor = useSlate();
   const { format, Icon, label, disabled } = props;
+  const active = isMarkActive(editor, format);
 
   return (
     <ToolbarButtonContainer tooltip={label} disabled={disabled}>
       <Button
         disabled={disabled}
         aria-label={label}
+        aria-pressed={active}
+        sx={active ? { bgcolor: 'gray.lite1' } : null}
         onMouseDown={event => {
           event.preventDefault();
           toggleMark(editor, format);
@@ -440,12 +597,103 @@ const MarkButton = props => {
   );
 };
 
+const BlockButton = props => {
+  const editor = useSlate();
+  const { format, Icon, label, disabled } = props;
+  const active = isBlockActive(editor, format);
+
+  return (
+    <ToolbarButtonContainer tooltip={label} disabled={disabled}>
+      <Button
+        disabled={disabled}
+        aria-label={label}
+        aria-pressed={active}
+        sx={active ? { bgcolor: 'gray.lite1' } : null}
+        onMouseDown={event => {
+          event.preventDefault();
+          toggleBlock(editor, format);
+        }}
+      >
+        <Icon />
+      </Button>
+    </ToolbarButtonContainer>
+  );
+};
+
+const StyleSelect = props => {
+  const { t } = useTranslation();
+  const editor = useSlate();
+  const { disabled, selectionRef } = props;
+
+  const value = getCurrentBlockType(editor);
+  const label = t('common.rich_text_editor_toolbar_style_label');
+
+  const onChange = useCallback(
+    event => {
+      if (selectionRef.current) {
+        ReactEditor.focus(editor);
+        Transforms.select(editor, selectionRef.current);
+      }
+
+      setBlockType(editor, event.target.value);
+    },
+    [editor, selectionRef]
+  );
+
+  return (
+    <ToolbarButtonContainer tooltip={label} disabled={disabled}>
+      <Select
+        size="small"
+        variant="standard"
+        disabled={disabled}
+        value={value}
+        onChange={onChange}
+        onMouseDownCapture={() => {
+          if (editor.selection) {
+            selectionRef.current = editor.selection;
+          }
+        }}
+        disableUnderline
+        inputProps={{ 'aria-label': label }}
+        MenuProps={{
+          disablePortal: true,
+          MenuListProps: {
+            'aria-label': label,
+          },
+        }}
+        sx={{
+          minWidth: 112,
+          px: 1,
+          '& .MuiSelect-select': {
+            py: 1,
+            pr: 3,
+            fontSize: '0.875rem',
+          },
+        }}
+        renderValue={selected =>
+          t(
+            BLOCK_OPTIONS.find(option => option.value === selected)?.labelKey ??
+              'common.rich_text_editor_toolbar_body'
+          )
+        }
+      >
+        {BLOCK_OPTIONS.map(option => (
+          <MenuItem key={option.value} value={option.value}>
+            {t(option.labelKey)}
+          </MenuItem>
+        ))}
+      </Select>
+    </ToolbarButtonContainer>
+  );
+};
+
 const RichTextEditor = props => {
   const { t } = useTranslation();
   const {
     id,
     label,
     editable = true,
+    onBlur,
     value,
     onChange,
     placeholder,
@@ -454,31 +702,64 @@ const RichTextEditor = props => {
   } = props;
 
   const [focused, setFocused] = useState(initialFocused);
+  const containerRef = useRef(null);
+  const selectionRef = useRef();
+  const syncingExternalValueRef = useRef(false);
 
   const editor = useMemo(
     () => withInlines(withHistory(withReact(createEditor()))),
     []
   );
 
-  const parsedValue = useMemo(() => {
-    if (!value) {
-      return [
-        {
-          type: 'paragraph',
-          children: [{ text: '' }],
-        },
-      ];
+  const onChangeWrapper = useCallback(
+    nextValue => {
+      if (syncingExternalValueRef.current) {
+        return;
+      }
+
+      if (editor.selection) {
+        selectionRef.current = editor.selection;
+      }
+
+      if (!onChange) {
+        return;
+      }
+
+      const hasContentChange = editor.operations.some(isContentChangeOperation);
+      if (!hasContentChange) {
+        return;
+      }
+
+      onChange(nextValue);
+    },
+    [editor, onChange]
+  );
+
+  const parsedValue = useMemo(() => normalizeValue(value), [value]);
+
+  useEffect(() => {
+    if (focused) {
+      return;
     }
-    if (typeof value === 'string') {
-      return [
-        {
-          type: 'paragraph',
-          children: [{ text: value }],
-        },
-      ];
+    if (areValuesEqual(editor.children, parsedValue)) {
+      return;
     }
-    return value;
-  }, [value]);
+
+    syncingExternalValueRef.current = true;
+
+    Editor.withoutNormalizing(editor, () => {
+      editor.children = parsedValue;
+      editor.selection = null;
+    });
+
+    editor.history = {
+      undos: [],
+      redos: [],
+    };
+    editor.onChange();
+
+    syncingExternalValueRef.current = false;
+  }, [editor, focused, parsedValue]);
 
   const Container = useMemo(
     () =>
@@ -491,67 +772,109 @@ const RichTextEditor = props => {
     [addContainer]
   );
 
+  const renderElement = useCallback(
+    props => <Element {...props} editable={editable} />,
+    [editable]
+  );
+
+  const renderPlaceholder = useCallback(
+    ({ children, attributes }) => (
+      <Box component="span" {...attributes}>
+        <Typography component="span" variant="subtitle1" sx={{ lineHeight: 3 }}>
+          {children}
+        </Typography>
+      </Box>
+    ),
+    []
+  );
+
   return (
     <Container>
-      <Slate editor={editor} initialValue={parsedValue} onChange={onChange}>
-        {editable && (
-          <Toolbar
-            groups={[
-              <>
-                <MarkButton
-                  disabled={!focused}
-                  format="bold"
-                  Icon={FormatBoldIcon}
-                  label={t('common.rich_text_editor_toolbar_bold')}
-                />
-                <MarkButton
-                  disabled={!focused}
-                  format="italic"
-                  Icon={FormatItalicIcon}
-                  label={t('common.rich_text_editor_toolbar_italic')}
-                />
-              </>,
-              <>
-                <AddLinkButton disabled={!focused} />
-                <RemoveLinkButton disabled={!focused} />
-              </>,
-            ]}
-          />
-        )}
-        <Box
-          component={Editable}
-          id={id}
-          aria-label={label}
-          sx={
-            addContainer
-              ? {
-                  pl: 2,
-                  pr: 2,
-                  overflow: 'hidden',
-                  outline: 'none',
-                  '&:focus': focusOutline,
-                }
-              : null
+      <Box
+        ref={containerRef}
+        onFocus={() => setFocused(true)}
+        onBlur={event => {
+          if (event.currentTarget.contains(event.relatedTarget)) {
+            return;
           }
-          readOnly={!editable}
-          renderElement={Element}
-          renderLeaf={Leaf}
-          placeholder={placeholder}
-          renderPlaceholder={({ children, attributes }) => (
-            <Box component="span" {...attributes}>
-              <Typography
-                component="span"
-                variant="subtitle1"
-                sx={{ lineHeight: 3 }}
-              >
-                {children}
-              </Typography>
-            </Box>
+
+          setFocused(false);
+          onBlur?.(event);
+        }}
+      >
+        <Slate
+          editor={editor}
+          initialValue={parsedValue}
+          onChange={onChangeWrapper}
+        >
+          {editable && (
+            <Toolbar
+              groups={[
+                <>
+                  <MarkButton
+                    disabled={!focused}
+                    format="bold"
+                    Icon={FormatBoldIcon}
+                    label={t('common.rich_text_editor_toolbar_bold')}
+                  />
+                  <MarkButton
+                    disabled={!focused}
+                    format="italic"
+                    Icon={FormatItalicIcon}
+                    label={t('common.rich_text_editor_toolbar_italic')}
+                  />
+                </>,
+                <>
+                  <LinkButton disabled={!focused} />
+                  <StyleSelect
+                    disabled={!focused}
+                    selectionRef={selectionRef}
+                  />
+                  <MarkButton
+                    disabled={!focused}
+                    format="highlight"
+                    Icon={BorderColorIcon}
+                    label={t('common.rich_text_editor_toolbar_highlight')}
+                  />
+                  <BlockButton
+                    disabled={!focused}
+                    format="numbered-list"
+                    Icon={FormatListNumberedIcon}
+                    label={t('common.rich_text_editor_toolbar_numbered_list')}
+                  />
+                  <BlockButton
+                    disabled={!focused}
+                    format="bulleted-list"
+                    Icon={FormatListBulletedIcon}
+                    label={t('common.rich_text_editor_toolbar_bulleted_list')}
+                  />
+                </>,
+              ]}
+            />
           )}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-        />
-      </Slate>
+          <Box
+            component={Editable}
+            id={id}
+            aria-label={label}
+            sx={
+              addContainer
+                ? {
+                    pl: 2,
+                    pr: 2,
+                    overflow: 'hidden',
+                    outline: 'none',
+                    '&:focus': focusOutline,
+                  }
+                : null
+            }
+            readOnly={!editable}
+            renderElement={renderElement}
+            renderLeaf={Leaf}
+            placeholder={placeholder}
+            renderPlaceholder={renderPlaceholder}
+          />
+        </Slate>
+      </Box>
     </Container>
   );
 };

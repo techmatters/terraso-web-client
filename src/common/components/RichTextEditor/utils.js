@@ -34,6 +34,7 @@ const ELEMENT_TAGS = {
 
 const TEXT_TAGS = {
   I: () => ({ italic: true }),
+  MARK: () => ({ highlight: true }),
   STRONG: () => ({ bold: true }),
 };
 
