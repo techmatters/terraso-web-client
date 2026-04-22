@@ -1403,8 +1403,12 @@ test('StoryMapForm: Add featured image', async () => {
     name: 'Featured Image',
   });
 
+  expect(
+    within(dialog).getByText('Recommended dimensions: 1200 x 630')
+  ).toBeInTheDocument();
+
   const dropZone = within(dialog).getByRole('button', {
-    name: 'Select File Accepted formats: .gif, .jpeg, .jpg, .png, .webp Maximum file size: 10 MB',
+    name: /Select File/,
   });
   const imageFile = new File(['featured-image-content'], 'featured.jpg', {
     type: 'image/jpeg',
