@@ -274,7 +274,7 @@ const StoryMapForm = props => {
           onDelete={onDeleteChapter}
           onMoveChapter={onMoveChapter}
         />
-        <Box sx={{ flex: 1, overflowY: 'scroll', position: 'relative' }}>
+        <Box sx={{ flex: 1 }}>
           <StoryMap
             config={config}
             onStepChange={setCurrentStepId}

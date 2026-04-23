@@ -24,7 +24,6 @@ import {
   within,
 } from 'terraso-web-client/tests/utils';
 import { when } from 'jest-when';
-import scrollama from 'scrollama';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { createMapMock } from 'terraso-web-client/tests/mapboxMock';
 
@@ -40,9 +39,6 @@ import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstant
 
 // Mock mapboxgl
 jest.mock('terraso-web-client/gis/mapbox', () => ({}));
-
-// Scrollama mock
-jest.mock('scrollama', () => jest.fn());
 
 // TODO test RichTextEditor
 // Right now there is no way to test it, see: https://github.com/ianstormtaylor/slate/issues/4902
@@ -287,22 +283,6 @@ beforeEach(() => {
   mapboxgl.Map.mockReturnValue(baseMapOptions());
   window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
-  const scroller = {
-    setup: function () {
-      return this;
-    },
-    onStepEnter: function (cb) {
-      this.stepEnter = cb;
-      return this;
-    },
-    onStepExit: function (cb) {
-      this.stepExit = cb;
-      return this;
-    },
-    resize: jest.fn(),
-    destroy: jest.fn(),
-  };
-  scrollama.mockImplementation(() => scroller);
   useAnalytics.mockReturnValue({
     trackEvent: jest.fn(),
   });
@@ -611,22 +591,17 @@ test('StoryMapForm: Sidebar navigation', async () => {
     getCenter: () => ({ lng: -99.91122777353772, lat: 21.64458705609789 }),
   };
   mapboxgl.Map.mockReturnValue(map);
-  const scroller = {
-    setup: function () {
-      return this;
-    },
-    onStepEnter: function (cb) {
-      this.stepEnter = cb;
-      return this;
-    },
-    onStepExit: function (cb) {
-      this.stepExit = cb;
-      return this;
-    },
-    resize: jest.fn(),
-    destroy: jest.fn(),
+
+  let intersectionObserverCallback;
+  const OriginalIntersectionObserver = globalThis.IntersectionObserver;
+  globalThis.IntersectionObserver = class {
+    constructor(cb) {
+      intersectionObserverCallback = cb;
+    }
+    observe() {}
+    unobserve() {}
+    disconnect() {}
   };
-  scrollama.mockImplementation(() => scroller);
 
   await setup({ config: BASE_CONFIG });
 
@@ -654,13 +629,14 @@ test('StoryMapForm: Sidebar navigation', async () => {
     name: 'Chapter 2',
   });
 
-  await waitFor(() => expect(scrollama).toHaveBeenCalled());
-
   // Trigger on chapter 1
   await act(async () => {
-    scroller.stepEnter({
-      element: document.querySelector('#chapter-1'),
-    });
+    intersectionObserverCallback([
+      {
+        isIntersecting: true,
+        target: { id: 'chapter-1' },
+      },
+    ]);
   });
   expect(chapter1).toHaveAttribute('aria-current', 'step');
   expect(chapter2).not.toHaveAttribute('aria-current', 'step');
@@ -669,13 +645,13 @@ test('StoryMapForm: Sidebar navigation', async () => {
   expect(map.flyTo).toHaveBeenCalledTimes(0);
 
   // Trigger on chapter 2
-  await waitFor(() =>
-    expect(document.querySelector('#chapter-2')).toBeInTheDocument()
-  );
   await act(async () => {
-    scroller.stepEnter({
-      element: document.querySelector('#chapter-2'),
-    });
+    intersectionObserverCallback([
+      {
+        isIntersecting: true,
+        target: { id: 'chapter-2' },
+      },
+    ]);
   });
   expect(chapter1).not.toHaveAttribute('aria-current', 'step');
   expect(chapter2).toHaveAttribute('aria-current', 'step');
@@ -685,13 +661,18 @@ test('StoryMapForm: Sidebar navigation', async () => {
 
   // Trigger on title
   await act(async () => {
-    scroller.stepEnter({
-      element: document.querySelector(`#${STORY_MAP_TITLE_ID}`),
-    });
+    intersectionObserverCallback([
+      {
+        isIntersecting: true,
+        target: { id: STORY_MAP_TITLE_ID },
+      },
+    ]);
   });
   expect(title).toHaveAttribute('aria-current', 'step');
   expect(chapter1).not.toHaveAttribute('aria-current', 'step');
   expect(chapter2).not.toHaveAttribute('aria-current', 'step');
+
+  globalThis.IntersectionObserver = OriginalIntersectionObserver;
 });
 
 test('StoryMapForm: Adds new chapter', async () => {
@@ -1304,35 +1285,28 @@ test('StoryMapForm: Keep map on chapter change', async () => {
     setPaintProperty: jest.fn(),
   };
   mapboxgl.Map.mockReturnValue(map);
-  const scroller = {
-    setup: function () {
-      return this;
-    },
-    onStepEnter: function (cb) {
-      this.stepEnter = cb;
-      return this;
-    },
-    onStepExit: function (cb) {
-      this.stepExit = cb;
-      return this;
-    },
-    resize: jest.fn(),
-    destroy: jest.fn(),
+
+  let intersectionObserverCallback;
+  const OriginalIntersectionObserver = globalThis.IntersectionObserver;
+  globalThis.IntersectionObserver = class {
+    constructor(cb) {
+      intersectionObserverCallback = cb;
+    }
+    observe() {}
+    unobserve() {}
+    disconnect() {}
   };
-  scrollama.mockImplementation(() => scroller);
 
   await setup({ config: BASE_CONFIG });
-
-  await waitFor(() => expect(scrollama).toHaveBeenCalled());
 
   // Go to chapter 1
   await waitFor(() =>
     expect(document.querySelector('#chapter-1')).toBeInTheDocument()
   );
   await act(async () =>
-    scroller.stepEnter({
-      element: document.querySelector('#chapter-1'),
-    })
+    intersectionObserverCallback([
+      { isIntersecting: true, target: { id: 'chapter-1' } },
+    ])
   );
 
   // Go to chapter 2
@@ -1340,16 +1314,9 @@ test('StoryMapForm: Keep map on chapter change', async () => {
     expect(document.querySelector('#chapter-2')).toBeInTheDocument()
   );
   await act(async () =>
-    scroller.stepEnter({
-      element: document.querySelector('#chapter-2'),
-      direction: 'down',
-    })
-  );
-  await act(async () =>
-    scroller.stepExit({
-      element: document.querySelector('#chapter-1'),
-      direction: 'down',
-    })
+    intersectionObserverCallback([
+      { isIntersecting: true, target: { id: 'chapter-2' } },
+    ])
   );
   await expect(map.setPaintProperty).toHaveBeenCalledWith(
     'layer1',
@@ -1364,16 +1331,9 @@ test('StoryMapForm: Keep map on chapter change', async () => {
 
   // Go to chapter 1
   await act(async () =>
-    scroller.stepEnter({
-      element: document.querySelector('#chapter-1'),
-      direction: 'up',
-    })
-  );
-  await act(async () =>
-    scroller.stepExit({
-      element: document.querySelector('#chapter-2'),
-      direction: 'up',
-    })
+    intersectionObserverCallback([
+      { isIntersecting: true, target: { id: 'chapter-1' } },
+    ])
   );
   await expect(map.setPaintProperty).toHaveBeenCalledWith(
     'layer1',
@@ -1385,6 +1345,8 @@ test('StoryMapForm: Keep map on chapter change', async () => {
     'fill-opacity',
     0
   );
+
+  globalThis.IntersectionObserver = OriginalIntersectionObserver;
 });
 
 test('StoryMapForm: Add featured image', async () => {
