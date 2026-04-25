@@ -15,14 +15,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import scrollama from 'scrollama';
 import { Box, useMediaQuery } from '@mui/material';
 
 import RichTextEditor from 'terraso-web-client/common/components/RichTextEditor/index';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
+import useActiveStep from 'terraso-web-client/storyMap/components/useActiveStep';
 import { startTransition } from 'terraso-web-client/storyMap/mapUtils';
 import {
   ALIGNMENTS,
@@ -85,11 +85,10 @@ const Embedded = ({ record }) => {
   );
 };
 
-const Chapter = ({ theme, record }) => {
+const Chapter = ({ theme, record, active }) => {
   const { t } = useTranslation();
-  const classList = [
+  const className = [
     'step-container',
-    'step',
     ALIGNMENTS[record.alignment] || 'centered',
     ...(record.hidden ? ['hidden'] : []),
   ].join(' ');
@@ -97,10 +96,12 @@ const Chapter = ({ theme, record }) => {
   const hasVisualMedia = chapterHasVisualMedia(record);
   return (
     <Box
-      id={record.id}
       component="section"
       aria-label={t('storyMap.view_chapter_label', { title: record.title })}
-      className={classList}
+      className={className}
+      sx={({ breakpoints }) => ({
+        [breakpoints.not('xs')]: { opacity: active ? 0.99 : 0.25 },
+      })}
     >
       <Box
         className={`${theme} step-content`}
@@ -133,7 +134,7 @@ const Chapter = ({ theme, record }) => {
 
 const Title = props => {
   const { t } = useTranslation();
-  const { config } = props;
+  const { config, active } = props;
 
   if (!config.title) {
     return null;
@@ -156,10 +157,12 @@ const Title = props => {
 
   return (
     <Box
-      id={STORY_MAP_TITLE_ID}
       component="section"
       aria-label={t('storyMap.view_title_label', { title: config.title })}
-      className="step step-container fully title"
+      className="step-container title fully"
+      sx={({ breakpoints }) => ({
+        [breakpoints.not('xs')]: { opacity: active ? 0.99 : 0.25 },
+      })}
     >
       <Box className={`${config.theme} step-content`}>
         <h1 id="story-view-title-id">{config.title}</h1>
@@ -172,43 +175,6 @@ const Title = props => {
       </Box>
     </Box>
   );
-};
-
-const Scroller = props => {
-  const { onStepChange, onReady } = props;
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    if (!isReady) {
-      return;
-    }
-    onReady?.();
-  }, [isReady, onReady]);
-
-  useEffect(() => {
-    const scroller = scrollama();
-    scroller
-      .setup({
-        root: document,
-        step: '.step',
-        offset: 0.5,
-      })
-      .onStepEnter(async response => {
-        onStepChange(response.element.id);
-        response.element.classList.add('active');
-      })
-      .onStepExit(response => {
-        response.element.classList.remove('active');
-      });
-
-    setIsReady(true);
-
-    return () => {
-      scroller.destroy();
-    };
-  }, [onStepChange]);
-
-  return null;
 };
 
 const MapTransitionController = ({ config, currentChapter }) => {
@@ -235,7 +201,7 @@ const MapTransitionController = ({ config, currentChapter }) => {
 // this is a cheap and idempotent operation, so we call it liberally.
 // it's called in a useEffect, which depends on:
 //   - the story map's config, to pick up chapter alignment changes
-//   - the current chapter, which is a piece of state updated by Scrollama
+//   - the current chapter, which is a piece of state updated by an IntersectionObserver hook
 //   - whether we're in a mobile viewport (which forces a centered chapter)
 //   - the map dimensions, so we readjust when the map's size changes
 const StoryMap = props => {
@@ -251,16 +217,16 @@ const StoryMap = props => {
   } = props;
 
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
-  const [currentChapter, setCurrentChapter] = useState(STORY_MAP_TITLE_ID);
   const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
+  const containerRef = useRef();
 
-  const onStepChangeWrapped = useCallback(
-    id => {
-      setCurrentChapter(id);
-      onStepChange?.(id);
-    },
-    [setCurrentChapter, onStepChange]
-  );
+  const { activeId, registerStep } = useActiveStep({
+    scrollRoot: isContained ? containerRef : null,
+    onStepChange,
+    onReady,
+  });
+
+  const currentChapter = activeId ?? STORY_MAP_TITLE_ID;
 
   const initialLocation = useMemo(() => {
     if (config.titleTransition?.location) {
@@ -281,6 +247,7 @@ const StoryMap = props => {
 
   return (
     <Box
+      ref={containerRef}
       component="section"
       aria-label={t('storyMap.view_map_label')}
       // we're using container queries here because of the CSS quirk that
@@ -352,14 +319,20 @@ const StoryMap = props => {
         id="features"
         className={ALIGNMENTS[config.alignment]}
       >
-        <Scroller onStepChange={onStepChangeWrapped} onReady={onReady} />
-        <TitleComponent config={config} />
-        {filteredChapters.map(chapter => (
-          <ChapterComponent
-            key={chapter.id}
-            theme={config.theme}
-            record={chapter}
+        <div ref={registerStep} id={STORY_MAP_TITLE_ID}>
+          <TitleComponent
+            config={config}
+            active={currentChapter === STORY_MAP_TITLE_ID}
           />
+        </div>
+        {filteredChapters.map(chapter => (
+          <div key={chapter.id} ref={registerStep} id={chapter.id}>
+            <ChapterComponent
+              theme={config.theme}
+              record={chapter}
+              active={currentChapter === chapter.id}
+            />
+          </div>
         ))}
       </Box>
       {config.footer && (
