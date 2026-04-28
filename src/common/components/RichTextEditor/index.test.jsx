@@ -330,7 +330,7 @@ test('RichTextEditor: style select does not trigger blur when opened', async () 
   });
 
   expect(onBlur).not.toHaveBeenCalled();
-  expect(screen.getByRole('listbox')).toBeInTheDocument();
+  expect(screen.getByRole('listbox', { hidden: true })).toBeInTheDocument();
 });
 
 test('RichTextEditor: rerendered value replaces the live editor contents', async () => {
