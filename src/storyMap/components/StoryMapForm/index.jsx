@@ -49,6 +49,20 @@ const BASE_CHAPTER = {
   onChapterEnter: [],
 };
 
+const buildAutoSaveSnapshot = ({
+  configRevision,
+  mediaFiles,
+  isConfigDirty,
+  saving,
+  saveError,
+}) => ({
+  configRevision,
+  mediaFiles,
+  isConfigDirty,
+  saving,
+  saveError,
+});
+
 const Preview = props => {
   const { getMediaFile } = useStoryMapConfigContext();
   const { config, onPublish } = props;
@@ -117,22 +131,30 @@ const StoryMapForm = props => {
   const [scrollToChapter, setScrollToChapter] = useState();
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
 
-  const [autoSaveData, setAutoSaveData] = useState({
-    configRevision,
-    mediaFiles,
-    isConfigDirty,
-    saving,
-    saveError,
-  });
-  const [autoSaveDataDebounced] = useDebounce(autoSaveData, autoSaveDebounce);
-  useEffect(() => {
-    setAutoSaveData({
+  const [autoSaveSnapshot, setAutoSaveSnapshot] = useState(() =>
+    buildAutoSaveSnapshot({
       configRevision,
       mediaFiles,
       isConfigDirty,
       saving,
       saveError,
-    });
+    })
+  );
+  const [debouncedAutoSaveSnapshot] = useDebounce(
+    autoSaveSnapshot,
+    autoSaveDebounce
+  );
+
+  useEffect(() => {
+    setAutoSaveSnapshot(
+      buildAutoSaveSnapshot({
+        configRevision,
+        mediaFiles,
+        isConfigDirty,
+        saving,
+        saveError,
+      })
+    );
   }, [configRevision, isConfigDirty, mediaFiles, saveError, saving]);
 
   useEffect(() => {
@@ -140,7 +162,7 @@ const StoryMapForm = props => {
       isConfigDirty: isDebouncedConfigDirty,
       configRevision: revision,
       mediaFiles: debouncedMediaFiles,
-    } = autoSaveDataDebounced;
+    } = debouncedAutoSaveSnapshot;
     if (!isDebouncedConfigDirty) {
       return;
     }
@@ -149,7 +171,7 @@ const StoryMapForm = props => {
       .catch(error => {
         logger.error('Error auto saving story map', error);
       });
-  }, [autoSaveDataDebounced, getConfig, onSaveDraft, saved]);
+  }, [debouncedAutoSaveSnapshot, getConfig, onSaveDraft, saved]);
 
   const { isBlocked, proceed, cancel } = useNavigationBlocker(
     isDirty,
