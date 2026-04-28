@@ -283,6 +283,21 @@ test('RichTextEditor: shows new highlight, list, and style controls', async () =
   expect(
     screen.getByRole('combobox', { name: 'Text style' })
   ).toBeInTheDocument();
+
+  const toolbar = screen.getByRole('toolbar', { name: 'Textbox toolbar' });
+  const controls = Array.from(
+    toolbar.querySelectorAll('button, [role="combobox"]')
+  ).map(control => control.getAttribute('aria-label'));
+
+  expect(controls).toEqual([
+    'Text style',
+    'Bold',
+    'Italic',
+    'Highlight',
+    'Link',
+    'Numbered list',
+    'Bulleted list',
+  ]);
 });
 
 test('RichTextEditor: style select does not trigger blur when opened', async () => {
@@ -419,6 +434,24 @@ test('RichTextEditor: setBlockType changes paragraph to a heading', () => {
     },
   ]);
   expect(getCurrentBlockType(editor)).toBe('heading-one');
+});
+
+test('RichTextEditor: renders the heading style option as h4', async () => {
+  await render(
+    <RichTextEditor
+      value={[
+        {
+          type: 'heading-one',
+          children: [{ text: 'Content heading' }],
+        },
+      ]}
+      editable={false}
+    />
+  );
+
+  expect(
+    screen.getByRole('heading', { name: 'Content heading', level: 4 })
+  ).toBeInTheDocument();
 });
 
 test('RichTextEditor: toggleBlock wraps paragraph selection in a bulleted list', () => {

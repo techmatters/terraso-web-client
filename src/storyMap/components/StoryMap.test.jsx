@@ -59,7 +59,7 @@ const testChapter = ({ title, description, image }) => {
     name: `Chapter: ${title}`,
   });
   expect(
-    within(chapterSection).getByRole('heading', { name: title })
+    within(chapterSection).getByRole('heading', { name: title, level: 3 })
   ).toBeInTheDocument();
 
   if (description) {
@@ -112,4 +112,40 @@ test('StoryMap: Use config style', async () => {
       style: CONFIG.style,
     })
   );
+});
+
+test('StoryMap: chapter content headings render below the chapter title level', async () => {
+  await render(
+    <StoryMap
+      config={{
+        ...CONFIG,
+        chapters: [
+          {
+            id: 'chapter-1',
+            title: 'Chapter 1',
+            description: [
+              {
+                type: 'heading-one',
+                children: [{ text: 'Content heading' }],
+              },
+            ],
+          },
+        ],
+      }}
+    />
+  );
+
+  const chapterSection = screen.getByRole('region', {
+    name: 'Chapter: Chapter 1',
+  });
+
+  expect(
+    within(chapterSection).getByRole('heading', { name: 'Chapter 1', level: 3 })
+  ).toBeInTheDocument();
+  expect(
+    within(chapterSection).getByRole('heading', {
+      name: 'Content heading',
+      level: 4,
+    })
+  ).toBeInTheDocument();
 });

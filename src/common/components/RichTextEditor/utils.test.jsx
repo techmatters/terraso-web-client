@@ -17,12 +17,13 @@
 
 import { deserialize } from 'terraso-web-client/common/components/RichTextEditor/utils';
 
-test('RichTextEditorUtils: deserialize', () => {
+test('RichTextEditorUtils: deserialize collapses HTML headings to heading-one', () => {
   const html = `<meta charset='utf-8'>
     <h1>Heading 1</h1>
     <span>Lorem ipsum dolor sit amet, consectetur <strong>adipiscing</strong> elit.</span>
     <br>
     <h2>Heading 2</h2>
+    <h6>Heading 6</h6>
     <p>
       <span>Nunc non ultrices eros. Sed tincidunt feugiat massa in egestas</span>
       <a href="https://www.terraso.org/">consectetur</a>
@@ -64,10 +65,21 @@ test('RichTextEditorUtils: deserialize', () => {
       text: ' elit.    \n    ',
     },
     {
-      type: 'heading-two',
+      type: 'heading-one',
       children: [
         {
           text: 'Heading 2',
+        },
+      ],
+    },
+    {
+      text: '    ',
+    },
+    {
+      type: 'heading-one',
+      children: [
+        {
+          text: 'Heading 6',
         },
       ],
     },
