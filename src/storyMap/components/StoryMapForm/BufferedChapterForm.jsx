@@ -19,23 +19,32 @@ import { useCallback } from 'react';
 
 import ChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/ChapterForm';
 import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
-import useBufferedConfigFields from 'terraso-web-client/storyMap/components/StoryMapForm/useBufferedConfigFields';
+import useBufferedChapterFields from 'terraso-web-client/storyMap/components/StoryMapForm/useBufferedChapterFields';
 
 const TEXT_COMMIT_DEBOUNCE = 500;
-const BUFFERED_CHANGE_FIELDS = ['title', 'description', 'alignment'];
-const BUFFERED_FIELD_COMMIT_OPTIONS = {
+const BUFFERED_CHAPTER_FIELDS = ['title', 'description', 'alignment'];
+const BUFFERED_CHAPTER_FIELD_COMMIT_OPTIONS = {
   title: { delayMs: TEXT_COMMIT_DEBOUNCE },
   description: { delayMs: TEXT_COMMIT_DEBOUNCE },
 };
 
-const buildChapterConfigUpdater = (record, nextFields) => config => ({
+const buildChapterConfigUpdater = (chapter, nextChapterFields) => config => ({
   ...config,
-  chapters: config.chapters.map(chapter =>
-    chapter.id === record.id ? { ...chapter, ...nextFields } : chapter
+  chapters: config.chapters.map(configChapter =>
+    configChapter.id === chapter.id
+      ? { ...configChapter, ...nextChapterFields }
+      : configChapter
   ),
 });
 
-const BufferedChapterForm = ({ theme, record }) => {
+const applyChapterFieldChange = (chapterId, fieldName, value) => config => ({
+  ...config,
+  chapters: config.chapters.map(chapter =>
+    chapter.id === chapterId ? { ...chapter, [fieldName]: value } : chapter
+  ),
+});
+
+const BufferedChapterForm = ({ theme, record: chapter }) => {
   const {
     setConfig,
     init,
@@ -44,49 +53,53 @@ const BufferedChapterForm = ({ theme, record }) => {
     getConfig,
   } = useStoryMapConfigActionsContext();
   const {
-    bufferedValues,
-    effectiveEntity: effectiveRecord,
-    commitBufferedField,
-    getBufferedFieldBlurHandler,
-    updateBufferedField,
-  } = useBufferedConfigFields({
-    buildConfigUpdater: buildChapterConfigUpdater,
-    entity: record,
-    fields: BUFFERED_CHANGE_FIELDS,
+    bufferedChapterValues,
+    effectiveChapter,
+    commitBufferedChapterField,
+    getBufferedChapterFieldBlurHandler,
+    updateBufferedChapterField,
+  } = useBufferedChapterFields({
+    buildChapterConfigUpdater,
+    chapter,
+    bufferedFieldNames: BUFFERED_CHAPTER_FIELDS,
     setBufferedChapterChangesPending,
-    registerFlusher: registerBufferedChapterChangesFlusher,
+    registerBufferedChapterChangesFlusher,
     setConfig,
   });
 
   const onFieldChange = useCallback(
-    field => value => {
-      if (BUFFERED_CHANGE_FIELDS.includes(field)) {
-        updateBufferedField(field, value);
-        commitBufferedField(field, value, BUFFERED_FIELD_COMMIT_OPTIONS[field]);
+    fieldName => value => {
+      if (BUFFERED_CHAPTER_FIELDS.includes(fieldName)) {
+        updateBufferedChapterField(fieldName, value);
+        commitBufferedChapterField(
+          fieldName,
+          value,
+          BUFFERED_CHAPTER_FIELD_COMMIT_OPTIONS[fieldName]
+        );
         return;
       }
 
-      setConfig(config => ({
-        ...config,
-        chapters: config.chapters.map(chapter =>
-          chapter.id === record.id ? { ...chapter, [field]: value } : chapter
-        ),
-      }));
+      setConfig(applyChapterFieldChange(chapter.id, fieldName, value));
     },
-    [commitBufferedField, record.id, setConfig, updateBufferedField]
+    [
+      chapter.id,
+      commitBufferedChapterField,
+      setConfig,
+      updateBufferedChapterField,
+    ]
   );
 
   return (
     <ChapterForm
       theme={theme}
-      record={record}
-      effectiveRecord={effectiveRecord}
-      bufferedValues={bufferedValues}
+      record={chapter}
+      effectiveRecord={effectiveChapter}
+      bufferedValues={bufferedChapterValues}
       init={init}
       setConfig={setConfig}
       getConfig={getConfig}
       onFieldChange={onFieldChange}
-      onFieldBlur={getBufferedFieldBlurHandler}
+      onFieldBlur={getBufferedChapterFieldBlurHandler}
     />
   );
 };
