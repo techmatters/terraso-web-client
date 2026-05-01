@@ -41,32 +41,11 @@ beforeEach(() => {
   });
 });
 
-test('StoryMapsToolHome: samples renders correctly', async () => {
+test('StoryMapsToolHome: community story maps are not rendered', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
     Promise.resolve({
-      samples: {
-        edges: [
-          {
-            node: {
-              id: 'id-1',
-              slug: 'id-1',
-              storyMapId: '46h36we',
-              title: 'Story 1',
-              isPublished: false,
-              updatedAt: '2023-01-31T22:25:42.916303+00:00',
-            },
-          },
-          {
-            node: {
-              id: 'id-2',
-              slug: 'id-2',
-              storyMapId: 'lftawa9',
-              title: 'Story 2',
-              isPublished: true,
-              updatedAt: '2023-01-31T22:25:42.916303+00:00',
-            },
-          },
-        ],
+      userStoryMaps: {
+        edges: [],
       },
     })
   );
@@ -89,25 +68,10 @@ test('StoryMapsToolHome: samples renders correctly', async () => {
     screen.getByRole('link', { name: 'Create Story Map' })
   ).toBeInTheDocument();
   expect(
-    screen.getByRole('region', {
+    screen.queryByRole('region', {
       name: 'Community Story Maps',
     })
-  ).toBeInTheDocument();
-  const list = screen.getByRole('list', {
-    name: 'Community Story Maps',
-  });
-  const items = within(list).getAllByRole('listitem');
-  expect(items.length).toBe(2);
-
-  expect(
-    within(items[0]).getByRole('link', { name: 'Story 2' })
-  ).toBeInTheDocument();
-  expect(
-    within(items[1]).getByRole('link', { name: 'Story 1' })
-  ).toBeInTheDocument();
-  expect(
-    within(items[0]).getByText(/By {{user.firstName}} {{user.lastName}}/i)
-  ).toBeInTheDocument();
+  ).not.toBeInTheDocument();
 });
 
 test('StoryMapsToolHome: user story maps render correctly', async () => {
@@ -167,6 +131,11 @@ test('StoryMapsToolHome: user story maps render correctly', async () => {
   expect(
     screen.getByRole('link', { name: 'Create Story Map' })
   ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('region', {
+      name: 'Community Story Maps',
+    })
+  ).not.toBeInTheDocument();
   const list = screen.getByRole('region', {
     name: "Jodies' Story Maps",
   });
@@ -185,7 +154,7 @@ test('StoryMapsToolHome: accept story map invite', async () => {
     trackEvent,
   });
   mockTerrasoAPIrequestGraphQL({
-    'query storyMapsHome': Promise.resolve({
+    'query userStoryMapsHome': Promise.resolve({
       userStoryMaps: {
         edges: [
           {
