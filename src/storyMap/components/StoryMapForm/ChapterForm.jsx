@@ -61,7 +61,7 @@ const ChapterConfig = props => {
     onLocationChange,
     onMapStyleChange,
     onDataLayerChange,
-    getConfig,
+    getLatestConfig,
     children,
   } = props;
   const [locationOpen, setLocationOpen] = useState(false);
@@ -115,7 +115,7 @@ const ChapterConfig = props => {
           location={chapter.location}
           mapLayerConfig={_.get(
             `dataLayers.${chapter.dataLayerConfigId}`,
-            getConfig()
+            getLatestConfig()
           )}
           title={chapter.title}
           chapterId={chapter.id}
@@ -159,29 +159,28 @@ const ChapterConfig = props => {
 const ChapterForm = props => {
   const {
     theme,
-    record,
-    effectiveRecord,
-    bufferedValues,
+    persistedChapter,
+    displayedChapter,
     init,
-    setConfig,
-    getConfig,
-    onFieldChange,
-    onFieldBlur,
+    updateConfig,
+    getLatestConfig,
+    getFieldChangeHandler,
+    getFieldBlurHandler,
   } = props;
   const { t } = useTranslation();
-  const [isNew, setIsNew] = useState(false);
+  const [shouldFocusTitle, setShouldFocusTitle] = useState(false);
 
   useEffect(() => {
     if (init.current) {
-      setIsNew(true);
+      setShouldFocusTitle(true);
     }
-  }, [init, record.id]);
+  }, [init, persistedChapter.id]);
 
   const onMapStyleChange = useCallback(
     style => {
-      setConfig(_.set('style', style));
+      updateConfig(_.set('style', style));
     },
-    [setConfig]
+    [updateConfig]
   );
 
   const onDataLayerChange = useCallback(
@@ -196,12 +195,12 @@ const ChapterForm = props => {
       const onChapterEnter = baseEvents;
       const onChapterExit = baseEvents.map(_.set('opacity', 0));
 
-      setConfig(config => ({
+      updateConfig(config => ({
         ...(dataLayerConfig
           ? _.set(`dataLayers.${dataLayerConfig.id}`, dataLayerConfig, config)
           : config),
         chapters: config.chapters.map(chapter =>
-          chapter.id === record.id
+          chapter.id === persistedChapter.id
             ? {
                 ...chapter,
                 dataLayerConfigId: dataLayerConfig?.id,
@@ -212,7 +211,7 @@ const ChapterForm = props => {
         ),
       }));
     },
-    [record.id, setConfig]
+    [persistedChapter.id, updateConfig]
   );
 
   const classList = useMemo(
@@ -220,10 +219,10 @@ const ChapterForm = props => {
       [
         'step-container',
         'active',
-        ALIGNMENTS[effectiveRecord.alignment] || 'centered',
-        ...(record.hidden ? ['hidden'] : []),
+        ALIGNMENTS[displayedChapter.alignment] || 'centered',
+        ...(persistedChapter.hidden ? ['hidden'] : []),
       ].join(' '),
-    [effectiveRecord.alignment, record.hidden]
+    [displayedChapter.alignment, persistedChapter.hidden]
   );
 
   return (
@@ -232,18 +231,19 @@ const ChapterForm = props => {
       direction="row"
       component="section"
       aria-label={t('storyMap.view_chapter_label', {
-        title: record.title || t('storyMap.form_chapter_no_title_label'),
+        title:
+          persistedChapter.title || t('storyMap.form_chapter_no_title_label'),
       })}
     >
       {/* div with ID added because of an Intersection Observer issue with overflow */}
-      <div className="step" id={record.id}></div>
+      <div className="step" id={persistedChapter.id}></div>
       <ChapterConfig
-        chapter={effectiveRecord}
-        onAlignmentChange={onFieldChange('alignment')}
-        onLocationChange={onFieldChange('location')}
+        chapter={displayedChapter}
+        onAlignmentChange={getFieldChangeHandler('alignment')}
+        onLocationChange={getFieldChangeHandler('location')}
         onMapStyleChange={onMapStyleChange}
         onDataLayerChange={onDataLayerChange}
-        getConfig={getConfig}
+        getLatestConfig={getLatestConfig}
       >
         <Stack
           className={`${theme} step-content`}
@@ -253,10 +253,10 @@ const ChapterForm = props => {
           <EditableText
             placeholder={t('storyMap.form_chapter_title_placeholder')}
             Component="h3"
-            value={bufferedValues.title}
-            onChange={onFieldChange('title')}
-            onBlur={onFieldBlur('title')}
-            focus={isNew}
+            value={displayedChapter.title}
+            onChange={getFieldChangeHandler('title')}
+            onBlur={getFieldBlurHandler('title')}
+            focus={shouldFocusTitle}
             inputProps={{
               inputProps: {
                 'aria-label': t('storyMap.form_chapter_title_label'),
@@ -265,15 +265,15 @@ const ChapterForm = props => {
           />
           <EditableMedia
             label={t('storyMap.form_chapter_media_label')}
-            value={record.media}
-            onChange={onFieldChange('media')}
+            value={persistedChapter.media}
+            onChange={getFieldChangeHandler('media')}
           />
           <EditableRichText
             label={t('storyMap.form_chapter_description_label')}
             placeholder={t('storyMap.form_chapter_description_placeholder')}
-            value={bufferedValues.description}
-            onChange={onFieldChange('description')}
-            onBlur={onFieldBlur('description')}
+            value={displayedChapter.description}
+            onChange={getFieldChangeHandler('description')}
+            onBlur={getFieldBlurHandler('description')}
           />
         </Stack>
       </ChapterConfig>

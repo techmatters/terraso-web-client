@@ -52,7 +52,7 @@ const StoryMapUpdate = props => {
   const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
   const [saved, setSaved] = useState();
-  const { storyMap, applySavedConfig } = useStoryMapConfigContext();
+  const { storyMap, applySavedRevisionConfig } = useStoryMapConfigContext();
 
   useDocumentTitle(
     t('storyMap.edit_document_title', {
@@ -96,7 +96,7 @@ const StoryMapUpdate = props => {
     );
   }, [storyMap, navigate, trackEvent, saved, t, dispatch]);
 
-  const save = useCallback(
+  const persistStoryMapUpdate = useCallback(
     (config, mediaFiles, publish, revision) =>
       dispatch(
         updateStoryMap({
@@ -116,8 +116,11 @@ const StoryMapUpdate = props => {
           const id = _.get('payload.id', data);
           const savedConfig = _.get('payload.configuration', data);
 
-          const applied = applySavedConfig(revision, savedConfig);
-          if (!applied) {
+          const didApplySavedRevisionConfig = applySavedRevisionConfig(
+            revision,
+            savedConfig
+          );
+          if (!didApplySavedRevisionConfig) {
             return false;
           }
 
@@ -132,15 +135,17 @@ const StoryMapUpdate = props => {
         }
         return Promise.reject(data);
       }),
-    [storyMap?.id, applySavedConfig, dispatch]
+    [storyMap?.id, applySavedRevisionConfig, dispatch]
   );
   const onPublish = useCallback(
-    (config, mediaFiles, revision) => save(config, mediaFiles, true, revision),
-    [save]
+    (config, mediaFiles, revision) =>
+      persistStoryMapUpdate(config, mediaFiles, true, revision),
+    [persistStoryMapUpdate]
   );
   const onSaveDraft = useCallback(
-    (config, mediaFiles, revision) => save(config, mediaFiles, false, revision),
-    [save]
+    (config, mediaFiles, revision) =>
+      persistStoryMapUpdate(config, mediaFiles, false, revision),
+    [persistStoryMapUpdate]
   );
 
   return <StoryMapForm onPublish={onPublish} onSaveDraft={onSaveDraft} />;
