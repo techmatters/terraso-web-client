@@ -25,10 +25,21 @@ import {
 } from 'react';
 import _ from 'lodash/fp';
 
+import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+
 const areFieldValuesEqual = (leftValue, rightValue) =>
   _.isEqual(leftValue, rightValue);
 
-const getBufferedChapterValues = (chapter, bufferedFieldNames) =>
+const buildChapterFieldUpdater = (chapterId, nextChapterFields) => config => ({
+  ...config,
+  chapters: config.chapters.map(configChapter =>
+    configChapter.id === chapterId
+      ? { ...configChapter, ...nextChapterFields }
+      : configChapter
+  ),
+});
+
+const pickInitialBufferedFieldValues = (chapter, bufferedFieldNames) =>
   bufferedFieldNames.reduce(
     (nextValues, fieldName) => ({
       ...nextValues,
@@ -37,48 +48,48 @@ const getBufferedChapterValues = (chapter, bufferedFieldNames) =>
     {}
   );
 
-const getChangedChapterFields = (
-  bufferedChapterValues,
+const calculateBufferedFieldChanges = (
+  bufferedFieldValues,
   chapter,
   bufferedFieldNames
 ) =>
   Object.fromEntries(
     bufferedFieldNames.flatMap(fieldName =>
-      areFieldValuesEqual(bufferedChapterValues[fieldName], chapter[fieldName])
+      areFieldValuesEqual(bufferedFieldValues[fieldName], chapter[fieldName])
         ? []
-        : [[fieldName, bufferedChapterValues[fieldName]]]
+        : [[fieldName, bufferedFieldValues[fieldName]]]
     )
   );
 
-const filterChangedChapterFields = (nextChapterFields, chapter) =>
+const getPersistableFieldChanges = (nextChapterFields, chapter) =>
   Object.fromEntries(
     Object.entries(nextChapterFields).filter(
       ([fieldName, value]) => !areFieldValuesEqual(chapter[fieldName], value)
     )
   );
 
-const shouldSyncBufferedChapterField = ({
-  currentBufferedChapterValues,
+const shouldRefreshBufferedFieldValue = ({
+  currentBufferedFieldValues,
   previousChapter,
   nextChapter,
   fieldName,
 }) =>
   !areFieldValuesEqual(nextChapter[fieldName], previousChapter[fieldName]) &&
   areFieldValuesEqual(
-    currentBufferedChapterValues[fieldName],
+    currentBufferedFieldValues[fieldName],
     previousChapter[fieldName]
   );
 
-const reconcileBufferedChapterValues = ({
-  currentBufferedChapterValues,
+const reconcileBufferedFieldValues = ({
+  currentBufferedFieldValues,
   previousChapter,
   nextChapter,
   bufferedFieldNames,
 }) => {
-  const syncedChapterFields = Object.fromEntries(
+  const refreshedFieldValues = Object.fromEntries(
     bufferedFieldNames.flatMap(fieldName =>
-      shouldSyncBufferedChapterField({
-        currentBufferedChapterValues,
+      shouldRefreshBufferedFieldValue({
+        currentBufferedFieldValues,
         previousChapter,
         nextChapter,
         fieldName,
@@ -88,77 +99,73 @@ const reconcileBufferedChapterValues = ({
     )
   );
 
-  return _.isEmpty(syncedChapterFields)
-    ? currentBufferedChapterValues
+  return _.isEmpty(refreshedFieldValues)
+    ? currentBufferedFieldValues
     : {
-        ...currentBufferedChapterValues,
-        ...syncedChapterFields,
+        ...currentBufferedFieldValues,
+        ...refreshedFieldValues,
       };
 };
 
-const removeScheduledCommit = (scheduledCommits, fieldName) => {
-  const nextScheduledCommits = new Map(scheduledCommits);
-  nextScheduledCommits.delete(fieldName);
-  return nextScheduledCommits;
-};
-
-const addScheduledCommit = (scheduledCommits, fieldName, pendingCommit) =>
-  new Map([...scheduledCommits, [fieldName, pendingCommit]]);
-
 const useBufferedChapterFields = props => {
+  const { chapter, bufferedFieldBehavior } = props;
   const {
-    buildChapterConfigUpdater,
-    chapter,
-    bufferedFieldNames,
-    setBufferedChapterChangesPending,
-    registerBufferedChapterChangesFlusher,
     setConfig,
-  } = props;
-  const [bufferedChapterValues, setBufferedChapterValues] = useState(() =>
-    getBufferedChapterValues(chapter, bufferedFieldNames)
+    setChapterHasBufferedChanges,
+    registerBufferedChapterUpdateBuilder,
+  } = useStoryMapConfigActionsContext();
+  const bufferedFieldNames = useMemo(
+    () => Object.keys(bufferedFieldBehavior),
+    [bufferedFieldBehavior]
   );
-  const latestChapterSnapshotRef = useRef({
-    bufferedChapterValues,
+  const [bufferedFieldValues, setBufferedFieldValues] = useState(() =>
+    pickInitialBufferedFieldValues(chapter, bufferedFieldNames)
+  );
+  const latestBufferedSnapshotRef = useRef({
+    bufferedFieldValues,
     chapter,
   });
   const previousChapterRef = useRef(chapter);
-  const commitTimeoutsRef = useRef(new Map());
+  const scheduledFieldCommitsRef = useRef(new Map());
 
-  const effectiveChapter = useMemo(
+  const displayedChapter = useMemo(
     () => ({
       ...chapter,
-      ...bufferedChapterValues,
+      ...bufferedFieldValues,
     }),
-    [bufferedChapterValues, chapter]
+    [bufferedFieldValues, chapter]
   );
 
-  const bufferedChapterFieldChanges = useMemo(
+  const pendingBufferedFieldChanges = useMemo(
     () =>
-      getChangedChapterFields(
-        bufferedChapterValues,
+      calculateBufferedFieldChanges(
+        bufferedFieldValues,
         chapter,
         bufferedFieldNames
       ),
-    [bufferedChapterValues, chapter, bufferedFieldNames]
+    [bufferedFieldValues, chapter, bufferedFieldNames]
+  );
+  const hasPendingBufferedFieldChanges = !_.isEmpty(
+    pendingBufferedFieldChanges
   );
 
   useEffect(() => {
-    latestChapterSnapshotRef.current = {
-      bufferedChapterValues,
+    latestBufferedSnapshotRef.current = {
+      bufferedFieldValues,
       chapter,
     };
-  }, [bufferedChapterValues, chapter]);
+  }, [bufferedFieldValues, chapter]);
 
   useEffect(() => {
     const previousChapter = previousChapterRef.current;
 
-    setBufferedChapterValues(currentBufferedChapterValues => {
+    setBufferedFieldValues(currentBufferedFieldValues => {
       if (chapter.id !== previousChapter.id) {
-        return getBufferedChapterValues(chapter, bufferedFieldNames);
+        return pickInitialBufferedFieldValues(chapter, bufferedFieldNames);
       }
 
-      return reconcileBufferedChapterValues({
-        currentBufferedChapterValues,
+      return reconcileBufferedFieldValues({
+        currentBufferedFieldValues,
         previousChapter,
         nextChapter: chapter,
         bufferedFieldNames,
@@ -169,73 +176,67 @@ const useBufferedChapterFields = props => {
   }, [chapter, bufferedFieldNames]);
 
   useEffect(() => {
-    setBufferedChapterChangesPending(
-      chapter.id,
-      !_.isEmpty(bufferedChapterFieldChanges)
-    );
+    setChapterHasBufferedChanges(chapter.id, hasPendingBufferedFieldChanges);
   }, [
-    bufferedChapterFieldChanges,
+    hasPendingBufferedFieldChanges,
     chapter.id,
-    setBufferedChapterChangesPending,
+    setChapterHasBufferedChanges,
   ]);
 
   useEffect(
     () => () => {
-      setBufferedChapterChangesPending(chapter.id, false);
+      setChapterHasBufferedChanges(chapter.id, false);
     },
-    [chapter.id, setBufferedChapterChangesPending]
+    [chapter.id, setChapterHasBufferedChanges]
   );
 
-  const clearScheduledCommit = useCallback(fieldName => {
-    const pendingFieldCommit = commitTimeoutsRef.current.get(fieldName);
+  const cancelScheduledFieldCommit = useCallback(fieldName => {
+    const pendingFieldCommit = scheduledFieldCommitsRef.current.get(fieldName);
     if (!pendingFieldCommit) {
       return;
     }
 
     clearTimeout(pendingFieldCommit.timeoutId);
 
-    commitTimeoutsRef.current = removeScheduledCommit(
-      commitTimeoutsRef.current,
-      fieldName
-    );
+    scheduledFieldCommitsRef.current.delete(fieldName);
   }, []);
 
-  const clearScheduledCommits = useCallback(() => {
-    commitTimeoutsRef.current.forEach(pendingFieldCommit => {
-      clearTimeout(pendingFieldCommit.timeoutId);
+  const clearScheduledFieldCommits = useCallback(() => {
+    scheduledFieldCommitsRef.current.forEach(({ timeoutId }) => {
+      clearTimeout(timeoutId);
     });
 
-    commitTimeoutsRef.current = new Map();
+    scheduledFieldCommitsRef.current.clear();
   }, []);
 
-  const getBufferedChapterFieldChanges = useCallback(() => {
+  const readPendingBufferedFieldChanges = useCallback(() => {
     const {
-      bufferedChapterValues: currentBufferedChapterValues,
+      bufferedFieldValues: currentBufferedFieldValues,
       chapter: currentChapter,
-    } = latestChapterSnapshotRef.current;
+    } = latestBufferedSnapshotRef.current;
 
-    return getChangedChapterFields(
-      currentBufferedChapterValues,
+    return calculateBufferedFieldChanges(
+      currentBufferedFieldValues,
       currentChapter,
       bufferedFieldNames
     );
   }, [bufferedFieldNames]);
 
-  const commitBufferedChapterFields = useCallback(
+  const persistBufferedFieldChanges = useCallback(
     (nextChapterFields, { defer = true } = {}) => {
-      const { chapter: currentChapter } = latestChapterSnapshotRef.current;
-      const changedChapterFields = filterChangedChapterFields(
+      const { chapter: currentChapter } = latestBufferedSnapshotRef.current;
+      const persistableFieldChanges = getPersistableFieldChanges(
         nextChapterFields,
         currentChapter
       );
 
-      if (_.isEmpty(changedChapterFields)) {
+      if (_.isEmpty(persistableFieldChanges)) {
         return;
       }
 
-      const configUpdater = buildChapterConfigUpdater(
-        currentChapter,
-        changedChapterFields
+      const configUpdater = buildChapterFieldUpdater(
+        currentChapter.id,
+        persistableFieldChanges
       );
 
       if (!defer) {
@@ -247,109 +248,131 @@ const useBufferedChapterFields = props => {
         setConfig(configUpdater);
       });
     },
-    [buildChapterConfigUpdater, setConfig]
+    [setConfig]
   );
 
-  const flushBufferedChapterChanges = useCallback(() => {
-    clearScheduledCommits();
-    const nextChapterFields = getBufferedChapterFieldChanges();
+  const buildBufferedChapterUpdate = useCallback(() => {
+    clearScheduledFieldCommits();
+    const nextChapterFields = readPendingBufferedFieldChanges();
 
     if (_.isEmpty(nextChapterFields)) {
       return null;
     }
 
-    return buildChapterConfigUpdater(
-      latestChapterSnapshotRef.current.chapter,
-      nextChapterFields
-    );
-  }, [
-    buildChapterConfigUpdater,
-    clearScheduledCommits,
-    getBufferedChapterFieldChanges,
-  ]);
+    const { chapter: currentChapter } = latestBufferedSnapshotRef.current;
+
+    return buildChapterFieldUpdater(currentChapter.id, nextChapterFields);
+  }, [clearScheduledFieldCommits, readPendingBufferedFieldChanges]);
 
   useEffect(
     () =>
-      registerBufferedChapterChangesFlusher(
+      registerBufferedChapterUpdateBuilder(
         chapter.id,
-        flushBufferedChapterChanges
+        buildBufferedChapterUpdate
       ),
     [
       chapter.id,
-      flushBufferedChapterChanges,
-      registerBufferedChapterChangesFlusher,
+      buildBufferedChapterUpdate,
+      registerBufferedChapterUpdateBuilder,
     ]
   );
 
   useEffect(
     () => () => {
-      clearScheduledCommits();
-      commitBufferedChapterFields(getBufferedChapterFieldChanges(), {
+      clearScheduledFieldCommits();
+      persistBufferedFieldChanges(readPendingBufferedFieldChanges(), {
         defer: false,
       });
     },
     [
-      clearScheduledCommits,
-      commitBufferedChapterFields,
-      getBufferedChapterFieldChanges,
+      clearScheduledFieldCommits,
+      persistBufferedFieldChanges,
+      readPendingBufferedFieldChanges,
     ]
   );
 
-  const commitBufferedChapterField = useCallback(
+  const scheduleBufferedFieldPersist = useCallback(
     (fieldName, value, { delayMs = 0, ...options } = {}) => {
-      clearScheduledCommit(fieldName);
+      cancelScheduledFieldCommit(fieldName);
 
       if (delayMs <= 0) {
-        commitBufferedChapterFields({ [fieldName]: value }, options);
+        persistBufferedFieldChanges({ [fieldName]: value }, options);
         return;
       }
 
       const timeoutId = setTimeout(() => {
-        commitTimeoutsRef.current = removeScheduledCommit(
-          commitTimeoutsRef.current,
-          fieldName
-        );
-        commitBufferedChapterFields({ [fieldName]: value }, options);
+        scheduledFieldCommitsRef.current.delete(fieldName);
+        persistBufferedFieldChanges({ [fieldName]: value }, options);
       }, delayMs);
 
-      commitTimeoutsRef.current = addScheduledCommit(
-        commitTimeoutsRef.current,
-        fieldName,
-        { timeoutId }
-      );
+      scheduledFieldCommitsRef.current.set(fieldName, { timeoutId });
     },
-    [clearScheduledCommit, commitBufferedChapterFields]
+    [cancelScheduledFieldCommit, persistBufferedFieldChanges]
   );
 
-  const updateBufferedChapterField = useCallback((fieldName, value) => {
-    setBufferedChapterValues(currentBufferedChapterValues => {
-      if (areFieldValuesEqual(currentBufferedChapterValues[fieldName], value)) {
-        return currentBufferedChapterValues;
+  const applyImmediateFieldChange = useCallback(
+    (fieldName, value) => {
+      setConfig(buildChapterFieldUpdater(chapter.id, { [fieldName]: value }));
+    },
+    [chapter.id, setConfig]
+  );
+
+  const handleFieldChange = useCallback(
+    (fieldName, value) => {
+      const fieldBehavior = bufferedFieldBehavior[fieldName];
+
+      if (!fieldBehavior) {
+        applyImmediateFieldChange(fieldName, value);
+        return;
       }
 
-      return {
-        ...currentBufferedChapterValues,
-        [fieldName]: value,
-      };
-    });
-  }, []);
+      setBufferedFieldValues(currentBufferedFieldValues => {
+        if (areFieldValuesEqual(currentBufferedFieldValues[fieldName], value)) {
+          return currentBufferedFieldValues;
+        }
 
-  const getBufferedChapterFieldBlurHandler = useCallback(
-    fieldName => () => {
-      commitBufferedChapterField(
-        fieldName,
-        latestChapterSnapshotRef.current.bufferedChapterValues[fieldName]
-      );
+        return {
+          ...currentBufferedFieldValues,
+          [fieldName]: value,
+        };
+      });
+
+      scheduleBufferedFieldPersist(fieldName, value, fieldBehavior);
     },
-    [commitBufferedChapterField]
+    [
+      applyImmediateFieldChange,
+      bufferedFieldBehavior,
+      scheduleBufferedFieldPersist,
+    ]
+  );
+
+  const getFieldChangeHandler = useCallback(
+    fieldName => value => {
+      handleFieldChange(fieldName, value);
+    },
+    [handleFieldChange]
+  );
+
+  const getFieldBlurHandler = useCallback(
+    fieldName => {
+      if (!bufferedFieldBehavior[fieldName]) {
+        return undefined;
+      }
+
+      return () => {
+        scheduleBufferedFieldPersist(
+          fieldName,
+          latestBufferedSnapshotRef.current.bufferedFieldValues[fieldName]
+        );
+      };
+    },
+    [bufferedFieldBehavior, scheduleBufferedFieldPersist]
   );
 
   return {
-    bufferedChapterValues,
-    effectiveChapter,
-    commitBufferedChapterField,
-    getBufferedChapterFieldBlurHandler,
-    updateBufferedChapterField,
+    displayedChapter,
+    getFieldBlurHandler,
+    getFieldChangeHandler,
   };
 };
 

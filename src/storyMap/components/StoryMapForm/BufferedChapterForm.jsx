@@ -22,84 +22,34 @@ import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/com
 import useBufferedChapterFields from 'terraso-web-client/storyMap/components/StoryMapForm/useBufferedChapterFields';
 
 const TEXT_COMMIT_DEBOUNCE = 500;
-const BUFFERED_CHAPTER_FIELDS = ['title', 'description', 'alignment'];
-const BUFFERED_CHAPTER_FIELD_COMMIT_OPTIONS = {
+const BUFFERED_CHAPTER_FIELD_BEHAVIOR = {
   title: { delayMs: TEXT_COMMIT_DEBOUNCE },
   description: { delayMs: TEXT_COMMIT_DEBOUNCE },
+  alignment: {},
 };
 
-const buildChapterConfigUpdater = (chapter, nextChapterFields) => config => ({
-  ...config,
-  chapters: config.chapters.map(configChapter =>
-    configChapter.id === chapter.id
-      ? { ...configChapter, ...nextChapterFields }
-      : configChapter
-  ),
-});
-
-const applyChapterFieldChange = (chapterId, fieldName, value) => config => ({
-  ...config,
-  chapters: config.chapters.map(chapter =>
-    chapter.id === chapterId ? { ...chapter, [fieldName]: value } : chapter
-  ),
-});
-
-const BufferedChapterForm = ({ theme, record: chapter }) => {
+const BufferedChapterForm = ({ theme, record: persistedChapter }) => {
   const {
-    setConfig,
+    setConfig: updateConfig,
+    getConfig: getLatestConfig,
     init,
-    setBufferedChapterChangesPending,
-    registerBufferedChapterChangesFlusher,
-    getConfig,
   } = useStoryMapConfigActionsContext();
-  const {
-    bufferedChapterValues,
-    effectiveChapter,
-    commitBufferedChapterField,
-    getBufferedChapterFieldBlurHandler,
-    updateBufferedChapterField,
-  } = useBufferedChapterFields({
-    buildChapterConfigUpdater,
-    chapter,
-    bufferedFieldNames: BUFFERED_CHAPTER_FIELDS,
-    setBufferedChapterChangesPending,
-    registerBufferedChapterChangesFlusher,
-    setConfig,
-  });
-
-  const onFieldChange = useCallback(
-    fieldName => value => {
-      if (BUFFERED_CHAPTER_FIELDS.includes(fieldName)) {
-        updateBufferedChapterField(fieldName, value);
-        commitBufferedChapterField(
-          fieldName,
-          value,
-          BUFFERED_CHAPTER_FIELD_COMMIT_OPTIONS[fieldName]
-        );
-        return;
-      }
-
-      setConfig(applyChapterFieldChange(chapter.id, fieldName, value));
-    },
-    [
-      chapter.id,
-      commitBufferedChapterField,
-      setConfig,
-      updateBufferedChapterField,
-    ]
-  );
+  const { displayedChapter, getFieldBlurHandler, getFieldChangeHandler } =
+    useBufferedChapterFields({
+      chapter: persistedChapter,
+      bufferedFieldBehavior: BUFFERED_CHAPTER_FIELD_BEHAVIOR,
+    });
 
   return (
     <ChapterForm
       theme={theme}
-      record={chapter}
-      effectiveRecord={effectiveChapter}
-      bufferedValues={bufferedChapterValues}
+      persistedChapter={persistedChapter}
+      displayedChapter={displayedChapter}
       init={init}
-      setConfig={setConfig}
-      getConfig={getConfig}
-      onFieldChange={onFieldChange}
-      onFieldBlur={getBufferedChapterFieldBlurHandler}
+      updateConfig={updateConfig}
+      getLatestConfig={getLatestConfig}
+      getFieldChangeHandler={getFieldChangeHandler}
+      getFieldBlurHandler={getFieldBlurHandler}
     />
   );
 };

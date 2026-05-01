@@ -36,10 +36,10 @@ const ContextProbe = () => {
     setConfig,
     isDirty,
     isConfigDirty,
-    saved,
+    markRevisionSaved,
     addMediaFile,
-    applySavedConfig,
-    setBufferedChapterChangesPending,
+    applySavedRevisionConfig,
+    setChapterHasBufferedChanges,
   } = useStoryMapConfigContext();
 
   return (
@@ -59,18 +59,16 @@ const ContextProbe = () => {
       >
         second change
       </button>
-      <button
-        onClick={() => setBufferedChapterChangesPending('chapter-1', true)}
-      >
+      <button onClick={() => setChapterHasBufferedChanges('chapter-1', true)}>
         set buffered dirty
       </button>
-      <button
-        onClick={() => setBufferedChapterChangesPending('chapter-1', false)}
-      >
+      <button onClick={() => setChapterHasBufferedChanges('chapter-1', false)}>
         clear buffered dirty
       </button>
-      <button onClick={() => saved(1)}>saved first revision</button>
-      <button onClick={() => saved(2)}>saved second revision</button>
+      <button onClick={() => markRevisionSaved(1)}>saved first revision</button>
+      <button onClick={() => markRevisionSaved(2)}>
+        saved second revision
+      </button>
       <button
         onClick={() =>
           addMediaFile('file-content', {
@@ -83,7 +81,7 @@ const ContextProbe = () => {
       </button>
       <button
         onClick={() =>
-          applySavedConfig(1, {
+          applySavedRevisionConfig(1, {
             ...baseConfig,
             title: 'Saved One',
           })
@@ -93,7 +91,7 @@ const ContextProbe = () => {
       </button>
       <button
         onClick={() =>
-          applySavedConfig(2, {
+          applySavedRevisionConfig(2, {
             ...baseConfig,
             title: 'Saved Two',
           })

@@ -64,8 +64,8 @@ jest.mock(
 );
 
 const setConfig = jest.fn();
-const registerBufferedChapterChangesFlusher = jest.fn(() => jest.fn());
-const setBufferedChapterChangesPending = jest.fn();
+const registerBufferedChapterUpdateBuilder = jest.fn(() => jest.fn());
+const setChapterHasBufferedChanges = jest.fn();
 
 const baseRecord = {
   id: 'chapter-1',
@@ -90,13 +90,13 @@ const getCommittedConfig = callIndex =>
 beforeEach(() => {
   jest.useFakeTimers();
   setConfig.mockClear();
-  registerBufferedChapterChangesFlusher.mockClear();
-  setBufferedChapterChangesPending.mockClear();
+  registerBufferedChapterUpdateBuilder.mockClear();
+  setChapterHasBufferedChanges.mockClear();
   useStoryMapConfigActionsContext.mockReturnValue({
     init: { current: false },
     setConfig,
-    setBufferedChapterChangesPending,
-    registerBufferedChapterChangesFlusher,
+    setChapterHasBufferedChanges,
+    registerBufferedChapterUpdateBuilder,
     getConfig: () => baseConfig,
   });
 });

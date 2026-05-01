@@ -41,17 +41,32 @@ export const StoryMapConfigContextProvider = props => {
   const [hasBufferedChapterChanges, setHasBufferedChapterChanges] =
     useState(false);
   const init = useRef(false);
-  const configRef = useRef(baseConfig || {});
+  const latestConfigRef = useRef(baseConfig || {});
   const configRevisionRef = useRef(0);
-  const bufferedChapterChangeFlushersRef = useRef(new Map());
-  const bufferedDirtyChaptersRef = useRef(new Set());
+  const bufferedChapterUpdateBuildersRef = useRef(new Map());
+  const chaptersWithBufferedChangesRef = useRef(new Set());
 
-  const bumpConfigRevision = useCallback(() => {
+  const commitConfigState = useCallback((nextConfig, dirty = true) => {
     const nextRevision = configRevisionRef.current + 1;
+    latestConfigRef.current = nextConfig;
     configRevisionRef.current = nextRevision;
+    setConfig(nextConfig);
     setConfigRevision(nextRevision);
-    return nextRevision;
+    setIsConfigDirty(dirty);
+
+    return {
+      config: nextConfig,
+      revision: nextRevision,
+    };
   }, []);
+
+  const getCurrentConfigSnapshot = useCallback(
+    () => ({
+      config: latestConfigRef.current,
+      revision: configRevisionRef.current,
+    }),
+    []
+  );
 
   const resolveConfigUpdate = useCallback((currentConfig, newConfigSetter) => {
     const newConfig =
@@ -93,7 +108,7 @@ export const StoryMapConfigContextProvider = props => {
     []
   );
 
-  const saved = useCallback(
+  const markRevisionSaved = useCallback(
     revision => {
       if (!isCurrentRevision(revision)) {
         return;
@@ -104,14 +119,17 @@ export const StoryMapConfigContextProvider = props => {
     [isCurrentRevision]
   );
 
-  const applySavedConfig = useCallback(
+  const applySavedRevisionConfig = useCallback(
     (revision, savedConfig) => {
       if (!isCurrentRevision(revision)) {
         return false;
       }
 
-      const nextConfig = resolveConfigUpdate(configRef.current, savedConfig);
-      configRef.current = nextConfig;
+      const nextConfig = resolveConfigUpdate(
+        latestConfigRef.current,
+        savedConfig
+      );
+      latestConfigRef.current = nextConfig;
       setConfig(nextConfig);
       clearMediaFiles();
       setIsConfigDirty(false);
@@ -121,57 +139,57 @@ export const StoryMapConfigContextProvider = props => {
     [clearMediaFiles, isCurrentRevision, resolveConfigUpdate]
   );
 
-  const setConfigWrapper = useCallback(
+  const updateConfig = useCallback(
     (newConfigSetter, dirty = true) => {
-      setConfig(currentConfig => {
-        const nextConfig = resolveConfigUpdate(currentConfig, newConfigSetter);
-        configRef.current = nextConfig;
-        return nextConfig;
-      });
-      bumpConfigRevision();
-      setIsConfigDirty(dirty);
+      const nextConfig = resolveConfigUpdate(
+        latestConfigRef.current,
+        newConfigSetter
+      );
+      commitConfigState(nextConfig, dirty);
     },
-    [bumpConfigRevision, resolveConfigUpdate]
+    [commitConfigState, resolveConfigUpdate]
   );
 
-  const setBufferedChapterChangesPending = useCallback(
-    (chapterId, hasPendingChanges) => {
-      const dirtyChapters = bufferedDirtyChaptersRef.current;
-      const isAlreadyPending = dirtyChapters.has(chapterId);
+  const setChapterHasBufferedChanges = useCallback(
+    (chapterId, hasBufferedChanges) => {
+      const chaptersWithBufferedChanges =
+        chaptersWithBufferedChangesRef.current;
+      const isAlreadyTracked = chaptersWithBufferedChanges.has(chapterId);
 
-      if (isAlreadyPending === hasPendingChanges) {
+      if (isAlreadyTracked === hasBufferedChanges) {
         return;
       }
 
-      if (hasPendingChanges) {
-        dirtyChapters.add(chapterId);
+      if (hasBufferedChanges) {
+        chaptersWithBufferedChanges.add(chapterId);
       } else {
-        dirtyChapters.delete(chapterId);
+        chaptersWithBufferedChanges.delete(chapterId);
       }
 
-      setHasBufferedChapterChanges(dirtyChapters.size > 0);
+      setHasBufferedChapterChanges(chaptersWithBufferedChanges.size > 0);
     },
     []
   );
 
-  const registerBufferedChapterChangesFlusher = useCallback(
-    (chapterId, flusher) => {
-      bufferedChapterChangeFlushersRef.current.set(chapterId, flusher);
+  const registerBufferedChapterUpdateBuilder = useCallback(
+    (chapterId, buildBufferedChapterUpdate) => {
+      bufferedChapterUpdateBuildersRef.current.set(
+        chapterId,
+        buildBufferedChapterUpdate
+      );
 
       return () => {
-        bufferedChapterChangeFlushersRef.current.delete(chapterId);
+        bufferedChapterUpdateBuildersRef.current.delete(chapterId);
       };
     },
     []
   );
 
-  const flushBufferedChapterChanges = useCallback(
-    (dirty = true) => {
-      const { hasChanges, nextConfig } = Array.from(
-        bufferedChapterChangeFlushersRef.current.values()
-      ).reduce(
-        (accumulator, flusher) => {
-          const configUpdater = flusher();
+  const collectBufferedChapterUpdates = useCallback(
+    () =>
+      Array.from(bufferedChapterUpdateBuildersRef.current.values()).reduce(
+        (accumulator, buildBufferedChapterUpdate) => {
+          const configUpdater = buildBufferedChapterUpdate();
           if (!configUpdater) {
             return accumulator;
           }
@@ -186,35 +204,31 @@ export const StoryMapConfigContextProvider = props => {
         },
         {
           hasChanges: false,
-          nextConfig: configRef.current,
+          nextConfig: latestConfigRef.current,
         }
-      );
-
-      if (!hasChanges) {
-        return {
-          config: configRef.current,
-          revision: configRevisionRef.current,
-        };
-      }
-
-      flushSync(() => {
-        const nextRevision = configRevisionRef.current + 1;
-        configRevisionRef.current = nextRevision;
-        configRef.current = nextConfig;
-        setConfigRevision(nextRevision);
-        setConfig(nextConfig);
-        setIsConfigDirty(dirty);
-      });
-
-      return {
-        config: nextConfig,
-        revision: configRevisionRef.current,
-      };
-    },
+      ),
     [resolveConfigUpdate]
   );
 
-  const getConfig = useCallback(() => configRef.current, []);
+  const flushBufferedChapterEdits = useCallback(
+    (dirty = true) => {
+      const { hasChanges, nextConfig } = collectBufferedChapterUpdates();
+
+      if (!hasChanges) {
+        return getCurrentConfigSnapshot();
+      }
+
+      let nextConfigSnapshot;
+      flushSync(() => {
+        nextConfigSnapshot = commitConfigState(nextConfig, dirty);
+      });
+
+      return nextConfigSnapshot;
+    },
+    [collectBufferedChapterUpdates, commitConfigState, getCurrentConfigSnapshot]
+  );
+
+  const getConfig = useCallback(() => latestConfigRef.current, []);
   const isDirty = isConfigDirty || hasBufferedChapterChanges;
 
   const configContextValue = useMemo(
@@ -231,28 +245,28 @@ export const StoryMapConfigContextProvider = props => {
 
   const actionsContextValue = useMemo(
     () => ({
-      setConfig: setConfigWrapper,
+      setConfig: updateConfig,
       addMediaFile,
       getMediaFile,
       clearMediaFiles,
       getConfig,
-      applySavedConfig,
+      applySavedRevisionConfig,
       init,
-      setBufferedChapterChangesPending,
-      registerBufferedChapterChangesFlusher,
-      flushBufferedChapterChanges,
+      setChapterHasBufferedChanges,
+      registerBufferedChapterUpdateBuilder,
+      flushBufferedChapterEdits,
     }),
     [
-      setConfigWrapper,
+      updateConfig,
       addMediaFile,
       getMediaFile,
       clearMediaFiles,
       getConfig,
-      applySavedConfig,
+      applySavedRevisionConfig,
       init,
-      setBufferedChapterChangesPending,
-      registerBufferedChapterChangesFlusher,
-      flushBufferedChapterChanges,
+      setChapterHasBufferedChanges,
+      registerBufferedChapterUpdateBuilder,
+      flushBufferedChapterEdits,
     ]
   );
 
@@ -260,9 +274,9 @@ export const StoryMapConfigContextProvider = props => {
     () => ({
       isDirty,
       isConfigDirty,
-      saved,
+      markRevisionSaved,
     }),
-    [isConfigDirty, isDirty, saved]
+    [isConfigDirty, isDirty, markRevisionSaved]
   );
 
   return (
