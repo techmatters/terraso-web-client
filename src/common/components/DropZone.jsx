@@ -43,6 +43,7 @@ const DropZone = props => {
   const {
     label,
     buttonLabel,
+    caption,
     maxSize,
     maxFiles,
     fileExtensions,
@@ -153,6 +154,14 @@ const DropZone = props => {
                   size: filesize(maxSize, { round: 0 }),
                 })}
               </Typography>
+              {caption && (
+                <>
+                  <br />
+                  <Typography variant="caption" sx={{ fontWeight: 'bold' }}>
+                    {caption}
+                  </Typography>
+                </>
+              )}
             </Box>
             {_.isEmpty(errors) && currentFile && (
               <CurrentFile file={currentFile} />

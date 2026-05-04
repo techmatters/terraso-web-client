@@ -91,6 +91,18 @@ const getTypesExtensions = (types: Record<string, string[]>) =>
     .map(ext => ext.substr(1))
     .sort();
 
+const getNumberEnv = (value: string | undefined, fallback: number) => {
+  if (value == null || value.trim() === '') {
+    return fallback;
+  }
+
+  const parsedValue = Number(value);
+
+  return Number.isInteger(parsedValue) && parsedValue > 0
+    ? parsedValue
+    : fallback;
+};
+
 export const MAP_DATA_ACCEPTED_TYPES = {
   'application/geo+json': ['.geojson'],
   'application/gpx': ['.gpx'],
@@ -209,6 +221,16 @@ export const MAPBOX_LANDSCAPE_DIRECTORY_STYLE =
   MAPBOX_STYLE_DEFAULT;
 
 export const STORY_MAP_MEDIA_MAX_SIZE = 10000000; // 10 MB
+export const STORY_MAP_FEATURED_IMAGE_RECOMMENDED_DIMENSIONS = {
+  width: getNumberEnv(
+    import.meta.env.REACT_APP_STORY_MAP_FEATURED_IMAGE_RECOMMENDED_WIDTH,
+    1200
+  ),
+  height: getNumberEnv(
+    import.meta.env.REACT_APP_STORY_MAP_FEATURED_IMAGE_RECOMMENDED_HEIGHT,
+    630
+  ),
+};
 
 export const STORY_MAP_IMAGE_ACCEPTED_TYPES = {
   'image/jpeg': ['.jpg', '.jpeg'],
