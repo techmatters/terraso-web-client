@@ -1404,7 +1404,7 @@ test('StoryMapForm: Add featured image', async () => {
   });
 
   expect(
-    within(dialog).getByText('Recommended dimensions: 1200 x 630')
+    within(dialog).getByText('Recommended dimensions: 1200 x 630 pixels')
   ).toBeInTheDocument();
 
   const dropZone = within(dialog).getByRole('button', {

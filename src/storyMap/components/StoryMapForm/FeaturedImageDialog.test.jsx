@@ -52,6 +52,6 @@ test('FeaturedImageDialog: Uses configured recommended dimensions', () => {
   );
 
   expect(
-    screen.getByText('Recommended dimensions: 1024 x 512')
+    screen.getByText('Recommended dimensions: 1024 x 512 pixels')
   ).toBeInTheDocument();
 });
