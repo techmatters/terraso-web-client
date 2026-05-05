@@ -728,6 +728,10 @@ const RichTextEditor = props => {
   const parsedValue = useMemo(() => normalizeValue(value), [value]);
 
   useEffect(() => {
+    if (focused) {
+      return;
+    }
+
     if (areValuesEqual(editor.children, parsedValue)) {
       return;
     }
@@ -746,7 +750,7 @@ const RichTextEditor = props => {
     editor.onChange();
 
     syncingExternalValueRef.current = false;
-  }, [editor, parsedValue]);
+  }, [editor, focused, parsedValue]);
 
   const Container = useMemo(
     () =>

@@ -338,7 +338,6 @@ test('RichTextEditor: rerendered value replaces the live editor contents', async
 
   const { rerender } = await render(
     <RichTextEditor
-      initialFocused
       value={[
         {
           type: 'paragraph',
@@ -362,6 +361,58 @@ test('RichTextEditor: rerendered value replaces the live editor contents', async
         ]}
       />
     );
+  });
+
+  expect(screen.queryByText('Original value')).not.toBeInTheDocument();
+  expect(screen.getByText('Updated value')).toBeInTheDocument();
+});
+
+test('RichTextEditor: rerendered value waits until blur when editor is focused', async () => {
+  Editor.nodes.mockImplementation(actualSlateEditor.nodes);
+
+  const { rerender } = await render(
+    <>
+      <RichTextEditor
+        value={[
+          {
+            type: 'paragraph',
+            children: [{ text: 'Original value' }],
+          },
+        ]}
+      />
+      <button type="button">Outside</button>
+    </>
+  );
+
+  const editable = screen.getByRole('textbox');
+  const outsideButton = screen.getByRole('button', { name: 'Outside' });
+
+  await act(async () => {
+    fireEvent.focus(editable);
+  });
+
+  await act(async () => {
+    rerender(
+      <>
+        <RichTextEditor
+          value={[
+            {
+              type: 'paragraph',
+              children: [{ text: 'Updated value' }],
+            },
+          ]}
+        />
+        <button type="button">Outside</button>
+      </>
+    );
+  });
+
+  expect(screen.getByText('Original value')).toBeInTheDocument();
+  expect(screen.queryByText('Updated value')).not.toBeInTheDocument();
+
+  await act(async () => {
+    fireEvent.blur(editable, { relatedTarget: outsideButton });
+    fireEvent.focus(outsideButton);
   });
 
   expect(screen.queryByText('Original value')).not.toBeInTheDocument();
