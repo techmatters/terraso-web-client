@@ -52,7 +52,7 @@ const StoryMapUpdate = props => {
   const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
   const [saved, setSaved] = useState();
-  const { storyMap, setConfig, clearMediaFiles } = useStoryMapConfigContext();
+  const { storyMap, applySavedRevisionConfig } = useStoryMapConfigContext();
 
   useDocumentTitle(
     t('storyMap.edit_document_title', {
@@ -96,8 +96,8 @@ const StoryMapUpdate = props => {
     );
   }, [storyMap, navigate, trackEvent, saved, t, dispatch]);
 
-  const save = useCallback(
-    (config, mediaFiles, publish) =>
+  const persistStoryMapUpdate = useCallback(
+    (config, mediaFiles, publish, revision) =>
       dispatch(
         updateStoryMap({
           storyMap: {
@@ -114,7 +114,15 @@ const StoryMapUpdate = props => {
           const storyMapId = _.get('payload.story_map_id', data);
           const title = _.get('payload.title', data);
           const id = _.get('payload.id', data);
-          const config = _.get('payload.configuration', data);
+          const savedConfig = _.get('payload.configuration', data);
+
+          const didApplySavedRevisionConfig = applySavedRevisionConfig(
+            revision,
+            savedConfig
+          );
+          if (!didApplySavedRevisionConfig) {
+            return false;
+          }
 
           setSaved({
             id,
@@ -123,21 +131,21 @@ const StoryMapUpdate = props => {
             storyMapId,
             published: publish,
           });
-          clearMediaFiles();
-          setConfig(config, false);
-          return;
+          return true;
         }
         return Promise.reject(data);
       }),
-    [storyMap?.id, dispatch, clearMediaFiles, setConfig]
+    [storyMap?.id, applySavedRevisionConfig, dispatch]
   );
   const onPublish = useCallback(
-    (config, mediaFiles) => save(config, mediaFiles, true),
-    [save]
+    (config, mediaFiles, revision) =>
+      persistStoryMapUpdate(config, mediaFiles, true, revision),
+    [persistStoryMapUpdate]
   );
   const onSaveDraft = useCallback(
-    (config, mediaFiles) => save(config, mediaFiles, false),
-    [save]
+    (config, mediaFiles, revision) =>
+      persistStoryMapUpdate(config, mediaFiles, false, revision),
+    [persistStoryMapUpdate]
   );
 
   return <StoryMapForm onPublish={onPublish} onSaveDraft={onSaveDraft} />;
