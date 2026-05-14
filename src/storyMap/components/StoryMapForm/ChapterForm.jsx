@@ -237,9 +237,8 @@ const ChapterForm = ({ theme, record }) => {
       aria-label={t('storyMap.view_chapter_label', {
         title: record.title || t('storyMap.form_chapter_no_title_label'),
       })}
+      sx={{ opacity: 0.99 }}
     >
-      {/* div with ID added because of an Intersection Observer issue with overflow */}
-      <div className="step" id={record.id}></div>
       <ChapterConfig
         chapter={record}
         onAlignmentChange={onFieldChange('alignment')}

@@ -119,7 +119,6 @@ const TitleForm = props => {
 
   return (
     <Box
-      id={STORY_MAP_TITLE_ID}
       className="step active title"
       component="section"
       aria-label={t('storyMap.view_title_label', {
