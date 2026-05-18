@@ -29,16 +29,9 @@ import { MEMBERSHIP_TYPE_CLOSED } from 'terraso-web-client/collaboration/collabo
 import { TILESET_STATUS_PENDING } from 'terraso-web-client/sharedData/sharedDataConstants';
 import { extractStoryMap } from 'terraso-web-client/storyMap/storyMapUtils';
 
-export const fetchSamples = (params, currentUser) => {
+export const fetchUserStoryMaps = (params, currentUser) => {
   const query = graphql(`
-    query storyMapsHome($accountEmail: String!) {
-      samples: storyMaps(memberships_User_Email_Not: $accountEmail) {
-        edges {
-          node {
-            ...storyMapMetadataFields
-          }
-        }
-      }
+    query userStoryMapsHome($accountEmail: String!) {
       userStoryMaps: storyMaps(memberships_User_Email: $accountEmail) {
         edges {
           node {
@@ -51,11 +44,6 @@ export const fetchSamples = (params, currentUser) => {
   return terrasoApi
     .requestGraphQL(query, { accountEmail: currentUser.email })
     .then(response => ({
-      samples: _.getOr([], 'samples.edges', response)
-        .map(_.get('node'))
-        .sort(_.get('publishedAt'))
-        .reverse()
-        .map(extractStoryMap),
       userStoryMaps: _.getOr([], 'userStoryMaps.edges', response)
         .map(_.get('node'))
         .sort(_.get('publishedAt'))

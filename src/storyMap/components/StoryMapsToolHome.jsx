@@ -21,29 +21,17 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Grid,
-  List,
-  Paper,
-  Typography,
-} from '@mui/material';
+import { Button, Grid, Paper, Typography } from '@mui/material';
 
 import ExternalLink from 'terraso-web-client/common/components/ExternalLink';
 import LoaderCard from 'terraso-web-client/common/components/LoaderCard';
-import RouterLink from 'terraso-web-client/common/components/RouterLink';
 import { useDocumentTitle } from 'terraso-web-client/common/document';
 import PageContainer from 'terraso-web-client/layout/PageContainer';
 import PageHeader from 'terraso-web-client/layout/PageHeader';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
-import { formatDate } from 'terraso-web-client/localization/utils';
 import { useBreadcrumbsParams } from 'terraso-web-client/navigation/breadcrumbsContext';
 import StoryMapsCard from 'terraso-web-client/storyMap/components/StoryMapsCard';
-import { fetchSamples } from 'terraso-web-client/storyMap/storyMapSlice';
-import { generateStoryMapUrl } from 'terraso-web-client/storyMap/storyMapUtils';
+import { fetchUserStoryMaps } from 'terraso-web-client/storyMap/storyMapSlice';
 
 const StoryMaps = ({ storyMaps, fetching }) => {
   const { t } = useTranslation();
@@ -71,21 +59,18 @@ const StoryMaps = ({ storyMaps, fetching }) => {
 };
 
 const StoryMapsToolsHome = () => {
-  const { t, i18n } = useTranslation();
-  const { listSamples, fetching: fetchingSamples } = useSelector(
-    _.get('storyMap.samples')
-  );
+  const { t } = useTranslation();
   const { list, fetching: fetchingStoryMaps } = useSelector(
     _.get('storyMap.userStoryMaps')
   );
 
   useDocumentTitle(t('storyMap.home_document_title'));
   useBreadcrumbsParams(useMemo(() => ({ loading: false }), []));
-  useFetchData(fetchSamples);
+  useFetchData(fetchUserStoryMaps);
 
   return (
     <>
-      {(fetchingStoryMaps || fetchingSamples) && <PageLoader />}
+      {fetchingStoryMaps && <PageLoader />}
       <PageContainer maxWidth="lg">
         <PageHeader header={t('storyMap.tool_home_title')} />
         <Grid container spacing={2} sx={{ width: '100%' }}>
@@ -125,79 +110,6 @@ const StoryMapsToolsHome = () => {
             </Paper>
           </Grid>
         </Grid>
-        {!_.isEmpty(listSamples) && (
-          <section aria-labelledby="story-map-examples-heading">
-            <Typography
-              id="story-map-examples-heading"
-              variant="h2"
-              sx={{ mt: 4, mb: 2 }}
-            >
-              {t('storyMap.tool_home_examples_title')}
-            </Typography>
-            <Grid
-              container
-              spacing={2}
-              component={List}
-              aria-labelledby="story-map-examples-heading"
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: {
-                  md: 'repeat(3, 1fr)',
-                  sm: 'repeat(2, 1fr)',
-                  xs: '1fr',
-                },
-                width: '100%',
-              }}
-            >
-              {listSamples.map(sample => (
-                <Grid
-                  size={{ xs: 12, sm: 6, md: 4 }}
-                  key={sample.id}
-                  component="li"
-                  aria-labelledby={`story-map-example-${sample.id}`}
-                  style={{
-                    flexGrow: 1,
-                    width: '100%',
-                  }}
-                >
-                  <Card sx={{ height: '100%' }}>
-                    <CardHeader
-                      title={
-                        <RouterLink
-                          variant="h3"
-                          id={`story-map-example-${sample.id}`}
-                          to={generateStoryMapUrl(sample)}
-                          sx={{ fontSize: '1.25rem' }}
-                        >
-                          {sample.title}
-                        </RouterLink>
-                      }
-                      subheader={
-                        sample.publishedAt && (
-                          <Typography variant="caption">
-                            {t('storyMap.tool_home_examples_published_at', {
-                              date: formatDate(
-                                i18n.resolvedLanguage,
-                                sample.publishedAt
-                              ),
-                            })}
-                          </Typography>
-                        )
-                      }
-                    />
-                    <CardContent sx={{ pt: 0 }}>
-                      <Typography>
-                        {t('storyMap.tool_home_examples_by', {
-                          user: sample.createdBy,
-                        })}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </section>
-        )}
       </PageContainer>
     </>
   );
