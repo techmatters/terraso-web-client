@@ -18,14 +18,16 @@
 import { Node as SlateNode } from 'slate';
 import { jsx } from 'slate-hyperscript';
 
+const HEADING_TAG = () => ({ type: 'heading-one' });
+
 const ELEMENT_TAGS = {
   A: el => ({ type: 'link', url: el.getAttribute('href') }),
-  H1: () => ({ type: 'heading-one' }),
-  H2: () => ({ type: 'heading-two' }),
-  H3: () => ({ type: 'heading-three' }),
-  H4: () => ({ type: 'heading-four' }),
-  H5: () => ({ type: 'heading-five' }),
-  H6: () => ({ type: 'heading-six' }),
+  H1: HEADING_TAG,
+  H2: HEADING_TAG,
+  H3: HEADING_TAG,
+  H4: HEADING_TAG,
+  H5: HEADING_TAG,
+  H6: HEADING_TAG,
   LI: () => ({ type: 'list-item' }),
   OL: () => ({ type: 'numbered-list' }),
   P: () => ({ type: 'paragraph' }),
@@ -34,6 +36,7 @@ const ELEMENT_TAGS = {
 
 const TEXT_TAGS = {
   I: () => ({ italic: true }),
+  MARK: () => ({ highlight: true }),
   STRONG: () => ({ bold: true }),
 };
 

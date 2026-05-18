@@ -18,10 +18,21 @@
 import { Theme } from '@mui/material';
 
 declare module '@mui/material/styles' {
+  interface RichTextPalette {
+    link: string;
+    highlightBackground: string;
+    highlightText: string;
+  }
+
   interface Palette {
     visualization: {
       markerDefaultColor: string;
     };
+    richText: RichTextPalette;
+  }
+
+  interface PaletteOptions {
+    richText?: Partial<RichTextPalette>;
   }
 }
 
