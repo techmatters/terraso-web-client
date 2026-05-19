@@ -40,7 +40,7 @@ const EditableText = props => {
     }
   }, [value]);
 
-  const onExit = useCallback(() => {
+  const handleBlur = useCallback(() => {
     onBlur?.();
     if (!normalizedValue) {
       return;
@@ -48,12 +48,12 @@ const EditableText = props => {
     setIsEditing(false);
   }, [normalizedValue, onBlur]);
 
-  const onClick = useCallback(() => {
+  const beginEditing = useCallback(() => {
     setIsEditing(true);
     setShouldFocus(true);
   }, []);
 
-  const onChangeWrapper = useCallback(
+  const handleChange = useCallback(
     event => onChange(event.target.value),
     [onChange]
   );
@@ -66,7 +66,7 @@ const EditableText = props => {
 
   useEffect(() => {
     if (shouldFocus && isEditing) {
-      inputRef.current.focus();
+      inputRef.current?.focus();
     }
   }, [isEditing, shouldFocus]);
 
@@ -77,8 +77,8 @@ const EditableText = props => {
         inputRef={inputRef}
         fullWidth
         value={normalizedValue}
-        onBlur={onExit}
-        onChange={onChangeWrapper}
+        onBlur={handleBlur}
+        onChange={handleChange}
         placeholder={placeholder}
         sx={{
           '& label.Mui-focused': {
@@ -105,7 +105,7 @@ const EditableText = props => {
     );
   }
 
-  return <Component onClick={onClick}>{value}</Component>;
+  return <Component onClick={beginEditing}>{value}</Component>;
 };
 
 export default EditableText;

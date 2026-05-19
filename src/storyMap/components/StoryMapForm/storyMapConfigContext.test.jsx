@@ -69,6 +69,9 @@ const ContextProbe = () => {
       <button onClick={() => markRevisionSaved(2)}>
         saved second revision
       </button>
+      <button onClick={() => markRevisionSaved(undefined)}>
+        saved without revision
+      </button>
       <button
         onClick={() =>
           addMediaFile('file-content', {
@@ -98,6 +101,16 @@ const ContextProbe = () => {
         }
       >
         apply second saved config
+      </button>
+      <button
+        onClick={() =>
+          applySavedRevisionConfig(null, {
+            ...baseConfig,
+            title: 'Saved Without Revision',
+          })
+        }
+      >
+        apply saved config without revision
       </button>
     </>
   );
@@ -237,4 +250,63 @@ test('StoryMapConfigContext ignores stale saved config responses and clears medi
   expect(screen.getByText('config-clean')).toBeInTheDocument();
   expect(screen.getByText('media:0')).toBeInTheDocument();
   expect(screen.getByText('revision:2')).toBeInTheDocument();
+});
+
+test('StoryMapConfigContext requires a matching revision to mark saves current', async () => {
+  await render(
+    <StoryMapConfigContextProvider
+      baseConfig={baseConfig}
+      storyMap={{ id: 'story-map-id-1' }}
+    >
+      <ContextProbe />
+    </StoryMapConfigContextProvider>
+  );
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'first change' }));
+  });
+
+  await act(async () => {
+    fireEvent.click(
+      screen.getByRole('button', { name: 'saved without revision' })
+    );
+  });
+
+  expect(screen.getByText('One')).toBeInTheDocument();
+  expect(screen.getByText('dirty')).toBeInTheDocument();
+  expect(screen.getByText('config-dirty')).toBeInTheDocument();
+  expect(screen.getByText('revision:1')).toBeInTheDocument();
+});
+
+test('StoryMapConfigContext requires a matching revision to apply saved config', async () => {
+  await render(
+    <StoryMapConfigContextProvider
+      baseConfig={baseConfig}
+      storyMap={{ id: 'story-map-id-1' }}
+    >
+      <ContextProbe />
+    </StoryMapConfigContextProvider>
+  );
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'first change' }));
+  });
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'add media file' }));
+  });
+
+  await act(async () => {
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'apply saved config without revision',
+      })
+    );
+  });
+
+  expect(screen.getByText('One')).toBeInTheDocument();
+  expect(screen.getByText('dirty')).toBeInTheDocument();
+  expect(screen.getByText('config-dirty')).toBeInTheDocument();
+  expect(screen.getByText('media:1')).toBeInTheDocument();
+  expect(screen.getByText('revision:1')).toBeInTheDocument();
 });

@@ -652,6 +652,37 @@ const StoryMapFormActionsProbe = () => {
   );
 };
 
+const StoryMapFormAutoSaveProbe = () => {
+  const { setConfig } = useStoryMapConfigContext();
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() =>
+          setConfig(config => ({
+            ...config,
+            title: 'First autosave title',
+          }))
+        }
+      >
+        set first autosave title
+      </button>
+      <button
+        type="button"
+        onClick={() =>
+          setConfig(config => ({
+            ...config,
+            title: 'Second autosave title',
+          }))
+        }
+      >
+        set second autosave title
+      </button>
+    </>
+  );
+};
+
 test('StoryMapForm: Media file changes stay debounced while config is dirty', async () => {
   const pendingSaves = [];
   const onPublish = jest.fn().mockResolvedValue();
@@ -704,6 +735,52 @@ test('StoryMapForm: Media file changes stay debounced while config is dirty', as
   await act(async () => {
     pendingSaves.forEach(resolve => resolve());
   });
+});
+
+test('StoryMapForm: Autosave persists the debounced config snapshot for its revision', async () => {
+  jest.useFakeTimers();
+
+  const onPublish = jest.fn().mockResolvedValue();
+  const onSaveDraft = jest.fn().mockResolvedValue();
+
+  await render(
+    <StoryMapConfigContextProvider
+      baseConfig={BASE_CONFIG}
+      storyMap={{
+        id: 'story-map-id-1',
+        memberships: [],
+      }}
+    >
+      <StoryMapForm
+        onPublish={onPublish}
+        onSaveDraft={onSaveDraft}
+        autoSaveDebounce={100}
+      />
+      <StoryMapFormAutoSaveProbe />
+    </StoryMapConfigContextProvider>
+  );
+
+  await act(async () => {
+    fireEvent.click(
+      screen.getByRole('button', { name: 'set first autosave title' })
+    );
+  });
+
+  await act(async () => {
+    jest.advanceTimersByTime(100);
+    fireEvent.click(
+      screen.getByRole('button', { name: 'set second autosave title' })
+    );
+  });
+
+  expect(onSaveDraft).toHaveBeenCalledTimes(1);
+  expect(onSaveDraft.mock.calls[0][0].title).toBe('First autosave title');
+  expect(onSaveDraft.mock.calls[0][2]).toBe(1);
+
+  await act(async () => {
+    jest.runOnlyPendingTimers();
+  });
+  jest.useRealTimers();
 });
 
 test('StoryMapForm: Publish flushes pending chapter buffered changes', async () => {

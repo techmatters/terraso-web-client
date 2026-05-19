@@ -46,35 +46,50 @@ import {
   generateStoryMapUrl,
 } from 'terraso-web-client/storyMap/storyMapUtils';
 
+const getStoryMapSaveEvent = ({ publish, isPublished }) => {
+  if (!publish) {
+    return 'storymap.saveDraft';
+  }
+
+  return isPublished ? 'storymap.update' : 'storymap.publish';
+};
+
+const buildSavedStoryMapState = ({ data, publish }) => ({
+  id: _.get('payload.id', data),
+  title: _.get('payload.title', data),
+  slug: _.get('payload.slug', data),
+  storyMapId: _.get('payload.story_map_id', data),
+  published: publish,
+});
+
 const StoryMapUpdate = props => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
-  const [saved, setSaved] = useState();
+  const [savedStoryMap, setSavedStoryMap] = useState();
   const { storyMap, applySavedRevisionConfig } = useStoryMapConfigContext();
 
   useDocumentTitle(
     t('storyMap.edit_document_title', {
       name: _.get('title', storyMap),
     }),
-    saved
+    savedStoryMap
   );
 
   useEffect(() => {
-    if (!saved) {
+    if (!savedStoryMap) {
       return;
     }
 
-    const { slug, storyMapId, published } = saved;
-    setSaved(null);
+    const { slug, storyMapId, published } = savedStoryMap;
+    setSavedStoryMap(null);
     const url = generateStoryMapUrl({ slug, storyMapId });
 
-    const event = published
-      ? storyMap.isPublished
-        ? 'storymap.update'
-        : 'storymap.publish'
-      : 'storymap.saveDraft';
+    const event = getStoryMapSaveEvent({
+      publish: published,
+      isPublished: storyMap.isPublished,
+    });
 
     trackEvent(event, {
       props: {
@@ -94,7 +109,7 @@ const StoryMapUpdate = props => {
       }),
       generateStoryMapEditUrl({ slug, storyMapId })
     );
-  }, [storyMap, navigate, trackEvent, saved, t, dispatch]);
+  }, [storyMap, navigate, trackEvent, savedStoryMap, t, dispatch]);
 
   const persistStoryMapUpdate = useCallback(
     (config, mediaFiles, publish, revision) =>
@@ -110,10 +125,6 @@ const StoryMapUpdate = props => {
       ).then(data => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
-          const slug = _.get('payload.slug', data);
-          const storyMapId = _.get('payload.story_map_id', data);
-          const title = _.get('payload.title', data);
-          const id = _.get('payload.id', data);
           const savedConfig = _.get('payload.configuration', data);
 
           const didApplySavedRevisionConfig = applySavedRevisionConfig(
@@ -124,13 +135,7 @@ const StoryMapUpdate = props => {
             return false;
           }
 
-          setSaved({
-            id,
-            title,
-            slug,
-            storyMapId,
-            published: publish,
-          });
+          setSavedStoryMap(buildSavedStoryMapState({ data, publish }));
           return true;
         }
         return Promise.reject(data);
