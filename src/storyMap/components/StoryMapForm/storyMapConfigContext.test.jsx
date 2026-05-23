@@ -59,6 +59,9 @@ const ContextProbe = () => {
       >
         second change
       </button>
+      <button onClick={() => setConfig(config => ({ ...config }))}>
+        noop change
+      </button>
       <button onClick={() => setChapterHasBufferedChanges('chapter-1', true)}>
         set buffered dirty
       </button>
@@ -196,6 +199,41 @@ test('StoryMapConfigContext keeps buffered chapter changes separate from config 
 
   expect(screen.getByText('clean')).toBeInTheDocument();
   expect(screen.getByText('config-clean')).toBeInTheDocument();
+});
+
+test('StoryMapConfigContext does not advance revisions for no-op config updates', async () => {
+  await render(
+    <StoryMapConfigContextProvider
+      baseConfig={baseConfig}
+      storyMap={{ id: 'story-map-id-1' }}
+    >
+      <ContextProbe />
+    </StoryMapConfigContextProvider>
+  );
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'noop change' }));
+  });
+
+  expect(screen.getByText('clean')).toBeInTheDocument();
+  expect(screen.getByText('config-clean')).toBeInTheDocument();
+  expect(screen.getByText('revision:0')).toBeInTheDocument();
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'first change' }));
+  });
+
+  expect(screen.getByText('dirty')).toBeInTheDocument();
+  expect(screen.getByText('config-dirty')).toBeInTheDocument();
+  expect(screen.getByText('revision:1')).toBeInTheDocument();
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'noop change' }));
+  });
+
+  expect(screen.getByText('dirty')).toBeInTheDocument();
+  expect(screen.getByText('config-dirty')).toBeInTheDocument();
+  expect(screen.getByText('revision:1')).toBeInTheDocument();
 });
 
 test('StoryMapConfigContext ignores stale saved config responses and clears media for the current revision', async () => {

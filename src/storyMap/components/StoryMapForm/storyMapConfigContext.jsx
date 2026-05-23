@@ -73,6 +73,13 @@ export const StoryMapConfigContextProvider = props => {
   const chaptersWithBufferedChangesRef = useRef(new Set());
 
   const commitConfigSnapshot = useCallback((nextConfig, dirty = true) => {
+    if (_.isEqual(nextConfig, latestConfigRef.current)) {
+      return createConfigSnapshot(
+        latestConfigRef.current,
+        latestConfigRevisionRef.current
+      );
+    }
+
     const nextRevision = latestConfigRevisionRef.current + 1;
     latestConfigRef.current = nextConfig;
     latestConfigRevisionRef.current = nextRevision;
