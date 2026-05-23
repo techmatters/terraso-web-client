@@ -731,9 +731,11 @@ const RichTextEditor = props => {
     if (focused) {
       return;
     }
+
     if (areValuesEqual(editor.children, parsedValue)) {
       return;
     }
+
     syncingExternalValueRef.current = true;
 
     Editor.withoutNormalizing(editor, () => {
