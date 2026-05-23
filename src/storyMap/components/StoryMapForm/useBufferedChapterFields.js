@@ -143,12 +143,10 @@ const useBufferedChapterFields = props => {
   );
   const hasPendingBufferedFieldChanges = !_.isEmpty(pendingBufferedFieldPatch);
 
-  useEffect(() => {
-    latestBufferedStateRef.current = {
-      bufferedFieldValues,
-      chapter,
-    };
-  }, [bufferedFieldValues, chapter]);
+  latestBufferedStateRef.current = {
+    bufferedFieldValues,
+    chapter,
+  };
 
   useEffect(() => {
     const previousChapter = previousChapterRef.current;
@@ -323,22 +321,29 @@ const useBufferedChapterFields = props => {
         return;
       }
 
-      setBufferedFieldValues(currentBufferedFieldValues => {
-        if (areFieldValuesEqual(currentBufferedFieldValues[fieldName], value)) {
-          return currentBufferedFieldValues;
-        }
+      const currentBufferedFieldValues =
+        latestBufferedStateRef.current.bufferedFieldValues;
+      if (areFieldValuesEqual(currentBufferedFieldValues[fieldName], value)) {
+        return;
+      }
 
-        return {
-          ...currentBufferedFieldValues,
-          [fieldName]: value,
-        };
-      });
+      const nextBufferedFieldValues = {
+        ...currentBufferedFieldValues,
+        [fieldName]: value,
+      };
+
+      latestBufferedStateRef.current = {
+        bufferedFieldValues: nextBufferedFieldValues,
+        chapter,
+      };
+      setBufferedFieldValues(nextBufferedFieldValues);
 
       scheduleBufferedFieldPersist(fieldName, value, fieldBehavior);
     },
     [
       applyImmediateFieldChange,
       bufferedFieldBehavior,
+      chapter,
       scheduleBufferedFieldPersist,
     ]
   );

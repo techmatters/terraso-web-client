@@ -19,6 +19,7 @@ import { act, fireEvent, render, screen } from 'terraso-web-client/tests/utils';
 
 import BufferedChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/BufferedChapterForm';
 import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import useBufferedChapterFields from 'terraso-web-client/storyMap/components/StoryMapForm/useBufferedChapterFields';
 
 jest.mock(
   'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext',
@@ -81,8 +82,36 @@ const baseConfig = {
   dataLayers: {},
 };
 
+const probeBufferedFieldBehavior = {
+  title: { delayMs: 500 },
+};
+
 const renderChapterForm = async (record = baseRecord) =>
   render(<BufferedChapterForm theme="dark" record={record} />);
+
+const renderBufferedFieldsProbe = async (record = baseRecord) => {
+  const Probe = ({ chapter = record }) => {
+    const { getFieldBlurHandler, getFieldChangeHandler } =
+      useBufferedChapterFields({
+        chapter,
+        bufferedFieldBehavior: probeBufferedFieldBehavior,
+      });
+
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          getFieldChangeHandler('title')('Same event title');
+          getFieldBlurHandler('title')();
+        }}
+      >
+        change and blur title
+      </button>
+    );
+  };
+
+  return render(<Probe />);
+};
 
 const getCommittedConfig = callIndex =>
   setConfig.mock.calls[callIndex][0](baseConfig);
@@ -150,6 +179,19 @@ test('ChapterForm commits the latest buffered title changes on blur', async () =
 
   expect(setConfig).toHaveBeenCalledTimes(1);
   expect(getCommittedConfig(0).chapters[0].title).toBe('Blurred title');
+});
+
+test('useBufferedChapterFields commits the latest buffered title when change and blur happen in the same event', async () => {
+  await renderBufferedFieldsProbe();
+
+  await act(async () => {
+    fireEvent.click(
+      screen.getByRole('button', { name: 'change and blur title' })
+    );
+  });
+
+  expect(setConfig).toHaveBeenCalledTimes(1);
+  expect(getCommittedConfig(0).chapters[0].title).toBe('Same event title');
 });
 
 test('ChapterForm flushes pending description changes on unmount', async () => {
