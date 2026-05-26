@@ -16,27 +16,36 @@
  */
 
 import ChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/ChapterForm';
-import useBufferedChapterFields from 'terraso-web-client/storyMap/components/StoryMapForm/useBufferedChapterFields';
+import useBufferedChapterFields, {
+  BUFFERED_FIELD_COMMIT_STRATEGIES,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/useBufferedChapterFields';
 
 const TEXT_COMMIT_DEBOUNCE = 500;
-const BUFFERED_CHAPTER_FIELD_CONFIG = {
-  title: { delayMs: TEXT_COMMIT_DEBOUNCE },
-  description: { delayMs: TEXT_COMMIT_DEBOUNCE },
-  alignment: {},
+const BUFFERED_CHAPTER_FIELDS = {
+  title: {
+    commitStrategy: BUFFERED_FIELD_COMMIT_STRATEGIES.DEBOUNCED,
+    delayMs: TEXT_COMMIT_DEBOUNCE,
+  },
+  description: {
+    commitStrategy: BUFFERED_FIELD_COMMIT_STRATEGIES.DEBOUNCED,
+    delayMs: TEXT_COMMIT_DEBOUNCE,
+  },
+  alignment: {
+    commitStrategy: BUFFERED_FIELD_COMMIT_STRATEGIES.IMMEDIATE,
+  },
 };
 
 const BufferedChapterForm = ({ theme, record: persistedChapter }) => {
-  const { displayedChapter, getFieldBlurHandler, getFieldChangeHandler } =
+  const { chapter, getFieldBlurHandler, getFieldChangeHandler } =
     useBufferedChapterFields({
       chapter: persistedChapter,
-      bufferedFieldBehavior: BUFFERED_CHAPTER_FIELD_CONFIG,
+      bufferedFields: BUFFERED_CHAPTER_FIELDS,
     });
 
   return (
     <ChapterForm
       theme={theme}
-      persistedChapter={persistedChapter}
-      displayedChapter={displayedChapter}
+      chapter={chapter}
       getFieldChangeHandler={getFieldChangeHandler}
       getFieldBlurHandler={getFieldBlurHandler}
     />

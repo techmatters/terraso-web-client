@@ -240,7 +240,7 @@ export const StoryMapConfigContextProvider = props => {
     ]
   );
 
-  const getConfig = useCallback(() => latestConfigRef.current, []);
+  const getLatestConfig = useCallback(() => latestConfigRef.current, []);
   const isDirty = isConfigDirty || hasBufferedChapterChanges;
 
   const configContextValue = useMemo(
@@ -261,7 +261,7 @@ export const StoryMapConfigContextProvider = props => {
       addMediaFile,
       getMediaFile,
       clearMediaFiles,
-      getConfig,
+      getLatestConfig,
       applySavedRevisionConfig,
       init,
       setChapterHasBufferedChanges,
@@ -273,7 +273,7 @@ export const StoryMapConfigContextProvider = props => {
       addMediaFile,
       getMediaFile,
       clearMediaFiles,
-      getConfig,
+      getLatestConfig,
       applySavedRevisionConfig,
       init,
       setChapterHasBufferedChanges,
@@ -302,13 +302,14 @@ export const StoryMapConfigContextProvider = props => {
   );
 };
 
-const useDataContext = () => useContext(StoryMapConfigContext);
+export const useStoryMapConfigDataContext = () =>
+  useContext(StoryMapConfigContext);
 export const useStoryMapConfigActionsContext = () =>
   useContext(StoryMapConfigActionsContext);
-const useSaveContext = () => useContext(StoryMapSaveContext);
+export const useStoryMapSaveContext = () => useContext(StoryMapSaveContext);
 
 export const useStoryMapConfigContext = () => ({
-  ...useDataContext(),
+  ...useStoryMapConfigDataContext(),
   ...useStoryMapConfigActionsContext(),
-  ...useSaveContext(),
+  ...useStoryMapSaveContext(),
 });

@@ -158,17 +158,11 @@ const ChapterConfig = props => {
 };
 
 const ChapterForm = props => {
-  const {
-    theme,
-    persistedChapter,
-    displayedChapter,
-    getFieldChangeHandler,
-    getFieldBlurHandler,
-  } = props;
+  const { theme, chapter, getFieldChangeHandler, getFieldBlurHandler } = props;
   const { t } = useTranslation();
   const {
     setConfig: updateConfig,
-    getConfig: getLatestConfig,
+    getLatestConfig,
     init,
   } = useStoryMapConfigActionsContext();
   const [shouldFocusTitle, setShouldFocusTitle] = useState(false);
@@ -177,7 +171,7 @@ const ChapterForm = props => {
     if (init.current) {
       setShouldFocusTitle(true);
     }
-  }, [init, persistedChapter.id]);
+  }, [chapter.id, init]);
 
   const onMapStyleChange = useCallback(
     style => {
@@ -202,19 +196,19 @@ const ChapterForm = props => {
         ...(dataLayerConfig
           ? _.set(`dataLayers.${dataLayerConfig.id}`, dataLayerConfig, config)
           : config),
-        chapters: config.chapters.map(chapter =>
-          chapter.id === persistedChapter.id
+        chapters: config.chapters.map(configChapter =>
+          configChapter.id === chapter.id
             ? {
-                ...chapter,
+                ...configChapter,
                 dataLayerConfigId: dataLayerConfig?.id,
                 onChapterEnter,
                 onChapterExit,
               }
-            : chapter
+            : configChapter
         ),
       }));
     },
-    [persistedChapter.id, updateConfig]
+    [chapter.id, updateConfig]
   );
 
   const classList = useMemo(
@@ -222,10 +216,10 @@ const ChapterForm = props => {
       [
         'step-container',
         'active',
-        ALIGNMENTS[displayedChapter.alignment] || 'centered',
-        ...(persistedChapter.hidden ? ['hidden'] : []),
+        ALIGNMENTS[chapter.alignment] || 'centered',
+        ...(chapter.hidden ? ['hidden'] : []),
       ].join(' '),
-    [displayedChapter.alignment, persistedChapter.hidden]
+    [chapter.alignment, chapter.hidden]
   );
 
   return (
@@ -234,15 +228,14 @@ const ChapterForm = props => {
       direction="row"
       component="section"
       aria-label={t('storyMap.view_chapter_label', {
-        title:
-          persistedChapter.title || t('storyMap.form_chapter_no_title_label'),
+        title: chapter.title || t('storyMap.form_chapter_no_title_label'),
       })}
       sx={{ opacity: 0.99 }}
     >
       {/* div with ID added because of an Intersection Observer issue with overflow */}
-      <div className="step" id={persistedChapter.id}></div>
+      <div className="step" id={chapter.id}></div>
       <ChapterConfig
-        chapter={displayedChapter}
+        chapter={chapter}
         onAlignmentChange={getFieldChangeHandler('alignment')}
         onLocationChange={getFieldChangeHandler('location')}
         onMapStyleChange={onMapStyleChange}
@@ -257,7 +250,7 @@ const ChapterForm = props => {
           <EditableText
             placeholder={t('storyMap.form_chapter_title_placeholder')}
             Component="h3"
-            value={displayedChapter.title}
+            value={chapter.title}
             onChange={getFieldChangeHandler('title')}
             onBlur={getFieldBlurHandler('title')}
             focus={shouldFocusTitle}
@@ -269,13 +262,13 @@ const ChapterForm = props => {
           />
           <EditableMedia
             label={t('storyMap.form_chapter_media_label')}
-            value={persistedChapter.media}
+            value={chapter.media}
             onChange={getFieldChangeHandler('media')}
           />
           <EditableRichText
             label={t('storyMap.form_chapter_description_label')}
             placeholder={t('storyMap.form_chapter_description_placeholder')}
-            value={displayedChapter.description}
+            value={chapter.description}
             onChange={getFieldChangeHandler('description')}
             onBlur={getFieldBlurHandler('description')}
           />

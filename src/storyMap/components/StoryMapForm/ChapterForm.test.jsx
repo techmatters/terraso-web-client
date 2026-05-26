@@ -19,7 +19,9 @@ import { act, fireEvent, render, screen } from 'terraso-web-client/tests/utils';
 
 import BufferedChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/BufferedChapterForm';
 import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
-import useBufferedChapterFields from 'terraso-web-client/storyMap/components/StoryMapForm/useBufferedChapterFields';
+import useBufferedChapterFields, {
+  BUFFERED_FIELD_COMMIT_STRATEGIES,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/useBufferedChapterFields';
 
 jest.mock(
   'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext',
@@ -82,8 +84,11 @@ const baseConfig = {
   dataLayers: {},
 };
 
-const probeBufferedFieldBehavior = {
-  title: { delayMs: 500 },
+const probeBufferedFields = {
+  title: {
+    commitStrategy: BUFFERED_FIELD_COMMIT_STRATEGIES.DEBOUNCED,
+    delayMs: 500,
+  },
 };
 
 const renderChapterForm = async (record = baseRecord) =>
@@ -94,7 +99,7 @@ const renderBufferedFieldsProbe = async (record = baseRecord) => {
     const { getFieldBlurHandler, getFieldChangeHandler } =
       useBufferedChapterFields({
         chapter,
-        bufferedFieldBehavior: probeBufferedFieldBehavior,
+        bufferedFields: probeBufferedFields,
       });
 
     return (
@@ -126,7 +131,7 @@ beforeEach(() => {
     setConfig,
     setChapterHasBufferedChanges,
     registerBufferedChapterUpdateBuilder,
-    getConfig: () => baseConfig,
+    getLatestConfig: () => baseConfig,
   });
 });
 
@@ -179,6 +184,20 @@ test('ChapterForm commits the latest buffered title changes on blur', async () =
 
   expect(setConfig).toHaveBeenCalledTimes(1);
   expect(getCommittedConfig(0).chapters[0].title).toBe('Blurred title');
+});
+
+test('ChapterForm updates the current chapter label from buffered title changes', async () => {
+  await renderChapterForm();
+
+  await act(async () =>
+    fireEvent.change(screen.getByRole('textbox', { name: 'Chapter title' }), {
+      target: { value: 'Buffered title' },
+    })
+  );
+
+  expect(
+    screen.getByRole('region', { name: 'Chapter: Buffered title' })
+  ).toBeInTheDocument();
 });
 
 test('useBufferedChapterFields commits the latest buffered title when change and blur happen in the same event', async () => {
