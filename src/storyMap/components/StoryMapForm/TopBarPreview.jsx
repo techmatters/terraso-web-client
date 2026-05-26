@@ -18,21 +18,26 @@
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Grid, Typography } from '@mui/material';
 
-import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import {
+  useStoryMapConfigDataContext,
+  useStoryMapPreviewContext,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import TopBarContainer from 'terraso-web-client/storyMap/components/StoryMapForm/TopBarContainer';
 
 const TopBarPreview = props => {
   const { t } = useTranslation();
-  const { storyMap, config, setPreview } = useStoryMapConfigContext();
+  const { storyMap, config } = useStoryMapConfigDataContext();
+  const { setPreview } = useStoryMapPreviewContext();
   const { onPublish, isPublishing } = props;
 
   const isPublished = storyMap?.isPublished;
+  const hasTitle = Boolean(config.title);
 
   return (
     <TopBarContainer>
       <Grid size={{ xs: 12, sm: 8 }}>
         <Typography variant="h3" sx={{ pt: 0, pl: 2, fontWeight: 700 }}>
-          {t ? (
+          {hasTitle ? (
             <Trans
               i18nKey="storyMap.form_preview_title"
               values={{ title: config.title }}

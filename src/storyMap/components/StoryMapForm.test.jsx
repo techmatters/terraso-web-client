@@ -817,6 +817,10 @@ test('StoryMapForm: Show preview', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Preview draft' }))
   );
 
+  expect(
+    screen.getByRole('heading', { name: 'You are previewing Story Map Title' })
+  ).toBeInTheDocument();
+
   const chapters = screen.getByRole('region', {
     name: 'Chapters',
   });
@@ -835,6 +839,24 @@ test('StoryMapForm: Show preview', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Exit Preview' }))
   );
 });
+
+test('StoryMapForm: Show preview without title uses blank preview copy', async () => {
+  await setup({
+    config: {
+      ...BASE_CONFIG,
+      title: '',
+    },
+  });
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Preview draft' }))
+  );
+
+  expect(
+    screen.getByRole('heading', { name: 'You are previewing' })
+  ).toBeInTheDocument();
+});
+
 test('StoryMapForm: Change chapter location', async () => {
   const map = {
     ...baseMapOptions(),

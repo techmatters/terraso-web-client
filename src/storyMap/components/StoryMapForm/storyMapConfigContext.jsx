@@ -27,8 +27,11 @@ import _ from 'lodash/fp';
 import { flushSync } from 'react-dom';
 import { v4 as uuidv4 } from 'uuid';
 
-const StoryMapConfigContext = createContext();
+const StoryMapConfigDataContext = createContext();
+const StoryMapPreviewContext = createContext();
+const StoryMapMediaContext = createContext();
 const StoryMapConfigActionsContext = createContext();
+const StoryMapBufferedChapterActionsContext = createContext();
 const StoryMapSaveContext = createContext();
 
 const createConfigSnapshot = (config, revision) => ({
@@ -243,39 +246,49 @@ export const StoryMapConfigContextProvider = props => {
   const getLatestConfig = useCallback(() => latestConfigRef.current, []);
   const isDirty = isConfigDirty || hasBufferedChapterChanges;
 
-  const configContextValue = useMemo(
+  const configDataContextValue = useMemo(
     () => ({
       storyMap,
       config,
       configRevision,
-      preview,
-      setPreview,
-      mediaFiles,
     }),
-    [storyMap, config, configRevision, preview, mediaFiles]
+    [storyMap, config, configRevision]
   );
 
-  const actionsContextValue = useMemo(
+  const previewContextValue = useMemo(
     () => ({
-      setConfig: updateConfig,
+      preview,
+      setPreview,
+    }),
+    [preview]
+  );
+
+  const mediaContextValue = useMemo(
+    () => ({
+      mediaFiles,
       addMediaFile,
       getMediaFile,
       clearMediaFiles,
+    }),
+    [mediaFiles, addMediaFile, getMediaFile, clearMediaFiles]
+  );
+
+  const configActionsContextValue = useMemo(
+    () => ({
+      setConfig: updateConfig,
       getLatestConfig,
-      applySavedRevisionConfig,
       init,
+    }),
+    [updateConfig, getLatestConfig, init]
+  );
+
+  const bufferedChapterActionsContextValue = useMemo(
+    () => ({
       setChapterHasBufferedChanges,
       registerBufferedChapterUpdateBuilder,
       flushBufferedChapterEdits,
     }),
     [
-      updateConfig,
-      addMediaFile,
-      getMediaFile,
-      clearMediaFiles,
-      getLatestConfig,
-      applySavedRevisionConfig,
-      init,
       setChapterHasBufferedChanges,
       registerBufferedChapterUpdateBuilder,
       flushBufferedChapterEdits,
@@ -287,29 +300,48 @@ export const StoryMapConfigContextProvider = props => {
       isDirty,
       isConfigDirty,
       markRevisionSaved,
+      applySavedRevisionConfig,
     }),
-    [isConfigDirty, isDirty, markRevisionSaved]
+    [applySavedRevisionConfig, isConfigDirty, isDirty, markRevisionSaved]
   );
 
   return (
-    <StoryMapConfigContext.Provider value={configContextValue}>
-      <StoryMapConfigActionsContext.Provider value={actionsContextValue}>
-        <StoryMapSaveContext.Provider value={saveContextValue}>
-          {children}
-        </StoryMapSaveContext.Provider>
-      </StoryMapConfigActionsContext.Provider>
-    </StoryMapConfigContext.Provider>
+    <StoryMapConfigDataContext.Provider value={configDataContextValue}>
+      <StoryMapPreviewContext.Provider value={previewContextValue}>
+        <StoryMapMediaContext.Provider value={mediaContextValue}>
+          <StoryMapConfigActionsContext.Provider
+            value={configActionsContextValue}
+          >
+            <StoryMapBufferedChapterActionsContext.Provider
+              value={bufferedChapterActionsContextValue}
+            >
+              <StoryMapSaveContext.Provider value={saveContextValue}>
+                {children}
+              </StoryMapSaveContext.Provider>
+            </StoryMapBufferedChapterActionsContext.Provider>
+          </StoryMapConfigActionsContext.Provider>
+        </StoryMapMediaContext.Provider>
+      </StoryMapPreviewContext.Provider>
+    </StoryMapConfigDataContext.Provider>
   );
 };
 
 export const useStoryMapConfigDataContext = () =>
-  useContext(StoryMapConfigContext);
+  useContext(StoryMapConfigDataContext);
+export const useStoryMapPreviewContext = () =>
+  useContext(StoryMapPreviewContext);
+export const useStoryMapMediaContext = () => useContext(StoryMapMediaContext);
 export const useStoryMapConfigActionsContext = () =>
   useContext(StoryMapConfigActionsContext);
+export const useStoryMapBufferedChapterActionsContext = () =>
+  useContext(StoryMapBufferedChapterActionsContext);
 export const useStoryMapSaveContext = () => useContext(StoryMapSaveContext);
 
 export const useStoryMapConfigContext = () => ({
   ...useStoryMapConfigDataContext(),
+  ...useStoryMapPreviewContext(),
+  ...useStoryMapMediaContext(),
   ...useStoryMapConfigActionsContext(),
+  ...useStoryMapBufferedChapterActionsContext(),
   ...useStoryMapSaveContext(),
 });

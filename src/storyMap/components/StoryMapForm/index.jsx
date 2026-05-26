@@ -31,7 +31,14 @@ import StoryMap from 'terraso-web-client/storyMap/components/StoryMap';
 import BufferedChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/BufferedChapterForm';
 import ChaptersSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/ChaptersSideBar';
 import RightSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/RightSidebar';
-import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import {
+  useStoryMapBufferedChapterActionsContext,
+  useStoryMapConfigActionsContext,
+  useStoryMapConfigDataContext,
+  useStoryMapMediaContext,
+  useStoryMapPreviewContext,
+  useStoryMapSaveContext,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import TitleForm from 'terraso-web-client/storyMap/components/StoryMapForm/TitleForm';
 import TopBar from 'terraso-web-client/storyMap/components/StoryMapForm/TopBar';
 import TopBarPreview from 'terraso-web-client/storyMap/components/StoryMapForm/TopBarPreview';
@@ -50,7 +57,7 @@ const BASE_CHAPTER = {
 };
 
 const Preview = props => {
-  const { getMediaFile } = useStoryMapConfigContext();
+  const { getMediaFile } = useStoryMapMediaContext();
   const { config, onPublish, isPublishing } = props;
 
   const previewConfig = useMemo(
@@ -99,19 +106,14 @@ const StoryMapForm = props => {
   } = props;
   const saveRequestStatus = useSelector(_.get('storyMap.form'));
   const { error: saveError, saving } = saveRequestStatus;
-  const {
-    storyMap,
-    config,
-    configRevision,
-    preview,
-    mediaFiles: draftMediaFiles,
-    setConfig: updateConfig,
-    init,
-    flushBufferedChapterEdits,
-    isConfigDirty,
-    isDirty,
-    markRevisionSaved,
-  } = useStoryMapConfigContext();
+  const { storyMap, config, configRevision } = useStoryMapConfigDataContext();
+  const { preview } = useStoryMapPreviewContext();
+  const { mediaFiles: draftMediaFiles } = useStoryMapMediaContext();
+  const { setConfig: updateConfig, init } = useStoryMapConfigActionsContext();
+  const { flushBufferedChapterEdits } =
+    useStoryMapBufferedChapterActionsContext();
+  const { isConfigDirty, isDirty, markRevisionSaved } =
+    useStoryMapSaveContext();
   const [currentStepId, setCurrentStepId] = useState();
   const [scrollToChapter, setScrollToChapter] = useState();
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);

@@ -19,13 +19,17 @@ import {
   startTransition,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
 import _ from 'lodash/fp';
 
-import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import {
+  useStoryMapBufferedChapterActionsContext,
+  useStoryMapConfigActionsContext,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 
 export const BUFFERED_FIELD_COMMIT_STRATEGIES = {
   DEBOUNCED: 'debounced',
@@ -125,26 +129,22 @@ const reconcileBufferedFieldValuesWithChapter = ({
       };
 };
 
-const useBufferedChapterFields = props => {
-  const { chapter: persistedChapter, bufferedFields } = props;
-  const {
-    setConfig: updateConfig,
-    setChapterHasBufferedChanges,
-    registerBufferedChapterUpdateBuilder,
-  } = useStoryMapConfigActionsContext();
-  const bufferedFieldNames = useMemo(
-    () => Object.keys(bufferedFields),
-    [bufferedFields]
-  );
+const useBufferedChapterState = ({
+  persistedChapter,
+  bufferedFieldNames,
+  setChapterHasBufferedChanges,
+}) => {
   const [bufferedFieldValues, setBufferedFieldValues] = useState(() =>
     pickBufferedFieldValues(persistedChapter, bufferedFieldNames)
   );
-  const latestBufferedStateRef = useRef({
-    bufferedFieldValues,
+  const bufferedChapterStateRef = useRef({
+    bufferedFieldValues: pickBufferedFieldValues(
+      persistedChapter,
+      bufferedFieldNames
+    ),
     chapter: persistedChapter,
   });
   const previousChapterRef = useRef(persistedChapter);
-  const scheduledFieldPersistsRef = useRef(new Map());
 
   const chapter = useMemo(
     () => ({
@@ -161,14 +161,36 @@ const useBufferedChapterFields = props => {
         persistedChapter,
         bufferedFieldNames
       ),
-    [bufferedFieldValues, persistedChapter, bufferedFieldNames]
+    [bufferedFieldNames, bufferedFieldValues, persistedChapter]
   );
   const hasPendingBufferedFieldChanges = !_.isEmpty(pendingBufferedFieldPatch);
 
-  latestBufferedStateRef.current = {
-    bufferedFieldValues,
-    chapter: persistedChapter,
-  };
+  const syncBufferedChapterState = useCallback(
+    nextBufferedFieldValues => {
+      bufferedChapterStateRef.current = {
+        bufferedFieldValues: nextBufferedFieldValues,
+        chapter: persistedChapter,
+      };
+    },
+    [persistedChapter]
+  );
+
+  const updateBufferedFieldValues = useCallback(
+    nextBufferedFieldValues => {
+      syncBufferedChapterState(nextBufferedFieldValues);
+      setBufferedFieldValues(nextBufferedFieldValues);
+    },
+    [syncBufferedChapterState]
+  );
+
+  const readBufferedChapterState = useCallback(
+    () => bufferedChapterStateRef.current,
+    []
+  );
+
+  useLayoutEffect(() => {
+    syncBufferedChapterState(bufferedFieldValues);
+  }, [bufferedFieldValues, syncBufferedChapterState]);
 
   useEffect(() => {
     const previousChapter = previousChapterRef.current;
@@ -207,6 +229,20 @@ const useBufferedChapterFields = props => {
     [persistedChapter.id, setChapterHasBufferedChanges]
   );
 
+  return {
+    chapter,
+    readBufferedChapterState,
+    updateBufferedFieldValues,
+  };
+};
+
+const useBufferedFieldPersistence = ({
+  bufferedFieldNames,
+  readBufferedChapterState,
+  updateConfig,
+}) => {
+  const scheduledFieldPersistsRef = useRef(new Map());
+
   const cancelScheduledFieldPersist = useCallback(fieldName => {
     const pendingFieldPersist =
       scheduledFieldPersistsRef.current.get(fieldName);
@@ -231,18 +267,18 @@ const useBufferedChapterFields = props => {
     const {
       bufferedFieldValues: currentBufferedFieldValues,
       chapter: currentChapter,
-    } = latestBufferedStateRef.current;
+    } = readBufferedChapterState();
 
     return buildBufferedFieldPatch(
       currentBufferedFieldValues,
       currentChapter,
       bufferedFieldNames
     );
-  }, [bufferedFieldNames]);
+  }, [bufferedFieldNames, readBufferedChapterState]);
 
   const persistBufferedFieldPatch = useCallback(
     (nextChapterFields, { defer = true } = {}) => {
-      const { chapter: currentChapter } = latestBufferedStateRef.current;
+      const { chapter: currentChapter } = readBufferedChapterState();
       const persistableFieldChanges = buildPersistableFieldPatch(
         nextChapterFields,
         currentChapter
@@ -266,47 +302,7 @@ const useBufferedChapterFields = props => {
         updateConfig(configUpdater);
       });
     },
-    [updateConfig]
-  );
-
-  const buildBufferedChapterConfigUpdater = useCallback(() => {
-    clearScheduledFieldPersists();
-    const nextChapterFields = readPendingBufferedFieldPatch();
-
-    if (_.isEmpty(nextChapterFields)) {
-      return null;
-    }
-
-    const { chapter: currentChapter } = latestBufferedStateRef.current;
-
-    return buildChapterConfigUpdater(currentChapter.id, nextChapterFields);
-  }, [clearScheduledFieldPersists, readPendingBufferedFieldPatch]);
-
-  useEffect(
-    () =>
-      registerBufferedChapterUpdateBuilder(
-        persistedChapter.id,
-        buildBufferedChapterConfigUpdater
-      ),
-    [
-      persistedChapter.id,
-      buildBufferedChapterConfigUpdater,
-      registerBufferedChapterUpdateBuilder,
-    ]
-  );
-
-  useEffect(
-    () => () => {
-      clearScheduledFieldPersists();
-      persistBufferedFieldPatch(readPendingBufferedFieldPatch(), {
-        defer: false,
-      });
-    },
-    [
-      clearScheduledFieldPersists,
-      persistBufferedFieldPatch,
-      readPendingBufferedFieldPatch,
-    ]
+    [readBufferedChapterState, updateConfig]
   );
 
   const scheduleBufferedFieldPersist = useCallback(
@@ -328,6 +324,104 @@ const useBufferedChapterFields = props => {
     [cancelScheduledFieldPersist, persistBufferedFieldPatch]
   );
 
+  const buildBufferedChapterConfigUpdater = useCallback(() => {
+    clearScheduledFieldPersists();
+    const nextChapterFields = readPendingBufferedFieldPatch();
+
+    if (_.isEmpty(nextChapterFields)) {
+      return null;
+    }
+
+    const { chapter: currentChapter } = readBufferedChapterState();
+
+    return buildChapterConfigUpdater(currentChapter.id, nextChapterFields);
+  }, [
+    clearScheduledFieldPersists,
+    readBufferedChapterState,
+    readPendingBufferedFieldPatch,
+  ]);
+
+  return {
+    buildBufferedChapterConfigUpdater,
+    clearScheduledFieldPersists,
+    persistBufferedFieldPatch,
+    readPendingBufferedFieldPatch,
+    scheduleBufferedFieldPersist,
+  };
+};
+
+const useBufferedChapterLifecycle = ({
+  persistedChapterId,
+  registerBufferedChapterUpdateBuilder,
+  buildBufferedChapterConfigUpdater,
+  clearScheduledFieldPersists,
+  persistBufferedFieldPatch,
+  readPendingBufferedFieldPatch,
+}) => {
+  useEffect(
+    () =>
+      registerBufferedChapterUpdateBuilder(
+        persistedChapterId,
+        buildBufferedChapterConfigUpdater
+      ),
+    [
+      persistedChapterId,
+      buildBufferedChapterConfigUpdater,
+      registerBufferedChapterUpdateBuilder,
+    ]
+  );
+
+  useEffect(
+    () => () => {
+      clearScheduledFieldPersists();
+      persistBufferedFieldPatch(readPendingBufferedFieldPatch(), {
+        defer: false,
+      });
+    },
+    [
+      clearScheduledFieldPersists,
+      persistBufferedFieldPatch,
+      readPendingBufferedFieldPatch,
+    ]
+  );
+};
+
+const useBufferedChapterFields = props => {
+  const { chapter: persistedChapter, bufferedFields } = props;
+  const { setConfig: updateConfig } = useStoryMapConfigActionsContext();
+  const { setChapterHasBufferedChanges, registerBufferedChapterUpdateBuilder } =
+    useStoryMapBufferedChapterActionsContext();
+  const bufferedFieldNames = useMemo(
+    () => Object.keys(bufferedFields),
+    [bufferedFields]
+  );
+  const { chapter, readBufferedChapterState, updateBufferedFieldValues } =
+    useBufferedChapterState({
+      persistedChapter,
+      bufferedFieldNames,
+      setChapterHasBufferedChanges,
+    });
+  const {
+    buildBufferedChapterConfigUpdater,
+    clearScheduledFieldPersists,
+    persistBufferedFieldPatch,
+    readPendingBufferedFieldPatch,
+    scheduleBufferedFieldPersist,
+  } = useBufferedFieldPersistence({
+    bufferedFieldNames,
+    readBufferedChapterState,
+    updateConfig,
+  });
+
+  useBufferedChapterLifecycle({
+    persistedChapterId: persistedChapter.id,
+    registerBufferedChapterUpdateBuilder,
+    buildBufferedChapterConfigUpdater,
+    clearScheduledFieldPersists,
+    persistBufferedFieldPatch,
+    readPendingBufferedFieldPatch,
+  });
+
   const applyImmediateFieldChange = useCallback(
     (fieldName, value) => {
       updateConfig(
@@ -347,7 +441,7 @@ const useBufferedChapterFields = props => {
       }
 
       const currentBufferedFieldValues =
-        latestBufferedStateRef.current.bufferedFieldValues;
+        readBufferedChapterState().bufferedFieldValues;
       if (areFieldValuesEqual(currentBufferedFieldValues[fieldName], value)) {
         return;
       }
@@ -357,11 +451,7 @@ const useBufferedChapterFields = props => {
         [fieldName]: value,
       };
 
-      latestBufferedStateRef.current = {
-        bufferedFieldValues: nextBufferedFieldValues,
-        chapter: persistedChapter,
-      };
-      setBufferedFieldValues(nextBufferedFieldValues);
+      updateBufferedFieldValues(nextBufferedFieldValues);
 
       scheduleBufferedFieldPersist(
         fieldName,
@@ -372,8 +462,9 @@ const useBufferedChapterFields = props => {
     [
       applyImmediateFieldChange,
       bufferedFields,
-      persistedChapter,
+      readBufferedChapterState,
       scheduleBufferedFieldPersist,
+      updateBufferedFieldValues,
     ]
   );
 
@@ -395,11 +486,11 @@ const useBufferedChapterFields = props => {
       return () => {
         scheduleBufferedFieldPersist(
           fieldName,
-          latestBufferedStateRef.current.bufferedFieldValues[fieldName]
+          readBufferedChapterState().bufferedFieldValues[fieldName]
         );
       };
     },
-    [bufferedFields, scheduleBufferedFieldPersist]
+    [bufferedFields, readBufferedChapterState, scheduleBufferedFieldPersist]
   );
 
   return {

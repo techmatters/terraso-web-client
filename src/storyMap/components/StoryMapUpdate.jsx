@@ -34,7 +34,8 @@ import { usePermission } from 'terraso-web-client/permissions/index';
 import StoryMapForm from 'terraso-web-client/storyMap/components/StoryMapForm/index';
 import {
   StoryMapConfigContextProvider,
-  useStoryMapConfigContext,
+  useStoryMapConfigDataContext,
+  useStoryMapSaveContext,
 } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import {
   fetchStoryMapForm,
@@ -68,7 +69,8 @@ const StoryMapUpdate = props => {
   const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
   const [savedStoryMap, setSavedStoryMap] = useState();
-  const { storyMap, applySavedRevisionConfig } = useStoryMapConfigContext();
+  const { storyMap } = useStoryMapConfigDataContext();
+  const { applySavedRevisionConfig } = useStoryMapSaveContext();
 
   useDocumentTitle(
     t('storyMap.edit_document_title', {
