@@ -232,8 +232,6 @@ const ChapterForm = props => {
       })}
       sx={{ opacity: 0.99 }}
     >
-      {/* div with ID added because of an Intersection Observer issue with overflow */}
-      <div className="step" id={chapter.id}></div>
       <ChapterConfig
         chapter={chapter}
         onAlignmentChange={getFieldChangeHandler('alignment')}

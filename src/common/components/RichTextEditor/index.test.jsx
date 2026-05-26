@@ -352,6 +352,7 @@ test('RichTextEditor: rerendered value replaces the live editor contents', async
   await act(async () => {
     rerender(
       <RichTextEditor
+        initialFocused
         value={[
           {
             type: 'paragraph',
