@@ -42,6 +42,7 @@ import EditableMedia from 'terraso-web-client/storyMap/components/StoryMapForm/E
 import EditableRichText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableRichText';
 import EditableText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableText';
 import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
+import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { ALIGNMENTS } from 'terraso-web-client/storyMap/storyMapConstants';
 import { chapterHasVisualMedia } from 'terraso-web-client/storyMap/storyMapUtils';
 
@@ -161,13 +162,15 @@ const ChapterForm = props => {
     theme,
     persistedChapter,
     displayedChapter,
-    init,
-    updateConfig,
-    getLatestConfig,
     getFieldChangeHandler,
     getFieldBlurHandler,
   } = props;
   const { t } = useTranslation();
+  const {
+    setConfig: updateConfig,
+    getConfig: getLatestConfig,
+    init,
+  } = useStoryMapConfigActionsContext();
   const [shouldFocusTitle, setShouldFocusTitle] = useState(false);
 
   useEffect(() => {

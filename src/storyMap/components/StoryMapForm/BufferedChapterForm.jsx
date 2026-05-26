@@ -16,7 +16,6 @@
  */
 
 import ChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/ChapterForm';
-import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import useBufferedChapterFields from 'terraso-web-client/storyMap/components/StoryMapForm/useBufferedChapterFields';
 
 const TEXT_COMMIT_DEBOUNCE = 500;
@@ -27,11 +26,6 @@ const BUFFERED_CHAPTER_FIELD_CONFIG = {
 };
 
 const BufferedChapterForm = ({ theme, record: persistedChapter }) => {
-  const {
-    setConfig: updateConfig,
-    getConfig: getLatestConfig,
-    init,
-  } = useStoryMapConfigActionsContext();
   const { displayedChapter, getFieldBlurHandler, getFieldChangeHandler } =
     useBufferedChapterFields({
       chapter: persistedChapter,
@@ -43,9 +37,6 @@ const BufferedChapterForm = ({ theme, record: persistedChapter }) => {
       theme={theme}
       persistedChapter={persistedChapter}
       displayedChapter={displayedChapter}
-      init={init}
-      updateConfig={updateConfig}
-      getLatestConfig={getLatestConfig}
       getFieldChangeHandler={getFieldChangeHandler}
       getFieldBlurHandler={getFieldBlurHandler}
     />

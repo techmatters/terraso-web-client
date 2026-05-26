@@ -49,22 +49,6 @@ const BASE_CHAPTER = {
   onChapterEnter: [],
 };
 
-const buildDraftAutoSaveSnapshot = ({
-  config,
-  configRevision,
-  mediaFiles,
-  isConfigDirty,
-  saving,
-  saveError,
-}) => ({
-  config,
-  configRevision,
-  mediaFiles,
-  isConfigDirty,
-  saving,
-  saveError,
-});
-
 const Preview = props => {
   const { getMediaFile } = useStoryMapConfigContext();
   const { config, onPublish } = props;
@@ -133,15 +117,14 @@ const StoryMapForm = props => {
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
 
   const draftAutoSaveSnapshot = useMemo(
-    () =>
-      buildDraftAutoSaveSnapshot({
-        config,
-        configRevision,
-        mediaFiles: draftMediaFiles,
-        isConfigDirty,
-        saving,
-        saveError,
-      }),
+    () => ({
+      config,
+      configRevision,
+      mediaFiles: draftMediaFiles,
+      isConfigDirty,
+      saving,
+      saveError,
+    }),
     [config, configRevision, draftMediaFiles, isConfigDirty, saveError, saving]
   );
   const [debouncedDraftAutoSaveSnapshot] = useDebounce(
