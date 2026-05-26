@@ -98,7 +98,7 @@ const StoryMapUpdate = props => {
       },
     });
     if (published) {
-      navigate(url);
+      navigate(url, { force: true });
       return;
     }
 
@@ -125,14 +125,16 @@ const StoryMapUpdate = props => {
       ).then(data => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
-          const savedConfig = _.get('payload.configuration', data);
+          if (!publish) {
+            const savedConfig = _.get('payload.configuration', data);
 
-          const didApplySavedRevisionConfig = applySavedRevisionConfig(
-            revision,
-            savedConfig
-          );
-          if (!didApplySavedRevisionConfig) {
-            return false;
+            const didApplySavedRevisionConfig = applySavedRevisionConfig(
+              revision,
+              savedConfig
+            );
+            if (!didApplySavedRevisionConfig) {
+              return false;
+            }
           }
 
           setSavedStoryMap(buildSavedStoryMapState({ data, publish }));

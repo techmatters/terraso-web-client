@@ -51,7 +51,7 @@ const BASE_CHAPTER = {
 
 const Preview = props => {
   const { getMediaFile } = useStoryMapConfigContext();
-  const { config, onPublish } = props;
+  const { config, onPublish, isPublishing } = props;
 
   const previewConfig = useMemo(
     () => ({
@@ -76,7 +76,7 @@ const Preview = props => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <TopBarPreview onPublish={onPublish} />
+      <TopBarPreview onPublish={onPublish} isPublishing={isPublishing} />
       <Box sx={{ flex: 1, overflowY: 'auto', position: 'relative' }}>
         <StoryMap
           config={previewConfig}
@@ -115,6 +115,7 @@ const StoryMapForm = props => {
   const [currentStepId, setCurrentStepId] = useState();
   const [scrollToChapter, setScrollToChapter] = useState();
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
+  const [isPublishing, setIsPublishing] = useState(false);
 
   const draftAutoSaveSnapshot = useMemo(
     () => ({
@@ -160,7 +161,7 @@ const StoryMapForm = props => {
       configRevision: revision,
       mediaFiles: mediaFilesToPersist,
     } = debouncedDraftAutoSaveSnapshot;
-    if (!hasPendingConfigChanges) {
+    if (isPublishing || !hasPendingConfigChanges) {
       return;
     }
     persistDraftAutoSave(configToPersist, revision, mediaFilesToPersist).catch(
@@ -168,7 +169,7 @@ const StoryMapForm = props => {
         logger.error('Error auto saving story map', error);
       }
     );
-  }, [debouncedDraftAutoSaveSnapshot, persistDraftAutoSave]);
+  }, [debouncedDraftAutoSaveSnapshot, isPublishing, persistDraftAutoSave]);
 
   const { isBlocked, proceed, cancel } = useNavigationBlocker(
     isDirty,
@@ -251,10 +252,19 @@ const StoryMapForm = props => {
     [updateConfig, trackEvent, storyMap]
   );
 
-  const onPublishWrapper = useCallback(
-    () => persistSaveOperationWithBufferedChapterEdits(onPublish),
-    [onPublish, persistSaveOperationWithBufferedChapterEdits]
-  );
+  const onPublishWrapper = useCallback(() => {
+    if (isPublishing) {
+      return Promise.resolve(false);
+    }
+
+    setIsPublishing(true);
+
+    return persistSaveOperationWithBufferedChapterEdits(onPublish).finally(
+      () => {
+        setIsPublishing(false);
+      }
+    );
+  }, [isPublishing, onPublish, persistSaveOperationWithBufferedChapterEdits]);
 
   const onSaveDraftWrapper = useCallback(
     () => persistSaveOperationWithBufferedChapterEdits(onSaveDraft),
@@ -270,7 +280,13 @@ const StoryMapForm = props => {
   }, []);
 
   if (preview || isSmall) {
-    return <Preview config={config} onPublish={onPublishWrapper} />;
+    return (
+      <Preview
+        config={config}
+        onPublish={onPublishWrapper}
+        isPublishing={isPublishing}
+      />
+    );
   }
 
   return (
@@ -288,6 +304,7 @@ const StoryMapForm = props => {
         onSaveDraft={onSaveDraftWrapper}
         requestStatus={saveRequestStatus}
         isDirty={isDirty}
+        isPublishing={isPublishing}
         onToggleRightSidebar={toggleRightSidebar}
         isRightSidebarOpen={isRightSidebarOpen}
       />

@@ -72,6 +72,7 @@ const TopBar = props => {
   const {
     onPublish,
     isDirty,
+    isPublishing,
     requestStatus,
     onToggleRightSidebar,
     isRightSidebarOpen,
@@ -121,6 +122,7 @@ const TopBar = props => {
             variant="contained"
             color="primary"
             onClick={onPublish}
+            disabled={isPublishing}
             sx={{ ml: 2 }}
           >
             {isPublished

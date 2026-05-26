@@ -24,7 +24,7 @@ import TopBarContainer from 'terraso-web-client/storyMap/components/StoryMapForm
 const TopBarPreview = props => {
   const { t } = useTranslation();
   const { storyMap, config, setPreview } = useStoryMapConfigContext();
-  const { onPublish } = props;
+  const { onPublish, isPublishing } = props;
 
   const isPublished = storyMap?.isPublished;
 
@@ -65,6 +65,7 @@ const TopBarPreview = props => {
           variant="contained"
           color="primary"
           onClick={onPublish}
+          disabled={isPublishing}
           sx={{ ml: 2 }}
         >
           {isPublished

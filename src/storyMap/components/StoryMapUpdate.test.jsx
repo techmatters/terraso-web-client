@@ -290,6 +290,76 @@ test('StoryMapUpdate: stale draft save response does not overwrite newer local e
   jest.useRealTimers();
 });
 
+test('StoryMapUpdate: publish responses still complete after local edits while publish is in flight', async () => {
+  const trackEvent = jest.fn();
+  const publishRequest = createDeferred();
+
+  useAnalytics.mockReturnValue({
+    trackEvent,
+  });
+  terrasoApi.requestGraphQL.mockResolvedValue({
+    storyMaps: {
+      edges: [
+        {
+          node: API_STORY_MAP,
+        },
+      ],
+    },
+  });
+  terrasoApi.request.mockImplementationOnce(() => publishRequest.promise);
+
+  await setup({ id: API_STORY_MAP.createdBy.id });
+
+  const titleSection = screen.getByRole('region', {
+    name: 'Title for: Story Map Title',
+  });
+
+  await act(async () => {
+    fireEvent.click(
+      within(titleSection).getByRole('heading', { name: 'Story Map Title' })
+    );
+  });
+
+  const titleInput = within(titleSection).getByRole('textbox', {
+    name: 'Story map title (Required)',
+  });
+
+  await act(async () => {
+    fireEvent.change(titleInput, {
+      target: { value: 'First published title' },
+    });
+  });
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Publish' }));
+  });
+
+  await waitFor(() => {
+    expect(screen.getByRole('button', { name: 'Publish' })).toBeDisabled();
+  });
+
+  await act(async () => {
+    fireEvent.change(titleInput, {
+      target: { value: 'Edited after publish click' },
+    });
+  });
+
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+
+  await act(async () => {
+    publishRequest.resolve(buildSavedStoryMap('First published title'));
+  });
+
+  await waitFor(() => {
+    expect(trackEvent).toHaveBeenCalledWith('storymap.publish', {
+      props: {
+        'ILM Output': 'Landscape Narratives',
+        map: '2b8b8352-2d41-4c92-9b97-0d5eb019d5ee',
+      },
+    });
+  });
+});
+
 test('StoryMapUpdate: Show Share Dialog', async () => {
   terrasoApi.requestGraphQL.mockResolvedValue({
     storyMaps: {
