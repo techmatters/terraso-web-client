@@ -43,7 +43,7 @@ import ExternalLink from 'terraso-web-client/common/components/ExternalLink';
 import UserEmailAutocomplete from 'terraso-web-client/common/components/UserEmailAutocomplete';
 import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
 import Restricted from 'terraso-web-client/permissions/components/Restricted';
-import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { useStoryMapConfigDataContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import {
   MEMBERSHIP_ROLE_EDITOR,
   MEMBERSHIP_ROLE_OWNER,
@@ -86,7 +86,7 @@ const RemoveButton = props => {
         ?.processing
   );
   const { t } = useTranslation();
-  const { storyMap } = useStoryMapConfigContext();
+  const { storyMap } = useStoryMapConfigDataContext();
   const { membership, tabIndex } = props;
   const isOwnMembership = useMemo(
     () => membership?.userId === currentUser?.id,
@@ -182,7 +182,7 @@ const ShareDialog = props => {
     state => state.storyMap.memberships.add.saving
   );
   const { open, onClose } = props;
-  const { storyMap } = useStoryMapConfigContext();
+  const { storyMap } = useStoryMapConfigDataContext();
   const [newEditors, setNewEditors] = useState([]);
   const [expanded, setExpanded] = React.useState(false);
 

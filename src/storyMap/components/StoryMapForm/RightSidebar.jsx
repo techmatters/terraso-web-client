@@ -31,7 +31,10 @@ import { createAbsoluteUrl } from 'terraso-web-client/common/utils/urlUtils';
 import FeaturedImage from 'terraso-web-client/storyMap/components/StoryMapForm/FeaturedImage';
 import ShareDialog from 'terraso-web-client/storyMap/components/StoryMapForm/ShareDialog';
 import ShortDescription from 'terraso-web-client/storyMap/components/StoryMapForm/ShortDescription';
-import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import {
+  useStoryMapConfigDataContext,
+  useStoryMapPreviewContext,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import {
   generateStoryMapEmbedUrl,
   generateStoryMapUrl,
@@ -191,7 +194,8 @@ const ShareAction = ({ storyMap, onShare }) => {
 const RightSidebar = props => {
   const { t } = useTranslation();
   const { open, onClose, zIndex = 3 } = props;
-  const { storyMap, setPreview } = useStoryMapConfigContext();
+  const { storyMap } = useStoryMapConfigDataContext();
+  const { setPreview } = useStoryMapPreviewContext();
   const [openShareDialog, setOpenShareDialog] = useState(false);
   const contentRef = useRef(null);
 

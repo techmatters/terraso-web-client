@@ -39,13 +39,13 @@ const createConfigSnapshot = (config, revision) => ({
   revision,
 });
 
-const resolveNextConfig = (currentConfig, nextConfigSetter) => {
-  const nextConfig =
-    typeof nextConfigSetter === 'function'
-      ? nextConfigSetter(currentConfig)
-      : nextConfigSetter;
+const resolveConfigUpdate = (currentConfig, nextConfigSetter) =>
+  typeof nextConfigSetter === 'function'
+    ? nextConfigSetter(currentConfig)
+    : nextConfigSetter;
 
-  const usedDataLayerIds = _.flow(
+const pruneUnusedDataLayers = nextConfig => {
+  const referencedDataLayerIds = _.flow(
     _.flatMap(ids => ids),
     _.compact
   )([
@@ -55,8 +55,14 @@ const resolveNextConfig = (currentConfig, nextConfigSetter) => {
 
   return {
     ...nextConfig,
-    dataLayers: _.pick(usedDataLayerIds, nextConfig.dataLayers),
+    dataLayers: _.pick(referencedDataLayerIds, nextConfig.dataLayers),
   };
+};
+
+const applyConfigUpdate = (currentConfig, nextConfigSetter) => {
+  const nextConfig = resolveConfigUpdate(currentConfig, nextConfigSetter);
+
+  return pruneUnusedDataLayers(nextConfig);
 };
 
 export const StoryMapConfigContextProvider = props => {
@@ -136,10 +142,9 @@ export const StoryMapConfigContextProvider = props => {
         return false;
       }
 
-      const nextConfig = resolveNextConfig(
-        latestConfigRef.current,
-        savedConfig
-      );
+      const nextConfig = savedConfig
+        ? applyConfigUpdate(latestConfigRef.current, savedConfig)
+        : latestConfigRef.current;
       latestConfigRef.current = nextConfig;
       setConfig(nextConfig);
       clearMediaFiles();
@@ -152,7 +157,7 @@ export const StoryMapConfigContextProvider = props => {
 
   const updateConfig = useCallback(
     (nextConfigSetter, dirty = true) => {
-      const nextConfig = resolveNextConfig(
+      const nextConfig = applyConfigUpdate(
         latestConfigRef.current,
         nextConfigSetter
       );
@@ -207,7 +212,7 @@ export const StoryMapConfigContextProvider = props => {
 
           return {
             hasChanges: true,
-            nextConfig: resolveNextConfig(
+            nextConfig: applyConfigUpdate(
               collectedUpdate.nextConfig,
               configUpdater
             ),
@@ -243,7 +248,6 @@ export const StoryMapConfigContextProvider = props => {
     ]
   );
 
-  const getLatestConfig = useCallback(() => latestConfigRef.current, []);
   const isDirty = isConfigDirty || hasBufferedChapterChanges;
 
   const configDataContextValue = useMemo(
@@ -276,10 +280,9 @@ export const StoryMapConfigContextProvider = props => {
   const configActionsContextValue = useMemo(
     () => ({
       setConfig: updateConfig,
-      getLatestConfig,
       init,
     }),
-    [updateConfig, getLatestConfig, init]
+    [updateConfig, init]
   );
 
   const bufferedChapterActionsContextValue = useMemo(
@@ -336,12 +339,3 @@ export const useStoryMapConfigActionsContext = () =>
 export const useStoryMapBufferedChapterActionsContext = () =>
   useContext(StoryMapBufferedChapterActionsContext);
 export const useStoryMapSaveContext = () => useContext(StoryMapSaveContext);
-
-export const useStoryMapConfigContext = () => ({
-  ...useStoryMapConfigDataContext(),
-  ...useStoryMapPreviewContext(),
-  ...useStoryMapMediaContext(),
-  ...useStoryMapConfigActionsContext(),
-  ...useStoryMapBufferedChapterActionsContext(),
-  ...useStoryMapSaveContext(),
-});

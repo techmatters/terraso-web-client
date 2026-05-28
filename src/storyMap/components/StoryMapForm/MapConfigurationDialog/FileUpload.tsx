@@ -37,7 +37,7 @@ import {
   uploadSharedDataFile,
 } from 'terraso-web-client/sharedData/sharedDataSlice';
 import { useVisualizationContext } from 'terraso-web-client/sharedData/visualization/visualizationContext';
-import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { useStoryMapConfigDataContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 
 import {
   MAP_LAYER_ACCEPTED_EXTENSIONS,
@@ -54,7 +54,7 @@ export const FileUpload = (props: FileUploadProps) => {
   const { trackEvent } = useAnalytics();
   const {
     storyMap: { id, slug },
-  } = useStoryMapConfigContext();
+  } = useStoryMapConfigDataContext();
   const [dropzoneErrors, setDropzoneErrors] = useState<string[]>([]);
 
   const { onCompleteSuccess } = props;

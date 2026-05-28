@@ -21,7 +21,10 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { Button, Stack, Typography } from '@mui/material';
 
 import ShortDescriptionDialog from 'terraso-web-client/storyMap/components/StoryMapForm/ShortDescriptionDialog';
-import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import {
+  useStoryMapConfigActionsContext,
+  useStoryMapConfigDataContext,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 
 const DESCRIPTION_STYLES = {
   whiteSpace: 'pre-wrap',
@@ -33,7 +36,8 @@ const DESCRIPTION_STYLES = {
 
 const ShortDescription = () => {
   const { t } = useTranslation();
-  const { config, setConfig } = useStoryMapConfigContext();
+  const { config } = useStoryMapConfigDataContext();
+  const { setConfig } = useStoryMapConfigActionsContext();
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleOpenDialog = useCallback(() => {

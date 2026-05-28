@@ -42,7 +42,7 @@ import {
 } from '@mui/material';
 
 import { CreateMapLayerFileUpload } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog';
-import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { useStoryMapConfigDataContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { fetchDataLayers } from 'terraso-web-client/storyMap/storyMapSlice';
 import { MapLayerConfig } from 'terraso-web-client/storyMap/storyMapTypes';
 
@@ -180,7 +180,7 @@ export const MapLayerDialog = ({
     state => state.storyMap.dataLayers
   ) as { fetching: boolean; list: MapLayerConfig[] };
   const [selected, setSelected] = useState('');
-  const { storyMap } = useStoryMapConfigContext() as {
+  const { storyMap } = useStoryMapConfigDataContext() as {
     storyMap?: { id: string };
   };
 

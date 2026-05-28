@@ -44,7 +44,7 @@ import MapControls from 'terraso-web-client/gis/components/MapControls';
 import MapGeocoder from 'terraso-web-client/gis/components/MapGeocoder';
 import MapStyleSwitcher from 'terraso-web-client/gis/components/MapStyleSwitcher';
 import { MapLayerDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerDialog';
-import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { useStoryMapConfigDataContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { StoryMapLayer } from 'terraso-web-client/storyMap/components/StoryMapLayer';
 import {
   MapBounds,
@@ -242,7 +242,7 @@ type MapConfigurationDialogProps = {
 };
 export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   const { t } = useTranslation();
-  const { config, storyMap } = useStoryMapConfigContext() as {
+  const { config, storyMap } = useStoryMapConfigDataContext() as {
     config: StoryMapConfig;
     storyMap: StoryMapNode;
   };

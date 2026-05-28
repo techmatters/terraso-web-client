@@ -71,39 +71,44 @@ const StoryMapUpdate = props => {
     savedStoryMap
   );
 
+  const handlePersistedStoryMap = useCallback(
+    ({ slug, storyMapId, published }) => {
+      const event = getStoryMapSaveEvent({
+        publish: published,
+        isPublished: storyMap.isPublished,
+      });
+
+      trackEvent(event, {
+        props: {
+          [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
+          map: storyMap.id,
+        },
+      });
+
+      if (published) {
+        navigate(generateStoryMapUrl({ slug, storyMapId }), { force: true });
+        return;
+      }
+
+      window.history.replaceState(
+        null,
+        t('storyMap.edit_document_title', {
+          name: _.get('title', storyMap),
+        }),
+        generateStoryMapEditUrl({ slug, storyMapId })
+      );
+    },
+    [navigate, storyMap, t, trackEvent]
+  );
+
   useEffect(() => {
     if (!savedStoryMap) {
       return;
     }
 
-    const { slug, storyMapId, published } = savedStoryMap;
     setSavedStoryMap(null);
-    const url = generateStoryMapUrl({ slug, storyMapId });
-
-    const event = getStoryMapSaveEvent({
-      publish: published,
-      isPublished: storyMap.isPublished,
-    });
-
-    trackEvent(event, {
-      props: {
-        [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
-        map: storyMap.id,
-      },
-    });
-    if (published) {
-      navigate(url, { force: true });
-      return;
-    }
-
-    window.history.replaceState(
-      null,
-      t('storyMap.edit_document_title', {
-        name: _.get('title', storyMap),
-      }),
-      generateStoryMapEditUrl({ slug, storyMapId })
-    );
-  }, [storyMap, navigate, trackEvent, savedStoryMap, t, dispatch]);
+    handlePersistedStoryMap(savedStoryMap);
+  }, [handlePersistedStoryMap, savedStoryMap]);
 
   const persistStoryMapUpdate = useCallback(
     (config, mediaFiles, publish, revision) =>
