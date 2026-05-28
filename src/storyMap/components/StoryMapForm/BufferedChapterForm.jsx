@@ -45,9 +45,9 @@ const BufferedChapterForm = ({ theme, record: persistedChapter }) => {
   return (
     <ChapterForm
       theme={theme}
-      chapter={chapter}
-      getFieldChangeHandler={getFieldChangeHandler}
-      getFieldBlurHandler={getFieldBlurHandler}
+      record={chapter}
+      onFieldChange={getFieldChangeHandler}
+      onFieldBlur={getFieldBlurHandler}
     />
   );
 };

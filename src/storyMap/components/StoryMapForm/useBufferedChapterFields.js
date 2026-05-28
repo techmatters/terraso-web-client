@@ -49,9 +49,6 @@ const getBufferedFieldPersistOptions = fieldConfig => {
 const shouldFlushBufferedFieldOnBlur = fieldConfig =>
   fieldConfig?.commitStrategy === BUFFERED_FIELD_COMMIT_STRATEGIES.DEBOUNCED;
 
-const areFieldValuesEqual = (leftValue, rightValue) =>
-  _.isEqual(leftValue, rightValue);
-
 const buildChapterConfigUpdater = (chapterId, nextChapterFields) => config => ({
   ...config,
   chapters: config.chapters.map(configChapter =>
@@ -77,7 +74,7 @@ const buildBufferedFieldPatch = (
 ) =>
   Object.fromEntries(
     bufferedFieldNames.flatMap(fieldName =>
-      areFieldValuesEqual(bufferedFieldValues[fieldName], chapter[fieldName])
+      _.isEqual(bufferedFieldValues[fieldName], chapter[fieldName])
         ? []
         : [[fieldName, bufferedFieldValues[fieldName]]]
     )
@@ -86,7 +83,7 @@ const buildBufferedFieldPatch = (
 const buildPersistableFieldPatch = (nextChapterFields, chapter) =>
   Object.fromEntries(
     Object.entries(nextChapterFields).filter(
-      ([fieldName, value]) => !areFieldValuesEqual(chapter[fieldName], value)
+      ([fieldName, value]) => !_.isEqual(chapter[fieldName], value)
     )
   );
 
@@ -96,11 +93,8 @@ const shouldRefreshBufferedValueFromChapter = ({
   nextChapter,
   fieldName,
 }) =>
-  !areFieldValuesEqual(nextChapter[fieldName], previousChapter[fieldName]) &&
-  areFieldValuesEqual(
-    currentBufferedFieldValues[fieldName],
-    previousChapter[fieldName]
-  );
+  !_.isEqual(nextChapter[fieldName], previousChapter[fieldName]) &&
+  _.isEqual(currentBufferedFieldValues[fieldName], previousChapter[fieldName]);
 
 const reconcileBufferedFieldValuesWithChapter = ({
   currentBufferedFieldValues,
@@ -388,7 +382,7 @@ const useBufferedChapterLifecycle = ({
 
 const useBufferedChapterFields = props => {
   const { chapter: persistedChapter, bufferedFields } = props;
-  const { setConfig: updateConfig } = useStoryMapConfigActionsContext();
+  const { setConfig } = useStoryMapConfigActionsContext();
   const { setChapterHasBufferedChanges, registerBufferedChapterUpdateBuilder } =
     useStoryMapBufferedChapterActionsContext();
   const bufferedFieldNames = useMemo(
@@ -410,7 +404,7 @@ const useBufferedChapterFields = props => {
   } = useBufferedFieldPersistence({
     bufferedFieldNames,
     readBufferedChapterState,
-    updateConfig,
+    updateConfig: setConfig,
   });
 
   useBufferedChapterLifecycle({
@@ -424,11 +418,11 @@ const useBufferedChapterFields = props => {
 
   const applyImmediateFieldChange = useCallback(
     (fieldName, value) => {
-      updateConfig(
+      setConfig(
         buildChapterConfigUpdater(persistedChapter.id, { [fieldName]: value })
       );
     },
-    [persistedChapter.id, updateConfig]
+    [persistedChapter.id, setConfig]
   );
 
   const handleFieldChange = useCallback(
@@ -442,7 +436,7 @@ const useBufferedChapterFields = props => {
 
       const currentBufferedFieldValues =
         readBufferedChapterState().bufferedFieldValues;
-      if (areFieldValuesEqual(currentBufferedFieldValues[fieldName], value)) {
+      if (_.isEqual(currentBufferedFieldValues[fieldName], value)) {
         return;
       }
 

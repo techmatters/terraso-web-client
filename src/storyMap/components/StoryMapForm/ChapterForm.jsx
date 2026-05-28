@@ -42,7 +42,7 @@ import EditableMedia from 'terraso-web-client/storyMap/components/StoryMapForm/E
 import EditableRichText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableRichText';
 import EditableText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableText';
 import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
-import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { ALIGNMENTS } from 'terraso-web-client/storyMap/storyMapConstants';
 import { chapterHasVisualMedia } from 'terraso-web-client/storyMap/storyMapUtils';
 
@@ -62,10 +62,10 @@ const ChapterConfig = props => {
     onLocationChange,
     onMapStyleChange,
     onDataLayerChange,
-    getLatestConfig,
     children,
   } = props;
   const [locationOpen, setLocationOpen] = useState(false);
+  const { config } = useStoryMapConfigContext();
 
   const options = useMemo(
     () => [
@@ -116,7 +116,7 @@ const ChapterConfig = props => {
           location={chapter.location}
           mapLayerConfig={_.get(
             `dataLayers.${chapter.dataLayerConfigId}`,
-            getLatestConfig()
+            config
           )}
           title={chapter.title}
           chapterId={chapter.id}
@@ -158,26 +158,33 @@ const ChapterConfig = props => {
 };
 
 const ChapterForm = props => {
-  const { theme, chapter, getFieldChangeHandler, getFieldBlurHandler } = props;
+  const { theme, record, onFieldChange, onFieldBlur } = props;
   const { t } = useTranslation();
-  const {
-    setConfig: updateConfig,
-    getLatestConfig,
-    init,
-  } = useStoryMapConfigActionsContext();
-  const [shouldFocusTitle, setShouldFocusTitle] = useState(false);
+  const { setConfig, init } = useStoryMapConfigContext();
+  const [isNew, setIsNew] = useState(false);
+
+  const classList = useMemo(
+    () =>
+      [
+        'step-container',
+        'active',
+        ALIGNMENTS[record.alignment] || 'centered',
+        ...(record.hidden ? ['hidden'] : []),
+      ].join(' '),
+    [record.alignment, record.hidden]
+  );
 
   useEffect(() => {
     if (init.current) {
-      setShouldFocusTitle(true);
+      setIsNew(true);
     }
-  }, [chapter.id, init]);
+  }, [record.id, init]);
 
   const onMapStyleChange = useCallback(
     style => {
-      updateConfig(_.set('style', style));
+      setConfig(_.set('style', style));
     },
-    [updateConfig]
+    [setConfig]
   );
 
   const onDataLayerChange = useCallback(
@@ -192,34 +199,23 @@ const ChapterForm = props => {
       const onChapterEnter = baseEvents;
       const onChapterExit = baseEvents.map(_.set('opacity', 0));
 
-      updateConfig(config => ({
+      setConfig(config => ({
         ...(dataLayerConfig
           ? _.set(`dataLayers.${dataLayerConfig.id}`, dataLayerConfig, config)
           : config),
-        chapters: config.chapters.map(configChapter =>
-          configChapter.id === chapter.id
+        chapters: config.chapters.map(chapter =>
+          chapter.id === record.id
             ? {
-                ...configChapter,
+                ...chapter,
                 dataLayerConfigId: dataLayerConfig?.id,
                 onChapterEnter,
                 onChapterExit,
               }
-            : configChapter
+            : chapter
         ),
       }));
     },
-    [chapter.id, updateConfig]
-  );
-
-  const classList = useMemo(
-    () =>
-      [
-        'step-container',
-        'active',
-        ALIGNMENTS[chapter.alignment] || 'centered',
-        ...(chapter.hidden ? ['hidden'] : []),
-      ].join(' '),
-    [chapter.alignment, chapter.hidden]
+    [record.id, setConfig]
   );
 
   return (
@@ -228,17 +224,16 @@ const ChapterForm = props => {
       direction="row"
       component="section"
       aria-label={t('storyMap.view_chapter_label', {
-        title: chapter.title || t('storyMap.form_chapter_no_title_label'),
+        title: record.title || t('storyMap.form_chapter_no_title_label'),
       })}
       sx={{ opacity: 0.99 }}
     >
       <ChapterConfig
-        chapter={chapter}
-        onAlignmentChange={getFieldChangeHandler('alignment')}
-        onLocationChange={getFieldChangeHandler('location')}
+        chapter={record}
+        onAlignmentChange={onFieldChange('alignment')}
+        onLocationChange={onFieldChange('location')}
         onMapStyleChange={onMapStyleChange}
         onDataLayerChange={onDataLayerChange}
-        getLatestConfig={getLatestConfig}
       >
         <Stack
           className={`${theme} step-content`}
@@ -248,10 +243,10 @@ const ChapterForm = props => {
           <EditableText
             placeholder={t('storyMap.form_chapter_title_placeholder')}
             Component="h3"
-            value={chapter.title}
-            onChange={getFieldChangeHandler('title')}
-            onBlur={getFieldBlurHandler('title')}
-            focus={shouldFocusTitle}
+            value={record.title}
+            onChange={onFieldChange('title')}
+            onBlur={onFieldBlur('title')}
+            focus={isNew}
             inputProps={{
               inputProps: {
                 'aria-label': t('storyMap.form_chapter_title_label'),
@@ -260,15 +255,15 @@ const ChapterForm = props => {
           />
           <EditableMedia
             label={t('storyMap.form_chapter_media_label')}
-            value={chapter.media}
-            onChange={getFieldChangeHandler('media')}
+            value={record.media}
+            onChange={onFieldChange('media')}
           />
           <EditableRichText
             label={t('storyMap.form_chapter_description_label')}
             placeholder={t('storyMap.form_chapter_description_placeholder')}
-            value={chapter.description}
-            onChange={getFieldChangeHandler('description')}
-            onBlur={getFieldBlurHandler('description')}
+            value={record.description}
+            onChange={onFieldChange('description')}
+            onBlur={onFieldBlur('description')}
           />
         </Stack>
       </ChapterConfig>

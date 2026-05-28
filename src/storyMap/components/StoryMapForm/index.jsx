@@ -109,7 +109,7 @@ const StoryMapForm = props => {
   const { storyMap, config, configRevision } = useStoryMapConfigDataContext();
   const { preview } = useStoryMapPreviewContext();
   const { mediaFiles: draftMediaFiles } = useStoryMapMediaContext();
-  const { setConfig: updateConfig, init } = useStoryMapConfigActionsContext();
+  const { setConfig, init } = useStoryMapConfigActionsContext();
   const { flushBufferedChapterEdits } =
     useStoryMapBufferedChapterActionsContext();
   const { isConfigDirty, isDirty, markRevisionSaved } =
@@ -198,7 +198,7 @@ const StoryMapForm = props => {
 
   const onAddChapter = useCallback(() => {
     const id = `chapter-${uuidv4()}`;
-    updateConfig(config => ({
+    setConfig(config => ({
       ...config,
       chapters: [
         ...config.chapters,
@@ -209,21 +209,21 @@ const StoryMapForm = props => {
       ],
     }));
     setScrollToChapter(id);
-  }, [updateConfig]);
+  }, [setConfig]);
 
   const onDeleteChapter = useCallback(
     id => () => {
-      updateConfig(config => ({
+      setConfig(config => ({
         ...config,
         chapters: config.chapters.filter(chapter => chapter.id !== id),
       }));
     },
-    [updateConfig]
+    [setConfig]
   );
 
   const onMoveChapter = useCallback(
     (id, index) => {
-      updateConfig(config => {
+      setConfig(config => {
         const fromIndex = config.chapters.findIndex(
           chapter => chapter.id === id
         );
@@ -251,7 +251,7 @@ const StoryMapForm = props => {
         };
       });
     },
-    [updateConfig, trackEvent, storyMap]
+    [setConfig, trackEvent, storyMap]
   );
 
   const onPublishWrapper = useCallback(() => {

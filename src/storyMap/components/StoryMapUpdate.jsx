@@ -55,14 +55,6 @@ const getStoryMapSaveEvent = ({ publish, isPublished }) => {
   return isPublished ? 'storymap.update' : 'storymap.publish';
 };
 
-const buildSavedStoryMapState = ({ data, publish }) => ({
-  id: _.get('payload.id', data),
-  title: _.get('payload.title', data),
-  slug: _.get('payload.slug', data),
-  storyMapId: _.get('payload.story_map_id', data),
-  published: publish,
-});
-
 const StoryMapUpdate = props => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -139,7 +131,13 @@ const StoryMapUpdate = props => {
             }
           }
 
-          setSavedStoryMap(buildSavedStoryMapState({ data, publish }));
+          setSavedStoryMap({
+            id: _.get('payload.id', data),
+            title: _.get('payload.title', data),
+            slug: _.get('payload.slug', data),
+            storyMapId: _.get('payload.story_map_id', data),
+            published: publish,
+          });
           return true;
         }
         return Promise.reject(data);
