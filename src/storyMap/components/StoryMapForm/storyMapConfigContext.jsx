@@ -67,7 +67,11 @@ const applyConfigUpdate = (currentConfig, nextConfigSetter) => {
 
 export const StoryMapConfigContextProvider = props => {
   const { children, baseConfig, storyMap } = props;
-  const initialConfig = baseConfig || {};
+  if (baseConfig === undefined || baseConfig === null) {
+    throw new Error('StoryMapConfigContextProvider requires a baseConfig');
+  }
+
+  const initialConfig = baseConfig;
   const [config, setConfig] = useState(initialConfig);
   const [configRevision, setConfigRevision] = useState(0);
   const [preview, setPreview] = useState(false);
@@ -81,23 +85,26 @@ export const StoryMapConfigContextProvider = props => {
   const bufferedChapterUpdateBuildersRef = useRef(new Map());
   const chaptersWithBufferedChangesRef = useRef(new Set());
 
-  const commitConfigSnapshot = useCallback((nextConfig, dirty = true) => {
-    if (_.isEqual(nextConfig, latestConfigRef.current)) {
-      return createConfigSnapshot(
-        latestConfigRef.current,
-        latestConfigRevisionRef.current
-      );
-    }
+  const commitConfigSnapshot = useCallback(
+    (nextConfig, shouldMarkDirty = true) => {
+      if (_.isEqual(nextConfig, latestConfigRef.current)) {
+        return createConfigSnapshot(
+          latestConfigRef.current,
+          latestConfigRevisionRef.current
+        );
+      }
 
-    const nextRevision = latestConfigRevisionRef.current + 1;
-    latestConfigRef.current = nextConfig;
-    latestConfigRevisionRef.current = nextRevision;
-    setConfig(nextConfig);
-    setConfigRevision(nextRevision);
-    setIsConfigDirty(dirty);
+      const nextRevision = latestConfigRevisionRef.current + 1;
+      latestConfigRef.current = nextConfig;
+      latestConfigRevisionRef.current = nextRevision;
+      setConfig(nextConfig);
+      setConfigRevision(nextRevision);
+      setIsConfigDirty(shouldMarkDirty);
 
-    return createConfigSnapshot(nextConfig, nextRevision);
-  }, []);
+      return createConfigSnapshot(nextConfig, nextRevision);
+    },
+    []
+  );
 
   const getLatestConfigSnapshot = useCallback(
     () =>
@@ -156,12 +163,12 @@ export const StoryMapConfigContextProvider = props => {
   );
 
   const updateConfig = useCallback(
-    (nextConfigSetter, dirty = true) => {
+    (nextConfigSetter, shouldMarkDirty = true) => {
       const nextConfig = applyConfigUpdate(
         latestConfigRef.current,
         nextConfigSetter
       );
-      commitConfigSnapshot(nextConfig, dirty);
+      commitConfigSnapshot(nextConfig, shouldMarkDirty);
     },
     [commitConfigSnapshot]
   );
@@ -227,7 +234,7 @@ export const StoryMapConfigContextProvider = props => {
   );
 
   const flushBufferedChapterEdits = useCallback(
-    (dirty = true) => {
+    (shouldMarkDirty = true) => {
       const { hasChanges, nextConfig } = collectBufferedChapterConfigUpdate();
 
       if (!hasChanges) {
@@ -236,7 +243,7 @@ export const StoryMapConfigContextProvider = props => {
 
       let nextConfigSnapshot;
       flushSync(() => {
-        nextConfigSnapshot = commitConfigSnapshot(nextConfig, dirty);
+        nextConfigSnapshot = commitConfigSnapshot(nextConfig, shouldMarkDirty);
       });
 
       return nextConfigSnapshot;
