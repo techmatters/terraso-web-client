@@ -169,12 +169,28 @@ const useBufferedChapterState = ({
     [persistedChapter]
   );
 
+  const syncBufferedDirtyState = useCallback(
+    nextBufferedFieldValues => {
+      const hasBufferedChanges = !_.isEmpty(
+        buildBufferedFieldPatch(
+          nextBufferedFieldValues,
+          persistedChapter,
+          bufferedFieldNames
+        )
+      );
+
+      setChapterHasBufferedChanges(persistedChapter.id, hasBufferedChanges);
+    },
+    [bufferedFieldNames, persistedChapter, setChapterHasBufferedChanges]
+  );
+
   const updateBufferedFieldValues = useCallback(
     nextBufferedFieldValues => {
       syncBufferedChapterState(nextBufferedFieldValues);
+      syncBufferedDirtyState(nextBufferedFieldValues);
       setBufferedFieldValues(nextBufferedFieldValues);
     },
-    [syncBufferedChapterState]
+    [syncBufferedChapterState, syncBufferedDirtyState]
   );
 
   const readBufferedChapterState = useCallback(
