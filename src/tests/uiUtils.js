@@ -18,7 +18,7 @@
 import { fireEvent, within } from 'terraso-web-client/tests/utils';
 
 export const changeCombobox = async (parent, name, newValue, isNew = true) => {
-  const combobox = parent.getByRole('combobox', {
+  const combobox = parent.getByRole('textbox', {
     name,
   });
   fireEvent.change(combobox, { target: { value: newValue } });

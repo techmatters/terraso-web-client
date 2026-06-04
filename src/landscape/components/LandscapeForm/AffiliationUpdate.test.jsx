@@ -43,7 +43,7 @@ const setup = async () => {
   };
 
   const changeCombobox = async (name, newValue, isNew = true) => {
-    const combobox = screen.getByRole('combobox', {
+    const combobox = screen.getByRole('textbox', {
       name,
     });
     await act(async () =>

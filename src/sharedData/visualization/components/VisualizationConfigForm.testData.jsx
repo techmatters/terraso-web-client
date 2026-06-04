@@ -239,7 +239,7 @@ export const createBaseTestParams = (entityType, fileType) => {
 export const createCSVTestConfig = () => ({
   visualizeConfig: createBaseVisualizationConfig({
     shape: 'triangle',
-    size: '30',
+    size: 30,
     opacity: 50,
   }),
   datasetConfig: {
@@ -268,7 +268,7 @@ export const createKMLTestConfig = () => ({
 export const createGeoJSONTestConfig = () => ({
   visualizeConfig: createBaseVisualizationConfig({
     shape: 'triangle',
-    size: '30',
+    size: 30,
   }),
   datasetConfig: createEmptyDatasetConfig(),
   annotateConfig: createEmptyAnnotateConfig(),
