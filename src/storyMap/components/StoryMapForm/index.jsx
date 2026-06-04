@@ -312,9 +312,13 @@ const StoryMapForm = props => {
       />
       <Grid
         container
-        justifyContent="flex-start"
         wrap="nowrap"
-        sx={{ width: '100%', flex: 1, overflow: 'hidden' }}
+        sx={{
+          justifyContent: 'flex-start',
+          width: '100%',
+          flex: 1,
+          overflow: 'hidden',
+        }}
       >
         <ChaptersSidebar
           config={config}

@@ -298,7 +298,13 @@ export const VisualizeForm = ({ visualizeConfig, setVisualizeConfig }) => {
           aria-labelledby="visualize-settings-label"
           size={{ xs: 12, md: 5 }}
         >
-          <Grid container alignItems="center" spacing={2}>
+          <Grid
+            container
+            spacing={2}
+            sx={{
+              alignItems: 'center',
+            }}
+          >
             {showPointsFields && (
               <>
                 <Shape shape={shape} setShape={setShape} />

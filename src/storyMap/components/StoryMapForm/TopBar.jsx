@@ -57,8 +57,10 @@ const SaveStatus = props => {
     <Stack
       direction="row"
       spacing={0.5}
-      alignItems="center"
-      sx={{ color: color || 'gray.dark1' }}
+      sx={{
+        alignItems: 'center',
+        color: color || 'gray.dark1',
+      }}
     >
       <Icon sx={{ fontSize: 20 }} />
       <Typography variant="caption">{t(message)}</Typography>

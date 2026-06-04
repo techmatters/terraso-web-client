@@ -162,19 +162,19 @@ const MediaActionBar = memo(
 
     return (
       <Stack
-        justifyContent="center"
-        alignItems="center"
         direction="row"
+        spacing={1}
+        role="toolbar"
+        aria-label={t('storyMap.form_media_actions')}
         sx={{
+          justifyContent: 'center',
+          alignItems: 'center',
           color: 'white',
           background: 'rgba(0,0,0,0.5)',
           width: '100%',
           pt: 2,
           pb: 2,
         }}
-        spacing={1}
-        role="toolbar"
-        aria-label={t('storyMap.form_media_actions')}
       >
         <Button
           variant="outlined"
@@ -540,9 +540,9 @@ const EditableImage = memo(
         />
         {loadingState === LOADING_STATES.ERROR && (
           <Stack
-            justifyContent="center"
-            alignItems="center"
             sx={{
+              justifyContent: 'center',
+              alignItems: 'center',
               position: 'absolute',
               top: 0,
               left: 0,
@@ -801,11 +801,15 @@ const EditableMedia = memo(({ label, value, onChange }) => {
       {renderMediaComponent}
       {!value && (
         <Stack
-          alignItems="center"
-          justifyContent="center"
           spacing={2}
           component={Paper}
-          sx={{ bgcolor: 'blue.mid', minHeight: 150, p: 2 }}
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            bgcolor: 'blue.mid',
+            minHeight: 150,
+            p: 2,
+          }}
         >
           <Typography variant="caption" sx={{ textAlign: 'center' }}>
             {t('storyMap.form_media_placeholder')}

@@ -275,8 +275,10 @@ const DataColumns = props => {
         container
         direction="row"
         spacing={2}
-        alignItems="center"
-        sx={{ ml: 2.5 }}
+        sx={{
+          alignItems: 'center',
+          ml: 2.5,
+        }}
       >
         {selectedColumns.map((column, index) => (
           <Fragment key={index}>

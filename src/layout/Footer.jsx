@@ -71,17 +71,20 @@ const LinksContainer = props => (
     container
     component="ul"
     spacing={0}
-    sx={{
-      listStyle: 'none',
-      padding: 0,
-      margin: 0,
-    }}
     style={{
       maxWidth: '100%',
     }}
-    justifyContent="flex-start"
-    alignItems="center"
     {...props}
+    sx={[
+      {
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        listStyle: 'none',
+        padding: 0,
+        margin: 0,
+      },
+      ...(Array.isArray(props.sx) ? props.sx : [props.sx]),
+    ]}
   />
 );
 
@@ -97,10 +100,10 @@ const DefaultFooter = () => {
       component="footer"
       className="footer"
       sx={{
+        justifyContent: 'space-between',
         background: palette.secondary.main,
         color: palette.white,
       }}
-      justifyContent="space-between"
     >
       <Typography sx={visuallyHidden} variant="h2">
         {t('footer.heading')}

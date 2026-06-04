@@ -171,13 +171,17 @@ const SideBarItem = props => {
           <Grid
             container
             size={4}
-            alignItems="flex-start"
-            justifyContent="space-between"
+            sx={{
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+            }}
           >
             <Stack
               direction="row"
-              justifyContent="space-around"
-              sx={{ width: '100%' }}
+              sx={{
+                justifyContent: 'space-around',
+                width: '100%',
+              }}
             >
               {(item.sortable || item.deletable) && (
                 <>

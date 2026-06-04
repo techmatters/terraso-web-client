@@ -176,7 +176,13 @@ const Link = props => {
         label={apiSuccess.name}
         message={t('sharedData.upload_link_success')}
       >
-        <Stack direction="row" alignItems="center" spacing={1}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            alignItems: 'center',
+          }}
+        >
           <LinkIcon />
           <ExternalLink href={transformURL(apiSuccess.url)}>
             {apiSuccess.name}
@@ -248,13 +254,17 @@ const SelectedLinks = () => {
           })}
         />
       }
-      sx={({ palette }) => ({
-        border: `2px dashed ${palette.blue.dark}`,
-        minHeight: '200px',
-        flexGrow: 1,
-      })}
-      justifyContent="center"
-      alignItems="stretch"
+      sx={[
+        {
+          justifyContent: 'center',
+          alignItems: 'stretch',
+        },
+        ({ palette }) => ({
+          border: `2px dashed ${palette.blue.dark}`,
+          minHeight: '200px',
+          flexGrow: 1,
+        }),
+      ]}
     >
       {_.isEmpty(links) ? (
         <Typography align="center">

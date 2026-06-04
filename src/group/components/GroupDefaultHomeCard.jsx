@@ -32,7 +32,12 @@ const GroupDefaultHomeCard = () => {
         to: '/groups',
       }}
     >
-      <Box display="flex" alignItems="center">
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
         <Typography variant="body1" sx={{ mr: 1 }}>
           {t('group.default_content')}
         </Typography>

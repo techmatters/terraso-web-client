@@ -145,21 +145,26 @@ const EditableText = props => {
       component={Stack}
       role="button"
       direction="row"
-      justifyContent="space-between"
       tabIndex="0"
       onKeyDown={onButtonKeyDown}
       onClick={onButtonClick}
       onMouseOver={onButtonMouseOver}
       onMouseOut={onButtononMouseOut}
       {...viewProps}
-      sx={{
-        pt: 1,
-        pb: 1,
-        ...(isHovering
-          ? { backgroundColor: 'blue.lite', cursor: 'pointer' }
-          : {}),
-        ...(viewProps?.sx || {}),
-      }}
+      sx={[
+        {
+          justifyContent: 'space-between',
+          pt: 1,
+          pb: 1,
+
+          ...(isHovering
+            ? { backgroundColor: 'blue.lite', cursor: 'pointer' }
+            : {}),
+
+          ...(viewProps?.sx || {}),
+        },
+        ...(Array.isArray(viewProps.sx) ? viewProps.sx : [viewProps.sx]),
+      ]}
     >
       {textValue || <Link href="#">+ {addMessage}</Link>}
       {isHovering && (

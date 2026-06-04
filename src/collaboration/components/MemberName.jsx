@@ -25,9 +25,11 @@ const MemberName = ({ membership }) => {
   return (
     <Stack
       direction="row"
-      justifyContent="flex-start"
-      alignItems="center"
       spacing={2}
+      sx={{
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+      }}
     >
       {!membership.pendingEmail && (
         <AccountAvatar

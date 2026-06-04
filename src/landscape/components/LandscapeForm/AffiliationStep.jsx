@@ -152,7 +152,12 @@ const YearSelect = props => {
 
 const PartnershipStatusInfo = props => {
   return (
-    <Stack direction="row" alignItems="center">
+    <Stack
+      direction="row"
+      sx={{
+        alignItems: 'center',
+      }}
+    >
       <Subheader
         id="landscape-affiliation-partnershipStatus-info"
         text="landscape.form_profile_partnership_status"

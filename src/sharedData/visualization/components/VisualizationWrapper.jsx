@@ -220,10 +220,12 @@ const VisualizationWrapper = props => {
                     })}
                   </Typography>
                   <Stack
-                    alignItems="flex-start"
                     direction="row"
                     spacing={2}
-                    sx={{ mt: 2 }}
+                    sx={{
+                      alignItems: 'flex-start',
+                      mt: 2,
+                    }}
                   >
                     <SocialShare />
                     <Button variant="outlined" onClick={handleDownloadPng}>

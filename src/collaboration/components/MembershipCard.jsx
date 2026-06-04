@@ -105,7 +105,12 @@ const Content = props => {
 
   return (
     <CardContent>
-      <Typography variant="body2" color="text.secondary">
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'text.secondary',
+        }}
+      >
         {t('group.membership_card_description', {
           count: totalCount,
           name: owner.name,

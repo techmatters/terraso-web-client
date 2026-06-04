@@ -43,25 +43,27 @@ const EmbedHeader = props => {
     <Stack
       component={Link}
       direction="row"
-      alignItems="center"
-      justifyContent="flex-end"
+      href={generateStoryMapUrl(storyMap)}
+      target="_blank"
       sx={{
+        alignItems: 'center',
+        justifyContent: 'flex-end',
         color: 'white',
         bgcolor: 'blue.dark3',
         width: '100%',
         fontSize: '12px',
       }}
-      href={generateStoryMapUrl(storyMap)}
-      target="_blank"
     >
       {t('storyMap.embed_header')}
       <Box
         component="img"
         src={logoWhite}
-        height={16}
-        width={62}
         alt={t('common.terraso_logoText')}
-        sx={{ m: 1 }}
+        sx={{
+          height: 16,
+          width: 62,
+          m: 1,
+        }}
       />
     </Stack>
   );

@@ -135,19 +135,37 @@ const LandscapeAboutCard = ({ landscape }) => {
         }
       />
       <CardContent>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           {landscape.description}
         </Typography>
       </CardContent>
       <CardContent component={Stack} sx={{ display: 'flex', flexGrow: 1 }}>
         {landscape.email && (
-          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{
+              alignItems: 'center',
+              mb: 2,
+            }}
+          >
             <EmailIcon sx={{ color: 'gray.lite1' }} />
             <Link href={`mailto:${landscape.email}`}>{landscape.email}</Link>
           </Stack>
         )}
         {landscape.website && (
-          <Stack direction="row" alignItems="center" spacing={1}>
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{
+              alignItems: 'center',
+            }}
+          >
             <PublicIcon sx={{ color: 'gray.lite1' }} />
             <Link
               href={landscape.website}
@@ -209,10 +227,12 @@ const LandscapeBoundaryDownload = props => {
   return (
     <Stack
       direction={{ xs: 'column', sm: 'row' }}
-      justifyContent="space-between"
-      alignItems="center"
       spacing={1}
-      sx={{ p: 2 }}
+      sx={{
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        p: 2,
+      }}
     >
       <Stack direction="row" spacing={1}>
         <BoundaryIcon />
@@ -327,9 +347,9 @@ const LandscapeView = () => {
       <PageContainer>
         <Stack
           direction="row"
-          justifyContent="space-between"
-          alignItems="flex-start"
           sx={{
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
             marginBottom: 1,
           }}
         >

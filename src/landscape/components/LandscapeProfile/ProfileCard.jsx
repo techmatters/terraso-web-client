@@ -324,8 +324,12 @@ const ProfileCard = props => {
           <Grid
             container
             spacing={2}
-            sx={{ pt: 2, pl: 0, pr: 2 }}
-            alignItems="center"
+            sx={{
+              alignItems: 'center',
+              pt: 2,
+              pl: 0,
+              pr: 2,
+            }}
           >
             {FIELDS.map((field, index) => (
               <ProfileField

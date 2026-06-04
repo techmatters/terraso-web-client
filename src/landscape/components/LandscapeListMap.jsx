@@ -46,7 +46,13 @@ const LandscapePopup = ({ landscape }) => {
       <RouterLink variant="h6" to={`/landscapes/${landscape.data.slug}`}>
         {landscape.data.name}
       </RouterLink>
-      <Typography variant="caption" display="block" sx={{ mb: 1 }}>
+      <Typography
+        variant="caption"
+        sx={{
+          display: 'block',
+          mb: 1,
+        }}
+      >
         {countryNameForCode(landscape.data.location)?.name ||
           landscape.data.location}
       </Typography>

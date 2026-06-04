@@ -24,9 +24,13 @@ const SuccessContainer = props => {
     <Stack
       component="section"
       aria-label={label}
-      justifyContent="center"
       spacing={1}
-      sx={{ bgcolor: 'success.background', flexGrow: 1, p: 2 }}
+      sx={{
+        justifyContent: 'center',
+        bgcolor: 'success.background',
+        flexGrow: 1,
+        p: 2,
+      }}
     >
       <Alert
         sx={{

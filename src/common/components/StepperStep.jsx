@@ -33,7 +33,12 @@ const StepperStep = props => {
     <>
       <PageHeader header={title} />
       {children}
-      <Stack direction="row" justifyContent="space-between">
+      <Stack
+        direction="row"
+        sx={{
+          justifyContent: 'space-between',
+        }}
+      >
         {backLabel && (
           <Button sx={{ marginTop: 2 }} onClick={onBack}>
             {backLabel}

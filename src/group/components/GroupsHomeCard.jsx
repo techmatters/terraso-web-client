@@ -74,7 +74,11 @@ const GroupItem = ({ group, index }) => {
         ({t(`group.role_${role.toLowerCase()}`)})
       </Typography>
       {!isApproved && (
-        <Typography color="text.secondary">
+        <Typography
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           {t('group.home_pending_message')}
         </Typography>
       )}
