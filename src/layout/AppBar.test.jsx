@@ -118,11 +118,13 @@ test('AppBar: Sign out', async () => {
   const saveCall = Cookies.remove.mock.calls[0];
   expect(saveCall[1]).toStrictEqual({
     path: '/',
+    expires: 30,
   });
   const saveCall2 = Cookies.remove.mock.calls[1];
   expect(saveCall2[1]).toStrictEqual({
     domain: '127.0.0.1',
     path: '/',
+    expires: 30,
   });
 });
 
