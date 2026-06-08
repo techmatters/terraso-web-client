@@ -20,7 +20,11 @@ import { useTranslation } from 'react-i18next';
 import { Box, Button } from '@mui/material';
 
 import FeaturedImageDialog from 'terraso-web-client/storyMap/components/StoryMapForm/FeaturedImageDialog';
-import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import {
+  useStoryMapConfigActionsContext,
+  useStoryMapConfigDataContext,
+  useStoryMapMediaContext,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 
 const BUTTON_SX = theme => ({
   width: '100%',
@@ -50,8 +54,9 @@ const THUMBNAIL_IMAGE_STYLE = {
 
 const FeaturedImage = () => {
   const { t } = useTranslation();
-  const { config, setConfig, addMediaFile, getMediaFile } =
-    useStoryMapConfigContext();
+  const { config } = useStoryMapConfigDataContext();
+  const { setConfig } = useStoryMapConfigActionsContext();
+  const { addMediaFile, getMediaFile } = useStoryMapMediaContext();
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const imageUrl = useMemo(() => {

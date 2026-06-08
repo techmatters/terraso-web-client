@@ -20,6 +20,7 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
   within,
 } from 'terraso-web-client/tests/utils';
 import _ from 'lodash/fp';
@@ -34,9 +35,16 @@ import { MEMBERSHIP_ROLE_EDITOR } from 'terraso-web-client/storyMap/storyMapCons
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
-jest.mock('terraso-web-client/storyMap/components/StoryMap', () => props => (
-  <div>Test</div>
-));
+jest.mock('terraso-web-client/storyMap/components/StoryMap', () => props => {
+  const { TitleComponent, config } = props;
+
+  return (
+    <>
+      {TitleComponent ? <TitleComponent config={config} /> : null}
+      <div>Test</div>
+    </>
+  );
+});
 
 jest.mock('terraso-web-client/monitoring/analytics', () => ({
   ...jest.requireActual('terraso-web-client/monitoring/analytics'),
@@ -106,6 +114,27 @@ const API_STORY_MAP = {
   },
 };
 
+const createDeferred = () => {
+  let resolve;
+
+  return {
+    promise: new Promise(result => {
+      resolve = result;
+    }),
+    resolve,
+  };
+};
+
+const buildSavedStoryMap = title => ({
+  ...API_STORY_MAP,
+  title,
+  story_map_id: API_STORY_MAP.storyMapId,
+  configuration: {
+    ...CONFIG,
+    title,
+  },
+});
+
 beforeEach(() => {
   useAnalytics.mockReturnValue({
     trackEvent: jest.fn(),
@@ -141,7 +170,9 @@ test('StoryMapUpdate: Renders editor', async () => {
     screen.getByRole('navigation', { name: 'Chapters sidebar' })
   ).toBeInTheDocument();
   expect(
-    screen.getByRole('heading', { name: 'Story Map Title' })
+    within(
+      screen.getByRole('region', { name: 'Story editor Header' })
+    ).getByRole('heading', { name: 'Story Map Title' })
   ).toBeInTheDocument();
 });
 
@@ -175,6 +206,157 @@ test('StoryMapUpdate: Save', async () => {
       'ILM Output': 'Landscape Narratives',
       map: '2b8b8352-2d41-4c92-9b97-0d5eb019d5ee',
     },
+  });
+});
+
+test('StoryMapUpdate: stale draft save response does not overwrite newer local edits', async () => {
+  jest.useFakeTimers();
+
+  const firstSave = createDeferred();
+  const secondSave = createDeferred();
+
+  terrasoApi.requestGraphQL.mockResolvedValue({
+    storyMaps: {
+      edges: [
+        {
+          node: API_STORY_MAP,
+        },
+      ],
+    },
+  });
+  terrasoApi.request
+    .mockImplementationOnce(() => firstSave.promise)
+    .mockImplementationOnce(() => secondSave.promise);
+
+  await setup({ id: API_STORY_MAP.createdBy.id });
+
+  const titleSection = screen.getByRole('region', {
+    name: 'Title for: Story Map Title',
+  });
+
+  await act(async () => {
+    fireEvent.click(
+      within(titleSection).getByRole('heading', { name: 'Story Map Title' })
+    );
+  });
+
+  const titleInput = within(titleSection).getByRole('textbox', {
+    name: 'Story map title (Required)',
+  });
+
+  await act(async () => {
+    fireEvent.change(titleInput, { target: { value: 'First title' } });
+  });
+
+  await act(async () => {
+    jest.advanceTimersByTime(1500);
+  });
+
+  await waitFor(() => {
+    expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+  });
+
+  await act(async () => {
+    fireEvent.change(titleInput, { target: { value: 'Second title' } });
+  });
+
+  await act(async () => {
+    jest.advanceTimersByTime(1500);
+  });
+
+  await waitFor(() => {
+    expect(terrasoApi.request).toHaveBeenCalledTimes(2);
+  });
+
+  await act(async () => {
+    secondSave.resolve(buildSavedStoryMap('Second title'));
+  });
+
+  await waitFor(() => {
+    expect(titleInput).toHaveValue('Second title');
+  });
+
+  await act(async () => {
+    firstSave.resolve(buildSavedStoryMap('First title'));
+  });
+
+  await waitFor(() => {
+    expect(titleInput).toHaveValue('Second title');
+  });
+
+  await act(async () => {
+    jest.runOnlyPendingTimers();
+  });
+  jest.useRealTimers();
+});
+
+test('StoryMapUpdate: publish responses still complete after local edits while publish is in flight', async () => {
+  const trackEvent = jest.fn();
+  const publishRequest = createDeferred();
+
+  useAnalytics.mockReturnValue({
+    trackEvent,
+  });
+  terrasoApi.requestGraphQL.mockResolvedValue({
+    storyMaps: {
+      edges: [
+        {
+          node: API_STORY_MAP,
+        },
+      ],
+    },
+  });
+  terrasoApi.request.mockImplementationOnce(() => publishRequest.promise);
+
+  await setup({ id: API_STORY_MAP.createdBy.id });
+
+  const titleSection = screen.getByRole('region', {
+    name: 'Title for: Story Map Title',
+  });
+
+  await act(async () => {
+    fireEvent.click(
+      within(titleSection).getByRole('heading', { name: 'Story Map Title' })
+    );
+  });
+
+  const titleInput = within(titleSection).getByRole('textbox', {
+    name: 'Story map title (Required)',
+  });
+
+  await act(async () => {
+    fireEvent.change(titleInput, {
+      target: { value: 'First published title' },
+    });
+  });
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Publish' }));
+  });
+
+  await waitFor(() => {
+    expect(screen.getByRole('button', { name: 'Publish' })).toBeDisabled();
+  });
+
+  await act(async () => {
+    fireEvent.change(titleInput, {
+      target: { value: 'Edited after publish click' },
+    });
+  });
+
+  expect(terrasoApi.request).toHaveBeenCalledTimes(1);
+
+  await act(async () => {
+    publishRequest.resolve(buildSavedStoryMap('First published title'));
+  });
+
+  await waitFor(() => {
+    expect(trackEvent).toHaveBeenCalledWith('storymap.publish', {
+      props: {
+        'ILM Output': 'Landscape Narratives',
+        map: '2b8b8352-2d41-4c92-9b97-0d5eb019d5ee',
+      },
+    });
   });
 });
 

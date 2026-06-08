@@ -18,12 +18,13 @@
 import RichTextEditor from 'terraso-web-client/common/components/RichTextEditor/index';
 
 const EditableRichText = props => {
-  const { label, value, onChange, placeholder } = props;
+  const { label, value, onChange, onBlur, placeholder } = props;
 
   return (
     <RichTextEditor
       addContainer
       label={label}
+      onBlur={onBlur}
       placeholder={placeholder}
       value={value}
       onChange={onChange}

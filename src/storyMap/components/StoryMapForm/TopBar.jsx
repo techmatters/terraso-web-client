@@ -24,7 +24,7 @@ import SyncIcon from '@mui/icons-material/Sync';
 import { Button, Grid, IconButton, Stack, Typography } from '@mui/material';
 
 import RouterLink from 'terraso-web-client/common/components/RouterLink';
-import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { useStoryMapConfigDataContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import TopBarContainer from 'terraso-web-client/storyMap/components/StoryMapForm/TopBarContainer';
 
 const SAVE_STATUS = {
@@ -68,10 +68,11 @@ const SaveStatus = props => {
 
 const TopBar = props => {
   const { t } = useTranslation();
-  const { storyMap, config } = useStoryMapConfigContext();
+  const { storyMap, config } = useStoryMapConfigDataContext();
   const {
     onPublish,
     isDirty,
+    isPublishing,
     requestStatus,
     onToggleRightSidebar,
     isRightSidebarOpen,
@@ -121,6 +122,7 @@ const TopBar = props => {
             variant="contained"
             color="primary"
             onClick={onPublish}
+            disabled={isPublishing}
             sx={{ ml: 2 }}
           >
             {isPublished

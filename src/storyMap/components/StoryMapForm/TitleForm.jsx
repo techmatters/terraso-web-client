@@ -27,13 +27,13 @@ import {
 } from 'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer';
 import EditableText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableText';
 import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
-import { useStoryMapConfigContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutline';
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 
 const TitleForm = props => {
   const { t } = useTranslation();
-  const { setConfig } = useStoryMapConfigContext();
+  const { setConfig } = useStoryMapConfigActionsContext();
   const [locationOpen, setLocationOpen] = useState(false);
   const { config } = props;
 

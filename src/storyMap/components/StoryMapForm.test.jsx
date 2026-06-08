@@ -34,7 +34,14 @@ import {
   TILESET_STATUS_READY,
 } from 'terraso-web-client/sharedData/sharedDataConstants';
 import StoryMapForm from 'terraso-web-client/storyMap/components/StoryMapForm/index';
-import { StoryMapConfigContextProvider } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import {
+  StoryMapConfigContextProvider,
+  useStoryMapConfigActionsContext,
+  useStoryMapConfigDataContext,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import useBufferedChapterFields, {
+  BUFFERED_FIELD_COMMIT_STRATEGIES,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/useBufferedChapterFields';
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 
 // Mock mapboxgl
@@ -330,6 +337,122 @@ const setup = async ({ config, autoSaveDebounce = 1500 }) => {
   };
 };
 
+const BUFFERED_LIFECYCLE_FIELDS = {
+  title: {
+    commitStrategy: BUFFERED_FIELD_COMMIT_STRATEGIES.DEBOUNCED,
+    delayMs: 500,
+  },
+  description: {
+    commitStrategy: BUFFERED_FIELD_COMMIT_STRATEGIES.DEBOUNCED,
+    delayMs: 500,
+  },
+  alignment: {
+    commitStrategy: BUFFERED_FIELD_COMMIT_STRATEGIES.IMMEDIATE,
+  },
+};
+
+const BufferedLifecycleHarnessInner = ({ chapter }) => {
+  const { chapter: bufferedChapter, getFieldChangeHandler } =
+    useBufferedChapterFields({
+      chapter,
+      bufferedFields: BUFFERED_LIFECYCLE_FIELDS,
+    });
+
+  return (
+    <>
+      <div data-testid="local-description">{bufferedChapter.description}</div>
+      <button
+        type="button"
+        onClick={() =>
+          getFieldChangeHandler('description')('Buffered chapter description')
+        }
+      >
+        Buffer description
+      </button>
+    </>
+  );
+};
+
+const BufferedLifecycleHarness = ({ chapterId }) => {
+  const { config } = useStoryMapConfigDataContext();
+  const { setConfig } = useStoryMapConfigActionsContext();
+  const chapter = config.chapters.find(
+    currentChapter => currentChapter.id === chapterId
+  );
+
+  return (
+    <>
+      {chapter ? (
+        <BufferedLifecycleHarnessInner chapter={chapter} />
+      ) : (
+        <div data-testid="chapter-unmounted">unmounted</div>
+      )}
+      <button
+        type="button"
+        onClick={() =>
+          setConfig(currentConfig => ({
+            ...currentConfig,
+            chapters: currentConfig.chapters.map(currentChapter =>
+              currentChapter.id === chapterId
+                ? {
+                    ...currentChapter,
+                    description: 'Persisted server description',
+                  }
+                : currentChapter
+            ),
+          }))
+        }
+      >
+        Replace persisted description
+      </button>
+      <button
+        type="button"
+        onClick={() =>
+          setConfig(currentConfig => ({
+            ...currentConfig,
+            chapters: currentConfig.chapters.filter(
+              currentChapter => currentChapter.id !== chapterId
+            ),
+          }))
+        }
+      >
+        Delete buffered chapter
+      </button>
+    </>
+  );
+};
+
+const BufferedLifecycleProbe = ({ chapterId }) => {
+  const { config } = useStoryMapConfigDataContext();
+  const chapter = config.chapters.find(
+    currentChapter => currentChapter.id === chapterId
+  );
+
+  return (
+    <>
+      <div data-testid="chapter-count">{config.chapters.length}</div>
+      <div data-testid="persisted-description">
+        {chapter?.description ?? 'deleted'}
+      </div>
+    </>
+  );
+};
+
+const setupBufferedLifecycleHarness = async () => {
+  await render(
+    <StoryMapConfigContextProvider
+      baseConfig={BASE_CONFIG}
+      storyMap={{
+        id: 'story-map-id-1',
+        memberships: [],
+      }}
+    >
+      <BufferedLifecycleHarness chapterId="chapter-1" />
+      <BufferedLifecycleProbe chapterId="chapter-1" />
+    </StoryMapConfigContextProvider>
+  );
+};
+
 const testChapter = ({ title, description, image }) => {
   const chapterSection = screen.getByRole('region', {
     name: `Chapter: ${title}`,
@@ -585,6 +708,131 @@ test('StoryMapForm: Title blur without changes should not trigger save', async (
   expect(onSaveDraft).not.toHaveBeenCalled();
 });
 
+test('StoryMapForm: Publish flushes pending chapter buffered changes', async () => {
+  const { onPublish, onSaveDraft } = await setup({
+    config: BASE_CONFIG,
+    autoSaveDebounce: 5000,
+  });
+
+  const chapterSection = screen.getByRole('region', {
+    name: 'Chapter: Chapter 1',
+  });
+
+  await act(async () =>
+    fireEvent.change(
+      within(chapterSection).getByRole('textbox', {
+        name: 'Chapter description',
+      }),
+      { target: { value: 'Published chapter description' } }
+    )
+  );
+
+  expect(onSaveDraft).not.toHaveBeenCalled();
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Publish' }))
+  );
+
+  expect(onPublish).toHaveBeenCalledTimes(1);
+  expect(onPublish.mock.calls[0][0].chapters[0].description).toBe(
+    'Published chapter description'
+  );
+});
+
+test('StoryMapForm: Buffered chapter text survives persisted chapter updates before debounce flush', async () => {
+  jest.useFakeTimers();
+
+  try {
+    await setupBufferedLifecycleHarness();
+
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Buffer description' })
+      );
+    });
+
+    expect(screen.getByTestId('local-description')).toHaveTextContent(
+      'Buffered chapter description'
+    );
+    expect(screen.getByTestId('persisted-description')).toHaveTextContent(
+      'Chapter 1 description'
+    );
+
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'Replace persisted description',
+        })
+      );
+    });
+
+    expect(screen.getByTestId('persisted-description')).toHaveTextContent(
+      'Persisted server description'
+    );
+    expect(screen.getByTestId('local-description')).toHaveTextContent(
+      'Buffered chapter description'
+    );
+
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('persisted-description')).toHaveTextContent(
+        'Buffered chapter description'
+      );
+    });
+  } finally {
+    await act(async () => {
+      jest.runOnlyPendingTimers();
+    });
+    jest.useRealTimers();
+  }
+});
+
+test('StoryMapForm: Deleting a chapter with buffered text does not restore it during cleanup', async () => {
+  jest.useFakeTimers();
+
+  try {
+    await setupBufferedLifecycleHarness();
+
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Buffer description' })
+      );
+    });
+
+    expect(screen.getByTestId('local-description')).toHaveTextContent(
+      'Buffered chapter description'
+    );
+
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Delete buffered chapter' })
+      );
+    });
+
+    expect(screen.getByTestId('chapter-unmounted')).toHaveTextContent(
+      'unmounted'
+    );
+    expect(screen.getByTestId('chapter-count')).toHaveTextContent('2');
+    expect(screen.getByTestId('persisted-description')).toHaveTextContent(
+      'deleted'
+    );
+
+    await act(async () => {
+      jest.runOnlyPendingTimers();
+    });
+
+    expect(screen.getByTestId('chapter-count')).toHaveTextContent('2');
+    expect(screen.getByTestId('persisted-description')).toHaveTextContent(
+      'deleted'
+    );
+  } finally {
+    jest.useRealTimers();
+  }
+});
+
 test('StoryMapForm: Sidebar navigation', async () => {
   const map = {
     ...baseMapOptions(),
@@ -700,7 +948,8 @@ test('StoryMapForm: Adds new chapter', async () => {
       subtitle: 'Story Map Subtitle',
       byline: 'by User',
     }),
-    expect.anything()
+    expect.anything(),
+    expect.any(Number)
   );
 
   // Change title and description
@@ -727,7 +976,8 @@ test('StoryMapForm: Adds new chapter', async () => {
         }),
       ]),
     }),
-    expect.anything()
+    expect.anything(),
+    expect.any(Number)
   );
 });
 test('StoryMapForm: Add embedded media', async () => {
@@ -784,6 +1034,10 @@ test('StoryMapForm: Show preview', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Preview draft' }))
   );
 
+  expect(
+    screen.getByRole('heading', { name: 'You are previewing Story Map Title' })
+  ).toBeInTheDocument();
+
   const chapters = screen.getByRole('region', {
     name: 'Chapters',
   });
@@ -802,6 +1056,24 @@ test('StoryMapForm: Show preview', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Exit Preview' }))
   );
 });
+
+test('StoryMapForm: Show preview without title uses blank preview copy', async () => {
+  await setup({
+    config: {
+      ...BASE_CONFIG,
+      title: '',
+    },
+  });
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Preview draft' }))
+  );
+
+  expect(
+    screen.getByRole('heading', { name: 'You are previewing' })
+  ).toBeInTheDocument();
+});
+
 test('StoryMapForm: Change chapter location', async () => {
   const map = {
     ...baseMapOptions(),
@@ -1011,7 +1283,8 @@ test('StoryMapForm: Add map layer', async () => {
         }),
       },
     }),
-    expect.anything()
+    expect.anything(),
+    expect.any(Number)
   );
 });
 

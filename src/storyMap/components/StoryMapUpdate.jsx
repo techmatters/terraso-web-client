@@ -34,7 +34,8 @@ import { usePermission } from 'terraso-web-client/permissions/index';
 import StoryMapForm from 'terraso-web-client/storyMap/components/StoryMapForm/index';
 import {
   StoryMapConfigContextProvider,
-  useStoryMapConfigContext,
+  useStoryMapConfigDataContext,
+  useStoryMapSaveContext,
 } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import {
   fetchStoryMapForm,
@@ -46,58 +47,71 @@ import {
   generateStoryMapUrl,
 } from 'terraso-web-client/storyMap/storyMapUtils';
 
+const getStoryMapSaveEvent = ({ publish, isPublished }) => {
+  if (!publish) {
+    return 'storymap.saveDraft';
+  }
+
+  return isPublished ? 'storymap.update' : 'storymap.publish';
+};
+
 const StoryMapUpdate = props => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
-  const [saved, setSaved] = useState();
-  const { storyMap, setConfig, clearMediaFiles } = useStoryMapConfigContext();
+  const [savedStoryMap, setSavedStoryMap] = useState();
+  const { storyMap } = useStoryMapConfigDataContext();
+  const { applySavedRevisionConfig } = useStoryMapSaveContext();
 
   useDocumentTitle(
     t('storyMap.edit_document_title', {
       name: _.get('title', storyMap),
     }),
-    saved
+    savedStoryMap
+  );
+
+  const handlePersistedStoryMap = useCallback(
+    ({ slug, storyMapId, published }) => {
+      const event = getStoryMapSaveEvent({
+        publish: published,
+        isPublished: storyMap.isPublished,
+      });
+
+      trackEvent(event, {
+        props: {
+          [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
+          map: storyMap.id,
+        },
+      });
+
+      if (published) {
+        navigate(generateStoryMapUrl({ slug, storyMapId }), { force: true });
+        return;
+      }
+
+      window.history.replaceState(
+        null,
+        t('storyMap.edit_document_title', {
+          name: _.get('title', storyMap),
+        }),
+        generateStoryMapEditUrl({ slug, storyMapId })
+      );
+    },
+    [navigate, storyMap, t, trackEvent]
   );
 
   useEffect(() => {
-    if (!saved) {
+    if (!savedStoryMap) {
       return;
     }
 
-    const { slug, storyMapId, published } = saved;
-    setSaved(null);
-    const url = generateStoryMapUrl({ slug, storyMapId });
+    setSavedStoryMap(null);
+    handlePersistedStoryMap(savedStoryMap);
+  }, [handlePersistedStoryMap, savedStoryMap]);
 
-    const event = published
-      ? storyMap.isPublished
-        ? 'storymap.update'
-        : 'storymap.publish'
-      : 'storymap.saveDraft';
-
-    trackEvent(event, {
-      props: {
-        [ILM_OUTPUT_PROP]: LANDSCAPE_NARRATIVES,
-        map: storyMap.id,
-      },
-    });
-    if (published) {
-      navigate(url);
-      return;
-    }
-
-    window.history.replaceState(
-      null,
-      t('storyMap.edit_document_title', {
-        name: _.get('title', storyMap),
-      }),
-      generateStoryMapEditUrl({ slug, storyMapId })
-    );
-  }, [storyMap, navigate, trackEvent, saved, t, dispatch]);
-
-  const save = useCallback(
-    (config, mediaFiles, publish) =>
+  const persistStoryMapUpdate = useCallback(
+    (config, mediaFiles, publish, revision) =>
       dispatch(
         updateStoryMap({
           storyMap: {
@@ -110,34 +124,40 @@ const StoryMapUpdate = props => {
       ).then(data => {
         const success = _.get('meta.requestStatus', data) === 'fulfilled';
         if (success) {
-          const slug = _.get('payload.slug', data);
-          const storyMapId = _.get('payload.story_map_id', data);
-          const title = _.get('payload.title', data);
-          const id = _.get('payload.id', data);
-          const config = _.get('payload.configuration', data);
+          if (!publish) {
+            const savedConfig = _.get('payload.configuration', data);
 
-          setSaved({
-            id,
-            title,
-            slug,
-            storyMapId,
+            const didApplySavedRevisionConfig = applySavedRevisionConfig(
+              revision,
+              savedConfig
+            );
+            if (!didApplySavedRevisionConfig) {
+              return false;
+            }
+          }
+
+          setSavedStoryMap({
+            id: _.get('payload.id', data),
+            title: _.get('payload.title', data),
+            slug: _.get('payload.slug', data),
+            storyMapId: _.get('payload.story_map_id', data),
             published: publish,
           });
-          clearMediaFiles();
-          setConfig(config, false);
-          return;
+          return true;
         }
         return Promise.reject(data);
       }),
-    [storyMap?.id, dispatch, clearMediaFiles, setConfig]
+    [storyMap?.id, applySavedRevisionConfig, dispatch]
   );
   const onPublish = useCallback(
-    (config, mediaFiles) => save(config, mediaFiles, true),
-    [save]
+    (config, mediaFiles, revision) =>
+      persistStoryMapUpdate(config, mediaFiles, true, revision),
+    [persistStoryMapUpdate]
   );
   const onSaveDraft = useCallback(
-    (config, mediaFiles) => save(config, mediaFiles, false),
-    [save]
+    (config, mediaFiles, revision) =>
+      persistStoryMapUpdate(config, mediaFiles, false, revision),
+    [persistStoryMapUpdate]
   );
 
   return <StoryMapForm onPublish={onPublish} onSaveDraft={onSaveDraft} />;
