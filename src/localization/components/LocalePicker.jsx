@@ -24,7 +24,8 @@ import { savePreference } from 'terraso-client-shared/account/accountSlice';
 import LocalePickerSelect from 'terraso-web-client/localization/components/LocalePickerSelect';
 import { LOCALES } from 'terraso-web-client/localization/i18n';
 
-const LocalePicker = () => {
+const LocalePicker = props => {
+  const { useShortLabels } = props;
   const { i18n } = useTranslation();
   const dispatch = useDispatch();
   const language = useSelector(
@@ -54,7 +55,11 @@ const LocalePicker = () => {
   const currentLocale = i18n.resolvedLanguage;
 
   return (
-    <LocalePickerSelect locale={currentLocale} onLocaleChange={handleChange} />
+    <LocalePickerSelect
+      locale={currentLocale}
+      onLocaleChange={handleChange}
+      useShortLabels={useShortLabels}
+    />
   );
 };
 

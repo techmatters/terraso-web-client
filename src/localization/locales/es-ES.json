@@ -1064,6 +1064,8 @@
         "view_chapter_label": "Capítulo: {{title}}",
         "view_title_label": "Título para: {{title}}",
         "view_chapter_media_label": "Multimedia del capítulo",
+        "published_action_bar_share": "Compartir Story Map",
+        "published_action_bar_join": "<1>Únete a Terraso</1> y crea tus propios story maps gratis.",
         "view_edit": "Editar Story Map",
         "unique": "Ya existe un Story Map con el mismo título.",
         "form_unsaved_changes_title": "¿Abandonar el Story Map?",

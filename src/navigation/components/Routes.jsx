@@ -21,6 +21,7 @@ import { matchPath, Navigate, Route, Routes, useLocation } from 'react-router';
 import { withProps } from 'terraso-web-client/react-hoc';
 
 import NotFound from 'terraso-web-client/layout/NotFound';
+import PublishedStoryMapFooter from 'terraso-web-client/layout/PublishedStoryMapFooter';
 import AccountAuthCallback from 'terraso-web-client/account/components/AccountAuthCallback';
 import AccountLogin from 'terraso-web-client/account/components/AccountLogin';
 import AccountProfile from 'terraso-web-client/account/components/AccountProfile';
@@ -64,6 +65,8 @@ const path = (
   Component,
   {
     auth = true,
+    FooterComponent,
+    hideHeader = false,
     optionalAuth = {
       enabled: false,
       message: null,
@@ -77,6 +80,8 @@ const path = (
   path,
   Component,
   auth,
+  FooterComponent,
+  hideHeader,
   optionalAuth,
   showBreadcrumbs,
   hasServerSideMetaTags,
@@ -219,17 +224,10 @@ const paths = [
       isEmbedded: true,
     }),
     path(`${basePath}/`, UserStoryMap, {
-      showBreadcrumbs: true,
-      breadcrumbsLabel: 'storyMap.breadcrumbs_view',
-      breadcrumbsOnlyIfCurrentPath: !basePath.endsWith(':slug'),
-      breadcrumbsShareProps: {
-        bgColor: 'white',
-        marginTop: 0,
-      },
+      FooterComponent: PublishedStoryMapFooter,
+      hideHeader: true,
       optionalAuth: {
         enabled: true,
-        topMessage: 'storyMap.optional_auth_top_message',
-        bottomMessage: 'storyMap.optional_auth_bottom_message',
       },
       hasServerSideMetaTags: true,
     }),

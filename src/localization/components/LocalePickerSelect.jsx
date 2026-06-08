@@ -34,17 +34,22 @@ const Select = styled(SelectBase)(({ theme }) => ({
     backgroundColor: theme.palette.white,
     fontSize: theme.typography.body2.fontSize,
     padding: 1,
+    paddingLeft: theme.spacing(1),
+  },
+  '& .MuiSelect-select': {
+    paddingLeft: theme.spacing(1),
   },
 }));
 
 const LocalePickerSelect = props => {
   const { t, i18n } = useTranslation();
-  const { locale, onLocaleChange } = props;
+  const { locale, onLocaleChange, useShortLabels } = props;
 
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
+  const shouldUseShortLabels = useShortLabels ?? isSmall;
 
   const getLocaleLabel = locale =>
-    isSmall
+    shouldUseShortLabels
       ? `localization.locale_${locale}_small`
       : `localization.locale_${locale}`;
 
@@ -64,9 +69,6 @@ const LocalePickerSelect = props => {
         'aria-label': t('localization.locale_select_label', {
           name: t(getLocaleLabel(currentLocale)),
         }),
-      }}
-      sx={{
-        pl: 1.5,
       }}
     >
       {Object.keys(LOCALES).map(locale => (

@@ -55,28 +55,45 @@ beforeEach(() => {
   global.fetch = jest.fn();
 });
 
-test('OptionalAuth: Display messages', async () => {
+test('OptionalAuth: Display top message for shared resource downloads', async () => {
   useLocation.mockReturnValue({
-    pathname: '/tools/story-maps/jqbb8ss/test-story',
+    pathname: '/groups/group-1/download/share-uuid',
   });
   await setup();
 
   expect(screen.getByRole('link', { name: 'Join Terraso' })).toHaveAttribute(
     'href',
-    '/account?referrer=%2Ftools%2Fstory-maps%2Fjqbb8ss%2Ftest-story'
+    '/account?referrer=%2Fgroups%2Fgroup-1%2Fdownload%2Fshare-uuid'
   );
   expect(
-    screen.getByText(/and create your own story map for free/i)
+    screen.getByText(/and share files with your community/i)
   ).toBeInTheDocument();
   expect(
-    screen.getByText(/Liked the story map\? Create one by/i)
-  ).toBeInTheDocument();
+    screen.queryByText(/Liked the story map\? Create one by/i)
+  ).not.toBeInTheDocument();
   expect(
-    screen.getByRole('link', { name: 'signing up for Terraso' })
-  ).toHaveAttribute(
-    'href',
-    '/account?referrer=%2Ftools%2Fstory-maps%2Fjqbb8ss%2Ftest-story'
-  );
+    screen.queryByRole('link', { name: 'signing up for Terraso' })
+  ).not.toBeInTheDocument();
+});
+
+test('OptionalAuth: Published story maps do not display optional auth messages', async () => {
+  useLocation.mockReturnValue({
+    pathname: '/tools/story-maps/jqbb8ss/test-story',
+  });
+  await setup();
+
+  expect(
+    screen.queryByRole('link', { name: 'Join Terraso' })
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByText(/and create your own story map for free/i)
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByText(/Liked the story map\? Create one by/i)
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('link', { name: 'signing up for Terraso' })
+  ).not.toBeInTheDocument();
 });
 
 test('OptionalAuth: Dont Display messages', async () => {

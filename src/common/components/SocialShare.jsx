@@ -262,7 +262,7 @@ const PostToService = props => {
 };
 
 const SocialShare = props => {
-  const { buttonProps } = props;
+  const { buttonLabel, buttonProps } = props;
   const { t } = useTranslation();
   const { onShare } = useShareEvent();
   const { socialShareProps } = useContext(SocialShareContext);
@@ -293,7 +293,7 @@ const SocialShare = props => {
   return (
     <>
       <Button variant="outlined" onClick={handleOpen} {...buttonProps}>
-        {t('share.button')}
+        {buttonLabel ?? t('share.button')}
       </Button>
       <Dialog
         open={open}

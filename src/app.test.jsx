@@ -30,20 +30,22 @@ jest.mock('terraso-web-client/navigation/components/Routes', () => ({
   default: jest.fn(),
 }));
 
-const setup = async () => {
-  await render(<App />, {
-    account: {
-      hasToken: true,
-      currentUser: {
-        fetching: false,
-        data: {
-          email: 'email@email.com',
-          firstName: 'John',
-          lastName: 'Doe',
-        },
+const DEFAULT_STATE = {
+  account: {
+    hasToken: true,
+    currentUser: {
+      fetching: false,
+      data: {
+        email: 'email@email.com',
+        firstName: 'John',
+        lastName: 'Doe',
       },
     },
-  });
+  },
+};
+
+const setup = async (initialState = DEFAULT_STATE) => {
+  await render(<App />, initialState);
 };
 
 test('App: Embedded', async () => {
@@ -63,6 +65,40 @@ test('App: Embedded', async () => {
   expect(
     screen.queryByRole('link', { name: 'About Terraso' })
   ).not.toBeInTheDocument();
+});
+
+test('App: Published story map uses the story map footer component', async () => {
+  useLocation.mockReturnValue({
+    pathname: '/tools/story-maps/123/test-story-map',
+    search: '',
+  });
+  await setup({
+    account: {
+      hasToken: false,
+      currentUser: {
+        fetching: false,
+        data: {},
+      },
+    },
+  });
+
+  expect(
+    screen.queryByRole('navigation', { name: 'Main' })
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Sign Out' })
+  ).not.toBeInTheDocument();
+  expect(
+    document.querySelector('#breadcrumbs-share-container')
+  ).not.toBeInTheDocument();
+  expect(screen.getByRole('img', { name: /Terraso/i })).toHaveAttribute(
+    'src',
+    '/storyMap/story-maps-footer-logo.svg'
+  );
+  expect(screen.getByRole('button', { name: 'Sign In' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'About Terraso' })
+  ).toBeInTheDocument();
 });
 
 test('App: Not Embedded', async () => {

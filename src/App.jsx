@@ -36,7 +36,8 @@ import OptionalAuthTopMessage from 'terraso-web-client/account/components/Option
 
 const App = () => {
   const contentRef = useRef();
-  const { isEmbedded, optionalAuth } = usePathParams();
+  const { FooterComponent, hideHeader, isEmbedded, optionalAuth } =
+    usePathParams();
   const useSecondRowNavigation = useMediaQuery(theme.breakpoints.down('md'));
 
   if (isEmbedded || optionalAuth.isEmbedded) {
@@ -53,10 +54,12 @@ const App = () => {
           minHeight: '100vh',
         }}
       >
-        <Box id="header-container">
-          <AppBar showInlineNavigation={!useSecondRowNavigation} />
-          {useSecondRowNavigation && <Navigation />}
-        </Box>
+        {!hideHeader && (
+          <Box id="header-container">
+            <AppBar showInlineNavigation={!useSecondRowNavigation} />
+            {useSecondRowNavigation && <Navigation />}
+          </Box>
+        )}
         <Box
           component="main"
           id="content"
@@ -72,7 +75,7 @@ const App = () => {
           <Routes />
           <OptionalAuthBottomMessage />
         </Box>
-        <Footer />
+        <Footer FooterComponent={FooterComponent} />
       </Box>
     </>
   );
