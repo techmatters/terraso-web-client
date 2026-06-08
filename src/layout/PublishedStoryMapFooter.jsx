@@ -172,7 +172,7 @@ const PublishedStoryMapFooter = () => {
           >
             {logo}
             <Box sx={{ flexShrink: 0 }}>
-              <LocalePicker useShortLabels={false} />
+              <LocalePicker />
             </Box>
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <PublishedStoryMapFooterLinks links={footerLinks} />
@@ -209,7 +209,7 @@ const PublishedStoryMapFooter = () => {
               }}
             >
               <Box sx={{ flexShrink: 0 }}>
-                <LocalePicker useShortLabels={false} />
+                <LocalePicker />
               </Box>
               <Box sx={{ minWidth: 0, flex: 1 }}>
                 <PublishedStoryMapFooterLinks links={footerLinks} />
@@ -231,7 +231,7 @@ const PublishedStoryMapFooter = () => {
           >
             <Box sx={{ gridColumn: 1, gridRow: 1 }}>{logo}</Box>
             <Box sx={{ gridColumn: 2, gridRow: 1 }}>
-              <LocalePicker useShortLabels={false} />
+              <LocalePicker />
             </Box>
             {signInButton ? (
               <Box sx={{ gridColumn: 1, gridRow: 2 }}>{signInButton}</Box>

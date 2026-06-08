@@ -43,13 +43,12 @@ const Select = styled(SelectBase)(({ theme }) => ({
 
 const LocalePickerSelect = props => {
   const { t, i18n } = useTranslation();
-  const { locale, onLocaleChange, useShortLabels } = props;
+  const { locale, onLocaleChange } = props;
 
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
-  const shouldUseShortLabels = useShortLabels ?? isSmall;
 
   const getLocaleLabel = locale =>
-    shouldUseShortLabels
+    isSmall
       ? `localization.locale_${locale}_small`
       : `localization.locale_${locale}`;
 
