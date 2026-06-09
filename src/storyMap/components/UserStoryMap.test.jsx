@@ -27,22 +27,6 @@ jest.mock('terraso-web-client/storyMap/components/StoryMap', () => () => (
   <section aria-label="Story Map"></section>
 ));
 
-const getStoryMapResponse = storyMap =>
-  _.set(
-    'storyMaps.edges[0].node',
-    {
-      id: 'id-1',
-      storyMapId: 'id-1',
-      slug: 'story-1',
-      title: 'Story 1',
-      configuration: JSON.stringify({
-        title: 'Story 1',
-      }),
-      ...storyMap,
-    },
-    {}
-  );
-
 test('UserStoryMap: Display loader', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
   await render(<UserStoryMap />);
@@ -52,15 +36,43 @@ test('UserStoryMap: Display loader', async () => {
   expect(loader).toBeInTheDocument();
 });
 test('UserStoryMap: renders correctly', async () => {
-  terrasoApi.requestGraphQL.mockResolvedValue(getStoryMapResponse());
+  terrasoApi.requestGraphQL.mockResolvedValue(
+    _.set(
+      'storyMaps.edges[0].node',
+      {
+        id: 'id-1',
+        storyMapId: 'id-1',
+        slug: 'story-1',
+        title: 'Story 1',
+        configuration: JSON.stringify({
+          title: 'Story 1',
+        }),
+      },
+      {}
+    )
+  );
   await render(<UserStoryMap />);
 
   expect(screen.getByRole('region', { name: 'Story Map' })).toBeInTheDocument();
 });
-test('UserStoryMap: anonymous users see share and join actions', async () => {
-  terrasoApi.requestGraphQL.mockResolvedValue(getStoryMapResponse());
+test('UserStoryMap: published action bar shows the right actions', async () => {
+  terrasoApi.requestGraphQL.mockResolvedValue(
+    _.set(
+      'storyMaps.edges[0].node',
+      {
+        id: 'id-1',
+        storyMapId: 'id-1',
+        slug: 'story-1',
+        title: 'Story 1',
+        configuration: JSON.stringify({
+          title: 'Story 1',
+        }),
+      },
+      {}
+    )
+  );
 
-  await render(<UserStoryMap />, {
+  const { unmount } = await render(<UserStoryMap />, {
     account: {
       hasToken: false,
       currentUser: {
@@ -79,18 +91,29 @@ test('UserStoryMap: anonymous users see share and join actions', async () => {
   expect(
     screen.queryByRole('link', { name: 'Edit Story Map' })
   ).not.toBeInTheDocument();
-});
 
-test('UserStoryMap: signed-in non-editors only see the share action', async () => {
+  unmount();
+
   terrasoApi.requestGraphQL.mockResolvedValue(
-    getStoryMapResponse({
-      createdBy: {
-        id: 'another-user',
+    _.set(
+      'storyMaps.edges[0].node',
+      {
+        id: 'id-1',
+        storyMapId: 'id-1',
+        slug: 'story-1',
+        title: 'Story 1',
+        configuration: JSON.stringify({
+          title: 'Story 1',
+        }),
+        createdBy: {
+          id: 'another-user',
+        },
       },
-    })
+      {}
+    )
   );
 
-  await render(<UserStoryMap />, {
+  const signedInUser = {
     account: {
       hasToken: true,
       currentUser: {
@@ -102,45 +125,47 @@ test('UserStoryMap: signed-in non-editors only see the share action', async () =
         },
       },
     },
-  });
+  };
+
+  const { unmount: unmountSignedIn } = await render(
+    <UserStoryMap />,
+    signedInUser
+  );
 
   expect(
     await screen.findByRole('button', { name: 'Share story map' })
   ).toBeInTheDocument();
-
   await waitFor(() => {
     expect(
       screen.queryByRole('link', { name: 'Edit Story Map' })
     ).not.toBeInTheDocument();
   });
-
   expect(
     screen.queryByRole('link', { name: 'Join Terraso' })
   ).not.toBeInTheDocument();
-});
 
-test('UserStoryMap: editors see share and edit actions', async () => {
+  unmountSignedIn();
+
   terrasoApi.requestGraphQL.mockResolvedValue(
-    getStoryMapResponse({
-      createdBy: {
-        id: 'current-user',
-      },
-    })
-  );
-
-  await render(<UserStoryMap />, {
-    account: {
-      hasToken: true,
-      currentUser: {
-        fetching: false,
-        data: {
+    _.set(
+      'storyMaps.edges[0].node',
+      {
+        id: 'id-1',
+        storyMapId: 'id-1',
+        slug: 'story-1',
+        title: 'Story 1',
+        configuration: JSON.stringify({
+          title: 'Story 1',
+        }),
+        createdBy: {
           id: 'current-user',
-          firstName: 'Test',
-          lastName: 'User',
         },
       },
-    },
-  });
+      {}
+    )
+  );
+
+  await render(<UserStoryMap />, signedInUser);
 
   expect(
     await screen.findByRole('button', { name: 'Share story map' })
