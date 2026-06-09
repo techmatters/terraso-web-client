@@ -410,7 +410,11 @@ test('Home: Featured story maps render no description when none is configured', 
 
 test('Home: Ignore featured story map fetch failures', async () => {
   fetchHomeStoryMaps.mockReturnValue(Promise.resolve([]));
-  fetchFeaturedStoryMaps.mockReturnValue(Promise.resolve([]));
+  fetchFeaturedStoryMaps.mockImplementation(
+    jest.requireActual('terraso-web-client/home/homeService')
+      .fetchFeaturedStoryMaps
+  );
+  terrasoApi.requestGraphQL.mockRejectedValueOnce('not_found');
 
   await setup();
 

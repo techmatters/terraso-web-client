@@ -15,6 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import { Link as ReactRouterLink } from 'react-router';
 import {
   Card,
   CardActionArea,
@@ -107,8 +108,8 @@ const StoryMapGalleryCard = ({ storyMap }) => {
       }}
     >
       <CardActionArea
-        component="a"
-        href={generateStoryMapUrl(storyMap)}
+        component={ReactRouterLink}
+        to={generateStoryMapUrl(storyMap)}
         sx={{ alignItems: 'stretch' }}
       >
         <CardMedia
