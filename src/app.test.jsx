@@ -97,6 +97,9 @@ test('App: Published story map uses the story map footer component', async () =>
   );
   expect(screen.getByRole('button', { name: 'Sign In' })).toBeInTheDocument();
   expect(
+    screen.getByRole('navigation', { name: 'Footer Navigation' })
+  ).toBeInTheDocument();
+  expect(
     screen.getByRole('link', { name: 'About Terraso' })
   ).toBeInTheDocument();
 });

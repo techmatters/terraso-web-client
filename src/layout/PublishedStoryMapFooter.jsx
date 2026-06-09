@@ -142,6 +142,7 @@ const PublishedStoryMapFooter = () => {
       sx={{
         background: palette.secondary.main,
         color: palette.white,
+        overflow: 'hidden',
       }}
     >
       <Typography sx={visuallyHidden} variant="h2">
@@ -174,7 +175,11 @@ const PublishedStoryMapFooter = () => {
             <Box sx={{ flexShrink: 0 }}>
               <LocalePicker />
             </Box>
-            <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Box
+              component="nav"
+              aria-label={t('footer.navigation')}
+              sx={{ flex: 1, minWidth: 0 }}
+            >
               <PublishedStoryMapFooterLinks links={footerLinks} />
             </Box>
             {signInButton}
@@ -211,7 +216,11 @@ const PublishedStoryMapFooter = () => {
               <Box sx={{ flexShrink: 0 }}>
                 <LocalePicker />
               </Box>
-              <Box sx={{ minWidth: 0, flex: 1 }}>
+              <Box
+                component="nav"
+                aria-label={t('footer.navigation')}
+                sx={{ minWidth: 0, flex: 1 }}
+              >
                 <PublishedStoryMapFooterLinks links={footerLinks} />
               </Box>
             </Box>
@@ -237,6 +246,8 @@ const PublishedStoryMapFooter = () => {
               <Box sx={{ gridColumn: 1, gridRow: 2 }}>{signInButton}</Box>
             ) : null}
             <Box
+              component="nav"
+              aria-label={t('footer.navigation')}
               sx={{
                 gridColumn: signInButton ? 2 : '1 / span 2',
                 gridRow: 2,
