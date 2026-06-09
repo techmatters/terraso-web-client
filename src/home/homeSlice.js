@@ -23,15 +23,19 @@ import { setUserStoryMaps } from 'terraso-web-client/storyMap/storyMapSlice';
 
 const initialState = {
   fetching: true,
+  featuredStoryMaps: [],
   error: null,
 };
 
 export const fetchHomeStoryMaps = createAsyncThunk(
   'home/fetchStoryMaps',
   (email, currentUser, { dispatch }) =>
-    homeService.fetchHomeStoryMaps(email).then(storyMaps => {
+    Promise.all([
+      homeService.fetchHomeStoryMaps(email),
+      homeService.fetchFeaturedStoryMaps(),
+    ]).then(([storyMaps, featuredStoryMaps]) => {
       dispatch(setUserStoryMaps(storyMaps));
-      return storyMaps;
+      return { storyMaps, featuredStoryMaps };
     })
 );
 
@@ -50,9 +54,10 @@ export const homeSlice = createSlice({
   extraReducers: builder => {
     builder.addCase(fetchHomeStoryMaps.pending, () => initialState);
 
-    builder.addCase(fetchHomeStoryMaps.fulfilled, state => ({
+    builder.addCase(fetchHomeStoryMaps.fulfilled, (state, action) => ({
       ...state,
       fetching: false,
+      featuredStoryMaps: action.payload.featuredStoryMaps,
       error: null,
     }));
 

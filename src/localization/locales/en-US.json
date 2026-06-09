@@ -2,6 +2,7 @@
     "home": {
         "title": "Home",
         "error": "Error loading data. {{error}}",
+        "featured_story_maps_title": "Featured Story Maps",
         "page_title": "{{name}}’s Terraso",
         "document_title": "Terraso Home",
         "document_description": "Terraso is a set of free and powerful software tools to manage your landscape, protect your environment, and promote human livelihoods."

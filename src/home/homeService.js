@@ -44,3 +44,40 @@ export const fetchHomeStoryMaps = email => {
         .map(extractStoryMap)
     );
 };
+
+export const fetchFeaturedStoryMaps = () =>
+  terrasoApi
+    .requestGraphQL(
+      `
+      query featuredStoryMaps {
+        storyMaps(featured: true) {
+          edges {
+            node {
+              id
+              slug
+              storyMapId
+              title
+              publishedAt
+              publishedConfiguration
+            }
+          }
+        }
+      }
+    `
+    )
+    .then(response =>
+      _.getOr([], 'storyMaps.edges', response)
+        .map(_.get('node'))
+        .map(storyMap => ({
+          ..._.omit(['publishedConfiguration'], storyMap),
+          config: storyMap.publishedConfiguration
+            ? JSON.parse(storyMap.publishedConfiguration)
+            : {},
+        }))
+        .sort(
+          (left, right) =>
+            new Date(right.publishedAt).getTime() -
+            new Date(left.publishedAt).getTime()
+        )
+    )
+    .catch(() => []);

@@ -20,7 +20,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useFetchData } from 'terraso-client-shared/store/utils';
-import { Alert, Grid, Stack } from '@mui/material';
+import { Alert, Grid, Stack, Typography } from '@mui/material';
 
 import LoaderCard from 'terraso-web-client/common/components/LoaderCard';
 import {
@@ -31,6 +31,7 @@ import PageContainer from 'terraso-web-client/layout/PageContainer';
 import GroupDefaultCard from 'terraso-web-client/group/components/GroupDefaultHomeCard';
 import { fetchHomeStoryMaps } from 'terraso-web-client/home/homeSlice';
 import LandscapeDefaultCard from 'terraso-web-client/landscape/components/LandscapeDefaultHomeCard';
+import StoryMapGalleryCard from 'terraso-web-client/storyMap/components/StoryMapGalleryCard';
 import StoryMapsCard from 'terraso-web-client/storyMap/components/StoryMapsCard';
 import StoryMapsHomeCardDefault from 'terraso-web-client/storyMap/components/StoryMapsHomeCardDefault';
 
@@ -62,7 +63,7 @@ const Home = () => {
   const { data: user } = useSelector(state => state.account.currentUser);
   const { list: storyMaps } = useSelector(_.get('storyMap.userStoryMaps'));
   const home = useSelector(state => state.userHome);
-  const { error, fetching } = home;
+  const { error, fetching, featuredStoryMaps } = home;
 
   useDocumentTitle(t('home.document_title'), false, true);
   useDocumentDescription(t('home.document_description'));
@@ -75,17 +76,34 @@ const Home = () => {
 
   return (
     <PageContainer>
-      <Grid container spacing={3}>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <StoryMaps storyMaps={storyMaps} fetching={fetching} />
+      <Stack spacing={5}>
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <StoryMaps storyMaps={storyMaps} fetching={fetching} />
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Stack spacing={3}>
+              <LandscapeDefaultCard />
+              <GroupDefaultCard />
+            </Stack>
+          </Grid>
         </Grid>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Stack spacing={3}>
-            <LandscapeDefaultCard />
-            <GroupDefaultCard />
+
+        {!_.isEmpty(featuredStoryMaps) && (
+          <Stack component="section" spacing={3}>
+            <Typography component="h2" variant="h2">
+              {t('home.featured_story_maps_title')}
+            </Typography>
+            <Grid container spacing={3}>
+              {featuredStoryMaps.map(storyMap => (
+                <Grid key={storyMap.id} size={{ xs: 12, md: 4 }}>
+                  <StoryMapGalleryCard storyMap={storyMap} />
+                </Grid>
+              ))}
+            </Grid>
           </Stack>
-        </Grid>
-      </Grid>
+        )}
+      </Stack>
     </PageContainer>
   );
 };

@@ -20,12 +20,16 @@ import _ from 'lodash/fp';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import Home from 'terraso-web-client/home/components/Home';
-import { fetchHomeStoryMaps } from 'terraso-web-client/home/homeService';
+import {
+  fetchFeaturedStoryMaps,
+  fetchHomeStoryMaps,
+} from 'terraso-web-client/home/homeService';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
 jest.mock('terraso-web-client/home/homeService', () => ({
   ...jest.requireActual('terraso-web-client/home/homeService'),
+  fetchFeaturedStoryMaps: jest.fn(),
   fetchHomeStoryMaps: jest.fn(),
 }));
 
@@ -47,6 +51,7 @@ beforeEach(() => {
   fetchHomeStoryMaps.mockImplementation(
     jest.requireActual('terraso-web-client/home/homeService').fetchHomeStoryMaps
   );
+  fetchFeaturedStoryMaps.mockReturnValue(Promise.resolve([]));
 });
 
 test('Home: Display error', async () => {
@@ -269,6 +274,130 @@ test('Home: Display defaults', async () => {
     )
   ).toBeInTheDocument();
   expect(screen.queryByText(/Data Collection/i)).not.toBeInTheDocument();
+});
+
+test('Home: Display featured story maps gallery', async () => {
+  fetchHomeStoryMaps.mockReturnValue(Promise.resolve([]));
+  fetchFeaturedStoryMaps.mockReturnValue(
+    Promise.resolve([
+      {
+        id: 'featured-1',
+        slug: 'featured-story-1',
+        storyMapId: 'featured-1',
+        title: 'Node title should not be used',
+        config: {
+          title: 'This outstanding story map',
+          description:
+            'This is the meta description for this sensational story map!',
+          featuredImage: {
+            signedUrl: 'https://example.com/story-map-1.png',
+            description: 'Story map 1 featured image',
+          },
+        },
+      },
+      {
+        id: 'featured-2',
+        slug: 'featured-story-2',
+        storyMapId: 'featured-2',
+        title: 'Node fallback title 2',
+        config: {
+          title:
+            'This outstanding story map with a longer title that must wrap',
+          description: 'Another featured description.',
+        },
+      },
+      {
+        id: 'featured-3',
+        slug: 'featured-story-3',
+        storyMapId: 'featured-3',
+        title: 'Node fallback title 3',
+        config: {
+          title: 'Third featured story map',
+          description: 'Third featured description.',
+        },
+      },
+    ])
+  );
+
+  await setup();
+
+  expect(
+    screen.getByRole('heading', { name: 'Featured Story Maps' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', {
+      name: 'Story map 1 featured image This outstanding story map This is the meta description for this sensational story map!',
+    })
+  ).toHaveAttribute('href', '/tools/story-maps/featured-1/featured-story-1');
+  expect(
+    screen.getByText(
+      /This is the meta description for this sensational story map!/i
+    )
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('img', { name: 'Story map 1 featured image' })
+  ).toHaveAttribute('src', 'https://example.com/story-map-1.png');
+});
+
+test('Home: Featured story maps fall back to first chapter description and default image', async () => {
+  fetchHomeStoryMaps.mockReturnValue(Promise.resolve([]));
+  fetchFeaturedStoryMaps.mockReturnValue(
+    Promise.resolve([
+      {
+        id: 'featured-4',
+        slug: 'featured-story-4',
+        storyMapId: 'featured-4',
+        title: 'Node fallback title 4',
+        config: {
+          title: 'Chapter preview story map',
+          chapters: [
+            {
+              description: [
+                {
+                  children: [
+                    {
+                      text: 'First chapter description used for the card preview when no story map description is configured.',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      },
+    ])
+  );
+
+  await setup();
+
+  expect(screen.getByText('Chapter preview story map')).toBeInTheDocument();
+  expect(
+    screen.getByText(
+      'First chapter description used for the card preview when no story map description is configured.'
+    )
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('img', { name: 'Chapter preview story map' })
+  ).toHaveAttribute('src', '/storyMap/terraso-story-maps-img.jpg');
+});
+
+test('Home: Ignore featured story map fetch failures', async () => {
+  fetchHomeStoryMaps.mockReturnValue(Promise.resolve([]));
+  fetchFeaturedStoryMaps.mockReturnValue(Promise.resolve([]));
+
+  await setup();
+
+  expect(
+    screen.getByText(
+      /Create and share interactive story maps to visualize your landscape data and community narratives/i
+    )
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('heading', { name: 'Featured Story Maps' })
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByText(/Error loading data\. not_found/i)
+  ).not.toBeInTheDocument();
 });
 
 test('Home: Main heading removed', async () => {
