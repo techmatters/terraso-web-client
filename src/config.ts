@@ -33,7 +33,8 @@ export const GRAPHQL_ENDPOINT = 'graphql/';
 export const COOKIES_DOMAIN =
   import.meta.env.REACT_APP_COOKIES_DOMAIN || '127.0.0.1';
 
-const COOKIES_PARAMS = { path: '/' };
+// 30 days expiration for both access and refresh tokens, since refresh token rotation is implemented on the backend
+const COOKIES_PARAMS = { path: '/', expires: 30 };
 
 export const SENTRY_DSN = import.meta.env.REACT_APP_SENTRY_DSN || '';
 
