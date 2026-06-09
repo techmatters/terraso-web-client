@@ -381,6 +381,33 @@ test('Home: Featured story maps fall back to first chapter description and defau
   ).toHaveAttribute('src', '/storyMap/terraso-story-maps-img.jpg');
 });
 
+test('Home: Featured story maps render no description when none is configured', async () => {
+  fetchHomeStoryMaps.mockReturnValue(Promise.resolve([]));
+  fetchFeaturedStoryMaps.mockReturnValue(
+    Promise.resolve([
+      {
+        id: 'featured-5',
+        slug: 'featured-story-5',
+        storyMapId: 'featured-5',
+        title: 'Node fallback title 5',
+        config: {
+          title: 'No description story map',
+          chapters: [],
+        },
+      },
+    ])
+  );
+
+  await setup();
+
+  expect(screen.getByText('No description story map')).toBeInTheDocument();
+  expect(
+    screen.queryByText(
+      /Inspire your audience with a free, easy to use, and powerful web app/i
+    )
+  ).not.toBeInTheDocument();
+});
+
 test('Home: Ignore featured story map fetch failures', async () => {
   fetchHomeStoryMaps.mockReturnValue(Promise.resolve([]));
   fetchFeaturedStoryMaps.mockReturnValue(Promise.resolve([]));

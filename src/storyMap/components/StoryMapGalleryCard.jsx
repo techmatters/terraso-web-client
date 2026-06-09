@@ -26,8 +26,6 @@ import {
 import { generateStoryMapUrl } from 'terraso-web-client/storyMap/storyMapUtils';
 
 const STORY_MAP_FALLBACK_IMAGE = '/storyMap/terraso-story-maps-img.jpg';
-const STORY_MAP_FALLBACK_DESCRIPTION =
-  'Inspire your audience with a free, easy to use, and powerful web app for place-based storytelling. Share data, media, and narratives on a map to ground your story in the land.';
 
 const toCleanText = value =>
   String(value || '')
@@ -91,13 +89,12 @@ const getStoryMapDescription = storyMap => {
     return description;
   }
 
-  return (
-    getFirstChapterDescriptionPreview(storyMap.config?.chapters) ||
-    STORY_MAP_FALLBACK_DESCRIPTION
-  );
+  return getFirstChapterDescriptionPreview(storyMap.config?.chapters);
 };
 
 const StoryMapGalleryCard = ({ storyMap }) => {
+  const description = getStoryMapDescription(storyMap);
+
   return (
     <Card
       sx={{
@@ -146,19 +143,21 @@ const StoryMapGalleryCard = ({ storyMap }) => {
           >
             {getStoryMapTitle(storyMap)}
           </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              fontFamily: 'Lato, Helvetica, Arial, sans-serif',
-              fontWeight: 400,
-              fontSize: '1.125rem',
-              lineHeight: '140%',
-              letterSpacing: '-0.005em',
-              color: 'rgba(0, 0, 0, 0.87)',
-            }}
-          >
-            {getStoryMapDescription(storyMap)}
-          </Typography>
+          {description && (
+            <Typography
+              variant="body1"
+              sx={{
+                fontFamily: 'Lato, Helvetica, Arial, sans-serif',
+                fontWeight: 400,
+                fontSize: '1.125rem',
+                lineHeight: '140%',
+                letterSpacing: '-0.005em',
+                color: 'rgba(0, 0, 0, 0.87)',
+              }}
+            >
+              {description}
+            </Typography>
+          )}
         </CardContent>
       </CardActionArea>
     </Card>
