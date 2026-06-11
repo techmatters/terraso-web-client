@@ -29,7 +29,10 @@ import {
 } from 'terraso-web-client/common/document';
 import PageContainer from 'terraso-web-client/layout/PageContainer';
 import GroupDefaultCard from 'terraso-web-client/group/components/GroupDefaultHomeCard';
-import { fetchHomeStoryMaps } from 'terraso-web-client/home/homeSlice';
+import {
+  fetchFeaturedStoryMaps,
+  fetchHomeStoryMaps,
+} from 'terraso-web-client/home/homeSlice';
 import LandscapeDefaultCard from 'terraso-web-client/landscape/components/LandscapeDefaultHomeCard';
 import StoryMapGalleryCard from 'terraso-web-client/storyMap/components/StoryMapGalleryCard';
 import StoryMapsCard from 'terraso-web-client/storyMap/components/StoryMapsCard';
@@ -69,6 +72,7 @@ const Home = () => {
   useDocumentDescription(t('home.document_description'));
 
   useFetchData(useCallback(() => fetchHomeStoryMaps(user.email), [user.email]));
+  useFetchData(fetchFeaturedStoryMaps);
 
   if (error) {
     return <Alert severity="error">{t('home.error', { error })}</Alert>;

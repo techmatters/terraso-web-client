@@ -30,13 +30,21 @@ const initialState = {
 export const fetchHomeStoryMaps = createAsyncThunk(
   'home/fetchStoryMaps',
   (email, currentUser, { dispatch }) =>
-    Promise.all([
-      homeService.fetchHomeStoryMaps(email),
-      homeService.fetchFeaturedStoryMaps(),
-    ]).then(([storyMaps, featuredStoryMaps]) => {
-      dispatch(setUserStoryMaps(storyMaps));
-      return { storyMaps, featuredStoryMaps };
-    })
+    homeService
+      .fetchHomeStoryMaps(email)
+      .then(storyMaps => {
+        dispatch(setUserStoryMaps(storyMaps));
+        return { storyMaps };
+      })
+      .catch(error => {
+        dispatch(setUserStoryMaps([]));
+        return Promise.reject(error);
+      })
+);
+
+export const fetchFeaturedStoryMaps = createAsyncThunk(
+  'home/fetchFeaturedStoryMaps',
+  homeService.fetchFeaturedStoryMaps
 );
 
 export const homeSlice = createSlice({
@@ -57,7 +65,6 @@ export const homeSlice = createSlice({
     builder.addCase(fetchHomeStoryMaps.fulfilled, (state, action) => ({
       ...state,
       fetching: false,
-      featuredStoryMaps: action.payload.featuredStoryMaps,
       error: null,
     }));
 
@@ -65,6 +72,11 @@ export const homeSlice = createSlice({
       ...state,
       fetching: false,
       error: action.payload?.error || action.payload || action.error,
+    }));
+
+    builder.addCase(fetchFeaturedStoryMaps.fulfilled, (state, action) => ({
+      ...state,
+      featuredStoryMaps: action.payload,
     }));
   },
 });

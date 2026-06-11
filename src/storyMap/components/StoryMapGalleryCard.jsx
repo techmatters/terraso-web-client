@@ -27,6 +27,7 @@ import {
 import { generateStoryMapUrl } from 'terraso-web-client/storyMap/storyMapUtils';
 
 const STORY_MAP_FALLBACK_IMAGE = '/storyMap/terraso-story-maps-img.jpg';
+const STORY_MAP_DESCRIPTION_LINE_CLAMP = 4;
 
 const toCleanText = value =>
   String(value || '')
@@ -151,6 +152,10 @@ const StoryMapGalleryCard = ({ storyMap }) => {
                 fontFamily: 'Lato, Helvetica, Arial, sans-serif',
                 fontWeight: 400,
                 fontSize: '1.125rem',
+                display: '-webkit-box',
+                overflow: 'hidden',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: STORY_MAP_DESCRIPTION_LINE_CLAMP,
                 lineHeight: '140%',
                 letterSpacing: '-0.005em',
                 color: 'rgba(0, 0, 0, 0.87)',

@@ -173,7 +173,7 @@ const storyMapSlice = createSlice({
     setUserStoryMaps: (state, action) => ({
       ...state,
       userStoryMaps: {
-        ...state.userStoryMaps,
+        fetching: false,
         list: action.payload,
       },
     }),
