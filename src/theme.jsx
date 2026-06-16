@@ -20,6 +20,8 @@ import { createTheme } from '@mui/material/styles';
 
 const defaultFontStack = 'Roboto, Helvetica, Arial, sans-serif';
 const headerFontStack = 'Lato, Helvetica, Arial, sans-serif';
+const containedHoverShadow =
+  '0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.20)';
 
 const colorTheme = createTheme({
   breakpoints: {
@@ -96,6 +98,52 @@ export const focusOutline = {
   outline: `2px solid ${colorTheme.palette.blue.dark}`,
   outlineOffset: '3px',
   borderRadius: '2px',
+};
+
+const buttonTokens = {
+  base: {
+    gap: '8px',
+    borderRadius: '4px',
+    whiteSpace: 'nowrap',
+    fontFamily: headerFontStack,
+    fontSize: '15px',
+    fontStyle: 'normal',
+    fontWeight: 500,
+    lineHeight: '26px',
+  },
+  buttonFocusOutline: {
+    outline: `2px solid ${colorTheme.palette.blue.dark2}`,
+    outlineOffset: '3px',
+    borderRadius: '2px',
+  },
+  sizes: {
+    small: {
+      padding: '4px 10px',
+    },
+    medium: {
+      padding: '6px 16px',
+    },
+    large: {
+      padding: '8px 22px',
+    },
+  },
+  containedHoverShadow,
+  tones: {
+    primary: {
+      main: colorTheme.palette.secondary.main,
+      hover: '#002F45',
+      contrastText: colorTheme.palette.white,
+      subtle: '#EBEFF1',
+      disabled: 'rgba(0, 52, 77, 0.40)',
+    },
+    secondary: {
+      main: colorTheme.palette.primary.main,
+      hover: '#027A3C',
+      contrastText: colorTheme.palette.white,
+      subtle: '#EBF5EE',
+      disabled: 'rgba(2, 136, 67, 0.40)',
+    },
+  },
 };
 
 const components = {
@@ -288,6 +336,7 @@ const theme = createTheme(colorTheme, {
   // This color cannot be part of the regular palette above, as MUI fails to reconize it.
   // See https://github.com/mui/material-ui/issues/19711
   backgroundNavColor: '#00914712',
+  buttonTokens,
   typography: {
     fontFamily: defaultFontStack,
     h1: {

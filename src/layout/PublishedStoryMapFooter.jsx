@@ -19,10 +19,11 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router';
-import { Box, Button, Link, Typography } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { visuallyHidden } from '@mui/utils';
 
+import Button from 'terraso-web-client/common/components/Button';
 import RouterLink from 'terraso-web-client/common/components/RouterLink';
 import { getFooterLinks } from 'terraso-web-client/layout/footerUtils';
 import LocalePicker from 'terraso-web-client/localization/components/LocalePicker';
@@ -123,12 +124,10 @@ const PublishedStoryMapFooter = () => {
   const signInButton = hasToken ? null : (
     <Button
       variant="contained"
-      color="primary"
+      color="secondary"
+      size="small"
       onClick={onSignIn}
       sx={{
-        alignSelf: 'flex-start',
-        px: 3,
-        py: 1,
         whiteSpace: 'nowrap',
       }}
     >

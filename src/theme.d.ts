@@ -18,6 +18,48 @@
 import { Theme } from '@mui/material';
 
 declare module '@mui/material/styles' {
+  interface ButtonTone {
+    main: string;
+    hover: string;
+    contrastText: string;
+    subtle: string;
+    disabled: string;
+  }
+
+  interface ButtonTokens {
+    base: {
+      gap: string;
+      borderRadius: string;
+      whiteSpace: string;
+      fontFamily: string;
+      fontSize: string;
+      fontStyle: string;
+      fontWeight: number;
+      lineHeight: string;
+    };
+    buttonFocusOutline: {
+      outline: string;
+      outlineOffset: string;
+      borderRadius: string;
+    };
+    sizes: {
+      small: {
+        padding: string;
+      };
+      medium: {
+        padding: string;
+      };
+      large: {
+        padding: string;
+      };
+    };
+    containedHoverShadow: string;
+    tones: {
+      primary: ButtonTone;
+      secondary: ButtonTone;
+    };
+  }
+
   interface RichTextPalette {
     link: string;
     highlightBackground: string;
@@ -33,6 +75,16 @@ declare module '@mui/material/styles' {
 
   interface PaletteOptions {
     richText?: Partial<RichTextPalette>;
+  }
+
+  interface Theme {
+    backgroundNavColor: string;
+    buttonTokens: ButtonTokens;
+  }
+
+  interface ThemeOptions {
+    backgroundNavColor?: string;
+    buttonTokens?: ButtonTokens;
   }
 }
 

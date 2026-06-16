@@ -23,7 +23,6 @@ import FacebookIcon from '@mui/icons-material/Facebook';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import {
   Alert,
-  Button,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -37,6 +36,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { useCopy } from 'terraso-web-client/custom-hooks';
 
+import Button from 'terraso-web-client/common/components/Button';
 import CopyLink from 'terraso-web-client/common/components/CopyLink';
 import { createAbsoluteUrl } from 'terraso-web-client/common/utils/urlUtils';
 import { useShareEvent } from 'terraso-web-client/monitoring/events';
@@ -186,14 +186,9 @@ const PostToService = props => {
         <li>
           <Button
             variant="outlined"
-            startIcon={
-              <EmailIcon sx={{ paddingRight: 1, color: 'secondary.main' }} />
-            }
+            startIcon={<EmailIcon sx={{ color: 'inherit' }} />}
             onClick={shareViaEmail}
             sx={{
-              '&:hover svg': {
-                color: 'white',
-              },
               width: {
                 xs: '100%',
                 sm: 'auto',
@@ -206,19 +201,9 @@ const PostToService = props => {
         <li>
           <Button
             variant="outlined"
-            startIcon={
-              <WhatsAppIcon
-                sx={{
-                  paddingRight: 1,
-                  color: 'secondary.main',
-                }}
-              />
-            }
+            startIcon={<WhatsAppIcon sx={{ color: 'inherit' }} />}
             onClick={shareViaWhatsApp}
             sx={{
-              '&:hover svg': {
-                color: 'white',
-              },
               width: {
                 xs: '100%',
                 sm: 'auto',
@@ -239,14 +224,9 @@ const PostToService = props => {
         <li>
           <Button
             variant="outlined"
-            startIcon={
-              <FacebookIcon sx={{ paddingRight: 1, color: 'secondary.main' }} />
-            }
+            startIcon={<FacebookIcon sx={{ color: 'inherit' }} />}
             onClick={shareViaFacebook}
             sx={{
-              '&:hover svg': {
-                color: 'white',
-              },
               width: {
                 xs: '100%',
                 sm: 'auto',

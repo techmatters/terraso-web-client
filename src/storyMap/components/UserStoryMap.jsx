@@ -101,14 +101,8 @@ const PublishedStoryMapActionBar = ({ storyMap }) => {
             buttonLabel={t('storyMap.published_action_bar_share')}
             buttonProps={{
               variant: 'contained',
+              color: 'primary',
               startIcon: <ShareIcon />,
-              sx: {
-                bgcolor: 'secondary.main',
-                color: 'white',
-                '&:hover': {
-                  bgcolor: 'secondary.main',
-                },
-              },
             }}
           />
           {showJoinCta ? (

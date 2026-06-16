@@ -17,7 +17,8 @@
 
 import { forwardRef } from 'react';
 import { Link } from 'react-router';
-import { Button } from '@mui/material';
+
+import Button from 'terraso-web-client/common/components/Button';
 
 const RouterButton = forwardRef((props, ref) => {
   return <Button ref={ref} component={Link} {...props} />;

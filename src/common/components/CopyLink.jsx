@@ -16,9 +16,11 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { Alert, Button, InputLabel, TextField } from '@mui/material';
+import { Alert, InputLabel, TextField } from '@mui/material';
 
 import { useCopy } from 'terraso-web-client/custom-hooks';
+
+import Button from 'terraso-web-client/common/components/Button';
 
 const CopyLink = props => {
   const { pageUrl, onShare } = props;
