@@ -58,6 +58,7 @@ export const createTestStoryMap = (): StoryMapNode => ({
   createdAt: new Date().toString(),
   createdBy: createTestUser(),
   isPublished: true,
+  featured: false,
   membershipList: {
     id: 'test-membership-list',
     enrollMethod: 'INVITE',
