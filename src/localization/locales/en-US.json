@@ -245,7 +245,10 @@
                 "url": "https://terraso.org/terms-of-service/"
             },
             "data": { "text": "Data Policy", "url": "#" },
-            "about": { "text": "About Terraso", "url": "https://terraso.org/" }
+            "about": {
+                "text": "About Terraso",
+                "url": "https://terraso.org/about"
+            }
         }
     },
     "navigation": {

@@ -18,7 +18,7 @@
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { Box, Link, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { visuallyHidden } from '@mui/utils';
@@ -27,23 +27,20 @@ import Button from 'terraso-web-client/common/components/Button';
 import RouterLink from 'terraso-web-client/common/components/RouterLink';
 import { getFooterLinks } from 'terraso-web-client/layout/footerUtils';
 import LocalePicker from 'terraso-web-client/localization/components/LocalePicker';
-import { generateReferrerUrl } from 'terraso-web-client/navigation/navigationUtils';
 
 import theme from 'terraso-web-client/theme';
 
 const { spacing, palette } = theme;
 
 const PublishedStoryMapFooterLink = ({ link, showBorder }) => {
-  const { t } = useTranslation();
-
   return (
     <Box component="li" sx={{ display: 'flex', alignItems: 'center' }}>
       <Link
         variant="body1"
         underline="none"
         {...(link.to
-          ? { component: RouterLink, to: t(link.to) }
-          : { href: t(link.url) })}
+          ? { component: RouterLink, to: link.to }
+          : { href: link.url })}
         sx={{
           color: palette.white,
           whiteSpace: 'nowrap',
@@ -59,7 +56,7 @@ const PublishedStoryMapFooterLink = ({ link, showBorder }) => {
           },
         }}
       >
-        {t(link.text)}
+        {link.text}
       </Link>
     </Box>
   );
@@ -91,7 +88,6 @@ const PublishedStoryMapFooterLinks = ({ links, vertical = false }) => (
 
 const PublishedStoryMapFooter = () => {
   const { t } = useTranslation();
-  const location = useLocation();
   const navigate = useNavigate();
   const hasToken = useSelector(state => state.account.hasToken);
   const isLarge = useMediaQuery(theme.breakpoints.up('lg'));
@@ -99,8 +95,8 @@ const PublishedStoryMapFooter = () => {
 
   const footerLinks = useMemo(() => getFooterLinks(t), [t]);
   const onSignIn = useCallback(() => {
-    navigate(generateReferrerUrl('/account', location));
-  }, [location, navigate]);
+    navigate('/account');
+  }, [navigate]);
 
   const logo = (
     <RouterLink to="/" sx={{ display: 'inline-flex', flexShrink: 0 }}>

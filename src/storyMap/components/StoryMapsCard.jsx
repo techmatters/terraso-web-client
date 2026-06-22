@@ -297,6 +297,7 @@ const StoryMapsCard = ({
           <Box sx={{ pb: 2 }}>
             <RouterButton
               variant="contained"
+              color="secondary"
               size="medium"
               to="/tools/story-maps/new"
               state={{ source: 'home_page' }}

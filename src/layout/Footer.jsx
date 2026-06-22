@@ -31,8 +31,6 @@ const { spacing, palette } = theme;
 const year = new Date().getFullYear();
 
 const FooterLink = ({ link, showBorder }) => {
-  const { t } = useTranslation();
-
   const borderStyle = {
     borderRight: `1px solid ${palette.gray.mid2}`,
     paddingRight: spacing(2),
@@ -54,14 +52,14 @@ const FooterLink = ({ link, showBorder }) => {
         <Link
           variant="body2"
           {...(link.to
-            ? { component: RouterLink, to: t(link.to) }
-            : { href: t(link.url) })}
+            ? { component: RouterLink, to: link.to }
+            : { href: link.url })}
           sx={{
             color: palette.white,
             ...(showBorder ? borderStyle : {}),
           }}
         >
-          {t(link.text)}
+          {link.text}
         </Link>
       </Grid>
     </Fragment>
@@ -119,11 +117,7 @@ const DefaultFooter = () => {
         aria-label={t('footer.heading')}
         component="nav"
       >
-        <Grid
-          size={{ xs: 12, sm: 8 }}
-          component={LinksContainer}
-          aria-label={t('footer.navigation')}
-        >
+        <Grid component={LinksContainer} aria-label={t('footer.navigation')}>
           {footerLinks.map((link, index) => (
             <FooterLink
               key={index}
