@@ -155,7 +155,7 @@ test('StoryMap: applies story theme tokens across rendered content', async () =>
     <StoryMap
       config={{
         ...CONFIG,
-        theme: 'theme-3',
+        themeId: 'theme-3',
         footer: 'Story footer',
       }}
     />
@@ -181,12 +181,12 @@ test('StoryMap: applies story theme tokens across rendered content', async () =>
   expect(storyMap).toHaveStyle('--story-theme-highlight: #7ED4C8');
 });
 
-test('StoryMap: falls back to the legacy light theme when theme is a legacy value', async () => {
+test('StoryMap: falls back to the default story map theme when no theme is configured', async () => {
   await render(
     <StoryMap
       config={{
         ...CONFIG,
-        theme: 'light',
+        themeId: undefined,
       }}
     />
   );
@@ -196,6 +196,6 @@ test('StoryMap: falls back to the legacy light theme when theme is a legacy valu
   });
   const storyMap = document.getElementById('features')?.parentElement;
 
-  expect(storyMap).toHaveStyle('--story-theme-background: #F0F6F8');
-  expect(storyMap).toHaveStyle('--story-theme-text: #00344D');
+  expect(storyMap).toHaveStyle('--story-theme-background: #00344D');
+  expect(storyMap).toHaveStyle('--story-theme-text: #FFFFFF');
 });

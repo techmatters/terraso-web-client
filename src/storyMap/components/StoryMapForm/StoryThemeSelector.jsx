@@ -152,7 +152,7 @@ const StoryThemeSelector = () => {
     themeId => () => {
       setPendingThemeId(themeId);
       startUiTransition(() => {
-        setConfig(_.set('theme', themeId));
+        setConfig(_.set('themeId', themeId));
       });
     },
     [setConfig, startUiTransition]

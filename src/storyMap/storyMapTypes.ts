@@ -85,7 +85,7 @@ export type StoryMapThemeId =
 
 export type StoryMapConfig = {
   style: string;
-  theme: StoryMapThemeId | 'dark' | 'light';
+  themeId: StoryMapThemeId;
   showMarkers: boolean;
   use3dTerrain: boolean;
   title: string;

@@ -444,7 +444,7 @@ const StoryThemeProbe = () => {
   const { config } = useStoryMapConfigDataContext();
 
   return (
-    <div data-testid="story-theme-probe" data-theme={config.theme || ''} />
+    <div data-testid="story-theme-probe" data-theme-id={config.themeId || ''} />
   );
 };
 
@@ -942,7 +942,7 @@ test('StoryMapForm: Sidebar navigation', async () => {
 test('StoryMapForm: Theme selector in chapters sidebar applies selection', async () => {
   await render(
     <StoryMapConfigContextProvider
-      baseConfig={{ ...BASE_CONFIG, theme: 'theme-1' }}
+      baseConfig={{ ...BASE_CONFIG, themeId: 'theme-1' }}
       storyMap={{
         id: 'story-map-id-1',
         memberships: [],
@@ -965,7 +965,7 @@ test('StoryMapForm: Theme selector in chapters sidebar applies selection', async
   });
 
   expect(screen.getByTestId('story-theme-probe')).toHaveAttribute(
-    'data-theme',
+    'data-theme-id',
     'theme-1'
   );
 
@@ -978,7 +978,7 @@ test('StoryMapForm: Theme selector in chapters sidebar applies selection', async
   fireEvent.click(themeFourButton);
 
   expect(screen.getByTestId('story-theme-probe')).toHaveAttribute(
-    'data-theme',
+    'data-theme-id',
     'theme-4'
   );
   expect(

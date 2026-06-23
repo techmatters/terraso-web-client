@@ -80,19 +80,12 @@ export const STORY_MAP_THEME_OPTIONS = [
   },
 ];
 
-const STORY_MAP_THEME_ID_BY_LEGACY_THEME = {
-  dark: 'theme-1',
-  light: 'theme-2',
-};
-
 export const getStoryMapThemeOption = themeId =>
   STORY_MAP_THEME_OPTIONS.find(option => option.id === themeId) ||
   STORY_MAP_THEME_OPTIONS[0];
 
 export const resolveStoryMapThemeId = config =>
-  STORY_MAP_THEME_ID_BY_LEGACY_THEME[config?.theme] ||
-  config?.theme ||
-  DEFAULT_STORY_MAP_THEME;
+  config?.themeId || DEFAULT_STORY_MAP_THEME;
 
 export const getResolvedStoryMapTheme = config =>
   getStoryMapThemeOption(resolveStoryMapThemeId(config));
