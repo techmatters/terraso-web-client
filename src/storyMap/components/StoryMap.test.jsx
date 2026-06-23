@@ -149,3 +149,53 @@ test('StoryMap: chapter content headings render below the chapter title level', 
     })
   ).toBeInTheDocument();
 });
+
+test('StoryMap: applies story theme tokens across rendered content', async () => {
+  await render(
+    <StoryMap
+      config={{
+        ...CONFIG,
+        theme: 'theme-3',
+        footer: 'Story footer',
+      }}
+    />
+  );
+
+  const titleSection = screen.getByRole('region', {
+    name: 'Title for: Story Map Title',
+  });
+  const titleContent = titleSection.querySelector('.step-content');
+  const chapterSection = screen.getByRole('region', {
+    name: 'Chapter: Chapter 1',
+  });
+  const chapterContent = chapterSection.querySelector('.step-content');
+  const footer = screen.getByText('Story footer').closest('#footer');
+  const storyMap = document.getElementById('features')?.parentElement;
+
+  expect(titleContent).toHaveClass('story-theme');
+  expect(chapterContent).toHaveClass('story-theme');
+  expect(footer).toHaveClass('story-theme');
+  expect(storyMap).toHaveStyle('--story-theme-background: #52270B');
+  expect(storyMap).toHaveStyle('--story-theme-text: #F4EDE0');
+  expect(storyMap).toHaveStyle('--story-theme-link: #FEB98C');
+  expect(storyMap).toHaveStyle('--story-theme-highlight: #7ED4C8');
+});
+
+test('StoryMap: falls back to the legacy light theme when theme is a legacy value', async () => {
+  await render(
+    <StoryMap
+      config={{
+        ...CONFIG,
+        theme: 'light',
+      }}
+    />
+  );
+
+  const titleSection = screen.getByRole('region', {
+    name: 'Title for: Story Map Title',
+  });
+  const storyMap = document.getElementById('features')?.parentElement;
+
+  expect(storyMap).toHaveStyle('--story-theme-background: #F0F6F8');
+  expect(storyMap).toHaveStyle('--story-theme-text: #00344D');
+});

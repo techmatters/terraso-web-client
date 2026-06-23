@@ -440,6 +440,14 @@ const BufferedLifecycleProbe = ({ chapterId }) => {
   );
 };
 
+const StoryThemeProbe = () => {
+  const { config } = useStoryMapConfigDataContext();
+
+  return (
+    <div data-testid="story-theme-probe" data-theme={config.theme || ''} />
+  );
+};
+
 const setupBufferedLifecycleHarness = async () => {
   await render(
     <StoryMapConfigContextProvider
@@ -860,6 +868,12 @@ test('StoryMapForm: Sidebar navigation', async () => {
     name: 'Chapters sidebar',
   });
 
+  expect(
+    within(sidebarList).getByRole('button', {
+      name: /theme selector\. selected theme 1\./i,
+    })
+  ).toBeInTheDocument();
+
   const title = within(sidebarList).getByRole('button', {
     name: 'Title',
   });
@@ -923,6 +937,55 @@ test('StoryMapForm: Sidebar navigation', async () => {
   expect(chapter2).not.toHaveAttribute('aria-current', 'step');
 
   globalThis.IntersectionObserver = OriginalIntersectionObserver;
+});
+
+test('StoryMapForm: Theme selector in chapters sidebar applies selection', async () => {
+  await render(
+    <StoryMapConfigContextProvider
+      baseConfig={{ ...BASE_CONFIG, theme: 'theme-1' }}
+      storyMap={{
+        id: 'story-map-id-1',
+        memberships: [],
+      }}
+    >
+      <StoryThemeProbe />
+      <StoryMapForm
+        onPublish={jest.fn().mockImplementation(() => Promise.resolve())}
+        onSaveDraft={jest.fn().mockImplementation(() => Promise.resolve())}
+      />
+    </StoryMapConfigContextProvider>
+  );
+
+  const sidebarList = screen.getByRole('navigation', {
+    name: 'Chapters sidebar',
+  });
+
+  const toggleButton = within(sidebarList).getByRole('button', {
+    name: /theme selector\. selected theme 1\./i,
+  });
+
+  expect(screen.getByTestId('story-theme-probe')).toHaveAttribute(
+    'data-theme',
+    'theme-1'
+  );
+
+  fireEvent.click(toggleButton);
+
+  const themeFourButton = within(sidebarList).getByRole('button', {
+    name: /theme 4\. background cream\./i,
+  });
+
+  fireEvent.click(themeFourButton);
+
+  expect(screen.getByTestId('story-theme-probe')).toHaveAttribute(
+    'data-theme',
+    'theme-4'
+  );
+  expect(
+    within(sidebarList).queryByRole('button', {
+      name: /theme 2\. background pale blue\./i,
+    })
+  ).not.toBeInTheDocument();
 });
 
 test('StoryMapForm: Adds new chapter', async () => {

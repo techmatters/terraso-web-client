@@ -161,7 +161,7 @@ const ChapterConfig = props => {
 };
 
 const ChapterForm = props => {
-  const { theme, record, onFieldChange, onFieldBlur } = props;
+  const { record, onFieldChange, onFieldBlur } = props;
   const { t } = useTranslation();
   const { setConfig, init } = useStoryMapConfigActionsContext();
   const [isNew, setIsNew] = useState(false);
@@ -239,9 +239,9 @@ const ChapterForm = props => {
         onDataLayerChange={onDataLayerChange}
       >
         <Stack
-          className={`${theme} step-content`}
+          className="story-theme step-content"
           spacing={1}
-          style={{ maxWidth: 'none' }}
+          sx={{ maxWidth: 'none' }}
         >
           <EditableText
             placeholder={t('storyMap.form_chapter_title_placeholder')}

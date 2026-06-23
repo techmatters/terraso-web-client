@@ -688,6 +688,7 @@ const RichTextEditor = props => {
     onChange,
     placeholder,
     addContainer,
+    containerSx,
     initialFocused = false,
   } = props;
 
@@ -757,10 +758,13 @@ const RichTextEditor = props => {
       addContainer
         ? withProps(Paper, {
             variant: 'outlined',
-            sx: { bgcolor: 'gray.dark2', color: 'white', borderRadius: 0 },
+            sx: [
+              { bgcolor: 'gray.dark2', color: 'white', borderRadius: 0 },
+              containerSx,
+            ],
           })
         : Fragment,
-    [addContainer]
+    [addContainer, containerSx]
   );
 
   const renderElement = useCallback(

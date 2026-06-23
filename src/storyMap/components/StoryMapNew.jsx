@@ -45,7 +45,7 @@ import theme from 'terraso-web-client/theme';
 
 const BASE_CONFIG = {
   style: MAPBOX_STYLE_DEFAULT,
-  theme: 'dark',
+  theme: 'theme-1',
   showMarkers: false,
   use3dTerrain: true,
   title: '',

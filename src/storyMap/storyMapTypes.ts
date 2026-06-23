@@ -75,9 +75,17 @@ export type ChapterConfig = {
   };
 } & Transition;
 
+export type StoryMapThemeId =
+  | 'theme-1'
+  | 'theme-2'
+  | 'theme-3'
+  | 'theme-4'
+  | 'theme-5'
+  | 'theme-6';
+
 export type StoryMapConfig = {
   style: string;
-  theme: 'dark' | 'light';
+  theme: StoryMapThemeId | 'dark' | 'light';
   showMarkers: boolean;
   use3dTerrain: boolean;
   title: string;

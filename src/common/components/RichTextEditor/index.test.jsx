@@ -219,6 +219,25 @@ test('RichTextEditor: modifier-click opens link in edit mode', async () => {
   );
 });
 
+test('RichTextEditor: containerSx overrides the default editor surface', async () => {
+  Editor.nodes.mockImplementation(actualSlateEditor.nodes);
+
+  await render(
+    <RichTextEditor
+      addContainer
+      containerSx={{ bgcolor: 'transparent', color: 'inherit' }}
+      value="Editor content"
+    />
+  );
+
+  const toolbar = screen.getByRole('toolbar');
+  const container = toolbar.closest('.MuiPaper-root');
+
+  expect(container).toHaveStyle({
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+  });
+});
+
 test('RichTextEditor: read-only link click opens link', async () => {
   Editor.nodes.mockImplementation(actualSlateEditor.nodes);
 
