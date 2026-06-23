@@ -23,6 +23,7 @@ import {
   waitFor,
   within,
 } from 'terraso-web-client/tests/utils';
+import MapboxGlGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { when } from 'jest-when';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { createMapMock } from 'terraso-web-client/tests/mapboxMock';
@@ -1077,10 +1078,12 @@ test('StoryMapForm: Show preview without title uses blank preview copy', async (
 test('StoryMapForm: Change chapter location', async () => {
   const map = {
     ...baseMapOptions(),
-    getCenter: () => ({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
-    getZoom: () => 10,
-    getPitch: () => 64,
-    getBearing: () => 45,
+    getCenter: jest
+      .fn()
+      .mockReturnValue({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
+    getZoom: jest.fn().mockReturnValue(10),
+    getPitch: jest.fn().mockReturnValue(64),
+    getBearing: jest.fn().mockReturnValue(45),
     getBounds: jest.fn().mockReturnValue({
       toArray: () => [
         [-180, -90],
@@ -1090,6 +1093,7 @@ test('StoryMapForm: Change chapter location', async () => {
   };
   mapboxgl.Map.mockReturnValue(map);
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
+  MapboxGlGeocoder.mockClear();
 
   const chapter1 = screen.getByRole('region', {
     name: 'Chapter: Chapter 1',
@@ -1102,6 +1106,27 @@ test('StoryMapForm: Change chapter location', async () => {
 
   const dialog = screen.getByRole('dialog', {
     name: 'Edit map for Chapter 1',
+  });
+
+  expect(MapboxGlGeocoder).toHaveBeenCalledTimes(1);
+  const geocoderOptions = MapboxGlGeocoder.mock.calls[0][0];
+  const [coordinateResult] = geocoderOptions.localGeocoder('1.2345, -77.6543');
+
+  expect(coordinateResult.center).toEqual([-77.6543, 1.2345]);
+  expect(coordinateResult.place_name).toEqual('Coordinates: 1.2345, -77.6543');
+
+  map.getCenter.mockReturnValue({
+    lng: coordinateResult.center[0],
+    lat: coordinateResult.center[1],
+  });
+  map.getZoom.mockReturnValue(13);
+  map.getPitch.mockReturnValue(20);
+  map.getBearing.mockReturnValue(5);
+  map.getBounds.mockReturnValue({
+    toArray: () => [
+      [-78, 1],
+      [-77, 2],
+    ],
   });
 
   await act(async () => map.onEvents['move']());
@@ -1122,14 +1147,14 @@ test('StoryMapForm: Change chapter location', async () => {
   expect(saveCall[0].chapters[0]).toEqual(
     expect.objectContaining({
       location: {
-        bearing: 45,
-        bounds: [-180, -90, 180, 90],
+        bearing: 5,
+        bounds: [-78, 1, -77, 2],
         center: {
-          lat: -0.2294635049867253,
-          lng: -78.54414857836304,
+          lat: 1.2345,
+          lng: -77.6543,
         },
-        pitch: 64,
-        zoom: 10,
+        pitch: 20,
+        zoom: 13,
       },
     })
   );
