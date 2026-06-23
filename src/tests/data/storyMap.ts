@@ -40,7 +40,7 @@ export const createTestPosition = (): MapPosition => ({
 export const createTestStoryMapConfig = (): StoryMapConfig => ({
   style: 'mapbox://styles/mapbox/streets-v12',
   projection: 'mercator',
-  theme: 'light',
+  themeId: 'theme-2',
   showMarkers: false,
   use3dTerrain: false,
   title: 'Test Story Map',
