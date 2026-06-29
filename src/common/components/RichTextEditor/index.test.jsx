@@ -438,6 +438,43 @@ test('RichTextEditor: rerendered value waits until blur when editor is focused',
   expect(screen.getByText('Updated value')).toBeInTheDocument();
 });
 
+test('RichTextEditor: rerender with a fresh containerSx object preserves the editor subtree', async () => {
+  Editor.nodes.mockImplementation(actualSlateEditor.nodes);
+
+  const value = [
+    {
+      type: 'paragraph',
+      children: [{ text: 'Original value' }],
+    },
+  ];
+
+  const { rerender } = await render(
+    <RichTextEditor
+      addContainer
+      initialFocused
+      containerSx={{ bgcolor: 'transparent', color: 'inherit' }}
+      value={value}
+    />
+  );
+
+  const editable = screen.getByRole('textbox');
+
+  await act(async () => {
+    rerender(
+      <RichTextEditor
+        addContainer
+        initialFocused
+        containerSx={{ bgcolor: 'transparent', color: 'inherit' }}
+        value={value}
+      />
+    );
+  });
+
+  const rerenderedEditable = screen.getByRole('textbox');
+
+  expect(rerenderedEditable).toBe(editable);
+});
+
 test('RichTextEditor: leaving toolbar triggers blur after moving from editable', async () => {
   Editor.nodes.mockImplementation(actualSlateEditor.nodes);
   const onBlur = jest.fn();

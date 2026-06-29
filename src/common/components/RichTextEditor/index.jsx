@@ -758,13 +758,9 @@ const RichTextEditor = props => {
       addContainer
         ? withProps(Paper, {
             variant: 'outlined',
-            sx: [
-              { bgcolor: 'gray.dark2', color: 'white', borderRadius: 0 },
-              containerSx,
-            ],
           })
         : Fragment,
-    [addContainer, containerSx]
+    [addContainer]
   );
 
   const renderElement = useCallback(
@@ -784,7 +780,16 @@ const RichTextEditor = props => {
   );
 
   return (
-    <Container>
+    <Container
+      {...(addContainer
+        ? {
+            sx: [
+              { bgcolor: 'gray.dark2', color: 'white', borderRadius: 0 },
+              containerSx,
+            ],
+          }
+        : {})}
+    >
       <Box
         ref={containerRef}
         onFocus={() => setFocused(true)}
