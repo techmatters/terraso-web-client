@@ -51,6 +51,7 @@ test('createCoordinateSearchResult: returns a geocoder feature', () => {
     place_name: '12.34, -56.78',
     place_type: ['coordinate'],
     properties: {
+      coordinateQuery: '12.34, -56.78',
       coordinateSearch: true,
     },
     text: '12.34, -56.78',

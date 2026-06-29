@@ -1114,6 +1114,12 @@ test('StoryMapForm: Change chapter location', async () => {
 
   expect(coordinateResult.center).toEqual([-77.6543, 1.2345]);
   expect(coordinateResult.place_name).toEqual('Coordinates: 1.2345, -77.6543');
+  expect(geocoderOptions.getItemValue(coordinateResult)).toEqual(
+    '1.2345, -77.6543'
+  );
+  expect(geocoderOptions.render(coordinateResult)).toEqual(
+    '<div class="mapboxgl-ctrl-geocoder__result-coordinate">Coordinates: 1.2345, -77.6543</div>'
+  );
 
   map.getCenter.mockReturnValue({
     lng: coordinateResult.center[0],

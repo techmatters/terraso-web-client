@@ -43,6 +43,9 @@ export const parseCoordinateQuery = query => {
 const formatCoordinateSearchLabel = ({ latitude, longitude }) =>
   `${latitude}, ${longitude}`;
 
+const formatCoordinateQueryValue = ({ latitude, longitude }) =>
+  `${latitude}, ${longitude}`;
+
 export const createCoordinateSearchResult = (
   query,
   resultLabelFormatter = formatCoordinateSearchLabel
@@ -66,6 +69,7 @@ export const createCoordinateSearchResult = (
     place_type: ['coordinate'],
     properties: {
       coordinateSearch: true,
+      coordinateQuery: formatCoordinateQueryValue({ latitude, longitude }),
     },
     text: label,
   };
