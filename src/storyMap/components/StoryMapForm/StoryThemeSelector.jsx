@@ -21,6 +21,7 @@ import {
   useEffect,
   useId,
   useMemo,
+  useRef,
   useState,
   useTransition,
 } from 'react';
@@ -29,7 +30,10 @@ import { useTranslation } from 'react-i18next';
 import {
   Box,
   ButtonBase,
+  FormControlLabel,
   LinearProgress,
+  Radio,
+  RadioGroup,
   Stack,
   Typography,
 } from '@mui/material';
@@ -117,11 +121,15 @@ const ThemePreview = ({ option, size }) => {
 const StoryThemeSelector = () => {
   const { t } = useTranslation();
   const contentId = useId();
+  const labelId = useId();
   const { config } = useStoryMapConfigDataContext();
   const { setConfig } = useStoryMapConfigActionsContext();
   const [isPending, startUiTransition] = useTransition();
   const [expanded, setExpanded] = useState(false);
   const [pendingThemeId, setPendingThemeId] = useState(null);
+  const toggleButtonRef = useRef(null);
+  const selectedRadioRef = useRef(null);
+  const shouldRestoreFocusRef = useRef(false);
 
   const selectedThemeId =
     resolveStoryMapThemeId(config) || DEFAULT_STORY_MAP_THEME;
@@ -140,16 +148,32 @@ const StoryThemeSelector = () => {
 
     if (pendingThemeId === selectedThemeId) {
       setPendingThemeId(null);
+      shouldRestoreFocusRef.current = true;
       setExpanded(false);
     }
   }, [pendingThemeId, selectedThemeId]);
+
+  useEffect(() => {
+    if (!expanded) {
+      if (shouldRestoreFocusRef.current) {
+        shouldRestoreFocusRef.current = false;
+        toggleButtonRef.current?.focus();
+      }
+
+      return;
+    }
+
+    selectedRadioRef.current?.focus();
+  }, [expanded, selectedThemeId]);
 
   const onToggleExpanded = useCallback(() => {
     setExpanded(currentExpanded => !currentExpanded);
   }, []);
 
   const onThemeSelect = useCallback(
-    themeId => () => {
+    event => {
+      const themeId = event.target.value;
+
       setPendingThemeId(themeId);
       startUiTransition(() => {
         setConfig(_.set('themeId', themeId));
@@ -158,12 +182,24 @@ const StoryThemeSelector = () => {
     [setConfig, startUiTransition]
   );
 
+  const onRadioGroupKeyDown = useCallback(event => {
+    if (event.key !== 'Escape') {
+      return;
+    }
+
+    event.preventDefault();
+    shouldRestoreFocusRef.current = true;
+    setExpanded(false);
+  }, []);
+
   return (
     <Stack aria-busy={isPending} sx={{ bgcolor: 'gray.lite2' }}>
       <ButtonBase
+        ref={toggleButtonRef}
         onClick={onToggleExpanded}
         disabled={isPending}
         aria-expanded={expanded}
+        aria-haspopup="radiogroup"
         aria-controls={contentId}
         aria-label={`Theme selector. Selected ${selectedTheme.label}. ${selectedTheme.colorsLabel}`}
         sx={{
@@ -175,7 +211,10 @@ const StoryThemeSelector = () => {
           pt: 4,
         }}
       >
-        <Typography sx={{ fontSize: 16, fontWeight: 400, color: 'link' }}>
+        <Typography
+          id={labelId}
+          sx={{ fontSize: 16, fontWeight: 400, color: 'link' }}
+        >
           {t('storyMap.form_theme_label', { defaultValue: 'Theme' })}
         </Typography>
         <ThemePreview option={selectedTheme} size="collapsed" />
@@ -193,28 +232,53 @@ const StoryThemeSelector = () => {
       />
 
       {expanded && (
-        <Stack id={contentId} spacing={2} sx={{ p: 2, pt: 0 }}>
+        <RadioGroup
+          id={contentId}
+          aria-labelledby={labelId}
+          value={selectedTheme.id}
+          onChange={onThemeSelect}
+          onKeyDown={onRadioGroupKeyDown}
+          sx={{ p: 2, pt: 0, gap: 2 }}
+        >
           {STORY_MAP_THEME_OPTIONS.map(option => {
             return (
-              <ButtonBase
+              <FormControlLabel
                 key={option.id}
-                onClick={onThemeSelect(option.id)}
+                value={option.id}
                 disabled={isPending}
-                aria-label={`${option.label}. ${option.colorsLabel}`}
-                aria-pressed={option.id === selectedTheme.id}
+                control={
+                  <Radio
+                    inputRef={
+                      option.id === selectedTheme.id ? selectedRadioRef : null
+                    }
+                    inputProps={{
+                      'aria-label': `${option.label}. ${option.colorsLabel}`,
+                    }}
+                    sx={visuallyHidden}
+                  />
+                }
+                label={
+                  <>
+                    <ThemePreview option={option} size="expanded" />
+                  </>
+                }
                 sx={{
+                  m: 0,
                   justifyContent: 'center',
-                  borderRadius: 0,
-                  px: 0,
-                  py: 0,
+                  '& .MuiRadio-root.Mui-focusVisible + .MuiFormControlLabel-label > .MuiStack-root':
+                    {
+                      outline: theme => `2px solid ${theme.palette.blue.dark}`,
+                      outlineOffset: '3px',
+                      borderRadius: '2px',
+                    },
+                  '& .MuiFormControlLabel-label': {
+                    display: 'flex',
+                  },
                 }}
-              >
-                <Box sx={visuallyHidden}>{option.label}</Box>
-                <ThemePreview option={option} size="expanded" />
-              </ButtonBase>
+              />
             );
           })}
-        </Stack>
+        </RadioGroup>
       )}
     </Stack>
   );

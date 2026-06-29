@@ -971,7 +971,7 @@ test('StoryMapForm: Theme selector in chapters sidebar applies selection', async
 
   fireEvent.click(toggleButton);
 
-  const themeEightButton = within(sidebarList).getByRole('button', {
+  const themeEightButton = within(sidebarList).getByRole('radio', {
     name: /theme 8\. background dark gray\./i,
   });
 
@@ -984,6 +984,58 @@ test('StoryMapForm: Theme selector in chapters sidebar applies selection', async
   expect(
     within(sidebarList).queryByRole('button', {
       name: /theme 7\. background white\./i,
+    })
+  ).not.toBeInTheDocument();
+});
+
+test('StoryMapForm: Theme selector uses radiogroup semantics and restores focus after keyboard dismissal', async () => {
+  await render(
+    <StoryMapConfigContextProvider
+      baseConfig={{ ...BASE_CONFIG, themeId: 'theme-1' }}
+      storyMap={{
+        id: 'story-map-id-1',
+        memberships: [],
+      }}
+    >
+      <StoryThemeProbe />
+      <StoryMapForm
+        onPublish={jest.fn().mockImplementation(() => Promise.resolve())}
+        onSaveDraft={jest.fn().mockImplementation(() => Promise.resolve())}
+      />
+    </StoryMapConfigContextProvider>
+  );
+
+  const sidebarList = screen.getByRole('navigation', {
+    name: 'Chapters sidebar',
+  });
+  const toggleButton = within(sidebarList).getByRole('button', {
+    name: /theme selector\. selected theme 1\./i,
+  });
+
+  fireEvent.click(toggleButton);
+
+  const themeList = within(sidebarList).getByRole('radiogroup', {
+    name: 'Theme',
+  });
+  const selectedOption = within(themeList).getByRole('radio', {
+    name: /theme 1\. background dark blue\./i,
+  });
+  const nextOption = within(themeList).getByRole('radio', {
+    name: /theme 2\. background pale blue\./i,
+  });
+
+  await waitFor(() => {
+    expect(selectedOption).toHaveFocus();
+  });
+
+  fireEvent.keyDown(selectedOption, { key: 'Escape' });
+
+  await waitFor(() => {
+    expect(toggleButton).toHaveFocus();
+  });
+  expect(
+    within(sidebarList).queryByRole('radiogroup', {
+      name: 'Theme',
     })
   ).not.toBeInTheDocument();
 });
