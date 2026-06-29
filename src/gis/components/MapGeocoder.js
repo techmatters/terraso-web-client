@@ -67,6 +67,10 @@ const MapGeocoder = props => {
       mapboxgl,
     });
     map.addControl(geocoder, position);
+
+    return () => {
+      map.removeControl(geocoder);
+    };
   }, [map, t, position]);
   return null;
 };

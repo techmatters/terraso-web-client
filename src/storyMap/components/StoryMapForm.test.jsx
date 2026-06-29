@@ -319,7 +319,7 @@ const setup = async ({ config, autoSaveDebounce = 1500 }) => {
   const onPublish = jest.fn().mockImplementation(() => Promise.resolve());
   const onSaveDraft = jest.fn().mockImplementation(() => Promise.resolve());
 
-  await render(
+  const view = await render(
     <StoryMapConfigContextProvider
       baseConfig={config}
       autoSaveDebounce={autoSaveDebounce}
@@ -333,6 +333,7 @@ const setup = async ({ config, autoSaveDebounce = 1500 }) => {
   );
 
   return {
+    ...view,
     onPublish,
     onSaveDraft,
   };
@@ -1092,8 +1093,8 @@ test('StoryMapForm: Change chapter location', async () => {
     }),
   };
   mapboxgl.Map.mockReturnValue(map);
-  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
   MapboxGlGeocoder.mockClear();
+  const { onSaveDraft, unmount } = await setup({ config: BASE_CONFIG });
 
   const chapter1 = screen.getByRole('region', {
     name: 'Chapter: Chapter 1',
@@ -1110,6 +1111,7 @@ test('StoryMapForm: Change chapter location', async () => {
 
   expect(MapboxGlGeocoder).toHaveBeenCalledTimes(1);
   const geocoderOptions = MapboxGlGeocoder.mock.calls[0][0];
+  const geocoderInstance = map.addControl.mock.calls[0][0];
   const [coordinateResult] = geocoderOptions.localGeocoder('1.2345, -77.6543');
 
   expect(coordinateResult.center).toEqual([-77.6543, 1.2345]);
@@ -1164,6 +1166,10 @@ test('StoryMapForm: Change chapter location', async () => {
       },
     })
   );
+
+  unmount();
+
+  expect(map.removeControl).toHaveBeenCalledWith(geocoderInstance);
 });
 
 test('StoryMapForm: Change chapter style', async () => {
