@@ -31,7 +31,7 @@ import PageHeader from 'terraso-web-client/layout/PageHeader';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
 import { useBreadcrumbsParams } from 'terraso-web-client/navigation/breadcrumbsContext';
 import { fetchFeaturedStoryMaps } from 'terraso-web-client/home/homeSlice';
-import StoryMapGalleryCard from 'terraso-web-client/storyMap/components/StoryMapGalleryCard';
+import FeaturedStoryMapsSection from 'terraso-web-client/storyMap/components/FeaturedStoryMapsSection';
 import StoryMapsCard from 'terraso-web-client/storyMap/components/StoryMapsCard';
 import { fetchUserStoryMaps } from 'terraso-web-client/storyMap/storyMapSlice';
 
@@ -117,20 +117,7 @@ const StoryMapsToolsHome = () => {
             </Grid>
           </Grid>
 
-          {!_.isEmpty(featuredStoryMaps) && (
-            <Stack component="section" spacing={3}>
-              <Typography component="h2" variant="h2">
-                {t('home.featured_story_maps_title')}
-              </Typography>
-              <Grid container spacing={3}>
-                {featuredStoryMaps.map(storyMap => (
-                  <Grid key={storyMap.id} size={{ xs: 12, md: 4 }}>
-                    <StoryMapGalleryCard storyMap={storyMap} />
-                  </Grid>
-                ))}
-              </Grid>
-            </Stack>
-          )}
+          <FeaturedStoryMapsSection storyMaps={featuredStoryMaps} />
         </Stack>
       </PageContainer>
     </>

@@ -50,7 +50,7 @@ export const fetchFeaturedStoryMaps = () =>
     .requestGraphQL(
       `
       query featuredStoryMaps {
-        storyMaps(featured: true) {
+        storyMaps(featured: true, first: 3) {
           edges {
             node {
               id
