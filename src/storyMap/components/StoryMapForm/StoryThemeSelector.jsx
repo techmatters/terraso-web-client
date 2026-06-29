@@ -198,7 +198,6 @@ const StoryThemeSelector = () => {
         onClick={onToggleExpanded}
         disabled={isPending}
         aria-expanded={expanded}
-        aria-haspopup="radiogroup"
         aria-controls={contentId}
         aria-label={`Theme selector. Selected ${selectedTheme.label}. ${selectedTheme.colorsLabel}`}
         sx={{

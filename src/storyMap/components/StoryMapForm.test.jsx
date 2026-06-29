@@ -982,8 +982,8 @@ test('StoryMapForm: Theme selector in chapters sidebar applies selection', async
     'theme-8'
   );
   expect(
-    within(sidebarList).queryByRole('button', {
-      name: /theme 7\. background white\./i,
+    within(sidebarList).queryByRole('radiogroup', {
+      name: 'Theme',
     })
   ).not.toBeInTheDocument();
 });
