@@ -69,6 +69,10 @@ const MapGeocoder = props => {
     map.addControl(geocoder, position);
 
     return () => {
+      if (!geocoder._container?.parentNode) {
+        return;
+      }
+
       map.removeControl(geocoder);
     };
   }, [map, t, position]);

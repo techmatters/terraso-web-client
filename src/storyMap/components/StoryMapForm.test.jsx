@@ -1111,7 +1111,6 @@ test('StoryMapForm: Change chapter location', async () => {
 
   expect(MapboxGlGeocoder).toHaveBeenCalledTimes(1);
   const geocoderOptions = MapboxGlGeocoder.mock.calls[0][0];
-  const geocoderInstance = map.addControl.mock.calls[0][0];
   const [coordinateResult] = geocoderOptions.localGeocoder('1.2345, -77.6543');
 
   expect(coordinateResult.center).toEqual([-77.6543, 1.2345]);
@@ -1166,10 +1165,45 @@ test('StoryMapForm: Change chapter location', async () => {
       },
     })
   );
+});
 
-  unmount();
+test('StoryMapForm: Closing map dialog is safe after geocoder DOM is detached', async () => {
+  const map = {
+    ...baseMapOptions(),
+    getCenter: jest
+      .fn()
+      .mockReturnValue({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
+    getZoom: jest.fn().mockReturnValue(10),
+    getPitch: jest.fn().mockReturnValue(64),
+    getBearing: jest.fn().mockReturnValue(45),
+    getBounds: jest.fn().mockReturnValue({
+      toArray: () => [
+        [-180, -90],
+        [180, 90],
+      ],
+    }),
+  };
+  mapboxgl.Map.mockReturnValue(map);
+  MapboxGlGeocoder.mockClear();
+  const { unmount } = await setup({ config: BASE_CONFIG });
 
-  expect(map.removeControl).toHaveBeenCalledWith(geocoderInstance);
+  const chapter1 = screen.getByRole('region', {
+    name: 'Chapter: Chapter 1',
+  });
+
+  await act(async () => {
+    fireEvent.click(
+      within(chapter1).getByRole('button', {
+        name: 'Edit Map',
+      })
+    );
+  });
+
+  const geocoderInstance = map.addControl.mock.calls[0][0];
+  geocoderInstance._container = { parentNode: null };
+
+  expect(() => unmount()).not.toThrow();
+  expect(map.removeControl).not.toHaveBeenCalled();
 });
 
 test('StoryMapForm: Change chapter style', async () => {
