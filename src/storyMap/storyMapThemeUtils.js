@@ -78,6 +78,26 @@ export const STORY_MAP_THEME_OPTIONS = [
     colorsLabel:
       'Background off-white. Text dark green. Hyperlink green. Highlight light pink.',
   },
+  {
+    id: 'theme-7',
+    label: 'Theme 7',
+    background: '#FFFFFF',
+    text: '#212121',
+    link: '#076B8E',
+    highlight: '#FFE2A0',
+    colorsLabel:
+      'Background white. Text charcoal. Hyperlink medium blue. Highlight pale yellow.',
+  },
+  {
+    id: 'theme-8',
+    label: 'Theme 8',
+    background: '#2B2B2B',
+    text: '#FFFFFF',
+    link: '#63D0F8',
+    highlight: '#FFE2A0',
+    colorsLabel:
+      'Background dark gray. Text white. Hyperlink light blue. Highlight pale yellow.',
+  },
 ];
 
 export const getStoryMapThemeOption = themeId =>

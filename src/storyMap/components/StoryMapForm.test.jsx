@@ -971,19 +971,19 @@ test('StoryMapForm: Theme selector in chapters sidebar applies selection', async
 
   fireEvent.click(toggleButton);
 
-  const themeFourButton = within(sidebarList).getByRole('button', {
-    name: /theme 4\. background cream\./i,
+  const themeEightButton = within(sidebarList).getByRole('button', {
+    name: /theme 8\. background dark gray\./i,
   });
 
-  fireEvent.click(themeFourButton);
+  fireEvent.click(themeEightButton);
 
   expect(screen.getByTestId('story-theme-probe')).toHaveAttribute(
     'data-theme-id',
-    'theme-4'
+    'theme-8'
   );
   expect(
     within(sidebarList).queryByRole('button', {
-      name: /theme 2\. background pale blue\./i,
+      name: /theme 7\. background white\./i,
     })
   ).not.toBeInTheDocument();
 });

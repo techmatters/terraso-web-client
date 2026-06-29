@@ -81,7 +81,9 @@ export type StoryMapThemeId =
   | 'theme-3'
   | 'theme-4'
   | 'theme-5'
-  | 'theme-6';
+  | 'theme-6'
+  | 'theme-7'
+  | 'theme-8';
 
 export type StoryMapConfig = {
   style: string;

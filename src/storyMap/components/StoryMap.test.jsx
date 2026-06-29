@@ -199,3 +199,21 @@ test('StoryMap: falls back to the default story map theme when no theme is confi
   expect(storyMap).toHaveStyle('--story-theme-background: #00344D');
   expect(storyMap).toHaveStyle('--story-theme-text: #FFFFFF');
 });
+
+test('StoryMap: applies the new theme 8 tokens across rendered content', async () => {
+  await render(
+    <StoryMap
+      config={{
+        ...CONFIG,
+        themeId: 'theme-8',
+      }}
+    />
+  );
+
+  const storyMap = document.getElementById('features')?.parentElement;
+
+  expect(storyMap).toHaveStyle('--story-theme-background: #2B2B2B');
+  expect(storyMap).toHaveStyle('--story-theme-text: #FFFFFF');
+  expect(storyMap).toHaveStyle('--story-theme-link: #63D0F8');
+  expect(storyMap).toHaveStyle('--story-theme-highlight: #FFE2A0');
+});
