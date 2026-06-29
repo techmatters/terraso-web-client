@@ -94,6 +94,14 @@ const getStoryMapDescription = storyMap => {
   return getFirstChapterDescriptionPreview(storyMap.config?.chapters);
 };
 
+const handleImageError = event => {
+  if (event.currentTarget.src.endsWith(STORY_MAP_FALLBACK_IMAGE)) {
+    return;
+  }
+
+  event.currentTarget.src = STORY_MAP_FALLBACK_IMAGE;
+};
+
 const StoryMapGalleryCard = ({ storyMap }) => {
   const description = getStoryMapDescription(storyMap);
 
@@ -117,6 +125,7 @@ const StoryMapGalleryCard = ({ storyMap }) => {
           component="img"
           image={getStoryMapImage(storyMap)}
           alt={getStoryMapImageAlt(storyMap)}
+          onError={handleImageError}
           sx={{ height: 190 }}
         />
         <CardContent
