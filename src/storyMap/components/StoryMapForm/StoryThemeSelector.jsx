@@ -34,6 +34,7 @@ import {
   Radio,
   RadioGroup,
   Stack,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
@@ -116,6 +117,14 @@ const ThemePreview = ({ option, size }) => {
     </Stack>
   );
 };
+
+const ThemePreviewTooltip = ({ option, children }) => (
+  <Tooltip title={option.colorsLabel} placement="right">
+    <Box component="span" sx={{ display: 'flex' }}>
+      {children}
+    </Box>
+  </Tooltip>
+);
 
 const StoryThemeSelector = () => {
   const { t } = useTranslation();
@@ -215,7 +224,9 @@ const StoryThemeSelector = () => {
         >
           {t('storyMap.form_theme_label', { defaultValue: 'Theme' })}
         </Typography>
-        <ThemePreview option={selectedTheme} size="collapsed" />
+        <ThemePreviewTooltip option={selectedTheme}>
+          <ThemePreview option={selectedTheme} size="collapsed" />
+        </ThemePreviewTooltip>
       </ButtonBase>
 
       <LinearProgress
@@ -256,9 +267,9 @@ const StoryThemeSelector = () => {
                   />
                 }
                 label={
-                  <>
+                  <ThemePreviewTooltip option={option}>
                     <ThemePreview option={option} size="expanded" />
-                  </>
+                  </ThemePreviewTooltip>
                 }
                 sx={{
                   m: 0,

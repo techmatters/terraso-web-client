@@ -1040,6 +1040,43 @@ test('StoryMapForm: Theme selector uses radiogroup semantics and restores focus 
   ).not.toBeInTheDocument();
 });
 
+test('StoryMapForm: Theme selector shows theme description tooltip on hover', async () => {
+  await render(
+    <StoryMapConfigContextProvider
+      baseConfig={{ ...BASE_CONFIG, themeId: 'theme-1' }}
+      storyMap={{
+        id: 'story-map-id-1',
+        memberships: [],
+      }}
+    >
+      <StoryThemeProbe />
+      <StoryMapForm
+        onPublish={jest.fn().mockImplementation(() => Promise.resolve())}
+        onSaveDraft={jest.fn().mockImplementation(() => Promise.resolve())}
+      />
+    </StoryMapConfigContextProvider>
+  );
+
+  const sidebarList = screen.getByRole('navigation', {
+    name: 'Chapters sidebar',
+  });
+  const toggleButton = within(sidebarList).getByRole('button', {
+    name: /theme selector\. selected theme 1\./i,
+  });
+
+  fireEvent.mouseOver(toggleButton.querySelector('[aria-hidden="true"]'));
+
+  const tooltip = await screen.findByRole('tooltip', {
+    name: 'Background dark blue. Text white. Hyperlink light blue. Highlight yellow.',
+  });
+
+  expect(tooltip).toBeInTheDocument();
+  expect(tooltip.closest('[data-popper-placement]')).toHaveAttribute(
+    'data-popper-placement',
+    'right'
+  );
+});
+
 test('StoryMapForm: Adds new chapter', async () => {
   const { onSaveDraft } = await setup({
     config: BASE_CONFIG,
