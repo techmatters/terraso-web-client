@@ -17,6 +17,7 @@
 
 import { useEffect } from 'react';
 import MapboxGlGeocoder from '@mapbox/mapbox-gl-geocoder';
+import escape from 'lodash/fp/escape';
 
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
@@ -29,7 +30,7 @@ import { getCoordinateSearchResults } from 'terraso-web-client/gis/mapGeocoderUt
 import { MAPBOX_ACCESS_TOKEN } from 'terraso-web-client/config';
 
 const renderCoordinateResult = result =>
-  `<div class="mapboxgl-ctrl-geocoder__result-coordinate">${result.place_name}</div>`;
+  `<div class="mapboxgl-ctrl-geocoder__result-coordinate">${escape(result.place_name ?? '')}</div>`;
 
 const getCoordinateQueryValue = result =>
   result.properties?.coordinateQuery || result.place_name;
@@ -39,7 +40,7 @@ const isCoordinateSearchResult = result => result.properties?.coordinateSearch;
 const renderSearchResult = result =>
   isCoordinateSearchResult(result)
     ? renderCoordinateResult(result)
-    : result.place_name;
+    : escape(result.place_name ?? '');
 
 const MapGeocoder = props => {
   const { position } = props;

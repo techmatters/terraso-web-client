@@ -1281,6 +1281,12 @@ test('StoryMapForm: Change chapter location', async () => {
   );
   expect(geocoderOptions.render(standardResult)).toEqual('Quito, Ecuador');
 
+  expect(
+    geocoderOptions.render({
+      place_name: '<b>Quito</b> & "Ecuador"',
+    })
+  ).toEqual('&lt;b&gt;Quito&lt;/b&gt; &amp; &quot;Ecuador&quot;');
+
   map.getCenter.mockReturnValue({
     lng: coordinateResult.center[0],
     lat: coordinateResult.center[1],
