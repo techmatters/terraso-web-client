@@ -20,6 +20,7 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
   within,
 } from 'terraso-web-client/tests/utils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
@@ -42,13 +43,18 @@ beforeEach(() => {
 });
 
 test('StoryMapsToolHome: community story maps are not rendered', async () => {
-  terrasoApi.requestGraphQL.mockReturnValue(
-    Promise.resolve({
+  mockTerrasoAPIrequestGraphQL({
+    'query userStoryMapsHome': Promise.resolve({
       userStoryMaps: {
         edges: [],
       },
-    })
-  );
+    }),
+    'query featuredStoryMaps': Promise.resolve({
+      storyMaps: {
+        edges: [],
+      },
+    }),
+  });
 
   await render(<StoryMapsToolsHome />, {
     account: {
@@ -75,8 +81,8 @@ test('StoryMapsToolHome: community story maps are not rendered', async () => {
 });
 
 test('StoryMapsToolHome: user story maps render correctly', async () => {
-  terrasoApi.requestGraphQL.mockReturnValue(
-    Promise.resolve({
+  mockTerrasoAPIrequestGraphQL({
+    'query userStoryMapsHome': Promise.resolve({
       userStoryMaps: {
         edges: [
           {
@@ -111,8 +117,13 @@ test('StoryMapsToolHome: user story maps render correctly', async () => {
           },
         ],
       },
-    })
-  );
+    }),
+    'query featuredStoryMaps': Promise.resolve({
+      storyMaps: {
+        edges: [],
+      },
+    }),
+  });
 
   await render(<StoryMapsToolsHome />, {
     account: {
@@ -148,6 +159,93 @@ test('StoryMapsToolHome: user story maps render correctly', async () => {
   expect(link1).toHaveAttribute('href', '/tools/story-maps/46h36we/id-1/edit');
 });
 
+test('StoryMapsToolHome: featured story maps render correctly', async () => {
+  mockTerrasoAPIrequestGraphQL({
+    'query userStoryMapsHome': Promise.resolve({
+      userStoryMaps: {
+        edges: [],
+      },
+    }),
+    'query featuredStoryMaps': Promise.resolve({
+      storyMaps: {
+        edges: [
+          {
+            node: {
+              id: 'featured-1',
+              slug: 'featured-story-1',
+              storyMapId: 'featured-1',
+              title: 'Node title should not be used',
+              publishedAt: '2024-01-01T00:00:00.000000+00:00',
+              publishedConfiguration: JSON.stringify({
+                title: 'This outstanding story map',
+                description:
+                  'This is the meta description for this sensational story map!',
+                featuredImage: {
+                  signedUrl: 'https://example.com/story-map-1.png',
+                  description: 'Story map 1 featured image',
+                },
+              }),
+            },
+          },
+        ],
+      },
+    }),
+  });
+
+  await render(<StoryMapsToolsHome />, {
+    account: {
+      currentUser: {
+        data: {
+          email: 'account@email.com',
+          firstName: 'Jodie',
+        },
+      },
+    },
+  });
+
+  expect(
+    screen.getByRole('heading', { name: 'Featured Story Maps' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', {
+      name: 'Story map 1 featured image This outstanding story map This is the meta description for this sensational story map!',
+    })
+  ).toHaveAttribute('href', '/tools/story-maps/featured-1/featured-story-1');
+});
+
+test('StoryMapsToolHome: user story map fetch failure clears page loader', async () => {
+  mockTerrasoAPIrequestGraphQL({
+    'query userStoryMapsHome': Promise.reject('not_found'),
+    'query featuredStoryMaps': Promise.resolve({
+      storyMaps: {
+        edges: [],
+      },
+    }),
+  });
+
+  await render(<StoryMapsToolsHome />, {
+    account: {
+      currentUser: {
+        data: {
+          email: 'account@email.com',
+          firstName: 'Jodie',
+        },
+      },
+    },
+  });
+
+  await waitFor(() => {
+    expect(screen.queryByLabelText('Loading')).not.toBeInTheDocument();
+  });
+
+  expect(
+    screen.getByRole('heading', { name: 'Terraso Story Maps' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'Create Story Map' })
+  ).toBeInTheDocument();
+});
+
 test('StoryMapsToolHome: accept story map invite', async () => {
   const trackEvent = jest.fn();
   useAnalytics.mockReturnValue({
@@ -181,6 +279,11 @@ test('StoryMapsToolHome: accept story map invite', async () => {
             },
           },
         ],
+      },
+    }),
+    'query featuredStoryMaps': Promise.resolve({
+      storyMaps: {
+        edges: [],
       },
     }),
     'mutation approveMembership': Promise.resolve({

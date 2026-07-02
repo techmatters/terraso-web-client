@@ -20,7 +20,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useFetchData } from 'terraso-client-shared/store/utils';
-import { Alert, Grid, Stack } from '@mui/material';
+import { Alert, Grid, Stack, Typography } from '@mui/material';
 
 import LoaderCard from 'terraso-web-client/common/components/LoaderCard';
 import {
@@ -29,8 +29,12 @@ import {
 } from 'terraso-web-client/common/document';
 import PageContainer from 'terraso-web-client/layout/PageContainer';
 import GroupDefaultCard from 'terraso-web-client/group/components/GroupDefaultHomeCard';
-import { fetchHomeStoryMaps } from 'terraso-web-client/home/homeSlice';
+import {
+  fetchFeaturedStoryMaps,
+  fetchHomeStoryMaps,
+} from 'terraso-web-client/home/homeSlice';
 import LandscapeDefaultCard from 'terraso-web-client/landscape/components/LandscapeDefaultHomeCard';
+import FeaturedStoryMapsSection from 'terraso-web-client/storyMap/components/FeaturedStoryMapsSection';
 import StoryMapsCard from 'terraso-web-client/storyMap/components/StoryMapsCard';
 import StoryMapsHomeCardDefault from 'terraso-web-client/storyMap/components/StoryMapsHomeCardDefault';
 
@@ -62,12 +66,13 @@ const Home = () => {
   const { data: user } = useSelector(state => state.account.currentUser);
   const { list: storyMaps } = useSelector(_.get('storyMap.userStoryMaps'));
   const home = useSelector(state => state.userHome);
-  const { error, fetching } = home;
+  const { error, fetching, featuredStoryMaps } = home;
 
   useDocumentTitle(t('home.document_title'), false, true);
   useDocumentDescription(t('home.document_description'));
 
   useFetchData(useCallback(() => fetchHomeStoryMaps(user.email), [user.email]));
+  useFetchData(fetchFeaturedStoryMaps);
 
   if (error) {
     return <Alert severity="error">{t('home.error', { error })}</Alert>;
@@ -75,17 +80,21 @@ const Home = () => {
 
   return (
     <PageContainer>
-      <Grid container spacing={3}>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <StoryMaps storyMaps={storyMaps} fetching={fetching} />
+      <Stack spacing={5}>
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <StoryMaps storyMaps={storyMaps} fetching={fetching} />
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Stack spacing={3}>
+              <LandscapeDefaultCard />
+              <GroupDefaultCard />
+            </Stack>
+          </Grid>
         </Grid>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Stack spacing={3}>
-            <LandscapeDefaultCard />
-            <GroupDefaultCard />
-          </Stack>
-        </Grid>
-      </Grid>
+
+        <FeaturedStoryMapsSection storyMaps={featuredStoryMaps} />
+      </Stack>
     </PageContainer>
   );
 };

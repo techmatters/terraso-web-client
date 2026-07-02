@@ -2,6 +2,7 @@
     "home": {
         "title": "Inicio",
         "error": "Error al cargar datos. {{error}}",
+        "featured_story_maps_title": "Story Maps destacados",
         "page_title": "Terraso de {{name}}",
         "document_title": "Terraso Inicio",
         "document_description": "Terraso es un conjunto de herramientas para gestionar paisajes, proteger el medio ambiente y fomentar el desarrollo humano."
