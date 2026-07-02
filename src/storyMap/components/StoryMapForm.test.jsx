@@ -1066,11 +1066,12 @@ test('StoryMapForm: Theme selector shows theme description tooltip on hover', as
 
   fireEvent.mouseOver(toggleButton.querySelector('[aria-hidden="true"]'));
 
-  const tooltip = await screen.findByRole('tooltip', {
-    name: 'Background dark blue. Text white. Hyperlink light blue. Highlight yellow.',
-  });
+  const tooltip = await screen.findByRole('tooltip');
 
   expect(tooltip).toBeInTheDocument();
+  expect(tooltip).toHaveTextContent(
+    /Background dark blue\.\s+Text white\.\s+Hyperlink light blue\.\s+Highlight yellow\./
+  );
   expect(tooltip.closest('[data-popper-placement]')).toHaveAttribute(
     'data-popper-placement',
     'right'

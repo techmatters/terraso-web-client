@@ -118,8 +118,26 @@ const ThemePreview = ({ option, size }) => {
   );
 };
 
-const ThemePreviewTooltip = ({ option, children }) => (
-  <Tooltip title={option.colorsLabel} placement="right">
+const getThemeLabel = (t, themeId) =>
+  t('storyMap.form_theme_option_label', {
+    number: themeId.replace('theme-', ''),
+  });
+
+const getThemeDescriptionLines = (t, themeId) => {
+  const value = t(`storyMap.form_theme_descriptions.${themeId}`, {
+    returnObjects: true,
+  });
+
+  return Array.isArray(value) ? value : [String(value)];
+};
+
+const getThemeDescriptionLabel = lines => lines.join(' ');
+
+const ThemePreviewTooltip = ({ lines, children }) => (
+  <Tooltip
+    title={<Box sx={{ whiteSpace: 'pre-line' }}>{lines.join('\n')}</Box>}
+    placement="right"
+  >
     <Box component="span" sx={{ display: 'flex' }}>
       {children}
     </Box>
@@ -147,6 +165,15 @@ const StoryThemeSelector = () => {
       STORY_MAP_THEME_OPTIONS.find(option => option.id === selectedThemeId) ||
       STORY_MAP_THEME_OPTIONS[0],
     [selectedThemeId]
+  );
+
+  const selectedThemeLabel = getThemeLabel(t, selectedTheme.id);
+  const selectedThemeDescriptionLines = getThemeDescriptionLines(
+    t,
+    selectedTheme.id
+  );
+  const selectedThemeDescriptionLabel = getThemeDescriptionLabel(
+    selectedThemeDescriptionLines
   );
 
   useEffect(() => {
@@ -208,7 +235,10 @@ const StoryThemeSelector = () => {
         disabled={isPending}
         aria-expanded={expanded}
         aria-controls={contentId}
-        aria-label={`Theme selector. Selected ${selectedTheme.label}. ${selectedTheme.colorsLabel}`}
+        aria-label={t('storyMap.form_theme_selector_aria_label', {
+          label: selectedThemeLabel,
+          description: selectedThemeDescriptionLabel,
+        })}
         sx={{
           width: '100%',
           borderRadius: 0,
@@ -224,7 +254,7 @@ const StoryThemeSelector = () => {
         >
           {t('storyMap.form_theme_label', { defaultValue: 'Theme' })}
         </Typography>
-        <ThemePreviewTooltip option={selectedTheme}>
+        <ThemePreviewTooltip lines={selectedThemeDescriptionLines}>
           <ThemePreview option={selectedTheme} size="collapsed" />
         </ThemePreviewTooltip>
       </ButtonBase>
@@ -250,6 +280,15 @@ const StoryThemeSelector = () => {
           sx={{ p: 2, pt: 0, gap: 2 }}
         >
           {STORY_MAP_THEME_OPTIONS.map(option => {
+            const optionLabel = getThemeLabel(t, option.id);
+            const optionDescriptionLines = getThemeDescriptionLines(
+              t,
+              option.id
+            );
+            const optionDescriptionLabel = getThemeDescriptionLabel(
+              optionDescriptionLines
+            );
+
             return (
               <FormControlLabel
                 key={option.id}
@@ -261,13 +300,13 @@ const StoryThemeSelector = () => {
                       option.id === selectedTheme.id ? selectedRadioRef : null
                     }
                     inputProps={{
-                      'aria-label': `${option.label}. ${option.colorsLabel}`,
+                      'aria-label': `${optionLabel}. ${optionDescriptionLabel}`,
                     }}
                     sx={visuallyHidden}
                   />
                 }
                 label={
-                  <ThemePreviewTooltip option={option}>
+                  <ThemePreviewTooltip lines={optionDescriptionLines}>
                     <ThemePreview option={option} size="expanded" />
                   </ThemePreviewTooltip>
                 }
