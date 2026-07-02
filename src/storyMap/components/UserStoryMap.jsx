@@ -17,22 +17,26 @@
 
 import { useCallback, useEffect, useMemo } from 'react';
 import _ from 'lodash/fp';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
+import ShareIcon from '@mui/icons-material/Share';
+import { Box, Stack, Typography } from '@mui/material';
 
 import RouterButton from 'terraso-web-client/common/components/RouterButton';
-import { useSocialShareContext } from 'terraso-web-client/common/components/SocialShare';
+import RouterLink from 'terraso-web-client/common/components/RouterLink';
+import SocialShare, {
+  useSocialShareContext,
+} from 'terraso-web-client/common/components/SocialShare';
 import { useDocumentTitle } from 'terraso-web-client/common/document';
 import Container, {
   useContainerContext,
 } from 'terraso-web-client/layout/Container';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
-import { useBreadcrumbsParams } from 'terraso-web-client/navigation/breadcrumbsContext';
-import Restricted from 'terraso-web-client/permissions/components/Restricted';
+import { generateReferrerUrl } from 'terraso-web-client/navigation/navigationUtils';
+import { usePermission } from 'terraso-web-client/permissions/index';
 import StoryMap from 'terraso-web-client/storyMap/components/StoryMap';
-import DeleteButton from 'terraso-web-client/storyMap/components/StoryMapDeleteButton';
 import { fetchStoryMap } from 'terraso-web-client/storyMap/storyMapSlice';
 import {
   generateStoryMapEditUrl,
@@ -40,8 +44,100 @@ import {
   isChapterEmpty,
 } from 'terraso-web-client/storyMap/storyMapUtils';
 
+const PublishedStoryMapActionBar = ({ storyMap }) => {
+  const { t } = useTranslation();
+  const location = useLocation();
+  const hasToken = useSelector(_.get('account.hasToken'));
+  const { allowed: canChangeStoryMap, loading } = usePermission(
+    'storyMap.change',
+    storyMap
+  );
+
+  const joinUrl = useMemo(
+    () => generateReferrerUrl('/account', location),
+    [location]
+  );
+
+  const showJoinCta = !hasToken;
+  const showEditButton = hasToken && !loading && canChangeStoryMap;
+
+  return (
+    <Box
+      component="section"
+      sx={{
+        bgcolor: 'blue.dark2',
+        borderTop: theme => `1px solid ${theme.palette.gray.lite1}`,
+      }}
+    >
+      <Container
+        maxWidth="lg"
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          py: {
+            xs: 3,
+            md: 4,
+          },
+        }}
+      >
+        <Stack
+          direction={{
+            xs: 'column',
+            md: 'row',
+          }}
+          spacing={2}
+          useFlexGap
+          alignItems={{
+            xs: 'center',
+            md: 'center',
+          }}
+          justifyContent="center"
+          sx={{
+            width: '100%',
+            textAlign: 'center',
+          }}
+        >
+          <SocialShare
+            buttonLabel={t('storyMap.published_action_bar_share')}
+            buttonProps={{
+              variant: 'contained',
+              color: 'primary',
+              startIcon: <ShareIcon />,
+            }}
+          />
+          {showJoinCta ? (
+            <Typography color="white">
+              <Trans i18nKey="storyMap.published_action_bar_join">
+                prefix
+                <RouterLink
+                  to={joinUrl}
+                  sx={{
+                    color: 'white',
+                    fontWeight: 'bold',
+                    textDecoration: 'underline',
+                  }}
+                >
+                  join
+                </RouterLink>
+                suffix
+              </Trans>
+            </Typography>
+          ) : null}
+          {showEditButton ? (
+            <RouterButton
+              variant="outlined"
+              to={generateStoryMapEditUrl(storyMap)}
+            >
+              {t('storyMap.view_edit')}
+            </RouterButton>
+          ) : null}
+        </Stack>
+      </Container>
+    </Box>
+  );
+};
+
 const UserStoryMap = () => {
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const { slug, storyMapId } = useParams();
   const { data: storyMap, fetching } = useSelector(_.get('storyMap.view'));
@@ -64,16 +160,6 @@ const UserStoryMap = () => {
     useCallback(() => fetchStoryMap({ slug, storyMapId }), [slug, storyMapId])
   );
 
-  useBreadcrumbsParams(
-    useMemo(
-      () => ({
-        title: storyMap?.title,
-        loading: !storyMap?.title,
-      }),
-      [storyMap?.title]
-    )
-  );
-
   useSocialShareContext(
     useMemo(
       () => ({
@@ -84,8 +170,6 @@ const UserStoryMap = () => {
       [storyMap]
     )
   );
-
-  const onDeleteSuccess = useCallback(() => navigate('/'), [navigate]);
 
   const chaptersFilter = useCallback(chapters => !isChapterEmpty(chapters), []);
 
@@ -99,26 +183,8 @@ const UserStoryMap = () => {
 
   return (
     <>
-      <Restricted permission="storyMap.change" resource={storyMap}>
-        <Container
-          sx={{ bgcolor: 'white', zIndex: 2, position: 'relative', pb: 2 }}
-        >
-          <RouterButton
-            variant="outlined"
-            to={generateStoryMapEditUrl(storyMap)}
-          >
-            {t('storyMap.view_edit')}
-          </RouterButton>
-          <DeleteButton
-            storyMap={storyMap}
-            onSuccess={onDeleteSuccess}
-            buttonProps={{ variant: 'outlined', sx: { ml: 3 } }}
-          >
-            {t('storyMap.delete_label', { name: storyMap.title })}
-          </DeleteButton>
-        </Container>
-      </Restricted>
       <StoryMap config={storyMap.config} chaptersFilter={chaptersFilter} />
+      <PublishedStoryMapActionBar storyMap={storyMap} />
     </>
   );
 };

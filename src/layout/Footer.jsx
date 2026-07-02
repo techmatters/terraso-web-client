@@ -22,6 +22,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { visuallyHidden } from '@mui/utils';
 
 import RouterLink from 'terraso-web-client/common/components/RouterLink';
+import { getFooterLinks } from 'terraso-web-client/layout/footerUtils';
 
 import theme from 'terraso-web-client/theme';
 
@@ -30,8 +31,6 @@ const { spacing, palette } = theme;
 const year = new Date().getFullYear();
 
 const FooterLink = ({ link, showBorder }) => {
-  const { t } = useTranslation();
-
   const borderStyle = {
     borderRight: `1px solid ${palette.gray.mid2}`,
     paddingRight: spacing(2),
@@ -53,14 +52,14 @@ const FooterLink = ({ link, showBorder }) => {
         <Link
           variant="body2"
           {...(link.to
-            ? { component: RouterLink, to: t(link.to) }
-            : { href: t(link.url) })}
+            ? { component: RouterLink, to: link.to }
+            : { href: link.url })}
           sx={{
             color: palette.white,
             ...(showBorder ? borderStyle : {}),
           }}
         >
-          {t(link.text)}
+          {link.text}
         </Link>
       </Grid>
     </Fragment>
@@ -86,16 +85,11 @@ const LinksContainer = props => (
   />
 );
 
-const Footer = () => {
+const DefaultFooter = () => {
   const { t } = useTranslation();
   const isBig = useMediaQuery(theme.breakpoints.up('sm'));
 
-  // Convert to Array. Remove items where URL is #. Return values from new array.
-  // IN: {"help":{"text":"Terraso Help","url":"https://terraso.org/help/"}, "terms":{"text":"Terms of Use","url":"#"}}
-  // OUT: [{"text":"Terraso Help", "url":"https://terraso.org/help/"}]
-  const footerLinks = Object.entries(t('footer.links', { returnObjects: true }))
-    .filter(item => item[1].url !== '#')
-    .map(item => item[1]);
+  const footerLinks = getFooterLinks(t);
 
   return (
     <Grid
@@ -123,11 +117,7 @@ const Footer = () => {
         aria-label={t('footer.heading')}
         component="nav"
       >
-        <Grid
-          size={{ xs: 12, sm: 8 }}
-          component={LinksContainer}
-          aria-label={t('footer.navigation')}
-        >
+        <Grid component={LinksContainer} aria-label={t('footer.navigation')}>
           {footerLinks.map((link, index) => (
             <FooterLink
               key={index}
@@ -161,6 +151,10 @@ const Footer = () => {
       </Grid>
     </Grid>
   );
+};
+
+const Footer = ({ FooterComponent = DefaultFooter }) => {
+  return <FooterComponent />;
 };
 
 export default Footer;

@@ -15,17 +15,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  within,
-} from 'terraso-web-client/tests/utils';
+import { render, screen, waitFor } from 'terraso-web-client/tests/utils';
 import _ from 'lodash/fp';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
-import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
 import UserStoryMap from 'terraso-web-client/storyMap/components/UserStoryMap';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
@@ -33,17 +26,6 @@ jest.mock('terraso-client-shared/terrasoApi/api');
 jest.mock('terraso-web-client/storyMap/components/StoryMap', () => () => (
   <section aria-label="Story Map"></section>
 ));
-
-jest.mock('terraso-web-client/monitoring/analytics', () => ({
-  ...jest.requireActual('terraso-web-client/monitoring/analytics'),
-  useAnalytics: jest.fn(),
-}));
-
-beforeEach(() => {
-  useAnalytics.mockReturnValue({
-    trackEvent: jest.fn(),
-  });
-});
 
 test('UserStoryMap: Display loader', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(new Promise(() => {}));
@@ -59,7 +41,8 @@ test('UserStoryMap: renders correctly', async () => {
       'storyMaps.edges[0].node',
       {
         id: 'id-1',
-        slug: 'id-1',
+        storyMapId: 'id-1',
+        slug: 'story-1',
         title: 'Story 1',
         configuration: JSON.stringify({
           title: 'Story 1',
@@ -72,59 +55,128 @@ test('UserStoryMap: renders correctly', async () => {
 
   expect(screen.getByRole('region', { name: 'Story Map' })).toBeInTheDocument();
 });
-test('UserStoryMap: Delete story map', async () => {
-  const trackEvent = jest.fn();
-  useAnalytics.mockReturnValue({
-    trackEvent,
+test('UserStoryMap: published action bar shows the right actions', async () => {
+  terrasoApi.requestGraphQL.mockResolvedValue(
+    _.set(
+      'storyMaps.edges[0].node',
+      {
+        id: 'id-1',
+        storyMapId: 'id-1',
+        slug: 'story-1',
+        title: 'Story 1',
+        configuration: JSON.stringify({
+          title: 'Story 1',
+        }),
+      },
+      {}
+    )
+  );
+
+  const { unmount } = await render(<UserStoryMap />, {
+    account: {
+      hasToken: false,
+      currentUser: {
+        fetching: false,
+        data: {},
+      },
+    },
   });
 
-  terrasoApi.requestGraphQL.mockImplementation(query => {
-    const trimmedQuery = query.trim();
-    if (trimmedQuery.startsWith('query fetchStoryMap')) {
-      return Promise.resolve(
-        _.set(
-          'storyMaps.edges[0].node',
-          {
-            id: 'id-1',
-            slug: 'id-1',
-            title: 'Story 1',
-            configuration: JSON.stringify({
-              title: 'Story 1',
-            }),
-            createdAt: '2023-01-31T22:25:42.916303+00:00',
-          },
-          {}
-        )
-      );
-    }
-    if (trimmedQuery.startsWith('mutation deleteStoryMap')) {
-      return Promise.resolve({});
-    }
-  });
-  await render(<UserStoryMap />);
+  expect(
+    await screen.findByRole('button', { name: 'Share story map' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'Join Terraso' })
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('link', { name: 'Edit Story Map' })
+  ).not.toBeInTheDocument();
 
-  await act(async () => {
-    fireEvent.click(screen.getByRole('button', { name: 'Delete Story 1' }));
-  });
-  const dialog = screen.getByRole('dialog', {
-    name: 'Delete story map Story 1?',
-  });
+  unmount();
 
-  await act(async () => {
-    fireEvent.click(
-      within(dialog).getByRole('button', { name: 'Delete Story Map' })
-    );
-  });
+  terrasoApi.requestGraphQL.mockResolvedValue(
+    _.set(
+      'storyMaps.edges[0].node',
+      {
+        id: 'id-1',
+        storyMapId: 'id-1',
+        slug: 'story-1',
+        title: 'Story 1',
+        configuration: JSON.stringify({
+          title: 'Story 1',
+        }),
+        createdBy: {
+          id: 'another-user',
+        },
+      },
+      {}
+    )
+  );
 
-  const saveCall = _.last(terrasoApi.requestGraphQL.mock.calls);
-  expect(saveCall[1]).toStrictEqual({
-    id: 'id-1',
-  });
+  const signedInUser = {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          id: 'current-user',
+          firstName: 'Test',
+          lastName: 'User',
+        },
+      },
+    },
+  };
 
-  expect(trackEvent).toHaveBeenCalledWith('storymap.delete', {
-    props: expect.objectContaining({
-      map: 'id-1',
-      durationDays: expect.anything(),
-    }),
+  const { unmount: unmountSignedIn } = await render(
+    <UserStoryMap />,
+    signedInUser
+  );
+
+  expect(
+    await screen.findByRole('button', { name: 'Share story map' })
+  ).toBeInTheDocument();
+  await waitFor(() => {
+    expect(
+      screen.queryByRole('link', { name: 'Edit Story Map' })
+    ).not.toBeInTheDocument();
   });
+  expect(
+    screen.queryByRole('link', { name: 'Join Terraso' })
+  ).not.toBeInTheDocument();
+
+  unmountSignedIn();
+
+  terrasoApi.requestGraphQL.mockResolvedValue(
+    _.set(
+      'storyMaps.edges[0].node',
+      {
+        id: 'id-1',
+        storyMapId: 'id-1',
+        slug: 'story-1',
+        title: 'Story 1',
+        configuration: JSON.stringify({
+          title: 'Story 1',
+        }),
+        createdBy: {
+          id: 'current-user',
+        },
+      },
+      {}
+    )
+  );
+
+  await render(<UserStoryMap />, signedInUser);
+
+  expect(
+    await screen.findByRole('button', { name: 'Share story map' })
+  ).toBeInTheDocument();
+  expect(
+    await screen.findByRole('link', { name: 'Edit Story Map' })
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Delete Story 1' })
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('link', { name: 'Join Terraso' })
+  ).not.toBeInTheDocument();
 });

@@ -83,27 +83,12 @@ test('Breadcrumbs: Show items', async () => {
   );
 });
 
-test('Breadcrumbs: Story map only displays once', async () => {
+test('Breadcrumbs: Published story map does not display breadcrumbs', async () => {
   useLocation.mockReturnValue({
     pathname: '/tools/story-maps/5e530dc3/story-map',
   });
   await setup();
   expect(
-    screen.getByRole('navigation', { name: 'Breadcrumbs' })
-  ).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
-    'href',
-    '/'
-  );
-  expect(
-    screen.getByRole('link', { name: 'Terraso Story Maps' })
-  ).toHaveAttribute('href', '/tools/story-maps');
-  expect(screen.getByRole('link', { name: 'Story Map Title' })).toHaveAttribute(
-    'href',
-    '/tools/story-maps/5e530dc3/story-map'
-  );
-  expect(screen.getByRole('link', { name: 'Story Map Title' })).toHaveAttribute(
-    'aria-current',
-    'page'
-  );
+    screen.queryByRole('navigation', { name: 'Breadcrumbs' })
+  ).not.toBeInTheDocument();
 });

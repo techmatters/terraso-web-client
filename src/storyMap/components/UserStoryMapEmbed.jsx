@@ -26,7 +26,6 @@ import { Box, Link, Stack } from '@mui/material';
 import { useSocialShareContext } from 'terraso-web-client/common/components/SocialShare';
 import { useDocumentTitle } from 'terraso-web-client/common/document';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
-import { useBreadcrumbsParams } from 'terraso-web-client/navigation/breadcrumbsContext';
 import StoryMap from 'terraso-web-client/storyMap/components/StoryMap';
 import { fetchStoryMap } from 'terraso-web-client/storyMap/storyMapSlice';
 import {
@@ -82,16 +81,6 @@ const UserStoryMapEmbed = () => {
 
   useFetchData(
     useCallback(() => fetchStoryMap({ slug, storyMapId }), [slug, storyMapId])
-  );
-
-  useBreadcrumbsParams(
-    useMemo(
-      () => ({
-        title: storyMap?.title,
-        loading: !storyMap?.title,
-      }),
-      [storyMap?.title]
-    )
   );
 
   useSocialShareContext(

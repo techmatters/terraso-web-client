@@ -245,7 +245,10 @@
                 "url": "https://terraso.org/terms-of-service/"
             },
             "data": { "text": "Data Policy", "url": "#" },
-            "about": { "text": "About Terraso", "url": "https://terraso.org/" }
+            "about": {
+                "text": "About Terraso",
+                "url": "https://terraso.org/about"
+            }
         }
     },
     "navigation": {
@@ -1057,6 +1060,8 @@
         "view_chapter_label": "Chapter: {{title}}",
         "view_title_label": "Title for: {{title}}",
         "view_chapter_media_label": "Chapter media",
+        "published_action_bar_share": "Share story map",
+        "published_action_bar_join": "<1>Join Terraso</1> and create your own story maps for free.",
         "view_edit": "Edit Story Map",
         "unique": "A Story Map with the same title already exists.",
         "form_unsaved_changes_title": "Leave Story Map?",

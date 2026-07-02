@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Technology Matters
+ * Copyright © 2026 Technology Matters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -15,13 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { forwardRef } from 'react';
-import { Link } from 'react-router';
-
-import Button from 'terraso-web-client/common/components/Button';
-
-const RouterButton = forwardRef((props, ref) => {
-  return <Button ref={ref} component={Link} {...props} />;
-});
-
-export default RouterButton;
+export const getFooterLinks = t =>
+  Object.entries(t('footer.links', { returnObjects: true }))
+    .filter(item => item[1].url !== '#')
+    .map(item => item[1]);
