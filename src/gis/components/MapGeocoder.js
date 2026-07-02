@@ -17,6 +17,7 @@
 
 import { useEffect } from 'react';
 import MapboxGlGeocoder from '@mapbox/mapbox-gl-geocoder';
+import escape from 'lodash/fp/escape';
 
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
@@ -29,10 +30,17 @@ import { getCoordinateSearchResults } from 'terraso-web-client/gis/mapGeocoderUt
 import { MAPBOX_ACCESS_TOKEN } from 'terraso-web-client/config';
 
 const renderCoordinateResult = result =>
-  `<div class="mapboxgl-ctrl-geocoder__result-coordinate">${result.place_name}</div>`;
+  `<div class="mapboxgl-ctrl-geocoder__result-coordinate">${escape(result.place_name ?? '')}</div>`;
 
 const getCoordinateQueryValue = result =>
   result.properties?.coordinateQuery || result.place_name;
+
+const isCoordinateSearchResult = result => result.properties?.coordinateSearch;
+
+const renderSearchResult = result =>
+  isCoordinateSearchResult(result)
+    ? renderCoordinateResult(result)
+    : escape(result.place_name ?? '');
 
 const MapGeocoder = props => {
   const { position } = props;
@@ -55,15 +63,12 @@ const MapGeocoder = props => {
       localGeocoder: query =>
         getCoordinateSearchResults(query, formatCoordinateResultLabel),
       getItemValue: result =>
-        result.properties?.coordinateSearch
+        isCoordinateSearchResult(result)
           ? getCoordinateQueryValue(result)
           : result.place_name,
       marker: false,
       placeholder: t('storyMap.form_location_dialog_geocoder_placeholder'),
-      render: result =>
-        result.properties?.coordinateSearch
-          ? renderCoordinateResult(result)
-          : undefined,
+      render: renderSearchResult,
       mapboxgl,
     });
     map.addControl(geocoder, position);
