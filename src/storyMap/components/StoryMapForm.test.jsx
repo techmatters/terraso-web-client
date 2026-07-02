@@ -1275,6 +1275,12 @@ test('StoryMapForm: Change chapter location', async () => {
     '<div class="mapboxgl-ctrl-geocoder__result-coordinate">Coordinates: 1.2345, -77.6543</div>'
   );
 
+  const standardResult = { place_name: 'Quito, Ecuador' };
+  expect(geocoderOptions.getItemValue(standardResult)).toEqual(
+    'Quito, Ecuador'
+  );
+  expect(geocoderOptions.render(standardResult)).toEqual('Quito, Ecuador');
+
   map.getCenter.mockReturnValue({
     lng: coordinateResult.center[0],
     lat: coordinateResult.center[1],

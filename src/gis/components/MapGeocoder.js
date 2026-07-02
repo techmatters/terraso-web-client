@@ -34,6 +34,13 @@ const renderCoordinateResult = result =>
 const getCoordinateQueryValue = result =>
   result.properties?.coordinateQuery || result.place_name;
 
+const isCoordinateSearchResult = result => result.properties?.coordinateSearch;
+
+const renderSearchResult = result =>
+  isCoordinateSearchResult(result)
+    ? renderCoordinateResult(result)
+    : result.place_name;
+
 const MapGeocoder = props => {
   const { position } = props;
   const { t } = useTranslation();
@@ -55,15 +62,12 @@ const MapGeocoder = props => {
       localGeocoder: query =>
         getCoordinateSearchResults(query, formatCoordinateResultLabel),
       getItemValue: result =>
-        result.properties?.coordinateSearch
+        isCoordinateSearchResult(result)
           ? getCoordinateQueryValue(result)
           : result.place_name,
       marker: false,
       placeholder: t('storyMap.form_location_dialog_geocoder_placeholder'),
-      render: result =>
-        result.properties?.coordinateSearch
-          ? renderCoordinateResult(result)
-          : undefined,
+      render: renderSearchResult,
       mapboxgl,
     });
     map.addControl(geocoder, position);
