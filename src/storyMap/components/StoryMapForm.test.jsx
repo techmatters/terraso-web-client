@@ -23,6 +23,7 @@ import {
   waitFor,
   within,
 } from 'terraso-web-client/tests/utils';
+import MapboxGlGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { when } from 'jest-when';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { createMapMock } from 'terraso-web-client/tests/mapboxMock';
@@ -318,7 +319,7 @@ const setup = async ({ config, autoSaveDebounce = 1500 }) => {
   const onPublish = jest.fn().mockImplementation(() => Promise.resolve());
   const onSaveDraft = jest.fn().mockImplementation(() => Promise.resolve());
 
-  await render(
+  const view = await render(
     <StoryMapConfigContextProvider
       baseConfig={config}
       autoSaveDebounce={autoSaveDebounce}
@@ -332,6 +333,7 @@ const setup = async ({ config, autoSaveDebounce = 1500 }) => {
   );
 
   return {
+    ...view,
     onPublish,
     onSaveDraft,
   };
@@ -1077,10 +1079,12 @@ test('StoryMapForm: Show preview without title uses blank preview copy', async (
 test('StoryMapForm: Change chapter location', async () => {
   const map = {
     ...baseMapOptions(),
-    getCenter: () => ({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
-    getZoom: () => 10,
-    getPitch: () => 64,
-    getBearing: () => 45,
+    getCenter: jest
+      .fn()
+      .mockReturnValue({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
+    getZoom: jest.fn().mockReturnValue(10),
+    getPitch: jest.fn().mockReturnValue(64),
+    getBearing: jest.fn().mockReturnValue(45),
     getBounds: jest.fn().mockReturnValue({
       toArray: () => [
         [-180, -90],
@@ -1089,7 +1093,8 @@ test('StoryMapForm: Change chapter location', async () => {
     }),
   };
   mapboxgl.Map.mockReturnValue(map);
-  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
+  MapboxGlGeocoder.mockClear();
+  const { onSaveDraft, unmount } = await setup({ config: BASE_CONFIG });
 
   const chapter1 = screen.getByRole('region', {
     name: 'Chapter: Chapter 1',
@@ -1102,6 +1107,33 @@ test('StoryMapForm: Change chapter location', async () => {
 
   const dialog = screen.getByRole('dialog', {
     name: 'Edit map for Chapter 1',
+  });
+
+  expect(MapboxGlGeocoder).toHaveBeenCalledTimes(1);
+  const geocoderOptions = MapboxGlGeocoder.mock.calls[0][0];
+  const [coordinateResult] = geocoderOptions.localGeocoder('1.2345, -77.6543');
+
+  expect(coordinateResult.center).toEqual([-77.6543, 1.2345]);
+  expect(coordinateResult.place_name).toEqual('Coordinates: 1.2345, -77.6543');
+  expect(geocoderOptions.getItemValue(coordinateResult)).toEqual(
+    '1.2345, -77.6543'
+  );
+  expect(geocoderOptions.render(coordinateResult)).toEqual(
+    '<div class="mapboxgl-ctrl-geocoder__result-coordinate">Coordinates: 1.2345, -77.6543</div>'
+  );
+
+  map.getCenter.mockReturnValue({
+    lng: coordinateResult.center[0],
+    lat: coordinateResult.center[1],
+  });
+  map.getZoom.mockReturnValue(13);
+  map.getPitch.mockReturnValue(20);
+  map.getBearing.mockReturnValue(5);
+  map.getBounds.mockReturnValue({
+    toArray: () => [
+      [-78, 1],
+      [-77, 2],
+    ],
   });
 
   await act(async () => map.onEvents['move']());
@@ -1122,17 +1154,56 @@ test('StoryMapForm: Change chapter location', async () => {
   expect(saveCall[0].chapters[0]).toEqual(
     expect.objectContaining({
       location: {
-        bearing: 45,
-        bounds: [-180, -90, 180, 90],
+        bearing: 5,
+        bounds: [-78, 1, -77, 2],
         center: {
-          lat: -0.2294635049867253,
-          lng: -78.54414857836304,
+          lat: 1.2345,
+          lng: -77.6543,
         },
-        pitch: 64,
-        zoom: 10,
+        pitch: 20,
+        zoom: 13,
       },
     })
   );
+});
+
+test('StoryMapForm: Closing map dialog is safe after geocoder DOM is detached', async () => {
+  const map = {
+    ...baseMapOptions(),
+    getCenter: jest
+      .fn()
+      .mockReturnValue({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
+    getZoom: jest.fn().mockReturnValue(10),
+    getPitch: jest.fn().mockReturnValue(64),
+    getBearing: jest.fn().mockReturnValue(45),
+    getBounds: jest.fn().mockReturnValue({
+      toArray: () => [
+        [-180, -90],
+        [180, 90],
+      ],
+    }),
+  };
+  mapboxgl.Map.mockReturnValue(map);
+  MapboxGlGeocoder.mockClear();
+  const { unmount } = await setup({ config: BASE_CONFIG });
+
+  const chapter1 = screen.getByRole('region', {
+    name: 'Chapter: Chapter 1',
+  });
+
+  await act(async () => {
+    fireEvent.click(
+      within(chapter1).getByRole('button', {
+        name: 'Edit Map',
+      })
+    );
+  });
+
+  const geocoderInstance = map.addControl.mock.calls[0][0];
+  geocoderInstance._container = { parentNode: null };
+
+  expect(() => unmount()).not.toThrow();
+  expect(map.removeControl).not.toHaveBeenCalled();
 });
 
 test('StoryMapForm: Change chapter style', async () => {

@@ -24,24 +24,57 @@ import { useTranslation } from 'react-i18next';
 
 import { useMap } from 'terraso-web-client/gis/components/Map';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
+import { getCoordinateSearchResults } from 'terraso-web-client/gis/mapGeocoderUtils';
 
 import { MAPBOX_ACCESS_TOKEN } from 'terraso-web-client/config';
+
+const renderCoordinateResult = result =>
+  `<div class="mapboxgl-ctrl-geocoder__result-coordinate">${result.place_name}</div>`;
+
+const getCoordinateQueryValue = result =>
+  result.properties?.coordinateQuery || result.place_name;
 
 const MapGeocoder = props => {
   const { position } = props;
   const { t } = useTranslation();
   const { map } = useMap();
+
   useEffect(() => {
     if (!map) {
       return;
     }
+
+    const formatCoordinateResultLabel = ({ latitude, longitude }) =>
+      t('storyMap.form_location_dialog_geocoder_coordinate_result', {
+        latitude,
+        longitude,
+      });
+
     const geocoder = new MapboxGlGeocoder({
       accessToken: MAPBOX_ACCESS_TOKEN,
+      localGeocoder: query =>
+        getCoordinateSearchResults(query, formatCoordinateResultLabel),
+      getItemValue: result =>
+        result.properties?.coordinateSearch
+          ? getCoordinateQueryValue(result)
+          : result.place_name,
       marker: false,
       placeholder: t('storyMap.form_location_dialog_geocoder_placeholder'),
+      render: result =>
+        result.properties?.coordinateSearch
+          ? renderCoordinateResult(result)
+          : undefined,
       mapboxgl,
     });
     map.addControl(geocoder, position);
+
+    return () => {
+      if (!geocoder._container?.parentNode) {
+        return;
+      }
+
+      map.removeControl(geocoder);
+    };
   }, [map, t, position]);
   return null;
 };
