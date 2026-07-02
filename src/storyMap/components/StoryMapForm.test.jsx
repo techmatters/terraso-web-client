@@ -440,6 +440,14 @@ const BufferedLifecycleProbe = ({ chapterId }) => {
   );
 };
 
+const StoryThemeProbe = () => {
+  const { config } = useStoryMapConfigDataContext();
+
+  return (
+    <div data-testid="story-theme-probe" data-theme-id={config.themeId || ''} />
+  );
+};
+
 const setupBufferedLifecycleHarness = async () => {
   await render(
     <StoryMapConfigContextProvider
@@ -860,6 +868,12 @@ test('StoryMapForm: Sidebar navigation', async () => {
     name: 'Chapters sidebar',
   });
 
+  expect(
+    within(sidebarList).getByRole('button', {
+      name: /theme selector\. selected theme 1\./i,
+    })
+  ).toBeInTheDocument();
+
   const title = within(sidebarList).getByRole('button', {
     name: 'Title',
   });
@@ -923,6 +937,145 @@ test('StoryMapForm: Sidebar navigation', async () => {
   expect(chapter2).not.toHaveAttribute('aria-current', 'step');
 
   globalThis.IntersectionObserver = OriginalIntersectionObserver;
+});
+
+test('StoryMapForm: Theme selector in chapters sidebar applies selection', async () => {
+  await render(
+    <StoryMapConfigContextProvider
+      baseConfig={{ ...BASE_CONFIG, themeId: 'theme-1' }}
+      storyMap={{
+        id: 'story-map-id-1',
+        memberships: [],
+      }}
+    >
+      <StoryThemeProbe />
+      <StoryMapForm
+        onPublish={jest.fn().mockImplementation(() => Promise.resolve())}
+        onSaveDraft={jest.fn().mockImplementation(() => Promise.resolve())}
+      />
+    </StoryMapConfigContextProvider>
+  );
+
+  const sidebarList = screen.getByRole('navigation', {
+    name: 'Chapters sidebar',
+  });
+
+  const toggleButton = within(sidebarList).getByRole('button', {
+    name: /theme selector\. selected theme 1\./i,
+  });
+
+  expect(screen.getByTestId('story-theme-probe')).toHaveAttribute(
+    'data-theme-id',
+    'theme-1'
+  );
+
+  fireEvent.click(toggleButton);
+
+  const themeEightButton = within(sidebarList).getByRole('radio', {
+    name: /theme 8\. background dark gray\./i,
+  });
+
+  fireEvent.click(themeEightButton);
+
+  expect(screen.getByTestId('story-theme-probe')).toHaveAttribute(
+    'data-theme-id',
+    'theme-8'
+  );
+  expect(
+    within(sidebarList).queryByRole('radiogroup', {
+      name: 'Theme',
+    })
+  ).not.toBeInTheDocument();
+});
+
+test('StoryMapForm: Theme selector uses radiogroup semantics and restores focus after keyboard dismissal', async () => {
+  await render(
+    <StoryMapConfigContextProvider
+      baseConfig={{ ...BASE_CONFIG, themeId: 'theme-1' }}
+      storyMap={{
+        id: 'story-map-id-1',
+        memberships: [],
+      }}
+    >
+      <StoryThemeProbe />
+      <StoryMapForm
+        onPublish={jest.fn().mockImplementation(() => Promise.resolve())}
+        onSaveDraft={jest.fn().mockImplementation(() => Promise.resolve())}
+      />
+    </StoryMapConfigContextProvider>
+  );
+
+  const sidebarList = screen.getByRole('navigation', {
+    name: 'Chapters sidebar',
+  });
+  const toggleButton = within(sidebarList).getByRole('button', {
+    name: /theme selector\. selected theme 1\./i,
+  });
+
+  fireEvent.click(toggleButton);
+
+  const themeList = within(sidebarList).getByRole('radiogroup', {
+    name: 'Theme',
+  });
+  const selectedOption = within(themeList).getByRole('radio', {
+    name: /theme 1\. background dark blue\./i,
+  });
+  const nextOption = within(themeList).getByRole('radio', {
+    name: /theme 2\. background pale blue\./i,
+  });
+
+  await waitFor(() => {
+    expect(selectedOption).toHaveFocus();
+  });
+
+  fireEvent.keyDown(selectedOption, { key: 'Escape' });
+
+  await waitFor(() => {
+    expect(toggleButton).toHaveFocus();
+  });
+  expect(
+    within(sidebarList).queryByRole('radiogroup', {
+      name: 'Theme',
+    })
+  ).not.toBeInTheDocument();
+});
+
+test('StoryMapForm: Theme selector shows theme description tooltip on hover', async () => {
+  await render(
+    <StoryMapConfigContextProvider
+      baseConfig={{ ...BASE_CONFIG, themeId: 'theme-1' }}
+      storyMap={{
+        id: 'story-map-id-1',
+        memberships: [],
+      }}
+    >
+      <StoryThemeProbe />
+      <StoryMapForm
+        onPublish={jest.fn().mockImplementation(() => Promise.resolve())}
+        onSaveDraft={jest.fn().mockImplementation(() => Promise.resolve())}
+      />
+    </StoryMapConfigContextProvider>
+  );
+
+  const sidebarList = screen.getByRole('navigation', {
+    name: 'Chapters sidebar',
+  });
+  const toggleButton = within(sidebarList).getByRole('button', {
+    name: /theme selector\. selected theme 1\./i,
+  });
+
+  fireEvent.mouseOver(toggleButton.querySelector('[aria-hidden="true"]'));
+
+  const tooltip = await screen.findByRole('tooltip');
+
+  expect(tooltip).toBeInTheDocument();
+  expect(tooltip).toHaveTextContent(
+    /Background dark blue\.\s+Text white\.\s+Hyperlink light blue\.\s+Highlight yellow\./
+  );
+  expect(tooltip.closest('[data-popper-placement]')).toHaveAttribute(
+    'data-popper-placement',
+    'right'
+  );
 });
 
 test('StoryMapForm: Adds new chapter', async () => {

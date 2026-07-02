@@ -41,14 +41,11 @@ footer {
   position: relative;
 }
 
-#story-map-title .step-content.dark {
-  background-color: #0d1a2a;
+#story-map-title .step-content.story-theme {
+  background-color: var(--story-theme-background);
 }
-#story-map-title .step-content.light {
-  background-color: #ffffff;
-}
-#story-map-title .step-content a {
-  color: #358eae;
+#story-map-title .step-content.story-theme a {
+  color: var(--story-theme-link);
 }
 
 #story-map-title h1,
@@ -104,6 +101,19 @@ footer {
 .dark {
   color: #fafafa;
   background-color: #444;
+}
+.story-theme {
+  color: var(--story-theme-text);
+  background-color: var(--story-theme-background);
+}
+.story-theme a {
+  color: var(--story-theme-link);
+}
+.story-theme mark {
+  background-color: var(--story-theme-highlight);
+}
+.story-theme ::selection {
+  background-color: var(--story-theme-highlight);
 }
 .step-container {
   padding-top: 15vh;

@@ -23,6 +23,7 @@ const EditableRichText = props => {
   return (
     <RichTextEditor
       addContainer
+      containerSx={{ bgcolor: 'transparent', color: 'inherit' }}
       label={label}
       onBlur={onBlur}
       placeholder={placeholder}

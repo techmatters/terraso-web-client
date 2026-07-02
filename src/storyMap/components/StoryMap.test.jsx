@@ -149,3 +149,71 @@ test('StoryMap: chapter content headings render below the chapter title level', 
     })
   ).toBeInTheDocument();
 });
+
+test('StoryMap: applies story theme tokens across rendered content', async () => {
+  await render(
+    <StoryMap
+      config={{
+        ...CONFIG,
+        themeId: 'theme-3',
+        footer: 'Story footer',
+      }}
+    />
+  );
+
+  const titleSection = screen.getByRole('region', {
+    name: 'Title for: Story Map Title',
+  });
+  const titleContent = titleSection.querySelector('.step-content');
+  const chapterSection = screen.getByRole('region', {
+    name: 'Chapter: Chapter 1',
+  });
+  const chapterContent = chapterSection.querySelector('.step-content');
+  const footer = screen.getByText('Story footer').closest('#footer');
+  const storyMap = document.getElementById('features')?.parentElement;
+
+  expect(titleContent).toHaveClass('story-theme');
+  expect(chapterContent).toHaveClass('story-theme');
+  expect(footer).toHaveClass('story-theme');
+  expect(storyMap).toHaveStyle('--story-theme-background: #52270B');
+  expect(storyMap).toHaveStyle('--story-theme-text: #F4EDE0');
+  expect(storyMap).toHaveStyle('--story-theme-link: #FEB98C');
+  expect(storyMap).toHaveStyle('--story-theme-highlight: #7ED4C8');
+});
+
+test('StoryMap: falls back to the default story map theme when no theme is configured', async () => {
+  await render(
+    <StoryMap
+      config={{
+        ...CONFIG,
+        themeId: undefined,
+      }}
+    />
+  );
+
+  const titleSection = screen.getByRole('region', {
+    name: 'Title for: Story Map Title',
+  });
+  const storyMap = document.getElementById('features')?.parentElement;
+
+  expect(storyMap).toHaveStyle('--story-theme-background: #00344D');
+  expect(storyMap).toHaveStyle('--story-theme-text: #FFFFFF');
+});
+
+test('StoryMap: applies the new theme 8 tokens across rendered content', async () => {
+  await render(
+    <StoryMap
+      config={{
+        ...CONFIG,
+        themeId: 'theme-8',
+      }}
+    />
+  );
+
+  const storyMap = document.getElementById('features')?.parentElement;
+
+  expect(storyMap).toHaveStyle('--story-theme-background: #2B2B2B');
+  expect(storyMap).toHaveStyle('--story-theme-text: #FFFFFF');
+  expect(storyMap).toHaveStyle('--story-theme-link: #63D0F8');
+  expect(storyMap).toHaveStyle('--story-theme-highlight: #FFE2A0');
+});

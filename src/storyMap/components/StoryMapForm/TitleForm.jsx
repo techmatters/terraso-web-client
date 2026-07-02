@@ -149,7 +149,7 @@ const TitleForm = props => {
         {t('storyMap.form_title_location_button')}
       </Button>
       <Stack
-        className={`${config.theme} step-content`}
+        className="story-theme step-content"
         spacing={1}
         sx={{ p: 2, pr: 3 }}
       >

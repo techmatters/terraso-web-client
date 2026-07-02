@@ -38,6 +38,7 @@ import { FullscreenButton } from 'terraso-web-client/gis/components/FullscreenCo
 import Map, { useMap } from 'terraso-web-client/gis/components/Map';
 import { StoryMapLayer } from 'terraso-web-client/storyMap/components/StoryMapLayer';
 import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutline';
+import { getStoryMapThemeCssVariables } from 'terraso-web-client/storyMap/storyMapThemeUtils';
 
 import theme from 'terraso-web-client/theme';
 
@@ -85,7 +86,7 @@ const Embedded = ({ record }) => {
   );
 };
 
-const Chapter = ({ theme, record, active }) => {
+const Chapter = ({ record, active }) => {
   const { t } = useTranslation();
   const className = [
     'step-container',
@@ -104,7 +105,7 @@ const Chapter = ({ theme, record, active }) => {
       })}
     >
       <Box
-        className={`${theme} step-content`}
+        className="story-theme step-content"
         sx={{
           width: hasVisualMedia ? '50vw' : 'auto',
         }}
@@ -154,7 +155,6 @@ const Title = props => {
     chapter,
     index,
   }));
-
   return (
     <Box
       component="section"
@@ -164,7 +164,7 @@ const Title = props => {
         [breakpoints.not('xs')]: { opacity: active ? 0.99 : 0.25 },
       })}
     >
-      <Box className={`${config.theme} step-content`}>
+      <Box className="story-theme step-content">
         <h1 id="story-view-title-id">{config.title}</h1>
         {config.subtitle && <h2>{config.subtitle}</h2>}
         {config.byline && <p>{config.byline}</p>}
@@ -245,6 +245,11 @@ const StoryMap = props => {
     return config.chapters.filter(chaptersFilter);
   }, [config.chapters, chaptersFilter]);
 
+  const storyMapThemeStyles = useMemo(
+    () => getStoryMapThemeCssVariables(config),
+    [config]
+  );
+
   return (
     <Box
       ref={containerRef}
@@ -254,8 +259,13 @@ const StoryMap = props => {
       // margin-top: -100% refers to the ancestor's _width_, not height
       sx={
         isContained
-          ? { height: '100%', overflowY: 'auto', containerType: 'size' }
-          : {}
+          ? {
+              ...storyMapThemeStyles,
+              height: '100%',
+              overflowY: 'auto',
+              containerType: 'size',
+            }
+          : storyMapThemeStyles
       }
     >
       <Box
@@ -328,7 +338,6 @@ const StoryMap = props => {
         {filteredChapters.map(chapter => (
           <div key={chapter.id} ref={registerStep} id={chapter.id}>
             <ChapterComponent
-              theme={config.theme}
               record={chapter}
               active={currentChapter === chapter.id}
             />
@@ -336,7 +345,7 @@ const StoryMap = props => {
         ))}
       </Box>
       {config.footer && (
-        <Box id="footer" className={config.theme}>
+        <Box id="footer" className="story-theme">
           <p>{config.footer}</p>
         </Box>
       )}

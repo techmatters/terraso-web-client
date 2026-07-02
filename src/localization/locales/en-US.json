@@ -914,6 +914,59 @@
         "form_preview_close": "Exit Preview",
         "form_preview_title": "You are previewing <1>{{title}}</1>",
         "form_preview_title_blank": "You are previewing",
+        "form_theme_label": "Theme",
+        "form_theme_option_label": "Theme {{number}}",
+        "form_theme_selector_aria_label": "Theme selector. Selected {{label}}. {{description}}",
+        "form_theme_descriptions": {
+            "theme-1": [
+                "Background dark blue.",
+                "Text white.",
+                "Hyperlink light blue.",
+                "Highlight yellow."
+            ],
+            "theme-2": [
+                "Background pale blue.",
+                "Text dark blue.",
+                "Hyperlink medium blue.",
+                "Highlight light blue."
+            ],
+            "theme-3": [
+                "Background dark brown.",
+                "Text cream.",
+                "Hyperlink peach.",
+                "Highlight greenish-blue."
+            ],
+            "theme-4": [
+                "Background cream.",
+                "Text dark brown.",
+                "Hyperlink rust orange.",
+                "Highlight tan."
+            ],
+            "theme-5": [
+                "Background dark green.",
+                "Text pale green.",
+                "Hyperlink medium green.",
+                "Highlight yellow."
+            ],
+            "theme-6": [
+                "Background off-white.",
+                "Text dark green.",
+                "Hyperlink green.",
+                "Highlight light pink."
+            ],
+            "theme-7": [
+                "Background white.",
+                "Text charcoal.",
+                "Hyperlink medium blue.",
+                "Highlight pale yellow."
+            ],
+            "theme-8": [
+                "Background dark gray.",
+                "Text white.",
+                "Hyperlink light blue.",
+                "Highlight pale yellow."
+            ]
+        },
         "form_chapter_title_placeholder": "Chapter title",
         "form_chapter_description_placeholder": "Write your story",
         "form_chapter_title_label": "Chapter title",

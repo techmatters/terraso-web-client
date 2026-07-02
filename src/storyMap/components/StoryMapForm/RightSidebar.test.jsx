@@ -75,7 +75,7 @@ const storyMap = {
 const renderRightSidebar = props =>
   render(
     <StoryMapConfigContextProvider
-      baseConfig={{ chapters: [] }}
+      baseConfig={{ chapters: [], themeId: 'theme-1' }}
       storyMap={storyMap}
     >
       <RightSidebar open onClose={jest.fn()} {...props} />

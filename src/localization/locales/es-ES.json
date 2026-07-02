@@ -918,6 +918,59 @@
         "form_preview_close": "Salir de vista previa",
         "form_preview_title": "Está viendo una vista previa de <1>{{title}}</1>",
         "form_preview_title_blank": "Usted está viendo una vista previa",
+        "form_theme_label": "Tema",
+        "form_theme_option_label": "Tema {{number}}",
+        "form_theme_selector_aria_label": "Selector de tema. Seleccionado {{label}}. {{description}}",
+        "form_theme_descriptions": {
+            "theme-1": [
+                "Fondo azul oscuro.",
+                "Texto blanco.",
+                "Hipervínculo azul claro.",
+                "Resaltado amarillo."
+            ],
+            "theme-2": [
+                "Fondo azul pálido.",
+                "Texto azul oscuro.",
+                "Hipervínculo azul medio.",
+                "Resaltado azul claro."
+            ],
+            "theme-3": [
+                "Fondo marrón oscuro.",
+                "Texto crema.",
+                "Hipervínculo durazno.",
+                "Resaltado azul verdoso."
+            ],
+            "theme-4": [
+                "Fondo crema.",
+                "Texto marrón oscuro.",
+                "Hipervínculo naranja óxido.",
+                "Resaltado beige."
+            ],
+            "theme-5": [
+                "Fondo verde oscuro.",
+                "Texto verde pálido.",
+                "Hipervínculo verde medio.",
+                "Resaltado amarillo."
+            ],
+            "theme-6": [
+                "Fondo blanco roto.",
+                "Texto verde oscuro.",
+                "Hipervínculo verde.",
+                "Resaltado rosa claro."
+            ],
+            "theme-7": [
+                "Fondo blanco.",
+                "Texto carbón.",
+                "Hipervínculo azul medio.",
+                "Resaltado amarillo pálido."
+            ],
+            "theme-8": [
+                "Fondo gris oscuro.",
+                "Texto blanco.",
+                "Hipervínculo azul claro.",
+                "Resaltado amarillo pálido."
+            ]
+        },
         "form_chapter_title_placeholder": "Título del capítulo",
         "form_chapter_description_placeholder": "escribe tu historia",
         "form_chapter_title_label": "Título del capítulo",
