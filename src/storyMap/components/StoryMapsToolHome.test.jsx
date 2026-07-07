@@ -167,28 +167,24 @@ test('StoryMapsToolHome: featured story maps render correctly', async () => {
       },
     }),
     'query featuredStoryMaps': Promise.resolve({
-      storyMaps: {
-        edges: [
-          {
-            node: {
-              id: 'featured-1',
-              slug: 'featured-story-1',
-              storyMapId: 'featured-1',
-              title: 'Node title should not be used',
-              publishedAt: '2024-01-01T00:00:00.000000+00:00',
-              publishedConfiguration: JSON.stringify({
-                title: 'This outstanding story map',
-                description:
-                  'This is the meta description for this sensational story map!',
-                featuredImage: {
-                  signedUrl: 'https://example.com/story-map-1.png',
-                  description: 'Story map 1 featured image',
-                },
-              }),
+      featuredStoryMapsRandom: [
+        {
+          id: 'featured-1',
+          slug: 'featured-story-1',
+          storyMapId: 'featured-1',
+          title: 'Node title should not be used',
+          publishedAt: '2024-01-01T00:00:00.000000+00:00',
+          publishedConfiguration: JSON.stringify({
+            title: 'This outstanding story map',
+            description:
+              'This is the meta description for this sensational story map!',
+            featuredImage: {
+              signedUrl: 'https://example.com/story-map-1.png',
+              description: 'Story map 1 featured image',
             },
-          },
-        ],
-      },
+          }),
+        },
+      ],
     }),
   });
 
@@ -217,9 +213,7 @@ test('StoryMapsToolHome: user story map fetch failure clears page loader', async
   mockTerrasoAPIrequestGraphQL({
     'query userStoryMapsHome': Promise.reject('not_found'),
     'query featuredStoryMaps': Promise.resolve({
-      storyMaps: {
-        edges: [],
-      },
+      featuredStoryMapsRandom: [],
     }),
   });
 
