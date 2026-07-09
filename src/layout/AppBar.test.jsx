@@ -122,7 +122,7 @@ test('AppBar: Sign out', async () => {
   });
   const saveCall2 = Cookies.remove.mock.calls[1];
   expect(saveCall2[1]).toStrictEqual({
-    domain: '127.0.0.1',
+    domain: 'localhost',
     path: '/',
     expires: 30,
   });
