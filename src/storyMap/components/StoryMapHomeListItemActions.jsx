@@ -145,7 +145,7 @@ const StoryMapHomeListItemActions = ({
         alignItems: 'flex-start',
         flexShrink: 0,
         alignSelf: 'stretch',
-        width: { xs: '100%', md: 'auto' },
+        width: { xs: '100%', md: 180 },
       }}
     >
       {primaryAction.render()}
