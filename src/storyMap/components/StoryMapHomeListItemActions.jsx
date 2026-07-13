@@ -139,14 +139,13 @@ const StoryMapHomeListItemActions = ({
 
   return (
     <Stack
-      direction="column"
-      spacing={2}
       sx={{
         alignItems: 'flex-start',
         flexShrink: 0,
         alignSelf: 'stretch',
-        width: { xs: '100%', md: 180 },
+        width: { xs: '100%', md: 'auto' },
       }}
+      spacing={2}
     >
       {primaryAction.render()}
       {!isStoryMapMembershipPending && (
