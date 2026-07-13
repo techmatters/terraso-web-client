@@ -129,10 +129,12 @@ const StoryMapHomeListItemActions = ({
     },
   }[primaryActionType];
   const deleteAction = (
-    <StoryMapDeleteAction
-      onDeleteSuccess={onDeleteSuccess}
-      storyMap={storyMap}
-    />
+    <Box sx={{ width: 48, flexShrink: 0 }}>
+      <StoryMapDeleteAction
+        onDeleteSuccess={onDeleteSuccess}
+        storyMap={storyMap}
+      />
+    </Box>
   );
 
   return (
