@@ -31,7 +31,6 @@ const GroupDefaultHomeCard = () => {
         label: t('group.default_connect_button'),
         to: '/groups',
       }}
-      showActionAsButton
     >
       <Box display="flex" alignItems="center">
         <Typography variant="body1" sx={{ mr: 1 }}>

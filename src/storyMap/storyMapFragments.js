@@ -49,6 +49,7 @@ export const storyMapMetadataFields = /* GraphQL */ `
     storyMapId
     title
     isPublished
+    configuration
     createdAt
     updatedAt
     publishedAt

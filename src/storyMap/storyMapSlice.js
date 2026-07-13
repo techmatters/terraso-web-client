@@ -177,6 +177,15 @@ const storyMapSlice = createSlice({
         list: action.payload,
       },
     }),
+    updateUserStoryMap: (state, action) => ({
+      ...state,
+      userStoryMaps: {
+        ...state.userStoryMaps,
+        list: state.userStoryMaps.list.map(userStoryMap =>
+          userStoryMap.id === action.payload.id ? action.payload : userStoryMap
+        ),
+      },
+    }),
   },
 
   extraReducers: builder => {
@@ -411,7 +420,11 @@ const storyMapSlice = createSlice({
   },
 });
 
-export const { resetForm, removeUserStoryMap, setUserStoryMaps } =
-  storyMapSlice.actions;
+export const {
+  resetForm,
+  removeUserStoryMap,
+  setUserStoryMaps,
+  updateUserStoryMap,
+} = storyMapSlice.actions;
 
 export default storyMapSlice.reducer;

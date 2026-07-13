@@ -45,12 +45,15 @@ declare module '@mui/material/styles' {
     sizes: {
       small: {
         padding: string;
+        fontSize: string;
       };
       medium: {
         padding: string;
+        fontSize: string;
       };
       large: {
         padding: string;
+        fontSize: string;
       };
     };
     containedHoverShadow: string;

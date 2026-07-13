@@ -94,7 +94,6 @@ const LandscapesHomeCard = ({
             }
           : null
       }
-      contentBackgroundColor="white"
       helperText={showHelperText ? t('landscape.home_popover') : null}
     >
       <List

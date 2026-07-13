@@ -32,7 +32,9 @@ import PageLoader from 'terraso-web-client/layout/PageLoader';
 import { useBreadcrumbsParams } from 'terraso-web-client/navigation/breadcrumbsContext';
 import { fetchFeaturedStoryMaps } from 'terraso-web-client/home/homeSlice';
 import FeaturedStoryMapsSection from 'terraso-web-client/storyMap/components/FeaturedStoryMapsSection';
-import StoryMapsCard from 'terraso-web-client/storyMap/components/StoryMapsCard';
+import StoryMapsCard, {
+  STORY_MAP_CARD_VARIANTS,
+} from 'terraso-web-client/storyMap/components/StoryMapsCard';
 import { fetchUserStoryMaps } from 'terraso-web-client/storyMap/storyMapSlice';
 
 const StoryMaps = ({ storyMaps, fetching }) => {
@@ -50,7 +52,7 @@ const StoryMaps = ({ storyMaps, fetching }) => {
 
   return (
     <StoryMapsCard
-      showCreate={false}
+      variant={STORY_MAP_CARD_VARIANTS.TOOL_HOME}
       storyMaps={storyMaps}
       title={t('storyMap.story_maps_title', {
         name: user.firstName,

@@ -119,12 +119,15 @@ const buttonTokens = {
   sizes: {
     small: {
       padding: '4px 10px',
+      fontSize: '13px',
     },
     medium: {
       padding: '6px 16px',
+      fontSize: '14px',
     },
     large: {
       padding: '8px 22px',
+      fontSize: '15px',
     },
   },
   containedHoverShadow,
