@@ -23,15 +23,17 @@ import type { Severity } from 'terraso-client-shared/monitoring/logger';
 export const TERRASO_ENV = import.meta.env.ENV || 'development';
 
 export const TERRASO_API_URL =
-  import.meta.env.REACT_APP_TERRASO_API_URL || 'http://127.0.0.1:8000';
+  import.meta.env.REACT_APP_TERRASO_API_URL ||
+  `http://${window.location.hostname}:8000`;
 
 export const REACT_APP_BASE_URL =
-  import.meta.env.REACT_APP_BASE_URL || 'http://127.0.0.1:3000';
+  import.meta.env.REACT_APP_BASE_URL ||
+  `http://${window.location.hostname}:3000`;
 
 export const GRAPHQL_ENDPOINT = 'graphql/';
 
 export const COOKIES_DOMAIN =
-  import.meta.env.REACT_APP_COOKIES_DOMAIN || '127.0.0.1';
+  import.meta.env.REACT_APP_COOKIES_DOMAIN || window.location.hostname;
 
 // 30 days expiration for both access and refresh tokens, since refresh token rotation is implemented on the backend
 const COOKIES_PARAMS = { path: '/', expires: 30 };
