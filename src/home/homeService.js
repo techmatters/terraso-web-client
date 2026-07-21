@@ -50,24 +50,19 @@ export const fetchFeaturedStoryMaps = () =>
     .requestGraphQL(
       `
       query featuredStoryMaps {
-        storyMaps(featured: true, first: 3) {
-          edges {
-            node {
-              id
-              slug
-              storyMapId
-              title
-              publishedAt
-              publishedConfiguration
-            }
-          }
+        featuredStoryMapsRandom(first: 3) {
+          id
+          slug
+          storyMapId
+          title
+          publishedAt
+          publishedConfiguration
         }
       }
     `
     )
     .then(response =>
-      _.getOr([], 'storyMaps.edges', response)
-        .map(_.get('node'))
+      _.getOr([], 'featuredStoryMapsRandom', response)
         .map(storyMap => ({
           ..._.omit(['publishedConfiguration'], storyMap),
           config: storyMap.publishedConfiguration
