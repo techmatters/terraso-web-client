@@ -231,7 +231,7 @@ test('StoryMapsToolHome: featured story maps render correctly', async () => {
   ).toHaveAttribute('href', '/tools/story-maps/featured-1/featured-story-1');
 });
 
-test('StoryMapsToolHome: drafts are ordered by last edit time in the mixed story map list', async () => {
+test('StoryMapsToolHome: story maps are ordered by last update time', async () => {
   mockTerrasoAPIrequestGraphQL({
     'query userStoryMapsHome': Promise.resolve({
       userStoryMaps: {
@@ -244,7 +244,7 @@ test('StoryMapsToolHome: drafts are ordered by last edit time in the mixed story
               title: 'Published story map',
               isPublished: true,
               publishedAt: '2024-01-01T00:00:00.000000+00:00',
-              updatedAt: '2024-01-01T00:00:00.000000+00:00',
+              updatedAt: '2025-02-01T00:00:00.000000+00:00',
               createdBy: {
                 userId: 'user-1',
                 firstName: 'Pablo',
@@ -294,10 +294,10 @@ test('StoryMapsToolHome: drafts are ordered by last edit time in the mixed story
   const items = within(list).getAllByRole('listitem');
 
   expect(
-    within(items[0]).getByRole('link', { name: 'Draft story map' })
+    within(items[0]).getByRole('link', { name: 'Published story map' })
   ).toBeInTheDocument();
   expect(
-    within(items[1]).getByRole('link', { name: 'Published story map' })
+    within(items[1]).getByRole('link', { name: 'Draft story map' })
   ).toBeInTheDocument();
 });
 

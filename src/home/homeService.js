@@ -21,7 +21,7 @@ import { StoryMapMetadataFieldsFragmentDoc } from 'terraso-web-client/terrasoApi
 import { graphql } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/index';
 
 import {
-  compareStoryMapsByRecency,
+  compareStoryMapsByUpdatedAt,
   extractStoryMap,
 } from 'terraso-web-client/storyMap/storyMapUtils';
 
@@ -46,7 +46,7 @@ export const fetchHomeStoryMaps = email => {
       _.getOr([], 'storyMaps.edges', response)
         .map(_.get('node'))
         .map(extractStoryMap)
-        .sort(compareStoryMapsByRecency)
+        .sort(compareStoryMapsByUpdatedAt)
     );
 };
 

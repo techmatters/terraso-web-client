@@ -21,6 +21,7 @@ import { createAsyncThunk } from 'terraso-client-shared/store/utils';
 
 import i18n from 'terraso-web-client/localization/i18n';
 import * as storyMapService from 'terraso-web-client/storyMap/storyMapService';
+import { compareStoryMapsByUpdatedAt } from 'terraso-web-client/storyMap/storyMapUtils';
 
 const initialState = {
   form: {
@@ -181,9 +182,13 @@ const storyMapSlice = createSlice({
       ...state,
       userStoryMaps: {
         ...state.userStoryMaps,
-        list: state.userStoryMaps.list.map(userStoryMap =>
-          userStoryMap.id === action.payload.id ? action.payload : userStoryMap
-        ),
+        list: state.userStoryMaps.list
+          .map(userStoryMap =>
+            userStoryMap.id === action.payload.id
+              ? action.payload
+              : userStoryMap
+          )
+          .sort(compareStoryMapsByUpdatedAt),
       },
     }),
   },

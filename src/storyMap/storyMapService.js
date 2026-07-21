@@ -29,7 +29,7 @@ import { graphql } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/inde
 import { MEMBERSHIP_TYPE_CLOSED } from 'terraso-web-client/collaboration/collaborationConstants';
 import { TILESET_STATUS_PENDING } from 'terraso-web-client/sharedData/sharedDataConstants';
 import {
-  compareStoryMapsByRecency,
+  compareStoryMapsByUpdatedAt,
   extractStoryMap,
   getStoryMapConfig,
 } from 'terraso-web-client/storyMap/storyMapUtils';
@@ -70,7 +70,7 @@ export const fetchUserStoryMaps = (params, currentUser) => {
       userStoryMaps: _.getOr([], 'userStoryMaps.edges', response)
         .map(_.get('node'))
         .map(extractStoryMap)
-        .sort(compareStoryMapsByRecency),
+        .sort(compareStoryMapsByUpdatedAt),
     }));
 };
 

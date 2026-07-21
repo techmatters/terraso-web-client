@@ -76,12 +76,8 @@ export const parseStoryMapConfiguration = configuration => {
 export const getStoryMapConfig = storyMap =>
   storyMap?.config || parseStoryMapConfiguration(storyMap?.configuration);
 
-export const getStoryMapRecency = storyMap =>
-  storyMap?.publishedAt || storyMap?.updatedAt || storyMap?.createdAt || null;
-
-export const compareStoryMapsByRecency = (left, right) =>
-  new Date(getStoryMapRecency(right) || 0).getTime() -
-  new Date(getStoryMapRecency(left) || 0).getTime();
+export const compareStoryMapsByUpdatedAt = (left, right) =>
+  new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime();
 
 export const extractStoryMap = storyMap => ({
   ..._.omit(['membershipList'], storyMap),
