@@ -31,7 +31,6 @@ const LandscapeDefaultHomeCard = () => {
         label: t('landscape.default_connect_button'),
         to: '/landscapes',
       }}
-      showActionAsButton
       helperText={t('landscape.home_popover')}
     >
       <Box display="flex" alignItems="center">

@@ -15,125 +15,70 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Box,
-  Card,
-  CardActions,
-  Divider,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Card, Stack, Typography } from '@mui/material';
 
-import CardActionRouterLink from 'terraso-web-client/common/components/CardActionRouterLink';
 import HelperText from 'terraso-web-client/common/components/HelperText';
 import RouterButton from 'terraso-web-client/common/components/RouterButton';
-import RouterLink from 'terraso-web-client/common/components/RouterLink';
 
-const HomeCard = ({
-  title,
-  action,
-  image,
-  children,
-  helperText,
-  showActionAsButton = false,
-  titleId,
-  contentBackgroundColor = 'blue.lite2',
-}) => (
-  <Card
-    component="section"
-    aria-labelledby={titleId}
-    sx={{
-      display: 'flex',
-      flexDirection: 'column',
-    }}
-  >
-    <Stack direction="column" sx={{ p: 2 }}>
-      <Stack direction="row">
-        <Typography
-          id={titleId}
-          variant="h2"
-          sx={{ pt: 0, pb: 2, textTransform: 'uppercase' }}
-        >
-          {title}
-        </Typography>
-        {helperText && (
-          <Box sx={{ alignItems: 'center' }}>
-            <HelperText i18nKey={helperText} />
-          </Box>
-        )}
-      </Stack>
-      <Stack
-        direction="row"
-        spacing={2}
-        height={image ? 'auto' : null}
-        sx={{
-          backgroundColor: contentBackgroundColor,
-          borderRadius: '4px',
-        }}
+const InlineAction = ({ action }) => {
+  if (!action) {
+    return null;
+  }
+
+  return (
+    <Box
+      sx={{
+        pt: 4,
+        display: 'flex',
+        justifyContent: 'center',
+        width: '100%',
+      }}
+    >
+      <RouterButton
+        variant="contained"
+        size="medium"
+        sx={{ color: 'white' }}
+        to={action.to}
+        state={action.pathState}
       >
-        {image && (
-          <RouterLink to={image.to}>
-            <Stack sx={{ position: 'relative' }}>
-              <Paper
-                variant="outlined"
-                component="img"
-                src={image.src}
-                alt={image.alt}
-                to={image.to}
-                height={128}
-                sx={{
-                  borderRadius: '4px 0px 0px 4px',
-                  borderWidth: 0,
-                }}
-              />
-              {image.caption && (
-                <Box
-                  sx={{
-                    color: 'white',
-                    background: 'transparent',
-                    position: 'absolute',
-                    bottom: 1,
-                    right: 4.5,
-                    pr: 1,
-                  }}
-                  spacing={2}
-                >
-                  <Typography variant="caption" aria-hidden="true">
-                    {image.caption}
-                  </Typography>
-                </Box>
-              )}
-            </Stack>
-          </RouterLink>
-        )}
-        {children}
-      </Stack>
-    </Stack>
-    {action &&
-      (showActionAsButton ? (
-        <CardActions sx={{ justifyContent: 'center' }}>
-          <RouterButton
-            variant="contained"
-            size="medium"
-            sx={{ color: 'white' }}
-            to={action.to}
-            state={action.pathState}
+        {action.label}
+      </RouterButton>
+    </Box>
+  );
+};
+
+const HomeCard = ({ title, action, children, helperText, titleId }) => {
+  return (
+    <Card
+      component="section"
+      aria-labelledby={titleId}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Stack direction="column" sx={{ p: 4 }}>
+        <Stack direction="row">
+          <Typography
+            id={titleId}
+            variant="h2"
+            sx={{ pt: 0, pb: 2, textTransform: 'uppercase' }}
           >
-            {action.label}
-          </RouterButton>
-        </CardActions>
-      ) : (
-        <>
-          <Divider aria-hidden="false" />
-          <CardActionRouterLink
-            label={action.label}
-            to={action.to}
-            state={action.pathState}
-          />
-        </>
-      ))}
-  </Card>
-);
+            {title}
+          </Typography>
+          {helperText && (
+            <Box sx={{ alignItems: 'center' }}>
+              <HelperText i18nKey={helperText} />
+            </Box>
+          )}
+        </Stack>
+        <Stack direction="row" spacing={2}>
+          {children}
+        </Stack>
+        <InlineAction action={action} />
+      </Stack>
+    </Card>
+  );
+};
 
 export default HomeCard;

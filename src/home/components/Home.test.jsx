@@ -15,7 +15,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { render, screen, within } from 'terraso-web-client/tests/utils';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from 'terraso-web-client/tests/utils';
 import _ from 'lodash/fp';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
@@ -129,6 +135,12 @@ test('Home: Display Story Maps', async () => {
               storyMapId: '46h36we',
               title: 'Story 1',
               isPublished: false,
+              configuration: JSON.stringify({
+                featuredImage: {
+                  signedUrl: 'https://example.com/story-map-1.png',
+                  description: 'Story 1 featured image',
+                },
+              }),
               updatedAt: '2023-01-31T22:25:42.916303+00:00',
               createdBy: {
                 userId: 'user-1',
@@ -164,10 +176,19 @@ test('Home: Display Story Maps', async () => {
   const items = list.getAllByRole('listitem');
   expect(items.length).toBe(2);
 
-  const link1 = within(items[0]).getByRole('link', { name: 'Story 2' });
-  expect(link1).toHaveAttribute('href', '/tools/story-maps/lftawa9/id-2/edit');
-  const link2 = within(items[1]).getByRole('link', { name: 'Story 1' });
-  expect(link2).toHaveAttribute('href', '/tools/story-maps/46h36we/id-1/edit');
+  const link1 = within(items[0]).getByRole('link', { name: 'Story 1' });
+  expect(link1).toHaveAttribute('href', '/tools/story-maps/46h36we/id-1/edit');
+  expect(
+    within(items[1]).getByRole('img', { name: 'Story 2' })
+  ).toHaveAttribute('src', '/storyMap/terraso-story-maps-img.jpg');
+  const link2 = within(items[1]).getByRole('link', { name: 'Story 2' });
+  expect(link2).toHaveAttribute('href', '/tools/story-maps/lftawa9/id-2/edit');
+  const image = within(items[0]).getByRole('img', {
+    name: 'Story 1 featured image',
+  });
+  expect(image).toHaveAttribute('src', 'https://example.com/story-map-1.png');
+  await act(async () => fireEvent.error(image));
+  expect(image).toHaveAttribute('src', '/storyMap/terraso-story-maps-img.jpg');
   expect(
     screen.getByRole('link', { name: 'Make a Story Map' })
   ).toHaveAttribute('href', '/tools/story-maps/new');
@@ -257,6 +278,62 @@ test('Home: Display only two most recent Story Maps and link to My Story Maps', 
   ).toHaveAttribute('href', '/tools/story-maps/new');
   const myStoryMapsLink = screen.getByRole('link', { name: 'My Story Maps' });
   expect(myStoryMapsLink).toHaveAttribute('href', '/tools/story-maps');
+});
+
+test('Home: drafts are ordered by last edit time in the mixed story map list', async () => {
+  terrasoApi.requestGraphQL.mockReturnValue(
+    Promise.resolve({
+      storyMaps: {
+        edges: [
+          {
+            node: {
+              id: 'published-1',
+              slug: 'published-1',
+              storyMapId: 'published-1',
+              title: 'Published story map',
+              isPublished: true,
+              publishedAt: '2024-01-01T00:00:00.000000+00:00',
+              updatedAt: '2024-01-01T00:00:00.000000+00:00',
+              createdBy: {
+                userId: 'user-1',
+                firstName: 'Pablo',
+                lastName: 'Perez',
+              },
+            },
+          },
+          {
+            node: {
+              id: 'draft-1',
+              slug: 'draft-1',
+              storyMapId: 'draft-1',
+              title: 'Draft story map',
+              isPublished: false,
+              updatedAt: '2025-01-01T00:00:00.000000+00:00',
+              createdBy: {
+                userId: 'user-2',
+                firstName: 'Maria',
+                lastName: 'Gomez',
+              },
+            },
+          },
+        ],
+      },
+    })
+  );
+
+  await setup();
+
+  const list = within(
+    screen.getByRole('region', { name: 'Terraso Story Maps' })
+  );
+  const items = list.getAllByRole('listitem');
+
+  expect(
+    within(items[0]).getByRole('link', { name: 'Draft story map' })
+  ).toBeInTheDocument();
+  expect(
+    within(items[1]).getByRole('link', { name: 'Published story map' })
+  ).toBeInTheDocument();
 });
 
 test('Home: Display defaults', async () => {

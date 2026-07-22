@@ -114,6 +114,12 @@ const API_STORY_MAP = {
   },
 };
 
+const PUBLISHED_API_STORY_MAP = {
+  ...API_STORY_MAP,
+  isPublished: true,
+  publishedAt: '2026-01-01T00:00:00.000000+00:00',
+};
+
 const createDeferred = () => {
   let resolve;
 
@@ -205,6 +211,38 @@ test('StoryMapUpdate: Save', async () => {
     props: {
       'ILM Output': 'Landscape Narratives',
       map: '2b8b8352-2d41-4c92-9b97-0d5eb019d5ee',
+    },
+  });
+});
+
+test('StoryMapUpdate: Republish tracks an update event', async () => {
+  const trackEvent = jest.fn();
+  useAnalytics.mockReturnValue({
+    trackEvent,
+  });
+  terrasoApi.requestGraphQL.mockResolvedValue({
+    storyMaps: {
+      edges: [
+        {
+          node: PUBLISHED_API_STORY_MAP,
+        },
+      ],
+    },
+  });
+  terrasoApi.request.mockResolvedValue({
+    ...PUBLISHED_API_STORY_MAP,
+    configuration: JSON.parse(PUBLISHED_API_STORY_MAP.configuration),
+  });
+  await setup({ id: PUBLISHED_API_STORY_MAP.createdBy.id });
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Publish Changes' }));
+  });
+
+  expect(trackEvent).toHaveBeenCalledWith('storymap.update', {
+    props: {
+      'ILM Output': 'Landscape Narratives',
+      map: PUBLISHED_API_STORY_MAP.id,
     },
   });
 });

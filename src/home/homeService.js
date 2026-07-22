@@ -17,31 +17,36 @@
 
 import _ from 'lodash/fp';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import { StoryMapMetadataFieldsFragmentDoc } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
 import { graphql } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/index';
 
-import { extractStoryMap } from 'terraso-web-client/storyMap/storyMapUtils';
+import {
+  compareStoryMapsByUpdatedAt,
+  extractStoryMap,
+} from 'terraso-web-client/storyMap/storyMapUtils';
 
 export const fetchHomeStoryMaps = email => {
-  const query = graphql(`
-    query homeStoryMaps($accountEmail: String!) {
-      storyMaps(memberships_User_Email: $accountEmail) {
-        edges {
-          node {
-            ...storyMapMetadataFields
+  return terrasoApi
+    .requestGraphQL(
+      `
+        query homeStoryMaps($accountEmail: String!) {
+          storyMaps(memberships_User_Email: $accountEmail) {
+            edges {
+              node {
+                ...storyMapMetadataFields
+              }
+            }
           }
         }
-      }
-    }
-  `);
-
-  return terrasoApi
-    .requestGraphQL(query, { accountEmail: email })
+        ${StoryMapMetadataFieldsFragmentDoc}
+      `,
+      { accountEmail: email }
+    )
     .then(response =>
       _.getOr([], 'storyMaps.edges', response)
         .map(_.get('node'))
-        .sort(_.get('publishedAt'))
-        .reverse()
         .map(extractStoryMap)
+        .sort(compareStoryMapsByUpdatedAt)
     );
 };
 

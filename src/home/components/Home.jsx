@@ -35,8 +35,9 @@ import {
 } from 'terraso-web-client/home/homeSlice';
 import LandscapeDefaultCard from 'terraso-web-client/landscape/components/LandscapeDefaultHomeCard';
 import FeaturedStoryMapsSection from 'terraso-web-client/storyMap/components/FeaturedStoryMapsSection';
-import StoryMapsCard from 'terraso-web-client/storyMap/components/StoryMapsCard';
-import StoryMapsHomeCardDefault from 'terraso-web-client/storyMap/components/StoryMapsHomeCardDefault';
+import StoryMapsCard, {
+  STORY_MAP_CARD_VARIANTS,
+} from 'terraso-web-client/storyMap/components/StoryMapsCard';
 
 const HOME_STORY_MAPS_PREVIEW_LIMIT = 2;
 
@@ -48,7 +49,12 @@ const StoryMaps = ({ storyMaps, fetching }) => {
   }
 
   if (_.isEmpty(storyMaps)) {
-    return <StoryMapsHomeCardDefault />;
+    return (
+      <StoryMapsCard
+        title={t('storyMap.tool_home_title')}
+        variant={STORY_MAP_CARD_VARIANTS.HOME_EMPTY}
+      />
+    );
   }
 
   return (
@@ -82,10 +88,10 @@ const Home = () => {
     <PageContainer>
       <Stack spacing={5}>
         <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <StoryMaps storyMaps={storyMaps} fetching={fetching} />
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Stack spacing={3}>
               <LandscapeDefaultCard />
               <GroupDefaultCard />

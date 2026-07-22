@@ -72,10 +72,10 @@ const StoryMapUpdate = props => {
   );
 
   const handlePersistedStoryMap = useCallback(
-    ({ slug, storyMapId, published }) => {
+    ({ slug, storyMapId, published, wasPublished }) => {
       const event = getStoryMapSaveEvent({
         publish: published,
-        isPublished: storyMap.isPublished,
+        isPublished: wasPublished,
       });
 
       trackEvent(event, {
@@ -140,14 +140,15 @@ const StoryMapUpdate = props => {
             id: _.get('payload.id', data),
             title: _.get('payload.title', data),
             slug: _.get('payload.slug', data),
-            storyMapId: _.get('payload.story_map_id', data),
+            storyMapId: _.get('payload.storyMapId', data),
             published: publish,
+            wasPublished: storyMap.isPublished,
           });
           return true;
         }
         return Promise.reject(data);
       }),
-    [storyMap?.id, applySavedRevisionConfig, dispatch]
+    [storyMap?.id, storyMap?.isPublished, applySavedRevisionConfig, dispatch]
   );
   const onPublish = useCallback(
     (config, mediaFiles, revision) =>

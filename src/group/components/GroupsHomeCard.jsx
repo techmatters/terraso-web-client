@@ -118,7 +118,6 @@ const GroupsHomeCard = ({
             }
           : null
       }
-      contentBackgroundColor="white"
       titleId="groups-list-title"
     >
       <List

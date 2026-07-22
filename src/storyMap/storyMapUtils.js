@@ -57,8 +57,31 @@ export const getStoryMapStatusLabel = (storyMap, t) =>
     ? t('storyMap.form_status_published')
     : t('storyMap.form_status_draft');
 
+export const parseStoryMapConfiguration = configuration => {
+  if (!configuration) {
+    return null;
+  }
+
+  if (typeof configuration === 'object') {
+    return configuration;
+  }
+
+  try {
+    return JSON.parse(configuration);
+  } catch {
+    return null;
+  }
+};
+
+export const getStoryMapConfig = storyMap =>
+  storyMap?.config || parseStoryMapConfiguration(storyMap?.configuration);
+
+export const compareStoryMapsByUpdatedAt = (left, right) =>
+  new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime();
+
 export const extractStoryMap = storyMap => ({
   ..._.omit(['membershipList'], storyMap),
+  config: getStoryMapConfig(storyMap),
   accountMembership: extractAccountMembership(storyMap.membershipList),
   membershipInfo: extractMembershipInfo(storyMap.membershipList),
 });

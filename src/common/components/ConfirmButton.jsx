@@ -16,8 +16,9 @@
  */
 
 import { Fragment, useCallback, useEffect, useState } from 'react';
-import { Button, Tooltip } from '@mui/material';
+import { Tooltip } from '@mui/material';
 
+import Button from 'terraso-web-client/common/components/Button';
 import ConfirmationDialog from 'terraso-web-client/common/components/ConfirmationDialog';
 
 const ConfirmButton = props => {

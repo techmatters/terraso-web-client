@@ -15,254 +15,64 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useMemo } from 'react';
-import _ from 'lodash/fp';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
-import { useDispatch, useSelector } from 'terraso-web-client/terrasoApi/store';
-import DeleteIcon from '@mui/icons-material/Delete';
-import PeopleIcon from '@mui/icons-material/People';
-import {
-  List as BaseList,
-  Box,
-  Button,
-  Chip,
-  Divider,
-  Grid,
-  ListItem,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { List as BaseList, Box, Stack, Typography } from '@mui/material';
 
 import { withProps } from 'terraso-web-client/react-hoc';
 
-import { MEMBERSHIP_STATUS_PENDING } from 'terraso-web-client/collaboration/collaborationConstants';
 import RouterButton from 'terraso-web-client/common/components/RouterButton';
-import RouterLink from 'terraso-web-client/common/components/RouterLink';
-import { formatDate } from 'terraso-web-client/localization/utils';
-import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
-import Restricted from 'terraso-web-client/permissions/components/Restricted';
 import HomeCard from 'terraso-web-client/home/components/HomeCard';
-import DeleteButton from 'terraso-web-client/storyMap/components/StoryMapDeleteButton';
-import {
-  approveMembership,
-  removeUserStoryMap,
-} from 'terraso-web-client/storyMap/storyMapSlice';
-import {
-  generateStoryMapEditUrl,
-  generateStoryMapUrl,
-} from 'terraso-web-client/storyMap/storyMapUtils';
+import StoryMapHomeListItem from 'terraso-web-client/storyMap/components/StoryMapHomeListItem';
+
+export const STORY_MAP_CARD_VARIANTS = {
+  HOME: 'home',
+  HOME_EMPTY: 'home-empty',
+  TOOL_HOME: 'tool-home',
+};
 
 const List = withProps(BaseList, {
   component: withProps(Stack, {
-    divider: <Divider aria-hidden="true" component="li" />,
     component: 'ul',
+    spacing: 1.5,
   }),
 });
 
-const GridListItem = withProps(Grid, { component: 'li' });
-
-const CollaborationIndicator = props => {
-  const { storyMap } = props;
-  const { t } = useTranslation();
-
-  const {
-    membershipInfo: { memberships },
-  } = storyMap;
-
-  if (_.isEmpty(memberships)) {
-    return null;
+const getCardPresentation = variant => {
+  switch (variant) {
+    case STORY_MAP_CARD_VARIANTS.HOME_EMPTY:
+      return {
+        showCreateAction: true,
+        showStoryMapList: false,
+        showMyStoryMapsAction: false,
+      };
+    case STORY_MAP_CARD_VARIANTS.TOOL_HOME:
+      return {
+        showCreateAction: false,
+        showStoryMapList: true,
+        showMyStoryMapsAction: false,
+      };
+    case STORY_MAP_CARD_VARIANTS.HOME:
+    default:
+      return {
+        showCreateAction: true,
+        showStoryMapList: true,
+        showMyStoryMapsAction: true,
+      };
   }
-
-  return (
-    <PeopleIcon
-      aria-label={t('storyMap.home_shared_label')}
-      sx={{ color: 'gray.dark1' }}
-    />
-  );
-};
-
-const StoryMapListItem = props => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { trackEvent } = useAnalytics();
-  const { t, i18n } = useTranslation();
-  const { storyMap } = props;
-
-  const accountMembership = useMemo(
-    () => storyMap.membershipInfo.accountMembership,
-    [storyMap.membershipInfo.accountMembership]
-  );
-
-  const isStoryMapMembershipPending = useMemo(
-    () => accountMembership?.membershipStatus === MEMBERSHIP_STATUS_PENDING,
-    [accountMembership]
-  );
-
-  const processing = useSelector(
-    state =>
-      state.storyMap.memberships.approve[accountMembership?.membershipId]
-        ?.processing || false
-  );
-
-  const onAcceptWrapper = useCallback(() => {
-    dispatch(
-      approveMembership({
-        membership: accountMembership,
-        storyMap,
-      })
-    ).then(data => {
-      const success = _.get('meta.requestStatus', data) === 'fulfilled';
-      if (success) {
-        const storyMapId = data.payload.storyMap.storyMapId;
-        const storyMapSlug = data.payload.storyMap.slug;
-        navigate(`/tools/story-maps/${storyMapId}/${storyMapSlug}/edit`);
-        trackEvent('storymap.share.accept', {
-          props: {
-            map: storyMap.id,
-          },
-        });
-      }
-    });
-  }, [dispatch, navigate, trackEvent, storyMap, accountMembership]);
-
-  const onDeleteSuccess = useCallback(() => {
-    dispatch(removeUserStoryMap(storyMap.id));
-  }, [dispatch, storyMap.id]);
-
-  return (
-    <ListItem
-      component={GridListItem}
-      container
-      aria-labelledby={`story-map-${storyMap.slug}-link`}
-      sx={{ pr: 0, pl: 0, width: '100%' }}
-    >
-      <Stack
-        component={Grid}
-        size={{ xs: 12, md: 8 }}
-        spacing={1}
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          flexGrow: 1,
-        }}
-      >
-        <Stack direction="row" spacing={1}>
-          {!storyMap.isPublished && (
-            <Chip
-              size="small"
-              label={t('storyMap.home_draft_label')}
-              sx={{
-                borderRadius: 0,
-                bgcolor: 'gray.dark1',
-                color: 'white',
-                textTransform: 'uppercase',
-                fontWeight: 700,
-                fontSize: '0.6rem',
-                height: 'auto',
-                pt: 0.25,
-                pb: 0.25,
-              }}
-            />
-          )}
-          <CollaborationIndicator storyMap={storyMap} />
-        </Stack>
-        {/*
-          Unpublished drafts you have not accepted get no link, as it would 404.
-          Published and not accepted get a view link.
-          Published and accepted get an edit link.
-        */}
-        {!storyMap.isPublished && isStoryMapMembershipPending ? (
-          storyMap.title
-        ) : (
-          <RouterLink
-            id={`story-map-${storyMap.slug}-link`}
-            to={
-              isStoryMapMembershipPending
-                ? generateStoryMapUrl(storyMap)
-                : generateStoryMapEditUrl(storyMap)
-            }
-          >
-            {storyMap.title}
-          </RouterLink>
-        )}
-        <Typography
-          variant="caption"
-          sx={{
-            fontStyle: 'italic',
-          }}
-        >
-          {storyMap.isPublished && storyMap.publishedAt
-            ? t('storyMap.home_published_on', {
-                date: formatDate(i18n.resolvedLanguage, storyMap.publishedAt),
-              })
-            : t('storyMap.home_last_edited', {
-                date: formatDate(i18n.resolvedLanguage, storyMap.updatedAt),
-              })}
-        </Typography>
-      </Stack>
-      <Grid
-        container
-        size={{ xs: 12, md: 4 }}
-        justifyContent="flex-end"
-        direction="row"
-        spacing={2}
-        sx={{ width: '100%' }}
-      >
-        <Grid size={{ xs: 6 }}>
-          {isStoryMapMembershipPending ? (
-            <Button
-              size="small"
-              variant="outlined"
-              sx={{ pr: 3, pl: 3 }}
-              onClick={onAcceptWrapper}
-              loading={processing}
-            >
-              {t('storyMap.home_accept')}
-            </Button>
-          ) : (
-            <RouterButton
-              to={generateStoryMapEditUrl(storyMap)}
-              size="small"
-              variant="outlined"
-              sx={{ pr: 3, pl: 3 }}
-            >
-              {t('storyMap.home_edit')}
-            </RouterButton>
-          )}
-        </Grid>
-        <Grid size={{ xs: 6 }}>
-          <Restricted
-            permission="storyMap.delete"
-            resource={storyMap}
-            FallbackComponent={Box}
-          >
-            <DeleteButton
-              storyMap={storyMap}
-              tooltip={t('storyMap.delete_label', { name: storyMap.title })}
-              onSuccess={onDeleteSuccess}
-            >
-              <DeleteIcon
-                sx={{
-                  color: 'secondary.main',
-                }}
-              />
-            </DeleteButton>
-          </Restricted>
-        </Grid>
-      </Grid>
-    </ListItem>
-  );
 };
 
 const StoryMapsCard = ({
   title,
-  storyMaps,
-  showCreate = true,
+  storyMaps = [],
+  variant = STORY_MAP_CARD_VARIANTS.HOME,
   maxVisibleStoryMaps,
 }) => {
   const { t } = useTranslation();
+  const { showCreateAction, showStoryMapList, showMyStoryMapsAction } = useMemo(
+    () => getCardPresentation(variant),
+    [variant]
+  );
   const visibleStoryMaps = useMemo(() => {
     if (maxVisibleStoryMaps == null) {
       return storyMaps;
@@ -271,7 +81,7 @@ const StoryMapsCard = ({
     return storyMaps.slice(0, maxVisibleStoryMaps);
   }, [storyMaps, maxVisibleStoryMaps]);
   const action = useMemo(() => {
-    if (!showCreate) {
+    if (!showMyStoryMapsAction) {
       return null;
     }
 
@@ -279,21 +89,15 @@ const StoryMapsCard = ({
       label: t('storyMap.home_my_story_maps'),
       to: '/tools/story-maps',
     };
-  }, [t, showCreate]);
+  }, [t, showMyStoryMapsAction]);
 
   return (
-    <HomeCard
-      title={title}
-      titleId="story-maps-list-title"
-      action={action}
-      showActionAsButton
-      contentBackgroundColor="white"
-    >
+    <HomeCard title={title} titleId="story-maps-list-title" action={action}>
       <Stack direction="column" sx={{ width: '100%' }}>
         <Typography sx={{ pb: 2 }}>
           {t('storyMap.home_default_description')}
         </Typography>
-        {showCreate && (
+        {showCreateAction && (
           <Box sx={{ pb: 2 }}>
             <RouterButton
               variant="contained"
@@ -307,11 +111,13 @@ const StoryMapsCard = ({
             </RouterButton>
           </Box>
         )}
-        <List aria-labelledby="story-maps-list-title" sx={{ width: '100%' }}>
-          {visibleStoryMaps.map(storyMap => (
-            <StoryMapListItem key={storyMap.id} storyMap={storyMap} />
-          ))}
-        </List>
+        {showStoryMapList && (
+          <List aria-labelledby="story-maps-list-title" sx={{ width: '100%' }}>
+            {visibleStoryMaps.map(storyMap => (
+              <StoryMapHomeListItem key={storyMap.id} storyMap={storyMap} />
+            ))}
+          </List>
+        )}
       </Stack>
     </HomeCard>
   );

@@ -23,32 +23,54 @@ import {
   extractMemberships,
 } from 'terraso-client-shared/collaboration/membershipsUtils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
+import { StoryMapMetadataFieldsFragmentDoc } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
 import { graphql } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/index';
 
 import { MEMBERSHIP_TYPE_CLOSED } from 'terraso-web-client/collaboration/collaborationConstants';
 import { TILESET_STATUS_PENDING } from 'terraso-web-client/sharedData/sharedDataConstants';
-import { extractStoryMap } from 'terraso-web-client/storyMap/storyMapUtils';
+import {
+  compareStoryMapsByUpdatedAt,
+  extractStoryMap,
+  getStoryMapConfig,
+} from 'terraso-web-client/storyMap/storyMapUtils';
+
+const normalizeUpdatedStoryMap = (storyMap, response = {}) => ({
+  ...response,
+  storyMapId: response.storyMapId || response.story_map_id,
+  publishedAt: response.publishedAt || response.published_at,
+  configuration: response.configuration || storyMap.config,
+  config: getStoryMapConfig({
+    ...response,
+    config: response.config || storyMap.config,
+    configuration: response.configuration || storyMap.config,
+  }),
+  isPublished:
+    response.isPublished ||
+    Boolean(response.publishedAt || response.published_at || storyMap.publish),
+});
 
 export const fetchUserStoryMaps = (params, currentUser) => {
-  const query = graphql(`
-    query userStoryMapsHome($accountEmail: String!) {
-      userStoryMaps: storyMaps(memberships_User_Email: $accountEmail) {
-        edges {
-          node {
-            ...storyMapMetadataFields
+  return terrasoApi
+    .requestGraphQL(
+      `
+        query userStoryMapsHome($accountEmail: String!) {
+          userStoryMaps: storyMaps(memberships_User_Email: $accountEmail) {
+            edges {
+              node {
+                ...storyMapMetadataFields
+              }
+            }
           }
         }
-      }
-    }
-  `);
-  return terrasoApi
-    .requestGraphQL(query, { accountEmail: currentUser.email })
+        ${StoryMapMetadataFieldsFragmentDoc}
+      `,
+      { accountEmail: currentUser.email }
+    )
     .then(response => ({
       userStoryMaps: _.getOr([], 'userStoryMaps.edges', response)
         .map(_.get('node'))
-        .sort(_.get('publishedAt'))
-        .reverse()
-        .map(extractStoryMap),
+        .map(extractStoryMap)
+        .sort(compareStoryMapsByUpdatedAt),
     }));
 };
 
@@ -156,7 +178,7 @@ export const updateStoryMap = async ({ storyMap, files }) => {
     await Promise.reject(Object.values(jsonResponse.error).join('. '));
   }
 
-  return jsonResponse;
+  return normalizeUpdatedStoryMap(storyMap, jsonResponse);
 };
 
 export const deleteStoryMap = ({ storyMap }) => {
