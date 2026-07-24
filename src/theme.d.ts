@@ -69,6 +69,10 @@ declare module '@mui/material/styles' {
     highlightText: string;
   }
 
+  interface PageContentBand {
+    background: string;
+  }
+
   interface Palette {
     visualization: {
       markerDefaultColor: string;
@@ -83,11 +87,13 @@ declare module '@mui/material/styles' {
   interface Theme {
     backgroundNavColor: string;
     buttonTokens: ButtonTokens;
+    pageContentBand: PageContentBand;
   }
 
   interface ThemeOptions {
     backgroundNavColor?: string;
     buttonTokens?: ButtonTokens;
+    pageContentBand?: Partial<PageContentBand>;
   }
 }
 

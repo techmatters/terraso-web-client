@@ -44,6 +44,7 @@ import {
   useDocumentTitle,
 } from 'terraso-web-client/common/document';
 import PageContainer from 'terraso-web-client/layout/PageContainer';
+import PageContentBand from 'terraso-web-client/layout/PageContentBand';
 import PageHeader from 'terraso-web-client/layout/PageHeader';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
 import { useRefreshProgressContext } from 'terraso-web-client/layout/RefreshProgressProvider';
@@ -259,38 +260,40 @@ const GroupView = () => {
       MemberRequestJoinButton={MemberRequestJoinButton}
       updateOwner={updateGroup}
     >
-      <PageContainer>
-        <Stack
-          direction="row"
-          sx={{
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            marginBottom: 1,
-          }}
-        >
-          <PageHeader header={group.name} />
-        </Stack>
-        <Grid container spacing={4}>
-          <Grid size={{ xs: 12, md: 6 }} style={{ display: 'flex' }}>
-            <GroupCard group={group} />
+      <>
+        <PageContainer>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="flex-start"
+            sx={{
+              marginBottom: 1,
+            }}
+          >
+            <PageHeader header={group.name} />
+          </Stack>
+          <Grid container spacing={4}>
+            <Grid size={{ xs: 12, md: 6 }} style={{ display: 'flex' }}>
+              <GroupCard group={group} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }} style={{ display: 'flex' }}>
+              <MembershipCard
+                allowedToManageMembers={allowedToManageMembers}
+                onViewMembers={() => navigate(`/groups/${group.slug}/members`)}
+                InfoComponent={GroupMembershipInfo}
+              />
+            </Grid>
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }} style={{ display: 'flex' }}>
-            <MembershipCard
-              allowedToManageMembers={allowedToManageMembers}
-              onViewMembers={() => navigate(`/groups/${group.slug}/members`)}
-              InfoComponent={GroupMembershipInfo}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 12 }}>
-            <SharedDataCard
-              onUploadClick={() => navigate(`/groups/${group.slug}/upload`)}
-              onAddVisualizationClick={() =>
-                navigate(`/groups/${group.slug}/map/new`)
-              }
-            />
-          </Grid>
-        </Grid>
-      </PageContainer>
+        </PageContainer>
+        <PageContentBand>
+          <SharedDataCard
+            onUploadClick={() => navigate(`/groups/${group.slug}/upload`)}
+            onAddVisualizationClick={() =>
+              navigate(`/groups/${group.slug}/map/new`)
+            }
+          />
+        </PageContentBand>
+      </>
     </CollaborationContextProvider>
   );
 };

@@ -18,8 +18,7 @@
 import ErrorIcon from '@mui/icons-material/Report';
 import { createTheme } from '@mui/material/styles';
 
-const defaultFontStack = 'Roboto, Helvetica, Arial, sans-serif';
-const headerFontStack = 'Lato, Helvetica, Arial, sans-serif';
+const defaultFontStack = 'Lato, Helvetica, Arial, sans-serif';
 const containedHoverShadow =
   '0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.20)';
 
@@ -39,7 +38,7 @@ const colorTheme = createTheme({
     primary: {
       main: '#028843',
       hover: '#006130',
-      background: '#F9FCF8',
+      background: '#FFFFFF',
     },
     secondary: {
       main: '#00344D',
@@ -105,7 +104,7 @@ const buttonTokens = {
     gap: '8px',
     borderRadius: '4px',
     whiteSpace: 'nowrap',
-    fontFamily: headerFontStack,
+    fontFamily: defaultFontStack,
     fontSize: '15px',
     fontStyle: 'normal',
     fontWeight: 500,
@@ -338,17 +337,20 @@ const components = {
 const theme = createTheme(colorTheme, {
   // This color cannot be part of the regular palette above, as MUI fails to reconize it.
   // See https://github.com/mui/material-ui/issues/19711
-  backgroundNavColor: '#00914712',
+  backgroundNavColor: colorTheme.palette.gray.lite2,
   buttonTokens,
+  pageContentBand: {
+    background: '#F1F1F1',
+  },
   typography: {
     fontFamily: defaultFontStack,
     h1: {
-      fontFamily: headerFontStack,
+      fontFamily: defaultFontStack,
       fontSize: '2rem',
       fontWeight: 700,
     },
     h2: {
-      fontFamily: headerFontStack,
+      fontFamily: defaultFontStack,
       fontSize: '1.2rem',
       fontWeight: 700,
       textTransform: 'uppercase',

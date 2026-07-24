@@ -19,6 +19,7 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Grid, Stack, Typography } from '@mui/material';
 
+import PageContentBand from 'terraso-web-client/layout/PageContentBand';
 import StoryMapGalleryCard from 'terraso-web-client/storyMap/components/StoryMapGalleryCard';
 
 const featuredStoryMapsHeadingSx = {
@@ -36,18 +37,20 @@ const FeaturedStoryMapsSection = ({ storyMaps }) => {
   }
 
   return (
-    <Stack component="section" spacing={3}>
-      <Typography component="h2" variant="h2" sx={featuredStoryMapsHeadingSx}>
-        {t('home.featured_story_maps_title')}
-      </Typography>
-      <Grid container spacing={3}>
-        {storyMaps.map(storyMap => (
-          <Grid key={storyMap.id} size={{ xs: 12, md: 4 }}>
-            <StoryMapGalleryCard storyMap={storyMap} />
-          </Grid>
-        ))}
-      </Grid>
-    </Stack>
+    <PageContentBand>
+      <Stack spacing={3}>
+        <Typography component="h2" variant="h2" sx={featuredStoryMapsHeadingSx}>
+          {t('home.featured_story_maps_title')}
+        </Typography>
+        <Grid container spacing={3}>
+          {storyMaps.map(storyMap => (
+            <Grid key={storyMap.id} size={{ xs: 12, md: 4 }}>
+              <StoryMapGalleryCard storyMap={storyMap} />
+            </Grid>
+          ))}
+        </Grid>
+      </Stack>
+    </PageContentBand>
   );
 };
 

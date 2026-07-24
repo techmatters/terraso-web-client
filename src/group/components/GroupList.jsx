@@ -37,6 +37,7 @@ import {
   useDocumentTitle,
 } from 'terraso-web-client/common/document';
 import PageContainer from 'terraso-web-client/layout/PageContainer';
+import PageContentBand from 'terraso-web-client/layout/PageContentBand';
 import PageHeader from 'terraso-web-client/layout/PageHeader';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
 import GroupsHomeCard from 'terraso-web-client/group/components/GroupsHomeCard';
@@ -208,56 +209,60 @@ const GroupList = () => {
   ];
 
   return (
-    <PageContainer>
-      <PageHeader header={t('group.list_title')} />
-      <ListSummaryCtaSection
-        summaryCard={
-          !_.isEmpty(myGroups) ? (
-            <GroupsHomeCard
-              groups={myGroups}
-              title={t('group.my_groups_title')}
-              showAction={false}
-            />
-          ) : null
-        }
-        ctaTitle={t('group.list_cta_title')}
-        ctaDescription={t('group.list_cta_description')}
-        ctaButtonLabel={t('group.list_cta_button')}
-        ctaButtonTo="/groups/new"
-      />
-      <TableResponsive
-        columns={columns}
-        rows={groups}
-        searchEnabled
-        searchPlaceholder={t('group.list_search_placeholder')}
-        searchFilterField="name"
-        searchParams={Object.fromEntries(searchParams.entries())}
-        onSearchParamsChange={setSearchParams}
-        ariaLabel="main-heading"
-        emptyMessage={
-          <Trans i18nKey="group.list_empty">
-            <Stack spacing={2}>
-              <Typography>First</Typography>
-              <Typography>
-                Prefix
-                <Link component={RouterLink} to="/groups/new">
-                  to add
-                </Link>
-                .
-              </Typography>
-            </Stack>
-          </Trans>
-        }
-        tableProps={{
-          initialSort: [
-            {
-              field: 'name',
-              sort: 'asc',
-            },
-          ],
-        }}
-      />
-    </PageContainer>
+    <>
+      <PageContainer>
+        <PageHeader header={t('group.list_title')} />
+        <ListSummaryCtaSection
+          summaryCard={
+            !_.isEmpty(myGroups) ? (
+              <GroupsHomeCard
+                groups={myGroups}
+                title={t('group.my_groups_title')}
+                showAction={false}
+              />
+            ) : null
+          }
+          ctaTitle={t('group.list_cta_title')}
+          ctaDescription={t('group.list_cta_description')}
+          ctaButtonLabel={t('group.list_cta_button')}
+          ctaButtonTo="/groups/new"
+        />
+      </PageContainer>
+      <PageContentBand>
+        <TableResponsive
+          columns={columns}
+          rows={groups}
+          searchEnabled
+          searchPlaceholder={t('group.list_search_placeholder')}
+          searchFilterField="name"
+          searchParams={Object.fromEntries(searchParams.entries())}
+          onSearchParamsChange={setSearchParams}
+          ariaLabel="main-heading"
+          emptyMessage={
+            <Trans i18nKey="group.list_empty">
+              <Stack spacing={2}>
+                <Typography>First</Typography>
+                <Typography>
+                  Prefix
+                  <Link component={RouterLink} to="/groups/new">
+                    to add
+                  </Link>
+                  .
+                </Typography>
+              </Stack>
+            </Trans>
+          }
+          tableProps={{
+            initialSort: [
+              {
+                field: 'name',
+                sort: 'asc',
+              },
+            ],
+          }}
+        />
+      </PageContentBand>
+    </>
   );
 };
 

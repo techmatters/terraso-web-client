@@ -38,6 +38,7 @@ import {
   useDocumentTitle,
 } from 'terraso-web-client/common/document';
 import PageContainer from 'terraso-web-client/layout/PageContainer';
+import PageContentBand from 'terraso-web-client/layout/PageContentBand';
 import PageHeader from 'terraso-web-client/layout/PageHeader';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
 import LandscapeListMap from 'terraso-web-client/landscape/components/LandscapeListMap';
@@ -179,73 +180,77 @@ const LandscapeList = () => {
   ];
 
   return (
-    <PageContainer>
-      <PageHeader header={t('landscape.list_title')} />
-      <Typography
-        variant="body2"
-        sx={{
-          display: 'block',
-          marginBottom: 3,
-          marginTop: 2,
-        }}
-      ></Typography>
-      <Stack
-        component="section"
-        aria-label={t('landscape.list_map_section_label')}
-        spacing={2}
-        sx={{ mb: 4 }}
-      >
-        <LandscapeListMap />
-      </Stack>
-      <ListSummaryCtaSection
-        summaryCard={
-          !_.isEmpty(myLandscapes) ? (
-            <LandscapesHomeCard
-              landscapes={myLandscapes}
-              title={t('landscape.my_landscapes_title')}
-              showAction={false}
-              showHelperText={false}
-            />
-          ) : null
-        }
-        ctaTitle={t('landscape.list_cta_title')}
-        ctaDescription={t('landscape.list_cta_description')}
-        ctaButtonLabel={t('landscape.list_cta_button')}
-        ctaButtonTo="/landscapes/new"
-      />
-      <TableResponsive
-        columns={columns}
-        rows={landscapes}
-        searchEnabled
-        searchPlaceholder={t('landscape.list_search_placeholder')}
-        searchFilterField="name"
-        searchParams={Object.fromEntries(searchParams.entries())}
-        onSearchParamsChange={setSearchParams}
-        ariaLabel="main-heading"
-        emptyMessage={
-          <Trans i18nKey="landscape.list_empty">
-            <Stack spacing={2}>
-              <Typography>First</Typography>
-              <Typography>
-                Prefix
-                <Link component={RouterLink} to="/landscapes/new">
-                  to add
-                </Link>
-                .
-              </Typography>
-            </Stack>
-          </Trans>
-        }
-        tableProps={{
-          initialSort: [
-            {
-              field: 'name',
-              sort: 'asc',
-            },
-          ],
-        }}
-      />
-    </PageContainer>
+    <>
+      <PageContainer>
+        <PageHeader header={t('landscape.list_title')} />
+        <Typography
+          variant="body2"
+          display="block"
+          sx={{
+            marginBottom: 3,
+            marginTop: 2,
+          }}
+        ></Typography>
+        <Stack
+          component="section"
+          aria-label={t('landscape.list_map_section_label')}
+          spacing={2}
+          sx={{ mb: 4 }}
+        >
+          <LandscapeListMap />
+        </Stack>
+        <ListSummaryCtaSection
+          summaryCard={
+            !_.isEmpty(myLandscapes) ? (
+              <LandscapesHomeCard
+                landscapes={myLandscapes}
+                title={t('landscape.my_landscapes_title')}
+                showAction={false}
+                showHelperText={false}
+              />
+            ) : null
+          }
+          ctaTitle={t('landscape.list_cta_title')}
+          ctaDescription={t('landscape.list_cta_description')}
+          ctaButtonLabel={t('landscape.list_cta_button')}
+          ctaButtonTo="/landscapes/new"
+        />
+      </PageContainer>
+      <PageContentBand>
+        <TableResponsive
+          columns={columns}
+          rows={landscapes}
+          searchEnabled
+          searchPlaceholder={t('landscape.list_search_placeholder')}
+          searchFilterField="name"
+          searchParams={Object.fromEntries(searchParams.entries())}
+          onSearchParamsChange={setSearchParams}
+          ariaLabel="main-heading"
+          emptyMessage={
+            <Trans i18nKey="landscape.list_empty">
+              <Stack spacing={2}>
+                <Typography>First</Typography>
+                <Typography>
+                  Prefix
+                  <Link component={RouterLink} to="/landscapes/new">
+                    to add
+                  </Link>
+                  .
+                </Typography>
+              </Stack>
+            </Trans>
+          }
+          tableProps={{
+            initialSort: [
+              {
+                field: 'name',
+                sort: 'asc',
+              },
+            ],
+          }}
+        />
+      </PageContentBand>
+    </>
   );
 };
 

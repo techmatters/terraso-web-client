@@ -50,21 +50,20 @@ const NavButton = styled(Button)(({ theme }) => ({
   padding: 0,
   paddingBottom: 1,
   textTransform: 'none',
-  fontFamily: 'Lato, Helvetica, Arial, sans-serif',
-  fontSize: '1rem',
-  lineHeight: '20px',
-  [theme.breakpoints.up('md')]: {
-    fontSize: '1.125rem',
-    lineHeight: '22px',
+  [theme.breakpoints.down('md')]: {
+    fontSize: '1rem',
+    lineHeight: '20px',
   },
   marginTop: '-4px', // adjust for bottom border
-  color: theme.palette.gray.dark2,
+  fontSize: '20px',
+  fontWeight: 400,
+  lineHeight: '30px',
+  letterSpacing: '0.15px',
+  color: theme.palette.blue.dark3,
   '&.Mui-selected': {
-    color: theme.palette.primary.main,
-    fontWeight: theme.typography.fontWeightBold,
-    borderBottom: '4px solid',
     marginTop: 0,
     backgroundColor: 'transparent',
+    borderBottom: `4px solid ${theme.palette.link}`,
   },
   '&:hover': {
     background: 'transparent',
@@ -158,13 +157,7 @@ const Navigation = props => {
   }
 
   return (
-    <Box
-      id="main-navigation"
-      sx={{
-        boxShadow: '0px 3px 4px 0px #0000001A',
-        marginBottom: '4px',
-      }}
-    >
+    <Box id="main-navigation">
       <Container
         component="nav"
         tabIndex="-1"

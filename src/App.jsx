@@ -55,7 +55,14 @@ const App = () => {
         }}
       >
         {!hideHeader && (
-          <Box id="header-container">
+          <Box
+            id="header-container"
+            sx={{
+              boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.22)',
+              position: 'relative',
+              zIndex: 1,
+            }}
+          >
             <AppBar showInlineNavigation={!useSecondRowNavigation} />
             {useSecondRowNavigation && <Navigation />}
           </Box>
