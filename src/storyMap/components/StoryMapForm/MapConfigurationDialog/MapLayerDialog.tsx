@@ -257,7 +257,6 @@ export const MapLayerDialog = ({
       </DialogContent>
       <DialogActions
         sx={{
-          justifyContent: 'space-between',
           padding: 2,
         }}
       >
