@@ -64,70 +64,6 @@ const HOME_STORY_MAPS_SKELETON_SX = {
   bgcolor: 'rgba(255, 255, 255, 0.24)',
 };
 
-export const StoryMapsCardLoader = () => {
-  const { t } = useTranslation();
-
-  return (
-    <Box
-      role="progressbar"
-      aria-label={t('common.loader_label')}
-      aria-busy="true"
-    >
-      <HomeCard
-        title={
-          <Skeleton
-            animation="wave"
-            height={60}
-            width="55%"
-            sx={HOME_STORY_MAPS_SKELETON_SX}
-          />
-        }
-        titleId="story-maps-loader-title"
-        cardSx={HOME_CARD_SX}
-        headingSx={HOME_HEADING_SX}
-        backgroundImage="/files/card-background-primary-1.png"
-      >
-        <Stack direction="column" spacing={2} sx={{ width: '100%' }}>
-          <Stack spacing={1} sx={{ pb: 2 }}>
-            <Skeleton
-              animation="wave"
-              height={20}
-              width="100%"
-              sx={HOME_STORY_MAPS_SKELETON_SX}
-            />
-            <Skeleton
-              animation="wave"
-              height={20}
-              width="75%"
-              sx={HOME_STORY_MAPS_SKELETON_SX}
-            />
-          </Stack>
-          <Stack direction="row" spacing={2} sx={{ pb: 5 }}>
-            <Skeleton
-              animation="wave"
-              variant="rectangular"
-              height={42}
-              width={180}
-              sx={HOME_STORY_MAPS_SKELETON_SX}
-            />
-            <Skeleton
-              animation="wave"
-              variant="rectangular"
-              height={42}
-              width={200}
-              sx={HOME_STORY_MAPS_SKELETON_SX}
-            />
-          </Stack>
-          <Stack spacing={3}>
-            <Skeleton animation="wave" variant="rounded" height={120} />
-            <Skeleton animation="wave" variant="rounded" height={120} />
-          </Stack>
-        </Stack>
-      </HomeCard>
-    </Box>
-  );
-};
-
 const getCardPresentation = variant => {
   switch (variant) {
     case STORY_MAP_CARD_VARIANTS.HOME_EMPTY:
@@ -157,6 +93,7 @@ const StoryMapsCard = ({
   storyMaps = [],
   variant = STORY_MAP_CARD_VARIANTS.HOME,
   maxVisibleStoryMaps,
+  isLoading = false,
 }) => {
   const { t } = useTranslation();
   const { showCreateAction, showStoryMapList, showMyStoryMapsAction } = useMemo(
@@ -226,11 +163,34 @@ const StoryMapsCard = ({
           </Stack>
         )}
         {showStoryMapList && (
-          <List aria-labelledby="story-maps-list-title" sx={{ width: '100%' }}>
-            {visibleStoryMaps.map(storyMap => (
-              <StoryMapHomeListItem key={storyMap.id} storyMap={storyMap} />
-            ))}
-          </List>
+          <Box
+            role={isLoading ? 'progressbar' : undefined}
+            aria-label={isLoading ? t('common.loader_label') : undefined}
+            aria-busy={isLoading || undefined}
+          >
+            <List
+              aria-labelledby="story-maps-list-title"
+              sx={{ width: '100%' }}
+            >
+              {isLoading
+                ? [0, 1].map(index => (
+                    <Box component="li" key={index}>
+                      <Skeleton
+                        animation="wave"
+                        variant="rounded"
+                        height={120}
+                        sx={HOME_STORY_MAPS_SKELETON_SX}
+                      />
+                    </Box>
+                  ))
+                : visibleStoryMaps.map(storyMap => (
+                    <StoryMapHomeListItem
+                      key={storyMap.id}
+                      storyMap={storyMap}
+                    />
+                  ))}
+            </List>
+          </Box>
         )}
       </Stack>
     </HomeCard>

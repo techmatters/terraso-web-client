@@ -75,6 +75,13 @@ test('Home: Display loader', async () => {
   });
   expect(loaders.length).toBe(1);
   loaders.forEach(role => expect(role).toBeInTheDocument());
+  expect(screen.getByText('Terraso Story Maps')).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'Make a Story Map' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'My Story Maps' })
+  ).toBeInTheDocument();
 });
 test('Home: Display CTA cards for Landscapes and Groups', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(

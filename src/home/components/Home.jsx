@@ -36,7 +36,6 @@ import LandscapeDefaultCard from 'terraso-web-client/landscape/components/Landsc
 import FeaturedStoryMapsSection from 'terraso-web-client/storyMap/components/FeaturedStoryMapsSection';
 import StoryMapsCard, {
   STORY_MAP_CARD_VARIANTS,
-  StoryMapsCardLoader,
 } from 'terraso-web-client/storyMap/components/StoryMapsCard';
 
 const HOME_STORY_MAPS_PREVIEW_LIMIT = 2;
@@ -45,7 +44,7 @@ const StoryMaps = ({ storyMaps, fetching }) => {
   const { t } = useTranslation();
 
   if (fetching) {
-    return <StoryMapsCardLoader />;
+    return <StoryMapsCard title={t('storyMap.tool_home_title')} isLoading />;
   }
 
   if (_.isEmpty(storyMaps)) {
