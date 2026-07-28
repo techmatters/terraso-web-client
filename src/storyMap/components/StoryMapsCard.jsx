@@ -45,8 +45,6 @@ const HOME_CARD_SX = {
   minHeight: 500,
   color: 'white',
   bgcolor: 'secondary.main',
-  border: 'none',
-  boxShadow: 'none',
 };
 
 const HOME_HEADING_SX = {

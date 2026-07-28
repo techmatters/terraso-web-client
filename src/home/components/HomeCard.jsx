@@ -65,6 +65,8 @@ const HomeCard = ({
       sx={{
         display: 'flex',
         flexDirection: 'column',
+        border: 'none',
+        boxShadow: 'none',
         backgroundImage: backgroundImage && `url(${backgroundImage})`,
         backgroundPosition: 'bottom center',
         backgroundRepeat: 'no-repeat',
