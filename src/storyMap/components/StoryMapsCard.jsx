@@ -19,7 +19,13 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
-import { List as BaseList, Box, Stack, Typography } from '@mui/material';
+import {
+  List as BaseList,
+  Box,
+  Skeleton,
+  Stack,
+  Typography,
+} from '@mui/material';
 
 import { withProps } from 'terraso-web-client/react-hoc';
 
@@ -52,6 +58,74 @@ const HOME_HEADING_SX = {
   lineHeight: '49.01px',
   textTransform: 'none',
   wordWrap: 'break-word',
+};
+
+const HOME_STORY_MAPS_SKELETON_SX = {
+  bgcolor: 'rgba(255, 255, 255, 0.24)',
+};
+
+export const StoryMapsCardLoader = () => {
+  const { t } = useTranslation();
+
+  return (
+    <Box
+      role="progressbar"
+      aria-label={t('common.loader_label')}
+      aria-busy="true"
+    >
+      <HomeCard
+        title={
+          <Skeleton
+            animation="wave"
+            height={60}
+            width="55%"
+            sx={HOME_STORY_MAPS_SKELETON_SX}
+          />
+        }
+        titleId="story-maps-loader-title"
+        cardSx={HOME_CARD_SX}
+        headingSx={HOME_HEADING_SX}
+        backgroundImage="/files/card-background-primary-1.png"
+      >
+        <Stack direction="column" spacing={2} sx={{ width: '100%' }}>
+          <Stack spacing={1} sx={{ pb: 2 }}>
+            <Skeleton
+              animation="wave"
+              height={20}
+              width="100%"
+              sx={HOME_STORY_MAPS_SKELETON_SX}
+            />
+            <Skeleton
+              animation="wave"
+              height={20}
+              width="75%"
+              sx={HOME_STORY_MAPS_SKELETON_SX}
+            />
+          </Stack>
+          <Stack direction="row" spacing={2} sx={{ pb: 5 }}>
+            <Skeleton
+              animation="wave"
+              variant="rectangular"
+              height={42}
+              width={180}
+              sx={HOME_STORY_MAPS_SKELETON_SX}
+            />
+            <Skeleton
+              animation="wave"
+              variant="rectangular"
+              height={42}
+              width={200}
+              sx={HOME_STORY_MAPS_SKELETON_SX}
+            />
+          </Stack>
+          <Stack spacing={3}>
+            <Skeleton animation="wave" variant="rounded" height={120} />
+            <Skeleton animation="wave" variant="rounded" height={120} />
+          </Stack>
+        </Stack>
+      </HomeCard>
+    </Box>
+  );
 };
 
 const getCardPresentation = variant => {

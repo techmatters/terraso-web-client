@@ -22,7 +22,6 @@ import { useSelector } from 'react-redux';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { Alert, Grid, Stack, Typography } from '@mui/material';
 
-import LoaderCard from 'terraso-web-client/common/components/LoaderCard';
 import {
   useDocumentDescription,
   useDocumentTitle,
@@ -37,6 +36,7 @@ import LandscapeDefaultCard from 'terraso-web-client/landscape/components/Landsc
 import FeaturedStoryMapsSection from 'terraso-web-client/storyMap/components/FeaturedStoryMapsSection';
 import StoryMapsCard, {
   STORY_MAP_CARD_VARIANTS,
+  StoryMapsCardLoader,
 } from 'terraso-web-client/storyMap/components/StoryMapsCard';
 
 const HOME_STORY_MAPS_PREVIEW_LIMIT = 2;
@@ -45,7 +45,7 @@ const StoryMaps = ({ storyMaps, fetching }) => {
   const { t } = useTranslation();
 
   if (fetching) {
-    return <LoaderCard />;
+    return <StoryMapsCardLoader />;
   }
 
   if (_.isEmpty(storyMaps)) {
