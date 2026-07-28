@@ -67,6 +67,7 @@ const HomeCard = ({
         flexDirection: 'column',
         border: 'none',
         boxShadow: 'none',
+        bgcolor: theme => theme.pageContentBand.background,
         backgroundImage: backgroundImage && `url(${backgroundImage})`,
         backgroundPosition: 'bottom center',
         backgroundRepeat: 'no-repeat',

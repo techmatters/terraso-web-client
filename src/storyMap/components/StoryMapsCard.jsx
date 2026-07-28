@@ -60,10 +60,6 @@ const HOME_HEADING_SX = {
   wordWrap: 'break-word',
 };
 
-const TOOL_HOME_CARD_SX = {
-  bgcolor: theme => theme.pageContentBand.background,
-};
-
 const HOME_STORY_MAPS_SKELETON_SX = {
   bgcolor: 'rgba(255, 255, 255, 0.24)',
 };
@@ -192,7 +188,7 @@ const StoryMapsCard = ({
       title={title}
       titleId="story-maps-list-title"
       action={action}
-      cardSx={isHomeFeatureCard ? HOME_CARD_SX : TOOL_HOME_CARD_SX}
+      cardSx={isHomeFeatureCard ? HOME_CARD_SX : undefined}
       headingSx={isHomeFeatureCard ? HOME_HEADING_SX : undefined}
       backgroundImage={
         isHomeFeatureCard ? '/files/card-background-primary-1.png' : undefined

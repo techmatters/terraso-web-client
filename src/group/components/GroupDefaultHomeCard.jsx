@@ -22,7 +22,6 @@ import { Box, Typography } from '@mui/material';
 import HomeCard from 'terraso-web-client/home/components/HomeCard';
 
 const CARD_SX = {
-  bgcolor: theme => theme.pageContentBand.background,
   minHeight: { xs: 300, md: 150 },
 };
 
