@@ -60,6 +60,7 @@ declare module '@mui/material/styles' {
     tones: {
       primary: ButtonTone;
       secondary: ButtonTone;
+      invertedMuted: ButtonTone;
     };
   }
 

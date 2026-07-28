@@ -17,10 +17,13 @@
 
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import { List as BaseList, Box, Stack, Typography } from '@mui/material';
 
 import { withProps } from 'terraso-web-client/react-hoc';
 
+import Button from 'terraso-web-client/common/components/Button';
 import RouterButton from 'terraso-web-client/common/components/RouterButton';
 import HomeCard from 'terraso-web-client/home/components/HomeCard';
 import StoryMapHomeListItem from 'terraso-web-client/storyMap/components/StoryMapHomeListItem';
@@ -34,9 +37,24 @@ export const STORY_MAP_CARD_VARIANTS = {
 const List = withProps(BaseList, {
   component: withProps(Stack, {
     component: 'ul',
-    spacing: 1.5,
+    spacing: 3,
   }),
 });
+
+const HOME_CARD_SX = {
+  minHeight: 500,
+  color: 'white',
+  bgcolor: 'secondary.main',
+  border: 'none',
+  boxShadow: 'none',
+};
+
+const HOME_HEADING_SX = {
+  fontSize: '42px',
+  lineHeight: '49.01px',
+  textTransform: 'none',
+  wordWrap: 'break-word',
+};
 
 const getCardPresentation = variant => {
   switch (variant) {
@@ -91,25 +109,49 @@ const StoryMapsCard = ({
     };
   }, [t, showMyStoryMapsAction]);
 
+  const isHomeFeatureCard = variant !== STORY_MAP_CARD_VARIANTS.TOOL_HOME;
+
   return (
-    <HomeCard title={title} titleId="story-maps-list-title" action={action}>
+    <HomeCard
+      title={title}
+      titleId="story-maps-list-title"
+      action={action}
+      cardSx={isHomeFeatureCard ? HOME_CARD_SX : undefined}
+      headingSx={isHomeFeatureCard ? HOME_HEADING_SX : undefined}
+      backgroundImage={
+        isHomeFeatureCard ? '/files/card-background-primary-1.png' : undefined
+      }
+    >
       <Stack direction="column" sx={{ width: '100%' }}>
-        <Typography sx={{ pb: 2 }}>
+        <Typography sx={{ pb: 2, color: 'inherit' }}>
           {t('storyMap.home_default_description')}
         </Typography>
         {showCreateAction && (
-          <Box sx={{ pb: 2 }}>
+          <Stack direction="row" spacing={2} sx={{ pb: 5 }}>
             <RouterButton
               variant="contained"
               color="secondary"
               size="medium"
               to="/tools/story-maps/new"
               state={{ source: 'home_page' }}
-              sx={{ color: 'white' }}
+              endIcon={<ChevronRightIcon />}
             >
               {t('storyMap.home_create')}
             </RouterButton>
-          </Box>
+            {isHomeFeatureCard && (
+              <Button
+                component="a"
+                href="https://terraso.org/help/"
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="text"
+                color="invertedMuted"
+                startIcon={<OpenInNewOutlinedIcon />}
+              >
+                {t('storyMap.home_tutorials')}
+              </Button>
+            )}
+          </Stack>
         )}
         {showStoryMapList && (
           <List aria-labelledby="story-maps-list-title" sx={{ width: '100%' }}>

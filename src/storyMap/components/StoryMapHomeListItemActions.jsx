@@ -139,17 +139,23 @@ const StoryMapHomeListItemActions = ({
 
   return (
     <Stack
+      direction={{ xs: 'row', md: 'column' }}
       sx={{
-        alignItems: 'flex-start',
+        alignItems: { xs: 'center', md: 'flex-start' },
+        justifyContent: { xs: 'flex-end', md: 'flex-start' },
         flexShrink: 0,
         alignSelf: 'stretch',
         width: { xs: '100%', md: 'auto' },
       }}
-      spacing={2}
+      spacing={{ xs: 1, md: 2 }}
     >
       {primaryAction.render()}
       {!isStoryMapMembershipPending && (
-        <Stack direction="row" spacing={2} sx={{ alignItems: 'flex-start' }}>
+        <Stack
+          direction="row"
+          spacing={{ xs: 1, md: 2 }}
+          sx={{ alignItems: 'flex-start' }}
+        >
           <RouterButton to={editUrl} size="medium" variant="outlined">
             {t('storyMap.home_edit')}
           </RouterButton>

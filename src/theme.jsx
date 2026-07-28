@@ -148,6 +148,13 @@ const buttonTokens = {
       subtle: '#EBF5EE',
       disabled: 'rgba(2, 136, 67, 0.40)',
     },
+    invertedMuted: {
+      main: '#C5D4D9',
+      hover: '#C5D4D9',
+      contrastText: colorTheme.palette.secondary.main,
+      subtle: 'rgba(255, 255, 255, 0.16)',
+      disabled: 'rgba(197, 212, 217, 0.40)',
+    },
   },
 };
 

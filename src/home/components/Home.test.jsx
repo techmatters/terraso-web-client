@@ -192,6 +192,12 @@ test('Home: Display Story Maps', async () => {
   expect(
     screen.getByRole('link', { name: 'Make a Story Map' })
   ).toHaveAttribute('href', '/tools/story-maps/new');
+  const tutorialsLink = screen.getByRole('link', {
+    name: 'Story map tutorials',
+  });
+  expect(tutorialsLink).toHaveAttribute('href', 'https://terraso.org/help/');
+  expect(tutorialsLink).toHaveAttribute('target', '_blank');
+  expect(tutorialsLink).toHaveAttribute('rel', 'noopener noreferrer');
   expect(screen.getByRole('link', { name: 'My Story Maps' })).toHaveAttribute(
     'href',
     '/tools/story-maps'

@@ -44,7 +44,7 @@ const FeaturedStoryMapsSection = ({ storyMaps }) => {
         </Typography>
         <Grid container spacing={3}>
           {storyMaps.map(storyMap => (
-            <Grid key={storyMap.id} size={{ xs: 12, md: 4 }}>
+            <Grid key={storyMap.id} size={{ xs: 12, sm: 6, md: 4 }}>
               <StoryMapGalleryCard storyMap={storyMap} />
             </Grid>
           ))}

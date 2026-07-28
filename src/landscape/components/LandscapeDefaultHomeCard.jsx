@@ -16,9 +16,19 @@
  */
 
 import { useTranslation } from 'react-i18next';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, Typography } from '@mui/material';
 
 import HomeCard from 'terraso-web-client/home/components/HomeCard';
+import {
+  SECONDARY_FEATURE_CARD_HEADING_SX,
+  SECONDARY_FEATURE_CARD_SX,
+} from 'terraso-web-client/home/components/homeFeatureCardPresentation';
+
+const CARD_SX = {
+  ...SECONDARY_FEATURE_CARD_SX,
+  minHeight: { xs: 320, sm: 350, md: 150 },
+};
 
 const LandscapeDefaultHomeCard = () => {
   const { t } = useTranslation();
@@ -27,9 +37,13 @@ const LandscapeDefaultHomeCard = () => {
     <HomeCard
       title={t('landscape.home_default_card_title')}
       titleId="landscapes-default-title"
+      cardSx={CARD_SX}
+      headingSx={SECONDARY_FEATURE_CARD_HEADING_SX}
+      backgroundImage="/files/card-background-secondary-1.png"
       action={{
         label: t('landscape.default_connect_button'),
         to: '/landscapes',
+        endIcon: <ChevronRightIcon />,
       }}
       helperText={t('landscape.home_popover')}
     >

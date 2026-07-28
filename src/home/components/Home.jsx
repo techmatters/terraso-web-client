@@ -86,13 +86,21 @@ const Home = () => {
 
   return (
     <>
-      <PageContainer>
+      <PageContainer sx={{ paddingTop: 5 }}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 8 }}>
             <StoryMaps storyMaps={storyMaps} fetching={fetching} />
           </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Stack spacing={3}>
+          <Grid size={{ xs: 12, md: 4 }} sx={{ display: { md: 'flex' } }}>
+            <Stack
+              direction={{ xs: 'column', sm: 'row', md: 'column' }}
+              spacing={3}
+              sx={{
+                width: '100%',
+                flex: { md: 1 },
+                '& > *': { flex: { sm: 1 } },
+              }}
+            >
               <LandscapeDefaultCard />
               <GroupDefaultCard />
             </Stack>
