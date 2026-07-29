@@ -79,9 +79,9 @@ const ThemePreview = ({ option, size }) => {
     <Stack
       direction="row"
       spacing={1}
-      alignItems="center"
       aria-hidden="true"
       sx={{
+        alignItems: 'center',
         height: dimensions.height,
         borderRadius: `${dimensions.radius}px`,
         border: '1px solid',
@@ -296,11 +296,14 @@ const StoryThemeSelector = () => {
                 disabled={isPending}
                 control={
                   <Radio
-                    inputRef={
-                      option.id === selectedTheme.id ? selectedRadioRef : null
-                    }
-                    inputProps={{
-                      'aria-label': `${optionLabel}. ${optionDescriptionLabel}`,
+                    slotProps={{
+                      input: {
+                        ref:
+                          option.id === selectedTheme.id
+                            ? selectedRadioRef
+                            : null,
+                        'aria-label': `${optionLabel}. ${optionDescriptionLabel}`,
+                      },
                     }}
                     sx={visuallyHidden}
                   />

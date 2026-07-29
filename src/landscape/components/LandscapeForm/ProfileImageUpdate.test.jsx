@@ -54,14 +54,29 @@ jest.mock('react-router', () => ({
 }));
 
 jest.mock('react-avatar-editor', () => {
-  return forwardRef((props, ref) => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const React = require('react');
+  return React.forwardRef((props, ref) => {
+    React.useEffect(() => {
+      if (props.image) {
+        // Simulate avatar editor ready and change callbacks
+        // so that onImageChange fires onChange({ result: blob })
+        const timer = setTimeout(() => {
+          props.onImageReady?.();
+          props.onImageChange?.();
+        }, 0);
+        return () => clearTimeout(timer);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.image]);
+
     // Attach the getImage method to the ref
     if (ref) {
       ref.current = {
         getImage: () => mockAvatarEditorImage,
       };
     }
-    return null;
+    return React.createElement(React.Fragment, null, 'mock-avatar');
   });
 });
 
@@ -152,7 +167,7 @@ test('ProfileImageUpdate: Save form', async () => {
   AVATAR_EDITOR_IMAGE.toDataURL.mockReturnValueOnce(
     'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='
   );
-  global.fetch.mockResolvedValueOnce({
+  global.fetch = jest.fn().mockResolvedValue({
     status: 200,
     blob: () =>
       new Blob(['test content'], {

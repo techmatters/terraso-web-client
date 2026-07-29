@@ -54,11 +54,13 @@ const setup = async () => {
   };
 
   const changeCombobox = async (name, newValue, isNew = true) => {
-    const combobox = screen.getByRole('textbox', {
+    const combobox = screen.getByRole('combobox', {
       name,
     });
     fireEvent.change(combobox, { target: { value: newValue } });
-
+    await waitFor(() =>
+      expect(screen.getByRole('listbox', { name })).toBeInTheDocument()
+    );
     const optionsList = screen.getByRole('listbox', { name });
 
     if (isNew) {

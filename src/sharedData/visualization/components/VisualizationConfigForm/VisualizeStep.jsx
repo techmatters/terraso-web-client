@@ -111,7 +111,7 @@ export const Size = props => {
         <OutlinedInput
           value={value}
           size="small"
-          onChange={event => onChange(event.target.value)}
+          onChange={event => onChange(Number(event.target.value))}
           inputProps={{
             step: 1,
             min: 5,

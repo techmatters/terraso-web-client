@@ -68,6 +68,7 @@ export const createTestStoryMap = (): StoryMapNode => ({
   publishedConfiguration: createTestStoryMapConfig(),
   storyMapId: 'test-story-map-id',
   updatedAt: new Date().toString(),
+  featured: false,
 });
 
 export const createTestDataEntryNode = (): DataEntryNode => ({
