@@ -33,6 +33,9 @@ const colorTheme = createTheme({
       xl: 1536,
     },
   },
+  typography: {
+    fontFamily: defaultFontStack,
+  },
   palette: {
     tonalOffset: 0.2,
     primary: {
@@ -325,13 +328,6 @@ const components = {
       },
     },
   },
-  MuiListItem: {
-    styleOverrides: {
-      root: {
-        fontFamily: defaultFontStack,
-      },
-    },
-  },
 };
 
 const theme = createTheme(colorTheme, {
@@ -345,12 +341,10 @@ const theme = createTheme(colorTheme, {
   typography: {
     fontFamily: defaultFontStack,
     h1: {
-      fontFamily: defaultFontStack,
       fontSize: '2rem',
       fontWeight: 700,
     },
     h2: {
-      fontFamily: defaultFontStack,
       fontSize: '1.2rem',
       fontWeight: 700,
       textTransform: 'uppercase',
