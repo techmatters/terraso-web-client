@@ -48,7 +48,6 @@ const LandscapeDefaultHomeCard = () => {
         to: '/landscapes',
         endIcon: <ChevronRightIcon />,
       }}
-      helperText={t('landscape.home_popover')}
     >
       <Box
         sx={{

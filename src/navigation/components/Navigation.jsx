@@ -19,7 +19,14 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink, useLocation } from 'react-router';
-import { Box, Button, List, ListItem, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  List,
+  ListItem,
+  MenuItem,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
 
@@ -99,8 +106,24 @@ const NavigationLink = ({ path, selected, index, inline }) => {
   );
 };
 
+const MobileNavigationLink = ({ path, selected, index, onNavigate }) => {
+  const { t } = useTranslation();
+
+  return (
+    <MenuItem
+      component={RouterLink}
+      to={path}
+      id={`main-navigation-${index}`}
+      onClick={onNavigate}
+      {...(selected ? { 'aria-current': 'page' } : {})}
+    >
+      {t(PAGES[path].label)}
+    </MenuItem>
+  );
+};
+
 const Navigation = props => {
-  const { inline = false } = props;
+  const { inline = false, mobile = false, onNavigate } = props;
   const { t } = useTranslation();
   const { data: user } = useSelector(state => state.account.currentUser);
   const hasToken = useSelector(state => state.account.hasToken);
@@ -115,6 +138,18 @@ const Navigation = props => {
     return null;
   }
 
+  if (mobile) {
+    return Object.keys(PAGES).map((path, index) => (
+      <MobileNavigationLink
+        key={path}
+        path={path}
+        index={index}
+        selected={index === value}
+        onNavigate={onNavigate}
+      />
+    ));
+  }
+
   if (inline) {
     return (
       <Box
@@ -124,10 +159,6 @@ const Navigation = props => {
         aria-label={t('navigation.nav_label_short')}
         sx={{
           ml: 2,
-          display: {
-            xs: 'none',
-            md: 'block',
-          },
         }}
       >
         <Typography sx={visuallyHidden} variant="h2">

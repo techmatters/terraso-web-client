@@ -142,12 +142,14 @@ const StoryMapHomeListItemActions = ({
       direction={{ xs: 'row', md: 'column' }}
       sx={{
         alignItems: { xs: 'center', md: 'flex-start' },
-        justifyContent: { xs: 'flex-end', md: 'flex-start' },
+        justifyContent: { xs: 'flex-start', sm: 'flex-end', md: 'flex-start' },
+        flexWrap: { xs: 'wrap', md: 'nowrap' },
         flexShrink: 0,
         alignSelf: 'stretch',
         width: { xs: '100%', md: 'auto' },
       }}
       spacing={{ xs: 1, md: 2 }}
+      useFlexGap
     >
       {primaryAction.render()}
       {!isStoryMapMembershipPending && (

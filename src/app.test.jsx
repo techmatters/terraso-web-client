@@ -18,6 +18,9 @@
 import { render, screen } from 'terraso-web-client/tests/utils';
 import { useLocation } from 'react-router';
 import App from 'terraso-web-client/App';
+import useMediaQuery from '@mui/material/useMediaQuery';
+
+jest.mock('@mui/material/useMediaQuery');
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
@@ -47,6 +50,10 @@ const DEFAULT_STATE = {
 const setup = async (initialState = DEFAULT_STATE) => {
   await render(<App />, initialState);
 };
+
+beforeEach(() => {
+  useMediaQuery.mockImplementation(query => query.includes('min-width'));
+});
 
 test('App: Embedded', async () => {
   useLocation.mockReturnValue({

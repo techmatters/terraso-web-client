@@ -136,7 +136,12 @@ const StoryMapsCard = ({
           {t('storyMap.home_default_description')}
         </Typography>
         {showCreateAction && (
-          <Stack direction="row" spacing={2} sx={{ pb: 5 }}>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={2}
+            alignItems={{ xs: 'flex-start', sm: 'center' }}
+            sx={{ pb: 5 }}
+          >
             <RouterButton
               variant="contained"
               color="secondary"

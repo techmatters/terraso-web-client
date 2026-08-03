@@ -75,7 +75,7 @@ const HomeCard = ({
         ...cardSx,
       }}
     >
-      <Stack direction="column" sx={{ p: 4, height: '100%' }}>
+      <Stack direction="column" sx={{ p: { xs: 3, md: 4 }, height: '100%' }}>
         <Stack direction="row" alignItems="baseline">
           <Typography
             id={titleId}

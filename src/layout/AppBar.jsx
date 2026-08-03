@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { signOut } from 'terraso-client-shared/account/accountSlice';
+import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar,
   Box,
@@ -41,7 +42,29 @@ import { generateReferrerUrl } from 'terraso-web-client/navigation/navigationUti
 import AccountAvatar from 'terraso-web-client/account/components/AccountAvatar';
 
 import storyMapsLogo from 'terraso-web-client/assets/logo-story-maps.svg';
-import theme from 'terraso-web-client/theme';
+
+const MAIN_NAVIGATION_BREAKPOINT = 950;
+export const MAIN_NAVIGATION_DESKTOP_QUERY = `(min-width:${MAIN_NAVIGATION_BREAKPOINT}px)`;
+const MAIN_NAVIGATION_MOBILE_QUERY = `(max-width:${MAIN_NAVIGATION_BREAKPOINT - 0.05}px)`;
+const NARROW_MOBILE_QUERY = '(max-width:299px)';
+
+const AccountMenuItems = ({ actions, onClose }) => (
+  <>
+    {actions.map(action => (
+      <MenuItem
+        key={action.id}
+        component={action.to ? Link : 'li'}
+        to={action.to}
+        onClick={() => {
+          onClose();
+          action.onClick?.();
+        }}
+      >
+        {action.label}
+      </MenuItem>
+    ))}
+  </>
+);
 
 const AppBarComponent = ({ showInlineNavigation = true }) => {
   const dispatch = useDispatch();
@@ -52,8 +75,10 @@ const AppBarComponent = ({ showInlineNavigation = true }) => {
   const hasToken = useSelector(state => state.account.hasToken);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
-  const isSmall = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmall = useMediaQuery(MAIN_NAVIGATION_MOBILE_QUERY);
+  const isNarrowMobile = useMediaQuery(NARROW_MOBILE_QUERY);
   const [accountMenuAnchor, setAccountMenuAnchor] = useState(null);
+  const [navigationMenuAnchor, setNavigationMenuAnchor] = useState(null);
 
   const onSignOut = useCallback(() => {
     dispatch(signOut());
@@ -65,6 +90,7 @@ const AppBarComponent = ({ showInlineNavigation = true }) => {
   }, [location, navigate]);
 
   const hasUser = useMemo(() => user && hasToken, [user, hasToken]);
+  const usesCompactHeader = hasUser && isSmall && isNarrowMobile;
 
   const onOpenAccountMenu = useCallback(event => {
     setAccountMenuAnchor(event.currentTarget);
@@ -74,13 +100,16 @@ const AppBarComponent = ({ showInlineNavigation = true }) => {
     setAccountMenuAnchor(null);
   }, []);
 
+  const onOpenNavigationMenu = useCallback(event => {
+    setNavigationMenuAnchor(event.currentTarget);
+  }, []);
+
+  const onCloseNavigationMenu = useCallback(() => {
+    setNavigationMenuAnchor(null);
+  }, []);
+
   const accountDisplayName =
     `${user?.firstName || ''} ${user?.lastName || ''}`.trim();
-
-  const onMobileSignOut = useCallback(() => {
-    onCloseAccountMenu();
-    onSignOut();
-  }, [onCloseAccountMenu, onSignOut]);
 
   const accountActions = useMemo(
     () => [
@@ -92,10 +121,10 @@ const AppBarComponent = ({ showInlineNavigation = true }) => {
       {
         id: 'signOut',
         label: t('user.sign_out'),
-        onClick: onMobileSignOut,
+        onClick: onSignOut,
       },
     ],
-    [accountDisplayName, t, onMobileSignOut]
+    [accountDisplayName, t, onSignOut]
   );
 
   if (!hasUser && !optionalAuthEnabled) {
@@ -122,6 +151,9 @@ const AppBarComponent = ({ showInlineNavigation = true }) => {
                 md: 160,
                 lg: 170,
               },
+              '@media (max-width:299px)': {
+                width: 96,
+              },
               maxWidth: '100%',
               height: 'auto',
             }}
@@ -133,31 +165,38 @@ const AppBarComponent = ({ showInlineNavigation = true }) => {
           <>
             {isSmall ? (
               <>
-                <IconButton
-                  aria-label={t('account.profile')}
-                  onClick={onOpenAccountMenu}
-                  sx={{ mr: 1 }}
-                >
-                  <AccountAvatar user={user} sx={{ width: 28, height: 28 }} />
-                </IconButton>
-                <Menu
-                  anchorEl={accountMenuAnchor}
-                  open={Boolean(accountMenuAnchor)}
-                  onClose={onCloseAccountMenu}
-                  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                >
-                  {accountActions.map(action => (
-                    <MenuItem
-                      key={action.id}
-                      component={action.to ? Link : 'li'}
-                      to={action.to}
-                      onClick={action.onClick || onCloseAccountMenu}
+                {!usesCompactHeader && (
+                  <>
+                    <IconButton
+                      aria-label={t('account.profile')}
+                      onClick={onOpenAccountMenu}
+                      sx={{ mr: 1 }}
                     >
-                      {action.label}
-                    </MenuItem>
-                  ))}
-                </Menu>
+                      <AccountAvatar
+                        user={user}
+                        sx={{ width: 28, height: 28 }}
+                      />
+                    </IconButton>
+                    <Menu
+                      anchorEl={accountMenuAnchor}
+                      open={Boolean(accountMenuAnchor)}
+                      onClose={onCloseAccountMenu}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                      }}
+                    >
+                      <AccountMenuItems
+                        actions={accountActions}
+                        onClose={onCloseAccountMenu}
+                      />
+                    </Menu>
+                  </>
+                )}
               </>
             ) : (
               <>
@@ -205,7 +244,41 @@ const AppBarComponent = ({ showInlineNavigation = true }) => {
             {t('user.sign_in')}
           </Button>
         )}
-        <LocalePicker />
+        {!usesCompactHeader && <LocalePicker />}
+        {hasUser && isSmall && (
+          <>
+            <IconButton
+              aria-label={t('navigation.nav_label_short')}
+              onClick={onOpenNavigationMenu}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              anchorEl={navigationMenuAnchor}
+              open={Boolean(navigationMenuAnchor)}
+              onClose={onCloseNavigationMenu}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+              <Navigation mobile onNavigate={onCloseNavigationMenu} />
+              {usesCompactHeader && [
+                <Divider key="account-actions-divider" />,
+                <Box
+                  component="li"
+                  key="locale-picker"
+                  sx={{ px: 2, py: 1, listStyle: 'none' }}
+                >
+                  <LocalePicker />
+                </Box>,
+                <AccountMenuItems
+                  key="account-menu-items"
+                  actions={accountActions}
+                  onClose={onCloseNavigationMenu}
+                />,
+              ]}
+            </Menu>
+          </>
+        )}
       </Toolbar>
     </AppBar>
   );
