@@ -53,10 +53,12 @@ const HomeCard = ({
   action,
   backgroundImage,
   cardSx,
+  contentSx,
   children,
   headingSx,
   helperText,
   titleId,
+  titleComponent = 'h2',
 }) => {
   return (
     <Card
@@ -75,10 +77,14 @@ const HomeCard = ({
         ...cardSx,
       }}
     >
-      <Stack direction="column" sx={{ p: { xs: 3, md: 4 }, height: '100%' }}>
+      <Stack
+        direction="column"
+        sx={{ p: { xs: 3, md: 4 }, height: '100%', ...contentSx }}
+      >
         <Stack direction="row" alignItems="baseline">
           <Typography
             id={titleId}
+            component={titleComponent}
             variant="h2"
             sx={{
               pt: 0,

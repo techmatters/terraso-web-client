@@ -208,10 +208,7 @@ const paths = [
   path('/account/profile/:completeProfile', AccountProfile),
   path('/account/profile', AccountProfile),
   path('/contact', ContactForm),
-  path('/tools/story-maps', StoryMapsToolsHome, {
-    showBreadcrumbs: true,
-    breadcrumbsLabel: 'storyMap.breadcrumbs_tool_home',
-  }),
+  path('/tools/story-maps', StoryMapsToolsHome),
   path('/tools/story-maps/new', StoryMapNew, {
     isEmbedded: true,
   }),

@@ -69,11 +69,17 @@ test('StoryMapsToolHome: community story maps are not rendered', async () => {
   });
 
   expect(
-    screen.getByRole('heading', { name: 'Terraso Story Maps' })
+    screen.getByRole('heading', {
+      level: 1,
+      name: 'Terraso Story Maps',
+    })
   ).toBeInTheDocument();
   expect(
-    screen.getByRole('link', { name: 'Create Story Map' })
+    screen.getByRole('link', { name: 'Make a Story Map' })
   ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('heading', { name: 'My Story Maps' })
+  ).not.toBeInTheDocument();
   expect(
     screen.queryByRole('region', {
       name: 'Community Story Maps',
@@ -147,7 +153,10 @@ test('StoryMapsToolHome: user story maps render correctly', async () => {
     screen.getByRole('heading', { name: 'Terraso Story Maps' })
   ).toBeInTheDocument();
   expect(
-    screen.getByRole('link', { name: 'Create Story Map' })
+    screen.getByRole('heading', { level: 2, name: 'My Story Maps' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'Make a Story Map' })
   ).toBeInTheDocument();
   expect(
     screen.queryByRole('region', {
@@ -155,7 +164,7 @@ test('StoryMapsToolHome: user story maps render correctly', async () => {
     })
   ).not.toBeInTheDocument();
   const list = screen.getByRole('region', {
-    name: "Jodies' Story Maps",
+    name: 'My Story Maps',
   });
   const items = within(list).getAllByRole('listitem');
   expect(items.length).toBe(2);
@@ -288,7 +297,7 @@ test('StoryMapsToolHome: story maps are ordered by last update time', async () =
   });
 
   const list = screen.getByRole('region', {
-    name: "Jodies' Story Maps",
+    name: 'My Story Maps',
   });
   const items = within(list).getAllByRole('listitem');
 
@@ -327,8 +336,63 @@ test('StoryMapsToolHome: user story map fetch failure clears page loader', async
     screen.getByRole('heading', { name: 'Terraso Story Maps' })
   ).toBeInTheDocument();
   expect(
-    screen.getByRole('link', { name: 'Create Story Map' })
+    screen.getByRole('link', { name: 'Make a Story Map' })
   ).toBeInTheDocument();
+});
+
+test('StoryMapsToolHome: filters story maps and loads more editor cards', async () => {
+  const storyMaps = Array.from({ length: 14 }, (_, index) => ({
+    node: {
+      id: `id-${index}`,
+      slug: `story-${index}`,
+      storyMapId: `story-map-${index}`,
+      title: `Story ${index}`,
+      isPublished: index % 2 === 0,
+      publishedAt: index % 2 === 0 ? '2024-01-01T00:00:00.000000+00:00' : null,
+      updatedAt: `2024-01-${String(14 - index).padStart(2, '0')}T00:00:00.000000+00:00`,
+      createdBy: {
+        userId: `user-${index}`,
+        firstName: 'Pablo',
+        lastName: 'Perez',
+      },
+    },
+  }));
+  mockTerrasoAPIrequestGraphQL({
+    'query userStoryMapsHome': Promise.resolve({
+      userStoryMaps: { edges: storyMaps },
+    }),
+    'query featuredStoryMaps': Promise.resolve({
+      storyMaps: { edges: [] },
+    }),
+  });
+
+  await render(<StoryMapsToolsHome />, {
+    account: {
+      currentUser: {
+        data: { email: 'account@email.com', firstName: 'Jodie' },
+      },
+    },
+  });
+
+  const list = screen.getByRole('list', { name: 'My Story Maps' });
+  expect(within(list).getAllByRole('listitem')).toHaveLength(3);
+  expect(screen.getByRole('button', { name: 'Load more' })).toBeInTheDocument();
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('tab', { name: 'Published' }));
+  });
+
+  expect(within(list).getAllByRole('listitem')).toHaveLength(3);
+  expect(
+    within(list).queryByRole('link', { name: 'Story 1' })
+  ).not.toBeInTheDocument();
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('tab', { name: 'All' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Load more' }));
+  });
+
+  expect(within(list).getAllByRole('listitem')).toHaveLength(13);
 });
 
 test('StoryMapsToolHome: accept story map invite', async () => {

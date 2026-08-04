@@ -15,56 +15,147 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState, useTransition } from 'react';
 import _ from 'lodash/fp';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
-import { Button, Grid, Paper, Typography } from '@mui/material';
+import { Box, Button, Stack, Tab, Tabs } from '@mui/material';
 
-import ExternalLink from 'terraso-web-client/common/components/ExternalLink';
-import LoaderCard from 'terraso-web-client/common/components/LoaderCard';
 import { useDocumentTitle } from 'terraso-web-client/common/document';
 import PageContainer from 'terraso-web-client/layout/PageContainer';
-import PageHeader from 'terraso-web-client/layout/PageHeader';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
 import { useBreadcrumbsParams } from 'terraso-web-client/navigation/breadcrumbsContext';
+import HomeCard from 'terraso-web-client/home/components/HomeCard';
 import { fetchFeaturedStoryMaps } from 'terraso-web-client/home/homeSlice';
 import FeaturedStoryMapsSection from 'terraso-web-client/storyMap/components/FeaturedStoryMapsSection';
+import StoryMapHomeListItem from 'terraso-web-client/storyMap/components/StoryMapHomeListItem';
 import StoryMapsCard, {
   STORY_MAP_CARD_VARIANTS,
 } from 'terraso-web-client/storyMap/components/StoryMapsCard';
 import { fetchUserStoryMaps } from 'terraso-web-client/storyMap/storyMapSlice';
 
-const StoryMaps = ({ storyMaps, fetching }) => {
+const INITIAL_VISIBLE_STORY_MAPS = 3;
+const LOAD_MORE_STORY_MAPS = 10;
+
+const STORY_MAP_FILTERS = {
+  ALL: 'all',
+  DRAFT: 'draft',
+  PUBLISHED: 'published',
+};
+
+const getFilteredStoryMaps = (storyMaps, filter) => {
+  if (filter === STORY_MAP_FILTERS.PUBLISHED) {
+    return storyMaps.filter(storyMap => storyMap.isPublished);
+  }
+
+  if (filter === STORY_MAP_FILTERS.DRAFT) {
+    return storyMaps.filter(storyMap => !storyMap.isPublished);
+  }
+
+  return storyMaps;
+};
+
+const StoryMapsEditorCard = ({ storyMaps }) => {
   const { t } = useTranslation();
-  const { data: user } = useSelector(_.get('account.currentUser'));
-  const possession = user.firstName.slice(-1) === 's' ? "'" : "'s";
+  const [filter, setFilter] = useState(STORY_MAP_FILTERS.ALL);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_STORY_MAPS);
+  const [isPending, startTransition] = useTransition();
+  const filteredStoryMaps = useMemo(
+    () => getFilteredStoryMaps(storyMaps, filter),
+    [filter, storyMaps]
+  );
+  const visibleStoryMaps = filteredStoryMaps.slice(0, visibleCount);
+  const canLoadMore = visibleStoryMaps.length < filteredStoryMaps.length;
 
-  if (fetching) {
-    return <LoaderCard />;
-  }
-
-  if (_.isEmpty(storyMaps)) {
-    return;
-  }
+  const handleFilterChange = (event, nextFilter) => {
+    setFilter(nextFilter);
+    setVisibleCount(INITIAL_VISIBLE_STORY_MAPS);
+  };
 
   return (
-    <StoryMapsCard
-      variant={STORY_MAP_CARD_VARIANTS.TOOL_HOME}
-      storyMaps={storyMaps}
-      title={t('storyMap.story_maps_title', {
-        name: user.firstName,
-        possession: possession,
-      })}
-    />
+    <HomeCard
+      title={t('storyMap.home_my_story_maps')}
+      titleId="my-story-maps-title"
+      cardSx={{
+        color: 'white',
+        bgcolor: 'secondary.main',
+        backgroundPosition: 'top center',
+        backgroundSize: '100% auto',
+      }}
+      headingSx={{
+        fontSize: '30px',
+        lineHeight: '36px',
+        textTransform: 'none',
+      }}
+      backgroundImage="/files/card-background-primary-1-longer.png"
+    >
+      <Stack spacing={3} sx={{ width: '100%' }}>
+        <Tabs
+          value={filter}
+          onChange={handleFilterChange}
+          aria-label={t('storyMap.home_my_story_maps')}
+          sx={{
+            minHeight: 32,
+            '& .MuiTab-root': {
+              color: 'white',
+              fontSize: '14px',
+              fontWeight: 400,
+              minHeight: 32,
+              minWidth: 0,
+              px: 1.5,
+            },
+            '& .Mui-selected': { color: 'white' },
+            '& .MuiTabs-indicator': { bgcolor: 'white' },
+          }}
+        >
+          <Tab
+            label={t('storyMap.dashboard_filter_all')}
+            value={STORY_MAP_FILTERS.ALL}
+          />
+          <Tab
+            label={t('storyMap.form_status_published')}
+            value={STORY_MAP_FILTERS.PUBLISHED}
+          />
+          <Tab
+            label={t('storyMap.form_status_draft')}
+            value={STORY_MAP_FILTERS.DRAFT}
+          />
+        </Tabs>
+        <Stack
+          component="ul"
+          aria-labelledby="my-story-maps-title"
+          aria-busy={isPending}
+          spacing={3}
+          sx={{ m: 0, p: 0, width: '100%' }}
+        >
+          {visibleStoryMaps.map(storyMap => (
+            <StoryMapHomeListItem key={storyMap.id} storyMap={storyMap} />
+          ))}
+        </Stack>
+        {canLoadMore && (
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Button
+              color="secondary"
+              loading={isPending}
+              variant="contained"
+              onClick={() => {
+                startTransition(() => {
+                  setVisibleCount(count => count + LOAD_MORE_STORY_MAPS);
+                });
+              }}
+            >
+              {t('storyMap.dashboard_load_more')}
+            </Button>
+          </Box>
+        )}
+      </Stack>
+    </HomeCard>
   );
 };
 
 const StoryMapsToolsHome = () => {
   const { t } = useTranslation();
-  const { data: user } = useSelector(_.get('account.currentUser'));
   const { list, fetching: fetchingStoryMaps } = useSelector(
     _.get('storyMap.userStoryMaps')
   );
@@ -78,45 +169,16 @@ const StoryMapsToolsHome = () => {
   return (
     <>
       {fetchingStoryMaps && <PageLoader />}
-      <PageContainer maxWidth="lg">
-        <PageHeader header={t('storyMap.tool_home_title')} />
-        <Grid container spacing={2} sx={{ width: '100%' }}>
-          {!_.isEmpty(list) && (
-            <Grid size={{ xs: 12, sm: 8 }}>
-              <StoryMaps storyMaps={list} fetching={fetchingStoryMaps} />
-            </Grid>
+      <PageContainer maxWidth="lg" sx={{ paddingTop: 3 }}>
+        <Stack spacing={3} sx={{ width: '100%' }}>
+          <StoryMapsCard
+            title={t('storyMap.tool_home_title')}
+            variant={STORY_MAP_CARD_VARIANTS.DASHBOARD_FEATURE}
+          />
+          {!fetchingStoryMaps && !_.isEmpty(list) && (
+            <StoryMapsEditorCard storyMaps={list} />
           )}
-          <Grid size={{ sm: _.isEmpty(list) ? 12 : 4 }}>
-            <Paper
-              variant="outlined"
-              sx={{ bgcolor: 'white', p: 2, borderRadius: '8px' }}
-            >
-              <Typography variant="body1">
-                {t('storyMap.tool_home_description')}
-              </Typography>
-              <Button
-                variant="contained"
-                component={Link}
-                to="/tools/story-maps/new"
-                state={{ source: 'story_maps_page' }}
-                sx={{ mt: 2, mb: 3 }}
-              >
-                {t('storyMap.tool_home_create_button')}
-              </Button>
-              <Trans i18nKey="storyMap.tool_home_help">
-                <Typography>
-                  Question
-                  <ExternalLink
-                    href={t('storyMap.tool_home_help_document_url')}
-                    underlined={true}
-                  >
-                    <u>Help</u>
-                  </ExternalLink>
-                </Typography>
-              </Trans>
-            </Paper>
-          </Grid>
-        </Grid>
+        </Stack>
       </PageContainer>
       <FeaturedStoryMapsSection storyMaps={featuredStoryMaps} />
     </>
