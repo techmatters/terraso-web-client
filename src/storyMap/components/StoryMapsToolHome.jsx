@@ -105,7 +105,7 @@ const StoryMapsEditorCard = ({ storyMaps }) => {
               minWidth: 0,
               px: 1.5,
             },
-            '& .Mui-selected': { color: 'white' },
+            '& .MuiTab-root.Mui-selected': { color: 'white' },
             '& .MuiTabs-indicator': { bgcolor: 'white' },
           }}
         >
