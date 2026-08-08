@@ -154,9 +154,11 @@ const ProfileImage = props => {
         <Stack
           direction="row"
           spacing={2}
-          sx={{ m: 2 }}
-          alignItems="center"
-          justifyContent="center"
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            m: 2,
+          }}
         >
           <Typography>
             {t('landscape.form_profile_image_zoom_label')}

@@ -108,9 +108,9 @@ const LandscapeProfile = () => {
     <PageContainer>
       <Stack
         direction="row"
-        justifyContent="space-between"
-        alignItems="flex-start"
         sx={{
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
           marginBottom: 1,
         }}
       >

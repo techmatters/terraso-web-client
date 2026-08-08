@@ -87,7 +87,7 @@ const VisualizeForm = ({
   } = useVisualizeForm({ visualizeConfig, setVisualizeConfig });
 
   return (
-    <Grid container alignItems="center" spacing={2}>
+    <Grid container spacing={2} sx={{ alignItems: 'center' }}>
       {showPointsFields && (
         <>
           <Shape shape={shape} setShape={setShape} />
@@ -352,7 +352,7 @@ const CreateMapLayerDialog = ({
       aria-labelledby="map-location-dialog-title"
       aria-describedby="map-location-dialog-content-text"
     >
-      <Stack direction="row" justifyContent="space-between">
+      <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
         <Stack>
           <DialogTitle
             component="h1"

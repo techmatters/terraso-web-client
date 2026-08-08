@@ -110,9 +110,12 @@ const FormField = props => {
     <Box sx={{ flexGrow: 1 }}>
       <Stack
         direction="row"
-        alignItems="center"
         spacing={1}
-        sx={{ overflow: 'visible', mb: 1 }}
+        sx={{
+          alignItems: 'center',
+          overflow: 'visible',
+          mb: 1,
+        }}
       >
         <Typography
           variant="caption"

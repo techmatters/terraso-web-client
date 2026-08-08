@@ -89,7 +89,6 @@ const PublishedActions = ({ storyMap, onPreview }) => {
         {t('storyMap.form_status_label')}: <strong>{statusLabel}</strong>
       </Typography>
       <PreviewAction onPreview={onPreview} />
-
       {published && (
         <>
           <Button
@@ -105,7 +104,11 @@ const PublishedActions = ({ storyMap, onPreview }) => {
           >
             {t('storyMap.form_view_published_button')}
           </Button>
-          <Stack alignItems="flex-start">
+          <Stack
+            sx={{
+              alignItems: 'flex-start',
+            }}
+          >
             <SocialShare
               buttonProps={{
                 variant: 'outlined',

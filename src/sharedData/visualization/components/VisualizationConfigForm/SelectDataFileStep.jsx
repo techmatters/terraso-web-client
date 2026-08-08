@@ -69,7 +69,17 @@ const TYPE_LABEL = {
 };
 
 const StackRow = props => (
-  <Stack direction="row" alignItems="center" spacing={1} {...props} />
+  <Stack
+    direction="row"
+    spacing={1}
+    {...props}
+    sx={[
+      {
+        alignItems: 'center',
+      },
+      ...(Array.isArray(props.sx) ? props.sx : [props.sx]),
+    ]}
+  />
 );
 
 const SelectDataFileStep = props => {

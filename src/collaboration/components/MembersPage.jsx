@@ -54,8 +54,8 @@ const Header = () => {
       />
       <Typography
         variant="body2"
-        display="block"
         sx={{
+          display: 'block',
           marginBottom: 3,
           marginTop: 2,
         }}
@@ -201,9 +201,9 @@ const MembersPage = () => {
       <section aria-labelledby="members-list-title-id">
         <Stack
           direction="row"
-          alignItems="center"
-          justifyContent="space-between"
           sx={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
             marginTop: 2,
             marginBottom: 2,
           }}

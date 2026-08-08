@@ -147,14 +147,14 @@ const Cards = props => {
             {cardsProps.avatarRender && cardsProps.avatarRender({ row })}
             <Grid
               container
-              justifyContent="center"
-              alignItems="center"
               columnSpacing={2}
               rowSpacing={{
                 xs: 1,
                 sm: 0,
               }}
               sx={{
+                justifyContent: 'center',
+                alignItems: 'center',
                 width: '100%',
                 justifyContent: 'space-between',
               }}
@@ -281,9 +281,11 @@ const SearchBar = props => {
     <Stack
       direction={{ xs: 'column', md: 'row' }}
       spacing={{ xs: 1 }}
-      justifyContent="space-between"
-      alignItems="center"
-      sx={{ width: '100%' }}
+      sx={{
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+      }}
     >
       <Typography sx={{ flexGrow: 3, width: { xs: '100%' } }}>
         {searchQuery &&

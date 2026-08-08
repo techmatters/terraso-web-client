@@ -42,8 +42,8 @@ const ToolList = () => {
       />
       <Typography
         variant="body2"
-        display="block"
         sx={{
+          display: 'block',
           mb: 3,
           mt: 2,
         }}

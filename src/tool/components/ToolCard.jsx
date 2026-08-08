@@ -53,9 +53,9 @@ const ToolIconAndLink = ({ tool, title, external }) => {
       component="img"
       src={toolImage}
       alt={t(`tools.${tool}.img.alt`)}
-      width={t(`tools.${tool}.img.width`)}
-      height={t(`tools.${tool}.img.height`)}
       sx={{
+        width: t(`tools.${tool}.img.width`),
+        height: t(`tools.${tool}.img.height`),
         width: `${t(`tools.${tool}.img.width`)}px`,
         height: `${t(`tools.${tool}.img.height`)}px`,
         borderRadius: '4px',
@@ -114,8 +114,10 @@ const ToolCard = ({ tool }) => {
         <Typography {...attributes}>{toolTitle}</Typography>
         <Stack
           direction={isSmall ? 'column' : 'row'}
-          justifyContent="space-between"
           spacing={2}
+          sx={{
+            justifyContent: 'space-between',
+          }}
         >
           <section>
             <Typography variant="h3">{t('tool.description')}</Typography>

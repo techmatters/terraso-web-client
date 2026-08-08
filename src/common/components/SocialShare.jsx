@@ -177,8 +177,8 @@ const PostToService = props => {
         component="ul"
         role="list"
         direction={isSmall ? 'column' : 'row'}
-        justifyContent="space-between"
         sx={{
+          justifyContent: 'space-between',
           listStyle: 'none',
           padding: 0,
         }}

@@ -96,7 +96,11 @@ const MapStyleSwitcher = props => {
 
   return (
     <Portal container={container}>
-      <Stack alignItems="flex-end">
+      <Stack
+        sx={{
+          alignItems: 'flex-end',
+        }}
+      >
         <Button
           size="small"
           className="mapboxgl-ctrl-group mapboxgl-ctrl"

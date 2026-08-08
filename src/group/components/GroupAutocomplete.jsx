@@ -55,8 +55,10 @@ const GroupAutocomplete = props => {
           variant="outlined"
           placeholder={t(placeholder)}
           slotProps={{
+            ...params.slotProps,
             htmlInput: {
-              ...params.inputProps,
+              ...params.slotProps?.htmlInput,
+              ...(params.inputProps || {}),
               'aria-labelledby': `${id}-label`,
             },
           }}

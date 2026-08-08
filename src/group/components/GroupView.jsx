@@ -103,7 +103,12 @@ const GroupCard = ({ group }) => {
         }
       />
       <CardContent>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           {group.description}
         </Typography>
       </CardContent>
@@ -113,16 +118,24 @@ const GroupCard = ({ group }) => {
         {group.email && (
           <Stack
             direction="row"
-            alignItems="center"
             spacing={1}
-            sx={{ marginBottom: 2 }}
+            sx={{
+              alignItems: 'center',
+              marginBottom: 2,
+            }}
           >
             <EmailIcon sx={{ color: 'gray.lite1' }} />
             <Link href={`mailto:${group.email}`}>{group.email}</Link>
           </Stack>
         )}
         {group.website && (
-          <Stack direction="row" alignItems="center" spacing={1}>
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{
+              alignItems: 'center',
+            }}
+          >
             <PublicIcon sx={{ color: 'gray.lite1' }} />
             <Link href={group.website} underline="none" className="wrap-url">
               {group.website}
@@ -249,9 +262,9 @@ const GroupView = () => {
       <PageContainer>
         <Stack
           direction="row"
-          justifyContent="space-between"
-          alignItems="flex-start"
           sx={{
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
             marginBottom: 1,
           }}
         >

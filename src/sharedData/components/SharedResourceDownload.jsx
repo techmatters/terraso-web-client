@@ -81,11 +81,14 @@ const SharedResourceDownload = props => {
   return (
     <PageContainer maxWidth="sm">
       <Stack
-        alignItems="center"
         component={Paper}
         variant="outlined"
         spacing={2}
-        sx={{ p: 4, mt: 6 }}
+        sx={{
+          alignItems: 'center',
+          p: 4,
+          mt: 6,
+        }}
       >
         <Typography variant="h1">{`${sharedResource.dataEntry?.name}.${sharedResource.dataEntry?.resourceType}`}</Typography>
         <Button variant="contained" onClick={downloadFile}>

@@ -75,7 +75,16 @@ export const getEntryTypeDescriptionMessageKey = dataEntry =>
     : 'sharedData.add_file_description_message';
 
 const StackRow = props => (
-  <Stack direction="row" alignItems="center" {...props} />
+  <Stack
+    direction="row"
+    {...props}
+    sx={[
+      {
+        alignItems: 'center',
+      },
+      ...(Array.isArray(props.sx) ? props.sx : [props.sx]),
+    ]}
+  />
 );
 
 const NameSection = ({
@@ -96,8 +105,10 @@ const NameSection = ({
           ? GRID_BREAKPOINTS.NAME_FULL
           : GRID_BREAKPOINTS.NAME_PARTIAL
       }
-      order={{ xs: 2, md: 2 }}
       component={StackRow}
+      sx={{
+        order: { xs: 2, md: 2 },
+      }}
     >
       <EntryTypeIcon resourceType={dataEntry.resourceType} />
       <Restricted
@@ -145,10 +156,12 @@ const ActionsSection = ({
   return (
     <Grid
       size={GRID_BREAKPOINTS.ACTIONS}
-      order={{ xs: 3, md: 6 }}
       component={StackRow}
-      justifyContent="flex-end"
-      display={isEditingName ? 'none' : 'inherit'}
+      sx={{
+        order: { xs: 3, md: 6 },
+        justifyContent: 'flex-end',
+        display: isEditingName ? 'none' : 'inherit',
+      }}
     >
       {ShareComponent && (
         <ShareComponent
@@ -208,7 +221,9 @@ const DescriptionSection = ({
           ? GRID_BREAKPOINTS.DESCRIPTION_FULL
           : GRID_BREAKPOINTS.DESCRIPTION_PARTIAL
       }
-      order={{ xs: 10, md: 7 }}
+      sx={{
+        order: { xs: 10, md: 7 },
+      }}
     >
       <Restricted
         permission="sharedData.edit"
@@ -344,8 +359,8 @@ const SharedDataEntryBase = props => {
       <Grid
         container
         spacing={1}
-        alignItems="center"
         sx={{
+          alignItems: 'center',
           fontSize: 14,
           color: 'gray.dark1',
           p: 1,
@@ -362,19 +377,44 @@ const SharedDataEntryBase = props => {
           EntryTypeIcon={EntryTypeIcon}
         />
 
-        <Grid size={{ xs: 1 }} order={{ xs: 4 }} display={{ md: 'none' }} />
+        <Grid
+          size={{ xs: 1 }}
+          sx={{
+            order: { xs: 4 },
+            display: { md: 'none' },
+          }}
+        />
         <Grid
           size={GRID_BREAKPOINTS.INFO}
-          order={{ xs: 5, md: 4 }}
           component={StackRow}
-          justifyContent="space-between"
+          sx={{
+            order: { xs: 5, md: 4 },
+            justifyContent: 'space-between',
+          }}
         >
           {InfoComponent && <InfoComponent sharedResource={sharedResource} />}
         </Grid>
-        <Grid size={{ xs: 2 }} order={{ xs: 6 }} display={{ md: 'none' }} />
+        <Grid
+          size={{ xs: 2 }}
+          sx={{
+            order: { xs: 6 },
+            display: { md: 'none' },
+          }}
+        />
 
-        <Grid size={{ xs: 1 }} order={{ xs: 7 }} display={{ md: 'none' }} />
-        <Grid size={GRID_BREAKPOINTS.DATE} order={{ xs: 8, md: 6 }}>
+        <Grid
+          size={{ xs: 1 }}
+          sx={{
+            order: { xs: 7 },
+            display: { md: 'none' },
+          }}
+        />
+        <Grid
+          size={GRID_BREAKPOINTS.DATE}
+          sx={{
+            order: { xs: 8, md: 6 },
+          }}
+        >
           {t('sharedData.file_date_and_author', {
             date: formatDate(i18n.resolvedLanguage, dataEntry.createdAt),
             user: dataEntry.createdBy,
@@ -394,7 +434,13 @@ const SharedDataEntryBase = props => {
           dataEntry={dataEntry}
         />
 
-        <Grid size={{ xs: 1 }} order={{ xs: 9 }} display={{ md: 'none' }} />
+        <Grid
+          size={{ xs: 1 }}
+          sx={{
+            order: { xs: 9 },
+            display: { md: 'none' },
+          }}
+        />
 
         <DescriptionSection
           isEditingDescription={isEditingDescription}

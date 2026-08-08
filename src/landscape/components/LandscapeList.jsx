@@ -183,8 +183,8 @@ const LandscapeList = () => {
       <PageHeader header={t('landscape.list_title')} />
       <Typography
         variant="body2"
-        display="block"
         sx={{
+          display: 'block',
           marginBottom: 3,
           marginTop: 2,
         }}

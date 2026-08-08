@@ -238,8 +238,10 @@ const Form = props => {
               container
               size={{ xs: 12 }}
               direction="row"
-              justifyContent={isMultiStep ? 'space-between' : 'start'}
-              sx={{ marginTop: 2 }}
+              sx={{
+                justifyContent: isMultiStep ? 'space-between' : 'start',
+                marginTop: 2,
+              }}
             >
               {isMultiStep ? actions.reverse() : actions}
             </Grid>

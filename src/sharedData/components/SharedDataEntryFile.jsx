@@ -61,7 +61,17 @@ import {
 import { useSharedData } from 'terraso-web-client/sharedData/sharedDataHooks';
 
 const StackRow = props => (
-  <Stack direction="row" alignItems="center" spacing={1} {...props} />
+  <Stack
+    direction="row"
+    spacing={1}
+    {...props}
+    sx={[
+      {
+        alignItems: 'center',
+      },
+      ...(Array.isArray(props.sx) ? props.sx : [props.sx]),
+    ]}
+  />
 );
 
 const InfoComponent = ({ sharedResource }) => {
@@ -78,7 +88,12 @@ const InfoComponent = ({ sharedResource }) => {
       <Grid size={{ xs: 8, md: 6 }} sx={{ wordWrap: 'break-word' }}>
         {fileSize}
       </Grid>
-      <Grid size={{ xs: 1 }} display={{ md: 'none' }} />
+      <Grid
+        size={{ xs: 1 }}
+        sx={{
+          display: { md: 'none' },
+        }}
+      />
     </>
   );
 };
@@ -252,8 +267,10 @@ const ShareDialog = props => {
         <Stack
           spacing={1}
           direction="row"
-          alignItems="center"
           {...(allowedToEditSharedData ? {} : { 'aria-hidden': true })}
+          sx={{
+            alignItems: 'center',
+          }}
         >
           <Select
             disabled={!allowedToEditSharedData || processing}
@@ -279,10 +296,12 @@ const ShareDialog = props => {
         </Stack>
         {!allowedToEditSharedData && (
           <Stack
-            alignItems="center"
             direction="row"
             spacing={0.5}
-            sx={{ mt: 1 }}
+            sx={{
+              alignItems: 'center',
+              mt: 1,
+            }}
           >
             <LockIcon sx={{ fontSize: 16, color: 'gray.dark1' }} />
             <Typography variant="caption">
@@ -292,10 +311,12 @@ const ShareDialog = props => {
         )}
         {sharedResource.shareAccess === SHARE_ACCESS_ALL && (
           <Stack
-            alignItems="center"
             direction="row"
             spacing={0.5}
-            sx={{ mt: 1 }}
+            sx={{
+              alignItems: 'center',
+              mt: 1,
+            }}
           >
             <PublicIcon sx={{ fontSize: 16, color: 'gray.dark1' }} />
             <Typography variant="caption">

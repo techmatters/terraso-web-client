@@ -145,8 +145,10 @@ const StoryMapHomeListItem = ({ storyMap }) => {
         <Stack
           direction={{ xs: 'column', md: 'row' }}
           spacing={{ xs: 2, md: 3 }}
-          justifyContent="flex-start"
-          alignItems={{ xs: 'stretch', md: 'flex-start' }}
+          sx={{
+            justifyContent: 'flex-start',
+            alignItems: { xs: 'stretch', md: 'flex-start' },
+          }}
         >
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
@@ -191,8 +193,10 @@ const StoryMapHomeListItem = ({ storyMap }) => {
               <Stack
                 direction="row"
                 spacing={0.75}
-                alignItems="flex-start"
-                sx={{ width: '100%' }}
+                sx={{
+                  alignItems: 'flex-start',
+                  width: '100%',
+                }}
               >
                 {titleDestination ? (
                   <RouterLink
@@ -222,8 +226,12 @@ const StoryMapHomeListItem = ({ storyMap }) => {
                 <Stack
                   direction="row"
                   spacing={1}
-                  alignItems="center"
-                  sx={{ flexShrink: 0, ml: 'auto', pt: 0.25 }}
+                  sx={{
+                    alignItems: 'center',
+                    flexShrink: 0,
+                    ml: 'auto',
+                    pt: 0.25,
+                  }}
                 >
                   {!storyMap.isPublished && (
                     <Chip

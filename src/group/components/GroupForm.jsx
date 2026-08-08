@@ -257,8 +257,8 @@ const GroupForm = () => {
       />
       <Typography
         variant="body2"
-        display="block"
         sx={{
+          display: 'block',
           marginBottom: 3,
           marginTop: 2,
         }}

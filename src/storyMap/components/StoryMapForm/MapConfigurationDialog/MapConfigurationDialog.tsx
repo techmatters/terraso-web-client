@@ -345,7 +345,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
         maxWidth="sm"
         fullWidth
       >
-        <Stack direction="row" justifyContent="space-between">
+        <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
           <Stack>
             <DialogTitle
               component="h1"

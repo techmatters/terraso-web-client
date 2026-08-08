@@ -58,11 +58,9 @@ const setup = async () => {
       name,
     });
     fireEvent.change(combobox, { target: { value: newValue } });
-
     await waitFor(() =>
       expect(screen.getByRole('listbox', { name })).toBeInTheDocument()
     );
-
     const optionsList = screen.getByRole('listbox', { name });
 
     if (isNew) {

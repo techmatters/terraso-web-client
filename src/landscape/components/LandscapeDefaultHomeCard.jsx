@@ -33,7 +33,12 @@ const LandscapeDefaultHomeCard = () => {
       }}
       helperText={t('landscape.home_popover')}
     >
-      <Box display="flex" alignItems="center">
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
         <Typography variant="body1">
           {t('landscape.default_content')}
         </Typography>

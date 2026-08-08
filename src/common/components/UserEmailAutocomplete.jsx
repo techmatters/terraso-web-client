@@ -86,7 +86,9 @@ const UserEmailAutocomplete = props => {
           type="email"
           helperText={helperText}
           slotProps={{
+            ...params.slotProps,
             inputLabel: {
+              ...params.slotProps?.inputLabel,
               shrink: true,
             },
           }}

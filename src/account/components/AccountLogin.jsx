@@ -98,11 +98,18 @@ const AccountForm = () => {
   return (
     <Stack
       direction="column"
-      alignItems="center"
-      justifyContent="center"
-      sx={{ height: '80vh' }}
+      sx={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '80vh',
+      }}
     >
-      <Stack sx={{ maxWidth: 'sm' }} alignItems="center">
+      <Stack
+        sx={{
+          alignItems: 'center',
+          maxWidth: 'sm',
+        }}
+      >
         <PageHeader header={t('account.welcome_to')}>
           <Box
             component="img"

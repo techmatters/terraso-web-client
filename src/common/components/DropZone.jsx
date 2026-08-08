@@ -77,25 +77,29 @@ const DropZone = props => {
       component={Paper}
       square
       direction="column"
-      alignItems="center"
-      justifyContent="center"
       spacing={1}
       variant="outlined"
       {...containerProps}
-      sx={theme => ({
-        bgcolor: isDragActive ? 'blue.mid' : 'blue.lite',
-        border: `2px dashed ${theme.palette.blue.dark}`,
-        pt: errors ? 0 : 2,
-        pb: 3,
-        pl: 1,
-        pr: 1,
-        minHeight: '125px',
-        cursor: 'pointer',
-        ...(containerProps?.sx ? containerProps.sx : {}),
-      })}
       {...getRootProps({
         role: 'button',
       })}
+      sx={[
+        {
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        theme => ({
+          bgcolor: isDragActive ? 'blue.mid' : 'blue.lite',
+          border: `2px dashed ${theme.palette.blue.dark}`,
+          pt: errors ? 0 : 2,
+          pb: 3,
+          pl: 1,
+          pr: 1,
+          minHeight: '125px',
+          cursor: 'pointer',
+          ...(containerProps?.sx ? containerProps.sx : {}),
+        }),
+      ]}
     >
       <input {...getInputProps()} />
       {label}

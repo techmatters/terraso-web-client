@@ -26,15 +26,20 @@ const UnexpectedError = () => {
   return (
     <Stack
       direction="column"
-      alignItems="center"
-      justifyContent="center"
-      sx={{ height: '80vh' }}
+      sx={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '80vh',
+      }}
     >
       <Stack
         component={Paper}
         elevation={0}
-        sx={{ maxWidth: 'md', padding: 3 }}
-        alignItems="center"
+        sx={{
+          alignItems: 'center',
+          maxWidth: 'md',
+          padding: 3,
+        }}
       >
         <img
           src={logo}
@@ -44,7 +49,7 @@ const UnexpectedError = () => {
         />
 
         <Alert severity="error" sx={{ margin: '3em 0 8em' }}>
-          {t('common.unexpected_error')}
+          {t('common.unexpected_error', { error: '' })}
         </Alert>
       </Stack>
     </Stack>
