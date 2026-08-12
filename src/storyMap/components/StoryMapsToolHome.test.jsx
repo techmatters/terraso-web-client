@@ -78,6 +78,11 @@ test('StoryMapsToolHome: community story maps are not rendered', async () => {
     screen.getByRole('link', { name: 'Make a Story Map' })
   ).toBeInTheDocument();
   expect(
+    screen.getByText(
+      'Create and share interactive story maps to visualize your landscape data and community narratives. Use maps, photos, videos, audio, and text to curate impactful stories.'
+    )
+  ).toBeInTheDocument();
+  expect(
     screen.queryByRole('heading', { name: 'My Story Maps' })
   ).not.toBeInTheDocument();
   expect(

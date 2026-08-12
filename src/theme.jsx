@@ -150,9 +150,9 @@ const buttonTokens = {
     },
     invertedMuted: {
       main: '#C5D4D9',
-      hover: '#C5D4D9',
+      hover: '#FFFFFF',
       contrastText: colorTheme.palette.secondary.main,
-      subtle: 'rgba(255, 255, 255, 0.16)',
+      subtle: 'transparent',
       disabled: 'rgba(197, 212, 217, 0.40)',
     },
   },

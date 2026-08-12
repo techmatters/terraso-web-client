@@ -59,7 +59,7 @@ const getVariantStyles = (variant, tone, buttonTokens, buttonFocusOutline) => {
         backgroundColor: 'transparent',
         border: '1px solid transparent',
         '&:hover': {
-          color: tone.main,
+          color: tone.hover,
           backgroundColor: tone.subtle,
           border: '1px solid transparent',
         },

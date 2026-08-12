@@ -1023,7 +1023,7 @@
         "dashboard_load_more": "Cargar más",
         "home_edit": "Editar",
         "home_accept": "Aceptar",
-        "home_default_description": "Crea y comparte story maps interactivos para visualizar los datos de tu paisaje y las narrativas de tu comunidad. Usa mapas, fotos, videos, audio y narrativa para construir historias de impacto.",
+        "home_default_description": "Crea y comparte story maps interactivos para visualizar los datos de tu paisaje y las narrativas de tu comunidad. Usa mapas, fotos, videos, audio y texto para construir historias de impacto.",
         "delete_label": "Eliminar {{name}}",
         "delete_confirm_title": "Eliminar el story map {{title}}?",
         "delete_confirm_message": "¿Estás seguro de que deseas eliminar el story map? Esto no se puede deshacer.",

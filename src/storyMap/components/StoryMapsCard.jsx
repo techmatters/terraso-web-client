@@ -201,7 +201,7 @@ const StoryMapsCard = ({
             <RouterButton
               variant="contained"
               color="secondary"
-              size="medium"
+              size="large"
               to="/tools/story-maps/new"
               state={{ source: 'home_page' }}
               endIcon={<ChevronRightIcon />}
@@ -216,6 +216,7 @@ const StoryMapsCard = ({
                 rel="noopener noreferrer"
                 variant="text"
                 color="invertedMuted"
+                size="large"
                 startIcon={<OpenInNewOutlinedIcon />}
               >
                 {t('storyMap.home_tutorials')}

@@ -37,6 +37,10 @@ import { fetchUserStoryMaps } from 'terraso-web-client/storyMap/storyMapSlice';
 
 const INITIAL_VISIBLE_STORY_MAPS = 3;
 const LOAD_MORE_STORY_MAPS = 10;
+const EDITOR_CARD_BACKGROUND_IMAGE =
+  '/files/card-background-primary-1-longer.png';
+const EDITOR_CARD_ARTWORK_HEIGHT_PER_WIDTH = 0.704;
+const EDITOR_CARD_ARTWORK_TOP_INSET_PER_WIDTH = 0.034;
 
 const STORY_MAP_FILTERS = {
   ALL: 'all',
@@ -80,15 +84,36 @@ const StoryMapsEditorCard = ({ storyMaps }) => {
       cardSx={{
         color: 'white',
         bgcolor: 'secondary.main',
-        backgroundPosition: 'top center',
-        backgroundSize: '100% auto',
+        backgroundImage: 'none',
+        containerType: 'inline-size',
+        isolation: 'isolate',
+        overflow: 'hidden',
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: `min(100%, ${EDITOR_CARD_ARTWORK_HEIGHT_PER_WIDTH * 100}cqw)`,
+          zIndex: 0,
+          backgroundImage: `url(${EDITOR_CARD_BACKGROUND_IMAGE})`,
+          backgroundPositionX: 'center',
+          backgroundPositionY: `-${EDITOR_CARD_ARTWORK_TOP_INSET_PER_WIDTH * 100}cqw`,
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: '100% auto',
+        },
+        '& > *': {
+          position: 'relative',
+          zIndex: 1,
+        },
       }}
       headingSx={{
         fontSize: '30px',
         lineHeight: '36px',
         textTransform: 'none',
       }}
-      backgroundImage="/files/card-background-primary-1-longer.png"
+      backgroundImage={EDITOR_CARD_BACKGROUND_IMAGE}
     >
       <Stack spacing={3} sx={{ width: '100%' }}>
         <Tabs

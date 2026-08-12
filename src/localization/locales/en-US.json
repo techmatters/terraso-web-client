@@ -1019,7 +1019,7 @@
         "dashboard_load_more": "Load more",
         "home_edit": "Edit",
         "home_accept": "Accept",
-        "home_default_description": "Create and share interactive story maps to visualize your landscape data and community narratives. Use maps, photos, videos, audio, and narrative to curate impactful stories.",
+        "home_default_description": "Create and share interactive story maps to visualize your landscape data and community narratives. Use maps, photos, videos, audio, and text to curate impactful stories.",
         "delete_label": "Delete {{name}}",
         "delete_confirm_title": "Delete story map {{title}}?",
         "delete_confirm_message": "Are you sure you wish to delete the story map? This cannot be undone.",
