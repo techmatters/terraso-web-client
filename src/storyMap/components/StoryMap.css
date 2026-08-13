@@ -105,6 +105,7 @@ footer {
 .story-theme {
   color: var(--story-theme-text);
   background-color: var(--story-theme-background);
+  font-family: Lato, Helvetica, Arial, sans-serif;
 }
 .story-theme a {
   color: var(--story-theme-link);

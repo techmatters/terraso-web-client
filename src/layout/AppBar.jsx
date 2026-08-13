@@ -107,7 +107,7 @@ const AppBarComponent = ({ showInlineNavigation = true }) => {
       position="static"
       sx={{ maxWidth: 1200, margin: '0 auto', backgroundColor: 'white' }}
     >
-      <Toolbar sx={{ py: { xs: 1.5, md: 2.5 } }}>
+      <Toolbar sx={{ pt: { xs: 1.5, md: 2.5 }, pb: { xs: 0.75, md: 1.25 } }}>
         <SkipLinks />
         <ConditionalLink to="/" condition={!isHomePage}>
           <Box

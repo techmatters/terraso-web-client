@@ -54,6 +54,7 @@ import {
   useDocumentTitle,
 } from 'terraso-web-client/common/document';
 import PageContainer from 'terraso-web-client/layout/PageContainer';
+import PageContentBand from 'terraso-web-client/layout/PageContentBand';
 import PageHeader from 'terraso-web-client/layout/PageHeader';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
 import { useRefreshProgressContext } from 'terraso-web-client/layout/RefreshProgressProvider';
@@ -344,106 +345,110 @@ const LandscapeView = () => {
       onMemberRemove={onMemberLeave}
       updateOwner={updateLandscape}
     >
-      <PageContainer>
-        <Stack
-          direction="row"
-          sx={{
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            marginBottom: 1,
-          }}
-        >
-          <div>
-            <PageHeader
-              header={landscape.name}
-              typographyProps={{ sx: { marginBottom: 0 } }}
-            />
-            <Typography variant="body2" sx={{ marginBottom: 2 }}>
-              {currentCountry?.name}
-            </Typography>
-          </div>
-        </Stack>
-        <Grid container spacing={4}>
-          <Grid size={{ xs: 12, md: 12 }}>
-            <Card variant="outlined">
-              <CardContent>
-                <Paper variant="outlined" sx={{ mb: 2 }}>
-                  <BaseMap
-                    showPolygons
-                    showMarkers
-                    label={t('landscape.view_map_title')}
-                    areaPolygon={landscape.areaPolygon}
-                    boundingBox={landscape.boundingBox}
-                  />
-                  <LandscapeBoundaryDownload landscape={landscape} />
-                </Paper>
-                <Restricted
-                  permission="landscape.change"
-                  resource={landscape}
-                  toDisallowedUsers={true}
-                >
-                  <InlineHelp
-                    items={[
-                      {
-                        title: t('landscape.view_map_boundaries_help'),
-                        details: (
-                          <Trans i18nKey="landscape.view_map_boundaries_help_details">
-                            Prefix
-                            <ExternalLink
-                              href={t('landscape.view_map_boundaries_help_url')}
-                            >
-                              link
-                              <LaunchIcon
-                                fontSize="small"
-                                sx={{ verticalAlign: 'bottom' }}
-                              />
-                            </ExternalLink>
-                            .
-                          </Trans>
-                        ),
-                      },
-                    ]}
-                  />
-                </Restricted>
-              </CardContent>
-              <Restricted permission="landscape.change" resource={landscape}>
-                <CardActions sx={{ paddingTop: 0 }}>
-                  <RouterButton
-                    variant="outlined"
-                    to={`/landscapes/${landscape.slug}/boundaries`}
-                  >
-                    {t('landscape.view_map_boundaries_update')}
-                  </RouterButton>
-                </CardActions>
-              </Restricted>
-            </Card>
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }} style={{ display: 'flex' }}>
-            <LandscapeAboutCard landscape={landscape} />
-          </Grid>
-          <Grid
-            size={{ xs: 12, md: 6 }}
-            style={{ display: 'flex', alignItems: 'flex-start' }}
+      <>
+        <PageContainer>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="flex-start"
+            sx={{
+              marginBottom: 1,
+            }}
           >
-            <MembershipCard
-              allowedToManageMembers={allowedToManageMembers}
-              onViewMembers={() =>
-                navigate(`/landscapes/${landscape.slug}/members`)
-              }
-            />
+            <div>
+              <PageHeader
+                header={landscape.name}
+                typographyProps={{ sx: { marginBottom: 0 } }}
+              />
+              <Typography variant="body2" sx={{ marginBottom: 2 }}>
+                {currentCountry?.name}
+              </Typography>
+            </div>
+          </Stack>
+          <Grid container spacing={4}>
+            <Grid size={{ xs: 12, md: 12 }}>
+              <Card variant="outlined">
+                <CardContent>
+                  <Paper variant="outlined" sx={{ mb: 2 }}>
+                    <BaseMap
+                      showPolygons
+                      showMarkers
+                      label={t('landscape.view_map_title')}
+                      areaPolygon={landscape.areaPolygon}
+                      boundingBox={landscape.boundingBox}
+                    />
+                    <LandscapeBoundaryDownload landscape={landscape} />
+                  </Paper>
+                  <Restricted
+                    permission="landscape.change"
+                    resource={landscape}
+                    toDisallowedUsers={true}
+                  >
+                    <InlineHelp
+                      items={[
+                        {
+                          title: t('landscape.view_map_boundaries_help'),
+                          details: (
+                            <Trans i18nKey="landscape.view_map_boundaries_help_details">
+                              Prefix
+                              <ExternalLink
+                                href={t(
+                                  'landscape.view_map_boundaries_help_url'
+                                )}
+                              >
+                                link
+                                <LaunchIcon
+                                  fontSize="small"
+                                  sx={{ verticalAlign: 'bottom' }}
+                                />
+                              </ExternalLink>
+                              .
+                            </Trans>
+                          ),
+                        },
+                      ]}
+                    />
+                  </Restricted>
+                </CardContent>
+                <Restricted permission="landscape.change" resource={landscape}>
+                  <CardActions sx={{ paddingTop: 0 }}>
+                    <RouterButton
+                      variant="outlined"
+                      to={`/landscapes/${landscape.slug}/boundaries`}
+                    >
+                      {t('landscape.view_map_boundaries_update')}
+                    </RouterButton>
+                  </CardActions>
+                </Restricted>
+              </Card>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }} style={{ display: 'flex' }}>
+              <LandscapeAboutCard landscape={landscape} />
+            </Grid>
+            <Grid
+              size={{ xs: 12, md: 6 }}
+              style={{ display: 'flex', alignItems: 'flex-start' }}
+            >
+              <MembershipCard
+                allowedToManageMembers={allowedToManageMembers}
+                onViewMembers={() =>
+                  navigate(`/landscapes/${landscape.slug}/members`)
+                }
+              />
+            </Grid>
           </Grid>
-          <Grid size={{ xs: 12, md: 12 }}>
-            <SharedDataCard
-              onUploadClick={() =>
-                navigate(`/landscapes/${landscape.slug}/upload`)
-              }
-              onAddVisualizationClick={() =>
-                navigate(`/landscapes/${landscape.slug}/map/new`)
-              }
-            />
-          </Grid>
-        </Grid>
-      </PageContainer>
+        </PageContainer>
+        <PageContentBand>
+          <SharedDataCard
+            onUploadClick={() =>
+              navigate(`/landscapes/${landscape.slug}/upload`)
+            }
+            onAddVisualizationClick={() =>
+              navigate(`/landscapes/${landscape.slug}/map/new`)
+            }
+          />
+        </PageContentBand>
+      </>
     </CollaborationContextProvider>
   );
 };

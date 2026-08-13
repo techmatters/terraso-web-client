@@ -85,8 +85,8 @@ const Home = () => {
   }
 
   return (
-    <PageContainer>
-      <Stack spacing={5}>
+    <>
+      <PageContainer>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 8 }}>
             <StoryMaps storyMaps={storyMaps} fetching={fetching} />
@@ -98,10 +98,9 @@ const Home = () => {
             </Stack>
           </Grid>
         </Grid>
-
-        <FeaturedStoryMapsSection storyMaps={featuredStoryMaps} />
-      </Stack>
-    </PageContainer>
+      </PageContainer>
+      <FeaturedStoryMapsSection storyMaps={featuredStoryMaps} />
+    </>
   );
 };
 

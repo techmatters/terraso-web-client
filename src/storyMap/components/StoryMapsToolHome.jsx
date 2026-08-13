@@ -21,7 +21,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
-import { Button, Grid, Paper, Stack, Typography } from '@mui/material';
+import { Button, Grid, Paper, Typography } from '@mui/material';
 
 import ExternalLink from 'terraso-web-client/common/components/ExternalLink';
 import LoaderCard from 'terraso-web-client/common/components/LoaderCard';
@@ -80,48 +80,45 @@ const StoryMapsToolsHome = () => {
       {fetchingStoryMaps && <PageLoader />}
       <PageContainer maxWidth="lg">
         <PageHeader header={t('storyMap.tool_home_title')} />
-        <Stack spacing={5}>
-          <Grid container spacing={2} sx={{ width: '100%' }}>
-            {!_.isEmpty(list) && (
-              <Grid size={{ xs: 12, sm: 8 }}>
-                <StoryMaps storyMaps={list} fetching={fetchingStoryMaps} />
-              </Grid>
-            )}
-            <Grid size={{ sm: _.isEmpty(list) ? 12 : 4 }}>
-              <Paper
-                variant="outlined"
-                sx={{ bgcolor: 'white', p: 2, borderRadius: '8px' }}
-              >
-                <Typography variant="body1">
-                  {t('storyMap.tool_home_description')}
-                </Typography>
-                <Button
-                  variant="contained"
-                  component={Link}
-                  to="/tools/story-maps/new"
-                  state={{ source: 'story_maps_page' }}
-                  sx={{ mt: 2, mb: 3 }}
-                >
-                  {t('storyMap.tool_home_create_button')}
-                </Button>
-                <Trans i18nKey="storyMap.tool_home_help">
-                  <Typography>
-                    Question
-                    <ExternalLink
-                      href={t('storyMap.tool_home_help_document_url')}
-                      underlined={true}
-                    >
-                      <u>Help</u>
-                    </ExternalLink>
-                  </Typography>
-                </Trans>
-              </Paper>
+        <Grid container spacing={2} sx={{ width: '100%' }}>
+          {!_.isEmpty(list) && (
+            <Grid size={{ xs: 12, sm: 8 }}>
+              <StoryMaps storyMaps={list} fetching={fetchingStoryMaps} />
             </Grid>
+          )}
+          <Grid size={{ sm: _.isEmpty(list) ? 12 : 4 }}>
+            <Paper
+              variant="outlined"
+              sx={{ bgcolor: 'white', p: 2, borderRadius: '8px' }}
+            >
+              <Typography variant="body1">
+                {t('storyMap.tool_home_description')}
+              </Typography>
+              <Button
+                variant="contained"
+                component={Link}
+                to="/tools/story-maps/new"
+                state={{ source: 'story_maps_page' }}
+                sx={{ mt: 2, mb: 3 }}
+              >
+                {t('storyMap.tool_home_create_button')}
+              </Button>
+              <Trans i18nKey="storyMap.tool_home_help">
+                <Typography>
+                  Question
+                  <ExternalLink
+                    href={t('storyMap.tool_home_help_document_url')}
+                    underlined={true}
+                  >
+                    <u>Help</u>
+                  </ExternalLink>
+                </Typography>
+              </Trans>
+            </Paper>
           </Grid>
-
-          <FeaturedStoryMapsSection storyMaps={featuredStoryMaps} />
-        </Stack>
+        </Grid>
       </PageContainer>
+      <FeaturedStoryMapsSection storyMaps={featuredStoryMaps} />
     </>
   );
 };
