@@ -38,6 +38,7 @@ const InlineAction = ({ action }) => {
         variant="contained"
         size="medium"
         sx={{ color: 'white' }}
+        endIcon={action.endIcon}
         to={action.to}
         state={action.pathState}
       >
@@ -47,7 +48,16 @@ const InlineAction = ({ action }) => {
   );
 };
 
-const HomeCard = ({ title, action, children, helperText, titleId }) => {
+const HomeCard = ({
+  title,
+  action,
+  backgroundImage,
+  cardSx,
+  children,
+  headingSx,
+  helperText,
+  titleId,
+}) => {
   return (
     <Card
       component="section"
@@ -55,19 +65,33 @@ const HomeCard = ({ title, action, children, helperText, titleId }) => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
+        border: 'none',
+        boxShadow: 'none',
+        bgcolor: theme => theme.pageContentBand.background,
+        backgroundImage: backgroundImage && `url(${backgroundImage})`,
+        backgroundPosition: 'bottom center',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: '100% auto',
+        ...cardSx,
       }}
     >
-      <Stack direction="column" sx={{ p: 4 }}>
-        <Stack direction="row">
+      <Stack direction="column" sx={{ p: { xs: 3, md: 4 }, height: '100%' }}>
+        <Stack direction="row" alignItems="baseline">
           <Typography
             id={titleId}
             variant="h2"
-            sx={{ pt: 0, pb: 2, textTransform: 'uppercase' }}
+            sx={{
+              pt: 0,
+              pb: 2,
+              color: 'inherit',
+              textTransform: 'uppercase',
+              ...headingSx,
+            }}
           >
             {title}
           </Typography>
           {helperText && (
-            <Box sx={{ alignItems: 'center' }}>
+            <Box>
               <HelperText i18nKey={helperText} />
             </Box>
           )}

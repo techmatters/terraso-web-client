@@ -49,9 +49,18 @@ const setup = async (
         },
       },
     },
-  }
+  },
+  props
 ) => {
-  await render(<AppBar />, initialState);
+  await render(<AppBar {...props} />, initialState);
+};
+
+const mockMobileViewport = isNarrowMobile => {
+  useMediaQuery.mockImplementation(
+    query =>
+      query.includes('949.95px') ||
+      (query === '(max-width:299px)' && isNarrowMobile)
+  );
 };
 
 beforeEach(() => {
@@ -163,12 +172,73 @@ test('AppBar: Mobile account menu sign out', async () => {
   global.fetch.mockResolvedValueOnce({
     status: 200,
   });
-  useMediaQuery.mockReturnValue(true);
+  mockMobileViewport(false);
   await setup();
 
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Account Profile' }))
   );
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Sign Out' }))
+  );
+
+  expect(Cookies.remove).toHaveBeenCalledTimes(4);
+});
+
+test('AppBar: Mobile navigation menu', async () => {
+  mockMobileViewport(false);
+  await setup(undefined, { showInlineNavigation: false });
+
+  const localePicker = screen.getByRole('combobox', {
+    name: /Selected language:/,
+  });
+  const navigationButton = screen.getByRole('button', { name: 'Main' });
+
+  expect(
+    localePicker.compareDocumentPosition(navigationButton) &
+      Node.DOCUMENT_POSITION_FOLLOWING
+  ).toBeTruthy();
+
+  await act(async () => fireEvent.click(navigationButton));
+
+  expect(screen.getByRole('menuitem', { name: 'Home' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('menuitem', { name: 'Story Maps' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('menuitem', { name: 'Landscapes' })
+  ).toBeInTheDocument();
+  expect(screen.getByRole('menuitem', { name: 'Groups' })).toBeInTheDocument();
+});
+
+test('AppBar: Mobile widths below 300px move account actions into navigation menu', async () => {
+  global.fetch.mockResolvedValueOnce({
+    status: 200,
+  });
+  mockMobileViewport(true);
+  await setup(undefined, { showInlineNavigation: false });
+
+  expect(
+    screen.queryByRole('button', { name: 'Account Profile' })
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('combobox', { name: /Selected language:/ })
+  ).not.toBeInTheDocument();
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Main' }))
+  );
+
+  expect(
+    screen.getByRole('combobox', { name: /Selected language:/ })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('menuitem', { name: 'First Last' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('menuitem', { name: 'Sign Out' })
+  ).toBeInTheDocument();
 
   await act(async () =>
     fireEvent.click(screen.getByRole('menuitem', { name: 'Sign Out' }))

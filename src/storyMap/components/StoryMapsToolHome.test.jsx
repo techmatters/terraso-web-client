@@ -27,6 +27,7 @@ import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { mockTerrasoAPIrequestGraphQL } from 'terraso-web-client/tests/apiUtils';
 
 import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
+import { STORY_MAP_CARD_IMAGE_ASPECT_RATIO } from 'terraso-web-client/storyMap/components/storyMapHomeListItemUtils';
 import StoryMapsToolsHome from 'terraso-web-client/storyMap/components/StoryMapsToolHome';
 
 jest.mock('terraso-client-shared/terrasoApi/api');
@@ -170,6 +171,8 @@ test('StoryMapsToolHome: user story maps render correctly', async () => {
     name: 'Story 1 featured image',
   });
   expect(image).toHaveAttribute('src', 'https://example.com/story-map-1.png');
+  expect(STORY_MAP_CARD_IMAGE_ASPECT_RATIO).toBe('184 / 97');
+  expect(image).toHaveStyle({ width: '100%', height: '100%' });
   await act(async () => fireEvent.error(image));
   expect(image).toHaveAttribute('src', '/storyMap/terraso-story-maps-img.jpg');
   expect(

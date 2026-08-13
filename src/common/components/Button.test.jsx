@@ -61,6 +61,21 @@ test('Button applies Figma outlined primary styles', async () => {
   });
 });
 
+test('Button applies muted inverted text styles', async () => {
+  await render(
+    <Button color="invertedMuted" variant="text">
+      Story map tutorials
+    </Button>
+  );
+
+  expect(
+    screen.getByRole('button', { name: 'Story map tutorials' })
+  ).toHaveStyle({
+    color: '#C5D4D9',
+    border: '1px solid transparent',
+  });
+});
+
 test('Button applies Figma outlined focus styles', async () => {
   await render(
     <Button color="primary" variant="outlined">

@@ -75,6 +75,13 @@ test('Home: Display loader', async () => {
   });
   expect(loaders.length).toBe(1);
   loaders.forEach(role => expect(role).toBeInTheDocument());
+  expect(screen.getByText('Terraso Story Maps')).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'Make a Story Map' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('link', { name: 'My Story Maps' })
+  ).toBeInTheDocument();
 });
 test('Home: Display CTA cards for Landscapes and Groups', async () => {
   terrasoApi.requestGraphQL.mockReturnValue(
@@ -192,6 +199,12 @@ test('Home: Display Story Maps', async () => {
   expect(
     screen.getByRole('link', { name: 'Make a Story Map' })
   ).toHaveAttribute('href', '/tools/story-maps/new');
+  const tutorialsLink = screen.getByRole('link', {
+    name: 'Story map tutorials',
+  });
+  expect(tutorialsLink).toHaveAttribute('href', 'https://terraso.org/help/');
+  expect(tutorialsLink).toHaveAttribute('target', '_blank');
+  expect(tutorialsLink).toHaveAttribute('rel', 'noopener noreferrer');
   expect(screen.getByRole('link', { name: 'My Story Maps' })).toHaveAttribute(
     'href',
     '/tools/story-maps'

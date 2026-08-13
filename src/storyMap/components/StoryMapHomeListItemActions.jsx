@@ -12,6 +12,7 @@ import SocialShare, {
 } from 'terraso-web-client/common/components/SocialShare';
 import Restricted from 'terraso-web-client/permissions/components/Restricted';
 import DeleteButton from 'terraso-web-client/storyMap/components/StoryMapDeleteButton';
+import { STORY_MAP_DESKTOP_ACTIONS_MEDIA_QUERY } from 'terraso-web-client/storyMap/components/storyMapHomeListItemUtils';
 import useStoryMapHomeListItemActions from 'terraso-web-client/storyMap/components/useStoryMapHomeListItemActions';
 import {
   generateStoryMapEmbedUrl,
@@ -139,17 +140,37 @@ const StoryMapHomeListItemActions = ({
 
   return (
     <Stack
+      direction="row"
       sx={{
-        alignItems: 'flex-start',
+        alignItems: 'center',
+        justifyContent: { xs: 'flex-start', sm: 'flex-end' },
+        flexWrap: 'wrap',
         flexShrink: 0,
         alignSelf: 'stretch',
-        width: { xs: '100%', md: 'auto' },
+        width: '100%',
+        [STORY_MAP_DESKTOP_ACTIONS_MEDIA_QUERY]: {
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          justifyContent: 'flex-start',
+          flexWrap: 'nowrap',
+          width: 'auto',
+        },
       }}
-      spacing={2}
+      spacing={1}
+      useFlexGap
     >
       {primaryAction.render()}
       {!isStoryMapMembershipPending && (
-        <Stack direction="row" spacing={2} sx={{ alignItems: 'flex-start' }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            alignItems: 'flex-start',
+            [STORY_MAP_DESKTOP_ACTIONS_MEDIA_QUERY]: {
+              columnGap: 2,
+            },
+          }}
+        >
           <RouterButton to={editUrl} size="medium" variant="outlined">
             {t('storyMap.home_edit')}
           </RouterButton>

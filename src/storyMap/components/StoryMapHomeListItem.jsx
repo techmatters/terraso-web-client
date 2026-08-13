@@ -29,9 +29,11 @@ import {
   getStoryMapImage,
   getStoryMapImageAlt,
   getTitleDestination,
-  STORY_MAP_CARD_IMAGE_HEIGHT,
+  STORY_MAP_CARD_IMAGE_ASPECT_RATIO,
   STORY_MAP_CARD_IMAGE_WIDTH,
+  STORY_MAP_DESKTOP_ACTIONS_MEDIA_QUERY,
   STORY_MAP_FALLBACK_IMAGE,
+  STORY_MAP_ROW_ACTIONS_IMAGE_WIDTH,
 } from 'terraso-web-client/storyMap/components/storyMapHomeListItemUtils';
 
 const TITLE_STYLES = {
@@ -142,52 +144,75 @@ const StoryMapHomeListItem = ({ storyMap }) => {
           boxShadow: 'none',
         }}
       >
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          spacing={{ xs: 2, md: 3 }}
+        <Box
           sx={{
-            justifyContent: 'flex-start',
-            alignItems: { xs: 'stretch', md: 'flex-start' },
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: 'minmax(0, 1fr)',
+              sm: `${STORY_MAP_ROW_ACTIONS_IMAGE_WIDTH}px minmax(0, 1fr)`,
+            },
+            columnGap: { xs: 0, sm: 5 },
+            rowGap: 2,
+            alignItems: 'flex-start',
+            [STORY_MAP_DESKTOP_ACTIONS_MEDIA_QUERY]: {
+              gridTemplateColumns: `${STORY_MAP_CARD_IMAGE_WIDTH}px minmax(0, 1fr)`,
+              columnGap: 3,
+            },
           }}
         >
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={{ xs: 2, sm: 5 }}
+          <Box
             sx={{
-              minWidth: 0,
-              flexGrow: 1,
-              alignItems: { xs: 'stretch', sm: 'flex-start' },
+              width: { xs: '100%', sm: STORY_MAP_ROW_ACTIONS_IMAGE_WIDTH },
+              aspectRatio: STORY_MAP_CARD_IMAGE_ASPECT_RATIO,
+              flexShrink: 0,
+              overflow: 'hidden',
+              borderRadius: '8px',
+              bgcolor: 'grey.200',
+              gridColumn: 1,
+              gridRow: { xs: 'auto', sm: 1 },
+              [STORY_MAP_DESKTOP_ACTIONS_MEDIA_QUERY]: {
+                width: STORY_MAP_CARD_IMAGE_WIDTH,
+              },
             }}
           >
             <Box
+              component="img"
+              src={imageSrc}
+              alt={getStoryMapImageAlt(storyMapConfig, storyMap.title)}
+              onError={handleImageError}
               sx={{
-                width: { xs: '100%', sm: STORY_MAP_CARD_IMAGE_WIDTH },
-                flexShrink: 0,
+                display: 'block',
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
               }}
-            >
-              <Box
-                component="img"
-                src={imageSrc}
-                alt={getStoryMapImageAlt(storyMapConfig, storyMap.title)}
-                onError={handleImageError}
-                sx={{
-                  display: 'block',
-                  width: '100%',
-                  height: { xs: 168, sm: STORY_MAP_CARD_IMAGE_HEIGHT },
-                  objectFit: 'cover',
-                  borderRadius: '8px',
-                  bgcolor: 'grey.200',
-                }}
-              />
-            </Box>
+            />
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              minWidth: 0,
+              gridColumn: { xs: 1, sm: 2 },
+              gridRow: { xs: 'auto', sm: 1 },
+              alignSelf: 'stretch',
+              [STORY_MAP_DESKTOP_ACTIONS_MEDIA_QUERY]: {
+                display: 'grid',
+                gridTemplateColumns: 'minmax(0, 1fr) auto',
+                columnGap: 3,
+              },
+            }}
+          >
             <Stack
               spacing={1}
               sx={{
                 minWidth: 0,
-                flexGrow: 1,
-                justifyContent: 'flex-start',
                 alignItems: 'flex-start',
                 alignSelf: 'stretch',
+                [STORY_MAP_DESKTOP_ACTIONS_MEDIA_QUERY]: {
+                  gridColumn: 1,
+                  gridRow: 1,
+                },
               }}
             >
               <Stack
@@ -247,13 +272,27 @@ const StoryMapHomeListItem = ({ storyMap }) => {
                 {timestampLabel}
               </Typography>
             </Stack>
-          </Stack>
-          <StoryMapHomeListItemActions
-            isStoryMapMembershipPending={isStoryMapMembershipPending}
-            storyMap={storyMap}
-            storyMapConfig={storyMapConfig}
-          />
-        </Stack>
+            <Box
+              sx={{
+                width: '100%',
+                mt: 2,
+                [STORY_MAP_DESKTOP_ACTIONS_MEDIA_QUERY]: {
+                  width: 'auto',
+                  mt: 0,
+                  gridColumn: 2,
+                  gridRow: 1,
+                  alignSelf: 'stretch',
+                },
+              }}
+            >
+              <StoryMapHomeListItemActions
+                isStoryMapMembershipPending={isStoryMapMembershipPending}
+                storyMap={storyMap}
+                storyMapConfig={storyMapConfig}
+              />
+            </Box>
+          </Box>
+        </Box>
       </Card>
     </ListItem>
   );

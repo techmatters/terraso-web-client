@@ -16,9 +16,22 @@
  */
 
 import { useTranslation } from 'react-i18next';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, Typography } from '@mui/material';
 
 import HomeCard from 'terraso-web-client/home/components/HomeCard';
+
+const CARD_SX = {
+  minHeight: { xs: 300, md: 150 },
+};
+
+const HEADING_SX = {
+  color: 'text.primary',
+  fontSize: '30px',
+  lineHeight: '36px',
+  textTransform: 'none',
+  wordWrap: 'break-word',
+};
 
 const GroupDefaultHomeCard = () => {
   const { t } = useTranslation();
@@ -27,9 +40,13 @@ const GroupDefaultHomeCard = () => {
     <HomeCard
       title={t('group.home_default_card_title')}
       titleId="groups-default-title"
+      cardSx={CARD_SX}
+      headingSx={HEADING_SX}
+      backgroundImage="/files/card-background-secondary-2.png"
       action={{
         label: t('group.default_connect_button'),
         to: '/groups',
+        endIcon: <ChevronRightIcon />,
       }}
     >
       <Box
