@@ -86,7 +86,7 @@ const BLOCK_OPTIONS = [
 ];
 const LIST_TYPES = ['bulleted-list', 'numbered-list'];
 
-const EMPTY_VALUE = [
+const createEmptyValue = () => [
   {
     type: 'paragraph',
     children: [{ text: '' }],
@@ -95,7 +95,7 @@ const EMPTY_VALUE = [
 
 const normalizeValue = value => {
   if (!value) {
-    return EMPTY_VALUE;
+    return createEmptyValue();
   }
 
   if (typeof value === 'string') {
