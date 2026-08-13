@@ -17,17 +17,13 @@
 
 import { useMemo } from 'react';
 import _ from 'lodash/fp';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
-import { Button, Grid, Paper, Typography } from '@mui/material';
+import { Stack } from '@mui/material';
 
-import ExternalLink from 'terraso-web-client/common/components/ExternalLink';
-import LoaderCard from 'terraso-web-client/common/components/LoaderCard';
 import { useDocumentTitle } from 'terraso-web-client/common/document';
 import PageContainer from 'terraso-web-client/layout/PageContainer';
-import PageHeader from 'terraso-web-client/layout/PageHeader';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
 import { useBreadcrumbsParams } from 'terraso-web-client/navigation/breadcrumbsContext';
 import { fetchFeaturedStoryMaps } from 'terraso-web-client/home/homeSlice';
@@ -35,36 +31,11 @@ import FeaturedStoryMapsSection from 'terraso-web-client/storyMap/components/Fea
 import StoryMapsCard, {
   STORY_MAP_CARD_VARIANTS,
 } from 'terraso-web-client/storyMap/components/StoryMapsCard';
+import StoryMapsEditorCard from 'terraso-web-client/storyMap/components/StoryMapsEditorCard';
 import { fetchUserStoryMaps } from 'terraso-web-client/storyMap/storyMapSlice';
-
-const StoryMaps = ({ storyMaps, fetching }) => {
-  const { t } = useTranslation();
-  const { data: user } = useSelector(_.get('account.currentUser'));
-  const possession = user.firstName.slice(-1) === 's' ? "'" : "'s";
-
-  if (fetching) {
-    return <LoaderCard />;
-  }
-
-  if (_.isEmpty(storyMaps)) {
-    return;
-  }
-
-  return (
-    <StoryMapsCard
-      variant={STORY_MAP_CARD_VARIANTS.TOOL_HOME}
-      storyMaps={storyMaps}
-      title={t('storyMap.story_maps_title', {
-        name: user.firstName,
-        possession: possession,
-      })}
-    />
-  );
-};
 
 const StoryMapsToolsHome = () => {
   const { t } = useTranslation();
-  const { data: user } = useSelector(_.get('account.currentUser'));
   const { list, fetching: fetchingStoryMaps } = useSelector(
     _.get('storyMap.userStoryMaps')
   );
@@ -78,45 +49,16 @@ const StoryMapsToolsHome = () => {
   return (
     <>
       {fetchingStoryMaps && <PageLoader />}
-      <PageContainer maxWidth="lg">
-        <PageHeader header={t('storyMap.tool_home_title')} />
-        <Grid container spacing={2} sx={{ width: '100%' }}>
-          {!_.isEmpty(list) && (
-            <Grid size={{ xs: 12, sm: 8 }}>
-              <StoryMaps storyMaps={list} fetching={fetchingStoryMaps} />
-            </Grid>
+      <PageContainer maxWidth="lg" sx={{ paddingTop: 3 }}>
+        <Stack spacing={3} sx={{ width: '100%' }}>
+          <StoryMapsCard
+            title={t('storyMap.tool_home_title')}
+            variant={STORY_MAP_CARD_VARIANTS.DASHBOARD_FEATURE}
+          />
+          {!fetchingStoryMaps && !_.isEmpty(list) && (
+            <StoryMapsEditorCard storyMaps={list} />
           )}
-          <Grid size={{ sm: _.isEmpty(list) ? 12 : 4 }}>
-            <Paper
-              variant="outlined"
-              sx={{ bgcolor: 'white', p: 2, borderRadius: '8px' }}
-            >
-              <Typography variant="body1">
-                {t('storyMap.tool_home_description')}
-              </Typography>
-              <Button
-                variant="contained"
-                component={Link}
-                to="/tools/story-maps/new"
-                state={{ source: 'story_maps_page' }}
-                sx={{ mt: 2, mb: 3 }}
-              >
-                {t('storyMap.tool_home_create_button')}
-              </Button>
-              <Trans i18nKey="storyMap.tool_home_help">
-                <Typography>
-                  Question
-                  <ExternalLink
-                    href={t('storyMap.tool_home_help_document_url')}
-                    underlined={true}
-                  >
-                    <u>Help</u>
-                  </ExternalLink>
-                </Typography>
-              </Trans>
-            </Paper>
-          </Grid>
-        </Grid>
+        </Stack>
       </PageContainer>
       <FeaturedStoryMapsSection storyMaps={featuredStoryMaps} />
     </>

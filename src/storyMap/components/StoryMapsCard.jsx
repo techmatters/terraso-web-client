@@ -35,9 +35,9 @@ import HomeCard from 'terraso-web-client/home/components/HomeCard';
 import StoryMapHomeListItem from 'terraso-web-client/storyMap/components/StoryMapHomeListItem';
 
 export const STORY_MAP_CARD_VARIANTS = {
+  DASHBOARD_FEATURE: 'dashboard-feature',
   HOME: 'home',
   HOME_EMPTY: 'home-empty',
-  TOOL_HOME: 'tool-home',
 };
 
 const List = withProps(BaseList, {
@@ -64,18 +64,29 @@ const HOME_STORY_MAPS_SKELETON_SX = {
   bgcolor: 'rgba(255, 255, 255, 0.24)',
 };
 
+const DASHBOARD_FEATURE_CARD_SX = {
+  color: 'white',
+  bgcolor: 'secondary.main',
+};
+
+const DASHBOARD_FEATURE_HEADING_SX = {
+  fontSize: '42px',
+  lineHeight: '49.01px',
+  textTransform: 'none',
+};
+
+const DASHBOARD_FEATURE_CONTENT_SX = {
+  alignItems: 'center',
+  textAlign: 'center',
+};
+
 const getCardPresentation = variant => {
   switch (variant) {
+    case STORY_MAP_CARD_VARIANTS.DASHBOARD_FEATURE:
     case STORY_MAP_CARD_VARIANTS.HOME_EMPTY:
       return {
         showCreateAction: true,
         showStoryMapList: false,
-        showMyStoryMapsAction: false,
-      };
-    case STORY_MAP_CARD_VARIANTS.TOOL_HOME:
-      return {
-        showCreateAction: false,
-        showStoryMapList: true,
         showMyStoryMapsAction: false,
       };
     case STORY_MAP_CARD_VARIANTS.HOME:
@@ -118,41 +129,79 @@ const StoryMapsCard = ({
     };
   }, [t, showMyStoryMapsAction]);
 
-  const isHomeFeatureCard = variant !== STORY_MAP_CARD_VARIANTS.TOOL_HOME;
+  const isHomeFeatureCard = [
+    STORY_MAP_CARD_VARIANTS.HOME,
+    STORY_MAP_CARD_VARIANTS.HOME_EMPTY,
+  ].includes(variant);
+  const isDashboardFeatureCard =
+    variant === STORY_MAP_CARD_VARIANTS.DASHBOARD_FEATURE;
+  const isFeatureCard = isHomeFeatureCard || isDashboardFeatureCard;
 
   return (
     <HomeCard
       title={title}
       titleId="story-maps-list-title"
+      titleComponent={isDashboardFeatureCard ? 'h1' : undefined}
       action={action}
-      cardSx={isHomeFeatureCard ? HOME_CARD_SX : undefined}
-      headingSx={isHomeFeatureCard ? HOME_HEADING_SX : undefined}
+      contentSx={
+        isDashboardFeatureCard ? DASHBOARD_FEATURE_CONTENT_SX : undefined
+      }
+      cardSx={
+        isHomeFeatureCard
+          ? HOME_CARD_SX
+          : isDashboardFeatureCard
+            ? DASHBOARD_FEATURE_CARD_SX
+            : undefined
+      }
+      headingSx={
+        isHomeFeatureCard
+          ? HOME_HEADING_SX
+          : isDashboardFeatureCard
+            ? DASHBOARD_FEATURE_HEADING_SX
+            : undefined
+      }
       backgroundImage={
         isHomeFeatureCard ? '/files/card-background-primary-1.png' : undefined
       }
     >
-      <Stack direction="column" sx={{ width: '100%' }}>
-        <Typography sx={{ pb: 2, color: 'inherit' }}>
+      <Stack
+        direction="column"
+        sx={{
+          width: '100%',
+          alignItems: isDashboardFeatureCard ? 'center' : undefined,
+        }}
+      >
+        <Typography
+          sx={{
+            pb: 2,
+            color: 'inherit',
+            maxWidth: isDashboardFeatureCard ? 720 : undefined,
+          }}
+        >
           {t('storyMap.home_default_description')}
         </Typography>
         {showCreateAction && (
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
             spacing={2}
-            alignItems={{ xs: 'flex-start', sm: 'center' }}
-            sx={{ pb: 5 }}
+            alignItems={
+              isDashboardFeatureCard
+                ? 'center'
+                : { xs: 'flex-start', sm: 'center' }
+            }
+            sx={{ pb: isDashboardFeatureCard ? 0 : 5 }}
           >
             <RouterButton
               variant="contained"
               color="secondary"
-              size="medium"
+              size="large"
               to="/tools/story-maps/new"
               state={{ source: 'home_page' }}
               endIcon={<ChevronRightIcon />}
             >
               {t('storyMap.home_create')}
             </RouterButton>
-            {isHomeFeatureCard && (
+            {isFeatureCard && (
               <Button
                 component="a"
                 href="https://terraso.org/help/"
@@ -160,6 +209,7 @@ const StoryMapsCard = ({
                 rel="noopener noreferrer"
                 variant="text"
                 color="invertedMuted"
+                size="large"
                 startIcon={<OpenInNewOutlinedIcon />}
               >
                 {t('storyMap.home_tutorials')}
