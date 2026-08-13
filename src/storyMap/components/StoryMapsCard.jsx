@@ -38,7 +38,6 @@ export const STORY_MAP_CARD_VARIANTS = {
   DASHBOARD_FEATURE: 'dashboard-feature',
   HOME: 'home',
   HOME_EMPTY: 'home-empty',
-  TOOL_HOME: 'tool-home',
 };
 
 const List = withProps(BaseList, {
@@ -88,12 +87,6 @@ const getCardPresentation = variant => {
       return {
         showCreateAction: true,
         showStoryMapList: false,
-        showMyStoryMapsAction: false,
-      };
-    case STORY_MAP_CARD_VARIANTS.TOOL_HOME:
-      return {
-        showCreateAction: false,
-        showStoryMapList: true,
         showMyStoryMapsAction: false,
       };
     case STORY_MAP_CARD_VARIANTS.HOME:
