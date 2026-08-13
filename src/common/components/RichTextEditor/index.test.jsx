@@ -386,6 +386,24 @@ test('RichTextEditor: rerendered value replaces the live editor contents', async
   expect(screen.getByText('Updated value')).toBeInTheDocument();
 });
 
+test('RichTextEditor: renders independent documents for empty editors', async () => {
+  Editor.nodes.mockImplementation(actualSlateEditor.nodes);
+
+  await render(
+    <>
+      <RichTextEditor label="First empty editor" />
+      <RichTextEditor label="Second empty editor" />
+    </>
+  );
+
+  expect(
+    screen.getByRole('textbox', { name: 'First empty editor' })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('textbox', { name: 'Second empty editor' })
+  ).toBeInTheDocument();
+});
+
 test('RichTextEditor: rerendered value waits until blur when editor is focused', async () => {
   Editor.nodes.mockImplementation(actualSlateEditor.nodes);
 
