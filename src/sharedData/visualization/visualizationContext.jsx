@@ -49,6 +49,7 @@ export const VisualizationContextProvider = props => {
   const [loadingFile, setLoadingFile] = useState(true);
   const [loadingFileError, setLoadingFileError] = useState();
   const [useTileset, setUseTileset] = useState(null);
+  const [geoJsonUrl, setGeoJsonUrl] = useState(null);
 
   const clear = useCallback(() => {
     setVisualizationConfig(INITIAL_CONFIG);
@@ -56,6 +57,7 @@ export const VisualizationContextProvider = props => {
     setLoadingFile(true);
     setLoadingFileError(null);
     setUseTileset(null);
+    setGeoJsonUrl(null);
   }, [setVisualizationConfig]);
 
   const isMapFile = useMemo(() => {
@@ -69,16 +71,30 @@ export const VisualizationContextProvider = props => {
   }, [visualizationConfig.selectedFile]);
 
   useEffect(() => {
-    if (!visualizationConfig.tilesetId) {
+    if (visualizationConfig.geojsonSignedUrl) {
+      setGeoJsonUrl(visualizationConfig.geojsonSignedUrl);
+      setUseTileset(false);
+      setLoadingFile(false);
       return;
     }
 
-    setUseTileset(true);
-    setLoadingFile(false);
-  }, [visualizationConfig.tilesetId]);
+    if (visualizationConfig.tilesetId) {
+      setGeoJsonUrl(null);
+      setUseTileset(true);
+      setLoadingFile(false);
+      return;
+    }
+
+    setGeoJsonUrl(null);
+    setUseTileset(false);
+  }, [visualizationConfig.geojsonSignedUrl, visualizationConfig.tilesetId]);
 
   useEffect(() => {
-    if (!visualizationConfig.selectedFile || visualizationConfig.tilesetId) {
+    if (
+      !visualizationConfig.selectedFile ||
+      visualizationConfig.tilesetId ||
+      visualizationConfig.geojsonSignedUrl
+    ) {
       return;
     }
     const newFileContext =
@@ -126,6 +142,7 @@ export const VisualizationContextProvider = props => {
   }, [
     visualizationConfig.selectedFile,
     visualizationConfig.tilesetId,
+    visualizationConfig.geojsonSignedUrl,
     fileContext,
     dispatch,
     isMapFile,
@@ -151,6 +168,7 @@ export const VisualizationContextProvider = props => {
         loadingFileError,
         getDataColumns,
         useTileset,
+        geoJsonUrl,
         isMapFile,
         clear,
       }}

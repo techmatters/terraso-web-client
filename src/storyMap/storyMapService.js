@@ -371,11 +371,17 @@ export const addMapLayer = ({
       },
     })
     .then(_.get('addVisualizationConfig.visualizationConfig'))
-    .then(({ geojson, configuration, ...rest }) => ({
-      ...rest,
-      ...JSON.parse(configuration),
-      geojson: JSON.parse(geojson),
-    }));
+    .then(({ geojson, configuration, ...rest }) => {
+      const result = {
+        ...rest,
+        ...JSON.parse(configuration),
+      };
+      // Only include inline geojson for VCs without S3 URL (legacy path)
+      if (!rest.geojsonSignedUrl) {
+        result.geojson = JSON.parse(geojson);
+      }
+      return result;
+    });
 };
 
 export const fetchDataLayers = ({ ownerId }) => {
@@ -424,6 +430,7 @@ export const fetchDataLayers = ({ ownerId }) => {
       list.map(entry => ({
         ..._.omit(['configuration', 'geojson'], entry.node),
         tilesetId: entry.node.mapboxTilesetId,
+        geojsonSignedUrl: entry.node.geojsonSignedUrl,
         dataEntry: {
           ...entry.node.dataEntry,
           sharedResources: entry.node.dataEntry.sharedResources?.edges.map(
@@ -435,9 +442,7 @@ export const fetchDataLayers = ({ ownerId }) => {
             edge.node?.target?.membershipList?.membershipType ===
             MEMBERSHIP_TYPE_CLOSED
         ),
-        processing:
-          entry.node.mapboxTilesetStatus === TILESET_STATUS_PENDING ||
-          !entry.node.mapboxTilesetId,
+        processing: !entry.node.geojsonSignedUrl && !entry.node.mapboxTilesetId,
         ...JSON.parse(entry.node.configuration),
         geojson: JSON.parse(entry.node.geojson),
       }))

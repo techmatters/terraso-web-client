@@ -66,6 +66,7 @@ export const visualizationConfigWithConfiguration = /* GraphQL */ `
     ...visualizationConfig
     mapboxTilesetId
     mapboxTilesetStatus
+    geojsonSignedUrl
     configuration
   }
 `;

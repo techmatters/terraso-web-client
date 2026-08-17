@@ -70,7 +70,8 @@ const Visualization = props => {
   } = props;
 
   const visualizationContext = useVisualizationContext();
-  const { useTileset, isMapFile, loadingFile } = visualizationContext;
+  const { useTileset, isMapFile, loadingFile, geoJsonUrl } =
+    visualizationContext;
 
   const visualizationConfig = useMemo(
     () => ({
@@ -103,7 +104,9 @@ const Visualization = props => {
         <MapStyleSwitcher />
         {!visualizationContext.loadingFile && (
           <>
-            {useTileset ? (
+            {geoJsonUrl ? (
+              <GeoJsonSource id="visualization" geoJsonUrl={geoJsonUrl} />
+            ) : useTileset ? (
               <MapboxRemoteSource
                 sourceName="visualization"
                 visualizationConfig={visualizationConfig}

@@ -49,6 +49,7 @@ const initialState = {
   },
   dataLayers: {
     fetching: true,
+    saving: false,
     list: [],
   },
 };
@@ -404,6 +405,27 @@ const storyMapSlice = createSlice({
       },
     }));
 
+    builder.addCase(addMapLayer.pending, state => ({
+      ...state,
+      dataLayers: {
+        ...state.dataLayers,
+        saving: true,
+      },
+    }));
+    builder.addCase(addMapLayer.fulfilled, state => ({
+      ...state,
+      dataLayers: {
+        ...state.dataLayers,
+        saving: false,
+      },
+    }));
+    builder.addCase(addMapLayer.rejected, state => ({
+      ...state,
+      dataLayers: {
+        ...state.dataLayers,
+        saving: false,
+      },
+    }));
     builder.addCase(fetchDataLayers.pending, state => ({
       ...state,
       dataLayers: initialState.dataLayers,
