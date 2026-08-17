@@ -70,11 +70,30 @@ const getSourceBounds = async (map, sourceId) => {
     return new mapboxgl.LngLatBounds(loadedSource.bounds);
   }
 
-  if (!loadedSource._data) {
+  // When _data is a string (URL-based source), fetch the GeoJSON to compute
+  // bounds. The browser cache serves this instantly since Mapbox GL already
+  // fetched it. For inline GeoJSON objects, compute bounds directly.
+  let sourceData = loadedSource._data;
+
+  if (typeof sourceData === 'string') {
+    try {
+      const response = await fetch(sourceData);
+      sourceData = await response.json();
+    } catch {
+      return;
+    }
+  }
+
+  if (!sourceData || typeof sourceData !== 'object') {
     return;
   }
 
-  const calculatedBbox = bbox(loadedSource._data);
+  let calculatedBbox;
+  try {
+    calculatedBbox = bbox(sourceData);
+  } catch {
+    return;
+  }
   if (
     calculatedBbox.some(
       value => !value || value === Infinity || value === -Infinity

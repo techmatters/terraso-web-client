@@ -15,24 +15,51 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { useMap } from 'terraso-web-client/gis/components/Map';
 
 const GeoJsonSource = props => {
-  const { id, geoJson } = props;
+  const { id, geoJson, geoJsonUrl, onError } = props;
   const { map, addSource } = useMap();
+
+  const handleSourceError = useCallback(
+    event => {
+      if (onError && event.sourceId === id && event.error) {
+        onError(event.error);
+      }
+    },
+    [onError, id]
+  );
 
   useEffect(() => {
     if (!map) {
       return;
     }
 
+    const sourceData = geoJsonUrl
+      ? geoJsonUrl
+      : geoJson
+        ? geoJson
+        : { type: 'FeatureCollection', features: [] };
+
     addSource(id, {
       type: 'geojson',
-      data: geoJson ? geoJson : { type: 'FeatureCollection', features: [] },
+      data: sourceData,
     });
-  }, [id, map, addSource, geoJson]);
+  }, [id, map, addSource, geoJson, geoJsonUrl]);
+
+  // Listen for source errors
+  useEffect(() => {
+    if (!map || !onError) {
+      return;
+    }
+
+    map.on('error', handleSourceError);
+    return () => {
+      map.off('error', handleSourceError);
+    };
+  }, [map, onError, handleSourceError]);
 
   return null;
 };

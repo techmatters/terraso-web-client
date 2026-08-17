@@ -25,24 +25,46 @@ type Props = {
   changeBounds: boolean;
   useConfigBounds?: boolean;
   opacity?: number;
+  onSourceError?: (error: unknown) => void;
 };
+
+const getSourceType = (config: MapLayerConfig): 's3' | 'tileset' | 'inline' => {
+  if (config.geojsonSignedUrl) {
+    return 's3';
+  }
+  if (
+    config.mapboxTilesetStatus === 'READY' &&
+    Boolean(config.mapboxTilesetId)
+  ) {
+    return 'tileset';
+  }
+  return 'inline';
+};
+
 export const StoryMapLayer = ({
   config,
   changeBounds,
   opacity,
   useConfigBounds = false,
+  onSourceError,
 }: Props) => {
-  const useTileset =
-    config.mapboxTilesetStatus === 'READY' && Boolean(config.mapboxTilesetId);
+  const sourceType = getSourceType(config);
+  const useTileset = sourceType === 'tileset';
+
   return (
     <>
-      {useTileset ? (
+      {sourceType === 'tileset' ? (
         <VisualizationMapRemoteSource
           sourceName={config.id}
           visualizationConfig={config}
         />
       ) : (
-        <GeoJsonSource id={config.id} geoJson={config.geojson} />
+        <GeoJsonSource
+          id={config.id}
+          geoJsonUrl={sourceType === 's3' ? config.geojsonSignedUrl : undefined}
+          geoJson={sourceType === 'inline' ? config.geojson : undefined}
+          onError={onSourceError}
+        />
       )}
       <VisualizationMapLayer
         sourceName={config.id}

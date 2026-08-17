@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from 'terraso-web-client/terrasoApi/store';
 import * as yup from 'yup';
 import {
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -225,9 +226,15 @@ const CreateMapLayerForm = () => {
     ? identifyLatLngColumns(headers)
     : {};
 
-  const { fetching, list: mapLayers } = useSelector(
-    state => state.storyMap.dataLayers
-  ) as { fetching: boolean; list: MapLayerConfig[] };
+  const {
+    fetching,
+    saving,
+    list: mapLayers,
+  } = useSelector(state => state.storyMap.dataLayers) as {
+    fetching: boolean;
+    saving: boolean;
+    list: MapLayerConfig[];
+  };
 
   const initialTitle = (() => {
     const fileName = selectedFile?.name;
@@ -303,6 +310,11 @@ const CreateMapLayerDialog = ({
   const { visualizationConfig, loadingFile, loadingFileError } =
     useVisualizationContext();
   const { selectedFile: dataEntry } = visualizationConfig;
+  const saving = useSelector(
+    state =>
+      (state.storyMap as { dataLayers?: { saving?: boolean } })?.dataLayers
+        ?.saving ?? false
+  );
 
   const formContext = useFormGetContext();
   const trigger = 'trigger' in formContext ? formContext.trigger : undefined;
@@ -382,12 +394,17 @@ const CreateMapLayerDialog = ({
       <DialogContent>{open && <CreateMapLayerForm />}</DialogContent>
       <DialogActions>
         <Button
-          disabled={!trigger}
+          disabled={!trigger || saving}
           size="small"
           onClick={onConfirm}
           variant="contained"
+          startIcon={
+            saving ? <CircularProgress size={16} color="inherit" /> : undefined
+          }
         >
-          {t('storyMap.form_location_add_data_layer_confirm')}
+          {saving
+            ? t('storyMap.form_location_add_data_layer_saving')
+            : t('storyMap.form_location_add_data_layer_confirm')}
         </Button>
       </DialogActions>
     </Dialog>

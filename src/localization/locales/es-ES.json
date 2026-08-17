@@ -1169,6 +1169,7 @@
         "form_location_add_data_layer_dialog_cancel": "Cancelar",
         "form_location_add_data_layer_dialog_processing": "Procesando",
         "form_location_add_data_layer_confirm": "Siguiente",
+        "form_location_add_data_layer_saving": "Guardando…",
         "share_dialog_title": "Invitar a editores",
         "share_dialog_description": "Invita a personas a editar tu story map. <1>Más información sobre cómo colaborar en story maps</1>.",
         "share_dialog_help_url": "https://terraso.org/help/how-to-manage-editors-for-your-story-map/",

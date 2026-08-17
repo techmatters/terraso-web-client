@@ -78,6 +78,7 @@ const VisualizationWrapper = props => {
             ...data.configuration,
             selectedFile: data.dataEntry,
             tilesetId: data.mapboxTilesetId,
+            geojsonSignedUrl: data.geojsonSignedUrl,
           },
     [data, fetching]
   );
