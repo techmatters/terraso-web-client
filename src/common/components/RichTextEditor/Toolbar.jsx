@@ -37,6 +37,7 @@ const Toolbar = props => {
       direction="row"
       sx={{
         bgcolor: 'gray.lite2',
+        flexWrap: 'wrap',
       }}
     >
       {groups.map((group, index) => (
@@ -46,8 +47,15 @@ const Toolbar = props => {
           disableElevation
           variant="text"
           sx={{
+            display: 'contents',
             '& .MuiButton-root': {
               color: 'black',
+              minHeight: 32,
+              minWidth: 32,
+              px: 0,
+            },
+            '& .MuiButton-root > svg': {
+              fontSize: '1.125rem',
             },
             '& .MuiButton-root.Mui-disabled': {
               color: 'gray.mid',
