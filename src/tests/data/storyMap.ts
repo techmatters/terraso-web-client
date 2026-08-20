@@ -98,5 +98,8 @@ export const createTestVisualizationConfigNode = (
   configuration: JSON.stringify({ visualization: 'test' }),
   geojson: JSON.stringify({ type: 'FeatureCollection', features: [] }),
   dataEntry: createTestDataEntryNode(),
+  owner: {
+    __typename: 'StoryMapNode',
+  } as unknown as VisualizationConfigNode['owner'],
   ...overrides,
 });

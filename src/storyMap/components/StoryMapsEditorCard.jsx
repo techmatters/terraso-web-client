@@ -17,8 +17,9 @@
 
 import { useMemo, useState, useTransition } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Button, Card, Stack, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Button, Card, Stack, Tabs, Typography } from '@mui/material';
 
+import { Tab } from 'terraso-web-client/common/components/Tabs';
 import StoryMapHomeListItem from 'terraso-web-client/storyMap/components/StoryMapHomeListItem';
 
 const INITIAL_VISIBLE_STORY_MAPS = 3;
