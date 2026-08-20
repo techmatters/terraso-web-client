@@ -20,10 +20,15 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import ErrorIcon from '@mui/icons-material/Report';
-import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Box, Button, Paper, Stack, Tab, Typography } from '@mui/material';
+import { Box, Button, Paper, Stack, Typography } from '@mui/material';
 
 import { useCollaborationContext } from 'terraso-web-client/collaboration/collaborationContext';
+import {
+  Tab,
+  TabContext,
+  TabList,
+  TabPanel,
+} from 'terraso-web-client/common/components/Tabs';
 import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
 import {
   ILM_OUTPUT_PROP,
