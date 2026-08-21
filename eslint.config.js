@@ -61,6 +61,27 @@ const compatConfigs = compat.config({
     'no-restricted-imports': [
       'error',
       {
+        paths: [
+          {
+            name: '@mui/lab',
+            importNames: [
+              'TabContext',
+              'TabContextProps',
+              'TabPanel',
+              'TabPanelProps',
+              'TabList',
+              'TabListProps',
+            ],
+            message:
+              'Please use terraso-web-client/common/components/Tabs instead.',
+          },
+          {
+            name: '@mui/material',
+            importNames: ['Tab', 'TabProps'],
+            message:
+              'Please use terraso-web-client/common/components/Tabs instead.',
+          },
+        ],
         patterns: [
           {
             group: ['./*', '../*'],
