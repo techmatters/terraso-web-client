@@ -24,6 +24,16 @@ jest.mock('terraso-web-client/storyMap/components/StoryMapsToolHome', () => ({
   default: () => <div>Story Maps Tool Home</div>,
 }));
 
+jest.mock('terraso-web-client/storyMap/components/StoryMapMediaPoc', () => ({
+  __esModule: true,
+  default: () => <div>Story Map Media POC</div>,
+}));
+
+jest.mock('terraso-web-client/storyMap/components/UserStoryMap', () => ({
+  __esModule: true,
+  default: () => <div>User Story Map</div>,
+}));
+
 test('Routes: /tools redirects to /tools/story-maps', async () => {
   window.history.pushState({}, '', '/tools');
 
@@ -42,4 +52,23 @@ test('Routes: /tools redirects to /tools/story-maps', async () => {
 
   expect(await screen.findByText('Story Maps Tool Home')).toBeInTheDocument();
   expect(window.location.pathname).toBe('/tools/story-maps');
+});
+
+test('Routes: renders the branch-only Story Map media POC', async () => {
+  window.history.pushState({}, '', '/tools/story-maps/media-poc');
+
+  await render(<RoutesComponent />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          firstName: 'First',
+          lastName: 'Last',
+        },
+      },
+    },
+  });
+
+  expect(await screen.findByText('Story Map Media POC')).toBeInTheDocument();
 });
