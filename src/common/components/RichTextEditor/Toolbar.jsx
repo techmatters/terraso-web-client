@@ -47,6 +47,7 @@ const Toolbar = props => {
           disableElevation
           variant="text"
           sx={{
+            // Let individual controls wrap while retaining logical toolbar groups.
             display: 'contents',
             '& .MuiButton-root': {
               color: 'black',
