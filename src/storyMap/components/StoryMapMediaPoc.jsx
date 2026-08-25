@@ -22,6 +22,7 @@ const POC_THEME_ID = 'theme-7';
 const POC_THEME_STYLES = getStoryMapThemeCssVariables({
   themeId: POC_THEME_ID,
 });
+const POC_MEDIA_SURFACE = '#FFF6E3';
 
 const MEDIA_ITEMS = [
   {
@@ -217,12 +218,18 @@ const mediaLabel = (item, index) =>
 
 const mediaSource = item => item.signedUrl || item.url;
 
-const PocMedia = ({ item, compact = false, fill = false }) => {
+const PocMedia = ({
+  item,
+  compact = false,
+  fill = false,
+  maxHeight,
+  objectFit = 'contain',
+}) => {
   const style = {
     display: 'block',
     height: fill ? '100%' : undefined,
-    maxHeight: fill ? 'none' : compact ? '160px' : '360px',
-    objectFit: 'cover',
+    maxHeight: fill ? 'none' : maxHeight || (compact ? '160px' : '360px'),
+    objectFit,
     width: '100%',
   };
 
@@ -272,7 +279,7 @@ const GalleryTilePreview = ({ item }) => {
       <Box
         sx={{
           alignItems: 'center',
-          bgcolor: 'var(--story-theme-highlight)',
+          bgcolor: POC_MEDIA_SURFACE,
           color: 'var(--story-theme-text)',
           display: 'flex',
           height: '100%',
@@ -289,7 +296,7 @@ const GalleryTilePreview = ({ item }) => {
       <Box
         sx={{
           alignItems: 'center',
-          bgcolor: 'var(--story-theme-highlight)',
+          bgcolor: POC_MEDIA_SURFACE,
           color: 'var(--story-theme-text)',
           display: 'flex',
           height: '100%',
@@ -305,10 +312,86 @@ const GalleryTilePreview = ({ item }) => {
     <PocMedia
       fill
       item={item}
+      objectFit="cover"
       {...(mediaKind(item) === 'video' ? { muted: true } : {})}
     />
   );
 };
+
+const MediaViewer = ({ item, onClose }) => (
+  <Dialog
+    fullWidth
+    maxWidth="md"
+    onClose={onClose}
+    open={Boolean(item)}
+    slotProps={{
+      paper: {
+        sx: {
+          ...POC_THEME_STYLES,
+          bgcolor: 'var(--story-theme-background)',
+          boxShadow: 'none',
+          maxHeight: 'calc(100dvh - 32px)',
+          overflow: 'hidden',
+        },
+      },
+    }}
+  >
+    {item && (
+      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+        <Stack
+          data-testid="gallery-media-viewer-header"
+          direction="row"
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            px: 1,
+            py: 0.5,
+          }}
+        >
+          <DialogTitle component="h2" sx={{ m: 0, p: 1 }}>
+            {mediaTypeLabel(item)}
+          </DialogTitle>
+          <Tooltip title="Close media viewer">
+            <IconButton
+              aria-label="Close media viewer"
+              onClick={onClose}
+              sx={{
+                '&:hover': { bgcolor: 'var(--story-theme-highlight)' },
+                border: '1px solid var(--story-theme-text)',
+                color: 'var(--story-theme-text)',
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+        <Box
+          data-testid="gallery-media-viewer-stage"
+          sx={{
+            alignItems: 'center',
+            bgcolor: 'var(--story-theme-background)',
+            display: 'flex',
+            justifyContent: 'center',
+            maxHeight: 'calc(100dvh - 112px)',
+            minHeight: 0,
+            overflow: 'hidden',
+            width: '100%',
+            '& > img, & > video, & > iframe': {
+              height: 'auto !important',
+              maxHeight: '100% !important',
+              maxWidth: '100%',
+              objectFit: 'contain',
+              width: '100%',
+            },
+            '& > iframe': { aspectRatio: '16 / 9' },
+          }}
+        >
+          <PocMedia item={item} />
+        </Box>
+      </Box>
+    )}
+  </Dialog>
+);
 
 const GalleryPresentation = ({ items }) => {
   const [selectedItem, setSelectedItem] = useState(null);
@@ -332,7 +415,7 @@ const GalleryPresentation = ({ items }) => {
             onClick={() => setSelectedItem(item)}
             sx={{
               aspectRatio: '4 / 3',
-              background: 'none',
+              background: POC_MEDIA_SURFACE,
               border: 0,
               cursor: 'pointer',
               overflow: 'hidden',
@@ -349,85 +432,14 @@ const GalleryPresentation = ({ items }) => {
           </Box>
         ))}
       </Box>
-      <Dialog
-        fullWidth
-        maxWidth="md"
-        onClose={closeViewer}
-        open={Boolean(selectedItem)}
-        slotProps={{
-          paper: {
-            sx: {
-              ...POC_THEME_STYLES,
-              bgcolor: 'var(--story-theme-background)',
-              boxShadow: 'none',
-              maxHeight: 'calc(100dvh - 32px)',
-              overflow: 'hidden',
-            },
-          },
-        }}
-      >
-        {selectedItem && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-            <Stack
-              data-testid="gallery-media-viewer-header"
-              direction="row"
-              sx={{
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                px: 1,
-                py: 0.5,
-              }}
-            >
-              <DialogTitle component="h2" sx={{ m: 0, p: 1 }}>
-                {mediaTypeLabel(selectedItem)}
-              </DialogTitle>
-              <Tooltip title="Close media viewer">
-                <IconButton
-                  aria-label="Close media viewer"
-                  onClick={closeViewer}
-                  sx={{
-                    '&:hover': { bgcolor: 'var(--story-theme-highlight)' },
-                    border: '1px solid var(--story-theme-text)',
-                    color: 'var(--story-theme-text)',
-                  }}
-                >
-                  <CloseIcon />
-                </IconButton>
-              </Tooltip>
-            </Stack>
-            <Box
-              data-testid="gallery-media-viewer-stage"
-              sx={{
-                alignItems: 'center',
-                bgcolor: 'var(--story-theme-background)',
-                display: 'flex',
-                justifyContent: 'center',
-                maxHeight: 'calc(100dvh - 112px)',
-                minHeight: 0,
-                overflow: 'hidden',
-                width: '100%',
-                '& > img, & > video, & > iframe': {
-                  height: 'auto !important',
-                  maxHeight: '100% !important',
-                  maxWidth: '100%',
-                  objectFit: 'contain',
-                  width: '100%',
-                },
-                '& > iframe': { aspectRatio: '16 / 9' },
-              }}
-            >
-              <PocMedia item={selectedItem} />
-            </Box>
-          </Box>
-        )}
-      </Dialog>
+      <MediaViewer item={selectedItem} onClose={closeViewer} />
     </>
   );
 };
 
-const CarouselStageMedia = ({ item }) => {
+const CarouselStageMedia = ({ item, objectFit = 'contain' }) => {
   if (mediaKind(item) !== 'audio') {
-    return <PocMedia fill item={item} />;
+    return <PocMedia fill item={item} objectFit={objectFit} />;
   }
 
   return (
@@ -435,7 +447,7 @@ const CarouselStageMedia = ({ item }) => {
       spacing={2}
       sx={{
         alignItems: 'center',
-        bgcolor: 'var(--story-theme-highlight)',
+        bgcolor: POC_MEDIA_SURFACE,
         color: 'var(--story-theme-text)',
         height: '100%',
         justifyContent: 'center',
@@ -454,8 +466,45 @@ const CarouselStageMedia = ({ item }) => {
   );
 };
 
+const ExpandableCarouselStage = ({
+  item,
+  testId,
+  onExpand,
+  objectFit = 'contain',
+}) => (
+  <Box
+    aria-label={`Expand ${mediaLabel(item)}`}
+    component="button"
+    data-testid={testId}
+    onClick={onExpand}
+    sx={{
+      alignItems: 'center',
+      aspectRatio: '16 / 9',
+      background: 'none',
+      bgcolor: POC_MEDIA_SURFACE,
+      border: 0,
+      cursor: 'zoom-in',
+      display: 'flex',
+      justifyContent: 'center',
+      minWidth: 0,
+      overflow: 'hidden',
+      p: 0,
+      width: '100%',
+      '&:focus-visible': {
+        outline: '3px solid',
+        outlineColor: 'var(--story-theme-link)',
+        outlineOffset: 3,
+      },
+    }}
+    type="button"
+  >
+    <CarouselStageMedia item={item} objectFit={objectFit} />
+  </Box>
+);
+
 const CarouselPresentation = ({ items }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [expandedItem, setExpandedItem] = useState(null);
   const currentItem = items[currentIndex];
 
   const previous = () =>
@@ -464,21 +513,11 @@ const CarouselPresentation = ({ items }) => {
 
   return (
     <Stack spacing={1.5}>
-      <Box
-        data-testid="carousel-viewport"
-        sx={{
-          alignItems: 'center',
-          aspectRatio: '16 / 9',
-          bgcolor: 'var(--story-theme-highlight)',
-          display: 'flex',
-          justifyContent: 'center',
-          minWidth: 0,
-          overflow: 'hidden',
-          width: '100%',
-        }}
-      >
-        <CarouselStageMedia item={currentItem} />
-      </Box>
+      <ExpandableCarouselStage
+        item={currentItem}
+        onExpand={() => setExpandedItem(currentItem)}
+        testId="carousel-viewport"
+      />
       <Stack
         aria-label="Media navigation"
         direction="row"
@@ -491,7 +530,6 @@ const CarouselPresentation = ({ items }) => {
             onClick={previous}
             sx={{
               '&:hover': { bgcolor: 'var(--story-theme-highlight)' },
-              border: '1px solid var(--story-theme-text)',
               color: 'var(--story-theme-text)',
             }}
           >
@@ -528,7 +566,6 @@ const CarouselPresentation = ({ items }) => {
             onClick={next}
             sx={{
               '&:hover': { bgcolor: 'var(--story-theme-highlight)' },
-              border: '1px solid var(--story-theme-text)',
               color: 'var(--story-theme-text)',
             }}
           >
@@ -536,6 +573,7 @@ const CarouselPresentation = ({ items }) => {
           </IconButton>
         </Tooltip>
       </Stack>
+      <MediaViewer item={expandedItem} onClose={() => setExpandedItem(null)} />
     </Stack>
   );
 };
@@ -552,7 +590,7 @@ const ThumbnailPreview = ({ item }) => {
     <Box
       sx={{
         alignItems: 'center',
-        bgcolor: 'var(--story-theme-highlight)',
+        bgcolor: POC_MEDIA_SURFACE,
         color: 'var(--story-theme-text)',
         display: 'flex',
         height: '100%',
@@ -566,6 +604,7 @@ const ThumbnailPreview = ({ item }) => {
 
 const ThumbnailCarouselPresentation = ({ items }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [expandedItem, setExpandedItem] = useState(null);
   const previewStripRef = useRef(null);
   const currentItem = items[currentIndex];
 
@@ -580,21 +619,12 @@ const ThumbnailCarouselPresentation = ({ items }) => {
 
   return (
     <Stack spacing={1}>
-      <Box
-        data-testid="thumbnail-carousel-viewport"
-        sx={{
-          alignItems: 'center',
-          aspectRatio: '16 / 9',
-          bgcolor: 'var(--story-theme-highlight)',
-          display: 'flex',
-          justifyContent: 'center',
-          minWidth: 0,
-          overflow: 'hidden',
-          width: '100%',
-        }}
-      >
-        <CarouselStageMedia item={currentItem} />
-      </Box>
+      <ExpandableCarouselStage
+        item={currentItem}
+        onExpand={() => setExpandedItem(currentItem)}
+        objectFit="cover"
+        testId="thumbnail-carousel-viewport"
+      />
       <Stack direction="row" spacing={0.75} sx={{ alignItems: 'center' }}>
         <Tooltip title="Previous previews">
           <IconButton
@@ -602,7 +632,6 @@ const ThumbnailCarouselPresentation = ({ items }) => {
             onClick={() => scrollPreviews(-1)}
             sx={{
               bgcolor: 'transparent',
-              border: '1px solid var(--story-theme-text)',
               color: 'var(--story-theme-text)',
               flex: '0 0 auto',
               '&:hover': { bgcolor: 'var(--story-theme-highlight)' },
@@ -634,7 +663,7 @@ const ThumbnailCarouselPresentation = ({ items }) => {
               onClick={() => setCurrentIndex(index)}
               sx={{
                 aspectRatio: '16 / 9',
-                background: 'none',
+                background: POC_MEDIA_SURFACE,
                 border: '2px solid',
                 borderColor:
                   index === currentIndex
@@ -663,7 +692,6 @@ const ThumbnailCarouselPresentation = ({ items }) => {
             onClick={() => scrollPreviews(1)}
             sx={{
               bgcolor: 'transparent',
-              border: '1px solid var(--story-theme-text)',
               color: 'var(--story-theme-text)',
               flex: '0 0 auto',
               '&:hover': { bgcolor: 'var(--story-theme-highlight)' },
@@ -673,6 +701,7 @@ const ThumbnailCarouselPresentation = ({ items }) => {
           </IconButton>
         </Tooltip>
       </Stack>
+      <MediaViewer item={expandedItem} onClose={() => setExpandedItem(null)} />
     </Stack>
   );
 };
@@ -680,7 +709,7 @@ const ThumbnailCarouselPresentation = ({ items }) => {
 const StackPresentation = ({ items }) => (
   <Stack spacing={2}>
     {items.map(item => (
-      <PocMedia item={item} key={mediaSource(item)} />
+      <PocMedia item={item} key={mediaSource(item)} maxHeight="none" />
     ))}
   </Stack>
 );
@@ -689,7 +718,11 @@ const InlineEditorialPresentation = ({ blocks }) => (
   <Stack spacing={2}>
     {blocks.map((block, index) =>
       block.type === 'media' ? (
-        <PocMedia item={block.item} key={mediaSource(block.item)} />
+        <PocMedia
+          item={block.item}
+          key={mediaSource(block.item)}
+          maxHeight="none"
+        />
       ) : (
         <RichTextEditor
           editable={false}
