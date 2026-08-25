@@ -31,7 +31,6 @@ import { MEMBERSHIP_STATUS_APPROVED } from 'terraso-web-client/collaboration/col
 import { CollaborationContextProvider } from 'terraso-web-client/collaboration/collaborationContext';
 import MembershipJoinLeaveButton from 'terraso-web-client/collaboration/components/MembershipJoinLeaveButton';
 import ListSummaryCtaSection from 'terraso-web-client/common/components/ListSummaryCtaSection';
-import { DIRECTORY_TABLE_HEADER_SX } from 'terraso-web-client/common/components/Table';
 import TableResponsive from 'terraso-web-client/common/components/TableResponsive';
 import {
   useDocumentDescription,
@@ -282,7 +281,6 @@ const GroupList = () => {
                 sort: 'asc',
               },
             ],
-            tableHeaderSx: DIRECTORY_TABLE_HEADER_SX,
           }}
         />
       </PageContentBand>
