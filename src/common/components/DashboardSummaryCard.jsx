@@ -17,7 +17,7 @@
 
 import HomeCard from 'terraso-web-client/common/components/HomeCard';
 
-export const DASHBOARD_SUMMARY_CONTAINER_RADIUS = '16px';
+const DASHBOARD_SUMMARY_CONTAINER_RADIUS = '16px';
 export const DASHBOARD_SUMMARY_ITEM_RADIUS = '8px';
 
 const DASHBOARD_SUMMARY_CARD_SX = {
