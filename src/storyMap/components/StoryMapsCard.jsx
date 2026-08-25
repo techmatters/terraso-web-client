@@ -30,8 +30,9 @@ import {
 import { withProps } from 'terraso-web-client/react-hoc';
 
 import Button from 'terraso-web-client/common/components/Button';
+import DashboardHero from 'terraso-web-client/common/components/DashboardHero';
+import HomeCard from 'terraso-web-client/common/components/HomeCard';
 import RouterButton from 'terraso-web-client/common/components/RouterButton';
-import HomeCard from 'terraso-web-client/home/components/HomeCard';
 import StoryMapHomeListItem from 'terraso-web-client/storyMap/components/StoryMapHomeListItem';
 
 export const STORY_MAP_CARD_VARIANTS = {
@@ -62,22 +63,6 @@ const HOME_HEADING_SX = {
 
 const HOME_STORY_MAPS_SKELETON_SX = {
   bgcolor: 'rgba(255, 255, 255, 0.24)',
-};
-
-const DASHBOARD_FEATURE_CARD_SX = {
-  color: 'white',
-  bgcolor: 'secondary.main',
-};
-
-const DASHBOARD_FEATURE_HEADING_SX = {
-  fontSize: '42px',
-  lineHeight: '49.01px',
-  textTransform: 'none',
-};
-
-const DASHBOARD_FEATURE_CONTENT_SX = {
-  alignItems: 'center',
-  textAlign: 'center',
 };
 
 const getCardPresentation = variant => {
@@ -136,30 +121,60 @@ const StoryMapsCard = ({
   const isDashboardFeatureCard =
     variant === STORY_MAP_CARD_VARIANTS.DASHBOARD_FEATURE;
   const isFeatureCard = isHomeFeatureCard || isDashboardFeatureCard;
+  const createActions = showCreateAction && (
+    <Stack
+      direction={{ xs: 'column', sm: 'row' }}
+      spacing={2}
+      alignItems={
+        isDashboardFeatureCard ? 'center' : { xs: 'flex-start', sm: 'center' }
+      }
+      sx={{ pb: isDashboardFeatureCard ? 0 : 5 }}
+    >
+      <RouterButton
+        variant="contained"
+        color="secondary"
+        size="large"
+        to="/tools/story-maps/new"
+        state={{ source: 'home_page' }}
+        endIcon={<ChevronRightIcon />}
+      >
+        {t('storyMap.home_create')}
+      </RouterButton>
+      {isFeatureCard && (
+        <Button
+          component="a"
+          href="https://terraso.org/help/"
+          target="_blank"
+          rel="noopener noreferrer"
+          variant="text"
+          color="invertedMuted"
+          size="large"
+          startIcon={<OpenInNewOutlinedIcon />}
+        >
+          {t('storyMap.home_tutorials')}
+        </Button>
+      )}
+    </Stack>
+  );
+
+  if (isDashboardFeatureCard) {
+    return (
+      <DashboardHero
+        title={title}
+        titleId="story-maps-list-title"
+        description={t('storyMap.home_default_description')}
+        actions={createActions}
+      />
+    );
+  }
 
   return (
     <HomeCard
       title={title}
       titleId="story-maps-list-title"
-      titleComponent={isDashboardFeatureCard ? 'h1' : undefined}
       action={action}
-      contentSx={
-        isDashboardFeatureCard ? DASHBOARD_FEATURE_CONTENT_SX : undefined
-      }
-      cardSx={
-        isHomeFeatureCard
-          ? HOME_CARD_SX
-          : isDashboardFeatureCard
-            ? DASHBOARD_FEATURE_CARD_SX
-            : undefined
-      }
-      headingSx={
-        isHomeFeatureCard
-          ? HOME_HEADING_SX
-          : isDashboardFeatureCard
-            ? DASHBOARD_FEATURE_HEADING_SX
-            : undefined
-      }
+      cardSx={HOME_CARD_SX}
+      headingSx={HOME_HEADING_SX}
       backgroundImage={
         isHomeFeatureCard ? '/files/card-background-primary-1.png' : undefined
       }
@@ -168,55 +183,17 @@ const StoryMapsCard = ({
         direction="column"
         sx={{
           width: '100%',
-          alignItems: isDashboardFeatureCard ? 'center' : undefined,
         }}
       >
         <Typography
           sx={{
             pb: 2,
             color: 'inherit',
-            maxWidth: isDashboardFeatureCard ? 720 : undefined,
           }}
         >
           {t('storyMap.home_default_description')}
         </Typography>
-        {showCreateAction && (
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={2}
-            alignItems={
-              isDashboardFeatureCard
-                ? 'center'
-                : { xs: 'flex-start', sm: 'center' }
-            }
-            sx={{ pb: isDashboardFeatureCard ? 0 : 5 }}
-          >
-            <RouterButton
-              variant="contained"
-              color="secondary"
-              size="large"
-              to="/tools/story-maps/new"
-              state={{ source: 'home_page' }}
-              endIcon={<ChevronRightIcon />}
-            >
-              {t('storyMap.home_create')}
-            </RouterButton>
-            {isFeatureCard && (
-              <Button
-                component="a"
-                href="https://terraso.org/help/"
-                target="_blank"
-                rel="noopener noreferrer"
-                variant="text"
-                color="invertedMuted"
-                size="large"
-                startIcon={<OpenInNewOutlinedIcon />}
-              >
-                {t('storyMap.home_tutorials')}
-              </Button>
-            )}
-          </Stack>
-        )}
+        {createActions}
         {showStoryMapList && (
           <Box
             role={isLoading ? 'progressbar' : undefined}

@@ -20,8 +20,8 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Box, Link, List, ListItem, Typography } from '@mui/material';
 
+import DashboardSummaryCard from 'terraso-web-client/common/components/DashboardSummaryCard';
 import RouterLink from 'terraso-web-client/common/components/RouterLink';
-import HomeCard from 'terraso-web-client/home/components/HomeCard';
 
 import landscapePlaceholder from 'terraso-web-client/assets/landscape.svg';
 import theme from 'terraso-web-client/theme';
@@ -99,20 +99,11 @@ const LandscapesHomeCard = ({
   actionLabel,
   actionTo = '/landscapes',
   showHelperText = true,
-  contentSx,
-  headingSx,
 }) => {
   const { t } = useTranslation();
   return (
-    <HomeCard
-      id="landscapes"
+    <DashboardSummaryCard
       title={title || t('landscape.home_title')}
-      cardSx={{
-        bgcolor: theme.palette.secondary.main,
-        color: theme.palette.white,
-      }}
-      contentSx={contentSx}
-      headingSx={headingSx}
       titleId="landscapes-list-title"
       action={
         showAction
@@ -140,7 +131,7 @@ const LandscapesHomeCard = ({
           </Fragment>
         ))}
       </List>
-    </HomeCard>
+    </DashboardSummaryCard>
   );
 };
 

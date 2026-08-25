@@ -21,7 +21,7 @@ import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { useDispatch } from 'terraso-web-client/terrasoApi/store';
-import { Link, Stack, Typography } from '@mui/material';
+import { Box, Link, Stack, Typography } from '@mui/material';
 
 import { withProps } from 'terraso-web-client/react-hoc';
 
@@ -30,6 +30,7 @@ import { CollaborationContextProvider } from 'terraso-web-client/collaboration/c
 import MemberJoin from 'terraso-web-client/collaboration/components/MemberJoin';
 import MembershipListCount from 'terraso-web-client/collaboration/components/MembershipCount';
 import MembershipJoinLeaveButton from 'terraso-web-client/collaboration/components/MembershipJoinLeaveButton';
+import DashboardHero from 'terraso-web-client/common/components/DashboardHero';
 import ListSummaryCtaSection from 'terraso-web-client/common/components/ListSummaryCtaSection';
 import TableResponsive from 'terraso-web-client/common/components/TableResponsive';
 import { countryNameForCode } from 'terraso-web-client/common/countries';
@@ -40,14 +41,6 @@ import {
 import PageContainer from 'terraso-web-client/layout/PageContainer';
 import PageContentBand from 'terraso-web-client/layout/PageContentBand';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
-import {
-  DASHBOARD_HERO_CARD_SX,
-  DASHBOARD_HERO_CONTENT_SX,
-  DASHBOARD_HERO_HEADING_SX,
-  DASHBOARD_SUMMARY_CONTENT_SX,
-  DASHBOARD_SUMMARY_HEADING_SX,
-} from 'terraso-web-client/home/components/dashboardCardStyles';
-import HomeCard from 'terraso-web-client/home/components/HomeCard';
 import LandscapeListMap from 'terraso-web-client/landscape/components/LandscapeListMap';
 import LandscapesHomeCard from 'terraso-web-client/landscape/components/LandscapesHomeCard';
 import {
@@ -189,18 +182,12 @@ const LandscapeList = () => {
   return (
     <>
       <PageContainer sx={{ paddingBottom: 2, paddingTop: 4 }}>
-        <HomeCard
-          title={t('landscape.dashboard_title')}
-          titleId="main-heading"
-          titleComponent="h1"
-          cardSx={DASHBOARD_HERO_CARD_SX}
-          contentSx={DASHBOARD_HERO_CONTENT_SX}
-          headingSx={DASHBOARD_HERO_HEADING_SX}
-        >
-          <Typography sx={{ color: 'inherit', maxWidth: 720, pb: 2 }}>
-            {t('landscape.default_content')}
-          </Typography>
-        </HomeCard>
+        <Box sx={{ mb: 3 }}>
+          <DashboardHero
+            title={t('landscape.dashboard_title')}
+            description={t('landscape.default_content')}
+          />
+        </Box>
         <Typography
           variant="body2"
           display="block"
@@ -225,8 +212,6 @@ const LandscapeList = () => {
                 title={t('landscape.my_landscapes_title')}
                 showAction={false}
                 showHelperText={false}
-                contentSx={DASHBOARD_SUMMARY_CONTENT_SX}
-                headingSx={DASHBOARD_SUMMARY_HEADING_SX}
               />
             ) : null
           }

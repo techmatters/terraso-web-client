@@ -30,12 +30,12 @@ import {
 import { withProps } from 'terraso-web-client/react-hoc';
 
 import MembershipPendingWarning from 'terraso-web-client/collaboration/components/MembershipPendingWarning';
+import DashboardSummaryCard from 'terraso-web-client/common/components/DashboardSummaryCard';
 import Restricted from 'terraso-web-client/permissions/components/Restricted';
 import {
   MEMBERSHIP_STATUS_APPROVED,
   MEMBERSHIP_STATUS_PENDING,
 } from 'terraso-web-client/group/membership/components/groupMembershipConstants';
-import HomeCard from 'terraso-web-client/home/components/HomeCard';
 
 import theme from 'terraso-web-client/theme';
 
@@ -125,8 +125,6 @@ const GroupsHomeCard = ({
   showAction = true,
   actionLabel,
   actionTo = '/groups',
-  contentSx,
-  headingSx,
 }) => {
   const { t } = useTranslation();
 
@@ -138,14 +136,8 @@ const GroupsHomeCard = ({
   );
 
   return (
-    <HomeCard
+    <DashboardSummaryCard
       title={title || t('group.home_default_title')}
-      cardSx={{
-        bgcolor: theme.palette.secondary.main,
-        color: theme.palette.white,
-      }}
-      contentSx={contentSx}
-      headingSx={headingSx}
       action={
         showAction
           ? {
@@ -172,7 +164,7 @@ const GroupsHomeCard = ({
           </Fragment>
         ))}
       </List>
-    </HomeCard>
+    </DashboardSummaryCard>
   );
 };
 

@@ -49,7 +49,7 @@ const StoryMapsToolsHome = () => {
   return (
     <>
       {fetchingStoryMaps && <PageLoader />}
-      <PageContainer maxWidth="lg" sx={{ paddingTop: 3 }}>
+      <PageContainer maxWidth="lg" sx={{ paddingTop: 4 }}>
         <Stack spacing={3} sx={{ width: '100%' }}>
           <StoryMapsCard
             title={t('storyMap.tool_home_title')}

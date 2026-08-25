@@ -15,31 +15,47 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-export const DASHBOARD_HERO_CARD_SX = {
+import { Stack, Typography } from '@mui/material';
+
+import HomeCard from 'terraso-web-client/common/components/HomeCard';
+
+const DASHBOARD_HERO_CARD_SX = {
   bgcolor: 'secondary.main',
   color: 'white',
-  mb: 3,
 };
 
-export const DASHBOARD_HERO_CONTENT_SX = {
+const DASHBOARD_HERO_CONTENT_SX = {
   alignItems: 'center',
   textAlign: 'center',
 };
 
-export const DASHBOARD_HERO_HEADING_SX = {
+const DASHBOARD_HERO_HEADING_SX = {
   fontSize: '42px',
   lineHeight: '49.01px',
   textTransform: 'none',
 };
 
-export const DASHBOARD_SUMMARY_CONTENT_SX = {
-  p: 3,
-};
+const DashboardHero = ({
+  actions,
+  description,
+  title,
+  titleId = 'main-heading',
+}) => (
+  <HomeCard
+    title={title}
+    titleId={titleId}
+    titleComponent="h1"
+    cardSx={DASHBOARD_HERO_CARD_SX}
+    contentSx={DASHBOARD_HERO_CONTENT_SX}
+    headingSx={DASHBOARD_HERO_HEADING_SX}
+  >
+    <Stack direction="column" sx={{ alignItems: 'center', width: '100%' }}>
+      <Typography sx={{ color: 'inherit', maxWidth: 720, pb: 2 }}>
+        {description}
+      </Typography>
+      {actions}
+    </Stack>
+  </HomeCard>
+);
 
-export const DASHBOARD_SUMMARY_HEADING_SX = {
-  fontSize: 30,
-  fontWeight: 700,
-  lineHeight: '36px',
-  pb: 5,
-  textTransform: 'none',
-};
+export default DashboardHero;

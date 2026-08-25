@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, Typography } from '@mui/material';
 
-import HomeCard from 'terraso-web-client/home/components/HomeCard';
+import HomeCard from 'terraso-web-client/common/components/HomeCard';
 
 const CARD_SX = {
   minHeight: { xs: 300, md: 150 },
