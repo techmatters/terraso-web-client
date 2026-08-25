@@ -21,6 +21,7 @@ import HomeCard from 'terraso-web-client/common/components/HomeCard';
 
 const DASHBOARD_HERO_CARD_SX = {
   bgcolor: 'secondary.main',
+  borderRadius: '16px',
   color: 'white',
 };
 

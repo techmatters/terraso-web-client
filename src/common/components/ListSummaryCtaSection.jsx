@@ -36,6 +36,7 @@ const ListSummaryCtaSection = ({
             alignItems: 'center',
             bgcolor: alpha(theme.palette.black, 0.05),
             border: 'none',
+            borderRadius: '16px',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',

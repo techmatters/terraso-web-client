@@ -30,7 +30,9 @@ import {
 import { withProps } from 'terraso-web-client/react-hoc';
 
 import MembershipPendingWarning from 'terraso-web-client/collaboration/components/MembershipPendingWarning';
-import DashboardSummaryCard from 'terraso-web-client/common/components/DashboardSummaryCard';
+import DashboardSummaryCard, {
+  DASHBOARD_SUMMARY_ITEM_RADIUS,
+} from 'terraso-web-client/common/components/DashboardSummaryCard';
 import Restricted from 'terraso-web-client/permissions/components/Restricted';
 import {
   MEMBERSHIP_STATUS_APPROVED,
@@ -64,7 +66,7 @@ const GroupItem = ({ group }) => {
       spacing={0.5}
       sx={{
         bgcolor: theme.palette.white,
-        borderRadius: 1,
+        borderRadius: DASHBOARD_SUMMARY_ITEM_RADIUS,
         color: 'text.primary',
         px: 2,
         py: 2,
@@ -153,7 +155,7 @@ const GroupsHomeCard = ({
         aria-describedby="groups-list-title"
         sx={{
           display: 'grid',
-          gap: 2,
+          gap: 3,
           p: 0,
           width: '100%',
         }}

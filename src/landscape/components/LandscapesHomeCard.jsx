@@ -20,7 +20,9 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Box, Link, List, ListItem, Typography } from '@mui/material';
 
-import DashboardSummaryCard from 'terraso-web-client/common/components/DashboardSummaryCard';
+import DashboardSummaryCard, {
+  DASHBOARD_SUMMARY_ITEM_RADIUS,
+} from 'terraso-web-client/common/components/DashboardSummaryCard';
 import RouterLink from 'terraso-web-client/common/components/RouterLink';
 
 import landscapePlaceholder from 'terraso-web-client/assets/landscape.svg';
@@ -34,7 +36,7 @@ const LandscapeItem = ({ landscape }) => {
     <ListItem
       sx={{
         bgcolor: theme.palette.white,
-        borderRadius: 1,
+        borderRadius: DASHBOARD_SUMMARY_ITEM_RADIUS,
         color: 'text.primary',
         display: 'flex',
         alignItems: 'flex-start',
@@ -120,7 +122,7 @@ const LandscapesHomeCard = ({
         aria-describedby="landscapes-list-title"
         sx={{
           display: 'grid',
-          gap: 2,
+          gap: 3,
           p: 0,
           width: '100%',
         }}
