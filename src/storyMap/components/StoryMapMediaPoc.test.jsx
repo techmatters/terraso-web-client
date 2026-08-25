@@ -123,6 +123,19 @@ test('StoryMapMediaPoc: interleaves rich text and media in Inline Editorial', as
   ]);
 });
 
+test('StoryMapMediaPoc: lets editorial media use the full story column', async () => {
+  await render(<StoryMapMediaPoc />);
+
+  for (const title of ['Editorial Stack', 'Inline Editorial']) {
+    const chapter = screen.getByRole('region', { name: `Chapter: ${title}` });
+    within(chapter)
+      .getAllByRole('img', { name: 'image media' })
+      .forEach(image => {
+        expect(image).toHaveStyle({ maxHeight: 'none', width: '100%' });
+      });
+  }
+});
+
 test('StoryMapMediaPoc: renders rich chapter content with every media option', async () => {
   await render(<StoryMapMediaPoc />);
 
@@ -160,6 +173,61 @@ test('StoryMapMediaPoc: uses a scan-first grid and stable carousel viewport', as
   expect(viewport).toBeInTheDocument();
   expect(
     within(carousel).getByRole('img', { name: 'image media' })
+  ).toBeInTheDocument();
+});
+
+test('StoryMapMediaPoc: compares contained and full-bleed fixed media frames', async () => {
+  await render(<StoryMapMediaPoc />);
+
+  const gallery = screen.getByRole('region', { name: 'Chapter: Gallery' });
+  const galleryImages = within(gallery).getAllByRole('img', {
+    name: 'image media',
+  });
+
+  expect(galleryImages).toHaveLength(3);
+  expect(galleryImages[0]).toHaveStyle({ objectFit: 'cover' });
+  expect(galleryImages[1]).toHaveStyle({ objectFit: 'cover' });
+
+  const carousel = screen.getByRole('region', { name: 'Chapter: Carousel' });
+  expect(
+    within(carousel).getByTestId('carousel-viewport').querySelector('img')
+  ).toHaveStyle({ objectFit: 'contain' });
+
+  const thumbnailCarousel = screen.getByRole('region', {
+    name: 'Chapter: Thumbnail Carousel',
+  });
+  expect(
+    within(thumbnailCarousel)
+      .getByTestId('thumbnail-carousel-viewport')
+      .querySelector('img')
+  ).toHaveStyle({ objectFit: 'cover' });
+});
+
+test('StoryMapMediaPoc: expands the active Carousel media from its main stage', async () => {
+  await render(<StoryMapMediaPoc />);
+
+  const carousel = screen.getByRole('region', { name: 'Chapter: Carousel' });
+  fireEvent.click(
+    within(carousel).getByRole('button', { name: 'Expand image media' })
+  );
+
+  expect(
+    screen.getByRole('dialog', { name: 'image media' })
+  ).toBeInTheDocument();
+});
+
+test('StoryMapMediaPoc: expands the active Thumbnail Carousel media', async () => {
+  await render(<StoryMapMediaPoc />);
+
+  const carousel = screen.getByRole('region', {
+    name: 'Chapter: Thumbnail Carousel',
+  });
+  fireEvent.click(
+    within(carousel).getByRole('button', { name: 'Expand image media' })
+  );
+
+  expect(
+    screen.getByRole('dialog', { name: 'image media' })
   ).toBeInTheDocument();
 });
 
