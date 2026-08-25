@@ -49,6 +49,7 @@ const List = withProps(BaseList, {
 });
 
 const HOME_CARD_SX = {
+  borderRadius: '16px',
   minHeight: 500,
   color: 'white',
   bgcolor: 'secondary.main',

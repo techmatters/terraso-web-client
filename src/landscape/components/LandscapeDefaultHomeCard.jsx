@@ -22,6 +22,7 @@ import { Box, Typography } from '@mui/material';
 import HomeCard from 'terraso-web-client/common/components/HomeCard';
 
 const CARD_SX = {
+  borderRadius: '16px',
   minHeight: { xs: 320, sm: 350, md: 150 },
 };
 
