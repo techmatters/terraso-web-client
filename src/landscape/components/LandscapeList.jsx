@@ -31,6 +31,7 @@ import MemberJoin from 'terraso-web-client/collaboration/components/MemberJoin';
 import MembershipListCount from 'terraso-web-client/collaboration/components/MembershipCount';
 import MembershipJoinLeaveButton from 'terraso-web-client/collaboration/components/MembershipJoinLeaveButton';
 import ListSummaryCtaSection from 'terraso-web-client/common/components/ListSummaryCtaSection';
+import { DIRECTORY_TABLE_HEADER_SX } from 'terraso-web-client/common/components/Table';
 import TableResponsive from 'terraso-web-client/common/components/TableResponsive';
 import { countryNameForCode } from 'terraso-web-client/common/countries';
 import {
@@ -39,8 +40,15 @@ import {
 } from 'terraso-web-client/common/document';
 import PageContainer from 'terraso-web-client/layout/PageContainer';
 import PageContentBand from 'terraso-web-client/layout/PageContentBand';
-import PageHeader from 'terraso-web-client/layout/PageHeader';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
+import {
+  DASHBOARD_HERO_CARD_SX,
+  DASHBOARD_HERO_CONTENT_SX,
+  DASHBOARD_HERO_HEADING_SX,
+  DASHBOARD_SUMMARY_CONTENT_SX,
+  DASHBOARD_SUMMARY_HEADING_SX,
+} from 'terraso-web-client/home/components/dashboardCardStyles';
+import HomeCard from 'terraso-web-client/home/components/HomeCard';
 import LandscapeListMap from 'terraso-web-client/landscape/components/LandscapeListMap';
 import LandscapesHomeCard from 'terraso-web-client/landscape/components/LandscapesHomeCard';
 import {
@@ -181,8 +189,19 @@ const LandscapeList = () => {
 
   return (
     <>
-      <PageContainer>
-        <PageHeader header={t('landscape.list_title')} />
+      <PageContainer sx={{ paddingBottom: 2, paddingTop: 4 }}>
+        <HomeCard
+          title={t('landscape.dashboard_title')}
+          titleId="main-heading"
+          titleComponent="h1"
+          cardSx={DASHBOARD_HERO_CARD_SX}
+          contentSx={DASHBOARD_HERO_CONTENT_SX}
+          headingSx={DASHBOARD_HERO_HEADING_SX}
+        >
+          <Typography sx={{ color: 'inherit', maxWidth: 720, pb: 2 }}>
+            {t('landscape.default_content')}
+          </Typography>
+        </HomeCard>
         <Typography
           variant="body2"
           display="block"
@@ -207,16 +226,20 @@ const LandscapeList = () => {
                 title={t('landscape.my_landscapes_title')}
                 showAction={false}
                 showHelperText={false}
+                contentSx={DASHBOARD_SUMMARY_CONTENT_SX}
+                headingSx={DASHBOARD_SUMMARY_HEADING_SX}
               />
             ) : null
           }
-          ctaTitle={t('landscape.list_cta_title')}
           ctaDescription={t('landscape.list_cta_description')}
           ctaButtonLabel={t('landscape.list_cta_button')}
           ctaButtonTo="/landscapes/new"
         />
       </PageContainer>
       <PageContentBand>
+        <Typography component="h2" variant="h1" sx={{ mb: 3, mt: 2 }}>
+          {t('landscape.directory_title')}
+        </Typography>
         <TableResponsive
           columns={columns}
           rows={landscapes}
@@ -247,6 +270,7 @@ const LandscapeList = () => {
                 sort: 'asc',
               },
             ],
+            tableHeaderSx: DIRECTORY_TABLE_HEADER_SX,
           }}
         />
       </PageContentBand>

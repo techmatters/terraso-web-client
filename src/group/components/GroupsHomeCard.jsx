@@ -43,7 +43,7 @@ const ListItem = withProps(BaseListItem, {
   component: withProps(Stack, { component: 'li' }),
 });
 
-const GroupItem = ({ group, index }) => {
+const GroupItem = ({ group }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -61,17 +61,41 @@ const GroupItem = ({ group, index }) => {
       direction="column"
       alignItems="flex-start"
       aria-label={group.slug}
-      spacing={2}
+      spacing={0.5}
       sx={{
-        paddingLeft: 0,
-        borderTop: index && `1px solid ${theme.palette.gray.lite1}`, // skip first item
+        bgcolor: theme.palette.white,
+        borderRadius: 1,
+        color: 'text.primary',
+        px: 2,
+        py: 2,
       }}
     >
-      <Typography component="span">
-        <Link component={RouterLink} to={`/groups/${group.slug}`}>
+      <Typography
+        sx={{
+          color: 'secondary.main',
+          fontSize: 20,
+          fontWeight: 700,
+          letterSpacing: '0.15px',
+          lineHeight: '23px',
+        }}
+      >
+        <Link
+          color="inherit"
+          component={RouterLink}
+          to={`/groups/${group.slug}`}
+        >
           {group.name}
-        </Link>{' '}
-        ({t(`group.role_${role.toLowerCase()}`)})
+        </Link>
+      </Typography>
+      <Typography
+        sx={{
+          color: 'secondary.main',
+          fontSize: 16,
+          fontStyle: 'italic',
+          lineHeight: '20px',
+        }}
+      >
+        {t(`group.role_${role.toLowerCase()}`)}
       </Typography>
       {!isApproved && (
         <Typography
@@ -101,6 +125,8 @@ const GroupsHomeCard = ({
   showAction = true,
   actionLabel,
   actionTo = '/groups',
+  contentSx,
+  headingSx,
 }) => {
   const { t } = useTranslation();
 
@@ -114,6 +140,12 @@ const GroupsHomeCard = ({
   return (
     <HomeCard
       title={title || t('group.home_default_title')}
+      cardSx={{
+        bgcolor: theme.palette.secondary.main,
+        color: theme.palette.white,
+      }}
+      contentSx={contentSx}
+      headingSx={headingSx}
       action={
         showAction
           ? {
@@ -127,11 +159,16 @@ const GroupsHomeCard = ({
       <List
         aria-labelledby="groups-list-title"
         aria-describedby="groups-list-title"
-        sx={{ width: '100%' }}
+        sx={{
+          display: 'grid',
+          gap: 2,
+          p: 0,
+          width: '100%',
+        }}
       >
-        {sortedGroups.map((group, index) => (
+        {sortedGroups.map(group => (
           <Fragment key={group.slug}>
-            <GroupItem group={group} index={index} />
+            <GroupItem group={group} />
           </Fragment>
         ))}
       </List>

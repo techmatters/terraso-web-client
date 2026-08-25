@@ -143,7 +143,7 @@ const baseListTest = async () => {
 
   // Landscape info
   expect(
-    screen.getByRole('heading', { name: 'Landscapes', level: 1 })
+    screen.getByRole('heading', { name: 'Terraso Landscapes', level: 1 })
   ).toBeInTheDocument();
 
   // Map
@@ -237,9 +237,6 @@ test('LandscapeList: Display My Landscapes when memberships exist', async () => 
   expect(
     within(myLandscapes).queryByRole('listitem', { name: 'Other Landscape' })
   ).not.toBeInTheDocument();
-  expect(
-    screen.getAllByRole('heading', { name: 'Add your landscape' }).length
-  ).toBe(1);
 });
 
 test('LandscapeList: Hide My Landscapes when memberships are empty', async () => {
@@ -266,9 +263,6 @@ test('LandscapeList: Hide My Landscapes when memberships are empty', async () =>
   await setup();
 
   expect(screen.queryByRole('region', { name: 'My Landscapes' })).toBeNull();
-  expect(
-    screen.getAllByRole('heading', { name: 'Add your landscape' }).length
-  ).toBe(1);
   expect(
     screen.getByRole('link', { name: 'Add your landscape' })
   ).toBeInTheDocument();
@@ -415,7 +409,7 @@ test('LandscapeList: List sort', async () => {
 
   // Landscape info
   expect(
-    screen.getByRole('heading', { name: 'Landscapes', level: 1 })
+    screen.getByRole('heading', { name: 'Terraso Landscapes', level: 1 })
   ).toBeInTheDocument();
   const rows = screen.getAllByRole('row');
   expect(rows.length).toBe(16); // 15 displayed + header
@@ -476,7 +470,7 @@ test('LandscapeList: Display list (small screen)', async () => {
 
   // Landscape info
   expect(
-    screen.getByRole('heading', { name: 'Landscapes', level: 1 })
+    screen.getByRole('heading', { name: 'Terraso Landscapes', level: 1 })
   ).toBeInTheDocument();
 
   const rows = screen.getAllByRole('listitem');

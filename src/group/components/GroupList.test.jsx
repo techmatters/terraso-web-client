@@ -124,9 +124,6 @@ test('GroupList: Display My Groups when memberships exist', async () => {
   expect(
     within(myGroups).queryByRole('listitem', { name: 'other-group' })
   ).not.toBeInTheDocument();
-  expect(
-    screen.getAllByRole('heading', { name: 'Create a group' }).length
-  ).toBe(1);
 });
 
 test('GroupList: Hide My Groups when memberships are empty', async () => {
@@ -156,9 +153,6 @@ test('GroupList: Hide My Groups when memberships are empty', async () => {
   await setup();
 
   expect(screen.queryByRole('region', { name: 'My Groups' })).toBeNull();
-  expect(
-    screen.getAllByRole('heading', { name: 'Create a group' }).length
-  ).toBe(1);
   expect(
     screen.getByRole('link', { name: 'Create a group' })
   ).toBeInTheDocument();
@@ -233,7 +227,7 @@ test('GroupList: Display list', async () => {
 
   // Group info
   expect(
-    screen.getByRole('heading', { name: 'Groups', level: 1 })
+    screen.getByRole('heading', { name: 'Terraso Groups', level: 1 })
   ).toBeInTheDocument();
   const rows = screen.getAllByRole('row');
   expect(rows.length).toBe(16); // 15 displayed + header
@@ -308,7 +302,7 @@ test('GroupList: List sort', async () => {
 
   // Group info
   expect(
-    screen.getByRole('heading', { name: 'Groups', level: 1 })
+    screen.getByRole('heading', { name: 'Terraso Groups', level: 1 })
   ).toBeInTheDocument();
   const rows = screen.getAllByRole('row');
   expect(rows.length).toBe(16); // 11 displayed + header
@@ -383,7 +377,7 @@ test('GroupList: Display list (small screen)', async () => {
 
   // Group info
   expect(
-    screen.getByRole('heading', { name: 'Groups', level: 1 })
+    screen.getByRole('heading', { name: 'Terraso Groups', level: 1 })
   ).toBeInTheDocument();
 
   const rows = screen.getAllByRole('listitem');
@@ -428,7 +422,7 @@ test('GroupList: URL params', async () => {
 
   // Group info
   expect(
-    screen.getByRole('heading', { name: 'Groups', level: 1 })
+    screen.getByRole('heading', { name: 'Terraso Groups', level: 1 })
   ).toBeInTheDocument();
   const rows = screen.getAllByRole('row');
   expect(rows.length).toBe(7); // Second page + header

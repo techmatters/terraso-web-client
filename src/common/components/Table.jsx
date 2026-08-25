@@ -39,6 +39,21 @@ const SORT_DIRECTION_BY_WORD = {
 };
 const SORT_DIRECTION_BY_SYMBOL = _.invert(SORT_DIRECTION_BY_WORD);
 
+export const DIRECTORY_TABLE_HEADER_SX = {
+  '& .MuiDataGrid-columnHeader': {
+    borderRight: '1px solid',
+    borderRightColor: 'gray.lite2',
+  },
+  '& .MuiDataGrid-columnHeader:last-child': {
+    borderRight: 'none',
+  },
+  '& .MuiDataGrid-columnHeaders': {
+    backgroundColor: 'white',
+    borderBottom: '1px solid',
+    borderBottomColor: 'gray.lite2',
+  },
+};
+
 const parseSortQuery = value =>
   _.flow(
     _.split(','),
@@ -145,6 +160,7 @@ const Table = props => {
     onSearchParamsChange,
     ariaLabel,
     columns,
+    tableHeaderSx,
     ...gridProps
   } = props;
 
@@ -259,6 +275,7 @@ const Table = props => {
         '.MuiDataGrid-columnHeaderTitle': {
           fontWeight: 'bold',
         },
+        ...tableHeaderSx,
       }}
       {...gridProps}
     />

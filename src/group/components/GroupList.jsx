@@ -31,6 +31,7 @@ import { MEMBERSHIP_STATUS_APPROVED } from 'terraso-web-client/collaboration/col
 import { CollaborationContextProvider } from 'terraso-web-client/collaboration/collaborationContext';
 import MembershipJoinLeaveButton from 'terraso-web-client/collaboration/components/MembershipJoinLeaveButton';
 import ListSummaryCtaSection from 'terraso-web-client/common/components/ListSummaryCtaSection';
+import { DIRECTORY_TABLE_HEADER_SX } from 'terraso-web-client/common/components/Table';
 import TableResponsive from 'terraso-web-client/common/components/TableResponsive';
 import {
   useDocumentDescription,
@@ -38,7 +39,6 @@ import {
 } from 'terraso-web-client/common/document';
 import PageContainer from 'terraso-web-client/layout/PageContainer';
 import PageContentBand from 'terraso-web-client/layout/PageContentBand';
-import PageHeader from 'terraso-web-client/layout/PageHeader';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
 import GroupsHomeCard from 'terraso-web-client/group/components/GroupsHomeCard';
 import {
@@ -49,6 +49,14 @@ import {
 import GroupMemberJoin from 'terraso-web-client/group/membership/components/GroupMemberJoin';
 import GroupMemberLeave from 'terraso-web-client/group/membership/components/GroupMemberLeave';
 import GroupMemberRequestCancel from 'terraso-web-client/group/membership/components/GroupMemberRequestCancel';
+import {
+  DASHBOARD_HERO_CARD_SX,
+  DASHBOARD_HERO_CONTENT_SX,
+  DASHBOARD_HERO_HEADING_SX,
+  DASHBOARD_SUMMARY_CONTENT_SX,
+  DASHBOARD_SUMMARY_HEADING_SX,
+} from 'terraso-web-client/home/components/dashboardCardStyles';
+import HomeCard from 'terraso-web-client/home/components/HomeCard';
 
 import theme from 'terraso-web-client/theme';
 
@@ -210,8 +218,19 @@ const GroupList = () => {
 
   return (
     <>
-      <PageContainer>
-        <PageHeader header={t('group.list_title')} />
+      <PageContainer sx={{ paddingBottom: 2, paddingTop: 4 }}>
+        <HomeCard
+          title={t('group.dashboard_title')}
+          titleId="main-heading"
+          titleComponent="h1"
+          cardSx={DASHBOARD_HERO_CARD_SX}
+          contentSx={DASHBOARD_HERO_CONTENT_SX}
+          headingSx={DASHBOARD_HERO_HEADING_SX}
+        >
+          <Typography sx={{ color: 'inherit', maxWidth: 720, pb: 2 }}>
+            {t('group.default_content')}
+          </Typography>
+        </HomeCard>
         <ListSummaryCtaSection
           summaryCard={
             !_.isEmpty(myGroups) ? (
@@ -219,16 +238,20 @@ const GroupList = () => {
                 groups={myGroups}
                 title={t('group.my_groups_title')}
                 showAction={false}
+                contentSx={DASHBOARD_SUMMARY_CONTENT_SX}
+                headingSx={DASHBOARD_SUMMARY_HEADING_SX}
               />
             ) : null
           }
-          ctaTitle={t('group.list_cta_title')}
           ctaDescription={t('group.list_cta_description')}
           ctaButtonLabel={t('group.list_cta_button')}
           ctaButtonTo="/groups/new"
         />
       </PageContainer>
       <PageContentBand>
+        <Typography component="h2" variant="h1" sx={{ mb: 3, mt: 2 }}>
+          {t('group.directory_title')}
+        </Typography>
         <TableResponsive
           columns={columns}
           rows={groups}
@@ -259,6 +282,7 @@ const GroupList = () => {
                 sort: 'asc',
               },
             ],
+            tableHeaderSx: DIRECTORY_TABLE_HEADER_SX,
           }}
         />
       </PageContentBand>

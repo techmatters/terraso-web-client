@@ -17,10 +17,10 @@
 
 import { Link as RouterLink } from 'react-router';
 import { Button, Card, Grid, Typography } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 
 const ListSummaryCtaSection = ({
   summaryCard,
-  ctaTitle,
   ctaDescription,
   ctaButtonLabel,
   ctaButtonTo,
@@ -29,14 +29,21 @@ const ListSummaryCtaSection = ({
 
   return (
     <Grid container spacing={3} sx={{ mb: 4 }}>
-      {hasSummaryCard && <Grid size={{ xs: 12, md: 6 }}>{summaryCard}</Grid>}
-      <Grid size={{ xs: 12, md: hasSummaryCard ? 6 : 12 }}>
-        <Card sx={{ p: 2 }}>
-          <Typography sx={{ pt: 0 }} variant="h2">
-            {ctaTitle}
-          </Typography>
-
-          <Typography sx={{ mt: 2, mb: 2 }}>{ctaDescription}</Typography>
+      {hasSummaryCard && <Grid size={{ xs: 12, md: 8 }}>{summaryCard}</Grid>}
+      <Grid size={{ xs: 12, md: hasSummaryCard ? 4 : 12 }}>
+        <Card
+          sx={theme => ({
+            alignItems: 'center',
+            bgcolor: alpha(theme.palette.black, 0.05),
+            border: 'none',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            p: 3,
+            textAlign: 'center',
+          })}
+        >
+          <Typography sx={{ mb: 2 }}>{ctaDescription}</Typography>
 
           <Button variant="contained" component={RouterLink} to={ctaButtonTo}>
             {ctaButtonLabel}

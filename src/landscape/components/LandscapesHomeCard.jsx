@@ -26,17 +26,19 @@ import HomeCard from 'terraso-web-client/home/components/HomeCard';
 import landscapePlaceholder from 'terraso-web-client/assets/landscape.svg';
 import theme from 'terraso-web-client/theme';
 
-const LandscapeItem = ({ landscape, index }) => {
+const LandscapeItem = ({ landscape }) => {
   const { t } = useTranslation();
   const landscapeUrl = `/landscapes/${landscape.slug}`;
 
   return (
     <ListItem
       sx={{
+        bgcolor: theme.palette.white,
+        borderRadius: 1,
+        color: 'text.primary',
         display: 'flex',
-        padding: 1,
-        paddingLeft: 0,
-        borderTop: index && `1px solid ${theme.palette.gray.lite1}`, // skip first item
+        alignItems: 'flex-start',
+        p: 2,
       }}
       aria-label={landscape.name}
     >
@@ -55,10 +57,28 @@ const LandscapeItem = ({ landscape, index }) => {
           marginLeft: 2,
         }}
       >
-        <Link component={RouterLink} to={landscapeUrl}>
+        <Link
+          color="secondary.main"
+          component={RouterLink}
+          to={landscapeUrl}
+          sx={{
+            fontSize: 20,
+            fontWeight: 700,
+            letterSpacing: '0.15px',
+            lineHeight: '23px',
+          }}
+        >
           {landscape.name}
         </Link>
-        <Typography>
+        <Typography
+          sx={{
+            color: 'secondary.main',
+            fontSize: 16,
+            fontStyle: 'italic',
+            lineHeight: '20px',
+            mt: 0.5,
+          }}
+        >
           {t(
             `landscape.role_${_.getOr(
               'member',
@@ -79,12 +99,20 @@ const LandscapesHomeCard = ({
   actionLabel,
   actionTo = '/landscapes',
   showHelperText = true,
+  contentSx,
+  headingSx,
 }) => {
   const { t } = useTranslation();
   return (
     <HomeCard
       id="landscapes"
       title={title || t('landscape.home_title')}
+      cardSx={{
+        bgcolor: theme.palette.secondary.main,
+        color: theme.palette.white,
+      }}
+      contentSx={contentSx}
+      headingSx={headingSx}
       titleId="landscapes-list-title"
       action={
         showAction
@@ -100,12 +128,15 @@ const LandscapesHomeCard = ({
         aria-labelledby="landscapes-list-title"
         aria-describedby="landscapes-list-title"
         sx={{
+          display: 'grid',
+          gap: 2,
+          p: 0,
           width: '100%',
         }}
       >
-        {landscapes.map((landscape, index) => (
+        {landscapes.map(landscape => (
           <Fragment key={landscape.slug}>
-            <LandscapeItem landscape={landscape} index={index} />
+            <LandscapeItem landscape={landscape} />
           </Fragment>
         ))}
       </List>
