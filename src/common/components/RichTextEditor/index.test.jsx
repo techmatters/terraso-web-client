@@ -317,6 +317,11 @@ test('RichTextEditor: shows new highlight, list, and style controls', async () =
     'Numbered list',
     'Bulleted list',
   ]);
+
+  expect(toolbar).toHaveStyle({ flexWrap: 'wrap' });
+  toolbar
+    .querySelectorAll('.MuiButtonGroup-root')
+    .forEach(group => expect(group).toHaveStyle({ display: 'contents' }));
 });
 
 test('RichTextEditor: style select does not trigger blur when opened', async () => {
