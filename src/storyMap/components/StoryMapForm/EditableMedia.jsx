@@ -18,9 +18,15 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import getVideoId from 'get-video-id';
 import _ from 'lodash/fp';
+import AvatarEditor from 'react-avatar-editor';
 import { useTranslation } from 'react-i18next';
+import AddIcon from '@mui/icons-material/Add';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import CropIcon from '@mui/icons-material/Crop';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -28,17 +34,28 @@ import {
   DialogTitle,
   FormControlLabel,
   FormHelperText,
+  IconButton,
   OutlinedInput,
   Paper,
   Radio,
+  Slider,
   Stack,
+  Tooltip,
   Typography,
 } from '@mui/material';
 
 import ConfirmButton from 'terraso-web-client/common/components/ConfirmButton';
 import DropZone from 'terraso-web-client/common/components/DropZone';
 import { openFile } from 'terraso-web-client/common/fileUtils';
-import { useStoryMapMediaContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import {
+  useStoryMapConfigDataContext,
+  useStoryMapMediaContext,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { CarouselPresentation } from 'terraso-web-client/storyMap/components/StoryMapMediaPoc';
+import {
+  getResolvedStoryMapTheme,
+  getStoryMapThemeCssVariables,
+} from 'terraso-web-client/storyMap/storyMapThemeUtils';
 
 import {
   STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS,
@@ -54,6 +71,11 @@ const MEDIA_TYPES = {
   VIDEO: 'video',
   EMBEDDED: 'embedded',
 };
+
+const CAROUSEL_ASPECT_RATIO = 16 / 9;
+const DEFAULT_CROP = { position: { x: 0.5, y: 0.5 }, scale: 1 };
+const FIT_IMAGE_SCALE = 0;
+const MIN_EDITOR_SCALE = 0.1;
 
 const MEDIA_CONFIG = {
   [MEDIA_TYPES.IMAGE]: {
@@ -119,7 +141,7 @@ const getMediaSrc = (media, getMediaFile) => {
   if (media.contentId) {
     return getMediaFile(media.contentId);
   }
-  return null;
+  return media.url || null;
 };
 
 // Calculate media height to avoid scroller jumps in story map editor
@@ -270,7 +292,7 @@ const AddSectionTitle = memo(({ checked, value, onChange, label, labelId }) => (
   />
 ));
 
-const AddDialog = memo(({ open, onClose, onAdd }) => {
+export const AddMediaDialog = memo(({ open, onClose, onAdd }) => {
   const { t } = useTranslation();
   const { addMediaFile } = useStoryMapMediaContext();
 
@@ -750,7 +772,224 @@ const EditableEmbedded = memo(
   }
 );
 
-const EditableMedia = memo(({ label, value, onChange }) => {
+const mediaLabel = (media, index) =>
+  `${media.type.split('/')[0]} media ${index + 1}`;
+
+const moveMedia = (mediaItems, index, direction) => {
+  const nextIndex = index + direction;
+  if (nextIndex < 0 || nextIndex >= mediaItems.length) {
+    return mediaItems;
+  }
+
+  const nextMediaItems = [...mediaItems];
+  [nextMediaItems[index], nextMediaItems[nextIndex]] = [
+    nextMediaItems[nextIndex],
+    nextMediaItems[index],
+  ];
+  return nextMediaItems;
+};
+
+const ImageCropDialog = ({ image, onClose, onSave }) => {
+  const { getMediaFile } = useStoryMapMediaContext();
+  const [crop, setCrop] = useState(image.crop || DEFAULT_CROP);
+
+  return (
+    <Dialog fullWidth maxWidth="md" open onClose={onClose}>
+      <DialogTitle>Crop carousel image</DialogTitle>
+      <DialogContent>
+        <Stack spacing={2} sx={{ alignItems: 'center', pt: 1 }}>
+          <Box sx={{ maxWidth: '100%', overflow: 'hidden' }}>
+            <AvatarEditor
+              image={getMediaSrc(image, getMediaFile)}
+              width={640}
+              height={640 / CAROUSEL_ASPECT_RATIO}
+              border={20}
+              color={[255, 255, 255, 0.6]}
+              position={crop.position}
+              scale={Math.max(crop.scale, MIN_EDITOR_SCALE)}
+              onPositionChange={position =>
+                setCrop(currentCrop => ({ ...currentCrop, position }))
+              }
+            />
+          </Box>
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{ alignItems: 'center', width: '100%' }}
+          >
+            <Typography id="carousel-crop-zoom-label">Zoom</Typography>
+            <Slider
+              aria-labelledby="carousel-crop-zoom-label"
+              min={FIT_IMAGE_SCALE}
+              max={3}
+              step={0.1}
+              value={crop.scale}
+              valueLabelDisplay="auto"
+              valueLabelFormat={scale =>
+                scale === FIT_IMAGE_SCALE ? 'Fit image' : `${scale}x`
+              }
+              onChange={(event, scale) =>
+                setCrop(currentCrop => ({ ...currentCrop, scale }))
+              }
+            />
+          </Stack>
+        </Stack>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button variant="contained" onClick={() => onSave(crop)}>
+          Apply crop
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+const EditableMediaList = ({ label, value, onChange }) => {
+  const { config } = useStoryMapConfigDataContext();
+  const [cropIndex, setCropIndex] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const mediaItems = value || [];
+  const carouselThemeStyles = useMemo(
+    () => getStoryMapThemeCssVariables(config),
+    [config]
+  );
+  const carouselTheme = useMemo(
+    () => getResolvedStoryMapTheme(config),
+    [config]
+  );
+  const selectedMedia = mediaItems[selectedIndex];
+
+  const updateCrop = crop => {
+    onChange(
+      mediaItems.map((media, index) =>
+        index === cropIndex ? { ...media, crop } : media
+      )
+    );
+    setCropIndex(null);
+  };
+
+  const moveMediaAtIndex = (index, direction) => {
+    const nextIndex = index + direction;
+    onChange(moveMedia(mediaItems, index, direction));
+    setSelectedIndex(nextIndex);
+  };
+
+  const removeMediaAtIndex = index => {
+    onChange(mediaItems.filter((media, mediaIndex) => mediaIndex !== index));
+    setSelectedIndex(index =>
+      Math.max(0, Math.min(index, mediaItems.length - 2))
+    );
+  };
+
+  return (
+    <Stack spacing={2}>
+      {open && (
+        <AddMediaDialog
+          open={open}
+          onClose={() => setOpen(false)}
+          onAdd={media => {
+            onChange([
+              ...mediaItems,
+              { ...media, id: media.contentId || media.url },
+            ]);
+            setOpen(false);
+          }}
+        />
+      )}
+      {!mediaItems.length && (
+        <Stack
+          spacing={2}
+          component={Paper}
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            bgcolor: 'blue.mid',
+            minHeight: 150,
+            p: 2,
+          }}
+        >
+          <Typography variant="caption" sx={{ textAlign: 'center' }}>
+            Upload or link images, audio recordings or video files.
+          </Typography>
+          <Button variant="outlined" onClick={() => setOpen(true)}>
+            Add media
+          </Button>
+        </Stack>
+      )}
+      {mediaItems.length > 0 && (
+        <CarouselPresentation
+          currentIndex={selectedIndex}
+          items={mediaItems}
+          navigationColor="#212121"
+          onCurrentIndexChange={setSelectedIndex}
+          sx={carouselThemeStyles}
+          theme={carouselTheme}
+          renderItemActions={(media, index) => (
+            <>
+              <Tooltip title="Add media">
+                <IconButton
+                  aria-label="Add media"
+                  onClick={() => setOpen(true)}
+                  size="small"
+                  sx={{ color: 'inherit' }}
+                >
+                  <AddIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              {media.type.startsWith(MEDIA_TYPES.IMAGE) && (
+                <IconButton
+                  aria-label={`Crop ${mediaLabel(media, index)}`}
+                  onClick={() => setCropIndex(index)}
+                  size="small"
+                  sx={{ color: 'inherit' }}
+                >
+                  <CropIcon fontSize="small" />
+                </IconButton>
+              )}
+              <IconButton
+                aria-label={`Move ${mediaLabel(media, index)} up`}
+                disabled={index === 0}
+                onClick={() => moveMediaAtIndex(index, -1)}
+                size="small"
+                sx={{ color: 'inherit' }}
+              >
+                <ArrowUpwardIcon fontSize="small" />
+              </IconButton>
+              <IconButton
+                aria-label={`Move ${mediaLabel(media, index)} down`}
+                disabled={index === mediaItems.length - 1}
+                onClick={() => moveMediaAtIndex(index, 1)}
+                size="small"
+                sx={{ color: 'inherit' }}
+              >
+                <ArrowDownwardIcon fontSize="small" />
+              </IconButton>
+              <IconButton
+                aria-label={`Remove ${mediaLabel(media, index)}`}
+                onClick={() => removeMediaAtIndex(index)}
+                size="small"
+                sx={{ color: 'error.main' }}
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </>
+          )}
+        />
+      )}
+      {cropIndex !== null && (
+        <ImageCropDialog
+          image={mediaItems[cropIndex]}
+          onClose={() => setCropIndex(null)}
+          onSave={updateCrop}
+        />
+      )}
+    </Stack>
+  );
+};
+
+const EditableSingleMedia = memo(({ label, value, onChange }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
@@ -797,7 +1036,7 @@ const EditableMedia = memo(({ label, value, onChange }) => {
 
   return (
     <>
-      {open && <AddDialog open={open} onClose={onClose} onAdd={onAdd} />}
+      {open && <AddMediaDialog open={open} onClose={onClose} onAdd={onAdd} />}
       {renderMediaComponent}
       {!value && (
         <Stack
@@ -823,4 +1062,11 @@ const EditableMedia = memo(({ label, value, onChange }) => {
   );
 });
 
-export default EditableMedia;
+const EditableMedia = ({ label, multiple = false, value, onChange }) =>
+  multiple ? (
+    <EditableMediaList label={label} value={value} onChange={onChange} />
+  ) : (
+    <EditableSingleMedia label={label} value={value} onChange={onChange} />
+  );
+
+export default memo(EditableMedia);

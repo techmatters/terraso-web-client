@@ -1,0 +1,103 @@
+import { useCallback, useState } from 'react';
+import { Box, Stack, Typography } from '@mui/material';
+
+import ChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/ChapterForm';
+import { StoryMapConfigContextProvider } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { getStoryMapThemeCssVariables } from 'terraso-web-client/storyMap/storyMapThemeUtils';
+
+const POC_THEME_STYLES = getStoryMapThemeCssVariables({ themeId: 'theme-7' });
+
+const INITIAL_CHAPTER = {
+  alignment: 'left',
+  description: [
+    {
+      type: 'paragraph',
+      children: [
+        {
+          text: 'This chapter uses the same media editor controls as Story Maps, extended to manage an ordered carousel.',
+        },
+      ],
+    },
+  ],
+  id: 'media-editor-poc',
+  mediaItems: [
+    {
+      id: 'image-1',
+      type: 'image/jpeg',
+      signedUrl: '/storyMap/terraso-story-maps-img.jpg',
+      crop: { position: { x: 0.5, y: 0.5 }, scale: 1 },
+    },
+    {
+      id: 'image-2',
+      type: 'image/png',
+      signedUrl: '/storyMap/set-map-step-1.png',
+      crop: { position: { x: 0.5, y: 0.5 }, scale: 1 },
+    },
+    {
+      id: 'audio-1',
+      type: 'audio/mpeg',
+      signedUrl: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3',
+    },
+    {
+      id: 'video-1',
+      type: 'video/mp4',
+      signedUrl: 'https://samplelib.com/lib/preview/mp4/sample-5s.mp4',
+    },
+    {
+      id: 'embedded-1',
+      type: 'embedded',
+      source: 'youtube',
+      url: 'https://www.youtube.com/embed/aqz-KE-bpKQ',
+    },
+  ],
+  onChapterEnter: [],
+  themeId: 'theme-7',
+  title: 'Multiple media chapter',
+};
+
+const StoryMapMediaEditorPocContent = () => {
+  const [chapter, setChapter] = useState(INITIAL_CHAPTER);
+  const onFieldChange = useCallback(
+    field => value =>
+      setChapter(currentChapter => ({ ...currentChapter, [field]: value })),
+    []
+  );
+
+  return (
+    <Box
+      sx={{
+        ...POC_THEME_STYLES,
+        bgcolor: '#1A3A2A',
+        minHeight: '100vh',
+        p: { xs: 2, md: 4 },
+      }}
+    >
+      <Stack spacing={2} sx={{ margin: 'auto', maxWidth: 900 }}>
+        <Typography color="white" component="h1" variant="h1">
+          Carousel editor POC
+        </Typography>
+        <ChapterForm
+          mediaField="mediaItems"
+          multipleMedia
+          onFieldBlur={() => {}}
+          onFieldChange={onFieldChange}
+          record={chapter}
+        />
+      </Stack>
+    </Box>
+  );
+};
+
+const StoryMapMediaEditorPoc = () => (
+  <StoryMapConfigContextProvider
+    baseConfig={{
+      chapters: [INITIAL_CHAPTER],
+      dataLayers: {},
+      themeId: 'theme-7',
+    }}
+  >
+    <StoryMapMediaEditorPocContent />
+  </StoryMapConfigContextProvider>
+);
+
+export default StoryMapMediaEditorPoc;
