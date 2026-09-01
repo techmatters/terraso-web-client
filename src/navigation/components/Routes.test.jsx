@@ -29,6 +29,14 @@ jest.mock('terraso-web-client/storyMap/components/StoryMapMediaPoc', () => ({
   default: () => <div>Story Map Media POC</div>,
 }));
 
+jest.mock(
+  'terraso-web-client/storyMap/components/StoryMapMediaEditorPoc',
+  () => ({
+    __esModule: true,
+    default: () => <div>Story Map Media Editor POC</div>,
+  })
+);
+
 jest.mock('terraso-web-client/storyMap/components/UserStoryMap', () => ({
   __esModule: true,
   default: () => <div>User Story Map</div>,
@@ -71,4 +79,25 @@ test('Routes: renders the branch-only Story Map media POC', async () => {
   });
 
   expect(await screen.findByText('Story Map Media POC')).toBeInTheDocument();
+});
+
+test('Routes: renders the branch-only Story Map media editor POC', async () => {
+  window.history.pushState({}, '', '/tools/story-maps/media-editor-poc');
+
+  await render(<RoutesComponent />, {
+    account: {
+      hasToken: true,
+      currentUser: {
+        fetching: false,
+        data: {
+          firstName: 'First',
+          lastName: 'Last',
+        },
+      },
+    },
+  });
+
+  expect(
+    await screen.findByText('Story Map Media Editor POC')
+  ).toBeInTheDocument();
 });

@@ -224,6 +224,8 @@ const PocMedia = ({
   fill = false,
   maxHeight,
   objectFit = 'contain',
+  crop,
+  imageStyle,
 }) => {
   const style = {
     display: 'block',
@@ -234,7 +236,23 @@ const PocMedia = ({
   };
 
   if (mediaKind(item) === 'image') {
-    return <img src={mediaSource(item)} alt={mediaLabel(item)} style={style} />;
+    return (
+      <img
+        src={mediaSource(item)}
+        alt={mediaLabel(item)}
+        style={{
+          ...style,
+          objectPosition: crop
+            ? `${crop.position.x * 100}% ${crop.position.y * 100}%`
+            : undefined,
+          transform: crop ? `scale(${crop.scale})` : undefined,
+          transformOrigin: crop
+            ? `${crop.position.x * 100}% ${crop.position.y * 100}%`
+            : undefined,
+          ...imageStyle,
+        }}
+      />
+    );
   }
 
   if (mediaKind(item) === 'audio') {
@@ -438,8 +456,45 @@ const GalleryPresentation = ({ items }) => {
 };
 
 const CarouselStageMedia = ({ item, objectFit = 'contain' }) => {
+  if (mediaKind(item) === 'image' && item.crop?.scale === 0) {
+    return (
+      <Box
+        sx={{
+          height: '100%',
+          overflow: 'hidden',
+          position: 'relative',
+          width: '100%',
+          '&::before': {
+            backgroundImage: `url(${mediaSource(item)})`,
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
+            content: '""',
+            filter: 'blur(18px)',
+            inset: -24,
+            opacity: 0.55,
+            position: 'absolute',
+          },
+        }}
+      >
+        <PocMedia
+          fill
+          imageStyle={{ position: 'relative', zIndex: 1 }}
+          item={item}
+          objectFit="contain"
+        />
+      </Box>
+    );
+  }
+
   if (mediaKind(item) !== 'audio') {
-    return <PocMedia fill item={item} objectFit={objectFit} />;
+    return (
+      <PocMedia
+        crop={item.crop}
+        fill
+        item={item}
+        objectFit={item.crop ? 'cover' : objectFit}
+      />
+    );
   }
 
   return (
@@ -502,17 +557,54 @@ const ExpandableCarouselStage = ({
   </Box>
 );
 
-const CarouselPresentation = ({ items }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+export const CarouselPresentation = ({
+  items,
+  currentIndex: controlledCurrentIndex,
+  itemActionsSx,
+  onCurrentIndexChange,
+  navigationColor,
+  renderItemActions,
+  sx,
+  theme,
+}) => {
+  const [uncontrolledCurrentIndex, setUncontrolledCurrentIndex] = useState(0);
   const [expandedItem, setExpandedItem] = useState(null);
+  const currentIndex = controlledCurrentIndex ?? uncontrolledCurrentIndex;
   const currentItem = items[currentIndex];
+  const setCurrentIndex = index => {
+    if (onCurrentIndexChange) {
+      onCurrentIndexChange(index);
+      return;
+    }
+    setUncontrolledCurrentIndex(index);
+  };
 
   const previous = () =>
-    setCurrentIndex(index => (index - 1 + items.length) % items.length);
+    setCurrentIndex((currentIndex - 1 + items.length) % items.length);
   const next = () => setCurrentIndex(index => (index + 1) % items.length);
 
   return (
-    <Stack spacing={1.5}>
+    <Stack spacing={renderItemActions ? 0.5 : 1.5} sx={sx}>
+      {renderItemActions && (
+        <Stack
+          direction="row"
+          role="toolbar"
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            minHeight: 32,
+            px: 0.5,
+            ...itemActionsSx,
+          }}
+        >
+          <Typography variant="caption">
+            Media {currentIndex + 1} of {items.length}
+          </Typography>
+          <Stack direction="row" spacing={0.5}>
+            {renderItemActions(currentItem, currentIndex)}
+          </Stack>
+        </Stack>
+      )}
       <ExpandableCarouselStage
         item={currentItem}
         onExpand={() => setExpandedItem(currentItem)}
@@ -529,8 +621,11 @@ const CarouselPresentation = ({ items }) => {
             aria-label="Previous media"
             onClick={previous}
             sx={{
-              '&:hover': { bgcolor: 'var(--story-theme-highlight)' },
-              color: 'var(--story-theme-text)',
+              '&:hover': {
+                bgcolor: theme?.highlight || 'var(--story-theme-highlight)',
+              },
+              color:
+                navigationColor || theme?.text || 'var(--story-theme-text)',
             }}
           >
             <NavigateBeforeIcon />
@@ -547,13 +642,15 @@ const CarouselPresentation = ({ items }) => {
               sx={{
                 bgcolor:
                   index === currentIndex
-                    ? 'var(--story-theme-highlight)'
-                    : 'var(--story-theme-text)',
-                border: 0,
+                    ? theme?.highlight || 'var(--story-theme-highlight)'
+                    : 'transparent',
+                border: '1px solid',
+                borderColor:
+                  navigationColor || theme?.text || 'var(--story-theme-text)',
                 borderRadius: '50%',
                 cursor: 'pointer',
                 height: 8,
-                opacity: index === currentIndex ? 1 : 0.35,
+                opacity: index === currentIndex ? 1 : 0.75,
                 p: 0,
                 width: 8,
               }}
@@ -565,8 +662,11 @@ const CarouselPresentation = ({ items }) => {
             aria-label="Next media"
             onClick={next}
             sx={{
-              '&:hover': { bgcolor: 'var(--story-theme-highlight)' },
-              color: 'var(--story-theme-text)',
+              '&:hover': {
+                bgcolor: theme?.highlight || 'var(--story-theme-highlight)',
+              },
+              color:
+                navigationColor || theme?.text || 'var(--story-theme-text)',
             }}
           >
             <NavigateNextIcon />
