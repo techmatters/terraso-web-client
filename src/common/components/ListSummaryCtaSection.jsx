@@ -46,7 +46,12 @@ const ListSummaryCtaSection = ({
         >
           <Typography sx={{ mb: 2 }}>{ctaDescription}</Typography>
 
-          <Button variant="contained" component={RouterLink} to={ctaButtonTo}>
+          <Button
+            variant="contained"
+            size="large"
+            component={RouterLink}
+            to={ctaButtonTo}
+          >
             {ctaButtonLabel}
           </Button>
         </Card>

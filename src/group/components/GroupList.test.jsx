@@ -153,9 +153,9 @@ test('GroupList: Hide My Groups when memberships are empty', async () => {
   await setup();
 
   expect(screen.queryByRole('region', { name: 'My Groups' })).toBeNull();
-  expect(
-    screen.getByRole('link', { name: 'Create a group' })
-  ).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Create a group' })).toHaveClass(
+    'MuiButton-sizeLarge'
+  );
 });
 
 test('GroupList: Empty', async () => {

@@ -263,9 +263,9 @@ test('LandscapeList: Hide My Landscapes when memberships are empty', async () =>
   await setup();
 
   expect(screen.queryByRole('region', { name: 'My Landscapes' })).toBeNull();
-  expect(
-    screen.getByRole('link', { name: 'Add your landscape' })
-  ).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Add your landscape' })).toHaveClass(
+    'MuiButton-sizeLarge'
+  );
 });
 
 test('LandscapeList: Empty', async () => {
