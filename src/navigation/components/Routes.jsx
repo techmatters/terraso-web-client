@@ -54,6 +54,7 @@ import LandscapeView from 'terraso-web-client/landscape/components/LandscapeView
 import LandscapeMembers from 'terraso-web-client/landscape/membership/components/LandscapeMembers';
 import SharedResourceDownload from 'terraso-web-client/sharedData/components/SharedResourceDownload';
 import StoryMapInvite from 'terraso-web-client/storyMap/components/StoryMapInvite';
+import StoryMapMediaEditorPoc from 'terraso-web-client/storyMap/components/StoryMapMediaEditorPoc';
 import StoryMapMediaPoc from 'terraso-web-client/storyMap/components/StoryMapMediaPoc';
 import StoryMapNew from 'terraso-web-client/storyMap/components/StoryMapNew';
 import StoryMapsToolsHome from 'terraso-web-client/storyMap/components/StoryMapsToolHome';
@@ -214,6 +215,10 @@ const paths = [
     isEmbedded: true,
   }),
   path('/tools/story-maps/media-poc', StoryMapMediaPoc, {
+    auth: false,
+    isEmbedded: true,
+  }),
+  path('/tools/story-maps/media-editor-poc', StoryMapMediaEditorPoc, {
     auth: false,
     isEmbedded: true,
   }),
