@@ -37,6 +37,7 @@ const EDITOR_CARD_SX = {
   color: 'white',
   bgcolor: 'secondary.main',
   border: 'none',
+  borderRadius: '16px',
   boxShadow: 'none',
   containerType: 'inline-size',
   isolation: 'isolate',

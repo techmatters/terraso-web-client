@@ -22,7 +22,7 @@ import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { useDispatch } from 'terraso-web-client/terrasoApi/store';
-import { Link, Stack, Typography } from '@mui/material';
+import { Box, Link, Stack, Typography } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { withProps } from 'terraso-web-client/react-hoc';
@@ -30,6 +30,7 @@ import { withProps } from 'terraso-web-client/react-hoc';
 import { MEMBERSHIP_STATUS_APPROVED } from 'terraso-web-client/collaboration/collaborationConstants';
 import { CollaborationContextProvider } from 'terraso-web-client/collaboration/collaborationContext';
 import MembershipJoinLeaveButton from 'terraso-web-client/collaboration/components/MembershipJoinLeaveButton';
+import DashboardHero from 'terraso-web-client/common/components/DashboardHero';
 import ListSummaryCtaSection from 'terraso-web-client/common/components/ListSummaryCtaSection';
 import TableResponsive from 'terraso-web-client/common/components/TableResponsive';
 import {
@@ -38,7 +39,6 @@ import {
 } from 'terraso-web-client/common/document';
 import PageContainer from 'terraso-web-client/layout/PageContainer';
 import PageContentBand from 'terraso-web-client/layout/PageContentBand';
-import PageHeader from 'terraso-web-client/layout/PageHeader';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
 import GroupsHomeCard from 'terraso-web-client/group/components/GroupsHomeCard';
 import {
@@ -210,8 +210,13 @@ const GroupList = () => {
 
   return (
     <>
-      <PageContainer>
-        <PageHeader header={t('group.list_title')} />
+      <PageContainer sx={{ paddingBottom: 2, paddingTop: 4 }}>
+        <Box sx={{ mb: 3 }}>
+          <DashboardHero
+            title={t('group.dashboard_title')}
+            description={t('group.default_content')}
+          />
+        </Box>
         <ListSummaryCtaSection
           summaryCard={
             !_.isEmpty(myGroups) ? (
@@ -222,13 +227,15 @@ const GroupList = () => {
               />
             ) : null
           }
-          ctaTitle={t('group.list_cta_title')}
           ctaDescription={t('group.list_cta_description')}
           ctaButtonLabel={t('group.list_cta_button')}
           ctaButtonTo="/groups/new"
         />
       </PageContainer>
       <PageContentBand>
+        <Typography component="h2" variant="h1" sx={{ mb: 3, mt: 2 }}>
+          {t('group.directory_title')}
+        </Typography>
         <TableResponsive
           columns={columns}
           rows={groups}

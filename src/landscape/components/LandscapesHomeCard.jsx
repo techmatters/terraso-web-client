@@ -20,23 +20,27 @@ import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Box, Link, List, ListItem, Typography } from '@mui/material';
 
+import DashboardSummaryCard, {
+  DASHBOARD_SUMMARY_ITEM_RADIUS,
+} from 'terraso-web-client/common/components/DashboardSummaryCard';
 import RouterLink from 'terraso-web-client/common/components/RouterLink';
-import HomeCard from 'terraso-web-client/home/components/HomeCard';
 
 import landscapePlaceholder from 'terraso-web-client/assets/landscape.svg';
 import theme from 'terraso-web-client/theme';
 
-const LandscapeItem = ({ landscape, index }) => {
+const LandscapeItem = ({ landscape }) => {
   const { t } = useTranslation();
   const landscapeUrl = `/landscapes/${landscape.slug}`;
 
   return (
     <ListItem
       sx={{
+        bgcolor: theme.palette.white,
+        borderRadius: DASHBOARD_SUMMARY_ITEM_RADIUS,
+        color: 'text.primary',
         display: 'flex',
-        padding: 1,
-        paddingLeft: 0,
-        borderTop: index && `1px solid ${theme.palette.gray.lite1}`, // skip first item
+        alignItems: 'flex-start',
+        p: 2,
       }}
       aria-label={landscape.name}
     >
@@ -55,10 +59,28 @@ const LandscapeItem = ({ landscape, index }) => {
           marginLeft: 2,
         }}
       >
-        <Link component={RouterLink} to={landscapeUrl}>
+        <Link
+          color="secondary.main"
+          component={RouterLink}
+          to={landscapeUrl}
+          sx={{
+            fontSize: 20,
+            fontWeight: 700,
+            letterSpacing: '0.15px',
+            lineHeight: '23px',
+          }}
+        >
           {landscape.name}
         </Link>
-        <Typography>
+        <Typography
+          sx={{
+            color: 'secondary.main',
+            fontSize: 16,
+            fontStyle: 'italic',
+            lineHeight: '20px',
+            mt: 0.5,
+          }}
+        >
           {t(
             `landscape.role_${_.getOr(
               'member',
@@ -82,8 +104,7 @@ const LandscapesHomeCard = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <HomeCard
-      id="landscapes"
+    <DashboardSummaryCard
       title={title || t('landscape.home_title')}
       titleId="landscapes-list-title"
       action={
@@ -100,16 +121,19 @@ const LandscapesHomeCard = ({
         aria-labelledby="landscapes-list-title"
         aria-describedby="landscapes-list-title"
         sx={{
+          display: 'grid',
+          gap: 3,
+          p: 0,
           width: '100%',
         }}
       >
-        {landscapes.map((landscape, index) => (
+        {landscapes.map(landscape => (
           <Fragment key={landscape.slug}>
-            <LandscapeItem landscape={landscape} index={index} />
+            <LandscapeItem landscape={landscape} />
           </Fragment>
         ))}
       </List>
-    </HomeCard>
+    </DashboardSummaryCard>
   );
 };
 

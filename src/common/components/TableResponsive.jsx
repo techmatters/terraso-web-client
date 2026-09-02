@@ -279,22 +279,20 @@ const SearchBar = props => {
 
   return (
     <Stack
-      direction={{ xs: 'column', md: 'row' }}
-      spacing={{ xs: 1 }}
       sx={{
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         width: '100%',
       }}
     >
-      <Typography sx={{ flexGrow: 3, width: { xs: '100%' } }}>
-        {searchQuery &&
-          t('common.table_search_filter_results', {
+      {searchQuery && (
+        <Typography sx={{ mb: 1 }}>
+          {t('common.table_search_filter_results', {
             rows: filteredRows,
             count: filteredRows.length,
             query: searchQuery,
           })}
-      </Typography>
+        </Typography>
+      )}
       <InputLabel htmlFor="table-search" className="visually-hidden">
         {searchPlaceholder}
       </InputLabel>
@@ -305,7 +303,7 @@ const SearchBar = props => {
         placeholder={searchPlaceholder}
         onChange={handleChange}
         value={query}
-        sx={{ flexGrow: 2, width: { xs: '100%' } }}
+        sx={{ maxWidth: 736, width: '100%' }}
         slotProps={{
           input: {
             sx: theme => ({

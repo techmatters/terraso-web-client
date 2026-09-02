@@ -21,7 +21,7 @@ import { useSelector } from 'react-redux';
 import { Link as RouterLink, useSearchParams } from 'react-router';
 import { useFetchData } from 'terraso-client-shared/store/utils';
 import { useDispatch } from 'terraso-web-client/terrasoApi/store';
-import { Link, Stack, Typography } from '@mui/material';
+import { Box, Link, Stack, Typography } from '@mui/material';
 
 import { withProps } from 'terraso-web-client/react-hoc';
 
@@ -30,6 +30,7 @@ import { CollaborationContextProvider } from 'terraso-web-client/collaboration/c
 import MemberJoin from 'terraso-web-client/collaboration/components/MemberJoin';
 import MembershipListCount from 'terraso-web-client/collaboration/components/MembershipCount';
 import MembershipJoinLeaveButton from 'terraso-web-client/collaboration/components/MembershipJoinLeaveButton';
+import DashboardHero from 'terraso-web-client/common/components/DashboardHero';
 import ListSummaryCtaSection from 'terraso-web-client/common/components/ListSummaryCtaSection';
 import TableResponsive from 'terraso-web-client/common/components/TableResponsive';
 import { countryNameForCode } from 'terraso-web-client/common/countries';
@@ -39,7 +40,6 @@ import {
 } from 'terraso-web-client/common/document';
 import PageContainer from 'terraso-web-client/layout/PageContainer';
 import PageContentBand from 'terraso-web-client/layout/PageContentBand';
-import PageHeader from 'terraso-web-client/layout/PageHeader';
 import PageLoader from 'terraso-web-client/layout/PageLoader';
 import LandscapeListMap from 'terraso-web-client/landscape/components/LandscapeListMap';
 import LandscapesHomeCard from 'terraso-web-client/landscape/components/LandscapesHomeCard';
@@ -181,8 +181,13 @@ const LandscapeList = () => {
 
   return (
     <>
-      <PageContainer>
-        <PageHeader header={t('landscape.list_title')} />
+      <PageContainer sx={{ paddingBottom: 2, paddingTop: 4 }}>
+        <Box sx={{ mb: 3 }}>
+          <DashboardHero
+            title={t('landscape.dashboard_title')}
+            description={t('landscape.default_content')}
+          />
+        </Box>
         <Typography
           variant="body2"
           display="block"
@@ -210,13 +215,15 @@ const LandscapeList = () => {
               />
             ) : null
           }
-          ctaTitle={t('landscape.list_cta_title')}
           ctaDescription={t('landscape.list_cta_description')}
           ctaButtonLabel={t('landscape.list_cta_button')}
           ctaButtonTo="/landscapes/new"
         />
       </PageContainer>
       <PageContentBand>
+        <Typography component="h2" variant="h1" sx={{ mb: 3, mt: 2 }}>
+          {t('landscape.directory_title')}
+        </Typography>
         <TableResponsive
           columns={columns}
           rows={landscapes}
