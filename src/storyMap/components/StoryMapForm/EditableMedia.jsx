@@ -74,8 +74,18 @@ const MEDIA_TYPES = {
 
 const CAROUSEL_ASPECT_RATIO = 16 / 9;
 const DEFAULT_CROP = { position: { x: 0.5, y: 0.5 }, scale: 1 };
-const FIT_IMAGE_SCALE = 0;
-const MIN_EDITOR_SCALE = 0.1;
+
+const calculateFitScale = ({ naturalHeight, naturalWidth }) => {
+  if (!naturalHeight || !naturalWidth) {
+    return 1;
+  }
+
+  const imageAspectRatio = naturalWidth / naturalHeight;
+  return Math.min(
+    imageAspectRatio / CAROUSEL_ASPECT_RATIO,
+    CAROUSEL_ASPECT_RATIO / imageAspectRatio
+  );
+};
 
 const MEDIA_CONFIG = {
   [MEDIA_TYPES.IMAGE]: {
@@ -789,9 +799,33 @@ const moveMedia = (mediaItems, index, direction) => {
   return nextMediaItems;
 };
 
+const getMediaDeleteConfirmProps = media => {
+  if (media.type.startsWith(MEDIA_TYPES.IMAGE)) {
+    return {
+      title: 'storyMap.form_media_image_delete_confirm_title',
+      message: 'storyMap.form_media_image_delete_confirm_message',
+      button: 'storyMap.form_media_image_delete_confirm_button',
+    };
+  }
+  if (media.type.startsWith(MEDIA_TYPES.AUDIO)) {
+    return {
+      title: 'storyMap.form_media_audio_delete_confirm_title',
+      message: 'storyMap.form_media_audio_delete_confirm_message',
+      button: 'storyMap.form_media_audio_delete_confirm_button',
+    };
+  }
+  return {
+    title: 'storyMap.form_media_video_delete_confirm_title',
+    message: 'storyMap.form_media_video_delete_confirm_message',
+    button: 'storyMap.form_media_video_delete_confirm_button',
+  };
+};
+
 const ImageCropDialog = ({ image, onClose, onSave }) => {
   const { getMediaFile } = useStoryMapMediaContext();
   const [crop, setCrop] = useState(image.crop || DEFAULT_CROP);
+  const [fitScale, setFitScale] = useState(image.crop?.fitScale || 1);
+  const imageSrc = getMediaSrc(image, getMediaFile);
 
   return (
     <Dialog fullWidth maxWidth="md" open onClose={onClose}>
@@ -799,14 +833,27 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
       <DialogContent>
         <Stack spacing={2} sx={{ alignItems: 'center', pt: 1 }}>
           <Box sx={{ maxWidth: '100%', overflow: 'hidden' }}>
+            <img
+              alt="Crop source"
+              onLoad={({ currentTarget }) => {
+                const nextFitScale = calculateFitScale(currentTarget);
+                setFitScale(nextFitScale);
+                setCrop(currentCrop => ({
+                  ...currentCrop,
+                  scale: Math.max(currentCrop.scale, nextFitScale),
+                }));
+              }}
+              src={imageSrc}
+              style={{ display: 'none' }}
+            />
             <AvatarEditor
-              image={getMediaSrc(image, getMediaFile)}
+              image={imageSrc}
               width={640}
               height={640 / CAROUSEL_ASPECT_RATIO}
               border={20}
               color={[255, 255, 255, 0.6]}
               position={crop.position}
-              scale={Math.max(crop.scale, MIN_EDITOR_SCALE)}
+              scale={Math.max(crop.scale, fitScale)}
               onPositionChange={position =>
                 setCrop(currentCrop => ({ ...currentCrop, position }))
               }
@@ -820,13 +867,13 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
             <Typography id="carousel-crop-zoom-label">Zoom</Typography>
             <Slider
               aria-labelledby="carousel-crop-zoom-label"
-              min={FIT_IMAGE_SCALE}
+              min={fitScale}
               max={3}
               step={0.1}
               value={crop.scale}
               valueLabelDisplay="auto"
               valueLabelFormat={scale =>
-                scale === FIT_IMAGE_SCALE ? 'Fit image' : `${scale}x`
+                scale === fitScale ? 'Fit image' : `${scale}x`
               }
               onChange={(event, scale) =>
                 setCrop(currentCrop => ({ ...currentCrop, scale }))
@@ -846,6 +893,7 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
 };
 
 const EditableMediaList = ({ label, value, onChange }) => {
+  const { t } = useTranslation();
   const { config } = useStoryMapConfigDataContext();
   const [cropIndex, setCropIndex] = useState(null);
   const [open, setOpen] = useState(false);
@@ -890,10 +938,11 @@ const EditableMediaList = ({ label, value, onChange }) => {
           open={open}
           onClose={() => setOpen(false)}
           onAdd={media => {
-            onChange([
-              ...mediaItems,
-              { ...media, id: media.contentId || media.url },
-            ]);
+            const nextMedia = {
+              ...media,
+              id: media.contentId || media.url,
+            };
+            onChange([...mediaItems, nextMedia]);
             setOpen(false);
           }}
         />
@@ -919,64 +968,134 @@ const EditableMediaList = ({ label, value, onChange }) => {
         </Stack>
       )}
       {mediaItems.length > 0 && (
-        <CarouselPresentation
-          currentIndex={selectedIndex}
-          items={mediaItems}
-          navigationColor="#212121"
-          onCurrentIndexChange={setSelectedIndex}
-          sx={carouselThemeStyles}
-          theme={carouselTheme}
-          renderItemActions={(media, index) => (
-            <>
-              <Tooltip title="Add media">
-                <IconButton
-                  aria-label="Add media"
-                  onClick={() => setOpen(true)}
-                  size="small"
-                  sx={{ color: 'inherit' }}
+        <Stack spacing={1}>
+          <CarouselPresentation
+            currentIndex={selectedIndex}
+            footerAction={
+              <Button
+                onClick={() => setOpen(true)}
+                size="small"
+                startIcon={<AddIcon fontSize="small" />}
+                sx={{ whiteSpace: 'nowrap' }}
+                variant="outlined"
+              >
+                Add media
+              </Button>
+            }
+            items={mediaItems}
+            navigationColor="#212121"
+            onCurrentIndexChange={setSelectedIndex}
+            sx={carouselThemeStyles}
+            theme={carouselTheme}
+            renderItemActions={(media, index) => {
+              const deleteConfirmProps = getMediaDeleteConfirmProps(media);
+              const hasActionBeforeDelete =
+                media.type.startsWith(MEDIA_TYPES.IMAGE) ||
+                mediaItems.length > 1;
+              const actionButtonSx = {
+                color: 'white',
+                height: 36,
+                width: 36,
+                '&.Mui-disabled': {
+                  color: 'rgba(255, 255, 255, 0.45)',
+                },
+              };
+
+              return (
+                <Stack
+                  direction="row"
+                  spacing={0.5}
+                  sx={{ alignItems: 'center' }}
                 >
-                  <AddIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              {media.type.startsWith(MEDIA_TYPES.IMAGE) && (
-                <IconButton
-                  aria-label={`Crop ${mediaLabel(media, index)}`}
-                  onClick={() => setCropIndex(index)}
-                  size="small"
-                  sx={{ color: 'inherit' }}
-                >
-                  <CropIcon fontSize="small" />
-                </IconButton>
-              )}
-              <IconButton
-                aria-label={`Move ${mediaLabel(media, index)} up`}
-                disabled={index === 0}
-                onClick={() => moveMediaAtIndex(index, -1)}
-                size="small"
-                sx={{ color: 'inherit' }}
-              >
-                <ArrowUpwardIcon fontSize="small" />
-              </IconButton>
-              <IconButton
-                aria-label={`Move ${mediaLabel(media, index)} down`}
-                disabled={index === mediaItems.length - 1}
-                onClick={() => moveMediaAtIndex(index, 1)}
-                size="small"
-                sx={{ color: 'inherit' }}
-              >
-                <ArrowDownwardIcon fontSize="small" />
-              </IconButton>
-              <IconButton
-                aria-label={`Remove ${mediaLabel(media, index)}`}
-                onClick={() => removeMediaAtIndex(index)}
-                size="small"
-                sx={{ color: 'error.main' }}
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </>
-          )}
-        />
+                  {media.type.startsWith(MEDIA_TYPES.IMAGE) && (
+                    <Tooltip
+                      placement="top"
+                      title={`Crop ${mediaLabel(media, index)}`}
+                    >
+                      <IconButton
+                        aria-label={`Crop ${mediaLabel(media, index)}`}
+                        onClick={() => setCropIndex(index)}
+                        size="small"
+                        sx={actionButtonSx}
+                      >
+                        <CropIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                  {mediaItems.length > 1 && (
+                    <Stack
+                      aria-label="Reorder media"
+                      direction="row"
+                      role="group"
+                      spacing={0.25}
+                    >
+                      <Tooltip placement="top" title="Move earlier">
+                        <span>
+                          <IconButton
+                            aria-label={`Move ${mediaLabel(media, index)} earlier`}
+                            disabled={index === 0}
+                            onClick={() => moveMediaAtIndex(index, -1)}
+                            size="small"
+                            sx={actionButtonSx}
+                          >
+                            <ArrowUpwardIcon fontSize="small" />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
+                      <Tooltip placement="top" title="Move later">
+                        <span>
+                          <IconButton
+                            aria-label={`Move ${mediaLabel(media, index)} later`}
+                            disabled={index === mediaItems.length - 1}
+                            onClick={() => moveMediaAtIndex(index, 1)}
+                            size="small"
+                            sx={actionButtonSx}
+                          >
+                            <ArrowDownwardIcon fontSize="small" />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
+                    </Stack>
+                  )}
+                  <Box
+                    sx={{
+                      borderLeft: hasActionBeforeDelete
+                        ? '1px solid'
+                        : undefined,
+                      borderColor: hasActionBeforeDelete
+                        ? 'rgba(255, 255, 255, 0.45)'
+                        : undefined,
+                      pl: hasActionBeforeDelete ? 0.5 : 0,
+                    }}
+                  >
+                    <ConfirmButton
+                      ariaLabel={`Remove ${mediaLabel(media, index)}`}
+                      buttonProps={{
+                        sx: {
+                          color: 'white',
+                          height: 36,
+                          minWidth: 36,
+                          p: 0,
+                          width: 36,
+                        },
+                      }}
+                      confirmButton={t(deleteConfirmProps.button)}
+                      confirmButtonDestructive
+                      confirmMessage={t(deleteConfirmProps.message)}
+                      confirmTitle={t(deleteConfirmProps.title)}
+                      onConfirm={() => removeMediaAtIndex(index)}
+                      tooltip={`Remove ${mediaLabel(media, index)}`}
+                      tooltipPlacement="top"
+                      variant="text"
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </ConfirmButton>
+                  </Box>
+                </Stack>
+              );
+            }}
+          />
+        </Stack>
       )}
       {cropIndex !== null && (
         <ImageCropDialog

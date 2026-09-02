@@ -23,19 +23,36 @@ const POC_THEME_STYLES = getStoryMapThemeCssVariables({
   themeId: POC_THEME_ID,
 });
 const POC_MEDIA_SURFACE = '#FFF6E3';
+const CAROUSEL_ASPECT_RATIO = 16 / 9;
+
+const calculateFitScale = ({ naturalHeight, naturalWidth }) => {
+  if (!naturalHeight || !naturalWidth) {
+    return undefined;
+  }
+
+  const imageAspectRatio = naturalWidth / naturalHeight;
+  return Math.min(
+    imageAspectRatio / CAROUSEL_ASPECT_RATIO,
+    CAROUSEL_ASPECT_RATIO / imageAspectRatio
+  );
+};
 
 const MEDIA_ITEMS = [
   {
     type: 'image/jpeg',
     signedUrl: '/storyMap/terraso-story-maps-img.jpg',
+    crop: { position: { x: 0.5, y: 0.5 }, scale: 1 },
   },
   {
     type: 'image/png',
     signedUrl: '/storyMap/set-map-step-1.png',
+    crop: { position: { x: 0.5, y: 0.5 }, scale: 1 },
   },
   {
-    type: 'image/png',
-    signedUrl: '/storyMap/set-map-step-2-1.png',
+    type: 'image/jpeg',
+    signedUrl:
+      'https://images.unsplash.com/photo-1497250681960-ef046c08a56e?auto=format&fit=crop&w=900&h=1200&q=85',
+    crop: { position: { x: 0.5, y: 0.5 }, scale: 0.421875 },
   },
   {
     type: 'audio/mpeg',
@@ -226,6 +243,7 @@ const PocMedia = ({
   objectFit = 'contain',
   crop,
   imageStyle,
+  onImageLoad,
 }) => {
   const style = {
     display: 'block',
@@ -240,6 +258,7 @@ const PocMedia = ({
       <img
         src={mediaSource(item)}
         alt={mediaLabel(item)}
+        onLoad={onImageLoad}
         style={{
           ...style,
           objectPosition: crop
@@ -456,7 +475,14 @@ const GalleryPresentation = ({ items }) => {
 };
 
 const CarouselStageMedia = ({ item, objectFit = 'contain' }) => {
-  if (mediaKind(item) === 'image' && item.crop?.scale === 0) {
+  const [fitScale, setFitScale] = useState();
+  const isImage = mediaKind(item) === 'image';
+  const isFit =
+    isImage &&
+    fitScale !== undefined &&
+    Math.abs(item.crop?.scale - fitScale) < 0.001;
+
+  if (isFit) {
     return (
       <Box
         sx={{
@@ -481,6 +507,9 @@ const CarouselStageMedia = ({ item, objectFit = 'contain' }) => {
           imageStyle={{ position: 'relative', zIndex: 1 }}
           item={item}
           objectFit="contain"
+          onImageLoad={({ currentTarget }) =>
+            setFitScale(calculateFitScale(currentTarget))
+          }
         />
       </Box>
     );
@@ -493,6 +522,12 @@ const CarouselStageMedia = ({ item, objectFit = 'contain' }) => {
         fill
         item={item}
         objectFit={item.crop ? 'cover' : objectFit}
+        onImageLoad={
+          isImage
+            ? ({ currentTarget }) =>
+                setFitScale(calculateFitScale(currentTarget))
+            : undefined
+        }
       />
     );
   }
@@ -558,6 +593,7 @@ const ExpandableCarouselStage = ({
 );
 
 export const CarouselPresentation = ({
+  footerAction,
   items,
   currentIndex: controlledCurrentIndex,
   itemActionsSx,
@@ -587,6 +623,7 @@ export const CarouselPresentation = ({
     <Stack spacing={renderItemActions ? 0.5 : 1.5} sx={sx}>
       {renderItemActions && (
         <Stack
+          aria-label="Media collection actions"
           direction="row"
           role="toolbar"
           sx={{
@@ -594,85 +631,110 @@ export const CarouselPresentation = ({
             justifyContent: 'space-between',
             minHeight: 32,
             px: 0.5,
-            ...itemActionsSx,
           }}
         >
           <Typography variant="caption">
             Media {currentIndex + 1} of {items.length}
           </Typography>
-          <Stack direction="row" spacing={0.5}>
-            {renderItemActions(currentItem, currentIndex)}
-          </Stack>
+          {footerAction}
         </Stack>
       )}
-      <ExpandableCarouselStage
-        item={currentItem}
-        onExpand={() => setExpandedItem(currentItem)}
-        testId="carousel-viewport"
-      />
-      <Stack
-        aria-label="Media navigation"
-        direction="row"
-        spacing={1}
-        sx={{ alignItems: 'center', justifyContent: 'center' }}
-      >
-        <Tooltip title="Previous media">
-          <IconButton
-            aria-label="Previous media"
-            onClick={previous}
+      <Stack spacing={0}>
+        <ExpandableCarouselStage
+          item={currentItem}
+          onExpand={() => setExpandedItem(currentItem)}
+          testId="carousel-viewport"
+        />
+        {renderItemActions && (
+          <Stack
+            aria-label="Current media actions"
+            direction="row"
+            role="toolbar"
             sx={{
-              '&:hover': {
-                bgcolor: theme?.highlight || 'var(--story-theme-highlight)',
-              },
-              color:
-                navigationColor || theme?.text || 'var(--story-theme-text)',
+              alignItems: 'center',
+              bgcolor: '#212121',
+              justifyContent: 'center',
+              minHeight: 52,
+              px: 1,
+              ...itemActionsSx,
             }}
           >
-            <NavigateBeforeIcon />
-          </IconButton>
-        </Tooltip>
-        <Stack aria-label="Media position" direction="row" spacing={0.75}>
-          {items.map((item, index) => (
-            <Box
-              aria-current={index === currentIndex ? 'true' : undefined}
-              aria-label={mediaLabel(item, index)}
-              component="button"
-              key={mediaSource(item)}
-              onClick={() => setCurrentIndex(index)}
-              sx={{
-                bgcolor:
-                  index === currentIndex
-                    ? theme?.highlight || 'var(--story-theme-highlight)'
-                    : 'transparent',
-                border: '1px solid',
-                borderColor:
-                  navigationColor || theme?.text || 'var(--story-theme-text)',
-                borderRadius: '50%',
-                cursor: 'pointer',
-                height: 8,
-                opacity: index === currentIndex ? 1 : 0.75,
-                p: 0,
-                width: 8,
-              }}
-            />
-          ))}
-        </Stack>
-        <Tooltip title="Next media">
-          <IconButton
-            aria-label="Next media"
-            onClick={next}
-            sx={{
-              '&:hover': {
-                bgcolor: theme?.highlight || 'var(--story-theme-highlight)',
-              },
-              color:
-                navigationColor || theme?.text || 'var(--story-theme-text)',
-            }}
-          >
-            <NavigateNextIcon />
-          </IconButton>
-        </Tooltip>
+            {renderItemActions(currentItem, currentIndex)}
+          </Stack>
+        )}
       </Stack>
+      {items.length > 1 && (
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Stack
+            aria-label="Media navigation"
+            direction="row"
+            spacing={1}
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Tooltip title="Previous media">
+              <IconButton
+                aria-label="Previous media"
+                onClick={previous}
+                sx={{
+                  '&:hover': {
+                    bgcolor: theme?.highlight || 'var(--story-theme-highlight)',
+                  },
+                  color:
+                    navigationColor || theme?.text || 'var(--story-theme-text)',
+                }}
+              >
+                <NavigateBeforeIcon />
+              </IconButton>
+            </Tooltip>
+            <Stack aria-label="Media position" direction="row" spacing={0.75}>
+              {items.map((item, index) => (
+                <Box
+                  aria-current={index === currentIndex ? 'true' : undefined}
+                  aria-label={mediaLabel(item, index)}
+                  component="button"
+                  key={mediaSource(item)}
+                  onClick={() => setCurrentIndex(index)}
+                  sx={{
+                    bgcolor:
+                      index === currentIndex
+                        ? theme?.highlight || 'var(--story-theme-highlight)'
+                        : 'transparent',
+                    border: '1px solid',
+                    borderColor:
+                      navigationColor ||
+                      theme?.text ||
+                      'var(--story-theme-text)',
+                    borderRadius: '50%',
+                    cursor: 'pointer',
+                    height: 8,
+                    opacity: index === currentIndex ? 1 : 0.75,
+                    p: 0,
+                    width: 8,
+                  }}
+                />
+              ))}
+            </Stack>
+            <Tooltip title="Next media">
+              <IconButton
+                aria-label="Next media"
+                onClick={next}
+                sx={{
+                  '&:hover': {
+                    bgcolor: theme?.highlight || 'var(--story-theme-highlight)',
+                  },
+                  color:
+                    navigationColor || theme?.text || 'var(--story-theme-text)',
+                }}
+              >
+                <NavigateNextIcon />
+              </IconButton>
+            </Tooltip>
+          </Stack>
+        </Box>
+      )}
       <MediaViewer item={expandedItem} onClose={() => setExpandedItem(null)} />
     </Stack>
   );
