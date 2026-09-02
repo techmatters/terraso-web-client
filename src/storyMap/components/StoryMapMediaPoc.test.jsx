@@ -191,7 +191,7 @@ test('StoryMapMediaPoc: compares contained and full-bleed fixed media frames', a
   const carousel = screen.getByRole('region', { name: 'Chapter: Carousel' });
   expect(
     within(carousel).getByTestId('carousel-viewport').querySelector('img')
-  ).toHaveStyle({ objectFit: 'contain' });
+  ).toHaveStyle({ objectFit: 'cover' });
 
   const thumbnailCarousel = screen.getByRole('region', {
     name: 'Chapter: Thumbnail Carousel',
@@ -201,6 +201,32 @@ test('StoryMapMediaPoc: compares contained and full-bleed fixed media frames', a
       .getByTestId('thumbnail-carousel-viewport')
       .querySelector('img')
   ).toHaveStyle({ objectFit: 'cover' });
+});
+
+test('StoryMapMediaPoc: fills a saved full-fit portrait crop with a blurred source image', async () => {
+  await render(<StoryMapMediaPoc />);
+
+  const carousel = screen.getByRole('region', { name: 'Chapter: Carousel' });
+  const viewport = within(carousel).getByTestId('carousel-viewport');
+
+  fireEvent.click(within(carousel).getByRole('button', { name: 'Next media' }));
+  fireEvent.click(within(carousel).getByRole('button', { name: 'Next media' }));
+
+  const portraitImage = within(viewport).getByRole('img', {
+    name: 'image media',
+  });
+  Object.defineProperties(portraitImage, {
+    naturalHeight: { value: 1200 },
+    naturalWidth: { value: 900 },
+  });
+  fireEvent.load(portraitImage);
+
+  expect(
+    within(viewport).getByRole('img', { name: 'image media' })
+  ).toHaveStyle({ objectFit: 'contain' });
+  expect(viewport.querySelector('div')).toHaveStyle({
+    position: 'relative',
+  });
 });
 
 test('StoryMapMediaPoc: expands the active Carousel media from its main stage', async () => {
