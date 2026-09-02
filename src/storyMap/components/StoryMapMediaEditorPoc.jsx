@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 
 import ChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/ChapterForm';
 import { StoryMapConfigContextProvider } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
@@ -7,7 +7,7 @@ import { getStoryMapThemeCssVariables } from 'terraso-web-client/storyMap/storyM
 
 const POC_THEME_STYLES = getStoryMapThemeCssVariables({ themeId: 'theme-7' });
 
-const INITIAL_CHAPTER = {
+export const INITIAL_CHAPTER = {
   alignment: 'left',
   description: [
     {
@@ -34,6 +34,13 @@ const INITIAL_CHAPTER = {
       crop: { position: { x: 0.5, y: 0.5 }, scale: 1 },
     },
     {
+      id: 'image-portrait',
+      type: 'image/jpeg',
+      signedUrl:
+        'https://images.unsplash.com/photo-1497250681960-ef046c08a56e?auto=format&fit=crop&w=900&h=1200&q=85',
+      crop: { position: { x: 0.5, y: 0.5 }, scale: 1 },
+    },
+    {
       id: 'audio-1',
       type: 'audio/mpeg',
       signedUrl: 'https://samplelib.com/lib/preview/mp3/sample-3s.mp3',
@@ -55,8 +62,8 @@ const INITIAL_CHAPTER = {
   title: 'Multiple media chapter',
 };
 
-const StoryMapMediaEditorPocContent = () => {
-  const [chapter, setChapter] = useState(INITIAL_CHAPTER);
+const StoryMapMediaEditorPocContent = ({ initialChapter }) => {
+  const [chapter, setChapter] = useState(initialChapter);
   const onFieldChange = useCallback(
     field => value =>
       setChapter(currentChapter => ({ ...currentChapter, [field]: value })),
@@ -73,9 +80,6 @@ const StoryMapMediaEditorPocContent = () => {
       }}
     >
       <Stack spacing={2} sx={{ margin: 'auto', maxWidth: 900 }}>
-        <Typography color="white" component="h1" variant="h1">
-          Carousel editor POC
-        </Typography>
         <ChapterForm
           mediaField="mediaItems"
           multipleMedia
@@ -88,15 +92,15 @@ const StoryMapMediaEditorPocContent = () => {
   );
 };
 
-const StoryMapMediaEditorPoc = () => (
+const StoryMapMediaEditorPoc = ({ initialChapter = INITIAL_CHAPTER }) => (
   <StoryMapConfigContextProvider
     baseConfig={{
-      chapters: [INITIAL_CHAPTER],
+      chapters: [initialChapter],
       dataLayers: {},
       themeId: 'theme-7',
     }}
   >
-    <StoryMapMediaEditorPocContent />
+    <StoryMapMediaEditorPocContent initialChapter={initialChapter} />
   </StoryMapConfigContextProvider>
 );
 
