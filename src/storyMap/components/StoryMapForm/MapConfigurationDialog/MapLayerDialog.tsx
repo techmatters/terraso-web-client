@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useFetchData } from 'terraso-client-shared/store/utils';
@@ -41,6 +41,12 @@ import {
   Typography,
 } from '@mui/material';
 
+import {
+  Tab,
+  TabContext,
+  TabList,
+  TabPanel,
+} from 'terraso-web-client/common/components/Tabs';
 import { CreateMapLayerFileUpload } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog';
 import { useStoryMapConfigDataContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { fetchDataLayers } from 'terraso-web-client/storyMap/storyMapSlice';
@@ -59,6 +65,8 @@ interface MapLayerListItemProps {
 }
 
 const MapLayerListItem = ({ mapLayer }: MapLayerListItemProps) => {
+  const { t } = useTranslation();
+
   return (
     <ListItem
       aria-label={mapLayer.title}
@@ -97,20 +105,94 @@ const MapLayerListItem = ({ mapLayer }: MapLayerListItemProps) => {
   );
 };
 
+interface SelectMapLayerRadioListProps {
+  mapLayers: MapLayerConfig[];
+  selected: string;
+  onSelect: (value: string) => void;
+}
+
+const SelectMapLayerRadioList = ({
+  mapLayers,
+  selected,
+  onSelect,
+}: SelectMapLayerRadioListProps) => {
+  return (
+    <RadioGroup
+      value={selected}
+      onChange={event => onSelect(event.target.value)}
+    >
+      <MapLayerList>
+        {mapLayers.map(mapLayer => (
+          <MapLayerListItem key={mapLayer.id} mapLayer={mapLayer} />
+        ))}
+      </MapLayerList>
+    </RadioGroup>
+  );
+};
+
+type MapLayerTab = 'STORY_MAP' | 'GROUP' | 'LANDSCAPE';
+
+interface SelectMapLayerTabPanelProps {
+  tab: MapLayerTab;
+  mapLayers: MapLayerConfig[];
+  selected: string;
+  onSelect: (value: string) => void;
+}
+
+const SelectMapLayerTabPanel = ({
+  tab,
+  mapLayers,
+  selected,
+  onSelect,
+}: SelectMapLayerTabPanelProps) => {
+  const { t } = useTranslation();
+  return (
+    <TabPanel<MapLayerTab> value={tab} sx={{ padding: 2 }}>
+      {mapLayers.length === 0 && (
+        <Typography>
+          {t(
+            `storyMap.form_location_add_data_layer_dialog_select_tab_empty.${tab}`
+          )}
+        </Typography>
+      )}
+      <SelectMapLayerRadioList
+        mapLayers={mapLayers}
+        selected={selected}
+        onSelect={onSelect}
+      />
+    </TabPanel>
+  );
+};
+
 interface SelectMapLayerSectionProps {
   fetching: boolean;
+  error: boolean;
   mapLayers: MapLayerConfig[];
   selected: string;
   setSelected: (value: string) => void;
+  hasGroups: boolean;
+  hasLandscapes: boolean;
 }
 
 const SelectMapLayerSection = ({
   fetching,
+  error,
   mapLayers,
   selected,
   setSelected,
+  hasGroups,
+  hasLandscapes,
 }: SelectMapLayerSectionProps) => {
   const { t } = useTranslation();
+
+  const [tab, setTab] = useState<MapLayerTab>('STORY_MAP');
+
+  const showTabs = hasGroups || hasLandscapes;
+
+  const handleSelect = useCallback(
+    (value: string) => setSelected(value),
+    [setSelected]
+  );
 
   const sortedMapLayers = useMemo(() => {
     return _.sortBy(
@@ -119,34 +201,102 @@ const SelectMapLayerSection = ({
     );
   }, [mapLayers]);
 
+  const { storyMapLayers, groupLayers, landscapeLayers } = useMemo(() => {
+    return {
+      storyMapLayers: sortedMapLayers.filter(
+        layer => layer.ownerType === 'StoryMapNode'
+      ),
+      landscapeLayers: sortedMapLayers.filter(
+        layer => layer.ownerType === 'LandscapeNode'
+      ),
+      groupLayers: sortedMapLayers.filter(
+        layer => layer.ownerType === 'GroupNode'
+      ),
+    };
+  }, [sortedMapLayers]);
+
+  if (fetching && mapLayers.length === 0) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+        <CircularProgress aria-label={t('common.loader_label')} />
+      </Box>
+    );
+  }
+
+  if (error && !fetching) {
+    return (
+      <Typography>
+        {t('storyMap.form_location_add_data_layer_dialog_load_error')}
+      </Typography>
+    );
+  }
+
+  if (!showTabs && storyMapLayers.length === 0) {
+    return null;
+  }
+
   return (
-    <>
-      {fetching ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-          <CircularProgress aria-label={t('common.loader_label')} />
-        </Box>
-      ) : _.isEmpty(mapLayers) ? (
-        <></>
-      ) : (
-        <Stack>
-          <Typography component="h2" sx={{ fontWeight: 'bold' }}>
-            {t(
-              'storyMap.form_location_add_data_layer_dialog_select_section_title'
+    <Stack>
+      <Typography component="h2" sx={{ fontWeight: 'bold' }}>
+        {t('storyMap.form_location_add_data_layer_dialog_select_section_title')}
+      </Typography>
+      {showTabs ? (
+        <TabContext<MapLayerTab> value={tab}>
+          <TabList onChange={(_, newTab) => setTab(newTab)}>
+            <Tab<MapLayerTab>
+              value="STORY_MAP"
+              label={t(
+                'storyMap.form_location_add_data_layer_dialog_story_map_tab'
+              )}
+            />
+            {hasGroups && (
+              <Tab<MapLayerTab>
+                value="GROUP"
+                label={t(
+                  'storyMap.form_location_add_data_layer_dialog_group_tab'
+                )}
+              />
             )}
-          </Typography>
-          <RadioGroup
-            value={selected}
-            onChange={event => setSelected(event.target.value)}
-          >
-            <MapLayerList aria-labelledby="data-layer-dialog-subtitle">
-              {sortedMapLayers.map(mapLayer => (
-                <MapLayerListItem key={mapLayer.id} mapLayer={mapLayer} />
-              ))}
-            </MapLayerList>
-          </RadioGroup>
-        </Stack>
+            {hasLandscapes && (
+              <Tab<MapLayerTab>
+                value="LANDSCAPE"
+                label={t(
+                  'storyMap.form_location_add_data_layer_dialog_landscape_tab'
+                )}
+              />
+            )}
+          </TabList>
+          <SelectMapLayerTabPanel
+            tab="STORY_MAP"
+            mapLayers={storyMapLayers}
+            selected={selected}
+            onSelect={handleSelect}
+          />
+          {hasGroups && (
+            <SelectMapLayerTabPanel
+              tab="GROUP"
+              mapLayers={groupLayers}
+              selected={selected}
+              onSelect={handleSelect}
+            />
+          )}
+          {hasLandscapes && (
+            <SelectMapLayerTabPanel
+              tab="LANDSCAPE"
+              mapLayers={landscapeLayers}
+              selected={selected}
+              onSelect={handleSelect}
+            />
+          )}
+        </TabContext>
+      ) : (
+        <SelectMapLayerRadioList
+          mapLayers={storyMapLayers}
+          selected={selected}
+          onSelect={handleSelect}
+        />
       )}
-    </>
+    </Stack>
   );
 };
 
@@ -176,31 +326,49 @@ export const MapLayerDialog = ({
   onConfirm,
 }: MapLayerDialogProps) => {
   const { t } = useTranslation();
-  const { fetching, list: mapLayers } = useSelector(
-    state => state.storyMap.dataLayers
-  ) as { fetching: boolean; list: MapLayerConfig[] };
+  const {
+    fetching,
+    error,
+    list: mapLayers,
+    hasGroups,
+    hasLandscapes,
+  } = useSelector(state => state.storyMap.dataLayers) as {
+    fetching: boolean;
+    error: boolean;
+    list: MapLayerConfig[];
+    hasGroups: boolean;
+    hasLandscapes: boolean;
+  };
+  const user = useSelector(state => state.account.currentUser);
   const [selected, setSelected] = useState('');
   const { storyMap } = useStoryMapConfigDataContext() as {
     storyMap?: { id: string };
   };
 
+  useEffect(() => {
+    if (open) {
+      setSelected('');
+    }
+  }, [open]);
+
   const mapLayersById = useMemo(
-    () =>
-      (_.isEmpty(mapLayers) ? {} : _.keyBy('id', mapLayers)) as Record<
-        string,
-        MapLayerConfig
-      >,
+    () => _.keyBy('id', mapLayers) as Record<string, MapLayerConfig>,
     [mapLayers]
   );
 
   useFetchData(
     useCallback(() => {
       if (open && storyMap?.id) {
-        return fetchDataLayers({ ownerId: storyMap.id });
+        return fetchDataLayers({
+          ownerId: storyMap.id,
+          // Must always pass a string: django-filter skips the filter when the
+          // arg is null, which would return ALL groups/landscapes.
+          email: user?.data?.email ?? '',
+        });
       } else {
         return null;
       }
-    }, [open, storyMap?.id])
+    }, [open, storyMap?.id, user?.data?.email])
   );
 
   const onConfirmWrapper = useCallback(() => {
@@ -249,9 +417,12 @@ export const MapLayerDialog = ({
           <CreateMapLayerSection title={title} onCreate={onCreate} />
           <SelectMapLayerSection
             fetching={fetching}
+            error={error}
             selected={selected}
             setSelected={setSelected}
             mapLayers={mapLayers}
+            hasGroups={hasGroups}
+            hasLandscapes={hasLandscapes}
           />
         </Stack>
       </DialogContent>

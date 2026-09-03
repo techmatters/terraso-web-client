@@ -26,7 +26,6 @@ import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { StoryMapMetadataFieldsFragmentDoc } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
 import { graphql } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/index';
 
-import { MEMBERSHIP_TYPE_CLOSED } from 'terraso-web-client/collaboration/collaborationConstants';
 import { TILESET_STATUS_PENDING } from 'terraso-web-client/sharedData/sharedDataConstants';
 import {
   compareStoryMapsByUpdatedAt,
@@ -375,6 +374,8 @@ export const addMapLayer = ({
       const result = {
         ...rest,
         ...JSON.parse(configuration),
+        // The created layer is owned by the story map being edited.
+        ownerType: 'StoryMapNode',
       };
       // Only include inline geojson for VCs without S3 URL (legacy path)
       if (!rest.geojsonSignedUrl) {
@@ -384,35 +385,67 @@ export const addMapLayer = ({
     });
 };
 
-export const fetchDataLayers = ({ ownerId }) => {
+export const fetchDataLayers = ({ ownerId, email }) => {
   const query = graphql(`
-    query visualizationConfigs($ownerId: UUID!) {
-      visualizationConfigs(ownerObjectId: $ownerId) {
+    query visualizationConfigs($ownerId: UUID!, $email: String!) {
+      storyMapConfigs: visualizationConfigs(ownerObjectId: $ownerId) {
         edges {
           node {
-            ...visualizationConfigWithConfiguration
-            geojson
-            dataEntry {
-              name
-              resourceType
-              createdBy {
-                lastName
-                firstName
-              }
-              sharedResources {
+            ...visualizationConfigWithStoryMapContext
+          }
+        }
+      }
+      # The backend scopes visualizationConfigs to the current user's
+      # APPROVED memberships (get_queryset in backend
+      # visualization_config.py), so the tabs only ever list layers from the
+      # user's own groups/landscapes. The myGroups/myLandscapes aliases exist
+      # anyway to drive TAB VISIBILITY (member vs not), not layer filtering:
+      # an empty groupConfigs list cannot distinguish "member with no maps"
+      # from "not a member", and the per-tab empty-state copy depends on that
+      # distinction. The inner membershipStatus: APPROVED filter keeps tab
+      # visibility aligned with the backend's APPROVED-only scoping (the root
+      # memberships_Email filter matches pending memberships too).
+      landscapeConfigs: visualizationConfigs(
+        dataEntry_SharedResources_TargetContentType: "landscape"
+      ) {
+        edges {
+          node {
+            ...visualizationConfigWithStoryMapContext
+          }
+        }
+      }
+      groupConfigs: visualizationConfigs(
+        dataEntry_SharedResources_TargetContentType: "group"
+      ) {
+        edges {
+          node {
+            ...visualizationConfigWithStoryMapContext
+          }
+        }
+      }
+      myGroups: groups(memberships_Email: $email) {
+        edges {
+          node {
+            membershipList {
+              memberships(user_Email_In: [$email], membershipStatus: APPROVED) {
                 edges {
                   node {
-                    target {
-                      ... on GroupNode {
-                        name
-                        membershipList {
-                          membershipType
-                        }
-                      }
-                      ... on LandscapeNode {
-                        name
-                      }
-                    }
+                    id
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      myLandscapes: landscapes(membershipList_Memberships_User_Email: $email) {
+        edges {
+          node {
+            membershipList {
+              memberships(user_Email_In: [$email], membershipStatus: APPROVED) {
+                edges {
+                  node {
+                    id
                   }
                 }
               }
@@ -422,29 +455,28 @@ export const fetchDataLayers = ({ ownerId }) => {
       }
     }
   `);
-  return terrasoApi
-    .requestGraphQL(query, { ownerId })
-    .then(_.get('visualizationConfigs.edges'))
-    .then(list => list || Promise.reject('not_found'))
-    .then(list =>
-      list.map(entry => ({
-        ..._.omit(['configuration', 'geojson'], entry.node),
-        tilesetId: entry.node.mapboxTilesetId,
-        geojsonSignedUrl: entry.node.geojsonSignedUrl,
-        dataEntry: {
-          ...entry.node.dataEntry,
-          sharedResources: entry.node.dataEntry.sharedResources?.edges.map(
-            edge => edge.node?.target.name
-          ),
-        },
-        isRestricted: entry.node.dataEntry.sharedResources?.edges.some(
-          edge =>
-            edge.node?.target?.membershipList?.membershipType ===
-            MEMBERSHIP_TYPE_CLOSED
-        ),
-        processing: !entry.node.geojsonSignedUrl && !entry.node.mapboxTilesetId,
-        ...JSON.parse(entry.node.configuration),
-        geojson: JSON.parse(entry.node.geojson),
-      }))
-    );
+  return terrasoApi.requestGraphQL(query, { ownerId, email }).then(lists => ({
+    list: [
+      ...(lists.storyMapConfigs?.edges || []),
+      ...(lists.landscapeConfigs?.edges || []),
+      ...(lists.groupConfigs?.edges || []),
+    ].map(entry => ({
+      ..._.omit(['configuration', 'geojson', 'owner'], entry.node),
+      tilesetId: entry.node.mapboxTilesetId,
+      geojsonSignedUrl: entry.node.geojsonSignedUrl,
+      processing:
+        !entry.node.geojsonSignedUrl &&
+        (entry.node.mapboxTilesetStatus === TILESET_STATUS_PENDING ||
+          !entry.node.mapboxTilesetId),
+      ownerType: entry.node.owner?.__typename,
+      ...JSON.parse(entry.node.configuration),
+      geojson: JSON.parse(entry.node.geojson),
+    })),
+    hasGroups: lists.myGroups?.edges?.some(
+      edge => edge.node?.membershipList?.memberships?.edges?.length > 0
+    ),
+    hasLandscapes: lists.myLandscapes?.edges?.some(
+      edge => edge.node?.membershipList?.memberships?.edges?.length > 0
+    ),
+  }));
 };
