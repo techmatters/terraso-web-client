@@ -21,10 +21,13 @@ import _ from 'lodash/fp';
 import AvatarEditor from 'react-avatar-editor';
 import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import CropIcon from '@mui/icons-material/Crop';
 import DeleteIcon from '@mui/icons-material/Delete';
+import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
+import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
+import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ViewCarouselOutlinedIcon from '@mui/icons-material/ViewCarouselOutlined';
 import {
   Box,
   Button,
@@ -35,11 +38,16 @@ import {
   FormControlLabel,
   FormHelperText,
   IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
   OutlinedInput,
   Paper,
   Radio,
   Slider,
   Stack,
+  ToggleButton,
+  ToggleButtonGroup,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -51,7 +59,10 @@ import {
   useStoryMapConfigDataContext,
   useStoryMapMediaContext,
 } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
-import { CarouselPresentation } from 'terraso-web-client/storyMap/components/StoryMapMediaPoc';
+import {
+  CarouselPresentation,
+  GalleryPresentation,
+} from 'terraso-web-client/storyMap/components/StoryMapMediaPoc';
 import {
   getResolvedStoryMapTheme,
   getStoryMapThemeCssVariables,
@@ -892,7 +903,252 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
   );
 };
 
-const EditableMediaList = ({ label, value, onChange }) => {
+const AddMediaButton = ({ compact = false, onClick }) => (
+  <Tooltip title="Add media">
+    <Button
+      aria-label="Add media"
+      onClick={onClick}
+      size="small"
+      sx={{
+        minWidth: compact ? 32 : { xs: 32, sm: 64 },
+        px: compact ? 0.5 : { xs: 0.5, sm: 1.25 },
+        whiteSpace: 'nowrap',
+        ...(compact && {
+          '@container (min-width: 300px)': {
+            minWidth: 64,
+            px: 1.25,
+          },
+        }),
+      }}
+      variant="outlined"
+    >
+      <AddIcon fontSize="small" />
+      <Box
+        component="span"
+        sx={{
+          display: compact ? 'none' : { xs: 'none', sm: 'inline' },
+          ml: 1,
+          ...(compact && {
+            '@container (min-width: 300px)': { display: 'inline' },
+          }),
+        }}
+      >
+        Add media
+      </Box>
+    </Button>
+  </Tooltip>
+);
+
+const MediaActionsMenu = ({
+  canMoveEarlier,
+  canMoveLater,
+  deleteConfirmProps,
+  label,
+  onCrop,
+  onDelete,
+  onMoveEarlier,
+  onMoveLater,
+}) => {
+  const { t } = useTranslation();
+  const [anchorElement, setAnchorElement] = useState(null);
+  const closeMenu = () => setAnchorElement(null);
+  const runAction = action => () => {
+    closeMenu();
+    action();
+  };
+
+  return (
+    <>
+      <IconButton
+        aria-label={`Actions for ${label}`}
+        onClick={event => {
+          event.stopPropagation();
+          setAnchorElement(event.currentTarget);
+        }}
+        size="small"
+        sx={{
+          bgcolor: 'rgba(33, 33, 33, 0.88)',
+          color: 'white',
+          height: 32,
+          width: 32,
+          '&:hover': { bgcolor: 'rgba(33, 33, 33, 0.96)' },
+        }}
+      >
+        <MoreVertIcon fontSize="small" />
+      </IconButton>
+      <Menu
+        anchorEl={anchorElement}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        onClick={event => event.stopPropagation()}
+        onClose={closeMenu}
+        open={Boolean(anchorElement)}
+        slotProps={{
+          list: { dense: true, sx: { py: 0.5 } },
+          paper: { sx: { width: 176 } },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+      >
+        {onCrop && (
+          <MenuItem onClick={runAction(onCrop)} sx={{ minHeight: 44, px: 1.5 }}>
+            <ListItemIcon sx={{ minWidth: 28 }}>
+              <CropIcon sx={{ fontSize: 18 }} />
+            </ListItemIcon>
+            <Typography
+              component="span"
+              sx={{ fontSize: 14, lineHeight: '20px' }}
+            >
+              Crop
+            </Typography>
+          </MenuItem>
+        )}
+        <MenuItem
+          disabled={!canMoveEarlier}
+          onClick={runAction(onMoveEarlier)}
+          sx={{ minHeight: 44, px: 1.5 }}
+        >
+          <ListItemIcon sx={{ minWidth: 28 }}>
+            <KeyboardDoubleArrowLeftIcon sx={{ fontSize: 18 }} />
+          </ListItemIcon>
+          <Typography
+            component="span"
+            sx={{ fontSize: 14, lineHeight: '20px' }}
+          >
+            Move earlier
+          </Typography>
+        </MenuItem>
+        <MenuItem
+          disabled={!canMoveLater}
+          onClick={runAction(onMoveLater)}
+          sx={{ minHeight: 44, px: 1.5 }}
+        >
+          <ListItemIcon sx={{ minWidth: 28 }}>
+            <KeyboardDoubleArrowRightIcon sx={{ fontSize: 18 }} />
+          </ListItemIcon>
+          <Typography
+            component="span"
+            sx={{ fontSize: 14, lineHeight: '20px' }}
+          >
+            Move later
+          </Typography>
+        </MenuItem>
+        <ConfirmButton
+          ariaLabel="Delete"
+          buttonProps={{
+            role: 'menuitem',
+            sx: {
+              borderRadius: 0,
+              color: 'error.main',
+              justifyContent: 'flex-start',
+              minHeight: 44,
+              px: 1.5,
+              width: '100%',
+            },
+          }}
+          confirmButton={t(deleteConfirmProps.button)}
+          confirmButtonDestructive
+          confirmMessage={t(deleteConfirmProps.message)}
+          confirmTitle={t(deleteConfirmProps.title)}
+          onConfirm={onDelete}
+          variant="text"
+        >
+          <ListItemIcon sx={{ color: 'inherit', minWidth: 28 }}>
+            <DeleteIcon sx={{ fontSize: 18 }} />
+          </ListItemIcon>
+          <Typography
+            component="span"
+            sx={{ fontSize: 14, lineHeight: '20px' }}
+          >
+            Delete
+          </Typography>
+        </ConfirmButton>
+      </Menu>
+    </>
+  );
+};
+
+const MediaActionsToolbar = ({
+  canMoveEarlier,
+  canMoveLater,
+  deleteConfirmProps,
+  label,
+  onCrop,
+  onDelete,
+  onMoveEarlier,
+  onMoveLater,
+}) => {
+  const { t } = useTranslation();
+  const actionButtonSx = {
+    color: 'white',
+    height: 36,
+    width: 36,
+    '&.Mui-disabled': { color: 'rgba(255, 255, 255, 0.45)' },
+  };
+
+  return (
+    <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
+      {onCrop && (
+        <Tooltip placement="top" title={`Crop ${label}`}>
+          <IconButton
+            aria-label={`Crop ${label}`}
+            onClick={onCrop}
+            size="small"
+            sx={actionButtonSx}
+          >
+            <CropIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      )}
+      <Tooltip placement="top" title="Move earlier">
+        <span>
+          <IconButton
+            aria-label={`Move ${label} earlier`}
+            disabled={!canMoveEarlier}
+            onClick={onMoveEarlier}
+            size="small"
+            sx={actionButtonSx}
+          >
+            <KeyboardDoubleArrowLeftIcon fontSize="small" />
+          </IconButton>
+        </span>
+      </Tooltip>
+      <Tooltip placement="top" title="Move later">
+        <span>
+          <IconButton
+            aria-label={`Move ${label} later`}
+            disabled={!canMoveLater}
+            onClick={onMoveLater}
+            size="small"
+            sx={actionButtonSx}
+          >
+            <KeyboardDoubleArrowRightIcon fontSize="small" />
+          </IconButton>
+        </span>
+      </Tooltip>
+      <ConfirmButton
+        ariaLabel={`Remove ${label}`}
+        buttonProps={{ sx: { ...actionButtonSx, minWidth: 36, p: 0 } }}
+        confirmButton={t(deleteConfirmProps.button)}
+        confirmButtonDestructive
+        confirmMessage={t(deleteConfirmProps.message)}
+        confirmTitle={t(deleteConfirmProps.title)}
+        onConfirm={onDelete}
+        tooltip={`Remove ${label}`}
+        tooltipPlacement="top"
+        variant="text"
+      >
+        <DeleteIcon fontSize="small" />
+      </ConfirmButton>
+    </Stack>
+  );
+};
+
+const EditableMediaList = ({
+  label,
+  onChange,
+  onPresentationChange,
+  presentation,
+  value,
+}) => {
   const { t } = useTranslation();
   const { config } = useStoryMapConfigDataContext();
   const [cropIndex, setCropIndex] = useState(null);
@@ -908,6 +1164,8 @@ const EditableMediaList = ({ label, value, onChange }) => {
     [config]
   );
   const selectedMedia = mediaItems[selectedIndex];
+  const Presentation =
+    presentation === 'gallery' ? GalleryPresentation : CarouselPresentation;
 
   const updateCrop = crop => {
     onChange(
@@ -967,132 +1225,82 @@ const EditableMediaList = ({ label, value, onChange }) => {
           </Button>
         </Stack>
       )}
-      {mediaItems.length > 0 && (
+      {mediaItems.length === 1 && (
         <Stack spacing={1}>
-          <CarouselPresentation
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <AddMediaButton onClick={() => setOpen(true)} />
+          </Box>
+          <EditableSingleMedia
+            label={label}
+            onChange={media => onChange(media ? [media] : [])}
+            value={mediaItems[0]}
+          />
+        </Stack>
+      )}
+      {mediaItems.length > 1 && (
+        <Stack spacing={1}>
+          <Presentation
             currentIndex={selectedIndex}
             footerAction={
-              <Button
-                onClick={() => setOpen(true)}
-                size="small"
-                startIcon={<AddIcon fontSize="small" />}
-                sx={{ whiteSpace: 'nowrap' }}
-                variant="outlined"
-              >
-                Add media
-              </Button>
+              <AddMediaButton compact onClick={() => setOpen(true)} />
             }
             items={mediaItems}
             navigationColor="#212121"
             onCurrentIndexChange={setSelectedIndex}
+            presentationAction={
+              <ToggleButtonGroup
+                aria-label="Display media as"
+                exclusive
+                onChange={(_event, nextPresentation) => {
+                  if (nextPresentation) {
+                    onPresentationChange(nextPresentation);
+                  }
+                }}
+                size="small"
+                value={presentation}
+              >
+                <Tooltip placement="top" title="Display as carousel">
+                  <ToggleButton
+                    aria-label="Display as carousel"
+                    sx={{ height: 32, minWidth: 36, p: 0.5, width: 36 }}
+                    value="carousel"
+                  >
+                    <ViewCarouselOutlinedIcon fontSize="small" />
+                  </ToggleButton>
+                </Tooltip>
+                <Tooltip placement="top" title="Display as gallery">
+                  <ToggleButton
+                    aria-label="Display as gallery"
+                    sx={{ height: 32, minWidth: 36, p: 0.5, width: 36 }}
+                    value="gallery"
+                  >
+                    <GridViewOutlinedIcon fontSize="small" />
+                  </ToggleButton>
+                </Tooltip>
+              </ToggleButtonGroup>
+            }
             sx={carouselThemeStyles}
             theme={carouselTheme}
-            renderItemActions={(media, index) => {
+            renderItemActions={(media, index, actionPresentation) => {
               const deleteConfirmProps = getMediaDeleteConfirmProps(media);
-              const hasActionBeforeDelete =
-                media.type.startsWith(MEDIA_TYPES.IMAGE) ||
-                mediaItems.length > 1;
-              const actionButtonSx = {
-                color: 'white',
-                height: 36,
-                width: 36,
-                '&.Mui-disabled': {
-                  color: 'rgba(255, 255, 255, 0.45)',
-                },
+              const actionProps = {
+                canMoveEarlier: index > 0,
+                canMoveLater: index < mediaItems.length - 1,
+                deleteConfirmProps,
+                label: mediaLabel(media, index),
+                onCrop: media.type.startsWith(MEDIA_TYPES.IMAGE)
+                  ? () => setCropIndex(index)
+                  : null,
+                onDelete: () => removeMediaAtIndex(index),
+                onMoveEarlier: () => moveMediaAtIndex(index, -1),
+                onMoveLater: () => moveMediaAtIndex(index, 1),
               };
 
-              return (
-                <Stack
-                  direction="row"
-                  spacing={0.5}
-                  sx={{ alignItems: 'center' }}
-                >
-                  {media.type.startsWith(MEDIA_TYPES.IMAGE) && (
-                    <Tooltip
-                      placement="top"
-                      title={`Crop ${mediaLabel(media, index)}`}
-                    >
-                      <IconButton
-                        aria-label={`Crop ${mediaLabel(media, index)}`}
-                        onClick={() => setCropIndex(index)}
-                        size="small"
-                        sx={actionButtonSx}
-                      >
-                        <CropIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                  {mediaItems.length > 1 && (
-                    <Stack
-                      aria-label="Reorder media"
-                      direction="row"
-                      role="group"
-                      spacing={0.25}
-                    >
-                      <Tooltip placement="top" title="Move earlier">
-                        <span>
-                          <IconButton
-                            aria-label={`Move ${mediaLabel(media, index)} earlier`}
-                            disabled={index === 0}
-                            onClick={() => moveMediaAtIndex(index, -1)}
-                            size="small"
-                            sx={actionButtonSx}
-                          >
-                            <ArrowUpwardIcon fontSize="small" />
-                          </IconButton>
-                        </span>
-                      </Tooltip>
-                      <Tooltip placement="top" title="Move later">
-                        <span>
-                          <IconButton
-                            aria-label={`Move ${mediaLabel(media, index)} later`}
-                            disabled={index === mediaItems.length - 1}
-                            onClick={() => moveMediaAtIndex(index, 1)}
-                            size="small"
-                            sx={actionButtonSx}
-                          >
-                            <ArrowDownwardIcon fontSize="small" />
-                          </IconButton>
-                        </span>
-                      </Tooltip>
-                    </Stack>
-                  )}
-                  <Box
-                    sx={{
-                      borderLeft: hasActionBeforeDelete
-                        ? '1px solid'
-                        : undefined,
-                      borderColor: hasActionBeforeDelete
-                        ? 'rgba(255, 255, 255, 0.45)'
-                        : undefined,
-                      pl: hasActionBeforeDelete ? 0.5 : 0,
-                    }}
-                  >
-                    <ConfirmButton
-                      ariaLabel={`Remove ${mediaLabel(media, index)}`}
-                      buttonProps={{
-                        sx: {
-                          color: 'white',
-                          height: 36,
-                          minWidth: 36,
-                          p: 0,
-                          width: 36,
-                        },
-                      }}
-                      confirmButton={t(deleteConfirmProps.button)}
-                      confirmButtonDestructive
-                      confirmMessage={t(deleteConfirmProps.message)}
-                      confirmTitle={t(deleteConfirmProps.title)}
-                      onConfirm={() => removeMediaAtIndex(index)}
-                      tooltip={`Remove ${mediaLabel(media, index)}`}
-                      tooltipPlacement="top"
-                      variant="text"
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </ConfirmButton>
-                  </Box>
-                </Stack>
-              );
+              if (actionPresentation === 'toolbar') {
+                return <MediaActionsToolbar {...actionProps} />;
+              }
+
+              return <MediaActionsMenu {...actionProps} />;
             }}
           />
         </Stack>
@@ -1181,9 +1389,22 @@ const EditableSingleMedia = memo(({ label, value, onChange }) => {
   );
 });
 
-const EditableMedia = ({ label, multiple = false, value, onChange }) =>
+const EditableMedia = ({
+  label,
+  multiple = false,
+  onChange,
+  onPresentationChange,
+  presentation = 'carousel',
+  value,
+}) =>
   multiple ? (
-    <EditableMediaList label={label} value={value} onChange={onChange} />
+    <EditableMediaList
+      label={label}
+      onChange={onChange}
+      onPresentationChange={onPresentationChange}
+      presentation={presentation}
+      value={value}
+    />
   ) : (
     <EditableSingleMedia label={label} value={value} onChange={onChange} />
   );
