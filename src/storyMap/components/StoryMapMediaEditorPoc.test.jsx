@@ -35,7 +35,7 @@ test('StoryMapMediaEditorPoc: stores image crop settings for the carousel while 
   const carouselActions = screen.getByRole('toolbar', {
     name: 'Current media actions',
   });
-  expect(carousel.nextElementSibling).toBe(carouselActions);
+  expect(carousel.previousElementSibling).toBe(carouselActions);
   fireEvent.click(
     within(carouselActions).getByRole('button', {
       name: 'Crop image media 1',
