@@ -182,6 +182,7 @@ const ChapterForm = props => {
     onFieldBlur,
     mediaField = 'media',
     multipleMedia = false,
+    mediaPresentationField = 'mediaPresentation',
   } = props;
   const { t } = useTranslation();
   const { setConfig, init } = useStoryMapConfigActionsContext();
@@ -280,6 +281,8 @@ const ChapterForm = props => {
           <EditableMedia
             label={t('storyMap.form_chapter_media_label')}
             multiple={multipleMedia}
+            onPresentationChange={onFieldChange(mediaPresentationField)}
+            presentation={record[mediaPresentationField] || 'carousel'}
             value={record[mediaField]}
             onChange={onFieldChange(mediaField)}
           />

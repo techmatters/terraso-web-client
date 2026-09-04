@@ -20,6 +20,7 @@ export const INITIAL_CHAPTER = {
     },
   ],
   id: 'media-editor-poc',
+  mediaPresentation: 'carousel',
   mediaItems: [
     {
       id: 'image-1',
