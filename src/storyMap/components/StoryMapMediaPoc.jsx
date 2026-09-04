@@ -733,16 +733,16 @@ export const CarouselPresentation = ({
         />
       )}
       <Stack spacing={0} sx={{ overflow: 'hidden', position: 'relative' }}>
-        <ExpandableCarouselStage
-          item={currentItem}
-          onExpand={() => setExpandedItem(currentItem)}
-          testId="carousel-viewport"
-        />
         {renderItemActions && (
           <MediaItemActions presentation="toolbar" sx={itemActionsSx}>
             {renderItemActions(currentItem, currentIndex, 'toolbar')}
           </MediaItemActions>
         )}
+        <ExpandableCarouselStage
+          item={currentItem}
+          onExpand={() => setExpandedItem(currentItem)}
+          testId="carousel-viewport"
+        />
       </Stack>
       {items.length > 1 && (
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
