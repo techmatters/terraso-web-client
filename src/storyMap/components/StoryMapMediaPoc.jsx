@@ -310,6 +310,57 @@ const PocMedia = ({
   );
 };
 
+const CroppedImagePreview = ({ item, objectFit = 'contain' }) => {
+  const [fitScale, setFitScale] = useState();
+  const isFit =
+    fitScale !== undefined && Math.abs(item.crop?.scale - fitScale) < 0.001;
+
+  if (isFit) {
+    return (
+      <Box
+        sx={{
+          height: '100%',
+          overflow: 'hidden',
+          position: 'relative',
+          width: '100%',
+          '&::before': {
+            backgroundImage: `url(${mediaSource(item)})`,
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
+            content: '""',
+            filter: 'blur(18px)',
+            inset: -24,
+            opacity: 0.55,
+            position: 'absolute',
+          },
+        }}
+      >
+        <PocMedia
+          fill
+          imageStyle={{ position: 'relative', zIndex: 1 }}
+          item={item}
+          objectFit="contain"
+          onImageLoad={({ currentTarget }) =>
+            setFitScale(calculateFitScale(currentTarget))
+          }
+        />
+      </Box>
+    );
+  }
+
+  return (
+    <PocMedia
+      crop={item.crop}
+      fill
+      item={item}
+      objectFit={item.crop ? 'cover' : objectFit}
+      onImageLoad={({ currentTarget }) =>
+        setFitScale(calculateFitScale(currentTarget))
+      }
+    />
+  );
+};
+
 const GalleryTilePreview = ({ item }) => {
   if (mediaKind(item) === 'audio') {
     return (
@@ -343,6 +394,10 @@ const GalleryTilePreview = ({ item }) => {
         <PlayCircleOutlineIcon fontSize="large" />
       </Box>
     );
+  }
+
+  if (mediaKind(item) === 'image') {
+    return <CroppedImagePreview item={item} objectFit="cover" />;
   }
 
   return (
@@ -430,12 +485,89 @@ const MediaViewer = ({ item, onClose }) => (
   </Dialog>
 );
 
-const GalleryPresentation = ({ items }) => {
+const MediaCollectionHeader = ({
+  currentIndex,
+  footerAction,
+  itemCount,
+  presentationAction,
+}) => (
+  <Stack
+    aria-label="Media collection actions"
+    direction="row"
+    role="toolbar"
+    sx={{
+      alignItems: 'center',
+      containerType: 'inline-size',
+      justifyContent: 'space-between',
+      minHeight: 32,
+      px: 0.5,
+    }}
+  >
+    <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+      {presentationAction}
+      <Typography variant="caption" sx={{ whiteSpace: 'nowrap' }}>
+        Media {currentIndex + 1} of {itemCount}
+      </Typography>
+    </Stack>
+    {footerAction}
+  </Stack>
+);
+
+const MediaItemActions = ({ children, presentation, sx }) => (
+  <Box
+    aria-label={
+      presentation === 'toolbar' ? 'Current media actions' : undefined
+    }
+    role={presentation === 'toolbar' ? 'toolbar' : undefined}
+    sx={{
+      ...(presentation === 'menu'
+        ? { position: 'absolute', right: 4, top: 4, zIndex: 2 }
+        : {
+            bgcolor: 'rgba(33, 33, 33, 0.92)',
+            display: 'flex',
+            justifyContent: 'center',
+            minHeight: 40,
+          }),
+      ...sx,
+    }}
+  >
+    {children}
+  </Box>
+);
+
+export const GalleryPresentation = ({
+  currentIndex: controlledCurrentIndex,
+  footerAction,
+  items,
+  itemActionsSx,
+  onCurrentIndexChange,
+  presentationAction,
+  renderItemActions,
+}) => {
+  const [uncontrolledCurrentIndex, setUncontrolledCurrentIndex] = useState(0);
   const [selectedItem, setSelectedItem] = useState(null);
+  const currentIndex = controlledCurrentIndex ?? uncontrolledCurrentIndex;
   const closeViewer = () => setSelectedItem(null);
+  const selectItem = (item, index) => {
+    if (renderItemActions) {
+      onCurrentIndexChange?.(index);
+      if (!onCurrentIndexChange) {
+        setUncontrolledCurrentIndex(index);
+      }
+    }
+    setSelectedItem(item);
+  };
 
   return (
-    <>
+    <Stack spacing={renderItemActions ? 0.5 : 1.5}>
+      {renderItemActions && (
+        <MediaCollectionHeader
+          currentIndex={currentIndex}
+          footerAction={footerAction}
+          itemCount={items.length}
+          presentationAction={presentationAction}
+        />
+      )}
       <Box
         data-testid="gallery-media-grid"
         sx={{
@@ -444,92 +576,62 @@ const GalleryPresentation = ({ items }) => {
           gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
         }}
       >
-        {items.map((item, index) => (
-          <Box
-            aria-label={`Open ${mediaLabel(item, index)}`}
-            component="button"
-            key={mediaSource(item)}
-            onClick={() => setSelectedItem(item)}
-            sx={{
-              aspectRatio: '4 / 3',
-              background: POC_MEDIA_SURFACE,
-              border: 0,
-              cursor: 'pointer',
-              overflow: 'hidden',
-              p: 0,
-              '&:focus-visible': {
-                outline: '3px solid',
-                outlineColor: 'storyTheme.highlight',
-                outlineOffset: 3,
-              },
-            }}
-            type="button"
-          >
-            <GalleryTilePreview item={item} />
-          </Box>
-        ))}
+        {items.map((item, index) => {
+          const isCurrent = index === currentIndex;
+          return (
+            <Stack
+              key={mediaSource(item)}
+              spacing={0}
+              sx={{
+                overflow: 'hidden',
+                position: 'relative',
+              }}
+            >
+              <Box
+                aria-label={`Open ${mediaLabel(item, index)}`}
+                aria-current={
+                  renderItemActions && isCurrent ? 'true' : undefined
+                }
+                component="button"
+                onClick={() => selectItem(item, index)}
+                sx={{
+                  aspectRatio: '4 / 3',
+                  background: POC_MEDIA_SURFACE,
+                  border: 0,
+                  cursor: 'pointer',
+                  overflow: 'hidden',
+                  p: 0,
+                  '&:focus-visible': {
+                    outline: '3px solid',
+                    outlineColor: 'storyTheme.highlight',
+                    outlineOffset: 3,
+                  },
+                }}
+                type="button"
+              >
+                <GalleryTilePreview item={item} />
+              </Box>
+              {renderItemActions && (
+                <MediaItemActions presentation="menu" sx={itemActionsSx}>
+                  {renderItemActions(item, index, 'menu')}
+                </MediaItemActions>
+              )}
+            </Stack>
+          );
+        })}
       </Box>
       <MediaViewer item={selectedItem} onClose={closeViewer} />
-    </>
+    </Stack>
   );
 };
 
 const CarouselStageMedia = ({ item, objectFit = 'contain' }) => {
-  const [fitScale, setFitScale] = useState();
-  const isImage = mediaKind(item) === 'image';
-  const isFit =
-    isImage &&
-    fitScale !== undefined &&
-    Math.abs(item.crop?.scale - fitScale) < 0.001;
-
-  if (isFit) {
-    return (
-      <Box
-        sx={{
-          height: '100%',
-          overflow: 'hidden',
-          position: 'relative',
-          width: '100%',
-          '&::before': {
-            backgroundImage: `url(${mediaSource(item)})`,
-            backgroundPosition: 'center',
-            backgroundSize: 'cover',
-            content: '""',
-            filter: 'blur(18px)',
-            inset: -24,
-            opacity: 0.55,
-            position: 'absolute',
-          },
-        }}
-      >
-        <PocMedia
-          fill
-          imageStyle={{ position: 'relative', zIndex: 1 }}
-          item={item}
-          objectFit="contain"
-          onImageLoad={({ currentTarget }) =>
-            setFitScale(calculateFitScale(currentTarget))
-          }
-        />
-      </Box>
-    );
+  if (mediaKind(item) === 'image') {
+    return <CroppedImagePreview item={item} objectFit={objectFit} />;
   }
 
   if (mediaKind(item) !== 'audio') {
-    return (
-      <PocMedia
-        crop={item.crop}
-        fill
-        item={item}
-        objectFit={item.crop ? 'cover' : objectFit}
-        onImageLoad={
-          isImage
-            ? ({ currentTarget }) =>
-                setFitScale(calculateFitScale(currentTarget))
-            : undefined
-        }
-      />
-    );
+    return <PocMedia fill item={item} objectFit={objectFit} />;
   }
 
   return (
@@ -599,6 +701,7 @@ export const CarouselPresentation = ({
   itemActionsSx,
   onCurrentIndexChange,
   navigationColor,
+  presentationAction,
   renderItemActions,
   sx,
   theme,
@@ -622,45 +725,23 @@ export const CarouselPresentation = ({
   return (
     <Stack spacing={renderItemActions ? 0.5 : 1.5} sx={sx}>
       {renderItemActions && (
-        <Stack
-          aria-label="Media collection actions"
-          direction="row"
-          role="toolbar"
-          sx={{
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            minHeight: 32,
-            px: 0.5,
-          }}
-        >
-          <Typography variant="caption">
-            Media {currentIndex + 1} of {items.length}
-          </Typography>
-          {footerAction}
-        </Stack>
+        <MediaCollectionHeader
+          currentIndex={currentIndex}
+          footerAction={footerAction}
+          itemCount={items.length}
+          presentationAction={presentationAction}
+        />
       )}
-      <Stack spacing={0}>
+      <Stack spacing={0} sx={{ overflow: 'hidden', position: 'relative' }}>
         <ExpandableCarouselStage
           item={currentItem}
           onExpand={() => setExpandedItem(currentItem)}
           testId="carousel-viewport"
         />
         {renderItemActions && (
-          <Stack
-            aria-label="Current media actions"
-            direction="row"
-            role="toolbar"
-            sx={{
-              alignItems: 'center',
-              bgcolor: '#212121',
-              justifyContent: 'center',
-              minHeight: 52,
-              px: 1,
-              ...itemActionsSx,
-            }}
-          >
-            {renderItemActions(currentItem, currentIndex)}
-          </Stack>
+          <MediaItemActions presentation="toolbar" sx={itemActionsSx}>
+            {renderItemActions(currentItem, currentIndex, 'toolbar')}
+          </MediaItemActions>
         )}
       </Stack>
       {items.length > 1 && (
