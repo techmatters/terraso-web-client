@@ -18,9 +18,18 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import getVideoId from 'get-video-id';
 import _ from 'lodash/fp';
+import AvatarEditor from 'react-avatar-editor';
 import { useTranslation } from 'react-i18next';
+import AddIcon from '@mui/icons-material/Add';
+import CropIcon from '@mui/icons-material/Crop';
 import DeleteIcon from '@mui/icons-material/Delete';
+import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
+import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
+import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ViewCarouselOutlinedIcon from '@mui/icons-material/ViewCarouselOutlined';
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -28,17 +37,36 @@ import {
   DialogTitle,
   FormControlLabel,
   FormHelperText,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
   OutlinedInput,
   Paper,
   Radio,
+  Slider,
   Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Tooltip,
   Typography,
 } from '@mui/material';
 
 import ConfirmButton from 'terraso-web-client/common/components/ConfirmButton';
 import DropZone from 'terraso-web-client/common/components/DropZone';
 import { openFile } from 'terraso-web-client/common/fileUtils';
-import { useStoryMapMediaContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import {
+  useStoryMapConfigDataContext,
+  useStoryMapMediaContext,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import {
+  CarouselPresentation,
+  GalleryPresentation,
+} from 'terraso-web-client/storyMap/components/StoryMapMediaPoc';
+import {
+  getResolvedStoryMapTheme,
+  getStoryMapThemeCssVariables,
+} from 'terraso-web-client/storyMap/storyMapThemeUtils';
 
 import {
   STORY_MAP_MEDIA_ACCEPTED_EXTENSIONS,
@@ -53,6 +81,21 @@ const MEDIA_TYPES = {
   AUDIO: 'audio',
   VIDEO: 'video',
   EMBEDDED: 'embedded',
+};
+
+const CAROUSEL_ASPECT_RATIO = 16 / 9;
+const DEFAULT_CROP = { position: { x: 0.5, y: 0.5 }, scale: 1 };
+
+const calculateFitScale = ({ naturalHeight, naturalWidth }) => {
+  if (!naturalHeight || !naturalWidth) {
+    return 1;
+  }
+
+  const imageAspectRatio = naturalWidth / naturalHeight;
+  return Math.min(
+    imageAspectRatio / CAROUSEL_ASPECT_RATIO,
+    CAROUSEL_ASPECT_RATIO / imageAspectRatio
+  );
 };
 
 const MEDIA_CONFIG = {
@@ -119,7 +162,7 @@ const getMediaSrc = (media, getMediaFile) => {
   if (media.contentId) {
     return getMediaFile(media.contentId);
   }
-  return null;
+  return media.url || null;
 };
 
 // Calculate media height to avoid scroller jumps in story map editor
@@ -270,7 +313,7 @@ const AddSectionTitle = memo(({ checked, value, onChange, label, labelId }) => (
   />
 ));
 
-const AddDialog = memo(({ open, onClose, onAdd }) => {
+export const AddMediaDialog = memo(({ open, onClose, onAdd }) => {
   const { t } = useTranslation();
   const { addMediaFile } = useStoryMapMediaContext();
 
@@ -750,7 +793,530 @@ const EditableEmbedded = memo(
   }
 );
 
-const EditableMedia = memo(({ label, value, onChange }) => {
+const mediaLabel = (media, index) =>
+  `${media.type.split('/')[0]} media ${index + 1}`;
+
+const moveMedia = (mediaItems, index, direction) => {
+  const nextIndex = index + direction;
+  if (nextIndex < 0 || nextIndex >= mediaItems.length) {
+    return mediaItems;
+  }
+
+  const nextMediaItems = [...mediaItems];
+  [nextMediaItems[index], nextMediaItems[nextIndex]] = [
+    nextMediaItems[nextIndex],
+    nextMediaItems[index],
+  ];
+  return nextMediaItems;
+};
+
+const getMediaDeleteConfirmProps = media => {
+  if (media.type.startsWith(MEDIA_TYPES.IMAGE)) {
+    return {
+      title: 'storyMap.form_media_image_delete_confirm_title',
+      message: 'storyMap.form_media_image_delete_confirm_message',
+      button: 'storyMap.form_media_image_delete_confirm_button',
+    };
+  }
+  if (media.type.startsWith(MEDIA_TYPES.AUDIO)) {
+    return {
+      title: 'storyMap.form_media_audio_delete_confirm_title',
+      message: 'storyMap.form_media_audio_delete_confirm_message',
+      button: 'storyMap.form_media_audio_delete_confirm_button',
+    };
+  }
+  return {
+    title: 'storyMap.form_media_video_delete_confirm_title',
+    message: 'storyMap.form_media_video_delete_confirm_message',
+    button: 'storyMap.form_media_video_delete_confirm_button',
+  };
+};
+
+const ImageCropDialog = ({ image, onClose, onSave }) => {
+  const { getMediaFile } = useStoryMapMediaContext();
+  const [crop, setCrop] = useState(image.crop || DEFAULT_CROP);
+  const [fitScale, setFitScale] = useState(image.crop?.fitScale || 1);
+  const imageSrc = getMediaSrc(image, getMediaFile);
+
+  return (
+    <Dialog fullWidth maxWidth="md" open onClose={onClose}>
+      <DialogTitle>Crop carousel image</DialogTitle>
+      <DialogContent>
+        <Stack spacing={2} sx={{ alignItems: 'center', pt: 1 }}>
+          <Box sx={{ maxWidth: '100%', overflow: 'hidden' }}>
+            <img
+              alt="Crop source"
+              onLoad={({ currentTarget }) => {
+                const nextFitScale = calculateFitScale(currentTarget);
+                setFitScale(nextFitScale);
+                setCrop(currentCrop => ({
+                  ...currentCrop,
+                  scale: Math.max(currentCrop.scale, nextFitScale),
+                }));
+              }}
+              src={imageSrc}
+              style={{ display: 'none' }}
+            />
+            <AvatarEditor
+              image={imageSrc}
+              width={640}
+              height={640 / CAROUSEL_ASPECT_RATIO}
+              border={20}
+              color={[255, 255, 255, 0.6]}
+              position={crop.position}
+              scale={Math.max(crop.scale, fitScale)}
+              onPositionChange={position =>
+                setCrop(currentCrop => ({ ...currentCrop, position }))
+              }
+            />
+          </Box>
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{ alignItems: 'center', width: '100%' }}
+          >
+            <Typography id="carousel-crop-zoom-label">Zoom</Typography>
+            <Slider
+              aria-labelledby="carousel-crop-zoom-label"
+              min={fitScale}
+              max={3}
+              step={0.1}
+              value={crop.scale}
+              valueLabelDisplay="auto"
+              valueLabelFormat={scale =>
+                scale === fitScale ? 'Fit image' : `${scale}x`
+              }
+              onChange={(event, scale) =>
+                setCrop(currentCrop => ({ ...currentCrop, scale }))
+              }
+            />
+          </Stack>
+        </Stack>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button variant="contained" onClick={() => onSave(crop)}>
+          Apply crop
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+const AddMediaButton = ({ compact = false, onClick }) => (
+  <Tooltip title="Add media">
+    <Button
+      aria-label="Add media"
+      onClick={onClick}
+      size="small"
+      sx={{
+        minWidth: compact ? 32 : { xs: 32, sm: 64 },
+        px: compact ? 0.5 : { xs: 0.5, sm: 1.25 },
+        whiteSpace: 'nowrap',
+        ...(compact && {
+          '@container (min-width: 300px)': {
+            minWidth: 64,
+            px: 1.25,
+          },
+        }),
+      }}
+      variant="outlined"
+    >
+      <AddIcon fontSize="small" />
+      <Box
+        component="span"
+        sx={{
+          display: compact ? 'none' : { xs: 'none', sm: 'inline' },
+          ml: 1,
+          ...(compact && {
+            '@container (min-width: 300px)': { display: 'inline' },
+          }),
+        }}
+      >
+        Add media
+      </Box>
+    </Button>
+  </Tooltip>
+);
+
+const MediaActionsMenu = ({
+  canMoveEarlier,
+  canMoveLater,
+  deleteConfirmProps,
+  label,
+  onCrop,
+  onDelete,
+  onMoveEarlier,
+  onMoveLater,
+}) => {
+  const { t } = useTranslation();
+  const [anchorElement, setAnchorElement] = useState(null);
+  const closeMenu = () => setAnchorElement(null);
+  const runAction = action => () => {
+    closeMenu();
+    action();
+  };
+
+  return (
+    <>
+      <IconButton
+        aria-label={`Actions for ${label}`}
+        onClick={event => {
+          event.stopPropagation();
+          setAnchorElement(event.currentTarget);
+        }}
+        size="small"
+        sx={{
+          bgcolor: 'rgba(33, 33, 33, 0.88)',
+          color: 'white',
+          height: 32,
+          width: 32,
+          '&:hover': { bgcolor: 'rgba(33, 33, 33, 0.96)' },
+        }}
+      >
+        <MoreVertIcon fontSize="small" />
+      </IconButton>
+      <Menu
+        anchorEl={anchorElement}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        onClick={event => event.stopPropagation()}
+        onClose={closeMenu}
+        open={Boolean(anchorElement)}
+        slotProps={{
+          list: { dense: true, sx: { py: 0.5 } },
+          paper: { sx: { width: 176 } },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+      >
+        {onCrop && (
+          <MenuItem onClick={runAction(onCrop)} sx={{ minHeight: 44, px: 1.5 }}>
+            <ListItemIcon sx={{ minWidth: 28 }}>
+              <CropIcon sx={{ fontSize: 18 }} />
+            </ListItemIcon>
+            <Typography
+              component="span"
+              sx={{ fontSize: 14, lineHeight: '20px' }}
+            >
+              Crop
+            </Typography>
+          </MenuItem>
+        )}
+        <MenuItem
+          disabled={!canMoveEarlier}
+          onClick={runAction(onMoveEarlier)}
+          sx={{ minHeight: 44, px: 1.5 }}
+        >
+          <ListItemIcon sx={{ minWidth: 28 }}>
+            <KeyboardDoubleArrowLeftIcon sx={{ fontSize: 18 }} />
+          </ListItemIcon>
+          <Typography
+            component="span"
+            sx={{ fontSize: 14, lineHeight: '20px' }}
+          >
+            Move earlier
+          </Typography>
+        </MenuItem>
+        <MenuItem
+          disabled={!canMoveLater}
+          onClick={runAction(onMoveLater)}
+          sx={{ minHeight: 44, px: 1.5 }}
+        >
+          <ListItemIcon sx={{ minWidth: 28 }}>
+            <KeyboardDoubleArrowRightIcon sx={{ fontSize: 18 }} />
+          </ListItemIcon>
+          <Typography
+            component="span"
+            sx={{ fontSize: 14, lineHeight: '20px' }}
+          >
+            Move later
+          </Typography>
+        </MenuItem>
+        <ConfirmButton
+          ariaLabel="Delete"
+          buttonProps={{
+            role: 'menuitem',
+            sx: {
+              borderRadius: 0,
+              color: 'error.main',
+              justifyContent: 'flex-start',
+              minHeight: 44,
+              px: 1.5,
+              width: '100%',
+            },
+          }}
+          confirmButton={t(deleteConfirmProps.button)}
+          confirmButtonDestructive
+          confirmMessage={t(deleteConfirmProps.message)}
+          confirmTitle={t(deleteConfirmProps.title)}
+          onConfirm={onDelete}
+          variant="text"
+        >
+          <ListItemIcon sx={{ color: 'inherit', minWidth: 28 }}>
+            <DeleteIcon sx={{ fontSize: 18 }} />
+          </ListItemIcon>
+          <Typography
+            component="span"
+            sx={{ fontSize: 14, lineHeight: '20px' }}
+          >
+            Delete
+          </Typography>
+        </ConfirmButton>
+      </Menu>
+    </>
+  );
+};
+
+const MediaActionsToolbar = ({
+  canMoveEarlier,
+  canMoveLater,
+  deleteConfirmProps,
+  label,
+  onCrop,
+  onDelete,
+  onMoveEarlier,
+  onMoveLater,
+}) => {
+  const { t } = useTranslation();
+  const actionButtonSx = {
+    color: 'white',
+    height: 36,
+    width: 36,
+    '&.Mui-disabled': { color: 'rgba(255, 255, 255, 0.45)' },
+  };
+
+  return (
+    <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
+      {onCrop && (
+        <Tooltip placement="top" title={`Crop ${label}`}>
+          <IconButton
+            aria-label={`Crop ${label}`}
+            onClick={onCrop}
+            size="small"
+            sx={actionButtonSx}
+          >
+            <CropIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      )}
+      <Tooltip placement="top" title="Move earlier">
+        <span>
+          <IconButton
+            aria-label={`Move ${label} earlier`}
+            disabled={!canMoveEarlier}
+            onClick={onMoveEarlier}
+            size="small"
+            sx={actionButtonSx}
+          >
+            <KeyboardDoubleArrowLeftIcon fontSize="small" />
+          </IconButton>
+        </span>
+      </Tooltip>
+      <Tooltip placement="top" title="Move later">
+        <span>
+          <IconButton
+            aria-label={`Move ${label} later`}
+            disabled={!canMoveLater}
+            onClick={onMoveLater}
+            size="small"
+            sx={actionButtonSx}
+          >
+            <KeyboardDoubleArrowRightIcon fontSize="small" />
+          </IconButton>
+        </span>
+      </Tooltip>
+      <ConfirmButton
+        ariaLabel={`Remove ${label}`}
+        buttonProps={{ sx: { ...actionButtonSx, minWidth: 36, p: 0 } }}
+        confirmButton={t(deleteConfirmProps.button)}
+        confirmButtonDestructive
+        confirmMessage={t(deleteConfirmProps.message)}
+        confirmTitle={t(deleteConfirmProps.title)}
+        onConfirm={onDelete}
+        tooltip={`Remove ${label}`}
+        tooltipPlacement="top"
+        variant="text"
+      >
+        <DeleteIcon fontSize="small" />
+      </ConfirmButton>
+    </Stack>
+  );
+};
+
+const EditableMediaList = ({
+  label,
+  onChange,
+  onPresentationChange,
+  presentation,
+  value,
+}) => {
+  const { t } = useTranslation();
+  const { config } = useStoryMapConfigDataContext();
+  const [cropIndex, setCropIndex] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const mediaItems = value || [];
+  const carouselThemeStyles = useMemo(
+    () => getStoryMapThemeCssVariables(config),
+    [config]
+  );
+  const carouselTheme = useMemo(
+    () => getResolvedStoryMapTheme(config),
+    [config]
+  );
+  const selectedMedia = mediaItems[selectedIndex];
+  const Presentation =
+    presentation === 'gallery' ? GalleryPresentation : CarouselPresentation;
+
+  const updateCrop = crop => {
+    onChange(
+      mediaItems.map((media, index) =>
+        index === cropIndex ? { ...media, crop } : media
+      )
+    );
+    setCropIndex(null);
+  };
+
+  const moveMediaAtIndex = (index, direction) => {
+    const nextIndex = index + direction;
+    onChange(moveMedia(mediaItems, index, direction));
+    setSelectedIndex(nextIndex);
+  };
+
+  const removeMediaAtIndex = index => {
+    onChange(mediaItems.filter((media, mediaIndex) => mediaIndex !== index));
+    setSelectedIndex(index =>
+      Math.max(0, Math.min(index, mediaItems.length - 2))
+    );
+  };
+
+  return (
+    <Stack spacing={2}>
+      {open && (
+        <AddMediaDialog
+          open={open}
+          onClose={() => setOpen(false)}
+          onAdd={media => {
+            const nextMedia = {
+              ...media,
+              id: media.contentId || media.url,
+            };
+            onChange([...mediaItems, nextMedia]);
+            setOpen(false);
+          }}
+        />
+      )}
+      {!mediaItems.length && (
+        <Stack
+          spacing={2}
+          component={Paper}
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            bgcolor: 'blue.mid',
+            minHeight: 150,
+            p: 2,
+          }}
+        >
+          <Typography variant="caption" sx={{ textAlign: 'center' }}>
+            Upload or link images, audio recordings or video files.
+          </Typography>
+          <Button variant="outlined" onClick={() => setOpen(true)}>
+            Add media
+          </Button>
+        </Stack>
+      )}
+      {mediaItems.length === 1 && (
+        <Stack spacing={1}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <AddMediaButton onClick={() => setOpen(true)} />
+          </Box>
+          <EditableSingleMedia
+            label={label}
+            onChange={media => onChange(media ? [media] : [])}
+            value={mediaItems[0]}
+          />
+        </Stack>
+      )}
+      {mediaItems.length > 1 && (
+        <Stack spacing={1}>
+          <Presentation
+            currentIndex={selectedIndex}
+            footerAction={
+              <AddMediaButton compact onClick={() => setOpen(true)} />
+            }
+            items={mediaItems}
+            navigationColor="#212121"
+            onCurrentIndexChange={setSelectedIndex}
+            presentationAction={
+              <ToggleButtonGroup
+                aria-label="Display media as"
+                exclusive
+                onChange={(_event, nextPresentation) => {
+                  if (nextPresentation) {
+                    onPresentationChange(nextPresentation);
+                  }
+                }}
+                size="small"
+                value={presentation}
+              >
+                <Tooltip placement="top" title="Display as carousel">
+                  <ToggleButton
+                    aria-label="Display as carousel"
+                    sx={{ height: 32, minWidth: 36, p: 0.5, width: 36 }}
+                    value="carousel"
+                  >
+                    <ViewCarouselOutlinedIcon fontSize="small" />
+                  </ToggleButton>
+                </Tooltip>
+                <Tooltip placement="top" title="Display as gallery">
+                  <ToggleButton
+                    aria-label="Display as gallery"
+                    sx={{ height: 32, minWidth: 36, p: 0.5, width: 36 }}
+                    value="gallery"
+                  >
+                    <GridViewOutlinedIcon fontSize="small" />
+                  </ToggleButton>
+                </Tooltip>
+              </ToggleButtonGroup>
+            }
+            sx={carouselThemeStyles}
+            theme={carouselTheme}
+            renderItemActions={(media, index, actionPresentation) => {
+              const deleteConfirmProps = getMediaDeleteConfirmProps(media);
+              const actionProps = {
+                canMoveEarlier: index > 0,
+                canMoveLater: index < mediaItems.length - 1,
+                deleteConfirmProps,
+                label: mediaLabel(media, index),
+                onCrop: media.type.startsWith(MEDIA_TYPES.IMAGE)
+                  ? () => setCropIndex(index)
+                  : null,
+                onDelete: () => removeMediaAtIndex(index),
+                onMoveEarlier: () => moveMediaAtIndex(index, -1),
+                onMoveLater: () => moveMediaAtIndex(index, 1),
+              };
+
+              if (actionPresentation === 'toolbar') {
+                return <MediaActionsToolbar {...actionProps} />;
+              }
+
+              return <MediaActionsMenu {...actionProps} />;
+            }}
+          />
+        </Stack>
+      )}
+      {cropIndex !== null && (
+        <ImageCropDialog
+          image={mediaItems[cropIndex]}
+          onClose={() => setCropIndex(null)}
+          onSave={updateCrop}
+        />
+      )}
+    </Stack>
+  );
+};
+
+const EditableSingleMedia = memo(({ label, value, onChange }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
@@ -797,7 +1363,7 @@ const EditableMedia = memo(({ label, value, onChange }) => {
 
   return (
     <>
-      {open && <AddDialog open={open} onClose={onClose} onAdd={onAdd} />}
+      {open && <AddMediaDialog open={open} onClose={onClose} onAdd={onAdd} />}
       {renderMediaComponent}
       {!value && (
         <Stack
@@ -823,4 +1389,24 @@ const EditableMedia = memo(({ label, value, onChange }) => {
   );
 });
 
-export default EditableMedia;
+const EditableMedia = ({
+  label,
+  multiple = false,
+  onChange,
+  onPresentationChange,
+  presentation = 'carousel',
+  value,
+}) =>
+  multiple ? (
+    <EditableMediaList
+      label={label}
+      onChange={onChange}
+      onPresentationChange={onPresentationChange}
+      presentation={presentation}
+      value={value}
+    />
+  ) : (
+    <EditableSingleMedia label={label} value={value} onChange={onChange} />
+  );
+
+export default memo(EditableMedia);

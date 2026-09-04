@@ -35,6 +35,7 @@ const ConfirmButton = props => {
     onConfirm,
     variant,
     tooltip,
+    tooltipPlacement,
   } = props;
 
   useEffect(() => {
@@ -51,8 +52,24 @@ const ConfirmButton = props => {
     event.stopPropagation();
   }, []);
 
+  const onConfirmWrapper = useCallback(
+    event => {
+      const result = onConfirm(event);
+      if (result instanceof Promise) {
+        return result.then(() => setOpenConfirmation(false));
+      }
+      setOpenConfirmation(false);
+      return result;
+    },
+    [onConfirm]
+  );
+
   const TooltipWrapper = tooltip
-    ? ({ children }) => <Tooltip title={tooltip}>{children}</Tooltip>
+    ? ({ children }) => (
+        <Tooltip placement={tooltipPlacement} title={tooltip}>
+          {children}
+        </Tooltip>
+      )
     : Fragment;
   return (
     <>
@@ -63,7 +80,7 @@ const ConfirmButton = props => {
         confirmButtonLabel={confirmButton}
         confirmButtonDestructive={confirmButtonDestructive}
         onCancel={onCancel}
-        onConfirm={onConfirm}
+        onConfirm={onConfirmWrapper}
         loading={loading}
       />
       <TooltipWrapper>
