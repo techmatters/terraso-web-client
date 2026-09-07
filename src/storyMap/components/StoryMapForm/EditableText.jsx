@@ -79,25 +79,23 @@ const EditableText = props => {
         onBlur={onExit}
         onChange={onChangeWrapper}
         placeholder={placeholder}
-        sx={{
-          '& label.Mui-focused': {
-            color: 'gray.lite1',
-          },
-        }}
         slotProps={{
           input: {
             ...inputProps,
             sx: {
               '& .MuiInputBase-input': {
                 bgcolor: 'transparent',
-                color: 'white',
+                color: 'var(--story-theme-text)',
               },
             },
           },
 
           inputLabel: {
             shrink: true,
-            sx: { color: 'white' },
+            sx: {
+              color: 'var(--story-theme-text)',
+              '&&.Mui-focused': { color: 'var(--story-theme-text)' },
+            },
           },
         }}
       />
