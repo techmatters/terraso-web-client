@@ -7,7 +7,6 @@ import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import {
   Box,
   Dialog,
-  DialogTitle,
   IconButton,
   Stack,
   Tooltip,
@@ -418,6 +417,7 @@ const MediaViewer = ({ item, onClose }) => (
     open={Boolean(item)}
     slotProps={{
       paper: {
+        'aria-label': item ? mediaLabel(item) : undefined,
         sx: {
           ...POC_THEME_STYLES,
           bgcolor: 'var(--story-theme-background)',
@@ -435,22 +435,22 @@ const MediaViewer = ({ item, onClose }) => (
           direction="row"
           sx={{
             alignItems: 'center',
+            flexShrink: 0,
+            height: 36,
             justifyContent: 'space-between',
-            px: 1,
-            py: 0.5,
+            px: 0.5,
           }}
         >
-          <DialogTitle component="h2" sx={{ m: 0, p: 1 }}>
-            {mediaTypeLabel(item)}
-          </DialogTitle>
-          <Tooltip title="Close media viewer">
+          <Box />
+          <Tooltip placement="top" title="Close media viewer">
             <IconButton
               aria-label="Close media viewer"
               onClick={onClose}
               sx={{
                 '&:hover': { bgcolor: 'var(--story-theme-highlight)' },
-                border: '1px solid var(--story-theme-text)',
                 color: 'var(--story-theme-text)',
+                height: 32,
+                width: 32,
               }}
             >
               <CloseIcon />
@@ -464,7 +464,7 @@ const MediaViewer = ({ item, onClose }) => (
             bgcolor: 'var(--story-theme-background)',
             display: 'flex',
             justifyContent: 'center',
-            maxHeight: 'calc(100dvh - 112px)',
+            maxHeight: 'calc(100dvh - 68px)',
             minHeight: 0,
             overflow: 'hidden',
             width: '100%',
@@ -541,9 +541,12 @@ export const GalleryPresentation = ({
   items,
   itemActionsSx,
   onCurrentIndexChange,
+  onItemsReorder,
   presentationAction,
   renderItemActions,
 }) => {
+  const [dragSourceIndex, setDragSourceIndex] = useState(null);
+  const [dropTargetIndex, setDropTargetIndex] = useState(null);
   const [uncontrolledCurrentIndex, setUncontrolledCurrentIndex] = useState(0);
   const [selectedItem, setSelectedItem] = useState(null);
   const currentIndex = controlledCurrentIndex ?? uncontrolledCurrentIndex;
@@ -556,6 +559,106 @@ export const GalleryPresentation = ({
       }
     }
     setSelectedItem(item);
+  };
+  const clearDrag = () => {
+    setDragSourceIndex(null);
+    setDropTargetIndex(null);
+  };
+  const onDragStart = (event, index) => {
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', String(index));
+    event.dataTransfer.setDragImage(
+      event.currentTarget,
+      Math.round(event.currentTarget.clientWidth / 2),
+      Math.round(event.currentTarget.clientHeight / 2)
+    );
+    setDragSourceIndex(index);
+  };
+  const onDrop = (event, destinationIndex) => {
+    event.preventDefault();
+    const sourceIndex = Number(event.dataTransfer.getData('text/plain'));
+    if (Number.isInteger(sourceIndex) && sourceIndex !== destinationIndex) {
+      onItemsReorder(sourceIndex, destinationIndex);
+    }
+    clearDrag();
+  };
+  const onDragOver = (event, index) => {
+    if (onItemsReorder) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+      setDropTargetIndex(index);
+    }
+  };
+  const renderItem = (item, index) => {
+    const isCurrent = index === currentIndex;
+    return (
+      <Stack
+        data-gallery-media-tile
+        draggable={Boolean(onItemsReorder)}
+        key={mediaSource(item)}
+        onDragEnd={clearDrag}
+        onDragStart={event => onDragStart(event, index)}
+        spacing={0}
+        sx={{
+          minWidth: 0,
+          opacity: dragSourceIndex === index ? 0.4 : 1,
+          overflow: 'hidden',
+          position: 'relative',
+          width: '100%',
+        }}
+      >
+        <Box
+          aria-label={`Open ${mediaLabel(item, index)}`}
+          aria-current={renderItemActions && isCurrent ? 'true' : undefined}
+          component="button"
+          onDragEnter={event => onDragOver(event, index)}
+          onDragOver={event => onDragOver(event, index)}
+          onDrop={event => onDrop(event, index)}
+          onClick={() => selectItem(item, index)}
+          sx={{
+            aspectRatio: '4 / 3',
+            background: POC_MEDIA_SURFACE,
+            border: 0,
+            cursor: 'pointer',
+            overflow: 'hidden',
+            p: 0,
+            '&:focus-visible': {
+              outline: '3px solid',
+              outlineColor: 'storyTheme.highlight',
+              outlineOffset: 3,
+            },
+          }}
+          type="button"
+        >
+          <GalleryTilePreview item={item} />
+        </Box>
+        {dropTargetIndex === index && dragSourceIndex !== index && (
+          <Box
+            aria-label={`Drop ${mediaLabel(item, index)} here`}
+            sx={{
+              alignItems: 'center',
+              bgcolor: 'rgba(255, 246, 227, 0.72)',
+              border: '3px solid',
+              borderColor: 'var(--story-theme-link)',
+              color: 'var(--story-theme-text)',
+              display: 'flex',
+              inset: 0,
+              justifyContent: 'center',
+              pointerEvents: 'none',
+              position: 'absolute',
+              zIndex: 3,
+            }}
+          >
+            <Typography variant="caption">Drop here</Typography>
+          </Box>
+        )}
+        {renderItemActions && (
+          <MediaItemActions presentation="menu" sx={itemActionsSx}>
+            {renderItemActions(item, index, 'menu')}
+          </MediaItemActions>
+        )}
+      </Stack>
+    );
   };
 
   return (
@@ -576,49 +679,7 @@ export const GalleryPresentation = ({
           gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
         }}
       >
-        {items.map((item, index) => {
-          const isCurrent = index === currentIndex;
-          return (
-            <Stack
-              key={mediaSource(item)}
-              spacing={0}
-              sx={{
-                overflow: 'hidden',
-                position: 'relative',
-              }}
-            >
-              <Box
-                aria-label={`Open ${mediaLabel(item, index)}`}
-                aria-current={
-                  renderItemActions && isCurrent ? 'true' : undefined
-                }
-                component="button"
-                onClick={() => selectItem(item, index)}
-                sx={{
-                  aspectRatio: '4 / 3',
-                  background: POC_MEDIA_SURFACE,
-                  border: 0,
-                  cursor: 'pointer',
-                  overflow: 'hidden',
-                  p: 0,
-                  '&:focus-visible': {
-                    outline: '3px solid',
-                    outlineColor: 'storyTheme.highlight',
-                    outlineOffset: 3,
-                  },
-                }}
-                type="button"
-              >
-                <GalleryTilePreview item={item} />
-              </Box>
-              {renderItemActions && (
-                <MediaItemActions presentation="menu" sx={itemActionsSx}>
-                  {renderItemActions(item, index, 'menu')}
-                </MediaItemActions>
-              )}
-            </Stack>
-          );
-        })}
+        {items.map((item, index) => renderItem(item, index))}
       </Box>
       <MediaViewer item={selectedItem} onClose={closeViewer} />
     </Stack>

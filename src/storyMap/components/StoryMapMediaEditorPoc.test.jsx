@@ -108,9 +108,11 @@ test('StoryMapMediaEditorPoc: applies saved carousel crops to Gallery tiles', as
   fireEvent.click(screen.getByRole('button', { name: 'Apply crop' }));
   fireEvent.click(screen.getByRole('button', { name: 'Display as gallery' }));
 
-  const galleryImage = within(
-    screen.getByRole('button', { name: 'Open image media 1' })
-  ).getByRole('img', { name: 'image media' });
+  const galleryImage = await waitFor(() =>
+    within(
+      screen.getByRole('button', { name: 'Open image media 1' })
+    ).getByRole('img', { name: 'image media' })
+  );
   expect(galleryImage).toHaveStyle({
     objectPosition: '50% 50%',
     transform: 'scale(2)',
@@ -138,9 +140,11 @@ test('StoryMapMediaEditorPoc: fills Gallery tiles behind complete minimum-zoom i
   fireEvent.click(screen.getByRole('button', { name: 'Apply crop' }));
   fireEvent.click(screen.getByRole('button', { name: 'Display as gallery' }));
 
-  const galleryImage = within(
-    screen.getByRole('button', { name: 'Open image media 1' })
-  ).getByRole('img', { name: 'image media' });
+  const galleryImage = await waitFor(() =>
+    within(
+      screen.getByRole('button', { name: 'Open image media 1' })
+    ).getByRole('img', { name: 'image media' })
+  );
   Object.defineProperties(galleryImage, {
     naturalHeight: { value: 1000 },
     naturalWidth: { value: 3000 },
@@ -223,8 +227,43 @@ test('StoryMapMediaEditorPoc: switches presentation while sharing contextual med
     })
   );
 
-  expect(screen.getByTestId('gallery-media-grid')).toBeInTheDocument();
+  await waitFor(() =>
+    expect(screen.getByTestId('gallery-media-grid')).toBeInTheDocument()
+  );
   expect(screen.queryByTestId('carousel-viewport')).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /^Reorder / })).toBeNull();
+  expect(
+    screen.getByRole('button', { name: 'Open image media 1' }).parentElement
+  ).toHaveAttribute('draggable', 'true');
+
+  const firstMedia = screen.getByRole('button', {
+    name: 'Open image media 1',
+  });
+  const secondMedia = screen.getByRole('button', {
+    name: 'Open image media 2',
+  });
+  const firstSource = within(firstMedia).getByRole('img').getAttribute('src');
+  const secondSource = within(secondMedia).getByRole('img').getAttribute('src');
+  const dataTransfer = {
+    effectAllowed: 'move',
+    getData: jest.fn(() => '0'),
+    setData: jest.fn(),
+    setDragImage: jest.fn(),
+  };
+  fireEvent.dragStart(firstMedia.parentElement, { dataTransfer });
+  fireEvent.dragOver(secondMedia, { dataTransfer });
+  fireEvent.drop(secondMedia, { dataTransfer });
+
+  expect(
+    within(
+      screen.getByRole('button', { name: 'Open image media 1' })
+    ).getByRole('img')
+  ).toHaveAttribute('src', secondSource);
+  expect(
+    within(
+      screen.getByRole('button', { name: 'Open image media 2' })
+    ).getByRole('img')
+  ).toHaveAttribute('src', firstSource);
 
   const secondMediaActions = screen.getByRole('button', {
     name: 'Actions for image media 2',
