@@ -21,11 +21,11 @@ import _ from 'lodash/fp';
 import AvatarEditor from 'react-avatar-editor';
 import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import CropIcon from '@mui/icons-material/Crop';
 import DeleteIcon from '@mui/icons-material/Delete';
 import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
-import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
-import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ViewCarouselOutlinedIcon from '@mui/icons-material/ViewCarouselOutlined';
 import {
@@ -810,6 +810,13 @@ const moveMedia = (mediaItems, index, direction) => {
   return nextMediaItems;
 };
 
+const reorderMedia = (mediaItems, sourceIndex, destinationIndex) => {
+  const nextMediaItems = [...mediaItems];
+  const [media] = nextMediaItems.splice(sourceIndex, 1);
+  nextMediaItems.splice(destinationIndex, 0, media);
+  return nextMediaItems;
+};
+
 const getMediaDeleteConfirmProps = media => {
   if (media.type.startsWith(MEDIA_TYPES.IMAGE)) {
     return {
@@ -1007,7 +1014,7 @@ const MediaActionsMenu = ({
           sx={{ minHeight: 44, px: 1.5 }}
         >
           <ListItemIcon sx={{ minWidth: 28 }}>
-            <KeyboardDoubleArrowLeftIcon sx={{ fontSize: 18 }} />
+            <ArrowUpwardIcon sx={{ fontSize: 18 }} />
           </ListItemIcon>
           <Typography
             component="span"
@@ -1022,7 +1029,7 @@ const MediaActionsMenu = ({
           sx={{ minHeight: 44, px: 1.5 }}
         >
           <ListItemIcon sx={{ minWidth: 28 }}>
-            <KeyboardDoubleArrowRightIcon sx={{ fontSize: 18 }} />
+            <ArrowDownwardIcon sx={{ fontSize: 18 }} />
           </ListItemIcon>
           <Typography
             component="span"
@@ -1107,7 +1114,7 @@ const MediaActionsToolbar = ({
             size="small"
             sx={actionButtonSx}
           >
-            <KeyboardDoubleArrowLeftIcon fontSize="small" />
+            <ArrowUpwardIcon fontSize="small" />
           </IconButton>
         </span>
       </Tooltip>
@@ -1120,7 +1127,7 @@ const MediaActionsToolbar = ({
             size="small"
             sx={actionButtonSx}
           >
-            <KeyboardDoubleArrowRightIcon fontSize="small" />
+            <ArrowDownwardIcon fontSize="small" />
           </IconButton>
         </span>
       </Tooltip>
@@ -1180,6 +1187,11 @@ const EditableMediaList = ({
     const nextIndex = index + direction;
     onChange(moveMedia(mediaItems, index, direction));
     setSelectedIndex(nextIndex);
+  };
+
+  const reorderMediaAtIndex = (sourceIndex, destinationIndex) => {
+    onChange(reorderMedia(mediaItems, sourceIndex, destinationIndex));
+    setSelectedIndex(destinationIndex);
   };
 
   const removeMediaAtIndex = index => {
@@ -1247,6 +1259,9 @@ const EditableMediaList = ({
             items={mediaItems}
             navigationColor="#212121"
             onCurrentIndexChange={setSelectedIndex}
+            onItemsReorder={
+              presentation === 'gallery' ? reorderMediaAtIndex : undefined
+            }
             presentationAction={
               <ToggleButtonGroup
                 aria-label="Display media as"
