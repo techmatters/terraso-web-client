@@ -273,7 +273,10 @@ test('StoryMapMediaPoc: opens full media controls from a gallery preview', async
       'audio media'
     )
   ).toBeInTheDocument();
-  expect(screen.getByTestId('gallery-media-viewer-header')).toContainElement(
+  const viewerHeader = screen.getByTestId('gallery-media-viewer-header');
+  expect(viewerHeader).toContainElement(
     screen.getByRole('button', { name: 'Close media viewer' })
   );
+  expect(viewerHeader).toHaveStyle({ height: '36px' });
+  expect(within(viewerHeader).queryByRole('heading')).not.toBeInTheDocument();
 });
