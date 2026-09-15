@@ -360,6 +360,75 @@ const CroppedImagePreview = ({ item, objectFit = 'contain' }) => {
   );
 };
 
+const GalleryVideoPreview = ({ item }) => {
+  const [hasError, setHasError] = useState(false);
+  const videoRef = useRef(null);
+
+  const capturePreviewFrame = () => {
+    const video = videoRef.current;
+    if (!video) {
+      return;
+    }
+
+    video.currentTime = Math.min(0.1, video.duration || 0);
+  };
+
+  if (hasError) {
+    return (
+      <Box
+        data-testid="gallery-video-preview-fallback"
+        sx={{
+          alignItems: 'center',
+          bgcolor: POC_MEDIA_SURFACE,
+          color: 'var(--story-theme-text)',
+          display: 'flex',
+          height: '100%',
+          justifyContent: 'center',
+        }}
+      >
+        <PlayCircleOutlineIcon fontSize="large" />
+      </Box>
+    );
+  }
+
+  return (
+    <Box
+      data-testid="gallery-video-preview"
+      sx={{ height: '100%', position: 'relative', width: '100%' }}
+    >
+      <video
+        aria-label={mediaLabel(item)}
+        muted
+        onError={() => setHasError(true)}
+        onLoadedMetadata={capturePreviewFrame}
+        onSeeked={() => videoRef.current?.pause()}
+        playsInline
+        preload="metadata"
+        ref={videoRef}
+        src={mediaSource(item)}
+        style={{
+          display: 'block',
+          height: '100%',
+          objectFit: 'cover',
+          width: '100%',
+        }}
+      />
+      <PlayCircleOutlineIcon
+        aria-hidden
+        sx={{
+          color: 'white',
+          filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.65))',
+          fontSize: 44,
+          left: '50%',
+          position: 'absolute',
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+        }}
+      />
+    </Box>
+  );
+};
+
 const GalleryTilePreview = ({ item }) => {
   if (mediaKind(item) === 'audio') {
     return (
@@ -399,14 +468,7 @@ const GalleryTilePreview = ({ item }) => {
     return <CroppedImagePreview item={item} objectFit="cover" />;
   }
 
-  return (
-    <PocMedia
-      fill
-      item={item}
-      objectFit="cover"
-      {...(mediaKind(item) === 'video' ? { muted: true } : {})}
-    />
-  );
+  return <GalleryVideoPreview item={item} />;
 };
 
 const MediaViewer = ({ item, onClose }) => (
