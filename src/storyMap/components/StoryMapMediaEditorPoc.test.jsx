@@ -58,6 +58,23 @@ test('StoryMapMediaEditorPoc: stores image crop settings for the carousel while 
   ).toHaveAttribute('src', originalSource);
 });
 
+test('StoryMapMediaEditorPoc: closes the headerless expanded media viewer with its top-right close control', async () => {
+  await render(<StoryMapMediaEditorPoc />);
+
+  fireEvent.click(screen.getByRole('button', { name: 'Expand image media' }));
+
+  expect(screen.getByRole('dialog')).toBeInTheDocument();
+  expect(
+    screen.queryByTestId('gallery-media-viewer-header')
+  ).not.toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole('button', { name: 'Close media viewer' }));
+
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  );
+});
+
 test('StoryMapMediaEditorPoc: fits the full image at the computed minimum zoom', async () => {
   await render(<StoryMapMediaEditorPoc />);
 

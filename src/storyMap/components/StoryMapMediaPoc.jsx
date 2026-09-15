@@ -429,34 +429,14 @@ const MediaViewer = ({ item, onClose }) => (
     }}
   >
     {item && (
-      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-        <Stack
-          data-testid="gallery-media-viewer-header"
-          direction="row"
-          sx={{
-            alignItems: 'center',
-            flexShrink: 0,
-            height: 36,
-            justifyContent: 'space-between',
-            px: 0.5,
-          }}
-        >
-          <Box />
-          <Tooltip placement="top" title="Close media viewer">
-            <IconButton
-              aria-label="Close media viewer"
-              onClick={onClose}
-              sx={{
-                '&:hover': { bgcolor: 'var(--story-theme-highlight)' },
-                color: 'var(--story-theme-text)',
-                height: 32,
-                width: 32,
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </Tooltip>
-        </Stack>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: 0,
+          position: 'relative',
+        }}
+      >
         <Box
           data-testid="gallery-media-viewer-stage"
           sx={{
@@ -464,7 +444,7 @@ const MediaViewer = ({ item, onClose }) => (
             bgcolor: 'var(--story-theme-background)',
             display: 'flex',
             justifyContent: 'center',
-            maxHeight: 'calc(100dvh - 68px)',
+            maxHeight: 'calc(100dvh - 32px)',
             minHeight: 0,
             overflow: 'hidden',
             width: '100%',
@@ -480,6 +460,26 @@ const MediaViewer = ({ item, onClose }) => (
         >
           <PocMedia item={item} />
         </Box>
+        <Tooltip placement="left" title="Close media viewer">
+          <IconButton
+            aria-label="Close media viewer"
+            onClick={onClose}
+            sx={{
+              '&:hover': { bgcolor: 'var(--story-theme-highlight)' },
+              bgcolor: 'rgba(33, 33, 33, 0.84)',
+              borderRadius: '50%',
+              color: 'white',
+              height: 36,
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              width: 36,
+              zIndex: 1,
+            }}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
       </Box>
     )}
   </Dialog>
