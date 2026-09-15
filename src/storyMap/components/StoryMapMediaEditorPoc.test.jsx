@@ -331,6 +331,31 @@ test('StoryMapMediaEditorPoc: switches presentation while sharing contextual med
   expect(screen.getByRole('dialog')).toBeInTheDocument();
 });
 
+test('StoryMapMediaEditorPoc: shows a muted first-frame video preview in Gallery', async () => {
+  await render(<StoryMapMediaEditorPoc />);
+
+  fireEvent.click(screen.getByRole('button', { name: 'Display as gallery' }));
+
+  const videoTile = screen.getByRole('button', {
+    name: 'Open video media 5',
+  });
+  const preview = within(videoTile).getByTestId('gallery-video-preview');
+  const video = within(preview).getByLabelText('video media');
+
+  Object.defineProperty(video, 'duration', { configurable: true, value: 5 });
+  fireEvent.loadedMetadata(video);
+  fireEvent.seeked(video);
+
+  expect(video.muted).toBe(true);
+  expect(video).toHaveAttribute('playsinline');
+  expect(video).toHaveAttribute('preload', 'metadata');
+  expect(video).not.toHaveAttribute('controls');
+  expect(video.currentTime).toBe(0.1);
+  expect(
+    within(preview).getByTestId('PlayCircleOutlinedIcon')
+  ).toBeInTheDocument();
+});
+
 test('StoryMapMediaEditorPoc: uses the production editor for one media item', async () => {
   await render(
     <StoryMapMediaEditorPoc
