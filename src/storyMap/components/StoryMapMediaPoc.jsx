@@ -2,6 +2,9 @@ import { useRef, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import OpenInFullIcon from '@mui/icons-material/OpenInFull';
+import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutlined';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import {
@@ -234,6 +237,12 @@ const mediaLabel = (item, index) =>
 
 const mediaSource = item => item.signedUrl || item.url;
 
+const formatAudioTime = seconds => {
+  const roundedSeconds = Math.max(0, Math.floor(seconds || 0));
+  const minutes = Math.floor(roundedSeconds / 60);
+  return `${minutes}:${String(roundedSeconds % 60).padStart(2, '0')}`;
+};
+
 const PocMedia = ({
   item,
   compact = false,
@@ -429,24 +438,134 @@ const GalleryVideoPreview = ({ item }) => {
   );
 };
 
-const GalleryTilePreview = ({ item }) => {
-  if (mediaKind(item) === 'audio') {
+const GalleryAudioPreview = ({ item, onOpen }) => {
+  const audioRef = useRef(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [hasError, setHasError] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const stopPropagation = action => event => {
+    event.stopPropagation();
+    action();
+  };
+
+  const togglePlayback = () => {
+    const audio = audioRef.current;
+    if (!audio || hasError) {
+      return;
+    }
+
+    if (audio.paused) {
+      audio.play().catch(() => setHasError(true));
+      return;
+    }
+    audio.pause();
+  };
+
+  if (hasError) {
     return (
       <Box
+        data-testid="gallery-audio-preview-fallback"
+        onClick={onOpen}
         sx={{
           alignItems: 'center',
           bgcolor: POC_MEDIA_SURFACE,
           color: 'var(--story-theme-text)',
+          cursor: 'pointer',
           display: 'flex',
+          flexDirection: 'column',
+          gap: 1,
           height: '100%',
           justifyContent: 'center',
+          width: '100%',
         }}
       >
         <VolumeUpIcon fontSize="large" />
+        <Typography variant="caption">Audio unavailable</Typography>
       </Box>
     );
   }
 
+  return (
+    <Box
+      data-testid="gallery-audio-preview"
+      onClick={onOpen}
+      sx={{
+        alignItems: 'center',
+        bgcolor: POC_MEDIA_SURFACE,
+        color: 'var(--story-theme-text)',
+        cursor: 'pointer',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1,
+        inset: 0,
+        justifyContent: 'center',
+        px: 2,
+        position: 'absolute',
+      }}
+    >
+      <audio
+        aria-label={mediaLabel(item)}
+        onEnded={() => setIsPlaying(false)}
+        onError={() => setHasError(true)}
+        onLoadedMetadata={({ currentTarget }) =>
+          setDuration(currentTarget.duration)
+        }
+        onPause={() => setIsPlaying(false)}
+        onPlay={() => setIsPlaying(true)}
+        onTimeUpdate={({ currentTarget }) =>
+          setCurrentTime(currentTarget.currentTime)
+        }
+        preload="metadata"
+        ref={audioRef}
+        src={mediaSource(item)}
+        style={{ display: 'none' }}
+      />
+      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+        <IconButton
+          aria-label={isPlaying ? 'Pause audio' : 'Play audio'}
+          onClick={stopPropagation(togglePlayback)}
+          sx={{
+            bgcolor: 'var(--story-theme-text)',
+            borderRadius: '50%',
+            color: POC_MEDIA_SURFACE,
+            height: 32,
+            width: 32,
+            '&:hover': { bgcolor: 'var(--story-theme-link)' },
+          }}
+        >
+          {isPlaying ? (
+            <PauseIcon sx={{ fontSize: 18 }} />
+          ) : (
+            <PlayArrowIcon sx={{ fontSize: 18 }} />
+          )}
+        </IconButton>
+        <Tooltip title="Open audio viewer">
+          <IconButton
+            aria-label="Expand audio media"
+            onClick={stopPropagation(onOpen)}
+            sx={{
+              bgcolor: 'var(--story-theme-text)',
+              borderRadius: '50%',
+              color: POC_MEDIA_SURFACE,
+              height: 32,
+              width: 32,
+              '&:hover': { bgcolor: 'var(--story-theme-link)' },
+            }}
+          >
+            <OpenInFullIcon sx={{ fontSize: 17 }} />
+          </IconButton>
+        </Tooltip>
+      </Stack>
+      <Typography variant="caption" sx={{ fontSize: 14, whiteSpace: 'nowrap' }}>
+        {formatAudioTime(currentTime)} / {formatAudioTime(duration)}
+      </Typography>
+    </Box>
+  );
+};
+
+const GalleryTilePreview = ({ item }) => {
   if (mediaKind(item) === 'embedded') {
     return (
       <Box
@@ -654,6 +773,7 @@ export const GalleryPresentation = ({
   };
   const renderItem = (item, index) => {
     const isCurrent = index === currentIndex;
+    const openItem = () => selectItem(item, index);
     return (
       <Stack
         data-gallery-media-tile
@@ -670,31 +790,47 @@ export const GalleryPresentation = ({
           width: '100%',
         }}
       >
-        <Box
-          aria-label={`Open ${mediaLabel(item, index)}`}
-          aria-current={renderItemActions && isCurrent ? 'true' : undefined}
-          component="button"
-          onDragEnter={event => onDragOver(event, index)}
-          onDragOver={event => onDragOver(event, index)}
-          onDrop={event => onDrop(event, index)}
-          onClick={() => selectItem(item, index)}
-          sx={{
-            aspectRatio: '4 / 3',
-            background: POC_MEDIA_SURFACE,
-            border: 0,
-            cursor: 'pointer',
-            overflow: 'hidden',
-            p: 0,
-            '&:focus-visible': {
-              outline: '3px solid',
-              outlineColor: 'storyTheme.highlight',
-              outlineOffset: 3,
-            },
-          }}
-          type="button"
-        >
-          <GalleryTilePreview item={item} />
-        </Box>
+        {mediaKind(item) === 'audio' ? (
+          <Box
+            aria-current={renderItemActions && isCurrent ? 'true' : undefined}
+            onDragEnter={event => onDragOver(event, index)}
+            onDragOver={event => onDragOver(event, index)}
+            onDrop={event => onDrop(event, index)}
+            sx={{
+              aspectRatio: '4 / 3',
+              overflow: 'hidden',
+              position: 'relative',
+            }}
+          >
+            <GalleryAudioPreview item={item} onOpen={openItem} />
+          </Box>
+        ) : (
+          <Box
+            aria-label={`Open ${mediaLabel(item, index)}`}
+            aria-current={renderItemActions && isCurrent ? 'true' : undefined}
+            component="button"
+            onDragEnter={event => onDragOver(event, index)}
+            onDragOver={event => onDragOver(event, index)}
+            onDrop={event => onDrop(event, index)}
+            onClick={openItem}
+            sx={{
+              aspectRatio: '4 / 3',
+              background: POC_MEDIA_SURFACE,
+              border: 0,
+              cursor: 'pointer',
+              overflow: 'hidden',
+              p: 0,
+              '&:focus-visible': {
+                outline: '3px solid',
+                outlineColor: 'storyTheme.highlight',
+                outlineOffset: 3,
+              },
+            }}
+            type="button"
+          >
+            <GalleryTilePreview item={item} />
+          </Box>
+        )}
         {renderItemStatus && (
           <Box sx={{ bottom: 4, left: 4, position: 'absolute', zIndex: 2 }}>
             {renderItemStatus(item, index)}
