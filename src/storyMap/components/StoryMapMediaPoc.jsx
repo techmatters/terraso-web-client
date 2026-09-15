@@ -544,6 +544,7 @@ export const GalleryPresentation = ({
   onItemsReorder,
   presentationAction,
   renderItemActions,
+  renderItemStatus,
 }) => {
   const [dragSourceIndex, setDragSourceIndex] = useState(null);
   const [dropTargetIndex, setDropTargetIndex] = useState(null);
@@ -632,6 +633,11 @@ export const GalleryPresentation = ({
         >
           <GalleryTilePreview item={item} />
         </Box>
+        {renderItemStatus && (
+          <Box sx={{ bottom: 4, left: 4, position: 'absolute', zIndex: 2 }}>
+            {renderItemStatus(item, index)}
+          </Box>
+        )}
         {dropTargetIndex === index && dragSourceIndex !== index && (
           <Box
             aria-label={`Drop ${mediaLabel(item, index)} here`}
@@ -764,6 +770,7 @@ export const CarouselPresentation = ({
   navigationColor,
   presentationAction,
   renderItemActions,
+  renderItemStatus,
   sx,
   theme,
 }) => {
@@ -799,11 +806,18 @@ export const CarouselPresentation = ({
             {renderItemActions(currentItem, currentIndex, 'toolbar')}
           </MediaItemActions>
         )}
-        <ExpandableCarouselStage
-          item={currentItem}
-          onExpand={() => setExpandedItem(currentItem)}
-          testId="carousel-viewport"
-        />
+        <Box sx={{ position: 'relative' }}>
+          <ExpandableCarouselStage
+            item={currentItem}
+            onExpand={() => setExpandedItem(currentItem)}
+            testId="carousel-viewport"
+          />
+          {renderItemStatus && (
+            <Box sx={{ bottom: 8, left: 8, position: 'absolute', zIndex: 2 }}>
+              {renderItemStatus(currentItem, currentIndex)}
+            </Box>
+          )}
+        </Box>
       </Stack>
       {items.length > 1 && (
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>

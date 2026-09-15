@@ -27,6 +27,7 @@ import CropIcon from '@mui/icons-material/Crop';
 import DeleteIcon from '@mui/icons-material/Delete';
 import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 import ViewCarouselOutlinedIcon from '@mui/icons-material/ViewCarouselOutlined';
 import {
   Box,
@@ -841,13 +842,13 @@ const getMediaDeleteConfirmProps = media => {
 
 const ImageCropDialog = ({ image, onClose, onSave }) => {
   const { getMediaFile } = useStoryMapMediaContext();
+  const [altText, setAltText] = useState(image.altText || '');
   const [crop, setCrop] = useState(image.crop || DEFAULT_CROP);
   const [fitScale, setFitScale] = useState(image.crop?.fitScale || 1);
   const imageSrc = getMediaSrc(image, getMediaFile);
 
   return (
     <Dialog fullWidth maxWidth="md" open onClose={onClose}>
-      <DialogTitle>Crop carousel image</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ alignItems: 'center', pt: 1 }}>
           <Box sx={{ maxWidth: '100%', overflow: 'hidden' }}>
@@ -898,17 +899,62 @@ const ImageCropDialog = ({ image, onClose, onSave }) => {
               }
             />
           </Stack>
+          <OutlinedInput
+            fullWidth
+            inputProps={{ maxLength: 1000 }}
+            multiline
+            onChange={event => setAltText(event.target.value)}
+            placeholder="Describe this image for people with visual impairments"
+            rows={3}
+            value={altText}
+          />
         </Stack>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" onClick={() => onSave(crop)}>
-          Apply crop
+        <Button
+          variant="contained"
+          onClick={() => onSave(crop, altText.trim())}
+        >
+          Done
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
+
+const ImageAltTextBadge = ({ hasAltText, label, onClick }) => (
+  <Tooltip title={hasAltText ? 'Edit alt text' : 'Add alt text'}>
+    <Button
+      aria-label={`${hasAltText ? 'Edit' : 'Add'} alt text for ${label}`}
+      color={hasAltText ? 'inherit' : 'warning'}
+      onClick={event => {
+        event.stopPropagation();
+        onClick();
+      }}
+      size="small"
+      startIcon={
+        !hasAltText && <ReportProblemOutlinedIcon sx={{ fontSize: 14 }} />
+      }
+      sx={{
+        bgcolor: hasAltText ? 'rgba(33, 33, 33, 0.88)' : 'warning.main',
+        borderRadius: 0.5,
+        color: 'white',
+        fontSize: 11,
+        lineHeight: 1,
+        minHeight: 24,
+        minWidth: 0,
+        px: 0.5,
+        '& .MuiButton-startIcon': { marginLeft: 0, marginRight: 0.25 },
+        '&:hover': {
+          bgcolor: hasAltText ? 'rgba(33, 33, 33, 0.96)' : 'warning.dark',
+        },
+      }}
+    >
+      ALT
+    </Button>
+  </Tooltip>
+);
 
 const AddMediaButton = ({ compact = false, onClick }) => (
   <Tooltip title="Add media">
@@ -1174,11 +1220,20 @@ const EditableMediaList = ({
   const Presentation =
     presentation === 'gallery' ? GalleryPresentation : CarouselPresentation;
 
-  const updateCrop = crop => {
+  const updateImage = (crop, altText) => {
     onChange(
-      mediaItems.map((media, index) =>
-        index === cropIndex ? { ...media, crop } : media
-      )
+      mediaItems.map((media, index) => {
+        if (index !== cropIndex) {
+          return media;
+        }
+
+        const { altText: existingAltText, ...mediaWithoutAltText } = media;
+        return {
+          ...mediaWithoutAltText,
+          crop,
+          ...(altText ? { altText } : {}),
+        };
+      })
     );
     setCropIndex(null);
   };
@@ -1317,6 +1372,15 @@ const EditableMediaList = ({
 
               return <MediaActionsMenu {...actionProps} />;
             }}
+            renderItemStatus={(media, index) =>
+              media.type.startsWith(MEDIA_TYPES.IMAGE) ? (
+                <ImageAltTextBadge
+                  hasAltText={Boolean(media.altText)}
+                  label={mediaLabel(media, index)}
+                  onClick={() => setCropIndex(index)}
+                />
+              ) : null
+            }
           />
         </Stack>
       )}
@@ -1324,7 +1388,7 @@ const EditableMediaList = ({
         <ImageCropDialog
           image={mediaItems[cropIndex]}
           onClose={() => setCropIndex(null)}
-          onSave={updateCrop}
+          onSave={updateImage}
         />
       )}
     </Stack>
