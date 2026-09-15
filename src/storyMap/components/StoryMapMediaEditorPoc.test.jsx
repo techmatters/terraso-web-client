@@ -35,7 +35,7 @@ test('StoryMapMediaEditorPoc: stores image crop settings for the carousel while 
   const carouselActions = screen.getByRole('toolbar', {
     name: 'Current media actions',
   });
-  expect(carousel.previousElementSibling).toBe(carouselActions);
+  expect(carousel.parentElement.previousElementSibling).toBe(carouselActions);
   fireEvent.click(
     within(carouselActions).getByRole('button', {
       name: 'Crop image media 1',
@@ -44,7 +44,7 @@ test('StoryMapMediaEditorPoc: stores image crop settings for the carousel while 
   fireEvent.change(screen.getByRole('slider', { name: 'Zoom' }), {
     target: { value: '2' },
   });
-  fireEvent.click(screen.getByRole('button', { name: 'Apply crop' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }));
 
   expect(originalImage).toHaveStyle({ transform: 'scale(2)' });
   expect(screen.getByText('Media 1 of 6')).toBeInTheDocument();
@@ -75,7 +75,7 @@ test('StoryMapMediaEditorPoc: fits the full image at the computed minimum zoom',
   fireEvent.change(screen.getByRole('slider', { name: 'Zoom' }), {
     target: { value: '0.5925925925925926' },
   });
-  fireEvent.click(screen.getByRole('button', { name: 'Apply crop' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }));
 
   const stageImage = within(screen.getByTestId('carousel-viewport')).getByRole(
     'img',
@@ -105,7 +105,7 @@ test('StoryMapMediaEditorPoc: applies saved carousel crops to Gallery tiles', as
   fireEvent.change(screen.getByRole('slider', { name: 'Zoom' }), {
     target: { value: '2' },
   });
-  fireEvent.click(screen.getByRole('button', { name: 'Apply crop' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }));
   fireEvent.click(screen.getByRole('button', { name: 'Display as gallery' }));
 
   const galleryImage = await waitFor(() =>
@@ -137,7 +137,7 @@ test('StoryMapMediaEditorPoc: fills Gallery tiles behind complete minimum-zoom i
   fireEvent.change(screen.getByRole('slider', { name: 'Zoom' }), {
     target: { value: '0.5925925925925926' },
   });
-  fireEvent.click(screen.getByRole('button', { name: 'Apply crop' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }));
   fireEvent.click(screen.getByRole('button', { name: 'Display as gallery' }));
 
   const galleryImage = await waitFor(() =>
@@ -207,6 +207,36 @@ test('StoryMapMediaEditorPoc: provides clear reordering, direct navigation, and 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   );
   expect(screen.getByText('Media 2 of 5')).toBeInTheDocument();
+});
+
+test('StoryMapMediaEditorPoc: shows one actionable ALT indicator on images without alt text', async () => {
+  await render(<StoryMapMediaEditorPoc />);
+
+  const altTextBadge = screen.getByRole('button', {
+    name: 'Add alt text for image media 1',
+  });
+  expect(altTextBadge).toBeInTheDocument();
+  expect(
+    screen.queryAllByRole('button', {
+      name: 'Add alt text for image media 1',
+    })
+  ).toHaveLength(1);
+
+  fireEvent.click(altTextBadge);
+  fireEvent.change(
+    screen.getByPlaceholderText(
+      'Describe this image for people with visual impairments'
+    ),
+    { target: { value: 'A mapped landscape with trees and wildflowers.' } }
+  );
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+
+  expect(
+    screen.getByRole('button', { name: 'Edit alt text for image media 1' })
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: /alt text for audio media/i })
+  ).not.toBeInTheDocument();
 });
 
 test('StoryMapMediaEditorPoc: switches presentation while sharing contextual media actions', async () => {
