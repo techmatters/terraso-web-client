@@ -343,6 +343,7 @@ test('StoryMapMediaEditorPoc: shows a muted first-frame video preview in Gallery
   const video = within(preview).getByLabelText('video media');
 
   Object.defineProperty(video, 'duration', { configurable: true, value: 5 });
+  video.pause = jest.fn();
   fireEvent.loadedMetadata(video);
   fireEvent.seeked(video);
 
@@ -354,6 +355,32 @@ test('StoryMapMediaEditorPoc: shows a muted first-frame video preview in Gallery
   expect(
     within(preview).getByTestId('PlayCircleOutlinedIcon')
   ).toBeInTheDocument();
+});
+
+test('StoryMapMediaEditorPoc: provides compact controls in Gallery audio tiles', async () => {
+  await render(<StoryMapMediaEditorPoc />);
+
+  fireEvent.click(screen.getByRole('button', { name: 'Display as gallery' }));
+
+  const preview = screen.getByTestId('gallery-audio-preview');
+  const audio = within(preview).getByLabelText('audio media');
+  Object.defineProperty(audio, 'duration', { configurable: true, value: 184 });
+  Object.defineProperty(audio, 'paused', { configurable: true, value: true });
+  audio.play = jest.fn(() => Promise.resolve());
+  fireEvent.loadedMetadata(audio);
+  fireEvent.timeUpdate(audio, { target: { currentTime: 12 } });
+  fireEvent.click(within(preview).getByRole('button', { name: 'Play audio' }));
+
+  expect(
+    within(preview).getByRole('button', { name: 'Play audio' })
+  ).toBeInTheDocument();
+  expect(audio.play).toHaveBeenCalled();
+  expect(
+    within(preview).getByRole('button', { name: 'Expand audio media' })
+  ).toBeInTheDocument();
+  expect(within(preview).getByText('0:12 / 3:04')).toBeInTheDocument();
+  expect(audio).toHaveAttribute('preload', 'metadata');
+  expect(audio).toHaveStyle({ display: 'none' });
 });
 
 test('StoryMapMediaEditorPoc: uses the production editor for one media item', async () => {
