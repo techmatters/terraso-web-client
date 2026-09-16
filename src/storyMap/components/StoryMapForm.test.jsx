@@ -1484,15 +1484,15 @@ test('StoryMapForm: Add map layer', async () => {
     name: 'Datalayer title 1',
   });
   expect(
-    within(dataMapDialog).getByRole('listitem', {
+    within(dataMapDialog).queryByRole('listitem', {
       name: 'Datalayer title 2',
     })
-  ).toBeInTheDocument();
+  ).not.toBeInTheDocument();
   expect(
-    within(dataMapDialog).getByRole('listitem', {
+    within(dataMapDialog).queryByRole('listitem', {
       name: 'Datalayer title 3',
     })
-  ).toBeInTheDocument();
+  ).not.toBeInTheDocument();
 
   const radioButton = within(dataLayerItem).getByRole('radio');
   await act(async () => fireEvent.click(radioButton));

@@ -26,7 +26,7 @@ import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { StoryMapMetadataFieldsFragmentDoc } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
 import { graphql } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/index';
 
-import { TILESET_STATUS_PENDING } from 'terraso-web-client/sharedData/sharedDataConstants';
+import { TILESET_STATUS_READY } from 'terraso-web-client/sharedData/sharedDataConstants';
 import {
   compareStoryMapsByUpdatedAt,
   extractStoryMap,
@@ -451,17 +451,22 @@ export const fetchDataLayers = ({ ownerId, email }) => {
       ...(lists.storyMapConfigs?.edges || []),
       ...(lists.landscapeConfigs?.edges || []),
       ...(lists.groupConfigs?.edges || []),
-    ].map(entry => ({
-      ..._.omit(['configuration', 'owner'], entry.node),
-      tilesetId: entry.node.mapboxTilesetId,
-      geojsonSignedUrl: entry.node.geojsonSignedUrl,
-      processing:
-        !entry.node.geojsonSignedUrl &&
-        (entry.node.mapboxTilesetStatus === TILESET_STATUS_PENDING ||
-          !entry.node.mapboxTilesetId),
-      ownerType: entry.node.owner?.__typename,
-      ...JSON.parse(entry.node.configuration),
-    })),
+    ]
+      .filter(
+        // Omit map layers that can never render: no S3 GeoJSON and no ready
+        // Mapbox tileset (e.g. legacy VCs whose conversion failed). Attaching
+        // one would only produce a blank layer.
+        entry =>
+          entry.node.geojsonSignedUrl ||
+          entry.node.mapboxTilesetStatus === TILESET_STATUS_READY
+      )
+      .map(entry => ({
+        ..._.omit(['configuration', 'owner'], entry.node),
+        tilesetId: entry.node.mapboxTilesetId,
+        geojsonSignedUrl: entry.node.geojsonSignedUrl,
+        ownerType: entry.node.owner?.__typename,
+        ...JSON.parse(entry.node.configuration),
+      })),
     hasGroups: lists.myGroups?.edges?.some(
       edge => edge.node?.membershipList?.memberships?.edges?.length > 0
     ),
