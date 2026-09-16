@@ -28,7 +28,7 @@ type Props = {
   onSourceError?: (error: unknown) => void;
 };
 
-const getSourceType = (config: MapLayerConfig): 's3' | 'tileset' | 'inline' => {
+const getSourceType = (config: MapLayerConfig): 's3' | 'tileset' => {
   if (config.geojsonSignedUrl) {
     return 's3';
   }
@@ -38,7 +38,9 @@ const getSourceType = (config: MapLayerConfig): 's3' | 'tileset' | 'inline' => {
   ) {
     return 'tileset';
   }
-  return 'inline';
+  throw new Error(
+    'Invalid MapLayerConfig: should have a GeoJSON URL or valid Mapbox tileset'
+  );
 };
 
 export const StoryMapLayer = ({
@@ -62,7 +64,6 @@ export const StoryMapLayer = ({
         <GeoJsonSource
           id={config.id}
           geoJsonUrl={sourceType === 's3' ? config.geojsonSignedUrl : undefined}
-          geoJson={sourceType === 'inline' ? config.geojson : undefined}
           onError={onSourceError}
         />
       )}

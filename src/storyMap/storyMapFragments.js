@@ -75,7 +75,6 @@ export const storyMapMetadataFields = /* GraphQL */ `
 export const visualizationConfigWithStoryMapContext = /* GraphQL */ `
   fragment visualizationConfigWithStoryMapContext on VisualizationConfigNode {
     ...visualizationConfigWithConfiguration
-    geojson
     owner {
       __typename
     }

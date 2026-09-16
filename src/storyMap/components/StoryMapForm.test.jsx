@@ -145,7 +145,6 @@ const VISUALIZATION_CONFIG = {
       ],
     },
   },
-  geojson: '{ "type": "FeatureCollection", "features": [] }',
 };
 
 const VISUALIZATION_CONFIG_PROCESSING = {

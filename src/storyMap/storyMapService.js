@@ -322,7 +322,6 @@ export const addMapLayer = ({
       addVisualizationConfig(input: $input) {
         visualizationConfig {
           ...visualizationConfigWithConfiguration
-          geojson
           dataEntry {
             name
             resourceType
@@ -370,19 +369,11 @@ export const addMapLayer = ({
       },
     })
     .then(_.get('addVisualizationConfig.visualizationConfig'))
-    .then(({ geojson, configuration, ...rest }) => {
-      const result = {
-        ...rest,
-        ...JSON.parse(configuration),
-        // The created layer is owned by the story map being edited.
-        ownerType: 'StoryMapNode',
-      };
-      // Only include inline geojson for VCs without S3 URL (legacy path)
-      if (!rest.geojsonSignedUrl) {
-        result.geojson = JSON.parse(geojson);
-      }
-      return result;
-    });
+    .then(({ configuration, ...rest }) => ({
+      ...rest,
+      ...JSON.parse(configuration),
+      ownerType: 'StoryMapNode',
+    }));
 };
 
 export const fetchDataLayers = ({ ownerId, email }) => {
@@ -461,7 +452,7 @@ export const fetchDataLayers = ({ ownerId, email }) => {
       ...(lists.landscapeConfigs?.edges || []),
       ...(lists.groupConfigs?.edges || []),
     ].map(entry => ({
-      ..._.omit(['configuration', 'geojson', 'owner'], entry.node),
+      ..._.omit(['configuration', 'owner'], entry.node),
       tilesetId: entry.node.mapboxTilesetId,
       geojsonSignedUrl: entry.node.geojsonSignedUrl,
       processing:
@@ -470,7 +461,6 @@ export const fetchDataLayers = ({ ownerId, email }) => {
           !entry.node.mapboxTilesetId),
       ownerType: entry.node.owner?.__typename,
       ...JSON.parse(entry.node.configuration),
-      geojson: JSON.parse(entry.node.geojson),
     })),
     hasGroups: lists.myGroups?.edges?.some(
       edge => edge.node?.membershipList?.memberships?.edges?.length > 0
