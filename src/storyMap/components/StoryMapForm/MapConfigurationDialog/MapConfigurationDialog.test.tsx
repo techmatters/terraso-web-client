@@ -30,7 +30,9 @@ import {
   createTestVisualizationConfigNode,
 } from 'terraso-web-client/tests/data/storyMap';
 
+import { CollaborationContextProvider } from 'terraso-web-client/collaboration/collaborationContext';
 import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
+import { MapLayerDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerDialog';
 import { StoryMapConfigContextProvider } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { MapLayerConfig } from 'terraso-web-client/storyMap/storyMapTypes';
 
@@ -45,6 +47,33 @@ jest.mock('terraso-web-client/gis/components/Map', () => {
   });
 });
 
+type ConfigEdge = { node: { id: string } };
+type MembershipListEdge = {
+  node: {
+    membershipList?: { memberships?: { edges: { node: { id: string } }[] } };
+  };
+};
+
+interface DataLayersMock {
+  storyMapConfigs?: ConfigEdge[];
+  landscapeConfigs?: ConfigEdge[];
+  groupConfigs?: ConfigEdge[];
+  myGroups?: MembershipListEdge[];
+  myLandscapes?: MembershipListEdge[];
+}
+
+let dataLayersMock: DataLayersMock = {};
+
+const membershipEdge = (id: string): MembershipListEdge => ({
+  node: {
+    membershipList: {
+      memberships: {
+        edges: [{ node: { id } }],
+      },
+    },
+  },
+});
+
 // GraphQL request handler for mocking network boundary
 const mockGraphQLRequest = (query: string | any): Promise<any> => {
   const queryString = typeof query === 'string' ? query : query.toString();
@@ -52,16 +81,24 @@ const mockGraphQLRequest = (query: string | any): Promise<any> => {
   // Detect operation by content inspection
   if (queryString.includes('visualizationConfigs')) {
     return Promise.resolve({
-      visualizationConfigs: {
-        edges: [
+      storyMapConfigs: {
+        edges: dataLayersMock.storyMapConfigs ?? [
           {
-            node: createTestVisualizationConfigNode({ id: 'test-story-map-1' }),
+            node: createTestVisualizationConfigNode({
+              id: 'test-story-map-1',
+            }),
           },
           {
-            node: createTestVisualizationConfigNode({ id: 'test-story-map-2' }),
+            node: createTestVisualizationConfigNode({
+              id: 'test-story-map-2',
+            }),
           },
         ],
       },
+      landscapeConfigs: { edges: dataLayersMock.landscapeConfigs ?? [] },
+      groupConfigs: { edges: dataLayersMock.groupConfigs ?? [] },
+      myGroups: { edges: dataLayersMock.myGroups ?? [] },
+      myLandscapes: { edges: dataLayersMock.myLandscapes ?? [] },
     });
   }
 
@@ -83,6 +120,7 @@ interface SetupOptions {
   mapLayerConfig?: MapLayerConfig | null;
   existingMapLayers?: MapLayerConfig[];
   isOwner?: boolean;
+  dataLayers?: DataLayersMock;
 }
 
 interface SetupResult {
@@ -99,7 +137,12 @@ const setup = async (options: SetupOptions = {}): Promise<SetupResult> => {
     chapterId = 'chapter-1',
     mapLayerConfig = null,
     existingMapLayers = [],
+    dataLayers,
   } = options;
+
+  if (dataLayers) {
+    dataLayersMock = dataLayers;
+  }
 
   const storyMapConfig = createTestStoryMapConfig();
   const storyMap = createTestStoryMap();
@@ -117,7 +160,13 @@ const setup = async (options: SetupOptions = {}): Promise<SetupResult> => {
       },
     },
     storyMap: {
-      dataLayers: { fetching: false, list: existingMapLayers },
+      dataLayers: {
+        fetching: false,
+        error: false,
+        list: existingMapLayers,
+        hasGroups: false,
+        hasLandscapes: false,
+      },
       // other default state
     },
   };
@@ -147,9 +196,24 @@ const setup = async (options: SetupOptions = {}): Promise<SetupResult> => {
   };
 };
 
+const openMapLayerDialog = async () => {
+  const addButton = screen.getByRole('button', {
+    name: /add map layer/i,
+  });
+
+  await act(async () => {
+    fireEvent.click(addButton);
+  });
+
+  await waitFor(() => {
+    expect(screen.getByText(/or select a layer:/i)).toBeInTheDocument();
+  });
+};
+
 describe('MapConfigurationDialog', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    dataLayersMock = {};
 
     // Mock network boundary only
     (terrasoApi.requestGraphQL as jest.Mock).mockImplementation(
@@ -208,18 +272,9 @@ describe('MapConfigurationDialog', () => {
     it('opens MapLayerDialog when "Add" button is clicked', async () => {
       await setup();
 
-      const addButton = screen.getByRole('button', {
-        name: /add map layer/i,
-      });
+      await openMapLayerDialog();
 
-      await act(async () => {
-        fireEvent.click(addButton);
-      });
-
-      // Check that MapLayerDialog content is visible
-      await waitFor(() => {
-        expect(screen.getByText(/or select a layer/i)).toBeInTheDocument();
-      });
+      expect(screen.getByText(/or select a layer/i)).toBeInTheDocument();
     });
   });
 
@@ -227,30 +282,15 @@ describe('MapConfigurationDialog', () => {
     it('opens MapLayerDialog when "Add" button is clicked', async () => {
       await setup();
 
-      const addButton = screen.getByRole('button', {
-        name: /add map layer/i,
-      });
+      await openMapLayerDialog();
 
-      await act(async () => {
-        fireEvent.click(addButton);
-      });
-
-      // Check that MapLayerDialog is open and shows both sections
-      await waitFor(() => {
-        expect(screen.getByText(/or select a layer/i)).toBeInTheDocument();
-      });
+      expect(screen.getByText(/or select a layer/i)).toBeInTheDocument();
     });
 
     it('renders MapLayerDialog with both create and select sections when opened', async () => {
       await setup();
 
-      const addButton = screen.getByRole('button', {
-        name: /add map layer/i,
-      });
-
-      await act(async () => {
-        fireEvent.click(addButton);
-      });
+      await openMapLayerDialog();
 
       // MapLayerDialog should render with both sections
       // Check for the "select layer" section which confirms MapLayerDialog is open
@@ -263,17 +303,7 @@ describe('MapConfigurationDialog', () => {
     it('closes MapLayerDialog when cancel button is clicked', async () => {
       await setup();
 
-      const addButton = screen.getByRole('button', {
-        name: /add map layer/i,
-      });
-
-      await act(async () => {
-        fireEvent.click(addButton);
-      });
-
-      await waitFor(() => {
-        expect(screen.getByText(/or select a layer/i)).toBeInTheDocument();
-      });
+      await openMapLayerDialog();
 
       // Find and click the cancel button in the MapLayerDialog
       // The MapLayerDialog has a Cancel button with text "Cancel"
@@ -305,7 +335,7 @@ describe('MapConfigurationDialog', () => {
   describe('Test Suite 4: Deleting a Map Layer', () => {
     it('displays delete icon when a layer is configured', async () => {
       const mapLayer = createTestVisualizationConfigNode();
-      await setup({ mapLayerConfig: mapLayer });
+      await setup({ mapLayerConfig: mapLayer as unknown as MapLayerConfig });
 
       // Find the delete icon button by looking for the DeleteIcon SVG
       const iconButtons = screen.getAllByRole('button');
@@ -320,7 +350,7 @@ describe('MapConfigurationDialog', () => {
 
     it('shows layer name when layer is configured', async () => {
       const mapLayer = createTestVisualizationConfigNode();
-      await setup({ mapLayerConfig: mapLayer });
+      await setup({ mapLayerConfig: mapLayer as unknown as MapLayerConfig });
 
       // Verify that the layer is displayed
       expect(screen.getByText(mapLayer.title)).toBeInTheDocument();
@@ -344,6 +374,384 @@ describe('MapConfigurationDialog', () => {
       });
 
       expect(addButton).not.toHaveAttribute('disabled');
+    });
+  });
+
+  describe('Test Suite 5: MapLayerDialog Tabs (group/landscape memberships)', () => {
+    it('renders Story Map, My Groups and My Landscapes tabs with their layers', async () => {
+      dataLayersMock = {
+        storyMapConfigs: [
+          {
+            node: createTestVisualizationConfigNode({
+              id: 'test-story-map-1',
+              title: 'Story Map Layer',
+            }),
+          },
+        ],
+        groupConfigs: [
+          {
+            node: createTestVisualizationConfigNode({
+              id: 'group-layer-1',
+              title: 'Group Layer',
+              owner: { __typename: 'GroupNode' } as any,
+            }),
+          },
+        ],
+        landscapeConfigs: [
+          {
+            node: createTestVisualizationConfigNode({
+              id: 'landscape-layer-1',
+              title: 'Landscape Layer',
+              owner: { __typename: 'LandscapeNode' } as any,
+            }),
+          },
+        ],
+        myGroups: [membershipEdge('m1')],
+        myLandscapes: [membershipEdge('m2')],
+      };
+      await setup();
+
+      await openMapLayerDialog();
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('tab', { name: 'This Story Map' })
+        ).toBeInTheDocument();
+      });
+      const groupTab = screen.getByRole('tab', { name: 'My Groups' });
+      const landscapeTab = screen.getByRole('tab', { name: 'My Landscapes' });
+
+      // Story map tab shows the story map layers
+      expect(
+        screen.getByRole('listitem', { name: 'Story Map Layer' })
+      ).toBeInTheDocument();
+
+      // Group tab shows group layers
+      await act(async () => {
+        fireEvent.click(groupTab);
+      });
+      expect(
+        screen.getByRole('listitem', { name: 'Group Layer' })
+      ).toBeInTheDocument();
+
+      // Landscape tab shows landscape layers
+      await act(async () => {
+        fireEvent.click(landscapeTab);
+      });
+      expect(
+        screen.getByRole('listitem', { name: 'Landscape Layer' })
+      ).toBeInTheDocument();
+    });
+
+    it('hides GROUP tab when the user only belongs to landscapes', async () => {
+      dataLayersMock = {
+        myLandscapes: [membershipEdge('m2')],
+      };
+      await setup();
+
+      await openMapLayerDialog();
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('tab', { name: 'This Story Map' })
+        ).toBeInTheDocument();
+      });
+      expect(
+        screen.queryByRole('tab', { name: 'My Groups' })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole('tab', { name: 'My Landscapes' })
+      ).toBeInTheDocument();
+    });
+
+    it('hides LANDSCAPE tab when the user only belongs to groups', async () => {
+      dataLayersMock = {
+        myGroups: [membershipEdge('m1')],
+      };
+      await setup();
+
+      await openMapLayerDialog();
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('tab', { name: 'This Story Map' })
+        ).toBeInTheDocument();
+      });
+      expect(
+        screen.queryByRole('tab', { name: 'My Landscapes' })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole('tab', { name: 'My Groups' })
+      ).toBeInTheDocument();
+    });
+
+    it('renders the old radio list UI without tabs when there are no memberships', async () => {
+      await setup({
+        dataLayers: {
+          storyMapConfigs: [
+            {
+              node: createTestVisualizationConfigNode({
+                id: 'test-story-map-1',
+                title: 'Story Map Layer',
+              }),
+            },
+          ],
+        },
+      });
+
+      await openMapLayerDialog();
+
+      // "Or select a layer:" heading is visible
+      expect(screen.getByText(/or select a layer/i)).toBeInTheDocument();
+
+      // No tabs at all
+      expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+
+      // Story map layers are listed in a plain radio group
+      expect(
+        screen.getByRole('listitem', { name: 'Story Map Layer' })
+      ).toBeInTheDocument();
+    });
+
+    it('shows GROUP empty state when the user belongs to groups but no group layers exist', async () => {
+      dataLayersMock = {
+        myGroups: [membershipEdge('m1')],
+      };
+      await setup();
+
+      await openMapLayerDialog();
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('tab', { name: 'My Groups' })
+        ).toBeInTheDocument();
+      });
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('tab', { name: 'My Groups' }));
+      });
+
+      expect(
+        screen.getByText('No maps have been made in your groups yet.')
+      ).toBeInTheDocument();
+    });
+
+    it('keeps a layer selected when clicking its radio again (no toggle)', async () => {
+      const { onConfirmMock } = await setup({
+        dataLayers: {
+          storyMapConfigs: [
+            {
+              node: createTestVisualizationConfigNode({
+                id: 'test-story-map-1',
+                title: 'Clickable Layer',
+              }),
+            },
+          ],
+        },
+      });
+
+      await openMapLayerDialog();
+
+      const radio = screen.getByRole('radio', { name: 'Clickable Layer' });
+      const nextButton = screen.getByRole('button', { name: 'Next' });
+
+      expect(nextButton).toBeDisabled();
+
+      await act(async () => {
+        fireEvent.click(radio);
+      });
+      expect(radio).toBeChecked();
+      expect(nextButton).not.toBeDisabled();
+
+      // Browsers do not fire a change event when re-clicking the selected
+      // radio, so the selection is unchanged: no toggle, no removal.
+      await act(async () => {
+        fireEvent.click(radio);
+      });
+      expect(radio).toBeChecked();
+      expect(nextButton).not.toBeDisabled();
+      expect(onConfirmMock).not.toHaveBeenCalled();
+    });
+
+    it('does not remove the chapter-assigned layer when its radio is clicked or re-clicked', async () => {
+      const assignedLayer = createTestVisualizationConfigNode({
+        id: 'test-story-map-1',
+        title: 'Assigned Layer',
+      });
+      const otherLayer = createTestVisualizationConfigNode({
+        id: 'test-story-map-2',
+        title: 'Other Layer',
+      });
+      const storyMapConfig = createTestStoryMapConfig();
+      const storyMap = createTestStoryMap();
+      const onConfirmMock = jest.fn();
+
+      dataLayersMock = {
+        storyMapConfigs: [
+          {
+            node: createTestVisualizationConfigNode({
+              id: 'test-story-map-1',
+              title: 'Assigned Layer',
+            }),
+          },
+          {
+            node: createTestVisualizationConfigNode({
+              id: 'test-story-map-2',
+              title: 'Other Layer',
+            }),
+          },
+        ],
+      };
+
+      await render(
+        <CollaborationContextProvider owner={storyMap} entityType="story_map">
+          <StoryMapConfigContextProvider
+            baseConfig={storyMapConfig}
+            storyMap={storyMap}
+          >
+            <MapLayerDialog
+              open
+              onClose={jest.fn()}
+              onConfirm={onConfirmMock}
+            />
+          </StoryMapConfigContextProvider>
+        </CollaborationContextProvider>,
+        {
+          account: {
+            currentUser: {
+              data: {
+                email: 'test@example.com',
+                firstName: 'Test',
+                lastName: 'User',
+              },
+            },
+          },
+          storyMap: {
+            dataLayers: {
+              fetching: false,
+              error: false,
+              list: [assignedLayer, otherLayer],
+              hasGroups: false,
+              hasLandscapes: false,
+            },
+          },
+        }
+      );
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('listitem', { name: 'Assigned Layer' })
+        ).toBeInTheDocument();
+      });
+
+      const assignedRadio = screen.getByRole('radio', {
+        name: 'Assigned Layer',
+      });
+      const otherRadio = screen.getByRole('radio', { name: 'Other Layer' });
+
+      // The dialog opens with no in-dialog selection; clicking the assigned
+      // layer only selects it.
+      await act(async () => {
+        fireEvent.click(assignedRadio);
+      });
+      expect(assignedRadio).toBeChecked();
+
+      // Re-clicking the selected radio keeps it selected (no toggle) and the
+      // chapter-assigned layer is never removed.
+      await act(async () => {
+        fireEvent.click(assignedRadio);
+      });
+      expect(assignedRadio).toBeChecked();
+      expect(onConfirmMock).not.toHaveBeenCalled();
+
+      // Selecting another layer and then the assigned one also only selects:
+      // no removal.
+      await act(async () => {
+        fireEvent.click(otherRadio);
+      });
+      expect(otherRadio).toBeChecked();
+
+      await act(async () => {
+        fireEvent.click(assignedRadio);
+      });
+      expect(assignedRadio).toBeChecked();
+      expect(onConfirmMock).not.toHaveBeenCalled();
+    });
+
+    it('shows the STORY_MAP tab empty state when the story map has no layers', async () => {
+      dataLayersMock = {
+        storyMapConfigs: [],
+        myGroups: [membershipEdge('m1')],
+      };
+      await setup();
+
+      await openMapLayerDialog();
+
+      expect(
+        screen.getByText(
+          "This story map doesn't contain any map layers yet. Upload a new file above or select a layer from your groups or landscapes."
+        )
+      ).toBeInTheDocument();
+    });
+
+    it('shows LANDSCAPE empty state when the user has no landscape layers', async () => {
+      dataLayersMock = {
+        myLandscapes: [membershipEdge('m2')],
+      };
+      await setup();
+
+      await openMapLayerDialog();
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('tab', { name: 'My Landscapes' })
+        ).toBeInTheDocument();
+      });
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('tab', { name: 'My Landscapes' }));
+      });
+
+      expect(
+        screen.getByText('No maps have been made in your landscapes yet.')
+      ).toBeInTheDocument();
+    });
+
+    it('shows the load error message when fetching data layers fails', async () => {
+      (terrasoApi.requestGraphQL as jest.Mock).mockImplementation(
+        (query: string | any) => {
+          const queryString =
+            typeof query === 'string' ? query : query.toString();
+          if (queryString.includes('visualizationConfigs')) {
+            return Promise.reject(new Error('network error'));
+          }
+          return mockGraphQLRequest(query);
+        }
+      );
+
+      await setup();
+
+      const addButton = screen.getByRole('button', {
+        name: /add map layer/i,
+      });
+      await act(async () => {
+        fireEvent.click(addButton);
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            "We couldn't load the map layers. Please try again later."
+          )
+        ).toBeInTheDocument();
+      });
+
+      // The empty-state copy must not be shown in the error case.
+      expect(
+        screen.queryByText(
+          "This story map doesn't contain any map layers yet. Upload a new file above or select a layer from your groups or landscapes."
+        )
+      ).not.toBeInTheDocument();
     });
   });
 });

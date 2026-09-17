@@ -96,7 +96,10 @@ export const createTestVisualizationConfigNode = (
   mapboxTilesetId: `tileset-test`,
   mapboxTilesetStatus: 'READY',
   configuration: JSON.stringify({ visualization: 'test' }),
-  geojson: JSON.stringify({ type: 'FeatureCollection', features: [] }),
+  geojsonSignedUrl: 'https://example.com/test.geojson?sig=1',
   dataEntry: createTestDataEntryNode(),
+  owner: {
+    __typename: 'StoryMapNode',
+  } as unknown as VisualizationConfigNode['owner'],
   ...overrides,
 });

@@ -50,7 +50,10 @@ const initialState = {
   dataLayers: {
     fetching: true,
     saving: false,
+    error: false,
     list: [],
+    hasGroups: false,
+    hasLandscapes: false,
   },
 };
 
@@ -428,20 +431,28 @@ const storyMapSlice = createSlice({
     }));
     builder.addCase(fetchDataLayers.pending, state => ({
       ...state,
-      dataLayers: initialState.dataLayers,
+      dataLayers: {
+        ...state.dataLayers,
+        fetching: true,
+        error: false,
+      },
     }));
     builder.addCase(fetchDataLayers.rejected, state => ({
       ...state,
       dataLayers: {
+        ...state.dataLayers,
         fetching: false,
-        list: [],
+        error: true,
       },
     }));
     builder.addCase(fetchDataLayers.fulfilled, (state, action) => ({
       ...state,
       dataLayers: {
         fetching: false,
-        list: action.payload,
+        error: false,
+        list: action.payload.list,
+        hasGroups: action.payload.hasGroups,
+        hasLandscapes: action.payload.hasLandscapes,
       },
     }));
   },

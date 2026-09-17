@@ -117,6 +117,9 @@ const VISUALIZATION_CONFIG = {
     lastName: '',
     firstName: 'Jose',
   },
+  owner: {
+    __typename: 'StoryMapNode',
+  },
   mapboxTilesetId: 'ac0853a299e4479493caaafc89f361b6',
   mapboxTilesetStatus: TILESET_STATUS_READY,
   configuration: JSON.stringify(VISUALIZATION_CONFIG_JSON),
@@ -142,7 +145,6 @@ const VISUALIZATION_CONFIG = {
       ],
     },
   },
-  geojson: '{ "type": "FeatureCollection", "features": [] }',
 };
 
 const VISUALIZATION_CONFIG_PROCESSING = {
@@ -297,9 +299,10 @@ beforeEach(() => {
   when(terrasoApi.requestGraphQL)
     .calledWith(expect.stringContaining('query visualizationConfigs'), {
       ownerId: 'story-map-id-1',
+      email: '',
     })
     .mockResolvedValue({
-      visualizationConfigs: {
+      storyMapConfigs: {
         edges: [
           {
             node: VISUALIZATION_CONFIG,
@@ -311,6 +314,18 @@ beforeEach(() => {
             node: VISUALIZATION_CONFIG_NO_TILESET,
           },
         ],
+      },
+      landscapeConfigs: {
+        edges: [],
+      },
+      groupConfigs: {
+        edges: [],
+      },
+      myGroups: {
+        edges: [],
+      },
+      myLandscapes: {
+        edges: [],
       },
     });
 });
@@ -1469,15 +1484,15 @@ test('StoryMapForm: Add map layer', async () => {
     name: 'Datalayer title 1',
   });
   expect(
-    within(dataMapDialog).getByRole('listitem', {
+    within(dataMapDialog).queryByRole('listitem', {
       name: 'Datalayer title 2',
     })
-  ).toBeInTheDocument();
+  ).not.toBeInTheDocument();
   expect(
-    within(dataMapDialog).getByRole('listitem', {
+    within(dataMapDialog).queryByRole('listitem', {
       name: 'Datalayer title 3',
     })
-  ).toBeInTheDocument();
+  ).not.toBeInTheDocument();
 
   const radioButton = within(dataLayerItem).getByRole('radio');
   await act(async () => fireEvent.click(radioButton));
@@ -1515,7 +1530,6 @@ test('StoryMapForm: Add map layer', async () => {
         'ac0853a2-99e4-4794-93ca-aafc89f361b6': expect.objectContaining({
           visualizeConfig: expect.anything(),
           mapboxTilesetId: expect.anything(),
-          dataEntry: expect.anything(),
         }),
       },
     }),

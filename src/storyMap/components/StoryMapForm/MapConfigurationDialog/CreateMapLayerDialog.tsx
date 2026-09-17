@@ -19,10 +19,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as React from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
-import {
-  DataEntryNode,
-  VisualizationConfigNode,
-} from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
+import { DataEntryNode } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
 import { useDispatch, useSelector } from 'terraso-web-client/terrasoApi/store';
 import * as yup from 'yup';
 import {
@@ -296,7 +293,7 @@ const CreateMapLayerForm = () => {
 
 type CreateMapLayerDialogProps = {
   onClose: () => void;
-  onCreate: (dataLayerConfig: VisualizationConfigNode) => void;
+  onCreate: (dataLayerConfig: MapLayerConfig) => void;
   chapterTitle?: string;
 };
 const CreateMapLayerDialog = ({
