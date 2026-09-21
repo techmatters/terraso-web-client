@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { Box, useMediaQuery } from '@mui/material';
@@ -177,7 +177,7 @@ const Title = props => {
   );
 };
 
-const MapTransitionController = ({ config, currentChapter }) => {
+const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
   const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
   const { map, mapDimensions } = useMap();
 
@@ -191,7 +191,7 @@ const MapTransitionController = ({ config, currentChapter }) => {
       mapDimensions,
       isMobile,
     });
-  }, [map, config, mapDimensions, currentChapter, isMobile]);
+  }, [map, config, mapDimensions, currentChapter, isMobile, layerRevision]);
 
   return null;
 };
@@ -217,8 +217,13 @@ const StoryMap = props => {
   } = props;
 
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
+  const [layerRevision, setLayerRevision] = useState(0);
   const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
   const containerRef = useRef();
+
+  const onLayerAdded = useCallback(() => {
+    setLayerRevision(revision => revision + 1);
+  }, []);
 
   const { activeId, registerStep } = useActiveStep({
     scrollRoot: isContained ? containerRef : null,
@@ -309,6 +314,7 @@ const StoryMap = props => {
               config={dataLayerConfig}
               changeBounds={false}
               opacity={0}
+              onLayerAdded={onLayerAdded}
             />
           ))}
 
@@ -318,6 +324,7 @@ const StoryMap = props => {
           // hopefully this will be less janky in the future.
           config={config}
           currentChapter={currentChapter}
+          layerRevision={layerRevision}
         />
       </Map>
       <Box

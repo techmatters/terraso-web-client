@@ -158,6 +158,7 @@ const MapboxLayer = props => {
     useTileset,
     isMapFile,
     opacity: initialOpacity,
+    onLayerAdded,
   } = props;
   const { map } = useMap();
   const [imageSvg, setimageSvg] = useState();
@@ -419,15 +420,18 @@ const MapboxLayer = props => {
           layer={layer}
           images={layerImages}
           events={layerEvents}
+          onLayerAdded={onLayerAdded}
         />
       )}
       <Layer
         id={generateLayerId(sourceName, LAYER_TYPES.POLYGONS_OUTLINE)}
         layer={layerPolygonOutline}
+        onLayerAdded={onLayerAdded}
       />
       <Layer
         id={generateLayerId(sourceName, LAYER_TYPES.POLYGONS_FILL)}
         layer={layerPolygonFill}
+        onLayerAdded={onLayerAdded}
       />
       <Portal container={popupContainer}>
         {popupData?.data && <MarkerPopupContent data={popupData.data} />}
