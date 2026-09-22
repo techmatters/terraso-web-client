@@ -70,9 +70,6 @@ const getSourceBounds = async (map, sourceId) => {
     return new mapboxgl.LngLatBounds(loadedSource.bounds);
   }
 
-  // When _data is a string (URL-based source), fetch the GeoJSON to compute
-  // bounds. The browser cache serves this instantly since Mapbox GL already
-  // fetched it. For inline GeoJSON objects, compute bounds directly.
   let sourceData = loadedSource._data;
 
   if (typeof sourceData === 'string') {
@@ -253,10 +250,13 @@ const MapboxLayer = props => {
   ]);
 
   useEffect(() => {
-    if (!map) {
+    if (!map || !changeBounds) {
       return;
     }
-    const visualizationConfigBounds = (async function () {
+
+    let cancelled = false;
+
+    const getConfigBounds = () => {
       const viewportBounds = visualizationConfig?.viewportConfig?.bounds;
       if (!viewportBounds) {
         return;
@@ -269,27 +269,36 @@ const MapboxLayer = props => {
       const sw = new mapboxgl.LngLat(southWest.lng, southWest.lat);
       const ne = new mapboxgl.LngLat(northEast.lng, northEast.lat);
       return new mapboxgl.LngLatBounds(sw, ne);
-    })();
+    };
 
-    const sourceBounds = getSourceBounds(map, sourceName);
-
-    Promise.all([visualizationConfigBounds, sourceBounds]).then(
-      ([visualizationConfigBounds, sourceBounds]) => {
-        if (!changeBounds) {
-          return;
-        }
-        const bounds =
-          useConfigBounds && visualizationConfigBounds
-            ? visualizationConfigBounds
-            : sourceBounds;
-
-        if (bounds && !bounds.isEmpty()) {
-          map.fitBounds(bounds, {
-            animate: false,
-          });
-        }
+    const applyBounds = bounds => {
+      if (!cancelled && bounds && !bounds.isEmpty()) {
+        map.fitBounds(bounds, {
+          animate: false,
+        });
       }
-    );
+    };
+
+    if (useConfigBounds) {
+      const configBounds = getConfigBounds();
+      if (configBounds) {
+        applyBounds(configBounds);
+        return;
+      }
+    }
+
+    // Bounds must come from the source. This fetch only runs when its result
+    // will actually be consumed, because it will re-parse the GeoJSON, and may
+    // even re-download it depending on browser.
+    getSourceBounds(map, sourceName)
+      .then(applyBounds)
+      .catch(() => {
+        // If fitBounds throws (e.g. on invalid bounds), just ignore it.
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [
     map,
     visualizationConfig?.viewportConfig?.bounds,

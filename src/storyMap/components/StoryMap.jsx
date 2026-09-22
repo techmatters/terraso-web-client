@@ -47,7 +47,7 @@ mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 const Audio = ({ record }) => {
   return (
     <>
-      <audio style={{ width: '100%' }} controls>
+      <audio style={{ width: '100%' }} controls loading="lazy">
         <source src={record.media.signedUrl} type={record.media.type} />
       </audio>
     </>
@@ -57,7 +57,7 @@ const Audio = ({ record }) => {
 const Video = ({ record }) => {
   return (
     <>
-      <video style={{ width: '100%' }} controls>
+      <video style={{ width: '100%' }} controls loading="lazy">
         <source src={record.media.signedUrl} type={record.media.type} />
       </video>
     </>
@@ -71,6 +71,7 @@ const Image = ({ record }) => {
       src={record.media.signedUrl || record.media.url}
       alt={t('storyMap.view_chapter_media_label')}
       width="100%"
+      loading="lazy"
     ></img>
   );
 };
@@ -82,6 +83,7 @@ const Embedded = ({ record }) => {
       title={record.media.title}
       src={record.media.url}
       style={{ height: '300px', width: '100%' }}
+      loading="lazy"
     />
   );
 };
