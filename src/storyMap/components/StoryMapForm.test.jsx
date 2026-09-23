@@ -700,6 +700,28 @@ test('StoryMapForm: Change title', async () => {
   );
 });
 
+test('StoryMapForm: Title label uses the story theme text color', async () => {
+  await setup({ config: { ...BASE_CONFIG, themeId: 'theme-3' } });
+
+  const titleSection = screen.getByRole('region', {
+    name: 'Title for: Story Map Title',
+  });
+
+  await act(async () =>
+    fireEvent.click(
+      within(titleSection).getByRole('heading', { name: 'Story Map Title' })
+    )
+  );
+
+  const titleLabel = within(titleSection).getByText('Title (Required)', {
+    selector: 'label',
+  });
+  expect(titleLabel).toHaveStyle({ color: 'var(--story-theme-text)' });
+
+  await act(async () => fireEvent.focus(titleLabel));
+  expect(titleLabel).toHaveStyle({ color: 'var(--story-theme-text)' });
+});
+
 test('StoryMapForm: Title blur without changes should not trigger save', async () => {
   const { onSaveDraft } = await setup({
     config: BASE_CONFIG,
