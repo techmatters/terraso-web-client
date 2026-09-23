@@ -20,7 +20,7 @@ import { useEffect } from 'react';
 import { useMap } from 'terraso-web-client/gis/components/Map';
 
 const Layer = props => {
-  const { id, layer, images, events } = props;
+  const { id, layer, images, events, onLayerAdded } = props;
   const { map, addLayer, removeLayer, addImage, removeImage } = useMap();
 
   useEffect(() => {
@@ -42,6 +42,7 @@ const Layer = props => {
       id,
       ...layer,
     });
+    onLayerAdded?.(id);
 
     const eventsParams =
       events?.map((event, index) => {
@@ -65,6 +66,7 @@ const Layer = props => {
     events,
     removeLayer,
     removeImage,
+    onLayerAdded,
   ]);
 };
 

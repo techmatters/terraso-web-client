@@ -26,6 +26,7 @@ type Props = {
   useConfigBounds?: boolean;
   opacity?: number;
   onSourceError?: (error: unknown) => void;
+  onLayerAdded?: (layerId: string) => void;
 };
 
 const getSourceType = (config: MapLayerConfig): 's3' | 'tileset' => {
@@ -49,6 +50,7 @@ export const StoryMapLayer = ({
   opacity,
   useConfigBounds = false,
   onSourceError,
+  onLayerAdded,
 }: Props) => {
   const sourceType = getSourceType(config);
   const useTileset = sourceType === 'tileset';
@@ -75,6 +77,7 @@ export const StoryMapLayer = ({
         changeBounds={changeBounds}
         useConfigBounds={useConfigBounds}
         opacity={opacity}
+        onLayerAdded={onLayerAdded}
       />
     </>
   );
