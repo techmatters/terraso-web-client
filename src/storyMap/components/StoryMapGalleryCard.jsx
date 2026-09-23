@@ -78,8 +78,28 @@ const getFirstChapterDescriptionPreview = chapters => {
 
 const getStoryMapTitle = storyMap => storyMap.config?.title || storyMap.title;
 
+const isImageMedia = media =>
+  media?.signedUrl &&
+  (media.type === 'image' || media.type?.startsWith('image/'));
+
+const getFirstChapterImageUrl = chapters => {
+  if (!Array.isArray(chapters)) {
+    return '';
+  }
+
+  for (const chapter of chapters) {
+    if (isImageMedia(chapter?.media)) {
+      return chapter.media.signedUrl;
+    }
+  }
+
+  return '';
+};
+
 const getStoryMapImage = storyMap =>
-  storyMap.config?.featuredImage?.signedUrl || STORY_MAP_FALLBACK_IMAGE;
+  storyMap.config?.featuredImage?.signedUrl ||
+  getFirstChapterImageUrl(storyMap.config?.chapters) ||
+  STORY_MAP_FALLBACK_IMAGE;
 
 const getStoryMapImageAlt = storyMap =>
   storyMap.config?.featuredImage?.description || getStoryMapTitle(storyMap);
