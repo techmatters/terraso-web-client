@@ -293,15 +293,42 @@ const StoryMap = props => {
         zoom={1}
         initialLocation={initialLocation}
         sx={({ breakpoints }) => ({
-          position: 'sticky',
-          height: '100cqh',
           width: '100%',
           [breakpoints.not('xs')]: {
+            position: 'sticky',
             top: 0,
+            height: '100cqh',
           },
           [breakpoints.only('xs')]: isMapFullscreen
-            ? { position: 'fixed', bottom: 0, zIndex: 4 }
-            : { top: 0, height: '33vh', zIndex: 4 },
+            ? isContained
+              ? {
+                  // preview/embed: keep the map bounded to the size
+                  // container. fixed positioning is viewport-anchored even
+                  // inside the container (container-type doesn't establish
+                  // a containing block for fixed elements), so the bound
+                  // must come from the unit: 100cqh resolves to the
+                  // container's height. horizontal placement stays at its
+                  // static position so the map keeps to its pane
+                  position: 'fixed',
+                  bottom: 0,
+                  height: '100cqh',
+                  zIndex: 4,
+                }
+              : {
+                  // no size container (public viewer): cover the visible
+                  // viewport exactly. 100cqh falls back to 100svh here,
+                  // which doesn't track mobile browser chrome, so a
+                  // bottom-anchored map falls short at the top when the
+                  // browser toolbar is collapsed and chapter content shows
+                  // through the gap; stretching between top and bottom
+                  // always matches the visible area
+                  position: 'fixed',
+                  top: 0,
+                  bottom: 0,
+                  height: 'auto',
+                  zIndex: 4,
+                }
+            : { position: 'sticky', top: 0, height: '33vh', zIndex: 4 },
         })}
       >
         <FullscreenButton
