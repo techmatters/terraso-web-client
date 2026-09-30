@@ -640,6 +640,52 @@ test('StoryMapForm: Renders title and chapters correctly', async () => {
   testChapter({ title: 'Chapter 2', description: 'Chapter 2 description' });
 });
 
+test('StoryMapForm: Edit Map button width matches chapter content width', async () => {
+  await setup({
+    config: {
+      ...BASE_CONFIG,
+      chapters: [
+        {
+          id: 'chapter-embed',
+          title: 'Chapter with embed',
+          description: 'Chapter with embed description',
+          media: {
+            type: 'embedded',
+            source: 'youtube',
+            url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+            title: 'Test video',
+          },
+          onChapterEnter: [],
+          onChapterExit: [],
+        },
+        {
+          id: 'chapter-no-media',
+          title: 'Chapter without media',
+          description: 'Chapter without media description',
+          onChapterEnter: [],
+          onChapterExit: [],
+        },
+      ],
+    },
+  });
+
+  // Chapters with visual media use a 50vw container, but the chapter content
+  // card (.step-content in StoryMap.css) is capped at max-width 35vw plus its
+  // 50px x2 horizontal padding. The Edit Map button must never be wider than
+  // that card: cap its border box at calc(35vw + 100px).
+  const embedButton = within(
+    screen.getByRole('region', { name: 'Chapter: Chapter with embed' })
+  ).getByRole('button', { name: 'Edit Map' });
+  expect(getComputedStyle(embedButton).maxWidth).toBe('calc(35vw + 100px)');
+  expect(getComputedStyle(embedButton).width).toBe('100%');
+
+  // Without visual media the button fills its grid cell as before.
+  const noMediaButton = within(
+    screen.getByRole('region', { name: 'Chapter: Chapter without media' })
+  ).getByRole('button', { name: 'Edit Map' });
+  expect(getComputedStyle(noMediaButton).width).toBe('100%');
+});
+
 test('StoryMapForm: Change title', async () => {
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 

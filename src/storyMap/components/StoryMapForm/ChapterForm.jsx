@@ -133,7 +133,15 @@ const ChapterConfig = props => {
             variant="contained"
             onClick={onLocationClick}
             startIcon={<GpsFixedIcon />}
-            sx={{ borderRadius: '0px', mb: 1, width: '100%' }}
+            sx={{
+              borderRadius: '0px',
+              mb: 1,
+              width: '100%',
+              // Keep the button within the chapter content card: mirror
+              // .step-content in StoryMap.css (max-width 35vw + 50px x2
+              // padding) so both boxes have the same width.
+              maxWidth: 'calc(35vw + 100px)',
+            }}
           >
             {t('storyMap.form_chapter_location_button')}
           </Button>
