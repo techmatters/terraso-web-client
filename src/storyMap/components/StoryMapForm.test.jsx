@@ -669,17 +669,22 @@ test('StoryMapForm: Edit Map button width matches chapter content width', async 
     },
   });
 
-  // Chapters with visual media use a 50vw container, but the chapter content
-  // card (.step-content in StoryMap.css) is capped at max-width 35vw plus its
-  // 50px x2 horizontal padding. The Edit Map button must never be wider than
-  // that card: cap its border box at calc(35vw + 100px).
+  // The chapter content card (.step-content in StoryMap.css) is capped at
+  // max-width 35vw plus its 50px x2 horizontal padding (border box
+  // calc(35vw + 100px)). The chapter's grid container must be capped so its
+  // 11/12 content cell lands exactly on that card width, keeping the Edit Map
+  // button, the card, and the 1/12 alignment column adjacent.
   const embedButton = within(
     screen.getByRole('region', { name: 'Chapter: Chapter with embed' })
   ).getByRole('button', { name: 'Edit Map' });
-  expect(getComputedStyle(embedButton).maxWidth).toBe('calc(35vw + 100px)');
+  const embedContainer = embedButton.closest('.MuiGrid-container');
+  expect(getComputedStyle(embedContainer).maxWidth).toBe(
+    'calc((35vw + 100px) * 12 / 11)'
+  );
   expect(getComputedStyle(embedButton).width).toBe('100%');
 
-  // Without visual media the button fills its grid cell as before.
+  // Without visual media the container cap never binds: the button fills its
+  // grid cell as before.
   const noMediaButton = within(
     screen.getByRole('region', { name: 'Chapter: Chapter without media' })
   ).getByRole('button', { name: 'Edit Map' });
