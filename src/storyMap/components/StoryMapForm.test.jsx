@@ -1787,6 +1787,14 @@ test('StoryMapForm: Show correct sort buttons if chapter is last', async () => {
     name: 'Chapters sidebar',
   });
 
+  await waitFor(() => {
+    expect(
+      within(chaptersSection).getByRole('button', {
+        name: 'Chapter 3',
+      })
+    ).toBeInTheDocument();
+  });
+
   const chapter3 = within(chaptersSection).getByRole('button', {
     name: 'Chapter 3',
   });
