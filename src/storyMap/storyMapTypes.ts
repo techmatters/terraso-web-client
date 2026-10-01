@@ -32,6 +32,11 @@ export type VisualizeConfig = {
 
 export type MapLayerConfig = VisualizationConfigNode & {
   ownerType: 'StoryMapNode' | 'GroupNode' | 'LandscapeNode';
+  /** Stable id of the owning group/landscape, when applicable. */
+  ownerId?: string;
+  /** Display name of the owning group/landscape, when applicable. */
+  ownerName?: string;
+  visualizeConfig?: VisualizeConfig;
 };
 
 export type MapPosition = {
@@ -48,11 +53,35 @@ export type LayerConfig = {
   duration?: number;
 };
 
+/** Reference to a map layer shown during a transition. */
+export type MapLayerTransition = {
+  layerId: string;
+};
+
 export type Transition = {
   location: MapPosition & { duration?: number };
   rotateAnimation?: boolean;
   mapAnimation?: 'flyTo' | 'easeTo';
+  /**
+   * Ordered list of the map layers shown during this transition.
+   * Index 0 is the topmost layer on the map.
+   * When absent, the legacy single-layer fields below are used instead.
+   */
+  mapLayers?: MapLayerTransition[];
+  /**
+   * @deprecated Legacy single-layer reference. Use {@link Transition.mapLayers}
+   * instead (kept as a compat field for older story map configurations).
+   */
+  dataLayerConfigId?: string;
+  /**
+   * @deprecated Compat mechanism driving the viewer's layer fade transitions.
+   * Kept in sync with {@link Transition.mapLayers}; do not edit by hand.
+   */
   onChapterEnter?: LayerConfig[];
+  /**
+   * @deprecated Compat mechanism driving the viewer's layer fade transitions.
+   * Kept in sync with {@link Transition.mapLayers}; do not edit by hand.
+   */
   onChapterExit?: LayerConfig[];
 };
 
