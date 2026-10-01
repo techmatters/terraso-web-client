@@ -44,13 +44,16 @@ const resolveConfigUpdate = (currentConfig, nextConfigSetter) =>
     ? nextConfigSetter(currentConfig)
     : nextConfigSetter;
 
-const pruneUnusedDataLayers = nextConfig => {
-  const referencedDataLayerIds = _.flow(
-    _.flatMap(ids => ids),
-    _.compact
-  )([
-    nextConfig.titleTransition?.dataLayerConfigId,
-    nextConfig.chapters.map(chapter => chapter.dataLayerConfigId),
+const transitionDataLayerIds = transition =>
+  [
+    transition?.dataLayerConfigId,
+    ...(transition?.mapLayers ?? []).map(({ layerId }) => layerId),
+  ].filter(Boolean);
+
+export const pruneUnusedDataLayers = nextConfig => {
+  const referencedDataLayerIds = _.uniq([
+    ...transitionDataLayerIds(nextConfig.titleTransition),
+    ...nextConfig.chapters.flatMap(transitionDataLayerIds),
   ]);
 
   return {
