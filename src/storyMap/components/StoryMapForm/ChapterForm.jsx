@@ -127,13 +127,28 @@ const ChapterConfig = props => {
           onConfirm={onLocationChangeWrapper}
         />
       )}
-      <Grid container sx={{ width: hasVisualMedia ? '50vw' : '35vw' }}>
+      <Grid
+        container
+        sx={{
+          width: hasVisualMedia ? '50vw' : '35vw',
+          // Cap the container so its 11/12 content cell lands exactly on the
+          // chapter content card's max border box: mirror .step-content in
+          // StoryMap.css (max-width 35vw + 50px x2 padding = calc(35vw +
+          // 100px)); the cell is 11/12 of the container, so the container cap
+          // is that width x 12/11. Keep this in sync with StoryMap.css.
+          maxWidth: 'calc((35vw + 100px) * 12 / 11)',
+        }}
+      >
         <Grid size={11}>
           <Button
             variant="contained"
             onClick={onLocationClick}
             startIcon={<GpsFixedIcon />}
-            sx={{ borderRadius: '0px', mb: 1, width: '100%' }}
+            sx={{
+              borderRadius: '0px',
+              mb: 1,
+              width: '100%',
+            }}
           >
             {t('storyMap.form_chapter_location_button')}
           </Button>

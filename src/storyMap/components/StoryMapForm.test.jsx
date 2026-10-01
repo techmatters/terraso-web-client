@@ -640,6 +640,57 @@ test('StoryMapForm: Renders title and chapters correctly', async () => {
   testChapter({ title: 'Chapter 2', description: 'Chapter 2 description' });
 });
 
+test('StoryMapForm: Edit Map button width matches chapter content width', async () => {
+  await setup({
+    config: {
+      ...BASE_CONFIG,
+      chapters: [
+        {
+          id: 'chapter-embed',
+          title: 'Chapter with embed',
+          description: 'Chapter with embed description',
+          media: {
+            type: 'embedded',
+            source: 'youtube',
+            url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+            title: 'Test video',
+          },
+          onChapterEnter: [],
+          onChapterExit: [],
+        },
+        {
+          id: 'chapter-no-media',
+          title: 'Chapter without media',
+          description: 'Chapter without media description',
+          onChapterEnter: [],
+          onChapterExit: [],
+        },
+      ],
+    },
+  });
+
+  // The chapter content card (.step-content in StoryMap.css) is capped at
+  // max-width 35vw plus its 50px x2 horizontal padding (border box
+  // calc(35vw + 100px)). The chapter's grid container must be capped so its
+  // 11/12 content cell lands exactly on that card width, keeping the Edit Map
+  // button, the card, and the 1/12 alignment column adjacent.
+  const embedButton = within(
+    screen.getByRole('region', { name: 'Chapter: Chapter with embed' })
+  ).getByRole('button', { name: 'Edit Map' });
+  const embedContainer = embedButton.closest('.MuiGrid-container');
+  expect(getComputedStyle(embedContainer).maxWidth).toBe(
+    'calc((35vw + 100px) * 12 / 11)'
+  );
+  expect(getComputedStyle(embedButton).width).toBe('100%');
+
+  // Without visual media the container cap never binds: the button fills its
+  // grid cell as before.
+  const noMediaButton = within(
+    screen.getByRole('region', { name: 'Chapter: Chapter without media' })
+  ).getByRole('button', { name: 'Edit Map' });
+  expect(getComputedStyle(noMediaButton).width).toBe('100%');
+});
+
 test('StoryMapForm: Change title', async () => {
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
@@ -1739,6 +1790,14 @@ test('StoryMapForm: Show correct sort buttons if chapter is last', async () => {
 
   const chaptersSection = screen.getByRole('navigation', {
     name: 'Chapters sidebar',
+  });
+
+  await waitFor(() => {
+    expect(
+      within(chaptersSection).getByRole('button', {
+        name: 'Chapter 3',
+      })
+    ).toBeInTheDocument();
   });
 
   const chapter3 = within(chaptersSection).getByRole('button', {
