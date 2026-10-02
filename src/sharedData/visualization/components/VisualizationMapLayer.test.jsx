@@ -192,7 +192,7 @@ test('uses config bounds and skips the source fetch when useConfigBounds is set'
         { lng: 3, lat: 4 },
       ],
     }),
-    { animate: false }
+    expect.objectContaining({ animate: false, maxZoom: 18 })
   );
 });
 
@@ -219,7 +219,7 @@ test('fits the viewport-layer union when the layer is completely outside and avo
         { lng: 101, lat: 20 },
       ],
     }),
-    { animate: false }
+    expect.objectContaining({ animate: false, maxZoom: 18 })
   );
 });
 
@@ -238,7 +238,7 @@ test('fetches the URL source once and fits the computed bounds when bounds are n
         { lng: 10, lat: 20 },
       ],
     }),
-    { animate: false }
+    expect.objectContaining({ animate: false, maxZoom: 18 })
   );
 });
 
@@ -260,7 +260,7 @@ test('does not fetch when the source already exposes bounds', async () => {
         { lng: 5, lat: 5 },
       ],
     }),
-    { animate: false }
+    expect.objectContaining({ animate: false, maxZoom: 18 })
   );
 });
 
@@ -278,7 +278,7 @@ test('computes bounds from inline geojson without fetching', async () => {
         { lng: 10, lat: 20 },
       ],
     }),
-    { animate: false }
+    expect.objectContaining({ animate: false, maxZoom: 18 })
   );
 });
 
