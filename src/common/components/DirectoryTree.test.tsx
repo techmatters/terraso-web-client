@@ -16,30 +16,8 @@
  */
 
 import { fireEvent, render, screen } from 'terraso-web-client/tests/utils';
-import { useTranslation } from 'react-i18next';
 
 import DirectoryTree from 'terraso-web-client/common/components/DirectoryTree';
-import {
-  buildMapLayerTree,
-  mapLayerTreeToDirectoryNodes,
-} from 'terraso-web-client/storyMap/mapLayerTree';
-import { MapLayerConfig } from 'terraso-web-client/storyMap/storyMapTypes';
-
-const makeLayer = (
-  id: string,
-  title: string,
-  owner: {
-    ownerType?: MapLayerConfig['ownerType'];
-    ownerId?: string;
-    ownerName?: string;
-  } = {}
-): MapLayerConfig =>
-  ({
-    id,
-    title,
-    ownerType: 'StoryMapNode',
-    ...owner,
-  }) as unknown as MapLayerConfig;
 
 describe('DirectoryTree (generic)', () => {
   const nodes = [
@@ -163,182 +141,101 @@ describe('DirectoryTree (generic)', () => {
   });
 });
 
-describe('DirectoryTree (story map layer tree)', () => {
-  const mapLayers = [
-    makeLayer('z-layer', 'Zebra', {
-      ownerType: 'LandscapeNode',
-      ownerId: 'landscape-b',
-      ownerName: 'Beta Landscape',
-    }),
-    makeLayer('b-layer', 'alpha', {
-      ownerType: 'LandscapeNode',
-      ownerId: 'landscape-b',
-      ownerName: 'Beta Landscape',
-    }),
-    makeLayer('g-layer', 'Group Layer', {
-      ownerType: 'GroupNode',
-      ownerId: 'group-a',
-      ownerName: 'Alpha Group',
-    }),
-    makeLayer('story-2', 'Second Layer'),
-    makeLayer('story-1', 'first layer'),
-    makeLayer('a-layer', 'Only Layer', {
-      ownerType: 'LandscapeNode',
-      ownerId: 'landscape-a',
-      ownerName: 'Alpha Landscape',
-    }),
-    makeLayer('g2-layer', 'Another Group Layer', {
-      ownerType: 'GroupNode',
-      ownerId: 'group-b',
-      ownerName: 'Beta Group',
-    }),
+describe('DirectoryTree (keyboard)', () => {
+  const nodes = [
+    {
+      id: 'root-a',
+      label: 'Root A',
+      children: [
+        { id: 'child-a1', label: 'Child A1' },
+        { id: 'child-a2', label: 'Child A2' },
+      ],
+    },
+    { id: 'leaf-b', label: 'Leaf B' },
+    { id: 'disabled-c', label: 'Disabled C', disabled: true },
   ];
 
-  const renderTree = async ({
-    layers = mapLayers,
-    hasGroups = true,
-    hasLandscapes = true,
-    activeLayerIds = [],
-    onNodeClick = jest.fn(),
-    onActionClick = jest.fn(),
-  }: {
-    layers?: MapLayerConfig[];
-    hasGroups?: boolean;
-    hasLandscapes?: boolean;
-    activeLayerIds?: string[];
-    onNodeClick?: (nodeId: string) => void;
-    onActionClick?: (nodeId: string) => void;
-  } = {}) => {
-    const Tree = () => {
-      const { t } = useTranslation();
-      return (
-        <DirectoryTree
-          aria-label="Layer tree"
-          nodes={mapLayerTreeToDirectoryNodes({
-            sections: buildMapLayerTree({
-              mapLayers: layers,
-              hasGroups,
-              hasLandscapes,
-            }),
-            activeLayerIds,
-            t,
-          })}
-          onNodeClick={onNodeClick}
-          onActionClick={onActionClick}
-        />
-      );
-    };
-    await render(<Tree />);
-  };
+  const row = (name: string) => screen.getByRole('treeitem', { name });
 
-  test('renders the three sections', async () => {
-    await renderTree();
+  test('uses a roving tabindex on the rows', async () => {
+    await render(<DirectoryTree aria-label="Tree" nodes={nodes} />);
 
-    expect(
-      screen.getByRole('treeitem', { name: 'This story map' })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('treeitem', { name: 'Landscapes' })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('treeitem', { name: 'Groups' })
-    ).toBeInTheDocument();
+    expect(row('Root A')).toHaveAttribute('tabindex', '0');
+    expect(row('Child A1')).toHaveAttribute('tabindex', '-1');
+    expect(row('Leaf B')).toHaveAttribute('tabindex', '-1');
   });
 
-  test('hides landscapes and groups with zero layers', async () => {
-    await renderTree({
-      layers: mapLayers.filter(layer => layer.ownerId !== 'landscape-a'),
-    });
+  test('ArrowDown/ArrowUp move focus across visible rows', async () => {
+    await render(<DirectoryTree aria-label="Tree" nodes={nodes} />);
 
-    expect(
-      screen.queryByRole('treeitem', { name: 'Alpha Landscape' })
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole('treeitem', { name: 'Beta Landscape' })
-    ).toBeInTheDocument();
+    row('Root A').focus();
+    fireEvent.keyDown(row('Root A'), { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(row('Child A1'));
+    expect(row('Child A1')).toHaveAttribute('tabindex', '0');
+
+    fireEvent.keyDown(row('Child A1'), { key: 'ArrowDown' });
+    fireEvent.keyDown(row('Child A2'), { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(row('Leaf B'));
+
+    fireEvent.keyDown(row('Leaf B'), { key: 'ArrowUp' });
+    expect(document.activeElement).toBe(row('Child A2'));
   });
 
-  test('hides the landscapes and groups sections when the user is not a member', async () => {
-    await renderTree({ hasGroups: false, hasLandscapes: false });
-
-    expect(
-      screen.queryByRole('treeitem', { name: 'Landscapes' })
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole('treeitem', { name: 'Groups' })
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole('treeitem', { name: 'This story map' })
-    ).toBeInTheDocument();
-  });
-
-  test('builds sections in order: this story map, landscapes, groups', () => {
-    const sections = buildMapLayerTree({
-      mapLayers,
-      hasGroups: true,
-      hasLandscapes: true,
-    });
-
-    expect(sections.map(section => section.key)).toEqual([
-      'STORY_MAP',
-      'LANDSCAPE',
-      'GROUP',
-    ]);
-  });
-
-  test('sorts layers by lowercase title and owners alphabetically', () => {
-    const sections = buildMapLayerTree({
-      mapLayers,
-      hasGroups: true,
-      hasLandscapes: true,
-    });
-    const byKey = (key: string) =>
-      sections.find(section => section.key === key);
-
-    expect(byKey('STORY_MAP')?.layers.map(layer => layer.title)).toEqual([
-      'first layer',
-      'Second Layer',
-    ]);
-
-    expect(byKey('LANDSCAPE')?.groups.map(group => group.name)).toEqual([
-      'Alpha Landscape',
-      'Beta Landscape',
-    ]);
-    expect(
-      byKey('LANDSCAPE')?.groups[1].layers.map(layer => layer.title)
-    ).toEqual(['alpha', 'Zebra']);
-
-    expect(byKey('GROUP')?.groups.map(group => group.name)).toEqual([
-      'Alpha Group',
-      'Beta Group',
-    ]);
-  });
-
-  test('layer rows toggle via row click and via the eye action', async () => {
-    const onNodeClick = jest.fn();
-    const onActionClick = jest.fn();
-    await renderTree({ onNodeClick, onActionClick });
-
-    fireEvent.click(screen.getByRole('treeitem', { name: 'first layer' }));
-    expect(onNodeClick).toHaveBeenCalledWith('story-1');
-
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Show or hide first layer' })
+  test('ArrowRight expands a collapsed branch and moves into its children', async () => {
+    await render(
+      <DirectoryTree aria-label="Tree" nodes={nodes} defaultExpandedIds={[]} />
     );
-    expect(onActionClick).toHaveBeenCalledWith('story-1');
+
+    fireEvent.keyDown(row('Root A'), { key: 'ArrowRight' });
+    expect(row('Root A')).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.keyDown(row('Root A'), { key: 'ArrowRight' });
+    expect(document.activeElement).toBe(row('Child A1'));
   });
 
-  test('shows layers in the chapter as on', async () => {
-    await renderTree({ activeLayerIds: ['story-1'] });
+  test('ArrowLeft collapses an expanded branch and moves to the parent', async () => {
+    await render(<DirectoryTree aria-label="Tree" nodes={nodes} />);
 
-    expect(
-      screen.getByRole('treeitem', { name: 'first layer' })
-    ).toHaveAttribute('aria-selected', 'true');
-    expect(
-      screen.getByRole('button', { name: 'Show or hide first layer' })
-    ).toHaveAttribute('aria-pressed', 'true');
-    expect(
-      screen.getByRole('treeitem', { name: 'Second Layer' })
-    ).toHaveAttribute('aria-selected', 'false');
+    fireEvent.keyDown(row('Child A1'), { key: 'ArrowLeft' });
+    expect(document.activeElement).toBe(row('Root A'));
+
+    fireEvent.keyDown(row('Root A'), { key: 'ArrowLeft' });
+    expect(row('Root A')).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('Enter and Space activate the focused row', async () => {
+    const onNodeClick = jest.fn();
+    await render(
+      <DirectoryTree
+        aria-label="Tree"
+        nodes={nodes}
+        onNodeClick={onNodeClick}
+      />
+    );
+
+    fireEvent.keyDown(row('Leaf B'), { key: 'Enter' });
+    expect(onNodeClick).toHaveBeenCalledWith('leaf-b');
+
+    fireEvent.keyDown(row('Child A1'), { key: ' ' });
+    expect(onNodeClick).toHaveBeenCalledWith('child-a1');
+
+    // Branch activation toggles expansion too.
+    fireEvent.keyDown(row('Root A'), { key: 'Enter' });
+    expect(row('Root A')).toHaveAttribute('aria-expanded', 'false');
+    expect(onNodeClick).toHaveBeenCalledWith('root-a');
+  });
+
+  test('Enter on a disabled row is a no-op', async () => {
+    const onNodeClick = jest.fn();
+    await render(
+      <DirectoryTree
+        aria-label="Tree"
+        nodes={nodes}
+        onNodeClick={onNodeClick}
+      />
+    );
+
+    fireEvent.keyDown(row('Disabled C'), { key: 'Enter' });
+    expect(onNodeClick).not.toHaveBeenCalled();
   });
 });

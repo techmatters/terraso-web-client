@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import type React from 'react';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -55,38 +55,86 @@ export type DirectoryTreeProps = {
   'aria-label'?: string;
 };
 
-type DirectoryTreeRowProps = {
+/** A row of the visible (expanded) tree, in DOM order. */
+type VisibleRow = {
   node: DirectoryTreeNode;
   level: number;
+  parentId?: string;
+  hasChildren: boolean;
+  isExpanded: boolean;
+};
+
+const flattenVisibleRows = (
+  nodes: DirectoryTreeNode[],
+  collapsedIds: Set<string>,
+  level = 1,
+  parentId?: string,
+  out: VisibleRow[] = []
+): VisibleRow[] => {
+  nodes.forEach(node => {
+    const hasChildren = (node.children?.length ?? 0) > 0;
+    const isExpanded = hasChildren && !collapsedIds.has(node.id);
+    out.push({ node, level, parentId, hasChildren, isExpanded });
+    if (isExpanded) {
+      flattenVisibleRows(
+        node.children ?? [],
+        collapsedIds,
+        level + 1,
+        node.id,
+        out
+      );
+    }
+  });
+  return out;
+};
+
+type DirectoryTreeRowProps = {
+  row: VisibleRow;
   collapsedIds: Set<string>;
   onToggleExpanded: (nodeId: string) => void;
   onNodeClick?: (nodeId: string) => void;
   onActionClick?: (nodeId: string) => void;
+  /** Roving tabindex: only the focused row is tabbable. */
+  focusedId?: string;
+  rowRef: (nodeId: string, element: HTMLElement | null) => void;
+  onRowKeyDown: (nodeId: string, event: React.KeyboardEvent) => void;
 };
 
 const DirectoryTreeRow = ({
-  node,
-  level,
+  row,
   collapsedIds,
   onToggleExpanded,
   onNodeClick,
   onActionClick,
+  focusedId,
+  rowRef,
+  onRowKeyDown,
 }: DirectoryTreeRowProps) => {
-  const hasChildren = (node.children?.length ?? 0) > 0;
-  const isExpanded = hasChildren && !collapsedIds.has(node.id);
+  const { node, level, hasChildren, isExpanded } = row;
+  const isFocused = node.id === focusedId;
+
+  const activate = useCallback(() => {
+    if (node.disabled) {
+      return;
+    }
+    if (hasChildren) {
+      onToggleExpanded(node.id);
+    }
+    onNodeClick?.(node.id);
+  }, [node.disabled, node.id, hasChildren, onToggleExpanded, onNodeClick]);
 
   const handleClick = useCallback(
     (event: React.MouseEvent) => {
       if (node.disabled) {
+        // Disabled rows (empty-state placeholders) are inert: swallow the
+        // click so it cannot bubble to the enclosing branch row.
+        event.stopPropagation();
         return;
       }
-      if (hasChildren) {
-        onToggleExpanded(node.id);
-      }
-      onNodeClick?.(node.id);
+      activate();
       event.stopPropagation();
     },
-    [node.disabled, node.id, hasChildren, onToggleExpanded, onNodeClick]
+    [node.disabled, activate]
   );
 
   const handleActionClick = useCallback(
@@ -99,6 +147,7 @@ const DirectoryTreeRow = ({
 
   return (
     <Box
+      ref={element => rowRef(node.id, element)}
       role="treeitem"
       aria-expanded={hasChildren ? isExpanded : undefined}
       aria-selected={node.active ?? false}
@@ -108,7 +157,9 @@ const DirectoryTreeRow = ({
         node['aria-label'] ??
         (typeof node.label === 'string' ? node.label : undefined)
       }
+      tabIndex={isFocused ? 0 : -1}
       onClick={handleClick}
+      onKeyDown={event => onRowKeyDown(node.id, event)}
       sx={{ cursor: node.disabled ? 'default' : 'pointer' }}
     >
       <Box
@@ -142,12 +193,22 @@ const DirectoryTreeRow = ({
           {node.children?.map(child => (
             <DirectoryTreeRow
               key={child.id}
-              node={child}
-              level={level + 1}
+              row={{
+                node: child,
+                level: level + 1,
+                parentId: node.id,
+                hasChildren: (child.children?.length ?? 0) > 0,
+                isExpanded:
+                  (child.children?.length ?? 0) > 0 &&
+                  !collapsedIds.has(child.id),
+              }}
               collapsedIds={collapsedIds}
               onToggleExpanded={onToggleExpanded}
               onNodeClick={onNodeClick}
               onActionClick={onActionClick}
+              focusedId={focusedId}
+              rowRef={rowRef}
+              onRowKeyDown={onRowKeyDown}
             />
           ))}
         </Box>
@@ -159,7 +220,9 @@ const DirectoryTreeRow = ({
 /**
  * Generic, data-driven directory tree (tree of expandable branches with
  * optional per-row action adornments). Thin, typed, themable wrapper in the
- * same spirit as `Tabs.tsx`.
+ * same spirit as `Tabs.tsx`. Implements minimal WAI-ARIA tree keyboard
+ * support: roving tabindex with Up/Down arrows to move focus, Right/Left to
+ * expand/collapse branches, Enter/Space to activate a row.
  */
 const DirectoryTree = ({
   nodes,
@@ -200,19 +263,120 @@ const DirectoryTree = ({
     });
   }, []);
 
+  const visibleRows = useMemo(
+    () => flattenVisibleRows(nodes, collapsedIds),
+    [nodes, collapsedIds]
+  );
+
+  const [focusedId, setFocusedId] = useState<string | undefined>();
+  const rowElements = useRef(new Map<string, HTMLElement>());
+
+  const rowRef = useCallback((nodeId: string, element: HTMLElement | null) => {
+    if (element) {
+      rowElements.current.set(nodeId, element);
+    } else {
+      rowElements.current.delete(nodeId);
+    }
+  }, []);
+
+  const effectiveFocusedId =
+    focusedId && visibleRows.some(({ node }) => node.id === focusedId)
+      ? focusedId
+      : visibleRows[0]?.node.id;
+
+  const focusRow = useCallback((nodeId?: string) => {
+    if (!nodeId) {
+      return;
+    }
+    setFocusedId(nodeId);
+    rowElements.current.get(nodeId)?.focus();
+  }, []);
+
+  const onRowKeyDown = useCallback(
+    (nodeId: string, event: React.KeyboardEvent) => {
+      const HANDLED_KEYS = [
+        'ArrowDown',
+        'ArrowUp',
+        'ArrowRight',
+        'ArrowLeft',
+        'Enter',
+        ' ',
+      ];
+      if (!HANDLED_KEYS.includes(event.key)) {
+        return;
+      }
+      // Rows nest DOM-wise: keep handled keys from bubbling to ancestor rows
+      // (which would move/toggle twice).
+      event.stopPropagation();
+      const index = visibleRows.findIndex(({ node }) => node.id === nodeId);
+      const row = visibleRows[index];
+      if (!row) {
+        return;
+      }
+      switch (event.key) {
+        case 'ArrowDown':
+          event.preventDefault();
+          focusRow(visibleRows[index + 1]?.node.id);
+          break;
+        case 'ArrowUp':
+          event.preventDefault();
+          focusRow(visibleRows[index - 1]?.node.id);
+          break;
+        case 'ArrowRight':
+          if (row.hasChildren && !row.isExpanded) {
+            onToggleExpanded(nodeId);
+          } else if (row.hasChildren) {
+            // Move to the first child row.
+            focusRow(visibleRows[index + 1]?.node.id);
+          }
+          break;
+        case 'ArrowLeft':
+          if (row.hasChildren && row.isExpanded) {
+            onToggleExpanded(nodeId);
+          } else {
+            focusRow(row.parentId);
+          }
+          break;
+        case 'Enter':
+        case ' ':
+          event.preventDefault();
+          if (!row.node.disabled) {
+            if (row.hasChildren) {
+              onToggleExpanded(nodeId);
+            }
+            onNodeClick?.(nodeId);
+          }
+          break;
+        default:
+          break;
+      }
+    },
+    [visibleRows, focusRow, onToggleExpanded, onNodeClick]
+  );
+
   return (
     <Box role="tree" aria-label={ariaLabel}>
-      {nodes.map(node => (
-        <DirectoryTreeRow
-          key={node.id}
-          node={node}
-          level={1}
-          collapsedIds={collapsedIds}
-          onToggleExpanded={onToggleExpanded}
-          onNodeClick={onNodeClick}
-          onActionClick={onActionClick}
-        />
-      ))}
+      {nodes.map(node => {
+        const hasChildren = (node.children?.length ?? 0) > 0;
+        return (
+          <DirectoryTreeRow
+            key={node.id}
+            row={{
+              node,
+              level: 1,
+              hasChildren,
+              isExpanded: hasChildren && !collapsedIds.has(node.id),
+            }}
+            collapsedIds={collapsedIds}
+            onToggleExpanded={onToggleExpanded}
+            onNodeClick={onNodeClick}
+            onActionClick={onActionClick}
+            focusedId={effectiveFocusedId}
+            rowRef={rowRef}
+            onRowKeyDown={onRowKeyDown}
+          />
+        );
+      })}
     </Box>
   );
 };
