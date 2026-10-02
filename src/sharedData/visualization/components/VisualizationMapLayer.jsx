@@ -34,6 +34,17 @@ export const LAYER_TYPES = {
   POLYGONS_FILL: 'polygons-fill',
 };
 
+/**
+ * Bottom-to-top stacking order of the generated sublayers — THE single source
+ * of truth: the <Layer> renderings below insert them in this order and
+ * mapUtils enforces the same stack on transitions.
+ */
+export const LAYER_TYPE_STACK_ORDER = [
+  LAYER_TYPES.MARKERS,
+  LAYER_TYPES.POLYGONS_OUTLINE,
+  LAYER_TYPES.POLYGONS_FILL,
+];
+
 export const generateLayerId = (layerId, layerType) => {
   return `${layerId}-${layerType}`;
 };

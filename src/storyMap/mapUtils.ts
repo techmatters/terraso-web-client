@@ -23,6 +23,7 @@ import logger from 'terraso-client-shared/monitoring/logger';
 import { isValidBounds } from 'terraso-web-client/gis/gisUtils';
 import {
   generateLayerId,
+  LAYER_TYPE_STACK_ORDER,
   LAYER_TYPES,
 } from 'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer';
 import {
@@ -293,43 +294,53 @@ const startLayerTransition = (
 
 /**
  * Bottom-to-top stacking order of the mapbox layers generated for a map layer
- * (matches the insertion order in VisualizationMapLayer).
+ * — imported from VisualizationMapLayer (the insertion order of its
+ * sublayers) so there is a single source of truth.
  */
-const LAYER_TYPE_STACK_ORDER = [
-  LAYER_TYPES.MARKERS,
-  LAYER_TYPES.POLYGONS_OUTLINE,
-  LAYER_TYPES.POLYGONS_FILL,
-];
 
 /**
  * Rearranges the mapbox layers to match `mapLayers` order (index 0 topmost).
- * Mapbox z-order is global, so this runs on every chapter transition.
- * Sublayers that are not on the map yet are skipped (they will be ordered on
- * the next pass, e.g. after `onLayerAdded`).
+ * Mapbox z-order is global, so this runs on every chapter transition and
+ * whenever a layer is added to the map. Sublayers that are not on the map yet
+ * are skipped (they will be ordered on the next pass, e.g. after
+ * `onLayerAdded`).
+ *
+ * No-op moves are skipped by comparing the desired order against the order
+ * this helper last applied to the map (per-map cache, restricted to layers
+ * still on the map) — layer existence is checked with `map.getLayer`, never
+ * with `map.getStyle()` (which deep-clones the whole style).
  */
+const appliedLayerOrder = new WeakMap<object, string[]>();
+
 export const enforceMapLayerOrder = (
   map: mapboxgl.Map,
   mapLayers: MapLayerTransition[]
 ) => {
-  const style = map.getStyle();
-  if (!style) {
-    return;
-  }
-  const existing = new Set(
-    (style.layers ?? []).map((layer: { id: string }) => layer.id)
-  );
+  const exists = (id: string) => Boolean(map.getLayer(id));
 
   // Desired order, topmost first. Within a map layer, keep the layer's own
   // stacking (markers below polygons outline below polygons fill).
-  const orderedIdsTopFirst = mapLayers.flatMap(({ layerId }) =>
+  const desiredTopFirst = mapLayers.flatMap(({ layerId }) =>
     [...LAYER_TYPE_STACK_ORDER]
       .reverse()
       .map(layerType => generateLayerId(layerId, layerType))
-      .filter(id => existing.has(id))
+      .filter(exists)
   );
+  if (desiredTopFirst.length === 0) {
+    return;
+  }
+
+  const currentTopFirst = (appliedLayerOrder.get(map) ?? []).filter(exists);
+  const alreadyOrdered =
+    currentTopFirst.length === desiredTopFirst.length &&
+    desiredTopFirst.every((id, index) => currentTopFirst[index] === id);
+  if (alreadyOrdered) {
+    return;
+  }
+  appliedLayerOrder.set(map, desiredTopFirst);
 
   // moveLayer() moves a layer to the top of the stack, so apply bottom-first.
-  orderedIdsTopFirst
+  desiredTopFirst
     .slice()
     .reverse()
     .forEach(id => map.moveLayer(id));

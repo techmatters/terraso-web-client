@@ -26,12 +26,24 @@ import {
 } from 'terraso-web-client/storyMap/storyMapTypes';
 
 const createFakeMap = (layerIds: string[] = []) => {
-  const layers = new Set(layerIds);
+  // Real mapbox moveLayer(id, beforeId?) semantics over an ordered id array
+  // (index 0 = bottom of the stack); tests assert the resulting ORDER.
+  const layers = [...layerIds];
   return {
-    moveLayer: jest.fn(),
-    getStyle: () => ({ layers: [...layers].map(id => ({ id })) }),
+    layerOrder: () => [...layers],
+    moveLayer: jest.fn((id: string, beforeId?: string) => {
+      const fromIndex = layers.indexOf(id);
+      if (fromIndex === -1) {
+        return;
+      }
+      layers.splice(fromIndex, 1);
+      const toIndex =
+        beforeId === undefined ? layers.length : layers.indexOf(beforeId);
+      layers.splice(toIndex === -1 ? layers.length : toIndex, 0, id);
+    }),
+    getStyle: () => ({ layers: layers.map(id => ({ id })) }),
     getLayer: (id: string) => {
-      if (!layers.has(id)) {
+      if (!layers.includes(id)) {
         return undefined;
       }
       if (id.endsWith('-markers')) {
@@ -110,9 +122,9 @@ describe('enforceMapLayerOrder', () => {
 
     enforceMapLayerOrder(map as never, [{ layerId: 'b' }, { layerId: 'a' }]);
 
-    // moveLayer moves to the top, so layers are moved bottom-first:
-    // layer a (bottom) fully before layer b (top)
-    expect(map.moveLayer.mock.calls.map(([id]: [string]) => id)).toEqual([
+    // mapLayers[0] (b) topmost, a fully below it; within a map layer the
+    // sublayers keep markers < outline < fill (bottom-to-top).
+    expect(map.layerOrder()).toEqual([
       'a-markers',
       'a-polygons-outline',
       'a-polygons-fill',
@@ -123,13 +135,30 @@ describe('enforceMapLayerOrder', () => {
   });
 
   test('skips sublayers that are not on the map yet', () => {
-    const map = createFakeMap(['a-markers']);
+    const map = createFakeMap(['b-polygons-fill', 'a-markers']);
 
     enforceMapLayerOrder(map as never, [{ layerId: 'b' }, { layerId: 'a' }]);
 
-    expect(map.moveLayer.mock.calls.map(([id]: [string]) => id)).toEqual([
-      'a-markers',
+    // b topmost with only its fill sublayer present; missing sublayers are
+    // skipped without disturbing the pass.
+    expect(map.layerOrder()).toEqual(['a-markers', 'b-polygons-fill']);
+  });
+
+  test('skips no-op moves when the order is already applied', () => {
+    const map = createFakeMap([
+      ...layerSublayerIds('a'),
+      ...layerSublayerIds('b'),
     ]);
+    const mapLayers = [{ layerId: 'b' }, { layerId: 'a' }];
+
+    enforceMapLayerOrder(map as never, mapLayers);
+    const orderAfterFirstPass = map.layerOrder();
+    map.moveLayer.mockClear();
+
+    enforceMapLayerOrder(map as never, mapLayers);
+
+    expect(map.moveLayer).not.toHaveBeenCalled();
+    expect(map.layerOrder()).toEqual(orderAfterFirstPass);
   });
 });
 
@@ -149,6 +178,7 @@ describe('startTransition layer ordering', () => {
     runTransition(map, config, 'chapter-1');
 
     expect(map.moveLayer).not.toHaveBeenCalled();
+    expect(map.layerOrder()).toEqual(layerSublayerIds('a'));
     // legacy opacity driving keeps working unchanged
     expect(map.setPaintProperty).toHaveBeenCalledWith(
       'a-markers',
@@ -181,7 +211,7 @@ describe('startTransition layer ordering', () => {
 
     runTransition(map, config, 'chapter-1');
 
-    expect(map.moveLayer.mock.calls.map(([id]: [string]) => id)).toEqual([
+    expect(map.layerOrder()).toEqual([
       'a-markers',
       'a-polygons-outline',
       'a-polygons-fill',
@@ -206,7 +236,7 @@ describe('startTransition layer ordering', () => {
 
     runTransition(map, config, STORY_MAP_TITLE_ID);
 
-    expect(map.moveLayer.mock.calls.map(([id]: [string]) => id)).toEqual([
+    expect(map.layerOrder()).toEqual([
       'b-markers',
       'b-polygons-outline',
       'b-polygons-fill',
