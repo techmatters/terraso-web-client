@@ -16,6 +16,7 @@
  */
 
 import type { LngLatBounds, Map as MapboxMap } from 'mapbox-gl';
+import logger from 'terraso-client-shared/monitoring/logger';
 
 /**
  * THE programmatic camera-move protocol (single source of truth). Programmatic
@@ -83,33 +84,51 @@ export const isProgrammaticMove = (map?: object | null): boolean =>
   Boolean(map) && guardFor(map as object).counter > 0;
 
 /**
+ * Default zoom cap for programmatic fits: fitting a tiny (e.g. single-point)
+ * dataset must not push the camera into mapbox's degenerate high-zoom range
+ * (single-point fits over 3D terrain hit a singular camera matrix at the
+ * maxZoom clamp and crash), and street-level zoom is never what a dataset
+ * overview wants anyway. Callers can override per fit.
+ */
+export const FIT_MAX_ZOOM = 18;
+
+/**
  * `map.fitBounds` wrapped in the programmatic-move protocol: the fit is
  * announced for exactly as long as its camera move is applied, so the move is
  * never recorded as a user camera edit. Non-animated fits apply synchronously
  * (mapbox `jumpTo` fires move events inside the call) and are announced
  * synchronously; animated fits stay announced until their `moveend`.
+ *
+ * A fit that throws (degenerate cameras etc.) is swallowed: the map stays
+ * where it is — a camera fit must never take the app down.
  */
 export const fitMapBounds = (
   map: MapboxMap | null | undefined,
   bounds: LngLatBounds | [[number, number], [number, number]],
-  options: { animate?: boolean } & Record<string, unknown> = {}
+  options: { animate?: boolean; maxZoom?: number } & Record<
+    string,
+    unknown
+  > = {}
 ) => {
   if (!map) {
     return;
   }
   const hasEvents = typeof (map as { on?: unknown }).on === 'function';
+  const fitOptions = { maxZoom: FIT_MAX_ZOOM, ...options };
   beginProgrammaticMove(map);
   const end = () => {
     map.off?.('moveend', end);
     endProgrammaticMove(map);
   };
-  if (options.animate !== false && hasEvents) {
+  if (fitOptions.animate !== false && hasEvents) {
     map.on('moveend', end);
   }
   try {
-    map.fitBounds(bounds, options);
+    map.fitBounds(bounds, fitOptions);
+  } catch (error) {
+    logger.warn('fitBounds failed', error);
   } finally {
-    if (options.animate === false || !hasEvents) {
+    if (fitOptions.animate === false || !hasEvents) {
       endProgrammaticMove(map);
     }
   }
