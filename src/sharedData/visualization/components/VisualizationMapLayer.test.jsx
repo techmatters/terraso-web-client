@@ -140,7 +140,7 @@ test('uses config bounds and skips the source fetch when useConfigBounds is set'
         { lng: 3, lat: 4 },
       ],
     }),
-    { animate: false }
+    expect.objectContaining({ animate: false, maxZoom: 18 })
   );
 });
 
@@ -159,7 +159,7 @@ test('fetches the URL source once and fits the computed bounds when bounds are n
         [10, 20],
       ],
     }),
-    { animate: false }
+    expect.objectContaining({ animate: false, maxZoom: 18 })
   );
 });
 
@@ -176,7 +176,7 @@ test('does not fetch when the source already exposes bounds', async () => {
   expect(mapMock.fitBounds).toHaveBeenCalledTimes(1);
   expect(mapMock.fitBounds).toHaveBeenCalledWith(
     expect.objectContaining({ args: [sourceBounds] }),
-    { animate: false }
+    expect.objectContaining({ animate: false, maxZoom: 18 })
   );
 });
 
@@ -194,7 +194,7 @@ test('computes bounds from inline geojson without fetching', async () => {
         [10, 20],
       ],
     }),
-    { animate: false }
+    expect.objectContaining({ animate: false, maxZoom: 18 })
   );
 });
 
