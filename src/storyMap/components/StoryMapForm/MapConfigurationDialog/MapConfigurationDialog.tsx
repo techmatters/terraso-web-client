@@ -15,21 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  MutableRefObject,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { StoryMapNode } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
 import { useSelector } from 'terraso-web-client/terrasoApi/store';
 import {
-  Alert,
   Box,
   Button,
   Dialog,
@@ -46,36 +37,35 @@ import {
   useCollaborationContext,
 } from 'terraso-web-client/collaboration/collaborationContext';
 import HelperText from 'terraso-web-client/common/components/HelperText';
-import Map, { useMap } from 'terraso-web-client/gis/components/Map';
+import Map from 'terraso-web-client/gis/components/Map';
 import { MapboxStyle } from 'terraso-web-client/gis/components/MapboxConstants';
 import MapControls from 'terraso-web-client/gis/components/MapControls';
 import MapGeocoder from 'terraso-web-client/gis/components/MapGeocoder';
 import MapStyleSwitcher from 'terraso-web-client/gis/components/MapStyleSwitcher';
 import {
-  MAP_LAYER_CREATE_PREVIEW_ID,
-  MapLayerCreatePreview,
   MapLayerCreateSessionProvider,
+  useMapLayerCreateFlow,
 } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerCreateSession';
+import {
+  MapLayerPreview,
+  MapLocationChange,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerCreateStage';
 import { MapLayerCreateSteps } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerCreateSteps';
 import {
-  isMapLayerFileAccepted,
-  mapLayerFileRejectionMessage,
-} from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/mapLayerFileDrop';
-import { MapLayersPanel } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayersPanel';
+  MapLayersPanel,
+  SIDEBAR_WIDTH,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayersPanel';
 import { useLayerDraft } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/useLayerDraft';
 import {
   useStoryMapConfigActionsContext,
   useStoryMapConfigDataContext,
 } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
-import { StoryMapLayer } from 'terraso-web-client/storyMap/components/StoryMapLayer';
 import {
+  addCreatedMapLayerToConfig,
   addMapLayerId,
   moveMapLayerId,
   removeMapLayerId,
-  resolveMapLayers,
-  toMapLayers,
 } from 'terraso-web-client/storyMap/mapLayerUtils';
-import { enforceMapLayerOrder } from 'terraso-web-client/storyMap/mapUtils';
 import {
   MapBounds,
   MapLayerConfig,
@@ -83,7 +73,6 @@ import {
   MapLayerTransition,
   MapPosition,
   StoryMapConfig,
-  Transition,
 } from 'terraso-web-client/storyMap/storyMapTypes';
 
 const BearingIcon = () => {
@@ -162,118 +151,6 @@ const SetMapHelperText = () => {
   );
 };
 
-type MapLocationChangeProps = {
-  onPositionChange: (position: MapPosition) => void;
-  /**
-   * Programmatic map moves (chapter camera fits for added layers) must not be
-   * recorded as user camera edits. While the counter is > 0, `move` updates
-   * are skipped; it is cleared on `moveend` and on real user interaction
-   * (pointer/wheel), so only genuinely user-driven moves are recorded.
-   */
-  programmaticMoveRef: MutableRefObject<number>;
-};
-const MapLocationChange = ({
-  onPositionChange,
-  programmaticMoveRef,
-}: MapLocationChangeProps) => {
-  const { map } = useMap();
-
-  useEffect(() => {
-    if (!map) {
-      return;
-    }
-    const updatePosition = () => {
-      if (programmaticMoveRef.current > 0) {
-        return;
-      }
-      onPositionChange({
-        center: map.getCenter(),
-        zoom: map.getZoom(),
-        pitch: map.getPitch(),
-        bearing: map.getBearing(),
-        bounds: _.flatten(map.getBounds().toArray()) as MapBounds,
-      });
-    };
-    const endProgrammaticMove = () => {
-      programmaticMoveRef.current = 0;
-    };
-    map.on('load', updatePosition);
-    map.on('move', updatePosition);
-    map.on('moveend', endProgrammaticMove);
-    const userInteractionEvents = [
-      'dragstart',
-      'mousedown',
-      'touchstart',
-      'wheel',
-    ];
-    userInteractionEvents.forEach(event => map.on(event, endProgrammaticMove));
-
-    return () => {
-      map.off('load', updatePosition);
-      map.off('move', updatePosition);
-      map.off('moveend', endProgrammaticMove);
-      userInteractionEvents.forEach(event =>
-        map.off(event, endProgrammaticMove)
-      );
-    };
-  }, [map, onPositionChange, programmaticMoveRef]);
-
-  return null;
-};
-
-/**
- * Renders the draft layers on the preview map (topmost first) and keeps the
- * mapbox z-order in sync with the draft order. `topLayerIds` (e.g. the create
- * flow's preview layer) are stacked ABOVE the draft layers; `children` are
- * rendered last so they are inserted on top by mapbox.
- */
-const MapLayerPreview = ({
-  mapLayerConfigs,
-  changeBoundsLayerId,
-  topLayerIds = [],
-  layerRevision,
-  onLayerAdded,
-  children,
-}: {
-  mapLayerConfigs: MapLayerConfig[];
-  changeBoundsLayerId?: string;
-  topLayerIds?: string[];
-  layerRevision: number;
-  onLayerAdded: (layerId: string) => void;
-  children?: ReactNode;
-}) => {
-  const { map } = useMap();
-
-  const mapLayers = useMemo<MapLayerTransition[]>(
-    () => [
-      ...topLayerIds.map(layerId => ({ layerId })),
-      ...mapLayerConfigs.map(({ id }) => ({ layerId: id })),
-    ],
-    [topLayerIds, mapLayerConfigs]
-  );
-
-  useEffect(() => {
-    if (map) {
-      enforceMapLayerOrder(map, mapLayers);
-    }
-  }, [map, mapLayers, layerRevision]);
-
-  return (
-    <>
-      {mapLayerConfigs.map(mapLayerConfig => (
-        <StoryMapLayer
-          key={mapLayerConfig.id}
-          config={mapLayerConfig}
-          useConfigBounds
-          changeBounds={mapLayerConfig.id === changeBoundsLayerId}
-          onLayerAdded={onLayerAdded}
-        />
-      ))}
-      {children}
-    </>
-  );
-};
-
 export type MapConfigurationConfirm = {
   location: MapPosition;
   mapStyle: string;
@@ -308,12 +185,6 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     useStoryMapConfigActionsContext();
   const { open, onClose, onConfirm, location, title, chapterId } = props;
 
-  // Programmatic-fit suppression for camera recording (see MapLocationChange).
-  const programmaticMoveRef = useRef(0);
-  const beginProgrammaticMove = useCallback(() => {
-    programmaticMoveRef.current += 1;
-  }, []);
-
   const [mapCenter, setMapCenter] = useState(location?.center);
   const [mapZoom, setMapZoom] = useState(location?.zoom);
   const [mapPitch, setMapPitch] = useState(location?.pitch);
@@ -323,15 +194,6 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   const [changeBoundsLayerId, setChangeBoundsLayerId] = useState<
     string | undefined
   >();
-
-  // Shared-map layer additions bump the revision so the z-order is
-  // (re-)enforced — including the create flow's preview layer.
-  const [layerRevision, setLayerRevision] = useState(0);
-  const onLayerAdded = useCallback(() => {
-    setLayerRevision(revision => revision + 1);
-  }, []);
-
-  const mapRef = useRef(null);
 
   const user = useSelector((state: any) => state.account.currentUser);
 
@@ -386,6 +248,40 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     return firstChapterWithLocation?.location;
   }, [location, config.chapters, config.titleTransition?.location, chapterId]);
 
+  /**
+   * COMMIT CONTRACT (product spec): a layer created through the create flow
+   * is committed to the config IMMEDIATELY (see `addCreatedMapLayerToConfig`)
+   * so it survives a later dialog Cancel. Only `mapLayers` + `dataLayers` are
+   * written; the compat fields are derived from them at the config write
+   * boundary. The created asset is registered as session-created (exempt from
+   * save-time pruning) and the draft shows it right away.
+   */
+  const onCreateLayer = useCallback(
+    (mapLayerConfig: MapLayerConfig) => {
+      registerSessionDataLayers([mapLayerConfig.id]);
+      setConfig((currentConfig: StoryMapConfig) =>
+        addCreatedMapLayerToConfig(currentConfig, {
+          chapterId,
+          mapLayerConfig,
+        })
+      );
+      // The map stage fits the added layer automatically (programmatic move,
+      // never recorded as a user camera edit).
+      setChangeBoundsLayerId(mapLayerConfig.id);
+      setDraftLayerIds(current => addMapLayerId(current, mapLayerConfig.id));
+    },
+    [setConfig, registerSessionDataLayers, chapterId, setDraftLayerIds]
+  );
+
+  // The create flow (session lifecycle, window-wide drop guard) is owned by
+  // the session module — the dialog only supplies the host seams and lays
+  // the pieces out.
+  const createFlow = useMapLayerCreateFlow({
+    enabled: open,
+    onCreateLayer,
+  });
+  const { creating, startCreateFlow, cancelCreate, rejectFile } = createFlow;
+
   const handleConfirm = useCallback(() => {
     const location = _.omitBy(_.isNil, {
       center: mapCenter,
@@ -394,6 +290,9 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
       bearing: mapBearing,
       bounds: mapBounds,
     }) as MapPosition;
+    // Saving the map ends any uncommitted creation (only committed layers
+    // are in the draft rows).
+    cancelCreate();
     onConfirm({
       location,
       mapStyle: mapStyle || config.style,
@@ -401,6 +300,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     });
   }, [
     onConfirm,
+    cancelCreate,
     mapCenter,
     mapZoom,
     mapPitch,
@@ -412,8 +312,10 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   ]);
 
   const handleCancel = useCallback(() => {
+    // Dialog Cancel discards any in-progress creation (nothing committed).
+    cancelCreate();
     onClose();
-  }, [onClose]);
+  }, [onClose, cancelCreate]);
 
   const handlePositionChange = useCallback((position: MapPosition) => {
     setMapCenter(position.center);
@@ -440,13 +342,12 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
       if (!resolveLayerConfig(layerId)) {
         return;
       }
-      // The preview fits the added layer — a programmatic move that must not
-      // rewrite the chapter camera.
-      beginProgrammaticMove();
+      // The map stage fits the added layer automatically (programmatic move,
+      // never recorded as a user camera edit).
       setChangeBoundsLayerId(layerId);
       setDraftLayerIds(current => addMapLayerId(current, layerId));
     },
-    [draftLayerIds, resolveLayerConfig, beginProgrammaticMove, setDraftLayerIds]
+    [draftLayerIds, resolveLayerConfig, setDraftLayerIds]
   );
 
   const onRemoveLayer = useCallback(
@@ -465,153 +366,14 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     [setDraftLayerIds]
   );
 
-  /**
-   * COMMIT CONTRACT (product spec): a layer created through the create flow
-   * is committed to the config IMMEDIATELY — its payload goes into
-   * `dataLayers` and its id is prepended onto the target transition's
-   * `mapLayers` — so it survives a later dialog Cancel. Only `mapLayers` +
-   * `dataLayers` are written; the compat fields (dataLayerConfigId,
-   * onChapterEnter/onChapterExit) are derived from them at the config write
-   * boundary. Removing the layer from the chapter and saving only DETACHES
-   * it: the created asset is registered as session-created (exempt from
-   * save-time pruning) and appended to the fetched layer list, so it stays
-   * available in the tree and re-toggling it re-adds its payload to
-   * `dataLayers` — it is never destroyed.
-   */
-  const onCreateLayer = useCallback(
-    (mapLayerConfig: MapLayerConfig) => {
-      registerSessionDataLayers([mapLayerConfig.id]);
-      setConfig((currentConfig: StoryMapConfig) => {
-        const applyAdd = (transition?: Transition) => ({
-          ...transition,
-          mapLayers: toMapLayers(
-            addMapLayerId(
-              resolveMapLayers(transition).map(({ layerId }) => layerId),
-              mapLayerConfig.id
-            )
-          ),
-        });
-
-        return {
-          ...currentConfig,
-          dataLayers: {
-            ...currentConfig.dataLayers,
-            [mapLayerConfig.id]: mapLayerConfig,
-          },
-          ...(chapterId
-            ? {
-                chapters: currentConfig.chapters.map(chapter =>
-                  chapter.id === chapterId ? applyAdd(chapter) : chapter
-                ),
-              }
-            : { titleTransition: applyAdd(currentConfig.titleTransition) }),
-        };
-      });
-      beginProgrammaticMove();
-      setChangeBoundsLayerId(mapLayerConfig.id);
-      setDraftLayerIds(current => addMapLayerId(current, mapLayerConfig.id));
-    },
-    [
-      setConfig,
-      registerSessionDataLayers,
-      chapterId,
-      beginProgrammaticMove,
-      setDraftLayerIds,
-    ]
-  );
-
-  // While the dialog is open, the whole window accepts file drops to start
-  // the create-new-layer flow preloaded with the dropped file.
-  const [pendingFile, setPendingFile] = useState<File | undefined>();
-  // A create session is in progress from file pick/drop until the layer is
-  // created (committed per onCreateLayer) or the creation is cancelled.
-  const creating = Boolean(pendingFile);
-  const [dropError, setDropError] = useState<string | null>(null);
-  const [dragActive, setDragActive] = useState(false);
-  const startCreateFlow = useCallback(
-    (file: File) => {
-      if (creating) {
-        return;
-      }
-      setDropError(null);
-      setPendingFile(file);
-    },
-    [creating]
-  );
-  const cancelCreate = useCallback(() => {
-    // Cancelling the creation only: the map dialog stays open and nothing
-    // else changes (no layer committed, draft untouched).
-    setPendingFile(undefined);
-  }, []);
-  const onRejectFile = useCallback(
-    (file: File) => {
-      setDropError(mapLayerFileRejectionMessage(file, t));
-    },
-    [t]
-  );
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-    const onDragOver = (event: DragEvent) => {
-      if (event.dataTransfer?.types?.includes('Files')) {
-        event.preventDefault();
-        setDragActive(true);
-      }
-    };
-    const onDragLeave = (event: DragEvent) => {
-      // Inner dragleave events fire for every element crossed; only leaving
-      // the window (no relatedTarget) cancels the affordance.
-      if (!event.relatedTarget) {
-        setDragActive(false);
-      }
-    };
-    const onDrop = (event: DragEvent) => {
-      setDragActive(false);
-      const files = event.dataTransfer?.files;
-      if (!files?.length) {
-        return;
-      }
-      event.preventDefault();
-      if (creating) {
-        // A layer creation is in progress: ignore the drop entirely (no file
-        // swap mid-form).
-        return;
-      }
-      // Multi-file drop: take the first file and ignore the rest.
-      const file = files[0];
-      if (isMapLayerFileAccepted(file)) {
-        startCreateFlow(file);
-      } else {
-        onRejectFile(file);
-      }
-    };
-    window.addEventListener('dragover', onDragOver);
-    window.addEventListener('dragleave', onDragLeave);
-    window.addEventListener('drop', onDrop);
-    return () => {
-      window.removeEventListener('dragover', onDragOver);
-      window.removeEventListener('dragleave', onDragLeave);
-      window.removeEventListener('drop', onDrop);
-    };
-  }, [open, startCreateFlow, onRejectFile, creating]);
-
-  const handleCreateLayer = useCallback(
-    (mapLayerConfig: MapLayerConfig) => {
-      onCreateLayer(mapLayerConfig);
-      // The created layer is committed (see onCreateLayer): end the create
-      // session and return to the layers panel.
-      setPendingFile(undefined);
-    },
-    [onCreateLayer]
-  );
-
   return (
     <CollaborationContextProvider owner={storyMap} entityType="story_map">
-      <MapLayerCreateSessionProvider file={pendingFile}>
+      <MapLayerCreateSessionProvider session={createFlow}>
         <Dialog
           open={open}
-          onClose={handleCancel}
+          // Escape/backdrop during a creation cancels the CREATION only —
+          // the map dialog (and the user's draft) stays.
+          onClose={creating ? cancelCreate : handleCancel}
           aria-labelledby="map-location-dialog-title"
           aria-describedby="map-location-dialog-content-text"
           maxWidth="sm"
@@ -664,7 +426,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
               spacing={2}
               sx={{ alignItems: 'stretch', position: 'relative' }}
             >
-              {dragActive && (
+              {createFlow.dragActive && (
                 <Box
                   data-testid="window-drop-overlay"
                   aria-hidden
@@ -682,13 +444,16 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
                   }}
                 >
                   <Typography variant="h3">
-                    {t('storyMap.form_map_layers_add_drop_text')}
+                    {/* The overlay never lies: while a creation is in
+                      progress drops are ignored — say so. */}
+                    {creating
+                      ? t('storyMap.form_map_layers_add_drop_busy')
+                      : t('storyMap.form_map_layers_add_drop_text')}
                   </Typography>
                 </Box>
               )}
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Map
-                  ref={mapRef}
                   use3dTerrain
                   initialLocation={initialLocation}
                   projection={config.projection}
@@ -700,53 +465,39 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
                     position="top-right"
                     onStyleChange={onStyleChange}
                   />
-                  <MapLocationChange
-                    onPositionChange={handlePositionChange}
-                    programmaticMoveRef={programmaticMoveRef}
-                  />
+                  <MapLocationChange onPositionChange={handlePositionChange} />
                   <MapLayerPreview
                     mapLayerConfigs={draftMapLayerConfigs}
                     changeBoundsLayerId={changeBoundsLayerId}
-                    topLayerIds={creating ? [MAP_LAYER_CREATE_PREVIEW_ID] : []}
-                    layerRevision={layerRevision}
-                    onLayerAdded={onLayerAdded}
-                  >
-                    {/* The layer being created previews on the shared map,
-                      above the chapter's other layers. */}
-                    {creating && (
-                      <MapLayerCreatePreview
-                        onLayerAdded={onLayerAdded}
-                        onFitBounds={beginProgrammaticMove}
-                      />
-                    )}
-                  </MapLayerPreview>
+                  />
                 </Map>
               </Box>
-              {pendingFile ? (
-                /* Inline creation: the steps replace the layers panel in the
-                 sidebar (one panel at a time); the map stays visible. */
-                <MapLayerCreateSteps
-                  file={pendingFile}
-                  title={title}
-                  onCreate={handleCreateLayer}
-                  onCancel={cancelCreate}
-                />
-              ) : (
-                <MapLayersPanel
-                  rows={draftRows}
-                  activeLayerIds={draftLayerIds}
-                  treeLayers={Object.values(layerConfigsById)}
-                  fetching={fetching}
-                  error={error}
-                  dropError={dropError}
-                  onDismissDropError={() => setDropError(null)}
-                  onFile={startCreateFlow}
-                  onReject={onRejectFile}
-                  onToggleLayer={onToggleLayer}
-                  onReorder={onReorder}
-                  onRemove={onRemoveLayer}
-                />
-              )}
+              <Box sx={{ width: SIDEBAR_WIDTH, flexShrink: 0 }}>
+                {creating ? (
+                  /* Inline creation: the steps replace the layers panel in
+                   the sidebar (one panel at a time); the map stays visible. */
+                  <MapLayerCreateSteps
+                    title={title}
+                    onCreate={createFlow.handleCreateLayer}
+                    onCancel={cancelCreate}
+                  />
+                ) : (
+                  <MapLayersPanel
+                    rows={draftRows}
+                    activeLayerIds={draftLayerIds}
+                    treeLayers={Object.values(layerConfigsById)}
+                    fetching={fetching}
+                    error={error}
+                    dropError={createFlow.dropError}
+                    onDismissDropError={createFlow.dismissDropError}
+                    onFile={startCreateFlow}
+                    onReject={rejectFile}
+                    onToggleLayer={onToggleLayer}
+                    onReorder={onReorder}
+                    onRemove={onRemoveLayer}
+                  />
+                )}
+              </Box>
             </Stack>
           </DialogContent>
         </Dialog>
