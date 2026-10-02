@@ -295,11 +295,14 @@ type CreateMapLayerDialogProps = {
   onClose: () => void;
   onCreate: (dataLayerConfig: MapLayerConfig) => void;
   chapterTitle?: string;
+  /** Reports the dialog open state to the host (e.g. to guard file drops). */
+  onOpenChange?: (open: boolean) => void;
 };
 const CreateMapLayerDialog = ({
   onClose,
   onCreate,
   chapterTitle,
+  onOpenChange,
 }: CreateMapLayerDialogProps) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -361,6 +364,10 @@ const CreateMapLayerDialog = ({
   ]);
 
   const open = Boolean(dataEntry) && !loadingFile && !loadingFileError;
+
+  useEffect(() => {
+    onOpenChange?.(open);
+  }, [open, onOpenChange]);
 
   return (
     <Dialog
@@ -424,12 +431,15 @@ interface CreateMapLayerFileUploadProps {
   externalFile?: File;
   /** When false, the create flow's drop zone UI is not rendered. */
   showDropZone?: boolean;
+  /** Reports the create dialog open state (e.g. to guard window drops). */
+  onCreateDialogOpenChange?: (open: boolean) => void;
 }
 export const CreateMapLayerFileUpload = ({
   onCreate,
   title,
   externalFile,
   showDropZone = true,
+  onCreateDialogOpenChange,
 }: CreateMapLayerFileUploadProps) => {
   const [visualizationConfig, setVisualizationConfig] =
     useState<VisualizationConfigForm>({
@@ -472,6 +482,7 @@ export const CreateMapLayerFileUpload = ({
           onCreate={onCreate}
           onClose={() => setDataEntry(undefined)}
           chapterTitle={title}
+          onOpenChange={onCreateDialogOpenChange}
         />
       </FormContextProvider>
     </VisualizationContextProvider>
