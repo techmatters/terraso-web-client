@@ -101,4 +101,47 @@ describe('pruneUnusedDataLayers', () => {
 
     expect(Object.keys(pruned.dataLayers ?? {})).toEqual(['a']);
   });
+
+  test('strips fields the backend config schema rejects from stored data layers', () => {
+    const config = makeConfig({
+      chapters: [
+        {
+          id: 'chapter-1',
+          mapLayers: [{ layerId: 'a' }],
+        },
+      ] as StoryMapConfig['chapters'],
+      dataLayers: {
+        a: {
+          id: 'a',
+          title: 'Layer A',
+          ownerType: 'StoryMapNode',
+          ownerId: 'owner-1',
+          ownerName: 'Owner Name',
+          dataEntry: { id: 'entry-1', name: 'file.geojson' },
+          visualizeConfig: {
+            shape: 'circle',
+            opacity: 50,
+            size: 15,
+            color: '#fff',
+          },
+          geojsonSignedUrl: 'https://example.com/a.geojson',
+        },
+      } as unknown as StoryMapConfig['dataLayers'],
+    });
+
+    const pruned = pruneUnusedDataLayers(config);
+
+    expect(pruned.dataLayers?.a).toEqual({
+      id: 'a',
+      title: 'Layer A',
+      ownerType: 'StoryMapNode',
+      visualizeConfig: {
+        shape: 'circle',
+        opacity: 50,
+        size: 15,
+        color: '#fff',
+      },
+      geojsonSignedUrl: 'https://example.com/a.geojson',
+    });
+  });
 });
