@@ -50,15 +50,46 @@ const transitionDataLayerIds = transition =>
     ...(transition?.mapLayers ?? []).map(({ layerId }) => layerId),
   ].filter(Boolean);
 
+// Fields of a data layer that may be stored in the story map configuration.
+// Mirrors the backend's story map config schema (config_validation.py):
+// anything else (e.g. `dataEntry`, owner identity used for the layer tree) is
+// runtime-only and would be rejected on save.
+const STORED_DATA_LAYER_FIELDS = [
+  'id',
+  'readableId',
+  'title',
+  'description',
+  'slug',
+  'createdAt',
+  'createdBy',
+  'mapboxTilesetId',
+  'mapboxTilesetStatus',
+  'tilesetId',
+  'geojsonSignedUrl',
+  'ownerType',
+  'visualizeConfig',
+  'annotateConfig',
+  'datasetConfig',
+  'viewportConfig',
+];
+
 export const pruneUnusedDataLayers = nextConfig => {
   const referencedDataLayerIds = _.uniq([
     ...transitionDataLayerIds(nextConfig.titleTransition),
     ...nextConfig.chapters.flatMap(transitionDataLayerIds),
   ]);
 
+  const dataLayers = {};
+  referencedDataLayerIds.forEach(layerId => {
+    const mapLayerConfig = nextConfig.dataLayers?.[layerId];
+    if (mapLayerConfig) {
+      dataLayers[layerId] = _.pick(STORED_DATA_LAYER_FIELDS, mapLayerConfig);
+    }
+  });
+
   return {
     ...nextConfig,
-    dataLayers: _.pick(referencedDataLayerIds, nextConfig.dataLayers),
+    dataLayers,
   };
 };
 
