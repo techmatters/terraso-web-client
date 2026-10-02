@@ -93,10 +93,24 @@ export const buildMapLayerTree = ({
   hasGroups: boolean;
   hasLandscapes: boolean;
 }): MapLayerTreeSection[] => {
+  // Layers without owner metadata (e.g. created in-session, absent from the
+  // fetched index) default to the "this story map" section instead of
+  // forming a phantom owner group.
+  const hasOwner = (layer: MapLayerConfig) => Boolean(layer.ownerId);
+  const storyMapLayers = mapLayers.filter(
+    layer => layer.ownerType === 'StoryMapNode' || !hasOwner(layer)
+  );
+  const landscapeLayers = layersByOwnerType(mapLayers, 'LandscapeNode').filter(
+    hasOwner
+  );
+  const groupLayers = layersByOwnerType(mapLayers, 'GroupNode').filter(
+    hasOwner
+  );
+
   const sections: MapLayerTreeSection[] = [
     {
       key: 'STORY_MAP',
-      layers: sortLayers(layersByOwnerType(mapLayers, 'StoryMapNode')),
+      layers: sortLayers(storyMapLayers),
       groups: [],
     },
   ];
@@ -105,7 +119,7 @@ export const buildMapLayerTree = ({
     sections.push({
       key: 'LANDSCAPE',
       layers: [],
-      groups: buildGroups(layersByOwnerType(mapLayers, 'LandscapeNode')),
+      groups: buildGroups(landscapeLayers),
     });
   }
 
@@ -113,7 +127,7 @@ export const buildMapLayerTree = ({
     sections.push({
       key: 'GROUP',
       layers: [],
-      groups: buildGroups(layersByOwnerType(mapLayers, 'GroupNode')),
+      groups: buildGroups(groupLayers),
     });
   }
 

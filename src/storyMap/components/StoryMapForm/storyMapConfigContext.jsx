@@ -27,6 +27,8 @@ import _ from 'lodash/fp';
 import { flushSync } from 'react-dom';
 import { v4 as uuidv4 } from 'uuid';
 
+import { syncTransitionLayerFields } from 'terraso-web-client/storyMap/mapLayerUtils';
+
 const StoryMapConfigDataContext = createContext();
 const StoryMapPreviewContext = createContext();
 const StoryMapMediaContext = createContext();
@@ -53,7 +55,9 @@ const transitionDataLayerIds = transition =>
 // Fields of a data layer that may be stored in the story map configuration.
 // Mirrors the backend's story map config schema (config_validation.py):
 // anything else (e.g. `dataEntry`, owner identity used for the layer tree) is
-// runtime-only and would be rejected on save.
+// runtime-only and would be rejected on save. Owner/title metadata is
+// resolved from the fetched layer index at render time (see the dialog's
+// layerConfigsById merge), never persisted.
 const STORED_DATA_LAYER_FIELDS = [
   'id',
   'readableId',
@@ -73,17 +77,82 @@ const STORED_DATA_LAYER_FIELDS = [
   'viewportConfig',
 ];
 
-export const pruneUnusedDataLayers = nextConfig => {
+// Allowed nested shape of the stored config fields, mirroring the backend
+// validators (config_validation.py: DATA_LAYER_FIELDS). `null` keeps the
+// value as-is; an array picks those keys; an object recurses.
+const STORED_DATA_LAYER_NESTED_FIELDS = {
+  createdBy: ['id', 'firstName', 'lastName'],
+  visualizeConfig: ['shape', 'opacity', 'size', 'color'],
+  annotateConfig: ['dataPoints', 'mapTitle', 'annotationTitle'],
+  datasetConfig: ['latitude', 'longitude', 'dataColumns'],
+  viewportConfig: {
+    bounds: {
+      northEast: ['lat', 'lng'],
+      southWest: ['lat', 'lng'],
+    },
+    baseMapStyle: null,
+  },
+};
+
+const sanitizeNested = (value, shape) => {
+  if (!_.isPlainObject(value)) {
+    return value;
+  }
+  if (Array.isArray(shape)) {
+    return _.pick(shape, value);
+  }
+  return Object.keys(shape).reduce(
+    (acc, key) =>
+      value[key] === undefined || value[key] === null
+        ? acc
+        : { ...acc, [key]: sanitizeNested(value[key], shape[key]) },
+    {}
+  );
+};
+
+/**
+ * Reduces a data layer entry to the schema-valid stored shape (top-level
+ * whitelist + deep sanitization of the nested config fields).
+ */
+export const sanitizeDataLayerConfig = mapLayerConfig => {
+  const sanitized = _.pick(STORED_DATA_LAYER_FIELDS, mapLayerConfig);
+  return Object.keys(STORED_DATA_LAYER_NESTED_FIELDS).reduce(
+    (acc, field) =>
+      acc[field] === undefined || acc[field] === null
+        ? acc
+        : {
+            ...acc,
+            [field]: sanitizeNested(
+              acc[field],
+              STORED_DATA_LAYER_NESTED_FIELDS[field]
+            ),
+          },
+    sanitized
+  );
+};
+
+/**
+ * Garbage-collects data layers no transition references (anymore) and
+ * sanitizes the remaining entries to the stored schema shape.
+ *
+ * COMMIT CONTRACT: this runs at the SAVE/PUBLISH boundary only — never on
+ * every update — so removing a layer from a chapter never destroys it mid
+ * edit. `options.keepLayerIds` exempts session-created layers (registered by
+ * the map configuration dialog's create flow): a just-created layer stays
+ * available even when removed from its chapter before saving.
+ */
+export const pruneUnusedDataLayers = (nextConfig, options = {}) => {
+  const keepLayerIds = new Set(options.keepLayerIds ?? []);
   const referencedDataLayerIds = _.uniq([
     ...transitionDataLayerIds(nextConfig.titleTransition),
     ...nextConfig.chapters.flatMap(transitionDataLayerIds),
   ]);
 
   const dataLayers = {};
-  referencedDataLayerIds.forEach(layerId => {
+  [...referencedDataLayerIds, ...keepLayerIds].forEach(layerId => {
     const mapLayerConfig = nextConfig.dataLayers?.[layerId];
     if (mapLayerConfig) {
-      dataLayers[layerId] = _.pick(STORED_DATA_LAYER_FIELDS, mapLayerConfig);
+      dataLayers[layerId] = sanitizeDataLayerConfig(mapLayerConfig);
     }
   });
 
@@ -93,10 +162,59 @@ export const pruneUnusedDataLayers = nextConfig => {
   };
 };
 
+/**
+ * Syncs the derived compat fields (dataLayerConfigId + onChapterEnter/Exit)
+ * of every transition that has `mapLayers` (see `syncTransitionLayerFields` —
+ * the single generation point) and sanitizes the `dataLayers` entries. Legacy
+ * transitions without `mapLayers` are left untouched.
+ */
+export const syncConfigLayerFields = (nextConfig, previousConfig) => {
+  const layerConfigsById = nextConfig.dataLayers ?? {};
+  const syncTransition = (transition, previousTransition) => {
+    if (!transition) {
+      return transition;
+    }
+    const derived = syncTransitionLayerFields(
+      transition,
+      layerId => layerConfigsById[layerId],
+      previousTransition
+    );
+    return Object.keys(derived).length > 0
+      ? { ...transition, ...derived }
+      : transition;
+  };
+
+  return {
+    ...nextConfig,
+    ...(nextConfig.dataLayers
+      ? {
+          dataLayers: _.mapValues(
+            sanitizeDataLayerConfig,
+            nextConfig.dataLayers
+          ),
+        }
+      : {}),
+    chapters: (nextConfig.chapters ?? []).map(chapter =>
+      syncTransition(
+        chapter,
+        previousConfig?.chapters?.find(({ id }) => id === chapter.id)
+      )
+    ),
+    ...(nextConfig.titleTransition
+      ? {
+          titleTransition: syncTransition(
+            nextConfig.titleTransition,
+            previousConfig?.titleTransition
+          ),
+        }
+      : {}),
+  };
+};
+
 const applyConfigUpdate = (currentConfig, nextConfigSetter) => {
   const nextConfig = resolveConfigUpdate(currentConfig, nextConfigSetter);
 
-  return pruneUnusedDataLayers(nextConfig);
+  return syncConfigLayerFields(nextConfig, currentConfig);
 };
 
 export const StoryMapConfigContextProvider = props => {
@@ -116,6 +234,9 @@ export const StoryMapConfigContextProvider = props => {
   const init = useRef(false);
   const latestConfigRef = useRef(initialConfig);
   const latestConfigRevisionRef = useRef(0);
+  // Layers created through the create flow in this editing session: exempt
+  // from save-time pruning (see the commit contract on pruneUnusedDataLayers).
+  const sessionDataLayerIdsRef = useRef(new Set());
   const bufferedChapterUpdateBuildersRef = useRef(new Map());
   const chaptersWithBufferedChangesRef = useRef(new Set());
 
@@ -205,6 +326,20 @@ export const StoryMapConfigContextProvider = props => {
       commitConfigSnapshot(nextConfig, shouldMarkDirty);
     },
     [commitConfigSnapshot]
+  );
+
+  const registerSessionDataLayers = useCallback(layerIds => {
+    layerIds.forEach(layerId => sessionDataLayerIdsRef.current.add(layerId));
+  }, []);
+
+  // Save/publish boundary: the ONLY place data layers are garbage-collected
+  // (session-created layers are exempt).
+  const getConfigForSave = useCallback(
+    config =>
+      pruneUnusedDataLayers(config, {
+        keepLayerIds: sessionDataLayerIdsRef.current,
+      }),
+    []
   );
 
   const setChapterHasBufferedChanges = useCallback(
@@ -321,9 +456,10 @@ export const StoryMapConfigContextProvider = props => {
   const configActionsContextValue = useMemo(
     () => ({
       setConfig: updateConfig,
+      registerSessionDataLayers,
       init,
     }),
-    [updateConfig, init]
+    [updateConfig, registerSessionDataLayers, init]
   );
 
   const bufferedChapterActionsContextValue = useMemo(
@@ -345,8 +481,15 @@ export const StoryMapConfigContextProvider = props => {
       isConfigDirty,
       markRevisionSaved,
       applySavedRevisionConfig,
+      getConfigForSave,
     }),
-    [applySavedRevisionConfig, isConfigDirty, isDirty, markRevisionSaved]
+    [
+      applySavedRevisionConfig,
+      getConfigForSave,
+      isConfigDirty,
+      isDirty,
+      markRevisionSaved,
+    ]
   );
 
   return (

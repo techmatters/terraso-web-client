@@ -1183,6 +1183,7 @@
         "form_map_layers_tree_toggle_label": "Show or hide {{title}}",
         "form_map_layers_list_label": "Map layers in this chapter, topmost first",
         "form_map_layers_item_drag_label": "Reorder {{title}}",
+        "form_map_layers_item_unknown_label": "Unknown layer",
         "form_map_layers_item_remove_label": "Remove {{title}} from this chapter",
         "form_map_layers_add_title": "Add a map layer",
         "form_map_layers_add_drop_text": "Drag and drop a map file here, or select one from your device.",

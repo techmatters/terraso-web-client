@@ -15,7 +15,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { useFetchData } from 'terraso-client-shared/store/utils';
@@ -59,16 +66,18 @@ import {
   mapLayerTreeToDirectoryNodes,
 } from 'terraso-web-client/storyMap/mapLayerTree';
 import {
-  addMapLayerToTransition,
-  removeMapLayerFromTransition,
-  reorderTransitionMapLayers,
+  addMapLayerId,
+  moveMapLayerId,
+  removeMapLayerId,
   resolveMapLayers,
+  toMapLayers,
 } from 'terraso-web-client/storyMap/mapLayerUtils';
 import { enforceMapLayerOrder } from 'terraso-web-client/storyMap/mapUtils';
 import { fetchDataLayers } from 'terraso-web-client/storyMap/storyMapSlice';
 import {
   MapBounds,
   MapLayerConfig,
+  MapLayerDraftRow,
   MapLayerTransition,
   MapPosition,
   StoryMapConfig,
@@ -155,8 +164,18 @@ const SetMapHelperText = () => {
 
 type MapLocationChangeProps = {
   onPositionChange: (position: MapPosition) => void;
+  /**
+   * Programmatic map moves (chapter camera fits for added layers) must not be
+   * recorded as user camera edits. While the counter is > 0, `move` updates
+   * are skipped; it is cleared on `moveend` and on real user interaction
+   * (pointer/wheel), so only genuinely user-driven moves are recorded.
+   */
+  programmaticMoveRef: MutableRefObject<number>;
 };
-const MapLocationChange = ({ onPositionChange }: MapLocationChangeProps) => {
+const MapLocationChange = ({
+  onPositionChange,
+  programmaticMoveRef,
+}: MapLocationChangeProps) => {
   const { map } = useMap();
 
   useEffect(() => {
@@ -164,6 +183,9 @@ const MapLocationChange = ({ onPositionChange }: MapLocationChangeProps) => {
       return;
     }
     const updatePosition = () => {
+      if (programmaticMoveRef.current > 0) {
+        return;
+      }
       onPositionChange({
         center: map.getCenter(),
         zoom: map.getZoom(),
@@ -172,14 +194,29 @@ const MapLocationChange = ({ onPositionChange }: MapLocationChangeProps) => {
         bounds: _.flatten(map.getBounds().toArray()) as MapBounds,
       });
     };
+    const endProgrammaticMove = () => {
+      programmaticMoveRef.current = 0;
+    };
     map.on('load', updatePosition);
     map.on('move', updatePosition);
+    map.on('moveend', endProgrammaticMove);
+    const userInteractionEvents = [
+      'dragstart',
+      'mousedown',
+      'touchstart',
+      'wheel',
+    ];
+    userInteractionEvents.forEach(event => map.on(event, endProgrammaticMove));
 
     return () => {
       map.off('load', updatePosition);
       map.off('move', updatePosition);
+      map.off('moveend', endProgrammaticMove);
+      userInteractionEvents.forEach(event =>
+        map.off(event, endProgrammaticMove)
+      );
     };
-  }, [map, onPositionChange]);
+  }, [map, onPositionChange, programmaticMoveRef]);
 
   return null;
 };
@@ -304,9 +341,13 @@ const AddMapLayerControl = ({ onFile }: { onFile: (file: File) => void }) => {
 export type MapConfigurationConfirm = {
   location: MapPosition;
   mapStyle: string;
-  /** Ordered layer configs, index 0 = topmost on the map. */
-  mapLayerConfigs: MapLayerConfig[];
-  dataLayerConfigId?: string;
+  /**
+   * Ordered layer rows, index 0 = topmost on the map. Writes back ALL
+   * layerIds — including rows whose config resolves nowhere (unknown refs are
+   * preserved). Compat fields are derived from `mapLayers` at the config
+   * write boundary; this payload carries no compat knowledge.
+   */
+  mapLayerRows: MapLayerDraftRow[];
 };
 
 type MapConfigurationDialogProps = {
@@ -327,8 +368,15 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     config: StoryMapConfig;
     storyMap: StoryMapNode;
   };
-  const { setConfig } = useStoryMapConfigActionsContext();
+  const { setConfig, registerSessionDataLayers } =
+    useStoryMapConfigActionsContext();
   const { open, onClose, onConfirm, location, title, chapterId } = props;
+
+  // Programmatic-fit suppression for camera recording (see MapLocationChange).
+  const programmaticMoveRef = useRef(0);
+  const beginProgrammaticMove = useCallback(() => {
+    programmaticMoveRef.current += 1;
+  }, []);
 
   const [mapCenter, setMapCenter] = useState(location?.center);
   const [mapZoom, setMapZoom] = useState(location?.zoom);
@@ -340,16 +388,16 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     string | undefined
   >();
 
-  // Draft layer state for this transition. `mapLayers` index 0 is topmost.
+  // Draft layer state for this transition: ordered layer ids, index 0 topmost.
   // This is only written back to the config on confirm — except layers
-  // created through the create flow, which are committed immediately.
-  const [draft, setDraft] = useState<Partial<Transition>>(() => ({
-    mapLayers: resolveMapLayers({
+  // created through the create flow, which are committed immediately (see
+  // onCreateLayer). The draft knows nothing about the compat fields.
+  const [draftLayerIds, setDraftLayerIds] = useState<string[]>(() =>
+    resolveMapLayers({
       mapLayers: props.mapLayers,
       dataLayerConfigId: props.dataLayerConfigId,
-    } as Transition),
-    dataLayerConfigId: props.dataLayerConfigId ?? props.mapLayers?.[0]?.layerId,
-  }));
+    }).map(({ layerId }) => layerId)
+  );
 
   const mapRef = useRef(null);
 
@@ -381,13 +429,33 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
 
   // Known layer configs: committed config layers plus everything fetched for
   // the layer tree (created layers end up in `config.dataLayers` immediately).
+  // Stored entries are the render/persisted shape; owner/title metadata is
+  // resolved by id from the fetched index so it never goes stale (stored
+  // entries are whitelisted to schema fields on write). A layer absent from
+  // the fetched index (e.g. created in this session) keeps its stored shape —
+  // without owner metadata the tree files it under "this story map".
   const layerConfigsById = useMemo(() => {
     const merged: Record<string, MapLayerConfig> = {};
-    fetchedMapLayers.forEach(mapLayerConfig => {
-      merged[mapLayerConfig.id] = mapLayerConfig;
+    const fetchedById = _.keyBy('id', fetchedMapLayers) as Record<
+      string,
+      MapLayerConfig
+    >;
+    Object.values(config.dataLayers ?? {}).forEach(storedConfig => {
+      const fetchedConfig = fetchedById[storedConfig.id];
+      merged[storedConfig.id] = fetchedConfig
+        ? {
+            ...storedConfig,
+            ..._.pick(
+              ['ownerType', 'ownerId', 'ownerName', 'title', 'description'],
+              fetchedConfig
+            ),
+          }
+        : storedConfig;
     });
-    Object.values(config.dataLayers ?? {}).forEach(mapLayerConfig => {
-      merged[mapLayerConfig.id] = mapLayerConfig;
+    fetchedMapLayers.forEach(mapLayerConfig => {
+      if (!merged[mapLayerConfig.id]) {
+        merged[mapLayerConfig.id] = mapLayerConfig;
+      }
     });
     return merged;
   }, [fetchedMapLayers, config.dataLayers]);
@@ -397,12 +465,25 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     [layerConfigsById]
   );
 
+  // ONE row array for render → reorder → confirm. Rows keep dangling refs
+  // (config null) — unknown data is never silently dropped.
+  const draftRows = useMemo<MapLayerDraftRow[]>(
+    () =>
+      draftLayerIds.map(layerId => ({
+        layerId,
+        config: resolveLayerConfig(layerId) ?? null,
+      })),
+    [draftLayerIds, resolveLayerConfig]
+  );
+
   const draftMapLayerConfigs = useMemo(
     () =>
-      resolveMapLayers(draft as Transition)
-        .map(({ layerId }) => resolveLayerConfig(layerId))
-        .filter(Boolean) as MapLayerConfig[],
-    [draft, resolveLayerConfig]
+      draftRows
+        .map(({ config: mapLayerConfig }) => mapLayerConfig)
+        .filter((mapLayerConfig): mapLayerConfig is MapLayerConfig =>
+          Boolean(mapLayerConfig)
+        ),
+    [draftRows]
   );
 
   const initialLocation = useMemo(() => {
@@ -443,8 +524,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     onConfirm({
       location,
       mapStyle: mapStyle || config.style,
-      mapLayerConfigs: draftMapLayerConfigs,
-      dataLayerConfigId: draft.dataLayerConfigId,
+      mapLayerRows: draftRows,
     });
   }, [
     onConfirm,
@@ -455,8 +535,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     mapBounds,
     mapStyle,
     config.style,
-    draftMapLayerConfigs,
-    draft.dataLayerConfigId,
+    draftRows,
   ]);
 
   const handleCancel = useCallback(() => {
@@ -480,63 +559,59 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
 
   const onToggleLayer = useCallback(
     (layerId: string) => {
-      const isOn = resolveMapLayers(draft as Transition).some(
-        ({ layerId: id }) => id === layerId
-      );
+      const isOn = draftLayerIds.includes(layerId);
       if (isOn) {
-        setDraft(current =>
-          removeMapLayerFromTransition(current, layerId, resolveLayerConfig)
-        );
+        setDraftLayerIds(current => removeMapLayerId(current, layerId));
         return;
       }
-      const mapLayerConfig = resolveLayerConfig(layerId);
-      if (!mapLayerConfig) {
+      if (!resolveLayerConfig(layerId)) {
         return;
       }
+      // The preview fits the added layer — a programmatic move that must not
+      // rewrite the chapter camera.
+      beginProgrammaticMove();
       setChangeBoundsLayerId(layerId);
-      setDraft(current =>
-        addMapLayerToTransition(current, mapLayerConfig, resolveLayerConfig)
-      );
+      setDraftLayerIds(current => addMapLayerId(current, layerId));
     },
-    [draft, resolveLayerConfig]
+    [draftLayerIds, resolveLayerConfig, beginProgrammaticMove]
   );
 
-  const onRemoveLayer = useCallback(
-    (layerId: string) => {
-      setDraft(current =>
-        removeMapLayerFromTransition(current, layerId, resolveLayerConfig)
-      );
-    },
-    [resolveLayerConfig]
-  );
+  const onRemoveLayer = useCallback((layerId: string) => {
+    setDraftLayerIds(current => removeMapLayerId(current, layerId));
+  }, []);
 
   const onReorder = useCallback((sourceIndex: number, destIndex: number) => {
-    setDraft(current => {
-      const mapLayers = [...resolveMapLayers(current as Transition)];
-      const [moved] = mapLayers.splice(sourceIndex, 1);
-      mapLayers.splice(destIndex, 0, moved);
-      return reorderTransitionMapLayers(current, mapLayers);
-    });
+    setDraftLayerIds(current =>
+      moveMapLayerId(current, sourceIndex, destIndex)
+    );
   }, []);
 
   /**
-   * A layer created through the create flow is committed to the config
-   * immediately (into `dataLayers` and prepended onto the target transition's
-   * `mapLayers` + compat fields), so it survives a later dialog cancel.
+   * COMMIT CONTRACT (product spec): a layer created through the create flow
+   * is committed to the config IMMEDIATELY — its payload goes into
+   * `dataLayers` and its id is prepended onto the target transition's
+   * `mapLayers` — so it survives a later dialog Cancel. Only `mapLayers` +
+   * `dataLayers` are written; the compat fields (dataLayerConfigId,
+   * onChapterEnter/onChapterExit) are derived from them at the config write
+   * boundary. Removing the layer from the chapter and saving only DETACHES
+   * it: the created asset is registered as session-created (exempt from
+   * save-time pruning) and appended to the fetched layer list, so it stays
+   * available in the tree and re-toggling it re-adds its payload to
+   * `dataLayers` — it is never destroyed.
    */
   const onCreateLayer = useCallback(
     (mapLayerConfig: MapLayerConfig) => {
+      registerSessionDataLayers([mapLayerConfig.id]);
       setConfig((currentConfig: StoryMapConfig) => {
-        const getLayerConfig = (layerId: string) =>
-          layerId === mapLayerConfig.id
-            ? mapLayerConfig
-            : currentConfig.dataLayers?.[layerId];
-        const applyAdd = (transition?: Transition) =>
-          addMapLayerToTransition(
-            transition ?? ({} as Transition),
-            mapLayerConfig,
-            getLayerConfig
-          );
+        const applyAdd = (transition?: Transition) => ({
+          ...transition,
+          mapLayers: toMapLayers(
+            addMapLayerId(
+              resolveMapLayers(transition).map(({ layerId }) => layerId),
+              mapLayerConfig.id
+            )
+          ),
+        });
 
         return {
           ...currentConfig,
@@ -553,12 +628,11 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
             : { titleTransition: applyAdd(currentConfig.titleTransition) }),
         };
       });
+      beginProgrammaticMove();
       setChangeBoundsLayerId(mapLayerConfig.id);
-      setDraft(current =>
-        addMapLayerToTransition(current, mapLayerConfig, resolveLayerConfig)
-      );
+      setDraftLayerIds(current => addMapLayerId(current, mapLayerConfig.id));
     },
-    [setConfig, chapterId, resolveLayerConfig]
+    [setConfig, registerSessionDataLayers, chapterId, beginProgrammaticMove]
   );
 
   // While the dialog is open, the whole window accepts file drops to start
@@ -661,7 +735,10 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
                   position="top-right"
                   onStyleChange={onStyleChange}
                 />
-                <MapLocationChange onPositionChange={handlePositionChange} />
+                <MapLocationChange
+                  onPositionChange={handlePositionChange}
+                  programmaticMoveRef={programmaticMoveRef}
+                />
                 <MapLayerPreview
                   mapLayerConfigs={draftMapLayerConfigs}
                   changeBoundsLayerId={changeBoundsLayerId}
@@ -672,15 +749,13 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
               <Stack spacing={2}>
                 <AddMapLayerControl onFile={startCreateFlow} />
                 <MapLayerOrderList
-                  mapLayerConfigs={draftMapLayerConfigs}
+                  rows={draftRows}
                   onReorder={onReorder}
                   onRemove={onRemoveLayer}
                 />
                 <LayerDirectoryTree
                   mapLayers={Object.values(layerConfigsById)}
-                  activeLayerIds={resolveMapLayers(draft as Transition).map(
-                    ({ layerId }) => layerId
-                  )}
+                  activeLayerIds={draftLayerIds}
                   fetching={fetching}
                   error={error}
                   onToggleLayer={onToggleLayer}

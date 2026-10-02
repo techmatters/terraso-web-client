@@ -25,7 +25,7 @@ import EditableText from 'terraso-web-client/storyMap/components/StoryMapForm/Ed
 import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
 import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutline';
-import { generateLayerTransitionEvents } from 'terraso-web-client/storyMap/mapLayerUtils';
+import { toMapLayers } from 'terraso-web-client/storyMap/mapLayerUtils';
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 
 const TitleForm = props => {
@@ -61,25 +61,24 @@ const TitleForm = props => {
     [setConfig]
   );
 
+  // Writes ONLY `mapLayers` + the `dataLayers` payload: the compat fields
+  // (dataLayerConfigId/onChapterEnter/onChapterExit) are derived from these at
+  // the config write boundary (syncTransitionLayerFields).
   const onMapLayersChange = useCallback(
-    ({ mapLayerConfigs, dataLayerConfigId }) => {
-      const mapLayers = mapLayerConfigs.map(({ id }) => ({ layerId: id }));
-      const layerConfigsById = _.keyBy('id', mapLayerConfigs);
-      const events = generateLayerTransitionEvents(
-        mapLayers,
-        layerId => layerConfigsById[layerId]
+    ({ mapLayerRows }) => {
+      const mapLayers = toMapLayers(mapLayerRows.map(({ layerId }) => layerId));
+      const dataLayerConfigs = _.keyBy(
+        'id',
+        mapLayerRows.map(({ config }) => config).filter(Boolean)
       );
 
       setConfig(
         _.flow(
           config => ({
             ...config,
-            dataLayers: { ...config.dataLayers, ...layerConfigsById },
+            dataLayers: { ...config.dataLayers, ...dataLayerConfigs },
           }),
-          _.set('titleTransition.mapLayers', mapLayers),
-          _.set('titleTransition.dataLayerConfigId', dataLayerConfigId),
-          _.set('titleTransition.onChapterEnter', events.onChapterEnter),
-          _.set('titleTransition.onChapterExit', events.onChapterExit)
+          _.set('titleTransition.mapLayers', mapLayers)
         )
       );
     },
@@ -95,10 +94,10 @@ const TitleForm = props => {
   }, []);
 
   const onLocationChangeWrapper = useCallback(
-    ({ location, mapStyle, mapLayerConfigs, dataLayerConfigId }) => {
+    ({ location, mapStyle, mapLayerRows }) => {
       onFieldChange('titleTransition.location')(location);
       onFieldChange('style')(mapStyle);
-      onMapLayersChange({ mapLayerConfigs, dataLayerConfigId });
+      onMapLayersChange({ mapLayerRows });
 
       onLocationClose();
     },
