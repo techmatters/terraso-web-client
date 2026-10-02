@@ -2015,3 +2015,493 @@ test('StoryMapForm: Add short description', async () => {
     'A monarch pupa sews its butterfly wings inside the chrysalis for Sunday Crafternoon!'
   );
 });
+
+// ---------------------------------------------------------------------------
+// Multi-layer map configuration: `mapLayers` is the single source of truth;
+// `dataLayerConfigId`/`onChapterEnter`/`onChapterExit` are derived compat
+// fields regenerated at the config write boundary.
+// ---------------------------------------------------------------------------
+
+const AC085 = 'ac0853a2-99e4-4794-93ca-aafc89f361b6';
+
+const ChapterLayerFieldsProbe = ({
+  chapterId,
+  testId = 'layer-fields-probe',
+}) => {
+  const { config } = useStoryMapConfigDataContext();
+  const chapter = config.chapters.find(({ id }) => id === chapterId) ?? {};
+  return (
+    <div
+      data-testid={testId}
+      data-fields={JSON.stringify({
+        mapLayers: chapter.mapLayers ?? null,
+        dataLayerConfigId: chapter.dataLayerConfigId ?? null,
+        onChapterEnter: chapter.onChapterEnter ?? null,
+        onChapterExit: chapter.onChapterExit ?? null,
+      })}
+    />
+  );
+};
+
+const probeFields = (testId = 'layer-fields-probe') =>
+  JSON.parse(screen.getByTestId(testId).getAttribute('data-fields') ?? '{}');
+
+const setupWithProbe = async ({ config, probe }) => {
+  const onPublish = jest.fn().mockImplementation(() => Promise.resolve());
+  const onSaveDraft = jest.fn().mockImplementation(() => Promise.resolve());
+  await render(
+    <StoryMapConfigContextProvider
+      baseConfig={config}
+      storyMap={{
+        id: 'story-map-id-1',
+        memberships: [],
+      }}
+    >
+      {probe}
+      <StoryMapForm onPublish={onPublish} onSaveDraft={onSaveDraft} />
+    </StoryMapConfigContextProvider>
+  );
+  return { onPublish, onSaveDraft };
+};
+
+test('StoryMapForm: Legacy chapter keeps its compat fields untouched until map dialog confirm', async () => {
+  mapboxgl.Map.mockReturnValue(makeCameraMap(CAMERA_OPEN));
+  const { onSaveDraft } = await setupWithProbe({
+    config: BASE_CONFIG,
+    probe: <ChapterLayerFieldsProbe chapterId="chapter-2" />,
+  });
+
+  // Legacy chapter: dataLayerConfigId + hand-authored events, no mapLayers.
+  let fields = probeFields();
+  expect(fields.mapLayers).toBeNull();
+  expect(fields.dataLayerConfigId).toBe(AC085);
+  expect(fields.onChapterEnter).toEqual([
+    { layer: 'layer1', opacity: 1, duration: 0 },
+  ]);
+
+  const chapter2 = screen.getByRole('region', { name: 'Chapter: Chapter 2' });
+  await act(async () =>
+    fireEvent.click(within(chapter2).getByRole('button', { name: 'Edit Map' }))
+  );
+  let dialog = screen.getByRole('dialog', {
+    name: 'Edit map for Chapter 2',
+  });
+  await act(async () =>
+    fireEvent.click(within(dialog).getByRole('button', { name: /cancel/i }))
+  );
+
+  // Opening and cancelling the dialog writes nothing back.
+  fields = probeFields();
+  expect(fields.mapLayers).toBeNull();
+  expect(fields.dataLayerConfigId).toBe(AC085);
+  expect(fields.onChapterEnter).toEqual([
+    { layer: 'layer1', opacity: 1, duration: 0 },
+  ]);
+  expect(onSaveDraft).not.toHaveBeenCalled();
+
+  // mapLayers materializes only after the dialog confirm + save.
+  await act(async () =>
+    fireEvent.click(within(chapter2).getByRole('button', { name: 'Edit Map' }))
+  );
+  dialog = screen.getByRole('dialog', {
+    name: 'Edit map for Chapter 2',
+  });
+  await act(async () =>
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save Map' }))
+  );
+  await expectSave();
+
+  fields = probeFields();
+  expect(fields.mapLayers).toEqual([{ layerId: AC085 }]);
+  expect(fields.dataLayerConfigId).toBe(AC085);
+  expect(fields.onChapterEnter).toEqual(
+    expect.arrayContaining([
+      { layer: 'layer1', opacity: 1, duration: 0 },
+      { layer: `${AC085}-markers`, opacity: 1, duration: 0 },
+      { layer: `${AC085}-polygons-outline`, opacity: 1, duration: 0 },
+      { layer: `${AC085}-polygons-fill`, opacity: 0.5, duration: 0 },
+    ])
+  );
+  expect(fields.onChapterExit).toEqual(
+    expect.arrayContaining([
+      { layer: 'layer1', opacity: 0, duration: 0 },
+      { layer: `${AC085}-markers`, opacity: 0, duration: 0 },
+    ])
+  );
+});
+
+test('StoryMapForm: Save Map regenerates chapter layer events and drops stale ones', async () => {
+  const config = {
+    ...BASE_CONFIG,
+    chapters: [
+      {
+        ...BASE_CONFIG.chapters[0],
+        mapLayers: [{ layerId: 'stale-layer' }],
+        dataLayerConfigId: 'stale-layer',
+        onChapterEnter: [
+          { layer: 'layer1', opacity: 1, duration: 0 },
+          { layer: 'stale-layer-markers', opacity: 1, duration: 0 },
+          { layer: 'stale-layer-polygons-fill', opacity: 0.01, duration: 0 },
+        ],
+        onChapterExit: [
+          { layer: 'layer1', opacity: 0, duration: 0 },
+          { layer: 'stale-layer-markers', opacity: 0, duration: 0 },
+        ],
+      },
+      ...BASE_CONFIG.chapters.slice(1),
+    ],
+    dataLayers: {
+      'stale-layer': {
+        id: 'stale-layer',
+        title: 'Stale Layer',
+        ownerType: 'StoryMapNode',
+        geojsonSignedUrl: 'https://example.com/stale.geojson?sig=1',
+      },
+    },
+  };
+  mapboxgl.Map.mockReturnValue(makeCameraMap(CAMERA_OPEN));
+  const { onSaveDraft } = await setup({ config });
+
+  const chapter1 = screen.getByRole('region', { name: 'Chapter: Chapter 1' });
+  await act(async () =>
+    fireEvent.click(within(chapter1).getByRole('button', { name: 'Edit Map' }))
+  );
+  const dialog = screen.getByRole('dialog', { name: 'Edit map for Chapter 1' });
+
+  // Remove the stale layer, add the fetched one.
+  await act(async () =>
+    fireEvent.click(
+      within(dialog).getByRole('button', {
+        name: 'Remove Stale Layer from this chapter',
+      })
+    )
+  );
+  await waitFor(() => {
+    expect(
+      within(dialog).getByRole('treeitem', { name: 'Datalayer title 1' })
+    ).toBeInTheDocument();
+  });
+  await act(async () =>
+    fireEvent.click(
+      within(dialog).getByRole('treeitem', { name: 'Datalayer title 1' })
+    )
+  );
+  await act(async () =>
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save Map' }))
+  );
+  await expectSave();
+
+  const saved = onSaveDraft.mock.calls.at(-1)[0].chapters[0];
+  expect(saved.mapLayers).toEqual([{ layerId: AC085 }]);
+  // Most recently added layer.
+  expect(saved.dataLayerConfigId).toBe(AC085);
+  // Regenerated events for ALL layers (per-layer-type opacities) + preserved
+  // hand-authored entries.
+  expect(saved.onChapterEnter).toEqual(
+    expect.arrayContaining([
+      { layer: 'layer1', opacity: 1, duration: 0 },
+      { layer: `${AC085}-markers`, opacity: 1, duration: 0 },
+      { layer: `${AC085}-polygons-outline`, opacity: 1, duration: 0 },
+      { layer: `${AC085}-polygons-fill`, opacity: 0.5, duration: 0 },
+    ])
+  );
+  expect(saved.onChapterExit).toEqual(
+    expect.arrayContaining([
+      { layer: 'layer1', opacity: 0, duration: 0 },
+      { layer: `${AC085}-markers`, opacity: 0, duration: 0 },
+      { layer: `${AC085}-polygons-fill`, opacity: 0, duration: 0 },
+    ])
+  );
+  // Stale generated entries for the removed layer are gone.
+  const eventLayers = [...saved.onChapterEnter, ...saved.onChapterExit].map(
+    ({ layer }) => layer
+  );
+  expect(eventLayers.filter(layer => layer.startsWith('stale-layer'))).toEqual(
+    []
+  );
+});
+
+test('StoryMapForm: Add map layer to the title transition', async () => {
+  mapboxgl.Map.mockReturnValue(makeCameraMap(CAMERA_OPEN));
+  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
+
+  const titleSection = screen.getByRole('region', {
+    name: 'Title for: Story Map Title',
+  });
+  await act(async () =>
+    fireEvent.click(
+      within(titleSection).getByRole('button', { name: 'Set Map Location' })
+    )
+  );
+  const dialog = screen.getByRole('dialog', { name: 'Edit map for Title' });
+
+  await waitFor(() => {
+    expect(
+      within(dialog).getByRole('treeitem', { name: 'Datalayer title 1' })
+    ).toBeInTheDocument();
+  });
+  await act(async () =>
+    fireEvent.click(
+      within(dialog).getByRole('treeitem', { name: 'Datalayer title 1' })
+    )
+  );
+  await act(async () =>
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save Map' }))
+  );
+  await expectSave();
+
+  const saved = onSaveDraft.mock.calls.at(-1)[0];
+  expect(saved.titleTransition.mapLayers).toEqual([{ layerId: AC085 }]);
+  expect(saved.titleTransition.dataLayerConfigId).toBe(AC085);
+  expect(saved.titleTransition.onChapterEnter).toEqual(
+    expect.arrayContaining([
+      { layer: `${AC085}-markers`, opacity: 1, duration: 0 },
+      { layer: `${AC085}-polygons-fill`, opacity: 0.5, duration: 0 },
+    ])
+  );
+  expect(saved.titleTransition.onChapterExit).toEqual(
+    expect.arrayContaining([
+      { layer: `${AC085}-polygons-fill`, opacity: 0, duration: 0 },
+    ])
+  );
+});
+
+const makeTwoLayerConfig = () => ({
+  ...BASE_CONFIG,
+  chapters: [
+    {
+      ...BASE_CONFIG.chapters[0],
+      mapLayers: [{ layerId: 'layer-b' }, { layerId: 'layer-a' }],
+      dataLayerConfigId: 'layer-b',
+    },
+    ...BASE_CONFIG.chapters.slice(1),
+  ],
+  dataLayers: {
+    'layer-a': {
+      id: 'layer-a',
+      title: 'Alpha',
+      ownerType: 'StoryMapNode',
+      geojsonSignedUrl: 'https://example.com/a.geojson?sig=1',
+      visualizeConfig: {
+        shape: 'circle',
+        size: 15,
+        color: '#000000',
+        opacity: 50,
+      },
+    },
+    'layer-b': {
+      id: 'layer-b',
+      title: 'Beta',
+      ownerType: 'StoryMapNode',
+      geojsonSignedUrl: 'https://example.com/b.geojson?sig=1',
+      visualizeConfig: {
+        shape: 'circle',
+        size: 15,
+        color: '#000000',
+        opacity: 25,
+      },
+    },
+  },
+});
+
+test('StoryMapForm: Removing the pointed layer repoints dataLayerConfigId to the topmost remaining', async () => {
+  mapboxgl.Map.mockReturnValue(makeCameraMap(CAMERA_OPEN));
+  const { onSaveDraft } = await setup({ config: makeTwoLayerConfig() });
+
+  const chapter1 = screen.getByRole('region', { name: 'Chapter: Chapter 1' });
+  await act(async () =>
+    fireEvent.click(within(chapter1).getByRole('button', { name: 'Edit Map' }))
+  );
+  const dialog = screen.getByRole('dialog', { name: 'Edit map for Chapter 1' });
+
+  await act(async () =>
+    fireEvent.click(
+      within(dialog).getByRole('button', {
+        name: 'Remove Beta from this chapter',
+      })
+    )
+  );
+  await act(async () =>
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save Map' }))
+  );
+  await expectSave();
+
+  const saved = onSaveDraft.mock.calls.at(-1)[0].chapters[0];
+  expect(saved.mapLayers).toEqual([{ layerId: 'layer-a' }]);
+  expect(saved.dataLayerConfigId).toBe('layer-a');
+  const eventLayers = [...saved.onChapterEnter, ...saved.onChapterExit].map(
+    ({ layer }) => layer
+  );
+  expect(eventLayers.filter(layer => layer.startsWith('layer-b'))).toEqual([]);
+  expect(eventLayers).toEqual(
+    expect.arrayContaining(['layer-a-markers', 'layer-a-polygons-fill'])
+  );
+});
+
+test('StoryMapForm: Removing all layers clears dataLayerConfigId and generated events', async () => {
+  mapboxgl.Map.mockReturnValue(makeCameraMap(CAMERA_OPEN));
+  const { onSaveDraft } = await setup({ config: makeTwoLayerConfig() });
+
+  const chapter1 = screen.getByRole('region', { name: 'Chapter: Chapter 1' });
+  await act(async () =>
+    fireEvent.click(within(chapter1).getByRole('button', { name: 'Edit Map' }))
+  );
+  const dialog = screen.getByRole('dialog', { name: 'Edit map for Chapter 1' });
+
+  await act(async () =>
+    fireEvent.click(
+      within(dialog).getByRole('button', {
+        name: 'Remove Beta from this chapter',
+      })
+    )
+  );
+  await act(async () =>
+    fireEvent.click(
+      within(dialog).getByRole('button', {
+        name: 'Remove Alpha from this chapter',
+      })
+    )
+  );
+  await act(async () =>
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save Map' }))
+  );
+  await expectSave();
+
+  const saved = onSaveDraft.mock.calls.at(-1)[0].chapters[0];
+  expect(saved.mapLayers).toEqual([]);
+  expect(saved.dataLayerConfigId).toBeUndefined();
+  // Only the preserved hand-authored entries remain.
+  expect(saved.onChapterEnter).toEqual([
+    { layer: 'layer1', opacity: 1, duration: 0 },
+  ]);
+  expect(saved.onChapterExit).toEqual([
+    { layer: 'layer1', opacity: 0, duration: 0 },
+  ]);
+});
+
+const makeCameraMap = openValues => {
+  let current = openValues;
+  return {
+    ...baseMapOptions(),
+    getCenter: () => current.center,
+    getZoom: () => current.zoom,
+    getPitch: () => current.pitch,
+    getBearing: () => current.bearing,
+    getBounds: jest.fn().mockReturnValue({
+      toArray: () => current.bounds,
+    }),
+    moveCameraTo: next => {
+      current = next;
+    },
+  };
+};
+
+const CAMERA_OPEN = {
+  center: { lng: -79.89928261750599, lat: -2.423124847733348 },
+  zoom: 5,
+  pitch: 0,
+  bearing: 0,
+  bounds: [
+    [-180, -90],
+    [180, 90],
+  ],
+};
+const CAMERA_FITTED = {
+  center: { lng: 1, lat: 1 },
+  zoom: 12,
+  pitch: 0,
+  bearing: 0,
+  bounds: [
+    [0, 0],
+    [2, 2],
+  ],
+};
+
+test('StoryMapForm: Adding a layer does not rewrite the chapter camera', async () => {
+  const map = makeCameraMap(CAMERA_OPEN);
+  mapboxgl.Map.mockReturnValue(map);
+
+  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
+
+  const chapter1 = screen.getByRole('region', { name: 'Chapter: Chapter 1' });
+  await act(async () =>
+    fireEvent.click(within(chapter1).getByRole('button', { name: 'Edit Map' }))
+  );
+  const dialog = screen.getByRole('dialog', { name: 'Edit map for Chapter 1' });
+
+  await waitFor(() => {
+    expect(
+      within(dialog).getByRole('treeitem', { name: 'Datalayer title 1' })
+    ).toBeInTheDocument();
+  });
+  await act(async () =>
+    fireEvent.click(
+      within(dialog).getByRole('treeitem', { name: 'Datalayer title 1' })
+    )
+  );
+
+  // The preview fits the added layer: a programmatic map move…
+  map.moveCameraTo(CAMERA_FITTED);
+  await act(async () => {
+    map.onEvents.move();
+    map.onEvents.moveend();
+  });
+
+  await act(async () =>
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save Map' }))
+  );
+  await expectSave();
+
+  const saved = onSaveDraft.mock.calls.at(-1)[0].chapters[0];
+  expect(saved.location).toEqual({
+    center: CAMERA_OPEN.center,
+    zoom: CAMERA_OPEN.zoom,
+    pitch: CAMERA_OPEN.pitch,
+    bearing: CAMERA_OPEN.bearing,
+    bounds: [-180, -90, 180, 90],
+  });
+});
+
+test('StoryMapForm: A user map move is still recorded after adding a layer', async () => {
+  const map = makeCameraMap(CAMERA_OPEN);
+  mapboxgl.Map.mockReturnValue(map);
+
+  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
+
+  const chapter1 = screen.getByRole('region', { name: 'Chapter: Chapter 1' });
+  await act(async () =>
+    fireEvent.click(within(chapter1).getByRole('button', { name: 'Edit Map' }))
+  );
+  const dialog = screen.getByRole('dialog', { name: 'Edit map for Chapter 1' });
+
+  await waitFor(() => {
+    expect(
+      within(dialog).getByRole('treeitem', { name: 'Datalayer title 1' })
+    ).toBeInTheDocument();
+  });
+  await act(async () =>
+    fireEvent.click(
+      within(dialog).getByRole('treeitem', { name: 'Datalayer title 1' })
+    )
+  );
+  await act(async () => {
+    map.onEvents.move();
+    map.onEvents.moveend();
+  });
+
+  // A real user move afterwards IS recorded.
+  await act(async () => {
+    map.onEvents.mousedown();
+    map.moveCameraTo(CAMERA_FITTED);
+    map.onEvents.move();
+  });
+
+  await act(async () =>
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save Map' }))
+  );
+  await expectSave();
+
+  const saved = onSaveDraft.mock.calls.at(-1)[0].chapters[0];
+  expect(saved.location.center).toEqual(CAMERA_FITTED.center);
+  expect(saved.location.zoom).toBe(CAMERA_FITTED.zoom);
+});
