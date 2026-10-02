@@ -79,7 +79,10 @@ describe('resolveMapLayers (legacy read fallback)', () => {
 
   test('mapLayers present as empty array wins over legacy dataLayerConfigId', () => {
     expect(
-      resolveMapLayers({ mapLayers: [], dataLayerConfigId: 'a' } as Transition)
+      resolveMapLayers({
+        mapLayers: [],
+        dataLayerConfigId: 'a',
+      } as unknown as Transition)
     ).toEqual([]);
   });
 });

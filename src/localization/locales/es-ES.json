@@ -1181,6 +1181,7 @@
         "form_location_add_data_layer_confirm": "Siguiente",
         "form_location_add_data_layer_saving": "Guardando…",
         "form_map_layers_tree_root_story_map": "Este story map",
+        "form_map_layers_tree_label": "Todas tus capas de mapa",
         "form_map_layers_tree_root_landscapes": "Paisajes",
         "form_map_layers_tree_root_groups": "Grupos",
         "form_map_layers_tree_toggle_label": "Mostrar u ocultar {{title}}",

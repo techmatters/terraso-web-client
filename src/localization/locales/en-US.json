@@ -1177,6 +1177,7 @@
         "form_location_add_data_layer_confirm": "Next",
         "form_location_add_data_layer_saving": "Saving…",
         "form_map_layers_tree_root_story_map": "This story map",
+        "form_map_layers_tree_label": "All your map layers",
         "form_map_layers_tree_root_landscapes": "Landscapes",
         "form_map_layers_tree_root_groups": "Groups",
         "form_map_layers_tree_toggle_label": "Show or hide {{title}}",

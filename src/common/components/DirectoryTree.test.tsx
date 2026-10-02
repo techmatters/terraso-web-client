@@ -201,6 +201,13 @@ describe('DirectoryTree (story map layer tree)', () => {
     activeLayerIds = [],
     onNodeClick = jest.fn(),
     onActionClick = jest.fn(),
+  }: {
+    layers?: MapLayerConfig[];
+    hasGroups?: boolean;
+    hasLandscapes?: boolean;
+    activeLayerIds?: string[];
+    onNodeClick?: (nodeId: string) => void;
+    onActionClick?: (nodeId: string) => void;
   } = {}) => {
     const Tree = () => {
       const { t } = useTranslation();

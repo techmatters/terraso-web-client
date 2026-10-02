@@ -43,7 +43,7 @@ export type LayerConfigResolver = (
  * the user saves the map configuration — legacy chapters are never migrated.
  */
 export const resolveMapLayers = (
-  transition?: Transition
+  transition?: Partial<Transition>
 ): MapLayerTransition[] => {
   if (!transition) {
     return [];
@@ -84,7 +84,7 @@ export const generateLayerTransitionEvents = (
  * topmost), points `dataLayerConfigId` at the most recently added layer and
  * regenerates the compat fade events for ALL layers.
  */
-export const addMapLayerToTransition = <T extends Transition>(
+export const addMapLayerToTransition = <T extends Partial<Transition>>(
   transition: T,
   layerConfig: MapLayerConfig,
   getLayerConfig: LayerConfigResolver = () => undefined
@@ -103,7 +103,7 @@ export const addMapLayerToTransition = <T extends Transition>(
     ),
     mapLayers,
     dataLayerConfigId: layerConfig.id,
-  };
+  } as T;
 };
 
 /**
@@ -111,7 +111,7 @@ export const addMapLayerToTransition = <T extends Transition>(
  * the remaining layers. When `dataLayerConfigId` pointed at the removed layer
  * it is repointed to the remaining topmost layer, or cleared if none remain.
  */
-export const removeMapLayerFromTransition = <T extends Transition>(
+export const removeMapLayerFromTransition = <T extends Partial<Transition>>(
   transition: T,
   layerId: string,
   getLayerConfig: LayerConfigResolver = () => undefined
@@ -129,17 +129,18 @@ export const removeMapLayerFromTransition = <T extends Transition>(
     ...generateLayerTransitionEvents(mapLayers, getLayerConfig),
     mapLayers,
     dataLayerConfigId,
-  };
+  } as T;
 };
 
 /**
  * Reorders a transition's layers. Only changes `mapLayers` order — it does NOT
  * change `dataLayerConfigId` nor regenerate the compat fade events.
  */
-export const reorderTransitionMapLayers = <T extends Transition>(
+export const reorderTransitionMapLayers = <T extends Partial<Transition>>(
   transition: T,
   mapLayers: MapLayerTransition[]
-): T => ({
-  ...transition,
-  mapLayers,
-});
+): T =>
+  ({
+    ...transition,
+    mapLayers,
+  }) as T;
