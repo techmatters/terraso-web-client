@@ -1161,7 +1161,6 @@
             "LANDSCAPE": "No maps have been made in your landscapes yet."
         },
         "form_location_add_data_layer_dialog_load_error": "We couldn't load the map layers. Please try again later.",
-        "form_location_add_data_layer_confirm": "Next",
         "form_location_add_data_layer_saving": "Saving…",
         "form_map_layers_tree_root_story_map": "This story map",
         "form_map_layers_tree_label": "All your map layers",

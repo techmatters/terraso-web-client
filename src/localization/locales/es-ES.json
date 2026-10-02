@@ -1165,7 +1165,6 @@
             "LANDSCAPE": "Todavía no se han creado mapas en tus paisajes."
         },
         "form_location_add_data_layer_dialog_load_error": "No pudimos cargar las capas de mapa. Inténtalo de nuevo más tarde.",
-        "form_location_add_data_layer_confirm": "Siguiente",
         "form_location_add_data_layer_saving": "Guardando…",
         "form_map_layers_tree_root_story_map": "Este story map",
         "form_map_layers_tree_label": "Todas tus capas de mapa",
