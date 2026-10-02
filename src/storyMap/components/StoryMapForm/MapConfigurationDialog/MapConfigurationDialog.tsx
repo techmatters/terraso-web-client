@@ -17,6 +17,7 @@
 
 import {
   MutableRefObject,
+  ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -50,7 +51,12 @@ import { MapboxStyle } from 'terraso-web-client/gis/components/MapboxConstants';
 import MapControls from 'terraso-web-client/gis/components/MapControls';
 import MapGeocoder from 'terraso-web-client/gis/components/MapGeocoder';
 import MapStyleSwitcher from 'terraso-web-client/gis/components/MapStyleSwitcher';
-import { CreateMapLayerFileUpload } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog';
+import {
+  MAP_LAYER_CREATE_PREVIEW_ID,
+  MapLayerCreatePreview,
+  MapLayerCreateSessionProvider,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerCreateSession';
+import { MapLayerCreateSteps } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerCreateSteps';
 import {
   isMapLayerFileAccepted,
   mapLayerFileRejectionMessage,
@@ -217,25 +223,33 @@ const MapLocationChange = ({
 
 /**
  * Renders the draft layers on the preview map (topmost first) and keeps the
- * mapbox z-order in sync with the draft order.
+ * mapbox z-order in sync with the draft order. `topLayerIds` (e.g. the create
+ * flow's preview layer) are stacked ABOVE the draft layers; `children` are
+ * rendered last so they are inserted on top by mapbox.
  */
 const MapLayerPreview = ({
   mapLayerConfigs,
   changeBoundsLayerId,
+  topLayerIds = [],
+  layerRevision,
+  onLayerAdded,
+  children,
 }: {
   mapLayerConfigs: MapLayerConfig[];
   changeBoundsLayerId?: string;
+  topLayerIds?: string[];
+  layerRevision: number;
+  onLayerAdded: (layerId: string) => void;
+  children?: ReactNode;
 }) => {
   const { map } = useMap();
-  const [layerRevision, setLayerRevision] = useState(0);
-
-  const onLayerAdded = useCallback(() => {
-    setLayerRevision(revision => revision + 1);
-  }, []);
 
   const mapLayers = useMemo<MapLayerTransition[]>(
-    () => mapLayerConfigs.map(({ id }) => ({ layerId: id })),
-    [mapLayerConfigs]
+    () => [
+      ...topLayerIds.map(layerId => ({ layerId })),
+      ...mapLayerConfigs.map(({ id }) => ({ layerId: id })),
+    ],
+    [topLayerIds, mapLayerConfigs]
   );
 
   useEffect(() => {
@@ -256,6 +270,7 @@ const MapLayerPreview = ({
           onLayerAdded={onLayerAdded}
         />
       ))}
+      {children}
     </>
   );
 };
@@ -309,6 +324,13 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   const [changeBoundsLayerId, setChangeBoundsLayerId] = useState<
     string | undefined
   >();
+
+  // Shared-map layer additions bump the revision so the z-order is
+  // (re-)enforced — including the create flow's preview layer.
+  const [layerRevision, setLayerRevision] = useState(0);
+  const onLayerAdded = useCallback(() => {
+    setLayerRevision(revision => revision + 1);
+  }, []);
 
   const mapRef = useRef(null);
 
@@ -502,21 +524,26 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   // While the dialog is open, the whole window accepts file drops to start
   // the create-new-layer flow preloaded with the dropped file.
   const [pendingFile, setPendingFile] = useState<File | undefined>();
+  // A create session is in progress from file pick/drop until the layer is
+  // created (committed per onCreateLayer) or the creation is cancelled.
+  const creating = Boolean(pendingFile);
   const [dropError, setDropError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
-  // True while CreateMapLayerDialog is open: window drops must never swap the
-  // file mid-form.
-  const [createFlowActive, setCreateFlowActive] = useState(false);
   const startCreateFlow = useCallback(
     (file: File) => {
-      if (createFlowActive) {
+      if (creating) {
         return;
       }
       setDropError(null);
       setPendingFile(file);
     },
-    [createFlowActive]
+    [creating]
   );
+  const cancelCreate = useCallback(() => {
+    // Cancelling the creation only: the map dialog stays open and nothing
+    // else changes (no layer committed, draft untouched).
+    setPendingFile(undefined);
+  }, []);
   const onRejectFile = useCallback(
     (file: File) => {
       setDropError(mapLayerFileRejectionMessage(file, t));
@@ -547,8 +574,9 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
         return;
       }
       event.preventDefault();
-      if (createFlowActive) {
-        // The create dialog is open: ignore the drop entirely (no file swap).
+      if (creating) {
+        // A layer creation is in progress: ignore the drop entirely (no file
+        // swap mid-form).
         return;
       }
       // Multi-file drop: take the first file and ignore the rest.
@@ -567,151 +595,179 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
       window.removeEventListener('dragleave', onDragLeave);
       window.removeEventListener('drop', onDrop);
     };
-  }, [open, startCreateFlow, onRejectFile, createFlowActive]);
+  }, [open, startCreateFlow, onRejectFile, creating]);
+
+  const handleCreateLayer = useCallback(
+    (mapLayerConfig: MapLayerConfig) => {
+      onCreateLayer(mapLayerConfig);
+      // The created layer is committed (see onCreateLayer): end the create
+      // session and return to the layers panel.
+      setPendingFile(undefined);
+    },
+    [onCreateLayer]
+  );
 
   return (
     <CollaborationContextProvider owner={storyMap} entityType="story_map">
-      <Dialog
-        open={open}
-        onClose={handleCancel}
-        aria-labelledby="map-location-dialog-title"
-        aria-describedby="map-location-dialog-content-text"
-        maxWidth={false}
-        fullWidth
-        slotProps={{
-          paper: {
-            sx: {
-              // Fill (most of) the available viewport height; the map and the
-              // layer sidebar share this height and scroll independently.
-              height: '90vh',
-              maxHeight: 'none',
+      <MapLayerCreateSessionProvider file={pendingFile}>
+        <Dialog
+          open={open}
+          onClose={handleCancel}
+          aria-labelledby="map-location-dialog-title"
+          aria-describedby="map-location-dialog-content-text"
+          maxWidth={false}
+          fullWidth
+          slotProps={{
+            paper: {
+              sx: {
+                // Fill (most of) the available viewport height; the map and the
+                // layer sidebar share this height and scroll independently.
+                height: '90vh',
+                maxHeight: 'none',
+              },
             },
-          },
-        }}
-      >
-        <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-          <Stack>
-            <DialogTitle
-              component="h1"
-              id="map-location-dialog-title"
-              sx={{ pb: 0 }}
-            >
-              {title ? (
-                <Trans
-                  i18nKey="storyMap.form_location_dialog_title"
-                  values={{ title: title }}
-                >
-                  prefix
-                  <i>italic</i>
-                </Trans>
-              ) : (
-                <>{t('storyMap.form_location_dialog_title_blank')}</>
-              )}
-            </DialogTitle>
-            <DialogContent sx={{ pb: 0 }}>
-              <HelperText
-                showLabel
-                maxWidth={586}
-                label={t('storyMap.form_location_dialog_helper_text_label')}
-                Component={SetMapHelperText}
-                buttonProps={{
-                  sx: { pl: 0, color: 'gray.dark1' },
-                }}
-              />
-            </DialogContent>
+          }}
+        >
+          <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
+            <Stack>
+              <DialogTitle
+                component="h1"
+                id="map-location-dialog-title"
+                sx={{ pb: 0 }}
+              >
+                {title ? (
+                  <Trans
+                    i18nKey="storyMap.form_location_dialog_title"
+                    values={{ title: title }}
+                  >
+                    prefix
+                    <i>italic</i>
+                  </Trans>
+                ) : (
+                  <>{t('storyMap.form_location_dialog_title_blank')}</>
+                )}
+              </DialogTitle>
+              <DialogContent sx={{ pb: 0 }}>
+                <HelperText
+                  showLabel
+                  maxWidth={586}
+                  label={t('storyMap.form_location_dialog_helper_text_label')}
+                  Component={SetMapHelperText}
+                  buttonProps={{
+                    sx: { pl: 0, color: 'gray.dark1' },
+                  }}
+                />
+              </DialogContent>
+            </Stack>
+            <DialogActions sx={{ pr: 3 }}>
+              <Button size="small" onClick={handleCancel}>
+                {t('storyMap.location_dialog_cancel_button')}
+              </Button>
+              <Button size="small" onClick={handleConfirm} variant="contained">
+                {t('storyMap.location_dialog_confirm_button')}
+              </Button>
+            </DialogActions>
           </Stack>
-          <DialogActions sx={{ pr: 3 }}>
-            <Button size="small" onClick={handleCancel}>
-              {t('storyMap.location_dialog_cancel_button')}
-            </Button>
-            <Button size="small" onClick={handleConfirm} variant="contained">
-              {t('storyMap.location_dialog_confirm_button')}
-            </Button>
-          </DialogActions>
-        </Stack>
 
-        <DialogContent sx={{ overflow: 'hidden' }}>
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{
-              alignItems: 'stretch',
-              position: 'relative',
-              height: '100%',
-              minHeight: 0,
-            }}
-          >
-            {dragActive && (
-              <Box
-                data-testid="window-drop-overlay"
-                aria-hidden
-                sx={{
-                  position: 'absolute',
-                  inset: 0,
-                  zIndex: theme => theme.zIndex.modal + 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  pointerEvents: 'none',
-                  border: '3px dashed',
-                  borderColor: 'blue.dark',
-                  bgcolor: 'blue.lite',
-                }}
-              >
-                <Typography variant="h3">
-                  {t('storyMap.form_map_layers_add_drop_text')}
-                </Typography>
+          <DialogContent sx={{ overflow: 'hidden' }}>
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{
+                alignItems: 'stretch',
+                position: 'relative',
+                height: '100%',
+                minHeight: 0,
+              }}
+            >
+              {dragActive && (
+                <Box
+                  data-testid="window-drop-overlay"
+                  aria-hidden
+                  sx={{
+                    position: 'absolute',
+                    inset: 0,
+                    zIndex: theme => theme.zIndex.modal + 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    pointerEvents: 'none',
+                    border: '3px dashed',
+                    borderColor: 'blue.dark',
+                    bgcolor: 'blue.lite',
+                  }}
+                >
+                  <Typography variant="h3">
+                    {t('storyMap.form_map_layers_add_drop_text')}
+                  </Typography>
+                </Box>
+              )}
+              <Box sx={{ flex: 1, minWidth: 0, minHeight: 0 }}>
+                <Map
+                  ref={mapRef}
+                  use3dTerrain
+                  height="100%"
+                  initialLocation={initialLocation}
+                  projection={config.projection}
+                  mapStyle={config.style}
+                >
+                  <MapControls showCompass visualizePitch />
+                  <MapGeocoder position="top-right" />
+                  <MapStyleSwitcher
+                    position="top-right"
+                    onStyleChange={onStyleChange}
+                  />
+                  <MapLocationChange
+                    onPositionChange={handlePositionChange}
+                    programmaticMoveRef={programmaticMoveRef}
+                  />
+                  <MapLayerPreview
+                    mapLayerConfigs={draftMapLayerConfigs}
+                    changeBoundsLayerId={changeBoundsLayerId}
+                    topLayerIds={creating ? [MAP_LAYER_CREATE_PREVIEW_ID] : []}
+                    layerRevision={layerRevision}
+                    onLayerAdded={onLayerAdded}
+                  >
+                    {/* The layer being created previews on the shared map,
+                      above the chapter's other layers. */}
+                    {creating && (
+                      <MapLayerCreatePreview
+                        onLayerAdded={onLayerAdded}
+                        onFitBounds={beginProgrammaticMove}
+                      />
+                    )}
+                  </MapLayerPreview>
+                </Map>
               </Box>
-            )}
-            <Box sx={{ flex: 1, minWidth: 0, minHeight: 0 }}>
-              <Map
-                ref={mapRef}
-                use3dTerrain
-                height="100%"
-                initialLocation={initialLocation}
-                projection={config.projection}
-                mapStyle={config.style}
-              >
-                <MapControls showCompass visualizePitch />
-                <MapGeocoder position="top-right" />
-                <MapStyleSwitcher
-                  position="top-right"
-                  onStyleChange={onStyleChange}
+              {pendingFile ? (
+                /* Inline creation: the steps replace the layers panel in the
+                 sidebar (one panel at a time); the map stays visible. */
+                <MapLayerCreateSteps
+                  file={pendingFile}
+                  title={title}
+                  onCreate={handleCreateLayer}
+                  onCancel={cancelCreate}
                 />
-                <MapLocationChange
-                  onPositionChange={handlePositionChange}
-                  programmaticMoveRef={programmaticMoveRef}
+              ) : (
+                <MapLayersPanel
+                  rows={draftRows}
+                  activeLayerIds={draftLayerIds}
+                  treeLayers={Object.values(layerConfigsById)}
+                  fetching={fetching}
+                  error={error}
+                  dropError={dropError}
+                  onDismissDropError={() => setDropError(null)}
+                  onFile={startCreateFlow}
+                  onReject={onRejectFile}
+                  onToggleLayer={onToggleLayer}
+                  onReorder={onReorder}
+                  onRemove={onRemoveLayer}
                 />
-                <MapLayerPreview
-                  mapLayerConfigs={draftMapLayerConfigs}
-                  changeBoundsLayerId={changeBoundsLayerId}
-                />
-              </Map>
-            </Box>
-            <MapLayersPanel
-              rows={draftRows}
-              activeLayerIds={draftLayerIds}
-              treeLayers={Object.values(layerConfigsById)}
-              fetching={fetching}
-              error={error}
-              dropError={dropError}
-              onDismissDropError={() => setDropError(null)}
-              onFile={startCreateFlow}
-              onReject={onRejectFile}
-              onToggleLayer={onToggleLayer}
-              onReorder={onReorder}
-              onRemove={onRemoveLayer}
-            />
-          </Stack>
-        </DialogContent>
-      </Dialog>
-      <CreateMapLayerFileUpload
-        title={title}
-        onCreate={onCreateLayer}
-        externalFile={pendingFile}
-        showDropZone={false}
-        onCreateDialogOpenChange={setCreateFlowActive}
-      />
+              )}
+            </Stack>
+          </DialogContent>
+        </Dialog>
+      </MapLayerCreateSessionProvider>
     </CollaborationContextProvider>
   );
 };
