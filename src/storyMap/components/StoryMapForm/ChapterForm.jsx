@@ -36,7 +36,7 @@ import { withProps } from 'terraso-web-client/react-hoc';
 import EditableMedia from 'terraso-web-client/storyMap/components/StoryMapForm/EditableMedia';
 import EditableRichText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableRichText';
 import EditableText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableText';
-import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
+import { useMapConfigSession } from 'terraso-web-client/storyMap/components/StoryMapForm/mapConfigSession';
 import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { toMapLayers } from 'terraso-web-client/storyMap/mapLayerUtils';
 import { ALIGNMENTS } from 'terraso-web-client/storyMap/storyMapConstants';
@@ -60,7 +60,7 @@ const ChapterConfig = props => {
     onMapLayersChange,
     children,
   } = props;
-  const [locationOpen, setLocationOpen] = useState(false);
+  const mapConfigSession = useMapConfigSession();
 
   const options = useMemo(
     () => [
@@ -83,13 +83,9 @@ const ChapterConfig = props => {
     [t]
   );
 
-  const onLocationClick = useCallback(() => {
-    setLocationOpen(true);
-  }, []);
-
   const onLocationClose = useCallback(() => {
-    setLocationOpen(false);
-  }, []);
+    mapConfigSession?.closeMapConfig();
+  }, [mapConfigSession]);
 
   const onLocationChangeWrapper = useCallback(
     ({ location, mapStyle, mapLayerRows }) => {
@@ -101,22 +97,23 @@ const ChapterConfig = props => {
     [onLocationChange, onLocationClose, onMapStyleChange, onMapLayersChange]
   );
 
+  const onLocationClick = useCallback(() => {
+    // The fullscreen map configuration overlay is hosted over the shared
+    // editor map (see StoryMapForm/StoryMap).
+    mapConfigSession?.openMapConfig({
+      location: chapter.location,
+      mapLayers: chapter.mapLayers,
+      dataLayerConfigId: chapter.dataLayerConfigId,
+      title: chapter.title,
+      chapterId: chapter.id,
+      onConfirm: onLocationChangeWrapper,
+    });
+  }, [mapConfigSession, chapter, onLocationChangeWrapper]);
+
   const hasVisualMedia = chapterHasVisualMedia(chapter);
 
   return (
     <>
-      {locationOpen && (
-        <MapConfigurationDialog
-          open={locationOpen}
-          location={chapter.location}
-          mapLayers={chapter.mapLayers}
-          dataLayerConfigId={chapter.dataLayerConfigId}
-          title={chapter.title}
-          chapterId={chapter.id}
-          onClose={onLocationClose}
-          onConfirm={onLocationChangeWrapper}
-        />
-      )}
       <Grid
         container
         sx={{

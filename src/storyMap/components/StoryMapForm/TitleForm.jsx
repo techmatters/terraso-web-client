@@ -15,14 +15,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import { Box, Button, Stack } from '@mui/material';
 
 import EditableText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableText';
-import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
+import { useMapConfigSession } from 'terraso-web-client/storyMap/components/StoryMapForm/mapConfigSession';
 import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutline';
 import { toMapLayers } from 'terraso-web-client/storyMap/mapLayerUtils';
@@ -31,7 +31,7 @@ import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstant
 const TitleForm = props => {
   const { t } = useTranslation();
   const { setConfig } = useStoryMapConfigActionsContext();
-  const [locationOpen, setLocationOpen] = useState(false);
+  const mapConfigSession = useMapConfigSession();
   const { config } = props;
 
   const inputProps = useMemo(
@@ -85,13 +85,9 @@ const TitleForm = props => {
     [setConfig]
   );
 
-  const onLocationClick = useCallback(() => {
-    setLocationOpen(true);
-  }, []);
-
   const onLocationClose = useCallback(() => {
-    setLocationOpen(false);
-  }, []);
+    mapConfigSession?.closeMapConfig();
+  }, [mapConfigSession]);
 
   const onLocationChangeWrapper = useCallback(
     ({ location, mapStyle, mapLayerRows }) => {
@@ -103,6 +99,18 @@ const TitleForm = props => {
     },
     [onFieldChange, onLocationClose, onMapLayersChange]
   );
+
+  const onLocationClick = useCallback(() => {
+    // The fullscreen map configuration overlay is hosted over the shared
+    // editor map (see StoryMapForm/StoryMap).
+    mapConfigSession?.openMapConfig({
+      location: config.titleTransition?.location,
+      mapLayers: config.titleTransition?.mapLayers,
+      dataLayerConfigId: config.titleTransition?.dataLayerConfigId,
+      title: t('storyMap.form_title_location_dialog_title'),
+      onConfirm: onLocationChangeWrapper,
+    });
+  }, [mapConfigSession, config.titleTransition, t, onLocationChangeWrapper]);
 
   const onTitleBlur = useCallback(() => {
     const trimmedTitle = config.title.trim();
@@ -120,18 +128,6 @@ const TitleForm = props => {
       })}
       sx={{ opacity: 0.99, pb: '35vh' }}
     >
-      {locationOpen && (
-        <MapConfigurationDialog
-          open={locationOpen}
-          location={config.titleTransition?.location}
-          mapLayers={config.titleTransition?.mapLayers}
-          dataLayerConfigId={config.titleTransition?.dataLayerConfigId}
-          title={t('storyMap.form_title_location_dialog_title')}
-          onClose={onLocationClose}
-          onConfirm={onLocationChangeWrapper}
-        />
-      )}
-
       <Button
         variant="contained"
         startIcon={<GpsFixedIcon />}

@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Alert, Box, Stack } from '@mui/material';
+import { Alert, Box, Stack, SxProps, Theme } from '@mui/material';
 
 import { useCollaborationContext } from 'terraso-web-client/collaboration/collaborationContext';
 import { CompactAddControl } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CompactAddControl';
@@ -28,7 +28,7 @@ import {
 
 export const SIDEBAR_WIDTH = 300;
 
-type MapLayersPanelProps = {
+export type MapLayersPanelProps = {
   /** Ordered rows, index 0 = topmost on the map. */
   rows: MapLayerDraftRow[];
   activeLayerIds: string[];
@@ -43,6 +43,8 @@ type MapLayersPanelProps = {
   onToggleLayer: (layerId: string) => void;
   onReorder: (sourceIndex: number, destinationIndex: number) => void;
   onRemove: (layerId: string) => void;
+  /** Host layout override for the panel column (width/spacing). */
+  sx?: SxProps<Theme>;
 };
 
 /**
@@ -63,17 +65,21 @@ export const MapLayersPanel = ({
   onToggleLayer,
   onReorder,
   onRemove,
+  sx,
 }: MapLayersPanelProps) => {
   const { owner } = useCollaborationContext();
 
   return (
     <Box
-      sx={{
-        width: SIDEBAR_WIDTH,
-        flexShrink: 0,
-        height: '100%',
-        overflowY: 'auto',
-      }}
+      sx={[
+        {
+          width: SIDEBAR_WIDTH,
+          flexShrink: 0,
+          height: '100%',
+          overflowY: 'auto',
+        },
+        ...(Array.isArray(sx) ? sx : [sx]),
+      ]}
     >
       <Stack spacing={2}>
         {dropError && (

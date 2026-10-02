@@ -30,6 +30,11 @@ import { useNavigationBlocker } from 'terraso-web-client/navigation/navigationCo
 import StoryMap from 'terraso-web-client/storyMap/components/StoryMap';
 import BufferedChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/BufferedChapterForm';
 import ChaptersSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/ChaptersSideBar';
+import {
+  MapConfigSessionProvider,
+  useMapConfigSession,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/mapConfigSession';
+import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
 import RightSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/RightSidebar';
 import {
   useStoryMapBufferedChapterActionsContext,
@@ -118,6 +123,8 @@ const StoryMapForm = props => {
   const [scrollToChapter, setScrollToChapter] = useState();
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
+  const mapConfigSession = useMapConfigSession();
+  const mapConfigTarget = mapConfigSession?.target ?? null;
 
   const draftAutoSaveSnapshot = useMemo(
     () => ({
@@ -335,6 +342,20 @@ const StoryMapForm = props => {
             TitleComponent={TitleForm}
             onReady={onMapReady}
             isContained
+            mapConfigOverlay={
+              mapConfigTarget && (
+                <MapConfigurationDialog
+                  open
+                  onClose={mapConfigSession.closeMapConfig}
+                  onConfirm={mapConfigTarget.onConfirm}
+                  location={mapConfigTarget.location}
+                  title={mapConfigTarget.title}
+                  chapterId={mapConfigTarget.chapterId}
+                  mapLayers={mapConfigTarget.mapLayers}
+                  dataLayerConfigId={mapConfigTarget.dataLayerConfigId}
+                />
+              )
+            }
           />
         </Box>
         <RightSidebar open={isRightSidebarOpen} onClose={closeRightSidebar} />
@@ -343,4 +364,10 @@ const StoryMapForm = props => {
   );
 };
 
-export default StoryMapForm;
+const StoryMapFormWithMapConfigSession = props => (
+  <MapConfigSessionProvider>
+    <StoryMapForm {...props} />
+  </MapConfigSessionProvider>
+);
+
+export default StoryMapFormWithMapConfigSession;

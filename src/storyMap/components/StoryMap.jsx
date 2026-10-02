@@ -179,12 +179,20 @@ const Title = props => {
   );
 };
 
-const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
+const MapTransitionController = ({
+  config,
+  currentChapter,
+  layerRevision,
+  mapConfigOpen,
+}) => {
   const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
   const { map, mapDimensions } = useMap();
 
   useEffect(() => {
-    if (!mapDimensions) {
+    if (!mapDimensions || mapConfigOpen) {
+      // While the map configuration overlay is open, the draft preview owns
+      // the camera and the layer stack: transitions must not fight the
+      // user's map dragging. They resume as soon as the overlay closes.
       return;
     }
     startTransition(map, {
@@ -193,7 +201,15 @@ const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
       mapDimensions,
       isMobile,
     });
-  }, [map, config, mapDimensions, currentChapter, isMobile, layerRevision]);
+  }, [
+    map,
+    config,
+    mapDimensions,
+    currentChapter,
+    isMobile,
+    layerRevision,
+    mapConfigOpen,
+  ]);
 
   return null;
 };
@@ -216,7 +232,12 @@ const StoryMap = props => {
     onReady,
     chaptersFilter,
     isContained = false,
+    // Fullscreen map configuration overlay host (editor only): when set, it
+    // renders INSIDE the shared map below and the editor dims its chapter
+    // content and hands map interaction to the overlay.
+    mapConfigOverlay = null,
   } = props;
+  const mapConfigOpen = Boolean(mapConfigOverlay);
 
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
   const [layerRevision, setLayerRevision] = useState(0);
@@ -287,7 +308,7 @@ const StoryMap = props => {
       />
       <Map
         id="map"
-        interactive={isMobile && isMapFullscreen}
+        interactive={mapConfigOpen || (isMobile && isMapFullscreen)}
         mapStyle={config.style}
         projection={config.projection}
         zoom={1}
@@ -336,7 +357,11 @@ const StoryMap = props => {
           onToggle={() => setIsMapFullscreen(prev => !prev)}
         />
 
-        {!_.isEmpty(config.dataLayers) &&
+        {/* While the map configuration overlay is open, its draft preview
+            owns the layer stack (same layer ids): the editor's own layers
+            stay unmounted to avoid double-mounting them on the shared map. */}
+        {!mapConfigOpen &&
+          !_.isEmpty(config.dataLayers) &&
           Object.values(config.dataLayers).map(dataLayerConfig => (
             <StoryMapLayer
               key={dataLayerConfig.id}
@@ -347,6 +372,8 @@ const StoryMap = props => {
             />
           ))}
 
+        {mapConfigOverlay}
+
         <MapTransitionController
           // NOTE: the MapTransitionController unfortunately must come AFTER any map layers
           // due to timing of the react render lifecycle and imperative mapbox events.
@@ -354,11 +381,16 @@ const StoryMap = props => {
           config={config}
           currentChapter={currentChapter}
           layerRevision={layerRevision}
+          mapConfigOpen={mapConfigOpen}
         />
       </Map>
       <Box
         sx={({ breakpoints }) => ({
           [breakpoints.not('xs')]: { marginTop: '-100cqh' },
+          // The chapter cards stay visible at ~20% opacity while the map
+          // configuration overlay is open (so the user can see where the
+          // content will sit) but let pointer events through to the map.
+          ...(mapConfigOpen ? { opacity: 0.2, pointerEvents: 'none' } : {}),
         })}
         component="section"
         aria-label={t('storyMap.view_chapters_label')}

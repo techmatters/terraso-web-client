@@ -33,6 +33,7 @@ import {
 } from 'terraso-web-client/tests/data/storyMap';
 
 import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
+import { SIDEBAR_WIDTH } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayersPanel';
 import {
   StoryMapConfigContextProvider,
   useStoryMapConfigDataContext,
@@ -46,6 +47,8 @@ import {
 // Mock terrasoApi at the network boundary
 jest.mock('terraso-client-shared/terrasoApi/api');
 
+const mockChangeStyle = jest.fn();
+
 // Set up mocks BEFORE importing components
 jest.mock('terraso-web-client/gis/components/Map', () => {
   const { forwardRef } = jest.requireActual('react');
@@ -57,9 +60,25 @@ jest.mock('terraso-web-client/gis/components/Map', () => {
     ) {
       return <div data-testid="mock-map">{children}</div>;
     }),
-    useMap: () => ({ map: null }),
+    useMap: () => ({ map: null, changeStyle: mockChangeStyle }),
   };
 });
+
+// Mirrors the real MapStyleSwitcher contract: a basemap change is applied to
+// the shared map live (changeStyle) AND reported to the host (onStyleChange).
+jest.mock('terraso-web-client/gis/components/MapStyleSwitcher', () => ({
+  __esModule: true,
+  default: ({ onStyleChange }: { onStyleChange?: (_: unknown) => void }) => (
+    <button
+      onClick={() => {
+        mockChangeStyle('draftStyle');
+        onStyleChange?.({ newStyle: { data: 'draftStyle' } });
+      }}
+    >
+      Change Style
+    </button>
+  ),
+}));
 
 jest.mock('terraso-web-client/storyMap/components/StoryMapLayer', () => ({
   __esModule: true,
@@ -341,9 +360,10 @@ describe('MapConfigurationDialog', () => {
   });
 
   describe('Test Suite 1: Rendering & Basic Interactions', () => {
-    it('renders dialog with chapter title', async () => {
+    it('renders the fullscreen overlay with the chapter title in the top bar', async () => {
       await setup({ title: 'Chapter A' });
 
+      expect(screen.getByTestId('map-config-overlay')).toBeInTheDocument();
       expect(screen.getByRole('dialog', { hidden: true })).toBeInTheDocument();
       expect(
         screen.getByRole('heading', {
@@ -351,6 +371,18 @@ describe('MapConfigurationDialog', () => {
           name: 'Edit map for Chapter A',
           hidden: true,
         })
+      ).toBeInTheDocument();
+
+      // the title lives in the overlay's top bar (editor TopBar shape)
+      const topBar = screen.getByTestId('map-config-top-bar');
+      expect(
+        within(topBar).getByRole('heading', {
+          level: 1,
+          name: 'Edit map for Chapter A',
+        })
+      ).toBeInTheDocument();
+      expect(
+        within(topBar).getByRole('button', { name: 'Close' })
       ).toBeInTheDocument();
     });
 
@@ -378,7 +410,7 @@ describe('MapConfigurationDialog', () => {
       expect(onConfirmMock).not.toHaveBeenCalled();
     });
 
-    it('renders the right column with the add control, order list and layer tree', async () => {
+    it('renders the right sidebar with the add control, order list and layer tree', async () => {
       await setup();
 
       // 1. compact add control
@@ -398,6 +430,84 @@ describe('MapConfigurationDialog', () => {
 
       // 3. directory tree of the user's layers
       expect(screen.getByRole('tree')).toBeInTheDocument();
+
+      // 4. the sidebar keeps the story map configuration right sidebar width
+      expect(SIDEBAR_WIDTH).toBe(300);
+      expect(screen.getByTestId('map-config-layers-panel')).toHaveStyle({
+        width: '300px',
+      });
+    });
+
+    it('renders the left sidebar invitation to drag the map', async () => {
+      await setup();
+
+      const positionPanel = screen.getByTestId('map-config-position-panel');
+      expect(
+        within(positionPanel).getByText('Drag the map to change its position')
+      ).toBeInTheDocument();
+      // The set-map helper content stays reachable from the invitation panel.
+      expect(
+        within(positionPanel).getByRole('button', {
+          name: 'Set the location, basemap style, and add layers',
+        })
+      ).toBeInTheDocument();
+    });
+
+    it('renders a large bottom bar with Save and Cancel', async () => {
+      await setup();
+
+      const bottomBar = screen.getByTestId('map-config-bottom-bar');
+      expect(
+        within(bottomBar).getByRole('button', { name: 'Save Map' })
+      ).toBeInTheDocument();
+      expect(
+        within(bottomBar).getByRole('button', { name: /cancel/i })
+      ).toBeInTheDocument();
+    });
+
+    it('leaves the map area between the bars transparent and click-through', async () => {
+      await setup();
+
+      const mapWindow = screen.getByTestId('map-config-map-window');
+      expect(mapWindow).toHaveStyle({ pointerEvents: 'none' });
+      // No background paint over the live editor map.
+      expect(['transparent', 'rgba(0, 0, 0, 0)', '']).toContain(
+        getComputedStyle(mapWindow).backgroundColor
+      );
+
+      // The overlay itself lets pointer events through to the map…
+      expect(screen.getByTestId('map-config-overlay')).toHaveStyle({
+        pointerEvents: 'none',
+      });
+      // …while the bars/sidebars stay interactive.
+      expect(screen.getByTestId('map-config-top-bar')).toHaveStyle({
+        pointerEvents: 'auto',
+      });
+      expect(screen.getByTestId('map-config-bottom-bar')).toHaveStyle({
+        pointerEvents: 'auto',
+      });
+    });
+
+    it('closes the overlay with the close (X) button without confirming', async () => {
+      const { onCloseMock, onConfirmMock } = await setup();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+      });
+
+      expect(onCloseMock).toHaveBeenCalled();
+      expect(onConfirmMock).not.toHaveBeenCalled();
+    });
+
+    it('closes the overlay with Escape without confirming', async () => {
+      const { onCloseMock, onConfirmMock } = await setup();
+
+      await act(async () => {
+        fireEvent.keyDown(window, { key: 'Escape' });
+      });
+
+      expect(onCloseMock).toHaveBeenCalled();
+      expect(onConfirmMock).not.toHaveBeenCalled();
     });
   });
 
@@ -1230,6 +1340,120 @@ describe('MapConfigurationDialog', () => {
         bearing: expect.anything(),
         bounds: expect.anything(),
       });
+    });
+
+    it('sends the changed basemap style on confirm', async () => {
+      const { onConfirmMock } = await setup();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Change Style' }));
+      });
+      await act(async () => {
+        fireEvent.click(saveButton());
+      });
+
+      const payload = onConfirmMock.mock.calls[0][0];
+      expect(payload.mapStyle).toEqual('draftStyle');
+    });
+  });
+
+  describe('Test Suite 6: Draft discard on the shared editor map', () => {
+    const CONFIG_STYLE = createTestStoryMapConfig().style;
+
+    const changeBasemap = async () => {
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Change Style' }));
+      });
+      // The style switcher has already styled the shared map live.
+      expect(mockChangeStyle).toHaveBeenCalledWith('draftStyle');
+    };
+
+    it('restores the config basemap style when the overlay is cancelled after a style change', async () => {
+      const { onCloseMock, onConfirmMock } = await setup();
+      await changeBasemap();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+      });
+
+      expect(onCloseMock).toHaveBeenCalled();
+      expect(onConfirmMock).not.toHaveBeenCalled();
+      // Cancel discards the basemap draft: the shared map is restored.
+      expect(mockChangeStyle).toHaveBeenLastCalledWith(CONFIG_STYLE);
+    });
+
+    it('restores the config basemap style when the overlay is closed with X after a style change', async () => {
+      const { onCloseMock, onConfirmMock } = await setup();
+      await changeBasemap();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+      });
+
+      expect(onCloseMock).toHaveBeenCalled();
+      expect(onConfirmMock).not.toHaveBeenCalled();
+      expect(mockChangeStyle).toHaveBeenLastCalledWith(CONFIG_STYLE);
+    });
+
+    it('restores the config basemap style on Escape after a style change', async () => {
+      const { onCloseMock, onConfirmMock } = await setup();
+      await changeBasemap();
+
+      await act(async () => {
+        fireEvent.keyDown(window, { key: 'Escape' });
+      });
+
+      expect(onCloseMock).toHaveBeenCalled();
+      expect(onConfirmMock).not.toHaveBeenCalled();
+      expect(mockChangeStyle).toHaveBeenLastCalledWith(CONFIG_STYLE);
+    });
+
+    it('does not restore the basemap style when the change is confirmed', async () => {
+      const { onConfirmMock } = await setup();
+      await changeBasemap();
+
+      await act(async () => {
+        fireEvent.click(saveButton());
+      });
+
+      expect(onConfirmMock).toHaveBeenCalledWith(
+        expect.objectContaining({ mapStyle: 'draftStyle' })
+      );
+      // No restore: the confirmed style is now the config style.
+      expect(mockChangeStyle).toHaveBeenCalledTimes(1);
+    });
+
+    it('discards the draft layer edits when the dialog closes and reopens', async () => {
+      const layerSetup = {
+        mapLayers: [{ layerId: 'layer-b' }, { layerId: 'layer-a' }],
+        dataLayerConfigId: 'layer-b',
+        configDataLayers: {
+          'layer-a': { id: 'layer-a', title: 'Alpha' } as MapLayerConfig,
+          'layer-b': { id: 'layer-b', title: 'Beta' } as MapLayerConfig,
+        },
+      };
+      const { renderResult, onCloseMock } = await setup(layerSetup);
+
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole('button', {
+            name: 'Remove Alpha from this chapter',
+          })
+        );
+      });
+      expect(orderListItems()).toEqual(['Beta']);
+
+      // Close (Cancel): the host unmounts the overlay…
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+      });
+      expect(onCloseMock).toHaveBeenCalled();
+      renderResult.unmount();
+
+      // …and a reopen shows the chapter's saved layers again: the removal
+      // was draft-only (created layers commit immediately; draft edits do not).
+      await setup(layerSetup);
+      expect(orderListItems()).toEqual(['Beta', 'Alpha']);
     });
   });
 });

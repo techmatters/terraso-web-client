@@ -1350,7 +1350,10 @@ test('StoryMapForm: Change chapter location', async () => {
     name: 'Edit map for Chapter 1',
   });
 
-  expect(MapboxGlGeocoder).toHaveBeenCalledTimes(1);
+  // The geocoder is created for the shared editor map when the overlay
+  // opens (React StrictMode may double-mount the effect in dev tests, so
+  // assert creation rather than an exact call count).
+  expect(MapboxGlGeocoder).toHaveBeenCalled();
   const geocoderOptions = MapboxGlGeocoder.mock.calls[0][0];
   const [coordinateResult] = geocoderOptions.localGeocoder('1.2345, -77.6543');
 
@@ -1452,11 +1455,21 @@ test('StoryMapForm: Closing map dialog is safe after geocoder DOM is detached', 
     );
   });
 
-  const geocoderInstance = map.addControl.mock.calls[0][0];
-  geocoderInstance._container = { parentNode: null };
+  // Simulate the geocoder control's DOM already being gone when the tree
+  // unmounts (its cleanup must skip removeControl for the detached control).
+  // The geocoder is the control added at "top-right".
+  const geocoderInstances = map.addControl.mock.calls
+    .filter(([, position]) => position === 'top-right')
+    .map(([control]) => control);
+  expect(geocoderInstances.length).toBeGreaterThan(0);
+  geocoderInstances.forEach(instance => {
+    instance._container = { parentNode: null };
+  });
 
   expect(() => unmount()).not.toThrow();
-  expect(map.removeControl).not.toHaveBeenCalled();
+  geocoderInstances.forEach(instance => {
+    expect(map.removeControl).not.toHaveBeenCalledWith(instance);
+  });
 });
 
 test('StoryMapForm: Change chapter style', async () => {
@@ -1485,11 +1498,9 @@ test('StoryMapForm: Change chapter style', async () => {
   });
   await act(async () => fireEvent.click(locationDialogButton));
 
-  const dialog = screen.getByRole('dialog', {
-    name: 'Edit map for Chapter 1',
-  });
-
-  const baseMapButton = within(dialog).getByRole('button', {
+  // The style switcher control attaches to the shared editor map (outside
+  // the overlay's own DOM).
+  const baseMapButton = screen.getByRole('button', {
     name: 'Change Style',
   });
 

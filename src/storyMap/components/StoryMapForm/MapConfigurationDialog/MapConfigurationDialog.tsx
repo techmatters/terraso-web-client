@@ -27,15 +27,15 @@ import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { StoryMapNode } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
 import { useSelector } from 'terraso-web-client/terrasoApi/store';
+import CloseIcon from '@mui/icons-material/Close';
 import {
-  Alert,
   Box,
   Button,
-  Dialog,
-  DialogActions,
   DialogContent,
-  DialogTitle,
+  Grid,
+  IconButton,
   Paper,
+  Portal,
   Stack,
   Typography,
 } from '@mui/material';
@@ -45,22 +45,27 @@ import {
   useCollaborationContext,
 } from 'terraso-web-client/collaboration/collaborationContext';
 import HelperText from 'terraso-web-client/common/components/HelperText';
-import Map, { useMap } from 'terraso-web-client/gis/components/Map';
+import { useMap } from 'terraso-web-client/gis/components/Map';
 import { MapboxStyle } from 'terraso-web-client/gis/components/MapboxConstants';
 import MapControls from 'terraso-web-client/gis/components/MapControls';
 import MapGeocoder from 'terraso-web-client/gis/components/MapGeocoder';
 import MapStyleSwitcher from 'terraso-web-client/gis/components/MapStyleSwitcher';
+import { isValidBounds } from 'terraso-web-client/gis/gisUtils';
 import { CreateMapLayerFileUpload } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog';
 import {
   isMapLayerFileAccepted,
   mapLayerFileRejectionMessage,
 } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/mapLayerFileDrop';
-import { MapLayersPanel } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayersPanel';
+import {
+  MapLayersPanel,
+  SIDEBAR_WIDTH,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayersPanel';
 import { useLayerDraft } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/useLayerDraft';
 import {
   useStoryMapConfigActionsContext,
   useStoryMapConfigDataContext,
 } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import TopBarContainer from 'terraso-web-client/storyMap/components/StoryMapForm/TopBarContainer';
 import { StoryMapLayer } from 'terraso-web-client/storyMap/components/StoryMapLayer';
 import {
   addMapLayerId,
@@ -201,6 +206,9 @@ const MapLocationChange = ({
       'wheel',
     ];
     userInteractionEvents.forEach(event => map.on(event, endProgrammaticMove));
+    // The shared editor map is already loaded when the overlay opens (no
+    // `load` event will fire), so record the starting camera right away.
+    updatePosition();
 
     return () => {
       map.off('load', updatePosition);
@@ -310,7 +318,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     string | undefined
   >();
 
-  const mapRef = useRef(null);
+  const { map, changeStyle } = useMap();
 
   const user = useSelector((state: any) => state.account.currentUser);
 
@@ -365,6 +373,32 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     return firstChapterWithLocation?.location;
   }, [location, config.chapters, config.titleTransition?.location, chapterId]);
 
+  // The overlay reuses the live editor map: place the shared camera at the
+  // transition's starting position (the standalone dialog's initial map
+  // view — the chapter's own location, or the closest previous one) before
+  // the user starts dragging. Only once per map instance so later config
+  // commits never yank the camera back mid-edit.
+  const cameraInitializedRef = useRef(false);
+  useEffect(() => {
+    if (!map || cameraInitializedRef.current) {
+      return;
+    }
+    cameraInitializedRef.current = true;
+    const { center, zoom, pitch, bearing, bounds } = initialLocation ?? {};
+    if (bounds && isValidBounds(bounds)) {
+      map.fitBounds(bounds, { animate: false });
+      return;
+    }
+    if (center) {
+      map.jumpTo({
+        center,
+        zoom: zoom ?? 1,
+        pitch: pitch ?? 0,
+        bearing: bearing ?? 0,
+      });
+    }
+  }, [map, initialLocation]);
+
   const handleConfirm = useCallback(() => {
     const location = _.omitBy(_.isNil, {
       center: mapCenter,
@@ -391,8 +425,28 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   ]);
 
   const handleCancel = useCallback(() => {
+    // Basemap changes are applied to the SHARED editor map live by the style
+    // switcher (unlike the standalone dialog's throwaway map). Cancel discards
+    // the whole draft — including the basemap — so restore the config style.
+    if (mapStyle && mapStyle !== config.style) {
+      changeStyle?.(config.style);
+    }
     onClose();
-  }, [onClose]);
+  }, [onClose, mapStyle, config.style, changeStyle]);
+
+  // Escape cancels the overlay (X close button = Cancel).
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCancel();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [open, handleCancel]);
 
   const handlePositionChange = useCallback((position: MapPosition) => {
     setMapCenter(position.center);
@@ -571,44 +625,90 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
 
   return (
     <CollaborationContextProvider owner={storyMap} entityType="story_map">
-      <Dialog
-        open={open}
-        onClose={handleCancel}
-        aria-labelledby="map-location-dialog-title"
-        aria-describedby="map-location-dialog-content-text"
-        maxWidth={false}
-        fullWidth
-        slotProps={{
-          paper: {
-            sx: {
-              // Fill (most of) the available viewport height; the map and the
-              // layer sidebar share this height and scroll independently.
-              height: '90vh',
-              maxHeight: 'none',
-            },
-          },
-        }}
-      >
-        <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-          <Stack>
-            <DialogTitle
-              component="h1"
-              id="map-location-dialog-title"
-              sx={{ pb: 0 }}
+      <Portal>
+        <Box
+          role="dialog"
+          aria-labelledby="map-location-dialog-title"
+          aria-describedby="map-location-dialog-content-text"
+          data-testid="map-config-overlay"
+          sx={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: theme => theme.zIndex.drawer + 1,
+            display: 'flex',
+            flexDirection: 'column',
+            // Everything not covered by the bars/sidebars shows — and lets
+            // the user drag — the live editor map underneath.
+            pointerEvents: 'none',
+          }}
+        >
+          <Box data-testid="map-config-top-bar" sx={{ pointerEvents: 'auto' }}>
+            <TopBarContainer
+              id="map-config-header"
+              ariaLabel={t('storyMap.form_location_dialog_header_label')}
             >
-              {title ? (
-                <Trans
-                  i18nKey="storyMap.form_location_dialog_title"
-                  values={{ title: title }}
+              <Grid size={10} sx={{ pl: 2 }}>
+                <Typography
+                  variant="h3"
+                  component="h1"
+                  id="map-location-dialog-title"
+                  sx={{ pt: 0 }}
                 >
-                  prefix
-                  <i>italic</i>
-                </Trans>
-              ) : (
-                <>{t('storyMap.form_location_dialog_title_blank')}</>
-              )}
-            </DialogTitle>
-            <DialogContent sx={{ pb: 0 }}>
+                  {title ? (
+                    <Trans
+                      i18nKey="storyMap.form_location_dialog_title"
+                      values={{ title: title }}
+                    >
+                      prefix
+                      <i>italic</i>
+                    </Trans>
+                  ) : (
+                    <>{t('storyMap.form_location_dialog_title_blank')}</>
+                  )}
+                </Typography>
+              </Grid>
+              <Grid
+                size={2}
+                sx={{
+                  pr: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <IconButton
+                  aria-label={t('common.dialog_close_label')}
+                  onClick={handleCancel}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Grid>
+            </TopBarContainer>
+          </Box>
+          <Stack direction="row" sx={{ flex: 1, minHeight: 0 }}>
+            {/* Left sidebar: the invitation to drag the shared map (it covers
+                the chapters list while the overlay is open). */}
+            <Box
+              data-testid="map-config-position-panel"
+              sx={{
+                width: 200,
+                flexShrink: 0,
+                bgcolor: 'white',
+                overflowY: 'auto',
+                p: 2,
+                pointerEvents: 'auto',
+              }}
+            >
+              <Typography variant="h3" gutterBottom>
+                {t('storyMap.form_location_dialog_drag_title')}
+              </Typography>
+              <Typography
+                id="map-location-dialog-content-text"
+                variant="body2"
+                sx={{ mb: 2 }}
+              >
+                {t('storyMap.form_location_dialog_drag_text')}
+              </Typography>
               <HelperText
                 showLabel
                 maxWidth={586}
@@ -618,93 +718,104 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
                   sx: { pl: 0, color: 'gray.dark1' },
                 }}
               />
-            </DialogContent>
+            </Box>
+            {/* Transparent, click-through map window: the live editor map
+                below is what gets dragged to set the chapter position. */}
+            <Box
+              data-testid="map-config-map-window"
+              sx={{ flex: 1, pointerEvents: 'none' }}
+            />
+            {/* Right sidebar: the layers panel at the story map configuration
+                right sidebar width. */}
+            <Box
+              data-testid="map-config-layers-panel"
+              sx={{
+                width: SIDEBAR_WIDTH,
+                flexShrink: 0,
+                bgcolor: 'white',
+                overflowY: 'auto',
+                p: 2,
+                pointerEvents: 'auto',
+              }}
+            >
+              <MapLayersPanel
+                sx={{ width: '100%' }}
+                rows={draftRows}
+                activeLayerIds={draftLayerIds}
+                treeLayers={Object.values(layerConfigsById)}
+                fetching={fetching}
+                error={error}
+                dropError={dropError}
+                onDismissDropError={() => setDropError(null)}
+                onFile={startCreateFlow}
+                onReject={onRejectFile}
+                onToggleLayer={onToggleLayer}
+                onReorder={onReorder}
+                onRemove={onRemoveLayer}
+              />
+            </Box>
           </Stack>
-          <DialogActions sx={{ pr: 3 }}>
-            <Button size="small" onClick={handleCancel}>
-              {t('storyMap.location_dialog_cancel_button')}
-            </Button>
-            <Button size="small" onClick={handleConfirm} variant="contained">
-              {t('storyMap.location_dialog_confirm_button')}
-            </Button>
-          </DialogActions>
-        </Stack>
-
-        <DialogContent sx={{ overflow: 'hidden' }}>
+          {/* Bottom bar: the large Save/Cancel action bar. */}
           <Stack
+            data-testid="map-config-bottom-bar"
             direction="row"
             spacing={2}
             sx={{
-              alignItems: 'stretch',
-              position: 'relative',
-              height: '100%',
-              minHeight: 0,
+              minHeight: 112,
+              bgcolor: 'white',
+              borderTop: '1px solid',
+              borderColor: 'gray.lite1',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              px: 3,
+              pointerEvents: 'auto',
             }}
           >
-            {dragActive && (
-              <Box
-                data-testid="window-drop-overlay"
-                aria-hidden
-                sx={{
-                  position: 'absolute',
-                  inset: 0,
-                  zIndex: theme => theme.zIndex.modal + 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  pointerEvents: 'none',
-                  border: '3px dashed',
-                  borderColor: 'blue.dark',
-                  bgcolor: 'blue.lite',
-                }}
-              >
-                <Typography variant="h3">
-                  {t('storyMap.form_map_layers_add_drop_text')}
-                </Typography>
-              </Box>
-            )}
-            <Box sx={{ flex: 1, minWidth: 0, minHeight: 0 }}>
-              <Map
-                ref={mapRef}
-                use3dTerrain
-                height="100%"
-                initialLocation={initialLocation}
-                projection={config.projection}
-                mapStyle={config.style}
-              >
-                <MapControls showCompass visualizePitch />
-                <MapGeocoder position="top-right" />
-                <MapStyleSwitcher
-                  position="top-right"
-                  onStyleChange={onStyleChange}
-                />
-                <MapLocationChange
-                  onPositionChange={handlePositionChange}
-                  programmaticMoveRef={programmaticMoveRef}
-                />
-                <MapLayerPreview
-                  mapLayerConfigs={draftMapLayerConfigs}
-                  changeBoundsLayerId={changeBoundsLayerId}
-                />
-              </Map>
-            </Box>
-            <MapLayersPanel
-              rows={draftRows}
-              activeLayerIds={draftLayerIds}
-              treeLayers={Object.values(layerConfigsById)}
-              fetching={fetching}
-              error={error}
-              dropError={dropError}
-              onDismissDropError={() => setDropError(null)}
-              onFile={startCreateFlow}
-              onReject={onRejectFile}
-              onToggleLayer={onToggleLayer}
-              onReorder={onReorder}
-              onRemove={onRemoveLayer}
-            />
+            <Button size="large" onClick={handleCancel}>
+              {t('storyMap.location_dialog_cancel_button')}
+            </Button>
+            <Button size="large" onClick={handleConfirm} variant="contained">
+              {t('storyMap.location_dialog_confirm_button')}
+            </Button>
           </Stack>
-        </DialogContent>
-      </Dialog>
+          {dragActive && (
+            <Box
+              data-testid="window-drop-overlay"
+              aria-hidden
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                zIndex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                pointerEvents: 'none',
+                border: '3px dashed',
+                borderColor: 'blue.dark',
+                bgcolor: 'blue.lite',
+              }}
+            >
+              <Typography variant="h3">
+                {t('storyMap.form_map_layers_add_drop_text')}
+              </Typography>
+            </Box>
+          )}
+        </Box>
+      </Portal>
+      {/* Map-scoped children: this component is hosted INSIDE the shared
+          editor map (StoryMap renders it within its Map), so these controls
+          attach to the live map instead of mounting a second one. */}
+      <MapControls showCompass visualizePitch />
+      <MapGeocoder position="top-right" />
+      <MapStyleSwitcher position="top-right" onStyleChange={onStyleChange} />
+      <MapLocationChange
+        onPositionChange={handlePositionChange}
+        programmaticMoveRef={programmaticMoveRef}
+      />
+      <MapLayerPreview
+        mapLayerConfigs={draftMapLayerConfigs}
+        changeBoundsLayerId={changeBoundsLayerId}
+      />
       <CreateMapLayerFileUpload
         title={title}
         onCreate={onCreateLayer}
