@@ -69,9 +69,13 @@ export const CompactAddControl = ({
           inputRef.current?.click();
         }
       }}
-      onDragOver={event => event.preventDefault()}
+      onDragOver={event => {
+        event.preventDefault();
+        event.stopPropagation();
+      }}
       onDrop={event => {
         event.preventDefault();
+        event.stopPropagation();
         if (!disabled) {
           handleFiles(event.dataTransfer?.files);
         }
