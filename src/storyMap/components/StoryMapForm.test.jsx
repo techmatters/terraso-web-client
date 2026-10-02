@@ -26,7 +26,7 @@ import {
 import MapboxGlGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { when } from 'jest-when';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
-import { createMapMock } from 'terraso-web-client/tests/mapboxMock';
+import { createLoadedMapMock } from 'terraso-web-client/tests/mapboxMock';
 
 import { useAnalytics } from 'terraso-web-client/monitoring/analytics';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
@@ -172,14 +172,7 @@ const expectSave = async () => {
 };
 
 const baseMapOptions = () =>
-  createMapMock({
-    onEvents: {},
-    on: function (type, cb) {
-      if (type === 'load') {
-        cb();
-      }
-      this.onEvents[type] = cb;
-    },
+  createLoadedMapMock({
     getContainer: jest.fn().mockReturnValue(document.createElement('div')),
   });
 
@@ -1392,7 +1385,7 @@ test('StoryMapForm: Change chapter location', async () => {
     ],
   });
 
-  await act(async () => map.onEvents['move']());
+  await act(async () => map.fire('move'));
 
   await act(async () =>
     fireEvent.click(within(dialog).getByRole('button', { name: 'Save Map' }))
@@ -2513,8 +2506,8 @@ test('StoryMapForm: Adding a layer does not rewrite the chapter camera', async (
   // The preview fits the added layer: a programmatic map move…
   map.moveCameraTo(CAMERA_FITTED);
   await act(async () => {
-    map.onEvents.move();
-    map.onEvents.moveend();
+    map.fire('move');
+    map.fire('moveend');
   });
 
   await act(async () =>
@@ -2555,15 +2548,15 @@ test('StoryMapForm: A user map move is still recorded after adding a layer', asy
     )
   );
   await act(async () => {
-    map.onEvents.move();
-    map.onEvents.moveend();
+    map.fire('move');
+    map.fire('moveend');
   });
 
   // A real user move afterwards IS recorded.
   await act(async () => {
-    map.onEvents.mousedown();
+    map.fire('mousedown');
     map.moveCameraTo(CAMERA_FITTED);
-    map.onEvents.move();
+    map.fire('move');
   });
 
   await act(async () =>

@@ -17,7 +17,7 @@
 
 import { act, render, screen } from 'terraso-web-client/tests/utils';
 import {
-  createMapMock,
+  createLoadedMapMock,
   setupMapboxMock,
 } from 'terraso-web-client/tests/mapboxMock';
 
@@ -83,19 +83,8 @@ const CONFIG = {
 
 const overlayStub = <div data-testid="map-config-dialog-stub" role="dialog" />;
 
-// The map mock must report `load` (like the real mapbox map) so MapProvider
-// picks the instance up.
-const createLoadedMapMock = () =>
-  createMapMock({
-    onEvents: {},
-    on: function (type, cb) {
-      if (type === 'load') {
-        cb();
-      }
-      this.onEvents[type] = cb;
-    },
-  });
-
+// The map mock reports `load` (like a real mapbox map that is already
+// loaded) so MapProvider picks the instance up.
 const setup = async ({ overlay } = {}) => {
   const map = createLoadedMapMock();
   mapboxgl.Map.mockReturnValue(map);
