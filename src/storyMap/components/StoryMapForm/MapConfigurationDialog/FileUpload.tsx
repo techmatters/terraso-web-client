@@ -78,8 +78,11 @@ export const FileUpload = (props: FileUploadProps) => {
   const { entityType } = useCollaborationContext();
 
   const [file, setFile] = useState<FileWrapper | undefined>();
+  // Null-safe on purpose: the uploads entry can be absent (e.g. resetUploads()
+  // wiped it between processing and the store update) — the selector must
+  // never crash the host tree.
   const uploadingStatus = useSelector(state =>
-    file ? state.sharedData.uploads.files[file.id].status : undefined
+    file ? state.sharedData.uploads.files[file.id]?.status : undefined
   );
 
   useEffect(() => {
