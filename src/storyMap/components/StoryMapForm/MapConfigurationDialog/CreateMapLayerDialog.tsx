@@ -347,9 +347,18 @@ const CreateMapLayerDialog = ({
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
       if (success) {
         onCreate(data.payload);
+        onClose();
       }
     });
-  }, [dispatch, onCreate, owner.id, entityType, visualizationConfig, trigger]);
+  }, [
+    dispatch,
+    onCreate,
+    onClose,
+    owner.id,
+    entityType,
+    visualizationConfig,
+    trigger,
+  ]);
 
   const open = Boolean(dataEntry) && !loadingFile && !loadingFileError;
 
