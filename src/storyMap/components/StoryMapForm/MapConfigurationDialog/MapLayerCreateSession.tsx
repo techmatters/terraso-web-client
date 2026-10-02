@@ -15,28 +15,114 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
-import bbox from '@turf/bbox';
-import { DataEntryNode } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
-
-import GeoJsonSource from 'terraso-web-client/gis/components/GeoJsonSource';
-import { useMap } from 'terraso-web-client/gis/components/Map';
-import VisualizationMapLayer from 'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer';
 import {
-  useVisualizationContext,
-  VisualizationContextProvider,
-} from 'terraso-web-client/sharedData/visualization/visualizationContext';
-import { sheetToGeoJSON } from 'terraso-web-client/sharedData/visualization/visualizationUtils';
-import { VisualizationConfigForm } from 'terraso-web-client/storyMap/storyMapTypes';
+  createContext,
+  ReactNode,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import _ from 'lodash/fp';
+import { useTranslation } from 'react-i18next';
+import { DataEntryNode } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
+import { useSelector } from 'terraso-web-client/terrasoApi/store';
+
+import { VisualizationContext } from 'terraso-web-client/sharedData/visualization/visualizationContext';
+import {
+  readDataSetFile,
+  readMapFile,
+} from 'terraso-web-client/sharedData/visualization/visualizationUtils';
+import {
+  mapLayerFileRejectionMessage,
+  useMapLayerWindowDrop,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/mapLayerFileDrop';
+import {
+  MapLayerConfig,
+  VisualizationConfigForm,
+} from 'terraso-web-client/storyMap/storyMapTypes';
+
+import { MAP_DATA_ACCEPTED_EXTENSIONS } from 'terraso-web-client/config';
 
 import theme from 'terraso-web-client/theme';
 
 /**
  * Source/layer id of the preview layer for the map layer being created. The
- * host map stacks its generated sublayers ABOVE every other layer (see
- * `MapLayerPreview`'s `topLayerIds`) while a creation is in progress.
+ * preview stack is ABOVE every other layer while a creation is in progress —
+ * handled INTERNALLY by the map stage (`MapLayerPreview`), so hosts implement
+ * no preview-on-top protocol at all.
  */
 export const MAP_LAYER_CREATE_PREVIEW_ID = 'map-layer-create-preview';
+
+/**
+ * Parsed file state of the create session (`readMapFile`/`readDataSetFile`
+ * result plus the DataEntryNode it was read for).
+ */
+export type MapLayerFileContext = {
+  selectedFile?: DataEntryNode;
+} & Record<string, unknown>;
+
+export type MapLayerCreateSession = {
+  /**
+   * Session identity and lifecycle — ONE owned unit. A session runs from
+   * `startCreateFlow` (file picked or dropped) until the layer is created
+   * (`handleCreateLayer`) or the creation is cancelled (`cancelCreate`).
+   * `creating` is derived from the session identity, never stored apart.
+   */
+  creating: boolean;
+  /** Unique id per session (0 = no session). Async fences compare it. */
+  sessionId: number;
+  /** The file that started the current session. */
+  file: File | undefined;
+  /** True while the create mutation is in flight. */
+  saving: boolean;
+  /** Starts a NEW session with `file`: EVERYTHING below is recreated fresh. */
+  startCreateFlow: (file: File) => void;
+  /** Ends the current session: nothing is committed, the host UI stays. */
+  cancelCreate: () => void;
+  /** Commits the created layer (host `onCreateLayer`) and ends the session. */
+  handleCreateLayer: (mapLayerConfig: MapLayerConfig) => void;
+  /**
+   * Session fence for async completions: callbacks (file reads, uploads,
+   * create mutations) captured under one session must check this before
+   * touching anything — a completion that lands after the session ended is
+   * ignored, it can never write into a later session.
+   */
+  isCurrentSession: (sessionId: number) => boolean;
+
+  // Session-scoped state. All of it lives INSIDE the session (recreated by
+  // `startCreateFlow`) so nothing can leak from a previous session: no
+  // ghost previews, stale headers, stale parse errors or burned camera fits.
+  visualizationConfig: VisualizationConfigForm;
+  setVisualizationConfig: (
+    update: SetStateAction<VisualizationConfigForm>
+  ) => void;
+  fileContext: MapLayerFileContext | undefined;
+  loadingFile: boolean;
+  loadingFileError: unknown;
+  isMapFile: boolean | undefined;
+  getDataColumns: () => unknown;
+
+  // Window-wide drop guard (host renders the affordance from these).
+  dropError: string | null;
+  dismissDropError: () => void;
+  /** Offers a rejected file to the flow (reports the localized rejection). */
+  rejectFile: (file: File) => void;
+  dragActive: boolean;
+};
+
+const MapLayerCreateSessionContext =
+  createContext<MapLayerCreateSession | null>(null);
+
+/**
+ * Session state access for create-flow components (steps, preview, upload).
+ * Returns null when no create flow is hosted (e.g. a plain map host).
+ */
+export const useMapLayerCreateSession = () =>
+  useContext(MapLayerCreateSessionContext);
 
 const createInitialVisualizationConfig = (): VisualizationConfigForm => ({
   selectedFile: undefined as DataEntryNode | undefined,
@@ -51,127 +137,273 @@ const createInitialVisualizationConfig = (): VisualizationConfigForm => ({
   },
 });
 
+type SessionState = {
+  sessionId: number;
+  file: File;
+  visualizationConfig: VisualizationConfigForm;
+  fileContext: MapLayerFileContext | undefined;
+  loadingFile: boolean;
+  loadingFileError: unknown;
+};
+
+type MapLayerCreateFlowOptions = {
+  /** Gates the window-wide drop guard (e.g. the host dialog is open). */
+  enabled: boolean;
+  /** Host commit of a created layer (immediate-commit contract). */
+  onCreateLayer: (mapLayerConfig: MapLayerConfig) => void;
+};
+
+/**
+ * THE create-session owner. Everything a create session touches lives in the
+ * session state object created by `startCreateFlow` — starting a new session
+ * recreates it wholesale and ending the session drops it, so no state can
+ * survive across sessions. Async completions are fenced by `isCurrentSession`
+ * (and by per-session bound setters), so a late completion of an old session
+ * can never write into the current one.
+ */
+export const useMapLayerCreateFlow = ({
+  enabled,
+  onCreateLayer,
+}: MapLayerCreateFlowOptions): MapLayerCreateSession => {
+  const { t } = useTranslation();
+
+  const [session, setSession] = useState<SessionState | null>(null);
+  // Mirror for async fences (readable after unmount / from stale closures).
+  const sessionRef = useRef<SessionState | null>(null);
+  const nextSessionIdRef = useRef(0);
+  const [dropError, setDropError] = useState<string | null>(null);
+
+  const commitSession = useCallback((next: SessionState | null) => {
+    sessionRef.current = next;
+    setSession(next);
+  }, []);
+
+  // Ending the host (e.g. dialog close) ends the session: nothing lingers.
+  useEffect(() => {
+    return () => {
+      sessionRef.current = null;
+    };
+  }, []);
+
+  // The host being disabled (dialog closed) also ends the session: an
+  // uncommitted creation is discarded, never resurrected on reopen.
+  useEffect(() => {
+    if (!enabled) {
+      commitSession(null);
+    }
+  }, [enabled, commitSession]);
+
+  const sessionId = session?.sessionId ?? 0;
+
+  const isCurrentSession = useCallback(
+    (candidate: number) =>
+      sessionRef.current !== null && sessionRef.current.sessionId === candidate,
+    []
+  );
+
+  const startCreateFlow = useCallback(
+    (file: File) => {
+      setDropError(null);
+      nextSessionIdRef.current += 1;
+      commitSession({
+        sessionId: nextSessionIdRef.current,
+        file,
+        visualizationConfig: createInitialVisualizationConfig(),
+        fileContext: undefined,
+        loadingFile: false,
+        loadingFileError: undefined,
+      });
+    },
+    [commitSession]
+  );
+
+  const cancelCreate = useCallback(() => {
+    commitSession(null);
+  }, [commitSession]);
+
+  const handleCreateLayer = useCallback(
+    (mapLayerConfig: MapLayerConfig) => {
+      onCreateLayer(mapLayerConfig);
+      // The created layer is committed: end the create session and return to
+      // the layers panel.
+      commitSession(null);
+    },
+    [onCreateLayer, commitSession]
+  );
+
+  // Bound to the session that was current when it was created: a stale
+  // closure (e.g. an upload completion of a cancelled session) can only ever
+  // address ITS OWN session and is dropped by the fence.
+  const setVisualizationConfig = useCallback(
+    (update: SetStateAction<VisualizationConfigForm>) => {
+      setSession(current => {
+        if (!current || current.sessionId !== sessionId) {
+          return current;
+        }
+        const visualizationConfig =
+          typeof update === 'function'
+            ? update(current.visualizationConfig)
+            : update;
+        return { ...current, visualizationConfig };
+      });
+    },
+    [sessionId]
+  );
+
+  const selectedFile = session?.visualizationConfig.selectedFile;
+
+  // Parse the session's uploaded file (once per selected file), fenced by the
+  // session id: results of an old session are dropped, never surfaced on a
+  // new one.
+  useEffect(() => {
+    if (!sessionId || !selectedFile) {
+      return;
+    }
+    const isMap = _.includes(
+      selectedFile.resourceType,
+      MAP_DATA_ACCEPTED_EXTENSIONS
+    );
+    setSession(current =>
+      current?.sessionId === sessionId
+        ? {
+            ...current,
+            fileContext: undefined,
+            loadingFile: true,
+            loadingFileError: undefined,
+          }
+        : current
+    );
+    (isMap ? readMapFile(selectedFile) : readDataSetFile(selectedFile))
+      .then(fileContext => {
+        setSession(current =>
+          current?.sessionId === sessionId
+            ? {
+                ...current,
+                fileContext: { ...fileContext, selectedFile },
+                loadingFile: false,
+              }
+            : current
+        );
+      })
+      .catch(error => {
+        setSession(current =>
+          current?.sessionId === sessionId
+            ? { ...current, loadingFileError: error, loadingFile: false }
+            : current
+        );
+      });
+  }, [sessionId, selectedFile]);
+
+  const isMapFile = useMemo(
+    () =>
+      selectedFile
+        ? _.includes(selectedFile.resourceType, MAP_DATA_ACCEPTED_EXTENSIONS)
+        : undefined,
+    [selectedFile]
+  );
+
+  const fileContext = session?.fileContext;
+  const getDataColumns = useCallback(() => {
+    const dataColumns = (
+      session?.visualizationConfig as
+        | {
+            datasetConfig?: {
+              dataColumns?: { option: string; selectedColumns: unknown };
+            };
+          }
+        | undefined
+    )?.datasetConfig?.dataColumns;
+    return dataColumns?.option === 'all'
+      ? fileContext?.headers
+      : dataColumns?.selectedColumns;
+  }, [session?.visualizationConfig, fileContext]);
+
+  const saving = useSelector(
+    (state: any) => state.storyMap?.dataLayers?.saving ?? false
+  ) as boolean;
+
+  const dismissDropError = useCallback(() => setDropError(null), []);
+  const onRejectFile = useCallback(
+    (file: File) => {
+      setDropError(mapLayerFileRejectionMessage(file, t));
+    },
+    [t]
+  );
+
+  const creating = session !== null;
+
+  // While the host is enabled, the whole window accepts file drops to start
+  // the create flow. Drops are ignored while a creation is in progress (no
+  // file swap mid-form); the drag affordance still reports so the host can
+  // explain why.
+  const dragActive = useMapLayerWindowDrop({
+    enabled,
+    suspended: creating,
+    onFile: startCreateFlow,
+    onReject: onRejectFile,
+  });
+
+  return {
+    creating,
+    sessionId,
+    file: session?.file,
+    saving,
+    startCreateFlow,
+    cancelCreate,
+    handleCreateLayer,
+    isCurrentSession,
+    visualizationConfig:
+      session?.visualizationConfig ?? createInitialVisualizationConfig(),
+    setVisualizationConfig,
+    fileContext,
+    loadingFile: session?.loadingFile ?? false,
+    loadingFileError: session?.loadingFileError,
+    isMapFile,
+    getDataColumns,
+    dropError,
+    dismissDropError,
+    rejectFile: onRejectFile,
+    dragActive,
+  };
+};
+
 type MapLayerCreateSessionProviderProps = {
-  /**
-   * The file that started the create session (picked or dropped). A change
-   * starts a NEW session: the visualization draft is reset so nothing leaks
-   * from a previous (finished or cancelled) creation.
-   */
-  file?: File;
+  /** The session owned by the host (from `useMapLayerCreateFlow`). */
+  session: MapLayerCreateSession;
   children: ReactNode;
 };
 
 /**
- * Holds the create-session state (the layer's visualization config draft) and
- * provides it to the create steps (sidebar) and the create preview (host map).
- * Host-agnostic: the same provider backs the map configuration dialog and a
- * persistent (non-dialog) sidebar.
+ * Provides the create session to the create-flow components. Also bridges the
+ * session state into the legacy visualization context so shared form widgets
+ * (ColumnSelect, useVisualizeForm, …) work unchanged — the bridge is a pure
+ * projection of the session, it owns no state of its own.
  */
 export const MapLayerCreateSessionProvider = ({
-  file,
+  session,
   children,
 }: MapLayerCreateSessionProviderProps) => {
-  const [visualizationConfig, setVisualizationConfig] =
-    useState<VisualizationConfigForm>(createInitialVisualizationConfig);
-
-  // New session (new file) → reset the draft during render, so the first
-  // render of the new session never sees the previous session's selections.
-  const sessionFileRef = useRef(file);
-  if (sessionFileRef.current !== file) {
-    sessionFileRef.current = file;
-    setVisualizationConfig(createInitialVisualizationConfig());
-  }
-
-  return (
-    <VisualizationContextProvider
-      visualizationConfig={visualizationConfig}
-      setVisualizationConfig={setVisualizationConfig}
-      dispatchErrors={false}
-    >
-      {children}
-    </VisualizationContextProvider>
+  const visualizationContextValue = useMemo(
+    () => ({
+      visualizationConfig: session.visualizationConfig,
+      setVisualizationConfig: session.setVisualizationConfig,
+      fileContext: session.fileContext ?? {},
+      loadingFile: session.loadingFile,
+      loadingFileError: session.loadingFileError,
+      getDataColumns: session.getDataColumns,
+      useTileset: false,
+      geoJsonUrl: null,
+      isMapFile: session.isMapFile,
+      clear: session.cancelCreate,
+    }),
+    [session]
   );
-};
-
-/**
- * Live preview of the map layer being created, rendered on the HOST map on
- * top of the chapter's other layers. Renders nothing until the session's
- * uploaded file is parsed; updates as the visualization config changes.
- */
-export const MapLayerCreatePreview = ({
-  onLayerAdded,
-  onFitBounds,
-}: {
-  onLayerAdded?: (layerId: string) => void;
-  /** Called just before the preview fits the map to its data (camera fits). */
-  onFitBounds?: () => void;
-}) => {
-  const {
-    visualizationConfig,
-    fileContext,
-    isMapFile,
-    loadingFile,
-    loadingFileError,
-  } = useVisualizationContext();
-  const { map } = useMap();
-
-  const geoJson = useMemo(() => {
-    if (loadingFile || loadingFileError || !fileContext) {
-      return null;
-    }
-    return isMapFile
-      ? fileContext.geojson
-      : sheetToGeoJSON(fileContext, visualizationConfig);
-  }, [
-    loadingFile,
-    loadingFileError,
-    fileContext,
-    isMapFile,
-    visualizationConfig,
-  ]);
-
-  // Fit the map to the previewed data ONCE per session (like the old create
-  // dialog's preview map did) — configuration changes must not steal the
-  // camera. The fit is announced so the host can suppress camera recording.
-  const fittedRef = useRef(false);
-  useEffect(() => {
-    if (!map || !geoJson || fittedRef.current) {
-      return;
-    }
-    fittedRef.current = true;
-    let bounds;
-    try {
-      const [minX, minY, maxX, maxY] = bbox(geoJson);
-      if (![minX, minY, maxX, maxY].every(Number.isFinite)) {
-        return;
-      }
-      bounds = [
-        [minX, minY],
-        [maxX, maxY],
-      ];
-    } catch {
-      return;
-    }
-    onFitBounds?.();
-    map.fitBounds(bounds, { animate: false });
-  }, [map, geoJson, onFitBounds]);
-
-  if (!geoJson) {
-    return null;
-  }
 
   return (
-    <>
-      <GeoJsonSource id={MAP_LAYER_CREATE_PREVIEW_ID} geoJson={geoJson} />
-      <VisualizationMapLayer
-        sourceName={MAP_LAYER_CREATE_PREVIEW_ID}
-        visualizationConfig={visualizationConfig}
-        showPopups={false}
-        isMapFile={isMapFile}
-        // Bounds are handled above (once per session), never on config change.
-        changeBounds={false}
-        onLayerAdded={onLayerAdded}
-      />
-    </>
+    <MapLayerCreateSessionContext.Provider value={session}>
+      <VisualizationContext.Provider value={visualizationContextValue}>
+        {children}
+      </VisualizationContext.Provider>
+    </MapLayerCreateSessionContext.Provider>
   );
 };
