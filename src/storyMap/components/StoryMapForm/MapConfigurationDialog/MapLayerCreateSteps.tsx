@@ -15,32 +15,31 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import * as React from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
 import { DataEntryNode } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
 import { useDispatch, useSelector } from 'terraso-web-client/terrasoApi/store';
 import * as yup from 'yup';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
+  Alert,
+  Box,
   Button,
   CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Grid,
   Stack,
+  Typography,
 } from '@mui/material';
 
 import { useCollaborationContext } from 'terraso-web-client/collaboration/collaborationContext';
 import Form from 'terraso-web-client/forms/components/Form';
 import {
   FormContextProvider,
-  useFormGetContext,
+  useFormTrigger,
 } from 'terraso-web-client/forms/formContext';
 import ColumnSelect from 'terraso-web-client/sharedData/visualization/components/VisualizationConfigForm/ColumnSelect';
-import VisualizationPreview from 'terraso-web-client/sharedData/visualization/components/VisualizationConfigForm/VisualizationPreview';
 import {
   Color,
   Opacity,
@@ -50,22 +49,17 @@ import {
 } from 'terraso-web-client/sharedData/visualization/components/VisualizationConfigForm/VisualizeStep';
 import { UseVisualizeFormArgs } from 'terraso-web-client/sharedData/visualization/components/VisualizeStep';
 import {
-  useVisualizationContext,
-  VisualizationContextProvider,
-} from 'terraso-web-client/sharedData/visualization/visualizationContext';
-import {
   identifyLatLngColumns,
   validateCoordinateField,
 } from 'terraso-web-client/sharedData/visualization/visualizationUtils';
 import { FileUpload } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/FileUpload';
+import { useMapLayerCreateSession } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerCreateSession';
 import { addMapLayer } from 'terraso-web-client/storyMap/storyMapSlice';
 import {
   MapLayerConfig,
   VisualizationConfigForm,
   VisualizeConfig,
 } from 'terraso-web-client/storyMap/storyMapTypes';
-
-import theme from 'terraso-web-client/theme';
 
 const VisualizeForm = ({
   visualizeConfig,
@@ -187,51 +181,30 @@ const useMapLayerFormFields = (isMapFile: boolean) => {
   }, [isMapFile]);
 };
 
-const Preview = ({
-  getValues,
-}: {
-  getValues: () => { visualizeConfig: VisualizeConfig };
-}) => {
-  const { t } = useTranslation();
-  return (
-    <VisualizationPreview
-      useConfigBounds
-      title={t('sharedData.form_visualization_preview_title')}
-      showPopups={false}
-      customConfig={{ visualizeConfig: getValues().visualizeConfig }}
-    />
-  );
-};
-
 type FormState = {
   mapTitle: string;
   latitude: number;
   longitude: number;
   visualizeConfig: VisualizeConfig;
 };
-const CreateMapLayerForm = () => {
+const CreateStepsForm = () => {
   const {
     isMapFile,
     visualizationConfig,
     setVisualizationConfig,
     fileContext,
-  } = useVisualizationContext();
+  } = useMapLayerCreateSession()!;
 
   const { selectedFile, headers } = fileContext ?? {};
 
   const { latColumn: latitude, lngColumn: longitude } = headers
-    ? identifyLatLngColumns(headers)
+    ? identifyLatLngColumns(headers as string[])
     : {};
 
-  const {
-    fetching,
-    saving,
-    list: mapLayers,
-  } = useSelector(state => state.storyMap.dataLayers) as {
-    fetching: boolean;
-    saving: boolean;
-    list: MapLayerConfig[];
-  };
+  const { fetching, list: mapLayers } = useSelector(
+    state =>
+      (state as any).storyMap?.dataLayers ?? { fetching: false, list: [] }
+  ) as { fetching: boolean; list: { title: string }[] };
 
   const initialTitle = (() => {
     const fileName = selectedFile?.name;
@@ -254,7 +227,9 @@ const CreateMapLayerForm = () => {
     visualizeConfig: visualizationConfig.visualizeConfig,
   }).current;
 
-  const { formFields, validationSchema } = useMapLayerFormFields(isMapFile);
+  const { formFields, validationSchema } = useMapLayerFormFields(
+    Boolean(isMapFile)
+  );
 
   const onChange = useCallback(
     (updatedValues: FormState) => {
@@ -279,49 +254,71 @@ const CreateMapLayerForm = () => {
 
   return (
     <Form
-      aria-labelledby="main-heading"
       prefix="map-layer"
       localizationPrefix="sharedData.form_step_set_dataset"
       fields={formFields}
       values={initialValues}
       validationSchema={validationSchema}
       onChange={onChange}
-      Preview={Preview}
     />
   );
 };
 
-type CreateMapLayerDialogProps = {
-  onClose: () => void;
-  onCreate: (dataLayerConfig: MapLayerConfig) => void;
-  chapterTitle?: string;
+type MapLayerCreateStepsProps = {
+  /** Chapter/title name for the heading. */
+  title?: string;
+  /** Called with the created layer config after the create mutation. */
+  onCreate: (mapLayerConfig: MapLayerConfig) => void;
+  /**
+   * Cancels the CREATION only: nothing is committed and the host UI (e.g.
+   * the map configuration dialog) stays open and unchanged.
+   */
+  onCancel: () => void;
 };
-const CreateMapLayerDialog = ({
-  onClose,
+
+const MapLayerCreateStepsPanel = ({
+  title,
   onCreate,
-  chapterTitle,
-}: CreateMapLayerDialogProps) => {
+  onCancel,
+}: MapLayerCreateStepsProps) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { owner, entityType } = useCollaborationContext();
-  const { visualizationConfig, loadingFile, loadingFileError } =
-    useVisualizationContext();
-  const { selectedFile: dataEntry } = visualizationConfig;
-  const saving = useSelector(
-    state =>
-      (state.storyMap as { dataLayers?: { saving?: boolean } })?.dataLayers
-        ?.saving ?? false
+  const session = useMapLayerCreateSession()!;
+  const {
+    visualizationConfig,
+    setVisualizationConfig,
+    loadingFile,
+    loadingFileError,
+    saving,
+  } = session;
+  const selectedFile = visualizationConfig.selectedFile;
+
+  const [uploading, setUploading] = useState(false);
+  const onUploadingChange = useCallback(
+    (isUploading: boolean) => setUploading(isUploading),
+    []
   );
 
-  const formContext = useFormGetContext();
-  const trigger = 'trigger' in formContext ? formContext.trigger : undefined;
+  const setDataEntry = useCallback(
+    (dataEntry?: DataEntryNode) => {
+      setVisualizationConfig((config: VisualizationConfigForm) => ({
+        ...config,
+        selectedFile: dataEntry,
+      }));
+    },
+    [setVisualizationConfig]
+  );
 
+  const trigger = useFormTrigger();
+
+  const [createError, setCreateError] = useState(false);
   const onConfirm = useCallback(async () => {
     const isValid = await trigger?.();
     if (!isValid) {
       return;
     }
-
+    setCreateError(false);
     const completeConfig = {
       ...visualizationConfig,
     };
@@ -334,6 +331,9 @@ const CreateMapLayerDialog = ({
       ],
       completeConfig
     );
+    // Fence: the completion is only applied if THIS session is still alive
+    // when the mutation fulfills — a cancelled session never commits.
+    const sessionId = session.sessionId;
     dispatch(
       addMapLayer({
         title: _.get('annotateConfig.mapTitle', completeConfig),
@@ -344,119 +344,144 @@ const CreateMapLayerDialog = ({
         ownerType: entityType,
       })
     ).then(data => {
+      if (!session.isCurrentSession(sessionId)) {
+        return;
+      }
       const success = _.get('meta.requestStatus', data) === 'fulfilled';
       if (success) {
         onCreate(data.payload);
+        return;
       }
+      // Stay in the form and offer a retry (no silent dead end).
+      setCreateError(true);
     });
-  }, [dispatch, onCreate, owner.id, entityType, visualizationConfig, trigger]);
+  }, [
+    dispatch,
+    onCreate,
+    owner.id,
+    entityType,
+    visualizationConfig,
+    trigger,
+    session,
+  ]);
 
-  const open = Boolean(dataEntry) && !loadingFile && !loadingFileError;
+  // The form is only shown once the session's file is uploaded AND parsed;
+  // until then a busy indicator (or the upload/load errors) is shown.
+  const ready = Boolean(selectedFile) && !loadingFile && !loadingFileError;
+  const busy = uploading || (Boolean(selectedFile) && loadingFile);
 
   return (
-    <Dialog
-      fullScreen
-      open={open}
-      onClose={onClose}
-      aria-labelledby="map-location-dialog-title"
-      aria-describedby="map-location-dialog-content-text"
-    >
-      <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-        <Stack>
-          <DialogTitle
-            component="h1"
-            id="map-location-dialog-title"
-            sx={{ pb: 0 }}
+    <Box sx={{ width: '100%', minWidth: 0 }}>
+      <Stack spacing={2}>
+        <Typography variant="h3" component="h2">
+          {title ? (
+            <Trans
+              i18nKey="storyMap.form_create_map_layer_heading"
+              values={{ title: title }}
+            >
+              prefix
+              <i>italic</i>
+            </Trans>
+          ) : (
+            <>{t('storyMap.form_create_map_layer_heading_blank')}</>
+          )}
+        </Typography>
+        <Box>
+          <Button
+            size="small"
+            startIcon={<ArrowBackIcon />}
+            onClick={onCancel}
+            disabled={saving}
+            sx={{ pl: 0 }}
           >
-            {chapterTitle ? (
-              <Trans
-                i18nKey="storyMap.form_create_map_layer_dialog_title"
-                values={{ title: chapterTitle }}
-              >
-                prefix
-                <i>italic</i>
-              </Trans>
-            ) : (
-              <>{t('storyMap.form_create_map_layer_dialog_title_blank')}</>
-            )}
-          </DialogTitle>
-        </Stack>
-        <DialogActions sx={{ pr: 3 }}>
-          <Button size="small" onClick={onClose}>
-            {t('storyMap.location_dialog_cancel_button')}
+            {t('storyMap.form_map_layers_create_cancel')}
           </Button>
-        </DialogActions>
-      </Stack>
-
-      <DialogContent>{open && <CreateMapLayerForm />}</DialogContent>
-      <DialogActions>
-        <Button
-          disabled={!trigger || saving}
-          size="small"
-          onClick={onConfirm}
-          variant="contained"
-          startIcon={
-            saving ? <CircularProgress size={16} color="inherit" /> : undefined
-          }
-        >
-          {saving
-            ? t('storyMap.form_location_add_data_layer_saving')
-            : t('storyMap.form_location_add_data_layer_confirm')}
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
-
-interface CreateMapLayerFileUploadProps {
-  onCreate: (mapLayer: MapLayerConfig) => void;
-  title?: string;
-}
-export const CreateMapLayerFileUpload = ({
-  onCreate,
-  title,
-}: CreateMapLayerFileUploadProps) => {
-  const [visualizationConfig, setVisualizationConfig] =
-    useState<VisualizationConfigForm>({
-      selectedFile: undefined as DataEntryNode | undefined,
-      visualizeConfig: {
-        shape: 'circle',
-        size: 15,
-        color: theme.palette.visualization.markerDefaultColor,
-        opacity: 50,
-      },
-      annotateConfig: {
-        dataPoints: [],
-      },
-    });
-
-  const setDataEntry = useCallback(
-    (dataEntry?: DataEntryNode) => {
-      setVisualizationConfig(config => ({
-        ...config,
-        selectedFile: dataEntry,
-      }));
-    },
-    [setVisualizationConfig]
-  );
-  useEffect(() => {}, [setVisualizationConfig]);
-
-  return (
-    <VisualizationContextProvider
-      visualizationConfig={visualizationConfig}
-      setVisualizationConfig={setVisualizationConfig}
-      dispatchErrors={false}
-    >
-      <FormContextProvider>
-        <FileUpload onCompleteSuccess={setDataEntry} />
-        <CreateMapLayerDialog
-          onCreate={onCreate}
-          onClose={() => setDataEntry(undefined)}
-          chapterTitle={title}
+        </Box>
+        <FileUpload
+          externalFile={session.file}
+          showDropZone={false}
+          onCompleteSuccess={setDataEntry}
+          onUploadingChange={onUploadingChange}
         />
-      </FormContextProvider>
-    </VisualizationContextProvider>
+        {Boolean(loadingFileError) && (
+          <Alert severity="error">
+            {t('sharedData.upload_rejected_cant-parse', {
+              rejectedFiles: selectedFile?.name,
+            })}
+          </Alert>
+        )}
+        {busy && (
+          <Stack spacing={1} sx={{ alignItems: 'center', py: 2 }}>
+            <CircularProgress size={24} />
+            <Typography variant="body2">
+              {t('storyMap.form_map_layers_create_loading')}
+            </Typography>
+          </Stack>
+        )}
+        {ready && (
+          <>
+            <CreateStepsForm />
+            {createError && (
+              <Alert
+                severity="error"
+                action={
+                  <Button
+                    color="inherit"
+                    size="small"
+                    disabled={saving}
+                    onClick={onConfirm}
+                  >
+                    {t('storyMap.form_map_layers_create_error_retry')}
+                  </Button>
+                }
+              >
+                {t('storyMap.form_map_layers_create_error')}
+              </Alert>
+            )}
+            <Box>
+              <Button
+                disabled={!trigger || saving}
+                size="small"
+                onClick={onConfirm}
+                variant="contained"
+                startIcon={
+                  saving ? (
+                    <CircularProgress size={16} color="inherit" />
+                  ) : undefined
+                }
+              >
+                {saving
+                  ? t('storyMap.form_location_add_data_layer_saving')
+                  : t('storyMap.form_map_layers_create_confirm')}
+              </Button>
+            </Box>
+          </>
+        )}
+      </Stack>
+    </Box>
   );
 };
 
-export default CreateMapLayerDialog;
+/**
+ * The map layer creation steps, shown inline (e.g. in the map configuration
+ * dialog's right sidebar): upload state, the layer configuration form
+ * (title, dataset columns, appearance), validation and the create mutation.
+ * Self-contained so the same component can back a persistent (non-dialog)
+ * sidebar: the host only provides the create session (see
+ * `useMapLayerCreateFlow`) and the create/cancel callbacks. The file comes
+ * from the session (never a duplicated prop), and the whole panel is a
+ * per-session unit (keyed by the session id) so nothing survives a session.
+ */
+export const MapLayerCreateSteps = (props: MapLayerCreateStepsProps) => {
+  const session = useMapLayerCreateSession();
+  if (!session) {
+    return null;
+  }
+  return (
+    <FormContextProvider>
+      <MapLayerCreateStepsPanel key={session.sessionId} {...props} />
+    </FormContextProvider>
+  );
+};
+
+export default MapLayerCreateSteps;

@@ -24,6 +24,7 @@ import { Box, Portal, Stack, Typography } from '@mui/material';
 import Layer from 'terraso-web-client/gis/components/Layer';
 import { useMap } from 'terraso-web-client/gis/components/Map';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
+import { fitMapBounds } from 'terraso-web-client/gis/mapCamera';
 import { getLayerImage } from 'terraso-web-client/sharedData/visualization/visualizationMarkers';
 
 const DEFAULT_MARKER_OPACITY = 1;
@@ -33,6 +34,17 @@ export const LAYER_TYPES = {
   POLYGONS_OUTLINE: 'polygons-outline',
   POLYGONS_FILL: 'polygons-fill',
 };
+
+/**
+ * Bottom-to-top stacking order of the generated sublayers — THE single source
+ * of truth: the <Layer> renderings below insert them in this order and
+ * mapUtils enforces the same stack on transitions.
+ */
+export const LAYER_TYPE_STACK_ORDER = [
+  LAYER_TYPES.MARKERS,
+  LAYER_TYPES.POLYGONS_OUTLINE,
+  LAYER_TYPES.POLYGONS_FILL,
+];
 
 export const generateLayerId = (layerId, layerType) => {
   return `${layerId}-${layerType}`;
@@ -274,7 +286,9 @@ const MapboxLayer = props => {
 
     const applyBounds = bounds => {
       if (!cancelled && bounds && !bounds.isEmpty()) {
-        map.fitBounds(bounds, {
+        // Shared fit helper: the camera move is announced automatically, so
+        // it is never recorded as a user camera edit (mapCamera protocol).
+        fitMapBounds(map, bounds, {
           animate: false,
         });
       }
