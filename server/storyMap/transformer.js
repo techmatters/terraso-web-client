@@ -87,6 +87,24 @@ const getFirstChapterDescriptionPreview = chapters => {
   return '';
 };
 
+const isImageMedia = media =>
+  media?.signedUrl &&
+  (media.type === 'image' || media.type?.startsWith('image/'));
+
+const getFirstChapterImageUrl = chapters => {
+  if (!Array.isArray(chapters)) {
+    return '';
+  }
+
+  for (const chapter of chapters) {
+    if (isImageMedia(chapter?.media)) {
+      return chapter.media.signedUrl;
+    }
+  }
+
+  return '';
+};
+
 const getStoryMapMetaDescription = storyMapConfig => {
   const shortDescription = toCleanText(storyMapConfig.description);
   if (shortDescription) {
@@ -116,7 +134,9 @@ const buildMetaTags = node => {
   const title = storyMapConfig.title;
   const description = getStoryMapMetaDescription(storyMapConfig);
   const image =
-    storyMapConfig.featuredImage?.signedUrl || getFallbackImageUrl();
+    storyMapConfig.featuredImage?.signedUrl ||
+    getFirstChapterImageUrl(storyMapConfig.chapters) ||
+    getFallbackImageUrl();
 
   return { title, description, image };
 };

@@ -23,10 +23,22 @@ const MOCK_HTML = `<!DOCTYPE html>
 <html>
 <head>
   <title>Terraso</title>
-  <meta name="description" content="Default description" data-rh="true"/>
-  <meta property="og:title" content="Terraso" data-rh="true"/>
-  <meta property="og:description" content="Default description" data-rh="true"/>
-  <meta property="og:image" content="https://example.com/default.jpg" data-rh="true"/>
+  <meta
+    name="description"
+    content="Default description"
+  />
+  <meta
+    property="og:title"
+    content="Terraso"
+  />
+  <meta
+    property="og:description"
+    content="Default description"
+  />
+  <meta
+    property="og:image"
+    content="https://example.com/default.jpg"
+  />
 </head>
 <body>
   <div id="root"></div>
@@ -148,6 +160,34 @@ describe('Story Map Routes - Integration Tests', () => {
       expect(text).toContain(
         'https://test.terraso.org/storyMap/terraso-story-maps-img.jpg'
       );
+    });
+
+    it('uses the first chapter image when no featured image is configured', async () => {
+      mockFetch(
+        mockStoryMapResponse({
+          title: 'Story With Chapter Image',
+          chapters: [
+            {
+              media: {
+                type: 'video/mp4',
+                signedUrl: 'https://cdn.example.com/video.mp4',
+              },
+            },
+            {
+              media: {
+                type: 'image/jpeg',
+                signedUrl: 'https://cdn.example.com/chapter.jpg',
+              },
+            },
+          ],
+        })
+      );
+
+      const { text } = await request(app)
+        .get('/tools/story-maps/abc123/chapter-image-story')
+        .expect(200);
+
+      expect(text).toContain('https://cdn.example.com/chapter.jpg');
     });
 
     it('falls back to first chapter content when short description is missing', async () => {
