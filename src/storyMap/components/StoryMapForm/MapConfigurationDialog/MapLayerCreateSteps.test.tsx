@@ -22,10 +22,14 @@ import {
   screen,
   waitFor,
 } from 'terraso-web-client/tests/utils';
+import { useEffect, useRef } from 'react';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 
 import * as visualizationUtils from 'terraso-web-client/sharedData/visualization/visualizationUtils';
-import { MapLayerCreateSessionProvider } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerCreateSession';
+import {
+  MapLayerCreateSessionProvider,
+  useMapLayerCreateFlow,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerCreateSession';
 import { MapLayerCreateSteps } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerCreateSteps';
 
 import theme from 'terraso-web-client/theme';
@@ -34,44 +38,7 @@ jest.mock('terraso-client-shared/terrasoApi/api');
 
 jest.mock(
   'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/FileUpload',
-  () => {
-    const { createTestDataEntryNode } = jest.requireActual(
-      'terraso-web-client/tests/data/storyMap'
-    );
-    return {
-      __esModule: true,
-      FileUpload: ({
-        externalFile,
-        onCompleteSuccess,
-        onUploadingChange,
-      }: {
-        externalFile?: File;
-        onCompleteSuccess: (dataEntry: unknown) => void;
-        onUploadingChange?: (uploading: boolean) => void;
-      }) => (
-        <div data-testid="stub-file-upload">
-          <span data-testid="stub-create-file">{externalFile?.name ?? ''}</span>
-          <button type="button" onClick={() => onUploadingChange?.(true)}>
-            stub-uploading
-          </button>
-          <button
-            onClick={() => {
-              onUploadingChange?.(false);
-              onCompleteSuccess(
-                createTestDataEntryNode({
-                  name: externalFile?.name ?? 'points.geojson',
-                  resourceType:
-                    externalFile?.name?.split('.').pop() ?? 'geojson',
-                })
-              );
-            }}
-          >
-            stub-upload-done
-          </button>
-        </div>
-      ),
-    };
-  }
+  () => jest.requireActual('terraso-web-client/tests/fileUploadMock')
 );
 
 jest.mock(
@@ -175,26 +142,55 @@ const mockAddMapLayerResponse = () =>
 const createFile = (name = 'points.geojson', type = 'application/geo+json') =>
   new File(['x'], name, { type });
 
-const setup = async ({
-  file = createFile(),
-  isMapFile = true,
-}: { file?: File; isMapFile?: boolean } = {}) => {
+// Test host: owns the create session exactly like a real host does (the
+// session module drives the lifecycle; the steps only consume it).
+const SessionHost = ({
+  file,
+  children,
+}: {
+  file?: File;
+  children: React.ReactNode;
+}) => {
+  const session = useMapLayerCreateFlow({
+    enabled: true,
+    onCreateLayer: () => {},
+  });
+  const { startCreateFlow } = session;
+  const startedRef = useRef(false);
+  useEffect(() => {
+    if (file && !startedRef.current) {
+      startedRef.current = true;
+      startCreateFlow(file);
+    }
+  }, [file, startCreateFlow]);
+  return (
+    <MapLayerCreateSessionProvider session={session}>
+      {/* Like the real hosts: the create flow renders only while a session
+          is active. */}
+      {session.creating ? children : null}
+    </MapLayerCreateSessionProvider>
+  );
+};
+
+const setup = async ({ file = createFile() }: { file?: File } = {}) => {
   const onCreate = jest.fn();
   const onCancel = jest.fn();
   await render(
-    <MapLayerCreateSessionProvider file={file}>
+    <SessionHost file={file}>
       <MapLayerCreateSteps
-        file={file}
         title="Chapter 1"
         onCreate={onCreate}
         onCancel={onCancel}
       />
-    </MapLayerCreateSessionProvider>,
+    </SessionHost>,
     {
       storyMap: { dataLayers: { saving: false, fetching: false, list: [] } },
     }
   );
-  return { onCreate, onCancel, file, isMapFile };
+  await waitFor(() => {
+    expect(screen.getByTestId('stub-create-file')).toHaveTextContent(file.name);
+  });
+  return { onCreate, onCancel, file };
 };
 
 const startCreation = async (options: Parameters<typeof setup>[0] = {}) => {
@@ -215,8 +211,19 @@ beforeEach(() => {
     latColumn: 'lat',
     lngColumn: 'lng',
   });
+  // Real point features — the fit path must see finite bounds (an empty
+  // FeatureCollection silently disables every fit).
   (visualizationUtils.readMapFile as jest.Mock).mockResolvedValue({
-    geojson: { type: 'FeatureCollection', features: [] },
+    geojson: {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [1, 2] },
+          properties: {},
+        },
+      ],
+    },
   });
   (visualizationUtils.readDataSetFile as jest.Mock).mockResolvedValue({
     headers: ['lat', 'lng'],
@@ -237,7 +244,7 @@ describe('MapLayerCreateSteps', () => {
         'points.geojson'
       );
       // No form before the file is uploaded and parsed.
-      expect(screen.queryByLabelText('Layer Title')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/^Layer Title/)).not.toBeInTheDocument();
 
       await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'stub-uploading' }));
@@ -318,7 +325,11 @@ describe('MapLayerCreateSteps', () => {
 
       await waitFor(() => {
         expect(onCreate).toHaveBeenCalledWith(
-          expect.objectContaining({ id: 'created-1' })
+          expect.objectContaining({
+            id: 'created-1',
+            // Load-bearing for the layer tree grouping.
+            ownerType: 'StoryMapNode',
+          })
         );
       });
       expect(onCancel).not.toHaveBeenCalled();
@@ -331,7 +342,7 @@ describe('MapLayerCreateSteps', () => {
         expect.objectContaining({
           input: expect.objectContaining({
             title: 'points.geojson',
-            dataEntryId: 'test-data-entry-id',
+            dataEntryId: 'entry-points.geojson',
             ownerId: 'story-map-id',
             ownerType: 'story_map',
           }),
@@ -403,6 +414,49 @@ describe('MapLayerCreateSteps', () => {
       expect(onCancel).toHaveBeenCalled();
       expect(onCreate).not.toHaveBeenCalled();
       expect(terrasoApi.requestGraphQL).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('failure paths', () => {
+    test('a failed create shows an error and can be retried (no silent dead end)', async () => {
+      (terrasoApi.requestGraphQL as jest.Mock).mockImplementation(
+        (query: string | any) => {
+          const queryString =
+            typeof query === 'string' ? query : query.toString();
+          if (queryString.includes('addVisualizationConfig')) {
+            return Promise.reject(new Error('network error'));
+          }
+          return Promise.resolve({});
+        }
+      );
+      const { onCreate, onCancel } = await startCreation();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Add map layer' }));
+      });
+
+      // The failure is visible and the user stays in the form.
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            'The map layer could not be created. Please try again.'
+          )
+        ).toBeInTheDocument();
+      });
+      expect(onCreate).not.toHaveBeenCalled();
+      expect(onCancel).not.toHaveBeenCalled();
+      expect(screen.getByLabelText(/^Layer Title/)).toBeInTheDocument();
+
+      // The retry affordance works.
+      mockAddMapLayerResponse();
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+      });
+      await waitFor(() => {
+        expect(onCreate).toHaveBeenCalledWith(
+          expect.objectContaining({ id: 'created-1' })
+        );
+      });
     });
   });
 });
