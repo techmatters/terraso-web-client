@@ -52,6 +52,8 @@ type FileUploadProps = {
   externalFile?: File;
   /** When false, only the upload state/errors are rendered (no drop zone). */
   showDropZone?: boolean;
+  /** Reports upload progress to the host (e.g. to show a busy indicator). */
+  onUploadingChange?: (uploading: boolean) => void;
 };
 export const FileUpload = (props: FileUploadProps) => {
   const { t } = useTranslation();
@@ -62,7 +64,12 @@ export const FileUpload = (props: FileUploadProps) => {
   } = useStoryMapConfigDataContext();
   const [dropzoneErrors, setDropzoneErrors] = useState<string[]>([]);
 
-  const { onCompleteSuccess, externalFile, showDropZone = true } = props;
+  const {
+    onCompleteSuccess,
+    externalFile,
+    showDropZone = true,
+    onUploadingChange,
+  } = props;
 
   useEffect(() => {
     dispatch(resetUploads());
@@ -74,6 +81,10 @@ export const FileUpload = (props: FileUploadProps) => {
   const uploadingStatus = useSelector(state =>
     file ? state.sharedData.uploads.files[file.id].status : undefined
   );
+
+  useEffect(() => {
+    onUploadingChange?.(uploadingStatus === UPLOAD_STATUS_UPLOADING);
+  }, [uploadingStatus, onUploadingChange]);
 
   const processFile = useCallback(
     (bareFile: File) => {
