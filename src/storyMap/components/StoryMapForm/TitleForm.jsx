@@ -21,14 +21,11 @@ import { useTranslation } from 'react-i18next';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import { Box, Button, Stack } from '@mui/material';
 
-import {
-  getLayerOpacity,
-  LAYER_TYPES,
-} from 'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer';
 import EditableText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableText';
 import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
 import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutline';
+import { generateLayerTransitionEvents } from 'terraso-web-client/storyMap/mapLayerUtils';
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 
 const TitleForm = props => {
@@ -64,27 +61,25 @@ const TitleForm = props => {
     [setConfig]
   );
 
-  const onDataLayerChange = useCallback(
-    dataLayerConfig => {
-      const baseEvents = dataLayerConfig
-        ? Object.values(LAYER_TYPES).map(name => ({
-            layer: generateLayerId(dataLayerConfig.id, name),
-            opacity: getLayerOpacity(name, dataLayerConfig),
-            duration: 0,
-          }))
-        : [];
-
-      const onChapterEnter = baseEvents;
-      const onChapterExit = baseEvents.map(_.set('opacity', 0));
+  const onMapLayersChange = useCallback(
+    ({ mapLayerConfigs, dataLayerConfigId }) => {
+      const mapLayers = mapLayerConfigs.map(({ id }) => ({ layerId: id }));
+      const layerConfigsById = _.keyBy('id', mapLayerConfigs);
+      const events = generateLayerTransitionEvents(
+        mapLayers,
+        layerId => layerConfigsById[layerId]
+      );
 
       setConfig(
         _.flow(
-          dataLayerConfig
-            ? _.set(`dataLayers.${dataLayerConfig.id}`, dataLayerConfig)
-            : _.identity,
-          _.set('titleTransition.dataLayerConfigId', dataLayerConfig?.id),
-          _.set('titleTransition.onChapterEnter', onChapterEnter),
-          _.set('titleTransition.onChapterExit', onChapterExit)
+          config => ({
+            ...config,
+            dataLayers: { ...config.dataLayers, ...layerConfigsById },
+          }),
+          _.set('titleTransition.mapLayers', mapLayers),
+          _.set('titleTransition.dataLayerConfigId', dataLayerConfigId),
+          _.set('titleTransition.onChapterEnter', events.onChapterEnter),
+          _.set('titleTransition.onChapterExit', events.onChapterExit)
         )
       );
     },
@@ -100,14 +95,14 @@ const TitleForm = props => {
   }, []);
 
   const onLocationChangeWrapper = useCallback(
-    ({ location, mapStyle, dataLayerConfig }) => {
+    ({ location, mapStyle, mapLayerConfigs, dataLayerConfigId }) => {
       onFieldChange('titleTransition.location')(location);
       onFieldChange('style')(mapStyle);
-      onDataLayerChange(dataLayerConfig);
+      onMapLayersChange({ mapLayerConfigs, dataLayerConfigId });
 
       onLocationClose();
     },
-    [onFieldChange, onLocationClose, onDataLayerChange]
+    [onFieldChange, onLocationClose, onMapLayersChange]
   );
 
   const onTitleBlur = useCallback(() => {
@@ -130,10 +125,8 @@ const TitleForm = props => {
         <MapConfigurationDialog
           open={locationOpen}
           location={config.titleTransition?.location}
-          mapLayerConfig={_.get(
-            `dataLayers.${_.get('titleTransition.dataLayerConfigId', config)}`,
-            config
-          )}
+          mapLayers={config.titleTransition?.mapLayers}
+          dataLayerConfigId={config.titleTransition?.dataLayerConfigId}
           title={t('storyMap.form_title_location_dialog_title')}
           onClose={onLocationClose}
           onConfirm={onLocationChangeWrapper}

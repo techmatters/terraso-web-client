@@ -411,10 +411,16 @@ const CreateMapLayerDialog = ({
 interface CreateMapLayerFileUploadProps {
   onCreate: (mapLayer: MapLayerConfig) => void;
   title?: string;
+  /** File to start the create flow with (e.g. dropped on the window). */
+  externalFile?: File;
+  /** When false, the create flow's drop zone UI is not rendered. */
+  showDropZone?: boolean;
 }
 export const CreateMapLayerFileUpload = ({
   onCreate,
   title,
+  externalFile,
+  showDropZone = true,
 }: CreateMapLayerFileUploadProps) => {
   const [visualizationConfig, setVisualizationConfig] =
     useState<VisualizationConfigForm>({
@@ -448,7 +454,11 @@ export const CreateMapLayerFileUpload = ({
       dispatchErrors={false}
     >
       <FormContextProvider>
-        <FileUpload onCompleteSuccess={setDataEntry} />
+        <FileUpload
+          onCompleteSuccess={setDataEntry}
+          externalFile={externalFile}
+          showDropZone={showDropZone}
+        />
         <CreateMapLayerDialog
           onCreate={onCreate}
           onClose={() => setDataEntry(undefined)}
