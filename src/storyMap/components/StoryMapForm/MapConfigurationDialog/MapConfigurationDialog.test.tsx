@@ -297,11 +297,12 @@ const setup = async (options: SetupOptions = {}): Promise<SetupResult> => {
       })
     ).toBeTruthy();
   });
+  // Either the tree or the load-error copy marks the tree region as settled.
   await waitFor(() => {
     expect(
-      screen.getByRole('tree') ||
-        screen.getByText(/couldn't load the map layers/i)
-    ).toBeTruthy();
+      screen.queryAllByRole('tree').length +
+        screen.queryAllByText(/couldn't load the map layers/i).length
+    ).toBeGreaterThan(0);
   });
 
   return {
