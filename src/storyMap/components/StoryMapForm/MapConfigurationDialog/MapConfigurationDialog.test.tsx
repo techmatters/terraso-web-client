@@ -32,21 +32,27 @@ import {
   createTestVisualizationConfigNode,
 } from 'terraso-web-client/tests/data/storyMap';
 
+import * as visualizationUtils from 'terraso-web-client/sharedData/visualization/visualizationUtils';
 import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
+import { MAP_LAYER_CREATE_PREVIEW_ID } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerCreateSession';
 import {
   StoryMapConfigContextProvider,
   useStoryMapConfigDataContext,
 } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { enforceMapLayerOrder } from 'terraso-web-client/storyMap/mapUtils';
 import {
   MapLayerConfig,
   MapLayerTransition,
   StoryMapConfig,
 } from 'terraso-web-client/storyMap/storyMapTypes';
 
+import theme from 'terraso-web-client/theme';
+
 // Mock terrasoApi at the network boundary
 jest.mock('terraso-client-shared/terrasoApi/api');
 
 // Set up mocks BEFORE importing components
+let mockMap: any;
 jest.mock('terraso-web-client/gis/components/Map', () => {
   const { forwardRef } = jest.requireActual('react');
   return {
@@ -57,7 +63,7 @@ jest.mock('terraso-web-client/gis/components/Map', () => {
     ) {
       return <div data-testid="mock-map">{children}</div>;
     }),
-    useMap: () => ({ map: null }),
+    useMap: () => ({ map: mockMap }),
   };
 });
 
@@ -68,40 +74,156 @@ jest.mock('terraso-web-client/storyMap/components/StoryMapLayer', () => ({
   ),
 }));
 
+// Z-order contract is asserted on the enforceMapLayerOrder call args.
+jest.mock('terraso-web-client/storyMap/mapUtils', () => ({
+  __esModule: true,
+  enforceMapLayerOrder: jest.fn(),
+}));
+
+jest.mock('terraso-web-client/gis/components/GeoJsonSource', () => ({
+  __esModule: true,
+  default: ({ id }: { id: string }) => (
+    <div data-testid="mock-geojson-source" data-id={id} />
+  ),
+}));
+
+// Map chrome is out of scope here (and needs a real mapbox map).
+jest.mock('terraso-web-client/gis/components/MapControls', () => ({
+  __esModule: true,
+  default: () => null,
+}));
+jest.mock('terraso-web-client/gis/components/MapGeocoder', () => ({
+  __esModule: true,
+  default: () => null,
+}));
+jest.mock('terraso-web-client/gis/components/MapStyleSwitcher', () => ({
+  __esModule: true,
+  default: () => null,
+}));
+
 jest.mock(
-  'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog',
+  'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer',
+  () => {
+    const actual = jest.requireActual(
+      'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer'
+    );
+    return {
+      __esModule: true,
+      ...actual,
+      default: ({
+        sourceName,
+        visualizationConfig,
+      }: {
+        sourceName: string;
+        visualizationConfig: any;
+      }) => (
+        <div
+          data-testid={`mock-create-preview-${sourceName}`}
+          data-config={JSON.stringify(
+            visualizationConfig?.visualizeConfig ?? {}
+          )}
+        />
+      ),
+    };
+  }
+);
+
+jest.mock(
+  'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/FileUpload',
+  () => {
+    const { createTestDataEntryNode } = jest.requireActual(
+      'terraso-web-client/tests/data/storyMap'
+    );
+    return {
+      __esModule: true,
+      FileUpload: ({
+        externalFile,
+        onCompleteSuccess,
+      }: {
+        externalFile?: File;
+        onCompleteSuccess: (dataEntry: unknown) => void;
+      }) => (
+        <div data-testid="stub-file-upload">
+          <span data-testid="stub-create-file">{externalFile?.name ?? ''}</span>
+          <button
+            onClick={() =>
+              onCompleteSuccess(
+                createTestDataEntryNode({
+                  name: externalFile?.name ?? 'points.geojson',
+                  resourceType:
+                    externalFile?.name?.split('.').pop() ?? 'geojson',
+                })
+              )
+            }
+          >
+            stub-upload-done
+          </button>
+        </div>
+      ),
+    };
+  }
+);
+
+jest.mock(
+  'terraso-web-client/sharedData/visualization/visualizationUtils',
   () => ({
     __esModule: true,
-    CreateMapLayerFileUpload: ({
-      onCreate,
-      externalFile,
-      onCreateDialogOpenChange,
-    }: {
-      onCreate: (mapLayer: unknown) => void;
-      externalFile?: File;
-      onCreateDialogOpenChange?: (open: boolean) => void;
-    }) => (
-      <div data-testid="stub-create-flow">
-        <span data-testid="stub-create-file">{externalFile?.name ?? ''}</span>
-        <button onClick={() => onCreateDialogOpenChange?.(true)}>
-          stub-open-create
+    identifyLatLngColumns: jest.fn(),
+    validateCoordinateField: () => () => true,
+    readMapFile: jest.fn(),
+    readDataSetFile: jest.fn(),
+    sheetToGeoJSON: () => ({ type: 'FeatureCollection', features: [] }),
+  })
+);
+
+jest.mock(
+  'terraso-web-client/sharedData/visualization/components/VisualizationConfigForm/VisualizeStep',
+  () => {
+    const actual = jest.requireActual(
+      'terraso-web-client/sharedData/visualization/components/VisualizationConfigForm/VisualizeStep'
+    );
+    return {
+      __esModule: true,
+      ...actual,
+      Shape: ({ setShape }: any) => (
+        <button type="button" onClick={() => setShape('square')}>
+          stub-shape
         </button>
-        <button onClick={() => onCreateDialogOpenChange?.(false)}>
-          stub-close-create
+      ),
+      Size: ({ setSize }: any) => (
+        <button type="button" onClick={() => setSize(20)}>
+          stub-size
         </button>
-        <button
-          onClick={() =>
-            onCreate({
-              id: 'created-layer',
-              title: 'Created Layer',
-              ownerType: 'StoryMapNode',
-              geojsonSignedUrl: 'https://example.com/created.geojson',
-            })
-          }
-        >
-          stub-create-layer
+      ),
+      Color: ({ setColor }: any) => (
+        <button type="button" onClick={() => setColor('#123456')}>
+          stub-color
         </button>
-      </div>
+      ),
+      Opacity: ({ setOpacity }: any) => (
+        <button type="button" onClick={() => setOpacity(80)}>
+          stub-opacity
+        </button>
+      ),
+    };
+  }
+);
+
+jest.mock(
+  'terraso-web-client/sharedData/visualization/components/VisualizationConfigForm/VisualizationPreview',
+  () => ({ __esModule: true, default: () => null })
+);
+
+jest.mock(
+  'terraso-web-client/sharedData/visualization/components/VisualizationConfigForm/ColumnSelect',
+  () => ({
+    __esModule: true,
+    default: ({ field, id }: any) => (
+      <input
+        aria-label={id}
+        value={field.value ?? ''}
+        onChange={event => field.onChange(event.target.value)}
+      />
     ),
   })
 );
@@ -182,6 +304,29 @@ const mockGraphQLRequest = (query: string | any): Promise<any> => {
       groupConfigs: { edges: dataLayersMock.groupConfigs ?? [] },
       myGroups: { edges: dataLayersMock.myGroups ?? [] },
       myLandscapes: { edges: dataLayersMock.myLandscapes ?? [] },
+    });
+  }
+
+  // Create layer mutation (the inline create flow's confirm)
+  if (queryString.includes('addVisualizationConfig')) {
+    return Promise.resolve({
+      addVisualizationConfig: {
+        visualizationConfig: {
+          id: 'created-layer',
+          title: 'Created Layer',
+          description: '',
+          configuration: JSON.stringify({
+            visualizeConfig: {
+              shape: 'circle',
+              opacity: 50,
+              size: 15,
+              color: '#000000',
+            },
+          }),
+          geojsonSignedUrl: 'https://example.com/created.geojson',
+        },
+        errors: [],
+      },
     });
   }
 
@@ -334,10 +479,33 @@ describe('MapConfigurationDialog', () => {
     jest.clearAllMocks();
     mockDragEndHandler = undefined;
     dataLayersMock = {};
+    mockMap = {
+      on: jest.fn(),
+      off: jest.fn(),
+      getLayer: jest.fn(),
+      moveLayer: jest.fn(),
+      fitBounds: jest.fn(),
+      getSource: jest.fn(),
+      addSource: jest.fn(),
+    };
 
     (terrasoApi.requestGraphQL as jest.Mock).mockImplementation(
       mockGraphQLRequest
     );
+    (visualizationUtils.identifyLatLngColumns as jest.Mock).mockReturnValue({
+      latColumn: 'lat',
+      lngColumn: 'lng',
+    });
+    (visualizationUtils.readMapFile as jest.Mock).mockResolvedValue({
+      geojson: { type: 'FeatureCollection', features: [] },
+    });
+    (visualizationUtils.readDataSetFile as jest.Mock).mockResolvedValue({
+      headers: ['lat', 'lng'],
+      headersIndexes: { lat: 0, lng: 1 },
+      colCount: 2,
+      rowCount: 2,
+      sheet: {},
+    });
   });
 
   describe('Test Suite 1: Rendering & Basic Interactions', () => {
@@ -913,7 +1081,190 @@ describe('MapConfigurationDialog', () => {
     });
   });
 
-  describe('Test Suite 4: Create flow', () => {
+  describe('Test Suite 4: Inline create flow', () => {
+    const createTestFile = (
+      name = 'points.geojson',
+      type = 'application/geo+json'
+    ) => new File(['x'], name, { type });
+
+    // Starts a create session through the window-wide drop target and drives
+    // the stubbed upload to the ready (form visible) state.
+    const startCreation = async (file = createTestFile()) => {
+      await act(async () => {
+        fireEvent.drop(window as unknown as HTMLElement, {
+          dataTransfer: { files: [file] },
+        });
+      });
+      await waitFor(() => {
+        expect(
+          screen.getByRole('heading', {
+            name: 'Create a map layer for Test Chapter',
+          })
+        ).toBeInTheDocument();
+      });
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole('button', { name: 'stub-upload-done' })
+        );
+      });
+      await waitFor(() => {
+        expect(screen.getByLabelText(/^Layer Title/)).toBeInTheDocument();
+      });
+    };
+
+    it('shows the create steps in the sidebar for a file dropped on the window', async () => {
+      await setup();
+
+      const file = createTestFile();
+      await act(async () => {
+        fireEvent.drop(window as unknown as HTMLElement, {
+          dataTransfer: { files: [file] },
+        });
+      });
+
+      // The layers panel is replaced by the create steps in the sidebar.
+      expect(
+        screen.getByRole('heading', {
+          name: 'Create a map layer for Test Chapter',
+        })
+      ).toBeInTheDocument();
+      expect(screen.getByTestId('stub-create-file')).toHaveTextContent(
+        'points.geojson'
+      );
+      expect(
+        screen.queryByRole('list', {
+          name: 'Map layers in this chapter, topmost first',
+        })
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows the create steps for a file dropped on the compact add control', async () => {
+      await setup();
+
+      const file = createTestFile();
+      const dropTarget = screen.getByRole('button', {
+        name: 'Add a map layer',
+      });
+
+      await act(async () => {
+        fireEvent.drop(dropTarget, {
+          dataTransfer: { files: [file] },
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('stub-create-file')).toHaveTextContent(
+          'points.geojson'
+        );
+      });
+    });
+
+    it('shows the create steps for a file picked through the file input', async () => {
+      await setup();
+
+      const file = createTestFile();
+      const fileInput = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement;
+      await act(async () => {
+        fireEvent.change(fileInput, { target: { files: [file] } });
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('heading', {
+            name: 'Create a map layer for Test Chapter',
+          })
+        ).toBeInTheDocument();
+      });
+      expect(screen.getByTestId('stub-create-file')).toHaveTextContent(
+        'points.geojson'
+      );
+    });
+
+    it('renders the preview topmost on the shared map and live-updates it', async () => {
+      await setup({
+        mapLayers: [{ layerId: 'test-story-map-1' }],
+        dataLayerConfigId: 'test-story-map-1',
+        configDataLayers: {
+          'test-story-map-1': {
+            id: 'test-story-map-1',
+            title: 'Story Map Layer 1',
+          } as MapLayerConfig,
+        },
+      });
+
+      await startCreation();
+
+      // The create preview renders on the shared map ABOVE the chapter's
+      // layers (rendered after them, mapbox adds later layers on top).
+      const mapLayersRendered = within(screen.getByTestId('mock-map'))
+        .queryAllByTestId(/^(mock-layer|mock-create-preview)/)
+        .map(element => element.getAttribute('data-testid'));
+      expect(mapLayersRendered).toEqual([
+        'mock-layer-test-story-map-1',
+        `mock-create-preview-${MAP_LAYER_CREATE_PREVIEW_ID}`,
+      ]);
+
+      // …and the z-order enforcement stacks it on top of the chapter layers.
+      expect(enforceMapLayerOrder).toHaveBeenLastCalledWith(mockMap, [
+        { layerId: MAP_LAYER_CREATE_PREVIEW_ID },
+        { layerId: 'test-story-map-1' },
+      ]);
+
+      // Configuration changes live-update the preview.
+      const preview = screen.getByTestId(
+        `mock-create-preview-${MAP_LAYER_CREATE_PREVIEW_ID}`
+      );
+      expect(preview.getAttribute('data-config')).toContain(
+        theme.palette.visualization.markerDefaultColor
+      );
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'stub-color' }));
+      });
+      expect(preview.getAttribute('data-config')).toContain('#123456');
+    });
+
+    it('cancel during creation keeps the dialog open, the draft intact and commits nothing', async () => {
+      const { onCloseMock, onConfirmMock } = await setup({
+        mapLayers: [{ layerId: 'test-story-map-1' }],
+        dataLayerConfigId: 'test-story-map-1',
+        configDataLayers: {
+          'test-story-map-1': {
+            id: 'test-story-map-1',
+            title: 'Story Map Layer 1',
+          } as MapLayerConfig,
+        },
+      });
+
+      await startCreation();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Back to layers' }));
+      });
+
+      // Creation is cancelled; the map dialog stays open and unchanged.
+      expect(onCloseMock).not.toHaveBeenCalled();
+      expect(onConfirmMock).not.toHaveBeenCalled();
+      await waitFor(() => {
+        expect(
+          screen.getByRole('list', {
+            name: 'Map layers in this chapter, topmost first',
+          })
+        ).toBeInTheDocument();
+      });
+      expect(orderListItems()).toEqual(['Story Map Layer 1']);
+      expect(probeData()).toEqual({
+        mapLayers: [{ layerId: 'test-story-map-1' }],
+        dataLayerConfigId: 'test-story-map-1',
+        dataLayerIds: ['test-story-map-1'],
+      });
+      expect(terrasoApi.requestGraphQL).not.toHaveBeenCalledWith(
+        expect.stringContaining('addVisualizationConfig'),
+        expect.anything()
+      );
+    });
+
     it('commits a created layer immediately and survives dialog cancel', async () => {
       const { onCloseMock, onConfirmMock } = await setup({
         mapLayers: [{ layerId: 'test-story-map-1' }],
@@ -926,13 +1277,10 @@ describe('MapConfigurationDialog', () => {
         },
       });
 
+      await startCreation();
+
       await act(async () => {
-        fireEvent.click(
-          screen.getByRole('button', {
-            name: 'stub-create-layer',
-            hidden: true,
-          })
-        );
+        fireEvent.click(screen.getByRole('button', { name: 'Add map layer' }));
       });
 
       // committed to config immediately…
@@ -944,8 +1292,23 @@ describe('MapConfigurationDialog', () => {
         dataLayerConfigId: 'created-layer',
         dataLayerIds: ['created-layer', 'test-story-map-1'],
       });
-      // …and visible in the draft order list (topmost)
+      // …back to the layers panel, with the new layer at the top of the
+      // order list…
+      await waitFor(() => {
+        expect(
+          screen.getByRole('list', {
+            name: 'Map layers in this chapter, topmost first',
+          })
+        ).toBeInTheDocument();
+      });
       expect(orderListItems()[0]).toBe('Created Layer');
+      // …and "on" in the tree.
+      expect(
+        screen.getByRole('treeitem', { name: 'Created Layer' })
+      ).toHaveAttribute('aria-selected', 'true');
+      expect(
+        screen.getByTestId('mock-layer-created-layer')
+      ).toBeInTheDocument();
 
       await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
@@ -964,48 +1327,6 @@ describe('MapConfigurationDialog', () => {
       });
     });
 
-    it('starts the create flow with a file dropped anywhere on the window', async () => {
-      await setup();
-
-      const file = new File(['x'], 'points.geojson', {
-        type: 'application/geo+json',
-      });
-      await act(async () => {
-        fireEvent.drop(window as unknown as HTMLElement, {
-          dataTransfer: { files: [file] },
-        });
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('stub-create-file')).toHaveTextContent(
-          'points.geojson'
-        );
-      });
-    });
-
-    it('starts the create flow with a file dropped on the compact add control', async () => {
-      await setup();
-
-      const file = new File(['x'], 'points.geojson', {
-        type: 'application/geo+json',
-      });
-      const dropTarget = screen.getByRole('button', {
-        name: 'Add a map layer',
-      });
-
-      await act(async () => {
-        fireEvent.drop(dropTarget, {
-          dataTransfer: { files: [file] },
-        });
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('stub-create-file')).toHaveTextContent(
-          'points.geojson'
-        );
-      });
-    });
-
     it('ignores files that the create flow does not accept', async () => {
       await setup();
 
@@ -1016,7 +1337,12 @@ describe('MapConfigurationDialog', () => {
         });
       });
 
-      expect(screen.getByTestId('stub-create-file')).toHaveTextContent('');
+      // No creation starts for a rejected file.
+      expect(
+        screen.queryByRole('heading', {
+          name: 'Create a map layer for Test Chapter',
+        })
+      ).not.toBeInTheDocument();
     });
 
     it('shows a rejection message when a dropped file is not accepted', async () => {
@@ -1082,44 +1408,52 @@ describe('MapConfigurationDialog', () => {
       ).not.toBeInTheDocument();
     });
 
-    it('ignores drops while the create layer dialog is open', async () => {
+    it('ignores drops while layer creation is in progress', async () => {
       await setup();
 
-      await act(async () => {
-        fireEvent.click(
-          screen.getByRole('button', { name: 'stub-open-create', hidden: true })
-        );
-      });
-
-      const file = new File(['x'], 'points.geojson', {
+      const first = new File(['x'], 'points.geojson', {
         type: 'application/geo+json',
       });
       await act(async () => {
         fireEvent.drop(window as unknown as HTMLElement, {
-          dataTransfer: { files: [file] },
-        });
-      });
-
-      // No file swap mid-form.
-      expect(screen.getByTestId('stub-create-file')).toHaveTextContent('');
-
-      // Drops work again once the create dialog is closed.
-      await act(async () => {
-        fireEvent.click(
-          screen.getByRole('button', {
-            name: 'stub-close-create',
-            hidden: true,
-          })
-        );
-      });
-      await act(async () => {
-        fireEvent.drop(window as unknown as HTMLElement, {
-          dataTransfer: { files: [file] },
+          dataTransfer: { files: [first] },
         });
       });
       await waitFor(() => {
         expect(screen.getByTestId('stub-create-file')).toHaveTextContent(
           'points.geojson'
+        );
+      });
+
+      const second = new File(['x'], 'other.geojson', {
+        type: 'application/geo+json',
+      });
+      await act(async () => {
+        fireEvent.drop(window as unknown as HTMLElement, {
+          dataTransfer: { files: [second] },
+        });
+      });
+
+      // No file swap mid-form.
+      expect(screen.getByTestId('stub-create-file')).toHaveTextContent(
+        'points.geojson'
+      );
+      expect(screen.getByTestId('stub-create-file')).not.toHaveTextContent(
+        'other.geojson'
+      );
+
+      // Drops work again once the creation is cancelled.
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Back to layers' }));
+      });
+      await act(async () => {
+        fireEvent.drop(window as unknown as HTMLElement, {
+          dataTransfer: { files: [second] },
+        });
+      });
+      await waitFor(() => {
+        expect(screen.getByTestId('stub-create-file')).toHaveTextContent(
+          'other.geojson'
         );
       });
     });
