@@ -119,8 +119,17 @@ export const fetchStyle = async style => {
 
 // Set Style doesn't keep the current layers, so we need to copy them across
 // Issue: https://github.com/mapbox/mapbox-gl-js/issues/4006
-async function switchStyle(map, style, images, sources, layers, language) {
+//
+// The images/sources/layers registry is resolved at MERGE time through
+// `getRegistry` (never captured in a closure): on the shared editor map the
+// layers can mount/unmount while the style fetch is in flight (the map
+// configuration overlay's draft layers), and merging a stale snapshot
+// resurrects deleted layers and wipes freshly mounted ones. With merge-time
+// resolution both fetch orderings heal.
+async function switchStyle(map, style, getRegistry, language) {
   const newStyle = await fetchStyle(style);
+
+  const { images, sources, layers } = getRegistry();
 
   const mergedSources = {
     ...newStyle.sources,
@@ -173,16 +182,18 @@ export const MapProvider = props => {
   const { children, onStyleChange } = props;
   const [map, setMap] = useState(null);
   const [mapDimensions, setMapDimensions] = useState(undefined);
-  const [images, setImages] = useState({});
-  const [sources, setSources] = useState({});
-  const [layers, setLayers] = useState({});
+  // The style-merge registry lives in refs, not state: nothing renders from
+  // it, and switchStyle must observe it at merge time (see switchStyle).
+  const imagesRef = useRef({});
+  const sourcesRef = useRef({});
+  const layersRef = useRef({});
 
   const addImage = useCallback(
     (name, image) => {
       if (!map) {
         return;
       }
-      setImages(prev => ({ ...prev, [name]: image }));
+      imagesRef.current = { ...imagesRef.current, [name]: image };
       map.addImage(name, image);
     },
     [map]
@@ -193,7 +204,7 @@ export const MapProvider = props => {
       if (!map) {
         return;
       }
-      setImages(_.omit(name));
+      imagesRef.current = _.omit(name, imagesRef.current);
       map.removeImage(name);
     },
     [map]
@@ -216,7 +227,7 @@ export const MapProvider = props => {
         const isGeoJson = source.type === 'geojson';
         if (isGeoJson && currentSource) {
           currentSource.setData(source.data);
-          setSources(prev => ({ ...prev, [name]: source }));
+          sourcesRef.current = { ...sourcesRef.current, [name]: source };
           return;
         }
 
@@ -225,7 +236,7 @@ export const MapProvider = props => {
         }
 
         map.addSource(name, source);
-        setSources(prev => ({ ...prev, [name]: source }));
+        sourcesRef.current = { ...sourcesRef.current, [name]: source };
       } catch (error) {
         logger.warn('Error adding source', error);
       }
@@ -240,7 +251,7 @@ export const MapProvider = props => {
       }
       try {
         map.removeSource(sourceName);
-        setSources(_.omit(sourceName));
+        sourcesRef.current = _.omit(sourceName, sourcesRef.current);
       } catch (error) {
         logger.error(`Error removing source {$sourceName}`, error);
       }
@@ -255,7 +266,7 @@ export const MapProvider = props => {
       }
       try {
         map.addLayer(layer, before);
-        setLayers(prev => ({ ...prev, [layer.id]: layer }));
+        layersRef.current = { ...layersRef.current, [layer.id]: layer };
       } catch (error) {
         logger.warn('Error adding layer', error);
       }
@@ -271,7 +282,7 @@ export const MapProvider = props => {
 
       try {
         map?.removeLayer(layerId);
-        setLayers(_.omit(layerId));
+        layersRef.current = _.omit(layerId, layersRef.current);
       } catch (error) {
         logger.error(`Error removing layer ${layerId}`, error);
       }
@@ -281,10 +292,19 @@ export const MapProvider = props => {
 
   const changeStyle = useCallback(
     newStyle => {
-      switchStyle(map, newStyle, images, sources, layers, language);
+      switchStyle(
+        map,
+        newStyle,
+        () => ({
+          images: imagesRef.current,
+          sources: sourcesRef.current,
+          layers: layersRef.current,
+        }),
+        language
+      );
       onStyleChange?.(newStyle);
     },
-    [map, images, sources, layers, onStyleChange, language]
+    [map, onStyleChange, language]
   );
 
   return (
@@ -431,6 +451,12 @@ const Map = forwardRef((props, ref) => {
     map.dragRotate.enable();
     map.doubleClickZoom.enable();
     map.scrollZoom.enable();
+    // Exactly mirrors the disable branch above (keyboard + boxZoom included):
+    // the fullscreen surface must be as keyboard-capable as the dialog it
+    // replaced.
+    map.boxZoom.enable();
+    map.keyboard.enable();
+    map.keyboard.enableRotation();
 
     if (disableRotation) {
       // disable map rotation using right click + drag

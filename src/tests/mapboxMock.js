@@ -66,7 +66,7 @@ export const createMapMock = (overrides = {}) => {
     removeLayer: jest.fn(),
     moveLayer: jest.fn(),
     setPaintProperty: jest.fn(),
-    getStyle: jest.fn(),
+    getStyle: jest.fn().mockReturnValue({}),
     setStyle: jest.fn(),
     setTerrain: jest.fn(),
     setFog: jest.fn(),
