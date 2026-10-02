@@ -89,40 +89,62 @@ jest.mock('terraso-web-client/storyMap/components/StoryMapLayer', () => ({
 
 jest.mock(
   'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog',
-  () => ({
-    __esModule: true,
-    CreateMapLayerFileUpload: ({
-      onCreate,
-      externalFile,
-      onCreateDialogOpenChange,
-    }: {
-      onCreate: (mapLayer: unknown) => void;
-      externalFile?: File;
-      onCreateDialogOpenChange?: (open: boolean) => void;
-    }) => (
-      <div data-testid="stub-create-flow">
-        <span data-testid="stub-create-file">{externalFile?.name ?? ''}</span>
-        <button onClick={() => onCreateDialogOpenChange?.(true)}>
-          stub-open-create
-        </button>
-        <button onClick={() => onCreateDialogOpenChange?.(false)}>
-          stub-close-create
-        </button>
-        <button
-          onClick={() =>
-            onCreate({
-              id: 'created-layer',
-              title: 'Created Layer',
-              ownerType: 'StoryMapNode',
-              geojsonSignedUrl: 'https://example.com/created.geojson',
-            })
-          }
-        >
-          stub-create-layer
-        </button>
-      </div>
-    ),
-  })
+  () => {
+    const { useState } = jest.requireActual('react');
+    return {
+      __esModule: true,
+      CreateMapLayerFileUpload: ({
+        onCreate,
+        externalFile,
+        onCreateDialogOpenChange,
+      }: {
+        onCreate: (mapLayer: unknown) => void;
+        externalFile?: File;
+        onCreateDialogOpenChange?: (open: boolean) => void;
+      }) => {
+        // Mirrors the real create dialog: a stacked MUI modal of its own.
+        const [createOpen, setCreateOpen] = useState(false);
+        return (
+          <div data-testid="stub-create-flow">
+            <span data-testid="stub-create-file">
+              {externalFile?.name ?? ''}
+            </span>
+            {createOpen && (
+              <div className="MuiModal-root" data-testid="stub-create-modal" />
+            )}
+            <button
+              onClick={() => {
+                setCreateOpen(true);
+                onCreateDialogOpenChange?.(true);
+              }}
+            >
+              stub-open-create
+            </button>
+            <button
+              onClick={() => {
+                setCreateOpen(false);
+                onCreateDialogOpenChange?.(false);
+              }}
+            >
+              stub-close-create
+            </button>
+            <button
+              onClick={() =>
+                onCreate({
+                  id: 'created-layer',
+                  title: 'Created Layer',
+                  ownerType: 'StoryMapNode',
+                  geojsonSignedUrl: 'https://example.com/created.geojson',
+                })
+              }
+            >
+              stub-create-layer
+            </button>
+          </div>
+        );
+      },
+    };
+  }
 );
 
 let mockDragEndHandler: ((result: unknown) => void) | undefined;
@@ -435,6 +457,8 @@ describe('MapConfigurationDialog', () => {
       expect(SIDEBAR_WIDTH).toBe(300);
       expect(screen.getByTestId('map-config-layers-panel')).toHaveStyle({
         width: '300px',
+        // 300px total (padding included) — same dimensions as RightSidebar.
+        boxSizing: 'border-box',
       });
     });
 
@@ -442,6 +466,11 @@ describe('MapConfigurationDialog', () => {
       await setup();
 
       const positionPanel = screen.getByTestId('map-config-position-panel');
+      // The invitation covers exactly the chapters list area (200px total).
+      expect(positionPanel).toHaveStyle({
+        width: '200px',
+        boxSizing: 'border-box',
+      });
       expect(
         within(positionPanel).getByText('Drag the map to change its position')
       ).toBeInTheDocument();
@@ -1454,6 +1483,76 @@ describe('MapConfigurationDialog', () => {
       // was draft-only (created layers commit immediately; draft edits do not).
       await setup(layerSetup);
       expect(orderListItems()).toEqual(['Beta', 'Alpha']);
+    });
+  });
+
+  describe('Test Suite 7: Escape and stacked sub-dialogs', () => {
+    it('lets the create layer dialog handle Escape before the overlay', async () => {
+      const { onCloseMock } = await setup();
+
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole('button', { name: 'stub-open-create' })
+        );
+      });
+
+      // First Escape belongs to the stacked create dialog (branch-1 parity).
+      await act(async () => {
+        fireEvent.keyDown(window, { key: 'Escape' });
+      });
+      expect(onCloseMock).not.toHaveBeenCalled();
+
+      // The create dialog closed itself on that Escape (as MUI dialogs do).
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole('button', { name: 'stub-close-create' })
+        );
+      });
+
+      // With no sub-dialog open, Escape cancels the overlay.
+      await act(async () => {
+        fireEvent.keyDown(window, { key: 'Escape' });
+      });
+      expect(onCloseMock).toHaveBeenCalled();
+    });
+
+    it('lets the set-map helper dialog handle Escape before the overlay', async () => {
+      const { onCloseMock } = await setup();
+
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole('button', {
+            name: 'Set the location, basemap style, and add layers',
+          })
+        );
+      });
+      expect(screen.getByText(/Step 1\. Find a location/)).toBeInTheDocument();
+
+      // Escape while the helper is stacked must not cancel the overlay (the
+      // helper gets the key first and closes itself — branch-1 parity).
+      const helperDialog = document.querySelector('.MuiPopover-root');
+      expect(helperDialog).not.toBeNull();
+      await act(async () => {
+        fireEvent.keyDown(helperDialog!, { key: 'Escape' });
+      });
+      expect(onCloseMock).not.toHaveBeenCalled();
+
+      // With the helper gone (its exit transition finished), Escape cancels
+      // the overlay.
+      const helperClose = helperDialog!.querySelector(
+        'button[title="Close"]'
+      ) as HTMLButtonElement;
+      expect(helperClose).not.toBeNull();
+      await act(async () => {
+        fireEvent.click(helperClose);
+      });
+      await waitFor(() => {
+        expect(document.querySelector('.MuiModal-root')).toBeNull();
+      });
+      await act(async () => {
+        fireEvent.keyDown(window, { key: 'Escape' });
+      });
+      expect(onCloseMock).toHaveBeenCalled();
     });
   });
 });

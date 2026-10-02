@@ -317,6 +317,9 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   const [changeBoundsLayerId, setChangeBoundsLayerId] = useState<
     string | undefined
   >();
+  // True while CreateMapLayerDialog is open: window drops must never swap the
+  // file mid-form, and Escape must close the modal before the overlay.
+  const [createFlowActive, setCreateFlowActive] = useState(false);
 
   const { map, changeStyle } = useMap();
 
@@ -434,19 +437,39 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     onClose();
   }, [onClose, mapStyle, config.style, changeStyle]);
 
-  // Escape cancels the overlay (X close button = Cancel).
+  // Escape cancels the overlay (X close button = Cancel). Stacked sub-dialogs
+  // (the create layer modal, the set-map helper popover, the style menu) are
+  // MUI modals in their own portals: Escape closes the topmost one first,
+  // exactly like branch 1's stacked dialog behavior.
+  const overlayRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!open) {
       return;
     }
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        handleCancel();
+      if (event.key !== 'Escape') {
+        return;
       }
+      if (createFlowActive) {
+        // The create layer modal owns this Escape (it closes itself).
+        return;
+      }
+      const stackedModal = document.querySelector('.MuiModal-root');
+      if (
+        stackedModal &&
+        !overlayRef.current?.contains(stackedModal) &&
+        stackedModal !== overlayRef.current
+      ) {
+        return;
+      }
+      handleCancel();
     };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [open, handleCancel]);
+    // Capture phase: probe for stacked dialogs BEFORE React processes their
+    // own Escape handling (which may unmount them synchronously on the way
+    // back up the bubble path).
+    window.addEventListener('keydown', onKeyDown, true);
+    return () => window.removeEventListener('keydown', onKeyDown, true);
+  }, [open, handleCancel, createFlowActive]);
 
   const handlePositionChange = useCallback((position: MapPosition) => {
     setMapCenter(position.center);
@@ -558,9 +581,6 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   const [pendingFile, setPendingFile] = useState<File | undefined>();
   const [dropError, setDropError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
-  // True while CreateMapLayerDialog is open: window drops must never swap the
-  // file mid-form.
-  const [createFlowActive, setCreateFlowActive] = useState(false);
   const startCreateFlow = useCallback(
     (file: File) => {
       if (createFlowActive) {
@@ -627,6 +647,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     <CollaborationContextProvider owner={storyMap} entityType="story_map">
       <Portal>
         <Box
+          ref={overlayRef}
           role="dialog"
           aria-labelledby="map-location-dialog-title"
           aria-describedby="map-location-dialog-content-text"
@@ -692,6 +713,8 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
               data-testid="map-config-position-panel"
               sx={{
                 width: 200,
+                // Cover exactly the chapters sidebar area (200px total).
+                boxSizing: 'border-box',
                 flexShrink: 0,
                 bgcolor: 'white',
                 overflowY: 'auto',
@@ -731,6 +754,9 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
               data-testid="map-config-layers-panel"
               sx={{
                 width: SIDEBAR_WIDTH,
+                // Same dimensions as the story map configuration right
+                // sidebar (RightSidebar SIDEBAR_WIDTH = 300, padding inside).
+                boxSizing: 'border-box',
                 flexShrink: 0,
                 bgcolor: 'white',
                 overflowY: 'auto',
