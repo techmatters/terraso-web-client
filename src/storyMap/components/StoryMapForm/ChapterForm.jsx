@@ -33,19 +33,12 @@ import {
 
 import { withProps } from 'terraso-web-client/react-hoc';
 
-import {
-  generateLayerId,
-  getLayerOpacity,
-  LAYER_TYPES,
-} from 'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer';
 import EditableMedia from 'terraso-web-client/storyMap/components/StoryMapForm/EditableMedia';
 import EditableRichText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableRichText';
 import EditableText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableText';
 import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
-import {
-  useStoryMapConfigActionsContext,
-  useStoryMapConfigDataContext,
-} from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import { toMapLayers } from 'terraso-web-client/storyMap/mapLayerUtils';
 import { ALIGNMENTS } from 'terraso-web-client/storyMap/storyMapConstants';
 import { chapterHasVisualMedia } from 'terraso-web-client/storyMap/storyMapUtils';
 
@@ -64,11 +57,10 @@ const ChapterConfig = props => {
     chapter,
     onLocationChange,
     onMapStyleChange,
-    onDataLayerChange,
+    onMapLayersChange,
     children,
   } = props;
   const [locationOpen, setLocationOpen] = useState(false);
-  const { config } = useStoryMapConfigDataContext();
 
   const options = useMemo(
     () => [
@@ -100,13 +92,13 @@ const ChapterConfig = props => {
   }, []);
 
   const onLocationChangeWrapper = useCallback(
-    ({ location, mapStyle, dataLayerConfig }) => {
+    ({ location, mapStyle, mapLayerRows }) => {
       onLocationChange(location);
       onMapStyleChange(mapStyle);
-      onDataLayerChange(dataLayerConfig);
+      onMapLayersChange({ mapLayerRows });
       onLocationClose();
     },
-    [onLocationChange, onLocationClose, onMapStyleChange, onDataLayerChange]
+    [onLocationChange, onLocationClose, onMapStyleChange, onMapLayersChange]
   );
 
   const hasVisualMedia = chapterHasVisualMedia(chapter);
@@ -117,10 +109,8 @@ const ChapterConfig = props => {
         <MapConfigurationDialog
           open={locationOpen}
           location={chapter.location}
-          mapLayerConfig={_.get(
-            `dataLayers.${chapter.dataLayerConfigId}`,
-            config
-          )}
+          mapLayers={chapter.mapLayers}
+          dataLayerConfigId={chapter.dataLayerConfigId}
           title={chapter.title}
           chapterId={chapter.id}
           onClose={onLocationClose}
@@ -205,31 +195,22 @@ const ChapterForm = props => {
     [setConfig]
   );
 
-  const onDataLayerChange = useCallback(
-    dataLayerConfig => {
-      const baseEvents = dataLayerConfig
-        ? Object.values(LAYER_TYPES).map(name => ({
-            layer: generateLayerId(dataLayerConfig.id, name),
-            opacity: getLayerOpacity(name, dataLayerConfig),
-            duration: 0,
-          }))
-        : [];
-      const onChapterEnter = baseEvents;
-      const onChapterExit = baseEvents.map(_.set('opacity', 0));
+  // Writes ONLY `mapLayers` + the `dataLayers` payload: the compat fields
+  // (dataLayerConfigId/onChapterEnter/onChapterExit) are derived from these at
+  // the config write boundary (syncTransitionLayerFields).
+  const onMapLayersChange = useCallback(
+    ({ mapLayerRows }) => {
+      const mapLayers = toMapLayers(mapLayerRows.map(({ layerId }) => layerId));
+      const dataLayerConfigs = _.keyBy(
+        'id',
+        mapLayerRows.map(({ config }) => config).filter(Boolean)
+      );
 
       setConfig(config => ({
-        ...(dataLayerConfig
-          ? _.set(`dataLayers.${dataLayerConfig.id}`, dataLayerConfig, config)
-          : config),
+        ...config,
+        dataLayers: { ...config.dataLayers, ...dataLayerConfigs },
         chapters: config.chapters.map(chapter =>
-          chapter.id === record.id
-            ? {
-                ...chapter,
-                dataLayerConfigId: dataLayerConfig?.id,
-                onChapterEnter,
-                onChapterExit,
-              }
-            : chapter
+          chapter.id === record.id ? { ...chapter, mapLayers } : chapter
         ),
       }));
     },
@@ -251,7 +232,7 @@ const ChapterForm = props => {
         onAlignmentChange={onFieldChange('alignment')}
         onLocationChange={onFieldChange('location')}
         onMapStyleChange={onMapStyleChange}
-        onDataLayerChange={onDataLayerChange}
+        onMapLayersChange={onMapLayersChange}
       >
         <Stack
           className="story-theme step-content"

@@ -96,6 +96,7 @@
     "localization-to-json": "node scripts/localization/transform-to.mjs json",
     "localization-check-missing": "node scripts/localization/missing-check.mjs",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org techmatters --project terraso-web-client ./build && sentry-cli sourcemaps upload --org techmatters --project terraso-web-client ./build",
+    "postinstall": "node scripts/patch-terraso-client-shared.mjs",
     "prepare": "husky"
   },
   "browserslist": [
