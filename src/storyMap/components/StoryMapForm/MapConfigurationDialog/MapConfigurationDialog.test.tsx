@@ -22,9 +22,11 @@ import {
   RenderResult,
   screen,
   waitFor,
+  within,
 } from 'terraso-web-client/tests/utils';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import {
+  createTestPosition,
   createTestStoryMap,
   createTestStoryMapConfig,
   createTestVisualizationConfigNode,
@@ -335,12 +337,26 @@ describe('MapConfigurationDialog', () => {
       await setup({ title: 'Chapter A' });
 
       expect(screen.getByRole('dialog', { hidden: true })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', {
+          level: 1,
+          name: 'Edit map for Chapter A',
+          hidden: true,
+        })
+      ).toBeInTheDocument();
     });
 
     it('renders dialog with fallback title when no title provided', async () => {
       await setup({ title: '' });
 
       expect(screen.getByRole('dialog', { hidden: true })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', {
+          level: 1,
+          name: 'Edit map',
+          hidden: true,
+        })
+      ).toBeInTheDocument();
     });
 
     it('closes dialog when cancel button is clicked', async () => {
@@ -423,7 +439,7 @@ describe('MapConfigurationDialog', () => {
       expect(orderListItems()).toEqual(['Beta']);
     });
 
-    it('reorders layers by drag and drop without changing dataLayerConfigId', async () => {
+    it('reorders layers by drag and drop without touching compat fields', async () => {
       const { onConfirmMock } = await setup({
         mapLayers: [{ layerId: 'layer-a' }, { layerId: 'layer-b' }],
         dataLayerConfigId: 'layer-a',
@@ -449,16 +465,270 @@ describe('MapConfigurationDialog', () => {
       });
 
       const payload = onConfirmMock.mock.calls[0][0];
-      expect(payload.mapLayerConfigs.map((c: MapLayerConfig) => c.id)).toEqual([
+      expect(payload.mapLayerRows.map((row: any) => row.layerId)).toEqual([
         'layer-b',
         'layer-a',
       ]);
-      // reorder does NOT change dataLayerConfigId
-      expect(payload.dataLayerConfigId).toBe('layer-a');
+      // The dialog writes ONLY mapLayers + dataLayers — no compat knowledge.
+      expect(payload.dataLayerConfigId).toBeUndefined();
+      expect(payload.onChapterEnter).toBeUndefined();
+    });
+
+    it('a cancelled drag is a no-op', async () => {
+      const { onConfirmMock } = await setup({
+        mapLayers: [{ layerId: 'layer-a' }, { layerId: 'layer-b' }],
+        dataLayerConfigId: 'layer-a',
+        configDataLayers: {
+          'layer-a': { id: 'layer-a', title: 'Alpha' } as MapLayerConfig,
+          'layer-b': { id: 'layer-b', title: 'Beta' } as MapLayerConfig,
+        },
+      });
+
+      await waitFor(() => expect(mockDragEndHandler).toBeDefined());
+
+      await act(async () => {
+        mockDragEndHandler?.({
+          source: { index: 1 },
+          destination: null,
+        });
+      });
+
+      expect(orderListItems()).toEqual(['Alpha', 'Beta']);
+
+      await act(async () => {
+        fireEvent.click(saveButton());
+      });
+
+      const payload = onConfirmMock.mock.calls[0][0];
+      expect(payload.mapLayerRows.map((row: any) => row.layerId)).toEqual([
+        'layer-a',
+        'layer-b',
+      ]);
+    });
+
+    it('a same-index drop is a no-op', async () => {
+      const { onConfirmMock } = await setup({
+        mapLayers: [{ layerId: 'layer-a' }, { layerId: 'layer-b' }],
+        dataLayerConfigId: 'layer-a',
+        configDataLayers: {
+          'layer-a': { id: 'layer-a', title: 'Alpha' } as MapLayerConfig,
+          'layer-b': { id: 'layer-b', title: 'Beta' } as MapLayerConfig,
+        },
+      });
+
+      await waitFor(() => expect(mockDragEndHandler).toBeDefined());
+
+      await act(async () => {
+        mockDragEndHandler?.({
+          source: { index: 1 },
+          destination: { index: 1 },
+        });
+      });
+
+      expect(orderListItems()).toEqual(['Alpha', 'Beta']);
+
+      await act(async () => {
+        fireEvent.click(saveButton());
+      });
+
+      const payload = onConfirmMock.mock.calls[0][0];
+      expect(payload.mapLayerRows.map((row: any) => row.layerId)).toEqual([
+        'layer-a',
+        'layer-b',
+      ]);
+    });
+
+    it('drag reorder with a dangling ref present moves the intended entries', async () => {
+      const { onConfirmMock } = await setup({
+        mapLayers: [
+          { layerId: 'ghost' },
+          { layerId: 'layer-a' },
+          { layerId: 'layer-b' },
+        ],
+        dataLayerConfigId: 'ghost',
+        configDataLayers: {
+          'layer-a': { id: 'layer-a', title: 'Alpha' } as MapLayerConfig,
+          'layer-b': { id: 'layer-b', title: 'Beta' } as MapLayerConfig,
+        },
+      });
+
+      expect(orderListItems()).toEqual(['Unknown layer', 'Alpha', 'Beta']);
+
+      await waitFor(() => expect(mockDragEndHandler).toBeDefined());
+
+      // Move Alpha (index 1) below Beta (index 2)
+      await act(async () => {
+        mockDragEndHandler?.({
+          source: { index: 1 },
+          destination: { index: 2 },
+        });
+      });
+
+      expect(orderListItems()).toEqual(['Unknown layer', 'Beta', 'Alpha']);
+
+      await act(async () => {
+        fireEvent.click(saveButton());
+      });
+
+      const payload = onConfirmMock.mock.calls[0][0];
+      expect(payload.mapLayerRows.map((row: any) => row.layerId)).toEqual([
+        'ghost',
+        'layer-b',
+        'layer-a',
+      ]);
+    });
+
+    it('a dangling ref survives confirm instead of being silently deleted', async () => {
+      const { onConfirmMock } = await setup({
+        mapLayers: [{ layerId: 'ghost' }, { layerId: 'layer-a' }],
+        dataLayerConfigId: 'ghost',
+        configDataLayers: {
+          'layer-a': { id: 'layer-a', title: 'Alpha' } as MapLayerConfig,
+        },
+      });
+
+      await act(async () => {
+        fireEvent.click(saveButton());
+      });
+
+      const payload = onConfirmMock.mock.calls[0][0];
+      expect(payload.mapLayerRows.map((row: any) => row.layerId)).toEqual([
+        'ghost',
+        'layer-a',
+      ]);
+      expect(payload.mapLayerRows[0].config).toBeNull();
     });
   });
 
   describe('Test Suite 3: Layer tree', () => {
+    it('keeps landscape grouping and live title for layers in both lists (F1)', async () => {
+      await setup({
+        dataLayers: {
+          landscapeConfigs: [
+            {
+              node: createTestVisualizationConfigNode({
+                id: 'shared-layer',
+                title: 'Live Title',
+                owner: {
+                  __typename: 'LandscapeNode',
+                  id: 'landscape-1',
+                  name: 'Alpha Landscape',
+                } as any,
+              }),
+            },
+          ],
+          myLandscapes: [membershipEdge('m2')],
+        },
+        // Stored (persisted) shape: whitelisted schema fields only — no
+        // ownerId/ownerName, and a stale title.
+        configDataLayers: {
+          'shared-layer': {
+            id: 'shared-layer',
+            title: 'Stale Title',
+            ownerType: 'LandscapeNode',
+          } as MapLayerConfig,
+        },
+      });
+
+      // Fetched metadata wins: the layer stays under its named landscape and
+      // shows its live title.
+      const landscapeGroup = screen.getByRole('treeitem', {
+        name: 'Alpha Landscape',
+      });
+      expect(
+        within(landscapeGroup).getByRole('treeitem', { name: 'Live Title' })
+      ).toBeInTheDocument();
+      expect(screen.queryByText('Stale Title')).not.toBeInTheDocument();
+      // No phantom owner group and not filed under "this story map".
+      expect(
+        within(
+          screen.getByRole('treeitem', { name: 'This story map' })
+        ).queryByRole('treeitem', { name: 'Live Title' })
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows a tree loading spinner while fetching, replaced when the layers resolve', async () => {
+      let resolveFetch: (value: unknown) => void = () => {};
+      (terrasoApi.requestGraphQL as jest.Mock).mockImplementation(
+        () =>
+          new Promise(resolve => {
+            resolveFetch = resolve;
+          })
+      );
+
+      const storyMapConfig = {
+        ...createTestStoryMapConfig(),
+        dataLayers: {},
+        chapters: [
+          {
+            id: 'chapter-1',
+            title: 'Test Chapter',
+            description: [],
+            alignment: 'center',
+          },
+        ],
+      } as unknown as StoryMapConfig;
+      await render(
+        <StoryMapConfigContextProvider
+          baseConfig={storyMapConfig}
+          storyMap={createTestStoryMap()}
+        >
+          <MapConfigurationDialog
+            open
+            onClose={jest.fn()}
+            onConfirm={jest.fn()}
+            chapterId="chapter-1"
+          />
+        </StoryMapConfigContextProvider>,
+        {
+          account: {
+            currentUser: {
+              data: { email: 'test@example.com' },
+            },
+          },
+          storyMap: {
+            dataLayers: {
+              fetching: true,
+              error: false,
+              list: [],
+              hasGroups: false,
+              hasLandscapes: false,
+            },
+          },
+        }
+      );
+
+      await waitFor(() => {
+        expect(screen.getByRole('progressbar')).toBeInTheDocument();
+      });
+
+      await act(async () => {
+        resolveFetch({
+          storyMapConfigs: {
+            edges: [
+              {
+                node: createTestVisualizationConfigNode({
+                  id: 'story-layer',
+                  title: 'Story Layer',
+                }),
+              },
+            ],
+          },
+          landscapeConfigs: { edges: [] },
+          groupConfigs: { edges: [] },
+          myGroups: { edges: [] },
+          myLandscapes: { edges: [] },
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+        expect(
+          screen.getByRole('treeitem', { name: 'Story Layer' })
+        ).toBeInTheDocument();
+      });
+    });
+
     it('builds the tree from fetched layers with the three sections', async () => {
       await setup({
         dataLayers: {
@@ -711,9 +981,9 @@ describe('MapConfigurationDialog', () => {
       const file = new File(['x'], 'points.geojson', {
         type: 'application/geo+json',
       });
-      const dropTarget = screen
-        .getByText('Add a map layer')
-        .closest('[role="button"]') as HTMLElement;
+      const dropTarget = screen.getByRole('button', {
+        name: 'Add a map layer',
+      });
 
       await act(async () => {
         fireEvent.drop(dropTarget, {
@@ -743,7 +1013,7 @@ describe('MapConfigurationDialog', () => {
   });
 
   describe('Test Suite 5: Confirm payload', () => {
-    it('sends the ordered layer configs with the most recently added selected', async () => {
+    it('sends the ordered layer rows with resolved configs (no compat fields)', async () => {
       const { onConfirmMock } = await setup();
 
       await act(async () => {
@@ -767,24 +1037,37 @@ describe('MapConfigurationDialog', () => {
       });
 
       const payload = onConfirmMock.mock.calls[0][0];
-      expect(payload.mapLayerConfigs.map((c: MapLayerConfig) => c.id)).toEqual([
+      expect(payload.mapLayerRows.map((row: any) => row.layerId)).toEqual([
         'test-story-map-2',
         'test-story-map-1',
       ]);
-      // dataLayerConfigId points at the most recently added layer
-      expect(payload.dataLayerConfigId).toBe('test-story-map-2');
+      expect(payload.mapLayerRows.map((row: any) => row.config?.id)).toEqual([
+        'test-story-map-2',
+        'test-story-map-1',
+      ]);
+      // The dialog writes ONLY mapLayers + dataLayers — no compat knowledge.
+      expect(payload.dataLayerConfigId).toBeUndefined();
+      expect(payload.onChapterEnter).toBeUndefined();
       expect(payload.mapStyle).toEqual(createTestStoryMapConfig().style);
     });
 
     it('sends the map location', async () => {
-      const { onConfirmMock } = await setup();
+      const { onConfirmMock } = await setup({
+        location: createTestPosition(),
+      });
 
       await act(async () => {
         fireEvent.click(saveButton());
       });
 
       const payload = onConfirmMock.mock.calls[0][0];
-      expect(payload.location).toBeDefined();
+      expect(payload.location).toEqual({
+        center: expect.anything(),
+        zoom: expect.anything(),
+        pitch: expect.anything(),
+        bearing: expect.anything(),
+        bounds: expect.anything(),
+      });
     });
   });
 });

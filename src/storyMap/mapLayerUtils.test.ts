@@ -15,17 +15,32 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import logger from 'terraso-client-shared/monitoring/logger';
+
 import {
-  addMapLayerToTransition,
+  addMapLayerId,
   generateLayerTransitionEvents,
-  removeMapLayerFromTransition,
-  reorderTransitionMapLayers,
+  isDataLayerSublayerId,
+  moveMapLayerId,
+  removeMapLayerId,
   resolveMapLayers,
+  syncTransitionLayerFields,
+  toMapLayers,
 } from 'terraso-web-client/storyMap/mapLayerUtils';
 import {
   MapLayerConfig,
   Transition,
 } from 'terraso-web-client/storyMap/storyMapTypes';
+
+jest.mock('terraso-client-shared/monitoring/logger', () => ({
+  __esModule: true,
+  default: {
+    log: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+  },
+}));
 
 const makeLayerConfig = (
   id: string,
@@ -135,43 +150,75 @@ describe('generateLayerTransitionEvents', () => {
     expect(onChapterEnter).toEqual([]);
     expect(onChapterExit).toEqual([]);
   });
+
+  test('skips unresolvable layers instead of baking in a placeholder opacity', () => {
+    const { onChapterEnter, onChapterExit } = generateLayerTransitionEvents(
+      [{ layerId: 'a' }, { layerId: 'ghost' }],
+      resolveConfig
+    );
+
+    expect(eventLayers(onChapterEnter)).toEqual([
+      'a-markers',
+      'a-polygons-fill',
+      'a-polygons-outline',
+    ]);
+    expect(onChapterEnter).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ layer: 'ghost-polygons-fill' }),
+      ])
+    );
+    expect(eventLayers(onChapterExit)).toEqual(eventLayers(onChapterEnter));
+    expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('ghost'));
+  });
 });
 
-describe('addMapLayerToTransition', () => {
-  test('prepends the layer (index 0 = topmost)', () => {
-    const transition: Transition = {
-      location: {} as Transition['location'],
-      mapLayers: [{ layerId: 'a' }],
-      dataLayerConfigId: 'a',
-    };
+describe('isDataLayerSublayerId', () => {
+  test('matches generated sublayer ids only', () => {
+    expect(isDataLayerSublayerId('a-markers')).toBe(true);
+    expect(isDataLayerSublayerId('a-polygons-outline')).toBe(true);
+    expect(isDataLayerSublayerId('a-polygons-fill')).toBe(true);
+    expect(isDataLayerSublayerId('water')).toBe(false);
+    expect(isDataLayerSublayerId('road-label')).toBe(false);
+  });
+});
 
-    const updated = addMapLayerToTransition(transition, layerB, resolveConfig);
-
-    expect(updated.mapLayers).toEqual([{ layerId: 'b' }, { layerId: 'a' }]);
+describe('ordered layer id list operations', () => {
+  test('addMapLayerId prepends (index 0 = topmost) and dedupes', () => {
+    expect(addMapLayerId(['a'], 'b')).toEqual(['b', 'a']);
+    expect(addMapLayerId(['b', 'a'], 'a')).toEqual(['a', 'b']);
+    expect(addMapLayerId([], 'a')).toEqual(['a']);
   });
 
-  test('sets dataLayerConfigId to the newly added layer', () => {
-    const transition: Transition = {
-      location: {} as Transition['location'],
-      mapLayers: [{ layerId: 'a' }],
-      dataLayerConfigId: 'a',
-    };
-
-    const updated = addMapLayerToTransition(transition, layerB, resolveConfig);
-
-    expect(updated.dataLayerConfigId).toBe('b');
+  test('removeMapLayerId drops the layer and keeps the rest ordered', () => {
+    expect(removeMapLayerId(['b', 'a'], 'b')).toEqual(['a']);
+    expect(removeMapLayerId(['b', 'a'], 'x')).toEqual(['b', 'a']);
   });
 
-  test('regenerates enter/exit events for ALL layers', () => {
+  test('moveMapLayerId moves by index (drag reorder semantics)', () => {
+    expect(moveMapLayerId(['a', 'b', 'c'], 0, 2)).toEqual(['b', 'c', 'a']);
+    expect(moveMapLayerId(['a', 'b', 'c'], 2, 0)).toEqual(['c', 'a', 'b']);
+  });
+
+  test('toMapLayers maps ids to mapLayers refs', () => {
+    expect(toMapLayers(['b', 'a'])).toEqual([
+      { layerId: 'b' },
+      { layerId: 'a' },
+    ]);
+    expect(toMapLayers([])).toEqual([]);
+  });
+});
+
+describe('syncTransitionLayerFields', () => {
+  test('regenerates events for ALL layers of mapLayers', () => {
     const transition: Transition = {
       location: {} as Transition['location'],
-      mapLayers: [{ layerId: 'a' }],
+      mapLayers: [{ layerId: 'a' }, { layerId: 'b' }],
       dataLayerConfigId: 'a',
     };
 
-    const updated = addMapLayerToTransition(transition, layerB, resolveConfig);
+    const derived = syncTransitionLayerFields(transition, resolveConfig);
 
-    expect(eventLayers(updated.onChapterEnter)).toEqual([
+    expect(eventLayers(derived.onChapterEnter)).toEqual([
       'a-markers',
       'a-polygons-fill',
       'a-polygons-outline',
@@ -179,159 +226,187 @@ describe('addMapLayerToTransition', () => {
       'b-polygons-fill',
       'b-polygons-outline',
     ]);
-    // per-layer-type opacities are kept for the pre-existing layer too
-    expect(updated.onChapterEnter).toEqual(
+    expect(derived.onChapterEnter).toEqual(
       expect.arrayContaining([
         { layer: 'a-polygons-fill', opacity: 0.5, duration: 0 },
         { layer: 'b-polygons-fill', opacity: 0.25, duration: 0 },
       ])
     );
-    expect(updated.onChapterExit?.every(event => event.opacity === 0)).toBe(
+    expect(derived.onChapterExit?.every(event => event.opacity === 0)).toBe(
       true
     );
   });
 
-  test('works on a legacy transition without mapLayers', () => {
-    const transition: Transition = {
-      location: {} as Transition['location'],
-      dataLayerConfigId: 'a',
-    };
-
-    const updated = addMapLayerToTransition(transition, layerB, resolveConfig);
-
-    expect(updated.mapLayers).toEqual([{ layerId: 'b' }, { layerId: 'a' }]);
-    expect(updated.dataLayerConfigId).toBe('b');
-  });
-
-  test('moves an already-present layer to the top instead of duplicating it', () => {
-    const transition: Transition = {
-      location: {} as Transition['location'],
-      mapLayers: [{ layerId: 'b' }, { layerId: 'a' }],
-      dataLayerConfigId: 'a',
-    };
-
-    const updated = addMapLayerToTransition(transition, layerA, resolveConfig);
-
-    expect(updated.mapLayers).toEqual([{ layerId: 'a' }, { layerId: 'b' }]);
-  });
-
-  test('preserves unrelated transition fields (location, alignment, media…)', () => {
-    const transition = {
-      id: 'chapter-1',
-      title: 'Chapter',
-      location: { zoom: 4 },
-    } as unknown as Transition;
-
-    const updated = addMapLayerToTransition(transition, layerA, resolveConfig);
-
-    expect(updated).toMatchObject({
-      id: 'chapter-1',
-      title: 'Chapter',
-      location: { zoom: 4 },
-    });
-  });
-});
-
-describe('removeMapLayerFromTransition', () => {
-  test('drops the layer and regenerates events for the remaining layers', () => {
-    const transition: Transition = {
-      location: {} as Transition['location'],
-      mapLayers: [{ layerId: 'b' }, { layerId: 'a' }],
-      dataLayerConfigId: 'b',
-    };
-
-    const updated = removeMapLayerFromTransition(
-      transition,
-      'b',
-      resolveConfig
-    );
-
-    expect(updated.mapLayers).toEqual([{ layerId: 'a' }]);
-    expect(eventLayers(updated.onChapterEnter)).toEqual([
-      'a-markers',
-      'a-polygons-fill',
-      'a-polygons-outline',
-    ]);
-    expect(updated.onChapterExit?.every(event => event.opacity === 0)).toBe(
-      true
-    );
-  });
-
-  test('repoints dataLayerConfigId to the remaining topmost layer', () => {
-    const transition: Transition = {
-      location: {} as Transition['location'],
-      mapLayers: [{ layerId: 'b' }, { layerId: 'a' }],
-      dataLayerConfigId: 'b',
-    };
-
-    const updated = removeMapLayerFromTransition(
-      transition,
-      'b',
-      resolveConfig
-    );
-
-    expect(updated.dataLayerConfigId).toBe('a');
-  });
-
-  test('keeps dataLayerConfigId when it points at another layer', () => {
-    const transition: Transition = {
-      location: {} as Transition['location'],
-      mapLayers: [{ layerId: 'b' }, { layerId: 'a' }],
-      dataLayerConfigId: 'a',
-    };
-
-    const updated = removeMapLayerFromTransition(
-      transition,
-      'b',
-      resolveConfig
-    );
-
-    expect(updated.dataLayerConfigId).toBe('a');
-  });
-
-  test('clears dataLayerConfigId when no layers remain', () => {
+  test('drops stale generated entries for removed layers', () => {
     const transition: Transition = {
       location: {} as Transition['location'],
       mapLayers: [{ layerId: 'a' }],
       dataLayerConfigId: 'a',
+      onChapterEnter: [
+        { layer: 'a-markers', opacity: 1, duration: 0 },
+        { layer: 'b-markers', opacity: 1, duration: 0 },
+        { layer: 'b-polygons-fill', opacity: 0.25, duration: 0 },
+      ],
+      onChapterExit: [
+        { layer: 'a-markers', opacity: 0, duration: 0 },
+        { layer: 'b-markers', opacity: 0, duration: 0 },
+      ],
     };
 
-    const updated = removeMapLayerFromTransition(
-      transition,
-      'a',
-      resolveConfig
-    );
+    const derived = syncTransitionLayerFields(transition, resolveConfig);
 
-    expect(updated.mapLayers).toEqual([]);
-    expect(updated.dataLayerConfigId).toBeUndefined();
-    expect(updated.onChapterEnter).toEqual([]);
-    expect(updated.onChapterExit).toEqual([]);
+    expect(eventLayers(derived.onChapterEnter)).toEqual([
+      'a-markers',
+      'a-polygons-fill',
+      'a-polygons-outline',
+    ]);
+    expect(eventLayers(derived.onChapterExit)).toEqual([
+      'a-markers',
+      'a-polygons-fill',
+      'a-polygons-outline',
+    ]);
   });
-});
 
-describe('reorderTransitionMapLayers', () => {
-  test('only changes the mapLayers order', () => {
+  test('preserves hand-authored non-layer event entries', () => {
     const transition: Transition = {
       location: {} as Transition['location'],
-      mapLayers: [{ layerId: 'a' }, { layerId: 'b' }, { layerId: 'c' }],
-      dataLayerConfigId: 'b',
-      onChapterEnter: [{ layer: 'a-markers', opacity: 1, duration: 0 }],
-      onChapterExit: [{ layer: 'a-markers', opacity: 0, duration: 0 }],
+      mapLayers: [{ layerId: 'a' }],
+      dataLayerConfigId: 'a',
+      onChapterEnter: [
+        { layer: 'water', opacity: 0, duration: 0.5 },
+        { layer: 'a-markers', opacity: 1, duration: 0 },
+      ],
+      onChapterExit: [{ layer: 'water', opacity: 1, duration: 0.5 }],
     };
 
-    const updated = reorderTransitionMapLayers(transition, [
-      { layerId: 'c' },
-      { layerId: 'a' },
-      { layerId: 'b' },
-    ]);
+    const derived = syncTransitionLayerFields(transition, resolveConfig);
 
-    expect(updated.mapLayers).toEqual([
-      { layerId: 'c' },
-      { layerId: 'a' },
-      { layerId: 'b' },
+    expect(derived.onChapterEnter).toEqual(
+      expect.arrayContaining([
+        { layer: 'water', opacity: 0, duration: 0.5 },
+        { layer: 'a-markers', opacity: 1, duration: 0 },
+      ])
+    );
+    expect(eventLayers(derived.onChapterEnter)).toEqual([
+      'a-markers',
+      'a-polygons-fill',
+      'a-polygons-outline',
+      'water',
     ]);
-    expect(updated.dataLayerConfigId).toBe('b');
-    expect(updated.onChapterEnter).toBe(transition.onChapterEnter);
-    expect(updated.onChapterExit).toBe(transition.onChapterExit);
+    expect(derived.onChapterExit).toEqual(
+      expect.arrayContaining([{ layer: 'water', opacity: 1, duration: 0.5 }])
+    );
+    expect(eventLayers(derived.onChapterExit)).toEqual([
+      'a-markers',
+      'a-polygons-fill',
+      'a-polygons-outline',
+      'water',
+    ]);
+  });
+
+  test('dataLayerConfigId points at the most recently added layer', () => {
+    const transition: Transition = {
+      location: {} as Transition['location'],
+      mapLayers: [{ layerId: 'b' }, { layerId: 'a' }],
+      dataLayerConfigId: 'a',
+    };
+
+    // layer b was just added at the top; previous state was [a]
+    const derived = syncTransitionLayerFields(transition, resolveConfig, {
+      mapLayers: [{ layerId: 'a' }],
+      dataLayerConfigId: 'a',
+    });
+
+    expect(derived.dataLayerConfigId).toBe('b');
+  });
+
+  test('keeps dataLayerConfigId across a reorder', () => {
+    const transition: Transition = {
+      location: {} as Transition['location'],
+      mapLayers: [{ layerId: 'c' }, { layerId: 'a' }, { layerId: 'b' }],
+      dataLayerConfigId: 'b',
+    };
+
+    const derived = syncTransitionLayerFields(transition, resolveConfig, {
+      mapLayers: [{ layerId: 'a' }, { layerId: 'b' }, { layerId: 'c' }],
+      dataLayerConfigId: 'b',
+    });
+
+    expect(derived.dataLayerConfigId).toBe('b');
+  });
+
+  test('repoints dataLayerConfigId to the topmost remaining layer on removal', () => {
+    const transition: Transition = {
+      location: {} as Transition['location'],
+      mapLayers: [{ layerId: 'a' }],
+    };
+
+    const derived = syncTransitionLayerFields(transition, resolveConfig, {
+      mapLayers: [{ layerId: 'b' }, { layerId: 'a' }],
+      dataLayerConfigId: 'b',
+    });
+
+    expect(derived.dataLayerConfigId).toBe('a');
+  });
+
+  test('keeps dataLayerConfigId when it points at another remaining layer', () => {
+    const transition: Transition = {
+      location: {} as Transition['location'],
+      mapLayers: [{ layerId: 'b' }, { layerId: 'a' }],
+      dataLayerConfigId: 'a',
+    };
+
+    const derived = syncTransitionLayerFields(transition, resolveConfig, {
+      mapLayers: [{ layerId: 'b' }, { layerId: 'a' }, { layerId: 'c' }],
+      dataLayerConfigId: 'a',
+    });
+
+    expect(derived.dataLayerConfigId).toBe('a');
+  });
+
+  test('clears dataLayerConfigId when the last layer is removed', () => {
+    const transition: Transition = {
+      location: {} as Transition['location'],
+      mapLayers: [],
+    };
+
+    const derived = syncTransitionLayerFields(transition, resolveConfig, {
+      mapLayers: [{ layerId: 'a' }],
+      dataLayerConfigId: 'a',
+    });
+
+    expect(derived.dataLayerConfigId).toBeUndefined();
+    expect(derived.onChapterEnter).toEqual([]);
+    expect(derived.onChapterExit).toEqual([]);
+  });
+
+  test('leaves legacy transitions without mapLayers untouched (no migration)', () => {
+    const transition: Transition = {
+      location: {} as Transition['location'],
+      dataLayerConfigId: 'a',
+      onChapterEnter: [{ layer: 'layer1', opacity: 1, duration: 0 }],
+      onChapterExit: [{ layer: 'layer1', opacity: 0, duration: 0 }],
+    };
+
+    const derived = syncTransitionLayerFields(transition, resolveConfig);
+
+    expect(derived).toEqual({});
+  });
+
+  test('keeps dangling layer refs out of the generated events (resolver miss)', () => {
+    const transition: Transition = {
+      location: {} as Transition['location'],
+      mapLayers: [{ layerId: 'a' }, { layerId: 'ghost' }],
+      dataLayerConfigId: 'a',
+    };
+
+    const derived = syncTransitionLayerFields(transition, resolveConfig);
+
+    expect(eventLayers(derived.onChapterEnter)).toEqual([
+      'a-markers',
+      'a-polygons-fill',
+      'a-polygons-outline',
+    ]);
+    expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('ghost'));
   });
 });
