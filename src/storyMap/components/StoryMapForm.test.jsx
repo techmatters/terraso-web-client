@@ -1493,36 +1493,42 @@ test('StoryMapForm: Add map layer', async () => {
     name: 'Edit map for Chapter 1',
   });
 
-  const addDataLayerButton = within(dialog).getByRole('button', {
-    name: 'Add Map Layer',
-  });
-  await act(async () => fireEvent.click(addDataLayerButton));
+  const addDataLayerItem = await (async () => {
+    await waitFor(() => {
+      expect(
+        within(dialog).getByRole('treeitem', {
+          name: 'Datalayer title 1',
+        })
+      ).toBeInTheDocument();
+    });
+    return within(dialog).getByRole('treeitem', {
+      name: 'Datalayer title 1',
+    });
+  })();
 
-  const dataMapDialog = screen.getByRole('dialog', {
-    name: 'Add a map layer to Chapter 1',
-  });
-
-  const dataLayerItem = within(dataMapDialog).getByRole('listitem', {
-    name: 'Datalayer title 1',
-  });
+  // Only renderable layers are listed in the tree: "Datalayer title 2" is
+  // still processing and "Datalayer title 3" has no tileset.
   expect(
-    within(dataMapDialog).queryByRole('listitem', {
+    within(dialog).queryByRole('treeitem', {
       name: 'Datalayer title 2',
     })
   ).not.toBeInTheDocument();
   expect(
-    within(dataMapDialog).queryByRole('listitem', {
+    within(dialog).queryByRole('treeitem', {
       name: 'Datalayer title 3',
     })
   ).not.toBeInTheDocument();
 
-  const radioButton = within(dataLayerItem).getByRole('radio');
-  await act(async () => fireEvent.click(radioButton));
+  await act(async () => fireEvent.click(addDataLayerItem));
 
-  const nextButton = within(dataMapDialog).getByRole('button', {
-    name: 'Next',
+  // Toggling the layer on puts it in the chapter's layer order list
+  await waitFor(() => {
+    expect(
+      within(dialog).getByRole('listitem', {
+        name: 'Datalayer title 1',
+      })
+    ).toBeInTheDocument();
   });
-  await act(async () => fireEvent.click(nextButton));
 
   await waitFor(() => {
     expect(
@@ -1545,6 +1551,7 @@ test('StoryMapForm: Add map layer', async () => {
     expect.objectContaining({
       chapters: expect.arrayContaining([
         expect.objectContaining({
+          mapLayers: [{ layerId: 'ac0853a2-99e4-4794-93ca-aafc89f361b6' }],
           dataLayerConfigId: 'ac0853a2-99e4-4794-93ca-aafc89f361b6',
         }),
       ]),

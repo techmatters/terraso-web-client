@@ -30,11 +30,16 @@ import {
   createTestVisualizationConfigNode,
 } from 'terraso-web-client/tests/data/storyMap';
 
-import { CollaborationContextProvider } from 'terraso-web-client/collaboration/collaborationContext';
 import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
-import { MapLayerDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerDialog';
-import { StoryMapConfigContextProvider } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
-import { MapLayerConfig } from 'terraso-web-client/storyMap/storyMapTypes';
+import {
+  StoryMapConfigContextProvider,
+  useStoryMapConfigDataContext,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
+import {
+  MapLayerConfig,
+  MapLayerTransition,
+  StoryMapConfig,
+} from 'terraso-web-client/storyMap/storyMapTypes';
 
 // Mock terrasoApi at the network boundary
 jest.mock('terraso-client-shared/terrasoApi/api');
@@ -42,10 +47,76 @@ jest.mock('terraso-client-shared/terrasoApi/api');
 // Set up mocks BEFORE importing components
 jest.mock('terraso-web-client/gis/components/Map', () => {
   const { forwardRef } = jest.requireActual('react');
-  return forwardRef(function MockMap() {
-    return <div data-testid="mock-map">Map</div>;
-  });
+  return {
+    __esModule: true,
+    default: forwardRef(function MockMap(
+      { children }: { children: any },
+      _ref: unknown
+    ) {
+      return <div data-testid="mock-map">{children}</div>;
+    }),
+    useMap: () => ({ map: null }),
+  };
 });
+
+jest.mock('terraso-web-client/storyMap/components/StoryMapLayer', () => ({
+  __esModule: true,
+  StoryMapLayer: ({ config }: { config: { id: string } }) => (
+    <div data-testid={`mock-layer-${config.id}`} />
+  ),
+}));
+
+jest.mock(
+  'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog',
+  () => ({
+    __esModule: true,
+    CreateMapLayerFileUpload: ({
+      onCreate,
+      externalFile,
+    }: {
+      onCreate: (mapLayer: unknown) => void;
+      externalFile?: File;
+    }) => (
+      <div data-testid="stub-create-flow">
+        <span data-testid="stub-create-file">{externalFile?.name ?? ''}</span>
+        <button
+          onClick={() =>
+            onCreate({
+              id: 'created-layer',
+              title: 'Created Layer',
+              ownerType: 'StoryMapNode',
+              geojsonSignedUrl: 'https://example.com/created.geojson',
+            })
+          }
+        >
+          stub-create-layer
+        </button>
+      </div>
+    ),
+  })
+);
+
+let mockDragEndHandler: ((result: unknown) => void) | undefined;
+jest.mock('@hello-pangea/dnd', () => ({
+  __esModule: true,
+  DragDropContext: ({
+    onDragEnd,
+    children,
+  }: {
+    onDragEnd: (result: unknown) => void;
+    children: any;
+  }) => {
+    mockDragEndHandler = onDragEnd;
+    return <div data-testid="dnd-context">{children}</div>;
+  },
+  Droppable: ({ children }: { children: any }) =>
+    children({ innerRef: () => {}, droppableProps: {}, placeholder: null }),
+  Draggable: ({ children }: { children: any }) =>
+    children(
+      { innerRef: () => {}, draggableProps: {}, dragHandleProps: {} },
+      { isDragging: false }
+    ),
+}));
 
 type ConfigEdge = { node: { id: string } };
 type MembershipListEdge = {
@@ -86,11 +157,13 @@ const mockGraphQLRequest = (query: string | any): Promise<any> => {
           {
             node: createTestVisualizationConfigNode({
               id: 'test-story-map-1',
+              title: 'Story Map Layer 1',
             }),
           },
           {
             node: createTestVisualizationConfigNode({
               id: 'test-story-map-2',
+              title: 'Story Map Layer 2',
             }),
           },
         ],
@@ -102,24 +175,36 @@ const mockGraphQLRequest = (query: string | any): Promise<any> => {
     });
   }
 
-  if (queryString.includes('addVisualizationConfig')) {
-    return Promise.resolve({
-      addVisualizationConfig: createTestVisualizationConfigNode(),
-    });
-  }
-
   // Fallback for other queries
   return Promise.resolve({});
 };
+
+const ConfigProbe = () => {
+  const { config } = useStoryMapConfigDataContext() as {
+    config: StoryMapConfig;
+  };
+  return (
+    <div data-testid="config-probe">
+      {JSON.stringify({
+        mapLayers: config.chapters?.[0]?.mapLayers,
+        dataLayerConfigId: config.chapters?.[0]?.dataLayerConfigId,
+        dataLayerIds: Object.keys(config.dataLayers ?? {}).sort(),
+      })}
+    </div>
+  );
+};
+
+const probeData = () =>
+  JSON.parse(screen.getByTestId('config-probe').textContent ?? '{}');
 
 interface SetupOptions {
   open?: boolean;
   location?: any;
   title?: string;
   chapterId?: string;
-  mapLayerConfig?: MapLayerConfig | null;
-  existingMapLayers?: MapLayerConfig[];
-  isOwner?: boolean;
+  mapLayers?: MapLayerTransition[];
+  dataLayerConfigId?: string;
+  configDataLayers?: Record<string, MapLayerConfig>;
   dataLayers?: DataLayersMock;
 }
 
@@ -135,8 +220,9 @@ const setup = async (options: SetupOptions = {}): Promise<SetupResult> => {
     location = undefined,
     title = 'Test Chapter',
     chapterId = 'chapter-1',
-    mapLayerConfig = null,
-    existingMapLayers = [],
+    mapLayers = undefined,
+    dataLayerConfigId = undefined,
+    configDataLayers = {},
     dataLayers,
   } = options;
 
@@ -144,7 +230,21 @@ const setup = async (options: SetupOptions = {}): Promise<SetupResult> => {
     dataLayersMock = dataLayers;
   }
 
-  const storyMapConfig = createTestStoryMapConfig();
+  const storyMapConfig = {
+    ...createTestStoryMapConfig(),
+    dataLayers: configDataLayers,
+    chapters: [
+      {
+        id: 'chapter-1',
+        title: 'Test Chapter',
+        description: [],
+        alignment: 'center',
+        location: createTestStoryMapConfig().titleTransition?.location,
+        mapLayers,
+        dataLayerConfigId,
+      },
+    ],
+  } as unknown as StoryMapConfig;
   const storyMap = createTestStoryMap();
   const onCloseMock = jest.fn();
   const onConfirmMock = jest.fn();
@@ -163,11 +263,10 @@ const setup = async (options: SetupOptions = {}): Promise<SetupResult> => {
       dataLayers: {
         fetching: false,
         error: false,
-        list: existingMapLayers,
+        list: [],
         hasGroups: false,
         hasLandscapes: false,
       },
-      // other default state
     },
   };
 
@@ -183,11 +282,27 @@ const setup = async (options: SetupOptions = {}): Promise<SetupResult> => {
         location={location}
         title={title}
         chapterId={chapterId}
-        mapLayerConfig={mapLayerConfig}
+        mapLayers={mapLayers}
+        dataLayerConfigId={dataLayerConfigId}
       />
+      <ConfigProbe />
     </StoryMapConfigContextProvider>,
     defaultInitialState
   );
+
+  await waitFor(() => {
+    expect(
+      screen.getByRole('list', {
+        name: 'Map layers in this chapter, topmost first',
+      })
+    ).toBeTruthy();
+  });
+  await waitFor(() => {
+    expect(
+      screen.getByRole('tree') ||
+        screen.getByText(/couldn't load the map layers/i)
+    ).toBeTruthy();
+  });
 
   return {
     renderResult: utils,
@@ -196,26 +311,19 @@ const setup = async (options: SetupOptions = {}): Promise<SetupResult> => {
   };
 };
 
-const openMapLayerDialog = async () => {
-  const addButton = screen.getByRole('button', {
-    name: /add map layer/i,
-  });
+const orderListItems = () =>
+  screen
+    .queryAllByRole('listitem')
+    .map(item => item.getAttribute('aria-label') ?? item.textContent);
 
-  await act(async () => {
-    fireEvent.click(addButton);
-  });
-
-  await waitFor(() => {
-    expect(screen.getByText(/or select a layer:/i)).toBeInTheDocument();
-  });
-};
+const saveButton = () => screen.getByRole('button', { name: 'Save Map' });
 
 describe('MapConfigurationDialog', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockDragEndHandler = undefined;
     dataLayersMock = {};
 
-    // Mock network boundary only
     (terrasoApi.requestGraphQL as jest.Mock).mockImplementation(
       mockGraphQLRequest
     );
@@ -225,7 +333,6 @@ describe('MapConfigurationDialog', () => {
     it('renders dialog with chapter title', async () => {
       await setup({ title: 'Chapter A' });
 
-      // The dialog should be rendered in the document
       expect(screen.getByRole('dialog', { hidden: true })).toBeInTheDocument();
     });
 
@@ -238,454 +345,240 @@ describe('MapConfigurationDialog', () => {
     it('closes dialog when cancel button is clicked', async () => {
       const { onCloseMock, onConfirmMock } = await setup();
 
-      const cancelButton = screen.getByRole('button', {
-        name: /cancel/i,
-      });
-
       await act(async () => {
-        fireEvent.click(cancelButton);
+        fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
       });
 
       expect(onCloseMock).toHaveBeenCalled();
       expect(onConfirmMock).not.toHaveBeenCalled();
     });
 
-    it('does not show MapLayerDialog when dialog is not open', async () => {
-      await setup({ open: false });
+    it('renders the right column with the add control, order list and layer tree', async () => {
+      await setup();
 
-      // Check for the MapLayerDialog's unique content when closed
-      expect(screen.queryByText(/or select a layer/i)).not.toBeInTheDocument();
+      // 1. compact add control
+      expect(screen.getByText('Add a map layer')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'Drag and drop a map file here, or select one from your device.'
+        )
+      ).toBeInTheDocument();
+
+      // 2. reorderable order list
+      expect(
+        screen.getByRole('list', {
+          name: 'Map layers in this chapter, topmost first',
+        })
+      ).toBeInTheDocument();
+
+      // 3. directory tree of the user's layers
+      expect(screen.getByRole('tree')).toBeInTheDocument();
     });
   });
 
-  describe('Test Suite 2: Adding an Existing Map Layer', () => {
-    it('displays "Add" button when no layer is configured', async () => {
-      await setup();
-
-      const addButton = screen.getByRole('button', {
-        name: /add map layer/i,
+  describe('Test Suite 2: Chapter layer order list', () => {
+    it('shows the chapter layers topmost first', async () => {
+      await setup({
+        mapLayers: [{ layerId: 'layer-b' }, { layerId: 'layer-a' }],
+        dataLayerConfigId: 'layer-b',
+        configDataLayers: {
+          'layer-a': { id: 'layer-a', title: 'Alpha' } as MapLayerConfig,
+          'layer-b': { id: 'layer-b', title: 'Beta' } as MapLayerConfig,
+        },
       });
-      expect(addButton).toBeInTheDocument();
-      expect(addButton).not.toHaveAttribute('disabled');
+
+      expect(orderListItems()).toEqual(['Beta', 'Alpha']);
     });
 
-    it('opens MapLayerDialog when "Add" button is clicked', async () => {
-      await setup();
-
-      await openMapLayerDialog();
-
-      expect(screen.getByText(/or select a layer/i)).toBeInTheDocument();
-    });
-  });
-
-  describe('Test Suite 3: MapLayerDialog Rendering with CreateMapLayerSection', () => {
-    it('opens MapLayerDialog when "Add" button is clicked', async () => {
-      await setup();
-
-      await openMapLayerDialog();
-
-      expect(screen.getByText(/or select a layer/i)).toBeInTheDocument();
-    });
-
-    it('renders MapLayerDialog with both create and select sections when opened', async () => {
-      await setup();
-
-      await openMapLayerDialog();
-
-      // MapLayerDialog should render with both sections
-      // Check for the "select layer" section which confirms MapLayerDialog is open
-      await waitFor(() => {
-        const selectLayerText = screen.getByText(/or select a layer/i);
-        expect(selectLayerText).toBeInTheDocument();
+    it('falls back to legacy dataLayerConfigId when mapLayers is absent', async () => {
+      await setup({
+        dataLayerConfigId: 'layer-a',
+        configDataLayers: {
+          'layer-a': { id: 'layer-a', title: 'Alpha' } as MapLayerConfig,
+        },
       });
+
+      expect(orderListItems()).toEqual(['Alpha']);
     });
 
-    it('closes MapLayerDialog when cancel button is clicked', async () => {
-      await setup();
-
-      await openMapLayerDialog();
-
-      // Find and click the cancel button in the MapLayerDialog
-      // The MapLayerDialog has a Cancel button with text "Cancel"
-      const buttons = screen.getAllByRole('button');
-      const cancelButtons = buttons.filter(
-        btn =>
-          btn.textContent === 'Cancel' || btn.textContent?.includes('Cancel')
-      );
-
-      // There should be multiple cancel buttons (one in main dialog, one in MapLayerDialog)
-      // Click the last one which is in MapLayerDialog
-      expect(cancelButtons.length).toBeGreaterThan(0);
-
-      const mapLayerDialogCancelButton =
-        cancelButtons[cancelButtons.length - 1];
+    it('removes a layer from the chapter when its X icon is clicked', async () => {
+      await setup({
+        mapLayers: [{ layerId: 'layer-b' }, { layerId: 'layer-a' }],
+        dataLayerConfigId: 'layer-b',
+        configDataLayers: {
+          'layer-a': { id: 'layer-a', title: 'Alpha' } as MapLayerConfig,
+          'layer-b': { id: 'layer-b', title: 'Beta' } as MapLayerConfig,
+        },
+      });
 
       await act(async () => {
-        fireEvent.click(mapLayerDialogCancelButton);
+        fireEvent.click(
+          screen.getByRole('button', {
+            name: 'Remove Alpha from this chapter',
+          })
+        );
       });
 
-      await waitFor(() => {
-        expect(
-          screen.queryByText(/or select a layer/i)
-        ).not.toBeInTheDocument();
+      expect(orderListItems()).toEqual(['Beta']);
+    });
+
+    it('reorders layers by drag and drop without changing dataLayerConfigId', async () => {
+      const { onConfirmMock } = await setup({
+        mapLayers: [{ layerId: 'layer-a' }, { layerId: 'layer-b' }],
+        dataLayerConfigId: 'layer-a',
+        configDataLayers: {
+          'layer-a': { id: 'layer-a', title: 'Alpha' } as MapLayerConfig,
+          'layer-b': { id: 'layer-b', title: 'Beta' } as MapLayerConfig,
+        },
       });
+
+      await waitFor(() => expect(mockDragEndHandler).toBeDefined());
+
+      await act(async () => {
+        mockDragEndHandler?.({
+          source: { index: 0 },
+          destination: { index: 1 },
+        });
+      });
+
+      expect(orderListItems()).toEqual(['Beta', 'Alpha']);
+
+      await act(async () => {
+        fireEvent.click(saveButton());
+      });
+
+      const payload = onConfirmMock.mock.calls[0][0];
+      expect(payload.mapLayerConfigs.map((c: MapLayerConfig) => c.id)).toEqual([
+        'layer-b',
+        'layer-a',
+      ]);
+      // reorder does NOT change dataLayerConfigId
+      expect(payload.dataLayerConfigId).toBe('layer-a');
     });
   });
 
-  describe('Test Suite 4: Deleting a Map Layer', () => {
-    it('displays delete icon when a layer is configured', async () => {
-      const mapLayer = createTestVisualizationConfigNode();
-      await setup({ mapLayerConfig: mapLayer as unknown as MapLayerConfig });
-
-      // Find the delete icon button by looking for the DeleteIcon SVG
-      const iconButtons = screen.getAllByRole('button');
-      const deleteButton = iconButtons.find(btn => {
-        const svg = btn.querySelector('svg[data-testid="DeleteIcon"]');
-        return svg !== null;
-      });
-
-      // The delete button should exist when a layer is configured
-      expect(deleteButton).toBeTruthy();
-    });
-
-    it('shows layer name when layer is configured', async () => {
-      const mapLayer = createTestVisualizationConfigNode();
-      await setup({ mapLayerConfig: mapLayer as unknown as MapLayerConfig });
-
-      // Verify that the layer is displayed
-      expect(screen.getByText(mapLayer.title)).toBeInTheDocument();
-    });
-
-    it('displays "Add Map Layer" button when no layer is configured', async () => {
-      await setup({ mapLayerConfig: null });
-
-      const addButton = screen.getByRole('button', {
-        name: /add map layer/i,
-      });
-
-      expect(addButton).toBeInTheDocument();
-    });
-
-    it('enables "Add Map Layer" button when user is owner', async () => {
-      await setup({ isOwner: true, mapLayerConfig: null });
-
-      const addButton = screen.getByRole('button', {
-        name: /add map layer/i,
-      });
-
-      expect(addButton).not.toHaveAttribute('disabled');
-    });
-  });
-
-  describe('Test Suite 5: MapLayerDialog Tabs (group/landscape memberships)', () => {
-    it('renders Story Map, My Groups and My Landscapes tabs with their layers', async () => {
-      dataLayersMock = {
-        storyMapConfigs: [
-          {
-            node: createTestVisualizationConfigNode({
-              id: 'test-story-map-1',
-              title: 'Story Map Layer',
-            }),
-          },
-        ],
-        groupConfigs: [
-          {
-            node: createTestVisualizationConfigNode({
-              id: 'group-layer-1',
-              title: 'Group Layer',
-              owner: { __typename: 'GroupNode' } as any,
-            }),
-          },
-        ],
-        landscapeConfigs: [
-          {
-            node: createTestVisualizationConfigNode({
-              id: 'landscape-layer-1',
-              title: 'Landscape Layer',
-              owner: { __typename: 'LandscapeNode' } as any,
-            }),
-          },
-        ],
-        myGroups: [membershipEdge('m1')],
-        myLandscapes: [membershipEdge('m2')],
-      };
-      await setup();
-
-      await openMapLayerDialog();
-
-      await waitFor(() => {
-        expect(
-          screen.getByRole('tab', { name: 'This Story Map' })
-        ).toBeInTheDocument();
-      });
-      const groupTab = screen.getByRole('tab', { name: 'My Groups' });
-      const landscapeTab = screen.getByRole('tab', { name: 'My Landscapes' });
-
-      // Story map tab shows the story map layers
-      expect(
-        screen.getByRole('listitem', { name: 'Story Map Layer' })
-      ).toBeInTheDocument();
-
-      // Group tab shows group layers
-      await act(async () => {
-        fireEvent.click(groupTab);
-      });
-      expect(
-        screen.getByRole('listitem', { name: 'Group Layer' })
-      ).toBeInTheDocument();
-
-      // Landscape tab shows landscape layers
-      await act(async () => {
-        fireEvent.click(landscapeTab);
-      });
-      expect(
-        screen.getByRole('listitem', { name: 'Landscape Layer' })
-      ).toBeInTheDocument();
-    });
-
-    it('hides GROUP tab when the user only belongs to landscapes', async () => {
-      dataLayersMock = {
-        myLandscapes: [membershipEdge('m2')],
-      };
-      await setup();
-
-      await openMapLayerDialog();
-
-      await waitFor(() => {
-        expect(
-          screen.getByRole('tab', { name: 'This Story Map' })
-        ).toBeInTheDocument();
-      });
-      expect(
-        screen.queryByRole('tab', { name: 'My Groups' })
-      ).not.toBeInTheDocument();
-      expect(
-        screen.getByRole('tab', { name: 'My Landscapes' })
-      ).toBeInTheDocument();
-    });
-
-    it('hides LANDSCAPE tab when the user only belongs to groups', async () => {
-      dataLayersMock = {
-        myGroups: [membershipEdge('m1')],
-      };
-      await setup();
-
-      await openMapLayerDialog();
-
-      await waitFor(() => {
-        expect(
-          screen.getByRole('tab', { name: 'This Story Map' })
-        ).toBeInTheDocument();
-      });
-      expect(
-        screen.queryByRole('tab', { name: 'My Landscapes' })
-      ).not.toBeInTheDocument();
-      expect(
-        screen.getByRole('tab', { name: 'My Groups' })
-      ).toBeInTheDocument();
-    });
-
-    it('renders the old radio list UI without tabs when there are no memberships', async () => {
+  describe('Test Suite 3: Layer tree', () => {
+    it('builds the tree from fetched layers with the three sections', async () => {
       await setup({
         dataLayers: {
           storyMapConfigs: [
             {
               node: createTestVisualizationConfigNode({
-                id: 'test-story-map-1',
-                title: 'Story Map Layer',
+                id: 'story-layer',
+                title: 'Story Layer',
               }),
             },
           ],
-        },
-      });
-
-      await openMapLayerDialog();
-
-      // "Or select a layer:" heading is visible
-      expect(screen.getByText(/or select a layer/i)).toBeInTheDocument();
-
-      // No tabs at all
-      expect(screen.queryByRole('tab')).not.toBeInTheDocument();
-
-      // Story map layers are listed in a plain radio group
-      expect(
-        screen.getByRole('listitem', { name: 'Story Map Layer' })
-      ).toBeInTheDocument();
-    });
-
-    it('shows GROUP empty state when the user belongs to groups but no group layers exist', async () => {
-      dataLayersMock = {
-        myGroups: [membershipEdge('m1')],
-      };
-      await setup();
-
-      await openMapLayerDialog();
-
-      await waitFor(() => {
-        expect(
-          screen.getByRole('tab', { name: 'My Groups' })
-        ).toBeInTheDocument();
-      });
-
-      await act(async () => {
-        fireEvent.click(screen.getByRole('tab', { name: 'My Groups' }));
-      });
-
-      expect(
-        screen.getByText('No maps have been made in your groups yet.')
-      ).toBeInTheDocument();
-    });
-
-    it('keeps a layer selected when clicking its radio again (no toggle)', async () => {
-      const { onConfirmMock } = await setup({
-        dataLayers: {
-          storyMapConfigs: [
+          landscapeConfigs: [
             {
               node: createTestVisualizationConfigNode({
-                id: 'test-story-map-1',
-                title: 'Clickable Layer',
+                id: 'landscape-layer',
+                title: 'Landscape Layer',
+                owner: {
+                  __typename: 'LandscapeNode',
+                  id: 'landscape-1',
+                  name: 'Alpha Landscape',
+                } as any,
               }),
             },
           ],
+          groupConfigs: [
+            {
+              node: createTestVisualizationConfigNode({
+                id: 'group-layer',
+                title: 'Group Layer',
+                owner: {
+                  __typename: 'GroupNode',
+                  id: 'group-1',
+                  name: 'Alpha Group',
+                } as any,
+              }),
+            },
+          ],
+          myGroups: [membershipEdge('m1')],
+          myLandscapes: [membershipEdge('m2')],
         },
       });
 
-      await openMapLayerDialog();
-
-      const radio = screen.getByRole('radio', { name: 'Clickable Layer' });
-      const nextButton = screen.getByRole('button', { name: 'Next' });
-
-      expect(nextButton).toBeDisabled();
-
-      await act(async () => {
-        fireEvent.click(radio);
-      });
-      expect(radio).toBeChecked();
-      expect(nextButton).not.toBeDisabled();
-
-      // Browsers do not fire a change event when re-clicking the selected
-      // radio, so the selection is unchanged: no toggle, no removal.
-      await act(async () => {
-        fireEvent.click(radio);
-      });
-      expect(radio).toBeChecked();
-      expect(nextButton).not.toBeDisabled();
-      expect(onConfirmMock).not.toHaveBeenCalled();
+      expect(
+        screen.getByRole('treeitem', { name: 'This story map' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('treeitem', { name: 'Landscapes' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('treeitem', { name: 'Groups' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('treeitem', { name: 'Story Layer' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('treeitem', { name: 'Alpha Landscape' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('treeitem', { name: 'Landscape Layer' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('treeitem', { name: 'Alpha Group' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('treeitem', { name: 'Group Layer' })
+      ).toBeInTheDocument();
     });
 
-    it('does not remove the chapter-assigned layer when its radio is clicked or re-clicked', async () => {
-      const assignedLayer = createTestVisualizationConfigNode({
-        id: 'test-story-map-1',
-        title: 'Assigned Layer',
-      });
-      const otherLayer = createTestVisualizationConfigNode({
-        id: 'test-story-map-2',
-        title: 'Other Layer',
-      });
-      const storyMapConfig = createTestStoryMapConfig();
-      const storyMap = createTestStoryMap();
-      const onConfirmMock = jest.fn();
-
-      dataLayersMock = {
-        storyMapConfigs: [
-          {
-            node: createTestVisualizationConfigNode({
-              id: 'test-story-map-1',
-              title: 'Assigned Layer',
-            }),
-          },
-          {
-            node: createTestVisualizationConfigNode({
-              id: 'test-story-map-2',
-              title: 'Other Layer',
-            }),
-          },
-        ],
-      };
-
-      await render(
-        <CollaborationContextProvider owner={storyMap} entityType="story_map">
-          <StoryMapConfigContextProvider
-            baseConfig={storyMapConfig}
-            storyMap={storyMap}
-          >
-            <MapLayerDialog
-              open
-              onClose={jest.fn()}
-              onConfirm={onConfirmMock}
-            />
-          </StoryMapConfigContextProvider>
-        </CollaborationContextProvider>,
-        {
-          account: {
-            currentUser: {
-              data: {
-                email: 'test@example.com',
-                firstName: 'Test',
-                lastName: 'User',
-              },
-            },
-          },
-          storyMap: {
-            dataLayers: {
-              fetching: false,
-              error: false,
-              list: [assignedLayer, otherLayer],
-              hasGroups: false,
-              hasLandscapes: false,
-            },
-          },
-        }
-      );
-
-      await waitFor(() => {
-        expect(
-          screen.getByRole('listitem', { name: 'Assigned Layer' })
-        ).toBeInTheDocument();
-      });
-
-      const assignedRadio = screen.getByRole('radio', {
-        name: 'Assigned Layer',
-      });
-      const otherRadio = screen.getByRole('radio', { name: 'Other Layer' });
-
-      // The dialog opens with no in-dialog selection; clicking the assigned
-      // layer only selects it.
-      await act(async () => {
-        fireEvent.click(assignedRadio);
-      });
-      expect(assignedRadio).toBeChecked();
-
-      // Re-clicking the selected radio keeps it selected (no toggle) and the
-      // chapter-assigned layer is never removed.
-      await act(async () => {
-        fireEvent.click(assignedRadio);
-      });
-      expect(assignedRadio).toBeChecked();
-      expect(onConfirmMock).not.toHaveBeenCalled();
-
-      // Selecting another layer and then the assigned one also only selects:
-      // no removal.
-      await act(async () => {
-        fireEvent.click(otherRadio);
-      });
-      expect(otherRadio).toBeChecked();
-
-      await act(async () => {
-        fireEvent.click(assignedRadio);
-      });
-      expect(assignedRadio).toBeChecked();
-      expect(onConfirmMock).not.toHaveBeenCalled();
-    });
-
-    it('shows the STORY_MAP tab empty state when the story map has no layers', async () => {
-      dataLayersMock = {
-        storyMapConfigs: [],
-        myGroups: [membershipEdge('m1')],
-      };
+    it('toggles a layer on from the tree: order list, eye and preview update', async () => {
       await setup();
 
-      await openMapLayerDialog();
+      const row = screen.getByRole('treeitem', { name: 'Story Map Layer 1' });
+      await act(async () => {
+        fireEvent.click(row);
+      });
+
+      expect(orderListItems()).toEqual(['Story Map Layer 1']);
+      expect(
+        screen.getByRole('button', {
+          name: 'Show or hide Story Map Layer 1',
+        })
+      ).toHaveAttribute('aria-pressed', 'true');
+      expect(
+        screen.getByTestId('mock-layer-test-story-map-1')
+      ).toBeInTheDocument();
+
+      // toggling the eye toggles the layer off again
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole('button', {
+            name: 'Show or hide Story Map Layer 1',
+          })
+        );
+      });
+      expect(orderListItems()).toEqual([]);
+      expect(
+        screen.queryByTestId('mock-layer-test-story-map-1')
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows layers already in the chapter as on', async () => {
+      await setup({
+        mapLayers: [{ layerId: 'test-story-map-1' }],
+        dataLayerConfigId: 'test-story-map-1',
+      });
+
+      expect(
+        screen.getByRole('treeitem', { name: 'Story Map Layer 1' })
+      ).toHaveAttribute('aria-selected', 'true');
+      expect(
+        screen.getByRole('treeitem', { name: 'Story Map Layer 2' })
+      ).toHaveAttribute('aria-selected', 'false');
+    });
+
+    it('shows the empty state copy when the story map has no layers', async () => {
+      await setup({
+        dataLayers: {
+          storyMapConfigs: [],
+          myGroups: [membershipEdge('m1')],
+        },
+      });
 
       expect(
         screen.getByText(
@@ -694,27 +587,27 @@ describe('MapConfigurationDialog', () => {
       ).toBeInTheDocument();
     });
 
-    it('shows LANDSCAPE empty state when the user has no landscape layers', async () => {
-      dataLayersMock = {
-        myLandscapes: [membershipEdge('m2')],
-      };
-      await setup();
-
-      await openMapLayerDialog();
-
-      await waitFor(() => {
-        expect(
-          screen.getByRole('tab', { name: 'My Landscapes' })
-        ).toBeInTheDocument();
-      });
-
-      await act(async () => {
-        fireEvent.click(screen.getByRole('tab', { name: 'My Landscapes' }));
+    it('shows the groups empty state when the user is a member of groups without layers', async () => {
+      await setup({
+        dataLayers: {
+          myGroups: [membershipEdge('m1')],
+        },
       });
 
       expect(
-        screen.getByText('No maps have been made in your landscapes yet.')
+        screen.getByText('No maps have been made in your groups yet.')
       ).toBeInTheDocument();
+    });
+
+    it('hides the landscapes and groups sections when the user is not a member', async () => {
+      await setup();
+
+      expect(
+        screen.queryByRole('treeitem', { name: 'Landscapes' })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('treeitem', { name: 'Groups' })
+      ).not.toBeInTheDocument();
     });
 
     it('shows the load error message when fetching data layers fails', async () => {
@@ -731,13 +624,6 @@ describe('MapConfigurationDialog', () => {
 
       await setup();
 
-      const addButton = screen.getByRole('button', {
-        name: /add map layer/i,
-      });
-      await act(async () => {
-        fireEvent.click(addButton);
-      });
-
       await waitFor(() => {
         expect(
           screen.getByText(
@@ -745,13 +631,159 @@ describe('MapConfigurationDialog', () => {
           )
         ).toBeInTheDocument();
       });
+    });
+  });
 
-      // The empty-state copy must not be shown in the error case.
-      expect(
-        screen.queryByText(
-          "This story map doesn't contain any map layers yet. Upload a new file above or select a layer from your groups or landscapes."
-        )
-      ).not.toBeInTheDocument();
+  describe('Test Suite 4: Create flow', () => {
+    it('commits a created layer immediately and survives dialog cancel', async () => {
+      const { onCloseMock, onConfirmMock } = await setup({
+        mapLayers: [{ layerId: 'test-story-map-1' }],
+        dataLayerConfigId: 'test-story-map-1',
+        configDataLayers: {
+          'test-story-map-1': {
+            id: 'test-story-map-1',
+            title: 'Story Map Layer 1',
+          } as MapLayerConfig,
+        },
+      });
+
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole('button', {
+            name: 'stub-create-layer',
+            hidden: true,
+          })
+        );
+      });
+
+      // committed to config immediately…
+      expect(probeData()).toEqual({
+        mapLayers: [
+          { layerId: 'created-layer' },
+          { layerId: 'test-story-map-1' },
+        ],
+        dataLayerConfigId: 'created-layer',
+        dataLayerIds: ['created-layer', 'test-story-map-1'],
+      });
+      // …and visible in the draft order list (topmost)
+      expect(orderListItems()[0]).toBe('Created Layer');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+      });
+      expect(onCloseMock).toHaveBeenCalled();
+      expect(onConfirmMock).not.toHaveBeenCalled();
+
+      // the create-flow commit survives the dialog cancel
+      expect(probeData()).toEqual({
+        mapLayers: [
+          { layerId: 'created-layer' },
+          { layerId: 'test-story-map-1' },
+        ],
+        dataLayerConfigId: 'created-layer',
+        dataLayerIds: ['created-layer', 'test-story-map-1'],
+      });
+    });
+
+    it('starts the create flow with a file dropped anywhere on the window', async () => {
+      await setup();
+
+      const file = new File(['x'], 'points.geojson', {
+        type: 'application/geo+json',
+      });
+      await act(async () => {
+        fireEvent.drop(window as unknown as HTMLElement, {
+          dataTransfer: { files: [file] },
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('stub-create-file')).toHaveTextContent(
+          'points.geojson'
+        );
+      });
+    });
+
+    it('starts the create flow with a file dropped on the compact add control', async () => {
+      await setup();
+
+      const file = new File(['x'], 'points.geojson', {
+        type: 'application/geo+json',
+      });
+      const dropTarget = screen
+        .getByText('Add a map layer')
+        .closest('[role="button"]') as HTMLElement;
+
+      await act(async () => {
+        fireEvent.drop(dropTarget, {
+          dataTransfer: { files: [file] },
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('stub-create-file')).toHaveTextContent(
+          'points.geojson'
+        );
+      });
+    });
+
+    it('ignores files that the create flow does not accept', async () => {
+      await setup();
+
+      const file = new File(['x'], 'notes.txt', { type: 'text/plain' });
+      await act(async () => {
+        fireEvent.drop(window as unknown as HTMLElement, {
+          dataTransfer: { files: [file] },
+        });
+      });
+
+      expect(screen.getByTestId('stub-create-file')).toHaveTextContent('');
+    });
+  });
+
+  describe('Test Suite 5: Confirm payload', () => {
+    it('sends the ordered layer configs with the most recently added selected', async () => {
+      const { onConfirmMock } = await setup();
+
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole('treeitem', { name: 'Story Map Layer 1' })
+        );
+      });
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole('treeitem', { name: 'Story Map Layer 2' })
+        );
+      });
+
+      expect(orderListItems()).toEqual([
+        'Story Map Layer 2',
+        'Story Map Layer 1',
+      ]);
+
+      await act(async () => {
+        fireEvent.click(saveButton());
+      });
+
+      const payload = onConfirmMock.mock.calls[0][0];
+      expect(payload.mapLayerConfigs.map((c: MapLayerConfig) => c.id)).toEqual([
+        'test-story-map-2',
+        'test-story-map-1',
+      ]);
+      // dataLayerConfigId points at the most recently added layer
+      expect(payload.dataLayerConfigId).toBe('test-story-map-2');
+      expect(payload.mapStyle).toEqual(createTestStoryMapConfig().style);
+    });
+
+    it('sends the map location', async () => {
+      const { onConfirmMock } = await setup();
+
+      await act(async () => {
+        fireEvent.click(saveButton());
+      });
+
+      const payload = onConfirmMock.mock.calls[0][0];
+      expect(payload.location).toBeDefined();
     });
   });
 });
