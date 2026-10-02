@@ -39,13 +39,14 @@ jest.mock(
     const { createContext, useContext } = jest.requireActual('react');
     // No provider wraps the dialog under test: the default context value is a
     // mutable holder the tests can populate.
-    const holder = { value: {} };
+    const holder: { value: unknown } = { value: {} };
     const context = createContext(holder);
     return {
       __esModule: true,
       VisualizationContextProvider: ({ children }: { children: any }) =>
         children,
-      useVisualizationContext: () => useContext(context).value,
+      useVisualizationContext: () =>
+        useContext(context).value as Record<string, unknown>,
       __setVisualizationContext: (value: unknown) => {
         holder.value = value;
       },
