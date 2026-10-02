@@ -1705,9 +1705,7 @@ describe('MapConfigurationDialog', () => {
           [1, 2],
           [1, 2],
         ],
-        {
-          animate: false,
-        }
+        expect.objectContaining({ animate: false, maxZoom: 18 })
       );
       await backToLayers();
 
@@ -1742,9 +1740,7 @@ describe('MapConfigurationDialog', () => {
           [10, 20],
           [10, 20],
         ],
-        {
-          animate: false,
-        }
+        expect.objectContaining({ animate: false, maxZoom: 18 })
       );
     });
 
@@ -2004,9 +2000,7 @@ describe('MapConfigurationDialog', () => {
           [5, 6],
           [5, 6],
         ],
-        {
-          animate: false,
-        }
+        expect.objectContaining({ animate: false, maxZoom: 18 })
       );
 
       // Configuration changes never steal the camera again.
