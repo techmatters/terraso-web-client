@@ -24,6 +24,7 @@ import { Box, Portal, Stack, Typography } from '@mui/material';
 import Layer from 'terraso-web-client/gis/components/Layer';
 import { useMap } from 'terraso-web-client/gis/components/Map';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
+import { fitMapBounds } from 'terraso-web-client/gis/mapCamera';
 import { getLayerImage } from 'terraso-web-client/sharedData/visualization/visualizationMarkers';
 
 const DEFAULT_MARKER_OPACITY = 1;
@@ -285,7 +286,9 @@ const MapboxLayer = props => {
 
     const applyBounds = bounds => {
       if (!cancelled && bounds && !bounds.isEmpty()) {
-        map.fitBounds(bounds, {
+        // Shared fit helper: the camera move is announced automatically, so
+        // it is never recorded as a user camera edit (mapCamera protocol).
+        fitMapBounds(map, bounds, {
           animate: false,
         });
       }
