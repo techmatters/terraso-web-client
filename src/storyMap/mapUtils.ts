@@ -22,6 +22,10 @@ import logger from 'terraso-client-shared/monitoring/logger';
 
 import { isValidBounds } from 'terraso-web-client/gis/gisUtils';
 import {
+  generateLayerId,
+  LAYER_TYPES,
+} from 'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer';
+import {
   LAYER_PAINT_TYPES,
   LayerPaintType,
   STORY_MAP_TITLE_ID,
@@ -31,6 +35,7 @@ import {
   ChapterConfig,
   LayerConfig,
   MapBounds,
+  MapLayerTransition,
   MapPosition,
   StoryMapConfig,
   Transition,
@@ -286,6 +291,61 @@ const startLayerTransition = (
   );
 };
 
+/**
+ * Bottom-to-top stacking order of the mapbox layers generated for a map layer
+ * (matches the insertion order in VisualizationMapLayer).
+ */
+const LAYER_TYPE_STACK_ORDER = [
+  LAYER_TYPES.MARKERS,
+  LAYER_TYPES.POLYGONS_OUTLINE,
+  LAYER_TYPES.POLYGONS_FILL,
+];
+
+/**
+ * Rearranges the mapbox layers to match `mapLayers` order (index 0 topmost).
+ * Mapbox z-order is global, so this runs on every chapter transition.
+ * Sublayers that are not on the map yet are skipped (they will be ordered on
+ * the next pass, e.g. after `onLayerAdded`).
+ */
+export const enforceMapLayerOrder = (
+  map: mapboxgl.Map,
+  mapLayers: MapLayerTransition[]
+) => {
+  const style = map.getStyle();
+  if (!style) {
+    return;
+  }
+  const existing = new Set(
+    (style.layers ?? []).map((layer: { id: string }) => layer.id)
+  );
+
+  // Desired order, topmost first. Within a map layer, keep the layer's own
+  // stacking (markers below polygons outline below polygons fill).
+  const orderedIdsTopFirst = mapLayers.flatMap(({ layerId }) =>
+    [...LAYER_TYPE_STACK_ORDER]
+      .reverse()
+      .map(layerType => generateLayerId(layerId, layerType))
+      .filter(id => existing.has(id))
+  );
+
+  // moveLayer() moves a layer to the top of the stack, so apply bottom-first.
+  orderedIdsTopFirst
+    .slice()
+    .reverse()
+    .forEach(id => map.moveLayer(id));
+};
+
+const startMapLayerOrder = (
+  map: mapboxgl.Map,
+  transition: ChapterConfig | Transition
+) => {
+  // Legacy chapters (no mapLayers) keep today's behavior unchanged.
+  if (transition.mapLayers === undefined) {
+    return;
+  }
+  enforceMapLayerOrder(map, transition.mapLayers);
+};
+
 export type StartTransitionOptions = {
   config: StoryMapConfig;
   chapterId: string;
@@ -307,4 +367,5 @@ export const startTransition = (
 
   startCameraTransition(map, isMobile, mapDimensions, transition);
   startLayerTransition(map, chapterId, config);
+  startMapLayerOrder(map, transition);
 };
