@@ -25,7 +25,6 @@ import {
 } from 'react';
 import _ from 'lodash/fp';
 import { Trans, useTranslation } from 'react-i18next';
-import { useFetchData } from 'terraso-client-shared/store/utils';
 import { StoryMapNode } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
 import { useSelector } from 'terraso-web-client/terrasoApi/store';
 import {
@@ -40,35 +39,29 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
 
 import {
   CollaborationContextProvider,
   useCollaborationContext,
 } from 'terraso-web-client/collaboration/collaborationContext';
-import DirectoryTree from 'terraso-web-client/common/components/DirectoryTree';
 import HelperText from 'terraso-web-client/common/components/HelperText';
 import Map, { useMap } from 'terraso-web-client/gis/components/Map';
 import { MapboxStyle } from 'terraso-web-client/gis/components/MapboxConstants';
 import MapControls from 'terraso-web-client/gis/components/MapControls';
 import MapGeocoder from 'terraso-web-client/gis/components/MapGeocoder';
 import MapStyleSwitcher from 'terraso-web-client/gis/components/MapStyleSwitcher';
-import { CompactAddControl } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CompactAddControl';
 import { CreateMapLayerFileUpload } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog';
 import {
   isMapLayerFileAccepted,
   mapLayerFileRejectionMessage,
 } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/mapLayerFileDrop';
-import { MapLayerOrderList } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerOrderList';
+import { MapLayersPanel } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayersPanel';
+import { useLayerDraft } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/useLayerDraft';
 import {
   useStoryMapConfigActionsContext,
   useStoryMapConfigDataContext,
 } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { StoryMapLayer } from 'terraso-web-client/storyMap/components/StoryMapLayer';
-import {
-  buildMapLayerTree,
-  mapLayerTreeToDirectoryNodes,
-} from 'terraso-web-client/storyMap/mapLayerTree';
 import {
   addMapLayerId,
   moveMapLayerId,
@@ -77,7 +70,6 @@ import {
   toMapLayers,
 } from 'terraso-web-client/storyMap/mapLayerUtils';
 import { enforceMapLayerOrder } from 'terraso-web-client/storyMap/mapUtils';
-import { fetchDataLayers } from 'terraso-web-client/storyMap/storyMapSlice';
 import {
   MapBounds,
   MapLayerConfig,
@@ -87,8 +79,6 @@ import {
   StoryMapConfig,
   Transition,
 } from 'terraso-web-client/storyMap/storyMapTypes';
-
-const SIDEBAR_WIDTH = 300;
 
 const BearingIcon = () => {
   const { t } = useTranslation();
@@ -269,87 +259,6 @@ const MapLayerPreview = ({
   );
 };
 
-type LayerDirectoryTreeProps = {
-  mapLayers: MapLayerConfig[];
-  activeLayerIds: string[];
-  fetching: boolean;
-  error: boolean;
-  onToggleLayer: (layerId: string) => void;
-};
-const LayerDirectoryTree = ({
-  mapLayers,
-  activeLayerIds,
-  fetching,
-  error,
-  onToggleLayer,
-}: LayerDirectoryTreeProps) => {
-  const { t } = useTranslation();
-  const { hasGroups, hasLandscapes } = useSelector(
-    (state: any) => state.storyMap.dataLayers
-  ) as { hasGroups: boolean; hasLandscapes: boolean };
-
-  const nodes = useMemo(
-    () =>
-      mapLayerTreeToDirectoryNodes({
-        sections: buildMapLayerTree({ mapLayers, hasGroups, hasLandscapes }),
-        activeLayerIds,
-        t,
-      }),
-    [mapLayers, hasGroups, hasLandscapes, activeLayerIds, t]
-  );
-
-  const onNodeClick = useCallback(
-    (nodeId: string) => {
-      if (mapLayers.some(({ id }) => id === nodeId)) {
-        onToggleLayer(nodeId);
-      }
-    },
-    [mapLayers, onToggleLayer]
-  );
-
-  if (fetching && mapLayers.length === 0) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-        <CircularProgress aria-label={t('common.loader_label')} />
-      </Box>
-    );
-  }
-
-  if (error && !fetching) {
-    return (
-      <Typography>
-        {t('storyMap.form_location_add_data_layer_dialog_load_error')}
-      </Typography>
-    );
-  }
-
-  return (
-    <DirectoryTree
-      aria-label={t('storyMap.form_map_layers_tree_label')}
-      nodes={nodes}
-      onNodeClick={onNodeClick}
-      onActionClick={onToggleLayer}
-    />
-  );
-};
-
-/**
- * Compact add control wired to the collaboration context (which lives inside
- * the dialog's provider).
- */
-const AddMapLayerControl = ({
-  onFile,
-  onReject,
-}: {
-  onFile: (file: File) => void;
-  onReject: (file: File) => void;
-}) => {
-  const { owner } = useCollaborationContext();
-  return (
-    <CompactAddControl onFile={onFile} onReject={onReject} disabled={!owner} />
-  );
-};
-
 export type MapConfigurationConfirm = {
   location: MapPosition;
   mapStyle: string;
@@ -400,103 +309,33 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     string | undefined
   >();
 
-  // Draft layer state for this transition: ordered layer ids, index 0 topmost.
-  // This is only written back to the config on confirm — except layers
-  // created through the create flow, which are committed immediately (see
-  // onCreateLayer). The draft knows nothing about the compat fields.
-  const [draftLayerIds, setDraftLayerIds] = useState<string[]>(() =>
-    resolveMapLayers({
-      mapLayers: props.mapLayers,
-      dataLayerConfigId: props.dataLayerConfigId,
-    }).map(({ layerId }) => layerId)
-  );
-
   const mapRef = useRef(null);
 
-  const fetchedMapLayers = useSelector(
-    (state: any) => state.storyMap.dataLayers.list
-  ) as MapLayerConfig[];
-  const fetching = useSelector(
-    (state: any) => state.storyMap.dataLayers.fetching
-  ) as boolean;
-  const error = useSelector(
-    (state: any) => state.storyMap.dataLayers.error
-  ) as boolean;
   const user = useSelector((state: any) => state.account.currentUser);
 
-  useFetchData(
-    useCallback(() => {
-      if (open && storyMap?.id) {
-        return fetchDataLayers({
-          ownerId: storyMap.id,
-          // Must always pass a string: django-filter skips the filter when the
-          // arg is null, which would return ALL groups/landscapes.
-          email: user?.data?.email ?? '',
-        });
-      } else {
-        return null;
-      }
-    }, [open, storyMap?.id, user?.data?.email])
-  );
-
-  // Known layer configs: committed config layers plus everything fetched for
-  // the layer tree (created layers end up in `config.dataLayers` immediately).
-  // Stored entries are the render/persisted shape; owner/title metadata is
-  // resolved by id from the fetched index so it never goes stale (stored
-  // entries are whitelisted to schema fields on write). A layer absent from
-  // the fetched index (e.g. created in this session) keeps its stored shape —
-  // without owner metadata the tree files it under "this story map".
-  const layerConfigsById = useMemo(() => {
-    const merged: Record<string, MapLayerConfig> = {};
-    const fetchedById = _.keyBy('id', fetchedMapLayers) as Record<
-      string,
-      MapLayerConfig
-    >;
-    Object.values(config.dataLayers ?? {}).forEach(storedConfig => {
-      const fetchedConfig = fetchedById[storedConfig.id];
-      merged[storedConfig.id] = fetchedConfig
-        ? {
-            ...storedConfig,
-            ..._.pick(
-              ['ownerType', 'ownerId', 'ownerName', 'title', 'description'],
-              fetchedConfig
-            ),
-          }
-        : storedConfig;
-    });
-    fetchedMapLayers.forEach(mapLayerConfig => {
-      if (!merged[mapLayerConfig.id]) {
-        merged[mapLayerConfig.id] = mapLayerConfig;
-      }
-    });
-    return merged;
-  }, [fetchedMapLayers, config.dataLayers]);
-
-  const resolveLayerConfig = useCallback(
-    (layerId: string) => layerConfigsById[layerId],
-    [layerConfigsById]
-  );
-
-  // ONE row array for render → reorder → confirm. Rows keep dangling refs
-  // (config null) — unknown data is never silently dropped.
-  const draftRows = useMemo<MapLayerDraftRow[]>(
-    () =>
-      draftLayerIds.map(layerId => ({
-        layerId,
-        config: resolveLayerConfig(layerId) ?? null,
-      })),
-    [draftLayerIds, resolveLayerConfig]
-  );
-
-  const draftMapLayerConfigs = useMemo(
-    () =>
-      draftRows
-        .map(({ config: mapLayerConfig }) => mapLayerConfig)
-        .filter((mapLayerConfig): mapLayerConfig is MapLayerConfig =>
-          Boolean(mapLayerConfig)
-        ),
-    [draftRows]
-  );
+  // Draft layer state + layer index fetch (useLayerDraft keeps the fetch
+  // wiring host-agnostic — a persistent host passes fetchEnabled=true). The
+  // draft is an ordered layer id list, index 0 topmost; it is only written
+  // back to the config on confirm — except layers created through the create
+  // flow, which are committed immediately (see onCreateLayer). The draft
+  // knows nothing about the compat fields.
+  const {
+    draftLayerIds,
+    setDraftLayerIds,
+    draftRows,
+    draftMapLayerConfigs,
+    layerConfigsById,
+    resolveLayerConfig,
+    fetching,
+    error,
+  } = useLayerDraft({
+    storyMapId: storyMap?.id,
+    email: user?.data?.email,
+    fetchEnabled: open,
+    mapLayers: props.mapLayers,
+    dataLayerConfigId: props.dataLayerConfigId,
+    dataLayers: config.dataLayers,
+  });
 
   const initialLocation = useMemo(() => {
     if (location) {
@@ -585,18 +424,24 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
       setChangeBoundsLayerId(layerId);
       setDraftLayerIds(current => addMapLayerId(current, layerId));
     },
-    [draftLayerIds, resolveLayerConfig, beginProgrammaticMove]
+    [draftLayerIds, resolveLayerConfig, beginProgrammaticMove, setDraftLayerIds]
   );
 
-  const onRemoveLayer = useCallback((layerId: string) => {
-    setDraftLayerIds(current => removeMapLayerId(current, layerId));
-  }, []);
+  const onRemoveLayer = useCallback(
+    (layerId: string) => {
+      setDraftLayerIds(current => removeMapLayerId(current, layerId));
+    },
+    [setDraftLayerIds]
+  );
 
-  const onReorder = useCallback((sourceIndex: number, destIndex: number) => {
-    setDraftLayerIds(current =>
-      moveMapLayerId(current, sourceIndex, destIndex)
-    );
-  }, []);
+  const onReorder = useCallback(
+    (sourceIndex: number, destIndex: number) => {
+      setDraftLayerIds(current =>
+        moveMapLayerId(current, sourceIndex, destIndex)
+      );
+    },
+    [setDraftLayerIds]
+  );
 
   /**
    * COMMIT CONTRACT (product spec): a layer created through the create flow
@@ -644,7 +489,13 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
       setChangeBoundsLayerId(mapLayerConfig.id);
       setDraftLayerIds(current => addMapLayerId(current, mapLayerConfig.id));
     },
-    [setConfig, registerSessionDataLayers, chapterId, beginProgrammaticMove]
+    [
+      setConfig,
+      registerSessionDataLayers,
+      chapterId,
+      beginProgrammaticMove,
+      setDraftLayerIds,
+    ]
   );
 
   // While the dialog is open, the whole window accepts file drops to start
@@ -820,31 +671,20 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
                 />
               </Map>
             </Box>
-            <Box sx={{ width: SIDEBAR_WIDTH, flexShrink: 0 }}>
-              <Stack spacing={2}>
-                {dropError && (
-                  <Alert severity="error" onClose={() => setDropError(null)}>
-                    {dropError}
-                  </Alert>
-                )}
-                <AddMapLayerControl
-                  onFile={startCreateFlow}
-                  onReject={onRejectFile}
-                />
-                <MapLayerOrderList
-                  rows={draftRows}
-                  onReorder={onReorder}
-                  onRemove={onRemoveLayer}
-                />
-                <LayerDirectoryTree
-                  mapLayers={Object.values(layerConfigsById)}
-                  activeLayerIds={draftLayerIds}
-                  fetching={fetching}
-                  error={error}
-                  onToggleLayer={onToggleLayer}
-                />
-              </Stack>
-            </Box>
+            <MapLayersPanel
+              rows={draftRows}
+              activeLayerIds={draftLayerIds}
+              treeLayers={Object.values(layerConfigsById)}
+              fetching={fetching}
+              error={error}
+              dropError={dropError}
+              onDismissDropError={() => setDropError(null)}
+              onFile={startCreateFlow}
+              onReject={onRejectFile}
+              onToggleLayer={onToggleLayer}
+              onReorder={onReorder}
+              onRemove={onRemoveLayer}
+            />
           </Stack>
         </DialogContent>
       </Dialog>

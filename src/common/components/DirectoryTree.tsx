@@ -147,7 +147,7 @@ const DirectoryTreeRow = ({
 
   return (
     <Box
-      ref={element => rowRef(node.id, element)}
+      ref={(element: HTMLElement | null) => rowRef(node.id, element)}
       role="treeitem"
       aria-expanded={hasChildren ? isExpanded : undefined}
       aria-selected={node.active ?? false}
