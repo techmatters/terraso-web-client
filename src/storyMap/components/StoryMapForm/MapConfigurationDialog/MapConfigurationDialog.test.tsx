@@ -75,12 +75,20 @@ jest.mock(
     CreateMapLayerFileUpload: ({
       onCreate,
       externalFile,
+      onCreateDialogOpenChange,
     }: {
       onCreate: (mapLayer: unknown) => void;
       externalFile?: File;
+      onCreateDialogOpenChange?: (open: boolean) => void;
     }) => (
       <div data-testid="stub-create-flow">
         <span data-testid="stub-create-file">{externalFile?.name ?? ''}</span>
+        <button onClick={() => onCreateDialogOpenChange?.(true)}>
+          stub-open-create
+        </button>
+        <button onClick={() => onCreateDialogOpenChange?.(false)}>
+          stub-close-create
+        </button>
         <button
           onClick={() =>
             onCreate({
@@ -1009,6 +1017,160 @@ describe('MapConfigurationDialog', () => {
       });
 
       expect(screen.getByTestId('stub-create-file')).toHaveTextContent('');
+    });
+
+    it('shows a rejection message when a dropped file is not accepted', async () => {
+      await setup();
+
+      const file = new File(['x'], 'notes.txt', { type: 'text/plain' });
+      await act(async () => {
+        fireEvent.drop(window as unknown as HTMLElement, {
+          dataTransfer: { files: [file] },
+        });
+      });
+
+      expect(
+        screen.getByText(
+          'notes.txt cannot be added because the file type(s) are not supported.'
+        )
+      ).toBeInTheDocument();
+    });
+
+    it('shows a rejection message for oversized files', async () => {
+      await setup();
+
+      const file = new File(['x'], 'big.geojson', {
+        type: 'application/geo+json',
+      });
+      Object.defineProperty(file, 'size', { value: 50000001 });
+      await act(async () => {
+        fireEvent.drop(window as unknown as HTMLElement, {
+          dataTransfer: { files: [file] },
+        });
+      });
+
+      expect(
+        screen.getByText(
+          'big.geojson cannot be added because one or more files are too large.'
+        )
+      ).toBeInTheDocument();
+    });
+
+    it('shows a drag-over affordance while dragging a file over the window', async () => {
+      await setup();
+
+      expect(
+        screen.queryByTestId('window-drop-overlay')
+      ).not.toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.dragOver(window as unknown as HTMLElement, {
+          dataTransfer: { types: ['Files'] },
+        });
+      });
+
+      expect(screen.getByTestId('window-drop-overlay')).toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.drop(window as unknown as HTMLElement, {
+          dataTransfer: { files: [] },
+        });
+      });
+
+      expect(
+        screen.queryByTestId('window-drop-overlay')
+      ).not.toBeInTheDocument();
+    });
+
+    it('ignores drops while the create layer dialog is open', async () => {
+      await setup();
+
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole('button', { name: 'stub-open-create', hidden: true })
+        );
+      });
+
+      const file = new File(['x'], 'points.geojson', {
+        type: 'application/geo+json',
+      });
+      await act(async () => {
+        fireEvent.drop(window as unknown as HTMLElement, {
+          dataTransfer: { files: [file] },
+        });
+      });
+
+      // No file swap mid-form.
+      expect(screen.getByTestId('stub-create-file')).toHaveTextContent('');
+
+      // Drops work again once the create dialog is closed.
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole('button', {
+            name: 'stub-close-create',
+            hidden: true,
+          })
+        );
+      });
+      await act(async () => {
+        fireEvent.drop(window as unknown as HTMLElement, {
+          dataTransfer: { files: [file] },
+        });
+      });
+      await waitFor(() => {
+        expect(screen.getByTestId('stub-create-file')).toHaveTextContent(
+          'points.geojson'
+        );
+      });
+    });
+
+    it('takes the first file of a multi-file drop and ignores the rest', async () => {
+      await setup();
+
+      const first = new File(['x'], 'points.geojson', {
+        type: 'application/geo+json',
+      });
+      const second = new File(['x'], 'other.geojson', {
+        type: 'application/geo+json',
+      });
+      await act(async () => {
+        fireEvent.drop(window as unknown as HTMLElement, {
+          dataTransfer: { files: [first, second] },
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('stub-create-file')).toHaveTextContent(
+          'points.geojson'
+        );
+      });
+      expect(screen.getByTestId('stub-create-file')).not.toHaveTextContent(
+        'other.geojson'
+      );
+    });
+
+    it('activates the add control with the keyboard', async () => {
+      await setup();
+
+      const clickSpy = jest
+        .spyOn(HTMLInputElement.prototype, 'click')
+        .mockImplementation(() => {});
+
+      const addControl = screen.getByRole('button', {
+        name: 'Add a map layer',
+      });
+      await act(async () => {
+        fireEvent.keyDown(addControl, { key: 'Enter' });
+      });
+      expect(clickSpy).toHaveBeenCalled();
+
+      clickSpy.mockClear();
+      await act(async () => {
+        fireEvent.keyDown(addControl, { key: ' ' });
+      });
+      expect(clickSpy).toHaveBeenCalled();
+
+      clickSpy.mockRestore();
     });
   });
 

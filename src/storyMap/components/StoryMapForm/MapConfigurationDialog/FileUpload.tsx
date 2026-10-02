@@ -38,13 +38,13 @@ import {
   uploadSharedDataFile,
 } from 'terraso-web-client/sharedData/sharedDataSlice';
 import { useVisualizationContext } from 'terraso-web-client/sharedData/visualization/visualizationContext';
-import { useStoryMapConfigDataContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
-
 import {
   MAP_LAYER_ACCEPTED_EXTENSIONS,
   MAP_LAYER_ACCEPTED_TYPES,
+  mapLayerFileValidator,
   SHARED_DATA_MAX_SIZE,
-} from 'terraso-web-client/config';
+} from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/mapLayerFileDrop';
+import { useStoryMapConfigDataContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 
 type FileUploadProps = {
   onCompleteSuccess: (dataEntry: DataEntryNode) => void;
@@ -176,6 +176,9 @@ export const FileUpload = (props: FileUploadProps) => {
           errors={errors}
           onDropAccepted={onDropAccepted}
           onDropRejected={onDropRejected}
+          // Same accept rule as the compact add control and the window-wide
+          // drop target (mapLayerFileDrop.ts).
+          validator={mapLayerFileValidator}
           maxSize={SHARED_DATA_MAX_SIZE}
           fileTypes={MAP_LAYER_ACCEPTED_TYPES}
           fileExtensions={MAP_LAYER_ACCEPTED_EXTENSIONS}

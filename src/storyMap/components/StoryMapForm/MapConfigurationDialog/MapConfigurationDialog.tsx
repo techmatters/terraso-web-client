@@ -29,6 +29,7 @@ import { useFetchData } from 'terraso-client-shared/store/utils';
 import { StoryMapNode } from 'terraso-web-client/terrasoApi/shared/graphqlSchema/graphql';
 import { useSelector } from 'terraso-web-client/terrasoApi/store';
 import {
+  Alert,
   Box,
   Button,
   Dialog,
@@ -54,7 +55,10 @@ import MapGeocoder from 'terraso-web-client/gis/components/MapGeocoder';
 import MapStyleSwitcher from 'terraso-web-client/gis/components/MapStyleSwitcher';
 import { CompactAddControl } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CompactAddControl';
 import { CreateMapLayerFileUpload } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog';
-import { isMapLayerFileAccepted } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/mapLayerFileDrop';
+import {
+  isMapLayerFileAccepted,
+  mapLayerFileRejectionMessage,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/mapLayerFileDrop';
 import { MapLayerOrderList } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerOrderList';
 import {
   useStoryMapConfigActionsContext,
@@ -333,9 +337,17 @@ const LayerDirectoryTree = ({
  * Compact add control wired to the collaboration context (which lives inside
  * the dialog's provider).
  */
-const AddMapLayerControl = ({ onFile }: { onFile: (file: File) => void }) => {
+const AddMapLayerControl = ({
+  onFile,
+  onReject,
+}: {
+  onFile: (file: File) => void;
+  onReject: (file: File) => void;
+}) => {
   const { owner } = useCollaborationContext();
-  return <CompactAddControl onFile={onFile} disabled={!owner} />;
+  return (
+    <CompactAddControl onFile={onFile} onReject={onReject} disabled={!owner} />
+  );
 };
 
 export type MapConfigurationConfirm = {
@@ -638,9 +650,27 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
   // While the dialog is open, the whole window accepts file drops to start
   // the create-new-layer flow preloaded with the dropped file.
   const [pendingFile, setPendingFile] = useState<File | undefined>();
-  const startCreateFlow = useCallback((file: File) => {
-    setPendingFile(file);
-  }, []);
+  const [dropError, setDropError] = useState<string | null>(null);
+  const [dragActive, setDragActive] = useState(false);
+  // True while CreateMapLayerDialog is open: window drops must never swap the
+  // file mid-form.
+  const [createFlowActive, setCreateFlowActive] = useState(false);
+  const startCreateFlow = useCallback(
+    (file: File) => {
+      if (createFlowActive) {
+        return;
+      }
+      setDropError(null);
+      setPendingFile(file);
+    },
+    [createFlowActive]
+  );
+  const onRejectFile = useCallback(
+    (file: File) => {
+      setDropError(mapLayerFileRejectionMessage(file, t));
+    },
+    [t]
+  );
   useEffect(() => {
     if (!open) {
       return;
@@ -648,25 +678,44 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
     const onDragOver = (event: DragEvent) => {
       if (event.dataTransfer?.types?.includes('Files')) {
         event.preventDefault();
+        setDragActive(true);
+      }
+    };
+    const onDragLeave = (event: DragEvent) => {
+      // Inner dragleave events fire for every element crossed; only leaving
+      // the window (no relatedTarget) cancels the affordance.
+      if (!event.relatedTarget) {
+        setDragActive(false);
       }
     };
     const onDrop = (event: DragEvent) => {
-      const file = event.dataTransfer?.files?.[0];
-      if (!file) {
+      setDragActive(false);
+      const files = event.dataTransfer?.files;
+      if (!files?.length) {
         return;
       }
       event.preventDefault();
+      if (createFlowActive) {
+        // The create dialog is open: ignore the drop entirely (no file swap).
+        return;
+      }
+      // Multi-file drop: take the first file and ignore the rest.
+      const file = files[0];
       if (isMapLayerFileAccepted(file)) {
         startCreateFlow(file);
+      } else {
+        onRejectFile(file);
       }
     };
     window.addEventListener('dragover', onDragOver);
+    window.addEventListener('dragleave', onDragLeave);
     window.addEventListener('drop', onDrop);
     return () => {
       window.removeEventListener('dragover', onDragOver);
+      window.removeEventListener('dragleave', onDragLeave);
       window.removeEventListener('drop', onDrop);
     };
-  }, [open, startCreateFlow]);
+  }, [open, startCreateFlow, onRejectFile, createFlowActive]);
 
   return (
     <CollaborationContextProvider owner={storyMap} entityType="story_map">
@@ -720,7 +769,33 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
         </Stack>
 
         <DialogContent>
-          <Stack direction="row" spacing={2} sx={{ alignItems: 'stretch' }}>
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{ alignItems: 'stretch', position: 'relative' }}
+          >
+            {dragActive && (
+              <Box
+                data-testid="window-drop-overlay"
+                aria-hidden
+                sx={{
+                  position: 'absolute',
+                  inset: 0,
+                  zIndex: theme => theme.zIndex.modal + 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  pointerEvents: 'none',
+                  border: '3px dashed',
+                  borderColor: 'blue.dark',
+                  bgcolor: 'blue.lite',
+                }}
+              >
+                <Typography variant="h3">
+                  {t('storyMap.form_map_layers_add_drop_text')}
+                </Typography>
+              </Box>
+            )}
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Map
                 ref={mapRef}
@@ -747,7 +822,15 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
             </Box>
             <Box sx={{ width: SIDEBAR_WIDTH, flexShrink: 0 }}>
               <Stack spacing={2}>
-                <AddMapLayerControl onFile={startCreateFlow} />
+                {dropError && (
+                  <Alert severity="error" onClose={() => setDropError(null)}>
+                    {dropError}
+                  </Alert>
+                )}
+                <AddMapLayerControl
+                  onFile={startCreateFlow}
+                  onReject={onRejectFile}
+                />
                 <MapLayerOrderList
                   rows={draftRows}
                   onReorder={onReorder}
@@ -770,6 +853,7 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
         onCreate={onCreateLayer}
         externalFile={pendingFile}
         showDropZone={false}
+        onCreateDialogOpenChange={setCreateFlowActive}
       />
     </CollaborationContextProvider>
   );

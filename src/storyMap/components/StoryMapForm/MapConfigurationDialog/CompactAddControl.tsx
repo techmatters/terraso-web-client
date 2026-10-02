@@ -19,15 +19,15 @@ import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Paper, Typography } from '@mui/material';
 
-import { isMapLayerFileAccepted } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/mapLayerFileDrop';
-
 import {
-  MAP_LAYER_ACCEPTED_EXTENSIONS,
-  MAP_LAYER_ACCEPTED_TYPES,
-} from 'terraso-web-client/config';
+  isMapLayerFileAccepted,
+  mapLayerAcceptAttribute,
+} from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/mapLayerFileDrop';
 
 type CompactAddControlProps = {
   onFile: (file: File) => void;
+  /** Called with the rejected file (surfaced by the host, e.g. the dialog). */
+  onReject?: (file: File) => void;
   disabled?: boolean;
 };
 
@@ -36,6 +36,7 @@ type CompactAddControlProps = {
  */
 export const CompactAddControl = ({
   onFile,
+  onReject,
   disabled,
 }: CompactAddControlProps) => {
   const { t } = useTranslation();
@@ -43,12 +44,18 @@ export const CompactAddControl = ({
 
   const handleFiles = useCallback(
     (files: FileList | null | undefined) => {
+      // Multi-file drops: take the first file and ignore the rest.
       const file = files?.[0];
-      if (file && isMapLayerFileAccepted(file)) {
+      if (!file) {
+        return;
+      }
+      if (isMapLayerFileAccepted(file)) {
         onFile(file);
+      } else {
+        onReject?.(file);
       }
     },
-    [onFile]
+    [onFile, onReject]
   );
 
   return (
@@ -91,10 +98,7 @@ export const CompactAddControl = ({
         ref={inputRef}
         type="file"
         hidden
-        accept={[
-          ...Object.values(MAP_LAYER_ACCEPTED_TYPES).flat(),
-          ...MAP_LAYER_ACCEPTED_EXTENSIONS.map(extension => `.${extension}`),
-        ].join(',')}
+        accept={mapLayerAcceptAttribute}
         onChange={event => {
           handleFiles(event.target.files);
           event.target.value = '';
