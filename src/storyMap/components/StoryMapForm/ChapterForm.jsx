@@ -38,7 +38,7 @@ import EditableRichText from 'terraso-web-client/storyMap/components/StoryMapFor
 import EditableText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableText';
 import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
 import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
-import { generateLayerTransitionEvents } from 'terraso-web-client/storyMap/mapLayerUtils';
+import { toMapLayers } from 'terraso-web-client/storyMap/mapLayerUtils';
 import { ALIGNMENTS } from 'terraso-web-client/storyMap/storyMapConstants';
 import { chapterHasVisualMedia } from 'terraso-web-client/storyMap/storyMapUtils';
 
@@ -92,10 +92,10 @@ const ChapterConfig = props => {
   }, []);
 
   const onLocationChangeWrapper = useCallback(
-    ({ location, mapStyle, mapLayerConfigs, dataLayerConfigId }) => {
+    ({ location, mapStyle, mapLayerRows }) => {
       onLocationChange(location);
       onMapStyleChange(mapStyle);
-      onMapLayersChange({ mapLayerConfigs, dataLayerConfigId });
+      onMapLayersChange({ mapLayerRows });
       onLocationClose();
     },
     [onLocationChange, onLocationClose, onMapStyleChange, onMapLayersChange]
@@ -195,27 +195,22 @@ const ChapterForm = props => {
     [setConfig]
   );
 
+  // Writes ONLY `mapLayers` + the `dataLayers` payload: the compat fields
+  // (dataLayerConfigId/onChapterEnter/onChapterExit) are derived from these at
+  // the config write boundary (syncTransitionLayerFields).
   const onMapLayersChange = useCallback(
-    ({ mapLayerConfigs, dataLayerConfigId }) => {
-      const mapLayers = mapLayerConfigs.map(({ id }) => ({ layerId: id }));
-      const layerConfigsById = _.keyBy('id', mapLayerConfigs);
-      const events = generateLayerTransitionEvents(
-        mapLayers,
-        layerId => layerConfigsById[layerId]
+    ({ mapLayerRows }) => {
+      const mapLayers = toMapLayers(mapLayerRows.map(({ layerId }) => layerId));
+      const dataLayerConfigs = _.keyBy(
+        'id',
+        mapLayerRows.map(({ config }) => config).filter(Boolean)
       );
 
       setConfig(config => ({
         ...config,
-        dataLayers: { ...config.dataLayers, ...layerConfigsById },
+        dataLayers: { ...config.dataLayers, ...dataLayerConfigs },
         chapters: config.chapters.map(chapter =>
-          chapter.id === record.id
-            ? {
-                ...chapter,
-                mapLayers,
-                dataLayerConfigId,
-                ...events,
-              }
-            : chapter
+          chapter.id === record.id ? { ...chapter, mapLayers } : chapter
         ),
       }));
     },

@@ -1187,6 +1187,7 @@
         "form_map_layers_tree_toggle_label": "Mostrar u ocultar {{title}}",
         "form_map_layers_list_label": "Capas de mapa en este capítulo, la superior primero",
         "form_map_layers_item_drag_label": "Reordenar {{title}}",
+        "form_map_layers_item_unknown_label": "Capa desconocida",
         "form_map_layers_item_remove_label": "Eliminar {{title}} de este capítulo",
         "form_map_layers_add_title": "Agregar una capa de mapa",
         "form_map_layers_add_drop_text": "Arrastra y suelta un archivo de mapa aquí, o selecciona uno de tu dispositivo.",

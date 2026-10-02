@@ -28,11 +28,11 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { Box, IconButton, Paper, Stack, Typography } from '@mui/material';
 
 import StrictModeDroppable from 'terraso-web-client/common/components/StrictModeDroppable';
-import { MapLayerConfig } from 'terraso-web-client/storyMap/storyMapTypes';
+import { MapLayerDraftRow } from 'terraso-web-client/storyMap/storyMapTypes';
 
 type MapLayerOrderListProps = {
-  /** Ordered layer configs, index 0 = topmost on the map. */
-  mapLayerConfigs: MapLayerConfig[];
+  /** Ordered rows, index 0 = topmost on the map. */
+  rows: MapLayerDraftRow[];
   onReorder: (sourceIndex: number, destinationIndex: number) => void;
   onRemove: (layerId: string) => void;
 };
@@ -40,10 +40,12 @@ type MapLayerOrderListProps = {
 /**
  * Reorderable list of the chapter's map layers. List order = map z-order,
  * top of the list = topmost layer. The whole row is draggable (except the X
- * icon, which removes the layer from the chapter).
+ * icon, which removes the layer from the chapter). Rows whose layer ref
+ * resolves nowhere render as an unknown/missing layer but stay reorderable
+ * and removable — unknown data is never silently dropped.
  */
 export const MapLayerOrderList = ({
-  mapLayerConfigs,
+  rows,
   onReorder,
   onRemove,
 }: MapLayerOrderListProps) => {
@@ -51,6 +53,7 @@ export const MapLayerOrderList = ({
 
   const handleDragEnd = useCallback(
     ({ source, destination }: DropResult) => {
+      // Drag cancelled or dropped at the same index: no-op (never splice).
       if (!destination || destination.index === source.index) {
         return;
       }
@@ -71,68 +74,73 @@ export const MapLayerOrderList = ({
             aria-label={t('storyMap.form_map_layers_list_label')}
             sx={{ p: 0, m: 0, listStyle: 'none' }}
           >
-            {mapLayerConfigs.map((layerConfig, index) => (
-              <Draggable
-                key={layerConfig.id}
-                draggableId={layerConfig.id}
-                index={index}
-              >
-                {(dragProvided, snapshot) => (
-                  <Paper
-                    ref={dragProvided.innerRef}
-                    {...dragProvided.draggableProps}
-                    component="li"
-                    aria-label={layerConfig.title}
-                    variant="outlined"
-                    sx={theme => ({
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: theme.spacing(0.5),
-                      p: theme.spacing(0.5, 1),
-                      bgcolor: snapshot.isDragging ? 'blue.lite' : 'gray.lite2',
-                    })}
-                  >
-                    {/* The whole row is draggable except the X icon. */}
-                    <Box
-                      {...dragProvided.dragHandleProps}
-                      sx={{
+            {rows.map(({ layerId, config }, index) => {
+              const title =
+                config?.title ??
+                t('storyMap.form_map_layers_item_unknown_label');
+              return (
+                <Draggable key={layerId} draggableId={layerId} index={index}>
+                  {(dragProvided, snapshot) => (
+                    <Paper
+                      ref={dragProvided.innerRef}
+                      {...dragProvided.draggableProps}
+                      component="li"
+                      aria-label={title}
+                      variant="outlined"
+                      sx={theme => ({
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 0.5,
-                        flexGrow: 1,
-                        cursor: 'grab',
-                      }}
+                        gap: theme.spacing(0.5),
+                        p: theme.spacing(0.5, 1),
+                        bgcolor: snapshot.isDragging
+                          ? 'blue.lite'
+                          : 'gray.lite2',
+                      })}
                     >
-                      <DragIndicatorIcon
-                        fontSize="small"
-                        aria-hidden="true"
-                        sx={{ color: 'gray.dark1' }}
-                      />
-                      <Typography variant="body2">
-                        {layerConfig.title}
-                      </Typography>
-                    </Box>
-                    <IconButton
-                      size="small"
-                      aria-label={t(
-                        'storyMap.form_map_layers_item_remove_label',
-                        {
-                          title: layerConfig.title,
-                        }
-                      )}
-                      // Keep the X out of the row's drag handle.
-                      onMouseDown={event => event.stopPropagation()}
-                      onClick={event => {
-                        event.stopPropagation();
-                        onRemove(layerConfig.id);
-                      }}
-                    >
-                      <CloseIcon fontSize="small" />
-                    </IconButton>
-                  </Paper>
-                )}
-              </Draggable>
-            ))}
+                      {/* The whole row is draggable except the X icon. */}
+                      <Box
+                        {...dragProvided.dragHandleProps}
+                        aria-label={t(
+                          'storyMap.form_map_layers_item_drag_label',
+                          { title }
+                        )}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 0.5,
+                          flexGrow: 1,
+                          cursor: 'grab',
+                        }}
+                      >
+                        <DragIndicatorIcon
+                          fontSize="small"
+                          aria-hidden="true"
+                          sx={{ color: 'gray.dark1' }}
+                        />
+                        <Typography variant="body2">{title}</Typography>
+                      </Box>
+                      <IconButton
+                        size="small"
+                        aria-label={t(
+                          'storyMap.form_map_layers_item_remove_label',
+                          {
+                            title,
+                          }
+                        )}
+                        // Keep the X out of the row's drag handle.
+                        onMouseDown={event => event.stopPropagation()}
+                        onClick={event => {
+                          event.stopPropagation();
+                          onRemove(layerId);
+                        }}
+                      >
+                        <CloseIcon fontSize="small" />
+                      </IconButton>
+                    </Paper>
+                  )}
+                </Draggable>
+              );
+            })}
             {provided.placeholder}
           </Stack>
         )}
