@@ -17,49 +17,114 @@
 
 import mapboxgl from 'terraso-web-client/gis/mapbox';
 
-export const createMapMock = (overrides = {}) => ({
-  on: jest.fn(),
-  off: jest.fn(),
-  remove: jest.fn(),
-  getCanvas: jest.fn(),
-  addControl: jest.fn(),
-  removeControl: jest.fn(),
-  addSource: jest.fn(),
-  getSource: jest.fn(),
-  addLayer: jest.fn(),
-  getLayer: jest.fn(),
-  setTerrain: jest.fn(),
-  fitBounds: jest.fn(),
-  getBounds: jest.fn(),
-  getStyle: jest.fn(),
-  getZoom: jest.fn(),
-  getCenter: jest.fn(),
-  flyTo: jest.fn(),
-  getContainer: jest.fn(),
-  hasImage: jest.fn(),
-  addImage: jest.fn(),
-  setPadding: jest.fn(),
-  scrollZoom: { enable: jest.fn(), disable: jest.fn() },
-  boxZoom: { enable: jest.fn(), disable: jest.fn() },
-  dragRotate: { enable: jest.fn(), disable: jest.fn() },
-  dragPan: { enable: jest.fn(), disable: jest.fn() },
-  keyboard: {
-    enable: jest.fn(),
-    disable: jest.fn(),
-    enableRotation: jest.fn(),
-    disableRotation: jest.fn(),
-  },
-  doubleClickZoom: { enable: jest.fn(), disable: jest.fn() },
-  touchZoomRotate: {
-    enable: jest.fn(),
-    disable: jest.fn(),
-    enableRotation: jest.fn(),
-    disableRotation: jest.fn(),
-  },
-  touchPitch: { enable: jest.fn(), disable: jest.fn() },
-  resize: jest.fn(),
-  ...overrides,
-});
+/**
+ * Map instance mock with REAL event-listener semantics: `on`/`once`/`off`
+ * record handler ARRAYS per event type (the shared editor map has 3+
+ * `move`/`moveend` registrants — last-one-wins recording hides drops), and
+ * `fire(type, ...args)` dispatches to all of them (snapshot of the current
+ * list, so handlers can unsubscribe while dispatching).
+ */
+export const createMapMock = (overrides = {}) => {
+  const map = {
+    onEvents: {},
+    on: jest.fn((type, cb) => {
+      (map.onEvents[type] ??= []).push(cb);
+    }),
+    once: jest.fn((type, cb) => {
+      const wrapped = (...args) => {
+        map.off(type, wrapped);
+        cb(...args);
+      };
+      wrapped.__original = cb;
+      (map.onEvents[type] ??= []).push(wrapped);
+    }),
+    off: jest.fn((type, cb) => {
+      const handlers = map.onEvents[type];
+      if (!handlers) {
+        return;
+      }
+      if (!cb) {
+        delete map.onEvents[type];
+        return;
+      }
+      map.onEvents[type] = handlers.filter(
+        handler => handler !== cb && handler.__original !== cb
+      );
+    }),
+    fire: (type, ...args) => {
+      [...(map.onEvents[type] ?? [])].forEach(handler => handler(...args));
+    },
+    remove: jest.fn(),
+    getCanvas: jest.fn(),
+    addControl: jest.fn(),
+    removeControl: jest.fn(),
+    addSource: jest.fn(),
+    getSource: jest.fn(),
+    removeSource: jest.fn(),
+    addLayer: jest.fn(),
+    getLayer: jest.fn(),
+    removeLayer: jest.fn(),
+    moveLayer: jest.fn(),
+    setPaintProperty: jest.fn(),
+    getStyle: jest.fn(),
+    setStyle: jest.fn(),
+    setTerrain: jest.fn(),
+    setFog: jest.fn(),
+    fitBounds: jest.fn(),
+    getBounds: jest.fn(),
+    getZoom: jest.fn(),
+    getPitch: jest.fn(),
+    getBearing: jest.fn(),
+    flyTo: jest.fn(),
+    easeTo: jest.fn(),
+    jumpTo: jest.fn(),
+    rotateTo: jest.fn(),
+    stop: jest.fn(),
+    getContainer: jest.fn(),
+    hasImage: jest.fn(),
+    addImage: jest.fn(),
+    removeImage: jest.fn(),
+    setPadding: jest.fn(),
+    scrollZoom: { enable: jest.fn(), disable: jest.fn() },
+    boxZoom: { enable: jest.fn(), disable: jest.fn() },
+    dragRotate: { enable: jest.fn(), disable: jest.fn() },
+    dragPan: { enable: jest.fn(), disable: jest.fn() },
+    keyboard: {
+      enable: jest.fn(),
+      disable: jest.fn(),
+      enableRotation: jest.fn(),
+      disableRotation: jest.fn(),
+    },
+    doubleClickZoom: { enable: jest.fn(), disable: jest.fn() },
+    touchZoomRotate: {
+      enable: jest.fn(),
+      disable: jest.fn(),
+      enableRotation: jest.fn(),
+      disableRotation: jest.fn(),
+    },
+    touchPitch: { enable: jest.fn(), disable: jest.fn() },
+    resize: jest.fn(),
+    ...overrides,
+  };
+  return map;
+};
+
+/**
+ * A map mock that reports `load` immediately on registration (like a mapbox
+ * map that is already loaded): `MapProvider` picks the instance up as soon
+ * as it subscribes.
+ */
+export const createLoadedMapMock = (overrides = {}) => {
+  const map = createMapMock(overrides);
+  const record = map.on;
+  map.on = jest.fn((type, cb) => {
+    record(type, cb);
+    if (type === 'load') {
+      cb();
+    }
+  });
+  return map;
+};
 
 export const setupMapboxMock = () => {
   beforeEach(() => {
