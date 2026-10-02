@@ -52,6 +52,20 @@ console.error = (...args) => {
   ) {
     return;
   }
+  // react-hook-form registers fields during render (Controller → register →
+  // useWatch subject next → setState), which React reports as "Cannot update
+  // a component while rendering" with both components named `Unknown`. It is
+  // an upstream artifact (reproduces on pre-existing Form-based suites), pure
+  // console noise in tests — filter exactly that unnamed variant so real
+  // setstate-in-render bugs (which name their components) still surface.
+  if (
+    typeof args[0] === 'string' &&
+    args[0].includes(
+      'Cannot update a component (`Unknown`) while rendering a different component'
+    )
+  ) {
+    return;
+  }
   consoleError(...args);
 };
 
