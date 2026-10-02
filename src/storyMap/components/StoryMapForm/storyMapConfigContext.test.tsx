@@ -312,7 +312,7 @@ describe('commit contract: pruning runs at the save boundary only', () => {
           {
             id: 'chapter-1',
             mapLayers: [{ layerId: 'created' }],
-          } as StoryMapConfig['chapters'][number],
+          } as unknown as StoryMapConfig['chapters'][number],
         ],
       }));
     });
@@ -326,7 +326,7 @@ describe('commit contract: pruning runs at the save boundary only', () => {
           {
             id: 'chapter-1',
             mapLayers: [],
-          } as StoryMapConfig['chapters'][number],
+          } as unknown as StoryMapConfig['chapters'][number],
         ],
       }));
     });
@@ -360,7 +360,7 @@ describe('commit contract: pruning runs at the save boundary only', () => {
           {
             id: 'chapter-1',
             mapLayers: [{ layerId: 'temp' }],
-          } as StoryMapConfig['chapters'][number],
+          } as unknown as StoryMapConfig['chapters'][number],
         ],
       }));
     });
@@ -371,7 +371,7 @@ describe('commit contract: pruning runs at the save boundary only', () => {
           {
             id: 'chapter-1',
             mapLayers: [],
-          } as StoryMapConfig['chapters'][number],
+          } as unknown as StoryMapConfig['chapters'][number],
         ],
       }));
     });
