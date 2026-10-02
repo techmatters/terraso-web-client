@@ -21,7 +21,7 @@ import { useMap } from 'terraso-web-client/gis/components/Map';
 
 const GeoJsonSource = props => {
   const { id, geoJson, geoJsonUrl, onError } = props;
-  const { map, addSource } = useMap();
+  const { map, addSource, removeSource } = useMap();
 
   const handleSourceError = useCallback(
     event => {
@@ -48,6 +48,17 @@ const GeoJsonSource = props => {
       data: sourceData,
     });
   }, [id, map, addSource, geoJson, geoJsonUrl]);
+
+  // Symmetric cleanup (like Layer.js): remove the source on unmount so a
+  // later style switch (which resurrects every source tracked by the map
+  // provider) cannot bring a stale source back to life.
+  useEffect(() => {
+    return () => {
+      if (map && map.getSource(id)) {
+        removeSource(id);
+      }
+    };
+  }, [id, map, removeSource]);
 
   // Listen for source errors
   useEffect(() => {
