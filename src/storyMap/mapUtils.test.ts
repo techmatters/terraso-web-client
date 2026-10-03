@@ -312,7 +312,7 @@ describe('startTransition camera suspension', () => {
             pitch: 0,
             bearing: 0,
             bounds: [-80, -3, -79, -2],
-          },
+          } as unknown as Transition['location'],
           mapLayers: [{ layerId: 'a' }],
           dataLayerConfigId: 'a',
           onChapterEnter: [{ layer: 'a-markers', opacity: 1, duration: 0 }],

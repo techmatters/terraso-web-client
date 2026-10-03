@@ -406,6 +406,10 @@ test('StoryMapUpdate: Show Share Dialog', async () => {
   });
   await setup({ id: API_STORY_MAP.createdBy.id });
 
+  // The Settings sidebar is closed by default (Configure Chapter wins).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
   const rightSidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',
   });
@@ -477,7 +481,17 @@ test('StoryMapUpdate: Share Dialog invite members', async () => {
   });
 
   await setup({ id: API_STORY_MAP.createdBy.id });
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  // The story map loads with one request (the configure sidebar's layer
+  // index fetch is separate, legitimate traffic).
+  expect(
+    terrasoApi.requestGraphQL.mock.calls.filter(
+      ([query]) => !String(query).includes('visualizationConfigs')
+    ).length
+  ).toBe(1);
+  // The Settings sidebar is closed by default (Configure Chapter wins).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
   const rightSidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',
   });
@@ -495,9 +509,14 @@ test('StoryMapUpdate: Share Dialog invite members', async () => {
 
   await act(async () => fireEvent.click(inviteButton));
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  // Load + invite mutation (the configure sidebar's layer index fetch is
+  // separate, legitimate traffic).
+  const nonLayerCalls = terrasoApi.requestGraphQL.mock.calls.filter(
+    ([query]) => !String(query).includes('visualizationConfigs')
+  );
+  expect(nonLayerCalls).toHaveLength(2);
 
-  const inviteCall = terrasoApi.requestGraphQL.mock.calls[1][1];
+  const inviteCall = nonLayerCalls[1][1];
 
   expect(inviteCall).toMatchObject({
     input: {
@@ -543,7 +562,17 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
   });
 
   await setup({ id: API_STORY_MAP.createdBy.id });
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  // The story map loads with one request (the configure sidebar's layer
+  // index fetch is separate, legitimate traffic).
+  expect(
+    terrasoApi.requestGraphQL.mock.calls.filter(
+      ([query]) => !String(query).includes('visualizationConfigs')
+    ).length
+  ).toBe(1);
+  // The Settings sidebar is closed by default (Configure Chapter wins).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
   const rightSidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',
   });
@@ -565,9 +594,14 @@ test('StoryMapUpdate: Share Dialog remove members', async () => {
 
   await act(async () => fireEvent.click(confirmationButton));
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(2);
+  // Load + remove mutation (the configure sidebar's layer index fetch is
+  // separate, legitimate traffic).
+  const nonLayerCalls = terrasoApi.requestGraphQL.mock.calls.filter(
+    ([query]) => !String(query).includes('visualizationConfigs')
+  );
+  expect(nonLayerCalls).toHaveLength(2);
 
-  const removeCall = terrasoApi.requestGraphQL.mock.calls[1][1];
+  const removeCall = nonLayerCalls[1][1];
 
   expect(removeCall).toMatchObject({
     input: {
@@ -607,9 +641,19 @@ test('StoryMapUpdate: See story map as editor', async () => {
 
   await setup(API_STORY_MAP.membershipList.memberships.edges[1].node.user);
 
-  expect(terrasoApi.requestGraphQL).toHaveBeenCalledTimes(1);
+  // The story map loads with one request (the configure sidebar's layer
+  // index fetch is separate, legitimate traffic).
+  expect(
+    terrasoApi.requestGraphQL.mock.calls.filter(
+      ([query]) => !String(query).includes('visualizationConfigs')
+    ).length
+  ).toBe(1);
 
   expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
+  // The Settings sidebar is closed by default (Configure Chapter wins).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
   const rightSidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',
   });
