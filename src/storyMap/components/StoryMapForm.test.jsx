@@ -1340,6 +1340,12 @@ test('StoryMapForm: the editor map mounts positioning controls while configuring
   expect(MapboxGlGeocoder).toHaveBeenCalledTimes(1);
   expect(map.addControl).toHaveBeenCalled();
 
+  // The chapter overlay must not eat map drags while the map is being
+  // positioned (found in E2E); form controls keep their pointer events.
+  expect(document.getElementById('features')).toHaveStyle({
+    pointerEvents: 'none',
+  });
+
   const geocoderOptions = MapboxGlGeocoder.mock.calls[0][0];
   const [coordinateResult] = geocoderOptions.localGeocoder('1.2345, -77.6543');
 
@@ -1460,13 +1466,17 @@ test('StoryMapForm: camera step transitions are suspended while configuring and 
     expect(map.flyTo).not.toHaveBeenCalled();
     expect(map.easeTo).not.toHaveBeenCalled();
 
-    // Closing the sidebar resumes the camera step transitions.
+    // Closing the sidebar resumes the camera step transitions and hands
+    // pointer events back to the chapter overlay.
     await act(async () =>
       fireEvent.click(
         screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
       )
     );
     await waitFor(() => expect(map.flyTo).toHaveBeenCalled());
+    expect(document.getElementById('features')).toHaveStyle({
+      pointerEvents: 'auto',
+    });
   } finally {
     io.restore();
   }

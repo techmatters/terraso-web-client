@@ -415,6 +415,18 @@ const StoryMap = props => {
       <Box
         sx={({ breakpoints }) => ({
           [breakpoints.not('xs')]: { marginTop: '-100cqh' },
+          // While the map is being positioned (Configure Chapter open),
+          // pointer drags pass through the chapter cards to the map; form
+          // controls keep their pointer events so text editing stays
+          // available while configuring.
+          ...(mapEditing
+            ? {
+                pointerEvents: 'none',
+                '& .step-container, & .step.title': { pointerEvents: 'none' },
+                '& input, & textarea, & button, & a, & [contenteditable="true"]':
+                  { pointerEvents: 'auto' },
+              }
+            : {}),
         })}
         component="section"
         aria-label={t('storyMap.view_chapters_label')}
