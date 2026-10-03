@@ -43,7 +43,7 @@ import {
   MAP_LAYER_ACCEPTED_TYPES,
   mapLayerFileValidator,
   SHARED_DATA_MAX_SIZE,
-} from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/mapLayerFileDrop';
+} from 'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/mapLayerFileDrop';
 import { useStoryMapConfigDataContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 
 type FileUploadProps = {

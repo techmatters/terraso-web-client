@@ -69,7 +69,7 @@ jest.mock('terraso-web-client/storyMap/components/StoryMapLayer', () => ({
 }));
 
 jest.mock(
-  'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog',
+  'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/CreateMapLayerDialog',
   () => ({
     __esModule: true,
     CreateMapLayerFileUpload: ({

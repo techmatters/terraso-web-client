@@ -19,7 +19,7 @@ import {
   isMapLayerFileAccepted,
   mapLayerAcceptAttribute,
   mapLayerFileRejectionCode,
-} from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/mapLayerFileDrop';
+} from 'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/mapLayerFileDrop';
 
 import { SHARED_DATA_MAX_SIZE } from 'terraso-web-client/config';
 

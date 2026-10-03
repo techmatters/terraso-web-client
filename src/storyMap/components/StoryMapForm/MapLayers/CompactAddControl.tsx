@@ -23,7 +23,7 @@ import { Box, Paper, Typography } from '@mui/material';
 import {
   isMapLayerFileAccepted,
   mapLayerAcceptAttribute,
-} from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/mapLayerFileDrop';
+} from 'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/mapLayerFileDrop';
 
 type CompactAddControlProps = {
   onFile: (file: File) => void;

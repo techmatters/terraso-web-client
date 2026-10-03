@@ -57,7 +57,7 @@ import {
   identifyLatLngColumns,
   validateCoordinateField,
 } from 'terraso-web-client/sharedData/visualization/visualizationUtils';
-import { FileUpload } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/FileUpload';
+import { FileUpload } from 'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/FileUpload';
 import { addMapLayer } from 'terraso-web-client/storyMap/storyMapSlice';
 import {
   MapLayerConfig,

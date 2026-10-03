@@ -15,12 +15,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Alert, Box, Stack } from '@mui/material';
+import { Alert, Box, Stack, SxProps } from '@mui/material';
 
 import { useCollaborationContext } from 'terraso-web-client/collaboration/collaborationContext';
-import { CompactAddControl } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CompactAddControl';
-import { LayerDirectoryTree } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/LayerDirectoryTree';
-import { MapLayerOrderList } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayerOrderList';
+import { CompactAddControl } from 'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/CompactAddControl';
+import { LayerDirectoryTree } from 'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/LayerDirectoryTree';
+import { MapLayerOrderList } from 'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/MapLayerOrderList';
 import {
   MapLayerConfig,
   MapLayerDraftRow,
@@ -43,6 +43,8 @@ type MapLayersPanelProps = {
   onToggleLayer: (layerId: string) => void;
   onReorder: (sourceIndex: number, destinationIndex: number) => void;
   onRemove: (layerId: string) => void;
+  /** Host-owned sizing (e.g. full width inside the configure sidebar). */
+  sx?: SxProps;
 };
 
 /**
@@ -63,18 +65,12 @@ export const MapLayersPanel = ({
   onToggleLayer,
   onReorder,
   onRemove,
+  sx,
 }: MapLayersPanelProps) => {
   const { owner } = useCollaborationContext();
 
   return (
-    <Box
-      sx={{
-        width: SIDEBAR_WIDTH,
-        flexShrink: 0,
-        height: '100%',
-        overflowY: 'auto',
-      }}
-    >
+    <Box sx={[{ width: SIDEBAR_WIDTH, flexShrink: 0 }, sx]}>
       <Stack spacing={2}>
         {dropError && (
           <Alert severity="error" onClose={onDismissDropError}>

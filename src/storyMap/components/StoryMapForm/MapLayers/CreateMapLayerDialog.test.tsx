@@ -20,7 +20,7 @@ import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import { createTestDataEntryNode } from 'terraso-web-client/tests/data/storyMap';
 
 import * as visualizationContext from 'terraso-web-client/sharedData/visualization/visualizationContext';
-import CreateMapLayerDialog from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog';
+import CreateMapLayerDialog from 'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/CreateMapLayerDialog';
 
 const setVisualizationContextMock = (
   visualizationContext as unknown as {
@@ -105,7 +105,7 @@ jest.mock(
 );
 
 jest.mock(
-  'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/FileUpload',
+  'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/FileUpload',
   () => ({ __esModule: true, FileUpload: () => null })
 );
 

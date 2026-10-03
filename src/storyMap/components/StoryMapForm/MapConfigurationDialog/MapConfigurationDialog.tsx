@@ -50,13 +50,14 @@ import { MapboxStyle } from 'terraso-web-client/gis/components/MapboxConstants';
 import MapControls from 'terraso-web-client/gis/components/MapControls';
 import MapGeocoder from 'terraso-web-client/gis/components/MapGeocoder';
 import MapStyleSwitcher from 'terraso-web-client/gis/components/MapStyleSwitcher';
-import { CreateMapLayerFileUpload } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog';
+import { CreateMapLayerFileUpload } from 'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/CreateMapLayerDialog';
 import {
   isMapLayerFileAccepted,
   mapLayerFileRejectionMessage,
-} from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/mapLayerFileDrop';
-import { MapLayersPanel } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayersPanel';
-import { useLayerDraft } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/useLayerDraft';
+} from 'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/mapLayerFileDrop';
+import { MapLayersPanel } from 'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/MapLayersPanel';
+import { SetMapHelperText } from 'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/SetMapHelperText';
+import { useLayerDraft } from 'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/useLayerDraft';
 import {
   useStoryMapConfigActionsContext,
   useStoryMapConfigDataContext,
@@ -79,82 +80,6 @@ import {
   StoryMapConfig,
   Transition,
 } from 'terraso-web-client/storyMap/storyMapTypes';
-
-const BearingIcon = () => {
-  const { t } = useTranslation();
-  return (
-    <Paper
-      alt={t('storyMap.form_location_helper_text_bearing_icon_alt')}
-      variant="outlined"
-      component="img"
-      src="/storyMap/bearing-icon.svg"
-      width={24}
-      height={24}
-      sx={{
-        verticalAlign: 'middle',
-      }}
-    />
-  );
-};
-
-const SetMapHelperText = () => {
-  const { t } = useTranslation();
-  return (
-    <DialogContent>
-      <Stack spacing={3}>
-        <Box>
-          <Trans i18nKey="storyMap.form_location_helper_text_step_1">
-            <Typography gutterBottom variant="h3">
-              Title
-            </Typography>
-            <Typography gutterBottom>Paragraph 1</Typography>
-            <img
-              src="/storyMap/set-map-step-1.png"
-              alt={t('storyMap.form_location_helper_text_step_1_image_alt')}
-            />
-          </Trans>
-        </Box>
-        <Box>
-          <Trans i18nKey="storyMap.form_location_helper_text_step_2">
-            <Typography gutterBottom variant="h3">
-              Title
-            </Typography>
-            <Typography gutterBottom sx={{ mb: 2 }}>
-              Paragraph 1
-            </Typography>
-            <Typography gutterBottom>
-              Content
-              <BearingIcon />
-              content
-              <BearingIcon />
-              content
-            </Typography>
-            <img
-              src="/storyMap/set-map-step-2-1.png"
-              alt={t('storyMap.form_location_helper_text_step_2_1_image_alt')}
-            />
-            <img
-              src="/storyMap/set-map-step-2-2.png"
-              alt={t('storyMap.form_location_helper_text_step_2_2_image_alt')}
-            />
-          </Trans>
-        </Box>
-        <Box>
-          <Trans i18nKey="storyMap.form_location_helper_text_step_3">
-            <Typography gutterBottom variant="h3">
-              Title
-            </Typography>
-            <Typography gutterBottom>Paragraph 1</Typography>
-            <img
-              src={t('storyMap.form_location_helper_text_step_3_image_src')}
-              alt={t('storyMap.form_location_helper_text_step_3_image_alt')}
-            />
-          </Trans>
-        </Box>
-      </Stack>
-    </DialogContent>
-  );
-};
 
 type MapLocationChangeProps = {
   onPositionChange: (position: MapPosition) => void;
