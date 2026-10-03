@@ -1471,7 +1471,7 @@ test('StoryMapForm: Closing map dialog is safe after geocoder DOM is detached', 
     .map(([control]) => control);
   expect(geocoderInstances.length).toBeGreaterThan(0);
   geocoderInstances.forEach(instance => {
-    instance._container = { parentNode: null };
+    instance.container = { parentNode: null };
   });
 
   const removalsBeforeUnmount = map.removeControl.mock.calls.filter(
