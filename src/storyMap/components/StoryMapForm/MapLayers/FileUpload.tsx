@@ -57,9 +57,10 @@ export const FileUpload = (props: FileUploadProps) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { trackEvent } = useAnalytics();
-  const {
-    storyMap: { id, slug },
-  } = useStoryMapConfigDataContext();
+  // The story map does not exist yet while creating a new one: tolerate its
+  // absence (the create-layer flow is disabled without an owner — the add
+  // control is disabled when the collaboration owner is missing).
+  const { id, slug } = useStoryMapConfigDataContext().storyMap ?? {};
   const [dropzoneErrors, setDropzoneErrors] = useState<string[]>([]);
 
   const { onCompleteSuccess, externalFile, showDropZone = true } = props;

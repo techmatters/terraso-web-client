@@ -343,7 +343,7 @@ const CreateMapLayerDialog = ({
         description: _.get('annotateConfig.mapDescription', completeConfig),
         visualizationConfig: filteredConfig,
         selectedFile: visualizationConfig.selectedFile,
-        ownerId: owner.id,
+        ownerId: owner?.id,
         ownerType: entityType,
       })
     ).then(data => {
@@ -357,7 +357,7 @@ const CreateMapLayerDialog = ({
     dispatch,
     onCreate,
     onClose,
-    owner.id,
+    owner?.id,
     entityType,
     visualizationConfig,
     trigger,
