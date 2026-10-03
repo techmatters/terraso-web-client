@@ -30,6 +30,7 @@ import { useNavigationBlocker } from 'terraso-web-client/navigation/navigationCo
 import StoryMap from 'terraso-web-client/storyMap/components/StoryMap';
 import BufferedChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/BufferedChapterForm';
 import ChaptersSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/ChaptersSideBar';
+import ConfigureChapterSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/ConfigureChapterSidebar';
 import RightSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/RightSidebar';
 import {
   useStoryMapBufferedChapterActionsContext,
@@ -55,6 +56,11 @@ const BASE_CHAPTER = {
   description: '',
   onChapterEnter: [],
 };
+
+// The editor shows exactly ONE right sidebar at a time (mutually exclusive):
+// the Configure Chapter sidebar (open by default) or the Settings sidebar.
+const RIGHT_SIDEBAR_CONFIGURE = 'configure';
+const RIGHT_SIDEBAR_SETTINGS = 'settings';
 
 const Preview = props => {
   const { getMediaFile } = useStoryMapMediaContext();
@@ -116,7 +122,7 @@ const StoryMapForm = props => {
     useStoryMapSaveContext();
   const [currentStepId, setCurrentStepId] = useState();
   const [scrollToChapter, setScrollToChapter] = useState();
-  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
+  const [rightSidebar, setRightSidebar] = useState(RIGHT_SIDEBAR_CONFIGURE);
   const [isPublishing, setIsPublishing] = useState(false);
 
   const draftAutoSaveSnapshot = useMemo(
@@ -274,11 +280,19 @@ const StoryMapForm = props => {
   );
 
   const closeRightSidebar = useCallback(() => {
-    setIsRightSidebarOpen(false);
+    setRightSidebar(null);
   }, []);
 
-  const toggleRightSidebar = useCallback(() => {
-    setIsRightSidebarOpen(isOpen => !isOpen);
+  const toggleSettings = useCallback(() => {
+    setRightSidebar(current =>
+      current === RIGHT_SIDEBAR_SETTINGS ? null : RIGHT_SIDEBAR_SETTINGS
+    );
+  }, []);
+
+  const toggleConfigureChapter = useCallback(() => {
+    setRightSidebar(current =>
+      current === RIGHT_SIDEBAR_CONFIGURE ? null : RIGHT_SIDEBAR_CONFIGURE
+    );
   }, []);
 
   if (preview || isSmall) {
@@ -307,8 +321,10 @@ const StoryMapForm = props => {
         requestStatus={saveRequestStatus}
         isDirty={isDirty}
         isPublishing={isPublishing}
-        onToggleRightSidebar={toggleRightSidebar}
-        isRightSidebarOpen={isRightSidebarOpen}
+        onToggleSettings={toggleSettings}
+        isSettingsOpen={rightSidebar === RIGHT_SIDEBAR_SETTINGS}
+        onToggleConfigureChapter={toggleConfigureChapter}
+        isConfigureChapterOpen={rightSidebar === RIGHT_SIDEBAR_CONFIGURE}
       />
       <Grid
         container
@@ -337,7 +353,16 @@ const StoryMapForm = props => {
             isContained
           />
         </Box>
-        <RightSidebar open={isRightSidebarOpen} onClose={closeRightSidebar} />
+        {rightSidebar === RIGHT_SIDEBAR_CONFIGURE && (
+          <ConfigureChapterSidebar
+            open
+            onClose={closeRightSidebar}
+            activeStepId={currentStepId ?? STORY_MAP_TITLE_ID}
+          />
+        )}
+        {rightSidebar === RIGHT_SIDEBAR_SETTINGS && (
+          <RightSidebar open onClose={closeRightSidebar} />
+        )}
       </Grid>
     </Box>
   );

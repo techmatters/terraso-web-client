@@ -99,3 +99,28 @@ export const getTransition = ({ config, id }) => {
   const chapter = config.chapters[chapterIndex];
   return chapter;
 };
+
+/**
+ * Immutably updates the transition targeted by `id` — a chapter id or
+ * STORY_MAP_TITLE_ID for the title transition. `update` receives the current
+ * transition (an empty object when the title transition does not exist yet)
+ * and returns the next one.
+ *
+ * @param {{ config: StoryMapConfig, id: string, update: (transition: ChapterConfig | Transition) => ChapterConfig | Transition }} options
+ * @returns {StoryMapConfig}
+ */
+export const updateTransition = ({ config, id, update }) => {
+  const isTitle = id === STORY_MAP_TITLE_ID;
+  if (isTitle) {
+    return {
+      ...config,
+      titleTransition: update(config.titleTransition ?? {}),
+    };
+  }
+  return {
+    ...config,
+    chapters: config.chapters.map(chapter =>
+      chapter.id === id ? update(chapter) : chapter
+    ),
+  };
+};

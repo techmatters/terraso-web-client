@@ -18,20 +18,8 @@
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
-import AlignHorizontalCenterIcon from '@mui/icons-material/AlignHorizontalCenter';
-import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft';
-import AlignHorizontalRightIcon from '@mui/icons-material/AlignHorizontalRight';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Grid,
-  IconButton,
-  Stack,
-} from '@mui/material';
-
-import { withProps } from 'terraso-web-client/react-hoc';
+import { Box, Button, Grid, Stack } from '@mui/material';
 
 import EditableMedia from 'terraso-web-client/storyMap/components/StoryMapForm/EditableMedia';
 import EditableRichText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableRichText';
@@ -42,18 +30,9 @@ import { toMapLayers } from 'terraso-web-client/storyMap/mapLayerUtils';
 import { ALIGNMENTS } from 'terraso-web-client/storyMap/storyMapConstants';
 import { chapterHasVisualMedia } from 'terraso-web-client/storyMap/storyMapUtils';
 
-const ConfigButton = withProps(IconButton, {
-  size: 'small',
-  sx: {
-    bgcolor: 'gray.lite1',
-    borderRadius: 0,
-    '&:hover': { bgcolor: 'gray.mid', borderRadius: 0 },
-  },
-});
 const ChapterConfig = props => {
   const { t } = useTranslation();
   const {
-    onAlignmentChange,
     chapter,
     onLocationChange,
     onMapStyleChange,
@@ -61,27 +40,6 @@ const ChapterConfig = props => {
     children,
   } = props;
   const [locationOpen, setLocationOpen] = useState(false);
-
-  const options = useMemo(
-    () => [
-      {
-        label: t('storyMap.form_chapter_alignment_left'),
-        Icon: AlignHorizontalLeftIcon,
-        value: 'left',
-      },
-      {
-        label: t('storyMap.form_chapter_alignment_center'),
-        Icon: AlignHorizontalCenterIcon,
-        value: 'center',
-      },
-      {
-        label: t('storyMap.form_chapter_alignment_right'),
-        Icon: AlignHorizontalRightIcon,
-        value: 'right',
-      },
-    ],
-    [t]
-  );
 
   const onLocationClick = useCallback(() => {
     setLocationOpen(true);
@@ -117,19 +75,8 @@ const ChapterConfig = props => {
           onConfirm={onLocationChangeWrapper}
         />
       )}
-      <Grid
-        container
-        sx={{
-          width: hasVisualMedia ? '50vw' : '35vw',
-          // Cap the container so its 11/12 content cell lands exactly on the
-          // chapter content card's max border box: mirror .step-content in
-          // StoryMap.css (max-width 35vw + 50px x2 padding = calc(35vw +
-          // 100px)); the cell is 11/12 of the container, so the container cap
-          // is that width x 12/11. Keep this in sync with StoryMap.css.
-          maxWidth: 'calc((35vw + 100px) * 12 / 11)',
-        }}
-      >
-        <Grid size={11}>
+      <Grid container sx={{ width: hasVisualMedia ? '50vw' : '35vw' }}>
+        <Grid size={12}>
           <Button
             variant="contained"
             onClick={onLocationClick}
@@ -143,23 +90,7 @@ const ChapterConfig = props => {
             {t('storyMap.form_chapter_location_button')}
           </Button>
         </Grid>
-        <Grid size={11}>{children}</Grid>
-        <Grid size={1}>
-          <ButtonGroup
-            orientation="vertical"
-            aria-label={t('storyMap.form_chapter_alignment_buttons')}
-          >
-            {options.map(option => (
-              <ConfigButton
-                key={option.value}
-                title={option.label}
-                onClick={() => onAlignmentChange(option.value)}
-              >
-                <option.Icon />
-              </ConfigButton>
-            ))}
-          </ButtonGroup>
-        </Grid>
+        <Grid size={12}>{children}</Grid>
       </Grid>
     </>
   );
@@ -229,7 +160,6 @@ const ChapterForm = props => {
     >
       <ChapterConfig
         chapter={record}
-        onAlignmentChange={onFieldChange('alignment')}
         onLocationChange={onFieldChange('location')}
         onMapStyleChange={onMapStyleChange}
         onMapLayersChange={onMapLayersChange}
