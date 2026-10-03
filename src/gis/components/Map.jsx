@@ -356,6 +356,14 @@ const Map = forwardRef((props, ref) => {
   const [bounds] = useState(initialBounds);
   const [initialLocation] = useState(propsInitialLocation);
 
+  // KNOWN QUIRK (documented, intentionally left): `mapStyle` is in this
+  // effect's dependency list, so a mapStyle PROP change tears the mapbox Map
+  // down and recreates it (all controls/layers re-attach). In-place style
+  // switches go through `changeStyle`/switchStyle instead (see
+  // MapStyleSwitcher) — the map config overlay's confirmed basemap reaches
+  // this path only via the config write. Switching this effect to switchStyle
+  // is NOT contained: the recreation also re-applies projection/bounds/center
+  // and would need its own equivalence tests on the shared editor map.
   useEffect(() => {
     const validBounds = isValidBounds(bounds);
 

@@ -61,9 +61,7 @@ const MapStyleSwitcher = props => {
   const handleClose = useCallback(() => {
     setAnchorEl(null);
     onOpenChange?.(false);
-  },
-    [onOpenChange]
-  );
+  }, [onOpenChange]);
 
   const handleChangeStyle = useCallback(
     newStyle => () => {

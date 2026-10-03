@@ -116,7 +116,11 @@ const mountEditorStack = () =>
 const mountDraftStack = () =>
   act(() => {
     mapApi.addSource('draft-source', { type: 'geojson', data: {} });
-    mapApi.addLayer({ id: 'draft-layer', type: 'fill', source: 'draft-source' });
+    mapApi.addLayer({
+      id: 'draft-layer',
+      type: 'fill',
+      source: 'draft-source',
+    });
   });
 
 const unmountDraftStack = () =>
@@ -137,67 +141,67 @@ const unmountEditorStack = () =>
  * tears down without confirm (draft unmounts, editor remounts). Both fetch
  * orderings must end with a map holding EXACTLY the editor's layers.
  */
-describe('Map: style switch merges the layer registry at merge time', () => {
-  it.each([
-    ['the style fetch resolves AFTER the teardown', false],
-    ['the style fetch resolves BEFORE the teardown', true],
-  ])(
-    'heals the layer stack when %s',
-    async (_label, resolveBeforeTeardown) => {
-      const map = createLoadedMapMock();
-      mapboxgl.Map.mockReturnValue(map);
-      await render(
-        <Map>
-          <Probe />
-        </Map>
-      );
-
-      mountEditorStack();
-      // Overlay opens: the editor's layers unmount, the draft's mount.
-      unmountEditorStack();
-      mountDraftStack();
-
-      // User switches the basemap; the style fetch is still in flight.
-      act(() => {
-        mapApi.changeStyle('mapbox://styles/mapbox/satellite-v9');
-      });
-      expect(pendingStyleFetches).toHaveLength(1);
-      const resolveStyle = pendingStyleFetches[0];
-
-      if (resolveBeforeTeardown) {
-        await act(async () => resolveStyle(NEW_STYLE));
-        // Teardown AFTER the fetch landed: the draft layers must still be
-        // removed from the map (post-setStyle removal heals the stack).
-        unmountDraftStack();
-        mountEditorStack();
-        const setStyleOrder = map.setStyle.mock.invocationCallOrder[0];
-        const removeDraftOrder = map.removeLayer.mock.calls.findIndex(
-          ([id]) => id === 'draft-layer'
-        );
-        expect(
-          map.removeLayer.mock.invocationCallOrder[removeDraftOrder]
-        ).toBeGreaterThan(setStyleOrder);
-      } else {
-        // Teardown BEFORE the fetch lands: the merged style must reflect the
-        // registry AT MERGE TIME — the draft layers are gone for good and the
-        // editor's layers are preserved (today's closure capture resurrects
-        // 'draft-layer' and drops 'editor-layer').
-        unmountDraftStack();
-        mountEditorStack();
-        await act(async () => resolveStyle(NEW_STYLE));
-
-        const mergedStyle = map.setStyle.mock.calls[0][0];
-        expect(mergedStyle.layers.map(layer => layer.id)).toEqual(
-          expect.arrayContaining(['editor-layer', 'basemap-layer'])
-        );
-        expect(mergedStyle.layers.map(layer => layer.id)).not.toContain(
-          'draft-layer'
-        );
-        expect(Object.keys(mergedStyle.sources)).toEqual(
-          expect.arrayContaining(['editor-source', 'basemap-source'])
-        );
-        expect(Object.keys(mergedStyle.sources)).not.toContain('draft-source');
-      }
-    }
+const runGhostLayerScenario = async () => {
+  const map = createLoadedMapMock();
+  mapboxgl.Map.mockReturnValue(map);
+  await render(
+    <Map>
+      <Probe />
+    </Map>
   );
+
+  mountEditorStack();
+  // Overlay opens: the editor's layers unmount, the draft's mount.
+  unmountEditorStack();
+  mountDraftStack();
+
+  // User switches the basemap; the style fetch is still in flight.
+  act(() => {
+    mapApi.changeStyle('mapbox://styles/mapbox/satellite-v9');
+  });
+  expect(pendingStyleFetches).toHaveLength(1);
+  return { map, resolveStyle: pendingStyleFetches[0] };
+};
+
+describe('Map: style switch merges the layer registry at merge time', () => {
+  it('heals the layer stack when the style fetch resolves AFTER the teardown', async () => {
+    const { map, resolveStyle } = await runGhostLayerScenario();
+
+    await act(async () => resolveStyle(NEW_STYLE));
+    // Teardown AFTER the fetch landed: the draft layers must still be
+    // removed from the map (post-setStyle removal heals the stack).
+    unmountDraftStack();
+    mountEditorStack();
+    const setStyleOrder = map.setStyle.mock.invocationCallOrder[0];
+    const removeDraftOrder = map.removeLayer.mock.calls.findIndex(
+      ([id]) => id === 'draft-layer'
+    );
+    expect(
+      map.removeLayer.mock.invocationCallOrder[removeDraftOrder]
+    ).toBeGreaterThan(setStyleOrder);
+  });
+
+  it('heals the layer stack when the style fetch resolves BEFORE the teardown', async () => {
+    const { map, resolveStyle } = await runGhostLayerScenario();
+
+    // Teardown BEFORE the fetch lands: the merged style must reflect the
+    // registry AT MERGE TIME — the draft layers are gone for good and the
+    // editor's layers are preserved (today's closure capture resurrects
+    // 'draft-layer' and drops 'editor-layer').
+    unmountDraftStack();
+    mountEditorStack();
+    await act(async () => resolveStyle(NEW_STYLE));
+
+    const mergedStyle = map.setStyle.mock.calls[0][0];
+    expect(mergedStyle.layers.map(layer => layer.id)).toEqual(
+      expect.arrayContaining(['editor-layer', 'basemap-layer'])
+    );
+    expect(mergedStyle.layers.map(layer => layer.id)).not.toContain(
+      'draft-layer'
+    );
+    expect(Object.keys(mergedStyle.sources)).toEqual(
+      expect.arrayContaining(['editor-source', 'basemap-source'])
+    );
+    expect(Object.keys(mergedStyle.sources)).not.toContain('draft-source');
+  });
 });

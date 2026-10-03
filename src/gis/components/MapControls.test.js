@@ -17,8 +17,8 @@
 
 import { render } from 'terraso-web-client/tests/utils';
 
-import MapControls from 'terraso-web-client/gis/components/MapControls';
 import { useMap } from 'terraso-web-client/gis/components/Map';
+import MapControls from 'terraso-web-client/gis/components/MapControls';
 import mapboxgl from 'terraso-web-client/gis/mapbox';
 
 jest.mock('terraso-web-client/gis/mapbox', () => ({}));
@@ -55,23 +55,29 @@ test('MapControls: removes the SAME control instance on unmount', async () => {
   unmount();
 
   expect(map.removeControl).toHaveBeenCalledTimes(1);
-  expect(map.removeControl.mock.calls[0][0]).toBe(map.addControl.mock.calls[0][0]);
+  expect(map.removeControl.mock.calls[0][0]).toBe(
+    map.addControl.mock.calls[0][0]
+  );
 });
 
 test('MapControls: remounting does not stack up controls on a shared map', async () => {
   const { map } = setup();
 
-  const first = await render(<MapControls />);
-  first.unmount();
-  const second = await render(<MapControls />);
-  second.unmount();
+  const { unmount: unmountFirst } = await render(<MapControls />);
+  unmountFirst();
+  const { unmount: unmountSecond } = await render(<MapControls />);
+  unmountSecond();
 
   // Each mount adds its own control and removes exactly that instance: the
   // shared map never carries more than one.
   expect(map.addControl).toHaveBeenCalledTimes(2);
   expect(map.removeControl).toHaveBeenCalledTimes(2);
-  expect(map.addControl.mock.calls[0][0]).toBe(map.removeControl.mock.calls[0][0]);
-  expect(map.addControl.mock.calls[1][0]).toBe(map.removeControl.mock.calls[1][0]);
+  expect(map.addControl.mock.calls[0][0]).toBe(
+    map.removeControl.mock.calls[0][0]
+  );
+  expect(map.addControl.mock.calls[1][0]).toBe(
+    map.removeControl.mock.calls[1][0]
+  );
   expect(map.addControl.mock.calls[1][0]).not.toBe(
     map.addControl.mock.calls[0][0]
   );

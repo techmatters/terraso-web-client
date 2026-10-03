@@ -56,7 +56,8 @@ const createFakeMap = (layerIds: string[] = []) => {
       layers.splice(toIndex === -1 ? layers.length : toIndex, 0, id);
     }),
     getStyle: () => ({ layers: layers.map(id => ({ id })) }),
-    getLayer: (id: string) => (layers.includes(id) ? layerObjectFor(id) : undefined),
+    getLayer: (id: string) =>
+      layers.includes(id) ? layerObjectFor(id) : undefined,
     // Simulates setStyle() (all objects replaced) or Layer re-adding its
     // layer (one object replaced): the next getLayer() hands out fresh
     // objects.
