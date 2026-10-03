@@ -1266,6 +1266,11 @@ test('StoryMapForm: Add audio media', async () => {
 test('StoryMapForm: Show preview', async () => {
   await setup({ config: BASE_CONFIG });
 
+  // Preview lives in the Settings sidebar (closed by default).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
+
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Preview draft' }))
   );
@@ -1300,6 +1305,11 @@ test('StoryMapForm: Show preview without title uses blank preview copy', async (
       title: '',
     },
   });
+
+  // Preview lives in the Settings sidebar (closed by default).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
 
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Preview draft' }))
@@ -1963,6 +1973,12 @@ test('StoryMapForm: Keep map on chapter change', async () => {
 test('StoryMapForm: Add featured image', async () => {
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
+  // The featured image control lives in the Settings sidebar (closed by
+  // default).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
+
   const sidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',
   });
@@ -2033,6 +2049,12 @@ test('StoryMapForm: Add featured image', async () => {
 
 test('StoryMapForm: Add short description', async () => {
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
+
+  // The short description control lives in the Settings sidebar (closed by
+  // default).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
 
   const sidebar = screen.getByRole('complementary', {
     name: 'Right sidebar',
@@ -2563,4 +2585,216 @@ test('StoryMapForm: A user map move is still recorded after adding a layer', asy
   const saved = onSaveDraft.mock.calls.at(-1)[0].chapters[0];
   expect(saved.location.center).toEqual(CAMERA_FITTED.center);
   expect(saved.location.zoom).toBe(CAMERA_FITTED.zoom);
+});
+
+// ---------------------------------------------------------------------------
+// Configure Chapter sidebar (persistent, mutually exclusive with Settings)
+// + top bar reorganization.
+// ---------------------------------------------------------------------------
+
+const installIntersectionObserverCapture = () => {
+  const OriginalIntersectionObserver = globalThis.IntersectionObserver;
+  let intersectionObserverCallback;
+  globalThis.IntersectionObserver = class {
+    constructor(cb) {
+      intersectionObserverCallback = cb;
+    }
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+  return {
+    selectStep: async id => {
+      await act(async () =>
+        intersectionObserverCallback([{ isIntersecting: true, target: { id } }])
+      );
+    },
+    restore: () => {
+      globalThis.IntersectionObserver = OriginalIntersectionObserver;
+    },
+  };
+};
+
+const ChapterAlignmentProbe = ({ chapterId, testId = 'alignment-probe' }) => {
+  const { config } = useStoryMapConfigDataContext();
+  const chapter = config.chapters.find(({ id }) => id === chapterId) ?? {};
+  return (
+    <div
+      data-testid={testId}
+      data-alignment={chapter.alignment ?? ''}
+      data-location={JSON.stringify(chapter.location ?? null)}
+    />
+  );
+};
+
+const probeChapter = (testId = 'alignment-probe') => ({
+  alignment: screen.getByTestId(testId).getAttribute('data-alignment'),
+  location: JSON.parse(
+    screen.getByTestId(testId).getAttribute('data-location') ?? 'null'
+  ),
+});
+
+test('StoryMapForm: top bar has a tools section and an Edit Chapter section', async () => {
+  await setup({ config: BASE_CONFIG });
+
+  const header = screen.getByRole('region', { name: 'Story editor Header' });
+
+  const tools = within(header).getByRole('group', { name: 'Story map tools' });
+  expect(within(tools).getByText('Draft saved')).toBeInTheDocument();
+  expect(
+    within(tools).getByRole('button', { name: 'Publish' })
+  ).toBeInTheDocument();
+  expect(
+    within(tools).getByRole('button', { name: 'Settings' })
+  ).toBeInTheDocument();
+  expect(
+    within(tools).queryByRole('button', { name: 'Edit Chapter' })
+  ).not.toBeInTheDocument();
+
+  const chapterTools = within(header).getByRole('group', {
+    name: 'Chapter tools',
+  });
+  expect(
+    within(chapterTools).getByRole('button', { name: 'Edit Chapter' })
+  ).toBeInTheDocument();
+  expect(
+    within(chapterTools).queryByRole('button', { name: 'Publish' })
+  ).not.toBeInTheDocument();
+});
+
+test('StoryMapForm: Configure Chapter sidebar is open by default with a title and a close button', async () => {
+  await setup({ config: BASE_CONFIG });
+
+  expect(
+    screen.getByRole('complementary', { name: 'Configure Chapter sidebar' })
+  ).toBeInTheDocument();
+  expect(screen.getByText('Configure Chapter')).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
+  ).toBeInTheDocument();
+
+  // Settings is closed (mutually exclusive, Configure Chapter wins the
+  // default).
+  expect(
+    screen.queryByRole('complementary', { name: 'Right sidebar' })
+  ).not.toBeInTheDocument();
+});
+
+test('StoryMapForm: right sidebars are mutually exclusive', async () => {
+  await setup({ config: BASE_CONFIG });
+
+  // Gear opens Settings, closing Configure Chapter.
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
+  expect(
+    screen.getByRole('complementary', { name: 'Right sidebar' })
+  ).toBeInTheDocument();
+  expect(screen.getByText('Settings')).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Close Settings sidebar' })
+  ).toBeInTheDocument();
+  expect(screen.queryByText('Configure Chapter')).not.toBeInTheDocument();
+
+  // "Edit Chapter" opens Configure Chapter, closing Settings.
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Chapter' }))
+  );
+  expect(screen.getByText('Configure Chapter')).toBeInTheDocument();
+  expect(screen.queryByText('Settings')).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('complementary', { name: 'Right sidebar' })
+  ).not.toBeInTheDocument();
+
+  // "Edit Chapter" toggles closed when already open.
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Chapter' }))
+  );
+  expect(screen.queryByText('Configure Chapter')).not.toBeInTheDocument();
+  expect(screen.queryByText('Settings')).not.toBeInTheDocument();
+
+  // X closes whichever sidebar is open.
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Close Settings sidebar' })
+    )
+  );
+  expect(screen.queryByText('Settings')).not.toBeInTheDocument();
+  expect(screen.queryByText('Configure Chapter')).not.toBeInTheDocument();
+
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Chapter' }))
+  );
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
+    )
+  );
+  expect(screen.queryByText('Configure Chapter')).not.toBeInTheDocument();
+  expect(screen.queryByText('Settings')).not.toBeInTheDocument();
+});
+
+test('StoryMapForm: alignment controls moved from the chapter editor to the configure sidebar', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    await setup({ config: BASE_CONFIG });
+
+    // Scroll to chapter 1: alignment is a per-chapter setting.
+    await io.selectStep('chapter-1');
+
+    const chapter1 = screen.getByRole('region', { name: 'Chapter: Chapter 1' });
+    expect(
+      within(chapter1).queryByRole('group', { name: 'Set alignment' })
+    ).not.toBeInTheDocument();
+
+    // The alignment control lives in the Configure Chapter sidebar instead.
+    const sidebar = screen.getByRole('complementary', {
+      name: 'Configure Chapter sidebar',
+    });
+    expect(
+      within(sidebar).getByRole('group', { name: 'Set alignment' })
+    ).toBeInTheDocument();
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: alignment buttons in the sidebar write the active chapter alignment', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const { onSaveDraft } = await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+
+    // Scroll to chapter 1: the sidebar targets the active step.
+    await io.selectStep('chapter-1');
+
+    const sidebar = screen.getByRole('complementary', {
+      name: 'Configure Chapter sidebar',
+    });
+    await act(async () =>
+      fireEvent.click(
+        within(sidebar).getByRole('button', { name: 'Align Left' })
+      )
+    );
+
+    // Immediate apply: the config carries the new alignment and the chapter
+    // card realigns.
+    expect(probeChapter().alignment).toBe('left');
+    expect(
+      screen.getByRole('region', { name: 'Chapter: Chapter 1' })
+    ).toHaveClass('lefty');
+
+    await expectSave();
+    const saved = onSaveDraft.mock.calls
+      .at(-1)[0]
+      .chapters.find(({ id }) => id === 'chapter-1');
+    expect(saved.alignment).toBe('left');
+  } finally {
+    io.restore();
+  }
 });
