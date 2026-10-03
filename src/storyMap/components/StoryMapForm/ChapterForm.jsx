@@ -36,7 +36,6 @@ import { withProps } from 'terraso-web-client/react-hoc';
 import EditableMedia from 'terraso-web-client/storyMap/components/StoryMapForm/EditableMedia';
 import EditableRichText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableRichText';
 import EditableText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableText';
-import { useMapConfigSession } from 'terraso-web-client/storyMap/components/StoryMapForm/mapConfigSession';
 import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { toMapLayers } from 'terraso-web-client/storyMap/mapLayerUtils';
 import { ALIGNMENTS } from 'terraso-web-client/storyMap/storyMapConstants';
@@ -60,7 +59,7 @@ const ChapterConfig = props => {
     onMapLayersChange,
     children,
   } = props;
-  const mapConfigSession = useMapConfigSession();
+  const { openMapConfig, closeMapConfig } = useStoryMapConfigActionsContext();
 
   const options = useMemo(
     () => [
@@ -84,8 +83,8 @@ const ChapterConfig = props => {
   );
 
   const onLocationClose = useCallback(() => {
-    mapConfigSession?.closeMapConfig();
-  }, [mapConfigSession]);
+    closeMapConfig();
+  }, [closeMapConfig]);
 
   const onLocationChangeWrapper = useCallback(
     ({ location, mapStyle, mapLayerRows }) => {
@@ -99,8 +98,10 @@ const ChapterConfig = props => {
 
   const onLocationClick = useCallback(() => {
     // The fullscreen map configuration overlay is hosted over the shared
-    // editor map (see StoryMapForm/StoryMap).
-    mapConfigSession?.openMapConfig({
+    // editor map (see StoryMapForm/StoryMap). The session API lives in the
+    // config actions context (always mounted above this form) — the trigger
+    // can never hit a silent dead button.
+    openMapConfig({
       location: chapter.location,
       mapLayers: chapter.mapLayers,
       dataLayerConfigId: chapter.dataLayerConfigId,
@@ -108,7 +109,7 @@ const ChapterConfig = props => {
       chapterId: chapter.id,
       onConfirm: onLocationChangeWrapper,
     });
-  }, [mapConfigSession, chapter, onLocationChangeWrapper]);
+  }, [openMapConfig, chapter, onLocationChangeWrapper]);
 
   const hasVisualMedia = chapterHasVisualMedia(chapter);
 

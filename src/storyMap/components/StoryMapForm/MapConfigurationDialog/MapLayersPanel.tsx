@@ -65,21 +65,20 @@ export const MapLayersPanel = ({
   onToggleLayer,
   onReorder,
   onRemove,
-  sx,
+  sx = {},
 }: MapLayersPanelProps) => {
   const { owner } = useCollaborationContext();
 
   return (
     <Box
-      sx={[
-        {
-          width: SIDEBAR_WIDTH,
-          flexShrink: 0,
-          height: '100%',
-          overflowY: 'auto',
-        },
-        ...(Array.isArray(sx) ? sx : [sx]),
-      ]}
+      sx={
+        [
+          // Layout/width is owned by the HOST (the overlay sizes this column
+          // to the story map configuration sidebar width).
+          { flexShrink: 0 },
+          sx,
+        ] as SxProps<Theme>
+      }
     >
       <Stack spacing={2}>
         {dropError && (

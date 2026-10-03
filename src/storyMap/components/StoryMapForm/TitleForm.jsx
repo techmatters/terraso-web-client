@@ -22,7 +22,6 @@ import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import { Box, Button, Stack } from '@mui/material';
 
 import EditableText from 'terraso-web-client/storyMap/components/StoryMapForm/EditableText';
-import { useMapConfigSession } from 'terraso-web-client/storyMap/components/StoryMapForm/mapConfigSession';
 import { useStoryMapConfigActionsContext } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutline';
 import { toMapLayers } from 'terraso-web-client/storyMap/mapLayerUtils';
@@ -30,8 +29,8 @@ import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstant
 
 const TitleForm = props => {
   const { t } = useTranslation();
-  const { setConfig } = useStoryMapConfigActionsContext();
-  const mapConfigSession = useMapConfigSession();
+  const { setConfig, openMapConfig, closeMapConfig } =
+    useStoryMapConfigActionsContext();
   const { config } = props;
 
   const inputProps = useMemo(
@@ -86,8 +85,8 @@ const TitleForm = props => {
   );
 
   const onLocationClose = useCallback(() => {
-    mapConfigSession?.closeMapConfig();
-  }, [mapConfigSession]);
+    closeMapConfig();
+  }, [closeMapConfig]);
 
   const onLocationChangeWrapper = useCallback(
     ({ location, mapStyle, mapLayerRows }) => {
@@ -102,15 +101,17 @@ const TitleForm = props => {
 
   const onLocationClick = useCallback(() => {
     // The fullscreen map configuration overlay is hosted over the shared
-    // editor map (see StoryMapForm/StoryMap).
-    mapConfigSession?.openMapConfig({
+    // editor map (see StoryMapForm/StoryMap). The session API lives in the
+    // config actions context (always mounted above this form) — the trigger
+    // can never hit a silent dead button.
+    openMapConfig({
       location: config.titleTransition?.location,
       mapLayers: config.titleTransition?.mapLayers,
       dataLayerConfigId: config.titleTransition?.dataLayerConfigId,
       title: t('storyMap.form_title_location_dialog_title'),
       onConfirm: onLocationChangeWrapper,
     });
-  }, [mapConfigSession, config.titleTransition, t, onLocationChangeWrapper]);
+  }, [openMapConfig, config.titleTransition, t, onLocationChangeWrapper]);
 
   const onTitleBlur = useCallback(() => {
     const trimmedTitle = config.title.trim();

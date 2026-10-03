@@ -23,6 +23,7 @@ import {
 
 import mapboxgl from 'terraso-web-client/gis/mapbox';
 import StoryMap from 'terraso-web-client/storyMap/components/StoryMap';
+import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
 
 // Mock mapboxgl
 jest.mock('terraso-web-client/gis/mapbox', () => ({}));
@@ -36,18 +37,46 @@ jest.mock('terraso-web-client/storyMap/components/StoryMapLayer', () => ({
 
 // The overlay itself is exercised by MapConfigurationDialog.test.tsx: here it
 // is a stub so the specs can pin how StoryMap HOSTS it over the editor map.
+// The stub PUBLISHES a draft layer stack (like the real overlay) so the specs
+// see the one-mount-per-layer-id dataset swap.
 jest.mock(
   'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog',
-  () => ({
-    __esModule: true,
-    MapConfigurationDialog: ({ title }) => (
-      <div
-        data-testid="map-config-dialog-stub"
-        role="dialog"
-        aria-label={title || 'Edit map'}
-      />
-    ),
-  })
+  () => {
+    const { useEffect } = jest.requireActual('react');
+    const { usePublishMapConfigLayerStack } = jest.requireActual(
+      'terraso-web-client/storyMap/components/mapConfigLayerStack'
+    );
+    return {
+      __esModule: true,
+      MapConfigurationDialog: ({ title }) => {
+        const publishLayerStack = usePublishMapConfigLayerStack();
+        useEffect(() => {
+          publishLayerStack({
+            configs: [
+              {
+                id: 'layer-draft',
+                title: 'Draft Layer',
+                ownerType: 'StoryMapNode',
+                geojsonSignedUrl: 'https://example.com/layer-draft.geojson',
+              },
+            ],
+            order: [{ layerId: 'layer-draft' }],
+          });
+          return () => publishLayerStack(null);
+          // The host's publisher is a state setter (stable): pin the draft
+          // to one publish per session.
+          // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, []);
+        return (
+          <div
+            data-testid="map-config-dialog-stub"
+            role="dialog"
+            aria-label={title || 'Edit map'}
+          />
+        );
+      },
+    };
+  }
 );
 
 setupMapboxMock();
@@ -82,14 +111,23 @@ const CONFIG = {
 };
 
 const overlayStub = <div data-testid="map-config-dialog-stub" role="dialog" />;
+// The stub OVERLAY (the mocked MapConfigurationDialog): publishes its draft
+// layer stack to the host like the real overlay does.
+const overlayWithDraft = <MapConfigurationDialog />;
 
 // The map mock reports `load` (like a real mapbox map that is already
-// loaded) so MapProvider picks the instance up.
-const setup = async ({ overlay } = {}) => {
+// loaded) so MapProvider picks the instance up. Map edit mode is NAMED at
+// the call site (StoryMapForm passes `mapEditMode={Boolean(mapConfigTarget)}`)
+// — StoryMap never infers it from the overlay's presence.
+const setup = async ({ overlay, mapEditMode = false } = {}) => {
   const map = createLoadedMapMock();
   mapboxgl.Map.mockReturnValue(map);
   const utils = await render(
-    <StoryMap config={CONFIG} mapConfigOverlay={overlay} />
+    <StoryMap
+      config={CONFIG}
+      mapEditMode={mapEditMode}
+      mapConfigOverlay={overlay}
+    />
   );
   return { ...utils, map };
 };
@@ -106,17 +144,20 @@ describe('StoryMap: map configuration overlay hosting', () => {
   });
 
   it('dims the chapter content and passes mouse events through while open', async () => {
-    await setup({ overlay: overlayStub });
+    await setup({ overlay: overlayStub, mapEditMode: true });
 
     const features = document.getElementById('features');
     expect(features).toHaveStyle({ opacity: 0.2, pointerEvents: 'none' });
   });
 
   it('restores the chapter content after the overlay closes', async () => {
-    const { rerender } = await setup({ overlay: overlayStub });
+    const { rerender } = await setup({
+      overlay: overlayStub,
+      mapEditMode: true,
+    });
 
     await act(async () => {
-      rerender(<StoryMap config={CONFIG} />);
+      rerender(<StoryMap config={CONFIG} mapEditMode={false} />);
     });
 
     const features = document.getElementById('features');
@@ -125,7 +166,10 @@ describe('StoryMap: map configuration overlay hosting', () => {
   });
 
   it('enables map interaction while open and restores it on close', async () => {
-    const { rerender, map } = await setup({ overlay: overlayStub });
+    const { rerender, map } = await setup({
+      overlay: overlayStub,
+      mapEditMode: true,
+    });
 
     // Map interaction (drag/zoom) is on while the overlay is open…
     expect(map.dragPan.enable).toHaveBeenCalled();
@@ -135,7 +179,7 @@ describe('StoryMap: map configuration overlay hosting', () => {
 
     map.dragPan.disable.mockClear();
     await act(async () => {
-      rerender(<StoryMap config={CONFIG} />);
+      rerender(<StoryMap config={CONFIG} mapEditMode={false} />);
     });
 
     // …and restored to the editor's normal (non-interactive) state on close.
@@ -145,17 +189,25 @@ describe('StoryMap: map configuration overlay hosting', () => {
     });
   });
 
-  it('hides its own map layers while the overlay is open and restores them after', async () => {
-    const { rerender } = await setup({ overlay: overlayStub });
+  it('swaps the layer mounts to the overlay draft stack while open and restores them after', async () => {
+    const { rerender } = await setup({
+      overlay: overlayWithDraft,
+      mapEditMode: true,
+    });
 
-    // The overlay's draft preview owns the layer stack while open — the
-    // editor must not mount the same layer ids alongside it.
+    // ONE mount point per mapbox layer id: while open, the mounts take their
+    // dataset from the overlay's DRAFT (published by its stub) — the
+    // config's own layers are never mounted alongside it.
+    expect(screen.getByTestId('mock-layer-layer-draft')).toBeInTheDocument();
     expect(screen.queryByTestId('mock-layer-layer-a')).not.toBeInTheDocument();
 
     await act(async () => {
-      rerender(<StoryMap config={CONFIG} />);
+      rerender(<StoryMap config={CONFIG} mapEditMode={false} />);
     });
 
     expect(screen.getByTestId('mock-layer-layer-a')).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('mock-layer-layer-draft')
+    ).not.toBeInTheDocument();
   });
 });

@@ -24,6 +24,7 @@ import {
   waitFor,
   within,
 } from 'terraso-web-client/tests/utils';
+import { cloneElement, useState } from 'react';
 import * as terrasoApi from 'terraso-client-shared/terrasoApi/api';
 import {
   createTestPosition,
@@ -31,9 +32,14 @@ import {
   createTestStoryMapConfig,
   createTestVisualizationConfigNode,
 } from 'terraso-web-client/tests/data/storyMap';
+import { createLoadedMapMock } from 'terraso-web-client/tests/mapboxMock';
 
+import mapboxgl from 'terraso-web-client/gis/mapbox';
+import {
+  MapConfigLayerStack,
+  MapConfigLayerStackProvider,
+} from 'terraso-web-client/storyMap/components/mapConfigLayerStack';
 import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
-import { SIDEBAR_WIDTH } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapLayersPanel';
 import {
   StoryMapConfigContextProvider,
   useStoryMapConfigDataContext,
@@ -48,6 +54,11 @@ import {
 jest.mock('terraso-client-shared/terrasoApi/api');
 
 const mockChangeStyle = jest.fn();
+// The overlay is hosted over the SHARED editor map: the suite drives it
+// through a real map instance mock (camera path included).
+let mockMap: ReturnType<typeof createLoadedMapMock>;
+
+jest.mock('terraso-web-client/gis/mapbox', () => ({}));
 
 // Set up mocks BEFORE importing components
 jest.mock('terraso-web-client/gis/components/Map', () => {
@@ -60,25 +71,63 @@ jest.mock('terraso-web-client/gis/components/Map', () => {
     ) {
       return <div data-testid="mock-map">{children}</div>;
     }),
-    useMap: () => ({ map: null, changeStyle: mockChangeStyle }),
+    useMap: () => ({ map: mockMap, changeStyle: mockChangeStyle }),
   };
 });
 
 // Mirrors the real MapStyleSwitcher contract: a basemap change is applied to
 // the shared map live (changeStyle) AND reported to the host (onStyleChange).
-jest.mock('terraso-web-client/gis/components/MapStyleSwitcher', () => ({
-  __esModule: true,
-  default: ({ onStyleChange }: { onStyleChange?: (_: unknown) => void }) => (
-    <button
-      onClick={() => {
-        mockChangeStyle('draftStyle');
-        onStyleChange?.({ newStyle: { data: 'draftStyle' } });
-      }}
-    >
-      Change Style
-    </button>
-  ),
-}));
+// The style MENU is a stacked sub-dialog of its own: it reports onOpenChange
+// and closes itself on Escape (like MUI).
+jest.mock('terraso-web-client/gis/components/MapStyleSwitcher', () => {
+  const { useState, useEffect } = jest.requireActual('react');
+  return {
+    __esModule: true,
+    default: function MapStyleSwitcherStub({
+      onStyleChange,
+      onOpenChange,
+    }: {
+      onStyleChange?: (_: unknown) => void;
+      onOpenChange?: (_: boolean) => void;
+    }) {
+      const [menuOpen, setMenuOpen] = useState(false);
+      useEffect(() => {
+        if (!menuOpen) {
+          return;
+        }
+        const onKeyDown = (event: KeyboardEvent) => {
+          if (event.key === 'Escape') {
+            setMenuOpen(false);
+            onOpenChange?.(false);
+          }
+        };
+        globalThis.addEventListener('keydown', onKeyDown, true);
+        return () => globalThis.removeEventListener('keydown', onKeyDown, true);
+      }, [menuOpen, onOpenChange]);
+      return (
+        <>
+          <button
+            onClick={() => {
+              mockChangeStyle('draftStyle');
+              onStyleChange?.({ newStyle: { data: 'draftStyle' } });
+            }}
+          >
+            Change Style
+          </button>
+          <button
+            onClick={() => {
+              setMenuOpen(true);
+              onOpenChange?.(true);
+            }}
+          >
+            Open Style Menu
+          </button>
+          {menuOpen && <div data-testid="stub-style-menu" />}
+        </>
+      );
+    },
+  };
+});
 
 jest.mock('terraso-web-client/storyMap/components/StoryMapLayer', () => ({
   __esModule: true,
@@ -90,7 +139,7 @@ jest.mock('terraso-web-client/storyMap/components/StoryMapLayer', () => ({
 jest.mock(
   'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/CreateMapLayerDialog',
   () => {
-    const { useState } = jest.requireActual('react');
+    const { useState, useEffect } = jest.requireActual('react');
     return {
       __esModule: true,
       CreateMapLayerFileUpload: ({
@@ -102,14 +151,29 @@ jest.mock(
         externalFile?: File;
         onCreateDialogOpenChange?: (open: boolean) => void;
       }) => {
-        // Mirrors the real create dialog: a stacked MUI modal of its own.
+        // Mirrors the real create dialog: a stacked MUI modal of its own,
+        // which closes ITSELF on Escape.
         const [createOpen, setCreateOpen] = useState(false);
+        useEffect(() => {
+          if (!createOpen) {
+            return;
+          }
+          const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+              setCreateOpen(false);
+              onCreateDialogOpenChange?.(false);
+            }
+          };
+          globalThis.addEventListener('keydown', onKeyDown, true);
+          return () =>
+            globalThis.removeEventListener('keydown', onKeyDown, true);
+        }, [createOpen, onCreateDialogOpenChange]);
         return (
           <div data-testid="stub-create-flow">
             <span data-testid="stub-create-file">
               {externalFile?.name ?? ''}
             </span>
-            {createOpen && (
+            {(createOpen || mockKeepCreateModalMounted) && (
               <div className="MuiModal-root" data-testid="stub-create-modal" />
             )}
             <button
@@ -146,6 +210,10 @@ jest.mock(
     };
   }
 );
+
+// Test-only switch for the create stub: keep its modal root mounted after
+// close (simulating an MUI exit transition).
+let mockKeepCreateModalMounted = false;
 
 let mockDragEndHandler: ((result: unknown) => void) | undefined;
 jest.mock('@hello-pangea/dnd', () => ({
@@ -245,6 +313,34 @@ const ConfigProbe = () => {
   );
 };
 
+// Mirrors StoryMap's single-mount layer stack: the host renders the
+// published DRAFT configs on the one mock layer mount per id (the draft is
+// a different dataset feeding the same mounts — never a parallel stack).
+// Every host render re-renders the dialog (in the app the map context value
+// is a fresh object per render, so consumers re-render with the host): a
+// publish that re-publishes on re-render loops.
+let mockLayerStackPublishes: (MapConfigLayerStack | null)[] = [];
+
+const LayerStackHost = ({ children }: { children: any }) => {
+  const [stack, setStack] = useState<MapConfigLayerStack | null>(null);
+  return (
+    <MapConfigLayerStackProvider
+      value={(next: MapConfigLayerStack | null) => {
+        mockLayerStackPublishes.push(next);
+        setStack(next);
+      }}
+    >
+      {cloneElement(children)}
+      {(stack?.configs ?? []).map(mapLayerConfig => (
+        <div
+          key={mapLayerConfig.id}
+          data-testid={`mock-layer-${mapLayerConfig.id}`}
+        />
+      ))}
+    </MapConfigLayerStackProvider>
+  );
+};
+
 const probeData = () =>
   JSON.parse(screen.getByTestId('config-probe').textContent ?? '{}');
 
@@ -257,6 +353,8 @@ interface SetupOptions {
   dataLayerConfigId?: string;
   configDataLayers?: Record<string, MapLayerConfig>;
   dataLayers?: DataLayersMock;
+  /** Legacy configs (pre-`dataLayers`) omit the payload entirely. */
+  legacyConfig?: boolean;
 }
 
 interface SetupResult {
@@ -275,6 +373,7 @@ const setup = async (options: SetupOptions = {}): Promise<SetupResult> => {
     dataLayerConfigId = undefined,
     configDataLayers = {},
     dataLayers,
+    legacyConfig = false,
   } = options;
 
   if (dataLayers) {
@@ -283,7 +382,7 @@ const setup = async (options: SetupOptions = {}): Promise<SetupResult> => {
 
   const storyMapConfig = {
     ...createTestStoryMapConfig(),
-    dataLayers: configDataLayers,
+    ...(legacyConfig ? {} : { dataLayers: configDataLayers }),
     chapters: [
       {
         id: 'chapter-1',
@@ -326,16 +425,18 @@ const setup = async (options: SetupOptions = {}): Promise<SetupResult> => {
       baseConfig={storyMapConfig}
       storyMap={storyMap}
     >
-      <MapConfigurationDialog
-        open={open}
-        onClose={onCloseMock}
-        onConfirm={onConfirmMock}
-        location={location}
-        title={title}
-        chapterId={chapterId}
-        mapLayers={mapLayers}
-        dataLayerConfigId={dataLayerConfigId}
-      />
+      <LayerStackHost>
+        <MapConfigurationDialog
+          open={open}
+          onClose={onCloseMock}
+          onConfirm={onConfirmMock}
+          location={location}
+          title={title}
+          chapterId={chapterId}
+          mapLayers={mapLayers}
+          dataLayerConfigId={dataLayerConfigId}
+        />
+      </LayerStackHost>
       <ConfigProbe />
     </StoryMapConfigContextProvider>,
     defaultInitialState
@@ -374,7 +475,24 @@ describe('MapConfigurationDialog', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockDragEndHandler = undefined;
+    mockKeepCreateModalMounted = false;
+    mockLayerStackPublishes = [];
     dataLayersMock = {};
+
+    // The shared editor map, with a camera the specs can move around.
+    mapboxgl.NavigationControl = jest.fn();
+    mockMap = createLoadedMapMock({
+      getCenter: jest.fn(() => ({ lng: -78.5, lat: -0.23 })),
+      getZoom: jest.fn(() => 10),
+      getPitch: jest.fn(() => 64),
+      getBearing: jest.fn(() => 45),
+      getBounds: jest.fn(() => ({
+        toArray: () => [
+          [-180, -90],
+          [180, 90],
+        ],
+      })),
+    });
 
     (terrasoApi.requestGraphQL as jest.Mock).mockImplementation(
       mockGraphQLRequest
@@ -454,10 +572,9 @@ describe('MapConfigurationDialog', () => {
       expect(screen.getByRole('tree')).toBeInTheDocument();
 
       // 4. the sidebar keeps the story map configuration right sidebar width
-      expect(SIDEBAR_WIDTH).toBe(300);
+      // (300px is the spec: same dimensions as RightSidebar, padding inside).
       expect(screen.getByTestId('map-config-layers-panel')).toHaveStyle({
         width: '300px',
-        // 300px total (padding included) — same dimensions as RightSidebar.
         boxSizing: 'border-box',
       });
     });
@@ -499,9 +616,12 @@ describe('MapConfigurationDialog', () => {
 
       const mapWindow = screen.getByTestId('map-config-map-window');
       expect(mapWindow).toHaveStyle({ pointerEvents: 'none' });
-      // No background paint over the live editor map.
-      expect(['transparent', 'rgba(0, 0, 0, 0)', '']).toContain(
-        getComputedStyle(mapWindow).backgroundColor
+      // No background paint over the live editor map. jsdom resolves the
+      // emotion stylesheets and reports its transparent default
+      // `rgba(0, 0, 0, 0)` — anything painted would show up here (the old
+      // `''` escape made this assertion a tautology).
+      expect(getComputedStyle(mapWindow).backgroundColor).toBe(
+        'rgba(0, 0, 0, 0)'
       );
 
       // The overlay itself lets pointer events through to the map…
@@ -1352,22 +1472,33 @@ describe('MapConfigurationDialog', () => {
       expect(payload.mapStyle).toEqual(createTestStoryMapConfig().style);
     });
 
-    it('sends the map location', async () => {
+    it('sends the map camera recorded from the shared map', async () => {
       const { onConfirmMock } = await setup({
         location: createTestPosition(),
+      });
+
+      // The user drags the shared map: the camera moves.
+      (mockMap.getCenter as jest.Mock).mockReturnValue({ lng: 12, lat: 34 });
+      (mockMap.getZoom as jest.Mock).mockReturnValue(7);
+      (mockMap.getPitch as jest.Mock).mockReturnValue(10);
+      (mockMap.getBearing as jest.Mock).mockReturnValue(20);
+      await act(async () => {
+        mockMap.fire('move');
       });
 
       await act(async () => {
         fireEvent.click(saveButton());
       });
 
+      // The payload carries the camera MapLocationChange recorded from the
+      // live map — not a prop passthrough.
       const payload = onConfirmMock.mock.calls[0][0];
       expect(payload.location).toEqual({
-        center: expect.anything(),
-        zoom: expect.anything(),
-        pitch: expect.anything(),
-        bearing: expect.anything(),
-        bounds: expect.anything(),
+        center: { lng: 12, lat: 34 },
+        zoom: 7,
+        pitch: 10,
+        bearing: 20,
+        bounds: [-180, -90, 180, 90],
       });
     });
 
@@ -1386,70 +1517,85 @@ describe('MapConfigurationDialog', () => {
     });
   });
 
-  describe('Test Suite 6: Draft discard on the shared editor map', () => {
+  describe('Test Suite 6: Session teardown on the shared editor map', () => {
     const CONFIG_STYLE = createTestStoryMapConfig().style;
 
-    const changeBasemap = async () => {
+    // The user drafts a basemap change (applied live to the shared map) and
+    // drags the camera.
+    const draftOnSharedMap = async () => {
       await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'Change Style' }));
       });
-      // The style switcher has already styled the shared map live.
       expect(mockChangeStyle).toHaveBeenCalledWith('draftStyle');
+      (mockMap.getCenter as jest.Mock).mockReturnValue({ lng: 5, lat: 5 });
+      (mockMap.getZoom as jest.Mock).mockReturnValue(3);
+      (mockMap.getPitch as jest.Mock).mockReturnValue(0);
+      (mockMap.getBearing as jest.Mock).mockReturnValue(0);
+      await act(async () => {
+        mockMap.fire('move');
+      });
     };
 
-    it('restores the config basemap style when the overlay is cancelled after a style change', async () => {
-      const { onCloseMock, onConfirmMock } = await setup();
-      await changeBasemap();
+    it('restores the basemap AND the camera when the session ends without confirm', async () => {
+      const { renderResult, onCloseMock, onConfirmMock } = await setup({
+        location: createTestPosition(),
+      });
+      await draftOnSharedMap();
 
+      // Cancel ends the session: the host unmounts the overlay (X, Escape,
+      // target swap and navigate-away all unwind the same way — one
+      // teardown path).
       await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
       });
-
       expect(onCloseMock).toHaveBeenCalled();
-      expect(onConfirmMock).not.toHaveBeenCalled();
-      // Cancel discards the basemap draft: the shared map is restored.
-      expect(mockChangeStyle).toHaveBeenLastCalledWith(CONFIG_STYLE);
-    });
-
-    it('restores the config basemap style when the overlay is closed with X after a style change', async () => {
-      const { onCloseMock, onConfirmMock } = await setup();
-      await changeBasemap();
-
       await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+        renderResult.unmount();
       });
 
-      expect(onCloseMock).toHaveBeenCalled();
       expect(onConfirmMock).not.toHaveBeenCalled();
+      // Basemap draft discarded …
       expect(mockChangeStyle).toHaveBeenLastCalledWith(CONFIG_STYLE);
+      // … camera draft discarded: the snapshot taken when the session
+      // opened is replayed (never the dragged camera).
+      expect(mockMap.jumpTo).toHaveBeenLastCalledWith({
+        center: { lng: -78.5, lat: -0.23 },
+        zoom: 10,
+        pitch: 64,
+        bearing: 45,
+      });
     });
 
-    it('restores the config basemap style on Escape after a style change', async () => {
-      const { onCloseMock, onConfirmMock } = await setup();
-      await changeBasemap();
+    it('takes no restore action on a plain close without drafts', async () => {
+      const { renderResult } = await setup();
 
       await act(async () => {
-        fireEvent.keyDown(window, { key: 'Escape' });
+        renderResult.unmount();
       });
 
-      expect(onCloseMock).toHaveBeenCalled();
-      expect(onConfirmMock).not.toHaveBeenCalled();
-      expect(mockChangeStyle).toHaveBeenLastCalledWith(CONFIG_STYLE);
+      expect(mockChangeStyle).not.toHaveBeenCalled();
     });
 
-    it('does not restore the basemap style when the change is confirmed', async () => {
-      const { onConfirmMock } = await setup();
-      await changeBasemap();
+    it('does not restore anything when the change is confirmed', async () => {
+      const { renderResult, onConfirmMock } = await setup();
+      await draftOnSharedMap();
 
       await act(async () => {
         fireEvent.click(saveButton());
       });
-
       expect(onConfirmMock).toHaveBeenCalledWith(
         expect.objectContaining({ mapStyle: 'draftStyle' })
       );
-      // No restore: the confirmed style is now the config style.
-      expect(mockChangeStyle).toHaveBeenCalledTimes(1);
+
+      mockChangeStyle.mockClear();
+      mockMap.jumpTo.mockClear();
+      await act(async () => {
+        renderResult.unmount();
+      });
+
+      // The confirmed draft is now the config: no restore on teardown.
+      expect(mockChangeStyle).not.toHaveBeenCalled();
+      expect(mockMap.jumpTo).not.toHaveBeenCalled();
     });
 
     it('discards the draft layer edits when the dialog closes and reopens', async () => {
@@ -1484,10 +1630,73 @@ describe('MapConfigurationDialog', () => {
       await setup(layerSetup);
       expect(orderListItems()).toEqual(['Beta', 'Alpha']);
     });
+
+    it('a title session (no chapterId) inits and discards its camera like a chapter session', async () => {
+      // Title session parity: `chapterId` is undefined, so the camera init
+      // runs the whole initialLocation fallback chain (own location → chapter
+      // lookup skipped → title transition → first chapter with a location).
+      const titleLocation = createTestStoryMapConfig().titleTransition
+        ?.location as any;
+      const { renderResult } = await setup({
+        chapterId: undefined,
+        title: 'Edit map title',
+        location: undefined,
+      });
+
+      // The camera lands on the title transition's starting position.
+      expect(mockMap.fitBounds).toHaveBeenCalledWith(titleLocation.bounds, {
+        animate: false,
+      });
+
+      // …and the session teardown restores the session-open snapshot on a
+      // close without confirm, exactly like a chapter session.
+      (mockMap.getCenter as jest.Mock).mockReturnValue({ lng: 5, lat: 5 });
+      (mockMap.getZoom as jest.Mock).mockReturnValue(3);
+      await act(async () => {
+        mockMap.fire('move');
+      });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+      });
+      await act(async () => {
+        renderResult.unmount();
+      });
+      expect(mockMap.jumpTo).toHaveBeenLastCalledWith({
+        center: { lng: -78.5, lat: -0.23 },
+        zoom: 10,
+        pitch: 64,
+        bearing: 45,
+      });
+    });
+
+    it('publishes the draft stack exactly once per change (no publish loop)', async () => {
+      // Legacy configs leave `config.dataLayers` UNDEFINED. A destructuring
+      // default of `{}` mints a new object per render — every draft memo
+      // downstream churns and the stack publish then fires per render:
+      // publish → host render → dialog re-render → publish → …, until React
+      // throws "Maximum update depth exceeded". The host re-renders the
+      // dialog on every publish (the app's map context churns the same way),
+      // so the loop reproduces here.
+      await setup({ legacyConfig: true });
+      const settled = mockLayerStackPublishes.length;
+
+      // No user change: pending renders must not re-publish the draft.
+      await act(async () => {});
+      expect(mockLayerStackPublishes).toHaveLength(settled);
+
+      // A real draft change publishes exactly once more — the host render
+      // that publish causes must not re-publish the (unchanged) draft.
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole('treeitem', { name: 'Story Map Layer 1' })
+        );
+      });
+      expect(mockLayerStackPublishes).toHaveLength(settled + 1);
+    });
   });
 
-  describe('Test Suite 7: Escape and stacked sub-dialogs', () => {
-    it('lets the create layer dialog handle Escape before the overlay', async () => {
+  describe('Test Suite 7: Escape routing with stacked sub-dialogs', () => {
+    it('absorbs Escape for a self-closing sub-dialog, then cancels the overlay', async () => {
       const { onCloseMock } = await setup();
 
       await act(async () => {
@@ -1495,28 +1704,75 @@ describe('MapConfigurationDialog', () => {
           screen.getByRole('button', { name: 'stub-open-create' })
         );
       });
+      expect(screen.getByTestId('stub-create-modal')).toBeInTheDocument();
 
-      // First Escape belongs to the stacked create dialog (branch-1 parity).
+      // First Escape belongs to the create dialog, which closes ITSELF
+      // (its modal root is gone immediately — the race the old DOM probe
+      // lost). The overlay absorbs the key and stays open.
       await act(async () => {
         fireEvent.keyDown(window, { key: 'Escape' });
       });
       expect(onCloseMock).not.toHaveBeenCalled();
+      expect(screen.queryByTestId('stub-create-modal')).not.toBeInTheDocument();
 
-      // The create dialog closed itself on that Escape (as MUI dialogs do).
-      await act(async () => {
-        fireEvent.click(
-          screen.getByRole('button', { name: 'stub-close-create' })
-        );
-      });
-
-      // With no sub-dialog open, Escape cancels the overlay.
+      // With no sub-dialog open, the next Escape cancels the overlay.
       await act(async () => {
         fireEvent.keyDown(window, { key: 'Escape' });
       });
       expect(onCloseMock).toHaveBeenCalled();
     });
 
-    it('lets the set-map helper dialog handle Escape before the overlay', async () => {
+    it('is not confused by a modal root lingering through an exit transition', async () => {
+      const { onCloseMock } = await setup();
+      // The sub-dialog's modal root stays mounted for its MUI exit
+      // transition after it closed — Escape routing is state-based, so the
+      // stale DOM node must not eat the next key.
+      mockKeepCreateModalMounted = true;
+
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole('button', { name: 'stub-open-create' })
+        );
+      });
+      await act(async () => {
+        fireEvent.keyDown(window, { key: 'Escape' });
+      });
+      expect(onCloseMock).not.toHaveBeenCalled();
+      // The exit transition is still running: the modal root is still there.
+      expect(screen.getByTestId('stub-create-modal')).toBeInTheDocument();
+
+      // Deterministic: the overlay still cancels on the next Escape.
+      await act(async () => {
+        fireEvent.keyDown(window, { key: 'Escape' });
+      });
+      expect(onCloseMock).toHaveBeenCalled();
+    });
+
+    it('routes Escape to the basemap style menu first', async () => {
+      const { onCloseMock } = await setup();
+
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Open Style Menu' })
+        );
+      });
+      expect(screen.getByTestId('stub-style-menu')).toBeInTheDocument();
+
+      // The open menu is the topmost sub-dialog: it closes itself on this
+      // Escape; the overlay is untouched.
+      await act(async () => {
+        fireEvent.keyDown(window, { key: 'Escape' });
+      });
+      expect(onCloseMock).not.toHaveBeenCalled();
+      expect(screen.queryByTestId('stub-style-menu')).not.toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.keyDown(window, { key: 'Escape' });
+      });
+      expect(onCloseMock).toHaveBeenCalled();
+    });
+
+    it('routes Escape to the set-map helper first', async () => {
       const { onCloseMock } = await setup();
 
       await act(async () => {
@@ -1528,8 +1784,8 @@ describe('MapConfigurationDialog', () => {
       });
       expect(screen.getByText(/Step 1\. Find a location/)).toBeInTheDocument();
 
-      // Escape while the helper is stacked must not cancel the overlay (the
-      // helper gets the key first and closes itself — branch-1 parity).
+      // Escape while the helper is stacked must not cancel the overlay: the
+      // helper (topmost) gets the key first and closes itself.
       const helperDialog = document.querySelector('.MuiPopover-root');
       expect(helperDialog).not.toBeNull();
       await act(async () => {
@@ -1537,18 +1793,8 @@ describe('MapConfigurationDialog', () => {
       });
       expect(onCloseMock).not.toHaveBeenCalled();
 
-      // With the helper gone (its exit transition finished), Escape cancels
-      // the overlay.
-      const helperClose = helperDialog!.querySelector(
-        'button[title="Close"]'
-      ) as HTMLButtonElement;
-      expect(helperClose).not.toBeNull();
-      await act(async () => {
-        fireEvent.click(helperClose);
-      });
-      await waitFor(() => {
-        expect(document.querySelector('.MuiModal-root')).toBeNull();
-      });
+      // With the helper closed (its flag cleared — no waiting out of exit
+      // transitions), Escape cancels the overlay.
       await act(async () => {
         fireEvent.keyDown(window, { key: 'Escape' });
       });

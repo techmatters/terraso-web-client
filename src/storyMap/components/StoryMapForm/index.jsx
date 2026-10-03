@@ -30,10 +30,6 @@ import { useNavigationBlocker } from 'terraso-web-client/navigation/navigationCo
 import StoryMap from 'terraso-web-client/storyMap/components/StoryMap';
 import BufferedChapterForm from 'terraso-web-client/storyMap/components/StoryMapForm/BufferedChapterForm';
 import ChaptersSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/ChaptersSideBar';
-import {
-  MapConfigSessionProvider,
-  useMapConfigSession,
-} from 'terraso-web-client/storyMap/components/StoryMapForm/mapConfigSession';
 import { MapConfigurationDialog } from 'terraso-web-client/storyMap/components/StoryMapForm/MapConfigurationDialog/MapConfigurationDialog';
 import RightSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/RightSidebar';
 import {
@@ -114,7 +110,8 @@ const StoryMapForm = props => {
   const { storyMap, config, configRevision } = useStoryMapConfigDataContext();
   const { preview } = useStoryMapPreviewContext();
   const { mediaFiles: draftMediaFiles } = useStoryMapMediaContext();
-  const { setConfig, init } = useStoryMapConfigActionsContext();
+  const { setConfig, init, mapConfigTarget, closeMapConfig } =
+    useStoryMapConfigActionsContext();
   const { flushBufferedChapterEdits } =
     useStoryMapBufferedChapterActionsContext();
   const { isConfigDirty, isDirty, markRevisionSaved } =
@@ -123,8 +120,9 @@ const StoryMapForm = props => {
   const [scrollToChapter, setScrollToChapter] = useState();
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
-  const mapConfigSession = useMapConfigSession();
-  const mapConfigTarget = mapConfigSession?.target ?? null;
+  // NAMED map edit mode, stated right here at the call site: StoryMap never
+  // infers it from the overlay's presence.
+  const mapEditMode = Boolean(mapConfigTarget);
 
   const draftAutoSaveSnapshot = useMemo(
     () => ({
@@ -308,15 +306,20 @@ const StoryMapForm = props => {
           onCancel={cancel}
         />
       )}
-      <TopBar
-        onPublish={onPublishWrapper}
-        onSaveDraft={onSaveDraftWrapper}
-        requestStatus={saveRequestStatus}
-        isDirty={isDirty}
-        isPublishing={isPublishing}
-        onToggleRightSidebar={toggleRightSidebar}
-        isRightSidebarOpen={isRightSidebarOpen}
-      />
+      {/* While the map configuration overlay is open, the editor chrome is
+          inert (keyboard/AT cannot reach it; display:contents keeps the
+          flex layout). The shared map under the overlay stays live. */}
+      <Box sx={{ display: 'contents' }} inert={mapEditMode}>
+        <TopBar
+          onPublish={onPublishWrapper}
+          onSaveDraft={onSaveDraftWrapper}
+          requestStatus={saveRequestStatus}
+          isDirty={isDirty}
+          isPublishing={isPublishing}
+          onToggleRightSidebar={toggleRightSidebar}
+          isRightSidebarOpen={isRightSidebarOpen}
+        />
+      </Box>
       <Grid
         container
         wrap="nowrap"
@@ -327,13 +330,15 @@ const StoryMapForm = props => {
           overflow: 'hidden',
         }}
       >
-        <ChaptersSidebar
-          config={config}
-          currentStepId={currentStepId}
-          onAdd={onAddChapter}
-          onDelete={onDeleteChapter}
-          onMoveChapter={onMoveChapter}
-        />
+        <Box sx={{ display: 'contents' }} inert={mapEditMode}>
+          <ChaptersSidebar
+            config={config}
+            currentStepId={currentStepId}
+            onAdd={onAddChapter}
+            onDelete={onDeleteChapter}
+            onMoveChapter={onMoveChapter}
+          />
+        </Box>
         <Box sx={{ flex: 1 }}>
           <StoryMap
             config={config}
@@ -342,11 +347,16 @@ const StoryMapForm = props => {
             TitleComponent={TitleForm}
             onReady={onMapReady}
             isContained
+            mapEditMode={mapEditMode}
             mapConfigOverlay={
               mapConfigTarget && (
                 <MapConfigurationDialog
+                  // One session per target: switching target (chapter A →
+                  // chapter B) remounts the overlay so no draft state leaks
+                  // between the two.
+                  key={mapConfigTarget.chapterId ?? 'title'}
                   open
-                  onClose={mapConfigSession.closeMapConfig}
+                  onClose={closeMapConfig}
                   onConfirm={mapConfigTarget.onConfirm}
                   location={mapConfigTarget.location}
                   title={mapConfigTarget.title}
@@ -358,16 +368,12 @@ const StoryMapForm = props => {
             }
           />
         </Box>
-        <RightSidebar open={isRightSidebarOpen} onClose={closeRightSidebar} />
+        <Box sx={{ display: 'contents' }} inert={mapEditMode}>
+          <RightSidebar open={isRightSidebarOpen} onClose={closeRightSidebar} />
+        </Box>
       </Grid>
     </Box>
   );
 };
 
-const StoryMapFormWithMapConfigSession = props => (
-  <MapConfigSessionProvider>
-    <StoryMapForm {...props} />
-  </MapConfigSessionProvider>
-);
-
-export default StoryMapFormWithMapConfigSession;
+export default StoryMapForm;

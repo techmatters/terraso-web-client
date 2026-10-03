@@ -323,7 +323,7 @@ beforeEach(() => {
     });
 });
 
-const setup = async ({ config, autoSaveDebounce = 1500 }) => {
+const setup = async ({ config, autoSaveDebounce = 1500, extra = null }) => {
   const onPublish = jest.fn().mockImplementation(() => Promise.resolve());
   const onSaveDraft = jest.fn().mockImplementation(() => Promise.resolve());
 
@@ -336,6 +336,7 @@ const setup = async ({ config, autoSaveDebounce = 1500 }) => {
         memberships: [],
       }}
     >
+      {extra}
       <StoryMapForm onPublish={onPublish} onSaveDraft={onSaveDraft} />
     </StoryMapConfigContextProvider>
   );
@@ -1343,10 +1344,24 @@ test('StoryMapForm: Change chapter location', async () => {
     name: 'Edit map for Chapter 1',
   });
 
-  // The geocoder is created for the shared editor map when the overlay
-  // opens (React StrictMode may double-mount the effect in dev tests, so
-  // assert creation rather than an exact call count).
-  expect(MapboxGlGeocoder).toHaveBeenCalled();
+  // The overlay reuses the ONE shared editor map: no second map is ever
+  // created for the map configuration UI.
+  expect(mapboxgl.Map).toHaveBeenCalledTimes(1);
+
+  // The geocoder control is created for the shared editor map when the
+  // overlay opens. The effect re-runs when i18next hands `t` a new identity
+  // and REPLACES the control — so pin the invariant the shared map depends
+  // on: exactly one live geocoder, each replaced instance removed first
+  // (no control stacking, no leaks).
+  const geocoders = map.addControl.mock.calls
+    .filter(([, position]) => position === 'top-right')
+    .map(([control]) => control);
+  expect(geocoders.length).toBeGreaterThanOrEqual(1);
+  const removedGeocoders = map.removeControl.mock.calls
+    .map(([control]) => control)
+    .filter(control => geocoders.includes(control));
+  expect(removedGeocoders).toEqual(geocoders.slice(0, -1));
+  expect(geocoders.length - removedGeocoders.length).toBe(1);
   const geocoderOptions = MapboxGlGeocoder.mock.calls[0][0];
   const [coordinateResult] = geocoderOptions.localGeocoder('1.2345, -77.6543');
 
@@ -1459,10 +1474,18 @@ test('StoryMapForm: Closing map dialog is safe after geocoder DOM is detached', 
     instance._container = { parentNode: null };
   });
 
+  const removalsBeforeUnmount = map.removeControl.mock.calls.filter(
+    ([control]) => geocoderInstances.includes(control)
+  ).length;
   expect(() => unmount()).not.toThrow();
-  geocoderInstances.forEach(instance => {
-    expect(map.removeControl).not.toHaveBeenCalledWith(instance);
-  });
+  // The pending cleanup skipped the detached control: no new removals of it
+  // (an earlier effect re-run may legitimately have replaced its control
+  // BEFORE the detachment — that removal is part of the balanced lifecycle).
+  expect(
+    map.removeControl.mock.calls.filter(([control]) =>
+      geocoderInstances.includes(control)
+    ).length
+  ).toBe(removalsBeforeUnmount);
 });
 
 test('StoryMapForm: Change chapter style', async () => {
@@ -2567,4 +2590,178 @@ test('StoryMapForm: A user map move is still recorded after adding a layer', asy
   const saved = onSaveDraft.mock.calls.at(-1)[0].chapters[0];
   expect(saved.location.center).toEqual(CAMERA_FITTED.center);
   expect(saved.location.zoom).toBe(CAMERA_FITTED.zoom);
+});
+
+// Drives target switching programmatically (the persistent-sidebar UX of
+// branch 4 swaps targets while the overlay is open).
+const MapConfigSessionProbe = () => {
+  const { openMapConfig } = useStoryMapConfigActionsContext();
+  return (
+    <button
+      onClick={() =>
+        openMapConfig({
+          chapterId: 'chapter-2',
+          title: 'Chapter 2',
+          location: BASE_CONFIG.chapters[1].location,
+          dataLayerConfigId: BASE_CONFIG.chapters[1].dataLayerConfigId,
+          onConfirm: jest.fn(),
+        })
+      }
+    >
+      switch map target to chapter 2
+    </button>
+  );
+};
+
+test('StoryMapForm: Map camera draft is discarded when the overlay closes without confirm', async () => {
+  const map = makeCameraMap(CAMERA_OPEN);
+  mapboxgl.Map.mockReturnValue(map);
+  await setup({ config: BASE_CONFIG });
+
+  const chapter2 = screen.getByRole('region', { name: 'Chapter: Chapter 2' });
+  await act(async () =>
+    fireEvent.click(within(chapter2).getByRole('button', { name: 'Edit Map' }))
+  );
+  screen.getByRole('dialog', { name: 'Edit map for Chapter 2' });
+
+  // The session owns the camera: no chapter transition runs while the
+  // overlay is open (suspension).
+  map.flyTo.mockClear();
+  map.easeTo.mockClear();
+
+  // The user drags the map: the camera draft is recorded…
+  map.moveCameraTo(CAMERA_FITTED);
+  await act(async () => {
+    map.fire('move');
+    map.fire('moveend');
+  });
+  expect(map.flyTo).not.toHaveBeenCalled();
+  expect(map.easeTo).not.toHaveBeenCalled();
+
+  // …and discarded on a close without confirm: the snapshot taken when the
+  // session opened is replayed (transition replay may animate on top).
+  await act(async () => fireEvent.keyDown(window, { key: 'Escape' }));
+  expect(
+    screen.queryByRole('dialog', { name: 'Edit map for Chapter 2' })
+  ).not.toBeInTheDocument();
+
+  expect(map.jumpTo).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      center: CAMERA_OPEN.center,
+      zoom: CAMERA_OPEN.zoom,
+      pitch: CAMERA_OPEN.pitch,
+      bearing: CAMERA_OPEN.bearing,
+    })
+  );
+});
+
+test('StoryMapForm: A location-less chapter still gets its camera back on discard', async () => {
+  const map = makeCameraMap(CAMERA_OPEN);
+  mapboxgl.Map.mockReturnValue(map);
+  await setup({ config: BASE_CONFIG });
+
+  // Chapter 1 has no location of its own: the only defined restore state is
+  // the snapshot taken when the session opened.
+  const chapter1 = screen.getByRole('region', { name: 'Chapter: Chapter 1' });
+  await act(async () =>
+    fireEvent.click(within(chapter1).getByRole('button', { name: 'Edit Map' }))
+  );
+  screen.getByRole('dialog', { name: 'Edit map for Chapter 1' });
+
+  map.moveCameraTo(CAMERA_FITTED);
+  await act(async () => {
+    map.fire('move');
+    map.fire('moveend');
+  });
+
+  await act(async () => fireEvent.keyDown(window, { key: 'Escape' }));
+  expect(
+    screen.queryByRole('dialog', { name: 'Edit map for Chapter 1' })
+  ).not.toBeInTheDocument();
+
+  expect(map.jumpTo).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      center: CAMERA_OPEN.center,
+      zoom: CAMERA_OPEN.zoom,
+      pitch: CAMERA_OPEN.pitch,
+      bearing: CAMERA_OPEN.bearing,
+    })
+  );
+});
+
+test('StoryMapForm: Switching the map config target mid-session starts a clean draft', async () => {
+  // Two RENDERABLE layers for this spec: the leak pin needs a draft layer the
+  // other target does not have (the default fixture has one — "Datalayer
+  // title 2" is still processing). Re-registering the same matcher REPLACES
+  // the default fixture clause (jest-when).
+  when(terrasoApi.requestGraphQL)
+    .calledWith(expect.stringContaining('query visualizationConfigs'), {
+      ownerId: 'story-map-id-1',
+      email: '',
+    })
+    .mockResolvedValue({
+      storyMapConfigs: {
+        edges: [
+          { node: VISUALIZATION_CONFIG },
+          {
+            node: {
+              ...VISUALIZATION_CONFIG_PROCESSING,
+              mapboxTilesetStatus: TILESET_STATUS_READY,
+            },
+          },
+        ],
+      },
+      landscapeConfigs: { edges: [] },
+      groupConfigs: { edges: [] },
+      myGroups: { edges: [] },
+      myLandscapes: { edges: [] },
+    });
+
+  const map = makeCameraMap(CAMERA_OPEN);
+  mapboxgl.Map.mockReturnValue(map);
+  await setup({ config: BASE_CONFIG, extra: <MapConfigSessionProbe /> });
+
+  // Open the map config for chapter 1 and draft-toggle a layer on.
+  const chapter1 = screen.getByRole('region', { name: 'Chapter: Chapter 1' });
+  await act(async () =>
+    fireEvent.click(within(chapter1).getByRole('button', { name: 'Edit Map' }))
+  );
+  let dialog = screen.getByRole('dialog', { name: 'Edit map for Chapter 1' });
+  await waitFor(() =>
+    expect(
+      within(dialog).getByRole('treeitem', { name: 'Datalayer title 2' })
+    ).toBeInTheDocument()
+  );
+  await act(async () =>
+    fireEvent.click(
+      within(dialog).getByRole('treeitem', { name: 'Datalayer title 2' })
+    )
+  );
+  expect(
+    within(dialog)
+      .getAllByRole('listitem')
+      .map(item => item.getAttribute('aria-label') ?? item.textContent)
+  ).toEqual(['Datalayer title 2']);
+
+  // Switch target to chapter 2 without closing (the key on the overlay
+  // remounts its session).
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', { name: 'switch map target to chapter 2' })
+    )
+  );
+
+  // B starts CLEAN: chapter 2's own layers only — chapter 1's draft edits
+  // must not leak into it (the leak wrote chapter A's draft into chapter B).
+  dialog = screen.getByRole('dialog', { name: 'Edit map for Chapter 2' });
+  await waitFor(() =>
+    expect(
+      within(dialog).queryByRole('listitem', { name: 'Datalayer title 2' })
+    ).not.toBeInTheDocument()
+  );
+  expect(
+    within(dialog)
+      .getAllByRole('listitem')
+      .map(item => item.getAttribute('aria-label') ?? item.textContent)
+  ).toEqual(['Datalayer title 1']);
 });

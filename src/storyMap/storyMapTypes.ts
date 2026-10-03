@@ -70,6 +70,34 @@ export type MapLayerDraftRow = {
   config: MapLayerConfig | null;
 };
 
+/**
+ * Confirm payload of the map configuration overlay. Writes back ALL
+ * layerIds — including rows whose config resolves nowhere (unknown refs are
+ * preserved). Compat fields are derived from `mapLayers` at the config
+ * write boundary; this payload carries no compat knowledge.
+ */
+export type MapConfigurationConfirm = {
+  location: MapPosition;
+  mapStyle: string;
+  /** Ordered layer rows, index 0 = topmost on the map. */
+  mapLayerRows: MapLayerDraftRow[];
+};
+
+/**
+ * Which transition (chapter or title) the fullscreen map configuration
+ * overlay is editing, plus its confirm callback. Everything else about the
+ * overlay (draft layers, camera, create flow) lives inside
+ * `MapConfigurationDialog`.
+ */
+export type MapConfigTarget = {
+  location?: MapPosition;
+  title?: string;
+  chapterId?: string;
+  mapLayers?: MapLayerTransition[];
+  dataLayerConfigId?: string;
+  onConfirm: (_: MapConfigurationConfirm) => void;
+};
+
 export type Transition = {
   location: MapPosition & { duration?: number };
   rotateAnimation?: boolean;

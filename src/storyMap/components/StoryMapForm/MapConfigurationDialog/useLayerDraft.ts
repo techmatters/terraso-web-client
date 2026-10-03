@@ -56,13 +56,19 @@ export type LayerDraftOptions = {
  * derived compat fields (see `syncTransitionLayerFields`) and is written back
  * to the config only by the caller.
  */
+// Stable empty payload: a destructuring default of `{}` would mint a new
+// object every render (legacy configs have no `dataLayers`), churning every
+// memo downstream of it — the dialog's layer-stack publish effect then loops
+// (publish → host render → context churn → dialog render → new `{}` → …).
+const EMPTY_DATA_LAYERS: Record<string, MapLayerConfig> = {};
+
 export const useLayerDraft = ({
   storyMapId,
   email,
   fetchEnabled,
   mapLayers,
   dataLayerConfigId,
-  dataLayers: configDataLayers = {},
+  dataLayers: configDataLayers = EMPTY_DATA_LAYERS,
 }: LayerDraftOptions) => {
   useFetchData(
     useCallback(() => {

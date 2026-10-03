@@ -240,6 +240,21 @@ export const StoryMapConfigContextProvider = props => {
   const bufferedChapterUpdateBuildersRef = useRef(new Map());
   const chaptersWithBufferedChangesRef = useRef(new Set());
 
+  // The map configuration overlay's session: which transition (chapter or
+  // title) the fullscreen "Edit Map" overlay is editing (see
+  // `MapConfigTarget`). Folded into this context (not a separate provider):
+  // the triggers (chapter/title forms), the host (StoryMapForm) and the
+  // overlay all live underneath it.
+  const [mapConfigTarget, setMapConfigTarget] = useState(null);
+
+  const openMapConfig = useCallback(newTarget => {
+    setMapConfigTarget(newTarget);
+  }, []);
+
+  const closeMapConfig = useCallback(() => {
+    setMapConfigTarget(null);
+  }, []);
+
   const commitConfigSnapshot = useCallback(
     (nextConfig, shouldMarkDirty = true) => {
       if (_.isEqual(nextConfig, latestConfigRef.current)) {
@@ -458,8 +473,18 @@ export const StoryMapConfigContextProvider = props => {
       setConfig: updateConfig,
       registerSessionDataLayers,
       init,
+      mapConfigTarget,
+      openMapConfig,
+      closeMapConfig,
     }),
-    [updateConfig, registerSessionDataLayers, init]
+    [
+      updateConfig,
+      registerSessionDataLayers,
+      init,
+      mapConfigTarget,
+      openMapConfig,
+      closeMapConfig,
+    ]
   );
 
   const bufferedChapterActionsContextValue = useMemo(
