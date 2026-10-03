@@ -2488,6 +2488,55 @@ test('StoryMapForm: Adding a layer does not rewrite the chapter camera', async (
   }
 });
 
+test('StoryMapForm: a burst of programmatic moveends is fully suppressed', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('treeitem', { name: 'Datalayer title 1' })
+      ).toBeInTheDocument();
+    });
+    await act(async () =>
+      fireEvent.click(
+        screen.getByRole('treeitem', { name: 'Datalayer title 1' })
+      )
+    );
+
+    // A bounds fit can fire SEVERAL moveends (real mapbox does): every one of
+    // them is programmatic — none may be recorded (found in E2E: the last
+    // moveend of the burst wrote the fit camera onto the chapter).
+    map.moveCameraTo(CAMERA_FITTED);
+    await act(async () => {
+      map.fire('move');
+      map.fire('moveend');
+    });
+    await act(async () => {
+      map.fire('move');
+      map.fire('moveend');
+    });
+    expect(probeChapter().location).toBeNull();
+
+    // The next REAL user move is still recorded.
+    await act(async () => {
+      map.fire('mousedown');
+      map.moveCameraTo(CAMERA_OPEN);
+      map.fire('move');
+      map.fire('moveend');
+    });
+    expect(probeChapter().location.center).toEqual(CAMERA_OPEN.center);
+  } finally {
+    io.restore();
+  }
+});
+
 test('StoryMapForm: A user map move is still recorded after adding a layer', async () => {
   const io = installIntersectionObserverCapture();
   try {

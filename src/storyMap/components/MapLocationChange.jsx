@@ -25,12 +25,15 @@ import { useMap } from 'terraso-web-client/gis/components/Map';
  * apply — the editor's draft autosave persists it).
  *
  * Programmatic map moves (the layer bounds fit requested by the configure
- * sidebar) must never be recorded as user camera edits: while the
- * `programmaticMoveRef` counter is > 0, recording is skipped. The counter is
- * cleared on `moveend` and on real user interaction (pointer/wheel), so a
- * programmatic move interrupted by a user grab still records the user's
- * move. Recording happens on `moveend` only — a drag re-renders the editor
- * once, not 60x/s.
+ * sidebar) must never be recorded as user camera edits: while a programmatic
+ * move is pending (`programmaticMoveRef` > 0), every `moveend` is skipped.
+ * The pending flag is cleared ONLY by real user interaction (pointer, wheel,
+ * keyboard, double-click) — one request can fire several moveends (a real
+ * mapbox bounds fit re-runs when the layer config object changes), and
+ * resetting per moveend recorded the last one (found in E2E). A user grab
+ * mid-fit voids the programmatic accounting and their move is recorded.
+ * Recording happens on `moveend` only — a drag re-renders the editor once,
+ * not 60x/s.
  */
 export const MapLocationChange = ({
   onPositionChange,
@@ -45,9 +48,7 @@ export const MapLocationChange = ({
       return;
     }
     const recordUserMove = () => {
-      const wasProgrammatic = moveRef.current > 0;
-      moveRef.current = 0;
-      if (wasProgrammatic) {
+      if (moveRef.current > 0) {
         return;
       }
       onPositionChange({
@@ -67,6 +68,8 @@ export const MapLocationChange = ({
       'mousedown',
       'touchstart',
       'wheel',
+      'keydown',
+      'dblclick',
     ];
     userInteractionEvents.forEach(event => map.on(event, endProgrammaticMove));
 
