@@ -1445,8 +1445,15 @@ test('StoryMapForm: Closing map dialog is safe after geocoder DOM is detached', 
     );
   });
 
-  const geocoderInstance = map.addControl.mock.calls[0][0];
-  geocoderInstance._container = { parentNode: null };
+  // Detach the geocoder control's DOM (the real v5 property is `container`):
+  // its cleanup must skip removeControl for the detached control.
+  const geocoderInstances = map.addControl.mock.calls
+    .map(([control]) => control)
+    .filter(control => control instanceof MapboxGlGeocoder);
+  expect(geocoderInstances.length).toBeGreaterThan(0);
+  geocoderInstances.forEach(instance => {
+    instance.container = { parentNode: null };
+  });
 
   expect(() => unmount()).not.toThrow();
   expect(map.removeControl).not.toHaveBeenCalled();
