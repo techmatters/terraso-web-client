@@ -56,8 +56,24 @@ export const createMapMock = (overrides = {}) => {
     },
     remove: jest.fn(),
     getCanvas: jest.fn(),
-    addControl: jest.fn(),
-    removeControl: jest.fn(),
+    // mapbox attaches a control's DOM container when it is added (controls
+    // do it in their onAdd) and detaches it on removal. Control doubles are
+    // plain objects (module-factory mock impls are reset per test), so the
+    // map models the attachment here: cleanup guards that check
+    // `_container.parentNode` (MapGeocoder) behave like the real world — an
+    // added control is attached, a removed one is detached.
+    addControl: jest.fn(control => {
+      if (control && !control._container) {
+        control._container = { parentNode: {} };
+      }
+      control?.onAdd?.(map);
+    }),
+    removeControl: jest.fn(control => {
+      control?.onRemove?.(map);
+      if (control?._container) {
+        control._container = { parentNode: null };
+      }
+    }),
     addSource: jest.fn(),
     getSource: jest.fn(),
     removeSource: jest.fn(),
@@ -72,6 +88,7 @@ export const createMapMock = (overrides = {}) => {
     setFog: jest.fn(),
     fitBounds: jest.fn(),
     getBounds: jest.fn(),
+    getCenter: jest.fn(),
     getZoom: jest.fn(),
     getPitch: jest.fn(),
     getBearing: jest.fn(),
