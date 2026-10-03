@@ -550,6 +550,59 @@ describe('MapConfigurationDialog', () => {
       expect(onConfirmMock).not.toHaveBeenCalled();
     });
 
+    it('keeps Tab cycling past selector matches that cannot take focus', async () => {
+      // react-dropzone's visually-hidden file input matches the focusable
+      // selector but refuses focus — the trap must skip it, not wedge the
+      // cycle at the element before it. The trap also must never let focus
+      // escape the overlay (the editor behind it is inert but still a risk
+      // for the focus ORDER).
+      await setup();
+
+      const FOCUSABLE = [
+        'a[href]',
+        'button:not([disabled])',
+        'input:not([disabled])',
+        'select:not([disabled])',
+        'textarea:not([disabled])',
+        '[tabindex]:not([tabindex="-1"])',
+      ].join(', ');
+      const overlay = document.querySelector(
+        '[data-testid="map-config-overlay"]'
+      ) as HTMLElement;
+      // The layer drop zone's visually-hidden file input (react-dropzone)
+      // matches the focusable selector but the browser silently refuses to
+      // focus it. jsdom does not model the refusal: pin it on the real
+      // element to reproduce the browser contract.
+      const deadInput = overlay.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement;
+      expect(deadInput).not.toBeNull();
+      deadInput.focus = () => {};
+      const count = overlay.querySelectorAll(FOCUSABLE).length;
+      const first = overlay.querySelectorAll(FOCUSABLE)[0];
+
+      let firstVisits = 0;
+      let escaped = false;
+      await act(async () => {
+        for (let i = 0; i < 2 * count; i++) {
+          fireEvent.keyDown(window, { key: 'Tab' });
+          if (document.activeElement === first) {
+            firstVisits += 1;
+          }
+          if (
+            !overlay.contains(document.activeElement) &&
+            document.activeElement !== first
+          ) {
+            escaped = true;
+          }
+        }
+      });
+
+      // Wrapped at least once: the cycle survives the dead target.
+      expect(firstVisits).toBeGreaterThanOrEqual(2);
+      expect(escaped).toBe(false);
+    });
+
     it('renders the right sidebar with the add control, order list and layer tree', async () => {
       await setup();
 

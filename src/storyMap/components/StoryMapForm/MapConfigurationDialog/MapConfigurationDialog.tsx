@@ -569,13 +569,21 @@ export const MapConfigurationDialog = (props: MapConfigurationDialogProps) => {
         document.activeElement as HTMLElement
       );
       const delta = event.shiftKey ? -1 : 1;
-      const nextIndex =
-        activeIndex === -1
-          ? event.shiftKey
-            ? targets.length - 1
-            : 0
-          : (activeIndex + delta + targets.length) % targets.length;
-      targets[nextIndex]?.focus();
+      // A selector match can still be unable to take focus (the layer drop
+      // zone's visually-hidden file input matches but the browser silently
+      // refuses it). Walk the cycle until a candidate accepts focus — one
+      // dead target must not wedge the trap on its predecessor.
+      let candidateIndex =
+        activeIndex === -1 ? (event.shiftKey ? 0 : -1) : activeIndex;
+      for (let attempt = 0; attempt < targets.length; attempt++) {
+        candidateIndex =
+          (candidateIndex + delta + targets.length) % targets.length;
+        const candidate = targets[candidateIndex];
+        candidate?.focus();
+        if (document.activeElement === candidate) {
+          break;
+        }
+      }
     };
     window.addEventListener('keydown', trapTab, true);
     return () => {
