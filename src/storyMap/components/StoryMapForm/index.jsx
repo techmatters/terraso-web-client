@@ -15,7 +15,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -44,7 +44,10 @@ import TitleForm from 'terraso-web-client/storyMap/components/StoryMapForm/Title
 import TopBar from 'terraso-web-client/storyMap/components/StoryMapForm/TopBar';
 import TopBarPreview from 'terraso-web-client/storyMap/components/StoryMapForm/TopBarPreview';
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
-import { isChapterEmpty } from 'terraso-web-client/storyMap/storyMapUtils';
+import {
+  isChapterEmpty,
+  updateTransition,
+} from 'terraso-web-client/storyMap/storyMapUtils';
 
 import { STORY_MAP_AUTO_SAVE_DEBOUNCE } from 'terraso-web-client/config';
 
@@ -124,6 +127,11 @@ const StoryMapForm = props => {
   const [scrollToChapter, setScrollToChapter] = useState();
   const [rightSidebar, setRightSidebar] = useState(RIGHT_SIDEBAR_CONFIGURE);
   const [isPublishing, setIsPublishing] = useState(false);
+  // Layer bounds fits are programmatic map moves — never user camera edits.
+  // The suppression counter is shared between the fit requester (the
+  // configure sidebar) and the camera recorder on the editor map.
+  const programmaticMoveRef = useRef(0);
+  const [fitBoundsRequest, setFitBoundsRequest] = useState(null);
 
   const draftAutoSaveSnapshot = useMemo(
     () => ({
@@ -295,6 +303,36 @@ const StoryMapForm = props => {
     );
   }, []);
 
+  const requestFitBounds = useCallback(layerId => {
+    programmaticMoveRef.current += 1;
+    setFitBoundsRequest(current => ({
+      layerId,
+      seq: (current?.seq ?? 0) + 1,
+    }));
+  }, []);
+
+  // Immediate-apply map camera edits: the recorder on the editor map writes
+  // the USER's moves to the ACTIVE step's location.
+  const onMapPositionChange = useCallback(
+    position => {
+      setConfig(config =>
+        updateTransition({
+          config,
+          id: currentStepId ?? STORY_MAP_TITLE_ID,
+          update: transition => ({ ...transition, location: position }),
+        })
+      );
+    },
+    [setConfig, currentStepId]
+  );
+
+  const onMapStyleChange = useCallback(
+    style => {
+      setConfig(_.set('style', style));
+    },
+    [setConfig]
+  );
+
   if (preview || isSmall) {
     return (
       <Preview
@@ -351,6 +389,11 @@ const StoryMapForm = props => {
             TitleComponent={TitleForm}
             onReady={onMapReady}
             isContained
+            mapEditing={rightSidebar === RIGHT_SIDEBAR_CONFIGURE}
+            onMapPositionChange={onMapPositionChange}
+            onMapStyleChange={onMapStyleChange}
+            programmaticMoveRef={programmaticMoveRef}
+            fitBoundsRequest={fitBoundsRequest}
           />
         </Box>
         {rightSidebar === RIGHT_SIDEBAR_CONFIGURE && (
@@ -358,6 +401,7 @@ const StoryMapForm = props => {
             open
             onClose={closeRightSidebar}
             activeStepId={currentStepId ?? STORY_MAP_TITLE_ID}
+            onFitLayerBounds={requestFitBounds}
           />
         )}
         {rightSidebar === RIGHT_SIDEBAR_SETTINGS && (

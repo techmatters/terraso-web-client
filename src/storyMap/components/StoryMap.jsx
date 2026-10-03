@@ -36,6 +36,10 @@ import 'terraso-web-client/storyMap/components/StoryMap.css';
 
 import { FullscreenButton } from 'terraso-web-client/gis/components/FullscreenControl';
 import Map, { useMap } from 'terraso-web-client/gis/components/Map';
+import MapControls from 'terraso-web-client/gis/components/MapControls';
+import MapGeocoder from 'terraso-web-client/gis/components/MapGeocoder';
+import MapStyleSwitcher from 'terraso-web-client/gis/components/MapStyleSwitcher';
+import MapLocationChange from 'terraso-web-client/storyMap/components/MapLocationChange';
 import { StoryMapLayer } from 'terraso-web-client/storyMap/components/StoryMapLayer';
 import StoryMapOutline from 'terraso-web-client/storyMap/components/StoryMapOutline';
 import { getStoryMapThemeCssVariables } from 'terraso-web-client/storyMap/storyMapThemeUtils';
@@ -179,7 +183,12 @@ const Title = props => {
   );
 };
 
-const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
+const MapTransitionController = ({
+  config,
+  currentChapter,
+  layerRevision,
+  suspendCamera,
+}) => {
   const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
   const { map, mapDimensions } = useMap();
 
@@ -192,8 +201,17 @@ const MapTransitionController = ({ config, currentChapter, layerRevision }) => {
       chapterId: currentChapter,
       mapDimensions,
       isMobile,
+      suspendCamera,
     });
-  }, [map, config, mapDimensions, currentChapter, isMobile, layerRevision]);
+  }, [
+    map,
+    config,
+    mapDimensions,
+    currentChapter,
+    isMobile,
+    layerRevision,
+    suspendCamera,
+  ]);
 
   return null;
 };
@@ -216,10 +234,25 @@ const StoryMap = props => {
     onReady,
     chaptersFilter,
     isContained = false,
+    // While the configure-chapter sidebar is open the editor map IS the map
+    // being positioned: it is interactive, carries the positioning controls
+    // (zoom/pitch, geocoder, style switcher), records the user's camera onto
+    // the active step, and its camera step-transitions are suspended (they
+    // would fight the drag) until the sidebar closes.
+    mapEditing = false,
+    onMapPositionChange,
+    onMapStyleChange,
+    programmaticMoveRef,
+    fitBoundsRequest,
   } = props;
 
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
   const [layerRevision, setLayerRevision] = useState(0);
+  // The map is created ONCE with the config's basemap style: live style
+  // changes are applied by the style switcher (MapContext.changeStyle keeps
+  // the sources/layers), and recreating the map on every config.style write
+  // would snap the camera and remount the layer stack.
+  const [mapStyle] = useState(config.style);
   const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
   const containerRef = useRef();
 
@@ -287,8 +320,8 @@ const StoryMap = props => {
       />
       <Map
         id="map"
-        interactive={isMobile && isMapFullscreen}
-        mapStyle={config.style}
+        interactive={(isMobile && isMapFullscreen) || mapEditing}
+        mapStyle={mapStyle}
         projection={config.projection}
         zoom={1}
         initialLocation={initialLocation}
@@ -336,12 +369,34 @@ const StoryMap = props => {
           onToggle={() => setIsMapFullscreen(prev => !prev)}
         />
 
+        {mapEditing && (
+          <>
+            <MapControls showCompass visualizePitch />
+            <MapGeocoder position="top-right" />
+            <MapStyleSwitcher
+              position="top-right"
+              onStyleChange={({ newStyle }) =>
+                onMapStyleChange?.(newStyle.data)
+              }
+            />
+            <MapLocationChange
+              onPositionChange={onMapPositionChange}
+              programmaticMoveRef={programmaticMoveRef}
+            />
+          </>
+        )}
+
         {!_.isEmpty(config.dataLayers) &&
           Object.values(config.dataLayers).map(dataLayerConfig => (
             <StoryMapLayer
               key={dataLayerConfig.id}
               config={dataLayerConfig}
-              changeBounds={false}
+              changeBounds={
+                fitBoundsRequest?.layerId === dataLayerConfig.id
+                  ? fitBoundsRequest.seq
+                  : false
+              }
+              useConfigBounds
               opacity={0}
               onLayerAdded={onLayerAdded}
             />
@@ -354,6 +409,7 @@ const StoryMap = props => {
           config={config}
           currentChapter={currentChapter}
           layerRevision={layerRevision}
+          suspendCamera={mapEditing}
         />
       </Map>
       <Box

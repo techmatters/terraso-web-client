@@ -22,12 +22,14 @@ import type { MapLayerConfig } from 'terraso-web-client/storyMap/storyMapTypes';
 
 type Props = {
   config: MapLayerConfig;
-  changeBounds: boolean;
+  /** Fit the map to this layer's bounds: truthy triggers the fit (a seq
+   * number lets the host re-trigger a fit for the same layer). */
+  changeBounds: boolean | number;
   /**
    * When true, the `changeBounds` fit is skipped while any part of the layer
    * is already visible (zoom out to the viewport ∪ layer union only when the
    * layer is completely outside the viewport). Used by the map configuration
-   * dialog's layer-add preview.
+   * editor's layer-add preview.
    */
   avoidMoveWhenVisible?: boolean;
   useConfigBounds?: boolean;
