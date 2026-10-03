@@ -944,6 +944,15 @@ test('StoryMapForm: Sidebar navigation', async () => {
 
   await setup({ config: BASE_CONFIG });
 
+  // Camera step-transitions follow chapter navigation only while the map is
+  // NOT being positioned. The Configure Chapter sidebar (open by default)
+  // suspends them — close it to get the playback behavior.
+  await act(async () =>
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
+    )
+  );
+
   // Get sidebar list
   const sidebarList = screen.getByRole('navigation', {
     name: 'Chapters sidebar',
@@ -1320,40 +1329,17 @@ test('StoryMapForm: Show preview without title uses blank preview copy', async (
   ).toBeInTheDocument();
 });
 
-test('StoryMapForm: Change chapter location', async () => {
-  const map = {
-    ...baseMapOptions(),
-    getCenter: jest
-      .fn()
-      .mockReturnValue({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
-    getZoom: jest.fn().mockReturnValue(10),
-    getPitch: jest.fn().mockReturnValue(64),
-    getBearing: jest.fn().mockReturnValue(45),
-    getBounds: jest.fn().mockReturnValue({
-      toArray: () => [
-        [-180, -90],
-        [180, 90],
-      ],
-    }),
-  };
+test('StoryMapForm: the editor map mounts positioning controls while configuring', async () => {
+  const map = makeCameraMap(CAMERA_OPEN);
   mapboxgl.Map.mockReturnValue(map);
   MapboxGlGeocoder.mockClear();
-  const { onSaveDraft, unmount } = await setup({ config: BASE_CONFIG });
+  await setup({ config: BASE_CONFIG });
 
-  const chapter1 = screen.getByRole('region', {
-    name: 'Chapter: Chapter 1',
-  });
-
-  const locationDialogButton = within(chapter1).getByRole('button', {
-    name: 'Edit Map',
-  });
-  await act(async () => fireEvent.click(locationDialogButton));
-
-  const dialog = screen.getByRole('dialog', {
-    name: 'Edit map for Chapter 1',
-  });
-
+  // Controls attach to the ONE editor map (no dialog, no second map) while
+  // the Configure Chapter sidebar is open.
   expect(MapboxGlGeocoder).toHaveBeenCalledTimes(1);
+  expect(map.addControl).toHaveBeenCalled();
+
   const geocoderOptions = MapboxGlGeocoder.mock.calls[0][0];
   const [coordinateResult] = geocoderOptions.localGeocoder('1.2345, -77.6543');
 
@@ -1377,149 +1363,130 @@ test('StoryMapForm: Change chapter location', async () => {
       place_name: '<b>Quito</b> & "Ecuador"',
     })
   ).toEqual('&lt;b&gt;Quito&lt;/b&gt; &amp; &quot;Ecuador&quot;');
-
-  map.getCenter.mockReturnValue({
-    lng: coordinateResult.center[0],
-    lat: coordinateResult.center[1],
-  });
-  map.getZoom.mockReturnValue(13);
-  map.getPitch.mockReturnValue(20);
-  map.getBearing.mockReturnValue(5);
-  map.getBounds.mockReturnValue({
-    toArray: () => [
-      [-78, 1],
-      [-77, 2],
-    ],
-  });
-
-  await act(async () => map.fire('move'));
-
-  await act(async () =>
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Save Map' }))
-  );
-
-  await waitFor(() => {
-    expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument();
-  });
-
-  // Save
-  await expectSave();
-
-  expect(onSaveDraft).toHaveBeenCalledTimes(1);
-  const saveCall = onSaveDraft.mock.calls[0];
-  expect(saveCall[0].chapters[0]).toEqual(
-    expect.objectContaining({
-      location: {
-        bearing: 5,
-        bounds: [-78, 1, -77, 2],
-        center: {
-          lat: 1.2345,
-          lng: -77.6543,
-        },
-        pitch: 20,
-        zoom: 13,
-      },
-    })
-  );
 });
 
-test('StoryMapForm: Closing map dialog is safe after geocoder DOM is detached', async () => {
-  const map = {
-    ...baseMapOptions(),
-    getCenter: jest
-      .fn()
-      .mockReturnValue({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
-    getZoom: jest.fn().mockReturnValue(10),
-    getPitch: jest.fn().mockReturnValue(64),
-    getBearing: jest.fn().mockReturnValue(45),
-    getBounds: jest.fn().mockReturnValue({
-      toArray: () => [
-        [-180, -90],
-        [180, 90],
-      ],
-    }),
-  };
+test('StoryMapForm: map controls balance across sidebar open/close and detached geocoder DOM is safe', async () => {
+  const map = makeCameraMap(CAMERA_OPEN);
   mapboxgl.Map.mockReturnValue(map);
   MapboxGlGeocoder.mockClear();
   const { unmount } = await setup({ config: BASE_CONFIG });
 
-  const chapter1 = screen.getByRole('region', {
-    name: 'Chapter: Chapter 1',
-  });
+  // "Balance" = exactly one LIVE geocoder on the map at a time (StrictMode
+  // remounts effects, so raw addControl counts may exceed one per session).
+  const geocodersOf = () =>
+    map.addControl.mock.calls
+      .map(([control]) => control)
+      .filter(control => control instanceof MapboxGlGeocoder);
+  const liveGeocoders = () =>
+    geocodersOf().filter(instance => Boolean(instance.container?.parentNode));
 
-  await act(async () => {
+  expect(liveGeocoders().length).toBe(1);
+
+  // Closing Configure Chapter detaches the control (no leak).
+  await act(async () =>
     fireEvent.click(
-      within(chapter1).getByRole('button', {
-        name: 'Edit Map',
-      })
-    );
-  });
+      screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
+    )
+  );
+  expect(liveGeocoders().length).toBe(0);
+  expect(map.removeControl).toHaveBeenCalledWith(geocodersOf()[0]);
 
-  // Detach the geocoder control's DOM (the real v5 property is `container`):
-  // its cleanup must skip removeControl for the detached control.
-  const geocoderInstances = map.addControl.mock.calls
-    .map(([control]) => control)
-    .filter(control => control instanceof MapboxGlGeocoder);
-  expect(geocoderInstances.length).toBeGreaterThan(0);
-  geocoderInstances.forEach(instance => {
-    instance.container = { parentNode: null };
-  });
+  // Reopening attaches a fresh instance (no stacking).
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Chapter' }))
+  );
+  expect(liveGeocoders().length).toBe(1);
 
+  // Detach the live geocoder control's DOM (the real v5 property is
+  // `container`): unmount must stay safe and skip removeControl for the
+  // detached control.
+  const [liveGeocoder] = liveGeocoders().slice(-1);
+  liveGeocoder.container = { parentNode: null };
+  const removalsBefore = map.removeControl.mock.calls.length;
   expect(() => unmount()).not.toThrow();
-  expect(map.removeControl).not.toHaveBeenCalled();
+  expect(map.removeControl.mock.calls.length).toBe(removalsBefore);
+});
+
+test('StoryMapForm: Dragging the map writes the active chapter location immediately', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    const { onSaveDraft } = await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-2" />,
+    });
+
+    // Scroll to chapter 2: the map writes the ACTIVE step.
+    await io.selectStep('chapter-2');
+
+    map.moveCameraTo(CAMERA_FITTED);
+    await act(async () => {
+      map.fire('mousedown');
+      map.fire('move');
+      map.fire('moveend');
+    });
+
+    // Immediate apply: the config already carries the dragged location.
+    expect(probeChapter().location).toEqual({
+      center: CAMERA_FITTED.center,
+      zoom: CAMERA_FITTED.zoom,
+      pitch: CAMERA_FITTED.pitch,
+      bearing: CAMERA_FITTED.bearing,
+      bounds: [0, 0, 2, 2],
+    });
+
+    // …and the editor's draft autosave persists it.
+    await expectSave();
+    const saved = onSaveDraft.mock.calls
+      .at(-1)[0]
+      .chapters.find(({ id }) => id === 'chapter-2');
+    expect(saved.location.center).toEqual(CAMERA_FITTED.center);
+  } finally {
+    io.restore();
+  }
+});
+
+test('StoryMapForm: camera step transitions are suspended while configuring and resume on close', async () => {
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    await setup({ config: BASE_CONFIG });
+
+    // Scrolling to a chapter with a location while the Configure Chapter
+    // sidebar is open must NOT move the camera (it would fight the drag).
+    await io.selectStep('chapter-2');
+    expect(map.flyTo).not.toHaveBeenCalled();
+    expect(map.easeTo).not.toHaveBeenCalled();
+
+    // Closing the sidebar resumes the camera step transitions.
+    await act(async () =>
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
+      )
+    );
+    await waitFor(() => expect(map.flyTo).toHaveBeenCalled());
+  } finally {
+    io.restore();
+  }
 });
 
 test('StoryMapForm: Change chapter style', async () => {
-  const map = {
-    ...baseMapOptions(),
-    getCenter: () => ({ lng: -78.54414857836304, lat: -0.2294635049867253 }),
-    getZoom: () => 10,
-    getPitch: () => 64,
-    getBearing: () => 45,
-    getBounds: jest.fn().mockReturnValue({
-      toArray: () => [
-        [-180, -90],
-        [180, 90],
-      ],
-    }),
-  };
+  const map = makeCameraMap(CAMERA_OPEN);
   mapboxgl.Map.mockReturnValue(map);
   const { onSaveDraft } = await setup({ config: BASE_CONFIG });
 
-  const chapter1 = screen.getByRole('region', {
-    name: 'Chapter: Chapter 1',
-  });
-
-  const locationDialogButton = within(chapter1).getByRole('button', {
-    name: 'Edit Map',
-  });
-  await act(async () => fireEvent.click(locationDialogButton));
-
-  const dialog = screen.getByRole('dialog', {
-    name: 'Edit map for Chapter 1',
-  });
-
-  const baseMapButton = within(dialog).getByRole('button', {
-    name: 'Change Style',
-  });
-
-  await act(async () => fireEvent.click(baseMapButton));
-
-  await waitFor(() => {
-    expect(
-      screen.getByRole('button', { name: 'Save Map' })
-    ).toBeInTheDocument();
-  });
-
+  // The style switcher lives on the editor map while configuring; its
+  // change writes config.style immediately (no dialog, no Save Map).
   await act(async () =>
-    fireEvent.click(screen.getByRole('button', { name: 'Save Map' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Change Style' }))
   );
 
-  // Save
   await expectSave();
 
-  expect(onSaveDraft).toHaveBeenCalledTimes(1);
-  const saveCall = onSaveDraft.mock.calls[0];
+  expect(onSaveDraft).toHaveBeenCalled();
+  const saveCall = onSaveDraft.mock.calls.at(-1);
   expect(saveCall[0].style).toEqual('newStyle');
 });
 
@@ -2499,94 +2466,90 @@ const CAMERA_FITTED = {
 };
 
 test('StoryMapForm: Adding a layer does not rewrite the chapter camera', async () => {
-  const map = makeCameraMap(CAMERA_OPEN);
-  mapboxgl.Map.mockReturnValue(map);
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    const { onSaveDraft } = await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
 
-  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
+    await waitFor(() => {
+      expect(
+        screen.getByRole('treeitem', { name: 'Datalayer title 1' })
+      ).toBeInTheDocument();
+    });
+    await act(async () =>
+      fireEvent.click(
+        screen.getByRole('treeitem', { name: 'Datalayer title 1' })
+      )
+    );
 
-  const chapter1 = screen.getByRole('region', { name: 'Chapter: Chapter 1' });
-  await act(async () =>
-    fireEvent.click(within(chapter1).getByRole('button', { name: 'Edit Map' }))
-  );
-  const dialog = screen.getByRole('dialog', { name: 'Edit map for Chapter 1' });
+    // The map fits the added layer: a programmatic map move…
+    map.moveCameraTo(CAMERA_FITTED);
+    await act(async () => {
+      map.fire('move');
+      map.fire('moveend');
+    });
 
-  await waitFor(() => {
-    expect(
-      within(dialog).getByRole('treeitem', { name: 'Datalayer title 1' })
-    ).toBeInTheDocument();
-  });
-  await act(async () =>
-    fireEvent.click(
-      within(dialog).getByRole('treeitem', { name: 'Datalayer title 1' })
-    )
-  );
-
-  // The preview fits the added layer: a programmatic map move…
-  map.moveCameraTo(CAMERA_FITTED);
-  await act(async () => {
-    map.fire('move');
-    map.fire('moveend');
-  });
-
-  await act(async () =>
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Save Map' }))
-  );
-  await expectSave();
-
-  const saved = onSaveDraft.mock.calls.at(-1)[0].chapters[0];
-  expect(saved.location).toEqual({
-    center: CAMERA_OPEN.center,
-    zoom: CAMERA_OPEN.zoom,
-    pitch: CAMERA_OPEN.pitch,
-    bearing: CAMERA_OPEN.bearing,
-    bounds: [-180, -90, 180, 90],
-  });
+    // …which is never recorded on the active chapter (it had no location and
+    // still has none).
+    expect(probeChapter().location).toBeNull();
+    await expectSave();
+    const saved = onSaveDraft.mock.calls
+      .at(-1)[0]
+      .chapters.find(({ id }) => id === 'chapter-1');
+    expect(saved.location).toBeUndefined();
+  } finally {
+    io.restore();
+  }
 });
 
 test('StoryMapForm: A user map move is still recorded after adding a layer', async () => {
-  const map = makeCameraMap(CAMERA_OPEN);
-  mapboxgl.Map.mockReturnValue(map);
+  const io = installIntersectionObserverCapture();
+  try {
+    const map = makeCameraMap(CAMERA_OPEN);
+    mapboxgl.Map.mockReturnValue(map);
+    await setupWithProbe({
+      config: BASE_CONFIG,
+      probe: <ChapterAlignmentProbe chapterId="chapter-1" />,
+    });
+    await io.selectStep('chapter-1');
 
-  const { onSaveDraft } = await setup({ config: BASE_CONFIG });
-
-  const chapter1 = screen.getByRole('region', { name: 'Chapter: Chapter 1' });
-  await act(async () =>
-    fireEvent.click(within(chapter1).getByRole('button', { name: 'Edit Map' }))
-  );
-  const dialog = screen.getByRole('dialog', { name: 'Edit map for Chapter 1' });
-
-  await waitFor(() => {
-    expect(
-      within(dialog).getByRole('treeitem', { name: 'Datalayer title 1' })
-    ).toBeInTheDocument();
-  });
-  await act(async () =>
-    fireEvent.click(
-      within(dialog).getByRole('treeitem', { name: 'Datalayer title 1' })
-    )
-  );
-  await act(async () => {
-    map.fire('move');
-    map.fire('moveend');
-  });
-
-  // A real user move afterwards IS recorded.
-  await act(async () => {
-    map.fire('mousedown');
+    await waitFor(() => {
+      expect(
+        screen.getByRole('treeitem', { name: 'Datalayer title 1' })
+      ).toBeInTheDocument();
+    });
+    await act(async () =>
+      fireEvent.click(
+        screen.getByRole('treeitem', { name: 'Datalayer title 1' })
+      )
+    );
+    // The fit move (programmatic) is not recorded: no location appears.
     map.moveCameraTo(CAMERA_FITTED);
-    map.fire('move');
-  });
+    await act(async () => {
+      map.fire('move');
+      map.fire('moveend');
+    });
+    expect(probeChapter().location).toBeNull();
 
-  await act(async () =>
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Save Map' }))
-  );
-  await expectSave();
+    // A real user move afterwards IS recorded.
+    await act(async () => {
+      map.fire('mousedown');
+      map.moveCameraTo(CAMERA_OPEN);
+      map.fire('move');
+      map.fire('moveend');
+    });
 
-  const saved = onSaveDraft.mock.calls.at(-1)[0].chapters[0];
-  expect(saved.location.center).toEqual(CAMERA_FITTED.center);
-  expect(saved.location.zoom).toBe(CAMERA_FITTED.zoom);
+    expect(probeChapter().location.center).toEqual(CAMERA_OPEN.center);
+    expect(probeChapter().location.zoom).toBe(CAMERA_OPEN.zoom);
+  } finally {
+    io.restore();
+  }
 });
-
 // ---------------------------------------------------------------------------
 // Configure Chapter sidebar (persistent, mutually exclusive with Settings)
 // + top bar reorganization.
