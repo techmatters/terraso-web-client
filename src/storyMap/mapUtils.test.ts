@@ -104,13 +104,15 @@ const makeConfig = (transitions: {
 const runTransition = (
   map: ReturnType<typeof createFakeMap>,
   config: StoryMapConfig,
-  chapterId: string
+  chapterId: string,
+  options: { suspendCamera?: boolean } = {}
 ) =>
   startTransition(map as never, {
     config,
     chapterId,
     mapDimensions: { width: 1200, height: 600 },
     isMobile: false,
+    ...options,
   });
 
 describe('enforceMapLayerOrder', () => {
@@ -295,6 +297,118 @@ describe('startTransition layer ordering', () => {
       'b-markers',
       'circle-opacity',
       1
+    );
+  });
+});
+
+describe('startTransition camera suspension', () => {
+  const cameraConfig = () =>
+    makeConfig({
+      chapters: [
+        {
+          location: {
+            center: { lng: -79.9, lat: -2.4 },
+            zoom: 5,
+            pitch: 0,
+            bearing: 0,
+            bounds: [-80, -3, -79, -2],
+          },
+          mapLayers: [{ layerId: 'a' }],
+          dataLayerConfigId: 'a',
+          onChapterEnter: [{ layer: 'a-markers', opacity: 1, duration: 0 }],
+          onChapterExit: [{ layer: 'a-markers', opacity: 0, duration: 0 }],
+        },
+      ],
+    });
+
+  test('suspendCamera skips the camera move but keeps layer fades and ordering', () => {
+    const map = createFakeMap(layerSublayerIds('a'));
+
+    runTransition(map, cameraConfig(), 'chapter-1', { suspendCamera: true });
+
+    expect(map.flyTo).not.toHaveBeenCalled();
+    expect(map.easeTo).not.toHaveBeenCalled();
+    // Layer fades still run…
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity',
+      1
+    );
+    // …and z-order is still enforced.
+    expect(map.layerOrder()).toEqual(layerSublayerIds('a'));
+  });
+
+  test('resuming the camera runs the step transition', () => {
+    const map = createFakeMap(layerSublayerIds('a'));
+
+    runTransition(map, cameraConfig(), 'chapter-1');
+
+    expect(map.flyTo).toHaveBeenCalled();
+  });
+});
+
+describe('startTransition layer visibility', () => {
+  test('a data layer with no transition events is hidden', () => {
+    // Toggle-off leaves a mounted data layer whose generated events were
+    // removed from every step: it must not stay visible at its last opacity.
+    const config = {
+      ...makeConfig({
+        chapters: [
+          {
+            mapLayers: [],
+          },
+        ],
+      }),
+      dataLayers: {
+        a: { id: 'a', title: 'A' },
+      },
+    } as unknown as StoryMapConfig;
+    const map = createFakeMap(layerSublayerIds('a'));
+
+    runTransition(map, config, 'chapter-1');
+
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity',
+      0
+    );
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-polygons-fill',
+      'fill-opacity',
+      0
+    );
+  });
+
+  test('hiding unreferenced data layers does not disturb hand-authored layer fades', () => {
+    const config = {
+      ...makeConfig({
+        chapters: [
+          {
+            mapLayers: [],
+            onChapterEnter: [{ layer: 'layer1', opacity: 1, duration: 0 }],
+            onChapterExit: [{ layer: 'layer1', opacity: 0, duration: 0 }],
+          },
+        ],
+      }),
+      dataLayers: {
+        a: { id: 'a', title: 'A' },
+      },
+    } as unknown as StoryMapConfig;
+    const map = createFakeMap(['layer1', ...layerSublayerIds('a')]);
+
+    runTransition(map, config, 'chapter-1');
+
+    // Hand-authored layer keeps its fade…
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'layer1',
+      'fill-opacity',
+      1
+    );
+    // …while the unreferenced data layer is hidden.
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity',
+      0
     );
   });
 });

@@ -233,6 +233,15 @@ const startLayerTransition = (
   }
 
   const allLayers = new Set<string>();
+  // Every mounted data layer is a visibility candidate — including layers
+  // whose generated events were just removed from every step (immediate-apply
+  // layer toggles in the editor): they must fade OUT instead of staying at
+  // their last applied opacity. Sublayer ids, matching the event entries.
+  Object.keys(config.dataLayers ?? {}).forEach(layerId => {
+    Object.values(LAYER_TYPES).forEach(name => {
+      allLayers.add(generateLayerId(layerId, name));
+    });
+  });
   // Track whether each layer's first appearance is in an onChapterExit; if so,
   // its default opacity before that exit should be 1 (visible, about to fade out)
   // rather than 0 (not yet shown).
@@ -354,10 +363,22 @@ export type StartTransitionOptions = {
   chapterId: string;
   mapDimensions: { height: number; width: number };
   isMobile: boolean;
+  /**
+   * Suspend the camera step-transition (it would fight the user's map drag
+   * while the map is being positioned in the editor). Layer fades and
+   * z-ordering still run — only the camera move is skipped.
+   */
+  suspendCamera?: boolean;
 };
 export const startTransition = (
   map: mapboxgl.Map,
-  { config, chapterId, isMobile, mapDimensions }: StartTransitionOptions
+  {
+    config,
+    chapterId,
+    isMobile,
+    mapDimensions,
+    suspendCamera,
+  }: StartTransitionOptions
 ) => {
   const transition = getTransition({
     config,
@@ -368,7 +389,9 @@ export const startTransition = (
     return;
   }
 
-  startCameraTransition(map, isMobile, mapDimensions, transition);
+  if (!suspendCamera) {
+    startCameraTransition(map, isMobile, mapDimensions, transition);
+  }
   startLayerTransition(map, chapterId, config);
   startMapLayerOrder(map, transition);
 };
