@@ -24,7 +24,11 @@ import {
 } from 'terraso-client-shared/collaboration/membershipsUtils';
 import logger from 'terraso-client-shared/monitoring/logger';
 
-import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
+import {
+  isChapterOnly,
+  isMapOnly,
+  STORY_MAP_TITLE_ID,
+} from 'terraso-web-client/storyMap/storyMapConstants';
 
 import { REACT_APP_BASE_URL } from 'terraso-web-client/config';
 
@@ -34,6 +38,13 @@ export const chapterHasVisualMedia = chapter => {
 };
 
 export const isChapterEmpty = chapter => {
+  // A "just" render mode IS the chapter's content: a bare-map beat (just
+  // `location` + layer events — the primary `justMap` use case) or an empty
+  // `justChapter` beat keeps its scroll span, its turn as the current step
+  // and its camera/layer transition instead of being dropped before render.
+  if (isMapOnly(chapter.alignment) || isChapterOnly(chapter.alignment)) {
+    return false;
+  }
   const { title, description, media } = chapter;
   return _.isEmpty(title) && _.isEmpty(description) && _.isEmpty(media);
 };

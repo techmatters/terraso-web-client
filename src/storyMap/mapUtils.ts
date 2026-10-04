@@ -27,8 +27,8 @@ import {
   LAYER_TYPES,
 } from 'terraso-web-client/sharedData/visualization/components/VisualizationMapLayer';
 import {
-  isChapterOnly,
-  isSideCardAlignment,
+  ChapterRenderPolicy,
+  chapterShell,
   LAYER_PAINT_TYPES,
   LayerPaintType,
   STORY_MAP_TITLE_ID,
@@ -97,7 +97,9 @@ const setLayerOpacity = (map: mapboxgl.Map, layer: LayerConfig) => {
   }
   const paintProps = getLayerPaintType(map, layer.layer);
   paintProps?.forEach(function (prop) {
-    if (layer.duration) {
+    // `duration: 0` is meaningful (an instant concealment): it must reset the
+    // *-opacity-transition instead of inheriting the previous event's fade.
+    if (layer.duration !== undefined) {
       const transitionProp = `${prop}-transition` as const;
       map.setPaintProperty(layer.layer, transitionProp, {
         duration: layer.duration,
@@ -127,7 +129,7 @@ const adjustBoundsForAlignment = (
   bounds: MapBounds,
   alignment: ChapterAlignment
 ): MapBounds => {
-  if (!isSideCardAlignment(alignment)) {
+  if (chapterShell({ alignment }).boundsRegion !== 'content-strip') {
     return bounds;
   }
 
@@ -154,7 +156,7 @@ export const expandBoundsForDisplay = (
   bounds: MapBounds,
   alignment: ChapterAlignment
 ): MapBounds => {
-  if (!isSideCardAlignment(alignment)) {
+  if (chapterShell({ alignment }).boundsRegion !== 'content-strip') {
     return bounds;
   }
 
@@ -193,7 +195,7 @@ export const contentRegionPixelRange = (
   width: number,
   alignment?: ChapterAlignment
 ): [number, number] => {
-  if (!isSideCardAlignment(alignment)) {
+  if (chapterShell({ alignment }).boundsRegion !== 'content-strip') {
     return [0, width];
   }
   const contentWidth = width * CONTENT_REGION_FRACTION;
@@ -265,9 +267,9 @@ const fitBoundsAnimated = (
 
 const startCameraTransition = (
   map: mapboxgl.Map,
-  isMobile: boolean,
   mapDimensions: { height: number; width: number },
   transition: ChapterConfig | Transition,
+  policy: ChapterRenderPolicy,
   allowRotation: boolean
 ) => {
   // A `justChapter` chapter covers the map entirely — there is nothing to
@@ -275,25 +277,27 @@ const startCameraTransition = (
   // it) is skipped: the map must not move while it is active. Recording the
   // location still works in the editor (see MapEditingSession): toggling the
   // alignment back to a card keeps the configured map location.
-  if ('alignment' in transition && isChapterOnly(transition.alignment)) {
+  if (policy.cameraMode === 'skip') {
+    // The skip must not leak an in-flight hand-off: a pending 30s
+    // `rotateAnimation` from a PREVIOUS chapter would detonate on the next
+    // moveend (e.g. the following chapter's camera init) and settle the map
+    // flipped. Cancel it and stop whatever is moving NOW.
+    cancelPendingRotateAnimation(map);
+    map.stop();
     return;
   }
   if (transition.location && !_.isEmpty(transition.location)) {
-    const alignment =
-      isMobile || !('alignment' in transition)
-        ? 'center'
-        : transition.alignment;
-
     let boundsToUse = transition.location.bounds;
 
     // If no bounds, backfill from center/zoom for legacy chapters
     if (!boundsToUse || !isValidBounds(boundsToUse)) {
-      const legacyAlignment =
-        'alignment' in transition ? transition.alignment : 'center';
-      boundsToUse = backfillBounds(transition.location, legacyAlignment);
+      boundsToUse = backfillBounds(transition.location, policy.boundsAlignment);
     }
 
-    const displayBounds = expandBoundsForDisplay(boundsToUse, alignment);
+    const displayBounds = expandBoundsForDisplay(
+      boundsToUse,
+      policy.boundsAlignment
+    );
 
     fitBoundsAnimated(map, mapDimensions, transition.mapAnimation ?? 'flyTo', {
       ...transition.location,
@@ -324,7 +328,8 @@ const startLayerTransition = (
   map: mapboxgl.Map,
   chapterId: string,
   config: StoryMapConfig,
-  allowLayerForcing: boolean
+  allowLayerForcing: boolean,
+  policy: ChapterRenderPolicy
 ) => {
   const steps = [
     { id: STORY_MAP_TITLE_ID, ...config.titleTransition },
@@ -371,22 +376,9 @@ const startLayerTransition = (
 
   const mostRecentLayerConfigs: Record<string, LayerConfig> = {};
 
-  // DISPLAY-SIDE ONLY: a `justChapter` chapter covers the map area, so every
-  // layer visibility candidate is forced off while it is active. The config
-  // (`mapLayers`, the compat events, `dataLayers`) is never touched — the
-  // next step's normal model below restores visibility. Forcing is a
-  // playback feature: the editor's map editing session keeps layers visible
-  // while they are being configured.
-  const currentStep = steps[currentIndex];
-  if (
-    allowLayerForcing &&
-    'alignment' in currentStep &&
-    isChapterOnly(currentStep.alignment)
-  ) {
-    allLayers.forEach(layer => setLayerOpacity(map, { layer, opacity: 0 }));
-    return;
-  }
-
+  // K5 PRECEDENCE: the layer MODEL runs exactly as authored — events
+  // accumulate across steps, including a `justChapter` chapter's own
+  // `onChapterEnter` events (they land at their step like any other event).
   for (let i = 0; i <= currentIndex; i++) {
     const step = steps[i];
     step.onChapterEnter?.forEach(t => {
@@ -403,22 +395,38 @@ const startLayerTransition = (
     }
   }
 
-  // for layers which haven't yet appeared in the story map, set their opacity to
-  // 0 (in case the user scrolls back up), unless the layer's first appearance is
-  // in an onChapterExit, in which case default to 1 so the exit can fade it out.
-  for (const layer of allLayers) {
-    if (!(layer in mostRecentLayerConfigs)) {
-      setLayerOpacity(map, {
-        layer,
-        opacity: firstAppearanceIsExit[layer] ? 1 : 0,
-      });
-    }
-  }
+  // DISPLAY-SIDE ONLY: a `justChapter` chapter covers the map area, so while
+  // it is active the DISPLAY OUTPUT is overridden — every visibility
+  // candidate is concealed (opacity 0, duration 0: an instant concealment,
+  // never a fade inheriting the previous event's `*-opacity-transition`).
+  // The config (`mapLayers`, the compat events, `dataLayers`) is never
+  // touched; the authored opacities resume from the next step on (a layer
+  // with `onChapterEnter` at a `justChapter` chapter is hidden during it and
+  // visible from the next chapter onward). Forcing is a playback/display
+  // feature: the editor's map editing session keeps layers visible while
+  // they are being configured (`allowLayerForcing: false`).
+  const displayOverride =
+    allowLayerForcing && policy.layerPolicy === 'force-off-display';
 
-  // for layers which have appeared, run their most recent entry in an onChapterEnter or onChapterExit
-  Object.values(mostRecentLayerConfigs).forEach(layerConfig =>
-    setLayerOpacity(map, layerConfig)
-  );
+  const outputs: LayerConfig[] = displayOverride
+    ? [...allLayers].map(layer => ({ layer, opacity: 0, duration: 0 }))
+    : [
+        // layers which haven't yet appeared in the story map are set to
+        // opacity 0 (in case the user scrolls back up), unless the layer's
+        // first appearance is in an onChapterExit, in which case default to 1
+        // so the exit can fade it out.
+        ...[...allLayers]
+          .filter(layer => !(layer in mostRecentLayerConfigs))
+          .map(layer => ({
+            layer,
+            opacity: firstAppearanceIsExit[layer] ? 1 : 0,
+          })),
+        // layers which have appeared run their most recent entry in an
+        // onChapterEnter or onChapterExit
+        ...Object.values(mostRecentLayerConfigs),
+      ];
+
+  outputs.forEach(layerConfig => setLayerOpacity(map, layerConfig));
 };
 
 /**
@@ -483,6 +491,12 @@ export type StartTransitionOptions = {
   chapterId: string;
   mapDimensions: { height: number; width: number };
   isMobile: boolean;
+  // NOTE: these three are deliberately NOT collapsed into a single
+  // `context: 'playback' | 'editing'` option — they do not move together
+  // (the editor's non-configuring preview RUNS the camera, never rotates,
+  // and DOES force layers; the configuring session suspends the camera and
+  // the forcing but keeps fades). One enum would sprawl into per-flag
+  // exceptions.
   /**
    * Suspend the camera step-transition (it would fight the user's map drag
    * while the map is being positioned in the editor). Layer fades and
@@ -492,8 +506,8 @@ export type StartTransitionOptions = {
   /** Playback-only camera rotation (see `startCameraTransition`). */
   allowRotation?: boolean;
   /**
-   * Display-side layer forcing: a `justChapter` chapter covers the map, so
-   * all layers are forced off while it is active (see `startLayerTransition`).
+   * Display-side layer override: while a `justChapter` chapter is active all
+   * layer visibility candidates are concealed (see `startLayerTransition`).
    * The editor's map editing session disables it — layers stay visible and
    * configurable; the stored config is never affected either way.
    */
@@ -520,15 +534,25 @@ export const startTransition = (
     return;
   }
 
+  // The title step is a CARD: `alignment` is a chapters-only field and a
+  // legacy `titleTransition.alignment` stored in old configs is IGNORED on
+  // read (pinned in mapUtils.test.ts) — the title camera always runs.
+  const isTitle = chapterId === STORY_MAP_TITLE_ID;
+  const policy = chapterShell({
+    alignment: isTitle ? undefined : (transition as ChapterConfig).alignment,
+    hidden: (transition as ChapterConfig).hidden,
+    isMobile,
+  });
+
   if (!suspendCamera) {
     startCameraTransition(
       map,
-      isMobile,
       mapDimensions,
       transition,
+      policy,
       allowRotation
     );
   }
-  startLayerTransition(map, chapterId, config, allowLayerForcing);
+  startLayerTransition(map, chapterId, config, allowLayerForcing, policy);
   startMapLayerOrder(map, transition);
 };

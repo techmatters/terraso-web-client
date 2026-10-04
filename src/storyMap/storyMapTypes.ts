@@ -114,10 +114,24 @@ export type Transition = {
   onChapterExit?: LayerConfig[];
 };
 
+/**
+ * SCHEMA DEBT (deliberately deferred, product decision): `alignment` conflates
+ * card POSITION (`left`/`right`/`center`/`full`) and RENDER MODE
+ * (`justMap`/`justChapter`). The clean fix is a separate `displayMode` field
+ * with a 2-row data migration — not done here.
+ */
 export type ChapterAlignment =
   | 'left'
   | 'right'
   | 'center'
+  /**
+   * LEGACY ALIAS (Mapbox storytelling-template lineage: `ALIGNMENTS.full →
+   * 'fully'`, the `.fully` full-width card). Stored configs in the wild
+   * contain it and the editor round-trips the whole config on save, so it
+   * stays a legal value; the editor does not offer it. Mirrored by the
+   * backend `CHAPTER_ALIGNMENTS` enum.
+   */
+  | 'full'
   /**
    * Render mode: the chapter renders NOTHING over the map (no content, no
    * background) for its scroll span — just the map. The camera transition
@@ -142,6 +156,13 @@ export type ChapterConfig = {
   title: string;
   description: Descendant;
   alignment: ChapterAlignment;
+  /**
+   * Legacy (Mapbox storytelling-template field): a hidden chapter keeps its
+   * scroll span but renders nothing visible. `hidden` WINS over the just-mode
+   * render semantics (no camera skip, no layer forcing — see
+   * `chapterShell`).
+   */
+  hidden?: boolean;
   media: {
     type: 'image' | 'video' | 'embedded';
     url: string;

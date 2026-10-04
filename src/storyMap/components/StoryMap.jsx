@@ -28,8 +28,8 @@ import { startTransition } from 'terraso-web-client/storyMap/mapUtils';
 import {
   ALIGNMENTS,
   CHAPTER_ONLY_CONTENT_MAX_WIDTH,
-  isChapterOnly,
-  isMapOnly,
+  CHAPTER_ONLY_CONTENT_MAX_WIDTH_VAR,
+  chapterShell,
   STORY_MAP_TITLE_ID,
 } from 'terraso-web-client/storyMap/storyMapConstants';
 import { chapterHasVisualMedia } from 'terraso-web-client/storyMap/storyMapUtils';
@@ -121,7 +121,9 @@ const Embedded = ({ record }) => {
 
 /**
  * A chapter card. The "just" alignments are RENDER MODES (display-side only —
- * the config, including content and layers, is never touched):
+ * the config, including content and layers, is never touched). Everything
+ * below reads from `chapterShell` (the ONE place "how does this
+ * chapter render" is answered):
  *
  * - `justMap`: renders NOTHING over the map (no content, no background) but
  *   keeps its scroll span (100vh / 100cqh when contained); the camera
@@ -131,19 +133,28 @@ const Embedded = ({ record }) => {
  *   reasonable max width. Its camera transition is skipped and all map
  *   layers are forced off while it is active (see `mapUtils.ts` — viewer
  *   side only).
+ * - `hidden` WINS over the modes: a hidden chapter performs no mode
+ *   semantics (no camera skip, no layer forcing) — the map behind the
+ *   invisible card stays alive.
+ * - On `xs` the modes degrade to `center` semantics (the map is a visible
+ *   33vh band there that no card can cover): normal card rendering with the
+ *   content shown, camera transitions run, no layer forcing.
  *
  * The editor's chapter form (`ChapterForm`) deliberately keeps the editable
  * card for these alignments: the map must stay visible and editable while
  * configuring (camera recording, layer panel).
  */
-const Chapter = ({ record, active, isContained }) => {
+const Chapter = ({ record, active, isContained, isMobile }) => {
   const { t } = useTranslation();
-  const mapOnly = isMapOnly(record.alignment);
-  const chapterOnly = isChapterOnly(record.alignment);
+  const policy = chapterShell({
+    alignment: record.alignment,
+    hidden: record.hidden,
+    isMobile,
+  });
   const className = [
     'step-container',
-    ALIGNMENTS[record.alignment] || 'centered',
-    ...(chapterOnly ? ['story-theme'] : []),
+    policy.alignmentClass,
+    ...(policy.coversMap ? ['story-theme'] : []),
     ...(record.hidden ? ['hidden'] : []),
   ].join(' ');
 
@@ -158,30 +169,34 @@ const Chapter = ({ record, active, isContained }) => {
         // The render modes span the full chapter scroll space: 100vh
         // uncontained, 100cqh when the story map scrolls in its container
         // (the map is `100cqh` there too). The classic card paddings are
-        // dropped: the span is exactly one viewport tall.
-        ...(mapOnly || chapterOnly
-          ? { minHeight: isContained ? '100cqh' : '100vh', padding: 0 }
+        // dropped for them in `StoryMap.css`, next to the paddings they
+        // cancel: the span is exactly one viewport tall.
+        ...(policy.spanHeight(isContained)
+          ? { minHeight: policy.spanHeight(isContained) }
           : {}),
         // `justChapter` covers the map area: full width, theme background,
-        // content centered.
-        ...(chapterOnly
+        // content centered. The content cap VALUE has exactly one owner —
+        // CHAPTER_ONLY_CONTENT_MAX_WIDTH — carried to the CSS rule on
+        // `.step-content` through the custom property below (StoryMap.css
+        // consumes the var; the editor never sets it and keeps its full
+        // editing width through the rule's `none` fallback).
+        ...(policy.coversMap
           ? {
               width: '100%',
               bgcolor: 'var(--story-theme-background)',
               justifyContent: 'center',
               alignItems: 'center',
+              [CHAPTER_ONLY_CONTENT_MAX_WIDTH_VAR]:
+                CHAPTER_ONLY_CONTENT_MAX_WIDTH,
             }
           : {}),
       })}
     >
-      {!mapOnly && (
+      {policy.rendersContent && (
         <Box
           className="story-theme step-content"
           sx={{
-            width: chapterOnly ? '100%' : hasVisualMedia ? '50vw' : 'auto',
-            ...(chapterOnly
-              ? { maxWidth: CHAPTER_ONLY_CONTENT_MAX_WIDTH }
-              : {}),
+            width: policy.coversMap ? '100%' : hasVisualMedia ? '50vw' : 'auto',
           }}
         >
           {record.title && (
@@ -376,11 +391,21 @@ const StoryMap = props => {
     if (config.titleTransition?.location) {
       return config.titleTransition?.location;
     }
+    // The map opens at the first chapter whose camera will actually run:
+    // a `justChapter` chapter's recorded camera never plays (its step
+    // transition is skipped while the chapter covers the map), while
+    // `justMap` locations stay eligible.
     const firstChapterWithLocation = config.chapters.find(
-      chapter => chapter.location
+      chapter =>
+        chapter.location &&
+        chapterShell({
+          alignment: chapter.alignment,
+          hidden: chapter.hidden,
+          isMobile,
+        }).cameraMode === 'run'
     );
     return firstChapterWithLocation?.location;
-  }, [config.chapters, config.titleTransition?.location]);
+  }, [config.chapters, config.titleTransition?.location, isMobile]);
 
   const filteredChapters = useMemo(() => {
     if (!chaptersFilter) {
@@ -556,6 +581,7 @@ const StoryMap = props => {
               record={chapter}
               active={currentChapter === chapter.id}
               isContained={isContained}
+              isMobile={isMobile}
             />
           </div>
         ))}
