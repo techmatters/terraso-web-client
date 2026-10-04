@@ -31,9 +31,24 @@ import {
 
 import mapboxgl from 'terraso-web-client/gis/mapbox';
 import StoryMap from 'terraso-web-client/storyMap/components/StoryMap';
+import {
+  CHAPTER_ONLY_CONTENT_MAX_WIDTH,
+  CHAPTER_ONLY_CONTENT_MAX_WIDTH_VAR,
+} from 'terraso-web-client/storyMap/storyMapConstants';
+import { isChapterEmpty } from 'terraso-web-client/storyMap/storyMapUtils';
 
 // Mock mapboxgl
 jest.mock('terraso-web-client/gis/mapbox', () => ({}));
+
+// The layer stack (StoryMapLayer → VisualizationMapLayer) has its own tests;
+// the transition-wiring tests below only observe startTransition's output on
+// the map mock, so layers render as inert stubs here.
+jest.mock('terraso-web-client/storyMap/components/StoryMapLayer', () => ({
+  __esModule: true,
+  StoryMapLayer: ({ config }) => (
+    <div data-testid={`mock-layer-${config?.id}`} />
+  ),
+}));
 
 setupMapboxMock();
 
@@ -376,10 +391,14 @@ test('StoryMap: justMap chapter renders nothing over the map but keeps its scrol
   expect(section).toBeEmptyDOMElement();
   expect(section.querySelector('.step-content')).toBeNull();
   expect(section).not.toHaveClass('story-theme');
-  // The chapter still occupies its scroll space (100vh uncontained).
+  // Mode classes are asserted symmetrically for both just-modes (both or
+  // neither — they are the CSS hooks for the shell rules in StoryMap.css).
+  expect(section).toHaveClass('map-only');
+  // The chapter still occupies its scroll space (100vh uncontained)…
   expect(section).toHaveStyle('min-height: 100vh');
   // …exactly one viewport: the classic card paddings do not stretch it.
-  expect(section).toHaveStyle('padding: 0');
+  // The padding cancellation itself is a CSS rule (deterministic, next to
+  // the paddings it cancels) — pinned by StoryMap.css.test.ts.
 });
 
 test('StoryMap: justMap chapter span is 100cqh when the story map is contained', async () => {
@@ -397,15 +416,20 @@ test('StoryMap: justChapter chapter is a full-span card covering the map, conten
   expect(section).toHaveClass('chapter-only');
   expect(section).toHaveStyle('width: 100%');
   expect(section).toHaveStyle('min-height: 100vh');
-  expect(section).toHaveStyle('padding: 0');
   expect(section).toHaveStyle(
     'background-color: var(--story-theme-background)'
   );
   // Content vertically centered, horizontally centered with a max width.
   expect(section).toHaveStyle('justify-content: center');
   expect(section).toHaveStyle('align-items: center');
+  // ONE owner of the cap value: the constant carries it to the CSS rule on
+  // `.step-content` through the custom property (the rule consumes the var —
+  // pinned by StoryMap.css.test.ts; the rule's `none` fallback keeps the
+  // EDITOR card uncapped).
+  expect(section).toHaveStyle(
+    `${CHAPTER_ONLY_CONTENT_MAX_WIDTH_VAR}: ${CHAPTER_ONLY_CONTENT_MAX_WIDTH}`
+  );
   const content = section.querySelector('.step-content');
-  expect(content).toHaveStyle('max-width: 46rem');
   // The content itself renders normally.
   expect(
     within(section).getByRole('heading', { name: 'Chapter Only', level: 3 })
@@ -416,6 +440,7 @@ test('StoryMap: justChapter chapter is a full-span card covering the map, conten
   expect(
     within(section).getByRole('img', { name: 'Chapter media' })
   ).toBeInTheDocument();
+  expect(content).toBeInTheDocument();
 });
 
 test('StoryMap: justChapter chapter span is 100cqh when the story map is contained', async () => {
@@ -443,4 +468,280 @@ test('StoryMap: left/center/right chapter rendering is unchanged', async () => {
     expect(section).not.toHaveStyle('min-height: 100vh');
     expect(section).not.toHaveStyle('min-height: 100cqh');
   }
+});
+
+test('StoryMap: content-free just-mode beats keep their span through the consumers filter (K2)', async () => {
+  // The consumers (UserStoryMap, UserStoryMapEmbed, StoryMapForm preview)
+  // drop content-free chapters via `isChapterEmpty` — a bare-map beat (just
+  // location + layer events) is the primary `justMap` use case and must keep
+  // its span and its turn as the current step.
+  await render(
+    <StoryMap
+      config={{
+        ...JUST_MODES_CONFIG,
+        chapters: [
+          { id: 'empty-map', alignment: 'justMap' },
+          { id: 'empty-chapter', alignment: 'justChapter' },
+          { id: 'empty-classic', alignment: 'center' },
+        ],
+      }}
+      chaptersFilter={chapter => !isChapterEmpty(chapter)}
+    />
+  );
+
+  const mapBeat = document
+    .getElementById('empty-map')
+    .querySelector('.step-container');
+  expect(mapBeat).toHaveClass('map-only');
+  expect(mapBeat).toHaveStyle('min-height: 100vh');
+
+  const chapterBeat = document
+    .getElementById('empty-chapter')
+    .querySelector('.step-container');
+  expect(chapterBeat).toHaveClass('chapter-only');
+  expect(chapterBeat).toHaveStyle('min-height: 100vh');
+
+  // The classic content-free chapter is still dropped.
+  expect(document.getElementById('empty-classic')).toBeNull();
+});
+
+test('StoryMap: the map opens at the first chapter whose camera will actually run (initialLocation fallback)', async () => {
+  await render(
+    <StoryMap
+      config={{
+        ...CONFIG,
+        titleTransition: undefined,
+        chapters: [
+          {
+            id: 'skipped-chapter',
+            alignment: 'justChapter',
+            // A justChapter chapter's recorded camera never plays (its step
+            // transition is skipped) — not eligible as the initial camera.
+            location: {
+              center: { lng: 1, lat: 1 },
+              zoom: 3,
+              pitch: 0,
+              bearing: 0,
+              bounds: [0, 0, 2, 2],
+            },
+          },
+          {
+            id: 'map-beat',
+            alignment: 'justMap',
+            // justMap locations stay eligible.
+            location: {
+              center: { lng: 42, lat: 24 },
+              zoom: 5,
+              pitch: 0,
+              bearing: 0,
+              bounds: [40, 20, 44, 28],
+            },
+          },
+        ],
+      }}
+    />
+  );
+
+  expect(mapboxgl.Map).toHaveBeenCalledWith(
+    expect.objectContaining({ center: { lng: 42, lat: 24 }, zoom: 5 })
+  );
+  expect(mapboxgl.Map).not.toHaveBeenCalledWith(
+    expect.objectContaining({ center: { lng: 1, lat: 1 } })
+  );
+});
+
+// --- transition wiring --------------------------------------------------
+//
+// startTransition only runs when the map has dimensions (the ResizeObserver
+// reports them). setupTests' stub never fires, so tests that observe its
+// output install a firing one and use a LOADED map mock (the map instance is
+// published on `load`).
+
+const withFiringResizeObserver = () => {
+  const original = globalThis.ResizeObserver;
+  globalThis.ResizeObserver = class {
+    constructor(callback) {
+      this.callback = callback;
+    }
+    observe() {
+      this.callback([
+        { contentBoxSize: [{ blockSize: 600, inlineSize: 1200 }] },
+      ]);
+    }
+    unobserve() {}
+    disconnect() {}
+  };
+  return () => {
+    globalThis.ResizeObserver = original;
+  };
+};
+
+// A LOADED map mock whose referenced layers all exist on the map (as circle
+// layers) — startLayerTransition only paints layers the map reports.
+const createWiringMap = () =>
+  createLoadedMapMock({
+    getLayer: jest.fn(() => ({ type: 'circle' })),
+  });
+
+const withMatchMedia = matches => {
+  const original = window.matchMedia;
+  window.matchMedia = query => ({
+    media: query,
+    matches,
+    onchange: null,
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  });
+  return () => {
+    window.matchMedia = original;
+  };
+};
+
+const WIRING_CONFIG = {
+  style: 'mapbox://styles/terraso/test',
+  title: 'Wiring Story',
+  subtitle: 'Wiring Subtitle',
+  byline: 'by User',
+  dataLayers: {
+    a: { id: 'a', title: 'A', geojsonSignedUrl: 'https://test.com/a.geojson' },
+  },
+  chapters: [
+    // The content-free bare-map beat (K2): location + layers only.
+    {
+      id: 'empty-map',
+      alignment: 'justMap',
+      location: {
+        center: { lng: -79.9, lat: -2.4 },
+        zoom: 5,
+        pitch: 0,
+        bearing: 0,
+        bounds: [-80, -3, -79, -2],
+      },
+    },
+    {
+      id: 'chapter-only-chapter',
+      title: 'Chapter Only',
+      description: 'Chapter Only description',
+      alignment: 'justChapter',
+      location: {
+        center: { lng: -79.9, lat: -2.4 },
+        zoom: 5,
+        pitch: 0,
+        bearing: 0,
+        bounds: [-80, -3, -79, -2],
+      },
+      onChapterEnter: [{ layer: 'a-markers', opacity: 1, duration: 0 }],
+    },
+  ],
+};
+
+describe('StoryMap: transition wiring (layers / camera at the component level)', () => {
+  test('allowLayerForcing wiring: concealed while viewing, configurable while the map is being positioned', async () => {
+    const restore = withFiringResizeObserver();
+    mapboxgl.Map.mockReturnValue(createWiringMap());
+    const view = await render(
+      <StoryMap config={WIRING_CONFIG} activeStepId="chapter-only-chapter" />
+    );
+    const map = mapboxgl.Map.mock.results[0].value;
+
+    // Viewing (and the editor's non-configuring preview): the display
+    // override conceals every layer while the justChapter chapter is active
+    // (`allowLayerForcing={!mapEditing}` — an INVERTED prop fails here).
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity',
+      0
+    );
+
+    map.setPaintProperty.mockClear();
+    view.rerender(
+      <StoryMap
+        config={WIRING_CONFIG}
+        activeStepId="chapter-only-chapter"
+        mapEditing
+      />
+    );
+    // The configuring session keeps layers visible and configurable.
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity',
+      1
+    );
+    restore();
+  });
+
+  test('a content-free justMap beat runs its camera transition (K2 end-to-end)', async () => {
+    const restore = withFiringResizeObserver();
+    mapboxgl.Map.mockReturnValue(createWiringMap());
+    await render(<StoryMap config={WIRING_CONFIG} activeStepId="empty-map" />);
+    const map = mapboxgl.Map.mock.results[0].value;
+
+    expect(map.flyTo).toHaveBeenCalled();
+    restore();
+  });
+
+  test('hidden wins: a hidden justChapter chapter performs NO mode semantics', async () => {
+    const restore = withFiringResizeObserver();
+    mapboxgl.Map.mockReturnValue(createWiringMap());
+    await render(
+      <StoryMap
+        config={{
+          ...WIRING_CONFIG,
+          chapters: [
+            {
+              ...WIRING_CONFIG.chapters[1],
+              id: 'hidden-chapter',
+              hidden: true,
+            },
+          ],
+        }}
+        activeStepId="hidden-chapter"
+      />
+    );
+    const map = mapboxgl.Map.mock.results[0].value;
+
+    // No camera skip…
+    expect(map.flyTo).toHaveBeenCalled();
+    // …and no layer forcing (the authored event applies).
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity',
+      1
+    );
+    restore();
+  });
+
+  test('xs: the just-modes degrade to center semantics (normal card, layers visible, camera runs)', async () => {
+    const restoreResize = withFiringResizeObserver();
+    const restoreMatchMedia = withMatchMedia(true);
+    mapboxgl.Map.mockReturnValue(createWiringMap());
+    await render(
+      <StoryMap config={WIRING_CONFIG} activeStepId="chapter-only-chapter" />
+    );
+    const map = mapboxgl.Map.mock.results[0].value;
+
+    // Normal card rendering: the content is shown, the mode shell is gone.
+    const section = document
+      .getElementById('chapter-only-chapter')
+      .querySelector('.step-container');
+    expect(section).not.toHaveClass('chapter-only');
+    expect(section).toHaveClass('centered');
+    expect(section).not.toHaveStyle('min-height: 100vh');
+    expect(
+      within(section).getByRole('heading', { name: 'Chapter Only', level: 3 })
+    ).toBeInTheDocument();
+
+    // The map is a visible band on xs: camera runs, layers are not forced.
+    expect(map.flyTo).toHaveBeenCalled();
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity',
+      1
+    );
+    restoreResize();
+    restoreMatchMedia();
+  });
 });

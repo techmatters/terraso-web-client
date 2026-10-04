@@ -31,9 +31,11 @@ import {
   createTestVisualizationConfigNode,
 } from 'terraso-web-client/tests/data/storyMap';
 
+import i18n from 'terraso-web-client/localization/i18n';
 import ConfigureChapterSidebar from 'terraso-web-client/storyMap/components/StoryMapForm/ConfigureChapterSidebar';
 import {
   StoryMapConfigContextProvider,
+  syncConfigLayerFields,
   useStoryMapConfigDataContext,
 } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
@@ -202,9 +204,18 @@ const ConfigProbe = ({ targetId }: { targetId: string }) => {
       ? config.titleTransition
       : config.chapters?.find(({ id }: { id: string }) => id === targetId)
   ) as Partial<ChapterConfig> | undefined;
+  // Toggle-safety probe: the WHOLE target transition with ONLY `alignment`
+  // redacted — location, onChapterEnter/Exit, mapAnimation, rotateAnimation,
+  // hidden and id ride along.
+  const transitionWithoutAlignment = { ...(transition ?? {}) } as Record<
+    string,
+    unknown
+  >;
+  delete transitionWithoutAlignment.alignment;
   return (
     <div
       data-testid="config-probe"
+      data-transition={JSON.stringify(transitionWithoutAlignment)}
       data-fields={JSON.stringify({
         mapLayers: transition?.mapLayers ?? null,
         dataLayerConfigId: transition?.dataLayerConfigId ?? null,
@@ -230,6 +241,11 @@ const probeContent = () =>
     screen.getByTestId('config-probe').getAttribute('data-content') ?? '{}'
   );
 
+const probeTransition = () =>
+  JSON.parse(
+    screen.getByTestId('config-probe').getAttribute('data-transition') ?? '{}'
+  );
+
 interface SetupOptions {
   activeStepId?: string;
   mapLayers?: MapLayerTransition[];
@@ -238,6 +254,15 @@ interface SetupOptions {
   dataLayers?: DataLayersMock;
   /** The chapter's title; `null` renders a chapter WITHOUT a title. */
   chapterTitle?: string | null;
+  /** Extra fields merged onto the chapter fixture (toggle-safety probe). */
+  chapterExtra?: Partial<ChapterConfig>;
+  /**
+   * Run the fixture through the editor's DERIVED layer-field sync first (what
+   * every config write does), so the fixture is a realistic editor-written
+   * config and the whole-transition toggle probe is exact from the first
+   * click on.
+   */
+  syncDerivedFields?: boolean;
 }
 
 interface SetupResult {
@@ -272,13 +297,15 @@ const setup = async (options: SetupOptions = {}): Promise<SetupResult> => {
     configDataLayers = {},
     dataLayers,
     chapterTitle = 'Test Chapter',
+    chapterExtra = {},
+    syncDerivedFields = false,
   } = options;
 
   if (dataLayers) {
     dataLayersMock = dataLayers;
   }
 
-  const storyMapConfig = {
+  const baseConfig = {
     ...createTestStoryMapConfig(),
     dataLayers: configDataLayers,
     chapters: [
@@ -290,9 +317,13 @@ const setup = async (options: SetupOptions = {}): Promise<SetupResult> => {
         location: createTestStoryMapConfig().titleTransition?.location,
         mapLayers,
         dataLayerConfigId,
+        ...chapterExtra,
       },
     ],
   } as unknown as StoryMapConfig;
+  const storyMapConfig = syncDerivedFields
+    ? (syncConfigLayerFields(baseConfig) as StoryMapConfig)
+    : baseConfig;
   const storyMap = createTestStoryMap();
   const onCloseMock = jest.fn();
   const onFitLayerBoundsMock = jest.fn();
@@ -1211,13 +1242,21 @@ describe('ConfigureChapterSidebar', () => {
   });
 
   describe('Chapter alignment settings', () => {
-    const ALIGNMENT_OPTIONS: [string, string][] = [
-      ['Align Left', 'left'],
-      ['Align Center', 'center'],
-      ['Align Right', 'right'],
-      ['Map only (no chapter content)', 'justMap'],
-      ['Chapter only (covers the map)', 'justChapter'],
-    ];
+    // Button labels come from the i18n catalog: tests look the buttons up
+    // through the SAME values the component renders, so a copy edit trips
+    // exactly one legible test (the copy canary below) instead of shrapnel
+    // across the suite.
+    const ALIGNMENT_OPTIONS: [string, string][] = (
+      [
+        ['storyMap.form_chapter_alignment_left', 'left'],
+        ['storyMap.form_chapter_alignment_center', 'center'],
+        ['storyMap.form_chapter_alignment_right', 'right'],
+        ['storyMap.form_chapter_alignment_just_map', 'justMap'],
+        ['storyMap.form_chapter_alignment_just_chapter', 'justChapter'],
+      ] as [string, string][]
+    ).map(([key, value]) => [i18n.t(key), value]);
+    const alignmentLabel = (value: string) =>
+      ALIGNMENT_OPTIONS.find(([, option]) => option === value)?.[0] ?? '';
 
     it('shows the card and just-mode options for a chapter target', async () => {
       await setup();
@@ -1228,26 +1267,30 @@ describe('ConfigureChapterSidebar', () => {
       }
     });
 
+    it('alignment button labels are exactly their i18n values (copy canary)', async () => {
+      await setup();
+
+      const group = screen.getByRole('group', { name: 'Set alignment' });
+      // Literal catalog values: a copy edit trips THIS test — and only this
+      // one (every other test derives labels through the catalog).
+      for (const name of [
+        'Align Left',
+        'Align Center',
+        'Align Right',
+        'Map only (no chapter content)',
+        'Chapter only (covers the map)',
+      ]) {
+        expect(within(group).getByRole('button', { name })).toBeInTheDocument();
+      }
+    });
+
     it('hides the alignment settings for the title step (no alignment in the schema)', async () => {
       await setup({ activeStepId: STORY_MAP_TITLE_ID });
 
       expect(screen.queryByRole('group', { name: 'Set alignment' })).toBeNull();
     });
 
-    it.each(ALIGNMENT_OPTIONS)(
-      'writes %s onto the chapter immediately',
-      async (name, value) => {
-        await setup();
-
-        await act(async () => {
-          fireEvent.click(screen.getByRole('button', { name }));
-        });
-
-        expect(probeContent().alignment).toBe(value);
-      }
-    );
-
-    it('toggling through every alignment mutates nothing but alignment', async () => {
+    it('toggling through every alignment writes each value and mutates nothing else', async () => {
       await setup({
         mapLayers: [{ layerId: 'layer-b' }, { layerId: 'layer-a' }],
         dataLayerConfigId: 'layer-b',
@@ -1255,26 +1298,40 @@ describe('ConfigureChapterSidebar', () => {
           'layer-a': { id: 'layer-a', title: 'Alpha' } as MapLayerConfig,
           'layer-b': { id: 'layer-b', title: 'Beta' } as MapLayerConfig,
         },
+        // Toggle-safety probe: the WHOLE target transition is compared with
+        // only `alignment` redacted — location, onChapterEnter/Exit,
+        // mapAnimation, rotateAnimation, hidden and id are all asserted.
+        chapterExtra: {
+          mapAnimation: 'easeTo',
+          rotateAnimation: true,
+          hidden: false,
+        },
+        syncDerivedFields: true,
       });
       const fieldsBefore = probeData();
-      const contentBefore = probeContent();
+      const transitionBefore = probeTransition();
 
-      for (const [name] of [...ALIGNMENT_OPTIONS, ALIGNMENT_OPTIONS[0]]) {
+      for (const [name, value] of [
+        ...ALIGNMENT_OPTIONS,
+        ALIGNMENT_OPTIONS[0],
+      ]) {
         await act(async () => {
           fireEvent.click(screen.getByRole('button', { name }));
         });
-        // Display-side modes never touch the layer config.
+        // Each option writes its value…
+        expect(probeContent().alignment).toBe(value);
+        // …and mutates nothing else: the layer config stays put
+        // (display-side modes never touch it) and the whole target
+        // transition is identical with `alignment` redacted.
         expect(probeData()).toEqual(fieldsBefore);
-        expect({ ...probeContent(), alignment: null }).toEqual({
-          ...contentBefore,
-          alignment: null,
-        });
+        expect(probeTransition()).toEqual(transitionBefore);
       }
 
       expect(probeContent().alignment).toBe('left');
     });
 
     it('layers stay configurable on a justChapter chapter', async () => {
+      const justChapterLabel = alignmentLabel('justChapter');
       await setup({
         mapLayers: [{ layerId: 'layer-a' }],
         dataLayerConfigId: 'layer-a',
@@ -1285,7 +1342,7 @@ describe('ConfigureChapterSidebar', () => {
       await act(async () => {
         fireEvent.click(
           screen.getByRole('button', {
-            name: 'Chapter only (covers the map)',
+            name: justChapterLabel,
           })
         );
       });

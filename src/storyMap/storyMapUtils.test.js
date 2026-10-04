@@ -20,6 +20,7 @@ import logger from 'terraso-client-shared/monitoring/logger';
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 import {
   getTransition,
+  isChapterEmpty,
   updateTransition,
 } from 'terraso-web-client/storyMap/storyMapUtils';
 
@@ -96,5 +97,44 @@ describe('updateTransition', () => {
     expect(warn).toHaveBeenCalled();
     expect(next).toBe(config);
     warn.mockRestore();
+  });
+});
+
+describe('isChapterEmpty', () => {
+  // K2: a bare-map beat (just `location` + layer events) is the primary
+  // `justMap` use case. Dropping it cost it its scroll span, its camera and
+  // its turn as the current step (while its layer events still leaked into
+  // later chapters). The render mode IS the chapter's content.
+  test.each(['justMap', 'justChapter'])(
+    'a content-free %s chapter is NOT empty (the render mode is the content)',
+    alignment => {
+      expect(
+        isChapterEmpty({
+          id: 'chapter-1',
+          alignment,
+          location: { zoom: 4 },
+          onChapterEnter: [{ layer: 'a-markers', opacity: 1, duration: 0 }],
+        })
+      ).toBe(false);
+    }
+  );
+
+  test('a chapter without title, description and media is empty', () => {
+    expect(isChapterEmpty({ id: 'chapter-1', alignment: 'center' })).toBe(true);
+  });
+
+  test('a chapter with any content is not empty', () => {
+    expect(
+      isChapterEmpty({ id: 'chapter-1', title: 'Chapter 1', media: null })
+    ).toBe(false);
+    expect(isChapterEmpty({ id: 'chapter-1', description: 'Some text' })).toBe(
+      false
+    );
+    expect(
+      isChapterEmpty({
+        id: 'chapter-1',
+        media: { type: 'image/png', signedUrl: 'https://test.com/i.png' },
+      })
+    ).toBe(false);
   });
 });

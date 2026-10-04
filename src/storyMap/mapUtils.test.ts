@@ -48,7 +48,13 @@ const createFakeMap = (layerIds: string[] = []) => {
     }
     return layerObjects.get(id);
   };
-  return {
+  // Real event-listener semantics (like the shared mapboxMock): the rotate
+  // hand-off registers a pending `moveend` handler via `once`, and the
+  // justChapter skip path must DROP it — a bare jest.fn `once` cannot express
+  // "handler dropped", and a tautological `not.toHaveBeenCalled` is worse.
+  type Handler = ((...args: unknown[]) => void) & { __original?: unknown };
+  const events: Record<string, Handler[]> = {};
+  const map = {
     layerOrder: () => [...layers],
     moveLayer: jest.fn((id: string, beforeId?: string) => {
       const fromIndex = layers.indexOf(id);
@@ -76,8 +82,34 @@ const createFakeMap = (layerIds: string[] = []) => {
     setPaintProperty: jest.fn(),
     flyTo: jest.fn(),
     easeTo: jest.fn(),
-    once: jest.fn(),
-    off: jest.fn(),
+    stop: jest.fn(),
+    on: jest.fn((type: string, cb: Handler) => {
+      (events[type] ??= []).push(cb);
+    }),
+    once: jest.fn((type: string, cb: Handler) => {
+      const wrapped: Handler = (...args: unknown[]) => {
+        map.off(type, wrapped);
+        cb(...args);
+      };
+      wrapped.__original = cb;
+      (events[type] ??= []).push(wrapped);
+    }),
+    off: jest.fn((type: string, cb: Handler) => {
+      const handlers = events[type];
+      if (!handlers) {
+        return;
+      }
+      if (!cb) {
+        delete events[type];
+        return;
+      }
+      events[type] = handlers.filter(
+        handler => handler !== cb && handler.__original !== cb
+      );
+    }),
+    fire: (type: string, ...args: unknown[]) => {
+      [...(events[type] ?? [])].forEach(handler => handler(...args));
+    },
     getBearing: () => 0,
     rotateTo: jest.fn(),
     getBounds: () => ({
@@ -90,6 +122,7 @@ const createFakeMap = (layerIds: string[] = []) => {
     getZoom: () => 1,
     getPitch: () => 0,
   };
+  return map;
 };
 
 const layerSublayerIds = (layerId: string) => [
@@ -125,7 +158,11 @@ const runTransition = (
   map: ReturnType<typeof createFakeMap>,
   config: StoryMapConfig,
   chapterId: string,
-  options: { suspendCamera?: boolean; allowLayerForcing?: boolean } = {}
+  options: {
+    suspendCamera?: boolean;
+    allowLayerForcing?: boolean;
+    isMobile?: boolean;
+  } = {}
 ) =>
   startTransition(map as never, {
     config,
@@ -475,39 +512,28 @@ describe('content region bounds recording (bounds WYSIWYG)', () => {
     }
   );
 
-  test('the recorded bounds are the uncovered strip, anchored opposite the card', () => {
+  test('a left card records the EASTERN strip of the camera as its content region', () => {
     const [w, s, e, n] = CAMERA_BOUNDS;
-    const lngRange = e - w;
-    const contentRange = lngRange * CONTENT_REGION_FRACTION;
-    const expectBoundsCloseTo = (actual: number[], expected: number[]) =>
-      actual.forEach((value: number, index: number) => {
-        expect(value).toBeCloseTo(expected[index], 8);
-      });
+    const contentRange = (e - w) * CONTENT_REGION_FRACTION;
 
-    // Card on the left: the content strip is the EASTERN one.
-    expectBoundsCloseTo(recordContentRegionBounds(createLinearMap(), 'left'), [
-      e - contentRange,
-      s,
-      e,
-      n,
-    ]);
-    // Card on the right: the content strip is the WESTERN one.
-    expectBoundsCloseTo(recordContentRegionBounds(createLinearMap(), 'right'), [
-      w,
-      s,
-      w + contentRange,
-      n,
-    ]);
-    // Just-modes: the full camera bounds are recorded (no strip).
-    expectBoundsCloseTo(
-      recordContentRegionBounds(createLinearMap(), 'justMap'),
-      CAMERA_BOUNDS
-    );
-    expectBoundsCloseTo(
-      recordContentRegionBounds(createLinearMap(), 'justChapter'),
-      CAMERA_BOUNDS
-    );
+    const recorded = recordContentRegionBounds(createLinearMap(), 'left');
+    [e - contentRange, s, e, n].forEach((value, index) => {
+      expect(recorded[index]).toBeCloseTo(value, 8);
+    });
   });
+
+  test('a right card records the WESTERN strip of the camera as its content region', () => {
+    const [w, s, e, n] = CAMERA_BOUNDS;
+    const contentRange = (e - w) * CONTENT_REGION_FRACTION;
+
+    const recorded = recordContentRegionBounds(createLinearMap(), 'right');
+    [w, s, w + contentRange, n].forEach((value, index) => {
+      expect(recorded[index]).toBeCloseTo(value, 8);
+    });
+  });
+  // The just-modes record the FULL camera (no strip) is pinned once, above
+  // ("content region is the full map for the just-modes") — no third copy
+  // here.
 
   test('falls back to the raw camera bounds without map layout', () => {
     const map = createLinearMap({ clientWidth: 0, clientHeight: 0 });
@@ -582,11 +608,18 @@ describe('startTransition layer visibility', () => {
 });
 
 describe('startTransition just-modes camera', () => {
-  const locationConfig = (alignment: ChapterAlignment) =>
+  const locationConfig = (
+    alignment: ChapterAlignment,
+    overrides: Partial<Transition> = {}
+  ) =>
     makeConfig({
       chapters: [
         {
           alignment,
+          // The fixture carries a rotation: asserting "the hand-off is
+          // skipped" without it was a tautology (map.once could not have
+          // been called either way).
+          rotateAnimation: true,
           location: {
             center: { lng: -79.9, lat: -2.4 },
             zoom: 5,
@@ -594,6 +627,7 @@ describe('startTransition just-modes camera', () => {
             bearing: 0,
             bounds: [-80, -3, -79, -2],
           } as unknown as Transition['location'],
+          ...overrides,
         },
       ],
     });
@@ -605,16 +639,20 @@ describe('startTransition just-modes camera', () => {
 
     expect(map.flyTo).not.toHaveBeenCalled();
     expect(map.easeTo).not.toHaveBeenCalled();
-    // No map movement at all — the rotation hand-off is skipped too.
+    // No map movement at all — the rotation hand-off is skipped too
+    // (`rotateAnimation: true` is set on the fixture).
     expect(map.once).not.toHaveBeenCalled();
+    expect(map.rotateTo).not.toHaveBeenCalled();
   });
 
-  test('runs the camera move for a justMap chapter (the map location is honored)', () => {
+  test('runs the camera move and the rotation hand-off for a justMap chapter (mirror)', () => {
     const map = createFakeMap();
 
     runTransition(map, locationConfig('justMap'), 'chapter-1');
 
     expect(map.flyTo).toHaveBeenCalled();
+    // The rotation hand-off is registered on the next moveend.
+    expect(map.once).toHaveBeenCalledWith('moveend', expect.any(Function));
   });
 
   test.each(['left', 'right', 'center'] as const)(
@@ -710,5 +748,361 @@ describe('startTransition just-modes layer forcing', () => {
       'circle-opacity',
       1
     );
+  });
+
+  // K5 PRECEDENCE PIN: the layer model runs as authored (events accumulate
+  // across steps); only the DISPLAY OUTPUT is overridden to 0 while the
+  // active step is `justChapter`. A layer with `onChapterEnter` at a
+  // `justChapter` chapter is hidden during it and visible from the next
+  // chapter onward.
+  test('a layer with onChapterEnter at a justChapter chapter is hidden during it and visible from the next chapter onward', () => {
+    const map = createFakeMap(layerSublayerIds('a'));
+    const config = {
+      ...makeConfig({
+        chapters: [
+          {
+            id: 'chapter-1',
+            alignment: 'justChapter' as const,
+            onChapterEnter: [{ layer: 'a-markers', opacity: 1, duration: 0 }],
+          },
+          { id: 'chapter-2', alignment: 'left' as const },
+        ],
+      }),
+      dataLayers: { a: { id: 'a', title: 'A' } },
+    } as unknown as StoryMapConfig;
+
+    runTransition(map, config, 'chapter-1');
+
+    // Hidden DURING the justChapter step (display override) …
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity',
+      0
+    );
+    expect(map.setPaintProperty).not.toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity',
+      1
+    );
+
+    // …visible from the NEXT chapter onward (the authored event applies).
+    map.setPaintProperty.mockClear();
+    runTransition(map, config, 'chapter-2');
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity',
+      1
+    );
+  });
+
+  test('ALL layers forced off: every data sublayer and every hand-authored event layer goes to 0', () => {
+    const map = createFakeMap([
+      ...layerSublayerIds('a'),
+      ...layerSublayerIds('b'),
+      'hand-fill',
+    ]);
+    const config = {
+      ...makeConfig({
+        chapters: [
+          {
+            id: 'chapter-1',
+            alignment: 'justChapter' as const,
+            onChapterEnter: [{ layer: 'hand-fill', opacity: 1, duration: 0 }],
+          },
+        ],
+      }),
+      dataLayers: {
+        a: { id: 'a', title: 'A' },
+        b: { id: 'b', title: 'B' },
+      },
+    } as unknown as StoryMapConfig;
+
+    runTransition(map, config, 'chapter-1');
+
+    for (const sublayer of [
+      ...layerSublayerIds('a'),
+      ...layerSublayerIds('b'),
+      'hand-fill',
+    ]) {
+      expect(map.setPaintProperty).toHaveBeenCalledWith(
+        sublayer,
+        expect.stringContaining('-opacity'),
+        0
+      );
+    }
+  });
+
+  test('justChapter → justMap restores layer visibility (the spec-named sequence)', () => {
+    const map = createFakeMap(layerSublayerIds('a'));
+    const config = {
+      ...makeConfig({
+        chapters: [
+          {
+            id: 'chapter-1',
+            alignment: 'justChapter' as const,
+            onChapterEnter: [{ layer: 'a-markers', opacity: 1, duration: 0 }],
+          },
+          {
+            id: 'chapter-2',
+            alignment: 'justMap' as const,
+            onChapterEnter: [{ layer: 'a-markers', opacity: 1, duration: 0 }],
+          },
+        ],
+      }),
+      dataLayers: { a: { id: 'a', title: 'A' } },
+    } as unknown as StoryMapConfig;
+
+    runTransition(map, config, 'chapter-1');
+    map.setPaintProperty.mockClear();
+    runTransition(map, config, 'chapter-2');
+
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity',
+      1
+    );
+  });
+
+  test('the forced-off display override is a concealment: duration 0, no inherited fade', () => {
+    const map = createFakeMap(layerSublayerIds('a'));
+    const config = {
+      ...makeConfig({
+        chapters: [
+          {
+            id: 'chapter-1',
+            alignment: 'left' as const,
+            onChapterEnter: [
+              { layer: 'a-markers', opacity: 1, duration: 3000 },
+            ],
+          },
+          { id: 'chapter-2', alignment: 'justChapter' as const },
+        ],
+      }),
+      dataLayers: { a: { id: 'a', title: 'A' } },
+    } as unknown as StoryMapConfig;
+
+    runTransition(map, config, 'chapter-1');
+    map.setPaintProperty.mockClear();
+    runTransition(map, config, 'chapter-2');
+
+    // Without duration: 0 the concealment would INHERIT the previous
+    // event's 3000ms *-opacity-transition and fade instead of hiding.
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity-transition',
+      { duration: 0 }
+    );
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity',
+      0
+    );
+  });
+
+  test('hidden wins: a hidden justChapter chapter forces NOTHING off', () => {
+    const map = createFakeMap(layerSublayerIds('a'));
+    const config = {
+      ...makeConfig({
+        chapters: [
+          {
+            id: 'chapter-1',
+            alignment: 'justChapter' as const,
+            hidden: true,
+            onChapterEnter: [{ layer: 'a-markers', opacity: 1, duration: 0 }],
+          },
+        ],
+      }),
+      dataLayers: { a: { id: 'a', title: 'A' } },
+    } as unknown as StoryMapConfig;
+
+    runTransition(map, config, 'chapter-1');
+
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity',
+      1
+    );
+  });
+
+  test('xs fallback: a justChapter chapter degrades to center semantics — layers are NOT forced', () => {
+    const map = createFakeMap(layerSublayerIds('a'));
+
+    runTransition(map, layerConfig('justChapter'), 'chapter-1', {
+      isMobile: true,
+    });
+
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity',
+      1
+    );
+  });
+});
+
+describe('startTransition justChapter camera skip: in-flight rotation (K3)', () => {
+  const config = makeConfig({
+    chapters: [
+      {
+        id: 'chapter-1',
+        alignment: 'justMap',
+        rotateAnimation: true,
+        location: {
+          center: { lng: -79.9, lat: -2.4 },
+          zoom: 5,
+          pitch: 0,
+          bearing: 0,
+          bounds: [-80, -3, -79, -2],
+        } as unknown as Transition['location'],
+      },
+      { id: 'chapter-2', alignment: 'justChapter' },
+    ],
+  });
+
+  test('a pending rotate hand-off is dropped by the skip instead of detonating later', () => {
+    const map = createFakeMap();
+
+    // chapter-1 runs its camera and hands the 30s rotation to the NEXT
+    // moveend — a long way out.
+    runTransition(map, config, 'chapter-1');
+    expect(map.once).toHaveBeenCalledWith('moveend', expect.any(Function));
+
+    // Scrolling into the justChapter chapter skips its camera step — but a
+    // bare early-return leaked the pending hand-off: the next moveend (e.g.
+    // the camera INIT of the following chapter) would detonate the 30s
+    // rotateTo and settle the map flipped.
+    runTransition(map, config, 'chapter-2');
+    expect(map.stop).toHaveBeenCalled();
+
+    map.fire('moveend');
+    expect(map.rotateTo).not.toHaveBeenCalled();
+  });
+});
+
+describe('startTransition justChapter camera skip and resume (K8)', () => {
+  const loc = () =>
+    ({
+      center: { lng: -79.9, lat: -2.4 },
+      zoom: 5,
+      pitch: 0,
+      bearing: 0,
+      bounds: [-80, -3, -79, -2],
+    }) as unknown as Transition['location'];
+
+  const config = makeConfig({
+    chapters: [
+      // first position: skipped
+      { id: 'chapter-1', alignment: 'justChapter', location: loc() },
+      // resume WITH a location (easeTo marks it as this one, not L1)
+      {
+        id: 'chapter-2',
+        alignment: 'left',
+        location: loc(),
+        mapAnimation: 'easeTo',
+      },
+      // resume WITHOUT a location: the map must stay put
+      { id: 'chapter-3', alignment: 'left' },
+      // consecutive justChapter steps
+      { id: 'chapter-4', alignment: 'justChapter', location: loc() },
+      { id: 'chapter-5', alignment: 'justChapter', location: loc() },
+      // last position: skipped
+      { id: 'chapter-6', alignment: 'justChapter', location: loc() },
+    ],
+  });
+
+  const clearCamera = (map: ReturnType<typeof createFakeMap>) => {
+    map.flyTo.mockClear();
+    map.easeTo.mockClear();
+    map.stop.mockClear();
+  };
+
+  test('the camera resumes at the NEXT chapter with a location (its own move, not the skipped one)', () => {
+    const map = createFakeMap();
+
+    runTransition(map, config, 'chapter-1');
+    expect(map.flyTo).not.toHaveBeenCalled();
+    expect(map.easeTo).not.toHaveBeenCalled();
+
+    clearCamera(map);
+    runTransition(map, config, 'chapter-2');
+    // mapAnimation: 'easeTo' on chapter-2's location marks the move as its
+    // own — the skipped chapter-1 location would have been a flyTo.
+    expect(map.easeTo).toHaveBeenCalled();
+    expect(map.flyTo).not.toHaveBeenCalled();
+  });
+
+  test('a chapter WITHOUT a location leaves the map where it is (no snap back to the skipped camera)', () => {
+    const map = createFakeMap();
+
+    runTransition(map, config, 'chapter-1');
+    clearCamera(map);
+    runTransition(map, config, 'chapter-3');
+
+    expect(map.flyTo).not.toHaveBeenCalled();
+    expect(map.easeTo).not.toHaveBeenCalled();
+  });
+
+  test('consecutive justChapter chapters never move the map', () => {
+    const map = createFakeMap();
+
+    runTransition(map, config, 'chapter-4');
+    runTransition(map, config, 'chapter-5');
+
+    expect(map.flyTo).not.toHaveBeenCalled();
+    expect(map.easeTo).not.toHaveBeenCalled();
+  });
+
+  test('the skip holds at the first and last chapter positions', () => {
+    const map = createFakeMap();
+
+    runTransition(map, config, 'chapter-1');
+    runTransition(map, config, 'chapter-6');
+
+    expect(map.flyTo).not.toHaveBeenCalled();
+    expect(map.easeTo).not.toHaveBeenCalled();
+    expect(map.stop).toHaveBeenCalled();
+  });
+
+  test('hidden wins: a hidden justChapter chapter runs its camera (no skip)', () => {
+    const map = createFakeMap();
+    const hiddenConfig = makeConfig({
+      chapters: [
+        {
+          id: 'chapter-1',
+          alignment: 'justChapter',
+          hidden: true,
+          location: loc(),
+        },
+      ],
+    });
+
+    runTransition(map, hiddenConfig, 'chapter-1');
+
+    expect(map.flyTo).toHaveBeenCalled();
+  });
+
+  test('xs fallback: a justChapter chapter runs its camera (no skip)', () => {
+    const map = createFakeMap();
+
+    runTransition(map, config, 'chapter-1', { isMobile: true });
+
+    expect(map.flyTo).toHaveBeenCalled();
+  });
+
+  test('the title step IGNORES a legacy titleTransition.alignment (the title has no alignment in the schema)', () => {
+    const map = createFakeMap();
+    const titleConfig = makeConfig({
+      titleTransition: {
+        // Legacy stored configs carry an alignment on the title transition.
+        // The read path pins "ignore": the title step is a card, its camera
+        // always runs (a stored justChapter there must not freeze the map).
+        alignment: 'justChapter',
+        location: loc(),
+      } as unknown as Transition,
+      chapters: [],
+    });
+
+    runTransition(map, titleConfig, STORY_MAP_TITLE_ID);
+
+    expect(map.flyTo).toHaveBeenCalled();
   });
 });
