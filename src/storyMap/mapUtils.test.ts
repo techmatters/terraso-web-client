@@ -25,6 +25,7 @@ import {
 } from 'terraso-web-client/storyMap/mapUtils';
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 import {
+  ChapterAlignment,
   StoryMapConfig,
   Transition,
 } from 'terraso-web-client/storyMap/storyMapTypes';
@@ -124,7 +125,7 @@ const runTransition = (
   map: ReturnType<typeof createFakeMap>,
   config: StoryMapConfig,
   chapterId: string,
-  options: { suspendCamera?: boolean } = {}
+  options: { suspendCamera?: boolean; allowLayerForcing?: boolean } = {}
 ) =>
   startTransition(map as never, {
     config,
@@ -439,12 +440,26 @@ describe('content region bounds recording (bounds WYSIWYG)', () => {
     ]);
   });
 
-  test.each(['left', 'right', 'center'])(
+  test('content region is the full map for the just-modes (no uncovered strip contract)', () => {
+    // justMap renders no card at all; justChapter covers the whole map —
+    // neither leaves an uncovered strip to record, so the content region is
+    // the full container width.
+    expect(contentRegionPixelRange(FRAME.clientWidth, 'justMap')).toEqual([
+      0,
+      FRAME.clientWidth,
+    ]);
+    expect(contentRegionPixelRange(FRAME.clientWidth, 'justChapter')).toEqual([
+      0,
+      FRAME.clientWidth,
+    ]);
+  });
+
+  test.each(['left', 'right', 'center', 'justMap', 'justChapter'] as const)(
     'recorded bounds + expandBoundsForDisplay round-trip to the framed region (%s)',
     alignment => {
       const recorded = recordContentRegionBounds(
         createLinearMap(),
-        alignment as 'left' | 'right' | 'center'
+        alignment as ChapterAlignment
       );
 
       // The viewer expands the recorded bounds to compensate for the chapter
@@ -452,7 +467,7 @@ describe('content region bounds recording (bounds WYSIWYG)', () => {
       // camera recording makes it display ~1.67x zoomed out).
       const displayed = expandBoundsForDisplay(
         recorded,
-        alignment as 'left' | 'right' | 'center'
+        alignment as ChapterAlignment
       );
       displayed.forEach((value, index) => {
         expect(value).toBeCloseTo(CAMERA_BOUNDS[index], 8);
@@ -483,6 +498,15 @@ describe('content region bounds recording (bounds WYSIWYG)', () => {
       w + contentRange,
       n,
     ]);
+    // Just-modes: the full camera bounds are recorded (no strip).
+    expectBoundsCloseTo(
+      recordContentRegionBounds(createLinearMap(), 'justMap'),
+      CAMERA_BOUNDS
+    );
+    expectBoundsCloseTo(
+      recordContentRegionBounds(createLinearMap(), 'justChapter'),
+      CAMERA_BOUNDS
+    );
   });
 
   test('falls back to the raw camera bounds without map layout', () => {
@@ -553,6 +577,138 @@ describe('startTransition layer visibility', () => {
       'a-markers',
       'circle-opacity',
       0
+    );
+  });
+});
+
+describe('startTransition just-modes camera', () => {
+  const locationConfig = (alignment: ChapterAlignment) =>
+    makeConfig({
+      chapters: [
+        {
+          alignment,
+          location: {
+            center: { lng: -79.9, lat: -2.4 },
+            zoom: 5,
+            pitch: 0,
+            bearing: 0,
+            bounds: [-80, -3, -79, -2],
+          } as unknown as Transition['location'],
+        },
+      ],
+    });
+
+  test('skips the camera move for a justChapter chapter (the map is invisible)', () => {
+    const map = createFakeMap();
+
+    runTransition(map, locationConfig('justChapter'), 'chapter-1');
+
+    expect(map.flyTo).not.toHaveBeenCalled();
+    expect(map.easeTo).not.toHaveBeenCalled();
+    // No map movement at all — the rotation hand-off is skipped too.
+    expect(map.once).not.toHaveBeenCalled();
+  });
+
+  test('runs the camera move for a justMap chapter (the map location is honored)', () => {
+    const map = createFakeMap();
+
+    runTransition(map, locationConfig('justMap'), 'chapter-1');
+
+    expect(map.flyTo).toHaveBeenCalled();
+  });
+
+  test.each(['left', 'right', 'center'] as const)(
+    'runs the camera move for %s chapters (unchanged)',
+    alignment => {
+      const map = createFakeMap();
+
+      runTransition(map, locationConfig(alignment), 'chapter-1');
+
+      expect(map.flyTo).toHaveBeenCalled();
+    }
+  );
+});
+
+describe('startTransition just-modes layer forcing', () => {
+  const layerConfig = (alignment: ChapterAlignment) =>
+    ({
+      ...makeConfig({
+        chapters: [
+          {
+            id: 'chapter-1',
+            alignment,
+            mapLayers: [{ layerId: 'a' }],
+            dataLayerConfigId: 'a',
+            onChapterEnter: [{ layer: 'a-markers', opacity: 1, duration: 0 }],
+            onChapterExit: [{ layer: 'a-markers', opacity: 0, duration: 0 }],
+          },
+          {
+            id: 'chapter-2',
+            alignment: 'left',
+            mapLayers: [{ layerId: 'a' }],
+            dataLayerConfigId: 'a',
+            onChapterEnter: [{ layer: 'a-markers', opacity: 1, duration: 0 }],
+            onChapterExit: [{ layer: 'a-markers', opacity: 0, duration: 0 }],
+          },
+        ],
+      }),
+      dataLayers: { a: { id: 'a', title: 'A' } },
+    }) as unknown as StoryMapConfig;
+
+  test('forces every layer off while a justChapter chapter is active', () => {
+    const map = createFakeMap(layerSublayerIds('a'));
+
+    runTransition(map, layerConfig('justChapter'), 'chapter-1');
+
+    for (const sublayer of layerSublayerIds('a')) {
+      expect(map.setPaintProperty).toHaveBeenCalledWith(
+        sublayer,
+        expect.stringContaining('-opacity'),
+        0
+      );
+    }
+  });
+
+  test('restores layer visibility for the chapters after a justChapter chapter', () => {
+    const map = createFakeMap(layerSublayerIds('a'));
+    const config = layerConfig('justChapter');
+
+    runTransition(map, config, 'chapter-1');
+    map.setPaintProperty.mockClear();
+    runTransition(map, config, 'chapter-2');
+
+    // The forcing is display-side only: the next chapter's normal layer
+    // model drives the visibility again.
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity',
+      1
+    );
+  });
+
+  test('does not force layers off in the editing session (allowLayerForcing: false)', () => {
+    const map = createFakeMap(layerSublayerIds('a'));
+
+    runTransition(map, layerConfig('justChapter'), 'chapter-1', {
+      allowLayerForcing: false,
+    });
+
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity',
+      1
+    );
+  });
+
+  test('justMap chapters keep the normal layer visibility model', () => {
+    const map = createFakeMap(layerSublayerIds('a'));
+
+    runTransition(map, layerConfig('justMap'), 'chapter-1');
+
+    expect(map.setPaintProperty).toHaveBeenCalledWith(
+      'a-markers',
+      'circle-opacity',
+      1
     );
   });
 });

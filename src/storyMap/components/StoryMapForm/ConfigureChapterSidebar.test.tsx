@@ -38,6 +38,7 @@ import {
 } from 'terraso-web-client/storyMap/components/StoryMapForm/storyMapConfigContext';
 import { STORY_MAP_TITLE_ID } from 'terraso-web-client/storyMap/storyMapConstants';
 import {
+  ChapterConfig,
   MapLayerConfig,
   MapLayerTransition,
   StoryMapConfig,
@@ -196,10 +197,11 @@ const ConfigProbe = ({ targetId }: { targetId: string }) => {
   const { config } = useStoryMapConfigDataContext() as {
     config: StoryMapConfig;
   };
-  const transition =
+  const transition = (
     targetId === STORY_MAP_TITLE_ID
       ? config.titleTransition
-      : config.chapters?.find(({ id }: { id: string }) => id === targetId);
+      : config.chapters?.find(({ id }: { id: string }) => id === targetId)
+  ) as Partial<ChapterConfig> | undefined;
   return (
     <div
       data-testid="config-probe"
@@ -208,6 +210,12 @@ const ConfigProbe = ({ targetId }: { targetId: string }) => {
         dataLayerConfigId: transition?.dataLayerConfigId ?? null,
         dataLayerIds: Object.keys(config.dataLayers ?? {}).sort(),
       })}
+      data-content={JSON.stringify({
+        alignment: transition?.alignment ?? null,
+        title: transition?.title ?? null,
+        description: transition?.description ?? null,
+        media: transition?.media ?? null,
+      })}
     />
   );
 };
@@ -215,6 +223,11 @@ const ConfigProbe = ({ targetId }: { targetId: string }) => {
 const probeData = () =>
   JSON.parse(
     screen.getByTestId('config-probe').getAttribute('data-fields') ?? '{}'
+  );
+
+const probeContent = () =>
+  JSON.parse(
+    screen.getByTestId('config-probe').getAttribute('data-content') ?? '{}'
   );
 
 interface SetupOptions {
@@ -1194,6 +1207,100 @@ describe('ConfigureChapterSidebar', () => {
 
       // The title step has no layers: the draft is the new target's.
       expect(orderListItems()).toEqual([]);
+    });
+  });
+
+  describe('Chapter alignment settings', () => {
+    const ALIGNMENT_OPTIONS: [string, string][] = [
+      ['Align Left', 'left'],
+      ['Align Center', 'center'],
+      ['Align Right', 'right'],
+      ['Map only (no chapter content)', 'justMap'],
+      ['Chapter only (covers the map)', 'justChapter'],
+    ];
+
+    it('shows the card and just-mode options for a chapter target', async () => {
+      await setup();
+
+      const group = screen.getByRole('group', { name: 'Set alignment' });
+      for (const [name] of ALIGNMENT_OPTIONS) {
+        expect(within(group).getByRole('button', { name })).toBeInTheDocument();
+      }
+    });
+
+    it('hides the alignment settings for the title step (no alignment in the schema)', async () => {
+      await setup({ activeStepId: STORY_MAP_TITLE_ID });
+
+      expect(screen.queryByRole('group', { name: 'Set alignment' })).toBeNull();
+    });
+
+    it.each(ALIGNMENT_OPTIONS)(
+      'writes %s onto the chapter immediately',
+      async (name, value) => {
+        await setup();
+
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button', { name }));
+        });
+
+        expect(probeContent().alignment).toBe(value);
+      }
+    );
+
+    it('toggling through every alignment mutates nothing but alignment', async () => {
+      await setup({
+        mapLayers: [{ layerId: 'layer-b' }, { layerId: 'layer-a' }],
+        dataLayerConfigId: 'layer-b',
+        configDataLayers: {
+          'layer-a': { id: 'layer-a', title: 'Alpha' } as MapLayerConfig,
+          'layer-b': { id: 'layer-b', title: 'Beta' } as MapLayerConfig,
+        },
+      });
+      const fieldsBefore = probeData();
+      const contentBefore = probeContent();
+
+      for (const [name] of [...ALIGNMENT_OPTIONS, ALIGNMENT_OPTIONS[0]]) {
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button', { name }));
+        });
+        // Display-side modes never touch the layer config.
+        expect(probeData()).toEqual(fieldsBefore);
+        expect({ ...probeContent(), alignment: null }).toEqual({
+          ...contentBefore,
+          alignment: null,
+        });
+      }
+
+      expect(probeContent().alignment).toBe('left');
+    });
+
+    it('layers stay configurable on a justChapter chapter', async () => {
+      await setup({
+        mapLayers: [{ layerId: 'layer-a' }],
+        dataLayerConfigId: 'layer-a',
+        configDataLayers: {
+          'layer-a': { id: 'layer-a', title: 'Alpha' } as MapLayerConfig,
+        },
+      });
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole('button', {
+            name: 'Chapter only (covers the map)',
+          })
+        );
+      });
+
+      // The sidebar still lists and toggles the chapter's layers: forcing is
+      // viewer-side only.
+      expect(orderListItems()).toEqual(['Alpha']);
+      const row = screen.getByRole('treeitem', { name: 'Story Map Layer 1' });
+      await act(async () => {
+        fireEvent.click(row);
+      });
+      expect(probeData().mapLayers).toEqual([
+        { layerId: 'test-story-map-1' },
+        { layerId: 'layer-a' },
+      ]);
     });
   });
 });

@@ -327,3 +327,117 @@ test('StoryMap: applies the new theme 8 tokens across rendered content', async (
   expect(storyMap).toHaveStyle('--story-theme-link: #63D0F8');
   expect(storyMap).toHaveStyle('--story-theme-highlight: #FFE2A0');
 });
+
+const JUST_MODES_CONFIG = {
+  style: 'mapbox://styles/terraso/test',
+  title: 'Just Modes Story',
+  subtitle: 'Just Modes Subtitle',
+  byline: 'by User',
+  chapters: [
+    {
+      id: 'map-only-chapter',
+      title: 'Map Only',
+      description: 'Map Only description',
+      alignment: 'justMap',
+    },
+    {
+      id: 'chapter-only-chapter',
+      title: 'Chapter Only',
+      description: 'Chapter Only description',
+      alignment: 'justChapter',
+      media: { type: 'image/png', signedUrl: 'https://test.com/only.png' },
+    },
+    {
+      id: 'classic-left-chapter',
+      title: 'Classic Left',
+      description: 'Classic Left description',
+      alignment: 'left',
+    },
+    {
+      id: 'classic-center-chapter',
+      title: 'Classic Center',
+      description: 'Classic Center description',
+      alignment: 'center',
+    },
+    {
+      id: 'classic-right-chapter',
+      title: 'Classic Right',
+      description: 'Classic Right description',
+      alignment: 'right',
+    },
+  ],
+};
+
+test('StoryMap: justMap chapter renders nothing over the map but keeps its scroll span', async () => {
+  await render(<StoryMap config={JUST_MODES_CONFIG} />);
+
+  const section = screen.getByRole('region', { name: 'Chapter: Map Only' });
+  // No content, no background — just the map.
+  expect(section).toBeEmptyDOMElement();
+  expect(section.querySelector('.step-content')).toBeNull();
+  expect(section).not.toHaveClass('story-theme');
+  // The chapter still occupies its scroll space (100vh uncontained).
+  expect(section).toHaveStyle('min-height: 100vh');
+});
+
+test('StoryMap: justMap chapter span is 100cqh when the story map is contained', async () => {
+  await render(<StoryMap config={JUST_MODES_CONFIG} isContained />);
+
+  const section = screen.getByRole('region', { name: 'Chapter: Map Only' });
+  expect(section).toHaveStyle('min-height: 100cqh');
+});
+
+test('StoryMap: justChapter chapter is a full-span card covering the map, content centered', async () => {
+  await render(<StoryMap config={JUST_MODES_CONFIG} />);
+
+  const section = screen.getByRole('region', { name: 'Chapter: Chapter Only' });
+  // Full-width background covering the map area for the chapter's span.
+  expect(section).toHaveClass('chapter-only');
+  expect(section).toHaveStyle('width: 100%');
+  expect(section).toHaveStyle('min-height: 100vh');
+  expect(section).toHaveStyle(
+    'background-color: var(--story-theme-background)'
+  );
+  // Content vertically centered, horizontally centered with a max width.
+  expect(section).toHaveStyle('justify-content: center');
+  expect(section).toHaveStyle('align-items: center');
+  const content = section.querySelector('.step-content');
+  expect(content).toHaveStyle('max-width: 46rem');
+  // The content itself renders normally.
+  expect(
+    within(section).getByRole('heading', { name: 'Chapter Only', level: 3 })
+  ).toBeInTheDocument();
+  expect(
+    within(section).getByText('Chapter Only description')
+  ).toBeInTheDocument();
+  expect(
+    within(section).getByRole('img', { name: 'Chapter media' })
+  ).toBeInTheDocument();
+});
+
+test('StoryMap: justChapter chapter span is 100cqh when the story map is contained', async () => {
+  await render(<StoryMap config={JUST_MODES_CONFIG} isContained />);
+
+  const section = screen.getByRole('region', { name: 'Chapter: Chapter Only' });
+  expect(section).toHaveStyle('min-height: 100cqh');
+});
+
+test('StoryMap: left/center/right chapter rendering is unchanged', async () => {
+  await render(<StoryMap config={JUST_MODES_CONFIG} />);
+
+  const expectations = [
+    ['Classic Left', 'lefty'],
+    ['Classic Center', 'centered'],
+    ['Classic Right', 'righty'],
+  ];
+  for (const [title, cssClass] of expectations) {
+    const section = screen.getByRole('region', { name: `Chapter: ${title}` });
+    expect(section).toHaveClass(cssClass);
+    expect(
+      within(section).getByText(`${title} description`)
+    ).toBeInTheDocument();
+    // No render-mode span on classic cards.
+    expect(section).not.toHaveStyle('min-height: 100vh');
+    expect(section).not.toHaveStyle('min-height: 100cqh');
+  }
+});
