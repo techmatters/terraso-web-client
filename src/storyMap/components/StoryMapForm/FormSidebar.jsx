@@ -44,6 +44,10 @@ const FormSidebar = ({
       variant="persistent"
       ModalProps={{ keepMounted: true }}
       transitionDuration={{ enter: 150, exit: 150 }}
+      // Both right sidebars STAY MOUNTED (toggling `open`): an in-flight
+      // create-layer flow inside the Configure Chapter sidebar survives a
+      // switch to Settings and back. A closed sidebar is hidden from the
+      // accessibility tree (its content is off-screen, width 0).
       sx={theme => ({
         zIndex,
         width: open ? SIDEBAR_WIDTH : 0,
@@ -57,6 +61,7 @@ const FormSidebar = ({
           position: 'static',
           borderLeft: `1px solid ${theme.palette.gray.lite1}`,
           boxSizing: 'border-box',
+          visibility: open ? 'visible' : 'hidden',
         },
       })}
     >
@@ -70,6 +75,9 @@ const FormSidebar = ({
           height: '100%',
           overflowY: 'auto',
           bgcolor: 'white',
+          // Closed sidebars stay mounted but are invisible — and thus out
+          // of the accessibility tree (visibility is inherited).
+          visibility: open ? 'visible' : 'hidden',
         }}
       >
         <Stack

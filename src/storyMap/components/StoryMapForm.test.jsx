@@ -88,6 +88,18 @@ jest.mock('terraso-web-client/gis/components/MapStyleSwitcher', () => ({
 
 jest.mock('terraso-client-shared/terrasoApi/api');
 
+// The create-layer dialog's upload flow needs the real storage pipeline; the
+// editor tests only care about the FLOW STATE (which file the create flow
+// holds) surviving sidebar toggles.
+jest.mock(
+  'terraso-web-client/storyMap/components/StoryMapForm/MapLayers/CreateMapLayerDialog',
+  () => ({
+    CreateMapLayerFileUpload: ({ externalFile }) => (
+      <div data-testid="create-flow-file">{externalFile?.name ?? ''}</div>
+    ),
+  })
+);
+
 const VISUALIZATION_CONFIG_JSON = {
   datasetConfig: {
     dataColumns: { option: '', selectedColumns: ['', '', ''] },
@@ -2687,35 +2699,51 @@ test('StoryMapForm: Configure Chapter sidebar is open by default with a title an
 test('StoryMapForm: right sidebars are mutually exclusive', async () => {
   await setup({ config: BASE_CONFIG });
 
+  // Both sidebars stay MOUNTED (toggling `open`): a closed sidebar is
+  // invisible (visibility: hidden — out of the accessibility tree too) and
+  // its in-flight state survives.
+  const sidebarByLabel = label =>
+    screen.queryByRole('complementary', { name: label, hidden: true });
+  const visibleSidebarByLabel = label =>
+    screen.queryByRole('complementary', { name: label });
+  const configureSidebar = () => sidebarByLabel('Configure Chapter sidebar');
+  const settingsSidebar = () => sidebarByLabel('Right sidebar');
+
   // Gear opens Settings, closing Configure Chapter.
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
   );
+  expect(visibleSidebarByLabel('Right sidebar')).toBeInTheDocument();
   expect(
-    screen.getByRole('complementary', { name: 'Right sidebar' })
-  ).toBeInTheDocument();
-  expect(screen.getByText('Settings')).toBeInTheDocument();
+    visibleSidebarByLabel('Configure Chapter sidebar')
+  ).not.toBeInTheDocument();
+  expect(within(settingsSidebar()).getByText('Settings')).toBeInTheDocument();
   expect(
-    screen.getByRole('button', { name: 'Close Settings sidebar' })
+    within(settingsSidebar()).getByRole('button', {
+      name: 'Close Settings sidebar',
+    })
   ).toBeInTheDocument();
-  expect(screen.queryByText('Configure Chapter')).not.toBeInTheDocument();
 
   // "Edit Chapter" opens Configure Chapter, closing Settings.
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Edit Chapter' }))
   );
-  expect(screen.getByText('Configure Chapter')).toBeInTheDocument();
-  expect(screen.queryByText('Settings')).not.toBeInTheDocument();
   expect(
-    screen.queryByRole('complementary', { name: 'Right sidebar' })
-  ).not.toBeInTheDocument();
+    visibleSidebarByLabel('Configure Chapter sidebar')
+  ).toBeInTheDocument();
+  expect(visibleSidebarByLabel('Right sidebar')).not.toBeInTheDocument();
+  expect(
+    within(configureSidebar()).getByText('Configure Chapter')
+  ).toBeInTheDocument();
 
   // "Edit Chapter" toggles closed when already open.
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Edit Chapter' }))
   );
-  expect(screen.queryByText('Configure Chapter')).not.toBeInTheDocument();
-  expect(screen.queryByText('Settings')).not.toBeInTheDocument();
+  expect(
+    visibleSidebarByLabel('Configure Chapter sidebar')
+  ).not.toBeInTheDocument();
+  expect(visibleSidebarByLabel('Right sidebar')).not.toBeInTheDocument();
 
   // X closes whichever sidebar is open.
   await act(async () =>
@@ -2726,8 +2754,10 @@ test('StoryMapForm: right sidebars are mutually exclusive', async () => {
       screen.getByRole('button', { name: 'Close Settings sidebar' })
     )
   );
-  expect(screen.queryByText('Settings')).not.toBeInTheDocument();
-  expect(screen.queryByText('Configure Chapter')).not.toBeInTheDocument();
+  expect(visibleSidebarByLabel('Right sidebar')).not.toBeInTheDocument();
+  expect(
+    visibleSidebarByLabel('Configure Chapter sidebar')
+  ).not.toBeInTheDocument();
 
   await act(async () =>
     fireEvent.click(screen.getByRole('button', { name: 'Edit Chapter' }))
@@ -2737,8 +2767,10 @@ test('StoryMapForm: right sidebars are mutually exclusive', async () => {
       screen.getByRole('button', { name: 'Close Configure Chapter sidebar' })
     )
   );
-  expect(screen.queryByText('Configure Chapter')).not.toBeInTheDocument();
-  expect(screen.queryByText('Settings')).not.toBeInTheDocument();
+  expect(
+    visibleSidebarByLabel('Configure Chapter sidebar')
+  ).not.toBeInTheDocument();
+  expect(visibleSidebarByLabel('Right sidebar')).not.toBeInTheDocument();
 });
 
 test('StoryMapForm: alignment controls moved from the chapter editor to the configure sidebar', async () => {
@@ -3293,4 +3325,39 @@ test('StoryMapForm: a deleted edit target never silently drops the camera write'
     warn.mockRestore();
     io.restore();
   }
+});
+
+test('StoryMapForm: an in-flight create-layer flow survives switching to Settings and back', async () => {
+  await setup({ config: BASE_CONFIG });
+
+  // Start the create flow with a window drop (the Configure Chapter sidebar
+  // is open by default).
+  const file = new File(['x'], 'points.geojson', {
+    type: 'application/geo+json',
+  });
+  await act(async () => {
+    fireEvent.drop(window, { dataTransfer: { files: [file] } });
+  });
+  await waitFor(() => {
+    expect(screen.getByTestId('create-flow-file')).toHaveTextContent(
+      'points.geojson'
+    );
+  });
+
+  // Switching to Settings must NOT kill the flow (the sidebars stay
+  // mounted and toggle `open`)…
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+  );
+  expect(screen.getByTestId('create-flow-file')).toHaveTextContent(
+    'points.geojson'
+  );
+
+  // …and the flow is still there when Configure Chapter comes back.
+  await act(async () =>
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Chapter' }))
+  );
+  expect(screen.getByTestId('create-flow-file')).toHaveTextContent(
+    'points.geojson'
+  );
 });

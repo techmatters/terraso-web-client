@@ -18,6 +18,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import _ from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
+import logger from 'terraso-client-shared/monitoring/logger';
 import { Box, useMediaQuery } from '@mui/material';
 
 import RichTextEditor from 'terraso-web-client/common/components/RichTextEditor/index';
@@ -45,6 +46,31 @@ import { getStoryMapThemeCssVariables } from 'terraso-web-client/storyMap/storyM
 import theme from 'terraso-web-client/theme';
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
+
+// Interactive elements that keep their pointer events while the chapter
+// overlay passes drags through to the map being positioned: form controls,
+// links, contenteditable, and the ARIA-widget equivalents MUI renders as
+// plain divs (Select, icon buttons, menus, media drop targets).
+const INTERACTIVE_SELECTOR = [
+  'input',
+  'textarea',
+  'select',
+  'button',
+  'a',
+  'label',
+  '[contenteditable="true"]',
+  '[role="button"]',
+  '[role="textbox"]',
+  '[role="combobox"]',
+  '[role="listbox"]',
+  '[role="option"]',
+  '[role="menuitem"]',
+  '[role="menuitemcheckbox"]',
+  '[role="radio"]',
+  '[role="checkbox"]',
+  '[role="switch"]',
+  '[role="tab"]',
+].join(', ');
 
 const Audio = ({ record }) => {
   return (
@@ -263,6 +289,26 @@ const StoryMap = props => {
   // the sources/layers), and recreating the map on every config.style write
   // would snap the camera and remount the layer stack.
   const [mapStyle] = useState(config.style);
+  // "the map shows config.style" is CODE, not a comment: style writes are
+  // funneled through the map style switcher (onMapStyleChange → the config
+  // context's `updateStyle`), which applies the style to the live map. A
+  // config.style write from anywhere else leaves the rendered map diverged
+  // — asserted here.
+  const styleSwitcherRef = useRef(false);
+  useEffect(() => {
+    if (config.style === mapStyle) {
+      styleSwitcherRef.current = false;
+      return;
+    }
+    if (!styleSwitcherRef.current) {
+      logger.warn(
+        `story map config.style diverged from the rendered map style ` +
+          `(${config.style} ≠ ${mapStyle}): write styles through ` +
+          `updateStyle, not raw config updates`
+      );
+    }
+    styleSwitcherRef.current = false;
+  }, [config.style, mapStyle]);
   const isMobile = useMediaQuery(theme.breakpoints.only('xs'));
   const containerRef = useRef();
 
@@ -390,9 +436,10 @@ const StoryMap = props => {
             <MapControls showCompass visualizePitch />
             <MapStyleSwitcher
               position="top-right"
-              onStyleChange={({ newStyle }) =>
-                onMapStyleChange?.(newStyle.data)
-              }
+              onStyleChange={({ newStyle }) => {
+                styleSwitcherRef.current = true;
+                onMapStyleChange?.(newStyle.data);
+              }}
             />
           </>
         )}
@@ -431,8 +478,12 @@ const StoryMap = props => {
             ? {
                 pointerEvents: 'none',
                 '& .step-container, & .step.title': { pointerEvents: 'none' },
-                '& input, & textarea, & button, & a, & [contenteditable="true"]':
-                  { pointerEvents: 'auto' },
+                // Everything interactive keeps its pointer events: form
+                // controls, links, contenteditable, plus the ARIA-widget
+                // equivalents MUI renders as divs (Select, icon buttons,
+                // menus, media drop targets) — those would otherwise be
+                // click-dead while the map is being positioned.
+                [`& ${INTERACTIVE_SELECTOR}`]: { pointerEvents: 'auto' },
               }
             : {}),
         })}

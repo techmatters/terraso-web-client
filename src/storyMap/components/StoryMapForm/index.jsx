@@ -119,7 +119,7 @@ const StoryMapForm = props => {
   const { storyMap, config, configRevision } = useStoryMapConfigDataContext();
   const { preview } = useStoryMapPreviewContext();
   const { mediaFiles: draftMediaFiles } = useStoryMapMediaContext();
-  const { setConfig, init } = useStoryMapConfigActionsContext();
+  const { setConfig, updateStyle, init } = useStoryMapConfigActionsContext();
   const { flushBufferedChapterEdits } =
     useStoryMapBufferedChapterActionsContext();
   const { isConfigDirty, isDirty, markRevisionSaved } =
@@ -404,9 +404,9 @@ const StoryMapForm = props => {
 
   const onMapStyleChange = useCallback(
     style => {
-      setConfig(_.set('style', style));
+      updateStyle(style);
     },
-    [setConfig]
+    [updateStyle]
   );
 
   if (preview || isSmall) {
@@ -475,17 +475,18 @@ const StoryMapForm = props => {
             playRotateAnimation={false}
           />
         </Box>
-        {rightSidebar === RIGHT_SIDEBAR_CONFIGURE && (
-          <ConfigureChapterSidebar
-            open
-            onClose={closeRightSidebar}
-            activeStepId={currentStepId ?? STORY_MAP_TITLE_ID}
-            onFitLayerBounds={requestFitBounds}
-          />
-        )}
-        {rightSidebar === RIGHT_SIDEBAR_SETTINGS && (
-          <RightSidebar open onClose={closeRightSidebar} />
-        )}
+        {/* Both right sidebars stay MOUNTED and toggle `open`: an in-flight
+            create-layer flow survives switching to Settings and back. */}
+        <ConfigureChapterSidebar
+          open={rightSidebar === RIGHT_SIDEBAR_CONFIGURE}
+          onClose={closeRightSidebar}
+          activeStepId={currentStepId ?? STORY_MAP_TITLE_ID}
+          onFitLayerBounds={requestFitBounds}
+        />
+        <RightSidebar
+          open={rightSidebar === RIGHT_SIDEBAR_SETTINGS}
+          onClose={closeRightSidebar}
+        />
       </Grid>
     </Box>
   );

@@ -384,6 +384,19 @@ export const StoryMapConfigContextProvider = props => {
     layerIds.forEach(layerId => sessionDataLayerIdsRef.current.add(layerId));
   }, []);
 
+  /**
+   * The ONE sanctioned writer of `config.style`: the map style switcher
+   * applies the style to the LIVE map (keeping its sources/layers) and then
+   * persists it here. Style writes through raw `setConfig` leave the
+   * rendered map diverged from the config (StoryMap asserts on that).
+   */
+  const updateStyle = useCallback(
+    style => {
+      updateConfig(_.set('style', style));
+    },
+    [updateConfig]
+  );
+
   // Save/publish boundary: the ONLY place data layers are garbage-collected
   // (session-created layers are exempt).
   const getConfigForSave = useCallback(
@@ -508,10 +521,11 @@ export const StoryMapConfigContextProvider = props => {
   const configActionsContextValue = useMemo(
     () => ({
       setConfig: updateConfig,
+      updateStyle,
       registerSessionDataLayers,
       init,
     }),
-    [updateConfig, registerSessionDataLayers, init]
+    [updateConfig, updateStyle, registerSessionDataLayers, init]
   );
 
   const bufferedChapterActionsContextValue = useMemo(

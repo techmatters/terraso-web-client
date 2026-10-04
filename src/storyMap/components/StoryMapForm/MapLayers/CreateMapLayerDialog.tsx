@@ -464,7 +464,6 @@ export const CreateMapLayerFileUpload = ({
     },
     [setVisualizationConfig]
   );
-  useEffect(() => {}, [setVisualizationConfig]);
 
   return (
     <VisualizationContextProvider

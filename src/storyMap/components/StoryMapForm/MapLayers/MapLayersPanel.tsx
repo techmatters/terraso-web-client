@@ -26,8 +26,6 @@ import {
   MapLayerDraftRow,
 } from 'terraso-web-client/storyMap/storyMapTypes';
 
-export const SIDEBAR_WIDTH = 300;
-
 type MapLayersPanelProps = {
   /** Ordered rows, index 0 = topmost on the map. */
   rows: MapLayerDraftRow[];
@@ -73,7 +71,9 @@ export const MapLayersPanel = ({
     <Box
       sx={
         [
-          { width: SIDEBAR_WIDTH, flexShrink: 0 },
+          // Hosts own the width (e.g. full width inside the configure
+          // sidebar).
+          { flexShrink: 0 },
           ...(sx == null ? [] : [sx]),
         ] as SxProps
       }
