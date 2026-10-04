@@ -378,6 +378,8 @@ test('StoryMap: justMap chapter renders nothing over the map but keeps its scrol
   expect(section).not.toHaveClass('story-theme');
   // The chapter still occupies its scroll space (100vh uncontained).
   expect(section).toHaveStyle('min-height: 100vh');
+  // …exactly one viewport: the classic card paddings do not stretch it.
+  expect(section).toHaveStyle('padding: 0');
 });
 
 test('StoryMap: justMap chapter span is 100cqh when the story map is contained', async () => {
@@ -395,6 +397,7 @@ test('StoryMap: justChapter chapter is a full-span card covering the map, conten
   expect(section).toHaveClass('chapter-only');
   expect(section).toHaveStyle('width: 100%');
   expect(section).toHaveStyle('min-height: 100vh');
+  expect(section).toHaveStyle('padding: 0');
   expect(section).toHaveStyle(
     'background-color: var(--story-theme-background)'
   );

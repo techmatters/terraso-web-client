@@ -157,9 +157,10 @@ const Chapter = ({ record, active, isContained }) => {
         [breakpoints.not('xs')]: { opacity: active ? 0.99 : 0.25 },
         // The render modes span the full chapter scroll space: 100vh
         // uncontained, 100cqh when the story map scrolls in its container
-        // (the map is `100cqh` there too).
+        // (the map is `100cqh` there too). The classic card paddings are
+        // dropped: the span is exactly one viewport tall.
         ...(mapOnly || chapterOnly
-          ? { minHeight: isContained ? '100cqh' : '100vh' }
+          ? { minHeight: isContained ? '100cqh' : '100vh', padding: 0 }
           : {}),
         // `justChapter` covers the map area: full width, theme background,
         // content centered.
